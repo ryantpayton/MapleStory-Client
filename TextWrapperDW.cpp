@@ -28,8 +28,6 @@ namespace Graphics
 		brush = 0;
 		backbrush = 0;
 		alpha = 1.0f;
-		height = 0;
-		width = 0;
 		back = TXB_NONE;
 	}
 

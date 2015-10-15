@@ -21,6 +21,7 @@
 #include "UI.h"
 #include "Login.h"
 #include "Session.h"
+#include "Nametag.h"
 
 using namespace Data;
 using namespace Net;
@@ -49,7 +50,7 @@ namespace IO
 		void buttonpressed(short);
 		void addchar(size_t);
 	private:
-		vector2d<int> getcharpos(char);
+		vector2d<int> getcharpos(size_t);
 		Equipcache* equips;
 		UI* ui;
 		Login* login;
@@ -59,6 +60,7 @@ namespace IO
 		char page;
 		Textlabel* namelabel;
 		Textlabel* joblabel;
+		ptrvector<Nametag*> nametags;
 	};
 
 	class ElementCharSelect : public Element

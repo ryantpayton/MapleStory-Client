@@ -16,24 +16,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Packethandler.h"
 #include "LoginHandlers.h"
 #include "PongPacket.h"
 #include "UILogin.h"
 
 namespace Net
 {
-	class PingHandler : public Handler
+	class PingHandler : public ChildHandler
 	{
-		void PingHandler::handle(InPacket* recv)
+		void PingHandler::handle(ParentHandler* parent, InPacket* recv)
 		{
 			PongPacket p = PongPacket();
-			session->dispatch(&p);
+			parent->getsession()->dispatch(&p);
 		}
 	};
 
-	class NullHandler : public Handler
+	class NullHandler : public ChildHandler
 	{
-		void NullHandler::handle(InPacket* recv) {}
+		void NullHandler::handle(ParentHandler* parent, InPacket* recv){}
 	};
 
 	Packethandler::Packethandler()
@@ -109,13 +110,12 @@ namespace Net
 		}
 	}
 
-	void Packethandler::init(Datacache* ch, UI* u, Login* lg, Session* ses, Packetcreator* crt)
+	void Packethandler::init(Datacache* ch, UI* u, Login* lg, Session* ses)
 	{
 		cache = ch;
 		ui = u;
 		login = lg;
 		session = ses;
-		creator = crt;
 	}
 
 	void Packethandler::handle(InPacket* recv)
@@ -126,10 +126,10 @@ namespace Net
 			int16_t opcode = recv->readshort();
 			if (opcode < NUM_HANDLERS)
 			{
-				Handler* hnd = handlers[opcode];
+				ChildHandler* hnd = handlers[opcode];
 				if (hnd)
 				{
-					hnd->handle(recv);
+					hnd->handle(this, recv);
 					handled = true;
 				}
 			}

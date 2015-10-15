@@ -16,34 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "CharEntry.h"
+#include "ParentHandler.h"
 
 namespace Net
 {
-	class Account
+	class ChildHandler : public Handler
 	{
 	public:
-		Account(InPacket*);
-		Account() {}
-		~Account() {}
-		void parsecharentry(InPacket*);
-		void setpic(char);
-		void setslots(char);
-		char getpic() { return pic; }
-		char getslots() { return slots; }
-		size_t getcharcount() { return chars.size(); }
-		CharEntry* getchar(size_t i) { return (i < chars.size()) ? &chars[i] : 0; }
-	private:
-		vector<CharEntry> chars;
-		string name;
-		int accid;
-		bool female;
-		bool muted;
-		short pin;
-		char gmlevel;
-		char pic;
-		char slots;
-		uint8_t selection;
+		virtual void handle(InPacket*){}
+		virtual void handle(ParentHandler*, InPacket*) = 0;
 	};
 }
-

@@ -28,7 +28,7 @@ namespace Character
 		setstance("stand");
 		frame = 0;
 		elapsed = 0;
-		flip = false;
+		flip = true;
 		expression = "default";
 		fcframe = 0;
 		fcelapsed = 0;

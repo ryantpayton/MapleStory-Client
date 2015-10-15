@@ -22,7 +22,7 @@ namespace Net
 	class CharlistRequestPacket : public OutPacket
 	{
 	public:
-		CharlistRequestPacket(uint8_t world, uint8_t channel) : OutPacket(CHARL_REQ)
+		CharlistRequestPacket(uint8_t world, uint8_t channel) : OutPacket(CHARLIST_REQUEST)
 		{
 			writech(0);
 			writech(world);

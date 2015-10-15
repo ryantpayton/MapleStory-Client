@@ -15,35 +15,30 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "CharEntry.h"
+#include "OutPacket.h"
 
 namespace Net
 {
-	class Account
+	class MovementPacket : public OutPacket
 	{
 	public:
-		Account(InPacket*);
-		Account() {}
-		~Account() {}
-		void parsecharentry(InPacket*);
-		void setpic(char);
-		void setslots(char);
-		char getpic() { return pic; }
-		char getslots() { return slots; }
-		size_t getcharcount() { return chars.size(); }
-		CharEntry* getchar(size_t i) { return (i < chars.size()) ? &chars[i] : 0; }
-	private:
-		vector<CharEntry> chars;
-		string name;
-		int accid;
-		bool female;
-		bool muted;
-		short pin;
-		char gmlevel;
-		char pic;
-		char slots;
-		uint8_t selection;
+		MovementPacket(SendOpcode opc) : OutPacket(opc) {}
+	protected:
+		/*void writemoves(vector<movefragment> moves)
+		{
+			p->writech(moves.size());
+
+			for (vector<movefragment>::iterator mvit = moves.begin(); mvit != moves.end(); ++mvit)
+			{
+				p->writech(mvit->command);
+				p->writesh(mvit->xpos);
+				p->writesh(mvit->ypos);
+				p->writesh(mvit->xpps);
+				p->writesh(mvit->ypps);
+				p->writesh(mvit->unk);
+				p->writech(mvit->newstate);
+				p->writesh(mvit->duration);
+			}
+		}*/
 	};
 }
-

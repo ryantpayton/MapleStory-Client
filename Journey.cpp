@@ -20,18 +20,11 @@
 #include "WindowD2D.h"
 #include "AudioplayerBass.h"
 #include "Datacache.h"
+#include "UI.h"
 #include "UILogin.h"
 #include "nx.hpp"
 #include "node.hpp"
 #include "audio.hpp"
-/*#include <Windows.h>
-#include <chrono>
-#include <string>*/
-//#include "Game.h"
-//#include "WindowD2D.h"
-//#include "AudioplayerBass.h"
-//#include "Datacache.h"
-//#include "Configuration.h"
 
 using namespace Net;
 using namespace Program;
@@ -39,72 +32,69 @@ using namespace Program;
 short DPF = 16;
 chrono::steady_clock::time_point start;
 
-int showerror(string error)
-{
-	MessageBox(NULL, error.c_str(), NULL, MB_OK);
-	return 0;
-}
-
 void evaluate()
 {
 	chrono::steady_clock::time_point time = chrono::steady_clock::now();
 	double elapsed = (chrono::duration_cast<chrono::duration<double>>(time - start)).count();
 	DPF = static_cast<int>(1000 * elapsed);
-	if (DPF > 60)
-	{
-		DPF = 60;
-	}
 	start = time;
 }
 
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+int init(WindowD2D& window, Server& server, AudioplayerBass& audiopb, Datacache& cache, UI& ui)
 {
-	Server server;
+	if (!window.init(&ui)) { return 1; }
+	if (!server.init(&cache, &ui)) { return 2; }
+	if (!audiopb.init(window.getwindow())) { return 3; }
+	nl::nx::load_all();
+	cache.init();
+	ui.init();
+	return 0;
+}
+
+#ifdef WIN32
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+#else
+int main()
+#endif
+{
 	WindowD2D window;
+	Server server;
 	AudioplayerBass audiopb;
 	Datacache cache;
 	UI ui;
 
-	nl::nx::load_all();
+	int error = init(window, server, audiopb, cache, ui);
 
-	cache.init();
-
-	if (window.init(&ui))
+	if (error == 0)
 	{
-		if (server.init(&cache, &ui))
-		{
-			if (audiopb.init(window.getwindow()))
-			{
-				audio loginbgm = nx::sound["BgmUI.img"]["Title"].get_audio();
-				audiopb.playbgm((void*)loginbgm.data(), loginbgm.length());
+		audio loginbgm = nx::sound["BgmUI.img"]["Title"].get_audio();
+		audiopb.playbgm((void*)loginbgm.data(), loginbgm.length());
 
-				ui.init();
-				ui.add(&ElementLogin(server.getsession(), &ui));
+		ui.add(&ElementLogin(server.getsession(), &ui));
 
-				start = chrono::steady_clock::now();
-				while (server.run())
-				{
-					window.begin();
-					ui.draw();
-					window.end();
-					window.update();
-					ui.update(DPF);
-					evaluate();
-				}
-			}
-			else
-			{
-				showerror("Error: Could not initialize audio.");
-			}
-		}
-		else
+		start = chrono::steady_clock::now();
+		while (server.run())
 		{
-			showerror("Error: Could not connect to server.");
+			window.begin();
+			ui.draw();
+			window.end();
+			window.update();
+			ui.update(DPF);
+			evaluate();
 		}
 	}
 	else
 	{
-		showerror("Error: Could not initialize windows application.");
+		switch (error)
+		{
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		}
+		PostQuitMessage(0);
 	}
 
 	return 0;

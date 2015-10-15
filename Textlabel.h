@@ -33,6 +33,7 @@ namespace Graphics
 		void settext(string);
 		void settext(string, short);
 		short getadvance(size_t);
+		short getwidth();
 		size_t getlength();
 		string gettext();
 	private:

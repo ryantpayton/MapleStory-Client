@@ -19,7 +19,6 @@
 #include "SessionWinsock.h"
 #include "CryptographyMaple.h"
 #include "Packethandler.h"
-#include "Packetcreator.h"
 #include "Login.h"
 
 namespace Net
@@ -36,7 +35,6 @@ namespace Net
 		SessionWinsock session;
 		CryptographyMaple crypto;
 		Packethandler handler;
-		Packetcreator creator;
 		Login login;
 	};
 }

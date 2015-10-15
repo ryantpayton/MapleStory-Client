@@ -15,35 +15,35 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "CharEntry.h"
+#include "OutPacket.h"
 
 namespace Net
 {
-	class Account
+	class NameCharPacket : public OutPacket
 	{
 	public:
-		Account(InPacket*);
-		Account() {}
-		~Account() {}
-		void parsecharentry(InPacket*);
-		void setpic(char);
-		void setslots(char);
-		char getpic() { return pic; }
-		char getslots() { return slots; }
-		size_t getcharcount() { return chars.size(); }
-		CharEntry* getchar(size_t i) { return (i < chars.size()) ? &chars[i] : 0; }
-	private:
-		vector<CharEntry> chars;
-		string name;
-		int accid;
-		bool female;
-		bool muted;
-		short pin;
-		char gmlevel;
-		char pic;
-		char slots;
-		uint8_t selection;
+		NameCharPacket(string name) : OutPacket(NAME_CHAR)
+		{
+			writestr(name);
+		}
+	};
+
+	class CreateCharPacket : public OutPacket
+	{
+	public:
+		CreateCharPacket(string name, short job, int face, int hair, uint8_t hairc, uint8_t skin, int top, int bot, int shoes, int weapon, bool female) : OutPacket(CREATE_CHAR)
+		{
+			writestr(name);
+			writeint(job);
+			writeint(face);
+			writeint(hair);
+			writeint(hairc);
+			writeint(skin);
+			writeint(top);
+			writeint(bot);
+			writeint(shoes);
+			writeint(weapon);
+			writech(female);
+		}
 	};
 }
-

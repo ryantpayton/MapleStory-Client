@@ -32,8 +32,7 @@ namespace Net
 	bool Server::init(Datacache* ch, UI* ui)
 	{
 		session.init(&crypto, &handler);
-		creator.init(&session);
-		handler.init(ch, ui, &login, &session, &creator);
+		handler.init(ch, ui, &login, &session);
 		return session.isconnected();
 	}
 

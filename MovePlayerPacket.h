@@ -15,35 +15,18 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "CharEntry.h"
+#include "MovementPacket.h"
 
 namespace Net
 {
-	class Account
+	class MovePlayerPacket : public MovementPacket
 	{
 	public:
-		Account(InPacket*);
-		Account() {}
-		~Account() {}
-		void parsecharentry(InPacket*);
-		void setpic(char);
-		void setslots(char);
-		char getpic() { return pic; }
-		char getslots() { return slots; }
-		size_t getcharcount() { return chars.size(); }
-		CharEntry* getchar(size_t i) { return (i < chars.size()) ? &chars[i] : 0; }
-	private:
-		vector<CharEntry> chars;
-		string name;
-		int accid;
-		bool female;
-		bool muted;
-		short pin;
-		char gmlevel;
-		char pic;
-		char slots;
-		uint8_t selection;
+		/*MovePlayerPacket(vector<movefragment> moves) : MovementPacket(MOVE_PLAYER)
+		{
+			writelg(0);
+			writech(0);
+			writemoves(moves);
+		}*/
 	};
 }
-

@@ -15,98 +15,45 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "vector2d.h"
+#include "OutPacket.h"
 
-using namespace Util;
-
-namespace Graphics
+namespace Net
 {
-	class DrawArgument
+	const string MACS = "68-5D-43-F8-B8-6C, 7A-79-19-8B-31-3F";
+	const string HWID = "685D43F8_B86C7A79";
+
+	class SelectCharPacket : public OutPacket
 	{
 	public:
-		virtual ~DrawArgument() {}
-		virtual vector2d<int> getpos() { return vector2d<int>(); }
-		virtual vector2d<int> getstretch() { return vector2d<int>(); }
-		virtual vector2d<int> getcenter() { return getpos(); }
-		virtual float getxscale() { return 1.0f; }
-		virtual float getyscale() { return 1.0f; }
-		virtual float getalpha() { return 1.0f; }
+		SelectCharPacket(int cid) : OutPacket(SELECT_CHAR)
+		{
+			writeint(cid);
+			writestr(MACS);
+			writestr(HWID);
+		}
 	};
 
-	class PosArgument : public DrawArgument
+	class RegisterPicPacket : public OutPacket
 	{
 	public:
-		PosArgument(vector2d<int> p)
+		RegisterPicPacket(int cid, string pic) : OutPacket(REGISTER_PIC)
 		{
-			pos = p;
+			writeint(cid);
+			writestr(MACS);
+			writestr(HWID);
+			writestr(pic);
 		}
-
-		vector2d<int> getpos() 
-		{ 
-			return pos; 
-		}
-	private:
-		vector2d<int> pos;
 	};
 
-	class FlipArgument : public DrawArgument
+	class SelectCharPicPacket : public OutPacket
 	{
 	public:
-		FlipArgument(vector2d<int> p, bool f, vector2d<int> c)
+		SelectCharPicPacket(string pic, int cid) : OutPacket(SELECT_CHAR_PIC)
 		{
-			pos = p;
-			xscale = f ? -1.0f : 1.0f;
-			center = c;
+			writestr(pic);
+			writeint(cid);
+			writestr(MACS);
+			writestr(HWID);
 		}
-
-		FlipArgument(vector2d<int> p, bool f)
-		{
-			pos = p;
-			xscale = f ? -1.0f : 1.0f;
-			center = p;
-		}
-
-		vector2d<int> getpos()
-		{
-			return pos;
-		}
-
-		float getxscale()
-		{
-			return xscale;
-		}
-
-		vector2d<int> getcenter()
-		{
-			return center;
-		}
-	private:
-		vector2d<int> pos;
-		float xscale;
-		vector2d<int> center;
-	};
-
-	class StretchArgument : public DrawArgument
-	{
-	public:
-		StretchArgument(vector2d<int> p, vector2d<int> s)
-		{
-			pos = p;
-			stretch = s;
-		}
-
-		vector2d<int> getpos()
-		{
-			return pos;
-		}
-
-		vector2d<int> getstretch()
-		{
-			return stretch;
-		}
-	private:
-		vector2d<int> pos;
-		vector2d<int> stretch;
 	};
 }

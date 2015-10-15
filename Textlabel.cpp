@@ -54,6 +54,11 @@ namespace Graphics
 		}
 	}
 
+	short Textlabel::getwidth()
+	{
+		return (text != 0) ? text->getdimensions().x() : 0;
+	}
+
 	short Textlabel::getadvance(size_t pos)
 	{
 		return (text != 0) ? text->getadvance(pos) : 0;

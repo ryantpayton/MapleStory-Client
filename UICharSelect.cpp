@@ -51,7 +51,7 @@ namespace IO
 
 		Account* account = login->getaccount();
 		char cslots = account->getslots();
-		size_t charcount = account->getchars()->size();
+		size_t charcount = account->getcharcount();
 		if (charcount + cslots < 9)
 		{
 			buttons.get(BT_PAGELEFT)->setstate(BTS_DISABLED);
@@ -67,14 +67,6 @@ namespace IO
 		{
 			graphics.add(new Sprite(charsel["buyCharacter"], vector2d<int>(130 + (120 * (i % 4)), 250 + (200 * (i > 3)))));
 		}
-
-		/*map<bool, vector<texture>> nttextures;
-		nttextures[false].push_back(texture(charsel["nameTag"]["0"]["0"]));
-		nttextures[false].push_back(texture(charsel["nameTag"]["0"]["1"]));
-		nttextures[false].push_back(texture(charsel["nameTag"]["0"]["2"]));
-		nttextures[true].push_back(texture(charsel["nameTag"]["1"]["0"]));
-		nttextures[true].push_back(texture(charsel["nameTag"]["1"]["1"]));
-		nttextures[true].push_back(texture(charsel["nameTag"]["1"]["2"]));*/
 
 		//selected = config.getconfig()->defaultchar;
 		selected = 0;
@@ -95,11 +87,13 @@ namespace IO
 		for (size_t i = 0; i < displaycount; i++)
 		{
 			addchar(i);
+			nametags.add(new Nametag(charsel["nameTag"], DWF_14MC, TXC_WHITE, account->getchar(i)->getstats()->getname()));
 		}
+		nametags.get(selected)->setselected(true);
 
 		if (charcount > 0)
 		{
-			StatsEntry* stats = account->getchars()->at(selected).getstats();
+			StatsEntry* stats = account->getchar(selected)->getstats();
 			namelabel = new Textlabel(DWF_20MC, TXC_WHITE, stats->getname(), 0);
 			//joblabel = new Textlabel(DWF_12MR, TXC_WHITE, stats->getjobname(), 0);
 		}
@@ -127,6 +121,10 @@ namespace IO
 				chit->draw(getcharpos(i));
 				i++;
 			}
+			for (size_t i = 0; i < nametags.getend(); i++)
+			{
+				nametags.get(i)->draw(getcharpos(i));
+			}
 		}
 	}
 
@@ -150,7 +148,7 @@ namespace IO
 
 	void UICharSelect::addchar(size_t index)
 	{
-		CharLook look = CharLook(login->getaccount()->getchars()->at(index).getlook());
+		CharLook look = CharLook(login->getaccount()->getchar(index)->getlook());
 		equips->loadlook(&look);
 
 		short buttonindex = static_cast<short>(BT_CHAR0 + index);
@@ -164,7 +162,7 @@ namespace IO
 		charlooks.push_back(look);
 	}
 
-	vector2d<int> UICharSelect::getcharpos(char i)
+	vector2d<int> UICharSelect::getcharpos(size_t i)
 	{
 		return vector2d<int>(130 + (120 * (i % 4)), 250 + (200 * (i > 3)));
 	}

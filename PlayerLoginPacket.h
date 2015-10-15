@@ -15,46 +15,16 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Session.h"
-#include "vector2d.h"
-
-using namespace Util;
+#include "OutPacket.h"
 
 namespace Net
 {
-	class Packetcreator
+	class PlayerLoginPacket : public OutPacket
 	{
 	public:
-		Packetcreator() {}
-		~Packetcreator() {}
-		void init(Session*);
-		void c_login(string, string);
-		void accept_tos();
-		void pong();
-		void serverlrequest();
-		void charlrequest(char, char);
-		void deletechar(string, int);
-		void registerpic(int, string);
-		void selectcharpic(int, string);
-		void selectchar(int);
-		void playerlogin(int);
-		void checkcharname(string);
-		void createchar(string, int, int, int, int, int, int, int, int, int, bool);
-		//void moveplayer(vector<movefragment>);
-		void changemap(bool, int, string, bool);
-		//void close_attack(attackinfo);
-		void general_chat(string, bool);
-		void talktonpc(int);
-		void moveitem(char, short, char, short);
-		void useitem(short, int);
-		void scrollequip(short, short, bool);
-		void spendap(int);
-		//void movemonster(int, short, byte, byte, byte, byte, byte, byte, vector2d, vector<movefragment>);
-		void pickupitem(int, vector2d<int32_t>);
-	private:
-		//void writemoves(OutPacket*, vector<movefragment>);
-		Session* session;
+		PlayerLoginPacket(int cid) : OutPacket(PLAYER_LOGIN)
+		{
+			writeint(cid);
+		}
 	};
 }
-

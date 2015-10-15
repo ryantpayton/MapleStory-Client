@@ -16,142 +16,144 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Packethandler.h"
+#include "ChildHandler.h"
 #include "UILogin.h"
 #include "UILoginNotice.h"
 #include "UIWorldSelect.h"
 #include "UICharSelect.h"
-#include "LoginPackets.h"
+#include "TOSPacket.h"
+#include "ServerRequestPacket.h"
+#include "PlayerLoginPacket.h"
 
 namespace Net
 {
-	class LoginResultHandler : public Handler
+	class LoginResultHandler : public ChildHandler
 	{
-		void LoginResultHandler::handle(InPacket* recv)
+		void LoginResultHandler::handle(ParentHandler* parent, InPacket* recv)
 		{
-			ui->remove(UI_LOGINWAIT);
+			parent->getui()->remove(UI_LOGINWAIT);
 			int reason = recv->readint();
 			if (reason != 0)
 			{
 				switch (reason)
 				{
 				case 2:
-					ui->add(&ElementLoginNotice(16));
+					parent->getui()->add(&ElementLoginNotice(16));
 					return;
 				case 7:
-					ui->add(&ElementLoginNotice(17));
+					parent->getui()->add(&ElementLoginNotice(17));
 					return;
 				case 23:
-					session->dispatch(&TOSPacket());
+					parent->getsession()->dispatch(&TOSPacket());
 					return;
 				default:
 					if (reason > 0)
 					{
-						ui->add(&ElementLoginNotice(reason - 1));
+						parent->getui()->add(&ElementLoginNotice(reason - 1));
 					}
 				}
-				ui->enable();
+				parent->getui()->enable();
 				return;
 			}
 			else
 			{
-				login->parseaccount(recv);
+				parent->getlogin()->parseaccount(recv);
 				/*if (config->saveid)
 				{
 					config->defaultacc = accname;
 				}*/
-				session->dispatch(&ServerRequestPacket());
+				parent->getsession()->dispatch(&ServerRequestPacket());
 			}
 		}
 	};
 
-	class ServerlistHandler : public Handler
+	class ServerlistHandler : public ChildHandler
 	{
-		void ServerlistHandler::handle(InPacket* recv)
+		void ServerlistHandler::handle(ParentHandler* parent, InPacket* recv)
 		{
-			login->parseworld(recv);
-			ui->remove(UI_LOGIN);
-			ui->add(&ElementWorldSelect(ui, login, session));
-			ui->enable();
+			parent->getlogin()->parseworld(recv);
+			parent->getui()->remove(UI_LOGIN);
+			parent->getui()->add(&ElementWorldSelect(parent->getui(), parent->getlogin(), parent->getsession()));
+			parent->getui()->enable();
 		}
 	};
 
-	class CharlistHandler : public Handler
+	class CharlistHandler : public ChildHandler
 	{
-		void CharlistHandler::handle(InPacket* recv)
+		void CharlistHandler::handle(ParentHandler* parent, InPacket* recv)
 		{
 			recv->readbyte();
 			char numchars = recv->readbyte();
 			for (char i = 0; i < numchars; i++)
 			{
-				login->getaccount()->parsecharentry(recv);
+				parent->getlogin()->getaccount()->parsecharentry(recv);
 			}
 			char pic = recv->readbyte();
 			char slots = static_cast<char>(recv->readint());
 			//Game::getcache()->getsounds()->play(MSN_CHARSEL);
-			login->getaccount()->setpic(pic);
-			login->getaccount()->setslots(slots);
-			ui->remove(UI_WORLDSELECT);
-			ui->add(&ElementCharSelect(cache->getequips(), ui, login, session));
-			ui->enable();
+			parent->getlogin()->getaccount()->setpic(pic);
+			parent->getlogin()->getaccount()->setslots(slots);
+			parent->getui()->remove(UI_WORLDSELECT);
+			parent->getui()->add(&ElementCharSelect(parent->getcache()->getequips(), parent->getui(), parent->getlogin(), parent->getsession()));
+			parent->getui()->enable();
 		}
 	};
 
-	class CharnameResultHandler : public Handler
+	class CharnameResultHandler : public ChildHandler
 	{
-		void CharnameResultHandler::handle(InPacket* recv)
+		void CharnameResultHandler::handle(ParentHandler* parent, InPacket* recv)
 		{
 			string name = recv->readascii();
 			bool used = recv->readbool();
-			UIElement* uicc = ui->getelement(UI_CHARCREATION);
+			UIElement* uicc = parent->getui()->getelement(UI_CHARCREATION);
 			if (uicc)
 			{
 				//uicc->getimpl()->nameresult(used);
 			}
 			if (used)
 			{
-				ui->add(&ElementLoginNotice(5));
+				parent->getui()->add(&ElementLoginNotice(5));
 			}
-			ui->enable();
+			parent->getui()->enable();
 		}
 	};
 
-	class AddNewcharHandler : public Handler
+	class AddNewcharHandler : public ChildHandler
 	{
-		void AddNewcharHandler::handle(InPacket* recv)
+		void AddNewcharHandler::handle(ParentHandler* parent, InPacket* recv)
 		{
 			char stuff = recv->readbyte();
 			if (stuff == 0)
 			{
-				login->getaccount()->parsecharentry(recv);
-				ui->getelement(UI_CHARCREATION)->deactivate();
-				ui->remove(UI_CHARCREATION);
-				//ui->add(UI_CHARSELECT);
-				ui->enable();
+				parent->getlogin()->getaccount()->parsecharentry(recv);
+				parent->getui()->getelement(UI_CHARCREATION)->deactivate();
+				parent->getui()->remove(UI_CHARCREATION);
+				parent->getui()->add(&ElementCharSelect(parent->getcache()->getequips(), parent->getui(), parent->getlogin(), parent->getsession()));
+				parent->getui()->enable();
 			}
 		}
 	};
 
-	class DeleteCharResultHandler : public Handler
+	class DeleteCharResultHandler : public ChildHandler
 	{
-		void DeleteCharResultHandler::handle(InPacket* recv)
+		void DeleteCharResultHandler::handle(ParentHandler* parent, InPacket* recv)
 		{
 			int cid = recv->readint();
 			bool success = recv->readbool();
 			if (success)
 			{
-				ui->add(&ElementLoginNotice(55));
+				parent->getui()->add(&ElementLoginNotice(55));
 			}
 			else
 			{
-				ui->add(&ElementLoginNotice(93));
+				parent->getui()->add(&ElementLoginNotice(93));
 			}
 		}
 	};
 
-	class ServerIPHandler : public Handler
+	class ServerIPHandler : public ChildHandler
 	{
-		void ServerIPHandler::handle(InPacket* recv)
+		void ServerIPHandler::handle(ParentHandler* parent, InPacket* recv)
 		{
 			recv->readshort();
 			vector<uint8_t> addr;
@@ -160,9 +162,9 @@ namespace Net
 				addr.push_back(recv->readbyte());
 			}
 			short port = recv->readshort();
-			int clientid = recv->readint();
-			session->reconnect(addr, port);
-			creator->playerlogin(clientid);
+			int cid = recv->readint();
+			parent->getsession()->reconnect(addr, port);
+			parent->getsession()->dispatch(&PlayerLoginPacket(cid));
 		}
 	};
 }

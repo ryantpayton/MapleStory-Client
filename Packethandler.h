@@ -16,14 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Handler.h"
-#include "Datacache.h"
-#include "UI.h"
-#include "Login.h"
-#include "Packetcreator.h"
-
-using namespace Program;
-using namespace IO;
+#include "ParentHandler.h"
+#include "ChildHandler.h"
 
 namespace Net
 {
@@ -91,21 +85,23 @@ namespace Net
 		KEYMAP = 335
 	};
 
-	static Datacache* cache;
-	static UI* ui;
-	static Login* login;
-	static Session* session;
-	static Packetcreator* creator;
-
-	class Packethandler : public Handler
+	class Packethandler : public ParentHandler
 	{
 	public:
 		Packethandler();
 		~Packethandler();
+		void init(Datacache*, UI*, Login*, Session*);
 		void handle(InPacket*);
-		void init(Datacache*, UI*, Login*, Session*, Packetcreator*);
+		Datacache* getcache() { return cache; }
+		UI* getui() { return ui; }
+		Login* getlogin() { return login; }
+		Session* getsession() { return session; }
 	private:
-		Handler* handlers[NUM_HANDLERS];
+		ChildHandler* handlers[NUM_HANDLERS];
+		Datacache* cache;
+		UI* ui;
+		Login* login;
+		Session* session;
 	};
 }
 
