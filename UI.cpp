@@ -39,9 +39,9 @@ namespace IO
 
 	void UI::draw()
 	{
-		for (spmit<UIType, UIElement*> elit = elements.getit(); elit.belowtop(); ++elit)
+		for (map<UIType, UIElement*>::iterator elit = elements.getbegin(); elit != elements.getend(); ++elit)
 		{
-			elit->draw();
+			elit->second->draw();
 		}
 
 		cursor.draw();
@@ -49,9 +49,9 @@ namespace IO
 
 	void UI::update(short dpf)
 	{
-		for (spmit<UIType, UIElement*> elit = elements.getit(); elit.belowtop(); ++elit)
+		for (map<UIType, UIElement*>::iterator elit = elements.getbegin(); elit != elements.getend(); ++elit)
 		{
-			elit->update(dpf);
+			elit->second->update(dpf);
 		}
 
 		cursor.update(dpf);
@@ -69,15 +69,15 @@ namespace IO
 		UIElement* front = 0;
 		if (enabled)
 		{
-			for (spmit<UIType, UIElement*> elit = elements.getit(); elit.belowtop(); ++elit)
+			for (map<UIType, UIElement*>::iterator elit = elements.getbegin(); elit != elements.getend(); ++elit)
 			{
-				if (elit->isactive() && elit->bounds().contains(pos))
+				if (elit->second->isactive() && elit->second->bounds().contains(pos))
 				{
 					if (front != 0)
 					{
 						front->sendmouse(false, pos);
 					}
-					front = elit.get();
+					front = elit->second;
 				}
 			}
 		}
@@ -94,12 +94,12 @@ namespace IO
 		cursor.setstate(mst);
 	}
 
-	void UI::add(Element* element)
+	void UI::add(const Element& element)
 	{
-		UIType type = element->type();
+		UIType type = element.type();
 		if (elements.contains(type))
 		{
-			if (element->isunique())
+			if (element.isunique())
 			{
 				elements.get(type)->togglehide();
 				return;
@@ -110,7 +110,7 @@ namespace IO
 			}
 		}
 
-		UIElement* toadd = element->instantiate();
+		UIElement* toadd = element.instantiate();
 		if (toadd)
 		{
 			elements.add(type, toadd);
@@ -119,7 +119,7 @@ namespace IO
 
 	void UI::remove(UIType type)
 	{
-		elements.removekey(type);
+		elements.remove(type);
 	}
 
 	UIElement* UI::getelement(UIType type)

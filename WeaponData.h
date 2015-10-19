@@ -45,12 +45,12 @@ namespace Data
 	class WeaponData : public EquipData
 	{
 	public:
-		WeaponData(int, BodyDrawinfo*);
-		Weapontype getweptype() { return weptype; }
-		bool istwohanded() { return twohanded; }
-		string getafterimage() { return afterimage; }
-		uint8_t getspeed() { return attackspeed; }
-		uint8_t getattack() { return attack; }
+		WeaponData(int, BodyDrawinfo&);
+		Weapontype getweptype() const;
+		bool istwohanded() const;
+		string getafterimage() const;
+		uint8_t getspeed() const;
+		uint8_t getattack() const;
 	private:
 		Weapontype weptype;
 		bool twohanded;

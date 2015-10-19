@@ -18,8 +18,8 @@
 #pragma once
 //#include "Mapdata.h"
 #include "Equipcache.h"
-/*#include "Itemcache.h"
-#include "Mobcache.h"
+#include "Itemcache.h"
+/*#include "Mobcache.h"
 #include "Npccache.h"
 #include "Skillcache.h"
 #include "Effectcache.h"
@@ -35,11 +35,11 @@ namespace Program
 		Datacache() {}
 		~Datacache() {}
 		void init();
-		//Itemdata* getitem(int);
+		const ItemData& getitem(int);
 		//Mapdata* getmap() { return &mdata; }
-		Equipcache* getequips() { return &equips; }
-		/*Itemcache* getitems() { return &items; }
-		Mobcache* getmobs() { return &mobs; }
+		Equipcache& getequips() { return equips; }
+		Itemcache& getitems() { return items; }
+		/*Mobcache* getmobs() { return &mobs; }
 		Npccache* getnpcs() { return &npcs; }
 		Skillcache* getskills() { return &skills; }
 		Effectcache* geteffects() { return &effects; }
@@ -47,8 +47,8 @@ namespace Program
 	private:
 		//Mapdata mdata;
 		Equipcache equips;
-		/*Itemcache items;
-		Mobcache mobs;
+		Itemcache items;
+		/*Mobcache mobs;
 		Npccache npcs;
 		Skillcache skills;
 		Effectcache effects;

@@ -18,7 +18,7 @@
 #pragma once
 #include "Button.h"
 #include "Texture.h"
-#include "ptrmap.h"
+#include "Ptrmap.h"
 
 using namespace Graphics;
 
@@ -31,7 +31,7 @@ namespace IO
 		void draw(vector2d<int>);
 		rectangle2d<int> bounds(vector2d<int>);
 	private:
-		ptrmap<Buttonstate, Texture*> textures;
+		Ptrmap<Buttonstate, Texture> textures;
 	};
 }
 

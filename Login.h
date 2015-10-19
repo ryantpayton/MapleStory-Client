@@ -26,15 +26,16 @@ namespace Net
 	public:
 		Login() {}
 		~Login() {}
-		void parseaccount(InPacket*);
-		void parseworld(InPacket*);
+		void parseaccount(InPacket&);
+		void parseworld(InPacket&);
 		void setworldid(uint8_t w) { worldid = w; }
 		void setchannelid(uint8_t c) { channelid = c; }
-		World* getworld(size_t w) { return &worlds[w]; }
+		void setcharid(int c) { charid = c; }
+		const World& getworld(size_t w) { return worlds[w]; }
 		uint8_t getworldid() { return worldid; }
 		uint8_t getchannelid() { return channelid; }
 		int getcharid() { return charid; }
-		Account* getaccount() { return &account; }
+		Account& getaccount() { return account; }
 	private:
 		Account account;
 		vector<World> worlds;

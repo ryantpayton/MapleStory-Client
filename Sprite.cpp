@@ -44,11 +44,11 @@ namespace Graphics
 		}
 	}
 
-	void Sprite::draw(DrawArgument* args)
+	void Sprite::draw(DrawArgument& args)
 	{
 		if (graphic != 0)
 		{
-			graphic->draw(&PosArgument(args->getpos() + position));
+			graphic->draw(PosArgument(args.getpos() + position));
 		}
 	}
 

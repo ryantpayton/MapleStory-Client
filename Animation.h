@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Texture.h"
-#include "ptrvector.h"
+#include "Ptrvector.h"
 
 namespace Graphics
 {
@@ -28,12 +28,12 @@ namespace Graphics
 	public:
 		Animation(node);
 		~Animation() {}
-		void draw(DrawArgument*);
+		void draw(DrawArgument&);
 		void update(short);
 		vector2d<int> getorigin();
 		vector2d<int> getdimension();
 	private:
-		ptrvector<Texture*> frames;
+		Ptrvector<Texture> frames;
 		vector<short> delays;
 		vector<pair<uint8_t, uint8_t>> alphablends;
 		uint8_t frame;

@@ -39,43 +39,39 @@ namespace IO
 	class UILogin : public UIElement
 	{
 	public:
-		UILogin(Session*, UI*);
+		UILogin(Session&, UI&);
 		~UILogin();
 		void draw();
 		void update(short);
 		void buttonpressed(short);
 		Mousestate sendmouse(bool, vector2d<int>);
 	private:
-		Session* session;
-		UI* ui;
+		Session& session;
+		UI& ui;
 		Textfield* account;
 		Textfield* password;
 		Texture* accountbg;
 		Texture* passwordbg;
-		ptrmap<bool, Texture*> checkbox;
+		Ptrmap<bool, Texture> checkbox;
 		bool saveid;
 	};
 
 	class ElementLogin : public Element
 	{
 	public:
-		ElementLogin(Session* ses, UI* u) 
-		{
-			session = ses;
-			ui = u;
-		}
+		ElementLogin(Session& ses, UI& u) : session(ses), ui(u) {}
 
-		UIType type()
+		UIType type() const
 		{
 			return UI_LOGIN;
 		}
 
-		UIElement* instantiate()
+		UIElement* instantiate() const
 		{
 			return new UILogin(session, ui);
 		}
 	private:
-		Session* session;
-		UI* ui;
+		Session& session;
+		UI& ui;
 	};
 }

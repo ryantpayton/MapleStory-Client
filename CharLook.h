@@ -16,14 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "LookEntry.h"
 #include "BodyDrawinfo.h"
 #include "BodyData.h"
 #include "HairData.h"
 #include "FaceData.h"
 #include "CharEquips.h"
 
-using namespace Net;
 using namespace Data;
 
 namespace Character
@@ -31,8 +29,7 @@ namespace Character
 	class CharLook
 	{
 	public:
-		CharLook(LookEntry*);
-		CharLook(){}
+		CharLook();
 		~CharLook(){}
 		void init(BodyDrawinfo*);
 		void draw(vector2d<int>);
@@ -40,14 +37,12 @@ namespace Character
 		void sethair(HairData*);
 		void setbody(BodyData*);
 		void setface(FaceData*);
-		void addequip(EquipData*);
+		void addequip(const EquipData&);
 		void setstance(string);
 		void setaction(string);
 		void setflip(bool f) { flip = f; }
-		LookEntry* getlook() { return lookentry; }
-		CharEquips* getequips() { return &equips; }
+		CharEquips& getequips() { return equips; }
 	private:
-		LookEntry* lookentry;
 		string stance;
 		uint8_t frame;
 		short elapsed;

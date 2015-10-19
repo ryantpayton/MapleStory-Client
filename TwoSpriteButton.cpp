@@ -33,7 +33,7 @@ namespace IO
 		if (active)
 		{
 			bool selected = state == BTS_MOUSEOVER || state == BTS_PRESSED;
-			textures.get(selected)->draw(&PosArgument(position + parentpos));
+			textures.get(selected)->draw(PosArgument(position + parentpos));
 		}
 	}
 

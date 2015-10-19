@@ -16,14 +16,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "InPacket.h"
+#include "Tileset.h"
+#include "Animation.h"
+#include "Ptrmap.h"
 
-namespace Net
+namespace Gameplay
 {
-	class Handler
+	class Layercache
 	{
 	public:
-		virtual ~Handler() {}
-		virtual void handle(InPacket*) = 0;
+		Layercache(){}
+		~Layercache(){}
+		void clear();
+		void update(short);
+		Tileset* gettileset(string);
+		Animation& getobj(node);
+	private:
+		Ptrmap<string, Tileset> tilesets;
+		Ptrmap<size_t, Animation> objs;
 	};
 }
+

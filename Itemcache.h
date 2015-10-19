@@ -15,29 +15,20 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Server.h"
+#pragma once
+#include "ItemData.h"
+#include "Ptrmap.h"
 
-namespace Net
+namespace Data
 {
-	Server::Server()
+	class Itemcache
 	{
-		
-	}
-
-	Server::~Server()
-	{
-		session.close();
-	}
-
-	bool Server::init(Datacache* ch, UI* ui)
-	{
-		session.init(&crypto, &handler);
-		handler.init(ch, ui, &login, &session);
-		return session.isconnected();
-	}
-
-	bool Server::run()
-	{
-		return session.receive();
-	}
+	public:
+		Itemcache(){}
+		~Itemcache(){}
+		const ItemData& getitem(int);
+	private:
+		Ptrmap<int, ItemData> items;
+	};
 }
+

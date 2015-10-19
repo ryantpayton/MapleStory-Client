@@ -68,9 +68,22 @@ namespace Data
 			descargs.text = desc;
 			descargs.color = TXC_WHITE;
 			desctext = itemtext(descargs, DWF_12LL, vector2d(150, 0));*/
+			loaded = true;
+		}
+		else
+		{
+			loaded = false;
 		}
 
 		itemid = id;
+	}
+
+	ItemData::ItemData()
+	{
+		loaded = false;
+		itemid = 0;
+		name = "";
+		desc = "";
 	}
 
 	void ItemData::geteqcategory(int id)
@@ -123,5 +136,10 @@ namespace Data
 				category = "";
 			}
 		}
+	}
+
+	bool ItemData::isloaded() const
+	{
+		return loaded;
 	}
 }

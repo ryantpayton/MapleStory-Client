@@ -21,7 +21,7 @@
 
 namespace Net
 {
-	const size_t NUM_HANDLERS = 335;
+	const size_t NUM_HANDLERS = 355;
 
 	enum RecvOpcode : int16_t
 	{
@@ -88,20 +88,21 @@ namespace Net
 	class Packethandler : public ParentHandler
 	{
 	public:
-		Packethandler();
+		Packethandler(Datacache&, Stage&, UI&, Login&, Session&);
 		~Packethandler();
-		void init(Datacache*, UI*, Login*, Session*);
-		void handle(InPacket*);
-		Datacache* getcache() { return cache; }
-		UI* getui() { return ui; }
-		Login* getlogin() { return login; }
-		Session* getsession() { return session; }
+		void handle(InPacket&);
+		Datacache& getcache() const { return cache; }
+		Stage& getstage() const { return stage; }
+		UI& getui() const { return ui; }
+		Login& getlogin() const { return login; }
+		Session& getsession() const { return session; }
 	private:
 		ChildHandler* handlers[NUM_HANDLERS];
-		Datacache* cache;
-		UI* ui;
-		Login* login;
-		Session* session;
+		Datacache& cache;
+		Stage& stage;
+		UI& ui;
+		Login& login;
+		Session& session;
 	};
 }
 

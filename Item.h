@@ -15,24 +15,29 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "OutPacket.h"
+#pragma once
+#include "ItemData.h"
+#include "InPacket.h"
 
-namespace Net
+using namespace Data;
+
+namespace Character
 {
-	class TOSPacket : public OutPacket
+	class Item
 	{
 	public:
-		TOSPacket() : OutPacket(ACCEPT_TOS)
-		{
-			writech(1);
-		}
-	};
-
-	class ServerRequestPacket : public OutPacket
-	{
-	public:
-		ServerRequestPacket() : OutPacket(SERVER_REQUEST) 
-		{
-		}
+		Item(const ItemData&, int, bool, int64_t, int64_t, short, string, short);
+		~Item(){}
+		int getid();
+	protected:
+		const ItemData& idata;
+		int iid;
+		bool cash;
+		int64_t uniqueid;
+		int64_t expire;
+		short count;
+		string owner;
+		short flag;
 	};
 }
+

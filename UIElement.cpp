@@ -25,7 +25,7 @@ namespace IO
 		{
 			for (size_t i = 0; i < graphics.getend(); i++)
 			{
-				graphics.get(i)->draw(&PosArgument(position));
+				graphics.get(i)->draw(PosArgument(position));
 			}
 			for (map<short, Button*>::iterator btit = buttons.getbegin(); btit != buttons.getend(); ++btit)
 			{

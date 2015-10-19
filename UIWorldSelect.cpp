@@ -25,15 +25,8 @@
 
 namespace IO
 {
-	UIWorldSelect::UIWorldSelect(UI* u, Login* lg, Session* ses)
+	UIWorldSelect::UIWorldSelect(UI& u, Login& lg, Session& ses) : ui(u), login(lg), session(ses)
 	{
-		ui = u;
-		login = lg;
-		session = ses;
-
-		worldid = 0;
-		channelid = 0;
-
 		node back = nx::map["Back"]["login.img"]["back"];
 		node worlds = nx::ui["Login.img"]["WorldSelect"]["BtWorld"]["release"];
 		node channels = nx::ui["Login.img"]["WorldSelect"]["BtChannel"];
@@ -50,7 +43,7 @@ namespace IO
 		graphics.add(new Sprite(channels["layer:bg"], vector2d<int>(200, 170)));
 		graphics.add(new Sprite(channels["release"]["layer:15"], vector2d<int>(200, 170)));
 
-		uint8_t chcount = login->getworld(0)->getchcount();
+		uint8_t chcount = login.getworld(0).getchcount();
 		for (uint8_t i = 0; i < chcount; i++)
 		{
 			node chnode = channels["button:" + to_string(i)];
@@ -67,10 +60,10 @@ namespace IO
 	{
 		if (id == BT_ENTERWORLD)
 		{
-			ui->disable();
-			login->setworldid(worldid);
-			login->setchannelid(channelid);
-			session->dispatch(&CharlistRequestPacket(worldid, channelid));
+			ui.disable();
+			login.setworldid(worldid);
+			login.setchannelid(channelid);
+			session.dispatch(CharlistRequestPacket(worldid, channelid));
 		}
 		else if (id >= BT_WORLD0 && id < BT_CHANNEL0)
 		{

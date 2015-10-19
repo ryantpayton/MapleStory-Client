@@ -28,7 +28,7 @@ namespace Net
 		CryptographyMaple() {}
 		~CryptographyMaple() {}
 		void init(vector<uint8_t>, vector<uint8_t>, uint8_t, uint8_t);
-		void encrypt(OutPacket*);
+		void encrypt(OutPacket&);
 		void decrypt(char*, int, bool);
 		int getlength(char*);
 		void mapleencrypt(char*, int);

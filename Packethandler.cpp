@@ -18,27 +18,40 @@
 #pragma once
 #include "Packethandler.h"
 #include "LoginHandlers.h"
+#include "SetfieldHandler.h"
 #include "PongPacket.h"
-#include "UILogin.h"
+#include "NxCheckPacket.h"
 
 namespace Net
 {
+	class NxCheckRequestHandler : public ChildHandler
+	{
+		void handle(const ParentHandler& parent, InPacket& recv)
+		{
+			parent.getsession().dispatch(NxCheckPacket());
+		}
+	};
+
 	class PingHandler : public ChildHandler
 	{
-		void PingHandler::handle(ParentHandler* parent, InPacket* recv)
+		void handle(const ParentHandler& parent, InPacket& recv)
 		{
-			PongPacket p = PongPacket();
-			parent->getsession()->dispatch(&p);
+			parent.getsession().dispatch(PongPacket());
 		}
 	};
 
 	class NullHandler : public ChildHandler
 	{
-		void NullHandler::handle(ParentHandler* parent, InPacket* recv){}
+		void handle(const ParentHandler& parent, InPacket& recv) {}
 	};
 
-	Packethandler::Packethandler()
+	Packethandler::Packethandler(Datacache& ch, Stage& st, UI& u, Login& lg, Session& ses) : cache(ch), stage(st), ui(u), login(lg), session(ses)
 	{
+		for (short i = 0; i < NUM_HANDLERS; i++)
+		{
+			handlers[i] = 0;
+		}
+
 		handlers[LOGIN_RESULT] = new LoginResultHandler();
 		handlers[SERVERLIST] = new ServerlistHandler();
 		handlers[CHARLIST] = new CharlistHandler();
@@ -59,17 +72,17 @@ namespace Net
 		handlers[ENABLE_REPORT] = unique_ptr<vhandler>(new enable_report_h());
 		handlers[UPDATE_GENDER] = unique_ptr<vhandler>(new unhandled()); //completely useless
 		handlers[BUDDY_LIST] = unique_ptr<vhandler>(new buddylist_h());
-		handlers[GUILD_OPERATION] = unique_ptr<vhandler>(new unhandled()); //TO DO
-		handlers[SERVER_MESSAGE] = unique_ptr<vhandler>(new server_message_h());
-		handlers[WEEK_EVENT_MESSAGE] = unique_ptr<vhandler>(new week_event_messsage_h());
+		handlers[GUILD_OPERATION] = unique_ptr<vhandler>(new unhandled()); //TO DO*/
+		handlers[SERVER_MESSAGE] = new NullHandler();
+		/*handlers[WEEK_EVENT_MESSAGE] = unique_ptr<vhandler>(new week_event_messsage_h());
 		handlers[FIELD_SET_VARIABLE] = unique_ptr<vhandler>(new unhandled()); //odin doesn't have it
 		handlers[FAMILY_PRIV_LIST] = unique_ptr<vhandler>(new family_plist_h());
 		handlers[CANCEL_RENAME_BY_OTHER] = unique_ptr<vhandler>(new unhandled()); //odin doesn't have it
 		handlers[SCRIPT_PROGRESS_MESSAGE] = unique_ptr<vhandler>(new unhandled()); //TO DO
 		handlers[RECEIVE_POLICE] = unique_ptr<vhandler>(new receive_police_h());
-		handlers[SKILL_MACROS] = unique_ptr<vhandler>(new skill_macros_h());
-		handlers[SET_FIELD] = unique_ptr<vhandler>(new set_field_h());
-		handlers[FIELD_EFFECT] = unique_ptr<vhandler>(new field_effect_h());
+		handlers[SKILL_MACROS] = unique_ptr<vhandler>(new skill_macros_h());*/
+		handlers[SET_FIELD] = new SetfieldHandler();
+		/*handlers[FIELD_EFFECT] = unique_ptr<vhandler>(new field_effect_h());
 		handlers[CLOCK] = unique_ptr<vhandler>(new clock_h());
 		handlers[SPAWN_PLAYER] = unique_ptr<vhandler>(new spawn_player_h());
 		handlers[REMOVE_PLAYER] = unique_ptr<vhandler>(new remove_player_h());
@@ -110,33 +123,22 @@ namespace Net
 		}
 	}
 
-	void Packethandler::init(Datacache* ch, UI* u, Login* lg, Session* ses)
+	void Packethandler::handle(InPacket& recv)
 	{
-		cache = ch;
-		ui = u;
-		login = lg;
-		session = ses;
-	}
-
-	void Packethandler::handle(InPacket* recv)
-	{
-		if (recv->length() > 1)
+		if (recv.length() > 1)
 		{
-			bool handled = false;
-			int16_t opcode = recv->readshort();
+			int16_t opcode = recv.readshort();
 			if (opcode < NUM_HANDLERS)
 			{
 				ChildHandler* hnd = handlers[opcode];
 				if (hnd)
 				{
-					hnd->handle(this, recv);
-					handled = true;
+					hnd->handle(*this, recv);
 				}
-			}
-
-			if (!handled)
-			{
-				throw new runtime_error("Unhandled packet.");
+				else
+				{
+					//throw new runtime_error("Unhandled packet.");
+				}
 			}
 		}
 	}

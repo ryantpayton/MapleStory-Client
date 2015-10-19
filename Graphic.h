@@ -24,7 +24,7 @@ namespace Graphics
 	{
 	public:
 		virtual ~Graphic() {}
-		virtual void draw(DrawArgument*) = 0;
+		virtual void draw(DrawArgument&) = 0;
 		virtual void update(short) = 0;
 		virtual vector2d<int> getorigin() = 0;
 		virtual vector2d<int> getdimension() = 0;

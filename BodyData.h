@@ -24,7 +24,7 @@ namespace Data
 	class BodyData : public CharacterData
 	{
 	public:
-		BodyData(char, BodyDrawinfo*);
+		BodyData(char, BodyDrawinfo&);
 		string getname() { return name; }
 	private:
 		string name;

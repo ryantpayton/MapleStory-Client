@@ -16,37 +16,46 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Imagecache.h"
-#include <d2d1.h>
-#include <d2d1helper.h>
-#include <wincodecsdk.h>
-#include <map>
-#include <mutex>
+#include "Layercache.h"
+#include "nx.hpp"
+#include "bitmap.hpp"
 
-using namespace std;
-
-namespace Program
+namespace Gameplay
 {
-	class ImagecacheD2D : public Imagecache
+	void Layercache::clear()
 	{
-	public:
-		ImagecacheD2D() { target = 0; }
-		~ImagecacheD2D();
-		void init(IWICImagingFactory*);
-		void setmode(Imagecontext);
-		void unlock();
-		void clearcache(Imagecontext);
-		void draw(Imagecontext, size_t, rectangle2d<int32_t>, float_t, float_t, vector2d<int32_t>, float_t);
-		Imagecontext createimage(bitmap);
-		void settarget(ID2D1RenderTarget* trg) { target = trg; }
-		ID2D1RenderTarget* gettarget() { return target; }
-	private:
-		IWICImagingFactory* imgfactory;
-		ID2D1RenderTarget* target;
-		map<Imagecontext, map<size_t, IWICBitmap*>> temp;
-		map<Imagecontext, map<size_t, ID2D1Bitmap*>> cache;
-		Imagecontext imgcon;
-		mutex modelock;
-	};
-}
+		tilesets.clear();
+		objs.clear();
+	}
 
+	void Layercache::update(short dpf)
+	{
+		for (map<size_t, Animation*>::iterator anit = objs.getbegin(); anit != objs.getend(); ++anit)
+		{
+			anit->second->update(dpf);
+		}
+	}
+
+	Tileset* Layercache::gettileset(string name)
+	{
+		if (!tilesets.contains(name))
+		{
+			node src = nx::map["Tile"][name + ".img"];
+			if (src.size() > 0)
+			{
+				tilesets.add(name, new Tileset(src));
+			}
+		}
+		return tilesets.get(name);
+	}
+
+	Animation& Layercache::getobj(node src)
+	{
+		size_t id = src["0"].get_bitmap().id();
+		if (!objs.contains(id))
+		{
+			objs.add(id, new Animation(src));
+		}
+		return *objs.get(id);
+	}
+}

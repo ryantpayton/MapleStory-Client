@@ -34,7 +34,7 @@ namespace IO
 	{
 		if (active)
 		{
-			textures.get(state)->draw(&PosArgument(position + parentpos));
+			textures.get(state)->draw(PosArgument(position + parentpos));
 		}
 	}
 

@@ -19,14 +19,14 @@
 
 namespace Net
 {
-	void Login::parseaccount(InPacket* recv)
+	void Login::parseaccount(InPacket& recv)
 	{
 		account = Account(recv);
 	}
 
-	void Login::parseworld(InPacket* recv)
+	void Login::parseworld(InPacket& recv)
 	{
-		uint8_t worldid = static_cast<uint8_t>(recv->readbyte());
+		uint8_t worldid = static_cast<uint8_t>(recv.readbyte());
 		if (worldid != 255)
 		{
 			World toadd = World(worldid, recv);

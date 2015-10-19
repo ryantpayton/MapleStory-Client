@@ -26,11 +26,8 @@ using namespace nl;
 
 namespace IO
 {
-	UILogin::UILogin(Session* ses, UI* u)
+	UILogin::UILogin(Session& ses, UI& u) : session(ses), ui(u)
 	{
-		session = ses;
-		ui = u;
-
 		node title = nx::ui["Login.img"]["Title"];
 		node common = nx::ui["Login.img"]["Common"];
 
@@ -62,7 +59,7 @@ namespace IO
 		passwordbg = new Texture(title["PW"]);
 		password->setcrypt('*');
 
-		ui->gethandler()->focustext(saveid ? password : account);
+		ui.gethandler()->focustext(saveid ? password : account);
 
 		position = vector2d<int>(0, 0);
 		dimension = vector2d<int>(800, 600);
@@ -88,14 +85,14 @@ namespace IO
 
 			if (account->getstate() == TXFS_NORMAL && account->gettext().size() == 0)
 			{
-				accountbg->draw(&PosArgument(vector2d<int>(310, 249)));
+				accountbg->draw(PosArgument(vector2d<int>(310, 249)));
 			}
 			if (password->getstate() == TXFS_NORMAL && password->gettext().size() == 0)
 			{
-				passwordbg->draw(&PosArgument(vector2d<int>(310, 275)));
+				passwordbg->draw(PosArgument(vector2d<int>(310, 275)));
 			}
 
-			checkbox.get(saveid)->draw(&PosArgument(position + vector2d<int>(313, 304)));
+			checkbox.get(saveid)->draw(PosArgument(position + vector2d<int>(313, 304)));
 		}
 	}
 
@@ -115,14 +112,14 @@ namespace IO
 		switch (id)
 		{
 		case BT_LOGIN:
-			ui->disable();
-			ui->gethandler()->focustext(0);
+			ui.disable();
+			ui.gethandler()->focustext(0);
 			buttons.get(BT_LOGIN)->setstate(BTS_MOUSEOVER);
 			//ui->add(UI_LOGINWAIT);
-			session->dispatch(&LoginPacket(account->gettext(), password->gettext()));
+			session.dispatch(LoginPacket(account->gettext(), password->gettext()));
 			return;
 		case BT_QUIT:
-			session->disconnect();
+			session.disconnect();
 			return;
 		case BT_SAVEID:
 			saveid = !saveid;
@@ -140,7 +137,7 @@ namespace IO
 		{
 			if (down)
 			{
-				ui->gethandler()->focustext(account);
+				ui.gethandler()->focustext(account);
 			}
 			else if (account->getstate() == TXFS_NORMAL)
 			{
@@ -151,7 +148,7 @@ namespace IO
 		{
 			if (down)
 			{
-				ui->gethandler()->focustext(password);
+				ui.gethandler()->focustext(password);
 			}
 			else if (password->getstate() == TXFS_NORMAL)
 			{
@@ -160,7 +157,7 @@ namespace IO
 		}
 		else if (down)
 		{
-			ui->gethandler()->focustext(0);
+			ui.gethandler()->focustext(0);
 		}
 
 		return ret;

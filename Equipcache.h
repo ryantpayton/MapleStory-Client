@@ -16,12 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-//#include "maplelook.h"
 #include "CharLook.h"
-#include "ptrmap.h"
+#include "LookEntry.h"
+#include "Ptrmap.h"
 
 using namespace Util;
 using namespace Character;
+using namespace Net;
 
 namespace Data
 {
@@ -31,19 +32,17 @@ namespace Data
 		Equipcache(){}
 		~Equipcache(){}
 		void init();
-		void loadlook(CharLook*);
+		void loadlook(CharLook&, const LookEntry&);
 		BodyData* getbody(char);
 		HairData* gethair(int);
 		FaceData* getface(int);
-		EquipData* getequip(int);
-		EquipData* getnulleq() { return &nullequip; }
+		const EquipData& getequip(int);
 	private:
-		EquipData nullequip;
 		BodyDrawinfo drawinfo;
-		ptrmap<char, BodyData*> bodytypes;
-		ptrmap<int, HairData*> hairstyles;
-		ptrmap<int, FaceData*> faces;
-		ptrmap<int, EquipData*> equips;
+		Ptrmap<char, BodyData> bodytypes;
+		Ptrmap<int, HairData> hairstyles;
+		Ptrmap<int, FaceData> faces;
+		Ptrmap<int, EquipData> equips;
 	};
 }
 

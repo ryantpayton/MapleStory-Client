@@ -30,7 +30,7 @@ namespace Graphics
 		Texture(node);
 		Texture() { loaded = false; }
 		~Texture() { if (loaded) delete source; }
-		void draw(DrawArgument*);
+		void draw(DrawArgument&);
 		void update(short) {}
 		void setshift(vector2d<int> s) { shift = s; }
 		vector2d<int> getorigin() { return origin; }

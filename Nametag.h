@@ -2,7 +2,7 @@
 #include "Textlabel.h"
 #include "Texture.h"
 #include "node.hpp"
-#include "ptrvector.h"
+#include "Ptrvector.h"
 #include <map>
 
 using namespace Graphics;
@@ -19,7 +19,7 @@ namespace IO
 		void setselected(bool s) { selected = s; }
 	private:
 		Textlabel* name;
-		map<bool, ptrvector<Texture*>> tag;
+		map<bool, Ptrvector<Texture>> tag;
 		bool selected;
 	};
 }

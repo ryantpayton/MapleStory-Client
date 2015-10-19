@@ -16,26 +16,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "SessionWinsock.h"
-#include "CryptographyMaple.h"
-#include "Packethandler.h"
-#include "Login.h"
+#include <map>
 
-namespace Net
+using namespace std;
+
+namespace Character
 {
-	class Server
+	class Monsterbook
 	{
 	public:
-		Server();
-		~Server();
-		bool init(Datacache*, UI*);
-		bool run();
-		Session* getsession() { return &session; }
+		Monsterbook(){}
+		~Monsterbook(){}
+		void setcover(int);
+		void addcard(short, char);
 	private:
-		SessionWinsock session;
-		CryptographyMaple crypto;
-		Packethandler handler;
-		Login login;
+		int cover;
+		map<short, char> cards;
 	};
 }
 

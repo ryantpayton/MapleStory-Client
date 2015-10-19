@@ -23,39 +23,39 @@ using namespace std;
 namespace Util
 {
 	template <typename K, typename V>
-	class ptrmap
+	class Ptrmap
 	{
 	public:
-		ptrmap()
+		Ptrmap()
 		{
 		}
 
-		~ptrmap()
+		~Ptrmap()
 		{
 			clear();
 		}
 
-		V get(K key)
+		V* get(K key) const
 		{
-			return contains(key) ? stdmap[key] : 0;
+			return contains(key) ? stdmap.at(key) : 0;
 		}
 
-		bool contains(K k)
+		bool contains(K k) const
 		{
 			return stdmap.count(k) > 0;
 		}
 
-		typename map<K, V>::iterator getbegin()
+		typename map<K, V*>::iterator getbegin()
 		{
 			return stdmap.begin();
 		}
 
-		typename map<K, V>::iterator getend()
+		typename map<K, V*>::iterator getend()
 		{
 			return stdmap.end();
 		}
 
-		void add(K key, V value)
+		void add(K key, V* value)
 		{
 			if (value != 0)
 			{
@@ -86,11 +86,11 @@ namespace Util
 			}
 		}
 
-		V extract(K key)
+		V* extract(K key)
 		{
 			if (contains(key))
 			{
-				V ret = stdmap[key];
+				V* ret = stdmap[key];
 				stdmap[key] = 0;
 				return ret;
 			}
@@ -102,14 +102,18 @@ namespace Util
 
 		void clear()
 		{
-			for (map<K, V>::iterator mpit = stdmap.begin(); mpit != stdmap.end(); ++mpit)
+			for (map<K, V*>::iterator mpit = stdmap.begin(); mpit != stdmap.end(); ++mpit)
 			{
-				delete mpit->second;
+				if (mpit->second != 0)
+				{
+					delete mpit->second;
+					mpit->second = 0;
+				}
 			}
 			stdmap.clear();
 		}
 	private:
-		map<K, V> stdmap;
+		map<K, V*> stdmap;
 	};
 }
 

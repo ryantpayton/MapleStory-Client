@@ -19,39 +19,39 @@
 
 namespace Net
 {
-	World::World(uint8_t id, InPacket* recv)
+	World::World(uint8_t id, InPacket& recv)
 	{
 		wid = id;
-		name = recv->readascii();
-		flag = recv->readbyte();
-		message = recv->readascii();
-		recv->readbyte();
-		recv->readbyte();
-		recv->readbyte();
-		recv->readbyte();
-		recv->readbyte();
-		channelcount = recv->readbyte();
+		name = recv.readascii();
+		flag = recv.readbyte();
+		message = recv.readascii();
+		recv.readbyte();
+		recv.readbyte();
+		recv.readbyte();
+		recv.readbyte();
+		recv.readbyte();
+		channelcount = recv.readbyte();
 		for (uint8_t i = 0; i < channelcount; i++)
 		{
-			recv->readascii();
-			recv->readint();
-			chloads.push_back(recv->readbyte());
-			recv->readshort();
+			recv.readascii();
+			recv.readint();
+			chloads.push_back(recv.readbyte());
+			recv.readshort();
 		}
 	}
 
-	uint8_t World::getid()
+	uint8_t World::getid() const
 	{
 		return wid;
 	}
 
-	uint8_t World::getchcount()
+	uint8_t World::getchcount() const
 	{
 		return channelcount;
 	}
 
-	vector<char>* World::getchloads()
+	char World::getchload(size_t ch) const
 	{
-		return &chloads;
+		return (ch < channelcount) ? chloads[ch] : 0;
 	}
 }

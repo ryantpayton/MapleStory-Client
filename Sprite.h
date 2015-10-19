@@ -28,7 +28,7 @@ namespace Graphics
 	public:
 		Sprite(node, vector2d<int>);
 		~Sprite();
-		void draw(DrawArgument*);
+		void draw(DrawArgument&);
 		void update(short);
 		vector2d<int> getorigin() { return graphic->getorigin(); }
 		vector2d<int> getdimension() { return graphic->getdimension(); }

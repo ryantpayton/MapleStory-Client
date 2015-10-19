@@ -37,15 +37,8 @@ namespace Graphics
 	class PosArgument : public DrawArgument
 	{
 	public:
-		PosArgument(vector2d<int> p)
-		{
-			pos = p;
-		}
-
-		vector2d<int> getpos() 
-		{ 
-			return pos; 
-		}
+		PosArgument(vector2d<int> p) : pos(p) {}
+		vector2d<int> getpos() { return pos; }
 	private:
 		vector2d<int> pos;
 	};
@@ -53,58 +46,34 @@ namespace Graphics
 	class FlipArgument : public DrawArgument
 	{
 	public:
-		FlipArgument(vector2d<int> p, bool f, vector2d<int> c)
-		{
-			pos = p;
-			xscale = f ? -1.0f : 1.0f;
-			center = c;
-		}
-
-		FlipArgument(vector2d<int> p, bool f)
-		{
-			pos = p;
-			xscale = f ? -1.0f : 1.0f;
-			center = p;
-		}
-
-		vector2d<int> getpos()
-		{
-			return pos;
-		}
-
-		float getxscale()
-		{
-			return xscale;
-		}
-
-		vector2d<int> getcenter()
-		{
-			return center;
-		}
+		FlipArgument(vector2d<int> p, bool f, vector2d<int> c) : pos(p), xscale(f ? -1.0f : 1.0f), center(c) {}
+		FlipArgument(vector2d<int> p, bool f) : pos(p), xscale(f ? -1.0f : 1.0f), center(p) {}
+		vector2d<int> getpos() { return pos; }
+		float getxscale() { return xscale; }
+		vector2d<int> getcenter() { return center; }
 	private:
 		vector2d<int> pos;
 		float xscale;
 		vector2d<int> center;
 	};
 
+	class AlphaArgument : public DrawArgument
+	{
+	public:
+		AlphaArgument(vector2d<int> p, float a) : pos(p), alpha(a) {}
+		vector2d<int> getpos() { return pos; }
+		float getalpha() { return alpha; }
+	private:
+		vector2d<int> pos;
+		float alpha;
+	};
+
 	class StretchArgument : public DrawArgument
 	{
 	public:
-		StretchArgument(vector2d<int> p, vector2d<int> s)
-		{
-			pos = p;
-			stretch = s;
-		}
-
-		vector2d<int> getpos()
-		{
-			return pos;
-		}
-
-		vector2d<int> getstretch()
-		{
-			return stretch;
-		}
+		StretchArgument(vector2d<int> p, vector2d<int> s) : pos(p), stretch(s) {}
+		vector2d<int> getpos() { return pos; }
+		vector2d<int> getstretch() { return stretch; }
 	private:
 		vector2d<int> pos;
 		vector2d<int> stretch;

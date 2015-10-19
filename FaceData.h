@@ -24,7 +24,7 @@ namespace Data
 	class FaceData : public CharacterData
 	{
 	public:
-		FaceData(int, BodyDrawinfo*);
+		FaceData(int);
 		uint8_t nextframe(string, uint8_t);
 		short getdelay(string, uint8_t);
 		string getname() { return name; }

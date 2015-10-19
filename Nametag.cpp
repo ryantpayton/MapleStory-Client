@@ -27,9 +27,9 @@ namespace IO
 	{
 		short width = name->getwidth();
 		vector2d<int> startpos = position - vector2d<int>(8 + width / 2, -3);
-		tag[selected].get(0)->draw(&PosArgument(startpos));
-		tag[selected].get(1)->draw(&StretchArgument(startpos + vector2d<int>(8, 0), vector2d<int>(width, 0)));
-		tag[selected].get(2)->draw(&PosArgument(startpos + vector2d<int>(width + 8, 0)));
+		tag[selected].get(0)->draw(PosArgument(startpos));
+		tag[selected].get(1)->draw(StretchArgument(startpos + vector2d<int>(8, 0), vector2d<int>(width, 0)));
+		tag[selected].get(2)->draw(PosArgument(startpos + vector2d<int>(width + 8, 0)));
 		name->draw(position);
 	}
 }

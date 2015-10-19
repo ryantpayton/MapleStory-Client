@@ -35,12 +35,12 @@ namespace IO
 	class UIWorldSelect : public UIElement
 	{
 	public:
-		UIWorldSelect(UI*, Login*, Session*);
+		UIWorldSelect(UI&, Login&, Session&);
 		void buttonpressed(short);
 	private:
-		UI* ui;
-		Login* login;
-		Session* session;
+		UI& ui;
+		Login& login;
+		Session& session;
 		uint8_t worldid;
 		uint8_t channelid;
 	};
@@ -48,26 +48,21 @@ namespace IO
 	class ElementWorldSelect : public Element
 	{
 	public:
-		ElementWorldSelect(UI* u, Login* lg, Session* ses)
-		{
-			ui = u;
-			login = lg;
-			session = ses;
-		}
+		ElementWorldSelect(UI& u, Login& lg, Session& ses) : ui(u), login(lg), session(ses) {}
 
-		UIType type()
+		UIType type() const
 		{
 			return UI_WORLDSELECT;
 		}
 
-		UIElement* instantiate()
+		UIElement* instantiate() const
 		{
 			return new UIWorldSelect(ui, login, session);
 		}
 	private:
-		UI* ui;
-		Login* login;
-		Session* session;
+		UI& ui;
+		Login& login;
+		Session& session;
 	};
 }
 

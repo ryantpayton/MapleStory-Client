@@ -23,11 +23,11 @@ namespace Net
 	class World
 	{
 	public:
-		World(uint8_t, InPacket*);
+		World(uint8_t, InPacket&);
 		~World() {}
-		uint8_t getid();
-		uint8_t getchcount();
-		vector<char>* getchloads();
+		uint8_t getid() const;
+		uint8_t getchcount() const;
+		char getchload(size_t) const;
 	private:
 		uint8_t wid;
 		string name;

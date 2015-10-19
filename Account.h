@@ -23,18 +23,20 @@ namespace Net
 	class Account
 	{
 	public:
-		Account(InPacket*);
+		Account(InPacket&);
 		Account() {}
 		~Account() {}
-		void parsecharentry(InPacket*);
+		void parsecharentry(InPacket&);
 		void setpic(char);
 		void setslots(char);
-		char getpic() { return pic; }
-		char getslots() { return slots; }
-		size_t getcharcount() { return chars.size(); }
-		CharEntry* getchar(size_t i) { return (i < chars.size()) ? &chars[i] : 0; }
+		char getpic() const;
+		char getslots() const;
+		size_t getcharcount() const;
+		const CharEntry& getchar(size_t) const;
+		const CharEntry& getcharbyid(int) const;
 	private:
 		vector<CharEntry> chars;
+		CharEntry nullchar;
 		string name;
 		int accid;
 		bool female;
@@ -43,7 +45,7 @@ namespace Net
 		char gmlevel;
 		char pic;
 		char slots;
-		uint8_t selection;
+		char selected;
 	};
 }
 

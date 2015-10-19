@@ -19,42 +19,43 @@
 
 namespace Net
 {
-	CharEntry::CharEntry(InPacket* recv)
+	CharEntry::CharEntry(InPacket& recv)
 	{
+		cid = recv.readint();
 		stats = StatsEntry(recv);
 		look = LookEntry(recv);
-		bool rankinfo = recv->readbool();
-		bool notgm = recv->readbool();
+		bool rankinfo = recv.readbool();
+		bool notgm = recv.readbool();
 		if (notgm)
 		{
-			int currank = recv->readint();
-			int rankmv = recv->readint();
-			int curjobrank = recv->readint();
-			int jobrankmv = recv->readint();
+			int currank = recv.readint();
+			int rankmv = recv.readint();
+			int curjobrank = recv.readint();
+			int jobrankmv = recv.readint();
 			char rankmc = (rankmv > 0) ? '+' : (rankmv < 0) ? '-' : '=';
 			char jobrankmc = (jobrankmv > 0) ? '+' : (jobrankmv < 0) ? '-' : '=';
-			rank = make_pair(currank, rankmc);
-			jobrank = make_pair(curjobrank, jobrankmc);
+			stats.setrank(make_pair(currank, rankmc));
+			stats.setjobrank(make_pair(curjobrank, jobrankmc));
 		}
 	}
 
-	StatsEntry* CharEntry::getstats()
+	CharEntry::CharEntry()
 	{
-		return &stats;
+		cid = 0;
 	}
 
-	LookEntry* CharEntry::getlook()
+	const StatsEntry& CharEntry::getstats() const
 	{
-		return &look;
+		return stats;
 	}
 
-	pair<int, char> CharEntry::getrank()
+	const LookEntry& CharEntry::getlook() const
 	{
-		return rank;
+		return look;
 	}
 
-	pair<int, char> CharEntry::getjobrank()
+	const int CharEntry::getcid() const
 	{
-		return jobrank;
+		return cid;
 	}
 }

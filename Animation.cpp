@@ -83,7 +83,7 @@ namespace Graphics
 		}
 	}
 
-	void Animation::draw(DrawArgument* args)
+	void Animation::draw(DrawArgument& args)
 	{
 		if (frame < frames.getend())
 		{

@@ -26,7 +26,7 @@ namespace Net
 	public:
 		virtual ~Cryptography() {}
 		virtual void init(vector<uint8_t>, vector<uint8_t>, uint8_t, uint8_t) = 0;
-		virtual void encrypt(OutPacket*) = 0;
+		virtual void encrypt(OutPacket&) = 0;
 		virtual void decrypt(char*, int, bool) = 0;
 		virtual int getlength(char*) = 0;
 	protected:

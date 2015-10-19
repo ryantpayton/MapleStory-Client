@@ -24,17 +24,16 @@ namespace Net
 	class CharEntry
 	{
 	public:
-		CharEntry(InPacket*);
+		CharEntry(InPacket&);
+		CharEntry();
 		~CharEntry() {}
-		StatsEntry* getstats();
-		LookEntry* getlook();
-		pair<int, char> getrank();
-		pair<int, char> getjobrank();
+		const StatsEntry& getstats() const;
+		const LookEntry& getlook() const;
+		const int getcid() const;
 	private:
 		StatsEntry stats;
 		LookEntry look;
-		pair<int, char> rank;
-		pair<int, char> jobrank;
+		int cid;
 	};
 }
 

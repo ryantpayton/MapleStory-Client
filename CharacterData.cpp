@@ -19,12 +19,17 @@
 
 namespace Data
 {
-	void CharacterData::draw(string stance, CharacterLayer layer, uint8_t frame, DrawArgument* args)
+	void CharacterData::draw(string stance, CharacterLayer layer, uint8_t frame, DrawArgument& args) const
 	{
-		Texture* txt = stances[stance][layer].get(frame);
-		if (txt)
+		if (stances.count(stance))
 		{
-			txt->draw(args);
+			if (stances.at(stance).count(layer))
+			{
+				if (stances.at(stance).at(layer).contains(frame))
+				{
+					stances.at(stance).at(layer).get(frame)->draw(args);
+				}
+			}
 		}
 	}
 }

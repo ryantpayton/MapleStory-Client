@@ -27,15 +27,17 @@ namespace IO
 		UI_LOGINNOTICE,
 		UI_WORLDSELECT,
 		UI_CHARSELECT,
-		UI_CHARCREATION
+		UI_CHARCREATION,
+		UI_SOFTKEYBOARD
 	};
 
 	class Element
 	{
 	public:
 		virtual ~Element() {}
-		virtual bool isunique() { return false; }
-		virtual UIType type() = 0;
-		virtual UIElement* instantiate() = 0;
+		virtual bool isunique() const { return false; }
+		virtual bool isfocused() const { return false; }
+		virtual UIType type() const = 0;
+		virtual UIElement* instantiate() const = 0;
 	};
 }

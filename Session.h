@@ -25,7 +25,7 @@ namespace Net
 	public:
 		virtual ~Session() {}
 		virtual bool receive() = 0;
-		virtual void dispatch(OutPacket*) = 0;
+		virtual void dispatch(OutPacket&) = 0;
 		virtual void reconnect(vector<uint8_t>, int16_t) = 0;
 		virtual void disconnect() = 0;
 	};

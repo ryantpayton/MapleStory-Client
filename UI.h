@@ -19,7 +19,7 @@
 #include "Element.h"
 #include "Cursor.h"
 #include "InputHandler.h"
-#include "safeptrmap.h"
+#include "Ptrmap.h"
 
 using namespace Util;
 
@@ -35,14 +35,14 @@ namespace IO
 		void update(short);
 		void sendmouse(vector2d<int>);
 		void sendmouse(Mousestate, vector2d<int>);
-		void add(Element*);
+		void add(const Element&);
 		void remove(UIType);
 		UIElement* getelement(UIType);
 		InputHandler* gethandler() { return handler; }
 		void enable() { enabled = true; }
 		void disable() { enabled = false; }
 	private:
-		safeptrmap<UIType, UIElement*> elements;
+		Ptrmap<UIType, UIElement> elements;
 		Cursor cursor;
 		InputHandler* handler;
 		bool enabled;

@@ -59,9 +59,9 @@ namespace Net
 		cipher.SetParameters(256);
 	}
 
-	void CryptographyMaple::encrypt(OutPacket* tosend)
+	void CryptographyMaple::encrypt(OutPacket& tosend)
 	{
-		int length = tosend->length();
+		int length = tosend.length();
 
 		int a = (sendiv[3] << 8) | sendiv[2];
 		a ^= (version);
@@ -72,12 +72,12 @@ namespace Net
 		header[2] = (char)(b % 0x100);
 		header[3] = (char)(b / 0x100);
 
-		char* bytes = tosend->getbytes();
+		char* bytes = tosend.getbytes();
 		mapleencrypt(bytes, length);
 		aescrypt(bytes, length, false);
 		updateiv(false);
 
-		tosend->writeheader(header);
+		tosend.writeheader(header);
 	}
 
 	int CryptographyMaple::getlength(char* bytes)

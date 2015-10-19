@@ -16,14 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Session.h"
 #include "Cryptography.h"
-#include "Handler.h"
 #include <ws2tcpip.h>
 #include <WinSock2.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <mutex>
+#include "ParentHandler.h"
 
 #pragma comment (lib, "Ws2_32.lib")
 #pragma comment (lib, "Mswsock.lib")
@@ -39,19 +38,19 @@ namespace Net
 	{
 	public:
 		SessionWinsock();
-		~SessionWinsock() {}
-		void init(Cryptography*, Handler*);
+		~SessionWinsock();
+		bool init(ParentHandler*);
 		void open(const char*, const char*);
 		void close();
 		bool receive();
-		void dispatch(OutPacket*);
+		void dispatch(OutPacket&);
 		void reconnect(vector<uint8_t>, int16_t);
 		void disconnect() { connected = false; }
 		bool isconnected() { return connected; }
 	private:
 		void process(char*, int);
 		Cryptography* crypto;
-		Handler* handler;
+		ParentHandler* handler;
 		SOCKET sock;
 		char buffer[BUFFERLEN];
 		InPacket toread;

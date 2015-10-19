@@ -21,7 +21,7 @@
 
 namespace Data
 {
-	EquipData::EquipData(int equipid, BodyDrawinfo* drawinfo) : ItemData(equipid)
+	EquipData::EquipData(int equipid, BodyDrawinfo& drawinfo) : ItemData(equipid)
 	{
 		CharacterLayer chlayer;
 		int prefix = equipid / 10000;
@@ -261,12 +261,12 @@ namespace Data
 							case CL_GLOVE:
 							case CL_BACKWEAPON:
 							case CL_BACKSHIELD:
-								shift = drawinfo->getbodypos(stance, frame) - parentpos;
+								shift = drawinfo.getbodypos(stance, frame) - parentpos;
 								break;
 							case CL_HAT:
 							case CL_EARRINGS:
 							case CL_EYEACC:
-								shift = drawinfo->getfacepos(stance, frame) - parentpos;
+								shift = drawinfo.getfacepos(stance, frame) - parentpos;
 								break;
 							case CL_SHIELD:
 							case CL_SHIELDOHAIR:
@@ -275,13 +275,13 @@ namespace Data
 							case CL_WEAPONOGLOVE:
 								if (parent == "hand")
 								{
-									shift += drawinfo->getarmpos(stance, frame);
+									shift += drawinfo.getarmpos(stance, frame);
 								}
 								else if (parent == "handMove")
 								{
-									shift += drawinfo->gethandpos(stance, frame);
+									shift += drawinfo.gethandpos(stance, frame);
 								}
-								shift += drawinfo->getbodypos(stance, frame) - parentpos;
+								shift += drawinfo.getbodypos(stance, frame) - parentpos;
 								break;
 							}
 
@@ -298,9 +298,25 @@ namespace Data
 		transparent = (getid() == 1002186);
 	}
 
-	EquipData::EquipData() : ItemData(0)
+	EquipData::EquipData()
 	{
-		eqslot = EQL_NONE;
 		transparent = true;
+		type = "";
+		eqslot = EQL_NONE;
+	}
+
+	bool EquipData::istransparent() const
+	{
+		return transparent;
+	}
+
+	string EquipData::gettype() const
+	{
+		return type;
+	}
+
+	Equipslot EquipData::geteqslot() const
+	{
+		return eqslot;
 	}
 }

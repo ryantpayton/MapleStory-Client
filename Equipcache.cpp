@@ -26,28 +26,27 @@ namespace Data
 		drawinfo.init();
 	}
 
-	void Equipcache::loadlook(CharLook* toload)
+	void Equipcache::loadlook(CharLook& toload, const LookEntry& look)
 	{
-		LookEntry* look = toload->getlook();
-		toload->setbody(getbody(look->getskin()));
-		toload->sethair(gethair(look->gethair()));
-		toload->setface(getface(look->getface()));
-		for (map<uint8_t, int>::iterator equip = look->getequips()->begin(); equip != look->getequips()->end(); ++equip)
+		toload.setbody(getbody(look.getskin()));
+		toload.sethair(gethair(look.gethair()));
+		toload.setface(getface(look.getface()));
+		for (Equipslot e = EQL_CAP; e <= EQL_WEAPON; e = static_cast<Equipslot>(e + 1))
 		{
-			int equipid = equip->second;
+			int equipid = look.getequip(e);
 			if (equipid > 0)
 			{
-				toload->addequip(getequip(equipid));
+				toload.addequip(getequip(equipid));
 			}
 		}
-		toload->init(&drawinfo);
+		toload.init(&drawinfo);
 	}
 
 	BodyData* Equipcache::getbody(char skin)
 	{
 		if (!bodytypes.contains(skin))
 		{
-			bodytypes.add(skin, new BodyData(skin, &drawinfo));
+			bodytypes.add(skin, new BodyData(skin, drawinfo));
 		}
 		return bodytypes.get(skin);
 	}
@@ -56,7 +55,7 @@ namespace Data
 	{
 		if (!hairstyles.contains(hairid))
 		{
-			hairstyles.add(hairid, new HairData(hairid, &drawinfo));
+			hairstyles.add(hairid, new HairData(hairid, drawinfo));
 		}
 		return hairstyles.get(hairid);
 	}
@@ -65,25 +64,25 @@ namespace Data
 	{
 		if (!faces.contains(faceid))
 		{
-			faces.add(faceid, new FaceData(faceid, &drawinfo));
+			faces.add(faceid, new FaceData(faceid));
 		}
 		return faces.get(faceid);
 	}
 
-	EquipData* Equipcache::getequip(int equipid)
+	const EquipData& Equipcache::getequip(int equipid)
 	{
 		if (!equips.contains(equipid))
 		{
 			int prefix = equipid / 10000;
 			if (prefix > 129 && prefix < 200)
 			{
-				equips.add(equipid, new WeaponData(equipid, &drawinfo));
+				equips.add(equipid, new WeaponData(equipid, drawinfo));
 			}
 			else
 			{
-				equips.add(equipid, new EquipData(equipid, &drawinfo));
+				equips.add(equipid, new EquipData(equipid, drawinfo));
 			}
 		}
-		return equips.get(equipid);
+		return *equips.get(equipid);
 	}
 }

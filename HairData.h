@@ -24,7 +24,7 @@ namespace Data
 	class HairData : public CharacterData
 	{
 	public:
-		HairData(int, BodyDrawinfo*);
+		HairData(int, BodyDrawinfo&);
 		string getname() { return name; }
 		string getcolor() { return color; }
 	private:

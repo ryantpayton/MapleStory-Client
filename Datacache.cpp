@@ -27,16 +27,16 @@ namespace Program
 		sounds.init();*/
 	}
 
-	/*Itemdata* Datacache::getitem(int iid)
+	const ItemData& Datacache::getitem(int iid)
 	{
 		int prefix = iid / 1000000;
 		if (prefix == 1)
 		{
-			return equips.getcloth(iid);
+			return equips.getequip(iid);
 		}
 		else
 		{
 			return items.getitem(iid);
 		}
-	}*/
+	}
 }

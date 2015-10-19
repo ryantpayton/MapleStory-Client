@@ -21,7 +21,7 @@
 
 namespace Data
 {
-	WeaponData::WeaponData(int equipid, BodyDrawinfo* drawinfo) : EquipData(equipid, drawinfo)
+	WeaponData::WeaponData(int equipid, BodyDrawinfo& drawinfo) : EquipData(equipid, drawinfo)
 	{
 		int prefix = equipid / 10000;
 		weptype = static_cast<Weapontype>(prefix);
@@ -77,5 +77,30 @@ namespace Data
 		{
 			sfx = MSN_WEP_HANDS;
 		}*/
+	}
+
+	Weapontype WeaponData::getweptype() const
+	{
+		return weptype;
+	}
+
+	bool WeaponData::istwohanded() const
+	{
+		return twohanded;
+	}
+
+	string WeaponData::getafterimage() const
+	{
+		return afterimage;
+	}
+
+	uint8_t WeaponData::getspeed() const
+	{
+		return attackspeed;
+	}
+
+	uint8_t WeaponData::getattack() const
+	{
+		return attack;
 	}
 }

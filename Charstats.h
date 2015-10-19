@@ -16,29 +16,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "bitmap.hpp"
-#include "rectangle2d.h"
+#include "StatsEntry.h"
 
-using namespace nl;
-using namespace Util;
+using namespace Net;
 
-namespace Program
+namespace Character
 {
-	enum Imagecontext
-	{
-		ICT_SYSTEM,
-		ICT_LOGIN,
-		ICT_MAP
-	};
-
-	class Imagecache
+	class Charstats
 	{
 	public:
-		virtual ~Imagecache() {}
-		virtual Imagecontext createimage(bitmap) = 0;
-		virtual void draw(Imagecontext, size_t, rectangle2d<int32_t>, float_t, float_t, vector2d<int32_t>, float_t) = 0;
-		virtual void setmode(Imagecontext) = 0;
-		virtual void unlock() = 0;
-		virtual void clearcache(Imagecontext) = 0;
+		Charstats(const StatsEntry&);
+		Charstats();
+		~Charstats(){}
+		int getmapid();
+		uint8_t getportal();
+	private:
+		string name;
+		vector<int64_t> petids;
+		map<Maplestat, short> stats;
+		CharJob job;
+		int64_t exp;
+		int mapid;
+		uint8_t portal;
 	};
 }
+

@@ -39,7 +39,7 @@ namespace IO
 
 	void Cursor::draw()
 	{
-		animations.get(state)->draw(&PosArgument(position));
+		animations.get(state)->draw(PosArgument(position));
 	}
 
 	void Cursor::update(short dpf)

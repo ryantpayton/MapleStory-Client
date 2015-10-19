@@ -15,21 +15,30 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
+#pragma once;
 #include "SessionWinsock.h"
+#include "CryptographyMaple.h"
 
 namespace Net
 {
 	SessionWinsock::SessionWinsock()
 	{
+		crypto = new CryptographyMaple();
 		connected = false;
 		active = false;
 	}
 
-	void SessionWinsock::init(Cryptography* crp, Handler* hnd)
+	SessionWinsock::~SessionWinsock()
 	{
-		crypto = crp;
+		close();
+		delete crypto;
+	}
+
+	bool SessionWinsock::init(ParentHandler* hnd)
+	{
 		handler = hnd;
 		open(HOST.c_str(), LOGINPORT.c_str());
+		return connected;
 	}
 
 	void SessionWinsock::open(const char* iaddr, const char* port)
@@ -135,11 +144,11 @@ namespace Net
 		open(addrstr.c_str(), portstr.c_str());
 	}
 
-	void SessionWinsock::dispatch(OutPacket* tosend)
+	void SessionWinsock::dispatch(OutPacket& tosend)
 	{
 		lock_guard<mutex> lock(sendlock);
 		crypto->encrypt(tosend);
-		connected = send(sock, tosend->getbytes(), tosend->length(), 0) != SOCKET_ERROR;
+		connected = send(sock, tosend.getbytes(), (int)tosend.length(), 0) != SOCKET_ERROR;
 	}
 
 	bool SessionWinsock::receive()
@@ -187,7 +196,7 @@ namespace Net
 		bufferpos += result;
 		if (bufferpos >= p_length)
 		{
-			handler->handle(&toread);
+			handler->handle(toread);
 			if (bufferpos > p_length)
 			{
 				bufferpos = 0;

@@ -27,14 +27,15 @@ namespace Character
 	public:
 		CharEquips(){}
 		~CharEquips(){}
-		void draw(Equipslot, string, CharacterLayer, uint8_t, DrawArgument*);
-		void addequip(EquipData*);
+		void draw(Equipslot, string, CharacterLayer, uint8_t, DrawArgument&);
+		void addequip(const EquipData&);
 		void removeequip(Equipslot);
-		bool isvisible(Equipslot);
-		bool istwohanded();
-		EquipData* getequip(Equipslot);
+		bool isvisible(Equipslot) const;
+		bool istwohanded() const;
+		const EquipData& getequip(Equipslot) const;
 	private:
-		map<Equipslot, EquipData*> equips;
+		map<Equipslot, const EquipData*> equips;
+		EquipData nullequip;
 	};
 }
 

@@ -16,24 +16,27 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Handler.h"
 #include "Datacache.h"
+#include "Stage.h"
 #include "UI.h"
 #include "Login.h"
 #include "Session.h"
 
+using namespace Gameplay;
 using namespace Program;
 using namespace IO;
 
 namespace Net
 {
-	class ParentHandler : public Handler
+	class ParentHandler
 	{
 	public:
-		virtual void handle(InPacket*) = 0;
-		virtual Datacache* getcache() = 0;
-		virtual UI* getui() = 0;
-		virtual Login* getlogin() = 0;
-		virtual Session* getsession() = 0;
+		virtual ~ParentHandler(){}
+		virtual void handle(InPacket&) = 0;
+		virtual Datacache& getcache() const = 0;
+		virtual Stage& getstage() const = 0;
+		virtual UI& getui() const = 0;
+		virtual Login& getlogin() const = 0;
+		virtual Session& getsession() const = 0;
 	};
 }

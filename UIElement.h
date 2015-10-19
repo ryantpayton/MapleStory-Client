@@ -19,8 +19,7 @@
 #include "Button.h"
 #include "Graphic.h"
 #include "Cursor.h"
-#include "safeptrmap.h"
-#include "ptrvector.h"
+#include "Ptrvector.h"
 
 using namespace Graphics;
 
@@ -45,7 +44,7 @@ namespace IO
 		bool active;
 		vector2d<int> position;
 		vector2d<int> dimension;
-		ptrmap<short, Button*> buttons;
-		ptrvector<Graphic*> graphics;
+		Ptrmap<short, Button> buttons;
+		Ptrvector<Graphic> graphics;
 	};
 }

@@ -17,24 +17,26 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "InPacket.h"
+#include "EquipData.h"
 #include <map>
+
+using namespace Constants;
 
 namespace Net
 {
 	class LookEntry
 	{
 	public:
-		LookEntry(InPacket*);
+		LookEntry(InPacket&);
 		LookEntry(bool, uint8_t, int, int, map<uint8_t, int>);
 		LookEntry() {}
 		~LookEntry() {}
-		bool isfemale();
-		uint8_t getskin();
-		int getface();
-		int gethair();
-		map<uint8_t, int>* getequips();
-		map<uint8_t, int>* getmaskedequips();
-		vector<int>* getpets();
+		const bool isfemale() const;
+		const uint8_t getskin() const;
+		const int getface() const;
+		const int gethair() const;
+		const int getequip(Equipslot) const;
+		const int getpet(size_t) const;
 	private:
 		bool female;
 		uint8_t skin;

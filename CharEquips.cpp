@@ -21,7 +21,7 @@
 
 namespace Character
 {
-	void CharEquips::draw(Equipslot slot, string stance, CharacterLayer layer, uint8_t frame, DrawArgument* args)
+	void CharEquips::draw(Equipslot slot, string stance, CharacterLayer layer, uint8_t frame, DrawArgument& args)
 	{
 		if (equips.count(slot))
 		{
@@ -29,10 +29,10 @@ namespace Character
 		}
 	}
 
-	void CharEquips::addequip(EquipData* eq)
+	void CharEquips::addequip(const EquipData& eq)
 	{
-		Equipslot slot = eq->geteqslot();
-		equips[slot] = eq;
+		Equipslot slot = eq.geteqslot();
+		equips[slot] = &eq;
 	}
 
 	void CharEquips::removeequip(Equipslot slot)
@@ -40,11 +40,11 @@ namespace Character
 		equips.erase(slot);
 	}
 
-	bool CharEquips::isvisible(Equipslot slot)
+	bool CharEquips::isvisible(Equipslot slot) const
 	{
 		if (equips.count(slot))
 		{
-			if (equips[slot]->istransparent())
+			if (equips.at(slot)->istransparent())
 			{
 				return false;
 			}
@@ -59,25 +59,25 @@ namespace Character
 		}
 	}
 
-	bool CharEquips::istwohanded()
+	bool CharEquips::istwohanded() const
 	{
 		if (equips.count(EQL_WEAPON))
 		{
-			WeaponData* weapon = reinterpret_cast<WeaponData*>(equips[EQL_WEAPON]);
+			const WeaponData* weapon = reinterpret_cast<const WeaponData*>(equips.at(EQL_WEAPON));
 			return weapon->istwohanded();
 		}
 		return false;
 	}
 
-	EquipData* CharEquips::getequip(Equipslot slot)
+	const EquipData& CharEquips::getequip(Equipslot slot) const
 	{
 		if (equips.count(slot))
 		{
-			return equips[slot];
+			return *equips.at(slot);
 		}
 		else
 		{
-			return 0;
+			return nullequip;
 		}
 	}
 }

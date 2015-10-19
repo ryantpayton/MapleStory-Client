@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Texture.h"
-#include "ptrmap.h"
+#include "Ptrmap.h"
 
 using namespace Graphics;
 
@@ -70,9 +70,9 @@ namespace Data
 	{
 	public:
 		virtual ~CharacterData() {}
-		void draw(string, CharacterLayer, uint8_t, DrawArgument*);
+		void draw(string, CharacterLayer, uint8_t, DrawArgument&) const;
 	protected:
-		map<string, map<CharacterLayer, ptrmap<uint8_t, Texture*>>> stances;
+		map<string, map<CharacterLayer, Ptrmap<uint8_t, Texture>>> stances;
 	};
 }
 

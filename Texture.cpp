@@ -56,11 +56,11 @@ namespace Graphics
 		}
 	}
 
-	void Texture::draw(DrawArgument* args)
+	void Texture::draw(DrawArgument& args)
 	{
 		if (loaded)
 		{
-			vector2d<int> stretch = args->getstretch();
+			vector2d<int> stretch = args.getstretch();
 			int w = stretch.x();
 			if (w == 0)
 				w = dimension.x();
@@ -68,10 +68,10 @@ namespace Graphics
 			if (h == 0)
 				h = dimension.y();
 
-			vector2d<int> absp = args->getpos() - origin + shift;
+			vector2d<int> absp = args.getpos() - origin + shift;
 			if (absp.x() <= 816 && absp.y() <= 624 && absp.x() > -w && absp.y() > -h)
 			{
-				source->draw(rectangle2d<int>(absp, absp + vector2d<int>(w, h)), args->getxscale(), args->getyscale(), args->getcenter(), args->getalpha());
+				source->draw(rectangle2d<int>(absp, absp + vector2d<int>(w, h)), args.getxscale(), args.getyscale(), args.getcenter(), args.getalpha());
 			}
 		}
 	}

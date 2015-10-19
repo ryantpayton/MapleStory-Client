@@ -23,24 +23,27 @@ using namespace std;
 namespace Util
 {
 	template <class V>
-	class ptrvector
+	class Ptrvector
 	{
 	public:
-		ptrvector() 
+		Ptrvector() 
 		{
 		}
 
-		~ptrvector()
+		~Ptrvector()
 		{
 			clear();
 		}
 
-		void add(V value)
+		void add(V* value)
 		{
-			stdvector.push_back(value);
+			if (value != 0)
+			{
+				stdvector.push_back(value);
+			}
 		}
 
-		V get(size_t pos)
+		V* get(size_t pos)
 		{
 			return (pos < stdvector.size()) ? stdvector[pos] : 0;
 		}
@@ -62,8 +65,9 @@ namespace Util
 			{
 				delete stdvector[i];
 			}
+
 		}
 	private:
-		vector<V> stdvector;
+		vector<V*> stdvector;
 	};
 }

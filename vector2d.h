@@ -31,9 +31,9 @@ namespace Util
 		~vector2d() {}
 		T x() { return a; }
 		T y() { return b; }
-		T length() { return std::sqrt(std::pow(a, 2) + std::pow(b, 2)) }
+		T length() { return static_cast<T>(std::sqrt(std::pow(a, 2) + std::pow(b, 2))); }
 		T center() { return ((a > b) ? a - b : b - a) / 2; }
-		bool contains(T p) { p >= a && p <= b }
+		bool contains(T p) { return (p >= a && p <= b); }
 		bool straight() { return a == b; }
 		bool overlaps(vector2d<T> v) { return (b >= v.x() && a <= v.x()) || (a <= v.y() && b >= v.y()) || (a >= v.x() && b <= v.y()) || (a <= v.x() && b >= v.y()); }
 		string tostring() { return to_string(a) + "," + to_string(b); }

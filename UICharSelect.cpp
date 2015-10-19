@@ -20,17 +20,14 @@
 #include "MapleButton.h"
 #include "AreaButton.h"
 #include "Sprite.h"
+#include "SelectCharPackets.h"
+#include "UISoftkey.h"
 #include "nx.hpp"
 
 namespace IO
 {
-	UICharSelect::UICharSelect(Equipcache* eq, UI* u, Login* lg, Session* ses)
+	UICharSelect::UICharSelect(Equipcache& eq, UI& u, Login& lg, Session& ses) : equips(eq), ui(u), login(lg), session(ses)
 	{
-		equips = eq;
-		ui = u;
-		login = lg;
-		session = ses;
-
 		node charsel = nx::ui["Login.img"]["CharSelect"];
 
 		graphics.add(new Sprite(nx::ui["Login.img"]["Title"]["worldsel"], vector2d<int>()));
@@ -38,7 +35,7 @@ namespace IO
 		graphics.add(new Sprite(nx::ui["Login.img"]["Common"]["selectWorld"], vector2d<int>(580, 42)));
 		graphics.add(new Sprite(charsel["selectedWorld"]["icon"]["15"], vector2d<int>(580, 42)));
 		graphics.add(new Sprite(charsel["selectedWorld"]["name"]["15"], vector2d<int>(580, 42)));
-		graphics.add(new Sprite(charsel["selectedWorld"]["ch"][to_string(login->getchannelid())], vector2d<int>(580, 42)));
+		graphics.add(new Sprite(charsel["selectedWorld"]["ch"][to_string(login.getchannelid())], vector2d<int>(580, 42)));
 		graphics.add(new Sprite(charsel["charInfo"], vector2d<int>(662, 355)));
 
 		buttons.add(BT_ARBEIT, new MapleButton(charsel["arbeit"], vector2d<int>(580, 115)));
@@ -49,25 +46,25 @@ namespace IO
 		buttons.add(BT_PAGELEFT, new MapleButton(charsel["pageL"], vector2d<int>(100, 490)));
 		buttons.add(BT_PAGERIGHT, new MapleButton(charsel["pageR"], vector2d<int>(490, 490)));
 
-		Account* account = login->getaccount();
-		char cslots = account->getslots();
-		size_t charcount = account->getcharcount();
-		if (charcount + cslots < 9)
+		levelset = new Charset(charsel["lv"], CHA_CENTER);
+		statsset = new Charset(nx::ui["StatusBar2.img"]["mainBar"]["gauge"]["number"], CHA_RIGHT);
+
+		Account& account = login.getaccount();
+		charcount = (char)account.getcharcount();
+		if (charcount + account.getslots() < 9)
 		{
 			buttons.get(BT_PAGELEFT)->setstate(BTS_DISABLED);
 			buttons.get(BT_PAGERIGHT)->setstate(BTS_DISABLED);
 		}
-
-		size_t createcount = cslots;
+		char createcount = account.getslots();
 		if (createcount > 8)
 		{
 			createcount = 8;
 		}
-		for (size_t i = charcount; i < createcount; i++)
+		for (char i = charcount; i < createcount; i++)
 		{
 			graphics.add(new Sprite(charsel["buyCharacter"], vector2d<int>(130 + (120 * (i % 4)), 250 + (200 * (i > 3)))));
 		}
-
 		//selected = config.getconfig()->defaultchar;
 		selected = 0;
 		if (selected >= charcount)
@@ -75,27 +72,22 @@ namespace IO
 			selected = 0;
 		}
 		page = selected % 8;
-
-		//lvset = charset(charsel["lv"]);
-		//statset = charset(nx::ui["StatusBar2.img"]["mainBar"]["gauge"]["number"]);
-
-		size_t displaycount = charcount;
+		char displaycount = (char)account.getcharcount();
 		if (displaycount > 8)
 		{
 			displaycount = 8;
 		}
-		for (size_t i = 0; i < displaycount; i++)
+		for (char i = 0; i < displaycount; i++)
 		{
 			addchar(i);
-			nametags.add(new Nametag(charsel["nameTag"], DWF_14MC, TXC_WHITE, account->getchar(i)->getstats()->getname()));
+			nametags.add(new Nametag(charsel["nameTag"], DWF_14MC, TXC_WHITE, account.getchar(i).getstats().getname()));
 		}
 		nametags.get(selected)->setselected(true);
-
 		if (charcount > 0)
 		{
-			StatsEntry* stats = account->getchar(selected)->getstats();
-			namelabel = new Textlabel(DWF_20MC, TXC_WHITE, stats->getname(), 0);
-			//joblabel = new Textlabel(DWF_12MR, TXC_WHITE, stats->getjobname(), 0);
+			const StatsEntry& stats = account.getchar(selected).getstats();
+			namelabel = new Textlabel(DWF_20MC, TXC_WHITE, stats.getname(), 0);
+			joblabel = new Textlabel(DWF_12MR, TXC_WHITE, stats.getjobname(), 0);
 		}
 
 		position = vector2d<int>(0, 0);
@@ -107,6 +99,8 @@ namespace IO
 	{
 		delete namelabel;
 		delete joblabel;
+		delete levelset;
+		delete statsset;
 	}
 
 	void UICharSelect::draw()
@@ -115,15 +109,25 @@ namespace IO
 
 		if (active)
 		{
-			char i = 0;
-			for (vector<CharLook>::iterator chit = charlooks.begin(); chit != charlooks.end(); ++chit)
+			for (char i = 0; i < charcount; i++)
 			{
-				chit->draw(getcharpos(i));
-				i++;
+				vector2d<int> charpos = getcharpos(i);
+				charlooks[i].draw(charpos);
+				nametags.get(i)->draw(charpos);
 			}
-			for (size_t i = 0; i < nametags.getend(); i++)
+			if (selected < charcount)
 			{
-				nametags.get(i)->draw(getcharpos(i));
+				const StatsEntry& stats = login.getaccount().getchar(selected).getstats();
+				namelabel->draw(vector2d<int>(662, 268));
+				joblabel->draw(vector2d<int>(732, 305));
+				statsset->draw(to_string(stats.getrank().first), PosArgument(vector2d<int>(732, 335)));
+				statsset->draw(to_string(stats.getjobrank().first), PosArgument(vector2d<int>(732, 355)));
+				int lvx = levelset->draw(to_string(stats.getstat(MS_LEVEL)), PosArgument(vector2d<int>(685, 262)));
+				levelset->draw('l', PosArgument(vector2d<int>(655 - lvx / 2, 262)));
+				statsset->draw(to_string(stats.getstat(MS_STR)), PosArgument(vector2d<int>(655, 385)));
+				statsset->draw(to_string(stats.getstat(MS_DEX)), PosArgument(vector2d<int>(655, 407)));
+				statsset->draw(to_string(stats.getstat(MS_INT)), PosArgument(vector2d<int>(732, 385)));
+				statsset->draw(to_string(stats.getstat(MS_LUK)), PosArgument(vector2d<int>(732, 407)));
 			}
 		}
 	}
@@ -141,25 +145,77 @@ namespace IO
 		}
 	}
 
-	void UICharSelect::buttonpressed(short id)
+	void UICharSelect::buttonpressed(short bid)
 	{
+		if (bid >= BT_CHAR0)
+		{
+			buttons.get(BT_CHAR0 + selected)->setstate(BTS_NORMAL);
+			nametags.get(selected)->setselected(false);
+			charlooks[selected].setstance("stand");
 
+			selected = bid - BT_CHAR0;
+			nametags.get(selected)->setselected(true);
+			charlooks[selected].setstance("walk");
+			namelabel->settext(login.getaccount().getchar(selected).getstats().getname());
+			joblabel->settext(login.getaccount().getchar(selected).getstats().getjobname());
+		}
+		else
+		{
+			switch (bid)
+			{
+			case BT_SELECTCHAR:
+				selectchar();
+				break;
+			case BT_CREATECHAR:
+				break;
+			}
+
+			buttons.get(bid)->setstate(BTS_MOUSEOVER);
+		}
 	}
 
-	void UICharSelect::addchar(size_t index)
+	void UICharSelect::selectchar()
 	{
-		CharLook look = CharLook(login->getaccount()->getchar(index)->getlook());
-		equips->loadlook(&look);
+		if (selected < charcount)
+		{
+			int cid = login.getaccount().getchar(selected).getcid();
+			login.setcharid(cid);
+			switch (login.getaccount().getpic())
+			{
+			case 0:
+				ui.add(ElementSoftkey(SFTK_REGISTER, ui, login, session));
+				break;
+			case 1:
+				ui.add(ElementSoftkey(SFTK_CHARSELECT, ui, login, session));
+				break;
+			case 2:
+				ui.disable();
+				session.dispatch(SelectCharPacket(cid));
+				break;
+			}
+		}
+	}
 
-		short buttonindex = static_cast<short>(BT_CHAR0 + index);
+	void UICharSelect::addchar(char index)
+	{
+		CharLook look;
+		equips.loadlook(look, login.getaccount().getchar(index).getlook());
+
+		short buttonindex = BT_CHAR0 + index;
 		buttons.add(buttonindex, new AreaButton(vector2d<int>(105 + (120 * (index % 4)), 170 + (200 * (index > 3))), vector2d<int>(50, 80)));
 		if (index == selected)
 		{
 			look.setstance("walk");
 			buttons.get(buttonindex)->setstate(BTS_PRESSED);
 		}
-		//nametags.push_back(nametag(DWF_14C, TXC_WHITE, nttextures, chars[i]->getstats()->getname(), vector2d(133 + (120 * (i % 4)), 250 + (200 * (i > 3))), (i == selected)));
 		charlooks.push_back(look);
+	}
+
+	void UICharSelect::removechar(char index)
+	{
+		nametags.remove(index);
+		buttons.remove(index);
+		charlooks.erase(charlooks.begin() + index);
 	}
 
 	vector2d<int> UICharSelect::getcharpos(size_t i)

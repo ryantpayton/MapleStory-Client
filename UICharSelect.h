@@ -22,6 +22,7 @@
 #include "Login.h"
 #include "Session.h"
 #include "Nametag.h"
+#include "Charset.h"
 
 using namespace Data;
 using namespace Net;
@@ -43,52 +44,50 @@ namespace IO
 	class UICharSelect : public UIElement
 	{
 	public:
-		UICharSelect(Equipcache*, UI*, Login*, Session*);
+		UICharSelect(Equipcache&, UI&, Login&, Session&);
 		~UICharSelect();
 		void draw();
 		void update(short);
 		void buttonpressed(short);
-		void addchar(size_t);
+		void addchar(char);
+		void removechar(char);
 	private:
+		void selectchar();
 		vector2d<int> getcharpos(size_t);
-		Equipcache* equips;
-		UI* ui;
-		Login* login;
-		Session* session;
+		Equipcache& equips;
+		UI& ui;
+		Login& login;
+		Session& session;
 		vector<CharLook> charlooks;
+		char charcount;
 		char selected;
 		char page;
 		Textlabel* namelabel;
 		Textlabel* joblabel;
-		ptrvector<Nametag*> nametags;
+		Ptrvector<Nametag> nametags;
+		Charset* levelset;
+		Charset* statsset;
 	};
 
 	class ElementCharSelect : public Element
 	{
 	public:
-		ElementCharSelect(Equipcache* eq, UI* u, Login* lg, Session* ses)
-		{
-			equips = eq;
-			ui = u;
-			login = lg;
-			session = ses;
-		}
+		ElementCharSelect(Equipcache& eq, UI& u, Login& lg, Session& ses) : equips(eq), ui(u), login(lg), session(ses) {}
 
-		UIType type()
+		UIType type() const
 		{
 			return UI_CHARSELECT;
 		}
 
-		UIElement* instantiate()
+		UIElement* instantiate() const
 		{
 			return new UICharSelect(equips, ui, login, session);
 		}
 	private:
-		Equipcache* equips;
-		UI* ui;
-		Login* login;
-		Session* session;
-		vector<CharLook> charlooks;
+		Equipcache& equips;
+		UI& ui;
+		Login& login;
+		Session& session;
 	};
 }
 

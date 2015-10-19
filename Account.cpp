@@ -19,24 +19,25 @@
 
 namespace Net
 {
-	Account::Account(InPacket* recv)
+	Account::Account(InPacket& recv)
 	{
-		recv->readshort();
-		accid = recv->readint();
-		female = recv->readbool();
-		recv->readbool(); //is admin
-		gmlevel = recv->readbyte();
-		recv->readbyte();
-		name = recv->readascii();
-		recv->readbyte();
-		muted = recv->readbool();
-		recv->readlong(); //muted until
-		recv->readlong(); //creation date
-		recv->readint();
-		pin = recv->readshort();
+		recv.readshort();
+		accid = recv.readint();
+		female = recv.readbool();
+		recv.readbool(); //is admin
+		gmlevel = recv.readbyte();
+		recv.readbyte();
+		name = recv.readascii();
+		recv.readbyte();
+		muted = recv.readbool();
+		recv.readlong(); //muted until
+		recv.readlong(); //creation date
+		recv.readint();
+		pin = recv.readshort();
+		selected = 0;
 	}
 
-	void Account::parsecharentry(InPacket* recv)
+	void Account::parsecharentry(InPacket& recv)
 	{
 		CharEntry toadd = CharEntry(recv);
 		chars.push_back(toadd);
@@ -50,5 +51,44 @@ namespace Net
 	void Account::setslots(char s)
 	{
 		slots = s;
+	}
+
+	char Account::getpic() const
+	{
+		return pic;
+	}
+
+	char Account::getslots() const
+	{
+		return slots;
+	}
+
+	size_t Account::getcharcount() const
+	{
+		return chars.size();
+	}
+
+	const CharEntry& Account::getchar(size_t i) const 
+	{ 
+		if (i < chars.size())
+		{
+			return chars[i];
+		}
+		else
+		{
+			return nullchar;
+		}
+	}
+
+	const CharEntry& Account::getcharbyid(int cid) const
+	{
+		for (size_t i = 0; i < chars.size(); i++)
+		{
+			if (chars.at(i).getcid() == cid)
+			{
+				return chars.at(i);
+			}
+		}
+		return nullchar;
 	}
 }

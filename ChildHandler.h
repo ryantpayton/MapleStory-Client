@@ -20,10 +20,10 @@
 
 namespace Net
 {
-	class ChildHandler : public Handler
+	class ChildHandler
 	{
 	public:
-		virtual void handle(InPacket*){}
-		virtual void handle(ParentHandler*, InPacket*) = 0;
+		virtual ~ChildHandler(){}
+		virtual void handle(const ParentHandler&, InPacket&) = 0;
 	};
 }

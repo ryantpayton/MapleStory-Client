@@ -21,7 +21,7 @@
 
 namespace Data
 {
-	FaceData::FaceData(int faceid, BodyDrawinfo* drawinfo)
+	FaceData::FaceData(int faceid)
 	{
 		node facenode = nx::character["Face"]["000" + to_string(faceid) + ".img"];
 		for (node expnode = facenode.begin(); expnode != facenode.end(); ++expnode)

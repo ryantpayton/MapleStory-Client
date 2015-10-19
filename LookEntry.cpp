@@ -19,29 +19,29 @@
 
 namespace Net
 {
-	LookEntry::LookEntry(InPacket* recv)
+	LookEntry::LookEntry(InPacket& recv)
 	{
-		female = recv->readbool();
-		skin = recv->readbyte();
-		faceid = recv->readint();
-		recv->readbool(); //megaphone
-		hairid = recv->readint();
-		uint8_t slot = recv->readbyte();
+		female = recv.readbool();
+		skin = recv.readbyte();
+		faceid = recv.readint();
+		recv.readbool(); //megaphone
+		hairid = recv.readint();
+		uint8_t slot = recv.readbyte();
 		while (slot != 0xFF)
 		{
-			equips[slot] = recv->readint();
-			slot = recv->readbyte();
+			equips[slot] = recv.readint();
+			slot = recv.readbyte();
 		}
-		slot = recv->readbyte();
+		slot = recv.readbyte();
 		while (slot != 0xFF)
 		{
-			maskedequips[slot] = recv->readint();
-			slot = recv->readbyte();
+			maskedequips[slot] = recv.readint();
+			slot = recv.readbyte();
 		}
-		maskedequips[-111] = recv->readint();
+		maskedequips[-111] = recv.readint();
 		for (uint8_t i = 0; i < 3; i++)
 		{
-			petids.push_back(recv->readint());
+			petids.push_back(recv.readint());
 		}
 	}
 
@@ -54,38 +54,28 @@ namespace Net
 		equips = eq;
 	}
 
-	bool LookEntry::isfemale()
+	const bool LookEntry::isfemale() const
 	{
 		return female;
 	}
 
-	uint8_t LookEntry::getskin()
+	const uint8_t LookEntry::getskin() const
 	{
 		return skin;
 	}
 
-	int LookEntry::gethair()
+	const int LookEntry::gethair() const
 	{
 		return hairid;
 	}
 
-	int LookEntry::getface()
+	const int LookEntry::getface() const
 	{
 		return faceid;
 	}
 
-	map<uint8_t, int>* LookEntry::getequips()
+	const int LookEntry::getequip(Equipslot e) const
 	{
-		return &equips;
-	}
-
-	map<uint8_t, int>* LookEntry::getmaskedequips()
-	{
-		return &maskedequips;
-	}
-
-	vector<int>* LookEntry::getpets()
-	{
-		return &petids;
+		return equips.count(e) ? equips.at(e) : 0;
 	}
 }

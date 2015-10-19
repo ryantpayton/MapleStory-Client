@@ -26,7 +26,7 @@ namespace Data
 		"Light", "Tan", "Dark", "Pale", "Blue", "Green", "", "", "", "Grey", "Pink", "Red"
 	};
 
-	BodyData::BodyData(char skin, BodyDrawinfo* drawinfo)
+	BodyData::BodyData(char skin, BodyDrawinfo& drawinfo)
 	{
 		string sk;
 		if (skin < 10)
@@ -71,7 +71,7 @@ namespace Data
 						{
 							shift -= vector2d<int>(partnode["map"]["navel"].x(), partnode["map"]["navel"].y());
 						}
-						shift += drawinfo->getbodypos(stance, frame);
+						shift += drawinfo.getbodypos(stance, frame);
 
 						stances[stance][z].get(frame)->setshift(shift);
 					}
@@ -80,7 +80,7 @@ namespace Data
 					if (headsfnode.data_type() == node::type::bitmap)
 					{
 						stances[stance][CL_HEAD].add(frame, new Texture(headsfnode));
-						stances[stance][CL_HEAD].get(frame)->setshift(drawinfo->getheadpos(stance, frame));
+						stances[stance][CL_HEAD].get(frame)->setshift(drawinfo.getheadpos(stance, frame));
 					}
 				}
 

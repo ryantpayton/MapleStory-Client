@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Texture.h"
-#include "ptrmap.h"
+#include "Ptrmap.h"
 
 using namespace Graphics;
 
@@ -27,7 +27,9 @@ namespace Data
 	{
 	public:
 		ItemData(int);
+		ItemData();
 		virtual ~ItemData(){}
+		bool isloaded() const;
 		int getid() { return itemid; }
 		string getname() { return name; }
 		string getdesc() { return desc; }
@@ -36,10 +38,11 @@ namespace Data
 		void geteqcategory(int);
 		string category;
 	private:
-		ptrmap<bool, Texture*> icons;
+		Ptrmap<bool, Texture> icons;
 		int itemid;
 		string name;
 		string desc;
+		bool loaded;
 	};
 }
 

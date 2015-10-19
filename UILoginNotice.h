@@ -42,12 +42,12 @@ namespace IO
 			text = t;
 		}
 
-		UIType type()
+		UIType type() const
 		{
 			return UI_LOGINNOTICE;
 		}
 
-		UIElement* instantiate()
+		UIElement* instantiate() const
 		{
 			return new UILoginNotice(text);
 		}

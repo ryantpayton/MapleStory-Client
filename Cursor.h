@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Animation.h"
-#include "ptrmap.h"
+#include "Ptrmap.h"
 
 using namespace Graphics;
 
@@ -53,7 +53,7 @@ namespace IO
 		void setstate(Mousestate s) { state = s; }
 		void setposition(vector2d<int> p) { position = p; }
 	private:
-		ptrmap<Mousestate, Animation*> animations;
+		Ptrmap<Mousestate, Animation> animations;
 		Mousestate state;
 		vector2d<int> position;
 	};

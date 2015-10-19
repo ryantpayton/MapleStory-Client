@@ -26,7 +26,7 @@ namespace Data
 		"Black", "Red", "Orange", "Blonde", "Green", "Blue", "Violet", "Brown" 
 	};
 
-	HairData::HairData(int hairid, BodyDrawinfo* drawinfo)
+	HairData::HairData(int hairid, BodyDrawinfo& drawinfo)
 	{
 		node hairnode = nx::character["Hair"]["000" + to_string(hairid) + ".img"];
 		for (node stancenode = hairnode.begin(); stancenode != hairnode.end(); ++stancenode)
@@ -62,7 +62,7 @@ namespace Data
 						{
 							shift -= vector2d<int>(partnode["map"]["brow"].x(), partnode["map"]["brow"].y());
 						}
-						shift += drawinfo->gethairpos(stance, frame);
+						shift += drawinfo.gethairpos(stance, frame);
 
 						stances[stance][z].get(frame)->setshift(shift);
 					}
