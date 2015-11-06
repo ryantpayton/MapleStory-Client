@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,38 +21,39 @@
 
 namespace Data
 {
-	ItemData::ItemData(int id)
+	ItemData::ItemData(int32_t id)
 	{
+		using::nl::node;
 		node src;
 		node strsrc;
 
-		int prefix = id / 1000000;
+		int32_t prefix = id / 1000000;
 		switch (prefix)
 		{
 		case 1:
-			geteqcategory(id);
-			src = nx::character[category]["0" + to_string(id) + ".img"];
-			strsrc = nx::string["Eqp.img"]["Eqp"][category][to_string(id)];
+			category = geteqcategory(id);
+			src = nl::nx::character[category]["0" + std::to_string(id) + ".img"];
+			strsrc = nl::nx::string["Eqp.img"]["Eqp"][category][std::to_string(id)];
 			break;
 		case 2:
 			category = "Consume";
-			src = nx::item["Consume"]["0" + to_string(id / 10000) + ".img"]["0" + to_string(id)]["info"];
-			strsrc = nx::string["Consume.img"][to_string(id)];
+			src = nl::nx::item["Consume"]["0" + std::to_string(id / 10000) + ".img"]["0" + std::to_string(id)]["info"];
+			strsrc = nl::nx::string["Consume.img"][std::to_string(id)];
 			break;
 		case 3:
 			category = "Install";
-			src = nx::item["Install"]["0" + to_string(id / 10000) + ".img"]["0" + to_string(id)]["info"];
-			strsrc = nx::string["Ins.img"][to_string(id)];
+			src = nl::nx::item["Install"]["0" + std::to_string(id / 10000) + ".img"]["0" + std::to_string(id)]["info"];
+			strsrc = nl::nx::string["Ins.img"][std::to_string(id)];
 			break;
 		case 4:
 			category = "Etc";
-			src = nx::item["Etc"]["0" + to_string(id / 10000) + ".img"]["0" + to_string(id)]["info"];
-			strsrc = nx::string["Etc.img"]["Etc"][to_string(id)];
+			src = nl::nx::item["Etc"]["0" + std::to_string(id / 10000) + ".img"]["0" + std::to_string(id)]["info"];
+			strsrc = nl::nx::string["Etc.img"]["Etc"][std::to_string(id)];
 			break;
 		case 5:
 			category = "Cash";
-			src = nx::item["Cash"]["0" + to_string(id / 10000) + ".img"]["0" + to_string(id)]["info"];
-			strsrc = nx::string["Cash.img"][to_string(id)];
+			src = nl::nx::item["Cash"]["0" + std::to_string(id / 10000) + ".img"]["0" + std::to_string(id)]["info"];
+			strsrc = nl::nx::string["Cash.img"][std::to_string(id)];
 			break;
 		}
 
@@ -64,10 +65,6 @@ namespace Data
 			name = strsrc["name"];
 			desc = strsrc["desc"];
 
-			/*txtargs descargs;
-			descargs.text = desc;
-			descargs.color = TXC_WHITE;
-			desctext = itemtext(descargs, DWF_12LL, vector2d(150, 0));*/
 			loaded = true;
 		}
 		else
@@ -86,60 +83,72 @@ namespace Data
 		desc = "";
 	}
 
-	void ItemData::geteqcategory(int id)
+	ItemData::~ItemData() {}
+
+	string ItemData::geteqcategory(int32_t id) const
 	{
-		int prefix = id / 10000;
+		int32_t prefix = id / 10000;
 		switch (prefix)
 		{
 		case 100:
-			category = "Cap";
-			break;
+			return "Cap";
 		case 104:
-			category = "Coat";
-			break;
+			return "Coat";
 		case 105:
-			category = "Longcoat";
-			break;
+			return "Longcoat";
 		case 106:
-			category = "Pants";
-			break;
+			return "Pants";
 		case 107:
-			category = "Shoes";
-			break;
+			return "Shoes";
 		case 108:
-			category = "Glove";
-			break;
+			return "Glove";
 		case 109:
-			category = "Shield";
-			break;
+			return "Shield";
 		case 110:
-			category = "Cape";
-			break;
+			return "Cape";
 		case 111:
-			category = "Ring";
-			break;
+			return "Ring";
 		case 101:
 		case 102:
 		case 103:
 		case 112:
 		case 113:
 		case 114:
-			category = "Accessory";
-			break;
+			return "Accessory";
 		default:
 			if (prefix >= 130 && prefix <= 170)
-			{
-				category = "Weapon";
-			}
-			else
-			{
-				category = "";
-			}
+				return "Weapon";
 		}
+		return "";
+	}
+
+	const string& ItemData::getcategory() const
+	{
+		return category;
 	}
 
 	bool ItemData::isloaded() const
 	{
 		return loaded;
+	}
+
+	int32_t ItemData::getid() const
+	{
+		return itemid;
+	}
+
+	const string& ItemData::getname() const
+	{
+		return name;
+	}
+
+	const string& ItemData::getdesc() const
+	{
+		return desc;
+	}
+
+	Texture* ItemData::geticon(bool raw) const
+	{
+		return icons.get(raw);
 	}
 }

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,29 +16,32 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "TextWrapper.h"
 #include "vector2d.h"
-#include <string>
+#include <cstdint>
 
-using namespace Util;
+#include "Journey.h"
+#ifdef JOURNEY_USE_OPENGL
+#include "TextWrapperGL.h"
+#else
+#include "TextWrapperDW.h"
+#endif
 
-namespace Graphics
+namespace IO
 {
 	class Textlabel
 	{
 	public:
-		Textlabel(Font, Textcolor, string, short);
-		~Textlabel();
-		void draw(vector2d<int>);
-		void settext(string);
-		void settext(string, short);
-		short getadvance(size_t);
-		short getwidth();
-		size_t getlength();
-		string gettext();
+		Textlabel(Font, Textcolor, string, int16_t);
+		Textlabel();
+		TextWrapper& gettext();
+		const TextWrapper& gettext() const;
 	private:
-		TextWrapper* text;
-		string str;
+
+#ifdef JOURNEY_USE_OPENGL
+		TextWrapperGL textwrapper;
+#else
+		TextWrapperDW textwrapper;
+#endif
+
 	};
 }
-

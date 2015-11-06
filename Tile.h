@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,15 +20,22 @@
 
 namespace Gameplay
 {
+	using::std::int32_t;
+	using::Util::vector2d;
+	// Represents a concrete tile on a map. Shares tile data with other tiles.
 	class Tile
 	{
 	public:
-		Tile(TileData*, vector2d<int>);
-		~Tile(){}
-		void draw(vector2d<int>);
+		// Construct the tile from constant tile data and a position on the map.
+		// Parameters: TileData&(data shared between tiles), vector2d(position)
+		Tile(const TileData&, vector2d<int32_t>);
+		~Tile();
+		// Draw the tile.
+		// Parameters: vector2d(position of camera)
+		void draw(vector2d<int32_t>) const;
 	private:
-		TileData* tdata;
-		vector2d<int> position;
+		const TileData& tdata;
+		vector2d<int32_t> position;
 	};
 }
 

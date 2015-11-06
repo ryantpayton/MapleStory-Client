@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,31 +17,45 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Texture.h"
-#include "Ptrmap.h"
-
-using namespace Graphics;
+#include "PtrBoolTuple.h"
 
 namespace Data
 {
+	using::std::int32_t;
+	using::std::string;
+	using::Graphics::Texture;
+	using::Util::PtrBoolTuple;
+	// Class that represents an item loaded from the game's files. Contains all shared data between concrete items.
 	class ItemData
 	{
 	public:
-		ItemData(int);
+		// Creates an item from the game's Item.nx with the specified id.
+		// Parameters: int32_t(item id)
+		ItemData(int32_t);
+		// A default item, which is used when an item is requested by the server, but does not exist in the game files.
 		ItemData();
-		virtual ~ItemData(){}
+		// Empty destructor.
+		virtual ~ItemData();
+		// Returns wether the item was loaded correctly. For the default item, this is 'false'.
 		bool isloaded() const;
-		int getid() { return itemid; }
-		string getname() { return name; }
-		string getdesc() { return desc; }
-		Texture* geticon(bool r) { return icons.get(r); }
+		// Returns the item id.
+		int32_t getid() const;
+		// Returns the item's name loaded from the String.nx file.
+		const string& getname() const;
+		// Returns the item's description loaded from the String.nx file.
+		const string& getdesc() const;
+		// Returns one of the item's icons. For each item there is a 'raw' icon and an icon with a drop shadow.
+		// Parameters: bool(raw)
+		Texture* geticon(bool) const;
 	protected:
-		void geteqcategory(int);
-		string category;
+		const string& getcategory() const;
 	private:
-		Ptrmap<bool, Texture> icons;
-		int itemid;
+		string geteqcategory(int32_t) const;
+		PtrBoolTuple<Texture> icons;
+		int32_t itemid;
 		string name;
 		string desc;
+		string category;
 		bool loaded;
 	};
 }

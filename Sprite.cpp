@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -22,7 +22,7 @@
 
 namespace Graphics
 {
-	Sprite::Sprite(node src, vector2d<int> pos)
+	Sprite::Sprite(node src, vector2d<int32_t> pos)
 	{
 		if (src.data_type() == nl::node::type::bitmap)
 		{
@@ -38,25 +38,35 @@ namespace Graphics
 
 	Sprite::~Sprite()
 	{
-		if (graphic != 0)
+		if (graphic)
 		{
 			delete graphic;
 		}
 	}
 
-	void Sprite::draw(DrawArgument& args)
+	void Sprite::draw(const DrawArgument& args) const
 	{
-		if (graphic != 0)
+		if (graphic)
 		{
 			graphic->draw(PosArgument(args.getpos() + position));
 		}
 	}
 
-	void Sprite::update(short dpf)
+	void Sprite::update(uint16_t dpf)
 	{
-		if (graphic != 0)
+		if (graphic)
 		{
 			graphic->update(dpf);
 		}
+	}
+
+	vector2d<int32_t> Sprite::getorigin() const
+	{
+		return graphic ? graphic->getorigin() : vector2d<int>();
+	}
+
+	vector2d<int32_t> Sprite::getdimensions() const
+	{
+		return graphic ? graphic->getdimensions() : vector2d<int>();
 	}
 }

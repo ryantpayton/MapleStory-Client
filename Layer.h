@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,24 +16,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Layercache.h"
+#include "LayerData.h"
 #include "Tile.h"
 #include "Obj.h"
-#include "ptrvector.h"
 #include <map>
 
 namespace Gameplay
 {
+	using::std::vector;
+	using::std::map;
+
 	class Layer
 	{
 	public:
-		Layer(node, Layercache&);
-		Layer(){}
-		~Layer(){}
-		void draw(vector2d<int>);
+		Layer(node, LayerData&);
+		Layer();
+		~Layer();
+		void draw(vector2d<int32_t>) const;
 	private:
-		map<char, vector<Tile>> tiles;
-		map<char, vector<Obj>> objs;
+		map<uint8_t, vector<Tile>> tiles;
+		map<uint8_t, vector<Obj>> objs;
 	};
 }
 

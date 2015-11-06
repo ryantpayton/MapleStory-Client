@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,13 +20,15 @@
 
 namespace Graphics
 {
+	using::std::uint16_t;
+	// Interface for classes that represent textures or animations.
 	class Graphic
 	{
 	public:
 		virtual ~Graphic() {}
-		virtual void draw(DrawArgument&) = 0;
-		virtual void update(short) = 0;
-		virtual vector2d<int> getorigin() = 0;
-		virtual vector2d<int> getdimension() = 0;
+		virtual void update(uint16_t) = 0;
+		virtual void draw(const DrawArgument&) const = 0;
+		virtual vector2d<int32_t> getorigin() const = 0;
+		virtual vector2d<int32_t> getdimensions() const = 0;
 	};
 }

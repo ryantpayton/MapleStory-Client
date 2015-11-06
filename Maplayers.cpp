@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,6 +19,8 @@
 
 namespace Gameplay
 {
+	Maplayers::Maplayers() {}
+
 	Maplayers::~Maplayers()
 	{
 		clear();
@@ -26,24 +28,24 @@ namespace Gameplay
 
 	void Maplayers::load(node src)
 	{
-		for (char i = 0; i < 8; i++)
+		for (uint8_t i = 0; i < NUM_LAYERS; i++)
 		{
-			layers[i] = Layer(src[to_string(i)], cache);
+			layers[i] = Layer(src[std::to_string(i)], layerdata);
 		}
 	}
 
 	void Maplayers::clear()
 	{
-		cache.clear();
+		layerdata.clear();
 	}
 
-	void Maplayers::draw(char layer, vector2d<int> viewpos)
+	void Maplayers::draw(uint8_t layer, vector2d<int32_t> viewpos) const
 	{
-		layers[layer].draw(viewpos);
+		if (layers.count(layer)) layers.at(layer).draw(viewpos);
 	}
 
-	void Maplayers::update(short dpf)
+	void Maplayers::update(uint16_t dpf)
 	{
-		cache.update(dpf);
+		layerdata.update(dpf);
 	}
 }

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,26 +20,25 @@
 #include "BitmapWrapper.h"
 #include "node.hpp"
 
-using namespace nl;
-
 namespace Graphics
 {
+	using::nl::node;
+	// Represents a single image loaded from a node of game data.
 	class Texture : public Graphic
 	{
 	public:
 		Texture(node);
-		Texture() { loaded = false; }
-		~Texture() { if (loaded) delete source; }
-		void draw(DrawArgument&);
-		void update(short) {}
-		void setshift(vector2d<int> s) { shift = s; }
-		vector2d<int> getorigin() { return origin; }
-		vector2d<int> getdimension() { return dimension; }
+		~Texture();
+		void draw(const DrawArgument&) const;
+		void update(uint16_t) {}
+		void setshift(vector2d<int32_t>);
+		vector2d<int32_t> getorigin() const;
+		vector2d<int32_t> getdimensions() const;
 	private:
 		BitmapWrapper* source;
-		vector2d<int> origin;
-		vector2d<int> dimension;
-		vector2d<int> shift;
+		vector2d<int32_t> origin;
+		vector2d<int32_t> dimensions;
+		vector2d<int32_t> shift;
 		bool loaded;
 	};
 }

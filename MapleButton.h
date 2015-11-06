@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,16 +20,18 @@
 #include "Texture.h"
 #include "Ptrmap.h"
 
-using namespace Graphics;
-
 namespace IO
 {
+	using::nl::node;
+	using::Util::Ptrmap;
+	using::Graphics::Texture;
+	// A standard maplestory-button with 4 states and a texture for each state.
 	class MapleButton : public Button
 	{
 	public:
-		MapleButton(node, vector2d<int>);
-		void draw(vector2d<int>);
-		rectangle2d<int> bounds(vector2d<int>);
+		MapleButton(node, vector2d<int32_t>);
+		void draw(vector2d<int32_t>) const;
+		rectangle2d<int32_t> bounds(vector2d<int32_t>) const;
 	private:
 		Ptrmap<Buttonstate, Texture> textures;
 	};

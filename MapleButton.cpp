@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,7 +19,7 @@
 
 namespace IO
 {
-	MapleButton::MapleButton(node src, vector2d<int> pos)
+	MapleButton::MapleButton(node src, vector2d<int32_t> pos)
 	{
 		textures.add(BTS_PRESSED, new Texture(src["pressed"]["0"]));
 		textures.add(BTS_MOUSEOVER , new Texture(src["mouseOver"]["0"]));
@@ -30,17 +30,30 @@ namespace IO
 		active = true;
 	}
 
-	void MapleButton::draw(vector2d<int> parentpos)
+	void MapleButton::draw(vector2d<int32_t> parentpos) const
 	{
 		if (active)
 		{
-			textures.get(state)->draw(PosArgument(position + parentpos));
+			const Texture* texture = textures.get(state);
+			if (texture)
+			{
+				using::Graphics::PosArgument;
+				texture->draw(PosArgument(position + parentpos));
+			}
 		}
 	}
 
-	rectangle2d<int> MapleButton::bounds(vector2d<int> parentpos)
+	rectangle2d<int32_t> MapleButton::bounds(vector2d<int32_t> parentpos) const
 	{
-		vector2d<int> absp = parentpos + position - textures.get(state)->getorigin();
-		return rectangle2d<int>(absp, absp + textures.get(state)->getdimension());
+		const Texture* texture = textures.get(state);
+		if (texture)
+		{
+			vector2d<int32_t> absp = parentpos + position - texture->getorigin();
+			return rectangle2d<int32_t>(absp, absp + texture->getdimensions());
+		}
+		else
+		{
+			return rectangle2d<int32_t>();
+		}
 	}
 }

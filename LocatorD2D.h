@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,13 +16,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Journey.h"
+#ifndef JOURNEY_USE_OPENGL
 #include "FontsDW.h"
 #include <d2d1.h>
 #include <d2d1helper.h>
 #include <wincodecsdk.h>
 
-namespace Program
+namespace Graphics
 {
+	using::IO::FontsDW;
+
 	class LocatorD2D
 	{
 	public:
@@ -40,3 +44,4 @@ namespace Program
 
 	extern LocatorD2D locator;
 }
+#endif

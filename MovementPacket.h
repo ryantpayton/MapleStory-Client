@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,14 +15,17 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
+#pragma once
 #include "OutPacket.h"
+#include "SendOpcodes83.h"
 
 namespace Net
 {
+	// Base class for packe
 	class MovementPacket : public OutPacket
 	{
 	public:
-		MovementPacket(SendOpcode opc) : OutPacket(opc) {}
+		MovementPacket(SendOpcode83 opc) : OutPacket(opc) {}
 	protected:
 		/*void writemoves(vector<movefragment> moves)
 		{

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,12 +20,12 @@
 #include "LookEntry.h"
 #include "Ptrmap.h"
 
-using namespace Util;
-using namespace Character;
-using namespace Net;
-
 namespace Data
 {
+	using::Util::Ptrmap;
+	using::Net::LookEntry;
+	using::Character::CharLook;
+
 	class Equipcache
 	{
 	public:
@@ -33,16 +33,16 @@ namespace Data
 		~Equipcache(){}
 		void init();
 		void loadlook(CharLook&, const LookEntry&);
-		BodyData* getbody(char);
-		HairData* gethair(int);
-		FaceData* getface(int);
-		const EquipData& getequip(int);
+		BodyData* getbody(uint8_t);
+		HairData* gethair(int32_t);
+		FaceData* getface(int32_t);
+		const EquipData& getequip(int32_t);
 	private:
 		BodyDrawinfo drawinfo;
-		Ptrmap<char, BodyData> bodytypes;
-		Ptrmap<int, HairData> hairstyles;
-		Ptrmap<int, FaceData> faces;
-		Ptrmap<int, EquipData> equips;
+		Ptrmap<uint8_t, BodyData> bodytypes;
+		Ptrmap<int32_t, HairData> hairstyles;
+		Ptrmap<int32_t, FaceData> faces;
+		Ptrmap<int32_t, EquipData> equips;
 	};
 }
 

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -38,13 +38,14 @@ namespace Character
 		drawinfo = 0;
 	}
 
-	void CharLook::init(BodyDrawinfo* bdi)
+	void CharLook::init(const BodyDrawinfo* bdi)
 	{
 		drawinfo = bdi;
 	}
 
-	void CharLook::draw(vector2d<int> parentpos)
+	void CharLook::draw(vector2d<int32_t> parentpos) const
 	{
+		using::Graphics::FlipArgument;
 		FlipArgument args = FlipArgument(parentpos, flip);
 		if (stance == "ladder" || stance == "rope")
 		{
@@ -52,52 +53,52 @@ namespace Character
 		}
 		else
 		{
-			hair->draw(stance, CL_HAIRBBODY, frame, args);
-			equips.draw(EQL_CAPE, stance, CL_CAPE, frame, args);
-			equips.draw(EQL_SHIELD, stance, CL_SHIELDBBODY, frame, args);
-			body->draw(stance, CL_BODY, frame, args);
-			equips.draw(EQL_SHOES, stance, CL_SHOES, frame, args);
-			equips.draw(EQL_PANTS, stance, CL_PANTS, frame, args);
-			equips.draw(EQL_TOP, stance, CL_TOP, frame, args);
-			equips.draw(EQL_TOP, stance, CL_MAIL, frame, args);
-			body->draw(stance, CL_LHAND, frame, args);
-			equips.draw(EQL_GLOVES, stance, CL_GLOVE, frame, args);
-			hair->draw(stance, CL_HAIR, frame, args);
-			equips.draw(EQL_SHIELD, stance, CL_SHIELDOHAIR, frame, args);
-			equips.draw(EQL_EARRINGS, stance, CL_EARRINGS, frame, args);
-			body->draw(stance, CL_HEAD, frame, args);
-			hair->draw(stance, CL_HAIRSHADE, frame, args);
+			hair->draw(stance, Data::CL_HAIRBBODY, frame, args);
+			equips.draw(EQL_CAPE, stance, Data::CL_CAPE, frame, args);
+			equips.draw(EQL_SHIELD, stance, Data::CL_SHIELDBBODY, frame, args);
+			body->draw(stance, Data::CL_BODY, frame, args);
+			equips.draw(EQL_SHOES, stance, Data::CL_SHOES, frame, args);
+			equips.draw(EQL_PANTS, stance, Data::CL_PANTS, frame, args);
+			equips.draw(EQL_TOP, stance, Data::CL_TOP, frame, args);
+			equips.draw(EQL_TOP, stance, Data::CL_MAIL, frame, args);
+			body->draw(stance, Data::CL_LHAND, frame, args);
+			equips.draw(EQL_GLOVES, stance, Data::CL_GLOVE, frame, args);
+			hair->draw(stance, Data::CL_HAIR, frame, args);
+			equips.draw(EQL_SHIELD, stance, Data::CL_SHIELDOHAIR, frame, args);
+			equips.draw(EQL_EARRINGS, stance, Data::CL_EARRINGS, frame, args);
+			body->draw(stance, Data::CL_HEAD, frame, args);
+			hair->draw(stance, Data::CL_HAIRSHADE, frame, args);
 			FlipArgument faceargs = FlipArgument(parentpos + drawinfo->getfacepos(stance, frame), flip, parentpos);
-			face->draw(expression, CL_FACE, fcframe, faceargs);
-			equips.draw(EQL_FACEACC, (expression == "default") ? "blink" : expression, CL_FACEACC, 0, faceargs);
-			equips.draw(EQL_EYEACC, stance, CL_EYEACC, frame, args);
-			equips.draw(EQL_SHIELD, stance, CL_SHIELD, frame, args);
+			face->draw(expression, Data::CL_FACE, fcframe, faceargs);
+			equips.draw(EQL_FACEACC, (expression == "default") ? "blink" : expression, Data::CL_FACEACC, 0, faceargs);
+			equips.draw(EQL_EYEACC, stance, Data::CL_EYEACC, frame, args);
+			equips.draw(EQL_SHIELD, stance, Data::CL_SHIELD, frame, args);
 			if (equips.isvisible(EQL_CAP))
 			{
-				equips.draw(EQL_CAP, stance, CL_HAT, frame, args);
+				equips.draw(EQL_CAP, stance, Data::CL_HAT, frame, args);
 			}
 			else
 			{
-				hair->draw(stance, CL_HAIROHEAD, frame, args);
+				hair->draw(stance, Data::CL_HAIROHEAD, frame, args);
 			}
 			if (equips.istwohanded())
 			{
-				equips.draw(EQL_TOP, stance, CL_MAILARM, frame, args);
-				body->draw(stance, CL_ARM, frame, args);
-				equips.draw(EQL_WEAPON, stance, CL_WEAPON, frame, args);
+				equips.draw(EQL_TOP, stance, Data::CL_MAILARM, frame, args);
+				body->draw(stance, Data::CL_ARM, frame, args);
+				equips.draw(EQL_WEAPON, stance, Data::CL_WEAPON, frame, args);
 			}
 			else
 			{
-				equips.draw(EQL_WEAPON, stance, CL_WEAPON, frame, args);
-				body->draw(stance, CL_ARM, frame, args);
-				equips.draw(EQL_TOP, stance, CL_MAILARM, frame, args);
+				equips.draw(EQL_WEAPON, stance, Data::CL_WEAPON, frame, args);
+				body->draw(stance, Data::CL_ARM, frame, args);
+				equips.draw(EQL_TOP, stance, Data::CL_MAILARM, frame, args);
 			}
-			body->draw(stance, CL_RHAND, frame, args);
-			body->draw(stance, CL_ARMOHAIR, frame, args);
-			equips.draw(EQL_WEAPON, stance, CL_WEAPONOHAND, frame, args);
-			body->draw(stance, CL_HANDOWEP, frame, args);
-			equips.draw(EQL_GLOVES, stance, CL_RGLOVE, frame, args);
-			equips.draw(EQL_WEAPON, stance, CL_WEAPONOGLOVE, frame, args);
+			body->draw(stance, Data::CL_RHAND, frame, args);
+			body->draw(stance, Data::CL_ARMOHAIR, frame, args);
+			equips.draw(EQL_WEAPON, stance, Data::CL_WEAPONOHAND, frame, args);
+			body->draw(stance, Data::CL_HANDOWEP, frame, args);
+			equips.draw(EQL_GLOVES, stance, Data::CL_RGLOVE, frame, args);
+			equips.draw(EQL_WEAPON, stance, Data::CL_WEAPONOGLOVE, frame, args);
 		}
 	}
 
@@ -108,9 +109,9 @@ namespace Character
 		{
 			elapsed += dpf;
 
-			if (action == 0)
+			if (action == nullptr)
 			{
-				short delay = drawinfo->getdelay(stance, frame);
+				uint16_t delay = drawinfo->getdelay(stance, frame);
 				if (elapsed > delay)
 				{
 					elapsed -= delay;
@@ -129,7 +130,7 @@ namespace Character
 			}
 			else
 			{
-				short delay = action->getdelay();
+				uint16_t delay = action->getdelay();
 				if (elapsed > delay)
 				{
 					elapsed -= delay;
@@ -150,7 +151,7 @@ namespace Character
 			}
 
 			fcelapsed += dpf;
-			short fcdelay = face->getdelay(expression, fcframe);
+			uint16_t fcdelay = face->getdelay(expression, fcframe);
 			if (fcelapsed > fcdelay)
 			{
 				fcelapsed -= fcdelay;
@@ -191,6 +192,7 @@ namespace Character
 		bool changestance = false;
 		if (eq.geteqslot() == EQL_WEAPON)
 		{
+			using::Data::WeaponData;
 			const WeaponData& weapon = reinterpret_cast<const WeaponData&>(eq);
 			changestance = weapon.istwohanded() != equips.istwohanded();
 		}
@@ -216,7 +218,7 @@ namespace Character
 			elapsed = 0;
 			if (ststr == "stand" || ststr == "walk")
 			{
-				char thchar = equips.istwohanded() ? '2' : '1';
+				int8_t thchar = equips.istwohanded() ? '2' : '1';
 				ststr.push_back(thchar);
 			}
 			stance = ststr;
@@ -233,5 +235,15 @@ namespace Character
 			actionstr = acstr;
 			action = drawinfo->getaction(acstr, 0);
 		}
+	}
+
+	void CharLook::setflip(bool f)
+	{
+		flip = f;
+	}
+
+	CharEquips& CharLook::getequips()
+	{
+		return equips;
 	}
 }

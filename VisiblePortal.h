@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,17 +17,20 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Portal.h"
+#include "Animation.h"
 
 namespace Gameplay
 {
+	using::Graphics::Animation;
+
 	class VisiblePortal : public Portal
 	{
 	public:
-		VisiblePortal(Animation&, PortalType, string, int, bool, string, vector2d<int>);
-		void draw(vector2d<int>);
+		VisiblePortal(const Animation&, PortalType, string, int32_t, bool, string, vector2d<int32_t>);
+		void draw(vector2d<int32_t>) const;
 		void settouch(bool);
 	private:
-		Animation& anim;
+		const Animation& anim;
 		bool touched;
 	};
 }

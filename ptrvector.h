@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,10 +18,12 @@
 #pragma once
 #include <vector>
 
-using namespace std;
-
 namespace Util
 {
+	using::std::vector;
+
+	// Template class for managing dynamically allocated objects in a vector.
+	// Objects should be allocated when using add(V*).
 	template <class V>
 	class Ptrvector
 	{
@@ -43,12 +45,12 @@ namespace Util
 			}
 		}
 
-		V* get(size_t pos)
+		V* get(size_t pos) const
 		{
-			return (pos < stdvector.size()) ? stdvector[pos] : 0;
+			return (pos < stdvector.size()) ? stdvector.at(pos) : 0;
 		}
 
-		size_t getend()
+		size_t getend() const
 		{
 			return stdvector.size();
 		}

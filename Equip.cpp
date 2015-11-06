@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,7 +19,7 @@
 
 namespace Character
 {
-	Equip::Equip(const ItemData& eqd, int id, bool cs, int64_t uqi, int64_t exp, char sl, char lv, map<Equipstat, short> st, string ow, short fl, char ilv, short iexp, int vic) : Item(eqd, id, cs, uqi, exp, 1, ow, fl)
+	Equip::Equip(const ItemData& eqd, int32_t id, bool cs, int64_t uqi, int64_t exp, uint8_t sl, uint8_t lv, map<Equipstat, int16_t> st, string ow, int16_t fl, uint8_t ilv, int16_t iexp, int32_t vic) : Item(eqd, id, cs, uqi, exp, 1, ow, fl)
 	{
 		slots = sl;
 		level = lv;

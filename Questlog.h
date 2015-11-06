@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,24 +20,28 @@
 #include <string>
 #include <map>
 
-using namespace std;
-
 namespace Character
 {
+	using::std::int16_t;
+	using::std::int64_t;
+	using::std::string;
+	using::std::map;
+	using::std::pair;
+	// Class that stores information on the questlog of an individual character.
 	class Questlog
 	{
 	public:
-		Questlog(){}
-		~Questlog(){}
-		void addstarted(short, string);
-		void addprogress(short, short, string);
-		void addcompleted(short, int64_t);
-		bool isstarted(short);
-		short getlaststarted();
+		Questlog();
+		~Questlog();
+		void addstarted(int16_t, string);
+		void addprogress(int16_t, int16_t, string);
+		void addcompleted(int16_t, int64_t);
+		bool isstarted(int16_t);
+		int16_t getlaststarted();
 	private:
-		map<short, string> started;
-		map<short, pair<short, string>> progress;
-		map<short, int64_t> completed;
+		map<int16_t, string> started;
+		map<int16_t, pair<int16_t, string>> progress;
+		map<int16_t, int64_t> completed;
 	};
 }
 

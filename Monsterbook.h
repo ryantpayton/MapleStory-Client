@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,22 +16,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include <cstdint>
 #include <map>
-
-using namespace std;
 
 namespace Character
 {
+	using::std::int8_t;
+	using::std::int16_t;
+	using::std::int32_t;
+	using::std::map;
+	// Class that represents the monster card collection of an individual character.
 	class Monsterbook
 	{
 	public:
-		Monsterbook(){}
-		~Monsterbook(){}
-		void setcover(int);
-		void addcard(short, char);
+		Monsterbook();
+		~Monsterbook();
+		void setcover(int32_t);
+		void addcard(int16_t, int8_t);
 	private:
-		int cover;
-		map<short, char> cards;
+		int32_t cover;
+		map<int16_t, int8_t> cards;
 	};
 }
 

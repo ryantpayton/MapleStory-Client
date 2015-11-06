@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,11 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Element.h"
+#include "Window.h"
 #include "Session.h"
 #include "UI.h"
+#include "Configuration.h"
 #include "Textfield.h"
-
-using namespace Net;
 
 namespace IO
 {
@@ -36,20 +36,26 @@ namespace IO
 		BT_QUIT
 	};
 
+	using::Net::Session;
+	using::Util::Configuration;
+	using::Graphics::Texture;
+
 	class UILogin : public UIElement
 	{
 	public:
-		UILogin(Session&, UI&);
+		UILogin(Window&, Session&, UI&, Configuration&);
 		~UILogin();
-		void draw();
-		void update(short);
-		void buttonpressed(short);
-		Mousestate sendmouse(bool, vector2d<int>);
+		void draw() const;
+		void update(uint16_t);
+		void buttonpressed(uint16_t);
+		Mousestate sendmouse(bool, vector2d<int32_t>);
 	private:
+		Window& window;
 		Session& session;
 		UI& ui;
-		Textfield* account;
-		Textfield* password;
+		Configuration& config;
+		Textfield account;
+		Textfield password;
 		Texture* accountbg;
 		Texture* passwordbg;
 		Ptrmap<bool, Texture> checkbox;
@@ -59,7 +65,7 @@ namespace IO
 	class ElementLogin : public Element
 	{
 	public:
-		ElementLogin(Session& ses, UI& u) : session(ses), ui(u) {}
+		ElementLogin(Window& wn, Session& ses, UI& u, Configuration& cfg) : window(wn), session(ses), ui(u), config(cfg){}
 
 		UIType type() const
 		{
@@ -68,10 +74,12 @@ namespace IO
 
 		UIElement* instantiate() const
 		{
-			return new UILogin(session, ui);
+			return new UILogin(window, session, ui, config);
 		}
 	private:
+		Window& window;
 		Session& session;
 		UI& ui;
+		Configuration& config;
 	};
 }

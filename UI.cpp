@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,20 +15,19 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "UI.h"
-#include "InputHandlerWM.h"
 
 namespace IO
 {
 	UI::UI()
 	{
-		handler = new InputHandlerWM();
+		add(ElementNull());
+		focused = UI_NULL;
+		enabled = false;
 	}
 
 	UI::~UI()
 	{
-		delete handler;
 	}
 
 	void UI::init()
@@ -37,9 +36,10 @@ namespace IO
 		enabled = true;
 	}
 
-	void UI::draw()
+	void UI::draw() const
 	{
-		for (map<UIType, UIElement*>::iterator elit = elements.getbegin(); elit != elements.getend(); ++elit)
+		using::std::map;
+		for (map<UIType, UIElement*>::const_iterator elit = elements.getbegin(); elit != elements.getend(); ++elit)
 		{
 			elit->second->draw();
 		}
@@ -47,8 +47,9 @@ namespace IO
 		cursor.draw();
 	}
 
-	void UI::update(short dpf)
+	void UI::update(uint16_t dpf)
 	{
+		using::std::map;
 		for (map<UIType, UIElement*>::iterator elit = elements.getbegin(); elit != elements.getend(); ++elit)
 		{
 			elit->second->update(dpf);
@@ -57,41 +58,71 @@ namespace IO
 		cursor.update(dpf);
 	}
 
-	void UI::sendmouse(vector2d<int> pos)
+	void UI::enable()
+	{
+		enabled = true;
+	}
+
+	void UI::disable()
+	{
+		enabled = false;
+	}
+
+	void UI::sendmouse(vector2d<int32_t> pos)
 	{
 		sendmouse(cursor.getstate(), pos);
 	}
 
-	void UI::sendmouse(Mousestate mst, vector2d<int> pos)
+	void UI::sendmouse(Mousestate mst, vector2d<int32_t> pos)
 	{
 		cursor.setposition(pos);
 
-		UIElement* front = 0;
-		if (enabled)
+		if (focused != UI_NULL)
 		{
-			for (map<UIType, UIElement*>::iterator elit = elements.getbegin(); elit != elements.getend(); ++elit)
-			{
-				if (elit->second->isactive() && elit->second->bounds().contains(pos))
-				{
-					if (front != 0)
-					{
-						front->sendmouse(false, pos);
-					}
-					front = elit->second;
-				}
-			}
-		}
-
-		if (front != 0)
-		{
-			mst = front->sendmouse(mst == MST_CLICKING, pos);
+			elements.get(focused)->sendmouse(mst == MST_CLICKING, pos);
 		}
 		else
 		{
-			mst = MST_IDLE;
+			UIElement* front = 0;
+			if (enabled)
+			{
+				using::std::map;
+				for (map<UIType, UIElement*>::iterator elit = elements.getbegin(); elit != elements.getend(); ++elit)
+				{
+					if (elit->second->isactive() && elit->second->bounds().contains(pos))
+					{
+						if (front != 0)
+						{
+							front->sendmouse(false, pos);
+						}
+						front = elit->second;
+					}
+				}
+			}
+
+			if (front != 0)
+			{
+				mst = front->sendmouse(mst == MST_CLICKING, pos);
+			}
+			else
+			{
+				mst = MST_IDLE;
+			}
 		}
 
 		cursor.setstate(mst);
+	}
+
+	void UI::sendkey(Keytype type, int action, bool down)
+	{
+		if (type == KT_MENU && down)
+		{
+			/*Element toadd = keyelements[action];
+			if (toadd.type() != UI_NULL)
+			{
+				add(toadd);
+			}*/
+		}
 	}
 
 	void UI::add(const Element& element)
@@ -111,19 +142,36 @@ namespace IO
 		}
 
 		UIElement* toadd = element.instantiate();
-		if (toadd)
+		elements.add(type, toadd);
+		if (element.isfocused())
 		{
-			elements.add(type, toadd);
+			focused = type;
 		}
 	}
 
 	void UI::remove(UIType type)
 	{
-		elements.remove(type);
+		if (type == focused)
+		{
+			focused = UI_NULL;
+		}
+		if (elements.contains(type))
+		{
+			elements.get(type)->deactivate();
+			elements.remove(type);
+		}
 	}
 
-	UIElement* UI::getelement(UIType type)
+	UIElement& UI::getelement(UIType type) const
 	{
-		return elements.get(type);
+		UIElement* elem = elements.get(type);
+		if (type != 0)
+		{
+			return *elem;
+		}
+		else
+		{
+			return *elements.get(UI_NULL);
+		}
 	}
 }

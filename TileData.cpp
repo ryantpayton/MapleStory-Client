@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,21 +21,36 @@ namespace Gameplay
 {
 	TileData::TileData(node src)
 	{
-		tiletxt = new Texture(src);
+		tiletexture = new Texture(src);
 		z = (src["z"].data_type() == node::type::integer) ? src["z"] : src["zM"];
+	}
+
+	TileData::TileData()
+	{
+		tiletexture = nullptr;
+		z = 0;
 	}
 
 	TileData::~TileData()
 	{
-		delete tiletxt;
+		if (tiletexture) delete tiletexture;
 	}
 
-	void TileData::draw(vector2d<int> pos)
+	void TileData::draw(vector2d<int32_t> pos) const
 	{
-		tiletxt->draw(PosArgument(pos));
+		if (tiletexture)
+		{
+			using::Graphics::PosArgument;
+			tiletexture->draw(PosArgument(pos));
+		}
 	}
 
-	int TileData::getz()
+	bool TileData::isloaded() const
+	{
+		return tiletexture != nullptr;
+	}
+
+	int32_t TileData::getz() const
 	{
 		return z;
 	}

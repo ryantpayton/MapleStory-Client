@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -32,13 +32,50 @@ namespace Character
 
 	Charstats::Charstats() {}
 
-	int Charstats::getmapid()
+	Charstats::~Charstats() {}
+
+	void Charstats::setstat(Maplestat stat, int16_t value)
+	{
+		stats[stat] = value;
+	}
+
+	void Charstats::settotal(Equipstat stat, int32_t value)
+	{
+		totalstats[stat] = value;
+	}
+
+	void Charstats::setexp(int64_t value)
+	{
+		exp = value;
+	}
+
+	void Charstats::setportal(uint8_t pid)
+	{
+		portal = pid;
+	}
+
+	int32_t Charstats::getmapid() const
 	{
 		return mapid;
 	}
 
-	uint8_t Charstats::getportal()
+	uint8_t Charstats::getportal() const
 	{
 		return portal;
+	}
+
+	int16_t Charstats::getstat(Maplestat stat) const
+	{
+		return stats.count(stat) ? stats.at(stat) : 0;
+	}
+
+	int32_t Charstats::gettotal(Equipstat stat) const
+	{
+		return totalstats.count(stat) ? totalstats.at(stat) : 0;
+	}
+
+	string Charstats::getname() const
+	{
+		return name;
 	}
 }

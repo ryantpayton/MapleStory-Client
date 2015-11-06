@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -23,27 +23,53 @@ namespace IO
 {
 	Cursor::Cursor()
 	{
-		position = vector2d<int>();
+		position = vector2d<int32_t>();
 		state = MST_IDLE;
 	}
 
+	Cursor::~Cursor() {}
+
 	void Cursor::init()
 	{
-		node cursornode = nx::ui["Basic.img"]["Cursor"];
-
+		using::nl::node;
+		node cursornode = nl::nx::ui["Basic.img"]["Cursor"];
 		for (Mousestate i = MST_IDLE; i <= MST_RCLICK; i = static_cast<Mousestate>(i + 1))
 		{
-			animations.add(i, new Animation(cursornode[to_string(i)]));
+			animations.add(i, new Animation(cursornode[std::to_string(i)]));
 		}
 	}
 
-	void Cursor::draw()
+	void Cursor::draw() const
 	{
-		animations.get(state)->draw(PosArgument(position));
+		using::Graphics::PosArgument;
+		const Animation* anim = animations.get(state);
+		if (anim)
+		{
+			anim->draw(PosArgument(position));
+		}
 	}
 
-	void Cursor::update(short dpf)
+	void Cursor::update(uint16_t dpf)
 	{
-		animations.get(state)->update(dpf);
+		Animation* anim = animations.get(state);
+		if (anim)
+		{
+			anim->update(dpf);
+		}
+	}
+
+	void Cursor::setstate(Mousestate s)
+	{
+		state = s;
+	}
+
+	void Cursor::setposition(vector2d<int32_t> pos)
+	{
+		position = pos;
+	}
+
+	Mousestate Cursor::getstate() const
+	{
+		return state;
 	}
 }

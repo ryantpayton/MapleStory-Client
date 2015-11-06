@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,41 +20,45 @@
 #include "CharConstants.h"
 #include "CharJob.h"
 #include <map>
-
-using namespace Constants;
-using namespace Character;
+#include <vector>
 
 namespace Net
 {
+	using::std::vector;
+	using::std::map;
+	using::std::pair;
+	using::Character::Maplestat;
+	using::Character::CharJob;
+	// Stats of a character directly constructed from a packet.
 	class StatsEntry
 	{
 	public:
 		StatsEntry(InPacket&);
-		StatsEntry() {}
-		~StatsEntry() {}
-		void setrank(pair<int, char>);
-		void setjobrank(pair<int, char>);
-		short getstat(Maplestat) const;
-		short getjob() const;
+		StatsEntry();
+		~StatsEntry();
+		void setrank(pair<int32_t, int8_t>);
+		void setjobrank(pair<int32_t, int8_t>);
+		int16_t getstat(Maplestat) const;
+		int16_t getjob() const;
 		string getname() const;
 		string getjobname() const;
 		vector<int64_t> getpets() const;
 		map<Maplestat, short> getstats() const;
 		int64_t getexp() const;
-		int getmapid() const;
+		int32_t getmapid() const;
 		uint8_t getportal() const;
-		pair<int, char> getrank() const;
-		pair<int, char> getjobrank() const;
+		pair<int32_t, int8_t> getrank() const;
+		pair<int32_t, int8_t> getjobrank() const;
 	private:
 		string name;
 		vector<int64_t> petids;
 		map<Maplestat, short> stats;
 		CharJob job;
 		int64_t exp;
-		int mapid;
+		int32_t mapid;
 		uint8_t portal;
-		pair<int, char> rank;
-		pair<int, char> jobrank;
+		pair<int32_t, int8_t> rank;
+		pair<int32_t, int8_t> jobrank;
 	};
 }
 

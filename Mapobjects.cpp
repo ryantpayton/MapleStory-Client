@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,28 +19,31 @@
 
 namespace Gameplay
 {
-	void Mapobjects::draw(char layer, vector2d<int> viewpos)
+	void Mapobjects::draw(int8_t layer, vector2d<int32_t> viewpos) const
 	{
-		for (map<int, int>::iterator lyit = layers[layer].begin(); lyit != layers[layer].end(); ++lyit)
+		if (layers.count(layer))
 		{
-			Mapobject* obj = objects.get(lyit->second);
-			if (obj != 0)
+			for (map<int32_t, int32_t>::const_iterator lyit = layers.at(layer).begin(); lyit != layers.at(layer).end(); ++lyit)
 			{
-				obj->draw(viewpos);
+				const Mapobject* obj = objects.get(lyit->second);
+				if (obj)
+				{
+					obj->draw(viewpos);
+				}
 			}
 		}
 	}
 
-	void Mapobjects::update(short dpf)
+	void Mapobjects::update(const Physics& fht, uint16_t dpf)
 	{
-		vector<int> toremove;
-		for (map<int, Mapobject*>::iterator obit = objects.getbegin(); obit != objects.getend(); ++obit)
+		vector<int32_t> toremove;
+		for (map<int32_t, Mapobject*>::iterator obit = objects.getbegin(); obit != objects.getend(); ++obit)
 		{
 			Mapobject* obj = obit->second;
-			if (obj != 0)
+			if (obj)
 			{
-				char oldlayer = obj->getlayer();
-				char newlayer = obj->update(dpf);
+				int8_t oldlayer = obj->getlayer();
+				int8_t newlayer = obj->update(fht, dpf);
 				if (newlayer != oldlayer)
 				{
 					if (newlayer == -1)
@@ -49,14 +52,14 @@ namespace Gameplay
 					}
 					else
 					{
-						int oid = obj->getoid();
+						int32_t oid = obj->getoid();
 						layers[oldlayer].erase(oid);
 						layers[newlayer][oid] = oid;
 					}
 				}
 			}
 		}
-		for (vector<int>::iterator rmit = toremove.begin(); rmit != toremove.end(); ++rmit)
+		for (vector<int32_t>::iterator rmit = toremove.begin(); rmit != toremove.end(); ++rmit)
 		{
 			remove(*rmit);
 		}
@@ -70,28 +73,28 @@ namespace Gameplay
 
 	void Mapobjects::add(Mapobject* toadd)
 	{
-		if (toadd != 0)
+		if (toadd)
 		{
-			int oid = toadd->getoid();
-			char layer = toadd->getlayer();
+			int32_t oid = toadd->getoid();
+			int8_t layer = toadd->getlayer();
 			objects.add(oid, toadd);
 			layers[layer][oid] = oid;
 		}
 	}
 
-	void Mapobjects::remove(int oid)
+	void Mapobjects::remove(int32_t oid)
 	{
 		Mapobject* obj = objects.get(oid);
-		if (obj != 0)
+		if (obj)
 		{
-			char layer = obj->getlayer();
+			int8_t layer = obj->getlayer();
 			objects.remove(oid);
 			layers[layer].erase(oid);
 		}
 	}
 
-	Mapobject& Mapobjects::get(int oid)
+	Mapobject* Mapobjects::get(int32_t oid)
 	{
-		return *objects.get(oid);
+		return objects.get(oid);
 	}
 }

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,10 +21,11 @@
 #include "Cursor.h"
 #include "Ptrvector.h"
 
-using namespace Graphics;
-
 namespace IO
 {
+	using::Util::Ptrvector;
+	using::Graphics::Graphic;
+
 	class UIElement
 	{
 	public:
@@ -32,19 +33,27 @@ namespace IO
 		virtual void togglehide() { active = !active; }
 		virtual void makeactive() { active = true; }
 		virtual void deactivate() { active = false; }
-		virtual void draw();
-		virtual void update(short);
-		virtual void buttonpressed(short) = 0;
-		virtual Mousestate sendmouse(bool, vector2d<int>);
-		virtual rectangle2d<int> bounds();
-		bool isactive() { return active; }
-		//template <class T>
-		//virtual T getimpl() = 0;
+		virtual void draw() const;
+		virtual void update(uint16_t);
+		virtual void buttonpressed(uint16_t) = 0;
+		virtual Mousestate sendmouse(bool, vector2d<int32_t>);
+		virtual rectangle2d<int32_t> bounds() const;
+		bool isactive() const { return active; }
 	protected:
 		bool active;
-		vector2d<int> position;
-		vector2d<int> dimension;
-		Ptrmap<short, Button> buttons;
+		vector2d<int32_t> position;
+		vector2d<int32_t> dimension;
+		Ptrmap<uint16_t, Button> buttons;
 		Ptrvector<Graphic> graphics;
+	};
+
+	class UINull : public UIElement
+	{
+	public:
+		void draw(){}
+		void update(uint16_t){}
+		void buttonpressed(uint16_t){}
+		Mousestate sendmouse(bool, vector2d<int32_t>){ return MST_IDLE; }
+		rectangle2d<int32_t> bounds() { return rectangle2d<int32_t>(); }
 	};
 }

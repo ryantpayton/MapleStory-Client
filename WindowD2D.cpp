@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,9 +15,12 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
+#pragma once
+#include "Journey.h"
+#ifndef JOURNEY_USE_OPENGL
 #include "WindowD2D.h"
 
-namespace Program
+namespace IO
 {
 	WindowD2D::WindowD2D()
 	{
@@ -28,8 +31,8 @@ namespace Program
 	WindowD2D::~WindowD2D()
 	{
 		CoUninitialize();
-		SafeRelease(&d2d_factory);
-		SafeRelease(&dwfactory);
+		if (d2d_factory) d2d_factory->Release();
+		if (dwfactory) dwfactory->Release();
 	}
 
 	bool WindowD2D::init(UI* u)
@@ -44,7 +47,7 @@ namespace Program
 			wcex.lpfnWndProc = WindowD2D::WndProc;
 			wcex.cbClsExtra = 0;
 			wcex.cbWndExtra = sizeof(LONG_PTR);
-			wcex.hInstance = HINST_THISCOMPONENT;
+			//wcex.hInstance = HINST_THISCOMPONENT;
 			wcex.hbrBackground = NULL;
 			wcex.lpszMenuName = NULL;
 			wcex.hCursor = LoadCursor(NULL, IDI_APPLICATION);
@@ -64,7 +67,7 @@ namespace Program
 				static_cast<int>(ceil(628.f * dpiY / 96.f)),
 				NULL,
 				NULL,
-				HINST_THISCOMPONENT,
+				NULL,
 				this
 				);
 
@@ -75,14 +78,13 @@ namespace Program
 				result = inittargets();
 				if (result == S_OK)
 				{
-					fonts.init(dwfactory);
-					Program::locator.setfonts(&fonts);
+					fonts.init(dwfactory, bitmaptarget);
+					Graphics::locator.setfonts(&fonts);
 
 					ui = u;
 					fullscreen = false;
 					screencd = 0;
 					scralpha = 1.0f;
-					trans = TRS_NONE;
 					draw_finished = true;
 
 					SetPriorityClass(wnd, REALTIME_PRIORITY_CLASS);
@@ -106,7 +108,7 @@ namespace Program
 
 		if (result == S_OK)
 		{
-			Program::locator.setfactory(&imgfactory);
+			Graphics::locator.setfactory(&imgfactory);
 
 			result = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &d2d_factory);
 			if (result == S_OK)
@@ -136,7 +138,7 @@ namespace Program
 			{
 				d2d_rtarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
 				bitmaptarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
-				Program::locator.settarget(&bitmaptarget);
+				Graphics::locator.settarget(&bitmaptarget);
 			}
 		}
 		return result;
@@ -181,11 +183,6 @@ namespace Program
 					result = 0;
 					wasHandled = true;
 					break;
-				case WM_PAINT:
-					app->draw();
-					result = 0;
-					wasHandled = true;
-					break;
 				case WM_DESTROY:
 				case WM_QUIT:
 					result = 1;
@@ -205,7 +202,7 @@ namespace Program
 					switch (wParam)
 					{
 					case MK_LBUTTON:
-						app->getui()->sendmouse(MST_CLICKING, vector2d<int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+						app->getui()->sendmouse(IO::MST_CLICKING, vector2d<int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 						break;
 					}
 					result = 0;
@@ -219,18 +216,18 @@ namespace Program
 				case WM_LBUTTONUP:
 					if (wParam != MK_LBUTTON)
 					{
-						app->getui()->sendmouse(MST_IDLE, vector2d<int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+						app->getui()->sendmouse(IO::MST_IDLE, vector2d<int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 					}
 					result = 0;
 					wasHandled = true;
 					break;
 				case WM_KEYDOWN:
-					app->getui()->gethandler()->sendkey(true, static_cast<uint8_t>(wParam));
+					app->getkeyboard().sendinput(true, static_cast<uint8_t>(wParam));
 					result = 0;
 					wasHandled = true;
 					break;
 				case WM_KEYUP:
-					app->getui()->gethandler()->sendkey(false, static_cast<uint8_t>(wParam));
+					app->getkeyboard().sendinput(false, static_cast<uint8_t>(wParam));
 					result = 0;
 					wasHandled = true;
 					break;
@@ -282,11 +279,12 @@ namespace Program
 	void WindowD2D::update()
 	{
 		MSG winmsg;
-		if (GetMessage(&winmsg, 0, 0, 0))
+		if (PeekMessage(&winmsg, 0, WM_KEYFIRST, WM_MOUSELAST, PM_REMOVE))
 		{
 			TranslateMessage(&winmsg);
 			DispatchMessage(&winmsg);
 		}
+
 		screencd -= 1;
 		if (alphastep != 0.0f)
 		{
@@ -310,46 +308,41 @@ namespace Program
 		switch (trans)
 		{
 		case TRS_MAP:
-			//field.respawn();
-			//uinterface.enableactions();
-			trans = TRS_NONE;
+			ui->enable();
 			break;
 		}
 		alphastep = 0.05f;
 	}
 
-	/*void WindowD2D::render()
-	{
-		if (alphastep >= 0.0f)
-		{
-			Program::locator.gettarget()->BeginDraw();
-			Program::locator.gettarget()->Clear(D2D1::ColorF(D2D1::ColorF::White));
-			//field.draw();
-			//uinterface.draw();
-		}
-	}*/
-
-	void WindowD2D::begin()
+	void WindowD2D::begin() const
 	{
 		bitmaptarget->BeginDraw();
 		bitmaptarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
 	}
 
-	void WindowD2D::end()
+	void WindowD2D::end() const
 	{
 		bitmaptarget->EndDraw();
-		bitmaptarget->GetBitmap(&scene);
+
+		if (alphastep >= 0.0f)
+		{
+			ID2D1Bitmap* scene;
+			bitmaptarget->GetBitmap(&scene);
+
+			RECT rc;
+			GetClientRect(wnd, &rc);
+			D2D1_RECT_F drc = D2D1::RectF((FLOAT)rc.left, (FLOAT)rc.top, (FLOAT)rc.right, (FLOAT)rc.bottom);
+
+			d2d_rtarget->BeginDraw();
+			d2d_rtarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+			d2d_rtarget->DrawBitmap(scene, drc, scralpha);
+			d2d_rtarget->EndDraw();
+		}
 	}
 
-	void WindowD2D::draw()
+	Keyboard& WindowD2D::getkeyboard()
 	{
-		RECT rc;
-		GetClientRect(wnd, &rc);
-		D2D1_RECT_F drc = D2D1::RectF((FLOAT)rc.left, (FLOAT)rc.top, (FLOAT)rc.right, (FLOAT)rc.bottom);
-
-		d2d_rtarget->BeginDraw();
-		d2d_rtarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-		d2d_rtarget->DrawBitmap(scene, drc, scralpha);
-		d2d_rtarget->EndDraw();
+		return keyboard;
 	}
 }
+#endif

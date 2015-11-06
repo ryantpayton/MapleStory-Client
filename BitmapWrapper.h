@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,14 +19,16 @@
 #include "rectangle2d.h"
 #include <cstdint>
 
-using namespace Util;
-
 namespace Graphics
 {
+	using::std::int32_t;
+	using::Util::vector2d;
+	using::Util::rectangle2d;
+	// Interface for classes that manage a bitmap in the API they are written in.
 	class BitmapWrapper
 	{
 	public:
 		virtual ~BitmapWrapper() {}
-		virtual void draw(rectangle2d<int32_t>, float_t, float_t, vector2d<int32_t>, float_t) = 0;
+		virtual void draw(rectangle2d<int32_t>, float, float, vector2d<int32_t>, float) const = 0;
 	};
 }

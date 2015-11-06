@@ -1,8 +1,7 @@
 #pragma once
+#include "KeyTarget.h"
 #include "Textlabel.h"
 #include "rectangle2d.h"
-
-using namespace Graphics;
 
 namespace IO
 {
@@ -13,30 +12,33 @@ namespace IO
 		TXFS_FOCUSED
 	};
 
-	class Textfield
+	using::std::string;
+	using::Util::rectangle2d;
+
+	class Textfield : public KeyTarget
 	{
 	public:
 		Textfield(Font, Textcolor, vector2d<int>, size_t);
-		~Textfield();
-		void draw(vector2d<int>);
+		Textfield(){}
+		void draw(vector2d<int>) const;
 		void update(short);
-		void sendinput(char);
+		void sendkey(Keytype, int, bool);
 		void setstate(TextfieldState);
 		void settext(string);
-		rectangle2d<int> bounds(vector2d<int>);
-		void setcrypt(char c) { cryptchar = c; }
-		string gettext() { return str; }
-		TextfieldState getstate() { return state; }
+		void setcrypt(char);
+		string gettext() const;
+		TextfieldState getstate() const;
+		rectangle2d<int> bounds(vector2d<int>) const;
 	private:
-		Textlabel* text;
-		string str;
-		Textlabel* marker;
+		Textlabel textlabel;
+		string text;
+		Textlabel marker;
 		bool showmarker;
 		short elapsed;
 		size_t markerpos;
 		vector2d<int> position;
 		size_t limit;
-		char cryptchar;
+		char crypt;
 		TextfieldState state;
 	};
 }

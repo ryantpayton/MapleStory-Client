@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,22 +19,25 @@
 
 namespace IO
 {
-	void UIElement::draw()
+	void UIElement::draw() const
 	{
 		if (active)
 		{
+			using::Graphics::PosArgument;
 			for (size_t i = 0; i < graphics.getend(); i++)
 			{
 				graphics.get(i)->draw(PosArgument(position));
 			}
-			for (map<short, Button*>::iterator btit = buttons.getbegin(); btit != buttons.getend(); ++btit)
+
+			using::std::map;
+			for (map<uint16_t, Button*>::const_iterator btit = buttons.getbegin(); btit != buttons.getend(); ++btit)
 			{
 				btit->second->draw(position);
 			}
 		}
 	}
 
-	void UIElement::update(short dpf)
+	void UIElement::update(uint16_t dpf)
 	{
 		if (active)
 		{
@@ -45,11 +48,12 @@ namespace IO
 		}
 	}
 
-	Mousestate UIElement::sendmouse(bool down, vector2d<int> pos)
+	Mousestate UIElement::sendmouse(bool down, vector2d<int32_t> pos)
 	{
 		Mousestate ret = down ? MST_CLICKING : MST_IDLE;
 
-		for (map<short, Button*>::iterator bmit = buttons.getbegin(); bmit != buttons.getend(); ++bmit)
+		using::std::map;
+		for (map<uint16_t, Button*>::iterator bmit = buttons.getbegin(); bmit != buttons.getend(); ++bmit)
 		{
 			Button* btit = bmit->second;
 			if (btit->isactive() && btit->bounds(position).contains(pos))
@@ -81,8 +85,8 @@ namespace IO
 		return ret;
 	}
 
-	rectangle2d<int> UIElement::bounds()
+	rectangle2d<int32_t> UIElement::bounds() const
 	{
-		return rectangle2d<int>(position, position + dimension);
+		return rectangle2d<int32_t>(position, position + dimension);
 	}
 }

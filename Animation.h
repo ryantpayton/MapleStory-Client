@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,32 +16,23 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Texture.h"
-#include "Ptrvector.h"
+#include "AnimationData.h"
+#include "AnimationController.h"
 
 namespace Graphics
 {
-	const short DEF_DELAY = 50;
-
 	class Animation : public Graphic
 	{
 	public:
 		Animation(node);
-		~Animation() {}
-		void draw(DrawArgument&);
-		void update(short);
-		vector2d<int> getorigin();
-		vector2d<int> getdimension();
+		Animation();
+		void draw(const DrawArgument&) const;
+		void update(uint16_t);
+		vector2d<int32_t> getorigin() const;
+		vector2d<int32_t> getdimensions() const;
 	private:
-		Ptrvector<Texture> frames;
-		vector<short> delays;
-		vector<pair<uint8_t, uint8_t>> alphablends;
-		uint8_t frame;
-		uint8_t last_f;
-		bool blending;
-		short elapsed;
-		float alphastep;
-		float alpha;
+		AnimationData animdata;
+		AnimationController animcont;
 	};
 }
 

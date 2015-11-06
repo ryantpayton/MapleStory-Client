@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,14 +19,18 @@
 
 namespace Character
 {
-	void Skillbook::setskill(int id, int level, int mlevel, int64_t expire)
+	Skillbook::Skillbook() {}
+
+	Skillbook::~Skillbook() {}
+
+	void Skillbook::setskill(int32_t id, int32_t level, int32_t mlevel, int64_t expire)
 	{
 		levels[id] = level;
 		masterlevels[id] = mlevel;
 		expirations[id] = expire;
 	}
 
-	void Skillbook::setcd(int id, int cd)
+	void Skillbook::setcd(int32_t id, int32_t cd)
 	{
 		cooldowns[id] = cd;
 	}

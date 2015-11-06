@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,151 +15,124 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-/*#include "WindowGLFW.h"
-#include "nx.hpp"
-#include "node.hpp"
-#include "bitmap.hpp"
+#pragma once
+#include "Journey.h"
+#ifdef JOURNEY_USE_OPENGL
+#include "WindowGLFW.h"
+#include "glm.hpp"
+#include <iostream>
 
-namespace Program
+namespace IO
 {
-	WindowGLFW::WindowGLFW()
+	WindowGLFW::WindowGLFW() : locator(&fonts)
 	{
-		glwnd = 0;
+		glwnd = nullptr;
 	}
 
 	WindowGLFW::~WindowGLFW()
 	{
+		if (glwnd) glfwDestroyWindow(glwnd);
 		glfwTerminate();
 	}
 
-	bool WindowGLFW::init()
+	void error_callback(int error, const char* description)
 	{
-		if (glfwInit())
+		std::cout << "Error no.:" << error << " : " << description << std::endl;
+	}
+
+	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+	{
+		Keyboard* keyboard = reinterpret_cast<Keyboard*>(glfwGetWindowUserPointer(window));
+		if (keyboard)
 		{
-			glfwWindowHint(GLFW_SAMPLES, 4);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-			glwnd = glfwCreateWindow(800, 600, "Journey", 0, 0);
-			if (glwnd)
-			{
-				glfwMakeContextCurrent(glwnd);
-				glfwSetInputMode(glwnd, GLFW_STICKY_KEYS, GL_TRUE);
-				glfwSwapInterval(1);
-				glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-			}
+			keyboard->sendinput(action != GLFW_RELEASE, key);
 		}
-		nl::nx::load_all();
-		return glwnd != 0;
 	}
 
-	void WindowGLFW::draw()
+	bool WindowGLFW::init(bool full)
 	{
-		//glViewport(0, 0, 800, 600);
-		nl::bitmap bmp = nl::nx::ui["Login.img"]["Title"]["11"];
-		//update();
-		//glBegin(GL_TEXTURE_2D);
-		/*glColor3f(1.0, 0.0, 0.0);   glVertex3i(50, 200, 0);
-		glColor3f(0.0, 1.0, 0.0);   glVertex3i(250, 200, 0);
-		glColor3f(0.0, 0.0, 1.0);   glVertex3i(250, 350, 0);
-		glColor3f(1.0, 1.0, 1.0);   glVertex3i(50, 350, 0);*/
-		//glDrawPixels(bmp.width(), bmp.height(), GL_RGBA, GL_UNSIGNED_INT, bmp.data());
-		//glEnd();
-		/*glEnable(GL_TEXTURE_2D);
+		fullscreen = full;
 
-		GLuint texName;
-		glGenTextures(1, &texName);
-		glBindTexture(GL_TEXTURE_2D, texName);
+		if (glfwInit() && fonts.init())
+		{
+			glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+			context = glfwCreateWindow(1, 1, "", nullptr, nullptr);
+			glfwMakeContextCurrent(context);
+			glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
+			glfwSetErrorCallback(error_callback);
+			return initwindow();
+		}
+		else
+		{
+			return false;
+		}
+	}
 
-		glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
-		glPixelStorei(GL_UNPACK_LSB_FIRST, GL_FALSE);
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-		glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, 0);
-		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-		glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-		glPixelStorei(GL_UNPACK_SKIP_IMAGES, 0);
+	bool WindowGLFW::initwindow()
+	{
+		if (glwnd) glfwDestroyWindow(glwnd);
+		glwnd = glfwCreateWindow(800, 600, "Journey", fullscreen ? glfwGetPrimaryMonitor() : nullptr, context);
+		if (glwnd)
+		{
+			glfwMakeContextCurrent(glwnd);
+			glfwSwapInterval(1);
+			glfwSetInputMode(glwnd, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+			glfwSetInputMode(glwnd, GLFW_STICKY_KEYS, 1);
+			glfwSetKeyCallback(glwnd, key_callback);
+			glfwSetWindowUserPointer(glwnd, &keyboard);
 
+			glLoadIdentity();
+			glOrtho(0.0, 800, 590, -10, -1.0, 1.0);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
+	void WindowGLFW::update(UI& ui)
+	{
+		double cursorx;
+		double cursory;
+		glfwGetCursorPos(glwnd, &cursorx, &cursory);
+		int32_t state = glfwGetMouseButton(glwnd, GLFW_MOUSE_BUTTON_LEFT);
+		using::IO::Mousestate;
+		Mousestate mst = (state == GLFW_PRESS) ? IO::MST_CLICKING : IO::MST_IDLE;
+		ui.sendmouse(mst, vector2d<int32_t>(static_cast<int32_t>(cursorx), static_cast<int32_t>(cursory)));
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-			bmp.width(), bmp.height(), 0,
-			GL_BGRA, GL_UNSIGNED_INT_8_8_8_8, bmp.data());
+		int32_t tabstate = glfwGetKey(glwnd, GLFW_KEY_TAB);
+		if (tabstate == GLFW_PRESS)
+		{
+			fullscreen = !fullscreen;
+			initwindow();
+		}
+	}
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-		//glBindTexture(GL_TEXTURE_2D, texName);
-		glBegin(GL_QUADS);
-
-		glTexCoord2i(0, 600);
-
-		glVertex2i(0, 0);
-
-		glTexCoord2i(800, 600);
-
-		glVertex2i(800, 0);
-
-		glTexCoord2i(800, 0);
-
-		glVertex2i(800, 600);
-
-		glTexCoord2i(0, 0);
-
-		glVertex2i(0, 600);
-		/*glBegin(GL_TEXTURE_2D);
-		glColor4f(1, 1, 1, 1);
-		glTexCoord2i(0, 0);
-		glVertex2i(0, 0);
-		glTexCoord2i(1, 0);
-		glVertex2i(800, 0);
-		glTexCoord2i(1, 1);
-		glVertex2i(800, 600);
-		glTexCoord2i(0, 1);
-		glVertex2i(0, 600);
-		//glDrawArrays(GL_TEXTURE_2D, 0, 1);
-		//glDisable(GL_TEXTURE_2D);
-
-		//glDrawPixels(bmp.width(), bmp.height(), GL_BGRA, GL_UNSIGNED_BYTE, bmp.data());
-		// Sets the size of the OpenGL viewport
-		glViewport(0, 0, 800, 600);
-
-		// Select the projection stack and apply
-		// an orthographic projection
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(0.0, 800, 600, 0.0, -1.0, 1.0);
-		glMatrixMode(GL_MODELVIEW);
-
+	void WindowGLFW::begin() const
+	{
+		glClearColor(0, 0, 0, 0);
 		glClear(GL_COLOR_BUFFER_BIT);
+		glEnable(GL_TEXTURE_2D);
+	}
 
-		glBegin(GL_QUADS);
-		glColor3f(1.0, 0.0, 0.0);   glVertex3i(50, 200, 0);
-		glColor3f(0.0, 1.0, 0.0);   glVertex3i(250, 200, 0);
-		glColor3f(0.0, 0.0, 1.0);   glVertex3i(250, 350, 0);
-		glColor3f(1.0, 1.0, 1.0);   glVertex3i(50, 350, 0);
-		glEnd();
-
-		glBegin(GL_TRIANGLES);
-		glColor3f(1.0, 0.0, 0.0);  glVertex3i(400, 350, 0);
-		glColor3f(0.0, 1.0, 0.0);  glVertex3i(500, 200, 0);
-		glColor3f(0.0, 0.0, 1.0);  glVertex3i(600, 350, 0);
-		glEnd();
-
-		glfwSwapBuffers(glwnd);
+	void WindowGLFW::end() const
+	{
+		glDisable(GL_TEXTURE_2D);
 		glfwPollEvents();
+		glfwSwapBuffers(glwnd);
 	}
 
-	void WindowGLFW::update()
-	{
-		
-	}
-
-	void WindowGLFW::fadeout()
+	void WindowGLFW::fadeout(Transition)
 	{
 
 	}
 
-	void WindowGLFW::togglemode()
+	Keyboard& WindowGLFW::getkeyboard()
 	{
-
+		return keyboard;
 	}
-}*/
+}
+#endif

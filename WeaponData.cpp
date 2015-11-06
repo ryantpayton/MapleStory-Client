@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,13 +21,14 @@
 
 namespace Data
 {
-	WeaponData::WeaponData(int equipid, BodyDrawinfo& drawinfo) : EquipData(equipid, drawinfo)
+	WeaponData::WeaponData(int32_t equipid, const BodyDrawinfo& drawinfo) : EquipData(equipid, drawinfo)
 	{
-		int prefix = equipid / 10000;
+		int32_t prefix = equipid / 10000;
 		weptype = static_cast<Weapontype>(prefix);
 		twohanded = (prefix == 138) || (prefix >= 140 && prefix <= 144);
 
-		node infonode = nx::character["Weapon"]["0" + to_string(equipid) + ".img"]["info"];
+		using::nl::node;
+		node infonode = nl::nx::character["Weapon"]["0" + std::to_string(equipid) + ".img"]["info"];
 		afterimage = infonode["afterImage"];
 		attackspeed = static_cast<uint8_t>(infonode["attackSpeed"]);
 		attack = static_cast<uint8_t>(infonode["attack"]);

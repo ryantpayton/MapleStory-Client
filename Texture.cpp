@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,9 +15,16 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
+#pragma once
 #include "Texture.h"
 #include "nx.hpp"
+
+#include "Journey.h"
+#ifdef JOURNEY_USE_OPENGL
+#include "BitmapWrapperGL.h"
+#else
 #include "BitmapWrapperD2D.h"
+#endif
 
 namespace Graphics
 {
@@ -28,25 +35,30 @@ namespace Graphics
 			node orgnode = src["origin"];
 			if (orgnode.data_type() == node::type::vector)
 			{
-				origin = vector2d<int>(orgnode.x(), orgnode.y());
+				origin = vector2d<int32_t>(orgnode.x(), orgnode.y());
 			}
 			else
 			{
-				origin = vector2d<int>();
+				origin = vector2d<int32_t>();
 			}
 
 			if (src["source"].data_type() == node::type::string)
 			{
+				using::std::string;
 				string link = src["source"].get_string();
 				string file = link.substr(0, link.find('/'));
 				link = link.substr(link.find('/') + 1);
-				src = nx::base[file].resolve(link);
+				src = nl::nx::base[file].resolve(link);
 			}
 
-			bitmap bmp = src.get_bitmap();
+			nl::bitmap bmp = src.get_bitmap();
+#ifdef JOURNEY_USE_OPENGL
+			source = new BitmapWrapperGL(bmp);
+#else
 			source = new BitmapWrapperD2D(bmp);
-			dimension = vector2d<int>(bmp.width(), bmp.height());
-			shift = vector2d<int>();
+#endif
+			dimensions = vector2d<int32_t>(bmp.width(), bmp.height());
+			shift = vector2d<int32_t>();
 
 			loaded = true;
 		}
@@ -56,23 +68,46 @@ namespace Graphics
 		}
 	}
 
-	void Texture::draw(DrawArgument& args)
+	Texture::~Texture() 
 	{
 		if (loaded)
 		{
-			vector2d<int> stretch = args.getstretch();
-			int w = stretch.x();
-			if (w == 0)
-				w = dimension.x();
-			int h = stretch.y();
-			if (h == 0)
-				h = dimension.y();
+			delete source;
+		}
+	}
 
-			vector2d<int> absp = args.getpos() - origin + shift;
+	void Texture::draw(const DrawArgument& args) const
+	{
+		if (loaded)
+		{
+			vector2d<int32_t> stretch = args.getstretch();
+			int32_t w = stretch.x();
+			if (w == 0)
+				w = dimensions.x();
+			int32_t h = stretch.y();
+			if (h == 0)
+				h = dimensions.y();
+
+			vector2d<int32_t> absp = args.getpos() - origin + shift;
 			if (absp.x() <= 816 && absp.y() <= 624 && absp.x() > -w && absp.y() > -h)
 			{
-				source->draw(rectangle2d<int>(absp, absp + vector2d<int>(w, h)), args.getxscale(), args.getyscale(), args.getcenter(), args.getalpha());
+				source->draw(rectangle2d<int32_t>(absp, absp + vector2d<int32_t>(w, h)), args.getxscale(), args.getyscale(), args.getcenter(), args.getalpha());
 			}
 		}
+	}
+
+	void Texture::setshift(vector2d<int32_t> shf)
+	{
+		shift = shf;
+	}
+
+	vector2d<int32_t> Texture::getorigin() const
+	{
+		return origin;
+	}
+
+	vector2d<int32_t> Texture::getdimensions() const
+	{
+		return dimensions;
 	}
 }

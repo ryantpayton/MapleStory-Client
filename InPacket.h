@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,20 +16,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include <string>
-#include "Packet.h"
+#include "PacketError.h"
 #include "vector2d.h"
-
-using namespace Util;
+#include <cstdint>
+#include <string>
 
 namespace Net
 {
-	class InPacket : public Packet
+	using::std::int8_t;
+	using::std::int16_t;
+	using::std::int32_t;
+	using::std::int64_t;
+	using::std::string;
+	using::Util::vector2d;
+	// A packet sent by the server. Contains read functions used by handlers to retrieve meaningful information. 
+	class InPacket
 	{
 	public:
-		InPacket(const char*, int32_t);
-		InPacket() {}
-		~InPacket() {}
+		InPacket(const int8_t*, size_t);
+		size_t length() const;
 		void skip(size_t);
 		string readascii();
 		string readpadascii(int16_t);
@@ -41,35 +46,34 @@ namespace Net
 		int64_t readlong() { return read<int64_t>(); }
 
 		template <class T>
-		vector<T> readvector(size_t count)
+		void readarray(T* buffer, size_t count)
 		{
-			vector<T> ret;
 			for (size_t i = 0; i < count; i++)
 			{
-				ret.push_back(read<T>());
+				buffer[i] = read<T>();
 			}
-			return ret;
 		}
+
 	private:
 		template <class T>
 		T read()
 		{
-			size_t size = sizeof(T) / sizeof(int8_t);
-			if (bytes.size() < size)
+			size_t count = sizeof(T) / sizeof(int8_t);
+			if (count > top - pos)
+				throw PacketError("Stack underflow while reading.");
+
+			size_t all = 0;
+			for (size_t i = 0; i < count; i++)
 			{
-				throw new runtime_error("packet error: stack underflow");
+				all += static_cast<uint8_t>(bytes[pos]) * static_cast<size_t>(pow(256, i));
+				pos++;
 			}
-			else
-			{
-				size_t all = 0;
-				for (size_t i = 0; i < size; i++)
-				{
-					all += static_cast<uint8_t>(bytes.back()) * static_cast<size_t>(pow(256, i));
-					bytes.pop_back();
-				}
-				return static_cast<T>(all);
-			}
+			return static_cast<T>(all);
 		}
+
+		const int8_t* bytes;
+		size_t top;
+		size_t pos;
 	};
 }
 

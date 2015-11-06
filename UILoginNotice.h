@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -28,8 +28,8 @@ namespace IO
 	class UILoginNotice : public UIElement
 	{
 	public:
-		UILoginNotice(char);
-		void buttonpressed(short);
+		UILoginNotice(int8_t);
+		void buttonpressed(uint16_t);
 	private:
 		bool saveid;
 	};
@@ -37,7 +37,7 @@ namespace IO
 	class ElementLoginNotice : public Element
 	{
 	public:
-		ElementLoginNotice(char t)
+		ElementLoginNotice(int8_t t)
 		{
 			text = t;
 		}
@@ -52,6 +52,6 @@ namespace IO
 			return new UILoginNotice(text);
 		}
 	private:
-		char text;
+		int8_t text;
 	};
 }

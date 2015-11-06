@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,8 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Datacache.h"
 
-namespace Program
+namespace Data
 {
+	Datacache::Datacache() {}
+
+	Datacache::~Datacache() {}
+
 	void Datacache::init()
 	{
 		equips.init();
@@ -27,9 +31,9 @@ namespace Program
 		sounds.init();*/
 	}
 
-	const ItemData& Datacache::getitem(int iid)
+	const ItemData& Datacache::getitem(int32_t iid)
 	{
-		int prefix = iid / 1000000;
+		int32_t prefix = iid / 1000000;
 		if (prefix == 1)
 		{
 			return equips.getequip(iid);

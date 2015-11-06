@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,11 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "rectangle2d.h"
-
-using namespace Util;
+#include <cstdint>
 
 namespace IO
 {
+	// Buttonstates that are used in game data.
 	enum Buttonstate
 	{
 		BTS_NORMAL,
@@ -30,20 +30,25 @@ namespace IO
 		BTS_PRESSED
 	};
 
+	using::std::int32_t;
+	using::Util::vector2d;
+	using::Util::rectangle2d;
+
+	// A button which can be used in an UIElement. Base class for different button types.
 	class Button
 	{
 	public:
 		virtual ~Button() {}
-		virtual void draw(vector2d<int>) = 0;
-		virtual rectangle2d<int> bounds(vector2d<int>) = 0;
-		void setposition(vector2d<int> p) { position = p; }
+		virtual void draw(vector2d<int32_t>) const = 0;
+		virtual rectangle2d<int32_t> bounds(vector2d<int32_t>) const = 0;
+		void setposition(vector2d<int32_t> p) { position = p; }
 		void setstate(Buttonstate s) { state = s; }
-		Buttonstate getstate() { return state; }
 		void setactive(bool a) { active = a; }
-		bool isactive() { return active && state != BTS_DISABLED; }
+		bool isactive() const { return active && state != BTS_DISABLED; }
+		Buttonstate getstate() const { return state; }
 	protected:
 		Buttonstate state;
-		vector2d<int> position;
+		vector2d<int32_t> position;
 		bool active;
 	};
 }

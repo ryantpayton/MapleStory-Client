@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,34 +21,29 @@ namespace IO
 {
 	Textfield::Textfield(Font fnt, Textcolor col, vector2d<int> pos, size_t lim)
 	{
-		text = new Textlabel(fnt, col, "", 0);
-		marker = new Textlabel(fnt, col, "|", 0);
-		str = "";
+		textlabel = Textlabel(fnt, col, "", 0);
+		marker = Textlabel(fnt, col, "|", 0);
+		text = "";
+		markerpos = 0;
 		position = pos;
 		limit = lim;
-		cryptchar = 0;
+		crypt = 0;
 		state = TXFS_NORMAL;
 	}
 
-	Textfield::~Textfield()
-	{
-		delete text;
-		delete marker;
-	}
-
-	void Textfield::draw(vector2d<int> parentpos)
+	void Textfield::draw(vector2d<int32_t> parentpos) const
 	{
 		if (state != TXFS_DISABLED)
 		{
-			vector2d<int> absp = position + parentpos;
-			if (str.size() > 0)
+			vector2d<int32_t> absp = position + parentpos;
+			if (text.size() > 0)
 			{
-				text->draw(absp);
+				textlabel.gettext().draw(absp);
 			}
 			if (state == TXFS_FOCUSED && showmarker)
 			{
-				vector2d<int> mpos = absp + vector2d<int>(text->getadvance(markerpos), 0);
-				marker->draw(mpos);
+				vector2d<int32_t> mpos = absp + vector2d<int32_t>(textlabel.gettext().getadvance(markerpos), 0);
+				marker.gettext().draw(mpos);
 			}
 		}
 	}
@@ -73,35 +68,41 @@ namespace IO
 		}
 	}
 
-	void Textfield::sendinput(char c)
+	void Textfield::sendkey(Keytype type, int key, bool down)
 	{
-		switch (c)
+		if (type == KT_ACTION)
 		{
-		case 0:
-			if (str.size() > 0)
+			switch (key)
 			{
-				str.erase(markerpos - 1, 1);
-				settext(str);
-				markerpos--;
+			case KA_LEFT:
+				if (markerpos > 0)
+				{
+					markerpos--;
+				}
+				break;
+			case KA_RIGHT:
+				if (markerpos < text.size())
+				{
+					markerpos++;
+				}
+				break;
+			case KA_BACK:
+				if (text.size() > 0)
+				{
+					text.erase(markerpos - 1, 1);
+					settext(text);
+					markerpos--;
+				}
+				break;
 			}
-			break;
-		case 1:
-			if (markerpos > 0)
+		}
+		else if (type == KT_LETTER)
+		{
+			char c = static_cast<char>(key);
+			if (text.size() < limit)
 			{
-				markerpos--;
-			}
-			break;
-		case 2:
-			if (markerpos < str.size())
-			{
-				markerpos++;
-			}
-			break;
-		default:
-			if (str.size() < limit)
-			{
-				str.insert(markerpos, 1, c);
-				settext(str);
+				text.insert(markerpos, 1, c);
+				settext(text);
 				markerpos++;
 			}
 		}
@@ -109,19 +110,35 @@ namespace IO
 
 	void Textfield::settext(string t)
 	{
-		if (cryptchar > 0)
+		if (crypt > 0)
 		{
 			string crypted;
-			crypted.insert(0, t.size(), cryptchar);
-			text->settext(crypted);
+			crypted.insert(0, t.size(), crypt);
+			textlabel.gettext().settext(crypted, 0);
 		}
 		else
 		{
-			text->settext(t);
+			textlabel.gettext().settext(t, 0);
 		}
+		text = t;
 	}
 
-	rectangle2d<int> Textfield::bounds(vector2d<int> parentpos)
+	void Textfield::setcrypt(char c)
+	{
+		crypt = c;
+	}
+
+	string Textfield::gettext() const
+	{
+		return text;
+	}
+
+	TextfieldState Textfield::getstate() const
+	{
+		return state;
+	}
+
+	rectangle2d<int> Textfield::bounds(vector2d<int> parentpos) const
 	{
 		vector2d<int> absp = position + parentpos;
 		return rectangle2d<int>(absp, absp + vector2d<int>(14 * (int)limit, 24));

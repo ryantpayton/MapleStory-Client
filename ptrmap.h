@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,10 +18,10 @@
 #pragma once
 #include <map>
 
-using namespace std;
-
 namespace Util
 {
+	using::std::map;
+
 	template <typename K, typename V>
 	class Ptrmap
 	{
@@ -37,12 +37,22 @@ namespace Util
 
 		V* get(K key) const
 		{
-			return contains(key) ? stdmap.at(key) : 0;
+			return contains(key) ? stdmap.at(key) : nullptr;
 		}
 
 		bool contains(K k) const
 		{
 			return stdmap.count(k) > 0;
+		}
+
+		typename map<K, V*>::const_iterator getbegin() const
+		{
+			return stdmap.begin();
+		}
+
+		typename map<K, V*>::const_iterator getend() const
+		{
+			return stdmap.end();
 		}
 
 		typename map<K, V*>::iterator getbegin()

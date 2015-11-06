@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,41 +16,37 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-//#include "Mapdata.h"
 #include "Equipcache.h"
 #include "Itemcache.h"
-/*#include "Mobcache.h"
+//#include "Mobcache.h"
 #include "Npccache.h"
-#include "Skillcache.h"
-#include "Effectcache.h"
-#include "Soundcache.h"*/
+//#include "Skillcache.h"
+//#include "Effectcache.h"
+//#include "Soundcache.h"
 
-using namespace Data;
-
-namespace Program
+namespace Data
 {
 	class Datacache
 	{
 	public:
-		Datacache() {}
-		~Datacache() {}
+		Datacache();
+		~Datacache();
 		void init();
-		const ItemData& getitem(int);
-		//Mapdata* getmap() { return &mdata; }
+		const ItemData& getitem(int32_t);
 		Equipcache& getequips() { return equips; }
 		Itemcache& getitems() { return items; }
-		/*Mobcache* getmobs() { return &mobs; }
-		Npccache* getnpcs() { return &npcs; }
-		Skillcache* getskills() { return &skills; }
+		//Mobcache* getmobs() { return &mobs; }
+		Npccache& getnpcs() { return npcs; }
+		/*Skillcache* getskills() { return &skills; }
 		Effectcache* geteffects() { return &effects; }
 		Soundcache* getsounds() { return &sounds; }*/
 	private:
 		//Mapdata mdata;
 		Equipcache equips;
 		Itemcache items;
-		/*Mobcache mobs;
+		//Mobcache mobs;
 		Npccache npcs;
-		Skillcache skills;
+		/*Skillcache skills;
 		Effectcache effects;
 		Soundcache sounds;*/
 	};

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -22,17 +22,23 @@
 #include "FaceData.h"
 #include "CharEquips.h"
 
-using namespace Data;
-
 namespace Character
 {
+	using::std::string;
+	using::Util::vector2d;
+	using::Data::BodyDrawinfo;
+	using::Data::BodyAction;
+	using::Data::BodyData;
+	using::Data::HairData;
+	using::Data::FaceData;
+
 	class CharLook
 	{
 	public:
 		CharLook();
 		~CharLook(){}
-		void init(BodyDrawinfo*);
-		void draw(vector2d<int>);
+		void init(const BodyDrawinfo*);
+		void draw(vector2d<int>) const;
 		bool update(short);
 		void sethair(HairData*);
 		void setbody(BodyData*);
@@ -40,8 +46,8 @@ namespace Character
 		void addequip(const EquipData&);
 		void setstance(string);
 		void setaction(string);
-		void setflip(bool f) { flip = f; }
-		CharEquips& getequips() { return equips; }
+		void setflip(bool);
+		CharEquips& getequips();
 	private:
 		string stance;
 		uint8_t frame;
@@ -50,14 +56,14 @@ namespace Character
 		string expression;
 		uint8_t fcframe;
 		short fcelapsed;
-		BodyAction* action;
+		const BodyAction* action;
 		string actionstr;
 		uint8_t actframe;
-		BodyData* body;
-		HairData* hair;
-		FaceData* face;
+		const BodyData* body;
+		const HairData* hair;
+		const FaceData* face;
 		CharEquips equips;
-		BodyDrawinfo* drawinfo;
+		const BodyDrawinfo* drawinfo;
 	};
 }
 

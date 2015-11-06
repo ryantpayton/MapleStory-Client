@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,27 +17,30 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "vector2d.h"
-
-using namespace Util;
+#include <cstdint>
 
 namespace Gameplay
 {
+	using::std::uint16_t;
+	using::std::int32_t;
+	using::Util::vector2d;
+	// View on stage which follows the player object.
 	class Camera
 	{
 	public:
 		Camera();
-		~Camera() {}
-		vector2d<int> update(vector2d<int>, short);
-		vector2d<int> getposition();
-		void setposition(vector2d<int>);
-		void updateview(vector2d<int>, vector2d<int>);
+		~Camera();
+		void update(vector2d<int32_t>, uint16_t);
+		void setposition(vector2d<int32_t>);
+		void updateview(vector2d<int32_t>, vector2d<int32_t>);
+		vector2d<int32_t> getposition() const;
 	private:
-		float hspeed;
-		float vspeed;
-		float fx;
-		float fy;
-		vector2d<int> hbounds;
-		vector2d<int> vbounds;
+		float movex;
+		float movey;
+		float posx;
+		float posy;
+		vector2d<int32_t> hbounds;
+		vector2d<int32_t> vbounds;
 	};
 }
 

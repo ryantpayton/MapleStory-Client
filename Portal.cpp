@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,38 +19,37 @@
 
 namespace Gameplay
 {
-	Portal::Portal(PortalType t, string n, int tid, bool in, string tnm, vector2d<int> pos)
+	Portal::Portal(PortalType t, string n, int32_t tid, bool in, string tnm, vector2d<int32_t> pos)
 	{
 		type = t;
 		name = n;
-		targetid = tid;
 		intermap = in;
-		targetpname = tnm;
+		warpinfo = std::make_pair(tid, tnm);
 		position = pos;
 	}
 
-	string Portal::getname()
+	const string& Portal::getname() const
 	{
 		return name;
 	}
 
-	PortalType Portal::gettype()
+	PortalType Portal::gettype() const
 	{
 		return type;
 	}
 
-	vector2d<int> Portal::getposition()
+	vector2d<int32_t> Portal::getposition() const
 	{
 		return position;
 	}
 
-	rectangle2d<int> Portal::bounds()
+	rectangle2d<int32_t> Portal::bounds() const
 	{
-		return rectangle2d<int>(position, position + vector2d<int>(30, -50));
+		return rectangle2d<int32_t>(position, position + vector2d<int32_t>(30, -50));
 	}
 
-	pair<int, string> Portal::getwarpinfo()
+	const pair<int32_t, string>* Portal::getwarpinfo() const
 	{
-		return make_pair(targetid, intermap ? targetpname : name);
+		return &warpinfo;
 	}
 }

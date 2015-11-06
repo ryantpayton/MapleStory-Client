@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,29 +18,28 @@
 #pragma once
 #include "Audioplayer.h"
 #include "bass.h"
-#include <string>
 #include <map>
-#include <vector>
-
-using namespace std;
 
 namespace Program
 {
+	using::std::map;
+
 	class AudioplayerBass : public Audioplayer
 	{
 	public:
-		AudioplayerBass() {}
-		~AudioplayerBass() {}
-		bool init(HWND);
+		AudioplayerBass();
+		~AudioplayerBass();
+		bool geterror() const;
 		void close();
 		void playsound(size_t);
 		void playbgm(void*, size_t);
 		void cachesound(void*, size_t, size_t);
-		void setsfxvolume(char);
-		void setbgmvolume(char);
+		void setsfxvolume(uint8_t);
+		void setbgmvolume(uint8_t);
 	private:
 		HSTREAM bgm;
 		map<size_t, HSAMPLE> soundcache;
+		bool error;
 	};
 }
 

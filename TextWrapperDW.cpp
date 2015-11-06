@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,47 +15,133 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
+#pragma once
+#include "Journey.h"
+#ifndef JOURNEY_USE_OPENGL
 #include "TextWrapperDW.h"
+#include "LocatorD2D.h"
 
-namespace Graphics
+namespace IO
 {
-	TextWrapperDW::TextWrapperDW(Font f, Textcolor c, string s, short m)
+	TextWrapperDW::TextWrapperDW(Font f, Textcolor c, string s, uint16_t m)
 	{
-		font = Program::locator.getfonts()->getfont(f);
+		font = f;
 		color = c;
 		settext(s, m);
 
-		brush = 0;
-		backbrush = 0;
 		alpha = 1.0f;
 		back = TXB_NONE;
 	}
 
-	TextWrapperDW::~TextWrapperDW()
+	TextWrapperDW::TextWrapperDW() {}
+
+	void TextWrapperDW::settext(string t, uint16_t wmax)
 	{
-		if (brush)
+		IDWriteTextFormat* fnt = Graphics::locator.getfonts()->getfont(font);
+		if (fnt)
 		{
-			brush->Release();
-		}
-		if (backbrush)
-		{
-			backbrush->Release();
+			str = t;
+			text = wstring(t.begin(), t.end());
+			int32_t totlen = createlayout(wmax);
+			float space = fnt->GetFontSize() * 1.25f;
+			if (totlen > wmax && wmax > 0)
+			{
+				width = wmax;
+				height = static_cast<uint16_t>(space)* ((totlen / wmax) + 1);
+				endpos = vector2d<uint16_t>(totlen % wmax, height - static_cast<uint16_t>(fnt->GetFontSize()));
+			}
+			else
+			{
+				width = totlen;
+				height = static_cast<uint16_t>(space);
+				endpos = vector2d<uint16_t>(totlen, 0);
+			}
 		}
 	}
 
-	void TextWrapperDW::draw(vector2d<int> pos)
+	int TextWrapperDW::createlayout(uint16_t wmax)
 	{
-		ID2D1RenderTarget* target = Program::locator.gettarget();
+		int32_t total = 0;
+		IDWriteFactory* dwfactory = Graphics::locator.getfonts()->getdwfactory();
+		IDWriteTextFormat* fnt = Graphics::locator.getfonts()->getfont(font);
+		if (dwfactory && fnt && text.size() > 0)
+		{
+			if (wmax < 1)
+			{
+				wmax = 816;
+			}
 
-		if (target && font)
+			IDWriteTextLayout* layout = 0;
+			dwfactory->CreateTextLayout(
+				text.c_str(),
+				(UINT32)text.length(),
+				fnt,
+				wmax,
+				624,
+				&layout
+				);
+
+			if (layout)
+			{
+				DWRITE_CLUSTER_METRICS* metrics = new DWRITE_CLUSTER_METRICS[text.length()];
+				UINT32 result = 0;
+
+				layout->GetClusterMetrics(metrics, (UINT32)text.size(), &result);
+				if (result != text.size())
+				{
+					layout->GetClusterMetrics(metrics, result, &result);
+				}
+
+				float tadv = 0.0f;
+				advances.clear();
+				for (UINT32 i = 0; i < result; i++)
+				{
+					advances[i] = tadv;
+					tadv += metrics[i].width;
+				}
+				advances[result] = tadv;
+
+				delete[] metrics;
+				layout->Release();
+				total = static_cast<int32_t>(tadv);
+			}
+		}
+		return total;
+	}
+
+	void TextWrapperDW::setfont(Font f)
+	{
+		font = f;
+	}
+
+	void TextWrapperDW::setcolor(Textcolor c)
+	{
+		color = c;
+	}
+
+	void TextWrapperDW::setback(TextBackground b)
+	{
+		back = b;
+	}
+
+	void TextWrapperDW::setalpha(float a)
+	{
+		alpha = a;
+	}
+
+	void TextWrapperDW::draw(vector2d<int32_t> pos) const
+	{
+		ID2D1RenderTarget* target = Graphics::locator.gettarget();
+		IDWriteTextFormat* fnt = Graphics::locator.getfonts()->getfont(font);
+		if (target && fnt)
 		{
 			pos.shifty(5);
 
 			if (pos.x() + width >= 0 && pos.x() - width <= 816 && pos.y() + height >= 0 && pos.y() - height <= 624 && text.size() > 0)
 			{
-				short lrwidth = width + 5;
+				uint16_t lrwidth = width + 5;
 				D2D1_RECT_F layrect;
-				switch (font->GetTextAlignment())
+				switch (fnt->GetTextAlignment())
 				{
 				case DWRITE_TEXT_ALIGNMENT_LEADING:
 					layrect = D2D1::RectF(
@@ -85,64 +171,13 @@ namespace Graphics
 					return;
 				}
 
-				if (!brush)
+				if (back == TXB_NAMETAG)
 				{
-					switch (color)
-					{
-					case TXC_WHITE:
-						target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &brush);
-						break;
-					case TXC_BLACK:
-						target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &brush);
-						break;
-					case TXC_YELLOW:
-						target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &brush);
-						break;;
-					case TXC_RED:
-						target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &brush);
-						break;
-					case TXC_BLUE:
-						target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &brush);
-						break;
-					case TXC_BROWN:
-						target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Brown), &brush);
-						break;
-					case TXC_GREY:
-						target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &brush);
-						break;
-					case TXC_ORANGE:
-						target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Orange), &brush);
-						break;
-					case TXC_MBLUE:
-						target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::SkyBlue), &brush);
-						break;
-					case TXC_VIOLET:
-						target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Violet), &brush);
-						break;
-					}
-				}
-
-				if (!backbrush)
-				{
-					switch (back)
-					{
-					case TXB_NAMETAG:
-						target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &backbrush);
-						backbrush->SetOpacity(0.6f);
-						break;
-					case TXB_GMCHAT:
-						target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::WhiteSmoke), &backbrush);
-						backbrush->SetOpacity(0.8f);
-						break;
-					}
-				}
-
-				if (backbrush)
-				{
-					if (back == TXB_NAMETAG)
+					ID2D1SolidColorBrush* backbrush = Graphics::locator.getfonts()->getbrush(TXC_BLACK);
+					if (backbrush)
 					{
 						FLOAT hwidth = ((FLOAT)lrwidth) / 2;
-						FLOAT space = font->GetFontSize() + 2.0f;
+						FLOAT space = fnt->GetFontSize() + 2.0f;
 
 						D2D1_RECT_F bglayout = D2D1::RectF(
 							(FLOAT)pos.x() - hwidth,
@@ -152,108 +187,55 @@ namespace Graphics
 							);
 
 						D2D1_ROUNDED_RECT rect = { bglayout, 1.5f, 1.5f };
-
+						backbrush->SetOpacity(0.6f);
 						target->DrawRoundedRectangle(&rect, backbrush);
 						target->FillRoundedRectangle(&rect, backbrush);
+						backbrush->SetOpacity(1.0f);
 					}
 				}
 
-				if (brush && target)
+				ID2D1SolidColorBrush* brush = Graphics::locator.getfonts()->getbrush(color);
+				if (brush)
 				{
 					brush->SetOpacity(alpha);
-
 					target->DrawText(
 						text.c_str(),
 						(UINT32)text.size(),
-						font,
+						fnt,
 						layrect,
 						brush
 						);
+					brush->SetOpacity(1.0f);
 				}
 			}
 		}
 	}
 
-	void TextWrapperDW::settext(string t, short wmax)
-	{
-		if (font)
-		{
-			text = wstring(t.begin(), t.end());
-			int totlen = createlayout(wmax);
-			float space = font->GetFontSize() * 1.25f;
-			if (totlen > wmax && wmax > 0)
-			{
-				width = wmax;
-				height = static_cast<short>(space)* ((totlen / wmax) + 1);
-				endpos = vector2d<short>(totlen % wmax, height - static_cast<short>(font->GetFontSize()));
-			}
-			else
-			{
-				width = totlen;
-				height = static_cast<short>(space);
-				endpos = vector2d<short>(totlen, 0);
-			}
-		}
-	}
-
-	int TextWrapperDW::createlayout(short wmax)
-	{
-		int total = 0;
-		IDWriteFactory* dwfactory = Program::locator.getfonts()->getdwfactory();
-		if (dwfactory && text.size() > 0)
-		{
-			if (wmax < 1)
-			{
-				wmax = 816;
-			}
-
-			IDWriteTextLayout* layout = 0;
-			dwfactory->CreateTextLayout(
-				text.c_str(),
-				(UINT32)text.length(),
-				font,
-				wmax,
-				624,
-				&layout
-				);
-
-			if (layout)
-			{
-				DWRITE_CLUSTER_METRICS* metrics = new DWRITE_CLUSTER_METRICS[text.length()];
-				UINT32 result = 0;
-
-				layout->GetClusterMetrics(metrics, (UINT32)text.size(), &result);
-				if (result != text.size())
-				{
-					layout->GetClusterMetrics(metrics, result, &result);
-				}
-
-				float tadv = 0.0f;
-				advances.clear();
-				for (UINT32 i = 0; i < result; i++)
-				{
-					advances[i] = tadv;
-					tadv += metrics[i].width;
-				}
-				advances[result] = tadv;
-
-				delete[] metrics;
-				layout->Release();
-				total = static_cast<int>(tadv);
-			}
-		}
-		return total;
-	}
-
-	short TextWrapperDW::getadvance(size_t pos)
+	uint16_t TextWrapperDW::getadvance(size_t pos) const
 	{
 		if (advances.count(pos))
 		{
-			return static_cast<short>(advances[pos]);
+			return static_cast<uint16_t>(advances.at(pos));
 		}
 		else
 		{
 			return 0;
 		}
 	}
+
+	size_t TextWrapperDW::getlength() const
+	{
+		return str.size();
+	}
+
+	string TextWrapperDW::gettext() const
+	{
+		return str;
+	}
+
+	vector2d<uint16_t> TextWrapperDW::getdimensions() const
+	{
+		return vector2d<uint16_t>(width, height);
+	}
 }
+#endif

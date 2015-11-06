@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,27 +17,42 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "StatsEntry.h"
-
-using namespace Net;
+#include "EquipConstants.h"
 
 namespace Character
 {
+	using::std::uint8_t;
+	using::std::int16_t;
+	using::std::int32_t;
+	using::std::int64_t;
+	using::std::vector;
+	using::std::map;
+	using::Net::StatsEntry;
+
 	class Charstats
 	{
 	public:
 		Charstats(const StatsEntry&);
 		Charstats();
-		~Charstats(){}
-		int getmapid();
-		uint8_t getportal();
+		~Charstats();
+		void setstat(Maplestat, int16_t);
+		void settotal(Equipstat, int32_t);
+		void setexp(int64_t);
+		void setportal(uint8_t);
+		int32_t getmapid() const;
+		uint8_t getportal() const;
+		int16_t getstat(Maplestat) const;
+		int32_t gettotal(Equipstat) const;
+		string getname() const;
 	private:
 		string name;
 		vector<int64_t> petids;
-		map<Maplestat, short> stats;
+		map<Maplestat, int16_t> stats;
 		CharJob job;
 		int64_t exp;
-		int mapid;
+		int32_t mapid;
 		uint8_t portal;
+		map<Equipstat, int32_t> totalstats;
 	};
 }
 

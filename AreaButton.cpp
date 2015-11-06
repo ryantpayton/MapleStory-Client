@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,7 +19,7 @@
 
 namespace IO
 {
-	AreaButton::AreaButton(vector2d<int> pos, vector2d<int> dim)
+	AreaButton::AreaButton(vector2d<int32_t> pos, vector2d<int32_t> dim)
 	{
 		position = pos;
 		dimension = dim;
@@ -27,9 +27,9 @@ namespace IO
 		active = true;
 	}
 
-	rectangle2d<int> AreaButton::bounds(vector2d<int> parentpos)
+	rectangle2d<int32_t> AreaButton::bounds(vector2d<int32_t> parentpos) const
 	{
-		vector2d<int> absp = position + parentpos;
-		return rectangle2d<int>(absp, absp + dimension);
+		vector2d<int32_t> absp = position + parentpos;
+		return rectangle2d<int32_t>(absp, absp + dimension);
 	}
 }

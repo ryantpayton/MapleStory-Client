@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -26,22 +26,24 @@ namespace Data
 		"Light", "Tan", "Dark", "Pale", "Blue", "Green", "", "", "", "Grey", "Pink", "Red"
 	};
 
-	BodyData::BodyData(char skin, BodyDrawinfo& drawinfo)
+	BodyData::BodyData(int8_t skin, const BodyDrawinfo& drawinfo)
 	{
 		string sk;
 		if (skin < 10)
 		{
 			sk.append("0");
 		}
-		sk.append(to_string(skin));
-		node bodynode = nx::character["000020" + sk + ".img"];
-		node headnode = nx::character["000120" + sk + ".img"];
+		sk.append(std::to_string(skin));
+
+		using::nl::node;
+		node bodynode = nl::nx::character["000020" + sk + ".img"];
+		node headnode = nl::nx::character["000120" + sk + ".img"];
 
 		for (node stancenode = bodynode.begin(); stancenode != bodynode.end(); ++stancenode)
 		{
 			string stance = stancenode.name();
 			uint8_t frame = 0;
-			node framenode = stancenode[to_string(frame)];
+			node framenode = stancenode[std::to_string(frame)];
 			while (framenode.size() > 0)
 			{
 				for (node partnode = framenode.begin(); partnode != framenode.end(); ++partnode)
@@ -66,17 +68,17 @@ namespace Data
 
 						stances[stance][z].add(frame, new Texture(partnode));
 
-						vector2d<int> shift = vector2d<int>();
+						vector2d<int32_t> shift = vector2d<int32_t>();
 						if (partnode["map"]["navel"].data_type() == node::type::vector)
 						{
-							shift -= vector2d<int>(partnode["map"]["navel"].x(), partnode["map"]["navel"].y());
+							shift -= vector2d<int32_t>(partnode["map"]["navel"].x(), partnode["map"]["navel"].y());
 						}
 						shift += drawinfo.getbodypos(stance, frame);
 
 						stances[stance][z].get(frame)->setshift(shift);
 					}
 
-					node headsfnode = headnode[stance][to_string(frame)]["head"];
+					node headsfnode = headnode[stance][std::to_string(frame)]["head"];
 					if (headsfnode.data_type() == node::type::bitmap)
 					{
 						stances[stance][CL_HEAD].add(frame, new Texture(headsfnode));
@@ -85,10 +87,15 @@ namespace Data
 				}
 
 				frame++;
-				framenode = stancenode[to_string(frame)];
+				framenode = stancenode[std::to_string(frame)];
 			}
 		}
 
 		name = (skin < 12) ? skintypes[skin] : "";
+	}
+
+	const string& BodyData::getname() const
+	{
+		return name;
 	}
 }

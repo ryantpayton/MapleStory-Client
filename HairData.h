@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -24,7 +24,7 @@ namespace Data
 	class HairData : public CharacterData
 	{
 	public:
-		HairData(int, BodyDrawinfo&);
+		HairData(int, const BodyDrawinfo&);
 		string getname() { return name; }
 		string getcolor() { return color; }
 	private:

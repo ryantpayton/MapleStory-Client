@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,14 +21,16 @@
 
 namespace Data
 {
+	using::Util::Ptrmap;
+
 	class Itemcache
 	{
 	public:
-		Itemcache(){}
-		~Itemcache(){}
-		const ItemData& getitem(int);
+		Itemcache();
+		~Itemcache();
+		const ItemData& getitem(int32_t);
 	private:
-		Ptrmap<int, ItemData> items;
+		Ptrmap<int32_t, ItemData> items;
 	};
 }
 

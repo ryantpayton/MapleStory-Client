@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,93 +16,61 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "SessionWinsock.h"
-#include "Packethandler.h"
-#include "WindowD2D.h"
-#include "AudioplayerBass.h"
-#include "Datacache.h"
-#include "Stage.h"
-#include "UI.h"
+#include "Journey.h"
+#include "Client.h"
 #include "StopWatch.h"
-#include "UILogin.h"
-#include "nx.hpp"
-#include "node.hpp"
-#include "audio.hpp"
+#include <iostream>
 
-using namespace Net;
-using namespace Program;
-
+using::std::string;
 void showerror(string error)
 {
-	MessageBox(NULL, error.c_str(), NULL, MB_OK);
+	std::cout << error << std::endl;
 }
 
-int init(SessionWinsock& session, ParentHandler& handler, WindowD2D& window, AudioplayerBass& audiopb, Datacache& cache, UI& ui)
-{
-	if (!session.init(&handler)) { return 1; }
-	if (!window.init(&ui)) { return 2; }
-	if (!audiopb.init(window.getwindow())) { return 3; }
-	return 0;
-}
-
-#ifdef WIN32
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
-#else
 int main()
-#endif
 {
-	nl::nx::load_all();
+	using::Journey::Client;
+	using::Journey::ClientError;
+	Client client;
 
-	SessionWinsock session;
-	WindowD2D window;
-	AudioplayerBass audiopb;
-	Datacache cache;
-	Stage stage;
-	UI ui;
-	Login login;
-	Packethandler handler(cache, stage, ui, login, session);
-
-	int error = init(session, handler, window, audiopb, cache, ui);
-	if (error == 0)
+	ClientError error = client.geterror();
+	if (error == Journey::CLERR_NOERROR)
 	{
-		audio loginbgm = nx::sound["BgmUI.img"]["Title"].get_audio();
-		audiopb.playbgm((void*)loginbgm.data(), loginbgm.length());
+		uint16_t dpf = 4;
+		uint16_t remain = 0;
 
-		cache.init();
-		ui.init();
-		stage.init();
-		ui.add(ElementLogin(session, ui));
-
+		using::Util::StopWatch;
 		StopWatch swatch;
-		short dpf = 16;
-		while (session.receive())
+		while (client.receive())
 		{
-			window.begin();
-			stage.draw();
-			ui.draw();
-			window.end();
-
-			window.update();
-			stage.update(dpf);
-			ui.update(dpf);
-
-			dpf = swatch.evaluate();
+			remain += swatch.evaluate();
+			while (remain > dpf - 1)
+			{
+				client.update(dpf);
+				remain -= dpf;
+			}
+			client.draw();
 		}
 	}
 	else
 	{
 		switch (error)
 		{
-		case 1:
+		case Journey::CLERR_NXFILES:
+			showerror("Error: Could not find valid game files.");
+			break;
+		case Journey::CLERR_CONNECTION:
 			showerror("Error: Could not connect to server.");
 			break;
-		case 2:
-			showerror("Error: Could not initialize window.");
+		case Journey::CLERR_WINDOW:
+			showerror("Error: Could not initialize graphics.");
 			break;
-		case 3:
+		case Journey::CLERR_AUDIO:
 			showerror("Error: Could not initialize audio.");
 			break;
 		}
+
+		while (true) {}
 	}
 
 	return 0;

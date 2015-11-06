@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,10 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "vector2d.h"
+#include <cstdint>
 
-using namespace Util;
-
-namespace Graphics
+namespace IO
 {
 	enum Font
 	{
@@ -58,15 +57,24 @@ namespace Graphics
 		TXB_GMCHAT
 	};
 
+	using::std::uint16_t;
+	using::std::int32_t;
+	using::std::string;
+	using::Util::vector2d;
+
 	class TextWrapper
 	{
 	public:
 		virtual ~TextWrapper() {}
-		virtual void draw(vector2d<int>) = 0;
-		virtual void settext(string, short) = 0;
-		virtual void setalpha(float) = 0;
+		virtual void settext(string, uint16_t) = 0;
+		virtual void setfont(Font) = 0;
+		virtual void setcolor(Textcolor) = 0;
 		virtual void setback(TextBackground) = 0;
-		virtual short getadvance(size_t) = 0;
-		virtual vector2d<short> getdimensions() = 0;
+		virtual void setalpha(float) = 0;
+		virtual void draw(vector2d<int32_t>) const = 0;
+		virtual uint16_t getadvance(size_t) const = 0;
+		virtual size_t getlength() const = 0;
+		virtual string gettext() const = 0;
+		virtual vector2d<uint16_t> getdimensions() const = 0;
 	};
 }

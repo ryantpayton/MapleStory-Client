@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,22 +19,24 @@
 #include <cstdint>
 #include <map>
 
-using namespace std;
-
 namespace Character
 {
+	using::std::int32_t;
+	using::std::int64_t;
+	using::std::map;
+	// Class that stores all information about the skills of an individual character.
 	class Skillbook
 	{
 	public:
-		Skillbook(){}
-		~Skillbook(){}
-		void setskill(int, int, int, int64_t);
-		void setcd(int, int);
+		Skillbook();
+		~Skillbook();
+		void setskill(int32_t, int32_t, int32_t, int64_t);
+		void setcd(int32_t, int32_t);
 	private:
-		map<int, int> levels;
-		map<int, int> masterlevels;
-		map<int, int> cooldowns;
-		map<int, int64_t> expirations;
+		map<int32_t, int32_t> levels;
+		map<int32_t, int32_t> masterlevels;
+		map<int32_t, int32_t> cooldowns;
+		map<int32_t, int64_t> expirations;
 	};
 }
 

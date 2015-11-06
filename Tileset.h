@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,14 +21,25 @@
 
 namespace Gameplay
 {
+	using::std::string;
+	using::std::map;
+	using::Util::Ptrmap;
+	// A tileset loaded from a .img of game data in Map.nx/Tile
 	class Tileset
 	{
 	public:
+		// Construct the tileset by loading all tiles from the specified node.
 		Tileset(node);
-		~Tileset(){}
-		TileData* gettile(string, int);
+		// Default empty tileset.
+		Tileset();
+		// Empty destructor.
+		~Tileset();
+		// Return a tile from the specified node with the specified number.
+		// Parmeters: string(u-node of a tile), int32_t(no-node of a tile)
+		const TileData& gettile(string, int32_t) const;
 	private:
-		map<string, Ptrmap<int, TileData>> tiles;
+		map<string, Ptrmap<int32_t, TileData>> tiles;
+		TileData nulltile;
 	};
 }
 

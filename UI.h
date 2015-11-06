@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,35 +16,36 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "KeyTarget.h"
 #include "Element.h"
 #include "Cursor.h"
-#include "InputHandler.h"
 #include "Ptrmap.h"
-
-using namespace Util;
 
 namespace IO
 {
-	class UI
+	using::Util::Ptrmap;
+
+	class UI : public KeyTarget
 	{
 	public:
 		UI();
 		~UI();
 		void init();
-		void draw();
-		void update(short);
-		void sendmouse(vector2d<int>);
-		void sendmouse(Mousestate, vector2d<int>);
+		void draw() const;
+		void update(uint16_t);
+		void enable();
+		void disable();
+		void sendmouse(vector2d<int32_t>);
+		void sendmouse(Mousestate, vector2d<int32_t>);
+		void sendkey(Keytype, int32_t, bool);
 		void add(const Element&);
 		void remove(UIType);
-		UIElement* getelement(UIType);
-		InputHandler* gethandler() { return handler; }
-		void enable() { enabled = true; }
-		void disable() { enabled = false; }
+		UIElement& getelement(UIType) const;
 	private:
 		Ptrmap<UIType, UIElement> elements;
+		UINull nullelement;
+		UIType focused;
 		Cursor cursor;
-		InputHandler* handler;
 		bool enabled;
 	};
 }

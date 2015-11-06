@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -31,18 +31,20 @@ namespace Data
 		toload.setbody(getbody(look.getskin()));
 		toload.sethair(gethair(look.gethair()));
 		toload.setface(getface(look.getface()));
-		for (Equipslot e = EQL_CAP; e <= EQL_WEAPON; e = static_cast<Equipslot>(e + 1))
+
+		for (Equipslot e = Character::EQL_CAP; e <= Character::EQL_WEAPON; e = static_cast<Equipslot>(e + 1))
 		{
-			int equipid = look.getequip(e);
+			int32_t equipid = look.getequip(e);
 			if (equipid > 0)
 			{
 				toload.addequip(getequip(equipid));
 			}
 		}
+
 		toload.init(&drawinfo);
 	}
 
-	BodyData* Equipcache::getbody(char skin)
+	BodyData* Equipcache::getbody(uint8_t skin)
 	{
 		if (!bodytypes.contains(skin))
 		{
@@ -51,7 +53,7 @@ namespace Data
 		return bodytypes.get(skin);
 	}
 
-	HairData* Equipcache::gethair(int hairid)
+	HairData* Equipcache::gethair(int32_t hairid)
 	{
 		if (!hairstyles.contains(hairid))
 		{
@@ -60,7 +62,7 @@ namespace Data
 		return hairstyles.get(hairid);
 	}
 
-	FaceData* Equipcache::getface(int faceid)
+	FaceData* Equipcache::getface(int32_t faceid)
 	{
 		if (!faces.contains(faceid))
 		{
@@ -69,11 +71,11 @@ namespace Data
 		return faces.get(faceid);
 	}
 
-	const EquipData& Equipcache::getequip(int equipid)
+	const EquipData& Equipcache::getequip(int32_t equipid)
 	{
 		if (!equips.contains(equipid))
 		{
-			int prefix = equipid / 10000;
+			int32_t prefix = equipid / 10000;
 			if (prefix > 129 && prefix < 200)
 			{
 				equips.add(equipid, new WeaponData(equipid, drawinfo));

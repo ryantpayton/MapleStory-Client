@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -24,8 +24,8 @@ namespace Data
 	class BodyData : public CharacterData
 	{
 	public:
-		BodyData(char, BodyDrawinfo&);
-		string getname() { return name; }
+		BodyData(int8_t, const BodyDrawinfo&);
+		const string& getname() const;
 	private:
 		string name;
 	};

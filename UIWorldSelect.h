@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,8 +21,6 @@
 #include "Login.h"
 #include "Session.h"
 
-using namespace Net;
-
 namespace IO
 {
 	enum WorldSelectButtons
@@ -32,11 +30,14 @@ namespace IO
 		BT_CHANNEL0 = 17
 	};
 
+	using::Net::Login;
+	using::Net::Session;
+
 	class UIWorldSelect : public UIElement
 	{
 	public:
 		UIWorldSelect(UI&, Login&, Session&);
-		void buttonpressed(short);
+		void buttonpressed(uint16_t);
 	private:
 		UI& ui;
 		Login& login;

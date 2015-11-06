@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,24 +20,28 @@
 #include "node.hpp"
 #include <vector>
 
-using namespace std;
-using namespace nl;
-using namespace Util;
-
 namespace Gameplay
 {
+	using::std::int32_t;
+	using::std::vector;
+	using::std::string;
+	using::nl::node;
+	using::Util::vector2d;
+
 	class Mapinfo
 	{
 	public:
-		Mapinfo(node, vector2d<int>, vector2d<int>);
-		Mapinfo() {}
+		Mapinfo();
 		~Mapinfo() {}
-		string getbgm() const;
-		vector2d<int> getwalls() const;
-		vector2d<int> getborders() const;
-		const vector2d<int>* getseat(vector2d<int>) const;
+		void loadinfo(node, vector2d<int32_t>, vector2d<int32_t>);
+		bool hasnewbgm() const;
+		const string& getbgm() const;
+		vector2d<int32_t> getwalls() const;
+		vector2d<int32_t> getborders() const;
+		const vector2d<int32_t>* getseat(vector2d<int>) const;
 	private:
-		int fieldlimit;
+		bool newbgm;
+		int32_t fieldlimit;
 		bool cloud;
 		string bgm;
 		string mapdesc;
@@ -47,8 +51,8 @@ namespace Gameplay
 		bool swim;
 		bool town;
 		bool hideminimap;
-		vector2d<int> mapwalls;
-		vector2d<int> mapborders;
-		vector<vector2d<int>> seats;
+		vector2d<int32_t> mapwalls;
+		vector2d<int32_t> mapborders;
+		vector<vector2d<int32_t>> seats;
 	};
 }

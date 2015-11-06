@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,15 +19,16 @@
 
 namespace Gameplay
 {
-	VisiblePortal::VisiblePortal(Animation& a, PortalType t, string n, int tid, bool in, string tnm, vector2d<int> pos) : anim(a), Portal(t, n, tid, in, tnm, pos) 
+	VisiblePortal::VisiblePortal(const Animation& a, PortalType t, string n, int32_t tid, bool in, string tnm, vector2d<int32_t> pos) : anim(a), Portal(t, n, tid, in, tnm, pos)
 	{
 		touched = false;
 	}
 
-	void VisiblePortal::draw(vector2d<int> viewpos)
+	void VisiblePortal::draw(vector2d<int32_t> viewpos) const
 	{
 		if (type != PT_HIDDEN || touched)
 		{
+			using::Graphics::PosArgument;
 			anim.draw(PosArgument(position + viewpos));
 		}
 	}

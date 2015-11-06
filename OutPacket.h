@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,56 +16,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Packet.h"
+#include <stdint.h>
+#include <string>
+#include <vector>
 
 namespace Net
 {
-	enum SendOpcode : int16_t
-	{
-		LOGIN = 1,
-		SERVERLIST_REREQUEST = 4,
-		CHARLIST_REQUEST = 5,
-		STATUS_REQUEST = 6,
-		ACCEPT_TOS = 7,
-		SET_GENDER = 8,
-		AFTER_LOGIN = 9,
-		REGISTER_PIN = 10,
-		SERVERLIST_REQUEST = 11,
-		SELECT_CHAR = 19,
-		PLAYER_LOGIN = 20,
-		NAME_CHAR = 21,
-		CREATE_CHAR = 22,
-		DELETE_CHAR = 23,
-		PONG = 24,
-		REGISTER_PIC = 29,
-		SELECT_CHAR_PIC = 30,
-		CHANGEMAP = 38,
-		MOVE_PLAYER = 41,
-		CLOSE_ATTACK = 44,
-		GENERAL_CHAT = 49,
-		TALK_TO_NPC = 58,
-		MOVE_ITEM = 71,
-		USE_ITEM = 72,
-		SCROLL_EQUIP = 86,
-		SPEND_AP = 87,
-		MOVE_MONSTER = 188,
-		PICKUP_ITEM = 202
-	};
-
-	class OutPacket : public Packet
+	using::std::string;
+	using::std::vector;
+	// A packet to be sent by the client. Used as a base class to create specific packets.
+	class OutPacket
 	{
 	public:
 		OutPacket(int16_t);
-		OutPacket() {}
-		~OutPacket() {}
+		size_t length() const;
+		const int8_t* getbytes() const;
+	protected:
 		void skip(size_t);
-		void writeheader(char*);
 		void writestr(string);
 		void writech(int8_t c) { bytes.push_back(c); }
 		void writesh(int16_t s) { write<int16_t>(s); }
 		void writeint(int32_t i) { write<int32_t>(i); }
 		void writelg(int64_t l) { write<int64_t>(l); }
-		void writeopc(SendOpcode o) { write<int16_t>(o); }
 	private:
 		template <class T>
 		void write(T num)
@@ -77,6 +49,8 @@ namespace Net
 				num = num >> 8;
 			}
 		}
+
+		vector<int8_t> bytes;
 	};
 }
 

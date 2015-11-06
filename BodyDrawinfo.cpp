@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,37 +21,40 @@
 #include "nx.hpp"
 #include "node.hpp"
 
-using namespace nl;
-
 namespace Data
 {
+	BodyDrawinfo::BodyDrawinfo() {}
+
+	BodyDrawinfo::~BodyDrawinfo() {}
+
 	void BodyDrawinfo::init()
 	{
-		node bodynode = nx::character["00002000.img"];
-		node headnode = nx::character["00012000.img"];
+		using::nl::node;
+		node bodynode = nl::nx::character["00002000.img"];
+		node headnode = nl::nx::character["00012000.img"];
 
 		for (node stancenode = bodynode.begin(); stancenode != bodynode.end(); ++stancenode)
 		{
 			string stance = stancenode.name();
 
 			uint8_t frame = 0;
-			node framenode = stancenode[to_string(frame)];
+			node framenode = stancenode[std::to_string(frame)];
 			while (framenode.size() > 0)
 			{
-				short delay = (framenode["delay"].data_type() == node::type::integer) ? framenode["delay"] : 50;
+				uint16_t delay = (framenode["delay"].data_type() == node::type::integer) ? framenode["delay"] : 50;
 
 				node actionnode = framenode.resolve("action");
 				if (actionnode.data_type() == node::type::string)
 				{
 					string acstance = actionnode.get_string();
-					uint8_t acframe = static_cast<uint8_t>(framenode["frame"]);
-					short acdelay = (delay < 0) ? -delay : delay;
+					uint8_t acframe = framenode["frame"];
+					uint16_t acdelay = (delay < 0) ? -delay : delay;
 					bodyactions[stance][frame] = BodyAction(acstance, acframe, delay);
 				}
 				else
 				{
 					stancedelays[stance][frame] = delay;
-					map<CharacterLayer, map<string, vector2d<int>>> bodyshiftmap;
+					map<CharacterLayer, map<string, vector2d<int32_t>>> bodyshiftmap;
 
 					for (node partnode = framenode.begin(); partnode != framenode.end(); ++partnode)
 					{
@@ -76,15 +79,15 @@ namespace Data
 							node bodymap = partnode["map"];
 							for (node mapnode = bodymap.begin(); mapnode != bodymap.end(); mapnode++)
 							{
-								bodyshiftmap[z][mapnode.name()] = vector2d<int>(mapnode.x(), mapnode.y());
+								bodyshiftmap[z][mapnode.name()] = vector2d<int32_t>(mapnode.x(), mapnode.y());
 							}
 						}
 					}
 
-					node headmap = headnode[stance][to_string(frame)]["head"]["map"];
+					node headmap = headnode[stance][std::to_string(frame)]["head"]["map"];
 					for (node mapnode = headmap.begin(); mapnode != headmap.end(); mapnode++)
 					{
-						bodyshiftmap[CL_HEAD][mapnode.name()] = vector2d<int>(mapnode.x(), mapnode.y());
+						bodyshiftmap[CL_HEAD][mapnode.name()] = vector2d<int32_t>(mapnode.x(), mapnode.y());
 					}
 
 					bodyposmap[stance][frame] = bodyshiftmap[CL_BODY]["navel"];
@@ -96,114 +99,128 @@ namespace Data
 				}
 
 				frame++;
-				framenode = stancenode[to_string(frame)];
+				framenode = stancenode[std::to_string(frame)];
 			}
 		}
 	}
 
-	vector2d<int> BodyDrawinfo::getbodypos(string stance, uint8_t pos)
+	vector2d<int32_t> BodyDrawinfo::getbodypos(string stance, uint8_t pos) const
 	{
-		if (pos < bodyposmap[stance].size())
+		if (bodyposmap.count(stance))
 		{
-			return bodyposmap[stance][pos];
+			if (pos < bodyposmap.at(stance).size())
+			{
+				return bodyposmap.at(stance).at(pos);
+			}
 		}
-		else
-		{
-			return vector2d<int>();
-		}
+		return vector2d<int32_t>();
 	}
 
-	vector2d<int> BodyDrawinfo::getarmpos(string stance, uint8_t pos)
+	vector2d<int32_t> BodyDrawinfo::getarmpos(string stance, uint8_t pos) const
 	{
-		if (pos < armposmap[stance].size())
+		if (armposmap.count(stance))
 		{
-			return armposmap[stance][pos];
+			if (pos < armposmap.at(stance).size())
+			{
+				return armposmap.at(stance).at(pos);
+			}
 		}
-		else
-		{
-			return vector2d<int>();
-		}
+		return vector2d<int32_t>();
 	}
 
-	vector2d<int> BodyDrawinfo::gethandpos(string stance, uint8_t pos)
+	vector2d<int32_t> BodyDrawinfo::gethandpos(string stance, uint8_t pos) const
 	{
-		if (pos < handposmap[stance].size())
+		if (handposmap.count(stance))
 		{
-			return handposmap[stance][pos];
+			if (pos < handposmap.at(stance).size())
+			{
+				return handposmap.at(stance).at(pos);
+			}
 		}
-		else
-		{
-			return vector2d<int>();
-		}
+		return vector2d<int32_t>();
 	}
 
-	vector2d<int> BodyDrawinfo::getheadpos(string stance, uint8_t pos)
+	vector2d<int32_t> BodyDrawinfo::getheadpos(string stance, uint8_t pos) const
 	{
-		if (pos < headposmap[stance].size())
+		if (headposmap.count(stance))
 		{
-			return headposmap[stance][pos];
+			if (pos < headposmap.at(stance).size())
+			{
+				return headposmap.at(stance).at(pos);
+			}
 		}
-		else
-		{
-			return vector2d<int>();
-		}
+		return vector2d<int32_t>();
 	}
 
-	vector2d<int> BodyDrawinfo::gethairpos(string stance, uint8_t pos)
+	vector2d<int32_t> BodyDrawinfo::gethairpos(string stance, uint8_t pos) const
 	{
-		if (pos < hairposmap[stance].size())
+		if (hairposmap.count(stance))
 		{
-			return hairposmap[stance][pos];
+			if (pos < hairposmap.at(stance).size())
+			{
+				return hairposmap.at(stance).at(pos);
+			}
 		}
-		else
-		{
-			return vector2d<int>();
-		}
+		return vector2d<int32_t>();
 	}
 
-	vector2d<int> BodyDrawinfo::getfacepos(string stance, uint8_t pos)
+	vector2d<int32_t> BodyDrawinfo::getfacepos(string stance, uint8_t pos) const
 	{
-		if (pos < faceposmap[stance].size())
+		if (faceposmap.count(stance))
 		{
-			return faceposmap[stance][pos];
+			if (pos < faceposmap.at(stance).size())
+			{
+				return faceposmap.at(stance).at(pos);
+			}
 		}
-		else
-		{
-			return vector2d<int>();
-		}
+		return vector2d<int32_t>();
 	}
 
-	uint8_t BodyDrawinfo::nextframe(string stance, uint8_t pos)
+	uint8_t BodyDrawinfo::nextframe(string stance, uint8_t pos) const
 	{
-		return (pos < stancedelays[stance].size() - 1) ? (pos + 1) : 0;
+		if (stancedelays.count(stance))
+		{
+			if (pos < stancedelays.at(stance).size() - 1)
+			{
+				return pos + 1;
+			}
+		}
+		return 0;
 	}
 
-	short BodyDrawinfo::getdelay(string stance, uint8_t pos)
+	uint16_t BodyDrawinfo::getdelay(string stance, uint8_t pos) const
 	{
-		if (pos < stancedelays[stance].size())
+		if (stancedelays.count(stance))
 		{
-			return stancedelays[stance][pos];
+			if (pos < stancedelays.at(stance).size())
+			{
+				return stancedelays.at(stance).at(pos);
+			}
 		}
-		else
-		{
-			return 50;
-		}
+		return 50;
 	}
 
-	uint8_t BodyDrawinfo::nextacframe(string action, uint8_t pos)
+	uint8_t BodyDrawinfo::nextacframe(string action, uint8_t pos) const
 	{
-		return (pos < bodyactions[action].size() - 1) ? (pos + 1) : 0;
+		if (bodyactions.count(action))
+		{
+			if (pos < bodyactions.at(action).size() - 1)
+			{
+				return pos + 1;
+			}
+		}
+		return 0;
 	}
 
-	BodyAction* BodyDrawinfo::getaction(string stance, uint8_t pos)
+	const BodyAction* BodyDrawinfo::getaction(string stance, uint8_t pos) const
 	{
-		if (pos < bodyactions[stance].size())
+		if (bodyactions.count(stance))
 		{
-			return &bodyactions[stance][pos];
+			if (pos < bodyactions.at(stance).size())
+			{
+				return &bodyactions.at(stance).at(pos);
+			}
 		}
-		else
-		{
-			return 0;
-		}
+		return nullptr;
 	}
 }

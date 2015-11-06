@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -24,55 +24,43 @@ namespace Gameplay
 {
 	Mapportals::Mapportals()
 	{
-		animhidden = 0;
-		animregular = 0;
+		findportalcd = 0;
 	}
 
 	Mapportals::~Mapportals()
 	{
-		if (animhidden != 0)
-		{
-			delete animhidden;
-		}
-		if (animregular != 0)
-		{
-			delete animregular;
-		}
 	}
 
 	void Mapportals::init()
 	{
-		node pnode = nx::map["MapHelper.img"]["portal"]["game"];
-		animhidden = new Animation(pnode["ph"]["default"]["portalContinue"]);
-		animregular = new Animation(pnode["pv"]);
+		node pnode = nl::nx::map["MapHelper.img"]["portal"]["game"];
+		animations.add(PT_HIDDEN, new Animation(pnode["ph"]["default"]["portalContinue"]));
+		animations.add(PT_REGULAR, new Animation(pnode["pv"]));
 	}
 
-	void Mapportals::load(node src, int mapid)
+	void Mapportals::load(node src, int32_t mapid)
 	{
-		char pid = 0;
-		node ptnode = src[to_string(pid)];
+		int8_t pid = 0;
+		node ptnode = src[std::to_string(pid)];
 		while (ptnode.size() > 0)
 		{
 			PortalType type = static_cast<PortalType>(ptnode["pt"].get_integer());
 			string name = ptnode["pn"];
-			int targetid = ptnode["tm"];
+			int32_t targetid = ptnode["tm"];
 			string targetname = ptnode["tn"];
-			vector2d<int> pos = vector2d<int>(ptnode["x"], ptnode["y"]);
-			switch (type)
+			vector2d<int32_t> pos = vector2d<int32_t>(ptnode["x"], ptnode["y"]);
+			if (animations.contains(type))
 			{
-			case PT_REGULAR:
-				portals.add(pid, new VisiblePortal(*animregular, type, name, targetid, targetid == mapid, targetname, pos));
-				break;
-			case PT_HIDDEN:
-				portals.add(pid, new VisiblePortal(*animhidden, type, name, targetid, targetid == mapid, targetname, pos));
-				break;
-			default:
+				portals.add(pid, new VisiblePortal(*animations.get(type), type, name, targetid, targetid == mapid, targetname, pos));
+			}
+			else
+			{
 				portals.add(pid, new Portal(type, name, targetid, targetid == mapid, targetname, pos));
 			}
 			portalnames[name] = pid;
 
 			pid++;
-			ptnode = src[to_string(pid)];
+			ptnode = src[std::to_string(pid)];
 		}
 	}
 
@@ -81,56 +69,52 @@ namespace Gameplay
 		portals.clear();
 	}
 
-	void Mapportals::draw(vector2d<int> viewpos)
+	void Mapportals::update(rectangle2d<int32_t> player, uint16_t dpf)
 	{
-		for (map<char, Portal*>::iterator ptit = portals.getbegin(); ptit != portals.getend(); ++ptit)
+		for (map<PortalType, Animation*>::iterator anit = animations.getbegin(); anit != animations.getend(); ++anit)
+		{
+			anit->second->update(dpf / 2);
+		}
+
+		if (findportalcd > 0)
+		{
+			findportalcd--;
+		}
+	}
+
+	void Mapportals::draw(vector2d<int32_t> viewpos) const
+	{
+		for (map<uint8_t, Portal*>::const_iterator ptit = portals.getbegin(); ptit != portals.getend(); ++ptit)
 		{
 			ptit->second->draw(viewpos);
 		}
 	}
 
-	void Mapportals::update(rectangle2d<int> player, short dpf)
-	{
-		animhidden->update(dpf / 2);
-		animregular->update(dpf / 2);
-	}
-
-	vector2d<int> Mapportals::getspawnpoint(char pid)
+	vector2d<int32_t> Mapportals::getspawnpoint(uint8_t pid) const
 	{
 		Portal* portal = portals.get(pid);
-		if (portal != 0)
-		{
-			return portal->getposition();
-		}
-		else
-		{
-			return vector2d<int>();
-		}
+		return portal ? portal->getposition() : vector2d<int32_t>();
 	}
 
-	vector2d<int> Mapportals::getspawnpoint(string pname)
+	vector2d<int32_t> Mapportals::getspawnpoint(string pname) const
 	{
-		char pid = portalnames.count(pname) ? portalnames[pname] : 0;
-		Portal* portal = portals.get(pid);
-		if (portal != 0)
-		{
-			return portal->getposition();
-		}
-		else
-		{
-			return vector2d<int>();
-		}
+		uint8_t pid = portalnames.count(pname) ? portalnames.at(pname) : 0;
+		return getspawnpoint(pid);
 	}
 
-	pair<int, string> Mapportals::findportal(rectangle2d<int> rect)
+	const pair<int32_t, string>* Mapportals::findportal(rectangle2d<int32_t> rect)
 	{
-		for (map<char, Portal*>::iterator ptit = portals.getbegin(); ptit != portals.getend(); ++ptit)
+		if (findportalcd == 0)
 		{
-			if (ptit->second->bounds().overlaps(rect))
+			for (map<uint8_t, Portal*>::const_iterator ptit = portals.getbegin(); ptit != portals.getend(); ++ptit)
 			{
-				return ptit->second->getwarpinfo();
+				if (ptit->second->bounds().overlaps(rect))
+				{
+					findportalcd = 60;
+					return ptit->second->getwarpinfo();
+				}
 			}
 		}
-		return make_pair(-1, "");
+		return nullptr;
 	}
 }

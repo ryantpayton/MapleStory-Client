@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -23,22 +23,24 @@
 
 namespace IO
 {
-	UILoginNotice::UILoginNotice(char text)
+	UILoginNotice::UILoginNotice(int8_t text)
 	{
-		node notice = nx::ui["Login.img"]["Notice"];
+		node notice = nl::nx::ui["Login.img"]["Notice"];
 
+		using::std::string;
+		using::Graphics::Sprite;
 		string back = (text == 16) ? "1" : "0";
 		graphics.add(new Texture(notice["backgrnd"][back]));
-		graphics.add(new Sprite(notice["text"][to_string(text)], vector2d<int>(17, 13)));
+		graphics.add(new Sprite(notice["text"][std::to_string(text)], vector2d<int32_t>(17, 13)));
 
-		buttons.add(BT_OK, new MapleButton(notice["BtYes"], vector2d<int>(100, 100)));
+		buttons.add(BT_OK, new MapleButton(notice["BtYes"], vector2d<int32_t>(100, 100)));
 
-		position = vector2d<int>(292, 200);
-		dimension = vector2d<int>(362, 219);
+		position = vector2d<int32_t>(292, 200);
+		dimension = vector2d<int32_t>(362, 219);
 		active = true;
 	}
 
-	void UILoginNotice::buttonpressed(short id)
+	void UILoginNotice::buttonpressed(uint16_t id)
 	{
 		active = false;
 	}

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,17 +16,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Journey.h"
+#ifndef JOURNEY_USE_OPENGL
 #include "Window.h"
 #include "UI.h"
+#include "Keyboard.h"
 #include "BitmapWrapperD2D.h"
 #include "FontsDW.h"
 #include <windowsx.h>
 #include <math.h>
 
-using namespace IO;
-
-namespace Program
+namespace IO
 {
+	// Implementation of 'Window' in Direct2D.
 	class WindowD2D : public Window
 	{
 	public:
@@ -34,15 +36,14 @@ namespace Program
 		~WindowD2D();
 		bool init(UI*);
 		void update();
-		void draw();
-		void begin();
-		void end();
+		void begin() const;
+		void end() const;
 		void togglemode();
 		void fadeout(Transition);
 		float getdpix() { return dpiX; }
 		float getdpiy() { return dpiY; }
-		HWND getwindow() { return wnd; }
 		UI* getui() { return ui; }
+		Keyboard& getkeyboard();
 	private:
 		void endtransition();
 		HRESULT initfactories();
@@ -54,9 +55,9 @@ namespace Program
 		IDWriteFactory* dwfactory;
 		ID2D1HwndRenderTarget* d2d_rtarget;
 		ID2D1BitmapRenderTarget* bitmaptarget;
-		ID2D1Bitmap* scene;
 		FontsDW fonts;
 		UI* ui;
+		Keyboard keyboard;
 		Transition trans;
 		float dpiX;
 		float dpiY;
@@ -67,19 +68,4 @@ namespace Program
 		bool draw_finished;
 	};
 }
-
-template<class Interface>
-inline void SafeRelease(Interface **ppInterfaceToRelease)
-{
-	if (*ppInterfaceToRelease != NULL)
-	{
-		(*ppInterfaceToRelease)->Release();
-
-		(*ppInterfaceToRelease) = NULL;
-	}
-}
-
-#ifndef HINST_THISCOMPONENT
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
-#define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 #endif

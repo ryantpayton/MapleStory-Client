@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,18 +20,29 @@
 
 namespace Gameplay
 {
+	const uint8_t NUM_LAYERS = 8;
+
+	// Represents all obj and tile layers on a map. Responsible for loading, drawing and updating them.
 	class Maplayers
 	{
 	public:
-		Maplayers(){}
+		// Empty constructor.
+		Maplayers();
+		// Calls clear, destroying all objs and tilesets in cache.
 		~Maplayers();
+		// Loads all layers from the specified node of map data.
 		void load(node);
+		// Clears the cache. To be called when loading a new map, but not when changing channel.
 		void clear();
-		void draw(char, vector2d<int>);
-		void update(short);
+		// Draw the specified layer at the specified position.
+		// Parameters: uint8_t(layer to draw), vector2d(camera position)
+		void draw(uint8_t, vector2d<int32_t>) const;
+		// Updates the animation of all objs. All objs of the same kind share the same animation.
+		// Parameters: uint16_t(delay-per-frame)
+		void update(uint16_t);
 	private:
-		Layercache cache;
-		map<char, Layer> layers;
+		LayerData layerdata;
+		map<uint8_t, Layer> layers;
 	};
 }
 

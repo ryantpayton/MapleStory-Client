@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Animation.h"
-
-using namespace Graphics;
+#include "rectangle2d.h"
+#include <cstdint>
+#include <map>
 
 namespace Gameplay
 {
@@ -41,24 +41,30 @@ namespace Gameplay
 		PT_14
 	};
 
+	using::std::int32_t;
+	using::std::string;
+	using::std::pair;
+	using::Util::vector2d;
+	using::Util::rectangle2d;
+
+	// Class that represents a portal on a map.
 	class Portal
 	{
 	public:
-		Portal(PortalType, string, int, bool, string, vector2d<int>);
-		virtual ~Portal(){}
-		virtual void draw(vector2d<int>){}
-		virtual void settouch(bool){}
-		string getname();
-		PortalType gettype();
-		vector2d<int> getposition();
-		rectangle2d<int> bounds();
-		pair<int, string> getwarpinfo();
+		Portal(PortalType, string, int32_t, bool, string, vector2d<int32_t>);
+		virtual ~Portal() {}
+		virtual void draw(vector2d<int32_t>) const {}
+		virtual void settouch(bool) {}
+		const string& getname() const;
+		PortalType gettype() const;
+		vector2d<int32_t> getposition() const;
+		rectangle2d<int32_t> bounds() const;
+		const pair<int32_t, string>* getwarpinfo() const;
 	protected:
 		PortalType type;
 		string name;
-		int targetid;
+		pair<int32_t, string> warpinfo;
 		bool intermap;
-		string targetpname;
-		vector2d<int> position;
+		vector2d<int32_t> position;
 	};
 }

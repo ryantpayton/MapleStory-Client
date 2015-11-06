@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,9 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include <cstdint>
 
 namespace Program
 {
+	using::std::uint8_t;
+
 	class Audioplayer
 	{
 	public:
@@ -26,7 +29,7 @@ namespace Program
 		virtual void playbgm(void*, size_t) = 0;
 		virtual void playsound(size_t) = 0;
 		virtual void cachesound(void*, size_t, size_t) = 0;
-		virtual void setsfxvolume(char) = 0;
-		virtual void setbgmvolume(char) = 0;
+		virtual void setsfxvolume(uint8_t) = 0;
+		virtual void setbgmvolume(uint8_t) = 0;
 	};
 }

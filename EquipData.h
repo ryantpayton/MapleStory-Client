@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -22,17 +22,19 @@
 #include "CharConstants.h"
 #include "EquipConstants.h"
 
-using namespace Constants;
-
 namespace Data
 {
+	using::Character::Equipslot;
+	using::Character::Equipstat;
+	using::Character::Maplestat;
+
 	class EquipData : public ItemData, public CharacterData
 	{
 	public:
-		EquipData(int, BodyDrawinfo&);
+		EquipData(int32_t, const BodyDrawinfo&);
 		EquipData();
 		bool istransparent() const;
-		string gettype() const;
+		const string& gettype() const;
 		Equipslot geteqslot() const;
 	private:
 		string type;
@@ -40,10 +42,10 @@ namespace Data
 		bool cash;
 		bool tradeblock;
 		bool transparent;
-		int price;
+		int32_t price;
 		uint8_t slots;
-		map<Maplestat, short> reqstats;
-		map<Equipstat, short> defstats;
+		map<Maplestat, int16_t> reqstats;
+		map<Equipstat, int16_t> defstats;
 	};
 }
 

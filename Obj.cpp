@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,14 +19,17 @@
 
 namespace Gameplay
 {
-	Obj::Obj(Animation& a, vector2d<int> p, bool f) : anim(a)
+	Obj::Obj(const Animation& a, vector2d<int32_t> p, bool f) : anim(a)
 	{
 		pos = p;
 		flip = f;
 	}
 
-	void Obj::draw(vector2d<int> viewpos)
+	Obj::~Obj() {}
+
+	void Obj::draw(vector2d<int32_t> viewpos) const
 	{
+		using::Graphics::FlipArgument;
 		anim.draw(FlipArgument(pos + viewpos, flip));
 	}
 }

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,27 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-namespace Constants
+namespace Character
 {
-	enum Equipstat
-	{
-		ES_STR,
-		ES_DEX,
-		ES_INT,
-		ES_LUK,
-		ES_HP,
-		ES_MP,
-		ES_WATK,
-		ES_MAGIC,
-		ES_WDEF,
-		ES_MDEF,
-		ES_ACC,
-		ES_AVOID,
-		ES_HANDS,
-		ES_SPEED,
-		ES_JUMP
-	};
-
 	enum Equipslot
 	{
 		EQL_NONE = 0,
@@ -61,5 +42,24 @@ namespace Constants
 		EQL_SADDLE = 19,
 		EQL_MEDAL = 49,
 		EQL_BELT = 50
+	};
+
+	enum Equipstat
+	{
+		ES_STR,
+		ES_DEX,
+		ES_INT,
+		ES_LUK,
+		ES_HP,
+		ES_MP,
+		ES_WATK,
+		ES_MAGIC,
+		ES_WDEF,
+		ES_MDEF,
+		ES_ACC,
+		ES_AVOID,
+		ES_HANDS,
+		ES_SPEED,
+		ES_JUMP
 	};
 }

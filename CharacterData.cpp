@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,7 +19,7 @@
 
 namespace Data
 {
-	void CharacterData::draw(string stance, CharacterLayer layer, uint8_t frame, DrawArgument& args) const
+	void CharacterData::draw(string stance, CharacterLayer layer, uint8_t frame, const DrawArgument& args) const
 	{
 		if (stances.count(stance))
 		{

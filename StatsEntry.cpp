@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,60 +19,65 @@
 
 namespace Net
 {
+	const size_t NUM_PETS = 3;
+
 	StatsEntry::StatsEntry(InPacket& recv)
 	{
 		name = recv.readpadascii(13);
+
 		recv.readbool(); //gender
 		recv.readbyte(); //skin
 		recv.readint(); //face
 		recv.readint(); //hair
-		for (uint8_t i = 0; i < 3; i++)
+
+		for (size_t i = 0; i < NUM_PETS; i++)
 		{
 			petids.push_back(recv.readlong());
 		}
-		stats[MS_LEVEL] = static_cast<uint8_t>(recv.readbyte());
-		job = CharJob(recv.readshort());
-		stats[MS_STR] = recv.readshort();
-		stats[MS_DEX] = recv.readshort();
-		stats[MS_INT] = recv.readshort();
-		stats[MS_LUK] = recv.readshort();
-		stats[MS_HP] = recv.readshort();
-		stats[MS_MAXHP] = recv.readshort();
-		stats[MS_MP] = recv.readshort();
-		stats[MS_MAXMP] = recv.readshort();
-		stats[MS_AP] = recv.readshort();
-		stats[MS_MP] = recv.readshort();
+
+		stats[Character::MS_LEVEL] = recv.readbyte();
+		stats[Character::MS_JOB] = recv.readshort();
+		stats[Character::MS_STR] = recv.readshort();
+		stats[Character::MS_DEX] = recv.readshort();
+		stats[Character::MS_INT] = recv.readshort();
+		stats[Character::MS_LUK] = recv.readshort();
+		stats[Character::MS_HP] = recv.readshort();
+		stats[Character::MS_MAXHP] = recv.readshort();
+		stats[Character::MS_MP] = recv.readshort();
+		stats[Character::MS_MAXMP] = recv.readshort();
+		stats[Character::MS_AP] = recv.readshort();
+		stats[Character::MS_MP] = recv.readshort();
 		exp = recv.readint();
-		stats[MS_FAME] = recv.readshort();
-		recv.readint(); //gachaexp
+		stats[Character::MS_FAME] = recv.readshort();
+
+		recv.skip(4); //gachaexp
 		mapid = recv.readint();
 		portal = recv.readbyte();
-		recv.readint(); //timestamp
+		recv.skip(4); //timestamp
+
+		job = CharJob(stats[Character::MS_JOB]);
 	}
 
-	void StatsEntry::setrank(pair<int, char> r)
+	StatsEntry::StatsEntry() {}
+
+	StatsEntry::~StatsEntry() {}
+
+	void StatsEntry::setrank(pair<int32_t, int8_t> r)
 	{
 		rank = r;
 	}
 
-	void StatsEntry::setjobrank(pair<int, char> jr)
+	void StatsEntry::setjobrank(pair<int32_t, int8_t> jr)
 	{
 		jobrank = jr;
 	}
 
-	short StatsEntry::getstat(Maplestat stat) const
+	int16_t StatsEntry::getstat(Maplestat stat) const
 	{
-		if (stat == MS_JOB)
-		{
-			return job.getid();
-		}
-		else
-		{
-			return (stats.count(stat) > 0) ? stats.at(stat) : 0;
-		}
+		return stats.count(stat) ? stats.at(stat) : 0;
 	}
 
-	short StatsEntry::getjob() const
+	int16_t StatsEntry::getjob() const
 	{
 		return job.getid();
 	}
@@ -92,7 +97,7 @@ namespace Net
 		return petids;
 	}
 
-	map<Maplestat, short> StatsEntry::getstats() const
+	map<Maplestat, int16_t> StatsEntry::getstats() const
 	{
 		return stats;
 	}
@@ -102,7 +107,7 @@ namespace Net
 		return exp;
 	}
 
-	int StatsEntry::getmapid() const
+	int32_t StatsEntry::getmapid() const
 	{
 		return mapid;
 	}
@@ -112,12 +117,12 @@ namespace Net
 		return portal;
 	}
 
-	pair<int, char> StatsEntry::getrank() const
+	pair<int32_t, int8_t> StatsEntry::getrank() const
 	{
 		return rank;
 	}
 
-	pair<int, char> StatsEntry::getjobrank() const
+	pair<int32_t, int8_t> StatsEntry::getjobrank() const
 	{
 		return jobrank;
 	}

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -26,27 +26,31 @@ namespace Gameplay
 			if (sub.size() > 0)
 			{
 				string u = sub.name();
-				int no = 0;
-				node tilen = sub[to_string(no)];
+				int32_t no = 0;
+				node tilen = sub[std::to_string(no)];
 				while (tilen.size() > 0)
 				{
 					tiles[u].add(no, new TileData(tilen));
 					no++;
-					tilen = sub[to_string(no)];
+					tilen = sub[std::to_string(no)];
 				}
 			}
 		}
 	}
 
-	TileData* Tileset::gettile(string u, int no)
+	Tileset::Tileset() {}
+
+	Tileset::~Tileset() {}
+
+	const TileData& Tileset::gettile(string u, int32_t no) const
 	{
 		if (tiles.count(u))
 		{
-			if (tiles[u].contains(no))
+			if (tiles.at(u).contains(no))
 			{
-				return tiles[u].get(no);
+				return *tiles.at(u).get(no);
 			}
 		}
-		return 0;
+		return nulltile;
 	}
 }

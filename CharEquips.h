@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,16 +18,22 @@
 #pragma once
 #include "EquipData.h"
 
-using namespace Data;
-
 namespace Character
 {
+	using::std::uint8_t;
+	using::std::map;
+	using::std::string;
+	using::Data::Equipslot;
+	using::Data::EquipData;
+	using::Data::CharacterLayer;
+	using::Graphics::DrawArgument;
+
 	class CharEquips
 	{
 	public:
 		CharEquips(){}
 		~CharEquips(){}
-		void draw(Equipslot, string, CharacterLayer, uint8_t, DrawArgument&);
+		void draw(Equipslot, string, CharacterLayer, uint8_t, const DrawArgument&) const;
 		void addequip(const EquipData&);
 		void removeequip(Equipslot);
 		bool isvisible(Equipslot) const;

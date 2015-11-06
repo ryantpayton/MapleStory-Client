@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,29 +19,33 @@
 
 namespace Character
 {
-	void Questlog::addstarted(short qid, string qdata)
+	Questlog::Questlog() {}
+
+	Questlog::~Questlog() {}
+
+	void Questlog::addstarted(int16_t qid, string qdata)
 	{
 		started[qid] = qdata;
 	}
 
-	void Questlog::addprogress(short qid, short qidl, string qdata)
+	void Questlog::addprogress(int16_t qid, int16_t qidl, string qdata)
 	{
 		progress[qid] = make_pair(qidl, qdata);
 	}
 
-	void Questlog::addcompleted(short qid, int64_t time)
+	void Questlog::addcompleted(int16_t qid, int64_t time)
 	{
 		completed[qid] = time;
 	}
 
-	bool Questlog::isstarted(short qid)
+	bool Questlog::isstarted(int16_t qid)
 	{
 		return started.count(qid) > 0;
 	}
 
-	short Questlog::getlaststarted()
+	int16_t Questlog::getlaststarted()
 	{
-		map<short, string>::iterator qend = started.end();
+		map<int16_t, string>::iterator qend = started.end();
 		qend--;
 		return qend->first;
 	}

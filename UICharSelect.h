@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -24,9 +24,6 @@
 #include "Nametag.h"
 #include "Charset.h"
 
-using namespace Data;
-using namespace Net;
-
 namespace IO
 {
 	enum CharSelectButtons
@@ -41,34 +38,42 @@ namespace IO
 		BT_CHAR0
 	};
 
+	using::std::vector;
+	using::Data::Equipcache;
+	using::Net::Login;
+	using::Net::Session;
+	using::Character::CharLook;
+
+	// The character selection screen.
 	class UICharSelect : public UIElement
 	{
 	public:
 		UICharSelect(Equipcache&, UI&, Login&, Session&);
 		~UICharSelect();
-		void draw();
-		void update(short);
-		void buttonpressed(short);
-		void addchar(char);
-		void removechar(char);
+		void draw() const;
+		void update(uint16_t);
+		void buttonpressed(uint16_t);
+		void addchar(uint8_t);
+		void removechar(uint8_t);
 	private:
 		void selectchar();
-		vector2d<int> getcharpos(size_t);
+		vector2d<int32_t> getcharpos(size_t) const;
 		Equipcache& equips;
 		UI& ui;
 		Login& login;
 		Session& session;
 		vector<CharLook> charlooks;
-		char charcount;
-		char selected;
-		char page;
-		Textlabel* namelabel;
-		Textlabel* joblabel;
+		uint8_t charcount;
+		uint8_t selected;
+		uint8_t page;
+		Textlabel namelabel;
+		Textlabel joblabel;
 		Ptrvector<Nametag> nametags;
 		Charset* levelset;
 		Charset* statsset;
 	};
 
+	// Factory for the character selection screen.
 	class ElementCharSelect : public Element
 	{
 	public:

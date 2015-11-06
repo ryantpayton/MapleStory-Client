@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,8 +18,7 @@
 #pragma once
 #include "Texture.h"
 #include "Ptrmap.h"
-
-using namespace Graphics;
+#include "EquipConstants.h"
 
 namespace Data
 {
@@ -66,11 +65,18 @@ namespace Data
 		CL_HANDOWEP
 	};
 
+	using::std::uint8_t;
+	using::std::string;
+	using::std::map;
+	using::Graphics::Texture;
+	using::Graphics::DrawArgument;
+	using::Util::Ptrmap;
+
 	class CharacterData
 	{
 	public:
 		virtual ~CharacterData() {}
-		void draw(string, CharacterLayer, uint8_t, DrawArgument&) const;
+		void draw(string, CharacterLayer, uint8_t, const DrawArgument&) const;
 	protected:
 		map<string, map<CharacterLayer, Ptrmap<uint8_t, Texture>>> stances;
 	};

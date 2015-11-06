@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,12 +19,12 @@
 
 namespace Character
 {
-	void Telerock::addlocation(int mapid)
+	void Telerock::addlocation(int32_t mapid)
 	{
 		locations.push_back(mapid);
 	}
 
-	void Telerock::addviplocation(int mapid)
+	void Telerock::addviplocation(int32_t mapid)
 	{
 		viplocations.push_back(mapid);
 	}

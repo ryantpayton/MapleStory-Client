@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -22,6 +22,7 @@ namespace IO
 {
 	enum UIType
 	{
+		UI_NULL,
 		UI_LOGIN,
 		UI_LOGINWAIT,
 		UI_LOGINNOTICE,
@@ -39,5 +40,12 @@ namespace IO
 		virtual bool isfocused() const { return false; }
 		virtual UIType type() const = 0;
 		virtual UIElement* instantiate() const = 0;
+	};
+
+	class ElementNull : public Element
+	{
+	public:
+		UIType type() const { return UI_NULL; }
+		UIElement* instantiate() const { return new UINull(); }
 	};
 }

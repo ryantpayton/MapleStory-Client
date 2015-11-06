@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,34 +20,36 @@
 #include "vector2d.h"
 #include <map>
 
-using namespace Util;
-
 namespace Data
 {
+	using::std::int32_t;
+	using::std::map;
+	using::Util::vector2d;
+
 	class BodyDrawinfo
 	{
 	public:
-		BodyDrawinfo(){}
-		~BodyDrawinfo(){}
+		BodyDrawinfo();
+		~BodyDrawinfo();
 		void init();
-		vector2d<int> getbodypos(string, uint8_t);
-		vector2d<int> getarmpos(string, uint8_t);
-		vector2d<int> gethandpos(string, uint8_t);
-		vector2d<int> getheadpos(string, uint8_t);
-		vector2d<int> gethairpos(string, uint8_t);
-		vector2d<int> getfacepos(string, uint8_t);
-		uint8_t nextframe(string, uint8_t);
-		short getdelay(string, uint8_t);
-		uint8_t nextacframe(string, uint8_t);
-		BodyAction* getaction(string, uint8_t);
+		vector2d<int32_t> getbodypos(string, uint8_t) const;
+		vector2d<int32_t> getarmpos(string, uint8_t) const;
+		vector2d<int32_t> gethandpos(string, uint8_t) const;
+		vector2d<int32_t> getheadpos(string, uint8_t) const;
+		vector2d<int32_t> gethairpos(string, uint8_t) const;
+		vector2d<int32_t> getfacepos(string, uint8_t) const;
+		uint8_t nextframe(string, uint8_t) const;
+		uint16_t getdelay(string, uint8_t) const;
+		uint8_t nextacframe(string, uint8_t) const;
+		const BodyAction* getaction(string, uint8_t) const;
 	private:
-		map<string, map<uint8_t, vector2d<int>>> bodyposmap;
-		map<string, map<uint8_t, vector2d<int>>> armposmap;
-		map<string, map<uint8_t, vector2d<int>>> handposmap;
-		map<string, map<uint8_t, vector2d<int>>> headposmap;
-		map<string, map<uint8_t, vector2d<int>>> hairposmap;
-		map<string, map<uint8_t, vector2d<int>>> faceposmap;
-		map<string, map<uint8_t, short>> stancedelays;
+		map<string, map<uint8_t, vector2d<int32_t>>> bodyposmap;
+		map<string, map<uint8_t, vector2d<int32_t>>> armposmap;
+		map<string, map<uint8_t, vector2d<int32_t>>> handposmap;
+		map<string, map<uint8_t, vector2d<int32_t>>> headposmap;
+		map<string, map<uint8_t, vector2d<int32_t>>> hairposmap;
+		map<string, map<uint8_t, vector2d<int32_t>>> faceposmap;
+		map<string, map<uint8_t, uint16_t>> stancedelays;
 		map<string, map<uint8_t, BodyAction>> bodyactions;
 	};
 }

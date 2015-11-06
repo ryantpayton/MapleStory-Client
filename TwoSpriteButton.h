@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,20 +18,22 @@
 #pragma once
 #include "Button.h"
 #include "Texture.h"
-#include "Ptrmap.h"
-
-using namespace Graphics;
+#include "PtrBoolTuple.h"
 
 namespace IO
 {
+	using::nl::node;
+	using::Util::PtrBoolTuple;
+	using::Graphics::Texture;
+
 	class TwoSpriteButton : public Button
 	{
 	public:
-		TwoSpriteButton(node, node, vector2d<int>);
-		void draw(vector2d<int>);
-		rectangle2d<int> bounds(vector2d<int>);
+		TwoSpriteButton(node, node, vector2d<int32_t>);
+		void draw(vector2d<int32_t>) const;
+		rectangle2d<int32_t> bounds(vector2d<int32_t>) const;
 	private:
-		Ptrmap<bool, Texture> textures;
+		PtrBoolTuple<Texture> textures;
 	};
 }
 

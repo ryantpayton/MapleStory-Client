@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,14 +19,23 @@
 
 namespace Net
 {
-	InPacket::InPacket(const char* recv, int32_t length)
+	InPacket::InPacket(const int8_t* recv, size_t length)
 	{
-		writearray(recv, length);
+		bytes = recv;
+		top = length;
+		pos = 0;
+	}
+
+	size_t InPacket::length() const
+	{
+		return top - pos;
 	}
 
 	void InPacket::skip(size_t count)
 	{
-		bytes.resize(bytes.size() - count);
+		if (count > top - pos)
+			throw PacketError("Stack underflow while using skip.");
+		pos += count;
 	}
 
 	string InPacket::readascii()
@@ -35,27 +44,21 @@ namespace Net
 		return readpadascii(length);
 	}
 
-	string InPacket::readpadascii(int16_t length)
+	string InPacket::readpadascii(int16_t count)
 	{
+		if (count > top - pos)
+			throw PacketError("Stack underflow while reading string.");
+
 		string ret;
-
-		if (length > bytes.size())
+		for (int16_t i = 0; i < count; i++)
 		{
-			throw new runtime_error("packet error: stack underflow");
-		}
-		else
-		{
-			for (int16_t i = 0; i < length; i++)
+			char letter = bytes[pos];
+			if (letter != '\0')
 			{
-				char letter = bytes.back();
-				if (letter != '\0')
-				{
-					ret.push_back(letter);
-				}
-				bytes.pop_back();
+				ret.push_back(letter);
 			}
+			pos++;
 		}
-
 		return ret;
 	}
 

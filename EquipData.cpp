@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,92 +21,99 @@
 
 namespace Data
 {
-	EquipData::EquipData(int equipid, BodyDrawinfo& drawinfo) : ItemData(equipid)
+	const size_t NUM_TRANSPARENT = 1;
+
+	const int32_t transparentequips[NUM_TRANSPARENT] =
+	{
+		1002186
+	};
+
+	EquipData::EquipData(int32_t equipid, const BodyDrawinfo& drawinfo) : ItemData(equipid)
 	{
 		CharacterLayer chlayer;
-		int prefix = equipid / 10000;
+		int32_t prefix = equipid / 10000;
 		switch (prefix)
 		{
 		case 100:
 			chlayer = CL_HAT;
-			eqslot = EQL_CAP;
+			eqslot = Character::EQL_CAP;
 			type = "HAT";
 			break;
 		case 101:
 			chlayer = CL_FACEACC;
-			eqslot = EQL_FACEACC;
+			eqslot = Character::EQL_FACEACC;
 			type = "FACE ACCESSORY";
 			break;
 		case 102:
 			chlayer = CL_EYEACC;
-			eqslot = EQL_EYEACC;
+			eqslot = Character::EQL_EYEACC;
 			type = "EYE ACCESSORY";
 			break;
 		case 103:
 			chlayer = CL_EARRINGS;
-			eqslot = EQL_EARRINGS;
+			eqslot = Character::EQL_EARRINGS;
 			type = "EARRINGS";
 			break;
 		case 104:
 			chlayer = CL_TOP;
-			eqslot = EQL_TOP;
+			eqslot = Character::EQL_TOP;
 			type = "TOP";
 			break;
 		case 105:
 			chlayer = CL_MAIL;
-			eqslot = EQL_TOP;
+			eqslot = Character::EQL_TOP;
 			type = "OVERALL";
 			break;
 		case 106:
 			chlayer = CL_PANTS;
-			eqslot = EQL_PANTS;
+			eqslot = Character::EQL_PANTS;
 			type = "BOTTOM";
 			break;
 		case 107:
 			chlayer = CL_SHOES;
-			eqslot = EQL_SHOES;
+			eqslot = Character::EQL_SHOES;
 			type = "SHOES";
 			break;
 		case 108:
 			chlayer = CL_GLOVE;
-			eqslot = EQL_GLOVES;
+			eqslot = Character::EQL_GLOVES;
 			type = "GLOVES";
 			break;
 		case 109:
 			chlayer = CL_SHIELD;
-			eqslot = EQL_SHIELD;
+			eqslot = Character::EQL_SHIELD;
 			type = "SHIELD";
 			break;
 		case 110:
 			chlayer = CL_CAPE;
-			eqslot = EQL_CAPE;
+			eqslot = Character::EQL_CAPE;
 			type = "CAPE";
 			break;
 		case 111:
 			chlayer = CL_RING;
-			eqslot = EQL_RING;
+			eqslot = Character::EQL_RING;
 			type = "RING";
 			break;
 		case 112:
 			chlayer = CL_PENDANT;
-			eqslot = EQL_PENDANT;
+			eqslot = Character::EQL_PENDANT;
 			type = "PENDANT";
 			break;
 		case 113:
 			chlayer = CL_BELT;
-			eqslot = EQL_BELT;
+			eqslot = Character::EQL_BELT;
 			type = "BELT";
 			break;
 		case 114:
 			chlayer = CL_MEDAL;
-			eqslot = EQL_MEDAL;
+			eqslot = Character::EQL_MEDAL;
 			type = "MEDAL";
 			break;
 		default:
 			if (prefix >= 130 && prefix <= 170)
 			{
 				chlayer = CL_WEAPON;
-				eqslot = EQL_WEAPON;
+				eqslot = Character::EQL_WEAPON;
 
 				switch (prefix)
 				{
@@ -162,7 +169,8 @@ namespace Data
 			}
 		}
 
-		node equipnode = nx::character[category]["0" + to_string(equipid) + ".img"];
+		using::nl::node;
+		node equipnode = nl::nx::character[getcategory()]["0" + std::to_string(equipid) + ".img"];
 		for (node stancenode = equipnode.begin(); stancenode != equipnode.end(); ++stancenode)
 		{
 			string stance = stancenode.name();
@@ -171,35 +179,35 @@ namespace Data
 				cash = stancenode["cash"].get_bool();
 				tradeblock = stancenode["tradeBlock"].get_bool();
 				price = stancenode["price"];
-				slots = static_cast<uint8_t>(stancenode["tuc"]);
+				slots = stancenode["tuc"];
 
-				reqstats[MS_LEVEL] = stancenode["reqLevel"];
-				reqstats[MS_JOB] = stancenode["reqJob"];
-				reqstats[MS_STR] = stancenode["reqSTR"];
-				reqstats[MS_DEX] = stancenode["reqDEX"];
-				reqstats[MS_INT] = stancenode["reqINT"];
-				reqstats[MS_LUK] = stancenode["reqLUK"];
+				reqstats[Character::MS_LEVEL] = stancenode["reqLevel"];
+				reqstats[Character::MS_JOB] = stancenode["reqJob"];
+				reqstats[Character::MS_STR] = stancenode["reqSTR"];
+				reqstats[Character::MS_DEX] = stancenode["reqDEX"];
+				reqstats[Character::MS_INT] = stancenode["reqINT"];
+				reqstats[Character::MS_LUK] = stancenode["reqLUK"];
 
-				defstats[ES_STR] = static_cast<short>(stancenode["incSTR"]);
-				defstats[ES_DEX] = static_cast<short>(stancenode["incDEX"]);
-				defstats[ES_INT] = static_cast<short>(stancenode["incINT"]);
-				defstats[ES_LUK] = static_cast<short>(stancenode["incLUK"]);
-				defstats[ES_WATK] = static_cast<short>(stancenode["incPAD"]);
-				defstats[ES_WDEF] = static_cast<short>(stancenode["incPDD"]);
-				defstats[ES_MAGIC] = static_cast<short>(stancenode["incMAD"]);
-				defstats[ES_MDEF] = static_cast<short>(stancenode["incMDD"]);
-				defstats[ES_HP] = static_cast<short>(stancenode["incMHP"]);
-				defstats[ES_MP] = static_cast<short>(stancenode["incMMP"]);
-				defstats[ES_ACC] = static_cast<short>(stancenode["incACC"]);
-				defstats[ES_AVOID] = static_cast<short>(stancenode["incEVA"]);
-				defstats[ES_HANDS] = static_cast<short>(stancenode["incHANDS"]);
-				defstats[ES_SPEED] = static_cast<short>(stancenode["incSPEED"]);
-				defstats[ES_JUMP] = static_cast<short>(stancenode["incJUMP"]);
+				defstats[Character::ES_STR] = stancenode["incSTR"];
+				defstats[Character::ES_DEX] = stancenode["incDEX"];
+				defstats[Character::ES_INT] = stancenode["incINT"];
+				defstats[Character::ES_LUK] = stancenode["incLUK"];
+				defstats[Character::ES_WATK] = stancenode["incPAD"];
+				defstats[Character::ES_WDEF] = stancenode["incPDD"];
+				defstats[Character::ES_MAGIC] = stancenode["incMAD"];
+				defstats[Character::ES_MDEF] = stancenode["incMDD"];
+				defstats[Character::ES_HP] = stancenode["incMHP"];
+				defstats[Character::ES_MP] = stancenode["incMMP"];
+				defstats[Character::ES_ACC] = stancenode["incACC"];
+				defstats[Character::ES_AVOID] = stancenode["incEVA"];
+				defstats[Character::ES_HANDS] = stancenode["incHANDS"];
+				defstats[Character::ES_SPEED] = stancenode["incSPEED"];
+				defstats[Character::ES_JUMP] = stancenode["incJUMP"];
 			}
 			else if (stance != "default" && stance != "backDefault")
 			{
 				uint8_t frame = 0;
-				node framenode = stancenode[to_string(frame)];
+				node framenode = stancenode[std::to_string(frame)];
 				while (framenode.size() > 0)
 				{
 					for (node partnode = framenode.begin(); partnode != framenode.end(); ++partnode)
@@ -290,19 +298,24 @@ namespace Data
 					}
 
 					frame++;
-					framenode = stancenode[to_string(frame)];
+					framenode = stancenode[std::to_string(frame)];
 				}
 			}
 		}
 
-		transparent = (getid() == 1002186);
+		transparent = false;
+		for (size_t i = 0; i < NUM_TRANSPARENT; i++)
+		{
+			if (equipid == transparentequips[i])
+				transparent = true;
+		}
 	}
 
 	EquipData::EquipData()
 	{
 		transparent = true;
 		type = "";
-		eqslot = EQL_NONE;
+		eqslot = Character::EQL_NONE;
 	}
 
 	bool EquipData::istransparent() const
@@ -310,7 +323,7 @@ namespace Data
 		return transparent;
 	}
 
-	string EquipData::gettype() const
+	const string& EquipData::gettype() const
 	{
 		return type;
 	}

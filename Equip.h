@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -41,18 +41,20 @@ namespace Character
 		EQQ_GOLD
 	};
 
+	using::std::map;
+
 	class Equip : public Item
 	{
 	public:
-		Equip(const ItemData&, int, bool, int64_t, int64_t, char, char, map<Equipstat, short>, string, short, char, short, int);
+		Equip(const ItemData&, int32_t, bool, int64_t, int64_t, uint8_t, uint8_t, map<Equipstat, int16_t>, string, int16_t, uint8_t, int16_t, int32_t);
 		~Equip();
 	private:
-		char slots;
-		char level;
-		map<Equipstat, short> stats;
-		char itemlevel;
-		short itemexp;
-		int vicious;
+		uint8_t slots;
+		uint8_t level;
+		map<Equipstat, int16_t> stats;
+		uint8_t itemlevel;
+		int16_t itemexp;
+		int32_t vicious;
 		PotentialRank rank;
 		EquipQuality quality;
 	};

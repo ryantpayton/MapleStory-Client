@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,19 +18,25 @@
 #pragma once
 #include "Animation.h"
 
-using namespace Graphics;
-
 namespace Gameplay
 {
+	using::std::int32_t;
+	using::Util::vector2d;
+	using::Graphics::Animation;
+	// Represents an obj (map decoration) on a map. Shares animation with other objs on the same map.
 	class Obj
 	{
 	public:
-		Obj(Animation&, vector2d<int>, bool);
-		~Obj(){}
-		void draw(vector2d<int>);
+		// Construct the obj with the specified values.
+		// Parameters: Animation&(reference to shared animation), vector2d(position), bool(is flipped)
+		Obj(const Animation&, vector2d<int32_t>, bool);
+		// Empty destructor.
+		~Obj();
+		// Draw the obj at the specified position.
+		void draw(vector2d<int32_t>) const;
 	private:
-		Animation& anim;
-		vector2d<int> pos;
+		const Animation& anim;
+		vector2d<int32_t> pos;
 		bool flip;
 	};
 }

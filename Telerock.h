@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,22 +16,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include <cstdint>
 #include <vector>
-
-using namespace std;
 
 namespace Character
 {
+	using::std::int32_t;
+	using::std::vector;
+	// Saved locations for the 'teleport rock' and 'VIP teleport rock' cash items.
 	class Telerock
 	{
 	public:
 		Telerock(){}
 		~Telerock(){}
-		void addlocation(int);
-		void addviplocation(int);
+		void addlocation(int32_t);
+		void addviplocation(int32_t);
 	private:
-		vector<int> locations;
-		vector<int> viplocations;
+		vector<int32_t> locations;
+		vector<int32_t> viplocations;
 	};
 }
 

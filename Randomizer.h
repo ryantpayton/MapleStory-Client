@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,15 +18,18 @@
 #pragma once
 #include <random>
 
-using namespace std;
-
 namespace Util
 {
+	using::std::default_random_engine;
+	using::std::random_device;
+
+	// Small class which can be used to generate random numbers.
+	// Classes that need this functionality should have a member variable of this class.
 	class Randomizer
 	{
 	public:
-		Randomizer(){}
-		~Randomizer(){}
+		Randomizer() {}
+		~Randomizer() {}
 
 		bool nextbool()
 		{
@@ -47,6 +50,7 @@ namespace Util
 		template <class T>
 		T nextreal(T low, T high)
 		{
+			using::std::uniform_real_distribution;
 			uniform_real_distribution<T> range(low, high);
 			return range(chance());
 		}
@@ -70,6 +74,7 @@ namespace Util
 		template <class T>
 		T nextint(T low, T high)
 		{
+			using::std::uniform_int_distribution;
 			uniform_int_distribution<T> range(low, high);
 			return range(chance());
 		}

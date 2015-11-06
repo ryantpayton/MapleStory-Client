@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,26 +16,30 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "TextWrapper.h"
+#include "Journey.h"
+#ifndef JOURNEY_USE_OPENGL
+#include "Textlabel.h"
 #include <dwrite.h>
+#include <d2d1.h>
 #include <map>
 
-using namespace std;
-using namespace Graphics;
-
-namespace Program
+namespace IO
 {
+	using::std::map;
+
 	class FontsDW
 	{
 	public:
-		FontsDW() {}
+		FontsDW(){}
 		~FontsDW();
-		void init(IDWriteFactory*);
-		IDWriteTextFormat* getfont(Font);
-		IDWriteFactory* getdwfactory() { return dwfactory; }
+		void init(IDWriteFactory*, ID2D1RenderTarget*);
+		IDWriteTextFormat* getfont(Font) const;
+		ID2D1SolidColorBrush* getbrush(Textcolor) const;
+		IDWriteFactory* getdwfactory() const;
 	private:
 		IDWriteFactory* dwfactory;
 		map<Font, IDWriteTextFormat*> fonts;
+		map<Textcolor, ID2D1SolidColorBrush*> brushes;
 	};
 }
-
+#endif

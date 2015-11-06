@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,8 +19,6 @@
 #include "Texture.h"
 #include "Ptrmap.h"
 
-using namespace Graphics;
-
 namespace IO
 {
 	enum CharsetAlignment
@@ -30,17 +28,26 @@ namespace IO
 		CHA_RIGHT
 	};
 
+	using::std::int8_t;
+	using::std::int32_t;
+	using::std::string;
+	using::nl::node;
+	using::Util::Ptrmap;
+	using::Graphics::Texture;
+	using::Graphics::DrawArgument;
+
 	class Charset
 	{
 	public:
 		Charset(node, CharsetAlignment);
-		~Charset(){}
-		void draw(char, DrawArgument&);
-		int draw(string, DrawArgument&);
-		int getw(char);
+		Charset(){}
+		~Charset();
+		void draw(int8_t, const DrawArgument&) const;
+		int32_t draw(string, const DrawArgument&) const;
+		int32_t getw(int8_t) const;
 	private:
 		CharsetAlignment alignment;
-		Ptrmap<char, Texture> chars;
+		Ptrmap<int8_t, Texture> chars;
 	};
 }
 

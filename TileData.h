@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,20 +18,31 @@
 #pragma once
 #include "Texture.h"
 
-using namespace Graphics;
-
 namespace Gameplay
 {
+	using::std::int32_t;
+	using::nl::node;
+	using::Util::vector2d;
+	using::Graphics::Texture;
+	// Tile loaded from Map.nx/Tile.img. Contains a Texture and a z (depth) value.
 	class TileData
 	{
 	public:
+		// Load the tile from a node of game data.
 		TileData(node);
+		// Default tile, can be used if a tile is requested that does not exist.
+		TileData();
+		// Delete the texture object at destruction.
 		~TileData();
-		void draw(vector2d<int>);
-		int getz();
+		// Draw the tile at the specified position.
+		void draw(vector2d<int32_t>) const;
+		// Return if the tile was loaded. False for default tile.
+		bool isloaded() const;
+		// Return the z (depth) value associated with this tile.
+		int32_t getz() const;
 	private:
-		Texture* tiletxt;
-		int z;
+		Texture* tiletexture;
+		int32_t z;
 	};
 }
 

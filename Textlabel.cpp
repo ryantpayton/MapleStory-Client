@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,60 +17,27 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Textlabel.h"
-#include "TextWrapperDW.h"
 
-namespace Graphics
+namespace IO
 {
-	Textlabel::Textlabel(Font f, Textcolor c, string s, short m)
+	Textlabel::Textlabel(Font f, Textcolor c, string s, int16_t m)
 	{
-		text = new TextWrapperDW(f, c, s, m);
-		str = s;
+#ifdef JOURNEY_USE_OPENGL
+		textwrapper = TextWrapperGL(f, c, s, m);
+#else
+		textwrapper = TextWrapperDW(f, c, s, m);
+#endif
 	}
 
-	Textlabel::~Textlabel()
+	Textlabel::Textlabel() {}
+
+	TextWrapper& Textlabel::gettext()
 	{
-		delete text;
+		return textwrapper;
 	}
 
-	void Textlabel::draw(vector2d<int> pos)
+	const TextWrapper& Textlabel::gettext() const
 	{
-		if (text != 0)
-		{
-			text->draw(pos);
-		}
-	}
-
-	void Textlabel::settext(string t)
-	{
-		settext(t, 816);
-	}
-
-	void Textlabel::settext(string t, short m)
-	{
-		str = t;
-		if (text != 0)
-		{
-			text->settext(t, m);
-		}
-	}
-
-	short Textlabel::getwidth()
-	{
-		return (text != 0) ? text->getdimensions().x() : 0;
-	}
-
-	short Textlabel::getadvance(size_t pos)
-	{
-		return (text != 0) ? text->getadvance(pos) : 0;
-	}
-
-	size_t Textlabel::getlength()
-	{
-		return str.size();
-	}
-
-	string Textlabel::gettext()
-	{
-		return str;
+		return textwrapper;
 	}
 }

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,10 +18,10 @@
 #pragma once
 #include <string>
 
-using namespace std;
-
 namespace Util
 {
+	using::std::string;
+
 	template <class T>
 	class vector2d
 	{
@@ -29,20 +29,22 @@ namespace Util
 		vector2d() { a = 0; b = 0; }
 		vector2d(T v1, T v2) { a = v1; b = v2; }
 		~vector2d() {}
-		T x() { return a; }
-		T y() { return b; }
-		T length() { return static_cast<T>(std::sqrt(std::pow(a, 2) + std::pow(b, 2))); }
-		T center() { return ((a > b) ? a - b : b - a) / 2; }
-		bool contains(T p) { return (p >= a && p <= b); }
-		bool straight() { return a == b; }
-		bool overlaps(vector2d<T> v) { return (b >= v.x() && a <= v.x()) || (a <= v.y() && b >= v.y()) || (a >= v.x() && b <= v.y()) || (a <= v.x() && b >= v.y()); }
-		string tostring() { return to_string(a) + "," + to_string(b); }
-		vector2d<T> operator + (vector2d<T> v) { return vector2d<T>(a + v.x(), b + v.y()); }
-		vector2d<T> operator - (vector2d<T> v) { return vector2d<T>(a - v.x(), b - v.y()); }
-		vector2d<T> operator * (vector2d<T> v) { return vector2d<T>(a / v.x(), b / v.y()); }
-		vector2d<T> operator / (vector2d<T> v) { return vector2d<T>(a / ((v.x() == 0) ? 1 : v.x()), b / ((v.y() == 0) ? 1 : v.y())); }
-		bool operator == (vector2d<T> v) { return a == v.x() && b == v.y(); }
-		bool operator != (vector2d<T> v) { return a != v.x() || b != v.y(); }
+		T x() const { return a; }
+		T y() const { return b; }
+		T smaller() const { return (a < b) ? a : b; }
+		T greater() const { return (a < b) ? b : a; }
+		T length() const { return static_cast<T>(std::sqrt(std::pow(a, 2) + std::pow(b, 2))); }
+		T center() const { return ((a > b) ? a - b : b - a) / 2; }
+		bool contains(T p) const { return (p >= a && p <= b); }
+		bool straight() const { return a == b; }
+		bool overlaps(vector2d<T> v) const { return (b >= v.x() && a <= v.x()) || (a <= v.y() && b >= v.y()) || (a >= v.x() && b <= v.y()) || (a <= v.x() && b >= v.y()); }
+		string tostring() const { return to_string(a) + "," + to_string(b); }
+		vector2d<T> operator + (vector2d<T> v) const { return vector2d<T>(a + v.x(), b + v.y()); }
+		vector2d<T> operator - (vector2d<T> v) const { return vector2d<T>(a - v.x(), b - v.y()); }
+		vector2d<T> operator * (vector2d<T> v) const { return vector2d<T>(a / v.x(), b / v.y()); }
+		vector2d<T> operator / (vector2d<T> v) const { return vector2d<T>(a / ((v.x() == 0) ? 1 : v.x()), b / ((v.y() == 0) ? 1 : v.y())); }
+		bool operator == (vector2d<T> v) const { return a == v.x() && b == v.y(); }
+		bool operator != (vector2d<T> v) const { return a != v.x() || b != v.y(); }
 		void setx(T v) { a = v; }
 		void sety(T v) { b = v; }
 		void shiftx(T v) { a += v; }

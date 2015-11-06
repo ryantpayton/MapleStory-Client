@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,12 +19,16 @@
 
 namespace Character
 {
-	void Monsterbook::setcover(int cov)
+	Monsterbook::Monsterbook() {}
+
+	Monsterbook::~Monsterbook() {}
+
+	void Monsterbook::setcover(int32_t cov)
 	{
 		cover = cov;
 	}
 
-	void Monsterbook::addcard(short card, char level)
+	void Monsterbook::addcard(int16_t card, int8_t level)
 	{
 		cards[card] = level;
 	}

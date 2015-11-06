@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -28,16 +28,13 @@ namespace Util
 		rectangle2d(vector2d<T> v1, vector2d<T> v2) { lt = v1; rb = v2; }
 		rectangle2d() { lt = vector2d<T>(); rb = vector2d<T>(); }
 		~rectangle2d() {}
-		T getwidth() { return abs(lt.x() - rb.x()); }
-		T l() { return lt.x(); }
-		T t() { return lt.y(); }
-		T r() { return rb.x(); }
-		T b() { return rb.y(); }
-		bool contains(vector2d<T> v) 
-		{ 
-			return !straight() && v.x() >= lt.x() && v.x() <= rb.x() && v.y() >= lt.y() && v.y() <= rb.y(); 
-		}
-		bool overlaps(rectangle2d<T> ar)
+		T getwidth() const { return abs(lt.x() - rb.x()); }
+		T l() const { return lt.x(); }
+		T t() const { return lt.y(); }
+		T r() const { return rb.x(); }
+		T b() const { return rb.y(); }
+		bool contains(vector2d<T> v) const { return !straight() && v.x() >= lt.x() && v.x() <= rb.x() && v.y() >= lt.y() && v.y() <= rb.y(); }
+		bool overlaps(rectangle2d<T> ar) const
 		{
 			vector2d<T> rhor = vector2d<T>(lt.x(), rb.x());
 			vector2d<T> rver = vector2d<T>(lt.y(), rb.y());
@@ -45,14 +42,16 @@ namespace Util
 			vector2d<T> aver = vector2d<T>(ar.getlt().y(), ar.getrb().y());
 			return rhor.overlaps(ahor) && rver.overlaps(aver);
 		}
-		bool straight() { return lt == rb; }
+		bool straight() const { return lt == rb; }
+		vector2d<T> getlt() const { return lt; }
+		vector2d<T> getrb() const { return rb; }
+		vector2d<T> gethor() const { return vector2d<T>(lt.x(), rb.x()); }
+		vector2d<T> getver() const { return vector2d<T>(lt.y(), rb.y()); }
 		void setlt(vector2d<T> l) { lt = l; }
 		void setrb(vector2d<T> r) { rb = r; }
 		void shift(vector2d<T> v) { lt = lt + v; rb = rb + v; }
 		void shiftlt(vector2d<T> l) { lt = lt + l; }
 		void shiftrb(vector2d<T> r) { rb = rb + r; }
-		vector2d<T> getlt() { return lt; }
-		vector2d<T> getrb() { return rb; }
 	private:
 		vector2d<T> lt;
 		vector2d<T> rb;

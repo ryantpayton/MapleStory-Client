@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,30 +16,34 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Cryptography.h"
 #include "AES.h"
-#include <mutex>
+#include <stdint.h>
 
 namespace Net
 {
-	class CryptographyMaple : public Cryptography
+	// Used to encrypt and decrypt packets for communication with the server.
+	class CryptographyMaple
 	{
 	public:
-		CryptographyMaple() {}
-		~CryptographyMaple() {}
-		void init(vector<uint8_t>, vector<uint8_t>, uint8_t, uint8_t);
-		void encrypt(OutPacket&);
-		void decrypt(char*, int, bool);
-		int getlength(char*);
-		void mapleencrypt(char*, int);
-		void mapledecrypt(char*, int);
-		void aescrypt(char*, int, bool);
-		char rollleft(char, int);
-		char rollright(char, int);
-		void updateiv(bool);
+		CryptographyMaple();
+		~CryptographyMaple();
+		// Encrypt a byte array with the given length and iv.
+		// Parameters: int8_t*(bytes to encrypt), size_t(length), uint8_t*(sendiv)
+		void encrypt(int8_t*, size_t, uint8_t*);
+		// Decrypt a byte array with the given length and iv.
+		// Parameters: int8_t*(bytes to encrypt), size_t(length), uint8_t*(recviv)
+		void decrypt(int8_t*, size_t, uint8_t*);
+		// Use the 4-byte header of a received packet to determine its length.
+		// Parameters: int8_t*(header)
+		size_t getlength(const int8_t*) const;
 	private:
+		void mapleencrypt(int8_t*, size_t) const;
+		void mapledecrypt(int8_t*, size_t) const;
+		void aesofb(int8_t*, size_t, uint8_t*);
+		void updateiv(uint8_t*) const;
+		int8_t rollleft(int8_t, size_t) const;
+		int8_t rollright(int8_t, size_t) const;
 		AES cipher;
-		mutex decryptlock;
 	};
 }
 

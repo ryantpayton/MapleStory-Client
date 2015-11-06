@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,19 +16,27 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "vector2d.h"
-
-using namespace Util;
+#include "Physics.h"
 
 namespace Gameplay
 {
+	using::std::int32_t;
+	// Interface for objects on a map, eg. mobs, npcs, characters etc.
 	class Mapobject
 	{
 	public:
 		virtual ~Mapobject(){}
-		virtual void draw(vector2d<int>) = 0;
-		virtual char update(short) = 0;
-		virtual char getlayer() = 0;
-		virtual int getoid() = 0;
+		// Updates the object and returns the updated layer.
+		virtual int8_t update(const Physics&, uint16_t) = 0;
+		// Draws the object.
+		virtual void draw(vector2d<int32_t>) const = 0;
+		// Changes the objects position.
+		virtual void setposition(vector2d<int32_t>) = 0;
+		// Obtains the layer used to determine the drawing order on the map.
+		virtual int8_t getlayer() const = 0;
+		// Returns the object id unique to every object on one map.
+		virtual int32_t getoid() const = 0;
+		// Returns the current position.
+		virtual vector2d<int32_t> getposition() const = 0;
 	};
 }

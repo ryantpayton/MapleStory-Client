@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,25 +16,38 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Journey.h"
+#ifdef JOURNEY_USE_OPENGL
 #include "Window.h"
-/*#include "GL\glew.h"
+#include "LocatorGL.h"
+#include "Keyboard.h"
+#include "GL\glew.h"
 #include "glfw3.h"
-#include "glm.hpp"
+#include "UI.h"
 
-namespace Program
+namespace IO
 {
+	// Implementation of 'Window' in GLFW.
 	class WindowGLFW : public Window
 	{
 	public:
 		WindowGLFW();
 		~WindowGLFW();
-		bool init();
-		void draw();
-		void update();
-		void fadeout();
-		void togglemode();
+		bool init(bool);
+		bool initwindow();
+		void update(UI&);
+		void begin() const;
+		void end() const;
+		void fadeout(Transition);
+		Keyboard& getkeyboard();
 	private:
 		GLFWwindow* glwnd;
+		GLFWwindow* context;
+		FontsFT fonts;
+		LocatorGL locator;
+		Keyboard keyboard;
+		bool fullscreen;
 	};
-}*/
+}
+#endif
 

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -22,8 +22,6 @@
 #include "UI.h"
 #include "Login.h"
 #include "Session.h"
-
-using namespace Net;
 
 namespace IO
 {
@@ -53,21 +51,25 @@ namespace IO
 		SFTK_MERCHANT
 	};
 
+	using::Net::Login;
+	using::Net::Session;
+	using::Util::Randomizer;
+
 	class UISoftkey : public UIElement
 	{
 	public:
 		UISoftkey(SoftkeyType, UI&, Login&, Session&);
 		~UISoftkey();
-		void draw();
-		void buttonpressed(short);
+		void draw() const;
+		void buttonpressed(uint16_t);
 		void shufflekeys();
-		vector2d<int> keypos(char);
+		vector2d<int32_t> keypos(uint8_t) const;
 	private:
 		SoftkeyType type;
 		UI& ui;
 		Login& login;
 		Session& session;
-		Textlabel* entry;
+		Textlabel entry;
 		Randomizer random;
 	};
 

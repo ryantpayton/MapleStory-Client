@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -28,14 +28,14 @@ namespace Net
 		bool notgm = recv.readbool();
 		if (notgm)
 		{
-			int currank = recv.readint();
-			int rankmv = recv.readint();
-			int curjobrank = recv.readint();
-			int jobrankmv = recv.readint();
-			char rankmc = (rankmv > 0) ? '+' : (rankmv < 0) ? '-' : '=';
-			char jobrankmc = (jobrankmv > 0) ? '+' : (jobrankmv < 0) ? '-' : '=';
-			stats.setrank(make_pair(currank, rankmc));
-			stats.setjobrank(make_pair(curjobrank, jobrankmc));
+			int32_t currank = recv.readint();
+			int32_t rankmv = recv.readint();
+			int32_t curjobrank = recv.readint();
+			int32_t jobrankmv = recv.readint();
+			int8_t rankmc = (rankmv > 0) ? '+' : (rankmv < 0) ? '-' : '=';
+			int8_t jobrankmc = (jobrankmv > 0) ? '+' : (jobrankmv < 0) ? '-' : '=';
+			stats.setrank(std::make_pair(currank, rankmc));
+			stats.setjobrank(std::make_pair(curjobrank, jobrankmc));
 		}
 	}
 
@@ -54,7 +54,7 @@ namespace Net
 		return look;
 	}
 
-	const int CharEntry::getcid() const
+	const int32_t CharEntry::getcid() const
 	{
 		return cid;
 	}

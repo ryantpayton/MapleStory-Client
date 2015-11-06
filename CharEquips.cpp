@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,11 +21,11 @@
 
 namespace Character
 {
-	void CharEquips::draw(Equipslot slot, string stance, CharacterLayer layer, uint8_t frame, DrawArgument& args)
+	void CharEquips::draw(Equipslot slot, string stance, CharacterLayer layer, uint8_t frame, const DrawArgument& args) const
 	{
 		if (equips.count(slot))
 		{
-			equips[slot]->draw(stance, layer, frame, args);
+			equips.at(slot)->draw(stance, layer, frame, args);
 		}
 	}
 
@@ -63,6 +63,7 @@ namespace Character
 	{
 		if (equips.count(EQL_WEAPON))
 		{
+			using::Data::WeaponData;
 			const WeaponData* weapon = reinterpret_cast<const WeaponData*>(equips.at(EQL_WEAPON));
 			return weapon->istwohanded();
 		}

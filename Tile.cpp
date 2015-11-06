@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,14 +19,15 @@
 
 namespace Gameplay
 {
-	Tile::Tile(TileData* t, vector2d<int> p)
+	Tile::Tile(const TileData& td, vector2d<int32_t> p) : tdata(td)
 	{
-		tdata = t;
 		position = p;
 	}
 
-	void Tile::draw(vector2d<int> viewpos)
+	Tile::~Tile() {}
+
+	void Tile::draw(vector2d<int32_t> viewpos) const
 	{
-		tdata->draw(position + viewpos);
+		tdata.draw(position + viewpos);
 	}
 }

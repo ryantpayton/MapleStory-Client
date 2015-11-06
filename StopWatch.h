@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,29 +17,38 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include <chrono>
+#include <stdint.h>
 
-using namespace std;
-
-namespace Program
+namespace Util
 {
+	using::std::chrono::high_resolution_clock;
+
+	// Small class for measuring elapsed time between game loops.
 	class StopWatch
 	{
 	public:
+		// Start watch at construction.
 		StopWatch()
 		{
-			start = chrono::steady_clock::now();
+			start();
 		}
 
 		~StopWatch() {}
 
-		short evaluate()
+		// Start measurement.
+		void start()
 		{
-			chrono::steady_clock::time_point time = chrono::steady_clock::now();
-			double elapsed = (chrono::duration_cast<chrono::duration<double>>(time - start)).count();
-			start = time;
-			return static_cast<short>(1000 * elapsed);
+			last = high_resolution_clock::now();
+		}
+
+		// Return time elapsed since last measurement.
+		uint16_t evaluate()
+		{
+			int64_t elapsed = (std::chrono::duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - last)).count();
+			start();
+			return static_cast<uint16_t>(elapsed);
 		}
 	private:
-		chrono::steady_clock::time_point start;
+		high_resolution_clock::time_point last;
 	};
 }

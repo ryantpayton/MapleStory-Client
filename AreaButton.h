@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,14 +20,15 @@
 
 namespace IO
 {
+	// An invisible button which is only defined by it's area.
 	class AreaButton : public Button
 	{
 	public:
-		AreaButton(vector2d<int>, vector2d<int>);
-		void draw(vector2d<int>) {}
-		rectangle2d<int> bounds(vector2d<int>);
+		AreaButton(vector2d<int32_t>, vector2d<int32_t>);
+		void draw(vector2d<int32_t>) const {}
+		rectangle2d<int32_t> bounds(vector2d<int32_t>) const;
 	private:
-		vector2d<int> dimension;
+		vector2d<int32_t> dimension;
 	};
 }
 

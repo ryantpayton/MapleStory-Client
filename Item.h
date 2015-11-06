@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,25 +19,26 @@
 #include "ItemData.h"
 #include "InPacket.h"
 
-using namespace Data;
-
 namespace Character
 {
+	using::std::string;
+	using::Data::ItemData;
+
 	class Item
 	{
 	public:
-		Item(const ItemData&, int, bool, int64_t, int64_t, short, string, short);
+		Item(const ItemData&, int32_t, bool, int64_t, int64_t, int16_t, string, int16_t);
 		~Item(){}
-		int getid();
+		int getid() const;
 	protected:
 		const ItemData& idata;
-		int iid;
+		int32_t iid;
 		bool cash;
 		int64_t uniqueid;
 		int64_t expire;
-		short count;
+		int16_t count;
 		string owner;
-		short flag;
+		int16_t flag;
 	};
 }
 

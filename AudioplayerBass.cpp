@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,9 +20,19 @@
 
 namespace Program
 {
-	bool AudioplayerBass::init(HWND hwnd)
+	AudioplayerBass::AudioplayerBass() 
 	{
-		return BASS_Init(1, 44100, 0, hwnd, 0) == TRUE;
+		error = !BASS_Init(1, 44100, 0, nullptr, 0);
+	}
+
+	AudioplayerBass::~AudioplayerBass() 
+	{
+		close();
+	}
+
+	bool AudioplayerBass::geterror() const
+	{
+		return error;
 	}
 
 	void AudioplayerBass::close()
@@ -68,12 +78,12 @@ namespace Program
 		}
 	}
 
-	void AudioplayerBass::setsfxvolume(char vol)
+	void AudioplayerBass::setsfxvolume(uint8_t vol)
 	{
 		BASS_SetConfig(BASS_CONFIG_GVOL_STREAM, vol * 100);
 	}
 
-	void AudioplayerBass::setbgmvolume(char vol)
+	void AudioplayerBass::setbgmvolume(uint8_t vol)
 	{
 		BASS_SetConfig(BASS_CONFIG_GVOL_SAMPLE, vol * 100);
 	}

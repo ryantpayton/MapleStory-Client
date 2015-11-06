@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,22 +19,22 @@
 #include "Graphic.h"
 #include "node.hpp"
 
-using namespace nl;
-
 namespace Graphics
 {
+	using::nl::node;
+
 	class Sprite : public Graphic
 	{
 	public:
-		Sprite(node, vector2d<int>);
+		Sprite(node, vector2d<int32_t>);
 		~Sprite();
-		void draw(DrawArgument&);
-		void update(short);
-		vector2d<int> getorigin() { return graphic->getorigin(); }
-		vector2d<int> getdimension() { return graphic->getdimension(); }
+		void draw(const DrawArgument&) const;
+		void update(uint16_t);
+		vector2d<int32_t> getorigin() const;
+		vector2d<int32_t> getdimensions() const;
 	private:
 		Graphic* graphic;
-		vector2d<int> position;
+		vector2d<int32_t> position;
 	};
 }
 

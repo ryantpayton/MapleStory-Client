@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,46 +16,33 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "InputConstants.h"
 #include "Animation.h"
 #include "Ptrmap.h"
 
-using namespace Graphics;
-
 namespace IO
 {
-	enum Mousestate
-	{
-		MST_IDLE = 0,
-		MST_CANCLICK = 1,
-		MST_GAME = 2,
-		MST_HOUSE = 3,
-		MST_CANCLICK2 = 4,
-		MST_CANGRAB = 5,
-		MST_GIFT = 6,
-		MST_VSCROLL = 7,
-		MST_HSCROLL = 8,
-		MST_VSCROLLIDLE = 9,
-		MST_HSCROLLIDLE = 10,
-		MST_GRABBING = 11,
-		MST_CLICKING = 12,
-		MST_RCLICK = 13
-	};
+	using::std::uint16_t;
+	using::std::int32_t;
+	using::Util::vector2d;
+	using::Util::Ptrmap;
+	using::Graphics::Animation;
 
 	class Cursor
 	{
 	public:
 		Cursor();
-		~Cursor() {}
+		~Cursor();
 		void init();
-		void draw();
-		void update(short);
-		Mousestate getstate() { return state; }
-		void setstate(Mousestate s) { state = s; }
-		void setposition(vector2d<int> p) { position = p; }
+		void draw() const;
+		void update(uint16_t);
+		void setstate(Mousestate);
+		void setposition(vector2d<int32_t>);
+		Mousestate getstate() const;
 	private:
 		Ptrmap<Mousestate, Animation> animations;
 		Mousestate state;
-		vector2d<int> position;
+		vector2d<int32_t> position;
 	};
 }
 

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,28 +17,38 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Portal.h"
+#include "Animation.h"
 #include "Ptrmap.h"
+#include "node.hpp"
 
 namespace Gameplay
 {
+	using::std::map;
+	using::nl::node;
+	using::Util::Ptrmap;
+	using::Graphics::Animation;
+
+	// Collecton of portals on a map. Draws and updates portals.
+	// Also contains methods for using portals and obtaining spawn points.
 	class Mapportals
 	{
 	public:
 		Mapportals();
 		~Mapportals();
 		void init();
-		void load(node, int);
+		void load(node, int32_t);
 		void clear();
-		void draw(vector2d<int>);
-		void update(rectangle2d<int>, short);
-		vector2d<int> getspawnpoint(char);
-		vector2d<int> getspawnpoint(string);
-		pair<int, string> findportal(rectangle2d<int>);
+		void update(rectangle2d<int32_t>, uint16_t);
+		void draw(vector2d<int32_t>) const;
+		uint8_t getportalbyname(string) const;
+		vector2d<int32_t> getspawnpoint(uint8_t) const;
+		vector2d<int32_t> getspawnpoint(string) const;
+		const pair<int32_t, string>* findportal(rectangle2d<int32_t>);
 	private:
-		Ptrmap<char, Portal> portals;
-		map<string, char> portalnames;
-		Animation* animhidden;
-		Animation* animregular;
+		Ptrmap<uint8_t, Portal> portals;
+		map<string, uint8_t> portalnames;
+		Ptrmap<PortalType, Animation> animations;
+		uint16_t findportalcd;
 	};
 }
 

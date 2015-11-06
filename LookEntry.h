@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,12 +18,15 @@
 #pragma once
 #include "InPacket.h"
 #include "EquipData.h"
+#include <vector>
 #include <map>
-
-using namespace Constants;
 
 namespace Net
 {
+	using::std::vector;
+	using::std::map;
+	using::Character::Equipslot;
+
 	class LookEntry
 	{
 	public:

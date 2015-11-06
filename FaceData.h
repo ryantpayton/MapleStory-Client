@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -25,9 +25,9 @@ namespace Data
 	{
 	public:
 		FaceData(int);
-		uint8_t nextframe(string, uint8_t);
-		short getdelay(string, uint8_t);
-		string getname() { return name; }
+		uint8_t nextframe(string, uint8_t) const;
+		short getdelay(string, uint8_t) const;
+		string getname() const;
 	private:
 		string name;
 		map<string, map<uint8_t, short>> delays;

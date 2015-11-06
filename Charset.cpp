@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -25,7 +25,7 @@ namespace IO
 		{
 			if (sub.data_type() == node::type::bitmap)
 			{
-				char c = sub.name()[0];
+				int8_t c = sub.name()[0];
 				if (c == '\\')
 				{
 					c = '/';
@@ -36,26 +36,34 @@ namespace IO
 		alignment = alg;
 	}
 
-	void Charset::draw(char c, DrawArgument& args)
+	Charset::~Charset() {}
+
+	void Charset::draw(int8_t c, const DrawArgument& args) const
 	{
-		Texture* txt = chars.get(c);
-		if (txt != 0)
+		const Texture* txt = chars.get(c);
+		if (txt)
 		{
 			txt->draw(args);
 		}
 	}
 
-	int Charset::getw(char c)
+	int32_t Charset::getw(int8_t c) const
 	{
-		Texture* txt = chars.get(c);
-		return (txt != 0) ? txt->getdimension().x() : 0;
+		const Texture* txt = chars.get(c);
+		if (txt)
+			return txt->getdimensions().x();
+		else
+			return 0;
 	}
 
-	int Charset::draw(string str, DrawArgument& args)
+	int32_t Charset::draw(string str, const DrawArgument& args) const
 	{
 		size_t length = str.size();
-		int shift = 0;
-		int total = 0;
+		int32_t shift = 0;
+		int32_t total = 0;
+
+		using::Util::vector2d;
+		using::Graphics::AlphaArgument;
 		switch (alignment)
 		{
 		case CHA_CENTER:
@@ -67,7 +75,7 @@ namespace IO
 		case CHA_LEFT:
 			for (size_t i = 0; i < length; i++)
 			{
-				draw(str[i], AlphaArgument(args.getpos() + vector2d<int>(shift, 0), args.getalpha()));
+				draw(str[i], AlphaArgument(args.getpos() + vector2d<int32_t>(shift, 0), args.getalpha()));
 				shift += getw(str[i]);
 			}
 			break;
@@ -75,7 +83,7 @@ namespace IO
 			for (size_t i = length - 1; i >= 0 && i < length; i--)
 			{
 				shift += getw(str[i]);
-				draw(str[i], AlphaArgument(args.getpos() - vector2d<int>(shift, 0), args.getalpha()));
+				draw(str[i], AlphaArgument(args.getpos() - vector2d<int32_t>(shift, 0), args.getalpha()));
 			}
 			break;
 		}
