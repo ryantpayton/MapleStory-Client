@@ -18,34 +18,26 @@
 #pragma once
 #include "Journey.h"
 #ifdef JOURNEY_USE_OPENGL
-#include "Window.h"
-//#include "LocatorGL.h"
-#include "Keyboard.h"
 #include "GL\glew.h"
 #include "glfw3.h"
 #include "UI.h"
 
 namespace IO
 {
-	// Implementation of 'Window' in GLFW.
-	class WindowGLFW : public Window
+	class WindowGLFW
 	{
 	public:
 		WindowGLFW();
 		~WindowGLFW();
-		bool init(bool);
+		bool init(UI*);
 		bool initwindow();
-		void update(UI&);
+		void update();
 		void begin() const;
 		void end() const;
-		void fadeout(Transition);
-		Keyboard& getkeyboard();
 	private:
 		GLFWwindow* glwnd;
 		GLFWwindow* context;
-		//FontsFT fonts;
-		//LocatorGL locator;
-		Keyboard keyboard;
+		UI* ui;
 		bool fullscreen;
 	};
 }

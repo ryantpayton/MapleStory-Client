@@ -63,17 +63,15 @@ namespace Gameplay
 
 	void Physics::movenormal(PhysicsObject& phobj) const
 	{
-		// Initialise acceleration with self-applied forces.
-		phobj.hacc = phobj.hforce / phobj.mass;
 		phobj.vacc = phobj.vforce / phobj.mass;
-		phobj.hforce = 0.0f;
 		phobj.vforce = 0.0f;
 
-		// This is a physics engine for non-flying, on-land movement
-		// so we differentiate based on if the object is on the ground.
+		phobj.hacc = 0.0f;
 		if (phobj.onground)
 		{
-			// Make sure speed doesn't diverge.
+			phobj.hacc += phobj.hforce / phobj.mass;
+			phobj.hforce = 0.0f;
+
 			if (phobj.hacc == 0.0f && phobj.hspeed < 0.1f && phobj.hspeed > -0.1f)
 			{
 				phobj.hspeed = 0.0f;
@@ -85,32 +83,26 @@ namespace Gameplay
 		else
 		{
 			phobj.hacc -= AIRFRICTION * phobj.hspeed;
-			// Apply gravity.
 			phobj.vacc += GRAVFORCE / phobj.mass;
 		}
 
-		// Add accelerations to speed.
 		phobj.hspeed += phobj.hacc;
 		phobj.vspeed += phobj.vacc;
 	}
 
 	void Physics::moveflying(PhysicsObject& phobj) const
 	{
-		// Initialise acceleration with self-applied forces.
 		phobj.hacc = phobj.hforce / phobj.mass;
 		phobj.vacc = phobj.vforce / phobj.mass;
 		phobj.hforce = 0.0f;
 		phobj.vforce = 0.0f;
 
-		// Apply frictions.
 		phobj.hacc -= FLYFRICTION * phobj.hspeed;
 		phobj.vacc -= FLYFRICTION * phobj.vspeed;
 
-		// Add accelerations to speed.
 		phobj.hspeed += phobj.hacc;
 		phobj.vspeed += phobj.vacc;
 
-		// Make sure speed doesn't diverge.
 		if (phobj.hacc == 0.0f && phobj.hspeed < 0.1f && phobj.hspeed > -0.1f)
 		{
 			phobj.hspeed = 0.0f;

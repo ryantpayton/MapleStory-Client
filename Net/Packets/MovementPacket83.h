@@ -15,46 +15,37 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "MapMobs.h"
+#pragma once
+#include "Net\OutPacket.h"
+#include "Net\SendOpcodes83.h"
+#include "Gameplay\MovementInfo.h"
 
-namespace Gameplay
+namespace Net
 {
-	MapMobs::MapMobs() {}
+	using::Gameplay::MovementInfo;
+	using::Gameplay::MovementFragment;
 
-	void MapMobs::addmob(int32_t oid, int32_t id, bool control, int8_t stance, 
-		uint16_t fhid, int8_t effect, bool fadein, int8_t team, int32_t x, int32_t y) {
-
-		Mob* mob = getmob(oid);
-		if (mob)
-			mob->makeactive();
-		else
-			add(new Mob(oid, id, control, stance, fhid, effect, fadein, team, x, y));
-	}
-
-	void MapMobs::killmob(int32_t oid, int8_t animation)
+	// Base class for packets which need to update object movements with the server.
+	class MovementPacket83 : public OutPacket
 	{
-		Mob* mob = getmob(oid);
-		if (mob)
+	public:
+		MovementPacket83(SendOpcode83 opc) : OutPacket(opc) {}
+	protected:
+		void writemoves(const MovementInfo& movement)
 		{
-			mob->kill(animation);
-		}
-	}
+			writech(static_cast<int8_t>(movement.getsize()));
 
-	void MapMobs::sendmobhp(int32_t oid, int8_t percent, uint16_t playerlevel)
-	{
-		Mob* mob = getmob(oid);
-		if (mob)
-		{
-			mob->sendhp(percent, playerlevel);
+			for (vector<MovementFragment>::const_iterator mvit = movement.getbegin(); mvit != movement.getend(); ++mvit)
+			{
+				writech(mvit->command);
+				writesh(mvit->xpos);
+				writesh(mvit->ypos);
+				writesh(mvit->lastx);
+				writesh(mvit->lasty);
+				writesh(0);
+				writech(mvit->newstate);
+				writesh(mvit->duration);
+			}
 		}
-	}
-
-	Mob* MapMobs::getmob(int32_t oid)
-	{
-		Mapobject* mmo = get(oid);
-		if (mmo)
-			return reinterpret_cast<Mob*>(mmo);
-		else
-			return nullptr;
-	}
+	};
 }

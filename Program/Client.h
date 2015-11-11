@@ -59,15 +59,14 @@ namespace Journey
 
 		Client();
 		~Client();
-		// Returns the last error code.
-		Error geterror() const;
+		// Initialise and return errors.
+		Error init();
 		// Checks for incoming packets and returns if the connection is still alive.
 		bool receive();
 		// Draws the window and all game objects.
 		void draw(float) const;
 		// Processes inputs and updates the window and all game objects.
-		// Parameters: short(delay-per-frame)
-		void update(uint16_t);
+		void update();
 		// Methods for obtaining references to game objects.
 		Audioplayer& getaudio();
 		StageInterface& getstage();

@@ -94,11 +94,11 @@ namespace IO
 				}
 				break;
 			case KA_BACK:
-				if (text.size() > 0)
+				if (text.size() > 0 && markerpos > 0)
 				{
 					text.erase(markerpos - 1, 1);
 					markerpos--;
-					settext(text);
+					modifytext(text);
 				}
 				break;
 			}
@@ -110,12 +110,12 @@ namespace IO
 			{
 				text.insert(markerpos, 1, c);
 				markerpos++;
-				settext(text);
+				modifytext(text);
 			}
 		}
 	}
 
-	void Textfield::settext(string t)
+	void Textfield::modifytext(string t)
 	{
 		if (crypt > 0)
 		{
@@ -129,9 +129,12 @@ namespace IO
 		}
 
 		text = t;
+	}
 
-		if (markerpos > text.size())
-			markerpos = text.size();
+	void Textfield::settext(string t)
+	{
+		modifytext(t);
+		markerpos = text.size();
 	}
 
 	void Textfield::setcrypt(int8_t c)

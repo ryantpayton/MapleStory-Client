@@ -62,28 +62,28 @@ namespace Net
 		handlers[RECEIVE_POLICE] = handler_ptr(new NullHandler()); //TO DO
 		handlers[SKILL_MACROS] = handler_ptr(new SkillmacrosHandler83());
 		handlers[SET_FIELD] = handler_ptr(new SetfieldHandler83());
-		/*handlers[FIELD_EFFECT] = unique_ptr<vhandler>(new field_effect_h());
-		handlers[CLOCK] = unique_ptr<vhandler>(new clock_h());
-		handlers[SPAWN_PLAYER] = unique_ptr<vhandler>(new spawn_player_h());
-		handlers[REMOVE_PLAYER] = unique_ptr<vhandler>(new remove_player_h());
-		handlers[CHAT_RECEIVED] = unique_ptr<vhandler>(new chat_received_h());
-		handlers[SCROLL_RESULT] = unique_ptr<vhandler>(new scroll_result_h());
-		handlers[SPAWN_PET] = unique_ptr<vhandler>(new unhandled()); //TO DO
-		handlers[PLAYER_MOVED] = unique_ptr<vhandler>(new player_moved_h());
-		handlers[SHOW_ITEM_EFFECT] = unique_ptr<vhandler>(new unhandled()); //TO DO
+		//handlers[FIELD_EFFECT] = unique_ptr<vhandler>(new field_effect_h());
+		//handlers[CLOCK] = unique_ptr<vhandler>(new clock_h());
+		handlers[SPAWN_PLAYER] = handler_ptr(new SpawnCharHandler83());
+		handlers[REMOVE_PLAYER] = handler_ptr(new RemoveCharHandler83());
+		//handlers[CHAT_RECEIVED] = unique_ptr<vhandler>(new chat_received_h());
+		//handlers[SCROLL_RESULT] = unique_ptr<vhandler>(new scroll_result_h());
+		//handlers[SPAWN_PET] = unique_ptr<vhandler>(new unhandled()); //TO DO
+		handlers[PLAYER_MOVED] = handler_ptr(new MoveCharHandler83());
+		/*handlers[SHOW_ITEM_EFFECT] = unique_ptr<vhandler>(new unhandled()); //TO DO
 		handlers[SHOW_CHAIR] = unique_ptr<vhandler>(new unhandled()); //TO DO
 		handlers[SHOW_FOREIGN_EFFECT] = unique_ptr<vhandler>(new show_foreign_effect_h()); //TO DO
 		handlers[LOCK_UI] = unique_ptr<vhandler>(new unhandled()); //not sure what this does
-		handlers[TOGGLE_UI] = unique_ptr<vhandler>(new toggle_ui_h());
-		handlers[SPAWN_MOB] = unique_ptr<vhandler>(new spawn_mob_h());
-		handlers[KILL_MOB] = unique_ptr<vhandler>(new kill_mob_h());
-		handlers[SPAWN_MOB_C] = unique_ptr<vhandler>(new spawn_mob_c_h());
-		handlers[MOB_MOVED] = unique_ptr<vhandler>(new mob_moved_h());
-		handlers[MOVE_MOB_RESPONSE] = unique_ptr<vhandler>(new move_mob_response_h());
-		handlers[SHOW_MOB_HP] = unique_ptr<vhandler>(new show_mob_hp_h());*/
+		handlers[TOGGLE_UI] = unique_ptr<vhandler>(new toggle_ui_h());*/
+		handlers[SPAWN_MOB] = handler_ptr(new SpawnMobHandler83());
+		handlers[KILL_MOB] = handler_ptr(new KillMobHandler83());
+		handlers[SPAWN_MOB_C] = handler_ptr(new SpawnMobControllerHandler83());
+		//handlers[MOB_MOVED] = unique_ptr<vhandler>(new mob_moved_h());
+		//handlers[MOVE_MOB_RESPONSE] = unique_ptr<vhandler>(new move_mob_response_h());
+		handlers[SHOW_MOB_HP] = handler_ptr(new ShowMobHpHandler83());
 		handlers[SPAWN_NPC] = handler_ptr(new SpawnNpcHandler83());
 		handlers[SPAWN_NPC_C] = handler_ptr(new SpawnNpcControllerHandler83());
-		handlers[MAKE_NPC_SCRIPTED] = handler_ptr(new NullHandler()); // odin doesn't have it so idk
+		handlers[MAKE_NPC_SCRIPTED] = handler_ptr(new NullHandler());
 		//handlers[DROP_ITEM_FROMOBJECT] = unique_ptr<vhandler>(new drop_item_from_mapobject_h());
 		//handlers[REMOVE_MAPITEM] = unique_ptr<vhandler>(new remove_mapitem_h());
 		//handlers[SPAWN_REACTOR] = unique_ptr<vhandler>(new spawn_reactor_h());
@@ -94,7 +94,7 @@ namespace Net
 
 	PacketHandler83::~PacketHandler83() {}
 
-	bool PacketHandler83::handle(ClientInterface& client, InPacket& recv) const
+	void PacketHandler83::handle(ClientInterface& client, InPacket& recv) const
 	{
 		try
 		{
@@ -117,10 +117,8 @@ namespace Net
 		}
 		catch (PacketError& pe)
 		{
-			// This occurs when the packet length or data sent by the server is incorrect.
+			// This occurs when the data sent by the server is incorrect.
 			std::cout << "Packet Error. Message: " << pe.what() << std::endl;
-			return false;
 		}
-		return true;
 	}
 }

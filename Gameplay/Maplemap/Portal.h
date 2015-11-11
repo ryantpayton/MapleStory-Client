@@ -63,11 +63,10 @@ namespace Gameplay
 		rectangle2d<int32_t> bounds() const;
 		const pair<int32_t, string>* getwarpinfo() const;
 	private:
-		const Animation* anim;
+		const Animation* animation;
 		PtType type;
 		string name;
-		bool intermap;
-		vector2d<int32_t> pos;
+		vector2d<int32_t> position;
 		pair<int32_t, string> warpinfo;
 		bool touched;
 	};

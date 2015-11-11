@@ -19,15 +19,14 @@
 
 namespace Gameplay
 {
-	Portal::Portal(const Animation* a, PtType t, string n, bool in, 
+	Portal::Portal(const Animation* a, PtType t, string nm, bool intermap, 
 		vector2d<int32_t> p, int32_t tid, string tnm) {
 
-		anim = a;
+		animation = a;
 		type = t;
-		name = n;
-		intermap = in;
-		pos = p;
-		warpinfo = std::make_pair(tid, tnm);
+		name = nm;
+		position = p;
+		warpinfo = std::make_pair(tid, intermap ? tnm : nm);
 		touched = false;
 	}
 
@@ -37,11 +36,11 @@ namespace Gameplay
 
 	void Portal::draw(vector2d<int32_t> viewpos, float inter) const
 	{
-		if (!anim || (type == HIDDEN && !touched))
+		if (!animation || (type == HIDDEN && !touched))
 			return;
 
 		using::Graphics::DrawArgument;
-		anim->draw(DrawArgument(pos + viewpos), inter);
+		animation->draw(DrawArgument(position + viewpos), inter);
 	}
 
 	void Portal::settouch(bool t)
@@ -61,12 +60,12 @@ namespace Gameplay
 
 	vector2d<int32_t> Portal::getposition() const
 	{
-		return pos;
+		return position;
 	}
 
 	rectangle2d<int32_t> Portal::bounds() const
 	{
-		return rectangle2d<int32_t>(pos, pos + vector2d<int32_t>(30, -50));
+		return rectangle2d<int32_t>(position, position + vector2d<int32_t>(30, -50));
 	}
 
 	const pair<int32_t, string>* Portal::getwarpinfo() const

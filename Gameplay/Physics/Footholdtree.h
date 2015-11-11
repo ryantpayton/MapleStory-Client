@@ -44,8 +44,8 @@ namespace Gameplay
 		vector2d<int32_t> getwalls() const;
 		// Returns the topmost and bottommost platform positions of the map.
 		vector2d<int32_t> getborders() const;
-	private:
 		const Foothold& getfh(uint16_t) const;
+	private:
 		uint16_t getnext(uint16_t, bool, float, float) const;
 		uint16_t getbelow(float, float) const;
 		int32_t getlwall(vector2d<int32_t>) const;

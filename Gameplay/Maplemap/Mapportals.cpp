@@ -22,21 +22,21 @@
 
 namespace Gameplay
 {
-	Mapportals::Mapportals()
+	MapPortals::MapPortals()
 	{
 		findportalcd = 0;
 	}
 
-	Mapportals::~Mapportals() {}
+	MapPortals::~MapPortals() {}
 
-	void Mapportals::init()
+	void MapPortals::init()
 	{
 		node pnode = nl::nx::map["MapHelper.img"]["portal"]["game"];
 		animations[Portal::HIDDEN] = Animation(pnode["ph"]["default"]["portalContinue"]);
 		animations[Portal::REGULAR] = Animation(pnode["pv"]);
 	}
 
-	void Mapportals::load(node src, int32_t mapid)
+	void MapPortals::load(node src, int32_t mapid)
 	{
 		int8_t pid = 0;
 		node ptnode = src[std::to_string(pid)];
@@ -62,12 +62,12 @@ namespace Gameplay
 		}
 	}
 
-	void Mapportals::clear()
+	void MapPortals::clear()
 	{
 		portals.clear();
 	}
 
-	void Mapportals::update(rectangle2d<int32_t> player)
+	void MapPortals::update(rectangle2d<int32_t> player)
 	{
 		for (map<Portal::PtType, Animation>::iterator anit = animations.begin(); anit != animations.end(); ++anit)
 		{
@@ -87,7 +87,7 @@ namespace Gameplay
 		}
 	}
 
-	void Mapportals::draw(vector2d<int32_t> viewpos, float inter) const
+	void MapPortals::draw(vector2d<int32_t> viewpos, float inter) const
 	{
 		for (map<uint8_t, Portal>::const_iterator ptit = portals.begin(); ptit != portals.end(); ++ptit)
 		{
@@ -95,18 +95,18 @@ namespace Gameplay
 		}
 	}
 
-	vector2d<int32_t> Mapportals::getspawnpoint(uint8_t pid) const
+	vector2d<int32_t> MapPortals::getspawnpoint(uint8_t pid) const
 	{
 		return portals.count(pid) ? portals.at(pid).getposition() : vector2d<int32_t>();
 	}
 
-	vector2d<int32_t> Mapportals::getspawnpoint(string pname) const
+	vector2d<int32_t> MapPortals::getspawnpoint(string pname) const
 	{
 		uint8_t pid = portalnames.count(pname) ? portalnames.at(pname) : 0;
 		return getspawnpoint(pid);
 	}
 
-	const pair<int32_t, string>* Mapportals::findportal(rectangle2d<int32_t> rect)
+	const pair<int32_t, string>* MapPortals::findportal(rectangle2d<int32_t> rect)
 	{
 		if (findportalcd == 0)
 		{

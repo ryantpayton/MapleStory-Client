@@ -24,39 +24,38 @@
 
 namespace Journey
 {
-	Client::Client() : stage(*this)
-	{
-		error = nxfiles.init() ? NONE : NXFILES;
-		error = (error == NONE) ? session.init() ? NONE : CONNECTION : error;
-#ifdef JOURNEY_USE_OPENGL
-		error = (error == NONE) ? window.init(config.getbool("Fullscreen")) ? NONE : WINDOW : error;
-#else
-		error = (error == NONE) ? window.init(&ui) ? NONE : WINDOW : error;
-#endif
-		error = (error == NONE) ? !audioplayer.geterror() ? NONE : AUDIO : error;
-
-		if (error == NONE)
-		{
-			ui.init();
-			stage.init();
-
-			using::Character::CharLook;
-			CharLook::init();
-
-			using::IO::ElementLogin;
-			ui.add(ElementLogin(session, ui, config));
-
-			using::nl::audio;
-			audio loginbgm = nl::nx::sound["BgmUI.img"]["Title"].get_audio();
-			audioplayer.playbgm((void*)loginbgm.data(), loginbgm.length());
-		}
-	}
+	Client::Client() : stage(*this) {}
 
 	Client::~Client() {}
 
-	Client::Error Client::geterror() const
+	Client::Error Client::init()
 	{
-		return error;
+		if (!nxfiles.init())
+			return NXFILES;
+
+		if (!session.init())
+			return CONNECTION;
+
+		if (!window.init(&ui))
+			return WINDOW;
+
+		if (audioplayer.geterror())
+			return AUDIO;
+
+		ui.init();
+		stage.init();
+
+		using::Character::CharLook;
+		CharLook::init();
+
+		using::IO::ElementLogin;
+		ui.add(ElementLogin(session, ui, config));
+
+		using::nl::audio;
+		audio loginbgm = nl::nx::sound["BgmUI.img"]["Title"].get_audio();
+		audioplayer.playbgm((void*)loginbgm.data(), loginbgm.length());
+
+		return NONE;
 	}
 
 	bool Client::receive()
@@ -72,13 +71,9 @@ namespace Journey
 		window.end();
 	}
 
-	void Client::update(uint16_t dpf)
+	void Client::update()
 	{
-#ifdef JOURNEY_USE_OPENGL
-		window.update(ui);
-#else
 		window.update();
-#endif
 		stage.update();
 		ui.update();
 	}

@@ -17,20 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "IO\KeyTarget.h"
-#include "Character\Look\CharLook.h"
-#include "Character\Charstats.h"
-#include "Audio\Audioplayer.h"
-#include "Gameplay\Maplemap\Mapmobs.h"
+#include "Gameplay\Maplemap\MapChars.h"
+#include "Gameplay\Maplemap\MapMobs.h"
 #include "Character\Player.h"
 
 namespace Gameplay
 {
-	using::Character::CharLook;
-	using::Character::Charstats;
 	using::Character::Player;
-	using::Audio::Audioplayer;
 	using::IO::KeyTarget;
-	using::Gameplay::Maplemap::Mapmobs;
 
 	// Interface for the 'Stage' class which represents the current map.
 	// Inherits from 'KeyTarget' to process key inputs.
@@ -39,21 +33,22 @@ namespace Gameplay
 	public:
 		virtual ~StageInterface() {}
 		// Adds a player object with the given properties.
-		// Parameters: int(objectid), CharLook(look to use), Charstats(stats to use)
-		virtual void loadplayer(int32_t, CharLook, Charstats) = 0;
+		// Parameters: int(character id)
+		virtual bool loadplayer(int32_t) = 0;
 		// Loads the map to display. 
 		// Parameters: int(mapid)
 		virtual void loadmap(int32_t) = 0;
 		// Repositions the player and reactivates the stage after loading.
 		// Also plays the bgm associated with the newly loaded map.
-		// Parameters: Audioplayer&(musicplayer to play the bgm with)
-		virtual void respawn(Audioplayer&) = 0;
+		virtual void respawn() = 0;
 		// Spawn an npc on the current map.
 		// Parameters: int32_t(id), int32_t(oid), bool(is flipped), 
-		// uint16_t(starting foothoold), int32_t(x), int32_t(y)
-		virtual void addnpc(int32_t, int32_t, bool, uint16_t, int32_t, int32_t) = 0;
+		// uint16_t(starting foothoold), bool(control), int32_t(x), int32_t(y)
+		virtual void addnpc(int32_t, int32_t, bool, uint16_t, bool, int32_t, int32_t) = 0;
+		// Returns a reference to the other characters on the current map.
+		virtual MapChars& getchars() = 0;
 		// Returns a reference to the mobs on the current map.
-		virtual Mapmobs& getmobs() = 0;
+		virtual MapMobs& getmobs() = 0;
 		// Returns a reference to the Player.
 		virtual Player& getplayer() = 0;
 	};

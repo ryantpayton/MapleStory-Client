@@ -67,7 +67,6 @@ namespace Net
 			if (channel == client.getsession().getlogin().getchannelid())
 			{
 				// Change map.
-				//Game::getcache()->getsounds()->play(MSN_PORTAL);
 #ifdef JOURNEY_USE_OPENGL
 				using::Graphics::GraphicsGL;
 				GraphicsGL::clear();
@@ -77,7 +76,7 @@ namespace Net
 #endif
 
 				client.getstage().loadmap(mapid);
-				client.getstage().respawn(client.getaudio());
+				client.getstage().respawn();
 			}
 			else
 			{
@@ -88,25 +87,22 @@ namespace Net
 		void setfield(ClientInterface& client, InPacket& recv) const
 		{
 			recv.skip(23);
-			int32_t cid = recv.readint();
-			const CharEntry& plchar = client.getsession().getlogin().getaccount().getcharbyid(cid);
-			if (plchar.getcid() > 0)
-			{
-				using::Character::Charstats;
-				using::Character::CharLook;
-				Charstats stats = Charstats(StatsEntry(recv));
-				CharLook look = CharLook(plchar.getlook());
-				client.getstage().loadplayer(cid, look, stats);
 
+			int32_t cid = recv.readint();
+			bool loaded = client.getstage().loadplayer(cid);
+			if (loaded)
+			{
+				using::Character::Player;
+				Player& player = client.getstage().getplayer();
+
+				StatsEntry trash(recv);
 				int8_t buddycap = recv.readbyte();
 				if (recv.readbool())
 				{
 					string lname = recv.readascii();
 				}
 
-				using::Character::Player;
-				Player& player = client.getstage().getplayer();
-				parseinventory(client, recv, player.getinvent());
+				parseinventory(recv, player.getinvent());
 				parseskillbook(recv, player.getskills());
 				parsequestlog(recv, player.getquests());
 				parseminigame(recv);
@@ -118,8 +114,9 @@ namespace Net
 				parsenewyear(recv);
 				parseareainfo(recv);
 
-				recv.skip(2);
-				recv.readlong(); //timestamp
+				recv.skip(10);
+
+				player.recalcstats(true);
 
 				client.getui().remove(IO::UI_CHARSELECT);
 				client.getui().remove(IO::UI_SOFTKEYBOARD);
@@ -141,7 +138,7 @@ namespace Net
 				//Game::getcache()->getsounds()->play(MSN_GAMEIN);
 				int32_t mapid = client.getstage().getplayer().getstats().getmapid();
 				client.getstage().loadmap(mapid);
-				client.getstage().respawn(client.getaudio());
+				client.getstage().respawn();
 
 				player.initcontrol();
 				client.getui().getkeyboard().addtarget(IO::KT_MENU, &client.getui());
@@ -149,7 +146,7 @@ namespace Net
 			}
 		}
 
-		void parseinventory(ClientInterface& client, InPacket& recv, Inventory& invent) const
+		void parseinventory(InPacket& recv, Inventory& invent) const
 		{
 			invent.setmeso(recv.readint());
 			invent.setslots(Inventory::EQUIP, recv.readbyte());
@@ -303,7 +300,6 @@ namespace Net
 			int16_t mgsize = recv.readshort();
 			for (int16_t i = 0; i < mgsize; i++)
 			{
-				//minigameinfo, odin doesn't have it
 			}
 		}
 
@@ -326,7 +322,6 @@ namespace Net
 			int16_t nysize = recv.readshort();
 			for (int16_t i = 0; i < nysize; i++)
 			{
-				//newyearsinfo, odin doesn't have it
 			}
 		}
 

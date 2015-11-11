@@ -16,15 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Char.h"
 #include "Gameplay\Playable.h"
-#include "Gameplay\Maplemap\Char.h"
-#include "Gameplay\Physics\PhysicsObject.h"
 
 namespace Character
 {
 	using::IO::Keyaction;
 	using::Gameplay::Playable;
-	using::Gameplay::PhysicsObject;
 
 	// Interface for a class that is both playable and a character. 
 	// Currently only used by the player, but could be extended to control androids or player npcs.
@@ -40,7 +38,5 @@ namespace Character
 		// Returns if the keyaction is active.
 		// Parameters: Keyaction(maple-keycode)
 		virtual bool keydown(Keyaction) const = 0;
-		// Returns a reference to a PhysicsObject, used to apply forces or check physics properties.
-		virtual PhysicsObject& getphobj() = 0;
 	};
 }

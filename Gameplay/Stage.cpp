@@ -26,7 +26,7 @@ namespace Gameplay
 {
 	Stage::Stage(ClientInterface& cl) : client(cl)
 	{
-		playerid = -1;
+		playerid = 0;
 		active = false;
 	}
 
@@ -35,17 +35,24 @@ namespace Gameplay
 		portals.init();
 	}
 
-	void Stage::loadplayer(int32_t cid, CharLook look, Charstats stats)
+	bool Stage::loadplayer(int32_t cid)
 	{
-		if (playerid < 0)
+		using::Net::CharEntry;
+		const CharEntry& entry = client.getsession().getlogin().getaccount().getcharbyid(cid);
+		if (entry.getcid() == cid)
 		{
-			player = Player(cid, look, stats);
+			player = Player(cid, entry.getlook(), entry.getstats());
 			playerid = cid;
 			playable = &player;
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 
-	void Stage::loadmap(int32_t mid)
+	void Stage::loadmap(int32_t mapid)
 	{
 		active = false;
 
@@ -53,24 +60,25 @@ namespace Gameplay
 		portals.clear();
 		chars.clear();
 		npcs.clear();
+		mobs.clear();
 
-		string strid = std::to_string(mid);
+		string strid = std::to_string(mapid);
 		strid.insert(0, 9 - strid.length(), '0');
-		node src = nl::nx::map["Map"]["Map" + std::to_string(mid / 100000000)][strid + ".img"];
+		node src = nl::nx::map["Map"]["Map" + std::to_string(mapid / 100000000)][strid + ".img"];
 
 		physics.loadfht(src["foothold"]);
 		mapinfo.loadinfo(src, physics.getfht().getwalls(), physics.getfht().getborders());
-		portals.load(src["portal"], mid);
+		portals.load(src["portal"], mapid);
 		//backgrounds = mapbackgrounds(src["back"]);
 		for (uint8_t i = 0; i < NUM_LAYERS; i++)
 		{
 			layers[i] = MapLayer(src[std::to_string(i)]);
 		}
 
-		mapid = mid;
+		currentmapid = mapid;
 	}
 
-	void Stage::respawn(Audioplayer& audiopb)
+	void Stage::respawn()
 	{
 		if (mapinfo.hasnewbgm())
 		{
@@ -78,11 +86,11 @@ namespace Gameplay
 			audio toplay = nl::nx::sound.resolve(mapinfo.getbgm()).get_audio();
 			if (toplay.data())
 			{
-				audiopb.playbgm((void*)toplay.data(), toplay.length());
+				client.getaudio().playbgm((void*)toplay.data(), toplay.length());
 			}
 		}
 
-		vector2d<int32_t> startpos = portals.getspawnpoint(player.getstats().getportal()) - vector2d<int32_t>(0, 40);
+		vector2d<int32_t> startpos = portals.getspawnpoint(player.getstats().getportal());
 		player.setposition(startpos.x(), startpos.y());
 		camera.setposition(startpos);
 		camera.updateview(mapinfo.getwalls(), mapinfo.getborders());
@@ -100,6 +108,7 @@ namespace Gameplay
 			{
 				layers.at(i).draw(viewpos, inter);
 				npcs.draw(i, viewpos, inter);
+				mobs.draw(i, viewpos, inter);
 				chars.draw(i, viewpos, inter);
 
 				if (i == player.getlayer())
@@ -121,6 +130,7 @@ namespace Gameplay
 			}
 
 			npcs.update(physics);
+			mobs.update(physics);
 			chars.update(physics);
 			player.update(physics);
 			portals.update(player.bounds());
@@ -128,7 +138,7 @@ namespace Gameplay
 
 			using::Gameplay::MovementInfo;
 			const MovementInfo& playermovement = player.getmovement();
-			if (playermovement.getsize() > 1)
+			if (playermovement.getsize() > 0)
 			{
 				using::Net::MovePlayerPacket83;
 				client.getsession().dispatch(MovePlayerPacket83(playermovement));
@@ -169,20 +179,16 @@ namespace Gameplay
 		const pair<int32_t, string>* warpinfo = portals.findportal(player.bounds());
 		if (warpinfo)
 		{
-			int32_t mid = warpinfo->first;
-			string pname = warpinfo->second;
-			if (mid < 999999999)
+			int32_t mapid = warpinfo->first;
+			if (mapid == currentmapid)
 			{
-				if (mid == mapid)
-				{
-					vector2d<int32_t> spawnpoint = portals.getspawnpoint(pname) - vector2d<int32_t>(0, 40);
-					player.setposition(spawnpoint.x(), spawnpoint.y());
-				}
-				else
-				{
-					using::Net::ChangeMapPacket83;
-					client.getsession().dispatch(ChangeMapPacket83(false, mid, pname, false));
-				}
+				vector2d<int32_t> spawnpoint = portals.getspawnpoint(warpinfo->second) - vector2d<int32_t>(0, 40);
+				player.setposition(spawnpoint.x(), spawnpoint.y());
+			}
+			else if (mapid < 999999999)
+			{
+				using::Net::ChangeMapPacket83;
+				client.getsession().dispatch(ChangeMapPacket83(false, mapid, warpinfo->second, false));
 			}
 		}
 	}
@@ -193,16 +199,21 @@ namespace Gameplay
 		if (seat)
 		{
 			player.setposition(seat->x(), seat->y());
-			player.setstance(Character::PST_SIT);
+			player.setstance(Character::Char::SIT);
 		}
 	}
 
-	void Stage::addnpc(int32_t id, int32_t oid, bool flip, uint16_t fhid, int32_t x, int32_t y)
+	void Stage::addnpc(int32_t id, int32_t oid, bool flip, uint16_t fhid, bool control, int32_t x, int32_t y)
 	{
-		npcs.add(new Npc(id, oid, flip, fhid, x, y));
+		npcs.add(new Npc(id, oid, flip, fhid, control, x, y));
 	}
 
-	Mapmobs& Stage::getmobs()
+	MapChars& Stage::getchars()
+	{
+		return chars;
+	}
+
+	MapMobs& Stage::getmobs()
 	{
 		return mobs;
 	}

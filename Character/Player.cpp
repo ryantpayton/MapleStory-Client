@@ -26,28 +26,29 @@ namespace Character
 	const float JUMPFORCE = 5.0f;
 	const float FLYFORCE = 0.25f;
 
-	Player::Player(int32_t id, CharLook lk, Charstats st)
+	Player::Player(int32_t id, const LookEntry& lookentry, const StatsEntry& statsentry)
 	{
 		cid = id;
-		look = lk;
-		stats = st;
-		name = Textlabel(Textlabel::DWF_14MC, Textlabel::TXC_WHITE, stats.getname(), 0);
-		name.setback(Textlabel::TXB_NAMETAG);
-		setstance(PST_STAND);
+		look = CharLook(lookentry);
+		stats = Charstats(statsentry);
+
+		namelabel = Textlabel(Textlabel::DWF_14MC, Textlabel::TXC_WHITE, stats.getname(), 0);
+		namelabel.setback(Textlabel::TXB_NAMETAG);
+
+		setstance(STAND);
 		setflip(false);
-		recalcstats(true);
 	}
 
 	Player::Player() {}
 
 	void Player::initcontrol()
 	{
-		plstates.add(PST_STAND, new PlayerStandState());
-		plstates.add(PST_WALK, new PlayerWalkState());
-		plstates.add(PST_FALL, new PlayerFallState());
-		plstates.add(PST_PRONE, new PlayerProneState());
-		plstates.add(PST_SIT, new PlayerSitState());
-		plstates.add(PST_SWIM, new PlayerFlyState());
+		plstates.add(STAND, new PlayerStandState());
+		plstates.add(WALK, new PlayerWalkState());
+		plstates.add(FALL, new PlayerFallState());
+		plstates.add(PRONE, new PlayerProneState());
+		plstates.add(SIT, new PlayerSitState());
+		plstates.add(SWIM, new PlayerFlyState());
 	}
 
 	void Player::sendaction(Keyaction ka, bool down)
@@ -60,21 +61,6 @@ namespace Character
 		keysdown[ka] = down;
 	}
 
-	void Player::setflip(bool f)
-	{
-		flip = f;
-		look.setflip(f);
-	}
-
-	void Player::setstance(CharStance st)
-	{
-		if (stance != st)
-		{
-			stance = st;
-			look.setstance(stances[st / 2]);
-		}
-	}
-
 	void Player::clearmovement()
 	{
 		movementinfo.clear();
@@ -82,6 +68,11 @@ namespace Character
 
 	void Player::recalcstats(bool equipchanged)
 	{
+		if (equipchanged)
+		{
+			//inventory.recalcstats();
+		}
+
 		int32_t speed = 100;
 		int32_t jump = 100;
 
@@ -91,9 +82,7 @@ namespace Character
 
 	void Player::draw(vector2d<int32_t> viewpos, float inter) const
 	{
-		vector2d<int32_t> absp = phobj.getposition(inter) + viewpos;
-		look.draw(absp, inter);
-		name.draw(absp);
+		Char::draw(phobj.getposition(inter) + viewpos, inter);
 	}
 
 	int8_t Player::update(const Physics& physics)
@@ -107,36 +96,23 @@ namespace Character
 		}
 
 		uint8_t dirstance = flip ? stance : stance + 1;
-		if (movementinfo.getsize() > 0)
-		{
-			using::Gameplay::MovementFragment;
-			const MovementFragment& lastmove = movementinfo.gettop();
-			if (dirstance != lastmove.newstate || static_cast<int16_t>(phobj.fx) != lastmove.xpos || static_cast<int16_t>(phobj.fy) != lastmove.ypos)
-			{
-				movementinfo.addmovement(phobj, 0, dirstance, Constants::TIMESTEP);
-			}
-		}
-		else
+		using::Gameplay::MovementFragment;
+		if (dirstance != lastmove.newstate || static_cast<int16_t>(phobj.fx) != lastmove.xpos || static_cast<int16_t>(phobj.fy) != lastmove.ypos)
 		{
 			movementinfo.addmovement(phobj, 0, dirstance, Constants::TIMESTEP);
+			lastmove = movementinfo.gettop();
 		}
 
 		uint16_t lookts = Constants::TIMESTEP;
 		switch (stance)
 		{
-		case PST_WALK:
+		case WALK:
 			lookts = static_cast<uint16_t>(Constants::TIMESTEP * (1.0f + abs(phobj.hspeed) / 25));
 			break;
 		}
 		look.update(lookts);
 
 		return phobj.fhlayer;
-	}
-
-	void Player::setposition(int32_t x, int32_t y)
-	{
-		phobj.fx = static_cast<float>(x);
-		phobj.fy = static_cast<float>(y);
 	}
 
 	float Player::getwforce() const
@@ -154,44 +130,14 @@ namespace Character
 		return FLYFORCE;
 	}
 
-	bool Player::getflip() const
-	{
-		return flip;
-	}
-
-	CharStance Player::getstance() const
-	{
-		return stance;
-	}
-
-	int32_t Player::getoid() const
-	{
-		return cid;
-	}
-
-	int8_t Player::getlayer() const
-	{
-		return phobj.fhlayer;
-	}
-
 	bool Player::keydown(Keyaction ka) const
 	{
 		return keysdown.count(ka) ? keysdown.at(ka) : false;
 	}
 
-	vector2d<int32_t> Player::getposition() const
-	{
-		return vector2d<int32_t>(static_cast<int32_t>(phobj.fx), static_cast<int32_t>(phobj.fy));
-	}
-
 	rectangle2d<int32_t> Player::bounds() const
 	{
 		return rectangle2d<int32_t>(getposition() - vector2d<int32_t>(30, 70), getposition() + vector2d<int32_t>(30, 10));
-	}
-
-	CharLook& Player::getlook()
-	{
-		return look;
 	}
 
 	Charstats& Player::getstats()
@@ -222,11 +168,6 @@ namespace Character
 	Monsterbook& Player::getmonsterbook()
 	{
 		return monsterbook;
-	}
-
-	PhysicsObject& Player::getphobj()
-	{
-		return phobj;
 	}
 
 	const MovementInfo& Player::getmovement() const

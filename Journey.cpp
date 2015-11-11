@@ -23,8 +23,7 @@
 #include <iostream>
 
 // Print errors to the console while testing.
-using::std::string;
-void showerror(string error)
+void showerror(const char* error)
 {
 	std::cout << error << std::endl;
 }
@@ -36,8 +35,8 @@ int main()
 	using::Journey::Client;
 	Client client;
 
-	// Check for critical errors.
-	Client::Error error = client.geterror();
+	// Initialise and check for errors.
+	Client::Error error = client.init();
 	if (error == Client::NONE)
 	{
 		// No error occured. We can start the main loop.
@@ -53,14 +52,15 @@ int main()
 			while (remain >= Constants::TIMESTEP)
 			{
 				// Update game with constant timestep as many times as possible.
-				client.update(Constants::TIMESTEP);
+				client.update();
 				remain -= Constants::TIMESTEP;
 			}
 			// Restart the stopwatch.
 			stopwatch.start();
 
-			// Draw the game. This uses linear interpolation to smoothen out movement.
-			client.draw(static_cast<float>(remain) / Constants::TIMESTEP);
+			// Draw the game. Interpolate to account for remaining time.
+			float inter = static_cast<float>(remain) / Constants::TIMESTEP;
+			client.draw(inter);
 		}
 	}
 	else

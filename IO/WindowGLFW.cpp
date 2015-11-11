@@ -25,7 +25,7 @@
 
 namespace IO
 {
-	WindowGLFW::WindowGLFW()// : locator(&fonts)
+	WindowGLFW::WindowGLFW()
 	{
 		glwnd = nullptr;
 	}
@@ -50,11 +50,12 @@ namespace IO
 		}
 	}
 
-	bool WindowGLFW::init(bool full)
+	bool WindowGLFW::init(UI* u)
 	{
-		fullscreen = full;
+		fullscreen = false;
+		ui = u;
 
-		if (glfwInit() /*&& fonts.init()*/)
+		if (glfwInit())
 		{
 			glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 			context = glfwCreateWindow(1, 1, "", nullptr, nullptr);
@@ -80,10 +81,10 @@ namespace IO
 			glfwSetInputMode(glwnd, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 			glfwSetInputMode(glwnd, GLFW_STICKY_KEYS, 1);
 			glfwSetKeyCallback(glwnd, key_callback);
-			glfwSetWindowUserPointer(glwnd, &keyboard);
+			glfwSetWindowUserPointer(glwnd, &ui->getkeyboard());
 
 			glLoadIdentity();
-			//glOrtho(0.0, 800, 590, -10, -1.0, 1.0);
+			glOrtho(0.0, 800, 590, -10, -1.0, 1.0);
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -97,7 +98,7 @@ namespace IO
 		}
 	}
 
-	void WindowGLFW::update(UI& ui)
+	void WindowGLFW::update()
 	{
 		double cursorx;
 		double cursory;
@@ -105,7 +106,7 @@ namespace IO
 		int32_t state = glfwGetMouseButton(glwnd, GLFW_MOUSE_BUTTON_LEFT);
 		using::IO::Mousestate;
 		Mousestate mst = (state == GLFW_PRESS) ? IO::MST_CLICKING : IO::MST_IDLE;
-		ui.sendmouse(mst, vector2d<int32_t>(static_cast<int32_t>(cursorx), static_cast<int32_t>(cursory)));
+		ui->sendmouse(mst, vector2d<int32_t>(static_cast<int32_t>(cursorx), static_cast<int32_t>(cursory)));
 
 		int32_t tabstate = glfwGetKey(glwnd, GLFW_KEY_TAB);
 		if (tabstate == GLFW_PRESS)
@@ -129,16 +130,6 @@ namespace IO
 		glDisable(GL_TEXTURE_2D);
 		glfwPollEvents();
 		glfwSwapBuffers(glwnd);
-	}
-
-	void WindowGLFW::fadeout(Transition)
-	{
-
-	}
-
-	Keyboard& WindowGLFW::getkeyboard()
-	{
-		return keyboard;
 	}
 }
 #endif

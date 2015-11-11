@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -15,46 +15,31 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "MapMobs.h"
+#pragma once
+#include "Char.h"
+#include "Net\Login\LookEntry.h"
+#include "Gameplay\MovementInfo.h"
 
-namespace Gameplay
+namespace Character
 {
-	MapMobs::MapMobs() {}
+	using::std::vector;
+	using::Net::LookEntry;
+	using::Gameplay::Physics;
+	using::Gameplay::MovementInfo;
+	using::Gameplay::MovementFragment;
 
-	void MapMobs::addmob(int32_t oid, int32_t id, bool control, int8_t stance, 
-		uint16_t fhid, int8_t effect, bool fadein, int8_t team, int32_t x, int32_t y) {
-
-		Mob* mob = getmob(oid);
-		if (mob)
-			mob->makeactive();
-		else
-			add(new Mob(oid, id, control, stance, fhid, effect, fadein, team, x, y));
-	}
-
-	void MapMobs::killmob(int32_t oid, int8_t animation)
+	class OtherChar : public Char
 	{
-		Mob* mob = getmob(oid);
-		if (mob)
-		{
-			mob->kill(animation);
-		}
-	}
+	public:
+		OtherChar(int32_t, const LookEntry&, uint8_t, int16_t, string, int8_t, vector2d<int32_t>);
+		int8_t update(const Physics&);
+		void sendmovement(const MovementInfo&);
+		void draw(vector2d<int32_t>, float) const;
 
-	void MapMobs::sendmobhp(int32_t oid, int8_t percent, uint16_t playerlevel)
-	{
-		Mob* mob = getmob(oid);
-		if (mob)
-		{
-			mob->sendhp(percent, playerlevel);
-		}
-	}
-
-	Mob* MapMobs::getmob(int32_t oid)
-	{
-		Mapobject* mmo = get(oid);
-		if (mmo)
-			return reinterpret_cast<Mob*>(mmo);
-		else
-			return nullptr;
-	}
+	private:
+		uint8_t level;
+		int16_t job;
+		string name;
+		MovementFragment lastmove;
+	};
 }

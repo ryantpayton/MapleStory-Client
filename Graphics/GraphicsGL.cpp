@@ -1,20 +1,3 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "GraphicsGL.h"
 #ifdef JOURNEY_USE_OPENGL
@@ -44,7 +27,7 @@ namespace Graphics
 		GLfloat b = 0.0f;
 	};
 
-	const GLuint ATLASSIZE = 1024;
+	const GLuint ATLASSIZE = 10240;
 	static GLuint atlas;
 	static GLuint buffer;
 	static map<size_t, texture> textures;
@@ -62,8 +45,8 @@ namespace Graphics
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glGenTextures(1, &atlas);
 		glBindTexture(GL_TEXTURE_2D, atlas);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_BGRA, 16192, 16192,
-			0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, ATLASSIZE, ATLASSIZE,
+			0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV, nullptr);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glGenBuffers(1, &buffer);
@@ -151,22 +134,15 @@ namespace Graphics
 
 		texture txt = textures[id];
 
-		/*glBegin(GL_QUADS);
-		glTexCoord2f(ver.l, ver.t); glVertex3f(left, top, 0);
-		glTexCoord2f(ver.l, ver.b); glVertex3f(left, bottom, 0);
-		glTexCoord2f(ver.r, ver.b); glVertex3f(right, bottom, 0);
-		glTexCoord2f(ver.r, ver.t); glVertex3f(right, top, 0);
-		glEnd();*/
-
 		vertex ver;
 		ver.r = 1.0f;
 		ver.g = 1.0f;
 		ver.b = 1.0f;
 		ver.a = alpha;
 		ver.x = left;
-		ver.y = bottom;
+		ver.y = top;
 		ver.s = txt.l;
-		ver.t = txt.b;
+		ver.t = txt.t;
 		vertices.push_back(ver);
 	}
 

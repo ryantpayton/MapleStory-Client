@@ -21,16 +21,6 @@
 
 namespace Gameplay
 {
-	// Movement types for servers and other clients to handle.
-	enum MovementType
-	{
-		MVT_NONE,
-		MVT_ABSOLUTE,
-		MVT_RELATIVE,
-		MVT_CHAIR,
-		MVT_JUMPDOWN
-	};
-
 	using::std::uint8_t;
 	using::std::int16_t;
 	using::std::uint16_t;
@@ -40,6 +30,16 @@ namespace Gameplay
 	// Contains information on a single movement.
 	struct MovementFragment
 	{
+		// Movement types for servers and other clients to handle.
+		enum MovementType
+		{
+			MVT_NONE,
+			MVT_ABSOLUTE,
+			MVT_RELATIVE,
+			MVT_CHAIR,
+			MVT_JUMPDOWN
+		};
+
 		MovementType type;
 		uint8_t command;
 		int16_t xpos;
@@ -63,7 +63,7 @@ namespace Gameplay
 		void addmovement(const PhysicsObject& phobj, uint8_t command, uint8_t state, int16_t duration)
 		{
 			MovementFragment toadd;
-			toadd.type = MVT_ABSOLUTE;
+			toadd.type = MovementFragment::MVT_ABSOLUTE;
 			toadd.command = command;
 			toadd.xpos = static_cast<int16_t>(phobj.fx);
 			toadd.ypos = static_cast<int16_t>(phobj.fy);
@@ -72,6 +72,12 @@ namespace Gameplay
 			toadd.fh = phobj.fhid;
 			toadd.newstate = state;
 			toadd.duration = duration;
+			fragments.push_back(toadd);
+		}
+
+		// Add a movement to the vector of store movements.
+		void addmovement(MovementFragment toadd)
+		{
 			fragments.push_back(toadd);
 		}
 

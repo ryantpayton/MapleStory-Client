@@ -30,7 +30,7 @@
 
 namespace Net
 {
-	// Class used to communicate with the server. Implements the Session interface to shield implementation details.
+	// Class used to communicate with the server.
 	class SessionServer : public Session
 	{
 	public:

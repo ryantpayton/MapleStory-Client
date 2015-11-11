@@ -36,8 +36,9 @@ namespace Gameplay
 	class Npc : public Mapobject
 	{
 	public:
-		// Parameters: int(npcdata id), int(objectid), bool(is mirrored), short(foothold id), int32_t(x), int32_t(y)
-		Npc(int32_t, int32_t, bool, uint16_t, int32_t, int32_t);
+		// Parameters: int(npcdata id), int(objectid), bool(is mirrored), 
+		// short(foothold id), bool(control), int32_t(x), int32_t(y)
+		Npc(int32_t, int32_t, bool, uint16_t, bool, int32_t, int32_t);
 		// Draws the current animation and name/function tags.
 		void draw(vector2d<int32_t>, float) const;
 		// Updates the current animation and physics.
@@ -58,6 +59,7 @@ namespace Gameplay
 		vector2d<int32_t> getposition() const;
 		// Returns width and height of the current texture.
 		vector2d<int32_t> getdimensions() const;
+
 	private:
 		map<string, Animation> animations;
 		map<string, vector<string>> lines;
@@ -67,12 +69,15 @@ namespace Gameplay
 		bool hidename;
 		bool scripted;
 		bool mouseonly;
+
+		bool control;
 		PhysicsObject phobj;
 		int32_t oid;
 		int32_t npcid;
 		bool flip;
 		string stance;
 		bool active;
+
 		Randomizer random;
 		Textlabel namelabel;
 		Textlabel funclabel;

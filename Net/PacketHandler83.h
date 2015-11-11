@@ -32,9 +32,8 @@ namespace Net
 		PacketHandler83();
 		// Empty destructor.
 		~PacketHandler83();
-		// Handle a packet and return if a critical error occured, meaning a bad packet sent by the server.
-		// Parameters: ClientInterface&(interface for handlers to change game state), InPacket(packet to handle)
-		bool handle(ClientInterface&, InPacket&) const;
+		// Handle a packet.
+		void handle(ClientInterface&, InPacket&) const;
 	private:
 		std::unique_ptr<PacketHandler> handlers[NUM_HANDLERS];
 	};

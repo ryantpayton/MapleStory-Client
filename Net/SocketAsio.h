@@ -25,9 +25,8 @@
 
 namespace Net
 {
-	// MAX_PACKET_LEN already had to be changed 3 times. 
-	// If an error occurs in SessionServder::process(),  try increasing this value.
-	const size_t MAX_PACKET_LEN = 20480;
+	// MAX_PACKET_LEN already had to be changed 3 times.
+	const size_t MAX_PACKET_LEN = 40960;
 	const size_t HANDSHAKE_LEN = 16;
 
 	using::asio::io_service;

@@ -22,7 +22,7 @@
 
 namespace Gameplay
 {
-	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, int32_t x, int32_t y)
+	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, bool c, int32_t x, int32_t y)
 	{
 		string strid = std::to_string(id);
 		strid.insert(0, 7 - strid.size(), '0');
@@ -89,6 +89,7 @@ namespace Gameplay
 		flip = !fl;
 		stance = "stand";
 		active = true;
+		control = c;
 
 		phobj.fhid = f;
 		setposition(x, y);

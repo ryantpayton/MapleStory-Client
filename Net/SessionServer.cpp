@@ -84,7 +84,7 @@ namespace Net
 			towrite = available;
 		}
 		memcpy(buffer + pos, bytes, towrite);
-		pos += available;
+		pos += towrite;
 
 		// Check if the current packet has been fully processed.
 		if (pos >= length)
@@ -93,13 +93,15 @@ namespace Net
 			InPacket recv = InPacket(buffer, length);
 			crypto.decrypt(buffer, length, recviv);
 			phandler.handle(client, recv);
-			// Rewind our position by length processed and check if there is more available.
-			pos -= length;
-			if (pos > 0)
+
+			pos = 0;
+
+			// Check if there is more available.
+			size_t remaining = available - towrite;
+			if (remaining > 0)
 			{
-				pos = 0;
-				// More packets are available, so we start over. Recursion is safe as this only occurs for 3 or 4 times max.
-				process(client, bytes + length, available - length);
+				// More packets are available, so we start over.
+				process(client, bytes + towrite, remaining);
 			}
 		}
 	}
@@ -127,7 +129,6 @@ namespace Net
 
 	void SessionServer::disconnect()
 	{
-		// The next call to receive will return false, this is assumed to quit the program.
 		connected = false;
 	}
 

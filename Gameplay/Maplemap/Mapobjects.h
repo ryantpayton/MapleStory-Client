@@ -35,10 +35,10 @@ namespace Gameplay
 	using::std::unique_ptr;
 
 	// Collection of mapobjects of a type. 
-	class Mapobjects
+	class MapObjects
 	{
 	public:
-		virtual ~Mapobjects() {}
+		virtual ~MapObjects() {}
 		// Draw all mapobjects that are on the specified layer.
 		void draw(int8_t, vector2d<int32_t>, float) const;
 		// Update all mapobjects of this type. Also updates layers eg. drawing order.
@@ -52,10 +52,13 @@ namespace Gameplay
 		// Removes the mapobject with the given oid.
 		// Parameters: int(object id)
 		void remove(int32_t);
+
 	protected:
 		// Obtains a pointer to the mapobject with the given oid.
 		// Parameters: int(object id)
 		Mapobject* get(int32_t);
+
+	private:
 		map<int32_t, unique_ptr<Mapobject>> objects;
 		map<int8_t, map<int32_t, int32_t>> layers;
 	};

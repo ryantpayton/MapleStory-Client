@@ -30,17 +30,17 @@ namespace Character
 				{
 				case IO::KA_LEFT:
 					player.setflip(false);
-					player.setstance(PST_WALK);
+					player.setstance(Char::WALK);
 					break;
 				case IO::KA_RIGHT:
 					player.setflip(true);
-					player.setstance(PST_WALK);
+					player.setstance(Char::WALK);
 					break;
 				case IO::KA_JUMP:
 					player.getphobj().vforce = -player.getjforce();
 					break;
 				case IO::KA_DOWN:
-					player.setstance(PST_PRONE);
+					player.setstance(Char::PRONE);
 					break;
 				}
 			}
@@ -52,7 +52,7 @@ namespace Character
 		{
 			if (!player.getphobj().onground)
 			{
-				player.setstance(PST_FALL);
+				player.setstance(Char::FALL);
 			}
 		}
 	};
@@ -76,7 +76,7 @@ namespace Character
 					break;
 				case IO::KA_DOWN:
 					player.getphobj().hspeed = 0.0f;
-					player.setstance(PST_PRONE);
+					player.setstance(Char::PRONE);
 					break;
 				}
 			}
@@ -100,12 +100,12 @@ namespace Character
 			{
 				if (player.getphobj().hspeed == 0.0f)
 				{
-					player.setstance(PST_STAND);
+					player.setstance(Char::STAND);
 				}
 			}
 			else
 			{
-				player.setstance(PST_FALL);
+				player.setstance(Char::FALL);
 			}
 		}
 	};
@@ -134,11 +134,11 @@ namespace Character
 
 				if (player.getphobj().hspeed != 0.0f)
 				{
-					player.setstance(PST_WALK);
+					player.setstance(Char::WALK);
 				}
 				else
 				{
-					player.setstance(PST_STAND);
+					player.setstance(Char::STAND);
 				}
 			}
 		}
@@ -153,7 +153,7 @@ namespace Character
 				switch (ka)
 				{
 				case IO::KA_JUMP:
-					player.setstance(PST_STAND);
+					player.setstance(Char::STAND);
 					player.sendaction(ka, down);
 					break;
 				}
@@ -163,7 +163,7 @@ namespace Character
 				switch (ka)
 				{
 				case IO::KA_DOWN:
-					player.setstance(PST_STAND);
+					player.setstance(Char::STAND);
 					break;
 				}
 			}
@@ -184,17 +184,17 @@ namespace Character
 				{
 				case IO::KA_LEFT:
 					player.setflip(false);
-					player.setstance(PST_WALK);
+					player.setstance(Char::WALK);
 					break;
 				case IO::KA_RIGHT:
 					player.setflip(true);
-					player.setstance(PST_WALK);
+					player.setstance(Char::WALK);
 					break;
 				case IO::KA_JUMP:
-					player.setstance(PST_STAND);
+					player.setstance(Char::STAND);
 					break;
 				case IO::KA_UP:
-					player.setstance(PST_SWIM);
+					player.setstance(Char::SWIM);
 					break;
 				}
 			}

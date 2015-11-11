@@ -33,6 +33,8 @@ namespace IO
 		rectangle2d<int32_t> bounds(vector2d<int32_t>) const;
 
 	private:
+		void modifytext(string);
+
 		Textlabel textlabel;
 		string text;
 		Textlabel marker;

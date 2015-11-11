@@ -16,36 +16,57 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\OutPacket.h"
-#include "Net\SendOpcodes83.h"
-#include "Gameplay\MovementInfo.h"
+#include "Gameplay\Maplemap\Mapobject.h"
+#include "Character\Look\CharLook.h"
+#include "Graphics\Textlabel.h"
+#include "Gameplay\Physics\PhysicsObject.h"
 
-namespace Net
+namespace Character
 {
-	using::Gameplay::MovementInfo;
-	using::Gameplay::MovementFragment;
+	using::Gameplay::Mapobject;
+	using::Gameplay::PhysicsObject;
+	using::Graphics::Textlabel;
 
-	// Base class for packets which need to update object movements with the server.
-	class MovementPacket : public OutPacket
+	// Base for characters, e.g. the player and other clients on the same map.
+	class Char : public Mapobject
 	{
 	public:
-		MovementPacket(SendOpcode83 opc) : OutPacket(opc) {}
-	protected:
-		void writemoves(const MovementInfo& movement)
+		// Player stances which determine animation and state. Values are used in movement packets (add 1 if facing left).
+		enum Stance
 		{
-			writech(static_cast<int8_t>(movement.getsize()));
+			WALK = 2,
+			STAND = 4,
+			FALL = 6,
+			ALERT = 8,
+			PRONE = 10,
+			SWIM = 12,
+			LADDER = 14,
+			ROPE = 16,
+			DIED = 18,
+			SIT = 20,
+			SKILL = 22
+		};
 
-			for (vector<MovementFragment>::const_iterator mvit = movement.getbegin(); mvit != movement.getend(); ++mvit)
-			{
-				writech(mvit->command);
-				writesh(mvit->xpos);
-				writesh(mvit->ypos);
-				writesh(mvit->lastx);
-				writesh(mvit->lasty);
-				writesh(0);
-				writech(mvit->newstate);
-				writesh(mvit->duration);
-			}
-		}
+		void setflip(bool);
+		void setstance(Stance);
+		void setposition(int32_t, int32_t);
+		bool getflip() const;
+		int8_t getlayer() const;
+		int32_t getoid() const;
+		vector2d<int32_t> getposition() const;
+		Stance getstance() const;
+		CharLook& getlook();
+		PhysicsObject& getphobj();
+
+	protected:
+		void draw(vector2d<int32_t>, float) const;
+
+		CharLook look;
+		Textlabel namelabel;
+
+		PhysicsObject phobj;
+		int32_t cid;
+		Stance stance;
+		bool flip;
 	};
 }

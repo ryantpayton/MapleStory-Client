@@ -16,14 +16,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Mapobjects.h"
+#include "MapObjects.h"
+#include "Character\OtherChar.h"
+#include "Gameplay\MovementInfo.h"
 
 namespace Gameplay
 {
-	class Mapchars : public Mapobjects
+	using::std::string;
+	using::Character::OtherChar;
+	using::Net::LookEntry;
+
+	class MapChars : public MapObjects
 	{
 	public:
-		Mapchars();
+		MapChars();
+		void addchar(int32_t, const LookEntry&, uint8_t, int16_t, string, int8_t, vector2d<int32_t>);
+		void removechar(int32_t);
+		void movechar(int32_t, const MovementInfo&);
+
+	private:
+		OtherChar* getchar(int32_t);
 	};
 }
 

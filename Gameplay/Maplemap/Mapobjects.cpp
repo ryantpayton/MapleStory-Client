@@ -21,7 +21,7 @@
 
 namespace Gameplay
 {
-	void Mapobjects::draw(int8_t layer, vector2d<int32_t> pos, float inter) const
+	void MapObjects::draw(int8_t layer, vector2d<int32_t> pos, float inter) const
 	{
 		if (layers.count(layer))
 		{
@@ -36,7 +36,7 @@ namespace Gameplay
 		}
 	}
 
-	void Mapobjects::update(const Physics& fht)
+	void MapObjects::update(const Physics& fht)
 	{
 		vector<int32_t> toremove;
 
@@ -50,14 +50,14 @@ namespace Gameplay
 				int8_t newlayer = obj->update(fht);
 				if (newlayer != oldlayer)
 				{
+					int32_t oid = obj->getoid();
+					layers[oldlayer].erase(oid);
 					if (newlayer == -1)
 					{
-						toremove.push_back(obit->first);
+						toremove.push_back(oid);
 					}
 					else
 					{
-						int32_t oid = obj->getoid();
-						layers[oldlayer].erase(oid);
 						layers[newlayer][oid] = oid;
 					}
 				}
@@ -69,13 +69,13 @@ namespace Gameplay
 		}
 	}
 
-	void Mapobjects::clear()
+	void MapObjects::clear()
 	{
 		objects.clear();
 		layers.clear();
 	}
 
-	void Mapobjects::add(Mapobject* toadd)
+	void MapObjects::add(Mapobject* toadd)
 	{
 		if (toadd)
 		{
@@ -86,7 +86,7 @@ namespace Gameplay
 		}
 	}
 
-	void Mapobjects::remove(int32_t oid)
+	void MapObjects::remove(int32_t oid)
 	{
 		if (objects.count(oid))
 		{
@@ -97,7 +97,7 @@ namespace Gameplay
 		}
 	}
 
-	Mapobject* Mapobjects::get(int32_t oid)
+	Mapobject* MapObjects::get(int32_t oid)
 	{
 		if (objects.count(oid))
 			return objects[oid].get();

@@ -16,20 +16,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Mapobjects.h"
+#include "MapObjects.h"
 #include "Mob.h"
 
 namespace Gameplay
 {
-	namespace Maplemap
+	class MapMobs : public MapObjects
 	{
-		class Mapmobs : public Mapobjects
-		{
-		public:
-			Mapmobs();
-			~Mapmobs();
-			void addmob(int32_t, int32_t, bool, int8_t, uint16_t, int8_t, bool, int8_t, int32_t, int32_t);
-		};
-	}
+	public:
+		MapMobs();
+		void addmob(int32_t, int32_t, bool, int8_t, uint16_t, int8_t, bool, int8_t, int32_t, int32_t);
+		void killmob(int32_t, int8_t);
+		void sendmobhp(int32_t, int8_t, uint16_t);
+
+	private:
+		Mob* getmob(int32_t);
+	};
 }
 

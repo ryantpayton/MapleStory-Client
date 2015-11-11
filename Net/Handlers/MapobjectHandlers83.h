@@ -16,7 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "PacketHandler.h"
+#include "Net\PacketHandler.h"
+#include "AbstractMovementHandler83.h"
 
 namespace Net
 {
@@ -34,7 +35,7 @@ namespace Net
 			int16_t rx = recv.readshort();
 			int16_t ry = recv.readshort();
 
-			client.getstage().addnpc(id, oid, f, fh, posx, posy);
+			client.getstage().addnpc(id, oid, f, fh, false, posx, posy);
 		}
 	};
 
@@ -61,14 +62,15 @@ namespace Net
 				int16_t ry = recv.readshort();
 				bool minimap = recv.readbool();
 
-				client.getstage().addnpc(id, oid, f, fh, posx, posy);
+				client.getstage().addnpc(id, oid, f, fh, true, posx, posy);
 			}
 		}
 	};
 
-	class SpawnMobHandler : public PacketHandler
+	// Handles a packet which tells the client to spawn a mob.
+	class SpawnMobHandler83 : public PacketHandler
 	{
-		void SpawnMobHandler::handle(ClientInterface& client, InPacket& recv)
+		void handle(ClientInterface& client, InPacket& recv) const
 		{
 			int32_t oid = recv.readint();
 			bool hascontrol = recv.readbyte() == 5;
@@ -97,13 +99,14 @@ namespace Net
 			int8_t team = recv.readbyte();
 			recv.skip(4);
 
-			//client.getstage().getmobs().addmob(oid, id, hascontrol, stance, fh, effect, fadein, team, posx, posy);
+			client.getstage().getmobs().addmob(oid, id, hascontrol, stance, fh, effect, fadein, team, posx, posy);
 		}
 	};
 
+	// Handles a packet which tells the client to spawn a mob and control it.
 	class SpawnMobControllerHandler83 : public PacketHandler
 	{
-		void SpawnMobControllerHandler83::handle(ClientInterface& client, InPacket& recv)
+		void handle(ClientInterface& client, InPacket& recv) const
 		{
 			int8_t aggro = recv.readbyte();
 			int32_t oid = recv.readint();
@@ -137,11 +140,65 @@ namespace Net
 			int8_t team = recv.readbyte();
 			recv.skip(4);
 
-			//client.getstage().getmobs().addmob(oid, id, true, stance, fh, effect, fadein, team, posx, posy);
+			client.getstage().getmobs().addmob(oid, id, true, stance, fh, effect, fadein, team, posx, posy);
 		}
 	};
 
-	/*class clock_h : public vhandler
+	class ShowMobHpHandler83 : public PacketHandler
+	{
+		void handle(ClientInterface& client, InPacket& recv) const
+		{
+			int32_t oid = recv.readint();
+			int8_t hppercent = recv.readbyte();
+
+			uint16_t playerlevel = client.getstage().getplayer().getstats().getstat(Character::MS_LEVEL);
+			client.getstage().getmobs().sendmobhp(oid, hppercent, playerlevel);
+		}
+	};
+
+	class KillMobHandler83 : public PacketHandler
+	{
+		void handle(ClientInterface& client, InPacket& recv) const
+		{
+			int32_t oid = recv.readint();
+			int8_t animation = recv.readbyte();
+
+			client.getstage().getmobs().killmob(oid, animation);
+		}
+	};
+	/*
+	
+
+	class mob_moved_h : public vhandler
+	{
+		void mob_moved_h::handle(packet recv)
+		{
+			int oid = recv.readint();
+			recv.readbyte();
+			char useskill = recv.readbyte();
+			char skill = recv.readbyte();
+			char skill1 = recv.readbyte();
+			char skill2 = recv.readbyte();
+			char skill3 = recv.readbyte();
+			char skill4 = recv.readbyte();
+			vector2d startpos = recv.readpoint();
+		}
+	};
+
+	class move_mob_response_h : public vhandler
+	{
+		void move_mob_response_h::handle(packet recv)
+		{
+			int oid = recv.readint();
+			short moveid = recv.readshort();
+			bool useskills = recv.readbool();
+			short curmp = recv.readshort();
+			char skill = recv.readbyte();
+			char skilllvl = recv.readbyte();
+		}
+	};
+
+	class clock_h : public vhandler
 	{
 		void clock_h::handle(packet recv)
 		{
@@ -177,63 +234,65 @@ namespace Net
 			bool enable = recv.readbool();
 			//uinterface.setactive(enable);
 		}
-	};
+	};*/
 
-	class spawn_player_h : public vhandler
+	class SpawnCharHandler83 : public PacketHandler
 	{
-		void spawn_player_h::handle(packet recv)
+		void handle(ClientInterface& client, InPacket& recv) const
 		{
-			int chrid = recv.readint();
-			byte level = recv.readbyte();
+			int32_t cid = recv.readint();
+			uint8_t level = recv.readbyte();
 			string name = recv.readascii();
+
 			string guild = recv.readascii();
-			short glogobg = recv.readshort();
-			char glogobgcolor = recv.readbyte();
-			short glogo = recv.readshort();
-			char glogocolor = recv.readbyte();
+			int16_t glogobg = recv.readshort();
+			int8_t glogobgcolor = recv.readbyte();
+			int16_t glogo = recv.readshort();
+			int8_t glogocolor = recv.readbyte();
 
 			recv.skip(8);
 
 			bool morphed = recv.readint() == 2;
-			int buffmask1 = recv.readint();
-			short buffvalue = 0;
+			int32_t buffmask1 = recv.readint();
+			int16_t buffvalue = 0;
 			if (buffmask1 != 0)
 			{
 				buffvalue = morphed ? recv.readshort() : recv.readbyte();
 			}
-			int buffmask2 = recv.readint();
+			int32_t buffmask2 = recv.readint();
 
 			recv.skip(43);
 
-			int mount = recv.readint();
+			int32_t mount = recv.readint();
 
 			recv.skip(61);
 
-			short job = recv.readshort();
-			maplelook mlook = maplelook(&recv);
+			int16_t job = recv.readshort();
+			LookEntry look = LookEntry(recv);
 
-			int itemcount = recv.readint(); //count of 5110000, idk 
-			int itemeffect = recv.readint();
-			int chair = recv.readint();
-			vector2d pos = recv.readpoint();
-			char stance = recv.readbyte();
+			int32_t itemcount = recv.readint(); //count of 5110000, idk 
+			int32_t itemeffect = recv.readint();
+			int32_t chair = recv.readint();
+			int32_t px = recv.readshort();
+			int32_t py = recv.readshort();
+			int8_t stance = recv.readbyte();
 
 			recv.skip(3);
 
-			for (char i = 0; i < 3; i++)
+			for (size_t i = 0; i < 3; i++)
 			{
-				char available = recv.readbyte();
+				int8_t available = recv.readbyte();
 				if (available == 1)
 				{
 					bool show = true;
-					char byte2 = show ? recv.readbyte() : 0;
-					int petid = recv.readint();
+					int8_t byte2 = show ? recv.readbyte() : 0;
+					int32_t petid = recv.readint();
 					string name = recv.readascii();
-					int uqid = recv.readint();
+					int32_t uqid = recv.readint();
 					recv.readint();
-					vector2d pos = recv.readpoint();
-					char stance = recv.readbyte();
-					int fh = recv.readint();
+					vector2d<int16_t> pos = recv.readpoint();
+					int8_t stance = recv.readbyte();
+					int32_t fh = recv.readint();
 				}
 				else
 				{
@@ -241,9 +300,9 @@ namespace Net
 				}
 			}
 
-			int mtlevel = recv.readint();
-			int mtexp = recv.readint();
-			int mttired = recv.readint();
+			int32_t mtlevel = recv.readint();
+			int32_t mtexp = recv.readint();
+			int32_t mttired = recv.readint();
 
 			//shop stuff, TO DO
 			recv.readbyte();
@@ -253,34 +312,36 @@ namespace Net
 			string chalktext = chalkboard ? recv.readascii() : "";
 
 			recv.skip(3);
-			char team = recv.readbyte();
+			int8_t team = recv.readbyte();
 
-			Game::getcache()->getequips()->loadcharlook(&mlook);
-			Game::getfield()->getchars()->addchar(chrid, mlook, level, job, name, pos);
+			client.getstage().getchars().addchar(cid, look, level, job, name, stance, vector2d<int32_t>(px, py));
 		}
 	};
 
-	class remove_player_h : public vhandler
+	class RemoveCharHandler83 : public PacketHandler
 	{
-		void remove_player_h::handle(packet recv)
+		void handle(ClientInterface& client, InPacket& recv) const
 		{
-			int cid = recv.readint();
-			Game::getfield()->getchars()->removechar(cid);
+			int32_t cid = recv.readint();
+			client.getstage().getchars().removechar(cid);
 		}
 	};
 
-	class player_moved_h : public vhandler
+	class MoveCharHandler83 : public AbstractMovementHandler83
 	{
-		void player_moved_h::handle(packet recv)
+		void handle(ClientInterface& client, InPacket& recv) const
 		{
-			int cid = recv.readint();
-			recv.readint();
-			objectmovement moves = objectmovement(&recv);
-			Game::getfield()->getchars()->movechar(cid, moves.getmoves());
+			int32_t cid = recv.readint();
+			recv.skip(4);
+
+			MovementInfo movements;
+			parsemovement(recv, movements);
+
+			client.getstage().getchars().movechar(cid, movements);
 		}
 	};
 
-	class spawn_reactor_h : public vhandler
+	/*class spawn_reactor_h : public vhandler
 	{
 		void spawn_reactor_h::handle(packet recv)
 		{
@@ -303,26 +364,7 @@ namespace Net
 		}
 	};
 
-	class show_mob_hp_h : public vhandler
-	{
-		void show_mob_hp_h::handle(packet recv)
-		{
-			int oid = recv.readint();
-			char hppercent = recv.readbyte();
-			Game::getfield()->getmobs()->sendmobhp(oid, Game::getfield()->getplayer()->getstats()->getstat(MS_LEVEL), hppercent);
-		}
-	};
-
-	class kill_mob_h : public vhandler
-	{
-		void kill_mob_h::handle(packet recv)
-		{
-			int oid = recv.readint();
-			char animation = recv.readbyte();
-			Game::getfield()->getmobs()->killmob(oid, animation);
-		}
-	};
-
+	
 	class drop_item_from_mapobject_h : public vhandler
 	{
 		void drop_item_from_mapobject_h::handle(packet recv)
@@ -377,35 +419,6 @@ namespace Net
 				looter = Game::getfield()->getchar(cid);
 			}
 			Game::getfield()->getdrops()->removedrop(oid, anim, looter);
-		}
-	};
-
-	class mob_moved_h : public vhandler
-	{
-		void mob_moved_h::handle(packet recv)
-		{
-			int oid = recv.readint();
-			recv.readbyte();
-			char useskill = recv.readbyte();
-			char skill = recv.readbyte();
-			char skill1 = recv.readbyte();
-			char skill2 = recv.readbyte();
-			char skill3 = recv.readbyte();
-			char skill4 = recv.readbyte();
-			vector2d startpos = recv.readpoint();
-		}
-	};
-
-	class move_mob_response_h : public vhandler
-	{
-		void move_mob_response_h::handle(packet recv)
-		{
-			int oid = recv.readint();
-			short moveid = recv.readshort();
-			bool useskills = recv.readbool();
-			short curmp = recv.readshort();
-			char skill = recv.readbyte();
-			char skilllvl = recv.readbyte();
 		}
 	};*/
 }

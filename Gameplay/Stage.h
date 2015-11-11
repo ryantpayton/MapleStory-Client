@@ -20,7 +20,7 @@
 #include "Program\ClientInterface.h"
 #include "Gameplay\Maplemap\Mapinfo.h"
 #include "Gameplay\Maplemap\MapLayer.h"
-#include "Gameplay\Maplemap\Mapportals.h"
+#include "Gameplay\Maplemap\MapPortals.h"
 #include "Gameplay\Maplemap\Mapchars.h"
 #include "Gameplay\Camera.h"
 #include "Gameplay\Physics\Physics.h"
@@ -29,7 +29,6 @@
 
 namespace Gameplay
 {
-	using::Gameplay::Mapportals;
 	using::Journey::ClientInterface;
 	using::IO::Keytype;
 
@@ -42,15 +41,14 @@ namespace Gameplay
 		// Calls 'init()' of members to preload assets.
 		void init();
 		// Adds a player object with the given properties.
-		// Parameters: int(objectid), CharLook(look to use), Charstats(stats to use)
-		void loadplayer(int32_t, CharLook, Charstats);
+		// Parameters: int(character id)
+		bool loadplayer(int32_t);
 		// Loads the map to display. 
 		// Parameters: int(mapid)
 		void loadmap(int32_t);
 		// Repositions the player and reactivates the stage after loading.
 		// Also plays the bgm associated with the newly loaded map.
-		// Parameters: Audioplayer&(musicplayer to play the bgm with)
-		void respawn(Audioplayer&);
+		void respawn();
 		// Call 'draw()' of  all objects on stage.
 		void draw(float) const;
 		// Calls 'update()' of all objects on stage.
@@ -61,10 +59,12 @@ namespace Gameplay
 		void sendkey(Keytype, int32_t, bool);
 		// Spawn an npc on the current map.
 		// Parameters: int32_t(id), int32_t(oid), bool(is flipped), 
-		// uint16_t(starting foothoold), int32_t(x), int32_t(y)
-		void addnpc(int32_t, int32_t, bool, uint16_t, int32_t, int32_t);
+		// uint16_t(starting foothoold), bool(control), int32_t(x), int32_t(y)
+		void addnpc(int32_t, int32_t, bool, uint16_t, bool, int32_t, int32_t);
+		// Returns a reference to the other characters on the current map.
+		MapChars& getchars();
 		// Returns a reference to the mobs on the current map.
-		Mapmobs& getmobs();
+		MapMobs& getmobs();
 		// Returns a reference to the Player.
 		Player& getplayer();
 	private:
@@ -72,18 +72,21 @@ namespace Gameplay
 		void checkseats();
 
 		ClientInterface& client;
+
 		Mapinfo mapinfo;
 		map<uint8_t, MapLayer> layers;
-		Mapportals portals;
-		Mapchars chars;
-		Mapobjects npcs;
-		Mapmobs mobs;
+		MapPortals portals;
+		MapChars chars;
+		MapObjects npcs;
+		MapMobs mobs;
+		Player player;
+
 		Camera camera;
 		Physics physics;
-		Player player;
+
 		Playable* playable;
 		bool active;
-		int32_t mapid;
+		int32_t currentmapid;
 		int32_t playerid;
 	};
 }

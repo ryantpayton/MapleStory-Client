@@ -28,11 +28,11 @@ namespace Gameplay
 
 	// Collecton of portals on a map. Draws and updates portals.
 	// Also contains methods for using portals and obtaining spawn points.
-	class Mapportals
+	class MapPortals
 	{
 	public:
-		Mapportals();
-		~Mapportals();
+		MapPortals();
+		~MapPortals();
 		void init();
 		void load(node, int32_t);
 		void clear();

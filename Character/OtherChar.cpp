@@ -15,42 +15,66 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "MapChars.h"
+#include "OtherChar.h"
+#include "Program\TimeConstants.h"
 
-namespace Gameplay
+namespace Character
 {
-	MapChars::MapChars() {}
+	OtherChar::OtherChar(int32_t id, const LookEntry& lk, uint8_t lvl,
+		int16_t jb, string nm, int8_t st, vector2d<int32_t> pos) {
 
-	void MapChars::addchar(int32_t cid, const LookEntry& look, uint8_t level,
-		int16_t job, string name, int8_t stance, vector2d<int32_t> pos) {
+		cid = id;
+		look = CharLook(lk);
+		level = lvl;
+		job = jb;
+		name = nm;
+		setposition(pos.x(), pos.y());
 
-		OtherChar* otherchar = getchar(cid);
-		if (!otherchar)
+		lastmove.xpos = pos.x();
+		lastmove.ypos = pos.y();
+		lastmove.newstate = st;
+
+		namelabel = Textlabel(Textlabel::DWF_14MC, Textlabel::TXC_WHITE, name, 0);
+		namelabel.setback(Textlabel::TXB_NAMETAG);
+	}
+
+	int8_t OtherChar::update(const Physics& physics)
+	{
+		uint8_t laststate = lastmove.newstate;
+		if (laststate % 2 == 1)
 		{
-			add(new OtherChar(cid, look, level, job, name, stance, pos));
+			setflip(false);
+			laststate -= 1;
 		}
-	}
-
-	void MapChars::removechar(int32_t cid)
-	{
-		remove(cid);
-	}
-
-	void MapChars::movechar(int32_t cid, const MovementInfo& movements)
-	{
-		OtherChar* otherchar = getchar(cid);
-		if (otherchar)
-		{
-			otherchar->sendmovement(movements);
-		}
-	}
-
-	OtherChar* MapChars::getchar(int32_t cid)
-	{
-		Mapobject* mmo = get(cid);
-		if (mmo)
-			return reinterpret_cast<OtherChar*>(mmo);
 		else
-			return nullptr;
+		{
+			setflip(true);
+		}
+		setstance(static_cast<Stance>(laststate));
+
+		phobj.lastx = phobj.fx;
+		phobj.lasty = phobj.fy;
+		phobj.fx = static_cast<float>(lastmove.xpos);
+		phobj.fy = static_cast<float>(lastmove.ypos);
+
+		phobj.hspeed = phobj.fx - phobj.lastx;
+		phobj.vspeed = phobj.fy - phobj.lasty;
+
+		physics.getfht().updatefh(phobj);
+
+		look.update(Constants::TIMESTEP);
+		phobj.fhlayer = physics.getfht().getfh(phobj.fhid).getlayer();
+
+		return phobj.fhlayer;
+	}
+
+	void OtherChar::sendmovement(const MovementInfo& movements)
+	{
+		lastmove = movements.gettop();
+	}
+
+	void OtherChar::draw(vector2d<int32_t> viewpos, float inter) const
+	{
+		Char::draw(phobj.getposition(inter) + viewpos, inter);
 	}
 }

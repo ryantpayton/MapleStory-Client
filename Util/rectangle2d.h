@@ -24,6 +24,7 @@ namespace Util
 	class rectangle2d
 	{
 	public:
+		rectangle2d(node na, node nb) { lt = vector2d<T>(na); rb = vector2d<T>(nb); }
 		rectangle2d(T l, T r, T t, T b) { lt = vector2d<T>(l, t); rb = vector2d<T>(r, b); }
 		rectangle2d(vector2d<T> v1, vector2d<T> v2) { lt = v1; rb = v2; }
 		rectangle2d() { lt = vector2d<T>(); rb = vector2d<T>(); }

@@ -19,32 +19,82 @@
 #include "Gameplay\Maplemap\Mapobject.h"
 #include "Gameplay\Physics\PhysicsObject.h"
 #include "Graphics\Animation.h"
+#include "Graphics\Textlabel.h"
+#include "Util\rectangle2d.h"
+#include "Util\Randomizer.h"
 
 namespace Gameplay
 {
 	using::std::string;
+	using::Util::rectangle2d;
+	using::Util::Randomizer;
 	using::Graphics::Animation;
+	using::Graphics::Textlabel;
 
 	class Mob : public Mapobject
 	{
 	public:
+		enum Stance
+		{
+			STAND = 2,
+			MOVE = 4,
+			JUMP = 6,
+			HIT = 8,
+			DIE = 10
+		};
+
 		Mob(int32_t, int32_t, bool, int8_t, uint16_t, int8_t, bool, int8_t, int32_t, int32_t);
 		~Mob();
+
 		int8_t update(const Physics&);
 		void draw(vector2d<int32_t>, float) const;
+		void kill(int8_t);
+		void sendhp(int8_t, uint16_t);
+		void makeactive();
+
 		void setposition(int32_t, int32_t);
 		int8_t getlayer() const;
 		int32_t getoid() const;
 		vector2d<int32_t> getposition() const;
+
 	private:
-		map<string, Animation> animations;
+		void parsestance(Stance, node);
+		//void parsesound(mobstate, node);
+		void nextmove();
+		void setstance(Stance);
+
+		map<Stance, Animation> animations;
+		map<Stance, rectangle2d<int32_t>> bounds;
+		string name;
+		uint16_t level;
+		uint16_t speed;
+		uint16_t watk;
+		uint16_t matk;
+		uint16_t wdef;
+		uint16_t mdef;
+		uint16_t accuracy;
+		uint16_t avoid;
+		uint16_t knockback;
+		bool undead;
+		bool touchdamage;
+
+		Textlabel namelabel;
+		Randomizer randomizer;
+
 		int32_t oid;
 		int32_t id;
 		bool control;
-		int8_t stance;
 		int8_t effect;
 		int8_t team;
+
+		bool active;
+		Stance stance;
 		PhysicsObject phobj;
+		uint16_t moved;
+		bool flip;
+		float walkforce;
+		int8_t hppercent;
+		bool fading;
 	};
 }
 

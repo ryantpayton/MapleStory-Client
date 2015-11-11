@@ -32,7 +32,7 @@ namespace Gameplay
 	Foothold::Foothold()
 	{
 		id = 0;
-		layer = -1;
+		layer = 0;
 		prev = 0;
 		next = 0;
 	}
