@@ -1,0 +1,398 @@
+/////////////////////////////////////////////////////////////////////////////
+// This file is part of the Journey MMORPG client                           //
+// Copyright © 2015 Daniel Allendorf                                        //
+//                                                                          //
+// This program is free software: you can redistribute it and/or modify     //
+// it under the terms of the GNU Affero General Public License as           //
+// published by the Free Software Foundation, either version 3 of the       //
+// License, or (at your option) any later version.                          //
+//                                                                          //
+// This program is distributed in the hope that it will be useful,          //
+// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
+// GNU Affero General Public License for more details.                      //
+//                                                                          //
+// You should have received a copy of the GNU Affero General Public License //
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
+//////////////////////////////////////////////////////////////////////////////
+#pragma once
+#include "CharLook.h"
+#include "BodyDrawinfo.h"
+#include "Weapon.h"
+#include "Program\TimeConstants.h"
+
+namespace Character
+{
+	static BodyDrawinfo drawinfo;
+
+	const Bodytype& getbody(uint8_t skin)
+	{
+		static map<uint8_t, Bodytype> bodytypes;
+		if (!bodytypes.count(skin))
+		{
+			bodytypes[skin] = Bodytype(skin, drawinfo);
+		}
+		return bodytypes[skin];
+	}
+
+	const Hairstyle& gethair(int32_t hairid)
+	{
+		static map<int32_t, Hairstyle> hairstyles;
+		if (!hairstyles.count(hairid))
+		{
+			hairstyles[hairid] = Hairstyle(hairid, drawinfo);
+		}
+		return hairstyles[hairid];
+	}
+
+	const Facetype& getface(int32_t faceid)
+	{
+		static map<int32_t, Facetype> faces;
+		if (!faces.count(faceid))
+		{
+			faces[faceid] = Facetype(faceid);
+		}
+		return faces[faceid];
+	}
+
+	const Clothing& getequip(int32_t equipid)
+	{
+		int32_t prefix = equipid / 10000;
+		if (prefix > 129 && prefix < 200)
+		{
+			static map<int32_t, Weapon> weapons;
+			if (!weapons.count(equipid))
+			{
+				weapons[equipid] = Weapon(equipid, drawinfo);
+			}
+			return weapons[equipid];
+		}
+		else
+		{
+			static map<int32_t, Clothing> equips;
+			if (!equips.count(equipid))
+			{
+				equips[equipid] = Clothing(equipid, drawinfo);
+			}
+			return equips[equipid];
+		}
+	}
+
+	void CharLook::init()
+	{
+		drawinfo.init();
+	}
+
+	CharLook::CharLook(const LookEntry& entry)
+	{
+		reset();
+
+		setbody(entry.getskin());
+		sethair(entry.gethair());
+		setface(entry.getface());
+
+		for (Equipslot e = EQL_CAP; e <= EQL_WEAPON; e = static_cast<Equipslot>(e + 1))
+		{
+			int32_t equipid = entry.getequip(e);
+			if (equipid > 0)
+			{
+				addequip(equipid);
+			}
+		}
+	}
+
+	CharLook::CharLook()
+	{
+		reset();
+
+		body = nullptr;
+		hair = nullptr;
+		face = nullptr;
+	}
+
+	CharLook::~CharLook() {}
+
+	void CharLook::reset()
+	{
+		setstance("stand");
+		lastframe = 0;
+		frame = 0;
+		elapsed = 0;
+
+		setexpression("default");
+		lastfcframe = 0;
+		fcframe = 0;
+		fcelapsed = 0;
+
+		action = nullptr;
+		actionstr = "";
+		actframe = 0;
+
+		flip = true;
+	}
+
+	void CharLook::draw(vector2d<int32_t> pos, float inter) const
+	{
+		if (!body || !hair || !face)
+			return;
+
+		uint16_t delay = (action) ? action->getdelay() : drawinfo.getdelay(laststance, lastframe);
+		uint8_t interframe;
+		if (elapsed + Constants::TIMESTEP * inter > delay)
+			interframe = frame;
+		else
+			interframe = lastframe;
+		uint16_t fcdelay = face->getdelay(lastexpression, lastfcframe);
+		uint8_t fcinterframe;
+		if (fcelapsed + Constants::TIMESTEP * inter > fcdelay)
+			fcinterframe = fcframe;
+		else
+			fcinterframe = lastfcframe;
+		string interexp;
+		if (fcinterframe == 0)
+		{
+			if (lastexpression == "default")
+				interexp = "blink";
+			else
+				interexp = "default";
+		}
+		else
+		{
+			interexp = lastexpression;
+		}
+
+		using::Graphics::DrawArgument;
+		DrawArgument args = DrawArgument(pos, flip);
+		DrawArgument faceargs = DrawArgument(pos + drawinfo.getfacepos(stance, frame), flip, pos);
+
+		if (laststance == "ladder" || laststance == "rope")
+		{
+
+		}
+		else
+		{
+			hair->draw(laststance, CL_HAIRBBODY, interframe, args);
+			equips.draw(EQL_CAPE, laststance, CL_CAPE, interframe, args);
+			equips.draw(EQL_SHIELD, laststance, CL_SHIELDBBODY, interframe, args);
+			body->draw(laststance, CL_BODY, interframe, args);
+			equips.draw(EQL_SHOES, laststance, CL_SHOES, interframe, args);
+			equips.draw(EQL_PANTS, laststance, CL_PANTS, interframe, args);
+			equips.draw(EQL_TOP, laststance, CL_TOP, interframe, args);
+			equips.draw(EQL_TOP, laststance, CL_MAIL, interframe, args);
+			body->draw(laststance, CL_LHAND, interframe, args);
+			equips.draw(EQL_GLOVES, laststance, CL_GLOVE, interframe, args);
+			hair->draw(laststance, CL_HAIR, interframe, args);
+			equips.draw(EQL_SHIELD, laststance, CL_SHIELDOHAIR, interframe, args);
+			equips.draw(EQL_EARRINGS, laststance, CL_EARRINGS, interframe, args);
+			body->draw(laststance, CL_HEAD, interframe, args);
+			hair->draw(laststance, CL_HAIRSHADE, interframe, args);
+			face->draw(interexp, CL_FACE, fcinterframe, faceargs);
+			equips.draw(EQL_FACEACC, "blink", CL_FACEACC, 0, faceargs);
+			equips.draw(EQL_EYEACC, laststance, CL_EYEACC, interframe, args);
+			equips.draw(EQL_SHIELD, laststance, CL_SHIELD, interframe, args);
+
+			if (equips.isvisible(EQL_CAP))
+				equips.draw(EQL_CAP, laststance, CL_HAT, interframe, args);
+			else
+				hair->draw(laststance, CL_HAIROHEAD, interframe, args);
+
+			if (equips.istwohanded())
+			{
+				equips.draw(EQL_TOP, laststance, CL_MAILARM, interframe, args);
+				body->draw(laststance, CL_ARM, interframe, args);
+				equips.draw(EQL_WEAPON, laststance, CL_WEAPON, interframe, args);
+			}
+			else
+			{
+				equips.draw(EQL_WEAPON, laststance, CL_WEAPON, interframe, args);
+				body->draw(laststance, CL_ARM, interframe, args);
+				equips.draw(EQL_TOP, laststance, CL_MAILARM, interframe, args);
+			}
+
+			body->draw(laststance, CL_RHAND, interframe, args);
+			body->draw(laststance, CL_ARMOHAIR, interframe, args);
+			equips.draw(EQL_WEAPON, laststance, CL_WEAPONOHAND, interframe, args);
+			body->draw(laststance, CL_HANDOWEP, interframe, args);
+			equips.draw(EQL_GLOVES, laststance, CL_RGLOVE, interframe, args);
+			equips.draw(EQL_WEAPON, laststance, CL_WEAPONOGLOVE, interframe, args);
+		}
+	}
+
+	bool CharLook::update(uint16_t timestep)
+	{
+		bool aniend = false;
+		if (timestep > 0)
+		{
+			lastframe = frame;
+			laststance = stance;
+			lastfcframe = fcframe;
+			lastexpression = expression;
+
+			elapsed += timestep;
+
+			if (action == nullptr)
+			{
+				uint16_t delay = drawinfo.getdelay(stance, frame);
+				if (elapsed > delay)
+				{
+					elapsed -= delay;
+					frame = drawinfo.nextframe(stance, frame);
+
+					if (frame == 0)
+					{
+						aniend = true;
+
+						if (stance == "attack")
+						{
+							setstance("stand");
+						}
+					}
+				}
+			}
+			else
+			{
+				uint16_t delay = action->getdelay();
+				if (elapsed > delay)
+				{
+					elapsed -= delay;
+
+					actframe = drawinfo.nextacframe(actionstr, actframe);
+					if (actframe > 0)
+					{
+						action = drawinfo.getaction(actionstr, actframe);
+						frame = action->getframe();
+						laststance = stance;
+						stance = action->getstance();
+					}
+					else
+					{
+						aniend = true;
+						action = nullptr;
+						setstance("stand");
+					}
+				}
+			}
+
+			fcelapsed += timestep;
+
+			uint16_t fcdelay = face->getdelay(expression, fcframe);
+			if (fcelapsed > fcdelay)
+			{
+				fcelapsed -= fcdelay;
+				fcframe = face->nextframe(expression, fcframe);
+
+				if (fcframe == 0)
+				{
+					if (expression == "default")
+					{
+						setexpression("blink");
+					}
+					else
+					{
+						setexpression("default");
+					}
+				}
+			}
+		}
+		return aniend;
+	}
+
+	void CharLook::setbody(uint8_t bd)
+	{
+		body = &getbody(bd);
+	}
+
+	void CharLook::sethair(int32_t hd)
+	{
+		hair = &gethair(hd);
+	}
+
+	void CharLook::setface(int32_t fd)
+	{
+		face = &getface(fd);
+	}
+
+	void CharLook::addequip(int32_t eq)
+	{
+		const Clothing& equip = getequip(eq);
+		bool changestance = false;
+		if (equip.geteqslot() == EQL_WEAPON)
+		{
+			const Weapon& weapon = reinterpret_cast<const Weapon&>(equip);
+			changestance = weapon.istwohanded() != equips.istwohanded();
+		}
+		equips.addequip(equip);
+		if (changestance)
+		{
+			if (stance == "stand1" || stance == "stand2")
+			{
+				setstance("stand");
+			}
+			else if (stance == "walk1" || stance == "walk2")
+			{
+				setstance("walk");
+			}
+		}
+	}
+
+	void CharLook::setstance(string ststr)
+	{
+		if (ststr != stance && action == nullptr)
+		{
+			frame = 0;
+			elapsed = 0;
+			if (ststr == "stand" || ststr == "walk")
+			{
+				ststr.push_back(equips.istwohanded() ? '2' : '1');
+			}
+			stance = ststr;
+		}
+	}
+
+	void CharLook::setexpression(string exstr)
+	{
+		if (exstr != expression)
+		{
+			fcframe = 0;
+			fcelapsed = 0;
+			expression = exstr;
+		}
+	}
+
+	void CharLook::setaction(string acstr)
+	{
+		if (acstr != actionstr)
+		{
+			actframe = 0;
+			frame = 0;
+			elapsed = 0;
+			actionstr = acstr;
+			action = drawinfo.getaction(acstr, 0);
+		}
+	}
+
+	void CharLook::setflip(bool f)
+	{
+		flip = f;
+	}
+
+	const Bodytype* CharLook::getbodytype() const
+	{
+		return body;
+	}
+
+	const Hairstyle* CharLook::gethairstyle() const
+	{
+		return hair;
+	}
+
+	const Facetype* CharLook::getfacetype() const
+	{
+		return face;
+	}
+
+	const CharEquips& CharLook::getequips() const
+	{
+		return equips;
+	}
+}

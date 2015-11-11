@@ -1,0 +1,57 @@
+/////////////////////////////////////////////////////////////////////////////
+// This file is part of the Journey MMORPG client                           //
+// Copyright © 2015 Daniel Allendorf                                        //
+//                                                                          //
+// This program is free software: you can redistribute it and/or modify     //
+// it under the terms of the GNU Affero General Public License as           //
+// published by the Free Software Foundation, either version 3 of the       //
+// License, or (at your option) any later version.                          //
+//                                                                          //
+// This program is distributed in the hope that it will be useful,          //
+// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
+// GNU Affero General Public License for more details.                      //
+//                                                                          //
+// You should have received a copy of the GNU Affero General Public License //
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
+//////////////////////////////////////////////////////////////////////////////
+#pragma once
+#include "Util\vector2d.h"
+#include <cstdint>
+
+namespace Gameplay
+{
+	using::std::int32_t;
+	using::Util::vector2d;
+
+	// View on stage which follows the player object.
+	class Camera
+	{
+	public:
+		// Initialize everything to 0, we need the player's spawnpoint first to properly set the position.
+		Camera();
+		// Empty destructor.
+		~Camera();
+		// Update the view with the current player position. (Or any other target)
+		void update(vector2d<int32_t>);
+		// Set the position, changing the view immediatly.
+		void setposition(vector2d<int32_t>);
+		// Updates the view's boundaries. Determined by mapinfo or footholds.
+		void updateview(vector2d<int32_t>, vector2d<int32_t>);
+		// Return the current position for drawing. Use lerp to smoothe movement.
+		vector2d<int32_t> getposition(float) const;
+	private:
+		// Movement variables.
+		float hspeed;
+		float vspeed;
+		float fx;
+		float fy;
+		// View limits.
+		vector2d<int32_t> hbounds;
+		vector2d<int32_t> vbounds;
+		// Variables for interpolation.
+		float lastx;
+		float lasty;
+	};
+}
+

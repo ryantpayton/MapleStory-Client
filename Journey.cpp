@@ -17,59 +17,72 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Journey.h"
-#include "Client.h"
-#include "StopWatch.h"
+#include "Program\Client.h"
+#include "Program\TimeConstants.h"
+#include "Util\StopWatch.h"
 #include <iostream>
 
+// Print errors to the console while testing.
 using::std::string;
 void showerror(string error)
 {
 	std::cout << error << std::endl;
 }
 
+// Main entry point.
 int main()
 {
+	// Create our game.
 	using::Journey::Client;
-	using::Journey::ClientError;
 	Client client;
 
-	ClientError error = client.geterror();
-	if (error == Journey::CLERR_NOERROR)
+	// Check for critical errors.
+	Client::Error error = client.geterror();
+	if (error == Client::NONE)
 	{
-		uint16_t dpf = 4;
+		// No error occured. We can start the main loop.
+		using::Util::StopWatch;
+		StopWatch stopwatch;
 		uint16_t remain = 0;
 
-		using::Util::StopWatch;
-		StopWatch swatch;
+		// Run the game as long as the connection is alive.
 		while (client.receive())
 		{
-			remain += swatch.evaluate();
-			while (remain > dpf - 1)
+			// remain is our accumulator for how much time we will have to update.
+			remain += stopwatch.stop();
+			while (remain >= Constants::TIMESTEP)
 			{
-				client.update(dpf);
-				remain -= dpf;
+				// Update game with constant timestep as many times as possible.
+				client.update(Constants::TIMESTEP);
+				remain -= Constants::TIMESTEP;
 			}
-			client.draw();
+			// Restart the stopwatch.
+			stopwatch.start();
+
+			// Draw the game. This uses linear interpolation to smoothen out movement.
+			client.draw(static_cast<float>(remain) / Constants::TIMESTEP);
 		}
 	}
 	else
 	{
+		// Display a critical error. These are errors that prevent the game from starting.
 		switch (error)
 		{
-		case Journey::CLERR_NXFILES:
+		case Client::NXFILES :
 			showerror("Error: Could not find valid game files.");
 			break;
-		case Journey::CLERR_CONNECTION:
+		case Client::CONNECTION :
 			showerror("Error: Could not connect to server.");
 			break;
-		case Journey::CLERR_WINDOW:
+		case Client::WINDOW:
 			showerror("Error: Could not initialize graphics.");
 			break;
-		case Journey::CLERR_AUDIO:
+		case Client::AUDIO:
 			showerror("Error: Could not initialize audio.");
 			break;
 		}
 
+		// Run an infinite loop to keep the console on screen.
 		while (true) {}
 	}
 
