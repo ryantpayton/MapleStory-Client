@@ -97,7 +97,10 @@ namespace Gameplay
 
 	vector2d<int32_t> MapPortals::getspawnpoint(uint8_t pid) const
 	{
-		return portals.count(pid) ? portals.at(pid).getposition() : vector2d<int32_t>();
+		if (portals.count(pid))
+			return portals.at(pid).getposition() - vector2d<int32_t>(0, 40);
+		else
+			return vector2d<int32_t>();
 	}
 
 	vector2d<int32_t> MapPortals::getspawnpoint(string pname) const
@@ -106,17 +109,17 @@ namespace Gameplay
 		return getspawnpoint(pid);
 	}
 
-	const pair<int32_t, string>* MapPortals::findportal(rectangle2d<int32_t> rect)
+	const WarpInfo* MapPortals::findportal(rectangle2d<int32_t> rect)
 	{
-		if (findportalcd == 0)
+		if (findportalcd)
+			return nullptr;
+
+		for (map<uint8_t, Portal>::iterator ptit = portals.begin(); ptit != portals.end(); ++ptit)
 		{
-			for (map<uint8_t, Portal>::iterator ptit = portals.begin(); ptit != portals.end(); ++ptit)
+			if (ptit->second.bounds().overlaps(rect))
 			{
-				if (ptit->second.bounds().overlaps(rect))
-				{
-					findportalcd = 60;
-					return ptit->second.getwarpinfo();
-				}
+				findportalcd = 60;
+				return &ptit->second.getwarpinfo();
 			}
 		}
 		return nullptr;

@@ -17,7 +17,6 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Stage.h"
-#include "Maplemap\Npc.h"
 #include "Net\Packets\GameplayPackets83.h"
 #include "nlnx\nx.hpp"
 #include "nlnx\audio.hpp"
@@ -91,7 +90,7 @@ namespace Gameplay
 		}
 
 		vector2d<int32_t> startpos = portals.getspawnpoint(player.getstats().getportal());
-		player.setposition(startpos.x(), startpos.y());
+		player.respawn(startpos);
 		camera.setposition(startpos);
 		camera.updateview(mapinfo.getwalls(), mapinfo.getborders());
 
@@ -133,7 +132,7 @@ namespace Gameplay
 			mobs.update(physics);
 			chars.update(physics);
 			player.update(physics);
-			portals.update(player.bounds());
+			portals.update(player.getbounds());
 			camera.update(player.getposition());
 
 			using::Gameplay::MovementInfo;
@@ -150,62 +149,74 @@ namespace Gameplay
 
 	void Stage::sendkey(Keytype type, int32_t action, bool down)
 	{
-		if (type == IO::KT_ACTION)
+		switch (type)
 		{
-			if (down)
+		case IO::KT_ACTION:
+			if (playable)
 			{
-				switch (action)
+				if (down)
 				{
-				case IO::KA_UP:
-					checkportal();
-					break;
-				case IO::KA_SIT:
-					checkseats();
-					break;
+					switch (action)
+					{
+					case IO::KA_UP:
+						checkladders();
+						checkportals();
+						break;
+					case IO::KA_DOWN:
+						checkladders();
+						break;
+					case IO::KA_SIT:
+						checkseats();
+						break;
+					}
 				}
-			}
 
-			Keyaction ka = static_cast<Keyaction>(action);
-			if (playable != 0)
-			{
+				Keyaction ka = static_cast<Keyaction>(action);
 				playable->sendaction(ka, down);
 			}
+			break;
 		}
 	}
 
-	void Stage::checkportal()
+	void Stage::checkportals()
 	{
-		using::std::pair;
-		const pair<int32_t, string>* warpinfo = portals.findportal(player.bounds());
+		const WarpInfo* warpinfo = portals.findportal(player.getbounds());
 		if (warpinfo)
 		{
-			int32_t mapid = warpinfo->first;
-			if (mapid == currentmapid)
+			if (warpinfo->mapid == currentmapid)
 			{
-				vector2d<int32_t> spawnpoint = portals.getspawnpoint(warpinfo->second) - vector2d<int32_t>(0, 40);
-				player.setposition(spawnpoint.x(), spawnpoint.y());
+				vector2d<int32_t> spawnpoint = portals.getspawnpoint(warpinfo->portal);
+				player.respawn(spawnpoint);
 			}
-			else if (mapid < 999999999)
+			else if (warpinfo->valid)
 			{
 				using::Net::ChangeMapPacket83;
-				client.getsession().dispatch(ChangeMapPacket83(false, mapid, warpinfo->second, false));
+				client.getsession().dispatch(ChangeMapPacket83(false, warpinfo->mapid, warpinfo->portal, false));
 			}
 		}
 	}
 
 	void Stage::checkseats()
 	{
-		const vector2d<int32_t>* seat = mapinfo.getseat(player.getposition());
-		if (seat)
-		{
-			player.setposition(seat->x(), seat->y());
-			player.setstance(Character::Char::SIT);
-		}
+		if (player.issitting())
+			return;
+
+		const Seat* seat = mapinfo.findseat(player.getposition());
+		player.setseat(seat);
 	}
 
-	void Stage::addnpc(int32_t id, int32_t oid, bool flip, uint16_t fhid, bool control, int32_t x, int32_t y)
+	void Stage::checkladders()
 	{
-		npcs.add(new Npc(id, oid, flip, fhid, control, x, y));
+		if (player.isclimbing())
+			return;
+
+		const Ladder* ladder = mapinfo.findladder(player.getposition());
+		player.setladder(ladder);
+	}
+
+	MapNpcs& Stage::getnpcs()
+	{
+		return npcs;
 	}
 
 	MapChars& Stage::getchars()

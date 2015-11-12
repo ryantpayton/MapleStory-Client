@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "AbstractItemHandler83.h"
+#include "IO\UITypes\UIStatusbar.h"
 
 #include "Journey.h"
 #ifdef JOURNEY_USE_OPENGL
@@ -130,17 +131,17 @@ namespace Net
 #endif
 
 				//parent.getui()add(UI_QUICKSLOTS);
-				//parent.getui()add(UI_STATUSBAR);
+				using::IO::ElementStatusbar;
+				client.getui().add(ElementStatusbar(player.getstats()));
 				//parent.getui()add(UI_CHATBAR);
 				//parent.getui()add(UI_INVENTORY);
 				//parent.getui()getbase()->setactive(true);
 
 				//Game::getcache()->getsounds()->play(MSN_GAMEIN);
-				int32_t mapid = client.getstage().getplayer().getstats().getmapid();
+				int32_t mapid = player.getstats().getmapid();
 				client.getstage().loadmap(mapid);
 				client.getstage().respawn();
 
-				player.initcontrol();
 				client.getui().getkeyboard().addtarget(IO::KT_MENU, &client.getui());
 				client.getui().getkeyboard().addtarget(IO::KT_ACTION, &client.getstage());
 			}

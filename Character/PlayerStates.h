@@ -16,10 +16,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "PlayerState.h"
+#include "PlayableChar.h"
 
 namespace Character
 {
+	class PlayerState
+	{
+	public:
+		virtual ~PlayerState(){}
+		virtual void sendaction(PlayableChar&, Keyaction, bool) const = 0;
+		virtual void update(PlayableChar&) const = 0;
+		virtual void nextstate(PlayableChar&) const = 0;
+	};
+
 	class PlayerStandState : public PlayerState
 	{
 		void sendaction(PlayableChar& player, Keyaction ka, bool down) const
@@ -263,5 +272,71 @@ namespace Character
 		}
 
 		void nextstate(PlayableChar&) const {}
+	};
+
+	class PlayerClimbState : public PlayerState
+	{
+		void sendaction(PlayableChar& player, Keyaction ka, bool down) const
+		{
+			if (down)
+			{
+				switch (ka)
+				{
+				case IO::KA_JUMP:
+					if (player.keydown(IO::KA_LEFT))
+					{
+						player.setflip(false);
+						player.getphobj().hforce = -player.getjforce();
+						player.getphobj().vforce = -player.getjforce();
+					}
+					else if (player.keydown(IO::KA_RIGHT))
+					{
+						player.setflip(true);
+						player.getphobj().hforce = player.getjforce();
+						player.getphobj().vforce = player.getjforce();
+					}
+					break;
+				}
+			}
+		}
+
+		void update(PlayableChar& player) const
+		{
+			if (player.keydown(IO::KA_UP))
+			{
+				player.getphobj().vforce = -player.getclimbforce();
+			}
+			else if (player.keydown(IO::KA_DOWN))
+			{
+				player.getphobj().vforce = player.getclimbforce();
+			}
+		}
+
+		void nextstate(PlayableChar& player) const
+		{
+			if (player.getphobj().onground)
+			{
+				player.setstance(Char::STAND);
+				player.getphobj().canfall = true;
+			}
+			else
+			{
+				const Ladder* ladder = player.getladder();
+				if (ladder)
+				{
+					float cfy;
+					if (player.getphobj().vspeed > 0.0f)
+						cfy = player.getphobj().fy;
+					else
+						cfy = player.getphobj().fy - 35;
+
+					if (cfy > ladder->y2 || cfy < ladder->y1)
+					{
+						player.setstance(Char::FALL);
+						player.getphobj().canfall = true;
+					}
+				}
+			}
+		}
 	};
 }

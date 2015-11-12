@@ -19,10 +19,9 @@
 
 namespace Character
 {
-	static map<int32_t, ItemData> items;
-
 	const ItemData& getitem(int32_t itemid)
 	{
+		static map<int32_t, ItemData> items;
 		if (!items.count(itemid))
 		{
 			items[itemid] = ItemData(itemid);

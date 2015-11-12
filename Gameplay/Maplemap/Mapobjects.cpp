@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Mapobjects.h"
 
-#define mmo_ptr unique_ptr<Mapobject>
+#define mmo_ptr unique_ptr<MapObject>
 
 namespace Gameplay
 {
@@ -38,12 +38,13 @@ namespace Gameplay
 
 	void MapObjects::update(const Physics& fht)
 	{
+		using::std::vector;
 		vector<int32_t> toremove;
 
 		using::std::map;
 		for (map<int32_t, mmo_ptr>::iterator obit = objects.begin(); obit != objects.end(); ++obit)
 		{
-			Mapobject* obj = obit->second.get();
+			MapObject* obj = obit->second.get();
 			if (obj)
 			{
 				int8_t oldlayer = obj->getlayer();
@@ -75,7 +76,7 @@ namespace Gameplay
 		layers.clear();
 	}
 
-	void MapObjects::add(Mapobject* toadd)
+	void MapObjects::add(MapObject* toadd)
 	{
 		if (toadd)
 		{
@@ -97,7 +98,7 @@ namespace Gameplay
 		}
 	}
 
-	Mapobject* MapObjects::get(int32_t oid)
+	MapObject* MapObjects::get(int32_t oid)
 	{
 		if (objects.count(oid))
 			return objects[oid].get();

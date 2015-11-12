@@ -47,7 +47,7 @@ namespace Gameplay
 
 	OtherChar* MapChars::getchar(int32_t cid)
 	{
-		Mapobject* mmo = get(cid);
+		MapObject* mmo = get(cid);
 		if (mmo)
 			return reinterpret_cast<OtherChar*>(mmo);
 		else

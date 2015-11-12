@@ -16,28 +16,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Gameplay\Maplemap\Mapobject.h"
+#include "MapObject.h"
 #include <memory>
 #include <vector>
 
 namespace Gameplay
 {
-	// Types of mapobjects. Not used by Mapobjects themselves, but by the Stage.
-	enum MapobjectType
-	{
-		MOT_CHAR,
-		MOT_NPC,
-		MOT_REACTOR,
-		MOT_MOB,
-		MOT_DROP
-	};
-
 	using::std::unique_ptr;
 
 	// Collection of mapobjects of a type. 
 	class MapObjects
 	{
 	public:
+		// Types of mapobjects. Not used by Mapobjects themselves, but by the Stage.
+		enum MapobjectType
+		{
+			MOT_CHAR,
+			MOT_NPC,
+			MOT_REACTOR,
+			MOT_MOB,
+			MOT_DROP
+		};
+
 		virtual ~MapObjects() {}
 		// Draw all mapobjects that are on the specified layer.
 		void draw(int8_t, vector2d<int32_t>, float) const;
@@ -48,7 +48,7 @@ namespace Gameplay
 		void clear();
 		// Adds a mapobject of this type.
 		// Parameters: Mapobject*(new Mapobject)
-		void add(Mapobject*);
+		void add(MapObject*);
 		// Removes the mapobject with the given oid.
 		// Parameters: int(object id)
 		void remove(int32_t);
@@ -56,10 +56,10 @@ namespace Gameplay
 	protected:
 		// Obtains a pointer to the mapobject with the given oid.
 		// Parameters: int(object id)
-		Mapobject* get(int32_t);
+		MapObject* get(int32_t);
 
 	private:
-		map<int32_t, unique_ptr<Mapobject>> objects;
+		map<int32_t, unique_ptr<MapObject>> objects;
 		map<int8_t, map<int32_t, int32_t>> layers;
 	};
 }

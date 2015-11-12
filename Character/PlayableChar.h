@@ -18,11 +18,13 @@
 #pragma once
 #include "Char.h"
 #include "Gameplay\Playable.h"
+#include "Gameplay\Maplemap\MapInfo.h"
 
 namespace Character
 {
 	using::IO::Keyaction;
 	using::Gameplay::Playable;
+	using::Gameplay::Ladder;
 
 	// Interface for a class that is both playable and a character. 
 	// Currently only used by the player, but could be extended to control androids or player npcs.
@@ -33,10 +35,14 @@ namespace Character
 		virtual float getwforce() const = 0;
 		// Returns the jumping force.
 		virtual float getjforce() const = 0;
+		// Returns the climbing force.
+		virtual float getclimbforce() const = 0;
 		// Returns the flying force.
 		virtual float getflyforce() const = 0;
 		// Returns if the keyaction is active.
 		// Parameters: Keyaction(maple-keycode)
 		virtual bool keydown(Keyaction) const = 0;
+		// Returns the ladder.
+		virtual const Ladder* getladder() const = 0;
 	};
 }

@@ -16,16 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\KeyTarget.h"
 #include "Program\ClientInterface.h"
-#include "Gameplay\Maplemap\Mapinfo.h"
-#include "Gameplay\Maplemap\MapLayer.h"
-#include "Gameplay\Maplemap\MapPortals.h"
-#include "Gameplay\Maplemap\Mapchars.h"
-#include "Gameplay\Camera.h"
-#include "Gameplay\Physics\Physics.h"
+#include "Maplemap\MapInfo.h"
+#include "Maplemap\MapLayer.h"
+#include "Maplemap\MapPortals.h"
+#include "Maplemap\Mapchars.h"
+#include "Camera.h"
+#include "Physics\Physics.h"
 #include "Character\Player.h"
-#include "Audio\Audioplayer.h"
 
 namespace Gameplay
 {
@@ -57,10 +55,8 @@ namespace Gameplay
 		// Will delegate inputs of Keytype 'KT_ACTION' to a targeted 'Playable'.
 		// Parameters: Keytype(type of key), int(maple-keycode), bool(is key down)
 		void sendkey(Keytype, int32_t, bool);
-		// Spawn an npc on the current map.
-		// Parameters: int32_t(id), int32_t(oid), bool(is flipped), 
-		// uint16_t(starting foothoold), bool(control), int32_t(x), int32_t(y)
-		void addnpc(int32_t, int32_t, bool, uint16_t, bool, int32_t, int32_t);
+		// Returns a reference to the npcs on the current map.
+		MapNpcs& getnpcs();
 		// Returns a reference to the other characters on the current map.
 		MapChars& getchars();
 		// Returns a reference to the mobs on the current map.
@@ -68,16 +64,17 @@ namespace Gameplay
 		// Returns a reference to the Player.
 		Player& getplayer();
 	private:
-		void checkportal();
+		void checkportals();
 		void checkseats();
+		void checkladders();
 
 		ClientInterface& client;
 
-		Mapinfo mapinfo;
+		MapInfo mapinfo;
 		map<uint8_t, MapLayer> layers;
 		MapPortals portals;
+		MapNpcs npcs;
 		MapChars chars;
-		MapObjects npcs;
 		MapMobs mobs;
 		Player player;
 

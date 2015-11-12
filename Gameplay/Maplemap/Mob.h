@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Gameplay\Maplemap\Mapobject.h"
+#include "Mapobject.h"
 #include "Gameplay\Physics\PhysicsObject.h"
 #include "Graphics\Animation.h"
 #include "Graphics\Textlabel.h"
@@ -31,7 +31,7 @@ namespace Gameplay
 	using::Graphics::Animation;
 	using::Graphics::Textlabel;
 
-	class Mob : public Mapobject
+	class Mob : public MapObject
 	{
 	public:
 		enum Stance

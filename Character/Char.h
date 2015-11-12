@@ -17,21 +17,24 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Gameplay\Maplemap\Mapobject.h"
-#include "Character\Look\CharLook.h"
-#include "Graphics\Textlabel.h"
 #include "Gameplay\Physics\PhysicsObject.h"
+#include "Look\CharLook.h"
+#include "Graphics\Textlabel.h"
+#include "Util\rectangle2d.h"
 
 namespace Character
 {
-	using::Gameplay::Mapobject;
+	using::Util::rectangle2d;
+	using::Gameplay::MapObject;
 	using::Gameplay::PhysicsObject;
 	using::Graphics::Textlabel;
 
 	// Base for characters, e.g. the player and other clients on the same map.
-	class Char : public Mapobject
+	class Char : public MapObject
 	{
 	public:
-		// Player stances which determine animation and state. Values are used in movement packets (add 1 if facing left).
+		// Player stances which determine animation and state. 
+		// Values are used in movement packets (add 1 if facing left).
 		enum Stance
 		{
 			WALK = 2,
@@ -47,6 +50,7 @@ namespace Character
 			SKILL = 22
 		};
 
+		void draw(vector2d<int32_t>, float) const;
 		void setflip(bool);
 		void setstance(Stance);
 		void setposition(int32_t, int32_t);
@@ -54,13 +58,11 @@ namespace Character
 		int8_t getlayer() const;
 		int32_t getoid() const;
 		vector2d<int32_t> getposition() const;
-		Stance getstance() const;
+		rectangle2d<int32_t> getbounds() const;
 		CharLook& getlook();
 		PhysicsObject& getphobj();
 
 	protected:
-		void draw(vector2d<int32_t>, float) const;
-
 		CharLook look;
 		Textlabel namelabel;
 

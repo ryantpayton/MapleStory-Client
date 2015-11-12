@@ -30,6 +30,16 @@ namespace IO
 		active = true;
 	}
 
+	MapleButton::MapleButton(node src)
+	{
+		textures[PRESSED] = Texture(src["pressed"]["0"]);
+		textures[MOUSEOVER] = Texture(src["mouseOver"]["0"]);
+		textures[NORMAL] = Texture(src["normal"]["0"]);
+		textures[DISABLED] = Texture(src["disabled"]["0"]);
+		state = NORMAL;
+		active = true;
+	}
+
 	void MapleButton::draw(vector2d<int32_t> parentpos) const
 	{
 		if (active)

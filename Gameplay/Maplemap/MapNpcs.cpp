@@ -15,17 +15,28 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "PlayableChar.h"
+#include "MapNpcs.h"
 
-namespace Character
+namespace Gameplay
 {
-	class PlayerState
+	MapNpcs::MapNpcs() {}
+
+	void MapNpcs::addnpc(int32_t id, int32_t oid, bool flip, 
+		uint16_t fhid, bool control, int32_t x, int32_t y) {
+
+		Npc* npc = getnpc(oid);
+		if (!npc)
+		{
+			add(new Npc(id, oid, flip, fhid, control, x, y));
+		}
+	}
+
+	Npc* MapNpcs::getnpc(int32_t oid)
 	{
-	public:
-		virtual ~PlayerState(){}
-		virtual void sendaction(PlayableChar&, Keyaction, bool) const = 0;
-		virtual void update(PlayableChar&) const = 0;
-		virtual void nextstate(PlayableChar&) const = 0;
-	};
+		MapObject* mmo = get(oid);
+		if (mmo)
+			return reinterpret_cast<Npc*>(mmo);
+		else
+			return nullptr;
+	}
 }

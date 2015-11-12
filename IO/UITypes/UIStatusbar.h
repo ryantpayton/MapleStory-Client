@@ -16,60 +16,78 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\vector2d.h"
-#include "nlnx\node.hpp"
-#include <vector>
+#include "IO\Element.h"
+#include "IO\Components\Charset.h"
+#include "IO\Components\Bar.h"
+#include "Character\Charstats.h"
+#include "Graphics\Animation.h"
+#include "Graphics\Textlabel.h"
 
-namespace Gameplay
+namespace IO
 {
-	using::std::int32_t;
-	using::std::vector;
-	using::std::string;
-	using::nl::node;
-	using::Util::vector2d;
+	using::Character::Charstats;
+	using::Graphics::Textlabel;
+	using::Graphics::Animation;
 
-	struct Seat
-	{
-		vector2d<int32_t> pos;
-	};
-
-	struct Ladder
-	{
-		int32_t x;
-		int32_t y1;
-		int32_t y2;
-		bool ladder;
-	};
-
-	class MapInfo
+	class UIStatusbar : public UIElement
 	{
 	public:
-		MapInfo();
-		~MapInfo();
-		void loadinfo(node, vector2d<int32_t>, vector2d<int32_t>);
-		bool hasnewbgm() const;
-		const string& getbgm() const;
-		vector2d<int32_t> getwalls() const;
-		vector2d<int32_t> getborders() const;
+		enum Buttons
+		{
+			BT_WHISPER,
+			BT_CALLGM,
+			BT_CASHSHOP,
+			BT_TRADE,
+			BT_MENU,
+			BT_OPTIONS,
+			BT_CHARACTER,
+			BT_STATS,
+			BT_QUEST,
+			BT_INVENTORY,
+			BT_EQUIPS,
+			BT_SKILL
+		};
 
-		const Seat* findseat(vector2d<int32_t>) const;
-		const Ladder* findladder(vector2d<int32_t>) const;
+		UIStatusbar(const Charstats&);
+		void draw(float) const;
+		void buttonpressed(uint16_t);
+		rectangle2d<int32_t> bounds();
 
 	private:
-		bool newbgm;
-		int32_t fieldlimit;
-		bool cloud;
-		string bgm;
-		string mapdesc;
-		string mapname;
-		string streetname;
-		string mapmark;
-		bool swim;
-		bool town;
-		bool hideminimap;
-		vector2d<int32_t> mapwalls;
-		vector2d<int32_t> mapborders;
-		vector<Seat> seats;
-		vector<Ladder> ladders;
+		const Charstats& stats;
+
+		Bar expbar;
+		Bar hpbar;
+		Bar mpbar;
+		Charset statset;
+		Charset levelset;
+		Textlabel namelabel;
+		Textlabel joblabel;
+		Animation hpanimation;
+		Animation mpanimation;
+	};
+
+	class ElementStatusbar : public Element
+	{
+	public:
+		ElementStatusbar(const Charstats& st) : stats(st) {}
+
+		bool isunique() const
+		{
+			return true;
+		}
+
+		UIType type() const
+		{
+			return UI_STATUSBAR;
+		}
+
+		UIElement* instantiate() const
+		{
+			return new UIStatusbar(stats);
+		}
+
+	private:
+		const Charstats& stats;
 	};
 }

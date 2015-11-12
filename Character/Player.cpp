@@ -24,7 +24,40 @@ namespace Character
 {
 	const float WALKFORCE = 0.5f;
 	const float JUMPFORCE = 5.0f;
+	const float CLIMBFORCE = 0.1f;
 	const float FLYFORCE = 0.25f;
+
+	const PlayerState* getstate(Char::Stance stance)
+	{
+		static PlayerStandState standing;
+		static PlayerWalkState walking;
+		static PlayerFallState falling;
+		static PlayerProneState lying;
+		static PlayerClimbState climbing;
+		static PlayerSitState sitting;
+		static PlayerFlyState flying;
+
+		switch (stance)
+		{
+		case Char::STAND:
+			return &standing;
+		case Char::WALK:
+			return &walking;
+		case Char::FALL:
+			return &falling;
+		case Char::PRONE:
+			return &lying;
+		case Char::LADDER:
+		case Char::ROPE:
+			return &climbing;
+		case Char::SIT:
+			return &sitting;
+		case Char::SWIM:
+			return &flying;
+		default:
+			return nullptr;
+		}
+	}
 
 	Player::Player(int32_t id, const LookEntry& lookentry, const StatsEntry& statsentry)
 	{
@@ -41,19 +74,16 @@ namespace Character
 
 	Player::Player() {}
 
-	void Player::initcontrol()
+	void Player::respawn(vector2d<int32_t> pos)
 	{
-		plstates.add(STAND, new PlayerStandState());
-		plstates.add(WALK, new PlayerWalkState());
-		plstates.add(FALL, new PlayerFallState());
-		plstates.add(PRONE, new PlayerProneState());
-		plstates.add(SIT, new PlayerSitState());
-		plstates.add(SWIM, new PlayerFlyState());
+		setposition(pos.x(), pos.y());
+		movementinfo.clear();
+		ladder = nullptr;
 	}
 
 	void Player::sendaction(Keyaction ka, bool down)
 	{
-		const PlayerState* pst = plstates.get(stance);
+		const PlayerState* pst = getstate(stance);
 		if (pst)
 		{
 			pst->sendaction(*this, ka, down);
@@ -76,18 +106,15 @@ namespace Character
 		int32_t speed = 100;
 		int32_t jump = 100;
 
+		stats.settotal(ES_HP, stats.getstat(MS_MAXHP));
+		stats.settotal(ES_MP, stats.getstat(MS_MAXMP));
 		stats.settotal(ES_SPEED, speed);
 		stats.settotal(ES_JUMP, jump);
 	}
 
-	void Player::draw(vector2d<int32_t> viewpos, float inter) const
-	{
-		Char::draw(phobj.getposition(inter) + viewpos, inter);
-	}
-
 	int8_t Player::update(const Physics& physics)
 	{
-		const PlayerState* pst = plstates.get(stance);
+		const PlayerState* pst = getstate(stance);
 		if (pst)
 		{
 			pst->update(*this);
@@ -115,6 +142,35 @@ namespace Character
 		return phobj.fhlayer;
 	}
 
+	void Player::setseat(const Seat* seat)
+	{
+		if (!seat)
+			return;
+
+		setposition(seat->pos.x(), seat->pos.y());
+		setstance(Char::SIT);
+	}
+
+	void Player::setladder(const Ladder* ldr)
+	{
+		if (!ldr)
+			return;
+
+		ladder = ldr;
+		phobj.fx = static_cast<float>(ldr->x);
+		setstance(ldr->ladder ? Char::LADDER : Char::ROPE);
+	}
+
+	bool Player::issitting() const
+	{
+		return stance == Char::SIT;
+	}
+
+	bool Player::isclimbing() const
+	{
+		return stance == Char::LADDER || stance == Char::ROPE;
+	}
+
 	float Player::getwforce() const
 	{
 		return WALKFORCE * static_cast<float>(stats.gettotal(ES_SPEED)) / 100;
@@ -125,6 +181,11 @@ namespace Character
 		return JUMPFORCE * static_cast<float>(stats.gettotal(ES_JUMP)) / 100;
 	}
 
+	float Player::getclimbforce() const
+	{
+		return CLIMBFORCE * static_cast<float>(stats.gettotal(ES_SPEED)) / 100;
+	}
+
 	float Player::getflyforce() const
 	{
 		return FLYFORCE;
@@ -133,11 +194,6 @@ namespace Character
 	bool Player::keydown(Keyaction ka) const
 	{
 		return keysdown.count(ka) ? keysdown.at(ka) : false;
-	}
-
-	rectangle2d<int32_t> Player::bounds() const
-	{
-		return rectangle2d<int32_t>(getposition() - vector2d<int32_t>(30, 70), getposition() + vector2d<int32_t>(30, 10));
 	}
 
 	Charstats& Player::getstats()
@@ -173,5 +229,10 @@ namespace Character
 	const MovementInfo& Player::getmovement() const
 	{
 		return movementinfo;
+	}
+
+	const Ladder* Player::getladder() const
+	{
+		return ladder;
 	}
 }

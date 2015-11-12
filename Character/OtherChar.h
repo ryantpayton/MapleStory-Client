@@ -34,7 +34,6 @@ namespace Character
 		OtherChar(int32_t, const LookEntry&, uint8_t, int16_t, string, int8_t, vector2d<int32_t>);
 		int8_t update(const Physics&);
 		void sendmovement(const MovementInfo&);
-		void draw(vector2d<int32_t>, float) const;
 
 	private:
 		uint8_t level;

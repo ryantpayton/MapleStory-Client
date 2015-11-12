@@ -19,6 +19,7 @@
 #include "IO\KeyTarget.h"
 #include "Gameplay\Maplemap\MapChars.h"
 #include "Gameplay\Maplemap\MapMobs.h"
+#include "Gameplay\Maplemap\MapNpcs.h"
 #include "Character\Player.h"
 
 namespace Gameplay
@@ -41,10 +42,8 @@ namespace Gameplay
 		// Repositions the player and reactivates the stage after loading.
 		// Also plays the bgm associated with the newly loaded map.
 		virtual void respawn() = 0;
-		// Spawn an npc on the current map.
-		// Parameters: int32_t(id), int32_t(oid), bool(is flipped), 
-		// uint16_t(starting foothoold), bool(control), int32_t(x), int32_t(y)
-		virtual void addnpc(int32_t, int32_t, bool, uint16_t, bool, int32_t, int32_t) = 0;
+		// Returns a reference to the npcs on the current map.
+		virtual MapNpcs& getnpcs() = 0;
 		// Returns a reference to the other characters on the current map.
 		virtual MapChars& getchars() = 0;
 		// Returns a reference to the mobs on the current map.

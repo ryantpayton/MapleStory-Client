@@ -44,7 +44,6 @@ namespace Gameplay
 		vector2d<int32_t> gethor() const;
 		// Returns the vertical component.
 		vector2d<int32_t> getver() const;
-		// Get coordinates.
 		int32_t getl() const;
 		int32_t getr() const;
 		int32_t gett() const;
@@ -66,10 +65,7 @@ namespace Gameplay
 		// Returns a y-coordinate right above the given x-coordinate. Used for slopes.
 		// Parameters: float(x-coordinate)
 		float resolvex(float) const;
-		// Returns a point slightly left off the edge of this platform.
-		vector2d<int32_t> getledge() const;
-		// Returns a point slightly right off the edge of this platform.
-		vector2d<int32_t> getredge() const;
+
 	private:
 		uint16_t id;
 		int8_t layer;

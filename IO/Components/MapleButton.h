@@ -31,6 +31,7 @@ namespace IO
 	{
 	public:
 		MapleButton(node, vector2d<int32_t>);
+		MapleButton(node);
 		void draw(vector2d<int32_t>) const;
 		rectangle2d<int32_t> bounds(vector2d<int32_t>) const;
 	private:

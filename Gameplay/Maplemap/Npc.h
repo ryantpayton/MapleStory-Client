@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Mapobject.h"
+#include "MapObject.h"
 #include "Graphics\Animation.h"
 #include "Graphics\Textlabel.h"
 #include "Gameplay\Physics\PhysicsObject.h"
@@ -27,13 +27,14 @@ namespace Gameplay
 {
 	using::std::string;
 	using::std::map;
+	using::std::vector;
 	using::Util::Randomizer;
 	using::Graphics::Animation;
 	using::Graphics::Textlabel;
 
 	// Represents a npc on the current map.
 	// Implements the 'Mapobject' interface to be used in a 'Mapobjects' template.
-	class Npc : public Mapobject
+	class Npc : public MapObject
 	{
 	public:
 		// Parameters: int(npcdata id), int(objectid), bool(is mirrored), 

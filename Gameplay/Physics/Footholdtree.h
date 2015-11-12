@@ -19,12 +19,10 @@
 #include "Foothold.h"
 #include "PhysicsObject.h"
 #include <map>
-#include <vector>
 
 namespace Gameplay
 {
 	using::std::map;
-	using::std::vector;
 
 	// The collection of platforms in a maple-map. Used for collision-detection.
 	class Footholdtree
@@ -44,18 +42,16 @@ namespace Gameplay
 		vector2d<int32_t> getwalls() const;
 		// Returns the topmost and bottommost platform positions of the map.
 		vector2d<int32_t> getborders() const;
+		// Returns the foothold with the given id.
 		const Foothold& getfh(uint16_t) const;
+
 	private:
 		uint16_t getnext(uint16_t, bool, float, float) const;
 		uint16_t getbelow(float, float) const;
-		int32_t getlwall(vector2d<int32_t>) const;
-		int32_t getrwall(vector2d<int32_t>) const;
 		float getwall(uint16_t, bool, vector2d<int32_t>) const;
 
 		map<uint16_t, Foothold> footholds;
 		Foothold nullfh;
-		vector<uint16_t> edgesl;
-		vector<uint16_t> edgesr;
 		vector2d<int32_t> walls;
 		vector2d<int32_t> borders;
 	};

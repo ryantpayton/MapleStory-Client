@@ -19,13 +19,14 @@
 
 namespace Gameplay
 {
-	Mapinfo::Mapinfo()
+	MapInfo::MapInfo()
 	{
 		bgm = "";
-		newbgm = true;
 	}
 
-	void Mapinfo::loadinfo(node src, vector2d<int32_t> walls, vector2d<int32_t> borders)
+	MapInfo::~MapInfo() {}
+
+	void MapInfo::loadinfo(node src, vector2d<int32_t> walls, vector2d<int32_t> borders)
 	{
 		string oldbgm = bgm;
 
@@ -63,42 +64,68 @@ namespace Gameplay
 		node stsrc = src["seat"];
 		for (node sub = stsrc.begin(); sub != stsrc.end(); ++sub)
 		{
-			seats.push_back(vector2d<int32_t>(sub.x(), sub.y()));
+			Seat seat;
+			seat.pos = vector2d<int32_t>(sub.x(), sub.y());
+			seats.push_back(seat);
+		}
+
+		node lrsrc = src["ladders"];
+		for (node lrnode = lrsrc.begin(); lrnode != lrsrc.end(); ++lrnode)
+		{
+			Ladder ladder;
+			ladder.x = lrnode["x"];
+			ladder.y1 = lrnode["y1"];
+			ladder.y2 = lrnode["y2"];
+			ladder.ladder = lrnode["l"].get_bool();
+			ladders.push_back(ladder);
 		}
 	}
 
-	bool Mapinfo::hasnewbgm() const
+	bool MapInfo::hasnewbgm() const
 	{
 		return newbgm;
 	}
 
-	const string& Mapinfo::getbgm() const
+	const string& MapInfo::getbgm() const
 	{
 		return bgm;
 	}
 
-	vector2d<int32_t> Mapinfo::getwalls() const
+	vector2d<int32_t> MapInfo::getwalls() const
 	{
 		return mapwalls;
 	}
 
-	vector2d<int32_t> Mapinfo::getborders() const
+	vector2d<int32_t> MapInfo::getborders() const
 	{
 		return mapborders;
 	}
 
-	const vector2d<int32_t>* Mapinfo::getseat(vector2d<int32_t> pos) const
+	const Seat* MapInfo::findseat(vector2d<int32_t> pos) const
 	{
 		vector2d<int32_t> hor = vector2d<int32_t>(pos.x() - 10, pos.x() + 10);
 		vector2d<int32_t> ver = vector2d<int32_t>(pos.y() - 10, pos.y() + 10);
-		for (size_t i = 0; i < seats.size(); i++)
+		for (vector<Seat>::const_iterator stit = seats.begin(); stit != seats.end(); ++stit)
 		{
-			vector2d<int32_t> stit = seats.at(i);
-			if (hor.contains(stit.x()) && ver.contains(stit.y()))
+			if (hor.contains(stit->pos.x()) && ver.contains(stit->pos.y()))
 			{
-				return &seats.at(i);
+				return stit._Ptr;
 			}
 		}
-		return 0;
+		return nullptr;
+	}
+
+	const Ladder* MapInfo::findladder(vector2d<int32_t> pos) const
+	{
+		vector2d<int32_t> hor = vector2d<int32_t>(pos.x() - 25, pos.x() + 25);
+		for (vector<Ladder>::const_iterator lrit = ladders.begin(); lrit != ladders.end(); ++lrit)
+		{
+			vector2d<int32_t> lrver = vector2d<int32_t>(lrit->y1 - 5, lrit->y2);
+			if (hor.contains(lrit->x) && lrver.contains(pos.y()))
+			{
+				return lrit._Ptr;
+			}
+		}
+		return nullptr;
 	}
 }

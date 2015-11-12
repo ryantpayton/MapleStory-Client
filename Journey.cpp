@@ -16,7 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Journey.h"
 #include "Program\Client.h"
 #include "Program\TimeConstants.h"
 #include "Util\StopWatch.h"

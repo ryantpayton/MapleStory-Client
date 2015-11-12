@@ -16,11 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Footholdtree.h"
+#include <vector>
 
 namespace Gameplay
 {
 	Footholdtree::Footholdtree(node src)
 	{
+		using::std::vector;
+		vector<uint16_t> edgesl;
+		vector<uint16_t> edgesr;
+
 		for (node basef = src.begin(); basef != src.end(); ++basef)
 		{
 			int8_t layer = static_cast<int8_t>(stoi(basef.name()));
@@ -170,46 +175,6 @@ namespace Gameplay
 	const Foothold& Footholdtree::getfh(uint16_t fid) const
 	{
 		return footholds.count(fid) ? footholds.at(fid) : nullfh;
-	}
-
-	int32_t Footholdtree::getlwall(vector2d<int32_t> pos) const
-	{
-		int32_t ret = walls.x();
-		vector2d<int32_t> ver = vector2d<int32_t>(pos.y() - 80, pos.y() - 20);
-		for (map<uint16_t, Foothold>::const_iterator ftit = footholds.begin(); ftit != footholds.end(); ++ftit)
-		{
-			Foothold fh = ftit->second;
-			if (fh.getver().overlaps(ver) && fh.iswall())
-			{
-				int32_t x = fh.getl();
-				if (x > ret && x <= pos.x())
-				{
-					ret = x;
-				}
-			}
-		}
-		return ret;
-	}
-
-	int32_t Footholdtree::getrwall(vector2d<int32_t> pos) const
-	{
-		int32_t ret = walls.y();
-		vector2d<int32_t> ver = vector2d<int32_t>(pos.y() - 80, pos.y() - 20);
-		for (map<uint16_t, Foothold>::const_iterator ftit = footholds.begin(); ftit != footholds.end(); ++ftit)
-		{
-			Foothold fh = ftit->second;
-
-			if (fh.getver().overlaps(ver) && fh.iswall())
-			{
-				int32_t x = fh.getl();
-
-				if (x < ret && x >= pos.x())
-				{
-					ret = x;
-				}
-			}
-		}
-		return ret;
 	}
 
 	float Footholdtree::getwall(uint16_t curid, bool left, vector2d<int32_t> ver) const

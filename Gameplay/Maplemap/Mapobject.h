@@ -21,10 +21,10 @@
 namespace Gameplay
 {
 	// Interface for objects on a map, eg. mobs, npcs, characters etc.
-	class Mapobject
+	class MapObject
 	{
 	public:
-		virtual ~Mapobject(){}
+		virtual ~MapObject(){}
 		// Updates the object and returns the updated layer.
 		virtual int8_t update(const Physics&) = 0;
 		// Draws the object.

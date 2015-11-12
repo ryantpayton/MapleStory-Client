@@ -23,7 +23,7 @@ namespace Gameplay
 	const float GRAVFORCE = 0.2f;
 	const float FRICTION = 0.3f;
 	const float SLOPEFACTOR = 0.1f;
-	const float AIRFRICTION = 0.01f;
+	const float AIRFRICTION = 0.005f;
 	const float FLYFRICTION = 0.05f;
 
 	Physics::Physics() {}

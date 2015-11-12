@@ -15,61 +15,31 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Util\vector2d.h"
-#include "nlnx\node.hpp"
-#include <vector>
+#include "Bar.h"
 
-namespace Gameplay
+namespace IO
 {
-	using::std::int32_t;
-	using::std::vector;
-	using::std::string;
-	using::nl::node;
-	using::Util::vector2d;
-
-	struct Seat
+	Bar::Bar(Texture front, Texture mid, Texture end, int32_t max)
 	{
-		vector2d<int32_t> pos;
-	};
+		barfront = front;
+		barmid = mid;
+		barend = end;
+		maxlength = max;
+	}
 
-	struct Ladder
+	Bar::Bar() {}
+
+	Bar::~Bar() {}
+
+	void Bar::draw(vector2d<int32_t> position, float percent) const
 	{
-		int32_t x;
-		int32_t y1;
-		int32_t y2;
-		bool ladder;
-	};
-
-	class MapInfo
-	{
-	public:
-		MapInfo();
-		~MapInfo();
-		void loadinfo(node, vector2d<int32_t>, vector2d<int32_t>);
-		bool hasnewbgm() const;
-		const string& getbgm() const;
-		vector2d<int32_t> getwalls() const;
-		vector2d<int32_t> getborders() const;
-
-		const Seat* findseat(vector2d<int32_t>) const;
-		const Ladder* findladder(vector2d<int32_t>) const;
-
-	private:
-		bool newbgm;
-		int32_t fieldlimit;
-		bool cloud;
-		string bgm;
-		string mapdesc;
-		string mapname;
-		string streetname;
-		string mapmark;
-		bool swim;
-		bool town;
-		bool hideminimap;
-		vector2d<int32_t> mapwalls;
-		vector2d<int32_t> mapborders;
-		vector<Seat> seats;
-		vector<Ladder> ladders;
-	};
+		int32_t length = static_cast<int32_t>(percent * maxlength);
+		if (length > 0)
+		{
+			using::Graphics::DrawArgument;
+			barfront.draw(DrawArgument(position));
+			barmid.draw(DrawArgument(position + vector2d<int32_t>(1, 0), vector2d<int32_t>(length, 0)));
+			barend.draw(DrawArgument(position + vector2d<int32_t>(length + 1, 0)));
+		}
+	}
 }

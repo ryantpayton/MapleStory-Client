@@ -41,9 +41,13 @@ namespace Character
 		void setportal(uint8_t);
 		int32_t getmapid() const;
 		uint8_t getportal() const;
+		int64_t getexp() const;
+		int64_t getexpneeded() const;
 		uint16_t getstat(Maplestat) const;
 		int32_t gettotal(Equipstat) const;
 		string getname() const;
+		string getjobname() const;
+
 	private:
 		string name;
 		vector<int64_t> petids;

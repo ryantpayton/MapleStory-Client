@@ -26,7 +26,13 @@ namespace Gameplay
 		type = t;
 		name = nm;
 		position = p;
-		warpinfo = std::make_pair(tid, intermap ? tnm : nm);
+
+		WarpInfo wi;
+		wi.mapid = tid;
+		wi.portal = intermap ? tnm : nm;
+		wi.valid = tid < 999999999;
+		warpinfo = wi;
+
 		touched = false;
 	}
 
@@ -68,8 +74,8 @@ namespace Gameplay
 		return rectangle2d<int32_t>(position, position + vector2d<int32_t>(30, -50));
 	}
 
-	const pair<int32_t, string>* Portal::getwarpinfo() const
+	const WarpInfo& Portal::getwarpinfo() const
 	{
-		return &warpinfo;
+		return warpinfo;
 	}
 }

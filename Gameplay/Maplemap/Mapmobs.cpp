@@ -51,7 +51,7 @@ namespace Gameplay
 
 	Mob* MapMobs::getmob(int32_t oid)
 	{
-		Mapobject* mmo = get(oid);
+		MapObject* mmo = get(oid);
 		if (mmo)
 			return reinterpret_cast<Mob*>(mmo);
 		else

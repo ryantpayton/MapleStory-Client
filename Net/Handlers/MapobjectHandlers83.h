@@ -35,7 +35,7 @@ namespace Net
 			int16_t rx = recv.readshort();
 			int16_t ry = recv.readshort();
 
-			client.getstage().addnpc(id, oid, f, fh, false, posx, posy);
+			client.getstage().getnpcs().addnpc(id, oid, f, fh, false, posx, posy);
 		}
 	};
 
@@ -62,7 +62,7 @@ namespace Net
 				int16_t ry = recv.readshort();
 				bool minimap = recv.readbool();
 
-				client.getstage().addnpc(id, oid, f, fh, true, posx, posy);
+				client.getstage().getnpcs().addnpc(id, oid, f, fh, true, posx, posy);
 			}
 		}
 	};

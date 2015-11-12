@@ -29,8 +29,9 @@ namespace Character
 		"dead", "sit"
 	};
 
-	void Char::draw(vector2d<int32_t> absp, float inter) const
+	void Char::draw(vector2d<int32_t> viewpos, float inter) const
 	{
+		vector2d<int32_t> absp = phobj.getposition(inter) + viewpos;
 		look.draw(absp, inter);
 		namelabel.draw(absp);
 	}
@@ -73,12 +74,18 @@ namespace Character
 
 	vector2d<int32_t> Char::getposition() const
 	{
-		return vector2d<int32_t>(static_cast<int32_t>(phobj.fx), static_cast<int32_t>(phobj.fy));
+		return vector2d<int32_t>(
+			static_cast<int32_t>(phobj.fx), 
+			static_cast<int32_t>(phobj.fy)
+			);
 	}
 
-	Char::Stance Char::getstance() const
+	rectangle2d<int32_t> Char::getbounds() const
 	{
-		return stance;
+		return rectangle2d<int32_t>(
+			getposition() - vector2d<int32_t>(30, 70), 
+			getposition() + vector2d<int32_t>(30, 10)
+			);
 	}
 
 	CharLook& Char::getlook()

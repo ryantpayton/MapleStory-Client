@@ -19,8 +19,9 @@
 
 namespace Character
 {
-	Item::Item(const ItemData& idt, int id, bool cs, int64_t uqi, int64_t exp, short ct, string ow, short fl) : idata(idt)
-	{
+	Item::Item(const ItemData& idt, int id, bool cs, int64_t uqi, 
+		int64_t exp, short ct, string ow, short fl) : idata(idt) {
+
 		iid = id;
 		cash = cs;
 		uniqueid = uqi;

@@ -30,6 +30,13 @@ namespace Gameplay
 	using::Util::rectangle2d;
 	using::Graphics::Animation;
 
+	struct WarpInfo
+	{
+		int32_t mapid;
+		string portal;
+		bool valid;
+	};
+
 	class Portal
 	{
 	public:
@@ -61,13 +68,13 @@ namespace Gameplay
 		PtType gettype() const;
 		vector2d<int32_t> getposition() const;
 		rectangle2d<int32_t> bounds() const;
-		const pair<int32_t, string>* getwarpinfo() const;
+		const WarpInfo& getwarpinfo() const;
 	private:
 		const Animation* animation;
 		PtType type;
 		string name;
 		vector2d<int32_t> position;
-		pair<int32_t, string> warpinfo;
+		WarpInfo warpinfo;
 		bool touched;
 	};
 }

@@ -72,9 +72,4 @@ namespace Character
 	{
 		lastmove = movements.gettop();
 	}
-
-	void OtherChar::draw(vector2d<int32_t> viewpos, float inter) const
-	{
-		Char::draw(phobj.getposition(inter) + viewpos, inter);
-	}
 }

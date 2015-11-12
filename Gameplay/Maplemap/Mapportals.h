@@ -41,7 +41,7 @@ namespace Gameplay
 		uint8_t getportalbyname(string) const;
 		vector2d<int32_t> getspawnpoint(uint8_t) const;
 		vector2d<int32_t> getspawnpoint(string) const;
-		const pair<int32_t, string>* findportal(rectangle2d<int32_t>);
+		const WarpInfo* findportal(rectangle2d<int32_t>);
 	private:
 		map<uint8_t, Portal> portals;
 		map<string, uint8_t> portalnames;

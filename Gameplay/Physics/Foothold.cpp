@@ -126,14 +126,4 @@ namespace Gameplay
 	{ 
 		return isfloor() ? vertical.x() : getslope() * (x - horizontal.x()) + vertical.x(); 
 	}
-
-	vector2d<int32_t> Foothold::getledge() const
-	{ 
-		return vector2d<int32_t>(horizontal.x() - 1, vertical.x());
-	}
-
-	vector2d<int32_t> Foothold::getredge() const
-	{ 
-		return vector2d<int32_t>(horizontal.y() + 1, vertical.y());
-	}
 }
