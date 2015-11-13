@@ -28,12 +28,12 @@ namespace Util
 	public:
 		HashUtility();
 		~HashUtility();
-		// Calculate file hash using the fast xxhash algorithm. This requires a seed sent by the server.
-		// Parameters: char*(name of file), uint64_t(seed)
-		string getfilehash(const char*, uint64_t) const;
+
+		// Calculate file hash using the fast xxhash algorithm.
+		string getfilehash(const char* filename, uint64_t seed) const;
 		// Calculate file hash using the slower Sha-256 algorithm.
-		// Parameters: char*(name of file)
-		string getfilehash(const char*) const;
+		string getfilehash(const char* filename) const;
+
 	private:
 		Sha256 sha256;
 	};

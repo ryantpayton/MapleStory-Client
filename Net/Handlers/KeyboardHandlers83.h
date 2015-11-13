@@ -22,7 +22,7 @@ namespace Net
 {
 	class KeymapHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			recv.readbyte();
 
@@ -44,7 +44,7 @@ namespace Net
 
 	class SkillmacrosHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			map<string, pair<char, vector<int>>> macros;
 			char size = recv.readbyte();

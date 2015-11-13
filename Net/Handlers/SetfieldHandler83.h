@@ -38,7 +38,7 @@ namespace Net
 	// or warps the player to a different map.
 	class SetfieldHandler83 : public AbstractItemHandler83
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			int32_t channel = recv.readint();
 			int8_t mode1 = recv.readbyte();

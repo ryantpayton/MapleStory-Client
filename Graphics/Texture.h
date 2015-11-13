@@ -31,10 +31,10 @@ namespace Graphics
 		Texture();
 		~Texture();
 		void draw(const DrawArgument&) const;
-		void update() {}
 		void setshift(vector2d<int32_t>);
 		vector2d<int32_t> getorigin() const;
 		vector2d<int32_t> getdimensions() const;
+
 	private:
 		node source;
 		vector2d<int32_t> origin;

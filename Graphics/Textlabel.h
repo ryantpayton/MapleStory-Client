@@ -70,6 +70,7 @@ namespace Graphics
 
 		Textlabel(Font, Textcolor, string, uint16_t);
 		Textlabel();
+
 		void settext(const string&);
 		void settext(const string&, uint16_t);
 		void setfont(Font);
@@ -78,16 +79,19 @@ namespace Graphics
 		void setalpha(float);
 		void draw(vector2d<int32_t>) const;
 		void draw(vector2d<float>) const;
+		void drawline(string, vector2d<int32_t>) const;
 		uint16_t getadvance(size_t) const;
 		size_t getlength() const;
 		const string& gettext() const;
 		vector2d<uint16_t> getdimensions() const;
+
 	private:
 		Font font;
 		Textcolor color;
 		wstring text;
 		string str;
 		Background back;
+
 		float alpha;
 		uint16_t width;
 		uint16_t height;

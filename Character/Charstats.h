@@ -18,6 +18,7 @@
 #pragma once
 #include "Net\Login\StatsEntry.h"
 #include "Character\EquipConstants.h"
+#include "Character\Look\Weapon.h"
 
 namespace Character
 {
@@ -35,20 +36,41 @@ namespace Character
 		Charstats(const StatsEntry&);
 		Charstats();
 		~Charstats();
-		void setstat(Maplestat, uint16_t);
-		void settotal(Equipstat, int32_t);
-		void setexp(int64_t);
-		void setportal(uint8_t);
-		int32_t getmapid() const;
-		uint8_t getportal() const;
-		int64_t getexp() const;
+
+		void calculatedamage(Weapon::WpType weapontype);
+		void setstat(Maplestat type, uint16_t value);
+		void settotal(Equipstat type, int32_t value);
+
+		void setexp(int64_t ex) { exp = ex; }
+		void setportal(uint8_t pt) { portal = pt; }
+
+		uint16_t calculateaccuracy() const;
 		int64_t getexpneeded() const;
 		uint16_t getstat(Maplestat) const;
 		int32_t gettotal(Equipstat) const;
-		string getname() const;
-		string getjobname() const;
+
+		int32_t getmapid() const { return mapid; }
+		uint8_t getportal() const { return portal; }
+		int64_t getexp() const { return exp; }
+		string getname() const { return name; }
+		string getjobname() const { return job.getname(); }
+		float getmastery() const { return mastery; }
+		float getcritical() const { return critical; }
+		float getmincrit() const { return mincrit; }
+		float getmaxcrit() const { return maxcrit; }
+		float getbossdmg() const { return bossdmg; }
+		float getignoredef() const { return ignoredef; }
+		float getstance() const { return stance; }
+		float getresist() const { return resiststatus; }
+		int32_t getmaxdamage() const { return maxdamage; }
+		int32_t getmindamage() const { return mindamage; }
+		uint16_t getattack() const { return attack; }
+		uint16_t gethonor() const { return honor; }
 
 	private:
+		uint16_t getprimary(Weapon::WpType weapontype);
+		uint16_t getsecondary(Weapon::WpType weapontype);
+
 		string name;
 		vector<int64_t> petids;
 		map<Maplestat, uint16_t> stats;
@@ -57,6 +79,19 @@ namespace Character
 		int32_t mapid;
 		uint8_t portal;
 		map<Equipstat, int32_t> totalstats;
+
+		int32_t maxdamage;
+		int32_t mindamage;
+		uint16_t attack;
+		uint16_t honor;
+		float mastery;
+		float critical;
+		float mincrit;
+		float maxcrit;
+		float bossdmg;
+		float ignoredef;
+		float stance;
+		float resiststatus;
 	};
 }
 

@@ -88,8 +88,6 @@ namespace Gameplay
 		}
 	}
 
-	Mob::~Mob() {}
-
 	void Mob::parsestance(Stance stance, node src)
 	{
 		if (src.size() > 0)

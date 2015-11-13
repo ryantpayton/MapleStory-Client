@@ -16,31 +16,67 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Audio\Audioplayer.h"
-#include "Gameplay\StageInterface.h"
-#include "IO\UIInterface.h"
-#include "Net\Session.h"
-#include "Util\Configuration.h"
-#include "Util\NxFileManager.h"
+#include "IO\Element.h"
+#include "Character\Charstats.h"
+#include "Graphics\Textlabel.h"
 
-namespace Journey
+namespace IO
 {
-	using::IO::UIInterface;
-	using::Util::NxFileManager;
-	using::Util::Configuration;
-	using::Gameplay::StageInterface;
-	using::Net::Session;
-	using::Audio::Audioplayer;
+	using std::string;
+	using Character::Charstats;
+	using Graphics::Textlabel;
+	using Graphics::Texture;
 
-	class ClientInterface
+	class UIStatsinfo : public UIElement
 	{
 	public:
-		virtual ~ClientInterface() {}
-		virtual UIInterface& getui() = 0;
-		virtual NxFileManager& getnxfiles() = 0;
-		virtual Configuration& getconfig() = 0;
-		virtual StageInterface& getstage() = 0;
-		virtual Session& getsession() = 0;
-		virtual Audioplayer& getaudio() = 0;
+		enum Buttons
+		{
+			BT_HP,
+			BT_MP,
+			BT_STR,
+			BT_DEX,
+			BT_INT,
+			BT_LUK,
+			BT_DETAILOPEN,
+			BT_DETAILCLOSE
+		};
+
+		UIStatsinfo(const Charstats&);
+
+		void draw(float) const override;
+		void buttonpressed(uint16_t) override;
+
+	private:
+		const Charstats& stats;
+
+		vector<Texture> detailtextures;
+		map<string, Texture> abilities;
+		Textlabel statlabel;
+		bool showdetail;
+	};
+
+	class ElementStatsinfo : public Element
+	{
+	public:
+		ElementStatsinfo(const Charstats& st) : stats(st) {}
+
+		bool isunique() const override
+		{
+			return true;
+		}
+
+		UIType type() const override
+		{
+			return UI_STATSINFO;
+		}
+
+		UIElement* instantiate() const override
+		{
+			return new UIStatsinfo(stats);
+		}
+
+	private:
+		const Charstats& stats;
 	};
 }

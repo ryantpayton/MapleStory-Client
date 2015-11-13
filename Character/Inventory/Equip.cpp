@@ -39,8 +39,9 @@ namespace Character
 		EQQ_GOLD
 	};
 
-	Equip::Equip(const ItemData& eqd, int32_t id, bool cs, int64_t uqi, int64_t exp, uint8_t sl, uint8_t lv, 
-		map<Equipstat, uint16_t> st, string ow, int16_t fl, uint8_t ilv, int16_t iexp, int32_t vic) : Item(eqd, id, cs, uqi, exp, 1, ow, fl) {
+	Equip::Equip(const ItemData& eqd, int32_t id, bool cs, int64_t uqi, int64_t exp, 
+		uint8_t sl, uint8_t lv, map<Equipstat, uint16_t> st, string ow, int16_t fl, 
+		uint8_t ilv, int16_t iexp, int32_t vic) : Item(eqd, id, cs, uqi, exp, 1, ow, fl) {
 
 		slots = sl;
 		level = lv;
@@ -48,5 +49,10 @@ namespace Character
 		itemlevel = ilv;
 		itemexp = iexp;
 		vicious = vic;
+	}
+
+	uint16_t Equip::getstat(Equipstat type) const
+	{
+		return stats.count(type) ? stats.at(type) : 0;
 	}
 }

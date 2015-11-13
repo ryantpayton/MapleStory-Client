@@ -33,8 +33,9 @@ namespace Net
 	class CreateCharPacket83 : public OutPacket
 	{
 	public:
-		CreateCharPacket83(string name, short job, int face, int hair, uint8_t hairc, 
-			uint8_t skin, int top, int bot, int shoes, int weapon, bool female) : OutPacket(CREATE_CHAR) {
+		CreateCharPacket83(string name, uint16_t job, int32_t face, int32_t hair, 
+			uint8_t hairc, uint8_t skin, int32_t top, int32_t bot, int32_t shoes, 
+			int32_t weapon, bool female) : OutPacket(CREATE_CHAR) {
 
 			writestr(name);
 			writeint(job);

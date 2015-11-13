@@ -71,7 +71,10 @@ namespace Gameplay
 
 	rectangle2d<int32_t> Portal::bounds() const
 	{
-		return rectangle2d<int32_t>(position, position + vector2d<int32_t>(30, -50));
+		return rectangle2d<int32_t>(
+			position, 
+			position + vector2d<int32_t>(30, -50)
+			);
 	}
 
 	const WarpInfo& Portal::getwarpinfo() const

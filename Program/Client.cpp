@@ -24,7 +24,7 @@
 
 namespace Journey
 {
-	Client::Client() : stage(*this) {}
+	Client::Client() : ui(*this), stage(*this) {}
 
 	Client::~Client() {}
 
@@ -88,7 +88,7 @@ namespace Journey
 		return stage;
 	}
 
-	UI& Client::getui()
+	UIInterface& Client::getui()
 	{
 		return ui;
 	}

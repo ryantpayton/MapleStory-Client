@@ -18,7 +18,7 @@
 #pragma once
 #include "IO\UIElement.h"
 #include "IO\Components\Textfield.h"
-#include "IO\UI.h"
+#include "IO\UIInterface.h"
 #include "Graphics\Texture.h"
 #include "Graphics\Textlabel.h"
 #include "Character\Look\CharLook.h"
@@ -66,18 +66,19 @@ namespace IO
 			BT_CHARC_GEMDERR,
 		};
 
-		UICharcreation(Session&, UI&);
-		void draw(float) const;
-		void update();
-		void buttonpressed(uint16_t);
-		Mousestate sendmouse(bool, vector2d<int32_t>);
+		UICharcreation(Session&, UIInterface&);
+		void draw(float) const override;
+		void update() override;
+		void buttonpressed(uint16_t) override;
+		Mousestate sendmouse(bool, vector2d<int32_t>) override;
+
 		void nameresult(bool);
 
 	private:
 		void randomizelook();
 
 		Session& session;
-		UI& ui;
+		UIInterface& ui;
 
 		Texture sky;
 		Texture cloud;
@@ -122,21 +123,21 @@ namespace IO
 	class ElementCharcreation : public Element
 	{
 	public:
-		ElementCharcreation(Session& ses, UI& u) : session(ses), ui(u) {}
+		ElementCharcreation(Session& ses, UIInterface& u) : session(ses), ui(u) {}
 
-		UIType type() const
+		UIType type() const override
 		{
 			return UI_CHARCREATION;
 		}
 
-		UIElement* instantiate() const
+		UIElement* instantiate() const override
 		{
 			return new UICharcreation(session, ui);
 		}
 
 	private:
 		Session& session;
-		UI& ui;
+		UIInterface& ui;
 	};
 }
 

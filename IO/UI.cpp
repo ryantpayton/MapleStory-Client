@@ -16,18 +16,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UI.h"
+#include "UITypes\UIStatsinfo.h"
 
 #define ui_ptr unique_ptr<UIElement>
 
 namespace IO
 {
-	UI::UI()
+	UI::UI(ClientInterface& cl) : client(cl)
 	{
 		focused = UI_NULL;
 		enabled = false;
 	}
-
-	UI::~UI() {}
 
 	void UI::init()
 	{
@@ -116,11 +115,12 @@ namespace IO
 	{
 		if (type == KT_MENU && down)
 		{
-			/*Element toadd = keyelements[action];
-			if (toadd.type() != UI_NULL)
+			switch (action)
 			{
-				add(toadd);
-			}*/
+			case KA_CHARSTATS:
+				add(ElementStatsinfo(client.getstage().getplayer().getstats()));
+				break;
+			}
 		}
 	}
 

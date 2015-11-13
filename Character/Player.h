@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Net\Login\CharEntry.h"
 #include "Character\PlayableChar.h"
 #include "Character\Charstats.h"
 #include "Character\Look\CharLook.h"
@@ -31,6 +32,7 @@
 
 namespace Character
 {
+	using::Net::CharEntry;
 	using::Gameplay::Physics;
 	using::Gameplay::MovementInfo;
 	using::Gameplay::MovementFragment;
@@ -41,51 +43,62 @@ namespace Character
 	class Player : public PlayableChar
 	{
 	public:
-		// Construct a player object with the given id, look and stats. Also initializes nametag, flip and stance.
-		Player(int32_t, const LookEntry&, const StatsEntry&);
+		// Construct a player object from the given char entry.
+		// Also initializes nametag, and stance.
+		Player(const CharEntry& entry);
 		// Empty destructor.
 		Player();
+
 		// Respawn the player at the given position.
-		void respawn(vector2d<int32_t>);
+		void respawn(vector2d<int32_t> position);
 		// Sends a Keyaction to the player's state, to apply forces, change the state and other behaviour.
-		// Parameters: Keyaction(maple key-code), bool(is key down)
-		void sendaction(Keyaction, bool);
+		void sendaction(Keyaction keycode, bool pressed);
 		// Can be called after sending player movement to the server to start a new stack.
 		void clearmovement();
 		// Recalculates the total stats from base stats, inventories and skills.
-		// Parameters: bool(also recalculate inventory stats)
-		void recalcstats(bool);
+		void recalcstats(bool equipchanged);
 		// Update the player's animation, physics and states.
-		// Parameters: Physics&(engine to use)
-		int8_t update(const Physics&);
+		int8_t update(const Physics& physics) override;
 
-		void setseat(const Seat*);
-		void setladder(const Ladder*);
-
-		bool issitting() const;
-		bool isclimbing() const;
 		// Returns the current walking force, calculated from the total ES_SPEED stat.
-		float getwforce() const;
+		float getwforce() const override;
 		// Returns the current jumping force, calculated from the total ES_JUMP stat.
-		float getjforce() const;
-		float getclimbforce() const;
-		// Returns if the player is flipped, eg. facing right.
-		float getflyforce() const;
+		float getjforce() const override;
+		// Returns the climbing force, calculated from the total ES_SPEED stat.
+		float getclimbforce() const override;
+		// Returns the flying force.
+		float getflyforce() const override;
 		// Returns if a Keyaction is currently active. Used by player states for some behaviour (ex. jumpdown).
-		bool keydown(Keyaction) const;
+		bool keydown(Keyaction) const override;
+		// Return a pointer to the ladder the player is on.
+		const Ladder* getladder() const override;
 
-		// References to various player properties.
+		// Change players position to the seat's position and stance to Char::SIT.
+		void setseat(const Seat* seat);
+		// Change players xpos to the ladder x and change stance to Char::LADDER or Char::ROPE.
+		void setladder(const Ladder* ladder);
+
+		// Return if the player is in the Char::SIT state.
+		bool issitting() const;
+		// Return if the player is in the Char::LADDER or Char::ROPE state.
+		bool isclimbing() const;
+
+		// Obtain a reference to the player's stats.
 		Charstats& getstats();
+		// Obtain a reference to the player's inventory.
 		Inventory& getinvent();
+		// Obtain a reference to the player's skills.
 		Skillbook& getskills();
+		// Obtain a reference to the player's questlog.
 		Questlog& getquests();
+		// Obtain a reference to the player's telerock locations.
 		Telerock& gettrock();
+		// Obtain a reference to the player's monsterbook.
 		Monsterbook& getmonsterbook();
 
 		// Obtain a reference to this object's movement info so it can be sent to the server.
 		const MovementInfo& getmovement() const;
 
-		const Ladder* getladder() const;
 	private:
 		Charstats stats;
 		Inventory inventory;

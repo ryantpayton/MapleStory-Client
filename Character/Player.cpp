@@ -59,11 +59,11 @@ namespace Character
 		}
 	}
 
-	Player::Player(int32_t id, const LookEntry& lookentry, const StatsEntry& statsentry)
+	Player::Player(const CharEntry& entry)
 	{
-		cid = id;
-		look = CharLook(lookentry);
-		stats = Charstats(statsentry);
+		cid = entry.getcid();
+		look = CharLook(entry.getlook());
+		stats = Charstats(entry.getstats());
 
 		namelabel = Textlabel(Textlabel::DWF_14MC, Textlabel::TXC_WHITE, stats.getname(), 0);
 		namelabel.setback(Textlabel::TXB_NAMETAG);
@@ -100,7 +100,7 @@ namespace Character
 	{
 		if (equipchanged)
 		{
-			//inventory.recalcstats();
+			inventory.recalcstats();
 		}
 
 		int32_t speed = 100;
@@ -108,6 +108,10 @@ namespace Character
 
 		stats.settotal(ES_HP, stats.getstat(MS_MAXHP));
 		stats.settotal(ES_MP, stats.getstat(MS_MAXMP));
+		stats.settotal(ES_STR, stats.getstat(MS_STR) + inventory.getstat(ES_STR));
+		stats.settotal(ES_DEX, stats.getstat(MS_DEX) + inventory.getstat(ES_DEX));
+		stats.settotal(ES_LUK, stats.getstat(MS_LUK) + inventory.getstat(ES_LUK));
+		stats.settotal(ES_INT, stats.getstat(MS_INT) + inventory.getstat(ES_INT));
 		stats.settotal(ES_SPEED, speed);
 		stats.settotal(ES_JUMP, jump);
 	}

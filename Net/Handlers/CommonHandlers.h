@@ -23,7 +23,7 @@ namespace Net
 {
 	class NxCheckRequestHandler : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			uint64_t seed = recv.readlong();
 			client.getsession().dispatch(NxCheckPacket(client.getnxfiles(), seed));
@@ -32,7 +32,7 @@ namespace Net
 
 	class PingHandler : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			client.getsession().dispatch(PongPacket());
 		}
@@ -40,6 +40,6 @@ namespace Net
 
 	class NullHandler : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const {}
+		void handle(ClientInterface& client, InPacket& recv) const override {}
 	};
 }

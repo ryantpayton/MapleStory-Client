@@ -43,25 +43,39 @@ namespace Gameplay
 			DIE = 10
 		};
 
-		Mob(int32_t, int32_t, bool, int8_t, uint16_t, int8_t, bool, int8_t, int32_t, int32_t);
-		~Mob();
+		// Construct a mob by combining data from game files with
+		// data sent by the server.
+		Mob(int32_t oid, int32_t mobid, bool control, int8_t stance, 
+			uint16_t fhid, int8_t effect, bool newspawn, int8_t team, 
+			int32_t xpos, int32_t ypos);
 
-		int8_t update(const Physics&);
-		void draw(vector2d<int32_t>, float) const;
-		void kill(int8_t);
-		void sendhp(int8_t, uint16_t);
+		// Update movement and animations.
+		int8_t update(const Physics& physics) override;
+		// Draw the object.
+		void draw(vector2d<int32_t> viewpos, float inter) const override;
+		// Change position.
+		void setposition(int32_t xpos, int32_t ypos) override;
+		// Return the layer of the current platform.
+		int8_t getlayer() const override;
+		// Return object id.
+		int32_t getoid() const override;
+		// Return position.
+		vector2d<int32_t> getposition() const override;
+
+		// Kill the mob with the appropriate type:
+		// 0: make inactive 1: death animation 2: fade out
+		void kill(int8_t killtype);
+		// Display the hp percentage above the mob.
+		// Use the playerlevel to determine color of nametag.
+		void sendhp(int8_t percentage, uint16_t playerlevel);
+		// Make an inactive (out of viewrange) mob active again.
 		void makeactive();
 
-		void setposition(int32_t, int32_t);
-		int8_t getlayer() const;
-		int32_t getoid() const;
-		vector2d<int32_t> getposition() const;
-
 	private:
-		void parsestance(Stance, node);
-		//void parsesound(mobstate, node);
+		void parsestance(Stance toparse, node source);
+		//void parsesound(Stance toparse, node source);
 		void nextmove();
-		void setstance(Stance);
+		void setstance(Stance newstance);
 
 		map<Stance, Animation> animations;
 		map<Stance, rectangle2d<int32_t>> bounds;

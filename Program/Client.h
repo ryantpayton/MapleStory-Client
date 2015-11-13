@@ -33,17 +33,17 @@
 namespace Journey
 {
 #ifdef JOURNEY_USE_OPENGL
-	using::IO::WindowGLFW;
+	using IO::WindowGLFW;
 #else
-	using::IO::WindowD2D;
+	using IO::WindowD2D;
 #endif
 
-	using::Net::SessionServer;
-	using::Audio::AudioplayerBass;
-	using::Util::Configuration;
-	using::Gameplay::Stage;
+	using IO::UI;
+	using Net::SessionServer;
+	using Audio::AudioplayerBass;
+	using Util::Configuration;
+	using Gameplay::Stage;
 
-	// Topmost class in the hierarchy that represents the program itself. Contains all game- and networking-objects.
 	class Client : public ClientInterface
 	{
 	public:
@@ -59,6 +59,7 @@ namespace Journey
 
 		Client();
 		~Client();
+
 		// Initialise and return errors.
 		Error init();
 		// Checks for incoming packets and returns if the connection is still alive.
@@ -67,13 +68,20 @@ namespace Journey
 		void draw(float) const;
 		// Processes inputs and updates the window and all game objects.
 		void update();
-		// Methods for obtaining references to game objects.
-		Audioplayer& getaudio();
-		StageInterface& getstage();
-		UI& getui();
-		Session& getsession();
-		Configuration& getconfig();
-		NxFileManager& getnxfiles();
+
+		// Obtain a reference to the audioplayer.
+		Audioplayer& getaudio() override;
+		// Obtain a reference to the stage.
+		StageInterface& getstage() override;
+		// Obtain a reference to the ui.
+		UIInterface& getui() override;
+		// Obtain a reference to the session.
+		Session& getsession() override;
+		// Obtain a reference to the settings.
+		Configuration& getconfig() override;
+		// Obtain a reference to the nxfilemanager.
+		NxFileManager& getnxfiles() override;
+
 	private:
 
 #ifdef JOURNEY_USE_OPENGL

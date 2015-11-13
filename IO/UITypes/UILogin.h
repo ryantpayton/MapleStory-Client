@@ -42,15 +42,15 @@ namespace IO
 			BT_QUIT
 		};
 
-		UILogin(Session&, UI&, Configuration&);
-		void draw(float) const;
-		void update();
-		void buttonpressed(uint16_t);
-		Mousestate sendmouse(bool, vector2d<int32_t>);
+		UILogin(Session&, UIInterface&, Configuration&);
+		void draw(float) const override;
+		void update() override;
+		void buttonpressed(uint16_t) override;
+		Mousestate sendmouse(bool, vector2d<int32_t>) override;
 
 	private:
 		Session& session;
-		UI& ui;
+		UIInterface& ui;
 		Configuration& config;
 
 		Textfield account;
@@ -64,21 +64,21 @@ namespace IO
 	class ElementLogin : public Element
 	{
 	public:
-		ElementLogin(Session& ses, UI& u, Configuration& cfg) : session(ses), ui(u), config(cfg){}
+		ElementLogin(Session& ses, UIInterface& u, Configuration& cfg) : session(ses), ui(u), config(cfg){}
 
-		UIType type() const
+		UIType type() const override
 		{
 			return UI_LOGIN;
 		}
 
-		UIElement* instantiate() const
+		UIElement* instantiate() const override
 		{
 			return new UILogin(session, ui, config);
 		}
 
 	private:
 		Session& session;
-		UI& ui;
+		UIInterface& ui;
 		Configuration& config;
 	};
 }

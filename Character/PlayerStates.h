@@ -31,7 +31,7 @@ namespace Character
 
 	class PlayerStandState : public PlayerState
 	{
-		void sendaction(PlayableChar& player, Keyaction ka, bool down) const
+		void sendaction(PlayableChar& player, Keyaction ka, bool down) const override
 		{
 			if (down)
 			{
@@ -55,9 +55,9 @@ namespace Character
 			}
 		}
 
-		void update(PlayableChar&) const {}
+		void update(PlayableChar&) const override {}
 
-		void nextstate(PlayableChar& player) const
+		void nextstate(PlayableChar& player) const override
 		{
 			if (!player.getphobj().onground)
 			{
@@ -68,7 +68,7 @@ namespace Character
 
 	class PlayerWalkState : public PlayerState
 	{
-		void sendaction(PlayableChar& player, Keyaction ka, bool down) const
+		void sendaction(PlayableChar& player, Keyaction ka, bool down) const override
 		{
 			if (down)
 			{
@@ -91,7 +91,7 @@ namespace Character
 			}
 		}
 
-		void update(PlayableChar& player) const
+		void update(PlayableChar& player) const override
 		{
 			if (player.keydown(IO::KA_LEFT))
 			{
@@ -103,7 +103,7 @@ namespace Character
 			}
 		}
 
-		void nextstate(PlayableChar& player) const
+		void nextstate(PlayableChar& player) const override
 		{
 			if (player.getphobj().onground)
 			{
@@ -121,14 +121,14 @@ namespace Character
 
 	class PlayerFallState : public PlayerState
 	{
-		void sendaction(PlayableChar& player, Keyaction ka, bool down) const
+		void sendaction(PlayableChar& player, Keyaction ka, bool down) const override
 		{
 
 		}
 
-		void update(PlayableChar&) const {}
+		void update(PlayableChar&) const override {}
 
-		void nextstate(PlayableChar& player) const
+		void nextstate(PlayableChar& player) const override
 		{
 			if (player.getphobj().onground)
 			{
@@ -155,7 +155,7 @@ namespace Character
 
 	class PlayerProneState : public PlayerState
 	{
-		void sendaction(PlayableChar& player, Keyaction ka, bool down) const
+		void sendaction(PlayableChar& player, Keyaction ka, bool down) const override
 		{
 			if (down)
 			{
@@ -178,14 +178,14 @@ namespace Character
 			}
 		}
 
-		void update(PlayableChar&) const {}
+		void update(PlayableChar&) const override {}
 
-		void nextstate(PlayableChar&) const {}
+		void nextstate(PlayableChar&) const override {}
 	};
 
 	class PlayerSitState : public PlayerState
 	{
-		void sendaction(PlayableChar& player, Keyaction ka, bool down) const
+		void sendaction(PlayableChar& player, Keyaction ka, bool down) const override
 		{
 			if (down)
 			{
@@ -209,14 +209,14 @@ namespace Character
 			}
 		}
 
-		void update(PlayableChar&) const {}
+		void update(PlayableChar&) const override {}
 
-		void nextstate(PlayableChar&) const {}
+		void nextstate(PlayableChar&) const override {}
 	};
 
 	class PlayerFlyState : public PlayerState
 	{
-		void sendaction(PlayableChar& player, Keyaction ka, bool down) const
+		void sendaction(PlayableChar& player, Keyaction ka, bool down) const override
 		{
 			if (down)
 			{
@@ -248,7 +248,7 @@ namespace Character
 			}
 		}
 
-		void update(PlayableChar& player) const 
+		void update(PlayableChar& player) const override
 		{
 			player.getphobj().terrain = Gameplay::PHT_FLYING;
 
@@ -271,12 +271,12 @@ namespace Character
 			}
 		}
 
-		void nextstate(PlayableChar&) const {}
+		void nextstate(PlayableChar&) const override {}
 	};
 
 	class PlayerClimbState : public PlayerState
 	{
-		void sendaction(PlayableChar& player, Keyaction ka, bool down) const
+		void sendaction(PlayableChar& player, Keyaction ka, bool down) const override
 		{
 			if (down)
 			{
@@ -300,7 +300,7 @@ namespace Character
 			}
 		}
 
-		void update(PlayableChar& player) const
+		void update(PlayableChar& player) const override
 		{
 			if (player.keydown(IO::KA_UP))
 			{
@@ -312,7 +312,7 @@ namespace Character
 			}
 		}
 
-		void nextstate(PlayableChar& player) const
+		void nextstate(PlayableChar& player) const override
 		{
 			if (player.getphobj().onground)
 			{

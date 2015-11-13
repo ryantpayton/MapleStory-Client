@@ -43,16 +43,17 @@ namespace Net
 		bool init(const char*, const char*);
 		// Check for incoming packets and handle them. Returns if the connection is still alive.
 		bool receive(ClientInterface&);
+
 		// Sends a packet to the server, using the cryptography to encrypt data and add the header.
 		// Parameters: OutPacket(packet to send)
-		void dispatch(const OutPacket&);
+		void dispatch(const OutPacket&) override;
 		// Closes the current connection and opens a new one. Used for login transition and changing channel.
 		// Parameters: char*(adress), char*(port)
-		bool reconnect(const char*, const char*);
+		bool reconnect(const char*, const char*) override;
 		// The next call to receive() will return false, qutting the game.
-		void disconnect();
+		void disconnect() override;
 		// Return the object with the current login information.
-		Login& getlogin();
+		Login& getlogin() override;
 
 	private:
 		void process(ClientInterface&, const int8_t*, size_t);

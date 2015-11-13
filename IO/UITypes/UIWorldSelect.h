@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "IO\UIElement.h"
-#include "IO\UI.h"
+#include "IO\UIInterface.h"
 #include "Net\Login\Login.h"
 #include "Net\Session.h"
 
@@ -36,10 +36,11 @@ namespace IO
 			BT_CHANNEL0 = 17
 		};
 
-		UIWorldSelect(UI&, Login&, Session&);
-		void buttonpressed(uint16_t);
+		UIWorldSelect(UIInterface&, Login&, Session&);
+		void buttonpressed(uint16_t) override;
+
 	private:
-		UI& ui;
+		UIInterface& ui;
 		Login& login;
 		Session& session;
 		uint8_t worldid;
@@ -49,19 +50,19 @@ namespace IO
 	class ElementWorldSelect : public Element
 	{
 	public:
-		ElementWorldSelect(UI& u, Login& lg, Session& ses) : ui(u), login(lg), session(ses) {}
+		ElementWorldSelect(UIInterface& u, Login& lg, Session& ses) : ui(u), login(lg), session(ses) {}
 
-		UIType type() const
+		UIType type() const override
 		{
 			return UI_WORLDSELECT;
 		}
 
-		UIElement* instantiate() const
+		UIElement* instantiate() const override
 		{
 			return new UIWorldSelect(ui, login, session);
 		}
 	private:
-		UI& ui;
+		UIInterface& ui;
 		Login& login;
 		Session& session;
 	};

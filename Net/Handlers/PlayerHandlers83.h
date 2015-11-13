@@ -23,7 +23,7 @@ namespace Net
 	// Handles a packet which notifies the client of changes in character stats.
 	class StatschangedHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			bool itemreaction = recv.readbool();
 			int32_t updatemask = recv.readint();
@@ -83,7 +83,7 @@ namespace Net
 	// Handles a packet which forces a stats recalculation.
 	class StatresetHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			client.getstage().getplayer().recalcstats(false);
 		}
@@ -92,7 +92,7 @@ namespace Net
 	// Handles a packet which notifies the client of changes in a character's skills.
 	class UpdateskillsHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			recv.skip(3);
 

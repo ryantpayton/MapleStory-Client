@@ -28,7 +28,7 @@ namespace IO
 {
 	const uint8_t NUM_KEYS = 10;
 
-	UISoftkey::UISoftkey(SkType t, UI& u, Session& ses) : ui(u), session(ses)
+	UISoftkey::UISoftkey(SkType t, UIInterface& u, Session& ses) : ui(u), session(ses)
 	{
 		type = t;
 
@@ -64,8 +64,6 @@ namespace IO
 		dimension = vector2d<int32_t>(140, 280);
 		active = true;
 	}
-
-	UISoftkey::~UISoftkey() {}
 
 	void UISoftkey::draw(float inter) const
 	{

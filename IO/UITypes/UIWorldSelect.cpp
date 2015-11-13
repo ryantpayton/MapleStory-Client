@@ -27,7 +27,7 @@
 
 namespace IO
 {
-	UIWorldSelect::UIWorldSelect(UI& u, Login& lg, Session& ses) : ui(u), login(lg), session(ses)
+	UIWorldSelect::UIWorldSelect(UIInterface& u, Login& lg, Session& ses) : ui(u), login(lg), session(ses)
 	{
 		worldid = 0;
 		channelid = 0;

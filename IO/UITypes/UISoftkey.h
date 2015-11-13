@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "IO\UIElement.h"
-#include "IO\UI.h"
+#include "IO\UIInterface.h"
 #include "Graphics\Textlabel.h"
 #include "Util\Randomizer.h"
 #include "Net\Session.h"
@@ -58,15 +58,17 @@ namespace IO
 			MERCHANT
 		};
 
-		UISoftkey(SkType, UI&, Session&);
-		~UISoftkey();
-		void draw(float) const;
-		void buttonpressed(uint16_t);
+		UISoftkey(SkType, UIInterface&, Session&);
+
+		void draw(float) const override;
+		void buttonpressed(uint16_t) override;
+
+	private:
 		void shufflekeys();
 		vector2d<int32_t> keypos(uint8_t) const;
-	private:
+
 		SkType type;
-		UI& ui;
+		UIInterface& ui;
 		Session& session;
 		Textlabel entry;
 		Randomizer random;
@@ -75,29 +77,29 @@ namespace IO
 	class ElementSoftkey : public Element
 	{
 	public:
-		ElementSoftkey(UISoftkey::SkType t, UI& u, Session& ses) : ui(u), session(ses) 
+		ElementSoftkey(UISoftkey::SkType t, UIInterface& u, Session& ses) : ui(u), session(ses)
 		{
 
 			sktype = t;
 		}
 
-		bool isfocused() const
+		bool isfocused() const override
 		{
 			return true;
 		}
 
-		UIType type() const
+		UIType type() const override
 		{
 			return UI_SOFTKEYBOARD;
 		}
 
-		UISoftkey* instantiate() const
+		UISoftkey* instantiate() const override
 		{
 			return new UISoftkey(sktype, ui, session);
 		}
 	private:
 		UISoftkey::SkType sktype;
-		UI& ui;
+		UIInterface& ui;
 		Session& session;
 	};
 }

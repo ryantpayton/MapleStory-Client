@@ -25,10 +25,10 @@ namespace Gameplay
 	{
 	public:
 		MapNpcs();
+
 		// Spawn an npc on the current map.
-		// Parameters: int32_t(id), int32_t(oid), bool(is flipped), 
-		// uint16_t(starting foothoold), bool(control), int32_t(x), int32_t(y)
-		void addnpc(int32_t, int32_t, bool, uint16_t, bool, int32_t, int32_t);
+		void addnpc(int32_t npcid, int32_t oid, bool mirrored, 
+			uint16_t fhid, bool control, int32_t xpos, int32_t ypos);
 
 	private:
 		Npc* getnpc(int32_t);

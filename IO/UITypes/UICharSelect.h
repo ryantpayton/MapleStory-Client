@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "IO\UIElement.h"
-#include "IO\UI.h"
+#include "IO\UIInterface.h"
 #include "IO\Components\Nametag.h"
 #include "IO\Components\Charset.h"
 #include "Net\Session.h"
@@ -45,11 +45,11 @@ namespace IO
 			BT_CHAR0
 		};
 
-		UICharSelect(UI&, Session&);
-		~UICharSelect();
-		void draw(float) const;
-		void update();
-		void buttonpressed(uint16_t);
+		UICharSelect(UIInterface&, Session&);
+		void draw(float) const override;
+		void update() override;
+		void buttonpressed(uint16_t) override;
+
 		void addchar(uint8_t);
 		void removechar(uint8_t);
 
@@ -57,7 +57,7 @@ namespace IO
 		void selectchar();
 		vector2d<int32_t> getcharpos(size_t) const;
 
-		UI& ui;
+		UIInterface& ui;
 		Session& session;
 
 		vector<CharLook> charlooks;
@@ -75,20 +75,20 @@ namespace IO
 	class ElementCharSelect : public Element
 	{
 	public:
-		ElementCharSelect(UI& u, Session& ses) : ui(u), session(ses) {}
+		ElementCharSelect(UIInterface& u, Session& ses) : ui(u), session(ses) {}
 
-		UIType type() const
+		UIType type() const override
 		{
 			return UI_CHARSELECT;
 		}
 
-		UIElement* instantiate() const
+		UIElement* instantiate() const override
 		{
 			return new UICharSelect(ui, session);
 		}
 
 	private:
-		UI& ui;
+		UIInterface& ui;
 		Session& session;
 	};
 }

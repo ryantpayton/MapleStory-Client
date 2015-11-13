@@ -30,7 +30,7 @@
 
 namespace IO
 {
-	UICharSelect::UICharSelect(UI& u, Session& ses) : ui(u), session(ses)
+	UICharSelect::UICharSelect(UIInterface& u, Session& ses) : ui(u), session(ses)
 	{
 		node charsel = nl::nx::ui["Login.img"]["CharSelect"];
 
@@ -89,7 +89,11 @@ namespace IO
 		for (char i = 0; i < displaycount; i++)
 		{
 			addchar(i);
-			nametags.push_back(Nametag(charsel["nameTag"], Textlabel::DWF_14MC, Textlabel::TXC_WHITE, account.getchar(i).getstats().getname()));
+			nametags.push_back(
+				Nametag(charsel["nameTag"], 
+				Textlabel::DWF_14MC, Textlabel::TXC_WHITE, 
+				account.getchar(i).getstats().getname()
+				));
 		}
 		nametags[selected].setselected(true);
 
@@ -105,8 +109,6 @@ namespace IO
 		dimension = vector2d<int32_t>(800, 600);
 		active = true;
 	}
-
-	UICharSelect::~UICharSelect() {}
 
 	void UICharSelect::draw(float inter) const
 	{

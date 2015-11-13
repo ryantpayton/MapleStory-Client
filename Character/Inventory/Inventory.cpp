@@ -36,6 +36,29 @@ namespace Character
 
 	Inventory::~Inventory() {}
 
+	void Inventory::recalcstats()
+	{
+		for (Equipstat es = ES_STR; es <= ES_JUMP; es = static_cast<Equipstat>(es + 1))
+		{
+			totalstats[es] = 0;
+		}
+
+		map<int16_t, Item*>::iterator beg = inventoryitems[EQUIPPED].getbegin();
+		map<int16_t, Item*>::iterator end = inventoryitems[EQUIPPED].getend();
+		for (map<int16_t, Item*>::iterator itit = beg; itit != end; itit++)
+		{
+			Item* item = itit->second;
+			if (!item)
+				continue;
+
+			Equip* equip = reinterpret_cast<Equip*>(item);
+			for (Equipstat es = ES_STR; es <= ES_JUMP; es = static_cast<Equipstat>(es + 1))
+			{
+				totalstats[es] += equip->getstat(es);
+			}
+		}
+	}
+
 	void Inventory::setmeso(int64_t m)
 	{
 		meso = m;
@@ -68,8 +91,9 @@ namespace Character
 		}
 	}
 
-	void Inventory::addequip(InvType invtype, int16_t slot, int32_t iid, bool cash, int64_t uniqueid, int64_t expire, uint8_t slots, 
-		uint8_t level, map<Equipstat, uint16_t> stats, string owner, int16_t flag, uint8_t ilevel, uint16_t iexp, int32_t vicious) {
+	void Inventory::addequip(InvType invtype, int16_t slot, int32_t iid, bool cash, int64_t uniqueid, 
+		int64_t expire, uint8_t slots, uint8_t level, map<Equipstat, uint16_t> stats, string owner, 
+		int16_t flag, uint8_t ilevel, uint16_t iexp, int32_t vicious) {
 
 		const ItemData& idata = getitem(iid);
 		if (idata.isloaded())
@@ -77,5 +101,10 @@ namespace Character
 			inventoryitems[invtype].add(slot, 
 				new Equip(idata, iid, cash, uniqueid, expire, slots, level, stats, owner, flag, ilevel, iexp, vicious));
 		}
+	}
+
+	uint16_t Inventory::getstat(Equipstat type) const
+	{
+		return totalstats.count(type) ? totalstats.at(type) : 0;
 	}
 }

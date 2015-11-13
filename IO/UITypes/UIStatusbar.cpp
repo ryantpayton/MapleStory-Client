@@ -137,7 +137,7 @@ namespace IO
 		buttons[id].get()->setstate(Button::MOUSEOVER);
 	}
 
-	rectangle2d<int32_t> UIStatusbar::bounds()
+	rectangle2d<int32_t> UIStatusbar::bounds() const
 	{
 		return rectangle2d<int32_t>(
 			position - vector2d<int32_t>(512, 84), 

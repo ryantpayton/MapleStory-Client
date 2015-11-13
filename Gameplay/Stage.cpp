@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "Stage.h"
 #include "Net\Packets\GameplayPackets83.h"
 #include "nlnx\nx.hpp"
@@ -25,7 +24,6 @@ namespace Gameplay
 {
 	Stage::Stage(ClientInterface& cl) : client(cl)
 	{
-		playerid = 0;
 		active = false;
 	}
 
@@ -34,14 +32,15 @@ namespace Gameplay
 		portals.init();
 	}
 
-	bool Stage::loadplayer(int32_t cid)
+	bool Stage::loadplayer(int32_t charid)
 	{
 		using::Net::CharEntry;
-		const CharEntry& entry = client.getsession().getlogin().getaccount().getcharbyid(cid);
-		if (entry.getcid() == cid)
+		using::Net::Account;
+		const Account& account = client.getsession().getlogin().getaccount();
+		const CharEntry& entry = account.getcharbyid(charid);
+		if (entry.getcid() == charid)
 		{
-			player = Player(cid, entry.getlook(), entry.getstats());
-			playerid = cid;
+			player = Player(entry);
 			playable = &player;
 			return true;
 		}
@@ -147,7 +146,7 @@ namespace Gameplay
 		}
 	}
 
-	void Stage::sendkey(Keytype type, int32_t action, bool down)
+	void Stage::sendkey(IO::Keytype type, int32_t action, bool down)
 	{
 		switch (type)
 		{

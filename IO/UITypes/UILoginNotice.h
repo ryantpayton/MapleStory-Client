@@ -29,7 +29,8 @@ namespace IO
 		};
 
 		UILoginNotice(int8_t);
-		void buttonpressed(uint16_t);
+		void buttonpressed(uint16_t) override;
+
 	private:
 		bool saveid;
 	};
@@ -42,12 +43,17 @@ namespace IO
 			text = t;
 		}
 
-		UIType type() const
+		bool isfocused() const override
+		{
+			return true;
+		}
+
+		UIType type() const override
 		{
 			return UI_LOGINNOTICE;
 		}
 
-		UIElement* instantiate() const
+		UIElement* instantiate() const override
 		{
 			return new UILoginNotice(text);
 		}

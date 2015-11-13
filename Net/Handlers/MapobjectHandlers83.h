@@ -24,7 +24,7 @@ namespace Net
 	// Handles a packet which tells the client to spawn an npc on the current map.
 	class SpawnNpcHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			int32_t oid = recv.readint();
 			int32_t id = recv.readint();
@@ -43,7 +43,7 @@ namespace Net
 	// Handles a packet which tells the client to spawn and control an npc on the current map.
 	class SpawnNpcControllerHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			int8_t mode = recv.readbyte();
 			int32_t oid = recv.readint();
@@ -70,7 +70,7 @@ namespace Net
 	// Handles a packet which tells the client to spawn a mob.
 	class SpawnMobHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			int32_t oid = recv.readint();
 			bool hascontrol = recv.readbyte() == 5;
@@ -106,7 +106,7 @@ namespace Net
 	// Handles a packet which tells the client to spawn a mob and control it.
 	class SpawnMobControllerHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			int8_t aggro = recv.readbyte();
 			int32_t oid = recv.readint();
@@ -146,7 +146,7 @@ namespace Net
 
 	class ShowMobHpHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			int32_t oid = recv.readint();
 			int8_t hppercent = recv.readbyte();
@@ -158,7 +158,7 @@ namespace Net
 
 	class KillMobHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			int32_t oid = recv.readint();
 			int8_t animation = recv.readbyte();
@@ -238,7 +238,7 @@ namespace Net
 
 	class SpawnCharHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			int32_t cid = recv.readint();
 			uint8_t level = recv.readbyte();
@@ -320,7 +320,7 @@ namespace Net
 
 	class RemoveCharHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			int32_t cid = recv.readint();
 			client.getstage().getchars().removechar(cid);
@@ -329,7 +329,7 @@ namespace Net
 
 	class MoveCharHandler83 : public AbstractMovementHandler83
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			int32_t cid = recv.readint();
 			recv.skip(4);

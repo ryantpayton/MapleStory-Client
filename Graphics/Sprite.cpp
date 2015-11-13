@@ -25,6 +25,11 @@ namespace Graphics
 		position = pos;
 	}
 
+	Sprite::Sprite(node src)
+	{
+		animation = Animation(src);
+	}
+
 	Sprite::~Sprite() {}
 
 	void Sprite::draw(const DrawArgument& args, float inter) const

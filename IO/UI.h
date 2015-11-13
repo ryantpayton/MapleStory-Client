@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Program\ClientInterface.h"
 #include "IO\KeyTarget.h"
 #include "IO\Element.h"
 #include "IO\Cursor.h"
@@ -27,25 +28,26 @@ namespace IO
 {
 	using::std::unique_ptr;
 	using::std::unordered_map;
+	using Journey::ClientInterface;
 
-	// Class that manages all the different UIs. Also responsible for distributing mouse input.
-	class UI : public KeyTarget
+	// Class that manages all the different UIs.
+	class UI : public UIInterface
 	{
 	public:
-		UI();
-		~UI();
+		UI(ClientInterface&);
+
 		void init();
 		void draw(float) const;
 		void update();
-		void enable();
-		void disable();
+		void enable() override;
+		void disable() override;
 		void sendmouse(vector2d<int32_t>);
 		void sendmouse(Mousestate, vector2d<int32_t>);
-		void sendkey(Keytype, int32_t, bool);
-		void add(const Element&);
-		void remove(UIType);
-		UIElement* getelement(UIType) const;
-		Keyboard& getkeyboard();
+		void sendkey(Keytype, int32_t, bool) override;
+		void add(const Element&) override;
+		void remove(UIType) override;
+		UIElement* getelement(UIType) const override;
+		Keyboard& getkeyboard() override;
 
 	private:
 		unordered_map<UIType, unique_ptr<UIElement>> elements;
@@ -53,5 +55,7 @@ namespace IO
 		Cursor cursor;
 		Keyboard keyboard;
 		bool enabled;
+
+		ClientInterface& client;
 	};
 }

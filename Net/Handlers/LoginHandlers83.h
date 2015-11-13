@@ -29,7 +29,7 @@ namespace Net
 	// Handler for a packet that contains the response to an attempt at logging in.
 	class LoginResultHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			// Remove waiting information and make sure textfields are not focused anymore.
 			client.getui().remove(IO::UI_LOGINWAIT);
@@ -80,7 +80,7 @@ namespace Net
 	// Handles the packet that contains information on worlds and channels.
 	class ServerlistHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			// Remove the Login UI.
 			client.getui().remove(IO::UI_LOGIN);
@@ -97,7 +97,7 @@ namespace Net
 	// Handler for a packet that contains information on all chars on this world.
 	class CharlistHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			recv.skip(1);
 
@@ -125,7 +125,7 @@ namespace Net
 	// Handler for a packet which responds to the request for a character name.
 	class CharnameResultHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			// Read the name and if it is already in use.
 			string name = recv.readascii();
@@ -153,7 +153,7 @@ namespace Net
 	// Handler for the packet that notifies that a char was successfully created.
 	class AddNewcharHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			// Some check.
 			int8_t stuff = recv.readbyte();
@@ -183,7 +183,7 @@ namespace Net
 	// Handler for a packet that responds to the request to the delete a character.
 	class DeleteCharResultHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			// Read the character id and if deletion was successfull (pic was correct).
 			int cid = recv.readint();
@@ -205,7 +205,7 @@ namespace Net
 	// Handles the packet which contains the IP of a channel server to connect to.
 	class ServerIPHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const
+		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			recv.skip(2);
 

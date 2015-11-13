@@ -15,32 +15,22 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Audio\Audioplayer.h"
-#include "Gameplay\StageInterface.h"
-#include "IO\UIInterface.h"
-#include "Net\Session.h"
-#include "Util\Configuration.h"
-#include "Util\NxFileManager.h"
+#include <cstdint>
 
-namespace Journey
+namespace Net
 {
-	using::IO::UIInterface;
-	using::Util::NxFileManager;
-	using::Util::Configuration;
-	using::Gameplay::StageInterface;
-	using::Net::Session;
-	using::Audio::Audioplayer;
-
-	class ClientInterface
+	class AES256
 	{
 	public:
-		virtual ~ClientInterface() {}
-		virtual UIInterface& getui() = 0;
-		virtual NxFileManager& getnxfiles() = 0;
-		virtual Configuration& getconfig() = 0;
-		virtual StageInterface& getstage() = 0;
-		virtual Session& getsession() = 0;
-		virtual Audioplayer& getaudio() = 0;
+		AES256();
+		~AES256();
+		void encrypt(uint8_t*) const;
+
+	private:
+		void addroundkey(uint8_t*, uint8_t) const;
+		void subbytes(uint8_t*) const;
+		void shiftrows(uint8_t*) const;
+		void mixcolumns(uint8_t*) const;
+		uint8_t gmul(uint8_t) const;
 	};
 }

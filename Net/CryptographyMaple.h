@@ -16,8 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "AES.h"
-#include <stdint.h>
+#include "AES256.h"
 
 namespace Net
 {
@@ -29,21 +28,22 @@ namespace Net
 		~CryptographyMaple();
 		// Encrypt a byte array with the given length and iv.
 		// Parameters: int8_t*(bytes to encrypt), size_t(length), uint8_t*(sendiv)
-		void encrypt(int8_t*, size_t, uint8_t*);
+		void encrypt(int8_t*, size_t, uint8_t*) const;
 		// Decrypt a byte array with the given length and iv.
 		// Parameters: int8_t*(bytes to encrypt), size_t(length), uint8_t*(recviv)
-		void decrypt(int8_t*, size_t, uint8_t*);
+		void decrypt(int8_t*, size_t, uint8_t*) const;
 		// Use the 4-byte header of a received packet to determine its length.
 		// Parameters: int8_t*(header)
 		size_t getlength(const int8_t*) const;
+
 	private:
 		void mapleencrypt(int8_t*, size_t) const;
 		void mapledecrypt(int8_t*, size_t) const;
-		void aesofb(int8_t*, size_t, uint8_t*);
+		void aesofb(int8_t*, size_t, uint8_t*) const;
 		void updateiv(uint8_t*) const;
 		int8_t rollleft(int8_t, size_t) const;
 		int8_t rollright(int8_t, size_t) const;
-		AES cipher;
+		AES256 cipher;
 	};
 }
 

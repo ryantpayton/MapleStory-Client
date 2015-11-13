@@ -37,28 +37,29 @@ namespace Gameplay
 	class Npc : public MapObject
 	{
 	public:
-		// Parameters: int(npcdata id), int(objectid), bool(is mirrored), 
-		// short(foothold id), bool(control), int32_t(x), int32_t(y)
-		Npc(int32_t, int32_t, bool, uint16_t, bool, int32_t, int32_t);
+		// Constructs an npc by combining data from game files with
+		// data sent by the server.
+		Npc(int32_t npcid, int32_t oid, bool mirrored, uint16_t fhid, 
+			bool control, int32_t xpos, int32_t ypos);
+
 		// Draws the current animation and name/function tags.
-		void draw(vector2d<int32_t>, float) const;
+		void draw(vector2d<int32_t> viewpos, float inter) const override;
 		// Updates the current animation and physics.
-		// Parameters: Physics&(engine to use)
-		int8_t update(const Physics&);
-		// Changes stance and resets animation.
-		// Parameters: string(stance eg. npc state)
-		void setstance(string);
-		// Parameters: bool(is object active)
-		void setactive(bool);
+		int8_t update(const Physics& physics) override;
 		// Set the PhysicsObject's position as specified.
-		void setposition(int32_t, int32_t);
+		void setposition(int32_t xpos, int32_t ypos) override;
 		// Returns object id of this npc.
-		int32_t getoid() const;
+		int32_t getoid() const override;
 		// Returns layer of this npc's foothold.
-		int8_t getlayer() const;
+		int8_t getlayer() const override;
 		// Returns the current position as a point from the PhysicsObject's position.
-		vector2d<int32_t> getposition() const;
-		// Returns width and height of the current texture.
+		vector2d<int32_t> getposition() const override;
+
+		// Changes stance and resets animation.
+		void setstance(string stance);
+		// Change object activity.
+		void setactive(bool newvalue);
+		// Returns width and height of the current animation.
 		vector2d<int32_t> getdimensions() const;
 
 	private:

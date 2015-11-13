@@ -50,15 +50,18 @@ namespace Character
 			SKILL = 22
 		};
 
-		void draw(vector2d<int32_t>, float) const;
-		void setflip(bool);
-		void setstance(Stance);
-		void setposition(int32_t, int32_t);
+		// Draw look, nametag, effects and chat bubble.
+		void draw(vector2d<int32_t> viewpos, float inter) const override;
+		void setposition(int32_t xpos, int32_t ypos) override;
+		int8_t getlayer() const override;
+		int32_t getoid() const override;
+		vector2d<int32_t> getposition() const override;
+
+		void setflip(bool flipped);
+		void setstance(Stance newstance);
 		bool getflip() const;
-		int8_t getlayer() const;
-		int32_t getoid() const;
-		vector2d<int32_t> getposition() const;
 		rectangle2d<int32_t> getbounds() const;
+
 		CharLook& getlook();
 		PhysicsObject& getphobj();
 

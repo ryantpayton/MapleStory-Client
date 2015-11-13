@@ -27,11 +27,14 @@ namespace Graphics
 	{
 	public:
 		Sprite(node, vector2d<int32_t>);
+		Sprite(node);
 		~Sprite();
+
 		void update();
 		void draw(const DrawArgument&, float) const;
 		vector2d<int32_t> getorigin() const;
 		vector2d<int32_t> getdimensions() const;
+
 	private:
 		Animation animation;
 		vector2d<int32_t> position;

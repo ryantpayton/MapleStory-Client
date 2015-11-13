@@ -24,7 +24,8 @@ namespace Util
 {
 	using::std::string;
 	using::std::map;
-	// Class that manages the settings file. Contains settings such as screen mode, fps or the default login.
+
+	// Class that manages the settings file. Contains settings such as screen mode or the default login.
 	class Configuration
 	{
 	public:
@@ -32,29 +33,29 @@ namespace Util
 		Configuration();
 		// Save the settings file at destruction.
 		~Configuration();
+
 		// Load all settings. If something is missing, set the default value. Can be used for reloading.
 		void load();
 		// Save the current settings. 
 		void save() const;
-		// Set the specified setting to the specified value. The caller is responsible for correctness.
-		// Parameters: string(name of setting), bool(value)
-		void setbool(string, bool);
-		// Set the specified setting to the specified value. The caller is responsible for correctness.
-		// Parameters: string(name of setting), uint32_t(value)
-		void setint(string, uint32_t);
-		// Set the specified setting to the specified value. The caller is responsible for correctness.
-		// Parameters: string(name of setting), string(value)
-		void setstring(string, string);
+		// Set the specified setting to the specified value.
+		void setbool(string setting, bool value);
+		// Set the specified setting to the specified value.
+		void setint(string setting, uint32_t value);
+		// Set the specified setting to the specified value.
+		void setstring(string setting, string value);
+
 		// Returns a bool based on the value of the setting specified.
-		bool getbool(string) const;
+		bool getbool(string setting) const;
 		// Returns a byte based on the value of the setting specified. Returns 0 if an exception occurs.
-		uint8_t getbyte(string) const;
+		uint8_t getbyte(string setting) const;
 		// Returns a short based on the value of the setting specified. Returns 0 if an exception occurs.
-		uint16_t getshort(string) const;
+		uint16_t getshort(string setting) const;
 		// Returns an int based on the value of the setting specified. Returns 0 if an exception occurs.
-		uint32_t getinteger(string) const;
+		uint32_t getinteger(string setting) const;
 		// Returns a string based on the value of the setting specified.
-		string getsetting(string) const;
+		string getsetting(string setting) const;
+
 	private:
 		map<string, string> settings;
 	};

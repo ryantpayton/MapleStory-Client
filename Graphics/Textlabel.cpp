@@ -95,6 +95,19 @@ namespace Graphics
 		draw(vector2d<float>(static_cast<float>(pos.x()), static_cast<float>(pos.y())));
 	}
 
+	void Textlabel::drawline(string todraw, vector2d<int32_t> pos) const
+	{
+#ifdef JOURNEY_USE_OPENGL
+#else
+		GraphicsD2D::drawtext(
+			wstring(todraw.begin(), todraw.end()), 
+			font, color, back, alpha,
+			vector2d<float>(static_cast<float>(pos.x()), static_cast<float>(pos.y())), 
+			vector2d<uint16_t>(800, height)
+			);
+#endif
+	}
+	
 	void Textlabel::draw(vector2d<float> pos) const
 	{
 #ifdef JOURNEY_USE_OPENGL

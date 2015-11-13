@@ -32,6 +32,9 @@ namespace Character
 		Equip(const ItemData&, int32_t, bool, int64_t, int64_t, uint8_t, uint8_t, 
 			map<Equipstat, uint16_t>, string, int16_t, uint8_t, int16_t, int32_t);
 		~Equip();
+
+		uint16_t getstat(Equipstat type) const;
+
 	private:
 		uint8_t slots;
 		uint8_t level;

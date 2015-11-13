@@ -51,11 +51,92 @@ namespace Character
 		exp = entry.getexp();
 		mapid = entry.getmapid();
 		portal = entry.getportal();
+
+		maxdamage = 0;
+		mindamage = 0;
+		attack = 0;
+		honor = 0;
+		mastery = 0.5f;
+		critical = 0.05f;
+		mincrit = 0.5f;
+		maxcrit = 0.75f;
+		bossdmg = 0.0f;
+		ignoredef = 0.0f;
+		stance = 0.0f;
+		resiststatus = 0.0f;
 	}
 
 	Charstats::Charstats() {}
 
 	Charstats::~Charstats() {}
+
+	void Charstats::calculatedamage(Weapon::WpType wtype)
+	{
+		uint16_t primary = getprimary(wtype);
+		uint16_t secondary = getsecondary(wtype);
+		maxdamage = static_cast<int32_t>(
+			(primary + secondary) * static_cast<float>(attack) / 100
+			);
+		mindamage = static_cast<int32_t>(
+			((primary * 0.9 * mastery) + secondary) * static_cast<float>(attack) / 100
+			);
+	}
+
+	uint16_t Charstats::getprimary(Weapon::WpType wtype)
+	{
+		if (wtype != Weapon::WEP_NONE)
+		{
+			switch (getstat(MS_JOB) / 100)
+			{
+			case 0:
+			case 1:
+			case 20:
+			case 21:
+				return gettotal(ES_STR);
+			case 2:
+				return gettotal(ES_INT);
+			case 3:
+				return gettotal(ES_DEX);
+			case 4:
+				return gettotal(ES_LUK);
+			case 5:
+				if (wtype == Weapon::WEP_GUN)
+					return gettotal(ES_DEX);
+				else
+					return gettotal(ES_STR);
+			}
+		}
+
+		return 0;
+	}
+
+	uint16_t Charstats::getsecondary(Weapon::WpType wtype)
+	{
+		if (wtype != Weapon::WEP_NONE)
+		{
+			switch (getstat(MS_JOB) / 100)
+			{
+			case 0:
+			case 1:
+			case 20:
+			case 21:
+				return gettotal(ES_DEX);
+			case 2:
+				return gettotal(ES_LUK);
+			case 3:
+				return gettotal(ES_STR);
+			case 4:
+				return gettotal(ES_DEX);
+			case 5:
+				if (wtype == Weapon::WEP_GUN)
+					return gettotal(ES_STR);
+				else
+					return gettotal(ES_DEX);
+			}
+		}
+
+		return 0;
+	}
 
 	void Charstats::setstat(Maplestat stat, uint16_t value)
 	{
@@ -67,29 +148,11 @@ namespace Character
 		totalstats[stat] = value;
 	}
 
-	void Charstats::setexp(int64_t value)
+	uint16_t Charstats::calculateaccuracy() const
 	{
-		exp = value;
-	}
-
-	void Charstats::setportal(uint8_t pid)
-	{
-		portal = pid;
-	}
-
-	int32_t Charstats::getmapid() const
-	{
-		return mapid;
-	}
-
-	uint8_t Charstats::getportal() const
-	{
-		return portal;
-	}
-
-	int64_t Charstats::getexp() const
-	{
-		return exp;
+		float dexacc = static_cast<float>(getstat(MS_DEX)) * 0.8f;
+		float lukacc = static_cast<float>(getstat(MS_LUK)) * 0.5f;
+		return static_cast<uint16_t>(dexacc + lukacc);
 	}
 
 	int64_t Charstats::getexpneeded() const
@@ -105,15 +168,5 @@ namespace Character
 	int32_t Charstats::gettotal(Equipstat stat) const
 	{
 		return totalstats.count(stat) ? totalstats.at(stat) : 0;
-	}
-
-	string Charstats::getname() const
-	{
-		return name;
-	}
-
-	string Charstats::getjobname() const
-	{
-		return job.getname();
 	}
 }

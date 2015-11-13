@@ -16,31 +16,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Audio\Audioplayer.h"
-#include "Gameplay\StageInterface.h"
-#include "IO\UIInterface.h"
-#include "Net\Session.h"
-#include "Util\Configuration.h"
-#include "Util\NxFileManager.h"
+#include "IO\KeyTarget.h"
+#include "IO\Element.h"
+#include "IO\Cursor.h"
+#include "IO\Keyboard.h"
 
-namespace Journey
+namespace IO
 {
-	using::IO::UIInterface;
-	using::Util::NxFileManager;
-	using::Util::Configuration;
-	using::Gameplay::StageInterface;
-	using::Net::Session;
-	using::Audio::Audioplayer;
-
-	class ClientInterface
+	class UIInterface : public KeyTarget
 	{
 	public:
-		virtual ~ClientInterface() {}
-		virtual UIInterface& getui() = 0;
-		virtual NxFileManager& getnxfiles() = 0;
-		virtual Configuration& getconfig() = 0;
-		virtual StageInterface& getstage() = 0;
-		virtual Session& getsession() = 0;
-		virtual Audioplayer& getaudio() = 0;
+		virtual ~UIInterface() {}
+		virtual void enable() = 0;
+		virtual void disable() = 0;
+		virtual void add(const Element& toadd) = 0;
+		virtual void remove(UIType toremove) = 0;
+		virtual UIElement* getelement(UIType type) const = 0;
+		virtual Keyboard& getkeyboard() = 0;
 	};
 }

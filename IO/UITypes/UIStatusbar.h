@@ -25,9 +25,9 @@
 
 namespace IO
 {
-	using::Character::Charstats;
-	using::Graphics::Textlabel;
-	using::Graphics::Animation;
+	using Character::Charstats;
+	using Graphics::Textlabel;
+	using Graphics::Animation;
 
 	class UIStatusbar : public UIElement
 	{
@@ -49,9 +49,9 @@ namespace IO
 		};
 
 		UIStatusbar(const Charstats&);
-		void draw(float) const;
-		void buttonpressed(uint16_t);
-		rectangle2d<int32_t> bounds();
+		void draw(float) const override;
+		void buttonpressed(uint16_t) override;
+		rectangle2d<int32_t> bounds() const override;
 
 	private:
 		const Charstats& stats;
@@ -72,17 +72,17 @@ namespace IO
 	public:
 		ElementStatusbar(const Charstats& st) : stats(st) {}
 
-		bool isunique() const
+		bool isunique() const override
 		{
 			return true;
 		}
 
-		UIType type() const
+		UIType type() const override
 		{
 			return UI_STATUSBAR;
 		}
 
-		UIElement* instantiate() const
+		UIElement* instantiate() const override
 		{
 			return new UIStatusbar(stats);
 		}

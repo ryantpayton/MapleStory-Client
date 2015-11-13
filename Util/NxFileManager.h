@@ -23,24 +23,26 @@ namespace Util
 	const size_t NUM_FILES = 14;
 
 	using::std::string;
+
 	// Class for doing some work with game asset files.
 	class NxFileManager
 	{
 	public:
 		NxFileManager();
 		~NxFileManager();
-		// Makes sure that all game files exist. When successfull also tests if the UI file contains valid images.
-		// Parameters: bool(calculate hash-values)
+
+		// Makes sure that all game files exist. 
+		// When successfull also tests if the UI file contains valid images.
 		bool init() const;
 		// Obtains a hash value for a file of game assets. Fast version.
-		// Parameters: size_t(index of file to hash), uint64_t(seed sent by the server)
-		string gethash(size_t, uint64_t) const;
+		string gethash(size_t fileindex, uint64_t seed) const;
 		// Obtains a hash value for a file of game assets. Slow version.
 		// Parameters: size_t(index of file to hash)
-		string gethash(size_t) const;
+		string gethash(size_t fileindex) const;
 	private:
 		// Checks if a game file exists.
-		bool exists(size_t) const;
+		bool exists(size_t fileindex) const;
+
 		HashUtility hashutil;
 	};
 }

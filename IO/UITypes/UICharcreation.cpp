@@ -27,7 +27,7 @@
 
 namespace IO
 {
-	UICharcreation::UICharcreation(Session& ses, UI& u) : session(ses), ui(u)
+	UICharcreation::UICharcreation(Session& ses, UIInterface& u) : session(ses), ui(u)
 	{
 		female = session.getlogin().getaccount().isfemale();
 

@@ -28,41 +28,38 @@
 namespace Gameplay
 {
 	using::Journey::ClientInterface;
-	using::IO::Keytype;
 
 	// Represents the game below the ui. Contains everything map-related.
 	class Stage : public StageInterface
 	{
 	public:
-		// Initializes 'active' with false.
 		Stage(ClientInterface&);
+
 		// Calls 'init()' of members to preload assets.
 		void init();
-		// Adds a player object with the given properties.
-		// Parameters: int(character id)
-		bool loadplayer(int32_t);
-		// Loads the map to display. 
-		// Parameters: int(mapid)
-		void loadmap(int32_t);
-		// Repositions the player and reactivates the stage after loading.
-		// Also plays the bgm associated with the newly loaded map.
-		void respawn();
 		// Call 'draw()' of  all objects on stage.
-		void draw(float) const;
+		void draw(float inter) const;
 		// Calls 'update()' of all objects on stage.
 		void update();
-		// Overrides 'sendkey()' of 'KeyTarget' to process key inputs.
-		// Will delegate inputs of Keytype 'KT_ACTION' to a targeted 'Playable'.
-		// Parameters: Keytype(type of key), int(maple-keycode), bool(is key down)
-		void sendkey(Keytype, int32_t, bool);
+
+		// Adds a player object with the given properties.
+		bool loadplayer(int32_t charid) override;
+		// Loads the map to display. 
+		void loadmap(int32_t mapid) override;
+		// Repositions the player and reactivates the stage after loading.
+		// Also plays the bgm associated with the newly loaded map.
+		void respawn() override;
+		void sendkey(IO::Keytype keytype, int32_t keycode, bool pressed) override;
+
 		// Returns a reference to the npcs on the current map.
-		MapNpcs& getnpcs();
+		MapNpcs& getnpcs() override;
 		// Returns a reference to the other characters on the current map.
-		MapChars& getchars();
+		MapChars& getchars() override;
 		// Returns a reference to the mobs on the current map.
-		MapMobs& getmobs();
+		MapMobs& getmobs() override;
 		// Returns a reference to the Player.
-		Player& getplayer();
+		Player& getplayer() override;
+
 	private:
 		void checkportals();
 		void checkseats();
@@ -76,15 +73,14 @@ namespace Gameplay
 		MapNpcs npcs;
 		MapChars chars;
 		MapMobs mobs;
-		Player player;
 
 		Camera camera;
 		Physics physics;
 
+		Player player;
 		Playable* playable;
 		bool active;
 		int32_t currentmapid;
-		int32_t playerid;
 	};
 }
 

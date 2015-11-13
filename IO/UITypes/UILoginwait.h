@@ -24,7 +24,7 @@ namespace IO
 	{
 	public:
 		UILoginwait();
-		void buttonpressed(uint16_t) {}
+		void buttonpressed(uint16_t) override {}
 	};
 
 	class ElementLoginwait : public Element
@@ -32,17 +32,17 @@ namespace IO
 	public:
 		ElementLoginwait(){}
 
-		bool isfocused() const
+		bool isfocused() const override
 		{
 			return true;
 		}
 
-		UIType type() const
+		UIType type() const override
 		{
 			return UI_LOGINWAIT;
 		}
 
-		UIElement* instantiate() const
+		UIElement* instantiate() const override
 		{
 			return new UILoginwait();
 		}

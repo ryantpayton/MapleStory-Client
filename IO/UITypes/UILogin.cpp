@@ -28,7 +28,7 @@
 
 namespace IO
 {
-	UILogin::UILogin(Session& ses, UI& u, Configuration& cfg) : session(ses), ui(u), config(cfg)
+	UILogin::UILogin(Session& ses, UIInterface& u, Configuration& cfg) : session(ses), ui(u), config(cfg)
 	{
 		node title = nl::nx::ui["Login.img"]["Title"];
 		node common = nl::nx::ui["Login.img"]["Common"];

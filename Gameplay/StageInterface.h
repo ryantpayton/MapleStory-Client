@@ -24,8 +24,8 @@
 
 namespace Gameplay
 {
-	using::Character::Player;
 	using::IO::KeyTarget;
+	using::Character::Player;
 
 	// Interface for the 'Stage' class which represents the current map.
 	// Inherits from 'KeyTarget' to process key inputs.
@@ -34,11 +34,9 @@ namespace Gameplay
 	public:
 		virtual ~StageInterface() {}
 		// Adds a player object with the given properties.
-		// Parameters: int(character id)
-		virtual bool loadplayer(int32_t) = 0;
+		virtual bool loadplayer(int32_t charid) = 0;
 		// Loads the map to display. 
-		// Parameters: int(mapid)
-		virtual void loadmap(int32_t) = 0;
+		virtual void loadmap(int32_t mapid) = 0;
 		// Repositions the player and reactivates the stage after loading.
 		// Also plays the bgm associated with the newly loaded map.
 		virtual void respawn() = 0;
