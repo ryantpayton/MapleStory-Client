@@ -250,7 +250,7 @@ namespace Character
 
 		void update(PlayableChar& player) const override
 		{
-			player.getphobj().terrain = Gameplay::PHT_FLYING;
+			player.getphobj().type = PhysicsObject::FLYING;
 
 			if (player.keydown(IO::KA_LEFT))
 			{

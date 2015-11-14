@@ -20,23 +20,23 @@
 
 namespace IO
 {
-	enum UIType
-	{
-		UI_NULL,
-		UI_LOGIN,
-		UI_LOGINWAIT,
-		UI_LOGINNOTICE,
-		UI_WORLDSELECT,
-		UI_CHARSELECT,
-		UI_CHARCREATION,
-		UI_SOFTKEYBOARD,
-		UI_STATUSBAR,
-		UI_STATSINFO
-	};
-
 	class Element
 	{
 	public:
+		enum UIType
+		{
+			NONE,
+			LOGIN,
+			LOGINWAIT,
+			LOGINNOTICE,
+			WORLDSELECT,
+			CHARSELECT,
+			CHARCREATION,
+			SOFTKEYBOARD,
+			STATUSBAR,
+			STATSINFO
+		};
+
 		virtual ~Element() {}
 		virtual bool isunique() const { return false; }
 		virtual bool isfocused() const { return false; }

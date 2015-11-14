@@ -20,13 +20,13 @@
 #include "IO\UIInterface.h"
 #include "Graphics\Textlabel.h"
 #include "Util\Randomizer.h"
-#include "Net\Session.h"
+#include "Net\SessionInterface.h"
 
 namespace IO
 {
-	using::Util::Randomizer;
-	using::Net::Session;
-	using::Graphics::Textlabel;
+	using Util::Randomizer;
+	using Net::SessionInterface;
+	using Graphics::Textlabel;
 
 	// Keyboard which is used via the mouse. The game uses this for pic/pin input.
 	class UISoftkey : public UIElement
@@ -58,7 +58,7 @@ namespace IO
 			MERCHANT
 		};
 
-		UISoftkey(SkType, UIInterface&, Session&);
+		UISoftkey(SkType, UIInterface&, SessionInterface&);
 
 		void draw(float) const override;
 		void buttonpressed(uint16_t) override;
@@ -69,7 +69,7 @@ namespace IO
 
 		SkType type;
 		UIInterface& ui;
-		Session& session;
+		SessionInterface& session;
 		Textlabel entry;
 		Randomizer random;
 	};
@@ -77,8 +77,8 @@ namespace IO
 	class ElementSoftkey : public Element
 	{
 	public:
-		ElementSoftkey(UISoftkey::SkType t, UIInterface& u, Session& ses) : ui(u), session(ses)
-		{
+		ElementSoftkey(UISoftkey::SkType t, UIInterface& u, SessionInterface& ses) 
+			: ui(u), session(ses) {
 
 			sktype = t;
 		}
@@ -90,7 +90,7 @@ namespace IO
 
 		UIType type() const override
 		{
-			return UI_SOFTKEYBOARD;
+			return SOFTKEYBOARD;
 		}
 
 		UISoftkey* instantiate() const override
@@ -100,7 +100,7 @@ namespace IO
 	private:
 		UISoftkey::SkType sktype;
 		UIInterface& ui;
-		Session& session;
+		SessionInterface& session;
 	};
 }
 

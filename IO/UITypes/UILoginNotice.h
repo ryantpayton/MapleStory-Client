@@ -50,7 +50,7 @@ namespace IO
 
 		UIType type() const override
 		{
-			return UI_LOGINNOTICE;
+			return LOGINNOTICE;
 		}
 
 		UIElement* instantiate() const override

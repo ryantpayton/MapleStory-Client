@@ -28,31 +28,31 @@ namespace IO
 {
 	const uint8_t NUM_KEYS = 10;
 
-	UISoftkey::UISoftkey(SkType t, UIInterface& u, Session& ses) : ui(u), session(ses)
+	UISoftkey::UISoftkey(SkType t, UIInterface& u, SessionInterface& ses) : ui(u), session(ses)
 	{
 		type = t;
 
 		node src = nl::nx::ui["Login.img"]["Common"]["SoftKey"];
-		sprites.push_back(Sprite(src["backgrnd"], vector2d<int32_t>()));
-		sprites.push_back(Sprite(src["backgrnd2"], vector2d<int32_t>()));
-		sprites.push_back(Sprite(src["backgrnd3"], vector2d<int32_t>()));
+		sprites.push_back(Sprite(src["backgrnd"]));
+		sprites.push_back(Sprite(src["backgrnd2"]));
+		sprites.push_back(Sprite(src["backgrnd3"]));
 
-		buttons[BT_NEXT] = button_ptr(new MapleButton(src["BtNext"], vector2d<int32_t>()));
-		buttons[BT_BACK] = button_ptr(new MapleButton(src["BtDel"], vector2d<int32_t>()));
+		buttons[BT_NEXT] = button_ptr(new MapleButton(src["BtNext"]));
+		buttons[BT_BACK] = button_ptr(new MapleButton(src["BtDel"]));
 		buttons[BT_OK] = button_ptr(new MapleButton(src["BtOK"], vector2d<int32_t>(72, 235)));
 		buttons[BT_CANCEL] = button_ptr(new MapleButton(src["BtCancel"], vector2d<int32_t>(13, 235)));
 
 		node keys = src["BtNum"];
-		buttons[BT_0] = button_ptr(new MapleButton(keys["0"], vector2d<int32_t>()));
-		buttons[BT_1] = button_ptr(new MapleButton(keys["1"], vector2d<int32_t>()));
-		buttons[BT_2] = button_ptr(new MapleButton(keys["2"], vector2d<int32_t>()));
-		buttons[BT_3] = button_ptr(new MapleButton(keys["3"], vector2d<int32_t>()));
-		buttons[BT_4] = button_ptr(new MapleButton(keys["4"], vector2d<int32_t>()));
-		buttons[BT_5] = button_ptr(new MapleButton(keys["5"], vector2d<int32_t>()));
-		buttons[BT_6] = button_ptr(new MapleButton(keys["6"], vector2d<int32_t>()));
-		buttons[BT_7] = button_ptr(new MapleButton(keys["7"], vector2d<int32_t>()));
-		buttons[BT_8] = button_ptr(new MapleButton(keys["8"], vector2d<int32_t>()));
-		buttons[BT_9] = button_ptr(new MapleButton(keys["9"], vector2d<int32_t>()));
+		buttons[BT_0] = button_ptr(new MapleButton(keys["0"]));
+		buttons[BT_1] = button_ptr(new MapleButton(keys["1"]));
+		buttons[BT_2] = button_ptr(new MapleButton(keys["2"]));
+		buttons[BT_3] = button_ptr(new MapleButton(keys["3"]));
+		buttons[BT_4] = button_ptr(new MapleButton(keys["4"]));
+		buttons[BT_5] = button_ptr(new MapleButton(keys["5"]));
+		buttons[BT_6] = button_ptr(new MapleButton(keys["6"]));
+		buttons[BT_7] = button_ptr(new MapleButton(keys["7"]));
+		buttons[BT_8] = button_ptr(new MapleButton(keys["8"]));
+		buttons[BT_9] = button_ptr(new MapleButton(keys["9"]));
 
 		buttons[BT_OK]->setstate(Button::DISABLED);
 

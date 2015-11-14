@@ -16,76 +16,58 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Footholdtree.h"
-#include <vector>
+#include <algorithm>
 
 namespace Gameplay
 {
 	Footholdtree::Footholdtree(node src)
 	{
-		using::std::vector;
-		vector<uint16_t> edgesl;
-		vector<uint16_t> edgesr;
+		int32_t leftw = 65536;
+		int32_t rightw = -65536;
+		int32_t botb = -65536;
+		int32_t topb = 65536;
 
-		for (node basef = src.begin(); basef != src.end(); ++basef)
+		for (node& basef : src)
 		{
 			int8_t layer = static_cast<int8_t>(stoi(basef.name()));
-			for (node midf = basef.begin(); midf != basef.end(); ++midf)
+			for (node& midf : basef)
 			{
-				for (node lastf = midf.begin(); lastf != midf.end(); ++lastf)
+				for (node& lastf : midf)
 				{
-					uint16_t id = stoi(lastf.name());
-					footholds[id] = Foothold(id, layer, lastf);
+					Foothold foothold = Foothold(lastf, layer);
 
-					if (footholds[id].getprev() == 0)
+					if (foothold.getl() < leftw)
 					{
-						edgesl.push_back(id);
+						leftw = foothold.getl();
 					}
-					else if (footholds[id].getnext() == 0)
+					else if (foothold.getr() > rightw)
 					{
-						edgesr.push_back(id);
+						rightw = foothold.getr();
+					}
+
+					if (foothold.getb() > botb)
+					{
+						botb = foothold.getb();
+					}
+					else if (foothold.gett() < topb)
+					{
+						topb = foothold.gett();
+					}
+
+					uint16_t id = foothold.getid();
+					footholds[id] = foothold;
+
+					int32_t start = foothold.getl();
+					int32_t end = foothold.getr();
+					for (int32_t i = start; i <= end; i++)
+					{
+						footholdsbyx.insert(std::make_pair(i, id));
 					}
 				}
 			}
 		}
 
-		int32_t leftw = 65536;
-		for (vector<uint16_t>::iterator fhit = edgesl.begin(); fhit != edgesl.end(); ++fhit)
-		{
-			int32_t lit = footholds[*fhit].getl();
-			if (lit < leftw)
-			{
-				leftw = lit;
-			}
-		}
-		int32_t rightw = -65536;
-		for (vector<uint16_t>::iterator fhit = edgesr.begin(); fhit != edgesr.end(); ++fhit)
-		{
-			int32_t rit = footholds[*fhit].getr();
-			if (rit > rightw)
-			{
-				rightw = rit;
-			}
-		}
 		walls = vector2d<int32_t>(leftw + 25, rightw - 25);
-
-		int32_t botb = -65536;
-		for (map<uint16_t, Foothold>::iterator fhit = footholds.begin(); fhit != footholds.end(); ++fhit)
-		{
-			int32_t btit = fhit->second.getb();
-			if (btit > botb)
-			{
-				botb = btit;
-			}
-		}
-		int32_t topb = 65536;
-		for (map<uint16_t, Foothold>::iterator fhit = footholds.begin(); fhit != footholds.end(); ++fhit)
-		{
-			int32_t tpit = fhit->second.gett();
-			if (tpit < topb)
-			{
-				topb = tpit;
-			}
-		}
 		borders = vector2d<int32_t>(topb - 400, botb + 400);
 	}
 
@@ -100,7 +82,10 @@ namespace Gameplay
 
 		if (nextx != phobj.fx)
 		{
-			vector2d<int32_t> vertical = vector2d<int32_t>(static_cast<int32_t>(phobj.fy - 40), static_cast<int32_t>(phobj.fy - 10));
+			vector2d<int32_t> vertical = vector2d<int32_t>(
+				static_cast<int32_t>(phobj.fy - 40), 
+				static_cast<int32_t>(phobj.fy - 10)
+				);
 			float wall = getwall(phobj.fhid, phobj.hspeed < 0.0f, vertical);
 			if ((phobj.hspeed < 0) ? nextx < wall : nextx > wall)
 			{
@@ -131,30 +116,23 @@ namespace Gameplay
 	void Footholdtree::updatefh(PhysicsObject& phobj) const
 	{
 		bool checkslope = false;
-		if (phobj.fhid == 0 || !phobj.onground)
+		if (phobj.onground)
 		{
-			phobj.fhid = getbelow(phobj.fx, phobj.fy);
+			const Foothold& curfh = getfh(phobj.fhid);
+
+			if (phobj.fx > curfh.getr())
+				phobj.fhid = curfh.getnext();
+			else if (phobj.fx < curfh.getl())
+				phobj.fhid = curfh.getprev();
+
+			if (phobj.fhid == 0)
+				phobj.fhid = getbelow(phobj.fx, phobj.fy);
+			else
+				checkslope = true;
 		}
 		else
 		{
-			const Foothold& curfh = getfh(phobj.fhid);
-			if (phobj.fx > curfh.getr())
-			{
-				phobj.fhid = getnext(phobj.fhid, false, phobj.fx, phobj.fy);
-			}
-			else if (phobj.fx < curfh.getl())
-			{
-				phobj.fhid = getnext(phobj.fhid, true, phobj.fx, phobj.fy);
-			}
-
-			if (phobj.fhid == 0)
-			{
-				phobj.fhid = getbelow(phobj.fx, phobj.fy);
-			}
-			else
-			{
-				checkslope = true;
-			}
+			phobj.fhid = getbelow(phobj.fx, phobj.fy);
 		}
 
 		const Foothold& nextfh = getfh(phobj.fhid);
@@ -172,73 +150,59 @@ namespace Gameplay
 		phobj.onground = phobj.fy == ground;
 	}
 
-	const Foothold& Footholdtree::getfh(uint16_t fid) const
+	const Foothold& Footholdtree::getfh(uint16_t fhid) const
 	{
-		return footholds.count(fid) ? footholds.at(fid) : nullfh;
+		if (footholds.count(fhid))
+			return footholds.at(fhid);
+		else
+			return nullfh;
 	}
 
 	float Footholdtree::getwall(uint16_t curid, bool left, vector2d<int32_t> ver) const
 	{
 		if (left)
 		{
-			if (footholds.count(curid))
+			uint16_t previd = getfh(curid).getprev();
+			if (footholds.count(previd))
 			{
-				uint16_t previd = footholds.at(curid).getprev();
-				if (footholds.count(previd))
+				if (getfh(previd).iswall() && getfh(previd).getver().overlaps(ver))
 				{
-					if (footholds.at(previd).iswall() && footholds.at(previd).getver().overlaps(ver))
-					{
-						return static_cast<float>(footholds.at(curid).getl());
-					}
+					return static_cast<float>(getfh(curid).getl());
 				}
 			}
 			return static_cast<float>(walls.x());
 		}
 		else
 		{
-			if (footholds.count(curid))
+			uint16_t nextid = getfh(curid).getnext();
+			if (footholds.count(nextid))
 			{
-				uint16_t nextid = footholds.at(curid).getnext();
-				if (footholds.count(nextid))
+				if (getfh(nextid).iswall() && getfh(nextid).getver().overlaps(ver))
 				{
-					if (footholds.at(nextid).iswall() && footholds.at(nextid).getver().overlaps(ver))
-					{
-						return static_cast<float>(footholds.at(curid).getr());
-					}
+					return static_cast<float>(getfh(curid).getr());
 				}
 			}
 			return static_cast<float>(walls.y());
 		}
 	}
 
-	uint16_t Footholdtree::getnext(uint16_t curid, bool left, float fx, float fy) const
-	{
-		if (footholds.count(curid))
-		{
-			uint16_t nextid = left ? footholds.at(curid).getprev() : footholds.at(curid).getnext();
-			if (footholds.count(nextid))
-			{
-				return nextid;
-			}
-		}
-		return 0;
-	}
-
 	uint16_t Footholdtree::getbelow(float fx, float fy) const
 	{
 		uint16_t ret = 0;
-		float comp = static_cast<float>(borders.y());
-		for (map<uint16_t, Foothold>::const_iterator fhit = footholds.begin(); fhit != footholds.end(); ++fhit)
+		int32_t x = static_cast<int32_t>(fx);
+		if (footholdsbyx.count(x))
 		{
-			if (fhit->second.hcontains(static_cast<int32_t>(fx)))
-			{
-				float ycomp = fhit->second.resolvex(fx);
-				if (comp > ycomp && ycomp >= fy)
+			float comp = static_cast<float>(borders.y());
+			std::for_each(footholdsbyx.lower_bound(x), footholdsbyx.upper_bound(x), 
+				[this, fx, fy, &comp, &ret](const std::pair<int32_t, uint16_t>& val) {
+				const Foothold& fh = footholds.at(val.second);
+				float ycomp = fh.resolvex(fx);
+				if (comp >= ycomp && ycomp >= fy)
 				{
-					ret = fhit->second.getid();
+					ret = fh.getid();
 					comp = ycomp;
 				}
-			}
+			});
 		}
 		return ret;
 	}

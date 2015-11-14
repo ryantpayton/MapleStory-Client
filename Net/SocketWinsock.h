@@ -37,11 +37,13 @@ namespace Net
 	public:
 		SocketWinsock();
 		~SocketWinsock();
-		bool open(const char*, const char*);
+
+		bool open(const char* adress, const char* port);
 		bool close();
-		size_t receive(bool*);
+		size_t receive(bool* connected);
 		const int8_t* getbuffer();
-		bool dispatch(const int8_t*, size_t);
+		bool dispatch(const int8_t* bytes, size_t length);
+
 	private:
 		SOCKET sock;
 		int8_t buffer[MAX_PACKET_LEN];

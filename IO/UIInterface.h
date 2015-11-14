@@ -30,8 +30,8 @@ namespace IO
 		virtual void enable() = 0;
 		virtual void disable() = 0;
 		virtual void add(const Element& toadd) = 0;
-		virtual void remove(UIType toremove) = 0;
-		virtual UIElement* getelement(UIType type) const = 0;
+		virtual void remove(Element::UIType toremove) = 0;
+		virtual UIElement* getelement(Element::UIType type) const = 0;
 		virtual Keyboard& getkeyboard() = 0;
 	};
 }

@@ -45,14 +45,7 @@ namespace Gameplay
 		string bgmpath = info["bgm"];
 		size_t split = bgmpath.find('/');
 		bgm = bgmpath.substr(0, split) + ".img/" + bgmpath.substr(split + 1);
-		if (bgm != oldbgm)
-		{
-			newbgm = true;
-		}
-		else
-		{
-			newbgm = false;
-		}
+		newbgm = bgm != oldbgm;
 
 		cloud = info["cloud"].get_bool();
 		fieldlimit = info["fieldLimit"];
@@ -62,7 +55,7 @@ namespace Gameplay
 		town = info["town"].get_bool();
 
 		node stsrc = src["seat"];
-		for (node sub = stsrc.begin(); sub != stsrc.end(); ++sub)
+		for (node& sub : stsrc)
 		{
 			Seat seat;
 			seat.pos = vector2d<int32_t>(sub.x(), sub.y());
@@ -70,7 +63,7 @@ namespace Gameplay
 		}
 
 		node lrsrc = src["ladders"];
-		for (node lrnode = lrsrc.begin(); lrnode != lrsrc.end(); ++lrnode)
+		for (node& lrnode : lrsrc)
 		{
 			Ladder ladder;
 			ladder.x = lrnode["x"];
@@ -105,11 +98,11 @@ namespace Gameplay
 	{
 		vector2d<int32_t> hor = vector2d<int32_t>(pos.x() - 10, pos.x() + 10);
 		vector2d<int32_t> ver = vector2d<int32_t>(pos.y() - 10, pos.y() + 10);
-		for (vector<Seat>::const_iterator stit = seats.begin(); stit != seats.end(); ++stit)
+		for (auto& stit : seats)
 		{
-			if (hor.contains(stit->pos.x()) && ver.contains(stit->pos.y()))
+			if (hor.contains(stit.pos.x()) && ver.contains(stit.pos.y()))
 			{
-				return stit._Ptr;
+				return &stit;
 			}
 		}
 		return nullptr;
@@ -118,12 +111,12 @@ namespace Gameplay
 	const Ladder* MapInfo::findladder(vector2d<int32_t> pos) const
 	{
 		vector2d<int32_t> hor = vector2d<int32_t>(pos.x() - 25, pos.x() + 25);
-		for (vector<Ladder>::const_iterator lrit = ladders.begin(); lrit != ladders.end(); ++lrit)
+		for (auto& lrit : ladders)
 		{
-			vector2d<int32_t> lrver = vector2d<int32_t>(lrit->y1 - 5, lrit->y2);
-			if (hor.contains(lrit->x) && lrver.contains(pos.y()))
+			vector2d<int32_t> lrver = vector2d<int32_t>(lrit.y1 - 5, lrit.y2);
+			if (hor.contains(lrit.x) && lrver.contains(pos.y()))
 			{
-				return lrit._Ptr;
+				return &lrit;
 			}
 		}
 		return nullptr;

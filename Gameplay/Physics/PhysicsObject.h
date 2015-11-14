@@ -25,19 +25,19 @@ namespace Gameplay
 	using::std::uint16_t;
 	using::Util::vector2d;
 
-	// Determines which physics engine to use for an object.
-	enum PhysicsTerrain
-	{
-		PHT_NORMAL,
-		PHT_ICE,
-		PHT_SWIMMING,
-		PHT_FLYING
-	};
-
 	// Struct that contains all properties neccessary for physics calculations.
 	struct PhysicsObject
 	{
-		PhysicsTerrain terrain = PHT_NORMAL;
+		// Determines which physics engine to use.
+		enum PhType
+		{
+			NORMAL,
+			ICE,
+			SWIMMING,
+			FLYING
+		};
+
+		PhType type = NORMAL;
 		uint16_t fhid = 0;
 		float fhslope = 0.0f;
 		int8_t fhlayer = 0;

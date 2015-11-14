@@ -25,7 +25,7 @@ namespace Character
 	{
 		using::nl::node;
 		node facenode = nl::nx::character["Face"]["000" + std::to_string(faceid) + ".img"];
-		for (node expnode = facenode.begin(); expnode != facenode.end(); ++expnode)
+		for (node& expnode : facenode)
 		{
 			string state = expnode.name();
 			if (state == "default")

@@ -24,15 +24,13 @@ namespace Gameplay
 	MapLayer::MapLayer(node src)
 	{
 		string tileset = src["info"]["tS"] + ".img";
-		node tilesrc = src["tile"];
-		for (node tilenode = tilesrc.begin(); tilenode != tilesrc.end(); ++tilenode)
+		for (node& tilenode : src["tile"])
 		{
 			Tile tile = Tile(tilenode, tileset);
 			tiles[tile.getz()].push_back(tile);
 		}
 
-		node objsrc = src["obj"];
-		for (node objnode = objsrc.begin(); objnode != objsrc.end(); ++objnode)
+		for (node& objnode : src["obj"])
 		{
 			Obj obj = Obj(objnode);
 			objs[obj.getz()].push_back(obj);
@@ -45,30 +43,30 @@ namespace Gameplay
 
 	void MapLayer::update()
 	{
-		for (map<uint8_t, vector<Obj>>::iterator lyit = objs.begin(); lyit != objs.end(); ++lyit)
+		for (auto& lyit : objs)
 		{
-			for (vector<Obj>::iterator obit = lyit->second.begin(); obit != lyit->second.end(); ++obit)
+			for (auto& obit : lyit.second)
 			{
-				obit->update();
+				obit.update();
 			}
 		}
 	}
 
 	void MapLayer::draw(vector2d<int32_t> viewpos, float inter) const
 	{
-		for (map<uint8_t, vector<Obj>>::const_iterator lyit = objs.begin(); lyit != objs.end(); ++lyit)
+		for (auto& lyit : objs)
 		{
-			for (vector<Obj>::const_iterator obit = lyit->second.begin(); obit != lyit->second.end(); ++obit)
+			for (auto& obit : lyit.second)
 			{
-				obit->draw(viewpos, inter);
+				obit.draw(viewpos, inter);
 			}
 		}
 
-		for (map<uint8_t, vector<Tile>>::const_iterator lyit = tiles.begin(); lyit != tiles.end(); ++lyit)
+		for (auto& lyit : tiles)
 		{
-			for (vector<Tile>::const_iterator tlit = lyit->second.begin(); tlit != lyit->second.end(); ++tlit)
+			for (auto& tlit : lyit.second)
 			{
-				tlit->draw(viewpos);
+				tlit.draw(viewpos);
 			}
 		}
 	}

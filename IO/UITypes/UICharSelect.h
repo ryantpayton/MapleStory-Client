@@ -20,14 +20,14 @@
 #include "IO\UIInterface.h"
 #include "IO\Components\Nametag.h"
 #include "IO\Components\Charset.h"
-#include "Net\Session.h"
+#include "Net\SessionInterface.h"
 #include "Character\Look\CharLook.h"
 
 namespace IO
 {
-	using::std::vector;
-	using::Net::Session;
-	using::Character::CharLook;
+	using std::vector;
+	using Character::CharLook;
+	using Net::SessionInterface;
 
 	// The character selection screen.
 	class UICharSelect : public UIElement
@@ -45,7 +45,7 @@ namespace IO
 			BT_CHAR0
 		};
 
-		UICharSelect(UIInterface&, Session&);
+		UICharSelect(UIInterface&, SessionInterface&);
 		void draw(float) const override;
 		void update() override;
 		void buttonpressed(uint16_t) override;
@@ -58,7 +58,7 @@ namespace IO
 		vector2d<int32_t> getcharpos(size_t) const;
 
 		UIInterface& ui;
-		Session& session;
+		SessionInterface& session;
 
 		vector<CharLook> charlooks;
 		uint8_t charcount;
@@ -75,11 +75,11 @@ namespace IO
 	class ElementCharSelect : public Element
 	{
 	public:
-		ElementCharSelect(UIInterface& u, Session& ses) : ui(u), session(ses) {}
+		ElementCharSelect(UIInterface& u, SessionInterface& ses) : ui(u), session(ses) {}
 
 		UIType type() const override
 		{
-			return UI_CHARSELECT;
+			return CHARSELECT;
 		}
 
 		UIElement* instantiate() const override
@@ -89,7 +89,7 @@ namespace IO
 
 	private:
 		UIInterface& ui;
-		Session& session;
+		SessionInterface& session;
 	};
 }
 

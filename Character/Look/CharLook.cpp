@@ -163,7 +163,7 @@ namespace Character
 
 		using::Graphics::DrawArgument;
 		DrawArgument args = DrawArgument(pos, flip);
-		DrawArgument faceargs = DrawArgument(pos + drawinfo.getfacepos(stance, frame), flip, pos);
+		DrawArgument faceargs = DrawArgument(pos + drawinfo.getfacepos(laststance, interframe), flip, pos);
 
 		if (laststance == "ladder" || laststance == "rope")
 		{

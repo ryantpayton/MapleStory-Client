@@ -30,12 +30,12 @@
 
 namespace IO
 {
-	UICharSelect::UICharSelect(UIInterface& u, Session& ses) : ui(u), session(ses)
+	UICharSelect::UICharSelect(UIInterface& u, SessionInterface& ses) : ui(u), session(ses)
 	{
 		node charsel = nl::nx::ui["Login.img"]["CharSelect"];
 
-		using::Graphics::Sprite;
-		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Title"]["worldsel"], vector2d<int32_t>()));
+		using Graphics::Sprite;
+		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Title"]["worldsel"]));
 		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Common"]["frame"], vector2d<int32_t>(400, 290)));
 		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Common"]["selectWorld"], vector2d<int32_t>(580, 42)));
 		sprites.push_back(Sprite(charsel["selectedWorld"]["icon"]["15"], vector2d<int32_t>(580, 42)));
@@ -152,9 +152,9 @@ namespace IO
 
 		if (active)
 		{
-			for (vector<CharLook>::iterator chit = charlooks.begin(); chit != charlooks.end(); ++chit)
+			for (auto& chit : charlooks)
 			{
-				chit->update(Constants::TIMESTEP);
+				chit.update(Constants::TIMESTEP);
 			}
 		}
 	}
@@ -185,7 +185,7 @@ namespace IO
 				break;
 			case BT_CREATECHAR:
 				active = false;
-				ui.remove(UI_CHARCREATION);
+				ui.remove(Element::CHARCREATION);
 				ui.add(ElementCharcreation(session, ui));
 				break;
 			}

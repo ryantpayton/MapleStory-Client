@@ -25,11 +25,12 @@
 
 namespace Gameplay
 {
-	using::std::string;
-	using::Util::rectangle2d;
-	using::Util::Randomizer;
-	using::Graphics::Animation;
-	using::Graphics::Textlabel;
+	using std::string;
+	using std::map;
+	using Util::rectangle2d;
+	using Util::Randomizer;
+	using Graphics::Animation;
+	using Graphics::Textlabel;
 
 	class Mob : public MapObject
 	{

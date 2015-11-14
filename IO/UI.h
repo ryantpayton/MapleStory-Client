@@ -45,13 +45,13 @@ namespace IO
 		void sendmouse(Mousestate, vector2d<int32_t>);
 		void sendkey(Keytype, int32_t, bool) override;
 		void add(const Element&) override;
-		void remove(UIType) override;
-		UIElement* getelement(UIType) const override;
+		void remove(Element::UIType) override;
+		UIElement* getelement(Element::UIType) const override;
 		Keyboard& getkeyboard() override;
 
 	private:
-		unordered_map<UIType, unique_ptr<UIElement>> elements;
-		UIType focused;
+		unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
+		Element::UIType focused;
 		Cursor cursor;
 		Keyboard keyboard;
 		bool enabled;

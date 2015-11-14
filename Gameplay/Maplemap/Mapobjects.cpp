@@ -17,17 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Mapobjects.h"
 
-#define mmo_ptr unique_ptr<MapObject>
-
 namespace Gameplay
 {
 	void MapObjects::draw(int8_t layer, vector2d<int32_t> pos, float inter) const
 	{
 		if (layers.count(layer))
 		{
-			for (map<int32_t, int32_t>::const_iterator lyit = layers.at(layer).begin(); lyit != layers.at(layer).end(); ++lyit)
+			for (auto& lyit : layers.at(layer))
 			{
-				int32_t oid = lyit->second;
+				int32_t oid = lyit.second;
 				if (objects.count(oid))
 				{
 					objects.at(oid)->draw(pos, inter);
@@ -38,35 +36,30 @@ namespace Gameplay
 
 	void MapObjects::update(const Physics& fht)
 	{
-		using::std::vector;
+		using std::vector;
 		vector<int32_t> toremove;
 
-		using::std::map;
-		for (map<int32_t, mmo_ptr>::iterator obit = objects.begin(); obit != objects.end(); ++obit)
+		for (auto& obit : objects)
 		{
-			MapObject* obj = obit->second.get();
-			if (obj)
+			int8_t oldlayer = obit.second->getlayer();
+			int8_t newlayer = obit.second->update(fht);
+			if (newlayer != oldlayer)
 			{
-				int8_t oldlayer = obj->getlayer();
-				int8_t newlayer = obj->update(fht);
-				if (newlayer != oldlayer)
+				int32_t oid = obit.second->getoid();
+				layers[oldlayer].erase(oid);
+				if (newlayer == -1)
 				{
-					int32_t oid = obj->getoid();
-					layers[oldlayer].erase(oid);
-					if (newlayer == -1)
-					{
-						toremove.push_back(oid);
-					}
-					else
-					{
-						layers[newlayer][oid] = oid;
-					}
+					toremove.push_back(oid);
+				}
+				else
+				{
+					layers[newlayer][oid] = oid;
 				}
 			}
 		}
-		for (vector<int32_t>::iterator rmit = toremove.begin(); rmit != toremove.end(); ++rmit)
+		for (auto& rmit : toremove)
 		{
-			remove(*rmit);
+			remove(rmit);
 		}
 	}
 
@@ -82,7 +75,7 @@ namespace Gameplay
 		{
 			int32_t oid = toadd->getoid();
 			int8_t layer = toadd->getlayer();
-			objects[oid] = mmo_ptr(toadd);
+			objects[oid] = unique_ptr<MapObject>(toadd);
 			layers[layer][oid] = oid;
 		}
 	}

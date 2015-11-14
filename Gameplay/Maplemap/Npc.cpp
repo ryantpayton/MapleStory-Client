@@ -30,6 +30,7 @@ namespace Gameplay
 
 		using::nl::node;
 		node src = nl::nx::npc[strid];
+		node strsrc = nl::nx::string["Npc.img"][std::to_string(id)];
 
 		string link = src["info"]["link"];
 		if (link.size() > 0)
@@ -38,8 +39,7 @@ namespace Gameplay
 			src = nl::nx::npc[link];
 		}
 
-		map<string, vector<string>> linenames;
-		for (node npcnode = src.begin(); npcnode != src.end(); ++npcnode)
+		for (node& npcnode : src)
 		{
 			string state = npcnode.name();
 			if (state == "info")
@@ -54,30 +54,14 @@ namespace Gameplay
 				states.push_back(state);
 			}
 
-			node speak = npcnode["speak"];
-			if (speak.size() > 0)
+			for (node& speaknode : npcnode["speak"])
 			{
-				for (node speaknode = speak.begin(); speaknode != speak.end(); speaknode++)
-				{
-					linenames[state].push_back(speaknode.get_string());
-				}
+				lines[state].push_back(strsrc[speaknode.get_string()]);
 			}
 		}
-
-		node strsrc = nl::nx::string["Npc.img"][std::to_string(id)];
 
 		name = strsrc["name"];
 		func = strsrc["func"];
-
-		for (map<string, vector<string>>::iterator stit = linenames.begin(); stit != linenames.end(); ++stit)
-		{
-			string state = stit->first;
-			vector<string> names = stit->second;
-			for (vector<string>::iterator nit = names.begin(); nit != names.end(); ++nit)
-			{
-				lines[state].push_back(strsrc[*nit]);
-			}
-		}
 
 		namelabel = Textlabel(Textlabel::DWF_14BC, Textlabel::TXC_YELLOW, name, 0);
 		funclabel = Textlabel(Textlabel::DWF_14BC, Textlabel::TXC_YELLOW, func, 0);
@@ -168,7 +152,10 @@ namespace Gameplay
 
 	vector2d<int32_t> Npc::getposition() const
 	{
-		return vector2d<int32_t>(static_cast<int32_t>(phobj.fx), static_cast<int32_t>(phobj.fy));
+		return vector2d<int32_t>(
+			static_cast<int32_t>(phobj.fx), 
+			static_cast<int32_t>(phobj.fy)
+			);
 	}
 
 	vector2d<int32_t> Npc::getdimensions() const

@@ -106,14 +106,17 @@ namespace Character
 		int32_t speed = 100;
 		int32_t jump = 100;
 
-		stats.settotal(ES_HP, stats.getstat(MS_MAXHP));
-		stats.settotal(ES_MP, stats.getstat(MS_MAXMP));
+		stats.settotal(ES_HP, stats.getstat(MS_MAXHP) + inventory.getstat(ES_HP));
+		stats.settotal(ES_MP, stats.getstat(MS_MAXMP) + inventory.getstat(ES_MP));
 		stats.settotal(ES_STR, stats.getstat(MS_STR) + inventory.getstat(ES_STR));
 		stats.settotal(ES_DEX, stats.getstat(MS_DEX) + inventory.getstat(ES_DEX));
 		stats.settotal(ES_LUK, stats.getstat(MS_LUK) + inventory.getstat(ES_LUK));
 		stats.settotal(ES_INT, stats.getstat(MS_INT) + inventory.getstat(ES_INT));
-		stats.settotal(ES_SPEED, speed);
-		stats.settotal(ES_JUMP, jump);
+		stats.settotal(ES_SPEED, speed + inventory.getstat(ES_SPEED));
+		stats.settotal(ES_JUMP, jump + inventory.getstat(ES_JUMP));
+		stats.setattack(inventory.getstat(ES_WATK));
+
+		stats.calculatedamage(look.getequips().getweapontype());
 	}
 
 	int8_t Player::update(const Physics& physics)
@@ -127,8 +130,10 @@ namespace Character
 		}
 
 		uint8_t dirstance = flip ? stance : stance + 1;
+		int16_t shortx = static_cast<int16_t>(phobj.fx);
+		int16_t shorty = static_cast<int16_t>(phobj.fy);
 		using::Gameplay::MovementFragment;
-		if (dirstance != lastmove.newstate || static_cast<int16_t>(phobj.fx) != lastmove.xpos || static_cast<int16_t>(phobj.fy) != lastmove.ypos)
+		if (dirstance != lastmove.newstate ||  shortx != lastmove.xpos ||  shorty != lastmove.ypos) 
 		{
 			movementinfo.addmovement(phobj, 0, dirstance, Constants::TIMESTEP);
 			lastmove = movementinfo.gettop();

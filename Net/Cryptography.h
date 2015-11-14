@@ -16,53 +16,38 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\UIElement.h"
-#include "IO\UIInterface.h"
-#include "Net\Login\Login.h"
-#include "Net\SessionInterface.h"
+#include <cstdint>
 
-namespace IO
+namespace Net
 {
-	using Net::SessionInterface;
-
-	class UIWorldSelect : public UIElement
+	// Used to encrypt and decrypt packets for communication with the server.
+	class Cryptography
 	{
 	public:
-		enum Buttons
-		{
-			BT_ENTERWORLD = 0,
-			BT_WORLD0 = 1,
-			BT_CHANNEL0 = 17
-		};
+		Cryptography();
+		~Cryptography();
 
-		UIWorldSelect(UIInterface&, SessionInterface&);
-		void buttonpressed(uint16_t) override;
+		// Encrypt a byte array with the given length and iv.
+		void encrypt(int8_t* bytes, size_t length, uint8_t* sendiv) const;
+		// Decrypt a byte array with the given length and iv.
+		void decrypt(int8_t* bytes, size_t length, uint8_t* sendiv) const;
+		// Use the 4-byte header of a received packet to determine its length.
+		size_t getlength(const int8_t* header) const;
 
 	private:
-		UIInterface& ui;
-		SessionInterface& session;
+		void mapleencrypt(int8_t*, size_t) const;
+		void mapledecrypt(int8_t*, size_t) const;
+		void updateiv(uint8_t*) const;
+		int8_t rollleft(int8_t, size_t) const;
+		int8_t rollright(int8_t, size_t) const;
 
-		uint8_t worldid;
-		uint8_t channelid;
-	};
-
-	class ElementWorldSelect : public Element
-	{
-	public:
-		ElementWorldSelect(UIInterface& u, SessionInterface& ses) : ui(u), session(ses) {}
-
-		UIType type() const override
-		{
-			return WORLDSELECT;
-		}
-
-		UIElement* instantiate() const override
-		{
-			return new UIWorldSelect(ui, session);
-		}
-	private:
-		UIInterface& ui;
-		SessionInterface& session;
+		void aesofb(int8_t*, size_t, uint8_t*) const;
+		void aesencrypt(uint8_t*) const;
+		void addroundkey(uint8_t*, uint8_t) const;
+		void subbytes(uint8_t*) const;
+		void shiftrows(uint8_t*) const;
+		void mixcolumns(uint8_t*) const;
+		uint8_t gmul(uint8_t) const;
 	};
 }
 

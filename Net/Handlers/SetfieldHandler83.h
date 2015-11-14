@@ -78,6 +78,7 @@ namespace Net
 
 				client.getstage().loadmap(mapid);
 				client.getstage().respawn();
+				client.getui().enable();
 			}
 			else
 			{
@@ -119,8 +120,9 @@ namespace Net
 
 				player.recalcstats(true);
 
-				client.getui().remove(IO::UI_CHARSELECT);
-				client.getui().remove(IO::UI_SOFTKEYBOARD);
+				using IO::Element;
+				client.getui().remove(Element::CHARSELECT);
+				client.getui().remove(Element::SOFTKEYBOARD);
 
 #ifdef JOURNEY_USE_OPENGL
 				using::Graphics::GraphicsGL;
@@ -141,6 +143,7 @@ namespace Net
 				int32_t mapid = player.getstats().getmapid();
 				client.getstage().loadmap(mapid);
 				client.getstage().respawn();
+				client.getui().enable();
 
 				client.getui().getkeyboard().addtarget(IO::KT_MENU, &client.getui());
 				client.getui().getkeyboard().addtarget(IO::KT_ACTION, &client.getstage());

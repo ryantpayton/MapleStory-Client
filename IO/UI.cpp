@@ -18,13 +18,11 @@
 #include "UI.h"
 #include "UITypes\UIStatsinfo.h"
 
-#define ui_ptr unique_ptr<UIElement>
-
 namespace IO
 {
 	UI::UI(ClientInterface& cl) : client(cl)
 	{
-		focused = UI_NULL;
+		focused = Element::NONE;
 		enabled = false;
 	}
 
@@ -36,10 +34,10 @@ namespace IO
 
 	void UI::draw(float inter) const
 	{
-		using::std::unordered_map;
-		for (unordered_map<UIType, ui_ptr>::const_iterator elit = elements.begin(); elit != elements.end(); ++elit)
+		for (auto& elit : elements)
 		{
-			elit->second->draw(inter);
+			if (elit.second->isactive())
+				elit.second->draw(inter);
 		}
 
 		cursor.draw(inter);
@@ -47,10 +45,10 @@ namespace IO
 
 	void UI::update()
 	{
-		using::std::unordered_map;
-		for (unordered_map<UIType, ui_ptr>::iterator elit = elements.begin(); elit != elements.end(); ++elit)
+		for (auto& elit : elements)
 		{
-			elit->second->update();
+			if (elit.second->isactive())
+				elit.second->update();
 		}
 
 		cursor.update();
@@ -75,25 +73,28 @@ namespace IO
 	{
 		cursor.setposition(pos);
 
-		if (focused != UI_NULL)
+		if (focused != Element::NONE)
 		{
-			elements[focused]->sendmouse(mst == MST_CLICKING, pos);
+			if (elements[focused]->isactive())
+				elements[focused]->sendmouse(mst == MST_CLICKING, pos);
+			else
+				focused = Element::NONE;
 		}
-		else
+		
+		if (focused == Element::NONE)
 		{
 			UIElement* front = nullptr;
 			if (enabled)
 			{
-				using::std::unordered_map;
-				for (unordered_map<UIType, ui_ptr>::iterator elit = elements.begin(); elit != elements.end(); ++elit)
+				for (auto& elit : elements)
 				{
-					if (elit->second->isactive() && elit->second->bounds().contains(pos))
+					if (elit.second->isactive() && elit.second->bounds().contains(pos))
 					{
 						if (front)
 						{
 							front->sendmouse(false, pos);
 						}
-						front = elit->second.get();
+						front = elit.second.get();
 					}
 				}
 			}
@@ -118,7 +119,10 @@ namespace IO
 			switch (action)
 			{
 			case KA_CHARSTATS:
-				add(ElementStatsinfo(client.getstage().getplayer().getstats()));
+				add(ElementStatsinfo(
+					client.getstage().getplayer().getstats(), 
+					client.getsession(), *this
+					));
 				break;
 			}
 		}
@@ -126,7 +130,7 @@ namespace IO
 
 	void UI::add(const Element& element)
 	{
-		UIType type = element.type();
+		Element::UIType type = element.type();
 		if (elements.count(type))
 		{
 			if (element.isunique())
@@ -141,7 +145,7 @@ namespace IO
 		}
 
 		UIElement* toadd = element.instantiate();
-		elements[type] = ui_ptr(toadd);
+		elements[type] = unique_ptr<UIElement>(toadd);
 
 		if (element.isfocused())
 		{
@@ -149,11 +153,11 @@ namespace IO
 		}
 	}
 
-	void UI::remove(UIType type)
+	void UI::remove(Element::UIType type)
 	{
 		if (type == focused)
 		{
-			focused = UI_NULL;
+			focused = Element::NONE;
 		}
 
 		if (elements.count(type))
@@ -164,7 +168,7 @@ namespace IO
 		}
 	}
 
-	UIElement* UI::getelement(UIType type) const
+	UIElement* UI::getelement(Element::UIType type) const
 	{
 		if (elements.count(type))
 			return elements.at(type).get();

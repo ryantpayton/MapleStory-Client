@@ -28,11 +28,11 @@ namespace Character
 
 	void BodyDrawinfo::init()
 	{
-		using::nl::node;
+		using nl::node;
 		node bodynode = nl::nx::character["00002000.img"];
 		node headnode = nl::nx::character["00012000.img"];
 
-		for (node stancenode = bodynode.begin(); stancenode != bodynode.end(); ++stancenode)
+		for (node& stancenode : bodynode)
 		{
 			string stance = stancenode.name();
 
@@ -55,7 +55,7 @@ namespace Character
 					stancedelays[stance][frame] = delay;
 					map<CharacterLayer, map<string, vector2d<int32_t>>> bodyshiftmap;
 
-					for (node partnode = framenode.begin(); partnode != framenode.end(); ++partnode)
+					for (node& partnode : framenode)
 					{
 						string part = partnode.name();
 						if (part != "delay" && part != "face")
@@ -75,8 +75,7 @@ namespace Character
 							else
 								continue;
 
-							node bodymap = partnode["map"];
-							for (node mapnode = bodymap.begin(); mapnode != bodymap.end(); mapnode++)
+							for (node& mapnode : partnode["map"])
 							{
 								bodyshiftmap[z][mapnode.name()] = vector2d<int32_t>(mapnode.x(), mapnode.y());
 							}
@@ -84,7 +83,7 @@ namespace Character
 					}
 
 					node headmap = headnode[stance][std::to_string(frame)]["head"]["map"];
-					for (node mapnode = headmap.begin(); mapnode != headmap.end(); mapnode++)
+					for (node& mapnode : headmap)
 					{
 						bodyshiftmap[CL_HEAD][mapnode.name()] = vector2d<int32_t>(mapnode.x(), mapnode.y());
 					}

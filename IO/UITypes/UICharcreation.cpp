@@ -27,11 +27,11 @@
 
 namespace IO
 {
-	UICharcreation::UICharcreation(Session& ses, UIInterface& u) : session(ses), ui(u)
+	UICharcreation::UICharcreation(SessionInterface& ses, UIInterface& u) : session(ses), ui(u)
 	{
 		female = session.getlogin().getaccount().isfemale();
 
-		using::nl::node;
+		using nl::node;
 		node src = nl::nx::ui["Login.img"];
 		node bgsrc = nl::nx::map["Back"]["login.img"]["back"];
 		node crsrc = src["NewChar"];
@@ -130,10 +130,10 @@ namespace IO
 				mk_n = mkinfo["CharMale"];
 			}
 
-			for (node subnode = mk_n.begin(); subnode != mk_n.end(); ++subnode)
+			for (node& subnode : mk_n)
 			{
 				int num = stoi(subnode.name());
-				for (node idnode = subnode.begin(); idnode != subnode.end(); ++idnode)
+				for (node& idnode : subnode)
 				{
 					int value = idnode;
 					switch (num)
@@ -281,7 +281,7 @@ namespace IO
 			{
 				active = false;
 				ui.getkeyboard().focustarget(nullptr);
-				ui.remove(UI_CHARSELECT);
+				ui.remove(Element::CHARSELECT);
 				ui.add(ElementCharSelect(ui, session));
 			}
 			break;
@@ -453,7 +453,7 @@ namespace IO
 			}
 			else
 			{
-				for (vector<Sprite>::const_iterator lbit = lookboard.begin(); lbit != lookboard.end(); ++lbit)
+				for (auto lbit = lookboard.begin(); lbit != lookboard.end(); ++lbit)
 				{
 					lbit->draw(DrawArgument(position), inter);
 				}

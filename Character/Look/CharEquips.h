@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Clothing.h"
+#include "Weapon.h"
 
 namespace Character
 {
@@ -30,12 +31,16 @@ namespace Character
 	public:
 		CharEquips();
 		~CharEquips();
+
 		void draw(Equipslot, string, CharacterLayer, uint8_t, const DrawArgument&) const;
 		void addequip(const Clothing&);
 		void removeequip(Equipslot);
+
 		bool isvisible(Equipslot) const;
 		bool istwohanded() const;
+		Weapon::WpType getweapontype() const;
 		const Clothing& getequip(Equipslot) const;
+
 	private:
 		map<Equipslot, const Clothing*> equips;
 		Clothing nullequip;

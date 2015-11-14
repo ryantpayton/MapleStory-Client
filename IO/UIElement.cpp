@@ -17,35 +17,27 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIElement.h"
 
-#define button_ptr unique_ptr<Button>
-
 namespace IO
 {
 	void UIElement::draw(float inter) const
 	{
-		if (active)
+		using::Graphics::DrawArgument;
+		for (auto& sprit : sprites)
 		{
-			using::Graphics::DrawArgument;
-			for (vector<Sprite>::const_iterator sprit = sprites.begin(); sprit != sprites.end(); ++sprit)
-			{
-				sprit->draw(DrawArgument(position), inter);
-			}
+			sprit.draw(DrawArgument(position), inter);
+		}
 
-			for (map<uint16_t, button_ptr>::const_iterator btit = buttons.begin(); btit != buttons.end(); ++btit)
-			{
-				btit->second->draw(position);
-			}
+		for (auto& btit : buttons)
+		{
+			btit.second->draw(position);
 		}
 	}
 
 	void UIElement::update()
 	{
-		if (active)
+		for (auto& sprit : sprites)
 		{
-			for (vector<Sprite>::iterator sprit = sprites.begin(); sprit != sprites.end(); ++sprit)
-			{
-				sprit->update();
-			}
+			sprit.update();
 		}
 	}
 
@@ -53,22 +45,21 @@ namespace IO
 	{
 		Mousestate ret = down ? MST_CLICKING : MST_IDLE;
 
-		for (map<uint16_t, button_ptr>::iterator bmit = buttons.begin(); bmit != buttons.end(); ++bmit)
+		for (auto& btit : buttons)
 		{
-			Button* btit = bmit->second.get();
-			if (btit->isactive() && btit->bounds(position).contains(pos))
+			if (btit.second->isactive() && btit.second->bounds(position).contains(pos))
 			{
-				if (btit->getstate() == Button::NORMAL)
+				if (btit.second->getstate() == Button::NORMAL)
 				{
-					btit->setstate(Button::MOUSEOVER);
+					btit.second->setstate(Button::MOUSEOVER);
 					ret = MST_CANCLICK;
 				}
-				else if (btit->getstate() == Button::MOUSEOVER)
+				else if (btit.second->getstate() == Button::MOUSEOVER)
 				{
 					if (down)
 					{
-						btit->setstate(Button::PRESSED);
-						buttonpressed(bmit->first);
+						btit.second->setstate(Button::PRESSED);
+						buttonpressed(btit.first);
 					}
 					else
 					{
@@ -76,9 +67,9 @@ namespace IO
 					}
 				}
 			}
-			else if (btit->getstate() == Button::MOUSEOVER)
+			else if (btit.second->getstate() == Button::MOUSEOVER)
 			{
-				btit->setstate(Button::NORMAL);
+				btit.second->setstate(Button::NORMAL);
 			}
 		}
 

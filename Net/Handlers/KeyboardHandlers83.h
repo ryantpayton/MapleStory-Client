@@ -27,10 +27,10 @@ namespace Net
 			recv.readbyte();
 
 			using::IO::Keytype;
-			for (char i = 0; i < 90; i++)
+			for (int32_t i = 0; i < 90; i++)
 			{
 				Keytype type = static_cast<Keytype>(recv.readbyte());
-				int action = recv.readint();
+				int32_t action = recv.readint();
 				client.getui().getkeyboard().addmapping(i, type, action);
 			}
 
@@ -46,13 +46,13 @@ namespace Net
 	{
 		void handle(ClientInterface& client, InPacket& recv) const override
 		{
-			map<string, pair<char, vector<int>>> macros;
-			char size = recv.readbyte();
-			for (char i = 0; i < size; i++)
+			map<string, pair<int8_t, vector<int32_t>>> macros;
+			uint8_t size = recv.readbyte();
+			for (uint8_t i = 0; i < size; i++)
 			{
 				string name = recv.readascii();
-				char shout = recv.readbyte();
-				vector<int> skills;
+				int8_t shout = recv.readbyte();
+				vector<int32_t> skills;
 				skills.push_back(recv.readint());
 				skills.push_back(recv.readint());
 				skills.push_back(recv.readint());

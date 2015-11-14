@@ -79,7 +79,7 @@ namespace IO
 
 		UIType type() const override
 		{
-			return UI_STATUSBAR;
+			return STATUSBAR;
 		}
 
 		UIElement* instantiate() const override

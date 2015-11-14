@@ -21,50 +21,53 @@
 
 namespace Gameplay
 {
-	using::nl::node;
-	using::Util::vector2d;
+	using nl::node;
+	using Util::vector2d;
 
-	// Represents a platform on a maple-map. Contains methods for usage with physics.
+	// Represents a platform part on a maple-map. Contains methods for usage with physics.
 	class Foothold
 	{
 	public:
-		// Parameters: short(foothold id), char(map layer), node(game data)
-		Foothold(uint16_t, int8_t, node);
+		Foothold(node src, int8_t layer);
 		Foothold();
-		~Foothold(){}
+		~Foothold();
+
 		// Returns the foothold id aka the identifier in game data of this platform.
-		uint16_t getid() const;
+		uint16_t getid() const { return id; }
 		// Returns the map layer. Used for drawing objects in the right order.
-		int8_t getlayer() const;
+		int8_t getlayer() const { return layer; }
 		// Returns the platform left to this.
-		uint16_t getprev() const;
+		uint16_t getprev() const { return prev; }
 		// Returns the platform right to this.
-		uint16_t getnext() const;
+		uint16_t getnext() const { return next; }
 		// Returns the horizontal component.
-		vector2d<int32_t> gethor() const;
+		const vector2d<int32_t>& gethor() const { return horizontal; }
 		// Returns the vertical component.
-		vector2d<int32_t> getver() const;
-		int32_t getl() const;
-		int32_t getr() const;
-		int32_t gett() const;
-		int32_t getb() const;
-		bool iswall() const;
-		bool isfloor() const;
+		const vector2d<int32_t>& getver() const { return vertical; }
+		// Return the left edge.
+		int32_t getl() const { return horizontal.smaller(); }
+		// Return the right edge.
+		int32_t getr() const { return horizontal.greater(); }
+		// Return the top edge.
+		int32_t gett() const { return vertical.smaller(); }
+		// Return the bottom edge.
+		int32_t getb() const { return vertical.greater(); }
+		// Return if the platform is a wall (x1 == x2).
+		bool iswall() const { return horizontal.straight(); }
+		// Return if the platform is a floor (y1 == y2).
+		bool isfloor() const { return vertical.straight(); }
 		// Returns if a x-coordinate is above or below this platform.
-		// Parameters: int(x-coordinate to test)
-		bool hcontains(int32_t) const;
+		bool hcontains(int32_t x) const { return horizontal.contains(x); }
 		// Returns if a y-coordinate is right or left of this platform.
-		// Parameters: int(y-coordinate to test)
-		bool vcontains(int32_t) const;
+		bool vcontains(int32_t y) const { return vertical.contains(y); }
 		// Returns the width.
-		int32_t gethdelta() const;
+		int32_t gethdelta() const { return horizontal.y() - horizontal.x(); }
 		// Returns the height.
-		int32_t getvdelta() const;
+		int32_t getvdelta() const { return vertical.y() - vertical.x(); }
 		// Returns the slope as a ratio of vertical/horizontal.
 		float getslope() const;
 		// Returns a y-coordinate right above the given x-coordinate. Used for slopes.
-		// Parameters: float(x-coordinate)
-		float resolvex(float) const;
+		float resolvex(float x) const;
 
 	private:
 		uint16_t id;

@@ -30,7 +30,7 @@ namespace Character
 	{
 		using::nl::node;
 		node hairnode = nl::nx::character["Hair"]["000" + std::to_string(hairid) + ".img"];
-		for (node stancenode = hairnode.begin(); stancenode != hairnode.end(); ++stancenode)
+		for (node& stancenode : hairnode)
 		{
 			string stance = stancenode.name();
 			if (stance != "default" || stance != "backDefault" || stance != "info")
@@ -39,7 +39,7 @@ namespace Character
 				node framenode = stancenode[std::to_string(frame)];
 				while (framenode.size() > 0)
 				{
-					for (node partnode = framenode.begin(); partnode != framenode.end(); ++partnode)
+					for (node& partnode : framenode)
 					{
 						string part = partnode.name();
 						CharacterLayer z;

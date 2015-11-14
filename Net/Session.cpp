@@ -15,28 +15,27 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "SessionServer.h"
+#include "Session.h"
 
 namespace Net
 {
-	// Default values. Connect to a localhost server's login port.
-	const string HOST = "127.0.0.1";
-	const string PORT = "8484";
-
-	SessionServer::SessionServer()
+	Session::Session()
 	{
 		connected = false;
 	}
 
-	SessionServer::~SessionServer() {}
+	Session::~Session() {}
 
-	bool SessionServer::init()
+	bool Session::init()
 	{
-		// Connect with default values.
+		// Connect to a localhost server's login port.
+		static const string HOST = "127.0.0.1";
+		static const string PORT = "8484";
+
 		return init(HOST.c_str(), PORT.c_str());
 	}
 
-	bool SessionServer::init(const char* host, const char* port)
+	bool Session::init(const char* host, const char* port)
 	{
 		// Connect to the server and attempt to read the handshake packet.
 		connected = socket.open(host, port);
@@ -52,7 +51,7 @@ namespace Net
 		return connected;
 	}
 
-	bool SessionServer::receive(ClientInterface& client)
+	bool Session::receive(ClientInterface& client)
 	{
 		// Check if a packet has arrived. Handle if data is sufficient: 4 bytes(header) + 2 bytes(opcode) = 6.
 		size_t result = socket.receive(&connected);
@@ -66,7 +65,7 @@ namespace Net
 		return connected;
 	}
 
-	void SessionServer::process(ClientInterface& client, const int8_t* bytes, size_t available)
+	void Session::process(ClientInterface& client, const int8_t* bytes, size_t available)
 	{
 		if (pos == 0)
 		{
@@ -106,7 +105,7 @@ namespace Net
 		}
 	}
 
-	void SessionServer::dispatch(const OutPacket& tosend)
+	void Session::dispatch(const OutPacket& tosend)
 	{
 		// The packet 'tosend' arrives without header so total length is + 4.
 		size_t total = tosend.length() + 4;
@@ -120,19 +119,19 @@ namespace Net
 		delete[] bytes;
 	}
 
-	bool SessionServer::reconnect(const char* address, const char* port)
+	bool Session::reconnect(const char* address, const char* port)
 	{
 		// Close the current connection and open a new one.
 		bool error = socket.close();
 		return error ? init(address, port) : false;
 	}
 
-	void SessionServer::disconnect()
+	void Session::disconnect()
 	{
 		connected = false;
 	}
 
-	Login& SessionServer::getlogin()
+	Login& Session::getlogin()
 	{
 		return login;
 	}

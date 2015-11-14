@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Inventory.h"
+#include <numeric>
 
 namespace Character
 {
@@ -40,22 +41,12 @@ namespace Character
 	{
 		for (Equipstat es = ES_STR; es <= ES_JUMP; es = static_cast<Equipstat>(es + 1))
 		{
-			totalstats[es] = 0;
-		}
-
-		map<int16_t, Item*>::iterator beg = inventoryitems[EQUIPPED].getbegin();
-		map<int16_t, Item*>::iterator end = inventoryitems[EQUIPPED].getend();
-		for (map<int16_t, Item*>::iterator itit = beg; itit != end; itit++)
-		{
-			Item* item = itit->second;
-			if (!item)
-				continue;
-
-			Equip* equip = reinterpret_cast<Equip*>(item);
-			for (Equipstat es = ES_STR; es <= ES_JUMP; es = static_cast<Equipstat>(es + 1))
-			{
-				totalstats[es] += equip->getstat(es);
-			}
+			totalstats[es] = std::accumulate(
+				inventoryitems[EQUIPPED].getbegin(), 
+				inventoryitems[EQUIPPED].getend(), 0,
+				[es](const uint16_t& val, const std::pair<int16_t, Item*>& itit) {
+				return val + reinterpret_cast<Equip*>(itit.second)->getstat(es);
+			});
 		}
 	}
 

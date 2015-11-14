@@ -23,7 +23,6 @@ namespace Gameplay
 	const float GRAVFORCE = 0.2f;
 	const float FRICTION = 0.3f;
 	const float SLOPEFACTOR = 0.1f;
-	const float AIRFRICTION = 0.005f;
 	const float FLYFRICTION = 0.05f;
 
 	Physics::Physics() {}
@@ -41,12 +40,12 @@ namespace Gameplay
 		fht.updatefh(phobj);
 
 		// Use the appropriate physics for the terrain the object is on.
-		switch (phobj.terrain)
+		switch (phobj.type)
 		{
-		case PHT_NORMAL:
+		case PhysicsObject::NORMAL:
 			movenormal(phobj);
 			break;
-		case PHT_FLYING:
+		case PhysicsObject::FLYING:
 			moveflying(phobj);
 			break;
 		}
@@ -82,7 +81,6 @@ namespace Gameplay
 		}
 		else
 		{
-			phobj.hacc -= AIRFRICTION * phobj.hspeed;
 			phobj.vacc += GRAVFORCE / phobj.mass;
 		}
 

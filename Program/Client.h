@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\SessionServer.h"
+#include "Net\Session.h"
 #include "Audio\AudioplayerBass.h"
 #include "Util\NxFileManager.h"
 #include "IO\UI.h"
@@ -39,7 +39,7 @@ namespace Journey
 #endif
 
 	using IO::UI;
-	using Net::SessionServer;
+	using Net::Session;
 	using Audio::AudioplayerBass;
 	using Util::Configuration;
 	using Gameplay::Stage;
@@ -76,7 +76,7 @@ namespace Journey
 		// Obtain a reference to the ui.
 		UIInterface& getui() override;
 		// Obtain a reference to the session.
-		Session& getsession() override;
+		SessionInterface& getsession() override;
 		// Obtain a reference to the settings.
 		Configuration& getconfig() override;
 		// Obtain a reference to the nxfilemanager.
@@ -94,7 +94,7 @@ namespace Journey
 		NxFileManager nxfiles;
 		Stage stage;
 		UI ui;
-		SessionServer session;
+		Session session;
 		Configuration config;
 		Error error;
 	};

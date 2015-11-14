@@ -25,24 +25,26 @@
 
 namespace Net
 {
-	// MAX_PACKET_LEN already had to be changed 3 times.
 	const size_t MAX_PACKET_LEN = 40960;
 	const size_t HANDSHAKE_LEN = 16;
 
-	using::asio::io_service;
-	using::asio::ip::tcp;
-	using::asio::error_code;
+	using asio::io_service;
+	using asio::ip::tcp;
+	using asio::error_code;
+
 	// Class that wraps an asio socket.
 	class SocketAsio
 	{
 	public:
 		SocketAsio();
 		~SocketAsio();
-		bool open(const char*, const char*);
+
+		bool open(const char* adress, const char* port);
 		bool close();
-		size_t receive(bool*);
+		size_t receive(bool* connected);
 		const int8_t* getbuffer() const;
-		bool dispatch(const int8_t*, size_t);
+		bool dispatch(const int8_t* bytes, size_t length);
+
 	private:
 		io_service ioservice;
 		tcp::resolver resolver;

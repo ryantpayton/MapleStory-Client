@@ -23,8 +23,9 @@ namespace Gameplay
 	const int32_t DAMAGECAP = 999999;
 	const float MONSTERSPEED = 0.4f;
 
-	Mob::Mob(int32_t oi, int32_t mid, bool c, int8_t st, uint16_t fh, int8_t eff, bool newspawn, int8_t tm, int32_t x, int32_t y)
-	{
+	Mob::Mob(int32_t oi, int32_t mid, bool c, int8_t st, uint16_t fh, 
+		int8_t eff, bool newspawn, int8_t tm, int32_t x, int32_t y) {
+
 		string path = std::to_string(mid);
 		path.insert(0, 7 - path.size(), '0');
 
@@ -230,6 +231,9 @@ namespace Gameplay
 
 	vector2d<int32_t> Mob::getposition() const
 	{
-		return vector2d<int32_t>(static_cast<int32_t>(phobj.fx), static_cast<int32_t>(phobj.fy));
+		return vector2d<int32_t>(
+			static_cast<int32_t>(phobj.fx), 
+			static_cast<int32_t>(phobj.fy)
+			);
 	}
 }

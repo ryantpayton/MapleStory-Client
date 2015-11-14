@@ -17,15 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIStatsinfo.h"
 #include "IO\Components\MapleButton.h"
+#include "Net\Packets\PlayerPackets83.h"
 #include "nlnx\nx.hpp"
-
-#define button_ptr unique_ptr<Button>
 
 namespace IO
 {
-	UIStatsinfo::UIStatsinfo(const Charstats& st) : stats(st)
-	{
-		using::nl::node;
+	UIStatsinfo::UIStatsinfo(const Charstats& st, SessionInterface& ses, UIInterface& u) 
+		: stats(st), session(ses), ui(u) {
+
+		using nl::node;
 		node src = nl::nx::ui["UIWindow4.img"]["Stat"]["main"];
 		node detail = nl::nx::ui["UIWindow4.img"]["Stat"]["detail"];
 
@@ -43,12 +43,12 @@ namespace IO
 		abilities["legendary"] = Texture(detail["abilityTitle"]["legendary"]["0"]);
 		abilities["none"] = Texture(detail["abilityTitle"]["normal"]["0"]);
 
-		buttons[BT_HP] = button_ptr(new MapleButton(src["BtHpUp"]));
-		buttons[BT_MP] = button_ptr(new MapleButton(src["BtMpUp"]));
-		buttons[BT_STR] = button_ptr(new MapleButton(src["BtStrUp"]));
-		buttons[BT_DEX] = button_ptr(new MapleButton(src["BtDexUp"]));
-		buttons[BT_LUK] = button_ptr(new MapleButton(src["BtLukUp"]));
-		buttons[BT_INT] = button_ptr(new MapleButton(src["BtIntUp"]));
+		buttons[BT_HP] = unique_ptr<Button>(new MapleButton(src["BtHpUp"]));
+		buttons[BT_MP] = unique_ptr<Button>(new MapleButton(src["BtMpUp"]));
+		buttons[BT_STR] = unique_ptr<Button>(new MapleButton(src["BtStrUp"]));
+		buttons[BT_DEX] = unique_ptr<Button>(new MapleButton(src["BtDexUp"]));
+		buttons[BT_LUK] = unique_ptr<Button>(new MapleButton(src["BtLukUp"]));
+		buttons[BT_INT] = unique_ptr<Button>(new MapleButton(src["BtIntUp"]));
 
 		if (stats.getstat(Character::MS_AP) == 0)
 		{
@@ -60,8 +60,8 @@ namespace IO
 			buttons[BT_INT]->setstate(Button::DISABLED);
 		}
 
-		buttons[BT_DETAILOPEN] = button_ptr(new MapleButton(src["BtDetailOpen"]));
-		buttons[BT_DETAILCLOSE] = button_ptr(new MapleButton(src["BtDetailClose"]));
+		buttons[BT_DETAILOPEN] = unique_ptr<Button>(new MapleButton(src["BtDetailOpen"]));
+		buttons[BT_DETAILCLOSE] = unique_ptr<Button>(new MapleButton(src["BtDetailClose"]));
 		buttons[BT_DETAILCLOSE]->setactive(false);
 
 		statlabel = Textlabel(Textlabel::DWF_12ML, Textlabel::TXC_BLACK, "", 0);
@@ -163,8 +163,8 @@ namespace IO
 				statlabel.drawline("0", detailpos + vector2d<int32_t>(73, 179));
 				statlabel.drawline(std::to_string(stats.gettotal(Character::ES_AVOID)), detailpos + vector2d<int32_t>(73, 197));
 				statlabel.drawline("0", detailpos + vector2d<int32_t>(73, 215));
-				statlabel.drawline(std::to_string(stats.gettotal(Character::ES_SPEED) + 100) + "%", detailpos + vector2d<int32_t>(73, 233));
-				statlabel.drawline(std::to_string(stats.gettotal(Character::ES_JUMP) + 100) + "%", detailpos + vector2d<int32_t>(168, 233));
+				statlabel.drawline(std::to_string(stats.gettotal(Character::ES_SPEED)) + "%", detailpos + vector2d<int32_t>(73, 233));
+				statlabel.drawline(std::to_string(stats.gettotal(Character::ES_JUMP)) + "%", detailpos + vector2d<int32_t>(168, 233));
 				statlabel.drawline(std::to_string(stats.gethonor()), detailpos + vector2d<int32_t>(73, 351));
 			}
 		}
@@ -172,6 +172,46 @@ namespace IO
 
 	void UIStatsinfo::buttonpressed(uint16_t id)
 	{
+		using Net::SpendApPacket83;
 
+		switch (id)
+		{
+		case BT_DETAILOPEN:
+			showdetail = true;
+			buttons[BT_DETAILOPEN]->setactive(false);
+			buttons[BT_DETAILCLOSE]->setactive(true);
+			break;
+		case BT_DETAILCLOSE:
+			showdetail = false;
+			buttons[BT_DETAILCLOSE]->setactive(false);
+			buttons[BT_DETAILOPEN]->setactive(true);
+			break;
+		case BT_HP:
+			session.dispatch(SpendApPacket83(Character::MS_HP));
+			ui.disable();
+			break;
+		case BT_MP:
+			session.dispatch(SpendApPacket83(Character::MS_MP));
+			ui.disable();
+			break;
+		case BT_STR:
+			session.dispatch(SpendApPacket83(Character::MS_STR));
+			ui.disable();
+			break;
+		case BT_DEX:
+			session.dispatch(SpendApPacket83(Character::MS_DEX));
+			ui.disable();
+			break;
+		case BT_INT:
+			session.dispatch(SpendApPacket83(Character::MS_INT));
+			ui.disable();
+			break;
+		case BT_LUK:
+			session.dispatch(SpendApPacket83(Character::MS_LUK));
+			ui.disable();
+			break;
+		}
+
+		buttons[id]->setstate(Button::NORMAL);
 	}
 }

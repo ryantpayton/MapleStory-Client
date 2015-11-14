@@ -15,9 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "CharEquips.h"
-#include "Weapon.h"
 
 namespace Character
 {
@@ -25,8 +23,9 @@ namespace Character
 
 	CharEquips::~CharEquips() {}
 
-	void CharEquips::draw(Equipslot slot, string stance, CharacterLayer layer, uint8_t frame, const DrawArgument& args) const
-	{
+	void CharEquips::draw(Equipslot slot, string stance, CharacterLayer layer, 
+		uint8_t frame, const DrawArgument& args) const {
+
 		if (equips.count(slot))
 		{
 			equips.at(slot)->draw(stance, layer, frame, args);
@@ -67,10 +66,25 @@ namespace Character
 	{
 		if (equips.count(EQL_WEAPON))
 		{
-			const Weapon* weapon = reinterpret_cast<const Weapon*>(equips.at(EQL_WEAPON));
+			const Weapon* weapon = 
+				reinterpret_cast<const Weapon*>(equips.at(EQL_WEAPON));
 			return weapon->istwohanded();
 		}
 		return false;
+	}
+
+	Weapon::WpType CharEquips::getweapontype() const
+	{
+		if (equips.count(EQL_WEAPON))
+		{
+			const Weapon* weapon = 
+				reinterpret_cast<const Weapon*>(equips.at(EQL_WEAPON));
+			return weapon->getweptype();
+		}
+		else
+		{
+			return Weapon::WEP_NONE;
+		}
 	}
 
 	const Clothing& CharEquips::getequip(Equipslot slot) const

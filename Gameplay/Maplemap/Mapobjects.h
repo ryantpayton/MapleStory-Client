@@ -19,10 +19,12 @@
 #include "MapObject.h"
 #include <memory>
 #include <vector>
+#include <map>
 
 namespace Gameplay
 {
-	using::std::unique_ptr;
+	using std::unique_ptr;
+	using std::map;
 
 	// Collection of mapobjects of a type. 
 	class MapObjects

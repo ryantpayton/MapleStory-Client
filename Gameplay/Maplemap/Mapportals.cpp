@@ -69,15 +69,15 @@ namespace Gameplay
 
 	void MapPortals::update(rectangle2d<int32_t> player)
 	{
-		for (map<Portal::PtType, Animation>::iterator anit = animations.begin(); anit != animations.end(); ++anit)
+		for (auto& anit : animations)
 		{
-			anit->second.update(Constants::TIMESTEP / 2);
+			anit.second.update(Constants::TIMESTEP / 2);
 		}
-		for (map<uint8_t, Portal>::iterator ptit = portals.begin(); ptit != portals.end(); ++ptit)
+		for (auto& ptit : portals)
 		{
-			if (ptit->second.gettype() == Portal::HIDDEN)
+			if (ptit.second.gettype() == Portal::HIDDEN)
 			{
-				ptit->second.settouch(ptit->second.bounds().overlaps(player));
+				ptit.second.settouch(ptit.second.bounds().overlaps(player));
 			}
 		}
 
@@ -89,9 +89,9 @@ namespace Gameplay
 
 	void MapPortals::draw(vector2d<int32_t> viewpos, float inter) const
 	{
-		for (map<uint8_t, Portal>::const_iterator ptit = portals.begin(); ptit != portals.end(); ++ptit)
+		for (auto& ptit : portals)
 		{
-			ptit->second.draw(viewpos, inter);
+			ptit.second.draw(viewpos, inter);
 		}
 	}
 
@@ -114,12 +114,12 @@ namespace Gameplay
 		if (findportalcd)
 			return nullptr;
 
-		for (map<uint8_t, Portal>::iterator ptit = portals.begin(); ptit != portals.end(); ++ptit)
+		for (auto& ptit : portals)
 		{
-			if (ptit->second.bounds().overlaps(rect))
+			if (ptit.second.bounds().overlaps(rect))
 			{
 				findportalcd = 60;
-				return &ptit->second.getwarpinfo();
+				return &ptit.second.getwarpinfo();
 			}
 		}
 		return nullptr;

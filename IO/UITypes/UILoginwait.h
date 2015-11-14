@@ -39,7 +39,7 @@ namespace IO
 
 		UIType type() const override
 		{
-			return UI_LOGINWAIT;
+			return LOGINWAIT;
 		}
 
 		UIElement* instantiate() const override

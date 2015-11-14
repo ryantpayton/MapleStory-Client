@@ -15,22 +15,24 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include <cstdint>
+#pragma once
+#include "OutPacket.h"
+#include "Login\Login.h"
 
 namespace Net
 {
-	class AES256
+	// Interface for class that is used to communicate with the server.
+	class SessionInterface
 	{
 	public:
-		AES256();
-		~AES256();
-		void encrypt(uint8_t*) const;
-
-	private:
-		void addroundkey(uint8_t*, uint8_t) const;
-		void subbytes(uint8_t*) const;
-		void shiftrows(uint8_t*) const;
-		void mixcolumns(uint8_t*) const;
-		uint8_t gmul(uint8_t) const;
+		virtual ~SessionInterface() {}
+		// Send a packet to the server. This will be a specific packet class that inerits from OutPacket.
+		virtual void dispatch(const OutPacket&) = 0;
+		// Used for login transition or changing channels.
+		virtual bool reconnect(const char*, const char*) = 0;
+		// Disconnect from the server, effectively terminating the program. Used to quit the game.
+		virtual void disconnect() = 0;
+		// Return the object with the current login information.
+		virtual Login& getlogin() = 0;
 	};
 }

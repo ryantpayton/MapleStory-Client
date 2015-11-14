@@ -93,7 +93,7 @@ namespace Journey
 		return ui;
 	}
 
-	Session& Client::getsession()
+	SessionInterface& Client::getsession()
 	{
 		return session;
 	}

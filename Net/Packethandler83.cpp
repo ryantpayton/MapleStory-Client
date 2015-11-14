@@ -115,7 +115,7 @@ namespace Net
 				}
 			}
 		}
-		catch (PacketError& pe)
+		catch (const PacketError& pe)
 		{
 			// This occurs when the data sent by the server is incorrect.
 			std::cout << "Packet Error. Message: " << pe.what() << std::endl;

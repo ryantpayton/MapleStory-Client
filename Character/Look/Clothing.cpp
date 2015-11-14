@@ -171,7 +171,7 @@ namespace Character
 
 		using::nl::node;
 		node equipnode = nl::nx::character[getcategory()]["0" + std::to_string(equipid) + ".img"];
-		for (node stancenode = equipnode.begin(); stancenode != equipnode.end(); ++stancenode)
+		for (node& stancenode : equipnode)
 		{
 			string stance = stancenode.name();
 			if (stance == "info")
@@ -210,7 +210,7 @@ namespace Character
 				node framenode = stancenode[std::to_string(frame)];
 				while (framenode.size() > 0)
 				{
-					for (node partnode = framenode.begin(); partnode != framenode.end(); ++partnode)
+					for (node& partnode : framenode)
 					{
 						string part = partnode.name();
 						if (partnode.data_type() == node::type::bitmap)
@@ -244,8 +244,7 @@ namespace Character
 
 							string parent;
 							vector2d<int> parentpos;
-							node map = partnode["map"];
-							for (node mapnode = map.begin(); mapnode != map.end(); mapnode++)
+							for (node& mapnode : partnode["map"])
 							{
 								if (mapnode.data_type() == node::type::vector)
 								{

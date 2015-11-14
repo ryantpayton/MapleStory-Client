@@ -23,20 +23,19 @@
 #include "Graphics\Textlabel.h"
 #include "Character\Look\CharLook.h"
 #include "Util\Randomizer.h"
-#include "Net\Session.h"
+#include "Net\SessionInterface.h"
 #include "Net\Login\Login.h"
 #include <map>
 
 namespace IO
 {
-	using::std::map;
-	using::std::string;
-	using::Util::Randomizer;
-	using::Graphics::Texture;
-	using::Graphics::Textlabel;
-	using::Character::CharLook;
-	using::Net::Session;
-	using::Net::Login;
+	using std::map;
+	using std::string;
+	using Util::Randomizer;
+	using Graphics::Texture;
+	using Graphics::Textlabel;
+	using Character::CharLook;
+	using Net::SessionInterface;
 
 	// Character creation screen.
 	class UICharcreation : public UIElement
@@ -66,7 +65,7 @@ namespace IO
 			BT_CHARC_GEMDERR,
 		};
 
-		UICharcreation(Session&, UIInterface&);
+		UICharcreation(SessionInterface&, UIInterface&);
 		void draw(float) const override;
 		void update() override;
 		void buttonpressed(uint16_t) override;
@@ -77,7 +76,7 @@ namespace IO
 	private:
 		void randomizelook();
 
-		Session& session;
+		SessionInterface& session;
 		UIInterface& ui;
 
 		Texture sky;
@@ -123,11 +122,11 @@ namespace IO
 	class ElementCharcreation : public Element
 	{
 	public:
-		ElementCharcreation(Session& ses, UIInterface& u) : session(ses), ui(u) {}
+		ElementCharcreation(SessionInterface& ses, UIInterface& u) : session(ses), ui(u) {}
 
 		UIType type() const override
 		{
-			return UI_CHARCREATION;
+			return CHARCREATION;
 		}
 
 		UIElement* instantiate() const override
@@ -136,7 +135,7 @@ namespace IO
 		}
 
 	private:
-		Session& session;
+		SessionInterface& session;
 		UIInterface& ui;
 	};
 }

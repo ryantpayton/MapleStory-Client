@@ -27,7 +27,7 @@
 
 namespace IO
 {
-	UIWorldSelect::UIWorldSelect(UIInterface& u, Login& lg, Session& ses) : ui(u), login(lg), session(ses)
+	UIWorldSelect::UIWorldSelect(UIInterface& u, SessionInterface& ses) : ui(u), session(ses)
 	{
 		worldid = 0;
 		channelid = 0;
@@ -49,7 +49,7 @@ namespace IO
 		sprites.push_back(Sprite(channels["layer:bg"], vector2d<int32_t>(200, 170)));
 		sprites.push_back(Sprite(channels["release"]["layer:15"], vector2d<int32_t>(200, 170)));
 
-		uint8_t chcount = login.getworld(0).getchcount();
+		uint8_t chcount = session.getlogin().getworld(0).getchcount();
 		for (uint8_t i = 0; i < chcount; i++)
 		{
 			node chnode = channels["button:" + std::to_string(i)];
@@ -69,8 +69,8 @@ namespace IO
 		if (id == BT_ENTERWORLD)
 		{
 			ui.disable();
-			login.setworldid(worldid);
-			login.setchannelid(channelid);
+			session.getlogin().setworldid(worldid);
+			session.getlogin().setchannelid(channelid);
 
 			using::Net::CharlistRequestPacket83;
 			session.dispatch(CharlistRequestPacket83(worldid, channelid));

@@ -61,9 +61,7 @@ namespace Character
 		phobj.vspeed = phobj.fy - phobj.lasty;
 
 		physics.getfht().updatefh(phobj);
-
 		look.update(Constants::TIMESTEP);
-		phobj.fhlayer = physics.getfht().getfh(phobj.fhid).getlayer();
 
 		return phobj.fhlayer;
 	}

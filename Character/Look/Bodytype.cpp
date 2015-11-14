@@ -39,14 +39,14 @@ namespace Character
 		node bodynode = nl::nx::character["000020" + sk + ".img"];
 		node headnode = nl::nx::character["000120" + sk + ".img"];
 
-		for (node stancenode = bodynode.begin(); stancenode != bodynode.end(); ++stancenode)
+		for (node& stancenode : bodynode)
 		{
 			string stance = stancenode.name();
 			uint8_t frame = 0;
 			node framenode = stancenode[std::to_string(frame)];
 			while (framenode.size() > 0)
 			{
-				for (node partnode = framenode.begin(); partnode != framenode.end(); ++partnode)
+				for (node& partnode : framenode)
 				{
 					string part = partnode.name();
 					if (part != "delay" && part != "face")

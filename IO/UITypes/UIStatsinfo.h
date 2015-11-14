@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "IO\Element.h"
+#include "IO\UIInterface.h"
+#include "Net\SessionInterface.h"
 #include "Character\Charstats.h"
 #include "Graphics\Textlabel.h"
 
@@ -26,6 +28,7 @@ namespace IO
 	using Character::Charstats;
 	using Graphics::Textlabel;
 	using Graphics::Texture;
+	using Net::SessionInterface;
 
 	class UIStatsinfo : public UIElement
 	{
@@ -42,13 +45,15 @@ namespace IO
 			BT_DETAILCLOSE
 		};
 
-		UIStatsinfo(const Charstats&);
+		UIStatsinfo(const Charstats& stats, SessionInterface& session, UIInterface& ui);
 
-		void draw(float) const override;
-		void buttonpressed(uint16_t) override;
+		void draw(float inter) const override;
+		void buttonpressed(uint16_t buttonid) override;
 
 	private:
 		const Charstats& stats;
+		SessionInterface& session;
+		UIInterface& ui;
 
 		vector<Texture> detailtextures;
 		map<string, Texture> abilities;
@@ -59,7 +64,8 @@ namespace IO
 	class ElementStatsinfo : public Element
 	{
 	public:
-		ElementStatsinfo(const Charstats& st) : stats(st) {}
+		ElementStatsinfo(const Charstats& st, SessionInterface& ses, UIInterface& u) 
+			: stats(st) , session(ses), ui(u) {}
 
 		bool isunique() const override
 		{
@@ -68,15 +74,17 @@ namespace IO
 
 		UIType type() const override
 		{
-			return UI_STATSINFO;
+			return STATSINFO;
 		}
 
 		UIElement* instantiate() const override
 		{
-			return new UIStatsinfo(stats);
+			return new UIStatsinfo(stats, session, ui);
 		}
 
 	private:
 		const Charstats& stats;
+		SessionInterface& session;
+		UIInterface& ui;
 	};
 }

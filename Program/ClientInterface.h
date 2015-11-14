@@ -19,7 +19,7 @@
 #include "Audio\Audioplayer.h"
 #include "Gameplay\StageInterface.h"
 #include "IO\UIInterface.h"
-#include "Net\Session.h"
+#include "Net\SessionInterface.h"
 #include "Util\Configuration.h"
 #include "Util\NxFileManager.h"
 
@@ -29,7 +29,7 @@ namespace Journey
 	using::Util::NxFileManager;
 	using::Util::Configuration;
 	using::Gameplay::StageInterface;
-	using::Net::Session;
+	using::Net::SessionInterface;
 	using::Audio::Audioplayer;
 
 	class ClientInterface
@@ -40,7 +40,7 @@ namespace Journey
 		virtual NxFileManager& getnxfiles() = 0;
 		virtual Configuration& getconfig() = 0;
 		virtual StageInterface& getstage() = 0;
-		virtual Session& getsession() = 0;
+		virtual SessionInterface& getsession() = 0;
 		virtual Audioplayer& getaudio() = 0;
 	};
 }

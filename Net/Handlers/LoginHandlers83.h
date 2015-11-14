@@ -26,13 +26,16 @@
 
 namespace Net
 {
+	using IO::Element;
+
 	// Handler for a packet that contains the response to an attempt at logging in.
 	class LoginResultHandler83 : public PacketHandler
 	{
 		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			// Remove waiting information and make sure textfields are not focused anymore.
-			client.getui().remove(IO::UI_LOGINWAIT);
+			client.getui().remove(Element::LOGINNOTICE);
+			client.getui().remove(Element::LOGINWAIT);
 			client.getui().getkeyboard().focustarget(nullptr);
 
 			// The packet should contain a 'reason' integer which can signify various things.
@@ -83,13 +86,13 @@ namespace Net
 		void handle(ClientInterface& client, InPacket& recv) const override
 		{
 			// Remove the Login UI.
-			client.getui().remove(IO::UI_LOGIN);
+			client.getui().remove(Element::LOGIN);
 			// Parse all worlds.
 			client.getsession().getlogin().parseworld(recv);
 
 			// Add the world selection screen to the ui.
 			using::IO::ElementWorldSelect;
-			client.getui().add(ElementWorldSelect(client.getui(), client.getsession().getlogin(), client.getsession()));
+			client.getui().add(ElementWorldSelect(client.getui(), client.getsession()));
 			client.getui().enable();
 		}
 	};
@@ -113,7 +116,7 @@ namespace Net
 			client.getsession().getlogin().getaccount().setslots(recv.readint());
 
 			// Remove the world selection screen.
-			client.getui().remove(IO::UI_WORLDSELECT);
+			client.getui().remove(Element::WORLDSELECT);
 
 			// Add the character selection screen.
 			using::IO::ElementCharSelect;
@@ -139,7 +142,7 @@ namespace Net
 
 			// Notify character creation screen.
 			using::IO::UIElement;
-			UIElement* uicc = client.getui().getelement(IO::UI_CHARCREATION);
+			UIElement* uicc = client.getui().getelement(Element::CHARCREATION);
 			if (uicc)
 			{
 				using::IO::UICharcreation;
@@ -164,16 +167,16 @@ namespace Net
 
 				// Remove the character creation ui.
 				using::IO::UIElement;
-				UIElement* uicc = client.getui().getelement(IO::UI_CHARCREATION);
+				UIElement* uicc = client.getui().getelement(Element::CHARCREATION);
 				if (uicc)
 				{
 					uicc->deactivate();
-					client.getui().remove(IO::UI_CHARCREATION);
+					client.getui().remove(Element::CHARCREATION);
 				}
 
 				// Readd the updated character selection.
 				using::IO::ElementCharSelect;
-				client.getui().remove(IO::UI_CHARSELECT);
+				client.getui().remove(Element::CHARSELECT);
 				client.getui().add(ElementCharSelect(client.getui(), client.getsession()));
 				client.getui().enable();
 			}

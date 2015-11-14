@@ -43,6 +43,7 @@ namespace Character
 
 		void setexp(int64_t ex) { exp = ex; }
 		void setportal(uint8_t pt) { portal = pt; }
+		void setattack(uint16_t at) { attack = at; }
 
 		uint16_t calculateaccuracy() const;
 		int64_t getexpneeded() const;

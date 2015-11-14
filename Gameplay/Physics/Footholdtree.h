@@ -18,39 +18,39 @@
 #pragma once
 #include "Foothold.h"
 #include "PhysicsObject.h"
-#include <map>
+#include <unordered_map>
 
 namespace Gameplay
 {
-	using::std::map;
+	using std::unordered_map;
+	using std::unordered_multimap;
 
 	// The collection of platforms in a maple-map. Used for collision-detection.
 	class Footholdtree
 	{
 	public:
-		// Parameters: node('foothold' node of map data)
-		Footholdtree(node);
+		Footholdtree(node source);
 		Footholdtree();
 		~Footholdtree();
+
 		// Takes an accelerated PhysicsObject and limits its movement based on the platforms in this tree.
-		// Parameters: PhysicsObject&(object to use)
-		void limitmoves(PhysicsObject&) const;
+		void limitmoves(PhysicsObject& touse) const;
 		// Updates a PhysicsObject's fhid based on it's position.
-		// Parameters: PhysicsObject&(object to use)
-		void updatefh(PhysicsObject&) const;
+		void updatefh(PhysicsObject& touse) const;
+
 		// Returns the leftmost and rightmost platform positions of the map.
 		vector2d<int32_t> getwalls() const;
 		// Returns the topmost and bottommost platform positions of the map.
 		vector2d<int32_t> getborders() const;
-		// Returns the foothold with the given id.
-		const Foothold& getfh(uint16_t) const;
 
 	private:
-		uint16_t getnext(uint16_t, bool, float, float) const;
-		uint16_t getbelow(float, float) const;
-		float getwall(uint16_t, bool, vector2d<int32_t>) const;
+		uint16_t getbelow(float fx, float fy) const;
+		float getwall(uint16_t fhid, bool left, vector2d<int32_t> vertical) const;
+		const Foothold& getfh(uint16_t fhid) const;
 
-		map<uint16_t, Foothold> footholds;
+		unordered_map<uint16_t, Foothold> footholds;
+		unordered_multimap<int32_t, uint16_t> footholdsbyx;
+
 		Foothold nullfh;
 		vector2d<int32_t> walls;
 		vector2d<int32_t> borders;
