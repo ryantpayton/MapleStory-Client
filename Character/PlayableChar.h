@@ -22,15 +22,21 @@
 
 namespace Character
 {
-	using::IO::Keyaction;
-	using::Gameplay::Playable;
-	using::Gameplay::Ladder;
+	using IO::Keyaction;
+	using Gameplay::Playable;
+	using Gameplay::Seat;
+	using Gameplay::Ladder;
 
 	// Interface for a class that is both playable and a character. 
 	// Currently only used by the player, but could be extended to control androids or player npcs.
 	class PlayableChar : public Playable, public Char
 	{
 	public:
+		// Change players position to the seat's position and stance to Char::SIT.
+		virtual void setseat(const Seat* seat) = 0;
+		// Change players xpos to the ladder x and change stance to Char::LADDER or Char::ROPE.
+		virtual void setladder(const Ladder* ladder) = 0;
+
 		// Returns the walking force.
 		virtual float getwforce() const = 0;
 		// Returns the jumping force.
@@ -39,9 +45,9 @@ namespace Character
 		virtual float getclimbforce() const = 0;
 		// Returns the flying force.
 		virtual float getflyforce() const = 0;
+
 		// Returns if the keyaction is active.
-		// Parameters: Keyaction(maple-keycode)
-		virtual bool keydown(Keyaction) const = 0;
+		virtual bool keydown(Keyaction keycode) const = 0;
 		// Returns the ladder.
 		virtual const Ladder* getladder() const = 0;
 	};

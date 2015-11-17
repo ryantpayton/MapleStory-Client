@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "PacketHandler83.h"
 #include "RecvOpcodes83.h"
 #include "Handlers\CommonHandlers.h"
@@ -26,7 +25,6 @@
 #include "Handlers\MapobjectHandlers83.h"
 #include <iostream>
 
-// Lazy
 #define handler_ptr std::unique_ptr<PacketHandler>
 
 namespace Net
@@ -94,7 +92,7 @@ namespace Net
 
 	PacketHandler83::~PacketHandler83() {}
 
-	void PacketHandler83::handle(ClientInterface& client, InPacket& recv) const
+	void PacketHandler83::handle(InPacket& recv) const
 	{
 		try
 		{
@@ -106,7 +104,7 @@ namespace Net
 				if (handler)
 				{
 					// Handler ok. Packet is passed on.
-					handler->handle(client, recv);
+					handler->handle(recv);
 				}
 				else
 				{

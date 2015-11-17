@@ -17,12 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "PacketHandler.h"
+#include "Net\Packets\LoginPackets83.h"
+#include "Net\Session.h"
 #include "IO\UITypes\UILogin.h"
 #include "IO\UITypes\UILoginNotice.h"
 #include "IO\UITypes\UIWorldSelect.h"
 #include "IO\UITypes\UICharSelect.h"
 #include "IO\UITypes\UICharcreation.h"
-#include "Net\Packets\LoginPackets83.h"
+#include "IO\UI.h"
+#include "Program\Configuration.h"
 
 namespace Net
 {
@@ -31,12 +34,12 @@ namespace Net
 	// Handler for a packet that contains the response to an attempt at logging in.
 	class LoginResultHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			// Remove waiting information and make sure textfields are not focused anymore.
-			client.getui().remove(Element::LOGINNOTICE);
-			client.getui().remove(Element::LOGINWAIT);
-			client.getui().getkeyboard().focustarget(nullptr);
+			IO::UI::remove(Element::LOGINNOTICE);
+			IO::UI::remove(Element::LOGINWAIT);
+			IO::UI::getkeyboard().focustarget(nullptr);
 
 			// The packet should contain a 'reason' integer which can signify various things.
 			int32_t reason = recv.readint();
@@ -47,35 +50,38 @@ namespace Net
 				switch (reason)
 				{
 				case 2:
-					client.getui().add(ElementLoginNotice(16));
+					IO::UI::add(ElementLoginNotice(16));
 					return;
 				case 7:
-					client.getui().add(ElementLoginNotice(17));
+					IO::UI::add(ElementLoginNotice(17));
 					return;
 				case 23:
 					// The server sends a request to accept the terms of service. For convenience, just auto-accept.
-					client.getsession().dispatch(TOSPacket83());
+					Session::dispatch(TOSPacket83());
 					return;
 				default:
 					// Other reasons.
 					if (reason > 0)
 					{
-						client.getui().add(ElementLoginNotice(reason - 1));
+						IO::UI::add(ElementLoginNotice(reason - 1));
 					}
 				}
-				client.getui().enable();
+				IO::UI::enable();
 			}
 			else
 			{
 				// Login successfull. The packet contains information on the account, so we initialise the account with it.
-				client.getsession().getlogin().parseaccount(recv);
+				Session::getlogin().parseaccount(recv);
 				// Save the Login ID if the box for it on the login panel is checked.
-				if (client.getconfig().getbool("SaveLogin"))
+				if (Program::Configuration::getbool("SaveLogin"))
 				{
-					client.getconfig().setstring("Account", client.getsession().getlogin().getaccount().getname());
+					Program::Configuration::setstring(
+						"Account", Session::getlogin().getaccount().getname()
+						);
 				}
-				// Request the worlds and channels online.
-				client.getsession().dispatch(ServerRequestPacket83());
+
+				// Request the list of worlds and channels online.
+				Session::dispatch(ServerRequestPacket83());
 			}
 		}
 	};
@@ -83,24 +89,24 @@ namespace Net
 	// Handles the packet that contains information on worlds and channels.
 	class ServerlistHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			// Remove the Login UI.
-			client.getui().remove(Element::LOGIN);
+			IO::UI::remove(Element::LOGIN);
 			// Parse all worlds.
-			client.getsession().getlogin().parseworld(recv);
+			Session::getlogin().parseworld(recv);
 
 			// Add the world selection screen to the ui.
 			using::IO::ElementWorldSelect;
-			client.getui().add(ElementWorldSelect(client.getui(), client.getsession()));
-			client.getui().enable();
+			IO::UI::add(ElementWorldSelect());
+			IO::UI::enable();
 		}
 	};
 
 	// Handler for a packet that contains information on all chars on this world.
 	class CharlistHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			recv.skip(1);
 
@@ -108,27 +114,27 @@ namespace Net
 			size_t numchars = recv.readbyte();
 			for (size_t i = 0; i < numchars; i++)
 			{
-				client.getsession().getlogin().getaccount().parsecharentry(recv);
+				Session::getlogin().getaccount().parsecharentry(recv);
 			}
 
 			// Additional information for login: Wether to use a pic and how many characters can be created.
-			client.getsession().getlogin().getaccount().setpic(recv.readbyte());
-			client.getsession().getlogin().getaccount().setslots(recv.readint());
+			Session::getlogin().getaccount().setpic(recv.readbyte());
+			Session::getlogin().getaccount().setslots(recv.readint());
 
 			// Remove the world selection screen.
-			client.getui().remove(Element::WORLDSELECT);
+			IO::UI::remove(Element::WORLDSELECT);
 
 			// Add the character selection screen.
 			using::IO::ElementCharSelect;
-			client.getui().add(ElementCharSelect(client.getui(), client.getsession()));
-			client.getui().enable();
+			IO::UI::add(ElementCharSelect());
+			IO::UI::enable();
 		}
 	};
 
 	// Handler for a packet which responds to the request for a character name.
 	class CharnameResultHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			// Read the name and if it is already in use.
 			string name = recv.readascii();
@@ -137,48 +143,48 @@ namespace Net
 			if (used)
 			{
 				using::IO::ElementLoginNotice;
-				client.getui().add(ElementLoginNotice(5));
+				IO::UI::add(ElementLoginNotice(5));
 			}
 
 			// Notify character creation screen.
 			using::IO::UIElement;
-			UIElement* uicc = client.getui().getelement(Element::CHARCREATION);
+			UIElement* uicc = IO::UI::getelement(Element::CHARCREATION);
 			if (uicc)
 			{
 				using::IO::UICharcreation;
 				reinterpret_cast<UICharcreation*>(uicc)->nameresult(used);
 			}
 
-			client.getui().enable();
+			IO::UI::enable();
 		}
 	};
 
 	// Handler for the packet that notifies that a char was successfully created.
 	class AddNewcharHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			// Some check.
 			int8_t stuff = recv.readbyte();
 			if (stuff == 0)
 			{
 				// Parse info on the new character.
-				client.getsession().getlogin().getaccount().parsecharentry(recv);
+				Session::getlogin().getaccount().parsecharentry(recv);
 
 				// Remove the character creation ui.
 				using::IO::UIElement;
-				UIElement* uicc = client.getui().getelement(Element::CHARCREATION);
+				UIElement* uicc = IO::UI::getelement(Element::CHARCREATION);
 				if (uicc)
 				{
 					uicc->deactivate();
-					client.getui().remove(Element::CHARCREATION);
+					IO::UI::remove(Element::CHARCREATION);
 				}
 
 				// Readd the updated character selection.
 				using::IO::ElementCharSelect;
-				client.getui().remove(Element::CHARSELECT);
-				client.getui().add(ElementCharSelect(client.getui(), client.getsession()));
-				client.getui().enable();
+				IO::UI::remove(Element::CHARSELECT);
+				IO::UI::add(ElementCharSelect());
+				IO::UI::enable();
 			}
 		}
 	};
@@ -186,7 +192,7 @@ namespace Net
 	// Handler for a packet that responds to the request to the delete a character.
 	class DeleteCharResultHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			// Read the character id and if deletion was successfull (pic was correct).
 			int cid = recv.readint();
@@ -196,11 +202,11 @@ namespace Net
 			using::IO::ElementLoginNotice;
 			if (success)
 			{
-				client.getui().add(ElementLoginNotice(55));
+				IO::UI::add(ElementLoginNotice(55));
 			}
 			else
 			{
-				client.getui().add(ElementLoginNotice(93));
+				IO::UI::add(ElementLoginNotice(93));
 			}
 		}
 	};
@@ -208,7 +214,7 @@ namespace Net
 	// Handles the packet which contains the IP of a channel server to connect to.
 	class ServerIPHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			recv.skip(2);
 
@@ -229,14 +235,14 @@ namespace Net
 			
 			// Attempt to reconnect to the server and if successfull, login to the game.
 			int32_t cid = recv.readint();
-			bool connected = client.getsession().reconnect(addrstr.c_str(), portstr.c_str());
+			bool connected = Session::reconnect(addrstr.c_str(), portstr.c_str());
 			if (connected)
 			{
-				client.getsession().dispatch(PlayerLoginPacket83(cid));
+				Session::dispatch(PlayerLoginPacket83(cid));
 			}
 			else
 			{
-				client.getsession().disconnect();
+				Session::disconnect();
 			}
 		}
 	};

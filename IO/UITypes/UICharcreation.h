@@ -16,14 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\UIElement.h"
+#include "IO\Element.h"
 #include "IO\Components\Textfield.h"
-#include "IO\UIInterface.h"
 #include "Graphics\Texture.h"
 #include "Graphics\Textlabel.h"
 #include "Character\Look\CharLook.h"
 #include "Util\Randomizer.h"
-#include "Net\SessionInterface.h"
 #include "Net\Login\Login.h"
 #include <map>
 
@@ -35,7 +33,6 @@ namespace IO
 	using Graphics::Texture;
 	using Graphics::Textlabel;
 	using Character::CharLook;
-	using Net::SessionInterface;
 
 	// Character creation screen.
 	class UICharcreation : public UIElement
@@ -65,7 +62,8 @@ namespace IO
 			BT_CHARC_GEMDERR,
 		};
 
-		UICharcreation(SessionInterface&, UIInterface&);
+		UICharcreation();
+
 		void draw(float) const override;
 		void update() override;
 		void buttonpressed(uint16_t) override;
@@ -75,9 +73,6 @@ namespace IO
 
 	private:
 		void randomizelook();
-
-		SessionInterface& session;
-		UIInterface& ui;
 
 		Texture sky;
 		Texture cloud;
@@ -121,9 +116,6 @@ namespace IO
 	// Factory for the character creation screen.
 	class ElementCharcreation : public Element
 	{
-	public:
-		ElementCharcreation(SessionInterface& ses, UIInterface& u) : session(ses), ui(u) {}
-
 		UIType type() const override
 		{
 			return CHARCREATION;
@@ -131,12 +123,8 @@ namespace IO
 
 		UIElement* instantiate() const override
 		{
-			return new UICharcreation(session, ui);
+			return new UICharcreation();
 		}
-
-	private:
-		SessionInterface& session;
-		UIInterface& ui;
 	};
 }
 

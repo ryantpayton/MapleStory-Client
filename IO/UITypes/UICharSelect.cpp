@@ -19,18 +19,18 @@
 #include "UICharSelect.h"
 #include "UISoftkey.h"
 #include "UICharcreation.h"
-#include "Program\TimeConstants.h"
+#include "IO\UI.h"
+#include "Net\Session.h"
+#include "Program\Constants.h"
 #include "IO\Components\MapleButton.h"
 #include "IO\Components\AreaButton.h"
 #include "Graphics\Sprite.h"
 #include "Net\Packets\SelectCharPackets83.h"
 #include "nlnx\nx.hpp"
 
-#define button_ptr unique_ptr<Button>
-
 namespace IO
 {
-	UICharSelect::UICharSelect(UIInterface& u, SessionInterface& ses) : ui(u), session(ses)
+	UICharSelect::UICharSelect()
 	{
 		node charsel = nl::nx::ui["Login.img"]["CharSelect"];
 
@@ -40,22 +40,24 @@ namespace IO
 		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Common"]["selectWorld"], vector2d<int32_t>(580, 42)));
 		sprites.push_back(Sprite(charsel["selectedWorld"]["icon"]["15"], vector2d<int32_t>(580, 42)));
 		sprites.push_back(Sprite(charsel["selectedWorld"]["name"]["15"], vector2d<int32_t>(580, 42)));
-		sprites.push_back(Sprite(charsel["selectedWorld"]["ch"][std::to_string(session.getlogin().getchannelid())], vector2d<int32_t>(580, 42)));
+
+		string channelid = std::to_string(Net::Session::getlogin().getchannelid());
+		sprites.push_back(Sprite(charsel["selectedWorld"]["ch"][channelid], vector2d<int32_t>(580, 42)));
 		sprites.push_back(Sprite(charsel["charInfo"], vector2d<int32_t>(662, 355)));
 
-		buttons[BT_ARBEIT] = button_ptr(new MapleButton(charsel["arbeit"], vector2d<int32_t>(580, 115)));
-		buttons[BT_CARDS] = button_ptr(new MapleButton(charsel["characterCard"], vector2d<int32_t>(665, 115)));
-		buttons[BT_CREATECHAR] = button_ptr(new MapleButton(charsel["BtNew"], vector2d<int32_t>(200, 495)));
-		buttons[BT_DELETECHAR] = button_ptr(new MapleButton(charsel["BtDelete"], vector2d<int32_t>(320, 495)));
-		buttons[BT_SELECTCHAR] = button_ptr(new MapleButton(charsel["BtSelect"], vector2d<int32_t>(586, 427)));
-		buttons[BT_PAGELEFT] = button_ptr(new MapleButton(charsel["pageL"], vector2d<int32_t>(100, 490)));
-		buttons[BT_PAGERIGHT] = button_ptr(new MapleButton(charsel["pageR"], vector2d<int32_t>(490, 490)));
+		buttons[BT_ARBEIT] = unique_ptr<Button>(new MapleButton(charsel["arbeit"], vector2d<int32_t>(580, 115)));
+		buttons[BT_CARDS] = unique_ptr<Button>(new MapleButton(charsel["characterCard"], vector2d<int32_t>(665, 115)));
+		buttons[BT_CREATECHAR] = unique_ptr<Button>(new MapleButton(charsel["BtNew"], vector2d<int32_t>(200, 495)));
+		buttons[BT_DELETECHAR] = unique_ptr<Button>(new MapleButton(charsel["BtDelete"], vector2d<int32_t>(320, 495)));
+		buttons[BT_SELECTCHAR] = unique_ptr<Button>(new MapleButton(charsel["BtSelect"], vector2d<int32_t>(586, 427)));
+		buttons[BT_PAGELEFT] = unique_ptr<Button>(new MapleButton(charsel["pageL"], vector2d<int32_t>(100, 490)));
+		buttons[BT_PAGERIGHT] = unique_ptr<Button>(new MapleButton(charsel["pageR"], vector2d<int32_t>(490, 490)));
 
 		levelset = Charset(charsel["lv"], Charset::CENTER);
 		statsset = Charset(nl::nx::ui["StatusBar2.img"]["mainBar"]["gauge"]["number"], Charset::RIGHT);
 
 		using::Net::Account;
-		const Account& account = session.getlogin().getaccount();
+		const Account& account = Net::Session::getlogin().getaccount();
 		charcount = static_cast<uint8_t>(account.getcharcount());
 
 		if (charcount + account.getslots() < 9)
@@ -70,7 +72,10 @@ namespace IO
 		}
 		for (uint8_t i = charcount; i < createcount; i++)
 		{
-			sprites.push_back(Sprite(charsel["buyCharacter"], vector2d<int32_t>(130 + (120 * (i % 4)), 250 + (200 * (i > 3)))));
+			sprites.push_back(Sprite(
+				charsel["buyCharacter"], 
+				vector2d<int32_t>(130 + (120 * (i % 4)), 250 + (200 * (i > 3))))
+				);
 		}
 		//selected = config.getconfig()->defaultchar;
 		selected = 0;
@@ -114,35 +119,32 @@ namespace IO
 	{
 		UIElement::draw(inter);
 
-		if (active)
+		for (uint8_t i = 0; i < charcount; i++)
 		{
-			for (uint8_t i = 0; i < charcount; i++)
-			{
-				vector2d<int32_t> charpos = getcharpos(i);
-				charlooks[i].draw(charpos, inter);
-				nametags[i].draw(charpos);
-			}
+			vector2d<int32_t> charpos = getcharpos(i);
+			charlooks[i].draw(charpos, inter);
+			nametags[i].draw(charpos);
+		}
 
-			namelabel.draw(vector2d<int32_t>(662, 268));
-			joblabel.draw(vector2d<int32_t>(732, 305));
+		namelabel.draw(vector2d<int32_t>(662, 268));
+		joblabel.draw(vector2d<int32_t>(732, 305));
 
-			if (selected < charcount)
-			{
-				using::Net::StatsEntry;
-				const StatsEntry& stats = session.getlogin().getaccount().getchar(selected).getstats();
+		if (selected < charcount)
+		{
+			using::Net::StatsEntry;
+			const StatsEntry& stats = Net::Session::getlogin().getaccount().getchar(selected).getstats();
 
-				using::Graphics::DrawArgument;
-				statsset.draw(std::to_string(stats.getrank().first), DrawArgument(732, 335));
-				statsset.draw(std::to_string(stats.getjobrank().first), DrawArgument(732, 355));
+			using::Graphics::DrawArgument;
+			statsset.draw(std::to_string(stats.getrank().first), DrawArgument(732, 335));
+			statsset.draw(std::to_string(stats.getjobrank().first), DrawArgument(732, 355));
 
-				int32_t lvx = levelset.draw(std::to_string(stats.getstat(Character::MS_LEVEL)), DrawArgument(685, 262));
-				levelset.draw('l', DrawArgument(655 - lvx / 2, 262));
+			int32_t lvx = levelset.draw(std::to_string(stats.getstat(Character::MS_LEVEL)), DrawArgument(685, 262));
+			levelset.draw('l', DrawArgument(655 - lvx / 2, 262));
 
-				statsset.draw(std::to_string(stats.getstat(Character::MS_STR)), DrawArgument(655, 385));
-				statsset.draw(std::to_string(stats.getstat(Character::MS_DEX)), DrawArgument(655, 407));
-				statsset.draw(std::to_string(stats.getstat(Character::MS_INT)), DrawArgument(732, 385));
-				statsset.draw(std::to_string(stats.getstat(Character::MS_LUK)), DrawArgument(732, 407));
-			}
+			statsset.draw(std::to_string(stats.getstat(Character::MS_STR)), DrawArgument(655, 385));
+			statsset.draw(std::to_string(stats.getstat(Character::MS_DEX)), DrawArgument(655, 407));
+			statsset.draw(std::to_string(stats.getstat(Character::MS_INT)), DrawArgument(732, 385));
+			statsset.draw(std::to_string(stats.getstat(Character::MS_LUK)), DrawArgument(732, 407));
 		}
 	}
 
@@ -150,12 +152,9 @@ namespace IO
 	{
 		UIElement::update();
 
-		if (active)
+		for (auto& chit : charlooks)
 		{
-			for (auto& chit : charlooks)
-			{
-				chit.update(Constants::TIMESTEP);
-			}
+			chit.update(Constants::TIMESTEP);
 		}
 	}
 
@@ -172,7 +171,7 @@ namespace IO
 			charlooks[selected].setstance("walk");
 
 			using::Net::StatsEntry;
-			const StatsEntry& stats = session.getlogin().getaccount().getchar(selected).getstats();
+			const StatsEntry& stats = Net::Session::getlogin().getaccount().getchar(selected).getstats();
 			namelabel.settext(stats.getname(), 0);
 			joblabel.settext(stats.getjobname(), 0);
 		}
@@ -185,8 +184,8 @@ namespace IO
 				break;
 			case BT_CREATECHAR:
 				active = false;
-				ui.remove(Element::CHARCREATION);
-				ui.add(ElementCharcreation(session, ui));
+				UI::remove(Element::CHARCREATION);
+				UI::add(ElementCharcreation());
 				break;
 			}
 
@@ -198,21 +197,21 @@ namespace IO
 	{
 		if (selected < charcount)
 		{
-			int32_t cid = session.getlogin().getaccount().getchar(selected).getcid();
-			session.getlogin().setcharid(cid);
-			switch (session.getlogin().getaccount().getpic())
+			int32_t cid = Net::Session::getlogin().getaccount().getchar(selected).getcid();
+			Net::Session::getlogin().setcharid(cid);
+			switch (Net::Session::getlogin().getaccount().getpic())
 			{
 			case 0:
-				ui.add(ElementSoftkey(UISoftkey::REGISTER, ui, session));
+				UI::add(ElementSoftkey(UISoftkey::REGISTER));
 				break;
 			case 1:
-				ui.add(ElementSoftkey(UISoftkey::CHARSELECT, ui, session));
+				UI::add(ElementSoftkey(UISoftkey::CHARSELECT));
 				break;
 			case 2:
-				ui.disable();
+				UI::disable();
 
 				using::Net::SelectCharPacket83;
-				session.dispatch(SelectCharPacket83(cid));
+				Net::Session::dispatch(SelectCharPacket83(cid));
 				break;
 			}
 		}
@@ -220,9 +219,9 @@ namespace IO
 
 	void UICharSelect::addchar(uint8_t index)
 	{
-		CharLook look = CharLook(session.getlogin().getaccount().getchar(index).getlook());
+		CharLook look = CharLook(Net::Session::getlogin().getaccount().getchar(index).getlook());
 		short buttonindex = BT_CHAR0 + index;
-		buttons[buttonindex] = button_ptr(new AreaButton(
+		buttons[buttonindex] = unique_ptr<Button>(new AreaButton(
 			vector2d<int32_t>(105 + (120 * (index % 4)), 170 + (200 * (index > 3))), 
 			vector2d<int32_t>(50, 80)
 			));

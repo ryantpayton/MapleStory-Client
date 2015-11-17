@@ -17,29 +17,30 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "PacketHandler.h"
+#include "Net\Session.h"
 #include "Net\Packets\CommonPackets.h"
 
 namespace Net
 {
 	class NxCheckRequestHandler : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			uint64_t seed = recv.readlong();
-			client.getsession().dispatch(NxCheckPacket(client.getnxfiles(), seed));
+			Session::dispatch(NxCheckPacket(seed));
 		}
 	};
 
 	class PingHandler : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
-			client.getsession().dispatch(PongPacket());
+			Session::dispatch(PongPacket());
 		}
 	};
 
 	class NullHandler : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override {}
+		void handle(InPacket& recv) const override {}
 	};
 }

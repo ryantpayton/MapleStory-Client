@@ -21,21 +21,21 @@
 #include "Graphics\Sprite.h"
 #include "nlnx\nx.hpp"
 
-#define button_ptr unique_ptr<Button>
-
 namespace IO
 {
 	UILoginNotice::UILoginNotice(int8_t text)
 	{
 		node notice = nl::nx::ui["Login.img"]["Notice"];
 
-		using::std::string;
-		using::Graphics::Sprite;
+		using std::string;
+		using Graphics::Sprite;
 		string back = (text == 16) ? "1" : "0";
 		sprites.push_back(Sprite(notice["backgrnd"][back], vector2d<int32_t>()));
 		sprites.push_back(Sprite(notice["text"][std::to_string(text)], vector2d<int32_t>(17, 13)));
 
-		buttons[BT_OK] = button_ptr(new MapleButton(notice["BtYes"], vector2d<int32_t>(100, 100)));
+		buttons[BT_OK] = unique_ptr<Button>(
+			new MapleButton(notice["BtYes"], vector2d<int32_t>(100, 100))
+			);
 
 		position = vector2d<int32_t>(292, 200);
 		dimension = vector2d<int32_t>(362, 219);

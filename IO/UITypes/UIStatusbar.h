@@ -49,6 +49,7 @@ namespace IO
 		};
 
 		UIStatusbar(const Charstats&);
+
 		void draw(float) const override;
 		void buttonpressed(uint16_t) override;
 		rectangle2d<int32_t> bounds() const override;

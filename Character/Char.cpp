@@ -57,6 +57,16 @@ namespace Character
 		phobj.fy = static_cast<float>(y);
 	}
 
+	bool Char::issitting() const
+	{
+		return stance == SIT;
+	}
+
+	bool Char::isclimbing() const
+	{
+		return stance == LADDER || stance == ROPE;
+	}
+
 	bool Char::getflip() const
 	{
 		return flip;
@@ -64,7 +74,7 @@ namespace Character
 
 	int8_t Char::getlayer() const
 	{
-		return phobj.fhlayer;
+		return isclimbing() ? 7 : phobj.fhlayer;
 	}
 
 	int32_t Char::getoid() const

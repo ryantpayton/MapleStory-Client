@@ -15,15 +15,14 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "CharLook.h"
 #include "BodyDrawinfo.h"
 #include "Weapon.h"
-#include "Program\TimeConstants.h"
+#include "Program\Constants.h"
 
 namespace Character
 {
-	static BodyDrawinfo drawinfo;
+	BodyDrawinfo drawinfo;
 
 	const Bodytype& getbody(uint8_t skin)
 	{
@@ -167,7 +166,28 @@ namespace Character
 
 		if (laststance == "ladder" || laststance == "rope")
 		{
+			body->draw(laststance, CL_BODY, lastframe, args);
+			equips.draw(EQL_GLOVES, laststance, CL_GLOVE, interframe, args);
+			equips.draw(EQL_SHOES, laststance, CL_SHOES, interframe, args);
+			equips.draw(EQL_PANTS, laststance, CL_PANTS, interframe, args);
+			equips.draw(EQL_TOP, laststance, CL_TOP, interframe, args);
+			equips.draw(EQL_TOP, laststance, CL_MAIL, interframe, args);
+			equips.draw(EQL_CAPE, laststance, CL_CAPE, interframe, args);
+			body->draw(laststance, CL_HEAD, interframe, args);
+			equips.draw(EQL_EARRINGS, laststance, CL_EARRINGS, interframe, args);
 
+			if (equips.isvisible(EQL_CAP))
+			{
+				hair->draw(laststance, CL_BACKHAIRBCAP, interframe, args);
+				equips.draw(EQL_CAP, laststance, CL_HAT, interframe, args);
+			}
+			else
+			{
+				hair->draw(laststance, CL_BACKHAIR, interframe, args);
+			}
+
+			equips.draw(EQL_SHIELD, laststance, CL_BACKSHIELD, interframe, args);
+			equips.draw(EQL_WEAPON, laststance, CL_BACKWEAPON, interframe, args);
 		}
 		else
 		{

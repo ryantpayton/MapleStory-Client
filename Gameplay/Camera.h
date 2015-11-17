@@ -32,23 +32,25 @@ namespace Gameplay
 		Camera();
 		// Empty destructor.
 		~Camera();
+
 		// Update the view with the current player position. (Or any other target)
-		void update(vector2d<int32_t>);
+		void update(vector2d<int32_t> destination);
 		// Set the position, changing the view immediatly.
-		void setposition(vector2d<int32_t>);
+		void setposition(vector2d<int32_t> position);
 		// Updates the view's boundaries. Determined by mapinfo or footholds.
-		void updateview(vector2d<int32_t>, vector2d<int32_t>);
-		// Return the current position for drawing. Use lerp to smoothe movement.
-		vector2d<int32_t> getposition(float) const;
+		void updateview(vector2d<int32_t> hborders, vector2d<int32_t> vborders);
+		// Return the current position for drawing.
+		vector2d<int32_t> getposition(float inter) const;
+
 	private:
 		// Movement variables.
-		float hspeed;
-		float vspeed;
 		float fx;
 		float fy;
+
 		// View limits.
 		vector2d<int32_t> hbounds;
 		vector2d<int32_t> vbounds;
+
 		// Variables for interpolation.
 		float lastx;
 		float lasty;

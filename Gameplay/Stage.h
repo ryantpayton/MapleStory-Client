@@ -16,71 +16,42 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Program\ClientInterface.h"
-#include "Maplemap\MapInfo.h"
-#include "Maplemap\MapLayer.h"
-#include "Maplemap\MapPortals.h"
-#include "Maplemap\Mapchars.h"
-#include "Camera.h"
-#include "Physics\Physics.h"
+#include "Maplemap\MapChars.h"
+#include "Maplemap\MapMobs.h"
+#include "Maplemap\MapNpcs.h"
 #include "Character\Player.h"
 
 namespace Gameplay
 {
-	using::Journey::ClientInterface;
-
-	// Represents the game below the ui. Contains everything map-related.
-	class Stage : public StageInterface
+	namespace Stage
 	{
-	public:
-		Stage(ClientInterface&);
+		using Character::Player;
 
-		// Calls 'init()' of members to preload assets.
+		// Preload assets.
 		void init();
 		// Call 'draw()' of  all objects on stage.
-		void draw(float inter) const;
+		void draw(float inter);
 		// Calls 'update()' of all objects on stage.
 		void update();
 
 		// Adds a player object with the given properties.
-		bool loadplayer(int32_t charid) override;
+		bool loadplayer(int32_t charid);
 		// Loads the map to display. 
-		void loadmap(int32_t mapid) override;
+		void loadmap(int32_t mapid);
 		// Repositions the player and reactivates the stage after loading.
 		// Also plays the bgm associated with the newly loaded map.
-		void respawn() override;
-		void sendkey(IO::Keytype keytype, int32_t keycode, bool pressed) override;
+		void respawn();
+		// Send a key input to the stage.
+		void sendkey(IO::Keytype keytype, int32_t keycode, bool pressed);
 
 		// Returns a reference to the npcs on the current map.
-		MapNpcs& getnpcs() override;
+		MapNpcs& getnpcs();
 		// Returns a reference to the other characters on the current map.
-		MapChars& getchars() override;
+		MapChars& getchars();
 		// Returns a reference to the mobs on the current map.
-		MapMobs& getmobs() override;
+		MapMobs& getmobs();
 		// Returns a reference to the Player.
-		Player& getplayer() override;
-
-	private:
-		void checkportals();
-		void checkseats();
-		void checkladders();
-
-		ClientInterface& client;
-
-		MapInfo mapinfo;
-		map<uint8_t, MapLayer> layers;
-		MapPortals portals;
-		MapNpcs npcs;
-		MapChars chars;
-		MapMobs mobs;
-
-		Camera camera;
-		Physics physics;
-
-		Player player;
-		Playable* playable;
-		bool active;
-		int32_t currentmapid;
-	};
+		Player& getplayer();
+	}
 }
 

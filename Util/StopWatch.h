@@ -16,12 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include <cstdint>
 #include <chrono>
-#include <stdint.h>
 
 namespace Util
 {
-	using::std::chrono::high_resolution_clock;
+	using std::uint16_t;
+	using std::int64_t;
+	using std::chrono::high_resolution_clock;
+	using std::chrono::milliseconds;
 
 	// Small class for measuring elapsed time between game loops.
 	class StopWatch
@@ -30,23 +33,20 @@ namespace Util
 		// Start watch at construction.
 		StopWatch()
 		{
-			start();
+			last = high_resolution_clock::now();
 		}
 
 		~StopWatch() {}
 
-		// Start measurement.
-		void start()
+		// Return time elapsed since the last measurement.
+		int64_t stop()
 		{
+			int64_t elapsed = (std::chrono::duration_cast
+				<milliseconds>(high_resolution_clock::now() - last)).count();
 			last = high_resolution_clock::now();
+			return elapsed;
 		}
 
-		// Return time elapsed since last measurement.
-		uint16_t stop()
-		{
-			int64_t elapsed = (std::chrono::duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - last)).count();
-			return static_cast<uint16_t>(elapsed);
-		}
 	private:
 		high_resolution_clock::time_point last;
 	};

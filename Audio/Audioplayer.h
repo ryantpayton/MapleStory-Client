@@ -17,19 +17,20 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include <cstdint>
+#include <string>
 
-namespace Audio
+namespace Audioplayer
 {
-	using::std::uint8_t;
+	using std::uint8_t;
+	using std::string;
 
-	class Audioplayer
-	{
-	public:
-		virtual ~Audioplayer() {}
-		virtual void playbgm(void*, size_t) = 0;
-		virtual void playsound(size_t) = 0;
-		virtual void cachesound(void*, size_t, size_t) = 0;
-		virtual void setsfxvolume(uint8_t) = 0;
-		virtual void setbgmvolume(uint8_t) = 0;
-	};
+	bool init();
+	void close();
+	void setsfxvolume(uint8_t);
+	void setbgmvolume(uint8_t);
+
+	void playsound(size_t);
+	void playbgm(string);
+	size_t addsound(string);
 }
+

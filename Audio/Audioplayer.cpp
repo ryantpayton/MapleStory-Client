@@ -15,42 +15,49 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Audio\AudioplayerBass.h"
+#include "Audioplayer.h"
+#include "bass.h"
+#include "nlnx\nx.hpp"
+#include "nlnx\audio.hpp"
+#include "nlnx\node.hpp"
+#include <map>
 
-namespace Audio
+namespace Audioplayer
 {
-	AudioplayerBass::AudioplayerBass() 
+	HSTREAM bgm;
+	std::map<size_t, HSAMPLE> soundcache;
+
+	bool init()
 	{
-		error = !BASS_Init(1, 44100, 0, nullptr, 0);
+		return BASS_Init(1, 44100, 0, nullptr, 0) == TRUE;
 	}
 
-	AudioplayerBass::~AudioplayerBass() 
-	{
-		close();
-	}
-
-	bool AudioplayerBass::geterror() const
-	{
-		return error;
-	}
-
-	void AudioplayerBass::close()
+	void close()
 	{
 		if (bgm != 0)
 		{
 			BASS_ChannelStop(bgm);
 			BASS_StreamFree(bgm);
 		}
-		for (map<size_t, HSAMPLE>::iterator snit = soundcache.begin(); snit != soundcache.end(); ++snit)
+		for (auto& snit : soundcache)
 		{
-			BASS_SampleStop(snit->second);
-			BASS_SampleFree(snit->second);
+			BASS_SampleStop(snit.second);
+			BASS_SampleFree(snit.second);
 		}
 		BASS_Free();
 	}
 
-	void AudioplayerBass::playbgm(void* data, size_t length)
+	void setsfxvolume(uint8_t vol)
+	{
+		BASS_SetConfig(BASS_CONFIG_GVOL_STREAM, vol * 100);
+	}
+
+	void setbgmvolume(uint8_t vol)
+	{
+		BASS_SetConfig(BASS_CONFIG_GVOL_SAMPLE, vol * 100);
+	}
+
+	void playbgm(void* data, size_t length)
 	{
 		if (bgm != 0)
 		{
@@ -61,15 +68,14 @@ namespace Audio
 		BASS_ChannelPlay(bgm, true);
 	}
 
-	void AudioplayerBass::cachesound(void* data, size_t length, size_t id)
+	void playbgm(string path)
 	{
-		if (!soundcache.count(id))
-		{
-			soundcache[id] = BASS_SampleLoad(true, data, 82, (DWORD)length, 4, BASS_SAMPLE_OVER_POS);
-		}
+		nl::audio toplay = nl::nx::sound.resolve(path);
+		if (toplay.data())
+			playbgm((void*)toplay.data(), toplay.length());
 	}
 
-	void AudioplayerBass::playsound(size_t id)
+	void playsound(size_t id)
 	{
 		if (soundcache.count(id))
 		{
@@ -78,13 +84,25 @@ namespace Audio
 		}
 	}
 
-	void AudioplayerBass::setsfxvolume(uint8_t vol)
+	void cachesound(void* data, size_t length, size_t id)
 	{
-		BASS_SetConfig(BASS_CONFIG_GVOL_STREAM, vol * 100);
+		if (!soundcache.count(id))
+		{
+			soundcache[id] = BASS_SampleLoad(true, data, 82, (DWORD)length, 4, BASS_SAMPLE_OVER_POS);
+		}
 	}
 
-	void AudioplayerBass::setbgmvolume(uint8_t vol)
+	size_t addsound(string path)
 	{
-		BASS_SetConfig(BASS_CONFIG_GVOL_SAMPLE, vol * 100);
+		nl::audio toplay = nl::nx::sound.resolve(path);
+		if (toplay.data())
+		{
+			cachesound((void*)toplay.data(), toplay.length(), toplay.id());
+			return toplay.id();
+		}
+		else
+		{
+			return 0;
+		}
 	}
 }

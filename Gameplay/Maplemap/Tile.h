@@ -34,11 +34,12 @@ namespace Gameplay
 	class Tile
 	{
 	public:
-		Tile(node, string);
+		Tile(node src, string tileset);
 		// Empty destructor.
 		~Tile();
+
 		// Draw the tile.
-		void draw(vector2d<int32_t>) const;
+		void draw(vector2d<int32_t> viewpos) const;
 		// Returns depth of the tile.
 		uint8_t getz() const;
 

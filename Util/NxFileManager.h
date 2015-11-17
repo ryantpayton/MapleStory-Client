@@ -16,34 +16,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "HashUtility.h"
+#include <cstdint>
+#include <string>
 
 namespace Util
 {
-	const size_t NUM_FILES = 14;
-
-	using::std::string;
-
-	// Class for doing some work with game asset files.
-	class NxFileManager
+	namespace NxFiles
 	{
-	public:
-		NxFileManager();
-		~NxFileManager();
+		using std::int64_t;
+		using std::string;
+
+		const size_t NUM_FILES = 14;
 
 		// Makes sure that all game files exist. 
 		// When successfull also tests if the UI file contains valid images.
-		bool init() const;
-		// Obtains a hash value for a file of game assets. Fast version.
-		string gethash(size_t fileindex, uint64_t seed) const;
-		// Obtains a hash value for a file of game assets. Slow version.
-		// Parameters: size_t(index of file to hash)
-		string gethash(size_t fileindex) const;
-	private:
-		// Checks if a game file exists.
-		bool exists(size_t fileindex) const;
+		bool init();
 
-		HashUtility hashutil;
-	};
+		// Obtains a hash value for a file of game assets. Fast version.
+		string gethash(size_t fileindex, uint64_t seed);
+		// Obtains a hash value for a file of game assets. Slow version.
+		string gethash(size_t fileindex);
+	}
 }
 

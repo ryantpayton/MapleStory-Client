@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Net\PacketHandler.h"
+#include "Gameplay\MovementInfo.h"
 
 namespace Net
 {

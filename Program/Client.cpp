@@ -15,96 +15,74 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "Client.h"
+#include "Configuration.h"
+#include "Util\NxFileManager.h"
+#include "IO\UI.h"
+#include "Gameplay\Stage.h"
+#include "Net\Session.h"
+#include "Audio\Audioplayer.h"
+
 #include "IO\UITypes\UILogin.h"
 #include "Character\Look\CharLook.h"
 #include "nlnx\nx.hpp"
 #include "nlnx\audio.hpp"
 
-namespace Journey
+namespace Program
 {
-	Client::Client() : ui(*this), stage(*this) {}
+	Client::Client() {}
 
-	Client::~Client() {}
+	Client::~Client() 
+	{
+		Audioplayer::close();
+	}
 
 	Client::Error Client::init()
 	{
-		if (!nxfiles.init())
+		if (!Util::NxFiles::init())
 			return NXFILES;
 
-		if (!session.init())
+		if (!Net::Session::init())
 			return CONNECTION;
 
-		if (!window.init(&ui))
+		if (!window.init())
 			return WINDOW;
 
-		if (audioplayer.geterror())
+		if (!Audioplayer::init())
 			return AUDIO;
 
-		ui.init();
-		stage.init();
+		Configuration::load();
+		IO::UI::init();
+		Gameplay::Stage::init();
 
-		using::Character::CharLook;
-		CharLook::init();
+		Character::CharLook::init();
 
-		using::IO::ElementLogin;
-		ui.add(ElementLogin(session, ui, config));
+		IO::UI::add(IO::ElementLogin());
 
-		using::nl::audio;
-		audio loginbgm = nl::nx::sound["BgmUI.img"]["Title"].get_audio();
-		audioplayer.playbgm((void*)loginbgm.data(), loginbgm.length());
+		Audioplayer::setbgmvolume(Configuration::getbyte("BGMVolume"));
+		Audioplayer::setsfxvolume(Configuration::getbyte("SFXVolume"));
+		Audioplayer::playbgm("BgmUI.img/Title");
 
 		return NONE;
 	}
 
-	bool Client::receive()
+	bool Client::receive() const
 	{
-		return session.receive(*this);
+		return Net::Session::receive();
 	}
 
 	void Client::draw(float inter) const
 	{
 		window.begin();
-		stage.draw(inter);
-		ui.draw(inter);
+		Gameplay::Stage::draw(inter);
+		IO::UI::draw(inter);
 		window.end();
 	}
 
 	void Client::update()
 	{
 		window.update();
-		stage.update();
-		ui.update();
-	}
-
-	Audioplayer& Client::getaudio()
-	{
-		return audioplayer;
-	}
-
-	StageInterface& Client::getstage()
-	{
-		return stage;
-	}
-
-	UIInterface& Client::getui()
-	{
-		return ui;
-	}
-
-	SessionInterface& Client::getsession()
-	{
-		return session;
-	}
-
-	Configuration& Client::getconfig()
-	{
-		return config;
-	}
-
-	NxFileManager& Client::getnxfiles()
-	{
-		return nxfiles;
+		Gameplay::Stage::update();
+		IO::UI::update();
 	}
 }

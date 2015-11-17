@@ -16,20 +16,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UICharcreation.h"
+#include "IO\UI.h"
+#include "Net\Session.h"
 #include "Net\Packets\CharCreationPackets83.h"
 #include "IO\Components\MapleButton.h"
 #include "IO\UITypes\UILoginNotice.h"
 #include "IO\UITypes\UICharSelect.h"
-#include "Program\TimeConstants.h"
+#include "Program\Constants.h"
 #include "nlnx\nx.hpp"
-
-#define button_ptr unique_ptr<Button>
 
 namespace IO
 {
-	UICharcreation::UICharcreation(SessionInterface& ses, UIInterface& u) : session(ses), ui(u)
+	UICharcreation::UICharcreation()
 	{
-		female = session.getlogin().getaccount().isfemale();
+		female = Net::Session::getlogin().getaccount().isfemale();
 
 		using nl::node;
 		node src = nl::nx::ui["Login.img"];
@@ -58,27 +58,67 @@ namespace IO
 		lookboard.push_back(Sprite(crsrc["avatarSel"]["7"]["normal"], vector2d<int32_t>(461, 350)));
 		lookboard.push_back(Sprite(crsrc["avatarSel"]["8"]["normal"], vector2d<int32_t>(461, 369)));
 
-		buttons[BT_CHARC_OK] = button_ptr(new MapleButton(crsrc["BtYes"], vector2d<int32_t>(482, 292)));
-		buttons[BT_CHARC_CANCEL] = button_ptr(new MapleButton(crsrc["BtNo"], vector2d<int32_t>(555, 292)));
+		buttons[BT_CHARC_OK] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtYes"], vector2d<int32_t>(482, 292))
+			);
+		buttons[BT_CHARC_CANCEL] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtNo"], vector2d<int32_t>(555, 292))
+			);
 
-		buttons[BT_CHARC_FACEL] = button_ptr(new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 216)));
-		buttons[BT_CHARC_FACER] = button_ptr(new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 216)));
-		buttons[BT_CHARC_HAIRL] = button_ptr(new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 235)));
-		buttons[BT_CHARC_HAIRR] = button_ptr(new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 235)));
-		buttons[BT_CHARC_HAIRCL] = button_ptr(new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 254)));
-		buttons[BT_CHARC_HAIRCR] = button_ptr(new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 254)));
-		buttons[BT_CHARC_SKINL] = button_ptr(new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 273)));
-		buttons[BT_CHARC_SKINR] = button_ptr(new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 273)));
-		buttons[BT_CHARC_TOPL] = button_ptr(new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 292)));
-		buttons[BT_CHARC_TOPR] = button_ptr(new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 292)));
-		buttons[BT_CHARC_BOTL] = button_ptr(new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 311)));
-		buttons[BT_CHARC_BOTR] = button_ptr(new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 311)));
-		buttons[BT_CHARC_SHOESL] = button_ptr(new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 330)));
-		buttons[BT_CHARC_SHOESR] = button_ptr(new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 330)));
-		buttons[BT_CHARC_WEPL] = button_ptr(new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 349)));
-		buttons[BT_CHARC_WEPR] = button_ptr(new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 348)));
-		buttons[BT_CHARC_GENDERL] = button_ptr(new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 368)));
-		buttons[BT_CHARC_GEMDERR] = button_ptr(new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 368)));
+		buttons[BT_CHARC_FACEL] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 216))
+			);
+		buttons[BT_CHARC_FACER] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 216))
+			);
+		buttons[BT_CHARC_HAIRL] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 235))
+			);
+		buttons[BT_CHARC_HAIRR] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 235))
+			);
+		buttons[BT_CHARC_HAIRCL] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 254))
+			);
+		buttons[BT_CHARC_HAIRCR] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 254))
+			);
+		buttons[BT_CHARC_SKINL] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 273))
+			);
+		buttons[BT_CHARC_SKINR] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 273))
+			);
+		buttons[BT_CHARC_TOPL] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 292))
+			);
+		buttons[BT_CHARC_TOPR] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 292))
+			);
+		buttons[BT_CHARC_BOTL] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 311))
+			);
+		buttons[BT_CHARC_BOTR] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 311))
+			);
+		buttons[BT_CHARC_SHOESL] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 330))
+			);
+		buttons[BT_CHARC_SHOESR] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 330))
+			);
+		buttons[BT_CHARC_WEPL] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 349))
+			);
+		buttons[BT_CHARC_WEPR] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 348))
+			);
+		buttons[BT_CHARC_GENDERL] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtLeft"], vector2d<int32_t>(521, 368))
+			);
+		buttons[BT_CHARC_GEMDERR] = unique_ptr<Button>(
+			new MapleButton(crsrc["BtRight"], vector2d<int32_t>(645, 368))
+			);
 
 		buttons[BT_CHARC_FACEL]->setactive(false);
 		buttons[BT_CHARC_FACER]->setactive(false);
@@ -102,7 +142,7 @@ namespace IO
 		namechar = Textfield(Textlabel::DWF_14ML, Textlabel::TXC_WHITE, vector2d<int32_t>(490, 217), 12);
 		namechar.setstate(Textfield::FOCUSED);
 
-		ui.getkeyboard().focustarget(&namechar);
+		UI::getkeyboard().focustarget(&namechar);
 
 		facename = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_BLACK, "", 0);
 		hairname = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_BLACK, "", 0);
@@ -169,16 +209,6 @@ namespace IO
 
 		randomizelook();
 
-		/*map<int8_t, int32_t> equips;
-		equips[0] = tops[female][top];
-		equips[1] = bots[female][bot];
-		equips[2] = shoes[female][shoe];
-		equips[3] = weapons[female][weapon];
-
-		using::Net::LookEntry;
-		LookEntry look = LookEntry(female, skins[female][skin], faces[female][face], 
-			hairs[female][hair] + haircolors[female][haircolor], face, equips);
-		newchar = CharLook(look);*/
 		newchar.setflip(true);
 
 		position = vector2d<int32_t>(0, 0);
@@ -225,7 +255,7 @@ namespace IO
 			if (named)
 			{
 				using::Net::CreateCharPacket83;
-				session.dispatch(CreateCharPacket83(
+				Net::Session::dispatch(CreateCharPacket83(
 					namechar.gettext(), 1, faces[female][face], hairs[female][hair], 
 					haircolors[female][haircolor], skins[female][skin], tops[female][top], 
 					bots[female][bot], shoes[female][shoe], weapons[female][weapon], female)
@@ -236,16 +266,16 @@ namespace IO
 				string name = namechar.gettext();
 				if (name.size() >= 4)
 				{
-					ui.disable();
-					ui.getkeyboard().focustarget(nullptr);
+					UI::disable();
+					UI::getkeyboard().focustarget(nullptr);
 					namechar.setstate(Textfield::NORMAL);
 
 					using::Net::NameCharPacket83;
-					session.dispatch(NameCharPacket83(name));
+					Net::Session::dispatch(NameCharPacket83(name));
 				}
 				else
 				{
-					ui.add(ElementLoginNotice(10));
+					UI::add(ElementLoginNotice(10));
 					buttons[id]->setstate(Button::NORMAL);
 				}
 			}
@@ -280,9 +310,9 @@ namespace IO
 			else
 			{
 				active = false;
-				ui.getkeyboard().focustarget(nullptr);
-				ui.remove(Element::CHARSELECT);
-				ui.add(ElementCharSelect(ui, session));
+				UI::getkeyboard().focustarget(nullptr);
+				UI::remove(Element::CHARSELECT);
+				UI::add(ElementCharSelect());
 			}
 			break;
 		}
@@ -373,7 +403,7 @@ namespace IO
 		{
 			if (down)
 			{
-				ui.getkeyboard().focustarget(&namechar);
+				UI::getkeyboard().focustarget(&namechar);
 				namechar.setstate(Textfield::FOCUSED);
 			}
 			else if (namechar.getstate() == Textfield::NORMAL)
@@ -383,7 +413,7 @@ namespace IO
 		}
 		else if (down)
 		{
-			ui.getkeyboard().focustarget(nullptr);
+			UI::getkeyboard().focustarget(nullptr);
 			namechar.setstate(Textfield::NORMAL);
 		}
 
@@ -429,55 +459,49 @@ namespace IO
 
 	void UICharcreation::draw(float inter) const
 	{
-		if (active)
+		using::Graphics::DrawArgument;
+
+		for (char i = 0; i < 2; i++)
 		{
-			using::Graphics::DrawArgument;
-
-			for (char i = 0; i < 2; i++)
+			for (int k = 0; k < 800; k += sky.getdimensions().x())
 			{
-				for (int k = 0; k < 800; k += sky.getdimensions().x())
-				{
-					sky.draw(DrawArgument(vector2d<int32_t>(k, (400 * i) - 100)));
-				}
+				sky.draw(DrawArgument(vector2d<int32_t>(k, (400 * i) - 100)));
 			}
+		}
 
-			int32_t cloudx = static_cast<int32_t>(cloudfx);
-			cloud.draw(DrawArgument(vector2d<int32_t>(cloudx - cloud.getdimensions().x(), 300)));
-			cloud.draw(DrawArgument(vector2d<int32_t>(cloudx, 300)));
-			cloud.draw(DrawArgument(vector2d<int32_t>(cloudx + cloud.getdimensions().x(), 300)));
+		int32_t cloudx = static_cast<int32_t>(cloudfx) % 800;
+		cloud.draw(DrawArgument(vector2d<int32_t>(cloudx - cloud.getdimensions().x(), 300)));
+		cloud.draw(DrawArgument(vector2d<int32_t>(cloudx, 300)));
+		cloud.draw(DrawArgument(vector2d<int32_t>(cloudx + cloud.getdimensions().x(), 300)));
 
-			if (!named)
+		if (!named)
+		{
+			nameboard.draw(DrawArgument(vector2d<int32_t>(455, 115)));
+			namechar.draw(position);
+		}
+		else
+		{
+			for (auto& lbit : lookboard)
 			{
-				nameboard.draw(DrawArgument(vector2d<int32_t>(455, 115)));
-				namechar.draw(position);
-			}
-			else
-			{
-				for (auto lbit = lookboard.begin(); lbit != lookboard.end(); ++lbit)
-				{
-					lbit->draw(DrawArgument(position), inter);
-				}
+				lbit.draw(DrawArgument(position), inter);
 			}
 		}
 
 		UIElement::draw(inter);
 
-		if (active)
-		{
-			newchar.draw(vector2d<int32_t>(360, 348), inter);
+		newchar.draw(vector2d<int32_t>(360, 348), inter);
 
-			if (named)
-			{
-				facename.draw(vector2d<int32_t>(591, 214));
-				hairname.draw(vector2d<int32_t>(591, 233));
-				haircname.draw(vector2d<int32_t>(591, 252));
-				bodyname.draw(vector2d<int32_t>(591, 271));
-				topname.draw(vector2d<int32_t>(591, 290));
-				botname.draw(vector2d<int32_t>(591, 309));
-				shoename.draw(vector2d<int32_t>(591, 328));
-				wepname.draw(vector2d<int32_t>(591, 347));
-				gendername.draw(vector2d<int32_t>(591, 366));
-			}
+		if (named)
+		{
+			facename.draw(vector2d<int32_t>(591, 214));
+			hairname.draw(vector2d<int32_t>(591, 233));
+			haircname.draw(vector2d<int32_t>(591, 252));
+			bodyname.draw(vector2d<int32_t>(591, 271));
+			topname.draw(vector2d<int32_t>(591, 290));
+			botname.draw(vector2d<int32_t>(591, 309));
+			shoename.draw(vector2d<int32_t>(591, 328));
+			wepname.draw(vector2d<int32_t>(591, 347));
+			gendername.draw(vector2d<int32_t>(591, 366));
 		}
 	}
 
@@ -485,19 +509,9 @@ namespace IO
 	{
 		UIElement::update();
 
-		if (active)
-		{
-			newchar.update(Constants::TIMESTEP);
-			namechar.update();
+		newchar.update(Constants::TIMESTEP);
+		namechar.update();
 
-			if (cloudfx < cloud.getdimensions().x())
-			{
-				cloudfx += 0.5f;
-			}
-			else
-			{
-				cloudfx = 200.0f;
-			}
-		}
+		cloudfx += 0.25f;
 	}
 }

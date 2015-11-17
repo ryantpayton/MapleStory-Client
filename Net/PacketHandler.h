@@ -16,19 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Program\ClientInterface.h"
+#include "InPacket.h"
 
 namespace Net
 {
-	using::Journey::ClientInterface;
-
 	// Interface for classes that handle InPackets.
 	class PacketHandler
 	{
 	public:
 		virtual ~PacketHandler(){}
-		// Handle a packet changing the game's state by using the reference to the ClientInterface.
-		// Parameters: ClientInterface&(reference to client), InPacket&(packet received)
-		virtual void handle(ClientInterface&, InPacket&) const = 0;
+		virtual void handle(InPacket& tohandle) const = 0;
 	};
 }

@@ -16,8 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "IO\Components\Textfield.h"
 #include "InputConstants.h"
-#include "KeyTarget.h"
 #include <map>
 #include <cstdint>
 
@@ -31,13 +31,15 @@ namespace IO
 	{
 	public:
 		Keyboard();
-		void addtarget(Keytype, KeyTarget*);
+
+		void setenabled(Keytype, bool);
 		void addmapping(uint8_t, Keytype, int32_t);
-		void focustarget(KeyTarget*);
+		void focustarget(Textfield*);
 		void sendinput(bool, int32_t);
+
 	private:
-		map<Keytype, KeyTarget*> targets;
-		KeyTarget* focused;
+		map<Keytype, bool> enabledtypes;
+		Textfield* focused;
 		map<int32_t, pair<Keytype, int32_t>> keymap;
 		map<int32_t, pair<Keytype, int32_t>> maplekeys;
 		map<int32_t, bool> keystate;

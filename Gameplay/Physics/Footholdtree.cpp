@@ -16,7 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Footholdtree.h"
-#include <algorithm>
 
 namespace Gameplay
 {
@@ -142,10 +141,16 @@ namespace Gameplay
 		float ground = nextfh.resolvex(phobj.fx);
 		if (phobj.vspeed == 0.0f && checkslope)
 		{
-			if (phobj.fhslope * abs(ground - phobj.fy) <= abs(phobj.hspeed))
-			{
+			float vdelta = abs(phobj.fhslope);
+			if (phobj.fhslope < 0.0f)
+				vdelta *= (ground - phobj.fy);
+			else if (phobj.fhslope > 0.0f)
+				vdelta *= (phobj.fy - ground);
+
+			if (phobj.hspeed > 0.0f && vdelta <= phobj.hspeed)
 				phobj.fy = ground;
-			}
+			else if (phobj.hspeed < 0.0f && vdelta >= phobj.hspeed)
+				phobj.fy = ground;
 		}
 		phobj.onground = phobj.fy == ground;
 	}
@@ -188,21 +193,21 @@ namespace Gameplay
 
 	uint16_t Footholdtree::getbelow(float fx, float fy) const
 	{
-		uint16_t ret = 0;
+		int32_t ret = 0;
 		int32_t x = static_cast<int32_t>(fx);
 		if (footholdsbyx.count(x))
 		{
 			float comp = static_cast<float>(borders.y());
-			std::for_each(footholdsbyx.lower_bound(x), footholdsbyx.upper_bound(x), 
-				[this, fx, fy, &comp, &ret](const std::pair<int32_t, uint16_t>& val) {
-				const Foothold& fh = footholds.at(val.second);
+			for (auto& fhit = footholdsbyx.lower_bound(x); fhit != footholdsbyx.upper_bound(x); ++fhit)
+			{
+				const Foothold& fh = footholds.at(fhit->second);
 				float ycomp = fh.resolvex(fx);
 				if (comp >= ycomp && ycomp >= fy)
 				{
-					ret = fh.getid();
 					comp = ycomp;
+					ret = fh.getid();
 				}
-			});
+			}
 		}
 		return ret;
 	}

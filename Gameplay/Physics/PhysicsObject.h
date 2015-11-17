@@ -34,14 +34,14 @@ namespace Gameplay
 			NORMAL,
 			ICE,
 			SWIMMING,
-			FLYING
+			FLYING,
+			CLIMBING,
 		};
 
 		PhType type = NORMAL;
 		uint16_t fhid = 0;
 		float fhslope = 0.0f;
 		int8_t fhlayer = 0;
-		bool canfall = true;
 		bool onground = true;
 		float mass = 1.0f;
 		float fx = 0.0f;

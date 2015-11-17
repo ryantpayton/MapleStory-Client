@@ -15,8 +15,10 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "IO\Keyboard.h"
+#include "IO\UI.h"
+#include "Gameplay\Stage.h"
+
 #include "Journey.h"
 #ifdef JOURNEY_USE_OPENGL
 #include "glfw3.h"
@@ -66,9 +68,9 @@ namespace IO
 	}
 #endif
 
-	void Keyboard::addtarget(Keytype type, KeyTarget* targ)
+	void Keyboard::setenabled(Keytype type, bool en)
 	{
-		targets[type] = targ;
+		enabledtypes[type] = en;
 	}
 
 	void Keyboard::addmapping(uint8_t key, Keytype type, int32_t action)
@@ -77,14 +79,14 @@ namespace IO
 		maplekeys[key] = std::make_pair(type, action);
 	}
 
-	void Keyboard::focustarget(KeyTarget* kt)
+	void Keyboard::focustarget(Textfield* kt)
 	{
 		focused = kt;
 	}
 
 	void Keyboard::sendinput(bool down, int32_t key)
 	{
-		if (focused != 0)
+		if (focused)
 		{
 			if (down)
 			{
@@ -104,12 +106,17 @@ namespace IO
 		{
 			Keytype type = keymap[key].first;
 			int action = keymap[key].second;
-			if (targets.count(type))
+
+			if (enabledtypes[type])
 			{
-				KeyTarget* targ = targets[type];
-				if (targ != 0)
+				switch (type)
 				{
-					targ->sendkey(type, action, down);
+				case KT_MENU:
+					UI::sendkey(type, action, down);
+					break;
+				case KT_ACTION:
+					Gameplay::Stage::sendkey(type, action, down);
+					break;
 				}
 			}
 		}

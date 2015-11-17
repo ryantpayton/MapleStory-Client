@@ -16,22 +16,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\KeyTarget.h"
-#include "IO\Element.h"
-#include "IO\Cursor.h"
-#include "IO\Keyboard.h"
+#include <cstdint>
 
-namespace IO
+namespace Constants
 {
-	class UIInterface : public KeyTarget
-	{
-	public:
-		virtual ~UIInterface() {}
-		virtual void enable() = 0;
-		virtual void disable() = 0;
-		virtual void add(const Element& toadd) = 0;
-		virtual void remove(Element::UIType toremove) = 0;
-		virtual UIElement* getelement(Element::UIType type) const = 0;
-		virtual Keyboard& getkeyboard() = 0;
-	};
+	using std::uint16_t;
+	using std::int32_t;
+
+	// Timestep, e.g. the granularity in which the game advances.
+	const uint16_t TIMESTEP = 8;
+
+	// Game width (float).
+	const float fVIEWWIDTH = 800.0f;
+	// Game heihgt (float).
+	const float fVIEWHEIGHT = 600.0f;
+	// Game width (int).
+	const int32_t VIEWWIDTH = 800;
+	// Game height (int).
+	const int32_t VIEWHEIGHT = 600;
 }

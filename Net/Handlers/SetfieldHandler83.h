@@ -18,6 +18,8 @@
 #pragma once
 #include "AbstractItemHandler83.h"
 #include "IO\UITypes\UIStatusbar.h"
+#include "IO\UI.h"
+#include "Gameplay\Stage.h"
 
 #include "Journey.h"
 #ifdef JOURNEY_USE_OPENGL
@@ -28,32 +30,32 @@
 
 namespace Net
 {
-	using::Character::Inventory;
-	using::Character::Skillbook;
-	using::Character::Questlog;
-	using::Character::Monsterbook;
-	using::Character::Telerock;
+	using Character::Inventory;
+	using Character::Skillbook;
+	using Character::Questlog;
+	using Character::Monsterbook;
+	using Character::Telerock;
 
 	// Handler for a packet which either contains all character information on first login,
 	// or warps the player to a different map.
 	class SetfieldHandler83 : public AbstractItemHandler83
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			int32_t channel = recv.readint();
 			int8_t mode1 = recv.readbyte();
 			int8_t mode2 = recv.readbyte();
 			if (mode1 == 0 && mode2 == 0)
 			{
-				changemap(client, recv, channel);
+				changemap(recv, channel);
 			}
 			else
 			{
-				setfield(client, recv);
+				setfield(recv);
 			}
 		}
 
-		void changemap(ClientInterface& client, InPacket& recv, int32_t channel) const
+		void changemap(InPacket& recv, int32_t channel) const
 		{
 			recv.skip(3);
 
@@ -64,8 +66,8 @@ namespace Net
 			// Timestamp
 			recv.skip(8);
 
-			client.getstage().getplayer().getstats().setportal(portalid);
-			if (channel == client.getsession().getlogin().getchannelid())
+			Gameplay::Stage::getplayer().getstats().setportal(portalid);
+			if (channel == Session::getlogin().getchannelid())
 			{
 				// Change map.
 #ifdef JOURNEY_USE_OPENGL
@@ -76,9 +78,9 @@ namespace Net
 				GraphicsD2D::clear();
 #endif
 
-				client.getstage().loadmap(mapid);
-				client.getstage().respawn();
-				client.getui().enable();
+				Gameplay::Stage::loadmap(mapid);
+				Gameplay::Stage::respawn();
+				IO::UI::enable();
 			}
 			else
 			{
@@ -86,16 +88,16 @@ namespace Net
 			}
 		}
 
-		void setfield(ClientInterface& client, InPacket& recv) const
+		void setfield(InPacket& recv) const
 		{
 			recv.skip(23);
 
 			int32_t cid = recv.readint();
-			bool loaded = client.getstage().loadplayer(cid);
+			bool loaded = Gameplay::Stage::loadplayer(cid);
 			if (loaded)
 			{
 				using::Character::Player;
-				Player& player = client.getstage().getplayer();
+				Player& player = Gameplay::Stage::getplayer();
 
 				StatsEntry trash(recv);
 				int8_t buddycap = recv.readbyte();
@@ -121,8 +123,8 @@ namespace Net
 				player.recalcstats(true);
 
 				using IO::Element;
-				client.getui().remove(Element::CHARSELECT);
-				client.getui().remove(Element::SOFTKEYBOARD);
+				IO::UI::remove(Element::CHARSELECT);
+				IO::UI::remove(Element::SOFTKEYBOARD);
 
 #ifdef JOURNEY_USE_OPENGL
 				using::Graphics::GraphicsGL;
@@ -134,19 +136,19 @@ namespace Net
 
 				//parent.getui()add(UI_QUICKSLOTS);
 				using::IO::ElementStatusbar;
-				client.getui().add(ElementStatusbar(player.getstats()));
+				IO::UI::add(ElementStatusbar(player.getstats()));
 				//parent.getui()add(UI_CHATBAR);
 				//parent.getui()add(UI_INVENTORY);
 				//parent.getui()getbase()->setactive(true);
 
 				//Game::getcache()->getsounds()->play(MSN_GAMEIN);
 				int32_t mapid = player.getstats().getmapid();
-				client.getstage().loadmap(mapid);
-				client.getstage().respawn();
-				client.getui().enable();
+				Gameplay::Stage::loadmap(mapid);
+				Gameplay::Stage::respawn();
 
-				client.getui().getkeyboard().addtarget(IO::KT_MENU, &client.getui());
-				client.getui().getkeyboard().addtarget(IO::KT_ACTION, &client.getstage());
+				IO::UI::enable();
+				IO::UI::getkeyboard().setenabled(IO::KT_MENU, true);
+				IO::UI::getkeyboard().setenabled(IO::KT_ACTION, true);
 			}
 		}
 

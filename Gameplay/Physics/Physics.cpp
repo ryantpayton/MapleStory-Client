@@ -44,14 +44,15 @@ namespace Gameplay
 		{
 		case PhysicsObject::NORMAL:
 			movenormal(phobj);
+			fht.limitmoves(phobj);
 			break;
 		case PhysicsObject::FLYING:
 			moveflying(phobj);
+			fht.limitmoves(phobj);
+			break;
+		case PhysicsObject::CLIMBING:
 			break;
 		}
-
-		// Check for collisions and restrict movement.
-		fht.limitmoves(phobj);
 
 		// Move the object forward.
 		phobj.lastx = phobj.fx;
@@ -75,9 +76,12 @@ namespace Gameplay
 			{
 				phobj.hspeed = 0.0f;
 			}
-
-			phobj.hacc -= SLOPEFACTOR * (1.0f + (phobj.fhslope * -phobj.hspeed)) * phobj.hspeed;
-			phobj.hacc -= FRICTION * phobj.hspeed;
+			float slopef = phobj.fhslope;
+			if (slopef > 0.5f)
+				slopef = 0.5f;
+			else if (slopef < -0.5f)
+				slopef = -0.5f;
+			phobj.hacc -= (SLOPEFACTOR * (1.0f + (slopef * -phobj.hspeed)) + FRICTION) * phobj.hspeed;
 		}
 		else
 		{

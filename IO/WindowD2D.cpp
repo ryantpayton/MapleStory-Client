@@ -19,6 +19,7 @@
 #include "Journey.h"
 #ifndef JOURNEY_USE_OPENGL
 #include "WindowD2D.h"
+#include "UI.h"
 
 namespace IO
 {
@@ -35,7 +36,7 @@ namespace IO
 		if (dwfactory) dwfactory->Release();
 	}
 
-	bool WindowD2D::init(UI* u)
+	bool WindowD2D::init()
 	{
 		HRESULT result = initfactories();
 		if (result == S_OK)
@@ -80,7 +81,6 @@ namespace IO
 				{
 					graphicsd2d.init();
 
-					ui = u;
 					fullscreen = false;
 					screencd = 0;
 					scralpha = 1.0f;
@@ -185,7 +185,7 @@ namespace IO
 					wasHandled = true;
 					break;
 				case WM_MOUSEMOVE:
-					app->getui()->sendmouse(vector2d<int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+					UI::sendmouse(vector2d<int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 					result = 0;
 					wasHandled = true;
 					break;
@@ -198,7 +198,7 @@ namespace IO
 					switch (wParam)
 					{
 					case MK_LBUTTON:
-						app->getui()->sendmouse(IO::MST_CLICKING, vector2d<int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+						UI::sendmouse(IO::MST_CLICKING, vector2d<int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 						break;
 					}
 					result = 0;
@@ -212,18 +212,18 @@ namespace IO
 				case WM_LBUTTONUP:
 					if (wParam != MK_LBUTTON)
 					{
-						app->getui()->sendmouse(IO::MST_IDLE, vector2d<int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+						UI::sendmouse(IO::MST_IDLE, vector2d<int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 					}
 					result = 0;
 					wasHandled = true;
 					break;
 				case WM_KEYDOWN:
-					app->getui()->getkeyboard().sendinput(true, static_cast<uint8_t>(wParam));
+					UI::getkeyboard().sendinput(true, static_cast<uint8_t>(wParam));
 					result = 0;
 					wasHandled = true;
 					break;
 				case WM_KEYUP:
-					app->getui()->getkeyboard().sendinput(false, static_cast<uint8_t>(wParam));
+					UI::getkeyboard().sendinput(false, static_cast<uint8_t>(wParam));
 					result = 0;
 					wasHandled = true;
 					break;

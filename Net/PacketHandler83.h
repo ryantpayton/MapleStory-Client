@@ -21,6 +21,8 @@
 
 namespace Net
 {
+	using std::unique_ptr;
+
 	// Maximum number of handler classes needed for now.
 	const uint16_t NUM_HANDLERS = 355;
 
@@ -32,10 +34,12 @@ namespace Net
 		PacketHandler83();
 		// Empty destructor.
 		~PacketHandler83();
+
 		// Handle a packet.
-		void handle(ClientInterface&, InPacket&) const;
+		void handle(InPacket&) const;
+
 	private:
-		std::unique_ptr<PacketHandler> handlers[NUM_HANDLERS];
+		unique_ptr<PacketHandler> handlers[NUM_HANDLERS];
 	};
 }
 

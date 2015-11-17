@@ -68,6 +68,17 @@ namespace Graphics
 			center = c;
 		}
 
+		DrawArgument(vector2d<int32_t> p, vector2d<int32_t> c, 
+			vector2d<int32_t> s, float xs, float ys, float a) {
+
+			pos = p;
+			center = c;
+			stretch = s;
+			xscale = xs;
+			yscale = ys;
+			alpha = a;
+		}
+
 		~DrawArgument() {}
 
 		vector2d<int32_t> getpos() const 
@@ -98,6 +109,11 @@ namespace Graphics
 		float getalpha() const 
 		{ 
 			return alpha; 
+		}
+
+		DrawArgument overwritealpha(float newalpha) const
+		{
+			return DrawArgument(pos, center, stretch, xscale, yscale, newalpha);
 		}
 
 	private:

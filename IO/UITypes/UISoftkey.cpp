@@ -15,20 +15,19 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "UISoftKey.h"
+#include "IO\UI.h"
+#include "Net\Session.h"
 #include "IO\Components\MapleButton.h"
 #include "Net\Packets\SelectCharPackets83.h"
 #include "nlnx\nx.hpp"
 #include "nlnx\node.hpp"
 
-#define button_ptr unique_ptr<Button>
-
 namespace IO
 {
 	const uint8_t NUM_KEYS = 10;
 
-	UISoftkey::UISoftkey(SkType t, UIInterface& u, SessionInterface& ses) : ui(u), session(ses)
+	UISoftkey::UISoftkey(SkType t)
 	{
 		type = t;
 
@@ -37,22 +36,22 @@ namespace IO
 		sprites.push_back(Sprite(src["backgrnd2"]));
 		sprites.push_back(Sprite(src["backgrnd3"]));
 
-		buttons[BT_NEXT] = button_ptr(new MapleButton(src["BtNext"]));
-		buttons[BT_BACK] = button_ptr(new MapleButton(src["BtDel"]));
-		buttons[BT_OK] = button_ptr(new MapleButton(src["BtOK"], vector2d<int32_t>(72, 235)));
-		buttons[BT_CANCEL] = button_ptr(new MapleButton(src["BtCancel"], vector2d<int32_t>(13, 235)));
+		buttons[BT_NEXT] = unique_ptr<Button>(new MapleButton(src["BtNext"]));
+		buttons[BT_BACK] = unique_ptr<Button>(new MapleButton(src["BtDel"]));
+		buttons[BT_OK] = unique_ptr<Button>(new MapleButton(src["BtOK"], vector2d<int32_t>(72, 235)));
+		buttons[BT_CANCEL] = unique_ptr<Button>(new MapleButton(src["BtCancel"], vector2d<int32_t>(13, 235)));
 
 		node keys = src["BtNum"];
-		buttons[BT_0] = button_ptr(new MapleButton(keys["0"]));
-		buttons[BT_1] = button_ptr(new MapleButton(keys["1"]));
-		buttons[BT_2] = button_ptr(new MapleButton(keys["2"]));
-		buttons[BT_3] = button_ptr(new MapleButton(keys["3"]));
-		buttons[BT_4] = button_ptr(new MapleButton(keys["4"]));
-		buttons[BT_5] = button_ptr(new MapleButton(keys["5"]));
-		buttons[BT_6] = button_ptr(new MapleButton(keys["6"]));
-		buttons[BT_7] = button_ptr(new MapleButton(keys["7"]));
-		buttons[BT_8] = button_ptr(new MapleButton(keys["8"]));
-		buttons[BT_9] = button_ptr(new MapleButton(keys["9"]));
+		buttons[BT_0] = unique_ptr<Button>(new MapleButton(keys["0"]));
+		buttons[BT_1] = unique_ptr<Button>(new MapleButton(keys["1"]));
+		buttons[BT_2] = unique_ptr<Button>(new MapleButton(keys["2"]));
+		buttons[BT_3] = unique_ptr<Button>(new MapleButton(keys["3"]));
+		buttons[BT_4] = unique_ptr<Button>(new MapleButton(keys["4"]));
+		buttons[BT_5] = unique_ptr<Button>(new MapleButton(keys["5"]));
+		buttons[BT_6] = unique_ptr<Button>(new MapleButton(keys["6"]));
+		buttons[BT_7] = unique_ptr<Button>(new MapleButton(keys["7"]));
+		buttons[BT_8] = unique_ptr<Button>(new MapleButton(keys["8"]));
+		buttons[BT_9] = unique_ptr<Button>(new MapleButton(keys["9"]));
 
 		buttons[BT_OK]->setstate(Button::DISABLED);
 
@@ -69,10 +68,7 @@ namespace IO
 	{
 		UIElement::draw(inter);
 
-		if (active)
-		{
-			entry.draw(position + vector2d<int32_t>(15, 41));
-		}
+		entry.draw(position + vector2d<int32_t>(15, 41));
 	}
 
 	void UISoftkey::buttonpressed(uint16_t id)
@@ -112,19 +108,18 @@ namespace IO
 		case BT_OK:
 			if (entered.size() > 5)
 			{
-				ui.disable();
-				int32_t cid = session.getlogin().getcharid();
+				UI::disable();
+
+				int32_t cid = Net::Session::getlogin().getcharid();
 				switch (type)
 				{
 				case CHARSELECT:
-
-					using::Net::SelectCharPicPacket83;
-					session.dispatch(SelectCharPicPacket83(entered, cid));
+					using Net::SelectCharPicPacket83;
+					Net::Session::dispatch(SelectCharPicPacket83(entered, cid));
 					break;
 				case REGISTER:
-
-					using::Net::RegisterPicPacket83;
-					session.dispatch(RegisterPicPacket83(cid, entered));
+					using Net::RegisterPicPacket83;
+					Net::Session::dispatch(RegisterPicPacket83(cid, entered));
 					break;
 				}
 				active = false;

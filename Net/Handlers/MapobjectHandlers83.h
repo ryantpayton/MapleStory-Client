@@ -18,13 +18,14 @@
 #pragma once
 #include "Net\PacketHandler.h"
 #include "AbstractMovementHandler83.h"
+#include "Gameplay\Stage.h"
 
 namespace Net
 {
 	// Handles a packet which tells the client to spawn an npc on the current map.
 	class SpawnNpcHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			int32_t oid = recv.readint();
 			int32_t id = recv.readint();
@@ -35,7 +36,7 @@ namespace Net
 			int16_t rx = recv.readshort();
 			int16_t ry = recv.readshort();
 
-			client.getstage().getnpcs().addnpc(id, oid, f, fh, false, posx, posy);
+			Gameplay::Stage::getnpcs().addnpc(id, oid, f, fh, false, posx, posy);
 		}
 	};
 
@@ -43,7 +44,7 @@ namespace Net
 	// Handles a packet which tells the client to spawn and control an npc on the current map.
 	class SpawnNpcControllerHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			int8_t mode = recv.readbyte();
 			int32_t oid = recv.readint();
@@ -62,7 +63,7 @@ namespace Net
 				int16_t ry = recv.readshort();
 				bool minimap = recv.readbool();
 
-				client.getstage().getnpcs().addnpc(id, oid, f, fh, true, posx, posy);
+				Gameplay::Stage::getnpcs().addnpc(id, oid, f, fh, true, posx, posy);
 			}
 		}
 	};
@@ -70,7 +71,7 @@ namespace Net
 	// Handles a packet which tells the client to spawn a mob.
 	class SpawnMobHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			int32_t oid = recv.readint();
 			bool hascontrol = recv.readbyte() == 5;
@@ -99,14 +100,14 @@ namespace Net
 			int8_t team = recv.readbyte();
 			recv.skip(4);
 
-			client.getstage().getmobs().addmob(oid, id, hascontrol, stance, fh, effect, fadein, team, posx, posy);
+			Gameplay::Stage::getmobs().addmob(oid, id, hascontrol, stance, fh, effect, fadein, team, posx, posy);
 		}
 	};
 
 	// Handles a packet which tells the client to spawn a mob and control it.
 	class SpawnMobControllerHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			int8_t aggro = recv.readbyte();
 			int32_t oid = recv.readint();
@@ -140,30 +141,30 @@ namespace Net
 			int8_t team = recv.readbyte();
 			recv.skip(4);
 
-			client.getstage().getmobs().addmob(oid, id, true, stance, fh, effect, fadein, team, posx, posy);
+			Gameplay::Stage::getmobs().addmob(oid, id, true, stance, fh, effect, fadein, team, posx, posy);
 		}
 	};
 
 	class ShowMobHpHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			int32_t oid = recv.readint();
 			int8_t hppercent = recv.readbyte();
 
-			uint16_t playerlevel = client.getstage().getplayer().getstats().getstat(Character::MS_LEVEL);
-			client.getstage().getmobs().sendmobhp(oid, hppercent, playerlevel);
+			uint16_t playerlevel = Gameplay::Stage::getplayer().getstats().getstat(Character::MS_LEVEL);
+			Gameplay::Stage::getmobs().sendmobhp(oid, hppercent, playerlevel);
 		}
 	};
 
 	class KillMobHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			int32_t oid = recv.readint();
 			int8_t animation = recv.readbyte();
 
-			client.getstage().getmobs().killmob(oid, animation);
+			Gameplay::Stage::getmobs().killmob(oid, animation);
 		}
 	};
 	/*
@@ -238,7 +239,7 @@ namespace Net
 
 	class SpawnCharHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			int32_t cid = recv.readint();
 			uint8_t level = recv.readbyte();
@@ -314,22 +315,22 @@ namespace Net
 			recv.skip(3);
 			int8_t team = recv.readbyte();
 
-			client.getstage().getchars().addchar(cid, look, level, job, name, stance, vector2d<int32_t>(px, py));
+			Gameplay::Stage::getchars().addchar(cid, look, level, job, name, stance, vector2d<int32_t>(px, py));
 		}
 	};
 
 	class RemoveCharHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			int32_t cid = recv.readint();
-			client.getstage().getchars().removechar(cid);
+			Gameplay::Stage::getchars().removechar(cid);
 		}
 	};
 
 	class MoveCharHandler83 : public AbstractMovementHandler83
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			int32_t cid = recv.readint();
 			recv.skip(4);
@@ -337,7 +338,7 @@ namespace Net
 			MovementInfo movements;
 			parsemovement(recv, movements);
 
-			client.getstage().getchars().movechar(cid, movements);
+			Gameplay::Stage::getchars().movechar(cid, movements);
 		}
 	};
 

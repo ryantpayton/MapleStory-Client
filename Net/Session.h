@@ -16,63 +16,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "SessionInterface.h"
-#include "Cryptography.h"
-#include "PacketHandler83.h"
-#include "Program\ClientInterface.h"
-
-#include "Journey.h"
-#ifdef JOURNEY_USE_ASIO
-#include "SocketAsio.h"
-#else
-#include "SocketWinsock.h"
-#endif
+#include "OutPacket.h"
+#include "Login\Login.h"
 
 namespace Net
 {
-	// Class used to communicate with the server.
-	class Session : public SessionInterface
+	//Contains methods for communicating with the server.
+	namespace Session
 	{
-	public:
-		Session();
-		~Session();
-
 		// Connect to the server using the default values for adress and login port, return if successfull.
 		bool init();
-		// Connect to the server using the specified values, return if successfull.
-		bool init(const char* adress, const char* port);
-		// Check for incoming packets and handle them. Returns if the connection is still alive.
-		bool receive(ClientInterface& client);
-
-		// Sends a packet to the server, using the cryptography to encrypt data and add the header.
-		void dispatch(const OutPacket& tosend) override;
 		// Closes the current connection and opens a new one.
-		bool reconnect(const char* adress, const char* port) override;
+		bool reconnect(const char* adress, const char* port);
 		// The next call to receive() will return false, qutting the game.
-		void disconnect() override;
-		// Return the object with the current login information.
-		Login& getlogin() override;
-
-	private:
-		void process(ClientInterface&, const int8_t*, size_t);
-
-#ifdef JOURNEY_USE_ASIO
-		SocketAsio socket;
-#else
-		SocketWinsock socket;
-#endif
-
-		Cryptography crypto;
-		PacketHandler83 phandler;
-
-		Login login;
-
-		bool connected;
-		uint8_t sendiv[4];
-		uint8_t recviv[4];
-		int8_t buffer[MAX_PACKET_LEN];
-		size_t length;
-		size_t pos;
-	};
+		void disconnect();
+		// Check for incoming packets and handle them. Returns if the connection is still alive.
+		bool receive();
+		// Sends a packet to the server, using the cryptography to encrypt data and add the header.
+		void dispatch(const OutPacket& tosend);
+		// Obtain a reference to the login information.
+		Login& getlogin();
+	}
 }
 

@@ -18,7 +18,6 @@
 #pragma once
 #include "Journey.h"
 #ifndef JOURNEY_USE_OPENGL
-#include "IO\UI.h"
 #include "Graphics\GraphicsD2D.h"
 #include <windowsx.h>
 #include <math.h>
@@ -32,7 +31,8 @@ namespace IO
 	public:
 		WindowD2D();
 		~WindowD2D();
-		bool init(UI*);
+
+		bool init();
 		void update();
 		void begin() const;
 		void end() const;
@@ -40,7 +40,6 @@ namespace IO
 		void fadeout();
 		float getdpix() { return dpiX; }
 		float getdpiy() { return dpiY; }
-		UI* getui() { return ui; }
 
 	private:
 		void endtransition();
@@ -54,7 +53,6 @@ namespace IO
 		ID2D1HwndRenderTarget* d2d_rtarget;
 		ID2D1BitmapRenderTarget* bitmaptarget;
 		GraphicsD2D graphicsd2d;
-		UI* ui;
 		float dpiX;
 		float dpiY;
 		float scralpha;

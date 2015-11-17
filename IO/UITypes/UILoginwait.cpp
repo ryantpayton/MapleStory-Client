@@ -24,9 +24,7 @@ namespace IO
 {
 	UILoginwait::UILoginwait()
 	{
-		using::Graphics::Texture;
-		using::Graphics::Sprite;
-		using::nl::node;
+		using nl::node;
 
 		node src = nl::nx::ui["Login.img"]["Notice"]["Loading"];
 		sprites.push_back(Sprite(src["backgrnd"], vector2d<int32_t>()));

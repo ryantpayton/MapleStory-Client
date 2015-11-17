@@ -16,12 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\Session.h"
-#include "Audio\AudioplayerBass.h"
-#include "Util\NxFileManager.h"
-#include "IO\UI.h"
-#include "Gameplay\Stage.h"
-#include "ClientInterface.h"
 
 #include "Journey.h"
 #ifdef JOURNEY_USE_OPENGL
@@ -30,21 +24,9 @@
 #include "IO\WindowD2D.h"
 #endif
 
-namespace Journey
+namespace Program
 {
-#ifdef JOURNEY_USE_OPENGL
-	using IO::WindowGLFW;
-#else
-	using IO::WindowD2D;
-#endif
-
-	using IO::UI;
-	using Net::Session;
-	using Audio::AudioplayerBass;
-	using Util::Configuration;
-	using Gameplay::Stage;
-
-	class Client : public ClientInterface
+	class Client
 	{
 	public:
 		// Error codes to be checked after initialisation.
@@ -63,40 +45,18 @@ namespace Journey
 		// Initialise and return errors.
 		Error init();
 		// Checks for incoming packets and returns if the connection is still alive.
-		bool receive();
+		bool receive() const;
 		// Draws the window and all game objects.
 		void draw(float) const;
 		// Processes inputs and updates the window and all game objects.
 		void update();
-
-		// Obtain a reference to the audioplayer.
-		Audioplayer& getaudio() override;
-		// Obtain a reference to the stage.
-		StageInterface& getstage() override;
-		// Obtain a reference to the ui.
-		UIInterface& getui() override;
-		// Obtain a reference to the session.
-		SessionInterface& getsession() override;
-		// Obtain a reference to the settings.
-		Configuration& getconfig() override;
-		// Obtain a reference to the nxfilemanager.
-		NxFileManager& getnxfiles() override;
 
 	private:
 
 #ifdef JOURNEY_USE_OPENGL
 		WindowGLFW window;
 #else
-		WindowD2D window;
+		IO::WindowD2D window;
 #endif
-
-		AudioplayerBass audioplayer;
-		NxFileManager nxfiles;
-		Stage stage;
-		UI ui;
-		Session session;
-		Configuration config;
-		Error error;
 	};
 }
-

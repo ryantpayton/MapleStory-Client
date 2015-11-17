@@ -53,7 +53,7 @@ namespace Gameplay
 		vector2d<int32_t> getborders() const;
 
 		const Seat* findseat(vector2d<int32_t>) const;
-		const Ladder* findladder(vector2d<int32_t>) const;
+		const Ladder* findladder(vector2d<int32_t>, bool) const;
 
 	private:
 		bool newbgm;

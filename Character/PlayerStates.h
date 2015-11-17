@@ -276,6 +276,7 @@ namespace Character
 
 	class PlayerClimbState : public PlayerState
 	{
+	public:
 		void sendaction(PlayableChar& player, Keyaction ka, bool down) const override
 		{
 			if (down)
@@ -286,14 +287,16 @@ namespace Character
 					if (player.keydown(IO::KA_LEFT))
 					{
 						player.setflip(false);
-						player.getphobj().hforce = -player.getjforce();
-						player.getphobj().vforce = -player.getjforce();
+						player.getphobj().hspeed = -player.getwforce() * 3.0f;
+						player.getphobj().vforce = -player.getjforce() / 1.5f;
+						cancelladder(player);
 					}
 					else if (player.keydown(IO::KA_RIGHT))
 					{
 						player.setflip(true);
-						player.getphobj().hforce = player.getjforce();
-						player.getphobj().vforce = player.getjforce();
+						player.getphobj().hspeed = player.getwforce() * 3.0f;
+						player.getphobj().vforce = -player.getjforce() / 1.5f;
+						cancelladder(player);
 					}
 					break;
 				}
@@ -304,39 +307,40 @@ namespace Character
 		{
 			if (player.keydown(IO::KA_UP))
 			{
-				player.getphobj().vforce = -player.getclimbforce();
+				player.getphobj().vspeed = -player.getclimbforce();
 			}
 			else if (player.keydown(IO::KA_DOWN))
 			{
-				player.getphobj().vforce = player.getclimbforce();
+				player.getphobj().vspeed = player.getclimbforce();
+			}
+			else
+			{
+				player.getphobj().vspeed = 0.0f;
 			}
 		}
 
 		void nextstate(PlayableChar& player) const override
 		{
-			if (player.getphobj().onground)
+			const Ladder* ladder = player.getladder();
+			if (ladder)
 			{
-				player.setstance(Char::STAND);
-				player.getphobj().canfall = true;
-			}
-			else
-			{
-				const Ladder* ladder = player.getladder();
-				if (ladder)
-				{
-					float cfy;
-					if (player.getphobj().vspeed > 0.0f)
-						cfy = player.getphobj().fy;
-					else
-						cfy = player.getphobj().fy - 35;
+				float cfy;
+				if (player.keydown(IO::KA_DOWN))
+					cfy = player.getphobj().fy;
+				else
+					cfy = player.getphobj().fy - 15;
 
-					if (cfy > ladder->y2 || cfy < ladder->y1)
-					{
-						player.setstance(Char::FALL);
-						player.getphobj().canfall = true;
-					}
-				}
+				if (cfy > ladder->y2 || player.getphobj().fy + 5 < ladder->y1)
+					cancelladder(player);
 			}
+		}
+
+	private:
+		void cancelladder(PlayableChar& player) const
+		{
+			player.setstance(Char::FALL);
+			player.getphobj().type = PhysicsObject::NORMAL;
+			player.setladder(nullptr);
 		}
 	};
 }

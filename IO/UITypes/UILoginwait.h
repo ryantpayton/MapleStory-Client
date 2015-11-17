@@ -29,9 +29,6 @@ namespace IO
 
 	class ElementLoginwait : public Element
 	{
-	public:
-		ElementLoginwait(){}
-
 		bool isfocused() const override
 		{
 			return true;

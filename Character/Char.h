@@ -62,6 +62,11 @@ namespace Character
 		bool getflip() const;
 		rectangle2d<int32_t> getbounds() const;
 
+		// Return if the char is in the Char::SIT state.
+		bool issitting() const;
+		// Return if the char is in the Char::LADDER or Char::ROPE state.
+		bool isclimbing() const;
+
 		CharLook& getlook();
 		PhysicsObject& getphobj();
 

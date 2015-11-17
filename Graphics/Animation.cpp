@@ -16,8 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Animation.h"
-#include "Program\TimeConstants.h"
+#include "Animation.h"
+#include "Program\Constants.h"
 
 namespace Graphics
 {
@@ -75,9 +75,8 @@ namespace Graphics
 			}
 
 			alpha = static_cast<float>(alphablends[0].first);
-			alphastep = (static_cast<float>(alphablends[0].second) - alpha) / (delays[0] / Constants::TIMESTEP);
+			alphastep = nextalphastep(0, Constants::TIMESTEP);
 			lastalpha = alpha;
-			lastalphastep = alphastep;
 		}
 
 		elapsed = 0;
@@ -94,19 +93,26 @@ namespace Graphics
 	void Animation::draw(const DrawArgument& args, float inter) const
 	{
 		uint8_t interframe;
+		float interalpha;
 		if (animated)
 		{
-			if (elapsed + Constants::TIMESTEP * inter > delays[lastframe])
+			if (lastelapsed + Constants::TIMESTEP * inter > delays[lastframe])
 				interframe = frame;
 			else
 				interframe = lastframe;
+
+			interalpha = (1.0f - inter) * lastalpha + inter * alpha;
 		}
 		else
 		{
 			interframe = 0;
+			interalpha = 255.0f;
 		}
 
-		textures[interframe].draw(args);
+		if (args.getalpha() == 1.0f && interalpha != 255.0f)
+			textures[interframe].draw(args.overwritealpha(interalpha / 255));
+		else
+			textures[interframe].draw(args);
 	}
 
 	void Animation::reset()
@@ -115,12 +121,11 @@ namespace Graphics
 		{
 			lastframe = frame;
 			lastalpha = alpha;
-			lastalphastep = alphastep;
 
 			elapsed = 0;
 			frame = 0;
 			alpha = static_cast<float>(alphablends[0].first);
-			alphastep = (static_cast<float>(alphablends[0].second) - alpha) / (delays[0] / Constants::TIMESTEP);
+			alphastep = nextalphastep(0, Constants::TIMESTEP);
 		}
 	}
 
@@ -133,26 +138,25 @@ namespace Graphics
 	{
 		if (animated)
 		{
+			lastframe = frame;
+			lastelapsed = elapsed;
+			lastalpha = alpha;
+
 			elapsed += timestep;
 
-			lastalpha = alpha;
 			alpha += alphastep;
-
-			if (alpha < 0.f)
-				alpha = 0.f;
-			else if (alpha > 255.f)
-				alpha = 255.f;
+			if (alpha < 0.0f)
+				alpha = 0.0f;
+			else if (alpha > 255.0f)
+				alpha = 255.0f;
 
 			uint16_t delay = delays[frame];
 			if (elapsed > delay)
 			{
 				elapsed -= delay;
-
-				lastframe = frame;
 				frame = (frame == textures.size() - 1) ? 0 : frame + 1;
 
-				lastalphastep = alphastep;
-				alphastep = (static_cast<float>(alphablends[frame].second) - alpha * timestep) / delay;
+				alphastep = nextalphastep(frame, timestep);
 				return frame == 0;
 			}
 		}
@@ -167,5 +171,10 @@ namespace Graphics
 	vector2d<int32_t> Animation::getdimensions() const
 	{
 		return textures[frame].getdimensions();
+	}
+
+	float Animation::nextalphastep(uint8_t frm, uint16_t timestep) const
+	{
+		return (static_cast<float>(alphablends[frm].second) - alpha) * timestep / delays[frm];
 	}
 }

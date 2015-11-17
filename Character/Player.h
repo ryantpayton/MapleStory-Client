@@ -78,11 +78,6 @@ namespace Character
 		// Change players xpos to the ladder x and change stance to Char::LADDER or Char::ROPE.
 		void setladder(const Ladder* ladder);
 
-		// Return if the player is in the Char::SIT state.
-		bool issitting() const;
-		// Return if the player is in the Char::LADDER or Char::ROPE state.
-		bool isclimbing() const;
-
 		// Obtain a reference to the player's stats.
 		Charstats& getstats();
 		// Obtain a reference to the player's inventory.

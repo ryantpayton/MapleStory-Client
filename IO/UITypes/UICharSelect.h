@@ -16,18 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\UIElement.h"
-#include "IO\UIInterface.h"
+#include "IO\Element.h"
 #include "IO\Components\Nametag.h"
 #include "IO\Components\Charset.h"
-#include "Net\SessionInterface.h"
 #include "Character\Look\CharLook.h"
 
 namespace IO
 {
 	using std::vector;
 	using Character::CharLook;
-	using Net::SessionInterface;
 
 	// The character selection screen.
 	class UICharSelect : public UIElement
@@ -45,7 +42,7 @@ namespace IO
 			BT_CHAR0
 		};
 
-		UICharSelect(UIInterface&, SessionInterface&);
+		UICharSelect();
 		void draw(float) const override;
 		void update() override;
 		void buttonpressed(uint16_t) override;
@@ -56,9 +53,6 @@ namespace IO
 	private:
 		void selectchar();
 		vector2d<int32_t> getcharpos(size_t) const;
-
-		UIInterface& ui;
-		SessionInterface& session;
 
 		vector<CharLook> charlooks;
 		uint8_t charcount;
@@ -74,9 +68,6 @@ namespace IO
 	// Factory for the character selection screen.
 	class ElementCharSelect : public Element
 	{
-	public:
-		ElementCharSelect(UIInterface& u, SessionInterface& ses) : ui(u), session(ses) {}
-
 		UIType type() const override
 		{
 			return CHARSELECT;
@@ -84,12 +75,8 @@ namespace IO
 
 		UIElement* instantiate() const override
 		{
-			return new UICharSelect(ui, session);
+			return new UICharSelect();
 		}
-
-	private:
-		UIInterface& ui;
-		SessionInterface& session;
 	};
 }
 

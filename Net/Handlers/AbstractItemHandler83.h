@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Net\PacketHandler.h"
+#include "Character\Inventory\Inventory.h"
 
 namespace Net
 {

@@ -62,7 +62,7 @@ namespace Gameplay
 			seats.push_back(seat);
 		}
 
-		node lrsrc = src["ladders"];
+		node lrsrc = src["ladderRope"];
 		for (node& lrnode : lrsrc)
 		{
 			Ladder ladder;
@@ -108,12 +108,17 @@ namespace Gameplay
 		return nullptr;
 	}
 
-	const Ladder* MapInfo::findladder(vector2d<int32_t> pos) const
+	const Ladder* MapInfo::findladder(vector2d<int32_t> pos, bool up) const
 	{
 		vector2d<int32_t> hor = vector2d<int32_t>(pos.x() - 25, pos.x() + 25);
 		for (auto& lrit : ladders)
 		{
-			vector2d<int32_t> lrver = vector2d<int32_t>(lrit.y1 - 5, lrit.y2);
+			vector2d<int32_t> lrver;
+			if (up)
+				lrver = vector2d<int32_t>(lrit.y1, lrit.y2 + 15);
+			else
+				lrver = vector2d<int32_t>(lrit.y1 - 5, lrit.y2);
+
 			if (hor.contains(lrit.x) && lrver.contains(pos.y()))
 			{
 				return &lrit;

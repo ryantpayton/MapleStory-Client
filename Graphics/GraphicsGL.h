@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Journey.h"
-//#ifdef JOURNEY_USE_OPENGL
+#ifdef JOURNEY_USE_OPENGL
 #include "Util\rectangle2d.h"
 #include "nlnx\bitmap.hpp"
 
@@ -27,18 +27,15 @@ namespace Graphics
 	using::Util::vector2d;
 	using::Util::rectangle2d;
 
-	class GraphicsGL
+	namespace GraphicsGL
 	{
-	public:
-		GraphicsGL();
-		~GraphicsGL();
-		static void init();
-		static void clear();
-		static void addbitmap(const bitmap&);
-		static bool available(size_t);
-		static void draw(size_t, rectangle2d<int32_t>, float, float, vector2d<int32_t>, float);
-		static void flush();
+		void init();
+		void clear();
+		void addbitmap(const bitmap&);
+		bool available(size_t);
+		void draw(size_t, rectangle2d<int32_t>, float, float, vector2d<int32_t>, float);
+		void flush();
 	};
 }
-//#endif
+#endif
 

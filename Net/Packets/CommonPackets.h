@@ -18,6 +18,7 @@
 #pragma once
 #include "OutPacket.h"
 #include "SendOpcodes83.h"
+#include "Util\NxFileManager.h"
 
 namespace Net
 {
@@ -28,26 +29,25 @@ namespace Net
 		PongPacket() : OutPacket(PONG) {}
 	};
 
-	using::Util::NxFileManager;
 	// Packet which sends the hash values of all game files to the server.
 	class NxCheckPacket : public OutPacket
 	{
 	public:
-		NxCheckPacket(const NxFileManager& nxfiles, uint64_t seed) : OutPacket(HASH_CHECK)
+		NxCheckPacket(uint64_t seed) : OutPacket(HASH_CHECK)
 		{
-			writech(static_cast<uint8_t>(Util::NUM_FILES));
-			for (size_t i = 0; i < Util::NUM_FILES; i++)
+			writech(static_cast<uint8_t>(Util::NxFiles::NUM_FILES));
+			for (size_t i = 0; i < Util::NxFiles::NUM_FILES; i++)
 			{
-				writestr(nxfiles.gethash(i, seed));
+				writestr(Util::NxFiles::gethash(i, seed));
 			}
 		}
 
-		NxCheckPacket(const NxFileManager& nxfiles) : OutPacket(HASH_CHECK)
+		NxCheckPacket() : OutPacket(HASH_CHECK)
 		{
-			writech(static_cast<uint8_t>(Util::NUM_FILES));
-			for (size_t i = 0; i < Util::NUM_FILES; i++)
+			writech(static_cast<uint8_t>(Util::NxFiles::NUM_FILES));
+			for (size_t i = 0; i < Util::NxFiles::NUM_FILES; i++)
 			{
-				writestr(nxfiles.gethash(i));
+				writestr(Util::NxFiles::gethash(i));
 			}
 		}
 	};

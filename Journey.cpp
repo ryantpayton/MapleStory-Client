@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Program\Client.h"
-#include "Program\TimeConstants.h"
+#include "Program\Constants.h"
 #include "Util\StopWatch.h"
 #include <iostream>
 
@@ -31,7 +31,7 @@ void showerror(const char* error)
 int main()
 {
 	// Create our game.
-	using::Journey::Client;
+	using::Program::Client;
 	Client client;
 
 	// Initialise and check for errors.
@@ -39,14 +39,12 @@ int main()
 	if (error == Client::NONE)
 	{
 		// No error occured. We can start the main loop.
-		using::Util::StopWatch;
-		StopWatch stopwatch;
-		uint16_t remain = 0;
+		Util::StopWatch stopwatch;
+		int64_t remain = 0;
 
 		// Run the game as long as the connection is alive.
 		while (client.receive())
 		{
-			// remain is our accumulator for how much time we will have to update.
 			remain += stopwatch.stop();
 			while (remain >= Constants::TIMESTEP)
 			{
@@ -54,8 +52,6 @@ int main()
 				client.update();
 				remain -= Constants::TIMESTEP;
 			}
-			// Restart the stopwatch.
-			stopwatch.start();
 
 			// Draw the game. Interpolate to account for remaining time.
 			float inter = static_cast<float>(remain) / Constants::TIMESTEP;

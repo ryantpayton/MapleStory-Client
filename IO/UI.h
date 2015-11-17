@@ -16,46 +16,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Program\ClientInterface.h"
-#include "IO\KeyTarget.h"
-#include "IO\Element.h"
-#include "IO\Cursor.h"
-#include "IO\Keyboard.h"
-#include <unordered_map>
-#include <memory>
+#include "Element.h"
+#include "Keyboard.h"
 
 namespace IO
 {
-	using::std::unique_ptr;
-	using::std::unordered_map;
-	using Journey::ClientInterface;
-
-	// Class that manages all the different UIs.
-	class UI : public UIInterface
+	namespace UI
 	{
-	public:
-		UI(ClientInterface&);
-
 		void init();
-		void draw(float) const;
+		void draw(float inter);
 		void update();
-		void enable() override;
-		void disable() override;
-		void sendmouse(vector2d<int32_t>);
-		void sendmouse(Mousestate, vector2d<int32_t>);
-		void sendkey(Keytype, int32_t, bool) override;
-		void add(const Element&) override;
-		void remove(Element::UIType) override;
-		UIElement* getelement(Element::UIType) const override;
-		Keyboard& getkeyboard() override;
 
-	private:
-		unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
-		Element::UIType focused;
-		Cursor cursor;
-		Keyboard keyboard;
-		bool enabled;
+		void sendmouse(vector2d<int32_t> pos);
+		void sendmouse(Mousestate state, vector2d<int32_t> pos);
+		void sendkey(Keytype type, int32_t keycode, bool pressed);
+		void enable();
+		void disable();
+		void add(const Element& type);
+		void remove(Element::UIType type);
 
-		ClientInterface& client;
-	};
+		Keyboard& getkeyboard();
+		UIElement* getelement(Element::UIType type);
+	}
 }

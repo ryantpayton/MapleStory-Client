@@ -17,21 +17,23 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "PacketHandler.h"
+#include "IO\UI.h"
 
 namespace Net
 {
 	class KeymapHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			recv.readbyte();
 
-			using::IO::Keytype;
+			using IO::Keytype;
+
 			for (int32_t i = 0; i < 90; i++)
 			{
 				Keytype type = static_cast<Keytype>(recv.readbyte());
 				int32_t action = recv.readint();
-				client.getui().getkeyboard().addmapping(i, type, action);
+				IO::UI::getkeyboard().addmapping(i, type, action);
 			}
 
 			/*quickslot* qslot = uinterface.getelement<quickslot>(UI_QUICKSLOTS);
@@ -44,7 +46,7 @@ namespace Net
 
 	class SkillmacrosHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			map<string, pair<int8_t, vector<int32_t>>> macros;
 			uint8_t size = recv.readbyte();

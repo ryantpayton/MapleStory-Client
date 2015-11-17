@@ -16,15 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\UIElement.h"
-#include "IO\UIInterface.h"
-#include "Net\Login\Login.h"
-#include "Net\SessionInterface.h"
+#include "IO\Element.h"
 
 namespace IO
 {
-	using Net::SessionInterface;
-
 	class UIWorldSelect : public UIElement
 	{
 	public:
@@ -35,13 +30,10 @@ namespace IO
 			BT_CHANNEL0 = 17
 		};
 
-		UIWorldSelect(UIInterface&, SessionInterface&);
+		UIWorldSelect();
 		void buttonpressed(uint16_t) override;
 
 	private:
-		UIInterface& ui;
-		SessionInterface& session;
-
 		uint8_t worldid;
 		uint8_t channelid;
 	};
@@ -49,7 +41,7 @@ namespace IO
 	class ElementWorldSelect : public Element
 	{
 	public:
-		ElementWorldSelect(UIInterface& u, SessionInterface& ses) : ui(u), session(ses) {}
+		ElementWorldSelect() {}
 
 		UIType type() const override
 		{
@@ -58,11 +50,8 @@ namespace IO
 
 		UIElement* instantiate() const override
 		{
-			return new UIWorldSelect(ui, session);
+			return new UIWorldSelect();
 		}
-	private:
-		UIInterface& ui;
-		SessionInterface& session;
 	};
 }
 

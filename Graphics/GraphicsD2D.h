@@ -36,6 +36,7 @@ namespace Graphics
 	public:
 		GraphicsD2D(IWICImagingFactory**, ID2D1BitmapRenderTarget**, IDWriteFactory**);
 		~GraphicsD2D();
+
 		static void init();
 		static void clear();
 		static void addbitmap(const bitmap&);

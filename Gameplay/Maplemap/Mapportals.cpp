@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Mapportals.h"
-#include "Program\TimeConstants.h"
+#include "Program\Constants.h"
 #include "nlnx\nx.hpp"
 
 namespace Gameplay

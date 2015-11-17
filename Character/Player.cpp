@@ -18,15 +18,10 @@
 #pragma once
 #include "Player.h"
 #include "PlayerStates.h"
-#include "Program\TimeConstants.h"
+#include "Program\Constants.h"
 
 namespace Character
 {
-	const float WALKFORCE = 0.5f;
-	const float JUMPFORCE = 5.0f;
-	const float CLIMBFORCE = 0.1f;
-	const float FLYFORCE = 0.25f;
-
 	const PlayerState* getstate(Char::Stance stance)
 	{
 		static PlayerStandState standing;
@@ -145,10 +140,14 @@ namespace Character
 		case WALK:
 			lookts = static_cast<uint16_t>(Constants::TIMESTEP * (1.0f + abs(phobj.hspeed) / 25));
 			break;
+		case LADDER:
+		case ROPE:
+			lookts = static_cast<uint16_t>(Constants::TIMESTEP * abs(phobj.vspeed));
+			break;
 		}
 		look.update(lookts);
 
-		return phobj.fhlayer;
+		return isclimbing() ? 7 : phobj.fhlayer;
 	}
 
 	void Player::setseat(const Seat* seat)
@@ -162,41 +161,39 @@ namespace Character
 
 	void Player::setladder(const Ladder* ldr)
 	{
-		if (!ldr)
-			return;
-
 		ladder = ldr;
-		phobj.fx = static_cast<float>(ldr->x);
-		setstance(ldr->ladder ? Char::LADDER : Char::ROPE);
+		if (ladder)
+		{
+			phobj.fx = static_cast<float>(ldr->x);
+			phobj.hspeed = 0.0f;
+			phobj.vspeed = 0.0f;
+			phobj.type = PhysicsObject::CLIMBING;
+			setstance(ldr->ladder ? Char::LADDER : Char::ROPE);
+			setflip(false);
+		}
 	}
-
-	bool Player::issitting() const
-	{
-		return stance == Char::SIT;
-	}
-
-	bool Player::isclimbing() const
-	{
-		return stance == Char::LADDER || stance == Char::ROPE;
-	}
-
+	
 	float Player::getwforce() const
 	{
+		static const float WALKFORCE = 0.5f;
 		return WALKFORCE * static_cast<float>(stats.gettotal(ES_SPEED)) / 100;
 	}
 
 	float Player::getjforce() const
 	{
+		static const float JUMPFORCE = 5.0f;
 		return JUMPFORCE * static_cast<float>(stats.gettotal(ES_JUMP)) / 100;
 	}
 
 	float Player::getclimbforce() const
 	{
+		static const float CLIMBFORCE = 1.0f;
 		return CLIMBFORCE * static_cast<float>(stats.gettotal(ES_SPEED)) / 100;
 	}
 
 	float Player::getflyforce() const
 	{
+		static const float FLYFORCE = 0.25f;
 		return FLYFORCE;
 	}
 

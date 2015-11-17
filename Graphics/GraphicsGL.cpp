@@ -1,5 +1,6 @@
 #pragma once
 #include "GraphicsGL.h"
+
 #ifdef JOURNEY_USE_OPENGL
 #include "GL\glew.h"
 #include "glm.hpp"

@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "OtherChar.h"
-#include "Program\TimeConstants.h"
+#include "Program\Constants.h"
 
 namespace Character
 {

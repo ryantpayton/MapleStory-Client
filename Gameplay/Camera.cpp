@@ -17,58 +17,42 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Camera.h"
-#include "Program\TimeConstants.h"
+#include "Program\Constants.h"
 
 namespace Gameplay
 {
-	const float fVIEWWIDTH = 800.0f;
-	const float fVIEWHEIGHT = 600.0f;
-	const int32_t VIEWWIDTH = 800;
-	const int32_t VIEWHEIGHT = 600;
-
 	Camera::Camera()
 	{
 		fx = 0.0f;
 		fy = 0.0f;
 		lastx = 0.0f;
 		lasty = 0.0f;
-		hspeed = 0.0f;
-		vspeed = 0.0f;
 	}
 
 	Camera::~Camera() {}
 
 	void Camera::update(vector2d<int32_t> playerpos)
 	{
-		float destx = (fVIEWWIDTH / 2) - static_cast<float>(playerpos.x());
-		float desty = (fVIEWHEIGHT / 2) - static_cast<float>(playerpos.y());
+		static const float hspeedf = 12 / Constants::fVIEWWIDTH;
+		static const float vspeedf = 12 / Constants::fVIEWHEIGHT;
+
+		float destx = (Constants::fVIEWWIDTH / 2) - static_cast<float>(playerpos.x());
+		float desty = (Constants::fVIEWHEIGHT / 2) - static_cast<float>(playerpos.y());
 
 		lastx = fx;
 		lasty = fy;
 
-		if (abs(destx - fx) > 1.0f || abs(desty - fy) > 1.0f)
-		{
-			hspeed = 1.5f * static_cast<float>(Constants::TIMESTEP) * (destx - fx) / fVIEWWIDTH;
-			vspeed = 1.5f * static_cast<float>(Constants::TIMESTEP) * (desty - fy) / fVIEWHEIGHT;
+		if (abs(destx - fx) > 1.0f)
+			fx += hspeedf * (destx - fx);
 
-			fx += hspeed;
-			fy += vspeed;
-
-			if (abs(destx - fx) <= 1.0f)
-			{
-				hspeed = 0.0f;
-			}
-			if (abs(desty - fy) <= 1.0f)
-			{
-				vspeed = 0.0f;
-			}
-		}
+		if (abs(desty - fy) > 1.0f)
+			fy += vspeedf * (desty - fy);
 	}
 
 	void Camera::setposition(vector2d<int32_t> pos)
 	{
-		fx = (fVIEWWIDTH / 2) - static_cast<float>(pos.x());
-		fy = (fVIEWHEIGHT / 2) - static_cast<float>(pos.y());
+		fx = (Constants::fVIEWWIDTH / 2) - static_cast<float>(pos.x());
+		fy = (Constants::fVIEWHEIGHT / 2) - static_cast<float>(pos.y());
 	}
 
 	void Camera::updateview(vector2d<int32_t> mapwalls, vector2d<int32_t> mapborders)
@@ -82,13 +66,13 @@ namespace Gameplay
 		int32_t retx = static_cast<int32_t>((1.0f - inter) * lastx + inter * fx);
 		int32_t rety = static_cast<int32_t>((1.0f - inter) * lasty + inter * fy);
 
-		if (retx > hbounds.x() || hbounds.length() < VIEWWIDTH)
+		if (retx > hbounds.x() || hbounds.length() < Constants::VIEWWIDTH)
 			retx = hbounds.x();
-		else if (retx < hbounds.y() + VIEWWIDTH)
-			retx = hbounds.y() + VIEWWIDTH;
+		else if (retx < hbounds.y() + Constants::VIEWWIDTH)
+			retx = hbounds.y() + Constants::VIEWWIDTH;
 
-		if (rety < vbounds.y() + VIEWHEIGHT || vbounds.length() < VIEWHEIGHT)
-			rety = vbounds.y() + VIEWHEIGHT;
+		if (rety < vbounds.y() + Constants::VIEWHEIGHT || vbounds.length() < Constants::VIEWHEIGHT)
+			rety = vbounds.y() + Constants::VIEWHEIGHT;
 
 		return vector2d<int32_t>(retx, rety);
 	}

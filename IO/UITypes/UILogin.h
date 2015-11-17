@@ -19,13 +19,9 @@
 #include "IO\Element.h"
 #include "IO\UI.h"
 #include "IO\Components\Textfield.h"
-#include "Net\SessionInterface.h"
-#include "Util\Configuration.h"
 
 namespace IO
 {
-	using Net::SessionInterface;
-	using Util::Configuration;
 	using Graphics::Texture;
 
 	class UILogin : public UIElement
@@ -42,17 +38,14 @@ namespace IO
 			BT_QUIT
 		};
 
-		UILogin(SessionInterface&, UIInterface&, Configuration&);
+		UILogin();
+
 		void draw(float) const override;
 		void update() override;
 		void buttonpressed(uint16_t) override;
 		Mousestate sendmouse(bool, vector2d<int32_t>) override;
 
 	private:
-		SessionInterface& session;
-		UIInterface& ui;
-		Configuration& config;
-
 		Textfield account;
 		Textfield password;
 		Texture accountbg;
@@ -63,10 +56,6 @@ namespace IO
 
 	class ElementLogin : public Element
 	{
-	public:
-		ElementLogin(SessionInterface& ses, UIInterface& u, Configuration& cfg) 
-			: session(ses), ui(u), config(cfg) {}
-
 		UIType type() const override
 		{
 			return LOGIN;
@@ -74,12 +63,7 @@ namespace IO
 
 		UIElement* instantiate() const override
 		{
-			return new UILogin(session, ui, config);
+			return new UILogin();
 		}
-
-	private:
-		SessionInterface& session;
-		UIInterface& ui;
-		Configuration& config;
 	};
 }

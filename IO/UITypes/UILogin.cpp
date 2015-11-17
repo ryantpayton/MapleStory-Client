@@ -18,19 +18,22 @@
 #pragma once
 #include "UILogin.h"
 #include "UILoginwait.h"
+#include "IO\UI.h"
+#include "Net\Session.h"
+#include "Program\Configuration.h"
 #include "Net\Packets\LoginPackets83.h"
 #include "IO\Components\MapleButton.h"
 #include "Graphics\Sprite.h"
 #include "nlnx\nx.hpp"
 #include "nlnx\audio.hpp"
 
-#define button_ptr unique_ptr<Button>
-
 namespace IO
 {
-	UILogin::UILogin(SessionInterface& ses, UIInterface& u, Configuration& cfg) 
-		: session(ses), ui(u), config(cfg) {
+	using namespace Program;
+	using namespace Net;
 
+	UILogin::UILogin()
+	{
 		node title = nl::nx::ui["Login.img"]["Title"];
 		node common = nl::nx::ui["Login.img"]["Common"];
 
@@ -41,13 +44,13 @@ namespace IO
 		sprites.push_back(Sprite(title["signboard"], vector2d<int32_t>(410, 300)));
 		sprites.push_back(Sprite(common["frame"], vector2d<int32_t>(400, 290)));
 
-		buttons[BT_LOGIN] = button_ptr(new MapleButton(title["BtLogin"], vector2d<int32_t>(475, 248)));
-		buttons[BT_REGISTER] = button_ptr(new MapleButton(title["BtNew"], vector2d<int32_t>(309, 320)));
-		buttons[BT_HOMEPAGE] = button_ptr(new MapleButton(title["BtHomePage"], vector2d<int32_t>(382, 320)));
-		buttons[BT_PASSLOST] = button_ptr(new MapleButton(title["BtPasswdLost"], vector2d<int32_t>(470, 300)));
-		buttons[BT_QUIT] = button_ptr(new MapleButton(title["BtQuit"], vector2d<int32_t>(455, 320)));
-		buttons[BT_IDLOST] = button_ptr(new MapleButton(title["BtLoginIDLost"], vector2d<int32_t>(395, 300)));
-		buttons[BT_SAVEID] = button_ptr(new MapleButton(title["BtLoginIDSave"], vector2d<int32_t>(325, 300)));
+		buttons[BT_LOGIN] = unique_ptr<Button>(new MapleButton(title["BtLogin"], vector2d<int32_t>(475, 248)));
+		buttons[BT_REGISTER] = unique_ptr<Button>(new MapleButton(title["BtNew"], vector2d<int32_t>(309, 320)));
+		buttons[BT_HOMEPAGE] = unique_ptr<Button>(new MapleButton(title["BtHomePage"], vector2d<int32_t>(382, 320)));
+		buttons[BT_PASSLOST] = unique_ptr<Button>(new MapleButton(title["BtPasswdLost"], vector2d<int32_t>(470, 300)));
+		buttons[BT_QUIT] = unique_ptr<Button>(new MapleButton(title["BtQuit"], vector2d<int32_t>(455, 320)));
+		buttons[BT_IDLOST] = unique_ptr<Button>(new MapleButton(title["BtLoginIDLost"], vector2d<int32_t>(395, 300)));
+		buttons[BT_SAVEID] = unique_ptr<Button>(new MapleButton(title["BtLoginIDSave"], vector2d<int32_t>(325, 300)));
 
 		checkbox[false] = Texture(title["check"]["0"]);
 		checkbox[true] = Texture(title["check"]["1"]);
@@ -59,16 +62,16 @@ namespace IO
 		passwordbg = Texture(title["PW"]);
 		password.setcrypt('*');
 
-		saveid = config.getbool("SaveLogin");
+		saveid = Configuration::getbool("SaveLogin");
 		if (saveid)
 		{
-			account.settext(config.getsetting("Account"));
-			ui.getkeyboard().focustarget(&password);
+			account.settext(Configuration::getsetting("Account"));
+			UI::getkeyboard().focustarget(&password);
 			password.setstate(Textfield::FOCUSED);
 		}
 		else
 		{
-			ui.getkeyboard().focustarget(&account);
+			UI::getkeyboard().focustarget(&account);
 			account.setstate(Textfield::FOCUSED);
 		}
 
@@ -81,33 +84,24 @@ namespace IO
 	{
 		UIElement::draw(inter);
 
-		if (active)
-		{
-			account.draw(position);
-			password.draw(position);
+		account.draw(position);
+		password.draw(position);
 
-			using::Graphics::DrawArgument;
-			if (account.getstate() == Textfield::NORMAL && account.gettext().size() == 0)
-			{
-				accountbg.draw(DrawArgument(310, 249));
-			}
-			if (password.getstate() == Textfield::NORMAL && password.gettext().size() == 0)
-			{
-				passwordbg.draw(DrawArgument(310, 275));
-			}
-			checkbox.at(saveid).draw(DrawArgument(position + vector2d<int32_t>(313, 304)));
-		}
+		using::Graphics::DrawArgument;
+		if (account.getstate() == Textfield::NORMAL && account.gettext().size() == 0)
+			accountbg.draw(DrawArgument(310, 249));
+		if (password.getstate() == Textfield::NORMAL && password.gettext().size() == 0)
+			passwordbg.draw(DrawArgument(310, 275));
+
+		checkbox.at(saveid).draw(DrawArgument(position + vector2d<int32_t>(313, 304)));
 	}
 
 	void UILogin::update()
 	{
-		if (active)
-		{
-			UIElement::update();
+		UIElement::update();
 
-			account.update();
-			password.update();
-		}
+		account.update();
+		password.update();
 	}
 
 	void UILogin::buttonpressed(uint16_t id)
@@ -115,22 +109,22 @@ namespace IO
 		switch (id)
 		{
 		case BT_LOGIN:
-			ui.disable();
-			ui.getkeyboard().focustarget(nullptr);
+			UI::disable();
+			UI::getkeyboard().focustarget(nullptr);
 			account.setstate(Textfield::NORMAL);
 			password.setstate(Textfield::NORMAL);
 			buttons[BT_LOGIN]->setstate(Button::MOUSEOVER);
-			ui.add(ElementLoginwait());
+			UI::add(ElementLoginwait());
 
 			using::Net::LoginPacket83;
-			session.dispatch(LoginPacket83(account.gettext(), password.gettext()));
+			Session::dispatch(LoginPacket83(account.gettext(), password.gettext()));
 			return;
 		case BT_QUIT:
-			session.disconnect();
+			Session::disconnect();
 			return;
 		case BT_SAVEID:
 			saveid = !saveid;
-			config.setbool("SaveLogin", saveid);
+			Configuration::setbool("SaveLogin", saveid);
 			buttons[BT_SAVEID]->setstate(Button::MOUSEOVER);
 			return;
 		}
@@ -144,7 +138,7 @@ namespace IO
 		{
 			if (down)
 			{
-				ui.getkeyboard().focustarget(&account);
+				UI::getkeyboard().focustarget(&account);
 				account.setstate(Textfield::FOCUSED);
 				password.setstate(Textfield::NORMAL);
 			}
@@ -157,7 +151,7 @@ namespace IO
 		{
 			if (down)
 			{
-				ui.getkeyboard().focustarget(&password);
+				UI::getkeyboard().focustarget(&password);
 				password.setstate(Textfield::FOCUSED);
 				account.setstate(Textfield::NORMAL);
 			}
@@ -168,7 +162,7 @@ namespace IO
 		}
 		else if (down)
 		{
-			ui.getkeyboard().focustarget(nullptr);
+			UI::getkeyboard().focustarget(nullptr);
 			account.setstate(Textfield::NORMAL);
 			password.setstate(Textfield::NORMAL);
 		}

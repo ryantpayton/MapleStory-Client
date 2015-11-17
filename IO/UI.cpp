@@ -16,168 +16,176 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UI.h"
+#include "Cursor.h"
 #include "UITypes\UIStatsinfo.h"
+#include "Gameplay\Stage.h"
+#include <unordered_map>
+#include <memory>
 
 namespace IO
 {
-	UI::UI(ClientInterface& cl) : client(cl)
+	namespace UI
 	{
-		focused = Element::NONE;
-		enabled = false;
-	}
+		using std::unique_ptr;
+		using std::unordered_map;
 
-	void UI::init()
-	{
-		cursor.init();
-		enabled = true;
-	}
+		unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
+		Element::UIType focused = Element::NONE;
+		bool enabled = false;
 
-	void UI::draw(float inter) const
-	{
-		for (auto& elit : elements)
+		Keyboard keyboard;
+		Cursor cursor;
+
+		void init()
 		{
-			if (elit.second->isactive())
-				elit.second->draw(inter);
+			cursor.init();
+			enabled = true;
 		}
 
-		cursor.draw(inter);
-	}
-
-	void UI::update()
-	{
-		for (auto& elit : elements)
+		void draw(float inter)
 		{
-			if (elit.second->isactive())
-				elit.second->update();
-		}
-
-		cursor.update();
-	}
-
-	void UI::enable()
-	{
-		enabled = true;
-	}
-
-	void UI::disable()
-	{
-		enabled = false;
-	}
-
-	void UI::sendmouse(vector2d<int32_t> pos)
-	{
-		sendmouse(cursor.getstate(), pos);
-	}
-
-	void UI::sendmouse(Mousestate mst, vector2d<int32_t> pos)
-	{
-		cursor.setposition(pos);
-
-		if (focused != Element::NONE)
-		{
-			if (elements[focused]->isactive())
-				elements[focused]->sendmouse(mst == MST_CLICKING, pos);
-			else
-				focused = Element::NONE;
-		}
-		
-		if (focused == Element::NONE)
-		{
-			UIElement* front = nullptr;
-			if (enabled)
+			for (auto& elit : elements)
 			{
-				for (auto& elit : elements)
+				if (elit.second->isactive())
+					elit.second->draw(inter);
+			}
+
+			cursor.draw(inter);
+		}
+
+		void update()
+		{
+			for (auto& elit : elements)
+			{
+				if (elit.second->isactive())
+					elit.second->update();
+			}
+
+			cursor.update();
+		}
+
+		void enable()
+		{
+			enabled = true;
+		}
+
+		void disable()
+		{
+			enabled = false;
+		}
+
+		void sendmouse(vector2d<int32_t> pos)
+		{
+			sendmouse(cursor.getstate(), pos);
+		}
+
+		void sendmouse(Mousestate mst, vector2d<int32_t> pos)
+		{
+			cursor.setposition(pos);
+
+			if (focused != Element::NONE)
+			{
+				if (elements[focused]->isactive())
+					elements[focused]->sendmouse(mst == MST_CLICKING, pos);
+				else
+					focused = Element::NONE;
+			}
+
+			if (focused == Element::NONE)
+			{
+				UIElement* front = nullptr;
+				if (enabled)
 				{
-					if (elit.second->isactive() && elit.second->bounds().contains(pos))
+					for (auto& elit : elements)
 					{
-						if (front)
+						if (elit.second->isactive() && elit.second->bounds().contains(pos))
 						{
-							front->sendmouse(false, pos);
+							if (front)
+							{
+								front->sendmouse(false, pos);
+							}
+							front = elit.second.get();
 						}
-						front = elit.second.get();
 					}
+				}
+
+				if (front)
+				{
+					mst = front->sendmouse(mst == MST_CLICKING, pos);
+				}
+				else
+				{
+					mst = MST_IDLE;
 				}
 			}
 
-			if (front)
+			cursor.setstate(mst);
+		}
+
+		void sendkey(Keytype type, int action, bool down)
+		{
+			if (type == KT_MENU && down)
 			{
-				mst = front->sendmouse(mst == MST_CLICKING, pos);
+				switch (action)
+				{
+				case KA_CHARSTATS:
+					add(ElementStatsinfo(Gameplay::Stage::getplayer().getstats()));
+					break;
+				}
 			}
+		}
+
+		void add(const Element& element)
+		{
+			Element::UIType type = element.type();
+			if (elements.count(type))
+			{
+				if (element.isunique())
+				{
+					elements[type]->togglehide();
+					return;
+				}
+				else
+				{
+					remove(type);
+				}
+			}
+
+			UIElement* toadd = element.instantiate();
+			elements[type] = unique_ptr<UIElement>(toadd);
+
+			if (element.isfocused())
+			{
+				focused = type;
+			}
+		}
+
+		void remove(Element::UIType type)
+		{
+			if (type == focused)
+			{
+				focused = Element::NONE;
+			}
+
+			if (elements.count(type))
+			{
+				elements[type]->deactivate();
+				elements[type].release();
+				elements.erase(type);
+			}
+		}
+
+		UIElement* getelement(Element::UIType type)
+		{
+			if (elements.count(type))
+				return elements.at(type).get();
 			else
-			{
-				mst = MST_IDLE;
-			}
+				return nullptr;
 		}
 
-		cursor.setstate(mst);
-	}
-
-	void UI::sendkey(Keytype type, int action, bool down)
-	{
-		if (type == KT_MENU && down)
+		Keyboard& getkeyboard()
 		{
-			switch (action)
-			{
-			case KA_CHARSTATS:
-				add(ElementStatsinfo(
-					client.getstage().getplayer().getstats(), 
-					client.getsession(), *this
-					));
-				break;
-			}
+			return keyboard;
 		}
-	}
-
-	void UI::add(const Element& element)
-	{
-		Element::UIType type = element.type();
-		if (elements.count(type))
-		{
-			if (element.isunique())
-			{
-				elements[type]->togglehide();
-				return;
-			}
-			else
-			{
-				remove(type);
-			}
-		}
-
-		UIElement* toadd = element.instantiate();
-		elements[type] = unique_ptr<UIElement>(toadd);
-
-		if (element.isfocused())
-		{
-			focused = type;
-		}
-	}
-
-	void UI::remove(Element::UIType type)
-	{
-		if (type == focused)
-		{
-			focused = Element::NONE;
-		}
-
-		if (elements.count(type))
-		{
-			elements[type]->deactivate();
-			elements[type].release();
-			elements.erase(type);
-		}
-	}
-
-	UIElement* UI::getelement(Element::UIType type) const
-	{
-		if (elements.count(type))
-			return elements.at(type).get();
-		else
-			return nullptr;
-	}
-
-	Keyboard& UI::getkeyboard()
-	{
-		return keyboard;
 	}
 }

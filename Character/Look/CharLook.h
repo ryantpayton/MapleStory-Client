@@ -16,35 +16,38 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Character\Look\Bodytype.h"
-#include "Character\Look\Hairstyle.h"
-#include "Character\Look\Facetype.h"
-#include "Character\Look\CharEquips.h"
+#include "Bodytype.h"
+#include "Hairstyle.h"
+#include "Facetype.h"
+#include "CharEquips.h"
 #include "Net\Login\LookEntry.h"
 
 namespace Character
 {
-	using::Net::LookEntry;
+	using Net::LookEntry;
 
 	class CharLook
 	{
 	public:
 		static void init();
 
-		CharLook(const LookEntry&);
+		CharLook(const LookEntry& entry);
 		CharLook();
 		~CharLook();
+
 		void reset();
-		void draw(vector2d<int32_t>, float) const;
-		bool update(uint16_t);
-		void sethair(int32_t);
-		void setbody(uint8_t);
-		void setface(int32_t);
-		void addequip(int32_t);
-		void setstance(string);
-		void setexpression(string);
-		void setaction(string);
-		void setflip(bool);
+		void draw(vector2d<int32_t> pos, float inter) const;
+		bool update(uint16_t timestep);
+
+		void sethair(int32_t hairid);
+		void setbody(uint8_t skinid);
+		void setface(int32_t faceid);
+		void addequip(int32_t equipid);
+
+		void setstance(string stance);
+		void setexpression(string expression);
+		void setaction(string action);
+		void setflip(bool mirrored);
 
 		const Bodytype* getbodytype() const;
 		const Hairstyle* gethairstyle() const;

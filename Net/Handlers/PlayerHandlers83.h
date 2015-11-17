@@ -17,13 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "PacketHandler.h"
+#include "Gameplay\Stage.h"
+#include "IO\UI.h"
 
 namespace Net
 {
 	// Handles a packet which notifies the client of changes in character stats.
 	class StatschangedHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			bool itemreaction = recv.readbool();
 			int32_t updatemask = recv.readint();
@@ -31,8 +33,7 @@ namespace Net
 			{
 				for (size_t i = 0; i < 20; i++)
 				{
-					using::Character::Player;
-					Player& player = client.getstage().getplayer();
+					Character::Player& player = Gameplay::Stage::getplayer();
 					Maplestat stat = Character::statvalues[i];
 
 					if (updatemask & stat)
@@ -75,7 +76,7 @@ namespace Net
 			}
 			else
 			{
-				client.getui().enable();
+				IO::UI::enable();
 			}
 		}
 	};
@@ -83,16 +84,16 @@ namespace Net
 	// Handles a packet which forces a stats recalculation.
 	class StatresetHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
-			client.getstage().getplayer().recalcstats(false);
+			Gameplay::Stage::getplayer().recalcstats(false);
 		}
 	};
 
 	// Handles a packet which notifies the client of changes in a character's skills.
 	class UpdateskillsHandler83 : public PacketHandler
 	{
-		void handle(ClientInterface& client, InPacket& recv) const override
+		void handle(InPacket& recv) const override
 		{
 			recv.skip(3);
 
@@ -101,7 +102,7 @@ namespace Net
 			int32_t masterlevel = recv.readint();
 			int64_t expire = recv.readlong();
 
-			client.getstage().getplayer().getskills().setskill(skillid, level, masterlevel, expire);
+			Gameplay::Stage::getplayer().getskills().setskill(skillid, level, masterlevel, expire);
 		}
 	};
 }

@@ -15,19 +15,18 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "UIWorldSelect.h"
+#include "IO\UI.h"
+#include "Net\Session.h"
 #include "IO\Components\MapleButton.h"
 #include "IO\Components\TwoSpriteButton.h"
 #include "Graphics\Sprite.h"
 #include "Net\Packets\LoginPackets83.h"
 #include "nlnx\nx.hpp"
 
-#define button_ptr unique_ptr<Button>
-
 namespace IO
 {
-	UIWorldSelect::UIWorldSelect(UIInterface& u, SessionInterface& ses) : ui(u), session(ses)
+	UIWorldSelect::UIWorldSelect()
 	{
 		worldid = 0;
 		channelid = 0;
@@ -41,20 +40,26 @@ namespace IO
 		sprites.push_back(Sprite(worlds["layer:bg"], vector2d<int32_t>(650, 45)));
 		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Common"]["frame"], vector2d<int32_t>(400, 290)));
 
-		buttons[BT_ENTERWORLD] = button_ptr(new MapleButton(channels["button:GoWorld"], vector2d<int32_t>(200, 170)));
+		buttons[BT_ENTERWORLD] = unique_ptr<Button>(
+			new MapleButton(channels["button:GoWorld"], vector2d<int32_t>(200, 170))
+			);
 
-		buttons[BT_WORLD0] = button_ptr(new MapleButton(worlds["button:15"], vector2d<int32_t>(650, 20)));
+		buttons[BT_WORLD0] = unique_ptr<Button>(
+			new MapleButton(worlds["button:15"], vector2d<int32_t>(650, 20))
+			);
 		buttons[BT_WORLD0]->setstate(Button::PRESSED);
 
 		sprites.push_back(Sprite(channels["layer:bg"], vector2d<int32_t>(200, 170)));
 		sprites.push_back(Sprite(channels["release"]["layer:15"], vector2d<int32_t>(200, 170)));
 
-		uint8_t chcount = session.getlogin().getworld(0).getchcount();
+		uint8_t chcount = Net::Session::getlogin().getworld(0).getchcount();
+
 		for (uint8_t i = 0; i < chcount; i++)
 		{
 			node chnode = channels["button:" + std::to_string(i)];
-			buttons[BT_CHANNEL0 + i] = button_ptr(
-				new TwoSpriteButton(chnode["normal"]["0"], chnode["keyFocused"]["0"], vector2d<int32_t>(200, 170))
+			buttons[BT_CHANNEL0 + i] = unique_ptr<Button>(
+				new TwoSpriteButton(chnode["normal"]["0"], chnode["keyFocused"]["0"], 
+				vector2d<int32_t>(200, 170))
 				);
 		}
 		buttons[BT_CHANNEL0 + channelid]->setstate(Button::PRESSED);
@@ -68,12 +73,12 @@ namespace IO
 	{
 		if (id == BT_ENTERWORLD)
 		{
-			ui.disable();
-			session.getlogin().setworldid(worldid);
-			session.getlogin().setchannelid(channelid);
+			UI::disable();
 
-			using::Net::CharlistRequestPacket83;
-			session.dispatch(CharlistRequestPacket83(worldid, channelid));
+			using Net::CharlistRequestPacket83;
+			Net::Session::getlogin().setworldid(worldid);
+			Net::Session::getlogin().setchannelid(channelid);
+			Net::Session::dispatch(CharlistRequestPacket83(worldid, channelid));
 		}
 		else if (id >= BT_WORLD0 && id < BT_CHANNEL0)
 		{

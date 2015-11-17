@@ -30,12 +30,14 @@ namespace Gameplay
 	class Obj
 	{
 	public:
-		Obj(node);
+		Obj(node source);
 		// Empty destructor.
 		~Obj();
+
+		// Update animation.
 		void update();
 		// Draw the obj at the specified position.
-		void draw(vector2d<int32_t>, float) const;
+		void draw(vector2d<int32_t> viewpos, float inter) const;
 		// Return depth of the obj.
 		uint8_t getz() const;
 
