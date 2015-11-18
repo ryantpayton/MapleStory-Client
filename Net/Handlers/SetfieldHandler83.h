@@ -100,7 +100,7 @@ namespace Net
 				Player& player = Gameplay::Stage::getplayer();
 
 				StatsEntry trash(recv);
-				int8_t buddycap = recv.readbyte();
+				recv.readbyte(); // 'buddycap'
 				if (recv.readbool())
 				{
 					string lname = recv.readascii();

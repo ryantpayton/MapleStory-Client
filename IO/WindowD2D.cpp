@@ -72,8 +72,6 @@ namespace IO
 				this
 				);
 
-			DWORD err = GetLastError();
-
 			if (wnd)
 			{
 				result = inittargets();
@@ -185,7 +183,7 @@ namespace IO
 					wasHandled = true;
 					break;
 				case WM_MOUSEMOVE:
-					UI::sendmouse(vector2d<int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+					UI::sendmouse(vector2d<int16_t>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 					result = 0;
 					wasHandled = true;
 					break;
@@ -198,7 +196,7 @@ namespace IO
 					switch (wParam)
 					{
 					case MK_LBUTTON:
-						UI::sendmouse(IO::MST_CLICKING, vector2d<int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+						UI::sendmouse(Cursor::MST_CLICKING, vector2d<int16_t>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 						break;
 					}
 					result = 0;
@@ -212,7 +210,7 @@ namespace IO
 				case WM_LBUTTONUP:
 					if (wParam != MK_LBUTTON)
 					{
-						UI::sendmouse(IO::MST_IDLE, vector2d<int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+						UI::sendmouse(Cursor::MST_IDLE, vector2d<int16_t>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 					}
 					result = 0;
 					wasHandled = true;

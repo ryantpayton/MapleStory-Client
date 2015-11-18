@@ -74,19 +74,19 @@ namespace IO
 			enabled = false;
 		}
 
-		void sendmouse(vector2d<int32_t> pos)
+		void sendmouse(vector2d<int16_t> pos)
 		{
 			sendmouse(cursor.getstate(), pos);
 		}
 
-		void sendmouse(Mousestate mst, vector2d<int32_t> pos)
+		void sendmouse(Cursor::Mousestate mst, vector2d<int16_t> pos)
 		{
 			cursor.setposition(pos);
 
 			if (focused != Element::NONE)
 			{
 				if (elements[focused]->isactive())
-					elements[focused]->sendmouse(mst == MST_CLICKING, pos);
+					elements[focused]->sendmouse(mst == Cursor::MST_CLICKING, pos);
 				else
 					focused = Element::NONE;
 			}
@@ -111,11 +111,11 @@ namespace IO
 
 				if (front)
 				{
-					mst = front->sendmouse(mst == MST_CLICKING, pos);
+					mst = front->sendmouse(mst == Cursor::MST_CLICKING, pos);
 				}
 				else
 				{
-					mst = MST_IDLE;
+					mst = Cursor::MST_IDLE;
 				}
 			}
 

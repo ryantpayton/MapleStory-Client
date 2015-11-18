@@ -34,7 +34,7 @@ namespace Audioplayer
 
 	void close()
 	{
-		if (bgm != 0)
+		if (bgm)
 		{
 			BASS_ChannelStop(bgm);
 			BASS_StreamFree(bgm);
@@ -57,9 +57,9 @@ namespace Audioplayer
 		BASS_SetConfig(BASS_CONFIG_GVOL_SAMPLE, vol * 100);
 	}
 
-	void playbgm(void* data, size_t length)
+	void playbgm(const void* data, size_t length)
 	{
-		if (bgm != 0)
+		if (bgm)
 		{
 			BASS_ChannelStop(bgm);
 			BASS_StreamFree(bgm);
@@ -72,7 +72,7 @@ namespace Audioplayer
 	{
 		nl::audio toplay = nl::nx::sound.resolve(path);
 		if (toplay.data())
-			playbgm((void*)toplay.data(), toplay.length());
+			playbgm(reinterpret_cast<const void*>(toplay.data()), toplay.length());
 	}
 
 	void playsound(size_t id)
@@ -84,7 +84,7 @@ namespace Audioplayer
 		}
 	}
 
-	void cachesound(void* data, size_t length, size_t id)
+	void cachesound(const void* data, size_t length, size_t id)
 	{
 		if (!soundcache.count(id))
 		{
@@ -97,7 +97,7 @@ namespace Audioplayer
 		nl::audio toplay = nl::nx::sound.resolve(path);
 		if (toplay.data())
 		{
-			cachesound((void*)toplay.data(), toplay.length(), toplay.id());
+			cachesound(reinterpret_cast<const void*>(toplay.data()), toplay.length(), toplay.id());
 			return toplay.id();
 		}
 		else

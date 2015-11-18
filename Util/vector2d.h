@@ -28,7 +28,7 @@ namespace Util
 	class vector2d
 	{
 	public:
-		vector2d(node n) { a = n.x(); b = n.y(); }
+		vector2d(node n) { a = static_cast<T>(n.x()); b = static_cast<T>(n.y()); }
 		vector2d() { a = 0; b = 0; }
 		vector2d(T v1, T v2) { a = v1; b = v2; }
 		~vector2d() {}

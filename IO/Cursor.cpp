@@ -23,7 +23,6 @@ namespace IO
 {
 	Cursor::Cursor()
 	{
-		position = vector2d<int32_t>();
 		state = MST_IDLE;
 	}
 
@@ -61,12 +60,12 @@ namespace IO
 		state = s;
 	}
 
-	void Cursor::setposition(vector2d<int32_t> pos)
+	void Cursor::setposition(vector2d<int16_t> pos)
 	{
 		position = pos;
 	}
 
-	Mousestate Cursor::getstate() const
+	Cursor::Mousestate Cursor::getstate() const
 	{
 		return state;
 	}

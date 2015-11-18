@@ -24,7 +24,7 @@ namespace Gameplay
 	const float MONSTERSPEED = 0.4f;
 
 	Mob::Mob(int32_t oi, int32_t mid, bool c, int8_t st, uint16_t fh, 
-		int8_t eff, bool newspawn, int8_t tm, int32_t x, int32_t y) {
+		int8_t, bool newspawn, int8_t tm, int16_t x, int16_t y) {
 
 		string path = std::to_string(mid);
 		path.insert(0, 7 - path.size(), '0');
@@ -39,7 +39,9 @@ namespace Gameplay
 		mdef = info["MDDamage"];
 		accuracy = info["acc"];
 		avoid = info["eva"];
-		knockback = (info["pushed"].get_integer() > 0) ? info["pushed"] : 1;
+		knockback = info["pushed"];
+		if (knockback < 1)
+			knockback = 1;
 		speed = info["speed"];
 		speed += 100;
 		touchdamage = info["bodyAttack"].get_bool();
@@ -160,11 +162,11 @@ namespace Gameplay
 		return phobj.fhlayer;
 	}
 
-	void Mob::draw(vector2d<int32_t> viewpos, float inter) const
+	void Mob::draw(vector2d<int16_t> viewpos, float inter) const
 	{
 		if (active)
 		{
-			vector2d<int32_t> absp = phobj.getposition(inter) + viewpos;
+			vector2d<int16_t> absp = phobj.getposition(inter) + viewpos;
 			if (animations.count(stance))
 			{
 				using::Graphics::DrawArgument;
@@ -213,7 +215,7 @@ namespace Gameplay
 		hppercent = percent;
 	}
 
-	void Mob::setposition(int32_t x, int32_t y)
+	void Mob::setposition(int16_t x, int16_t y)
 	{
 		phobj.fx = static_cast<float>(x);
 		phobj.fy = static_cast<float>(y);
@@ -229,11 +231,11 @@ namespace Gameplay
 		return oid;
 	}
 
-	vector2d<int32_t> Mob::getposition() const
+	vector2d<int16_t> Mob::getposition() const
 	{
-		return vector2d<int32_t>(
-			static_cast<int32_t>(phobj.fx), 
-			static_cast<int32_t>(phobj.fy)
+		return vector2d<int16_t>(
+			static_cast<int16_t>(phobj.fx),
+			static_cast<int16_t>(phobj.fy)
 			);
 	}
 }

@@ -26,6 +26,7 @@ namespace Gameplay
 	namespace Stage
 	{
 		using Character::Player;
+		using Character::Char;
 
 		// Preload assets.
 		void init();
@@ -52,6 +53,9 @@ namespace Gameplay
 		MapMobs& getmobs();
 		// Returns a reference to the Player.
 		Player& getplayer();
+
+		// Return a pointer to a character, possibly the player.
+		Char* getcharacter(int32_t cid);
 	}
 }
 

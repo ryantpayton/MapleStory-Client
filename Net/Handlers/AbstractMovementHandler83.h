@@ -32,7 +32,8 @@ namespace Net
 			uint8_t length = recv.readbyte();
 			for (uint8_t i = 0; i < length; i++)
 			{
-				MovementFragment fragment;
+				MovementFragment fragment = MovementFragment();
+
 				fragment.command = recv.readbyte();
 				switch (fragment.command)
 				{

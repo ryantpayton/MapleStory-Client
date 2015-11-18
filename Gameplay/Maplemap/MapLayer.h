@@ -23,19 +23,21 @@
 
 namespace Gameplay
 {
-	const uint8_t NUM_LAYERS = 8;
-
-	using::std::vector;
-	using::std::map;
+	using std::vector;
+	using std::map;
 
 	class MapLayer
 	{
 	public:
+		static const uint8_t NUM_LAYERS = 8;
+
 		MapLayer(node);
 		MapLayer();
 		~MapLayer();
+
 		void update();
-		void draw(vector2d<int32_t>, float) const;
+		void draw(vector2d<int16_t>, float) const;
+
 	private:
 		map<uint8_t, vector<Tile>> tiles;
 		map<uint8_t, vector<Obj>> objs;

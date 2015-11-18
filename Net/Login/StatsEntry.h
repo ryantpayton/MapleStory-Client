@@ -24,11 +24,11 @@
 
 namespace Net
 {
-	using::std::vector;
-	using::std::map;
-	using::std::pair;
-	using::Character::Maplestat;
-	using::Character::CharJob;
+	using std::vector;
+	using std::map;
+	using std::pair;
+	using Character::Maplestat;
+	using Character::CharJob;
 
 	// Stats of a character directly constructed from a packet.
 	class StatsEntry
@@ -37,6 +37,7 @@ namespace Net
 		StatsEntry(InPacket&);
 		StatsEntry();
 		~StatsEntry();
+
 		void setrank(pair<int32_t, int8_t>);
 		void setjobrank(pair<int32_t, int8_t>);
 		int16_t getstat(Maplestat) const;
@@ -50,6 +51,7 @@ namespace Net
 		uint8_t getportal() const;
 		pair<int32_t, int8_t> getrank() const;
 		pair<int32_t, int8_t> getjobrank() const;
+
 	private:
 		string name;
 		vector<int64_t> petids;

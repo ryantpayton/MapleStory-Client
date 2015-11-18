@@ -24,7 +24,7 @@ namespace Net
 		cid = recv.readint();
 		stats = StatsEntry(recv);
 		look = LookEntry(recv);
-		bool rankinfo = recv.readbool();
+		recv.readbool(); // 'rankinfo' bool
 		bool notgm = recv.readbool();
 		if (notgm)
 		{

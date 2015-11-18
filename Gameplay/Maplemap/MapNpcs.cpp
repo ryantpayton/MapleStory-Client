@@ -22,7 +22,7 @@ namespace Gameplay
 	MapNpcs::MapNpcs() {}
 
 	void MapNpcs::addnpc(int32_t id, int32_t oid, bool flip, 
-		uint16_t fhid, bool control, int32_t x, int32_t y) {
+		uint16_t fhid, bool control, int16_t x, int16_t y) {
 
 		Npc* npc = getnpc(oid);
 		if (!npc)

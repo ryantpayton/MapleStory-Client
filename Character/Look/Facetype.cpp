@@ -25,14 +25,14 @@ namespace Character
 	{
 		using::nl::node;
 		node facenode = nl::nx::character["Face"]["000" + std::to_string(faceid) + ".img"];
-		for (node& expnode : facenode)
+		for (node expnode : facenode)
 		{
 			string state = expnode.name();
 			if (state == "default")
 			{
 				node shiftnode = expnode["face"]["map"]["brow"];
 				stances[state][CL_FACE][0] = Texture(expnode["face"]);
-				stances[state][CL_FACE][0].setshift(vector2d<int32_t>(-shiftnode.x(), -shiftnode.y()));
+				stances[state][CL_FACE][0].setshift(vector2d<int16_t>() - vector2d<int16_t>(shiftnode));
 				delays[state][0] = 2500;
 			}
 			else if (state != "info")
@@ -45,8 +45,12 @@ namespace Character
 					{
 						node shiftnode = framenode["face"]["map"]["brow"];
 						stances[state][CL_FACE][frame] = Texture(framenode["face"]);
-						stances[state][CL_FACE][frame].setshift(vector2d<int32_t>(-shiftnode.x(), -shiftnode.y()));
-						delays[state][frame] = (framenode["delay"].data_type() == node::type::integer) ? framenode["delay"] : 2500;
+						stances[state][CL_FACE][frame].setshift(vector2d<int16_t>() - vector2d<int16_t>(shiftnode));
+
+						if (framenode["delay"].data_type() == node::type::integer)
+							delays[state][frame] = framenode["delay"];
+						else
+							delays[state][frame] = 2500;
 					}
 
 					frame++;

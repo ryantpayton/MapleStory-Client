@@ -37,9 +37,9 @@ namespace IO
 			FOCUSED
 		};
 
-		Textfield(Textlabel::Font, Textlabel::Textcolor, vector2d<int32_t>, size_t);
+		Textfield(Textlabel::Font, Textlabel::Textcolor, vector2d<int16_t>, size_t);
 		Textfield();
-		void draw(vector2d<int32_t>) const;
+		void draw(vector2d<int16_t>) const;
 		void update();
 		void sendkey(Keytype, int32_t, bool);
 		void setstate(TfState);
@@ -47,7 +47,7 @@ namespace IO
 		void setcrypt(int8_t);
 		string gettext() const;
 		TfState getstate() const;
-		rectangle2d<int32_t> bounds(vector2d<int32_t>) const;
+		rectangle2d<int16_t> bounds(vector2d<int16_t>) const;
 
 	private:
 		void modifytext(string);
@@ -58,7 +58,7 @@ namespace IO
 		bool showmarker;
 		uint16_t elapsed;
 		size_t markerpos;
-		vector2d<int32_t> position;
+		vector2d<int16_t> position;
 		size_t limit;
 		int8_t crypt;
 		TfState state;

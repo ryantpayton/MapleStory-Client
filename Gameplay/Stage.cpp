@@ -87,7 +87,7 @@ namespace Gameplay
 			mapinfo.loadinfo(src, physics.getfht().getwalls(), physics.getfht().getborders());
 			portals.load(src["portal"], mapid);
 			//backgrounds = mapbackgrounds(src["back"]);
-			for (uint8_t i = 0; i < NUM_LAYERS; i++)
+			for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
 			{
 				layers[i] = MapLayer(src[std::to_string(i)]);
 			}
@@ -100,7 +100,7 @@ namespace Gameplay
 			if (mapinfo.hasnewbgm())
 				Audioplayer::playbgm(mapinfo.getbgm());
 
-			vector2d<int32_t> startpos = portals.getspawnpoint(player.getstats().getportal());
+			vector2d<int16_t> startpos = portals.getspawnpoint(player.getstats().getportal());
 			player.respawn(startpos);
 			camera.setposition(startpos);
 			camera.updateview(mapinfo.getwalls(), mapinfo.getborders());
@@ -112,9 +112,9 @@ namespace Gameplay
 		{
 			if (active)
 			{
-				vector2d<int32_t> viewpos = camera.getposition(inter);
+				vector2d<int16_t> viewpos = camera.getposition(inter);
 
-				for (uint8_t i = 0; i < NUM_LAYERS; i++)
+				for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
 				{
 					layers.at(i).draw(viewpos, inter);
 					npcs.draw(i, viewpos, inter);
@@ -134,7 +134,7 @@ namespace Gameplay
 		{
 			if (active)
 			{
-				for (uint8_t i = 0; i < NUM_LAYERS; i++)
+				for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
 				{
 					layers[i].update();
 				}
@@ -165,7 +165,7 @@ namespace Gameplay
 			{
 				if (warpinfo->mapid == currentmapid)
 				{
-					vector2d<int32_t> spawnpoint = portals.getspawnpoint(warpinfo->portal);
+					vector2d<int16_t> spawnpoint = portals.getspawnpoint(warpinfo->portal);
 					player.respawn(spawnpoint);
 				}
 				else if (warpinfo->valid)
@@ -243,6 +243,14 @@ namespace Gameplay
 		Player& getplayer()
 		{
 			return player;
+		}
+
+		Char* getcharacter(int32_t cid)
+		{
+			if (cid == player.getoid())
+				return &player;
+			else
+				return chars.getchar(cid);
 		}
 	}
 }

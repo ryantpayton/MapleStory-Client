@@ -42,8 +42,8 @@ namespace Graphics
 				src = nl::nx::base[file].resolve(link);
 			}
 			source = src;
-			origin = vector2d<int32_t>(source["origin"].x(), source["origin"].y());
-			dimensions = vector2d<int32_t>(source.get_bitmap().width(), source.get_bitmap().height());
+			origin = vector2d<int16_t>(source["origin"]);
+			dimensions = vector2d<int16_t>(source.get_bitmap().width(), source.get_bitmap().height());
 
 #ifdef JOURNEY_USE_OPENGL
 			GraphicsGL::addbitmap(source.get_bitmap());
@@ -63,15 +63,15 @@ namespace Graphics
 		size_t id = source.get_bitmap().id();
 		if (id > 0)
 		{
-			vector2d<int32_t> stretch = args.getstretch();
-			int32_t w = stretch.x();
+			vector2d<int16_t> stretch = args.getstretch();
+			int16_t w = stretch.x();
 			if (w == 0)
 				w = dimensions.x();
-			int32_t h = stretch.y();
+			int16_t h = stretch.y();
 			if (h == 0)
 				h = dimensions.y();
 
-			vector2d<int32_t> absp = args.getpos() - origin + shift;
+			vector2d<int16_t> absp = args.getpos() - origin + shift;
 
 			if (absp.x() <= 816 && absp.y() <= 624 && absp.x() > -w && absp.y() > -h)
 			{
@@ -81,7 +81,7 @@ namespace Graphics
 				{
 					GraphicsGL::addbitmap(source.get_bitmap());
 				}
-				GraphicsGL::draw(id, rectangle2d<int32_t>(absp.x(), absp.x() + w, absp.y(), absp.y() + h),
+				GraphicsGL::draw(id, rectangle2d<int16_t>(absp.x(), absp.x() + w, absp.y(), absp.y() + h),
 					args.getxscale(), args.getyscale(), args.getcenter(), args.getalpha());
 #else
 				if (!GraphicsD2D::available(id))
@@ -96,17 +96,17 @@ namespace Graphics
 		}
 	}
 
-	void Texture::setshift(vector2d<int32_t> shf)
+	void Texture::setshift(vector2d<int16_t> shf)
 	{
 		shift = shf;
 	}
 
-	vector2d<int32_t> Texture::getorigin() const
+	vector2d<int16_t> Texture::getorigin() const
 	{
 		return origin;
 	}
 
-	vector2d<int32_t> Texture::getdimensions() const
+	vector2d<int16_t> Texture::getdimensions() const
 	{
 		return dimensions;
 	}

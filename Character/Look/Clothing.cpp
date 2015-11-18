@@ -167,11 +167,15 @@ namespace Character
 					break;
 				}
 			}
+			else
+			{
+				chlayer = CL_BASE;
+			}
 		}
 
 		using::nl::node;
 		node equipnode = nl::nx::character[getcategory()]["0" + std::to_string(equipid) + ".img"];
-		for (node& stancenode : equipnode)
+		for (node stancenode : equipnode)
 		{
 			string stance = stancenode.name();
 			if (stance == "info")
@@ -210,7 +214,7 @@ namespace Character
 				node framenode = stancenode[std::to_string(frame)];
 				while (framenode.size() > 0)
 				{
-					for (node& partnode : framenode)
+					for (node partnode : framenode)
 					{
 						string part = partnode.name();
 						if (partnode.data_type() == node::type::bitmap)
@@ -243,17 +247,17 @@ namespace Character
 							stances[stance][z][frame] = Texture(partnode);
 
 							string parent;
-							vector2d<int> parentpos;
-							for (node& mapnode : partnode["map"])
+							vector2d<int16_t> parentpos;
+							for (node mapnode : partnode["map"])
 							{
 								if (mapnode.data_type() == node::type::vector)
 								{
 									parent = mapnode.name();
-									parentpos = vector2d<int>(mapnode.x(), mapnode.y());
+									parentpos = vector2d<int16_t>(mapnode);
 								}
 							}
 
-							vector2d<int> shift = vector2d<int>();
+							vector2d<int16_t> shift;
 							switch (z)
 							{
 							case CL_FACEACC:
@@ -290,6 +294,8 @@ namespace Character
 								}
 								shift += drawinfo.getbodypos(stance, frame) - parentpos;
 								break;
+							default:
+								shift = vector2d<int16_t>();
 							}
 
 							stances[stance][z][frame].setshift(shift);

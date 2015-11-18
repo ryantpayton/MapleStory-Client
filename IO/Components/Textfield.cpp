@@ -20,7 +20,7 @@
 
 namespace IO
 {
-	Textfield::Textfield(Textlabel::Font fnt, Textlabel::Textcolor col, vector2d<int32_t> pos, size_t lim)
+	Textfield::Textfield(Textlabel::Font fnt, Textlabel::Textcolor col, vector2d<int16_t> pos, size_t lim)
 	{
 		textlabel = Textlabel(fnt, col, "", 0);
 		marker = Textlabel(fnt, col, "|", 0);
@@ -37,18 +37,18 @@ namespace IO
 		text = "";
 	}
 
-	void Textfield::draw(vector2d<int32_t> parentpos) const
+	void Textfield::draw(vector2d<int16_t> parentpos) const
 	{
 		if (state != DISABLED)
 		{
-			vector2d<int32_t> absp = position + parentpos;
+			vector2d<int16_t> absp = position + parentpos;
 			if (text.size() > 0)
 			{
 				textlabel.draw(absp);
 			}
 			if (state == FOCUSED && showmarker)
 			{
-				vector2d<int32_t> mpos = absp + vector2d<int32_t>(textlabel.getadvance(markerpos), 0);
+				vector2d<int16_t> mpos = absp + vector2d<int16_t>(textlabel.getadvance(markerpos), 0);
 				marker.draw(mpos);
 			}
 		}
@@ -74,7 +74,7 @@ namespace IO
 		}
 	}
 
-	void Textfield::sendkey(Keytype type, int32_t key, bool down)
+	void Textfield::sendkey(Keytype type, int32_t key, bool)
 	{
 		if (type == KT_ACTION)
 		{
@@ -151,9 +151,9 @@ namespace IO
 		return state;
 	}
 
-	rectangle2d<int32_t> Textfield::bounds(vector2d<int32_t> parentpos) const
+	rectangle2d<int16_t> Textfield::bounds(vector2d<int16_t> parentpos) const
 	{
-		vector2d<int32_t> absp = position + parentpos;
-		return rectangle2d<int32_t>(absp, absp + vector2d<int32_t>(14 * (int32_t)limit, 24));
+		vector2d<int16_t> absp = position + parentpos;
+		return rectangle2d<int16_t>(absp, absp + vector2d<int16_t>(14 * (int16_t)limit, 24));
 	}
 }

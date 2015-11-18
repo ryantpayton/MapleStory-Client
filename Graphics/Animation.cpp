@@ -163,12 +163,12 @@ namespace Graphics
 		return false;
 	}
 
-	vector2d<int32_t> Animation::getorigin() const
+	vector2d<int16_t> Animation::getorigin() const
 	{
 		return textures[frame].getorigin();
 	}
 
-	vector2d<int32_t> Animation::getdimensions() const
+	vector2d<int16_t> Animation::getdimensions() const
 	{
 		return textures[frame].getdimensions();
 	}

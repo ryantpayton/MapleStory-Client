@@ -22,7 +22,7 @@ namespace Gameplay
 	MapChars::MapChars() {}
 
 	void MapChars::addchar(int32_t cid, const LookEntry& look, uint8_t level,
-		int16_t job, string name, int8_t stance, vector2d<int32_t> pos) {
+		int16_t job, string name, int8_t stance, vector2d<int16_t> pos) {
 
 		OtherChar* otherchar = getchar(cid);
 		if (!otherchar)

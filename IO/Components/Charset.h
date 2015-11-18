@@ -21,13 +21,13 @@
 
 namespace IO
 {
-	using::std::int8_t;
-	using::std::int32_t;
-	using::std::string;
-	using::std::map;
-	using::nl::node;
-	using::Graphics::Texture;
-	using::Graphics::DrawArgument;
+	using std::int8_t;
+	using std::int16_t;
+	using std::string;
+	using std::map;
+	using nl::node;
+	using Graphics::Texture;
+	using Graphics::DrawArgument;
 
 	class Charset
 	{
@@ -43,8 +43,8 @@ namespace IO
 		Charset(){}
 		~Charset();
 		void draw(int8_t, const DrawArgument&) const;
-		int32_t draw(string, const DrawArgument&) const;
-		int32_t getw(int8_t) const;
+		int16_t draw(string, const DrawArgument&) const;
+		int16_t getw(int8_t) const;
 	private:
 		Alignment alignment;
 		map<int8_t, Texture> chars;

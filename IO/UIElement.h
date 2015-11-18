@@ -16,16 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Components\Button.h"
-#include "IO\Cursor.h"
+#include "Components\Button.h"
+#include "Cursor.h"
 #include "Graphics\Sprite.h"
 #include <memory>
 
 namespace IO
 {
-	using::std::vector;
-	using::std::unique_ptr;
-	using::Graphics::Sprite;
+	using std::vector;
+	using std::unique_ptr;
+	using Graphics::Sprite;
 
 	// Base class for all types of user interfaces on screen.
 	class UIElement
@@ -38,13 +38,13 @@ namespace IO
 		virtual void draw(float) const;
 		virtual void update();
 		virtual void buttonpressed(uint16_t) = 0;
-		virtual Mousestate sendmouse(bool, vector2d<int32_t>);
-		virtual rectangle2d<int32_t> bounds() const;
+		virtual Cursor::Mousestate sendmouse(bool, vector2d<int16_t>);
+		virtual rectangle2d<int16_t> bounds() const;
 		bool isactive() const { return active; }
 	protected:
 		bool active;
-		vector2d<int32_t> position;
-		vector2d<int32_t> dimension;
+		vector2d<int16_t> position;
+		vector2d<int16_t> dimension;
 		map<uint16_t, unique_ptr<Button>> buttons;
 		vector<Sprite> sprites;
 	};

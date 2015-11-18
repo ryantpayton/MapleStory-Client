@@ -46,7 +46,7 @@ namespace IO
 		}
 	}
 
-	int32_t Charset::getw(int8_t c) const
+	int16_t Charset::getw(int8_t c) const
 	{
 		if (chars.count(c))
 			return chars.at(c).getdimensions().x();
@@ -54,14 +54,14 @@ namespace IO
 			return 0;
 	}
 
-	int32_t Charset::draw(string str, const DrawArgument& args) const
+	int16_t Charset::draw(string str, const DrawArgument& args) const
 	{
 		size_t length = str.size();
-		int32_t shift = 0;
-		int32_t total = 0;
+		int16_t shift = 0;
+		int16_t total = 0;
 
-		using::Util::vector2d;
-		using::Graphics::DrawArgument;
+		using Util::vector2d;
+		using Graphics::DrawArgument;
 		switch (alignment)
 		{
 		case CENTER:
@@ -73,7 +73,7 @@ namespace IO
 		case LEFT:
 			for (size_t i = 0; i < length; i++)
 			{
-				draw(str[i], DrawArgument(args.getpos() + vector2d<int32_t>(shift, 0), args.getalpha()));
+				draw(str[i], DrawArgument(args.getpos() + vector2d<int16_t>(shift, 0), args.getalpha()));
 				shift += getw(str[i]);
 			}
 			break;
@@ -81,7 +81,7 @@ namespace IO
 			for (size_t i = length - 1; i >= 0 && i < length; i--)
 			{
 				shift += getw(str[i]);
-				draw(str[i], DrawArgument(args.getpos() - vector2d<int32_t>(shift, 0), args.getalpha()));
+				draw(str[i], DrawArgument(args.getpos() - vector2d<int16_t>(shift, 0), args.getalpha()));
 			}
 			break;
 		}

@@ -42,7 +42,7 @@ namespace Gameplay
 
 		virtual ~MapObjects() {}
 		// Draw all mapobjects that are on the specified layer.
-		void draw(int8_t, vector2d<int32_t>, float) const;
+		void draw(int8_t, vector2d<int16_t>, float) const;
 		// Update all mapobjects of this type. Also updates layers eg. drawing order.
 		// Parameters: Physics&(engine to use)
 		void update(const Physics&);

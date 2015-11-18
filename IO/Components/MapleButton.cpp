@@ -19,7 +19,7 @@
 
 namespace IO
 {
-	MapleButton::MapleButton(node src, vector2d<int32_t> pos)
+	MapleButton::MapleButton(node src, vector2d<int16_t> pos)
 	{
 		textures[PRESSED] = Texture(src["pressed"]["0"]);
 		textures[MOUSEOVER] = Texture(src["mouseOver"]["0"]);
@@ -40,7 +40,7 @@ namespace IO
 		active = true;
 	}
 
-	void MapleButton::draw(vector2d<int32_t> parentpos) const
+	void MapleButton::draw(vector2d<int16_t> parentpos) const
 	{
 		if (active)
 		{
@@ -49,9 +49,9 @@ namespace IO
 		}
 	}
 
-	rectangle2d<int32_t> MapleButton::bounds(vector2d<int32_t> parentpos) const
+	rectangle2d<int16_t> MapleButton::bounds(vector2d<int16_t> parentpos) const
 	{
-		vector2d<int32_t> absp = parentpos + position - textures.at(state).getorigin();
-		return rectangle2d<int32_t>(absp, absp + textures.at(state).getdimensions());
+		vector2d<int16_t> absp = parentpos + position - textures.at(state).getorigin();
+		return rectangle2d<int16_t>(absp, absp + textures.at(state).getdimensions());
 	}
 }

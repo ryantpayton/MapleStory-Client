@@ -22,20 +22,21 @@
 
 namespace Gameplay
 {
-	using::std::string;
-	using::Character::OtherChar;
-	using::Net::LookEntry;
+	using std::string;
+	using Character::OtherChar;
+	using Net::LookEntry;
 
 	class MapChars : public MapObjects
 	{
 	public:
 		MapChars();
-		void addchar(int32_t, const LookEntry&, uint8_t, int16_t, string, int8_t, vector2d<int32_t>);
-		void removechar(int32_t);
-		void movechar(int32_t, const MovementInfo&);
 
-	private:
-		OtherChar* getchar(int32_t);
+		void addchar(int32_t cid, const LookEntry& look, uint8_t level, 
+			int16_t job, string name, int8_t stance, vector2d<int16_t> pos);
+		void removechar(int32_t cid);
+		void movechar(int32_t cid, const MovementInfo& moves);
+
+		OtherChar* getchar(int32_t cid);
 	};
 }
 

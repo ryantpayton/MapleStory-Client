@@ -41,7 +41,7 @@ namespace Graphics
 		static void clear();
 		static void addbitmap(const bitmap&);
 		static bool available(size_t);
-		static void draw(size_t, int32_t, int32_t, int32_t, int32_t, float, float, float, int32_t, int32_t);
+		static void draw(size_t, int16_t, int16_t, int16_t, int16_t, float, float, float, int16_t, int16_t);
 		static vector2d<uint16_t> createlayout(const wstring&, Textlabel::Font, uint16_t, map<size_t, float>&);
 		static void drawtext(const wstring&, Textlabel::Font, Textlabel::Textcolor, 
 			Textlabel::Background, float, vector2d<float>, vector2d<uint16_t>);

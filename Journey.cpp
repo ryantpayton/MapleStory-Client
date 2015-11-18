@@ -78,7 +78,7 @@ int main()
 		}
 
 		// Run an infinite loop to keep the console on screen.
-		while (true) {}
+		while (error != Client::NONE) {}
 	}
 
 	return 0;

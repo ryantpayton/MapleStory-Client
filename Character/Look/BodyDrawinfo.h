@@ -24,9 +24,9 @@
 
 namespace Character
 {
-	using::std::uint8_t;
-	using::std::uint16_t;
-	using::std::string;
+	using std::uint8_t;
+	using std::uint16_t;
+	using std::string;
 
 	// A frame of animation for a skill or similiar 'meta-stance'. 
 	// This simply redirects to a different stance and frame to use.
@@ -56,39 +56,42 @@ namespace Character
 		{
 			return delay;
 		}
+
 	private:
 		string stance;
 		uint8_t frame;
 		uint16_t delay;
 	};
 
-	using::std::int32_t;
-	using::std::map;
-	using::Util::vector2d;
+	using std::int16_t;
+	using std::map;
+	using Util::vector2d;
 
 	class BodyDrawinfo
 	{
 	public:
 		BodyDrawinfo();
 		~BodyDrawinfo();
+
 		void init();
-		vector2d<int32_t> getbodypos(string, uint8_t) const;
-		vector2d<int32_t> getarmpos(string, uint8_t) const;
-		vector2d<int32_t> gethandpos(string, uint8_t) const;
-		vector2d<int32_t> getheadpos(string, uint8_t) const;
-		vector2d<int32_t> gethairpos(string, uint8_t) const;
-		vector2d<int32_t> getfacepos(string, uint8_t) const;
+		vector2d<int16_t> getbodypos(string, uint8_t) const;
+		vector2d<int16_t> getarmpos(string, uint8_t) const;
+		vector2d<int16_t> gethandpos(string, uint8_t) const;
+		vector2d<int16_t> getheadpos(string, uint8_t) const;
+		vector2d<int16_t> gethairpos(string, uint8_t) const;
+		vector2d<int16_t> getfacepos(string, uint8_t) const;
 		uint8_t nextframe(string, uint8_t) const;
 		uint16_t getdelay(string, uint8_t) const;
 		uint8_t nextacframe(string, uint8_t) const;
 		const BodyAction* getaction(string, uint8_t) const;
+
 	private:
-		map<string, map<uint8_t, vector2d<int32_t>>> bodyposmap;
-		map<string, map<uint8_t, vector2d<int32_t>>> armposmap;
-		map<string, map<uint8_t, vector2d<int32_t>>> handposmap;
-		map<string, map<uint8_t, vector2d<int32_t>>> headposmap;
-		map<string, map<uint8_t, vector2d<int32_t>>> hairposmap;
-		map<string, map<uint8_t, vector2d<int32_t>>> faceposmap;
+		map<string, map<uint8_t, vector2d<int16_t>>> bodyposmap;
+		map<string, map<uint8_t, vector2d<int16_t>>> armposmap;
+		map<string, map<uint8_t, vector2d<int16_t>>> handposmap;
+		map<string, map<uint8_t, vector2d<int16_t>>> headposmap;
+		map<string, map<uint8_t, vector2d<int16_t>>> hairposmap;
+		map<string, map<uint8_t, vector2d<int16_t>>> faceposmap;
 		map<string, map<uint8_t, uint16_t>> stancedelays;
 		map<string, map<uint8_t, BodyAction>> bodyactions;
 	};

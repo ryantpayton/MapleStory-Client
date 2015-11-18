@@ -28,14 +28,14 @@ namespace Gameplay
 		// Updates the object and returns the updated layer.
 		virtual int8_t update(const Physics&) = 0;
 		// Draws the object.
-		virtual void draw(vector2d<int32_t>, float) const = 0;
+		virtual void draw(vector2d<int16_t>, float) const = 0;
 		// Changes the objects position.
-		virtual void setposition(int32_t, int32_t) = 0;
+		virtual void setposition(int16_t, int16_t) = 0;
 		// Obtains the layer used to determine the drawing order on the map.
 		virtual int8_t getlayer() const = 0;
 		// Returns the object id unique to every object on one map.
 		virtual int32_t getoid() const = 0;
 		// Returns the current position.
-		virtual vector2d<int32_t> getposition() const = 0;
+		virtual vector2d<int16_t> getposition() const = 0;
 	};
 }

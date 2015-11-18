@@ -32,7 +32,7 @@ namespace Character
 		node bodynode = nl::nx::character["00002000.img"];
 		node headnode = nl::nx::character["00012000.img"];
 
-		for (node& stancenode : bodynode)
+		for (node stancenode : bodynode)
 		{
 			string stance = stancenode.name();
 
@@ -40,7 +40,11 @@ namespace Character
 			node framenode = stancenode[std::to_string(frame)];
 			while (framenode.size() > 0)
 			{
-				uint16_t delay = (framenode["delay"].data_type() == node::type::integer) ? framenode["delay"] : 50;
+				uint16_t delay;
+				if (framenode["delay"].data_type() == node::type::integer)
+					delay = framenode["delay"];
+				else
+					delay = 50;
 
 				node actionnode = framenode.resolve("action");
 				if (actionnode.data_type() == node::type::string)
@@ -48,14 +52,14 @@ namespace Character
 					string acstance = actionnode.get_string();
 					uint8_t acframe = framenode["frame"];
 					uint16_t acdelay = (delay < 0) ? -delay : delay;
-					bodyactions[stance][frame] = BodyAction(acstance, acframe, delay);
+					bodyactions[stance][frame] = BodyAction(acstance, acframe, acdelay);
 				}
 				else
 				{
 					stancedelays[stance][frame] = delay;
-					map<CharacterLayer, map<string, vector2d<int32_t>>> bodyshiftmap;
+					map<CharacterLayer, map<string, vector2d<int16_t>>> bodyshiftmap;
 
-					for (node& partnode : framenode)
+					for (node partnode : framenode)
 					{
 						string part = partnode.name();
 						if (part != "delay" && part != "face")
@@ -75,17 +79,17 @@ namespace Character
 							else
 								continue;
 
-							for (node& mapnode : partnode["map"])
+							for (node mapnode : partnode["map"])
 							{
-								bodyshiftmap[z][mapnode.name()] = vector2d<int32_t>(mapnode.x(), mapnode.y());
+								bodyshiftmap[z][mapnode.name()] = vector2d<int16_t>(mapnode);
 							}
 						}
 					}
 
 					node headmap = headnode[stance][std::to_string(frame)]["head"]["map"];
-					for (node& mapnode : headmap)
+					for (node mapnode : headmap)
 					{
-						bodyshiftmap[CL_HEAD][mapnode.name()] = vector2d<int32_t>(mapnode.x(), mapnode.y());
+						bodyshiftmap[CL_HEAD][mapnode.name()] = vector2d<int16_t>(mapnode);
 					}
 
 					bodyposmap[stance][frame] = bodyshiftmap[CL_BODY]["navel"];
@@ -102,7 +106,7 @@ namespace Character
 		}
 	}
 
-	vector2d<int32_t> BodyDrawinfo::getbodypos(string stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::getbodypos(string stance, uint8_t pos) const
 	{
 		if (bodyposmap.count(stance))
 		{
@@ -111,10 +115,10 @@ namespace Character
 				return bodyposmap.at(stance).at(pos);
 			}
 		}
-		return vector2d<int32_t>();
+		return vector2d<int16_t>();
 	}
 
-	vector2d<int32_t> BodyDrawinfo::getarmpos(string stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::getarmpos(string stance, uint8_t pos) const
 	{
 		if (armposmap.count(stance))
 		{
@@ -123,10 +127,10 @@ namespace Character
 				return armposmap.at(stance).at(pos);
 			}
 		}
-		return vector2d<int32_t>();
+		return vector2d<int16_t>();
 	}
 
-	vector2d<int32_t> BodyDrawinfo::gethandpos(string stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::gethandpos(string stance, uint8_t pos) const
 	{
 		if (handposmap.count(stance))
 		{
@@ -135,10 +139,10 @@ namespace Character
 				return handposmap.at(stance).at(pos);
 			}
 		}
-		return vector2d<int32_t>();
+		return vector2d<int16_t>();
 	}
 
-	vector2d<int32_t> BodyDrawinfo::getheadpos(string stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::getheadpos(string stance, uint8_t pos) const
 	{
 		if (headposmap.count(stance))
 		{
@@ -147,10 +151,10 @@ namespace Character
 				return headposmap.at(stance).at(pos);
 			}
 		}
-		return vector2d<int32_t>();
+		return vector2d<int16_t>();
 	}
 
-	vector2d<int32_t> BodyDrawinfo::gethairpos(string stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::gethairpos(string stance, uint8_t pos) const
 	{
 		if (hairposmap.count(stance))
 		{
@@ -159,10 +163,10 @@ namespace Character
 				return hairposmap.at(stance).at(pos);
 			}
 		}
-		return vector2d<int32_t>();
+		return vector2d<int16_t>();
 	}
 
-	vector2d<int32_t> BodyDrawinfo::getfacepos(string stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::getfacepos(string stance, uint8_t pos) const
 	{
 		if (faceposmap.count(stance))
 		{
@@ -171,7 +175,7 @@ namespace Character
 				return faceposmap.at(stance).at(pos);
 			}
 		}
-		return vector2d<int32_t>();
+		return vector2d<int16_t>();
 	}
 
 	uint8_t BodyDrawinfo::nextframe(string stance, uint8_t pos) const

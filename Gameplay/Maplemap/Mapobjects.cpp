@@ -19,7 +19,7 @@
 
 namespace Gameplay
 {
-	void MapObjects::draw(int8_t layer, vector2d<int32_t> pos, float inter) const
+	void MapObjects::draw(int8_t layer, vector2d<int16_t> pos, float inter) const
 	{
 		if (layers.count(layer))
 		{

@@ -22,7 +22,7 @@
 
 namespace Gameplay
 {
-	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, bool c, int32_t x, int32_t y)
+	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, bool c, int16_t x, int16_t y)
 	{
 		string strid = std::to_string(id);
 		strid.insert(0, 7 - strid.size(), '0');
@@ -39,7 +39,7 @@ namespace Gameplay
 			src = nl::nx::npc[link];
 		}
 
-		for (node& npcnode : src)
+		for (node npcnode : src)
 		{
 			string state = npcnode.name();
 			if (state == "info")
@@ -54,7 +54,7 @@ namespace Gameplay
 				states.push_back(state);
 			}
 
-			for (node& speaknode : npcnode["speak"])
+			for (node speaknode : npcnode["speak"])
 			{
 				lines[state].push_back(strsrc[speaknode.get_string()]);
 			}
@@ -79,11 +79,11 @@ namespace Gameplay
 		setposition(x, y);
 	}
 
-	void Npc::draw(vector2d<int32_t> viewpos, float inter) const
+	void Npc::draw(vector2d<int16_t> viewpos, float inter) const
 	{
 		if (active)
 		{
-			vector2d<int32_t> absp = phobj.getposition(inter) + viewpos;
+			vector2d<int16_t> absp = phobj.getposition(inter) + viewpos;
 
 			if (animations.count(stance))
 			{
@@ -93,7 +93,7 @@ namespace Gameplay
 			if (!hidename)
 			{
 				namelabel.draw(absp);
-				funclabel.draw(absp + vector2d<int32_t>(0, 18));
+				funclabel.draw(absp + vector2d<int16_t>(0, 18));
 			}
 		}
 	}
@@ -134,7 +134,7 @@ namespace Gameplay
 		active = a;
 	}
 
-	void Npc::setposition(int32_t x, int32_t y)
+	void Npc::setposition(int16_t x, int16_t y)
 	{
 		phobj.fx = static_cast<float>(x);
 		phobj.fy = static_cast<float>(y);
@@ -150,19 +150,19 @@ namespace Gameplay
 		return phobj.fhlayer;
 	}
 
-	vector2d<int32_t> Npc::getposition() const
+	vector2d<int16_t> Npc::getposition() const
 	{
-		return vector2d<int32_t>(
-			static_cast<int32_t>(phobj.fx), 
-			static_cast<int32_t>(phobj.fy)
+		return vector2d<int16_t>(
+			static_cast<int16_t>(phobj.fx),
+			static_cast<int16_t>(phobj.fy)
 			);
 	}
 
-	vector2d<int32_t> Npc::getdimensions() const
+	vector2d<int16_t> Npc::getdimensions() const
 	{
 		if (animations.count(stance))
 			return animations.at(stance).getdimensions();
 		else
-			return vector2d<int32_t>();
+			return vector2d<int16_t>();
 	}
 }

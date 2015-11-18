@@ -24,13 +24,13 @@ namespace Gameplay
 	MapLayer::MapLayer(node src)
 	{
 		string tileset = src["info"]["tS"] + ".img";
-		for (node& tilenode : src["tile"])
+		for (node tilenode : src["tile"])
 		{
 			Tile tile = Tile(tilenode, tileset);
 			tiles[tile.getz()].push_back(tile);
 		}
 
-		for (node& objnode : src["obj"])
+		for (node objnode : src["obj"])
 		{
 			Obj obj = Obj(objnode);
 			objs[obj.getz()].push_back(obj);
@@ -52,7 +52,7 @@ namespace Gameplay
 		}
 	}
 
-	void MapLayer::draw(vector2d<int32_t> viewpos, float inter) const
+	void MapLayer::draw(vector2d<int16_t> viewpos, float inter) const
 	{
 		for (auto& lyit : objs)
 		{

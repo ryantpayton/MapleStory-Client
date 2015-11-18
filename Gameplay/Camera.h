@@ -21,8 +21,8 @@
 
 namespace Gameplay
 {
-	using::std::int32_t;
-	using::Util::vector2d;
+	using std::int16_t;
+	using Util::vector2d;
 
 	// View on stage which follows the player object.
 	class Camera
@@ -34,13 +34,13 @@ namespace Gameplay
 		~Camera();
 
 		// Update the view with the current player position. (Or any other target)
-		void update(vector2d<int32_t> destination);
+		void update(vector2d<int16_t> destination);
 		// Set the position, changing the view immediatly.
-		void setposition(vector2d<int32_t> position);
+		void setposition(vector2d<int16_t> position);
 		// Updates the view's boundaries. Determined by mapinfo or footholds.
-		void updateview(vector2d<int32_t> hborders, vector2d<int32_t> vborders);
+		void updateview(vector2d<int16_t> hborders, vector2d<int16_t> vborders);
 		// Return the current position for drawing.
-		vector2d<int32_t> getposition(float inter) const;
+		vector2d<int16_t> getposition(float inter) const;
 
 	private:
 		// Movement variables.
@@ -48,8 +48,8 @@ namespace Gameplay
 		float fy;
 
 		// View limits.
-		vector2d<int32_t> hbounds;
-		vector2d<int32_t> vbounds;
+		vector2d<int16_t> hbounds;
+		vector2d<int16_t> vbounds;
 
 		// Variables for interpolation.
 		float lastx;

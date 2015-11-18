@@ -66,7 +66,7 @@ namespace Net
 		handlers[REMOVE_PLAYER] = handler_ptr(new RemoveCharHandler83());
 		//handlers[CHAT_RECEIVED] = unique_ptr<vhandler>(new chat_received_h());
 		//handlers[SCROLL_RESULT] = unique_ptr<vhandler>(new scroll_result_h());
-		//handlers[SPAWN_PET] = unique_ptr<vhandler>(new unhandled()); //TO DO
+		handlers[SPAWN_PET] = handler_ptr(new SpawnPetHandler83());
 		handlers[PLAYER_MOVED] = handler_ptr(new MoveCharHandler83());
 		/*handlers[SHOW_ITEM_EFFECT] = unique_ptr<vhandler>(new unhandled()); //TO DO
 		handlers[SHOW_CHAIR] = unique_ptr<vhandler>(new unhandled()); //TO DO

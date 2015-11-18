@@ -27,7 +27,7 @@ namespace Net
 	{
 		void handle(InPacket& recv) const override
 		{
-			bool itemreaction = recv.readbool();
+			recv.readbool(); // 'itemreaction'
 			int32_t updatemask = recv.readint();
 			if (updatemask > 0)
 			{
@@ -84,7 +84,7 @@ namespace Net
 	// Handles a packet which forces a stats recalculation.
 	class StatresetHandler83 : public PacketHandler
 	{
-		void handle(InPacket& recv) const override
+		void handle(InPacket&) const override
 		{
 			Gameplay::Stage::getplayer().recalcstats(false);
 		}

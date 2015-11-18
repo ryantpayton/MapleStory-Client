@@ -130,7 +130,7 @@ namespace Character
 		flip = true;
 	}
 
-	void CharLook::draw(vector2d<int32_t> pos, float inter) const
+	void CharLook::draw(vector2d<int16_t> pos, float inter) const
 	{
 		if (!body || !hair || !face)
 			return;

@@ -22,16 +22,17 @@
 
 namespace Character
 {
-	using::std::vector;
-	using::Net::LookEntry;
-	using::Gameplay::Physics;
-	using::Gameplay::MovementInfo;
-	using::Gameplay::MovementFragment;
+	using std::vector;
+	using Net::LookEntry;
+	using Gameplay::Physics;
+	using Gameplay::MovementInfo;
+	using Gameplay::MovementFragment;
 
 	class OtherChar : public Char
 	{
 	public:
-		OtherChar(int32_t, const LookEntry&, uint8_t, int16_t, string, int8_t, vector2d<int32_t>);
+		OtherChar(int32_t, const LookEntry&, uint8_t, int16_t, string, int8_t, vector2d<int16_t>);
+
 		int8_t update(const Physics&);
 		void sendmovement(const MovementInfo&);
 

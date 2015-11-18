@@ -30,7 +30,7 @@ namespace Character
 	{
 		using::nl::node;
 		node hairnode = nl::nx::character["Hair"]["000" + std::to_string(hairid) + ".img"];
-		for (node& stancenode : hairnode)
+		for (node stancenode : hairnode)
 		{
 			string stance = stancenode.name();
 			if (stance != "default" || stance != "backDefault" || stance != "info")
@@ -39,7 +39,7 @@ namespace Character
 				node framenode = stancenode[std::to_string(frame)];
 				while (framenode.size() > 0)
 				{
-					for (node& partnode : framenode)
+					for (node partnode : framenode)
 					{
 						string part = partnode.name();
 						CharacterLayer z;
@@ -58,10 +58,10 @@ namespace Character
 
 						stances[stance][z][frame] = Texture(partnode);
 
-						vector2d<int32_t> shift = vector2d<int32_t>();
+						vector2d<int16_t> shift = vector2d<int16_t>();
 						if (partnode["map"]["brow"].data_type() == node::type::vector)
 						{
-							shift -= vector2d<int32_t>(partnode["map"]["brow"].x(), partnode["map"]["brow"].y());
+							shift -= vector2d<int16_t>(partnode["map"]["brow"]);
 						}
 						shift += drawinfo.gethairpos(stance, frame);
 

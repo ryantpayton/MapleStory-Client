@@ -35,6 +35,8 @@ namespace Util
 		string getfilehash(const char* filename) const;
 
 	private:
+		HashUtility& operator = (const HashUtility&) = delete;
+
 		const Sha256 sha256;
 	};
 }

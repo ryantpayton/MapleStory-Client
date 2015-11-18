@@ -31,14 +31,14 @@ namespace Graphics
 		Texture();
 		~Texture();
 		void draw(const DrawArgument&) const;
-		void setshift(vector2d<int32_t>);
-		vector2d<int32_t> getorigin() const;
-		vector2d<int32_t> getdimensions() const;
+		void setshift(vector2d<int16_t>);
+		vector2d<int16_t> getorigin() const;
+		vector2d<int16_t> getdimensions() const;
 
 	private:
 		node source;
-		vector2d<int32_t> origin;
-		vector2d<int32_t> dimensions;
-		vector2d<int32_t> shift;
+		vector2d<int16_t> origin;
+		vector2d<int16_t> dimensions;
+		vector2d<int16_t> shift;
 	};
 }

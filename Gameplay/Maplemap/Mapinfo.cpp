@@ -26,15 +26,15 @@ namespace Gameplay
 
 	MapInfo::~MapInfo() {}
 
-	void MapInfo::loadinfo(node src, vector2d<int32_t> walls, vector2d<int32_t> borders)
+	void MapInfo::loadinfo(node src, vector2d<int16_t> walls, vector2d<int16_t> borders)
 	{
 		string oldbgm = bgm;
 
 		node info = src["info"];
 		if (info["VRLeft"].data_type() == node::type::integer)
 		{
-			mapwalls = vector2d<int32_t>(info["VRLeft"], info["VRRight"]);
-			mapborders = vector2d<int32_t>(info["VRTop"], info["VRBottom"]);
+			mapwalls = vector2d<int16_t>(info["VRLeft"], info["VRRight"]);
+			mapborders = vector2d<int16_t>(info["VRTop"], info["VRBottom"]);
 		}
 		else
 		{
@@ -54,16 +54,14 @@ namespace Gameplay
 		swim = info["swim"].get_bool();
 		town = info["town"].get_bool();
 
-		node stsrc = src["seat"];
-		for (node& sub : stsrc)
+		for (node sub : src["seat"])
 		{
 			Seat seat;
-			seat.pos = vector2d<int32_t>(sub.x(), sub.y());
+			seat.pos = vector2d<int16_t>(sub);
 			seats.push_back(seat);
 		}
 
-		node lrsrc = src["ladderRope"];
-		for (node& lrnode : lrsrc)
+		for (node lrnode : src["ladderRope"])
 		{
 			Ladder ladder;
 			ladder.x = lrnode["x"];
@@ -84,20 +82,20 @@ namespace Gameplay
 		return bgm;
 	}
 
-	vector2d<int32_t> MapInfo::getwalls() const
+	vector2d<int16_t> MapInfo::getwalls() const
 	{
 		return mapwalls;
 	}
 
-	vector2d<int32_t> MapInfo::getborders() const
+	vector2d<int16_t> MapInfo::getborders() const
 	{
 		return mapborders;
 	}
 
-	const Seat* MapInfo::findseat(vector2d<int32_t> pos) const
+	const Seat* MapInfo::findseat(vector2d<int16_t> pos) const
 	{
-		vector2d<int32_t> hor = vector2d<int32_t>(pos.x() - 10, pos.x() + 10);
-		vector2d<int32_t> ver = vector2d<int32_t>(pos.y() - 10, pos.y() + 10);
+		vector2d<int16_t> hor = vector2d<int16_t>(pos.x() - 10, pos.x() + 10);
+		vector2d<int16_t> ver = vector2d<int16_t>(pos.y() - 10, pos.y() + 10);
 		for (auto& stit : seats)
 		{
 			if (hor.contains(stit.pos.x()) && ver.contains(stit.pos.y()))
@@ -108,16 +106,16 @@ namespace Gameplay
 		return nullptr;
 	}
 
-	const Ladder* MapInfo::findladder(vector2d<int32_t> pos, bool up) const
+	const Ladder* MapInfo::findladder(vector2d<int16_t> pos, bool up) const
 	{
-		vector2d<int32_t> hor = vector2d<int32_t>(pos.x() - 25, pos.x() + 25);
+		vector2d<int16_t> hor = vector2d<int16_t>(pos.x() - 25, pos.x() + 25);
 		for (auto& lrit : ladders)
 		{
-			vector2d<int32_t> lrver;
+			vector2d<int16_t> lrver;
 			if (up)
-				lrver = vector2d<int32_t>(lrit.y1, lrit.y2 + 15);
+				lrver = vector2d<int16_t>(lrit.y1, lrit.y2 + 15);
 			else
-				lrver = vector2d<int32_t>(lrit.y1 - 5, lrit.y2);
+				lrver = vector2d<int16_t>(lrit.y1 - 5, lrit.y2);
 
 			if (hor.contains(lrit.x) && lrver.contains(pos.y()))
 			{

@@ -36,7 +36,7 @@ namespace Character
 		~CharLook();
 
 		void reset();
-		void draw(vector2d<int32_t> pos, float inter) const;
+		void draw(vector2d<int16_t> pos, float inter) const;
 		bool update(uint16_t timestep);
 
 		void sethair(int32_t hairid);

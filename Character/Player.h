@@ -32,12 +32,12 @@
 
 namespace Character
 {
-	using::Net::CharEntry;
-	using::Gameplay::Physics;
-	using::Gameplay::MovementInfo;
-	using::Gameplay::MovementFragment;
-	using::Gameplay::Ladder;
-	using::Gameplay::Seat;
+	using Net::CharEntry;
+	using Gameplay::Physics;
+	using Gameplay::MovementInfo;
+	using Gameplay::MovementFragment;
+	using Gameplay::Ladder;
+	using Gameplay::Seat;
 
 	// A class that represents the player.
 	class Player : public PlayableChar
@@ -50,7 +50,7 @@ namespace Character
 		Player();
 
 		// Respawn the player at the given position.
-		void respawn(vector2d<int32_t> position);
+		void respawn(vector2d<int16_t> position);
 		// Sends a Keyaction to the player's state, to apply forces, change the state and other behaviour.
 		void sendaction(Keyaction keycode, bool pressed);
 		// Can be called after sending player movement to the server to start a new stack.

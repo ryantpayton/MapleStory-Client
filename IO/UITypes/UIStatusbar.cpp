@@ -28,11 +28,11 @@ namespace IO
 		node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
 		node chat = nl::nx::ui["StatusBar2.img"]["chat"];
 
-		sprites.push_back(Sprite(mainbar["backgrnd"], vector2d<int32_t>(0, 0)));
-		sprites.push_back(Sprite(mainbar["gaugeBackgrd"], vector2d<int32_t>(0, 0)));
-		sprites.push_back(Sprite(mainbar["notice"], vector2d<int32_t>(0, 0)));
-		sprites.push_back(Sprite(mainbar["lvBacktrnd"], vector2d<int32_t>(0, 0)));
-		sprites.push_back(Sprite(mainbar["lvCover"], vector2d<int32_t>(0, 0)));
+		sprites.push_back(Sprite(mainbar["backgrnd"], vector2d<int16_t>(0, 0)));
+		sprites.push_back(Sprite(mainbar["gaugeBackgrd"], vector2d<int16_t>(0, 0)));
+		sprites.push_back(Sprite(mainbar["notice"], vector2d<int16_t>(0, 0)));
+		sprites.push_back(Sprite(mainbar["lvBacktrnd"], vector2d<int16_t>(0, 0)));
+		sprites.push_back(Sprite(mainbar["lvCover"], vector2d<int16_t>(0, 0)));
 
 		expbar = Bar(
 			Texture(mainbar.resolve("gauge/exp/0")), 
@@ -74,8 +74,8 @@ namespace IO
 		buttons[BT_EQUIPS] = unique_ptr<Button>(new MapleButton(mainbar["BtEquip"]));
 		buttons[BT_SKILL] = unique_ptr<Button>(new MapleButton(mainbar["BtSkill"]));
 
-		position = vector2d<int32_t>(512, 590);
-		dimension = vector2d<int32_t>(1366, 80);
+		position = vector2d<int16_t>(512, 590);
+		dimension = vector2d<int16_t>(1366, 80);
 		active = true;
 	}
 
@@ -87,34 +87,34 @@ namespace IO
 		int64_t expneeded = stats.getexpneeded();
 		uint16_t currenthp = stats.getstat(Character::MS_HP);
 		uint16_t currentmp = stats.getstat(Character::MS_MP);
-		uint16_t maxhp = stats.gettotal(Character::ES_HP);
-		uint16_t maxmp = stats.gettotal(Character::ES_MP);
+		uint32_t maxhp = stats.gettotal(Character::ES_HP);
+		uint32_t maxmp = stats.gettotal(Character::ES_MP);
 		float exppercent = static_cast<float>(static_cast<double>(currentexp) / expneeded);
 
-		expbar.draw(position + vector2d<int32_t>(-261, -15), exppercent);
-		hpbar.draw(position + vector2d<int32_t>(-261, -31), static_cast<float>(currenthp) / maxhp);
-		mpbar.draw(position + vector2d<int32_t>(-90, -31), static_cast<float>(currentmp) / maxmp);
+		expbar.draw(position + vector2d<int16_t>(-261, -15), exppercent);
+		hpbar.draw(position + vector2d<int16_t>(-261, -31), static_cast<float>(currenthp) / maxhp);
+		mpbar.draw(position + vector2d<int16_t>(-90, -31), static_cast<float>(currentmp) / maxmp);
 
 		string expstring = std::to_string(100 * exppercent);
 		statset.draw(
 			std::to_string(currentexp) + "[" + expstring.substr(0, expstring.find('.') + 3) + "%]",
-			position + vector2d<int32_t>(47, -13)
+			position + vector2d<int16_t>(47, -13)
 			);
 		statset.draw(
 			"[" + std::to_string(currenthp) + "/" + std::to_string(maxhp) + "]",
-			position + vector2d<int32_t>(-124, -29)
+			position + vector2d<int16_t>(-124, -29)
 			);
 		statset.draw(
 			"[" + std::to_string(currentmp) + "/" + std::to_string(maxmp) + "]",
-			position + vector2d<int32_t>(47, -29)
+			position + vector2d<int16_t>(47, -29)
 			);
 		levelset.draw(
 			std::to_string(stats.getstat(Character::MS_LEVEL)),
-			position + vector2d<int32_t>(-480, -24)
+			position + vector2d<int16_t>(-480, -24)
 			);
 
-		joblabel.draw(position + vector2d<int32_t>(-435, -22));
-		namelabel.draw(position + vector2d<int32_t>(-435, -37));
+		joblabel.draw(position + vector2d<int16_t>(-435, -22));
+		namelabel.draw(position + vector2d<int16_t>(-435, -37));
 	}
 
 	void UIStatusbar::buttonpressed(uint16_t id)
@@ -134,11 +134,11 @@ namespace IO
 		buttons[id].get()->setstate(Button::MOUSEOVER);
 	}
 
-	rectangle2d<int32_t> UIStatusbar::bounds() const
+	rectangle2d<int16_t> UIStatusbar::bounds() const
 	{
-		return rectangle2d<int32_t>(
-			position - vector2d<int32_t>(512, 84), 
-			position - vector2d<int32_t>(512, 84) + dimension
+		return rectangle2d<int16_t>(
+			position - vector2d<int16_t>(512, 84), 
+			position - vector2d<int16_t>(512, 84) + dimension
 			);
 	}
 }

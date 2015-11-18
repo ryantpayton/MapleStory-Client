@@ -23,12 +23,13 @@
 
 namespace Gameplay
 {
-	using::std::int32_t;
-	using::std::string;
-	using::std::pair;
-	using::Util::vector2d;
-	using::Util::rectangle2d;
-	using::Graphics::Animation;
+	using std::int16_t;
+	using std::int32_t;
+	using std::string;
+	using std::pair;
+	using Util::vector2d;
+	using Util::rectangle2d;
+	using Graphics::Animation;
 
 	struct WarpInfo
 	{
@@ -59,21 +60,23 @@ namespace Gameplay
 			TYPE14
 		};
 
-		Portal(const Animation*, PtType, string, bool, vector2d<int32_t>, int32_t, string);
+		Portal(const Animation*, PtType, string, bool, vector2d<int16_t>, int32_t, string);
 		Portal();
 		~Portal();
-		void draw(vector2d<int32_t>, float) const;
+
+		void draw(vector2d<int16_t>, float) const;
 		void settouch(bool);
 		string getname() const;
 		PtType gettype() const;
-		vector2d<int32_t> getposition() const;
-		rectangle2d<int32_t> bounds() const;
+		vector2d<int16_t> getposition() const;
+		rectangle2d<int16_t> bounds() const;
 		const WarpInfo& getwarpinfo() const;
+
 	private:
 		const Animation* animation;
 		PtType type;
 		string name;
-		vector2d<int32_t> position;
+		vector2d<int16_t> position;
 		WarpInfo warpinfo;
 		bool touched;
 	};

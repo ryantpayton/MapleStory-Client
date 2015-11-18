@@ -20,7 +20,7 @@
 namespace Gameplay
 {
 	Portal::Portal(const Animation* a, PtType t, string nm, bool intermap, 
-		vector2d<int32_t> p, int32_t tid, string tnm) {
+		vector2d<int16_t> p, int32_t tid, string tnm) {
 
 		animation = a;
 		type = t;
@@ -40,7 +40,7 @@ namespace Gameplay
 
 	Portal::~Portal() {}
 
-	void Portal::draw(vector2d<int32_t> viewpos, float inter) const
+	void Portal::draw(vector2d<int16_t> viewpos, float inter) const
 	{
 		if (!animation || (type == HIDDEN && !touched))
 			return;
@@ -64,16 +64,16 @@ namespace Gameplay
 		return type;
 	}
 
-	vector2d<int32_t> Portal::getposition() const
+	vector2d<int16_t> Portal::getposition() const
 	{
 		return position;
 	}
 
-	rectangle2d<int32_t> Portal::bounds() const
+	rectangle2d<int16_t> Portal::bounds() const
 	{
-		return rectangle2d<int32_t>(
+		return rectangle2d<int16_t>(
 			position, 
-			position + vector2d<int32_t>(30, -50)
+			position + vector2d<int16_t>(30, -50)
 			);
 	}
 

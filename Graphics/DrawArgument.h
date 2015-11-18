@@ -21,46 +21,46 @@
 
 namespace Graphics
 {
-	using::std::int32_t;
-	using::Util::vector2d;
+	using std::int16_t;
+	using Util::vector2d;
 
 	class DrawArgument
 	{
 	public:
-		DrawArgument(int32_t x, int32_t y)
+		DrawArgument(int16_t x, int16_t y)
 		{
-			pos = vector2d<int32_t>(x, y);
+			pos = vector2d<int16_t>(x, y);
 			defaults();
 		}
 
-		DrawArgument(vector2d<int32_t> p)
+		DrawArgument(vector2d<int16_t> p)
 		{
 			pos = p;
 			defaults();
 		}
 
-		DrawArgument(vector2d<int32_t> p, float a)
+		DrawArgument(vector2d<int16_t> p, float a)
 		{
 			pos = p;
 			defaults();
 			alpha = a;
 		}
 
-		DrawArgument(vector2d<int32_t> p, vector2d<int32_t> str)
+		DrawArgument(vector2d<int16_t> p, vector2d<int16_t> str)
 		{
 			pos = p;
 			defaults();
 			stretch = str;
 		}
 
-		DrawArgument(vector2d<int32_t> p, bool flip)
+		DrawArgument(vector2d<int16_t> p, bool flip)
 		{
 			pos = p;
 			defaults();
 			xscale = flip ? -1.0f : 1.0f;
 		}
 
-		DrawArgument(vector2d<int32_t> p, bool flip, vector2d<int32_t> c)
+		DrawArgument(vector2d<int16_t> p, bool flip, vector2d<int16_t> c)
 		{
 			pos = p;
 			defaults();
@@ -68,8 +68,8 @@ namespace Graphics
 			center = c;
 		}
 
-		DrawArgument(vector2d<int32_t> p, vector2d<int32_t> c, 
-			vector2d<int32_t> s, float xs, float ys, float a) {
+		DrawArgument(vector2d<int16_t> p, vector2d<int16_t> c, 
+			vector2d<int16_t> s, float xs, float ys, float a) {
 
 			pos = p;
 			center = c;
@@ -81,17 +81,17 @@ namespace Graphics
 
 		~DrawArgument() {}
 
-		vector2d<int32_t> getpos() const 
+		vector2d<int16_t> getpos() const 
 		{ 
 			return pos; 
 		}
 
-		vector2d<int32_t> getcenter() const
+		vector2d<int16_t> getcenter() const
 		{
 			return center;
 		}
 
-		vector2d<int32_t> getstretch() const 
+		vector2d<int16_t> getstretch() const 
 		{ 
 			return stretch; 
 		}
@@ -125,9 +125,9 @@ namespace Graphics
 			alpha = 1.0f;
 		}
 
-		vector2d<int32_t> pos;
-		vector2d<int32_t> center;
-		vector2d<int32_t> stretch;
+		vector2d<int16_t> pos;
+		vector2d<int16_t> center;
+		vector2d<int16_t> stretch;
 		float xscale;
 		float yscale;
 		float alpha;

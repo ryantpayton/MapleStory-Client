@@ -30,20 +30,21 @@ namespace IO
 		using std::string;
 		using Graphics::Sprite;
 		string back = (text == 16) ? "1" : "0";
-		sprites.push_back(Sprite(notice["backgrnd"][back], vector2d<int32_t>()));
-		sprites.push_back(Sprite(notice["text"][std::to_string(text)], vector2d<int32_t>(17, 13)));
+		sprites.push_back(Sprite(notice["backgrnd"][back], vector2d<int16_t>()));
+		sprites.push_back(Sprite(notice["text"][std::to_string(text)], vector2d<int16_t>(17, 13)));
 
 		buttons[BT_OK] = unique_ptr<Button>(
-			new MapleButton(notice["BtYes"], vector2d<int32_t>(100, 100))
+			new MapleButton(notice["BtYes"], vector2d<int16_t>(100, 100))
 			);
 
-		position = vector2d<int32_t>(292, 200);
-		dimension = vector2d<int32_t>(362, 219);
+		position = vector2d<int16_t>(292, 200);
+		dimension = vector2d<int16_t>(362, 219);
 		active = true;
 	}
 
 	void UILoginNotice::buttonpressed(uint16_t id)
 	{
-		active = false;
+		if (id == BT_OK)
+			active = false;
 	}
 }

@@ -183,8 +183,8 @@ namespace Graphics
 		temp = nullptr;
 	}
 
-	void GraphicsD2D::draw(size_t id, int32_t x, int32_t y, int32_t w, int32_t h, float alpha,
-		float xscale, float yscale, int32_t ox, int32_t oy) {
+	void GraphicsD2D::draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, float alpha,
+		float xscale, float yscale, int16_t ox, int16_t oy) {
 
 		if (!p_target || !bitmaps.count(id))
 			return;

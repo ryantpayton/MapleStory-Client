@@ -21,17 +21,17 @@ namespace Gameplay
 {
 	Footholdtree::Footholdtree(node src)
 	{
-		int32_t leftw = 65536;
-		int32_t rightw = -65536;
-		int32_t botb = -65536;
-		int32_t topb = 65536;
+		int16_t leftw = 30000;
+		int16_t rightw = -30000;
+		int16_t botb = -30000;
+		int16_t topb = 30000;
 
-		for (node& basef : src)
+		for (node basef : src)
 		{
 			int8_t layer = static_cast<int8_t>(stoi(basef.name()));
-			for (node& midf : basef)
+			for (node midf : basef)
 			{
-				for (node& lastf : midf)
+				for (node lastf : midf)
 				{
 					Foothold foothold = Foothold(lastf, layer);
 
@@ -56,9 +56,9 @@ namespace Gameplay
 					uint16_t id = foothold.getid();
 					footholds[id] = foothold;
 
-					int32_t start = foothold.getl();
-					int32_t end = foothold.getr();
-					for (int32_t i = start; i <= end; i++)
+					int16_t start = foothold.getl();
+					int16_t end = foothold.getr();
+					for (int16_t i = start; i <= end; i++)
 					{
 						footholdsbyx.insert(std::make_pair(i, id));
 					}
@@ -66,8 +66,8 @@ namespace Gameplay
 			}
 		}
 
-		walls = vector2d<int32_t>(leftw + 25, rightw - 25);
-		borders = vector2d<int32_t>(topb - 400, botb + 400);
+		walls = vector2d<int16_t>(leftw + 25, rightw - 25);
+		borders = vector2d<int16_t>(topb - 400, botb + 400);
 	}
 
 	Footholdtree::Footholdtree() {}
@@ -81,9 +81,9 @@ namespace Gameplay
 
 		if (nextx != phobj.fx)
 		{
-			vector2d<int32_t> vertical = vector2d<int32_t>(
-				static_cast<int32_t>(phobj.fy - 40), 
-				static_cast<int32_t>(phobj.fy - 10)
+			vector2d<int16_t> vertical = vector2d<int16_t>(
+				static_cast<int16_t>(phobj.fy - 40),
+				static_cast<int16_t>(phobj.fy - 10)
 				);
 			float wall = getwall(phobj.fhid, phobj.hspeed < 0.0f, vertical);
 			if ((phobj.hspeed < 0) ? nextx < wall : nextx > wall)
@@ -147,10 +147,13 @@ namespace Gameplay
 			else if (phobj.fhslope > 0.0f)
 				vdelta *= (phobj.fy - ground);
 
-			if (phobj.hspeed > 0.0f && vdelta <= phobj.hspeed)
-				phobj.fy = ground;
-			else if (phobj.hspeed < 0.0f && vdelta >= phobj.hspeed)
-				phobj.fy = ground;
+			if (vdelta != 0.0f)
+			{
+				if (phobj.hspeed > 0.0f && vdelta <= phobj.hspeed)
+					phobj.fy = ground;
+				else if (phobj.hspeed < 0.0f && vdelta >= phobj.hspeed)
+					phobj.fy = ground;
+			}
 		}
 		phobj.onground = phobj.fy == ground;
 	}
@@ -163,7 +166,7 @@ namespace Gameplay
 			return nullfh;
 	}
 
-	float Footholdtree::getwall(uint16_t curid, bool left, vector2d<int32_t> ver) const
+	float Footholdtree::getwall(uint16_t curid, bool left, vector2d<int16_t> ver) const
 	{
 		if (left)
 		{
@@ -193,12 +196,12 @@ namespace Gameplay
 
 	uint16_t Footholdtree::getbelow(float fx, float fy) const
 	{
-		int32_t ret = 0;
-		int32_t x = static_cast<int32_t>(fx);
+		uint16_t ret = 0;
+		int16_t x = static_cast<int16_t>(fx);
 		if (footholdsbyx.count(x))
 		{
 			float comp = static_cast<float>(borders.y());
-			for (auto& fhit = footholdsbyx.lower_bound(x); fhit != footholdsbyx.upper_bound(x); ++fhit)
+			for (auto fhit = footholdsbyx.lower_bound(x); fhit != footholdsbyx.upper_bound(x); ++fhit)
 			{
 				const Foothold& fh = footholds.at(fhit->second);
 				float ycomp = fh.resolvex(fx);
@@ -212,12 +215,12 @@ namespace Gameplay
 		return ret;
 	}
 
-	vector2d<int32_t> Footholdtree::getwalls() const
+	vector2d<int16_t> Footholdtree::getwalls() const
 	{
 		return walls;
 	}
 
-	vector2d<int32_t> Footholdtree::getborders() const
+	vector2d<int16_t> Footholdtree::getborders() const
 	{
 		return borders;
 	}

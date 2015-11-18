@@ -21,9 +21,9 @@
 
 namespace IO
 {
-	using::std::int32_t;
-	using::Util::vector2d;
-	using::Util::rectangle2d;
+	using std::int16_t;
+	using Util::vector2d;
+	using Util::rectangle2d;
 
 	// A button which can be used in an UIElement. Base class for different button types.
 	class Button
@@ -38,16 +38,16 @@ namespace IO
 		};
 
 		virtual ~Button() {}
-		virtual void draw(vector2d<int32_t>) const = 0;
-		virtual rectangle2d<int32_t> bounds(vector2d<int32_t>) const = 0;
-		void setposition(vector2d<int32_t> p) { position = p; }
+		virtual void draw(vector2d<int16_t>) const = 0;
+		virtual rectangle2d<int16_t> bounds(vector2d<int16_t>) const = 0;
+		void setposition(vector2d<int16_t> p) { position = p; }
 		void setstate(State s) { state = s; }
 		void setactive(bool a) { active = a; }
 		bool isactive() const { return active && state != DISABLED; }
 		State getstate() const { return state; }
 	protected:
 		State state;
-		vector2d<int32_t> position;
+		vector2d<int16_t> position;
 		bool active;
 	};
 }

@@ -121,10 +121,7 @@ namespace Character
 
 	class PlayerFallState : public PlayerState
 	{
-		void sendaction(PlayableChar& player, Keyaction ka, bool down) const override
-		{
-
-		}
+		void sendaction(PlayableChar&, Keyaction, bool) const override {}
 
 		void update(PlayableChar&) const override {}
 

@@ -22,16 +22,18 @@
 
 namespace IO
 {
-	using::std::map;
-	using::nl::node;
-	using::Graphics::Texture;
+	using std::map;
+	using nl::node;
+	using Graphics::Texture;
 
 	class TwoSpriteButton : public Button
 	{
 	public:
-		TwoSpriteButton(node, node, vector2d<int32_t>);
-		void draw(vector2d<int32_t>) const;
-		rectangle2d<int32_t> bounds(vector2d<int32_t>) const;
+		TwoSpriteButton(node, node, vector2d<int16_t>);
+
+		void draw(vector2d<int16_t>) const;
+		rectangle2d<int16_t> bounds(vector2d<int16_t>) const;
+
 	private:
 		map<bool, Texture> textures;
 	};

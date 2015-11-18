@@ -34,10 +34,9 @@ namespace Net
 		void parseitem(InPacket& recv, Inventory::InvType invtype, int16_t slot, Inventory& inventory) const
 		{
 			// Read type and item id.
-			int8_t type = recv.readbyte();
+			recv.readbyte(); // 'type' byte
 			int32_t iid = recv.readint();
 
-			Item* toadd = 0;
 			if (invtype == Inventory::EQUIP || invtype == Inventory::EQUIPPED)
 			{
 				// Parse an equip.

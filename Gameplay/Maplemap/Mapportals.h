@@ -22,9 +22,9 @@
 
 namespace Gameplay
 {
-	using::std::map;
-	using::nl::node;
-	using::Graphics::Animation;
+	using std::map;
+	using nl::node;
+	using Graphics::Animation;
 
 	// Collecton of portals on a map. Draws and updates portals.
 	// Also contains methods for using portals and obtaining spawn points.
@@ -33,15 +33,17 @@ namespace Gameplay
 	public:
 		MapPortals();
 		~MapPortals();
+
 		void init();
 		void load(node, int32_t);
 		void clear();
-		void update(rectangle2d<int32_t>);
-		void draw(vector2d<int32_t>, float) const;
+		void update(rectangle2d<int16_t>);
+		void draw(vector2d<int16_t>, float) const;
 		uint8_t getportalbyname(string) const;
-		vector2d<int32_t> getspawnpoint(uint8_t) const;
-		vector2d<int32_t> getspawnpoint(string) const;
-		const WarpInfo* findportal(rectangle2d<int32_t>);
+		vector2d<int16_t> getspawnpoint(uint8_t) const;
+		vector2d<int16_t> getspawnpoint(string) const;
+		const WarpInfo* findportal(rectangle2d<int16_t>);
+
 	private:
 		map<uint8_t, Portal> portals;
 		map<string, uint8_t> portalnames;

@@ -22,22 +22,22 @@
 
 namespace Gameplay
 {
-	using::std::int32_t;
-	using::std::vector;
-	using::std::string;
-	using::nl::node;
-	using::Util::vector2d;
+	using std::int16_t;
+	using std::vector;
+	using std::string;
+	using nl::node;
+	using Util::vector2d;
 
 	struct Seat
 	{
-		vector2d<int32_t> pos;
+		vector2d<int16_t> pos;
 	};
 
 	struct Ladder
 	{
-		int32_t x;
-		int32_t y1;
-		int32_t y2;
+		int16_t x;
+		int16_t y1;
+		int16_t y2;
 		bool ladder;
 	};
 
@@ -46,14 +46,15 @@ namespace Gameplay
 	public:
 		MapInfo();
 		~MapInfo();
-		void loadinfo(node, vector2d<int32_t>, vector2d<int32_t>);
+
+		void loadinfo(node, vector2d<int16_t>, vector2d<int16_t>);
 		bool hasnewbgm() const;
 		const string& getbgm() const;
-		vector2d<int32_t> getwalls() const;
-		vector2d<int32_t> getborders() const;
+		vector2d<int16_t> getwalls() const;
+		vector2d<int16_t> getborders() const;
 
-		const Seat* findseat(vector2d<int32_t>) const;
-		const Ladder* findladder(vector2d<int32_t>, bool) const;
+		const Seat* findseat(vector2d<int16_t>) const;
+		const Ladder* findladder(vector2d<int16_t>, bool) const;
 
 	private:
 		bool newbgm;
@@ -67,8 +68,8 @@ namespace Gameplay
 		bool swim;
 		bool town;
 		bool hideminimap;
-		vector2d<int32_t> mapwalls;
-		vector2d<int32_t> mapborders;
+		vector2d<int16_t> mapwalls;
+		vector2d<int16_t> mapborders;
 		vector<Seat> seats;
 		vector<Ladder> ladders;
 	};

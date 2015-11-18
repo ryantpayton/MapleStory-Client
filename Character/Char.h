@@ -17,17 +17,16 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Gameplay\Maplemap\Mapobject.h"
-#include "Gameplay\Physics\PhysicsObject.h"
 #include "Look\CharLook.h"
-#include "Graphics\Textlabel.h"
+#include "Look\PetLook.h"
 #include "Util\rectangle2d.h"
+#include <memory>
 
 namespace Character
 {
-	using::Util::rectangle2d;
-	using::Gameplay::MapObject;
-	using::Gameplay::PhysicsObject;
-	using::Graphics::Textlabel;
+	using std::unique_ptr;
+	using Util::rectangle2d;
+	using Gameplay::MapObject;
 
 	// Base for characters, e.g. the player and other clients on the same map.
 	class Char : public MapObject
@@ -51,16 +50,21 @@ namespace Character
 		};
 
 		// Draw look, nametag, effects and chat bubble.
-		void draw(vector2d<int32_t> viewpos, float inter) const override;
-		void setposition(int32_t xpos, int32_t ypos) override;
+		void draw(vector2d<int16_t> viewpos, float inter) const override;
+		int8_t update(const Physics& physics) override;
+		void setposition(int16_t xpos, int16_t ypos) override;
 		int8_t getlayer() const override;
 		int32_t getoid() const override;
-		vector2d<int32_t> getposition() const override;
+		vector2d<int16_t> getposition() const override;
+
+		void addpet(uint8_t index, int32_t iid, string name, 
+			int32_t uniqueid, vector2d<int16_t> pos, uint8_t stance, int32_t fhid);
+		void removepet(uint8_t index, bool hunger);
 
 		void setflip(bool flipped);
 		void setstance(Stance newstance);
 		bool getflip() const;
-		rectangle2d<int32_t> getbounds() const;
+		rectangle2d<int16_t> getbounds() const;
 
 		// Return if the char is in the Char::SIT state.
 		bool issitting() const;
@@ -73,6 +77,7 @@ namespace Character
 	protected:
 		CharLook look;
 		Textlabel namelabel;
+		PetLook pets[3];
 
 		PhysicsObject phobj;
 		int32_t cid;

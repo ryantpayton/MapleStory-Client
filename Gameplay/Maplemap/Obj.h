@@ -21,10 +21,10 @@
 
 namespace Gameplay
 {
-	using::std::int32_t;
-	using::nl::node;
-	using::Util::vector2d;
-	using::Graphics::Animation;
+	using std::int16_t;
+	using nl::node;
+	using Util::vector2d;
+	using Graphics::Animation;
 
 	// Represents an obj (map decoration) on a map.
 	class Obj
@@ -37,13 +37,13 @@ namespace Gameplay
 		// Update animation.
 		void update();
 		// Draw the obj at the specified position.
-		void draw(vector2d<int32_t> viewpos, float inter) const;
+		void draw(vector2d<int16_t> viewpos, float inter) const;
 		// Return depth of the obj.
 		uint8_t getz() const;
 
 	private:
 		Animation animation;
-		vector2d<int32_t> pos;
+		vector2d<int16_t> pos;
 		uint8_t z;
 		bool flip;
 	};

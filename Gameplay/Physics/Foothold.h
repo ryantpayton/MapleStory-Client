@@ -41,29 +41,29 @@ namespace Gameplay
 		// Returns the platform right to this.
 		uint16_t getnext() const { return next; }
 		// Returns the horizontal component.
-		const vector2d<int32_t>& gethor() const { return horizontal; }
+		const vector2d<int16_t>& gethor() const { return horizontal; }
 		// Returns the vertical component.
-		const vector2d<int32_t>& getver() const { return vertical; }
+		const vector2d<int16_t>& getver() const { return vertical; }
 		// Return the left edge.
-		int32_t getl() const { return horizontal.smaller(); }
+		int16_t getl() const { return horizontal.smaller(); }
 		// Return the right edge.
-		int32_t getr() const { return horizontal.greater(); }
+		int16_t getr() const { return horizontal.greater(); }
 		// Return the top edge.
-		int32_t gett() const { return vertical.smaller(); }
+		int16_t gett() const { return vertical.smaller(); }
 		// Return the bottom edge.
-		int32_t getb() const { return vertical.greater(); }
+		int16_t getb() const { return vertical.greater(); }
 		// Return if the platform is a wall (x1 == x2).
 		bool iswall() const { return horizontal.straight(); }
 		// Return if the platform is a floor (y1 == y2).
 		bool isfloor() const { return vertical.straight(); }
 		// Returns if a x-coordinate is above or below this platform.
-		bool hcontains(int32_t x) const { return horizontal.contains(x); }
+		bool hcontains(int16_t x) const { return horizontal.contains(x); }
 		// Returns if a y-coordinate is right or left of this platform.
-		bool vcontains(int32_t y) const { return vertical.contains(y); }
+		bool vcontains(int16_t y) const { return vertical.contains(y); }
 		// Returns the width.
-		int32_t gethdelta() const { return horizontal.y() - horizontal.x(); }
+		int16_t gethdelta() const { return horizontal.y() - horizontal.x(); }
 		// Returns the height.
-		int32_t getvdelta() const { return vertical.y() - vertical.x(); }
+		int16_t getvdelta() const { return vertical.y() - vertical.x(); }
 		// Returns the slope as a ratio of vertical/horizontal.
 		float getslope() const;
 		// Returns a y-coordinate right above the given x-coordinate. Used for slopes.
@@ -74,8 +74,8 @@ namespace Gameplay
 		int8_t layer;
 		uint16_t prev;
 		uint16_t next;
-		vector2d<int32_t> horizontal;
-		vector2d<int32_t> vertical;
+		vector2d<int16_t> horizontal;
+		vector2d<int16_t> vertical;
 	};
 }
 

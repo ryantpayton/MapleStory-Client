@@ -36,22 +36,22 @@ namespace IO
 
 		using Graphics::Sprite;
 		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Title"]["worldsel"]));
-		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Common"]["frame"], vector2d<int32_t>(400, 290)));
-		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Common"]["selectWorld"], vector2d<int32_t>(580, 42)));
-		sprites.push_back(Sprite(charsel["selectedWorld"]["icon"]["15"], vector2d<int32_t>(580, 42)));
-		sprites.push_back(Sprite(charsel["selectedWorld"]["name"]["15"], vector2d<int32_t>(580, 42)));
+		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Common"]["frame"], vector2d<int16_t>(400, 290)));
+		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Common"]["selectWorld"], vector2d<int16_t>(580, 42)));
+		sprites.push_back(Sprite(charsel["selectedWorld"]["icon"]["15"], vector2d<int16_t>(580, 42)));
+		sprites.push_back(Sprite(charsel["selectedWorld"]["name"]["15"], vector2d<int16_t>(580, 42)));
 
 		string channelid = std::to_string(Net::Session::getlogin().getchannelid());
-		sprites.push_back(Sprite(charsel["selectedWorld"]["ch"][channelid], vector2d<int32_t>(580, 42)));
-		sprites.push_back(Sprite(charsel["charInfo"], vector2d<int32_t>(662, 355)));
+		sprites.push_back(Sprite(charsel["selectedWorld"]["ch"][channelid], vector2d<int16_t>(580, 42)));
+		sprites.push_back(Sprite(charsel["charInfo"], vector2d<int16_t>(662, 355)));
 
-		buttons[BT_ARBEIT] = unique_ptr<Button>(new MapleButton(charsel["arbeit"], vector2d<int32_t>(580, 115)));
-		buttons[BT_CARDS] = unique_ptr<Button>(new MapleButton(charsel["characterCard"], vector2d<int32_t>(665, 115)));
-		buttons[BT_CREATECHAR] = unique_ptr<Button>(new MapleButton(charsel["BtNew"], vector2d<int32_t>(200, 495)));
-		buttons[BT_DELETECHAR] = unique_ptr<Button>(new MapleButton(charsel["BtDelete"], vector2d<int32_t>(320, 495)));
-		buttons[BT_SELECTCHAR] = unique_ptr<Button>(new MapleButton(charsel["BtSelect"], vector2d<int32_t>(586, 427)));
-		buttons[BT_PAGELEFT] = unique_ptr<Button>(new MapleButton(charsel["pageL"], vector2d<int32_t>(100, 490)));
-		buttons[BT_PAGERIGHT] = unique_ptr<Button>(new MapleButton(charsel["pageR"], vector2d<int32_t>(490, 490)));
+		buttons[BT_ARBEIT] = unique_ptr<Button>(new MapleButton(charsel["arbeit"], vector2d<int16_t>(580, 115)));
+		buttons[BT_CARDS] = unique_ptr<Button>(new MapleButton(charsel["characterCard"], vector2d<int16_t>(665, 115)));
+		buttons[BT_CREATECHAR] = unique_ptr<Button>(new MapleButton(charsel["BtNew"], vector2d<int16_t>(200, 495)));
+		buttons[BT_DELETECHAR] = unique_ptr<Button>(new MapleButton(charsel["BtDelete"], vector2d<int16_t>(320, 495)));
+		buttons[BT_SELECTCHAR] = unique_ptr<Button>(new MapleButton(charsel["BtSelect"], vector2d<int16_t>(586, 427)));
+		buttons[BT_PAGELEFT] = unique_ptr<Button>(new MapleButton(charsel["pageL"], vector2d<int16_t>(100, 490)));
+		buttons[BT_PAGERIGHT] = unique_ptr<Button>(new MapleButton(charsel["pageR"], vector2d<int16_t>(490, 490)));
 
 		levelset = Charset(charsel["lv"], Charset::CENTER);
 		statsset = Charset(nl::nx::ui["StatusBar2.img"]["mainBar"]["gauge"]["number"], Charset::RIGHT);
@@ -74,7 +74,7 @@ namespace IO
 		{
 			sprites.push_back(Sprite(
 				charsel["buyCharacter"], 
-				vector2d<int32_t>(130 + (120 * (i % 4)), 250 + (200 * (i > 3))))
+				vector2d<int16_t>(130 + (120 * (i % 4)), 250 + (200 * (i > 3))))
 				);
 		}
 		//selected = config.getconfig()->defaultchar;
@@ -110,8 +110,8 @@ namespace IO
 			joblabel = Textlabel(Textlabel::DWF_12MR, Textlabel::TXC_WHITE, stats.getjobname(), 0);
 		}
 
-		position = vector2d<int32_t>(0, 0);
-		dimension = vector2d<int32_t>(800, 600);
+		position = vector2d<int16_t>(0, 0);
+		dimension = vector2d<int16_t>(800, 600);
 		active = true;
 	}
 
@@ -121,13 +121,13 @@ namespace IO
 
 		for (uint8_t i = 0; i < charcount; i++)
 		{
-			vector2d<int32_t> charpos = getcharpos(i);
+			vector2d<int16_t> charpos = getcharpos(i);
 			charlooks[i].draw(charpos, inter);
 			nametags[i].draw(charpos);
 		}
 
-		namelabel.draw(vector2d<int32_t>(662, 268));
-		joblabel.draw(vector2d<int32_t>(732, 305));
+		namelabel.draw(vector2d<int16_t>(662, 268));
+		joblabel.draw(vector2d<int16_t>(732, 305));
 
 		if (selected < charcount)
 		{
@@ -138,7 +138,7 @@ namespace IO
 			statsset.draw(std::to_string(stats.getrank().first), DrawArgument(732, 335));
 			statsset.draw(std::to_string(stats.getjobrank().first), DrawArgument(732, 355));
 
-			int32_t lvx = levelset.draw(std::to_string(stats.getstat(Character::MS_LEVEL)), DrawArgument(685, 262));
+			int16_t lvx = levelset.draw(std::to_string(stats.getstat(Character::MS_LEVEL)), DrawArgument(685, 262));
 			levelset.draw('l', DrawArgument(655 - lvx / 2, 262));
 
 			statsset.draw(std::to_string(stats.getstat(Character::MS_STR)), DrawArgument(655, 385));
@@ -166,7 +166,7 @@ namespace IO
 			nametags[selected].setselected(false);
 			charlooks[selected].setstance("stand");
 
-			selected = bid - BT_CHAR0;
+			selected = static_cast<uint8_t>(bid - BT_CHAR0);
 			nametags[selected].setselected(true);
 			charlooks[selected].setstance("walk");
 
@@ -222,8 +222,8 @@ namespace IO
 		CharLook look = CharLook(Net::Session::getlogin().getaccount().getchar(index).getlook());
 		short buttonindex = BT_CHAR0 + index;
 		buttons[buttonindex] = unique_ptr<Button>(new AreaButton(
-			vector2d<int32_t>(105 + (120 * (index % 4)), 170 + (200 * (index > 3))), 
-			vector2d<int32_t>(50, 80)
+			vector2d<int16_t>(105 + (120 * (index % 4)), 170 + (200 * (index > 3))),
+			vector2d<int16_t>(50, 80)
 			));
 		if (index == selected)
 		{
@@ -241,8 +241,8 @@ namespace IO
 		buttons.erase(BT_CHAR0 + index);
 	}
 
-	vector2d<int32_t> UICharSelect::getcharpos(size_t i) const
+	vector2d<int16_t> UICharSelect::getcharpos(size_t i) const
 	{
-		return vector2d<int32_t>(130 + (120 * (i % 4)), 250 + (200 * (i > 3)));
+		return vector2d<int16_t>(130 + (120 * (i % 4)), 250 + (200 * (i > 3)));
 	}
 }

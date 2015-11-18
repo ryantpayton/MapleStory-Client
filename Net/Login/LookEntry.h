@@ -23,31 +23,33 @@
 
 namespace Net
 {
-	using::std::vector;
-	using::std::map;
-	using::Character::Equipslot;
+	using std::vector;
+	using std::map;
+	using Character::Equipslot;
 
 	class LookEntry
 	{
 	public:
 		LookEntry(InPacket&);
-		LookEntry(bool, uint8_t, int, int, map<uint8_t, int>);
+		LookEntry(bool, uint8_t, int32_t, int32_t, map<int8_t, int32_t>);
 		LookEntry() {}
 		~LookEntry() {}
-		const bool isfemale() const;
-		const uint8_t getskin() const;
-		const int getface() const;
-		const int gethair() const;
-		const int getequip(Equipslot) const;
-		const int getpet(size_t) const;
+
+		bool isfemale() const;
+		uint8_t getskin() const;
+		int32_t getface() const;
+		int32_t gethair() const;
+		int32_t getequip(Equipslot) const;
+		int32_t getpet(size_t) const;
+
 	private:
 		bool female;
 		uint8_t skin;
-		int faceid;
-		int hairid;
-		map<uint8_t, int> equips;
-		map<uint8_t, int> maskedequips;
-		vector<int> petids;
+		int32_t faceid;
+		int32_t hairid;
+		map<int8_t, int32_t> equips;
+		map<int8_t, int32_t> maskedequips;
+		vector<int32_t> petids;
 	};
 }
 

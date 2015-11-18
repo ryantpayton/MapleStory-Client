@@ -19,25 +19,6 @@
 
 namespace IO
 {
-	// Maple-cursorstates, linked to the cursor's animation.
-	enum Mousestate
-	{
-		MST_IDLE = 0,
-		MST_CANCLICK = 1,
-		MST_GAME = 2,
-		MST_HOUSE = 3,
-		MST_CANCLICK2 = 4,
-		MST_CANGRAB = 5,
-		MST_GIFT = 6,
-		MST_VSCROLL = 7,
-		MST_HSCROLL = 8,
-		MST_VSCROLLIDLE = 9,
-		MST_HSCROLLIDLE = 10,
-		MST_GRABBING = 11,
-		MST_CLICKING = 12,
-		MST_RCLICK = 13
-	};
-
 	//Maple-specific keycodes, sent via the Keymap Packet.
 	enum Keyaction
 	{

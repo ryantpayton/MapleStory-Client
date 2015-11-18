@@ -31,7 +31,7 @@ namespace Gameplay
 
 	Camera::~Camera() {}
 
-	void Camera::update(vector2d<int32_t> playerpos)
+	void Camera::update(vector2d<int16_t> playerpos)
 	{
 		static const float hspeedf = 12 / Constants::fVIEWWIDTH;
 		static const float vspeedf = 12 / Constants::fVIEWHEIGHT;
@@ -49,22 +49,22 @@ namespace Gameplay
 			fy += vspeedf * (desty - fy);
 	}
 
-	void Camera::setposition(vector2d<int32_t> pos)
+	void Camera::setposition(vector2d<int16_t> pos)
 	{
 		fx = (Constants::fVIEWWIDTH / 2) - static_cast<float>(pos.x());
 		fy = (Constants::fVIEWHEIGHT / 2) - static_cast<float>(pos.y());
 	}
 
-	void Camera::updateview(vector2d<int32_t> mapwalls, vector2d<int32_t> mapborders)
+	void Camera::updateview(vector2d<int16_t> mapwalls, vector2d<int16_t> mapborders)
 	{
-		hbounds = vector2d<int32_t>(-mapwalls.x(), -mapwalls.y());
-		vbounds = vector2d<int32_t>(-mapborders.x(), -mapborders.y());
+		hbounds = vector2d<int16_t>(-mapwalls.x(), -mapwalls.y());
+		vbounds = vector2d<int16_t>(-mapborders.x(), -mapborders.y());
 	}
 
-	vector2d<int32_t> Camera::getposition(float inter) const
+	vector2d<int16_t> Camera::getposition(float inter) const
 	{
-		int32_t retx = static_cast<int32_t>((1.0f - inter) * lastx + inter * fx);
-		int32_t rety = static_cast<int32_t>((1.0f - inter) * lasty + inter * fy);
+		int16_t retx = static_cast<int16_t>((1.0f - inter) * lastx + inter * fx);
+		int16_t rety = static_cast<int16_t>((1.0f - inter) * lasty + inter * fy);
 
 		if (retx > hbounds.x() || hbounds.length() < Constants::VIEWWIDTH)
 			retx = hbounds.x();
@@ -74,6 +74,6 @@ namespace Gameplay
 		if (rety < vbounds.y() + Constants::VIEWHEIGHT || vbounds.length() < Constants::VIEWHEIGHT)
 			rety = vbounds.y() + Constants::VIEWHEIGHT;
 
-		return vector2d<int32_t>(retx, rety);
+		return vector2d<int16_t>(retx, rety);
 	}
 }

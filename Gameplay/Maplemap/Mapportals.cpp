@@ -46,7 +46,7 @@ namespace Gameplay
 			string name = ptnode["pn"];
 			int32_t targetid = ptnode["tm"];
 			string targetname = ptnode["tn"];
-			vector2d<int32_t> pos = vector2d<int32_t>(ptnode["x"], ptnode["y"]);
+			vector2d<int16_t> pos = vector2d<int16_t>(ptnode["x"], ptnode["y"]);
 
 			const Animation* animation;
 			if (animations.count(type))
@@ -67,7 +67,7 @@ namespace Gameplay
 		portals.clear();
 	}
 
-	void MapPortals::update(rectangle2d<int32_t> player)
+	void MapPortals::update(rectangle2d<int16_t> player)
 	{
 		for (auto& anit : animations)
 		{
@@ -87,7 +87,7 @@ namespace Gameplay
 		}
 	}
 
-	void MapPortals::draw(vector2d<int32_t> viewpos, float inter) const
+	void MapPortals::draw(vector2d<int16_t> viewpos, float inter) const
 	{
 		for (auto& ptit : portals)
 		{
@@ -95,21 +95,21 @@ namespace Gameplay
 		}
 	}
 
-	vector2d<int32_t> MapPortals::getspawnpoint(uint8_t pid) const
+	vector2d<int16_t> MapPortals::getspawnpoint(uint8_t pid) const
 	{
 		if (portals.count(pid))
-			return portals.at(pid).getposition() - vector2d<int32_t>(0, 40);
+			return portals.at(pid).getposition() - vector2d<int16_t>(0, 40);
 		else
-			return vector2d<int32_t>();
+			return vector2d<int16_t>();
 	}
 
-	vector2d<int32_t> MapPortals::getspawnpoint(string pname) const
+	vector2d<int16_t> MapPortals::getspawnpoint(string pname) const
 	{
 		uint8_t pid = portalnames.count(pname) ? portalnames.at(pname) : 0;
 		return getspawnpoint(pid);
 	}
 
-	const WarpInfo* MapPortals::findportal(rectangle2d<int32_t> rect)
+	const WarpInfo* MapPortals::findportal(rectangle2d<int16_t> rect)
 	{
 		if (findportalcd)
 			return nullptr;

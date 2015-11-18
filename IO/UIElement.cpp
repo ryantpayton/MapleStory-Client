@@ -41,9 +41,9 @@ namespace IO
 		}
 	}
 
-	Mousestate UIElement::sendmouse(bool down, vector2d<int32_t> pos)
+	Cursor::Mousestate UIElement::sendmouse(bool down, vector2d<int16_t> pos)
 	{
-		Mousestate ret = down ? MST_CLICKING : MST_IDLE;
+		Cursor::Mousestate ret = down ? Cursor::MST_CLICKING : Cursor::MST_IDLE;
 
 		for (auto& btit : buttons)
 		{
@@ -52,7 +52,7 @@ namespace IO
 				if (btit.second->getstate() == Button::NORMAL)
 				{
 					btit.second->setstate(Button::MOUSEOVER);
-					ret = MST_CANCLICK;
+					ret = Cursor::MST_CANCLICK;
 				}
 				else if (btit.second->getstate() == Button::MOUSEOVER)
 				{
@@ -63,7 +63,7 @@ namespace IO
 					}
 					else
 					{
-						ret = MST_CANCLICK;
+						ret = Cursor::MST_CANCLICK;
 					}
 				}
 			}
@@ -76,8 +76,8 @@ namespace IO
 		return ret;
 	}
 
-	rectangle2d<int32_t> UIElement::bounds() const
+	rectangle2d<int16_t> UIElement::bounds() const
 	{
-		return rectangle2d<int32_t>(position, position + dimension);
+		return rectangle2d<int16_t>(position, position + dimension);
 	}
 }

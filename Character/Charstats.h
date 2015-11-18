@@ -69,8 +69,8 @@ namespace Character
 		uint16_t gethonor() const { return honor; }
 
 	private:
-		uint16_t getprimary(Weapon::WpType weapontype);
-		uint16_t getsecondary(Weapon::WpType weapontype);
+		int32_t getprimary(Weapon::WpType weapontype);
+		int32_t getsecondary(Weapon::WpType weapontype);
 
 		string name;
 		vector<int64_t> petids;

@@ -29,7 +29,7 @@ namespace Net
 
 			using IO::Keytype;
 
-			for (int32_t i = 0; i < 90; i++)
+			for (uint8_t i = 0; i < 90; i++)
 			{
 				Keytype type = static_cast<Keytype>(recv.readbyte());
 				int32_t action = recv.readint();

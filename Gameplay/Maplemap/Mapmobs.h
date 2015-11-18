@@ -25,7 +25,7 @@ namespace Gameplay
 	{
 	public:
 		MapMobs();
-		void addmob(int32_t, int32_t, bool, int8_t, uint16_t, int8_t, bool, int8_t, int32_t, int32_t);
+		void addmob(int32_t, int32_t, bool, int8_t, uint16_t, int8_t, bool, int8_t, int16_t, int16_t);
 		void killmob(int32_t, int8_t);
 		void sendmobhp(int32_t, int8_t, uint16_t);
 

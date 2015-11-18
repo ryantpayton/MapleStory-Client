@@ -29,11 +29,41 @@ namespace Character
 		"dead", "sit"
 	};
 
-	void Char::draw(vector2d<int32_t> viewpos, float inter) const
+	void Char::draw(vector2d<int16_t> viewpos, float inter) const
 	{
-		vector2d<int32_t> absp = phobj.getposition(inter) + viewpos;
+		vector2d<int16_t> absp = phobj.getposition(inter) + viewpos;
 		look.draw(absp, inter);
+		for (int32_t i = 0; i < 3; i++)
+		{
+			if (pets[i].getiid() > 0)
+				pets[i].draw(viewpos, inter);
+		}
 		namelabel.draw(absp);
+	}
+
+	int8_t Char::update(const Physics& physics)
+	{
+		for (int32_t i = 0; i < 3; i++)
+		{
+			if (pets[i].getiid() > 0)
+			{
+				switch (stance)
+				{
+				case LADDER:
+				case ROPE:
+					pets[i].setstance(PetLook::HANG);
+					break;
+				case SWIM:
+					pets[i].setstance(PetLook::FLY);
+					break;
+				default:
+					if (pets[i].getstance() == PetLook::HANG || pets[i].getstance() == PetLook::FLY)
+						pets[i].setstance(PetLook::STAND);
+				}
+				pets[i].update(physics, phobj.getposition(1.0f));
+			}
+		}
+		return 0;
 	}
 
 	void Char::setflip(bool f)
@@ -51,10 +81,31 @@ namespace Character
 		}
 	}
 
-	void Char::setposition(int32_t x, int32_t y)
+	void Char::setposition(int16_t x, int16_t y)
 	{
 		phobj.fx = static_cast<float>(x);
 		phobj.fy = static_cast<float>(y);
+	}
+
+	void Char::addpet(uint8_t index, int32_t iid, string name,
+		int32_t uniqueid, vector2d<int16_t> pos, uint8_t stance, int32_t fhid) {
+
+		if (index > 2)
+			return;
+
+		pets[index] = PetLook(iid, name, uniqueid, pos, stance, fhid);
+	}
+
+	void Char::removepet(uint8_t index, bool hunger)
+	{
+		if (index > 2)
+			return;
+
+		pets[index] = PetLook();
+		if (hunger)
+		{
+
+		}
 	}
 
 	bool Char::issitting() const
@@ -82,19 +133,19 @@ namespace Character
 		return cid;
 	}
 
-	vector2d<int32_t> Char::getposition() const
+	vector2d<int16_t> Char::getposition() const
 	{
-		return vector2d<int32_t>(
-			static_cast<int32_t>(phobj.fx), 
-			static_cast<int32_t>(phobj.fy)
+		return vector2d<int16_t>(
+			static_cast<int16_t>(phobj.fx),
+			static_cast<int16_t>(phobj.fy)
 			);
 	}
 
-	rectangle2d<int32_t> Char::getbounds() const
+	rectangle2d<int16_t> Char::getbounds() const
 	{
-		return rectangle2d<int32_t>(
-			getposition() - vector2d<int32_t>(30, 70), 
-			getposition() + vector2d<int32_t>(30, 10)
+		return rectangle2d<int16_t>(
+			getposition() - vector2d<int16_t>(30, 70),
+			getposition() + vector2d<int16_t>(30, 10)
 			);
 	}
 

@@ -72,8 +72,8 @@ namespace Character
 
 	void Charstats::calculatedamage(Weapon::WpType wtype)
 	{
-		uint16_t primary = getprimary(wtype);
-		uint16_t secondary = getsecondary(wtype);
+		int32_t primary = getprimary(wtype);
+		int32_t secondary = getsecondary(wtype);
 		maxdamage = static_cast<int32_t>(
 			(primary + secondary) * static_cast<float>(attack) / 100
 			);
@@ -82,7 +82,7 @@ namespace Character
 			);
 	}
 
-	uint16_t Charstats::getprimary(Weapon::WpType wtype)
+	int32_t Charstats::getprimary(Weapon::WpType wtype)
 	{
 		if (wtype != Weapon::WEP_NONE)
 		{
@@ -110,7 +110,7 @@ namespace Character
 		return 0;
 	}
 
-	uint16_t Charstats::getsecondary(Weapon::WpType wtype)
+	int32_t Charstats::getsecondary(Weapon::WpType wtype)
 	{
 		if (wtype != Weapon::WEP_NONE)
 		{

@@ -41,12 +41,12 @@ namespace Character
 	{
 		for (Equipstat es = ES_STR; es <= ES_JUMP; es = static_cast<Equipstat>(es + 1))
 		{
-			totalstats[es] = std::accumulate(
+			totalstats[es] = static_cast<uint16_t>(std::accumulate(
 				inventoryitems[EQUIPPED].getbegin(), 
 				inventoryitems[EQUIPPED].getend(), 0,
 				[es](const uint16_t& val, const std::pair<int16_t, Item*>& itit) {
 				return val + reinterpret_cast<Equip*>(itit.second)->getstat(es);
-			});
+			}));
 		}
 	}
 

@@ -22,8 +22,8 @@
 
 namespace Graphics
 {
-	using::std::vector;
-	using::std::pair;
+	using std::vector;
+	using std::pair;
 
 	// Class which consists of multiple textures to make an Animation.
 	class Animation
@@ -36,8 +36,8 @@ namespace Graphics
 		bool update(uint16_t timestep);
 		void reset();
 		void draw(const DrawArgument& arguments, float inter) const;
-		vector2d<int32_t> getorigin() const;
-		vector2d<int32_t> getdimensions() const;
+		vector2d<int16_t> getorigin() const;
+		vector2d<int16_t> getdimensions() const;
 
 	private:
 		float nextalphastep(uint8_t frame, uint16_t timestep) const;

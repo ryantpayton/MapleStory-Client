@@ -24,11 +24,11 @@
 
 namespace Gameplay
 {
-	using::std::int32_t;
-	using::std::string;
-	using::nl::node;
-	using::Util::vector2d;
-	using::Graphics::Texture;
+	using std::int32_t;
+	using std::string;
+	using nl::node;
+	using Util::vector2d;
+	using Graphics::Texture;
 
 	// Represents a tile on a map.
 	class Tile
@@ -39,13 +39,13 @@ namespace Gameplay
 		~Tile();
 
 		// Draw the tile.
-		void draw(vector2d<int32_t> viewpos) const;
+		void draw(vector2d<int16_t> viewpos) const;
 		// Returns depth of the tile.
 		uint8_t getz() const;
 
 	private:
 		Texture texture;
-		vector2d<int32_t> pos;
+		vector2d<int16_t> pos;
 		uint8_t z;
 	};
 }

@@ -22,12 +22,12 @@
 
 namespace Graphics
 {
-	using::std::uint16_t;
-	using::std::int32_t;
-	using::std::map;
-	using::std::wstring;
-	using::std::string;
-	using::Util::vector2d;
+	using std::uint16_t;
+	using std::int16_t;
+	using std::map;
+	using std::wstring;
+	using std::string;
+	using Util::vector2d;
 
 	class Textlabel
 	{
@@ -77,9 +77,9 @@ namespace Graphics
 		void setcolor(Textcolor);
 		void setback(Background);
 		void setalpha(float);
-		void draw(vector2d<int32_t>) const;
+		void draw(vector2d<int16_t>) const;
 		void draw(vector2d<float>) const;
-		void drawline(string, vector2d<int32_t>) const;
+		void drawline(string, vector2d<int16_t>) const;
 		uint16_t getadvance(size_t) const;
 		size_t getlength() const;
 		const string& gettext() const;
@@ -95,7 +95,7 @@ namespace Graphics
 		float alpha;
 		uint16_t width;
 		uint16_t height;
-		vector2d<uint16_t> endpos;
+		vector2d<int16_t> endpos;
 		map<size_t, float> advances;
 	};
 }

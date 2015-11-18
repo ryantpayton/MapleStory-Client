@@ -63,7 +63,8 @@ namespace Net
 					// Other reasons.
 					if (reason > 0)
 					{
-						IO::UI::add(ElementLoginNotice(reason - 1));
+						int8_t rbyte = static_cast<int8_t>(reason - 1);
+						IO::UI::add(ElementLoginNotice(rbyte));
 					}
 				}
 				IO::UI::enable();
@@ -119,7 +120,7 @@ namespace Net
 
 			// Additional information for login: Wether to use a pic and how many characters can be created.
 			Session::getlogin().getaccount().setpic(recv.readbyte());
-			Session::getlogin().getaccount().setslots(recv.readint());
+			Session::getlogin().getaccount().setslots(static_cast<int8_t>(recv.readint()));
 
 			// Remove the world selection screen.
 			IO::UI::remove(Element::WORLDSELECT);
@@ -195,7 +196,7 @@ namespace Net
 		void handle(InPacket& recv) const override
 		{
 			// Read the character id and if deletion was successfull (pic was correct).
-			int cid = recv.readint();
+			recv.readint(); // charid
 			bool success = recv.readbool();
 
 			// Show the result to the user.

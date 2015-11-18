@@ -52,9 +52,11 @@ namespace IO
 
 		void draw(float) const override;
 		void buttonpressed(uint16_t) override;
-		rectangle2d<int32_t> bounds() const override;
+		rectangle2d<int16_t> bounds() const override;
 
 	private:
+		UIStatusbar& operator = (const UIStatusbar&) = delete;
+
 		const Charstats& stats;
 
 		Bar expbar;
@@ -89,6 +91,8 @@ namespace IO
 		}
 
 	private:
+		ElementStatusbar& operator = (const ElementStatusbar&) = delete;
+
 		const Charstats& stats;
 	};
 }

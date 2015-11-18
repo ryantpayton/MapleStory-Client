@@ -48,20 +48,20 @@ namespace Gameplay
 		// data sent by the server.
 		Mob(int32_t oid, int32_t mobid, bool control, int8_t stance, 
 			uint16_t fhid, int8_t effect, bool newspawn, int8_t team, 
-			int32_t xpos, int32_t ypos);
+			int16_t xpos, int16_t ypos);
 
 		// Update movement and animations.
 		int8_t update(const Physics& physics) override;
 		// Draw the object.
-		void draw(vector2d<int32_t> viewpos, float inter) const override;
+		void draw(vector2d<int16_t> viewpos, float inter) const override;
 		// Change position.
-		void setposition(int32_t xpos, int32_t ypos) override;
+		void setposition(int16_t xpos, int16_t ypos) override;
 		// Return the layer of the current platform.
 		int8_t getlayer() const override;
 		// Return object id.
 		int32_t getoid() const override;
 		// Return position.
-		vector2d<int32_t> getposition() const override;
+		vector2d<int16_t> getposition() const override;
 
 		// Kill the mob with the appropriate type:
 		// 0: make inactive 1: death animation 2: fade out

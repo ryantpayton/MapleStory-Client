@@ -15,31 +15,61 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Bar.h"
+#include "Gameplay\Physics\PhysicsObject.h"
+#include "Gameplay\Physics\Physics.h"
+#include "Graphics\Textlabel.h"
+#include "Graphics\Animation.h"
+#include "Util\vector2d.h"
+#include <cstdint>
+#include <string>
+#include <map>
 
-namespace IO
+namespace Character
 {
-	Bar::Bar(Texture front, Texture mid, Texture end, int16_t max)
+	using std::uint8_t;
+	using std::int16_t;
+	using std::int32_t;
+	using std::string;
+	using std::map;
+	using Util::vector2d;
+	using Gameplay::Physics;
+	using Gameplay::PhysicsObject;
+	using Graphics::Textlabel;
+	using Graphics::Animation;
+
+	class PetLook
 	{
-		barfront = front;
-		barmid = mid;
-		barend = end;
-		maxlength = max;
-	}
-
-	Bar::Bar() {}
-
-	Bar::~Bar() {}
-
-	void Bar::draw(vector2d<int16_t> position, float percent) const
-	{
-		int16_t length = static_cast<int16_t>(percent * maxlength);
-		if (length > 0)
+	public:
+		enum Stance
 		{
-			using::Graphics::DrawArgument;
-			barfront.draw(DrawArgument(position));
-			barmid.draw(DrawArgument(position + vector2d<int16_t>(1, 0), vector2d<int16_t>(length, 0)));
-			barend.draw(DrawArgument(position + vector2d<int16_t>(length + 1, 0)));
-		}
-	}
+			STAND = 0,
+			MOVE = 2,
+			HANG = 4,
+			FLY = 6
+		};
+
+		PetLook(int32_t iid, string name, int32_t uniqueid, 
+			vector2d<int16_t> pos, uint8_t stance, int32_t fhid);
+		PetLook();
+
+		void draw(vector2d<int16_t> viewpos, float inter) const;
+		void update(const Physics& physics, vector2d<int16_t> charpos);
+
+		void setposition(int16_t xpos, int16_t ypos);
+		void setstance(Stance);
+
+		int32_t getiid() const;
+		Stance getstance() const;
+
+	private:
+		int32_t itemid;
+		string name;
+		int32_t uniqueid;
+		Stance stance;
+		bool flip;
+
+		map<string, Animation> animations;
+		PhysicsObject phobj;
+		Textlabel namelabel;
+	};
 }

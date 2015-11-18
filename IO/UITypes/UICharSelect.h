@@ -52,7 +52,7 @@ namespace IO
 
 	private:
 		void selectchar();
-		vector2d<int32_t> getcharpos(size_t) const;
+		vector2d<int16_t> getcharpos(size_t) const;
 
 		vector<CharLook> charlooks;
 		uint8_t charcount;

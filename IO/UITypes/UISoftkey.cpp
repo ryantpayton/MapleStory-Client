@@ -38,8 +38,8 @@ namespace IO
 
 		buttons[BT_NEXT] = unique_ptr<Button>(new MapleButton(src["BtNext"]));
 		buttons[BT_BACK] = unique_ptr<Button>(new MapleButton(src["BtDel"]));
-		buttons[BT_OK] = unique_ptr<Button>(new MapleButton(src["BtOK"], vector2d<int32_t>(72, 235)));
-		buttons[BT_CANCEL] = unique_ptr<Button>(new MapleButton(src["BtCancel"], vector2d<int32_t>(13, 235)));
+		buttons[BT_OK] = unique_ptr<Button>(new MapleButton(src["BtOK"], vector2d<int16_t>(72, 235)));
+		buttons[BT_CANCEL] = unique_ptr<Button>(new MapleButton(src["BtCancel"], vector2d<int16_t>(13, 235)));
 
 		node keys = src["BtNum"];
 		buttons[BT_0] = unique_ptr<Button>(new MapleButton(keys["0"]));
@@ -59,8 +59,8 @@ namespace IO
 
 		shufflekeys();
 
-		position = vector2d<int32_t>(330, 160);
-		dimension = vector2d<int32_t>(140, 280);
+		position = vector2d<int16_t>(330, 160);
+		dimension = vector2d<int16_t>(140, 280);
 		active = true;
 	}
 
@@ -68,7 +68,7 @@ namespace IO
 	{
 		UIElement::draw(inter);
 
-		entry.draw(position + vector2d<int32_t>(15, 41));
+		entry.draw(position + vector2d<int16_t>(15, 41));
 	}
 
 	void UISoftkey::buttonpressed(uint16_t id)
@@ -166,14 +166,14 @@ namespace IO
 		for (uint8_t i = 0; i < NUM_KEYS; i++)
 		{
 			size_t rand = random.nextint(reserve.size() - 1);
-			vector2d<int32_t> pos = keypos(reserve[rand]);
+			vector2d<int16_t> pos = keypos(reserve[rand]);
 			buttons[BT_0 + i]->setposition(pos);
 			reserve.erase(reserve.begin() + rand);
 		}
 	}
 
-	vector2d<int32_t> UISoftkey::keypos(uint8_t num) const
+	vector2d<int16_t> UISoftkey::keypos(uint8_t num) const
 	{
-		return vector2d<int32_t>(12 + (num % 3) * 39, 94 + (num / 3) * 35);
+		return vector2d<int16_t>(12 + (num % 3) * 39, 94 + (num / 3) * 35);
 	}
 }

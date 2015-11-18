@@ -33,8 +33,8 @@ namespace Net
 			int16_t posy = recv.readshort();
 			bool f = recv.readbool();
 			uint16_t fh = recv.readshort();
-			int16_t rx = recv.readshort();
-			int16_t ry = recv.readshort();
+			recv.readshort(); // 'rx'
+			recv.readshort(); // 'ry'
 
 			Gameplay::Stage::getnpcs().addnpc(id, oid, f, fh, false, posx, posy);
 		}
@@ -59,9 +59,9 @@ namespace Net
 				int16_t posy = recv.readshort();
 				bool f = recv.readbool();
 				uint16_t fh = recv.readshort();
-				int16_t rx = recv.readshort();
-				int16_t ry = recv.readshort();
-				bool minimap = recv.readbool();
+				recv.readshort(); // 'rx'
+				recv.readshort(); // 'ry'
+				recv.readbool(); // 'minimap'
 
 				Gameplay::Stage::getnpcs().addnpc(id, oid, f, fh, true, posx, posy);
 			}
@@ -151,8 +151,8 @@ namespace Net
 		{
 			int32_t oid = recv.readint();
 			int8_t hppercent = recv.readbyte();
-
 			uint16_t playerlevel = Gameplay::Stage::getplayer().getstats().getstat(Character::MS_LEVEL);
+
 			Gameplay::Stage::getmobs().sendmobhp(oid, hppercent, playerlevel);
 		}
 	};
@@ -245,11 +245,11 @@ namespace Net
 			uint8_t level = recv.readbyte();
 			string name = recv.readascii();
 
-			string guild = recv.readascii();
-			int16_t glogobg = recv.readshort();
-			int8_t glogobgcolor = recv.readbyte();
-			int16_t glogo = recv.readshort();
-			int8_t glogocolor = recv.readbyte();
+			recv.readascii(); // guildname
+			recv.readshort(); // guildlogobg
+			recv.readbyte(); // guildlogobgcolor
+			recv.readshort(); // guildlogo
+			recv.readbyte(); // guildlogocolor
 
 			recv.skip(8);
 
@@ -260,22 +260,22 @@ namespace Net
 			{
 				buffvalue = morphed ? recv.readshort() : recv.readbyte();
 			}
-			int32_t buffmask2 = recv.readint();
+			recv.readint(); // buffmask 2
 
 			recv.skip(43);
 
-			int32_t mount = recv.readint();
+			recv.readint(); // 'mount'
 
 			recv.skip(61);
 
 			int16_t job = recv.readshort();
 			LookEntry look = LookEntry(recv);
 
-			int32_t itemcount = recv.readint(); //count of 5110000, idk 
-			int32_t itemeffect = recv.readint();
-			int32_t chair = recv.readint();
-			int32_t px = recv.readshort();
-			int32_t py = recv.readshort();
+			recv.readint(); //count of 5110000 
+			recv.readint(); // 'itemeffect'
+			recv.readint(); // 'chair'
+
+			vector2d<int16_t> position = recv.readpoint();
 			int8_t stance = recv.readbyte();
 
 			recv.skip(3);
@@ -285,15 +285,14 @@ namespace Net
 				int8_t available = recv.readbyte();
 				if (available == 1)
 				{
-					bool show = true;
-					int8_t byte2 = show ? recv.readbyte() : 0;
-					int32_t petid = recv.readint();
-					string name = recv.readascii();
-					int32_t uqid = recv.readint();
+					recv.readbyte(); // 'byte2'
+					recv.readint(); // petid
+					recv.readascii(); // name
+					recv.readint(); // unique id
 					recv.readint();
-					vector2d<int16_t> pos = recv.readpoint();
-					int8_t stance = recv.readbyte();
-					int32_t fh = recv.readint();
+					recv.readpoint(); // pos
+					recv.readbyte(); // stance
+					recv.readint(); // fhid
 				}
 				else
 				{
@@ -301,9 +300,9 @@ namespace Net
 				}
 			}
 
-			int32_t mtlevel = recv.readint();
-			int32_t mtexp = recv.readint();
-			int32_t mttired = recv.readint();
+			recv.readint(); // mountlevel
+			recv.readint(); // mountexp
+			recv.readint(); // mounttiredness
 
 			//shop stuff, TO DO
 			recv.readbyte();
@@ -313,9 +312,9 @@ namespace Net
 			string chalktext = chalkboard ? recv.readascii() : "";
 
 			recv.skip(3);
-			int8_t team = recv.readbyte();
+			recv.readbyte(); // team
 
-			Gameplay::Stage::getchars().addchar(cid, look, level, job, name, stance, vector2d<int32_t>(px, py));
+			Gameplay::Stage::getchars().addchar(cid, look, level, job, name, stance, position);
 		}
 	};
 
@@ -339,6 +338,41 @@ namespace Net
 			parsemovement(recv, movements);
 
 			Gameplay::Stage::getchars().movechar(cid, movements);
+		}
+	};
+
+	class SpawnPetHandler83 : public PacketHandler
+	{
+		void handle(InPacket& recv) const override
+		{
+			using Character::Char;
+			Char* character = Gameplay::Stage::getcharacter(recv.readint());
+
+			if (!character)
+				return;
+
+			uint8_t petindex = recv.readbyte();
+			int8_t mode = recv.readbyte();
+
+			if (mode == 1)
+			{
+				recv.skip(1);
+				int32_t itemid = recv.readint();
+				string name = recv.readascii();
+				int32_t uniqueid = recv.readint();
+				recv.skip(4);
+				vector2d<int16_t> pos = recv.readpoint();
+				uint8_t stance = recv.readbyte();
+				int32_t fhid = recv.readint();
+
+				character->addpet(petindex, itemid, name, uniqueid, pos, stance, fhid);
+			}
+			else if (mode == 0)
+			{
+				bool hunger = recv.readbool();
+
+				character->removepet(petindex, hunger);
+			}
 		}
 	};
 

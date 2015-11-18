@@ -27,8 +27,8 @@ namespace IO
 		void draw(float inter);
 		void update();
 
-		void sendmouse(vector2d<int32_t> pos);
-		void sendmouse(Mousestate state, vector2d<int32_t> pos);
+		void sendmouse(vector2d<int16_t> pos);
+		void sendmouse(Cursor::Mousestate state, vector2d<int16_t> pos);
 		void sendkey(Keytype type, int32_t keycode, bool pressed);
 		void enable();
 		void disable();

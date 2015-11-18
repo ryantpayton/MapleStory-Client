@@ -130,7 +130,7 @@ namespace Util
 		}
 		// Append the original length in bits (in big-endian) as a 64-bit integer.
 		uint64_t blen64 = static_cast<uint64_t>(length * 8);
-		for (size_t i = 7; i >= 0 && i < 8; i--)
+		for (int32_t i = 7; i >= 0; i--)
 		{
 			buffer[length + padsize + i] = static_cast<uint8_t>(blen64);
 			blen64 = blen64 >> 8;

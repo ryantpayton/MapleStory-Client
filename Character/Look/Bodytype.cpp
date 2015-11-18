@@ -39,14 +39,14 @@ namespace Character
 		node bodynode = nl::nx::character["000020" + sk + ".img"];
 		node headnode = nl::nx::character["000120" + sk + ".img"];
 
-		for (node& stancenode : bodynode)
+		for (node stancenode : bodynode)
 		{
 			string stance = stancenode.name();
 			uint8_t frame = 0;
 			node framenode = stancenode[std::to_string(frame)];
 			while (framenode.size() > 0)
 			{
-				for (node& partnode : framenode)
+				for (node partnode : framenode)
 				{
 					string part = partnode.name();
 					if (part != "delay" && part != "face")
@@ -68,10 +68,10 @@ namespace Character
 
 						stances[stance][z][frame] = Texture(partnode);
 
-						vector2d<int32_t> shift = vector2d<int32_t>();
+						vector2d<int16_t> shift = vector2d<int16_t>();
 						if (partnode["map"]["navel"].data_type() == node::type::vector)
 						{
-							shift -= vector2d<int32_t>(partnode["map"]["navel"].x(), partnode["map"]["navel"].y());
+							shift -= vector2d<int16_t>(partnode["map"]["navel"]);
 						}
 						shift += drawinfo.getbodypos(stance, frame);
 

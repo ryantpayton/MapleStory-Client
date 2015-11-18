@@ -22,18 +22,18 @@
 
 namespace IO
 {
-	using::std::map;
-	using::nl::node;
-	using::Graphics::Texture;
+	using std::map;
+	using nl::node;
+	using Graphics::Texture;
 
 	// A standard maplestory-button with 4 states and a texture for each state.
 	class MapleButton : public Button
 	{
 	public:
-		MapleButton(node, vector2d<int32_t>);
+		MapleButton(node, vector2d<int16_t>);
 		MapleButton(node);
-		void draw(vector2d<int32_t>) const;
-		rectangle2d<int32_t> bounds(vector2d<int32_t>) const;
+		void draw(vector2d<int16_t>) const;
+		rectangle2d<int16_t> bounds(vector2d<int16_t>) const;
 	private:
 		map<State, Texture> textures;
 	};

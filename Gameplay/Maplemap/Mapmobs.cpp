@@ -22,7 +22,7 @@ namespace Gameplay
 	MapMobs::MapMobs() {}
 
 	void MapMobs::addmob(int32_t oid, int32_t id, bool control, int8_t stance, 
-		uint16_t fhid, int8_t effect, bool fadein, int8_t team, int32_t x, int32_t y) {
+		uint16_t fhid, int8_t effect, bool fadein, int8_t team, int16_t x, int16_t y) {
 
 		Mob* mob = getmob(oid);
 		if (mob)

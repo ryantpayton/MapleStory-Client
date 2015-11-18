@@ -38,27 +38,27 @@ namespace IO
 		node common = nl::nx::ui["Login.img"]["Common"];
 
 		using::Graphics::Sprite;
-		sprites.push_back(Sprite(title["11"], vector2d<int32_t>(410, 300)));
-		sprites.push_back(Sprite(title["35"], vector2d<int32_t>(410, 260)));
-		sprites.push_back(Sprite(title["Logo"], vector2d<int32_t>(410, 130)));
-		sprites.push_back(Sprite(title["signboard"], vector2d<int32_t>(410, 300)));
-		sprites.push_back(Sprite(common["frame"], vector2d<int32_t>(400, 290)));
+		sprites.push_back(Sprite(title["11"], vector2d<int16_t>(410, 300)));
+		sprites.push_back(Sprite(title["35"], vector2d<int16_t>(410, 260)));
+		sprites.push_back(Sprite(title["Logo"], vector2d<int16_t>(410, 130)));
+		sprites.push_back(Sprite(title["signboard"], vector2d<int16_t>(410, 300)));
+		sprites.push_back(Sprite(common["frame"], vector2d<int16_t>(400, 290)));
 
-		buttons[BT_LOGIN] = unique_ptr<Button>(new MapleButton(title["BtLogin"], vector2d<int32_t>(475, 248)));
-		buttons[BT_REGISTER] = unique_ptr<Button>(new MapleButton(title["BtNew"], vector2d<int32_t>(309, 320)));
-		buttons[BT_HOMEPAGE] = unique_ptr<Button>(new MapleButton(title["BtHomePage"], vector2d<int32_t>(382, 320)));
-		buttons[BT_PASSLOST] = unique_ptr<Button>(new MapleButton(title["BtPasswdLost"], vector2d<int32_t>(470, 300)));
-		buttons[BT_QUIT] = unique_ptr<Button>(new MapleButton(title["BtQuit"], vector2d<int32_t>(455, 320)));
-		buttons[BT_IDLOST] = unique_ptr<Button>(new MapleButton(title["BtLoginIDLost"], vector2d<int32_t>(395, 300)));
-		buttons[BT_SAVEID] = unique_ptr<Button>(new MapleButton(title["BtLoginIDSave"], vector2d<int32_t>(325, 300)));
+		buttons[BT_LOGIN] = unique_ptr<Button>(new MapleButton(title["BtLogin"], vector2d<int16_t>(475, 248)));
+		buttons[BT_REGISTER] = unique_ptr<Button>(new MapleButton(title["BtNew"], vector2d<int16_t>(309, 320)));
+		buttons[BT_HOMEPAGE] = unique_ptr<Button>(new MapleButton(title["BtHomePage"], vector2d<int16_t>(382, 320)));
+		buttons[BT_PASSLOST] = unique_ptr<Button>(new MapleButton(title["BtPasswdLost"], vector2d<int16_t>(470, 300)));
+		buttons[BT_QUIT] = unique_ptr<Button>(new MapleButton(title["BtQuit"], vector2d<int16_t>(455, 320)));
+		buttons[BT_IDLOST] = unique_ptr<Button>(new MapleButton(title["BtLoginIDLost"], vector2d<int16_t>(395, 300)));
+		buttons[BT_SAVEID] = unique_ptr<Button>(new MapleButton(title["BtLoginIDSave"], vector2d<int16_t>(325, 300)));
 
 		checkbox[false] = Texture(title["check"]["0"]);
 		checkbox[true] = Texture(title["check"]["1"]);
 
-		account = Textfield(Textlabel::DWF_TEXTFIELD, Textlabel::TXC_WHITE, vector2d<int32_t>(315, 249), 12);
+		account = Textfield(Textlabel::DWF_TEXTFIELD, Textlabel::TXC_WHITE, vector2d<int16_t>(315, 249), 12);
 		accountbg = Texture(title["ID"]);
 
-		password = Textfield(Textlabel::DWF_TEXTFIELD, Textlabel::TXC_WHITE, vector2d<int32_t>(315, 275), 12);
+		password = Textfield(Textlabel::DWF_TEXTFIELD, Textlabel::TXC_WHITE, vector2d<int16_t>(315, 275), 12);
 		passwordbg = Texture(title["PW"]);
 		password.setcrypt('*');
 
@@ -75,8 +75,8 @@ namespace IO
 			account.setstate(Textfield::FOCUSED);
 		}
 
-		position = vector2d<int32_t>(0, 0);
-		dimension = vector2d<int32_t>(800, 600);
+		position = vector2d<int16_t>(0, 0);
+		dimension = vector2d<int16_t>(800, 600);
 		active = true;
 	}
 
@@ -93,7 +93,7 @@ namespace IO
 		if (password.getstate() == Textfield::NORMAL && password.gettext().size() == 0)
 			passwordbg.draw(DrawArgument(310, 275));
 
-		checkbox.at(saveid).draw(DrawArgument(position + vector2d<int32_t>(313, 304)));
+		checkbox.at(saveid).draw(DrawArgument(position + vector2d<int16_t>(313, 304)));
 	}
 
 	void UILogin::update()
@@ -130,9 +130,9 @@ namespace IO
 		}
 	}
 
-	Mousestate UILogin::sendmouse(bool down, vector2d<int32_t> pos)
+	Cursor::Mousestate UILogin::sendmouse(bool down, vector2d<int16_t> pos)
 	{
-		Mousestate ret = UIElement::sendmouse(down, pos);
+		Cursor::Mousestate ret = UIElement::sendmouse(down, pos);
 
 		if (account.bounds(position).contains(pos))
 		{
@@ -144,7 +144,7 @@ namespace IO
 			}
 			else if (account.getstate() == Textfield::NORMAL)
 			{
-				ret = MST_CANCLICK;
+				ret = Cursor::MST_CANCLICK;
 			}
 		}
 		else if (password.bounds(position).contains(pos))
@@ -157,7 +157,7 @@ namespace IO
 			}
 			else if (password.getstate() == Textfield::NORMAL)
 			{
-				ret = MST_CANCLICK;
+				ret = Cursor::MST_CANCLICK;
 			}
 		}
 		else if (down)

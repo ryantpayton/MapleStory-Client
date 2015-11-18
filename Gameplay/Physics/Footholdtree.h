@@ -39,21 +39,21 @@ namespace Gameplay
 		void updatefh(PhysicsObject& touse) const;
 
 		// Returns the leftmost and rightmost platform positions of the map.
-		vector2d<int32_t> getwalls() const;
+		vector2d<int16_t> getwalls() const;
 		// Returns the topmost and bottommost platform positions of the map.
-		vector2d<int32_t> getborders() const;
+		vector2d<int16_t> getborders() const;
 
 	private:
 		uint16_t getbelow(float fx, float fy) const;
-		float getwall(uint16_t fhid, bool left, vector2d<int32_t> vertical) const;
+		float getwall(uint16_t fhid, bool left, vector2d<int16_t> vertical) const;
 		const Foothold& getfh(uint16_t fhid) const;
 
 		unordered_map<uint16_t, Foothold> footholds;
-		unordered_multimap<int32_t, uint16_t> footholdsbyx;
+		unordered_multimap<int16_t, uint16_t> footholdsbyx;
 
 		Foothold nullfh;
-		vector2d<int32_t> walls;
-		vector2d<int32_t> borders;
+		vector2d<int16_t> walls;
+		vector2d<int16_t> borders;
 	};
 }
 

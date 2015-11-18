@@ -58,13 +58,13 @@ namespace Graphics
 			{
 				width = wmax;
 				height = space * ((dimensions.x() / wmax) + 1);
-				endpos = vector2d<uint16_t>(dimensions.x() % wmax, height - dimensions.y());
+				endpos = vector2d<int16_t>(dimensions.x() % wmax, height - dimensions.y());
 			}
 			else
 			{
 				width = dimensions.x();
 				height = space;
-				endpos = vector2d<uint16_t>(dimensions.x(), 0);
+				endpos = vector2d<int16_t>(dimensions.x(), 0);
 			}
 		}
 #endif
@@ -90,12 +90,12 @@ namespace Graphics
 		alpha = a;
 	}
 
-	void Textlabel::draw(vector2d<int32_t> pos) const
+	void Textlabel::draw(vector2d<int16_t> pos) const
 	{
 		draw(vector2d<float>(static_cast<float>(pos.x()), static_cast<float>(pos.y())));
 	}
 
-	void Textlabel::drawline(string todraw, vector2d<int32_t> pos) const
+	void Textlabel::drawline(string todraw, vector2d<int16_t> pos) const
 	{
 #ifdef JOURNEY_USE_OPENGL
 #else

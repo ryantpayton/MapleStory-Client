@@ -21,9 +21,10 @@
 
 namespace Gameplay
 {
-	using::std::int8_t;
-	using::std::uint16_t;
-	using::Util::vector2d;
+	using std::int8_t;
+	using std::int16_t;
+	using std::uint16_t;
+	using Util::vector2d;
 
 	// Struct that contains all properties neccessary for physics calculations.
 	struct PhysicsObject
@@ -56,11 +57,11 @@ namespace Gameplay
 		float lastx = 0.0f;
 		float lasty = 0.0f;
 
-		vector2d<int32_t> getposition(float inter) const
+		vector2d<int16_t> getposition(float inter) const
 		{
-			int32_t interx = static_cast<int32_t>((1.0f - inter) * lastx + inter * fx);
-			int32_t intery = static_cast<int32_t>((1.0f - inter) * lasty + inter * fy);
-			return vector2d<int32_t>(interx, intery);
+			int16_t interx = static_cast<int16_t>((1.0f - inter) * lastx + inter * fx);
+			int16_t intery = static_cast<int16_t>((1.0f - inter) * lasty + inter * fy);
+			return vector2d<int16_t>(interx, intery);
 		}
 	};
 }

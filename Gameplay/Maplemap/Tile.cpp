@@ -24,7 +24,7 @@ namespace Gameplay
 	{
 		node dsrc = nl::nx::map["Tile"][ts][src["u"]][src["no"]];
 		texture = Texture(dsrc);
-		pos = vector2d<int32_t>(src["x"], src["y"]);
+		pos = vector2d<int16_t>(src["x"], src["y"]);
 		z = dsrc["z"];
 		if (z == 0)
 			z = dsrc["zM"];
@@ -32,7 +32,7 @@ namespace Gameplay
 
 	Tile::~Tile() {}
 
-	void Tile::draw(vector2d<int32_t> viewpos) const
+	void Tile::draw(vector2d<int16_t> viewpos) const
 	{
 		using::Graphics::DrawArgument;
 		texture.draw(DrawArgument(pos + viewpos));

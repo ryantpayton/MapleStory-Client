@@ -43,7 +43,7 @@ namespace IO
 		void draw(float) const override;
 		void update() override;
 		void buttonpressed(uint16_t) override;
-		Mousestate sendmouse(bool, vector2d<int32_t>) override;
+		Cursor::Mousestate sendmouse(bool, vector2d<int16_t>) override;
 
 	private:
 		Textfield account;

@@ -52,9 +52,9 @@ namespace Program
 			return AUDIO;
 
 		Configuration::load();
+
 		IO::UI::init();
 		Gameplay::Stage::init();
-
 		Character::CharLook::init();
 
 		IO::UI::add(IO::ElementLogin());

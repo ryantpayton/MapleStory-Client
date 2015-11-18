@@ -69,7 +69,7 @@ namespace Character
 
 	Player::Player() {}
 
-	void Player::respawn(vector2d<int32_t> pos)
+	void Player::respawn(vector2d<int16_t> pos)
 	{
 		setposition(pos.x(), pos.y());
 		movementinfo.clear();
@@ -121,10 +121,16 @@ namespace Character
 		{
 			pst->update(*this);
 			physics.moveobject(phobj);
+			Char::update(physics);
 			pst->nextstate(*this);
 		}
 
-		uint8_t dirstance = flip ? stance : stance + 1;
+		uint8_t dirstance;
+		if (flip)
+			dirstance = static_cast<uint8_t>(stance);
+		else
+			dirstance = static_cast<uint8_t>(stance + 1);
+
 		int16_t shortx = static_cast<int16_t>(phobj.fx);
 		int16_t shorty = static_cast<int16_t>(phobj.fy);
 		using::Gameplay::MovementFragment;

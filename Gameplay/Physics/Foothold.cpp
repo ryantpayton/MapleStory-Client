@@ -21,12 +21,12 @@ namespace Gameplay
 {
 	Foothold::Foothold(node src, int8_t l)
 	{
-		id = stoi(src.name());
+		id = static_cast<uint16_t>(stoi(src.name()));
 		layer = l;
 		prev = src["prev"];
 		next = src["next"];
-		horizontal = vector2d<int32_t>(src["x1"], src["x2"]);
-		vertical = vector2d<int32_t>(src["y1"], src["y2"]);
+		horizontal = vector2d<int16_t>(src["x1"], src["x2"]);
+		vertical = vector2d<int16_t>(src["y1"], src["y2"]);
 	}
 
 	Foothold::Foothold()

@@ -21,7 +21,7 @@
 namespace Character
 {
 	OtherChar::OtherChar(int32_t id, const LookEntry& lk, uint8_t lvl,
-		int16_t jb, string nm, int8_t st, vector2d<int32_t> pos) {
+		int16_t jb, string nm, int8_t st, vector2d<int16_t> pos) {
 
 		cid = id;
 		look = CharLook(lk);

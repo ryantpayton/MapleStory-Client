@@ -48,6 +48,8 @@ namespace IO
 		void buttonpressed(uint16_t buttonid) override;
 
 	private:
+		UIStatsinfo& operator = (const UIStatsinfo&) = delete;
+
 		const Charstats& stats;
 
 		vector<Texture> detailtextures;
@@ -77,6 +79,8 @@ namespace IO
 		}
 
 	private:
+		ElementStatsinfo& operator = (const ElementStatsinfo&) = delete;
+
 		const Charstats& stats;
 	};
 }

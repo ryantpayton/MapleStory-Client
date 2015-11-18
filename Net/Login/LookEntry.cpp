@@ -45,7 +45,7 @@ namespace Net
 		}
 	}
 
-	LookEntry::LookEntry(bool fe, uint8_t sk, int fc, int hr, map<uint8_t, int> eq)
+	LookEntry::LookEntry(bool fe, uint8_t sk, int32_t fc, int32_t hr, map<int8_t, int32_t> eq)
 	{
 		female = fe;
 		skin = sk;
@@ -54,28 +54,29 @@ namespace Net
 		equips = eq;
 	}
 
-	const bool LookEntry::isfemale() const
+	bool LookEntry::isfemale() const
 	{
 		return female;
 	}
 
-	const uint8_t LookEntry::getskin() const
+	uint8_t LookEntry::getskin() const
 	{
 		return skin;
 	}
 
-	const int LookEntry::gethair() const
+	int32_t LookEntry::gethair() const
 	{
 		return hairid;
 	}
 
-	const int LookEntry::getface() const
+	int32_t LookEntry::getface() const
 	{
 		return faceid;
 	}
 
-	const int LookEntry::getequip(Equipslot e) const
+	int32_t LookEntry::getequip(Equipslot e) const
 	{
-		return equips.count(e) ? equips.at(e) : 0;
+		int8_t slot = static_cast<int8_t>(e);
+		return equips.count(slot) ? equips.at(slot) : 0;
 	}
 }

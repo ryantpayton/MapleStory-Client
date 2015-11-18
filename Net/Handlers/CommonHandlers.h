@@ -33,7 +33,7 @@ namespace Net
 
 	class PingHandler : public PacketHandler
 	{
-		void handle(InPacket& recv) const override
+		void handle(InPacket&) const override
 		{
 			Session::dispatch(PongPacket());
 		}
@@ -41,6 +41,6 @@ namespace Net
 
 	class NullHandler : public PacketHandler
 	{
-		void handle(InPacket& recv) const override {}
+		void handle(InPacket&) const override {}
 	};
 }
