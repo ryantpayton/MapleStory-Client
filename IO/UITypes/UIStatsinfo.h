@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "IO\Element.h"
+#include "IO\UIDragElement.h"
 #include "Character\Charstats.h"
 #include "Graphics\Textlabel.h"
 
@@ -27,7 +28,7 @@ namespace IO
 	using Graphics::Textlabel;
 	using Graphics::Texture;
 
-	class UIStatsinfo : public UIElement
+	class UIStatsinfo : public UIDragElement
 	{
 	public:
 		enum Buttons
@@ -43,6 +44,7 @@ namespace IO
 		};
 
 		UIStatsinfo(const Charstats& stats);
+		~UIStatsinfo();
 
 		void draw(float inter) const override;
 		void buttonpressed(uint16_t buttonid) override;

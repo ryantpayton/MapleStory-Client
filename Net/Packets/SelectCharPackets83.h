@@ -24,10 +24,12 @@ namespace Net
 	const string MACS = "68-5D-43-F8-B8-6C, 7A-79-19-8B-31-3F";
 	const string HWID = "685D43F8_B86C7A79";
 
+	// Packet which tells the server which character was picked.
+	// Also sends (fake) Mac-adress and Hardware Id.
 	class SelectCharPacket83 : public OutPacket
 	{
 	public:
-		SelectCharPacket83(int cid) : OutPacket(SELECT_CHAR)
+		SelectCharPacket83(int32_t cid) : OutPacket(SELECT_CHAR)
 		{
 			writeint(cid);
 			writestr(MACS);
@@ -35,10 +37,12 @@ namespace Net
 		}
 	};
 
+	// Packet which registers a pic and tells the server which character was picked.
+	// Also sends (fake) Mac-adress and Hardware Id.
 	class RegisterPicPacket83 : public OutPacket
 	{
 	public:
-		RegisterPicPacket83(int cid, string pic) : OutPacket(REGISTER_PIC)
+		RegisterPicPacket83(int32_t cid, string pic) : OutPacket(REGISTER_PIC)
 		{
 			writeint(cid);
 			writestr(MACS);
@@ -47,10 +51,12 @@ namespace Net
 		}
 	};
 
+	// Packet which requests using the specified character with the specified pic.
+	// Also sends (fake) mac-adress and hardware id.
 	class SelectCharPicPacket83 : public OutPacket
 	{
 	public:
-		SelectCharPicPacket83(string pic, int cid) : OutPacket(SELECT_CHAR_PIC)
+		SelectCharPicPacket83(string pic, int32_t cid) : OutPacket(SELECT_CHAR_PIC)
 		{
 			writestr(pic);
 			writeint(cid);

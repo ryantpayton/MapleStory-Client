@@ -22,8 +22,8 @@
 
 namespace Net
 {
-	using::Gameplay::MovementInfo;
-	using::Gameplay::MovementFragment;
+	using Gameplay::MovementInfo;
+	using Gameplay::MovementFragment;
 
 	// Base class for packets which need to update object movements with the server.
 	class MovementPacket83 : public OutPacket
@@ -33,18 +33,18 @@ namespace Net
 	protected:
 		void writemoves(const MovementInfo& movement)
 		{
-			writech(static_cast<int8_t>(movement.getsize()));
+			writech(static_cast<uint8_t>(movement.getsize()));
 
-			for (vector<MovementFragment>::const_iterator mvit = movement.getbegin(); mvit != movement.getend(); ++mvit)
+			for (auto& mvit : movement)
 			{
-				writech(mvit->command);
-				writesh(mvit->xpos);
-				writesh(mvit->ypos);
-				writesh(mvit->lastx);
-				writesh(mvit->lasty);
+				writech(mvit.command);
+				writesh(mvit.xpos);
+				writesh(mvit.ypos);
+				writesh(mvit.lastx);
+				writesh(mvit.lasty);
 				writesh(0);
-				writech(mvit->newstate);
-				writesh(mvit->duration);
+				writech(mvit.newstate);
+				writesh(mvit.duration);
 			}
 		}
 	};

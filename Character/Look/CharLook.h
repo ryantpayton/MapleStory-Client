@@ -76,8 +76,10 @@ namespace Character
 
 		string laststance;
 		uint8_t lastframe;
+		uint16_t lastelapsed;
 		string lastexpression;
 		uint8_t lastfcframe;
+		uint16_t lastfcelapsed;
 	};
 }
 

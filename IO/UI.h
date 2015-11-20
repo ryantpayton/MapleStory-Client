@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Element.h"
-#include "Keyboard.h"
+#include "Components\Textfield.h"
 
 namespace IO
 {
@@ -29,13 +29,16 @@ namespace IO
 
 		void sendmouse(vector2d<int16_t> pos);
 		void sendmouse(Cursor::Mousestate state, vector2d<int16_t> pos);
-		void sendkey(Keytype type, int32_t keycode, bool pressed);
+		void sendkey(int32_t keycode, bool pressed);
+		void focustextfield(Textfield*);
+
+		void addkeymapping(uint8_t no, uint8_t type, int32_t action);
+		void enablegamekeys(bool enable);
 		void enable();
 		void disable();
 		void add(const Element& type);
 		void remove(Element::UIType type);
 
-		Keyboard& getkeyboard();
 		UIElement* getelement(Element::UIType type);
 	}
 }

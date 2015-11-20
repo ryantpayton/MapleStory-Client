@@ -54,7 +54,7 @@ namespace Program
 	private:
 
 #ifdef JOURNEY_USE_OPENGL
-		WindowGLFW window;
+		IO::WindowGLFW window;
 #else
 		IO::WindowD2D window;
 #endif

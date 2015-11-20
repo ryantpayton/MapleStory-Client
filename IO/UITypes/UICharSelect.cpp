@@ -26,6 +26,7 @@
 #include "IO\Components\AreaButton.h"
 #include "Graphics\Sprite.h"
 #include "Net\Packets\SelectCharPackets83.h"
+#include "Program\Configuration.h"
 #include "nlnx\nx.hpp"
 
 namespace IO
@@ -77,12 +78,10 @@ namespace IO
 				vector2d<int16_t>(130 + (120 * (i % 4)), 250 + (200 * (i > 3))))
 				);
 		}
-		//selected = config.getconfig()->defaultchar;
-		selected = 0;
+
+		selected = Program::Configuration::getbyte("Character");
 		if (selected >= charcount)
-		{
 			selected = 0;
-		}
 		page = selected % 8;
 
 		uint8_t displaycount = charcount;
@@ -104,8 +103,7 @@ namespace IO
 
 		if (charcount > 0)
 		{
-			using::Net::StatsEntry;
-			const StatsEntry& stats = account.getchar(selected).getstats();
+			const Net::StatsEntry& stats = account.getchar(selected).getstats();
 			namelabel = Textlabel(Textlabel::DWF_20MC, Textlabel::TXC_WHITE, stats.getname(), 0);
 			joblabel = Textlabel(Textlabel::DWF_12MR, Textlabel::TXC_WHITE, stats.getjobname(), 0);
 		}
@@ -131,8 +129,7 @@ namespace IO
 
 		if (selected < charcount)
 		{
-			using::Net::StatsEntry;
-			const StatsEntry& stats = Net::Session::getlogin().getaccount().getchar(selected).getstats();
+			const Net::StatsEntry& stats = Net::Session::getlogin().getaccount().getchar(selected).getstats();
 
 			using::Graphics::DrawArgument;
 			statsset.draw(std::to_string(stats.getrank().first), DrawArgument(732, 335));
@@ -170,8 +167,7 @@ namespace IO
 			nametags[selected].setselected(true);
 			charlooks[selected].setstance("walk");
 
-			using::Net::StatsEntry;
-			const StatsEntry& stats = Net::Session::getlogin().getaccount().getchar(selected).getstats();
+			const Net::StatsEntry& stats = Net::Session::getlogin().getaccount().getchar(selected).getstats();
 			namelabel.settext(stats.getname(), 0);
 			joblabel.settext(stats.getjobname(), 0);
 		}
@@ -197,6 +193,7 @@ namespace IO
 	{
 		if (selected < charcount)
 		{
+			Program::Configuration::setint("Character", selected);
 			int32_t cid = Net::Session::getlogin().getaccount().getchar(selected).getcid();
 			Net::Session::getlogin().setcharid(cid);
 			switch (Net::Session::getlogin().getaccount().getpic())
@@ -209,9 +206,7 @@ namespace IO
 				break;
 			case 2:
 				UI::disable();
-
-				using::Net::SelectCharPacket83;
-				Net::Session::dispatch(SelectCharPacket83(cid));
+				Net::Session::dispatch(Net::SelectCharPacket83(cid));
 				break;
 			}
 		}

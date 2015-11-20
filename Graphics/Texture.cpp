@@ -35,15 +35,19 @@ namespace Graphics
 		{
 			if (src["source"].data_type() == node::type::string)
 			{
-				using::std::string;
+				using std::string;
 				string link = src["source"].get_string();
 				string file = link.substr(0, link.find('/'));
 				link = link.substr(link.find('/') + 1);
 				src = nl::nx::base[file].resolve(link);
 			}
+
 			source = src;
+			id = src.get_bitmap().id();
 			origin = vector2d<int16_t>(source["origin"]);
-			dimensions = vector2d<int16_t>(source.get_bitmap().width(), source.get_bitmap().height());
+			dimensions = vector2d<int16_t>(
+				source.get_bitmap().width(), source.get_bitmap().height()
+				);
 
 #ifdef JOURNEY_USE_OPENGL
 			GraphicsGL::addbitmap(source.get_bitmap());
@@ -60,39 +64,38 @@ namespace Graphics
 
 	void Texture::draw(const DrawArgument& args) const
 	{
-		size_t id = source.get_bitmap().id();
-		if (id > 0)
+		if (id == 0)
+			return;
+
+		vector2d<int16_t> stretch = args.getstretch();
+		int16_t w = stretch.x();
+		if (w == 0)
+			w = dimensions.x();
+		int16_t h = stretch.y();
+		if (h == 0)
+			h = dimensions.y();
+
+		vector2d<int16_t> absp = args.getpos() - origin + shift;
+
+		if (absp.x() <= 816 && absp.y() <= 624 && absp.x() > -w && absp.y() > -h)
 		{
-			vector2d<int16_t> stretch = args.getstretch();
-			int16_t w = stretch.x();
-			if (w == 0)
-				w = dimensions.x();
-			int16_t h = stretch.y();
-			if (h == 0)
-				h = dimensions.y();
-
-			vector2d<int16_t> absp = args.getpos() - origin + shift;
-
-			if (absp.x() <= 816 && absp.y() <= 624 && absp.x() > -w && absp.y() > -h)
-			{
 
 #ifdef JOURNEY_USE_OPENGL
-				if (!GraphicsGL::available(id))
-				{
-					GraphicsGL::addbitmap(source.get_bitmap());
-				}
-				GraphicsGL::draw(id, rectangle2d<int16_t>(absp.x(), absp.x() + w, absp.y(), absp.y() + h),
-					args.getxscale(), args.getyscale(), args.getcenter(), args.getalpha());
+			if (!GraphicsGL::available(id))
+			{
+				GraphicsGL::addbitmap(source.get_bitmap());
+			}
+			GraphicsGL::draw(id, rectangle2d<int16_t>(absp.x(), absp.x() + w, absp.y(), absp.y() + h),
+				args.getxscale(), args.getyscale(), args.getcenter(), args.getalpha());
 #else
-				if (!GraphicsD2D::available(id))
-				{
-					GraphicsD2D::addbitmap(source.get_bitmap());
-				}
-				GraphicsD2D::draw(id, absp.x(), absp.y(), w, h, args.getalpha(), args.getxscale(),
-					args.getyscale(), args.getcenter().x(), args.getcenter().y());
+			if (!GraphicsD2D::available(id))
+			{
+				GraphicsD2D::addbitmap(source.get_bitmap());
+			}
+			GraphicsD2D::draw(id, absp.x(), absp.y(), w, h, args.getalpha(), args.getxscale(),
+				args.getyscale(), args.getcenter().x(), args.getcenter().y());
 #endif
 
-			}
 		}
 	}
 

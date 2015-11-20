@@ -20,6 +20,7 @@
 #include "Net\Session.h"
 #include "IO\Components\MapleButton.h"
 #include "Net\Packets\PlayerPackets83.h"
+#include "Program\Configuration.h"
 #include "nlnx\nx.hpp"
 
 namespace IO
@@ -67,10 +68,19 @@ namespace IO
 
 		statlabel = Textlabel(Textlabel::DWF_12ML, Textlabel::TXC_BLACK, "", 0);
 
-		position = vector2d<int16_t>(200, 100);
+		dragarea = vector2d<int16_t>(212, 20);
+		cursoroffset = vector2d<int16_t>();
+		dragged = false;
+
+		position = Program::Configuration::getvector2d("PosSTATS");
 		dimension = vector2d<int16_t>(212, 318);
 		active = true;
 		showdetail = false;
+	}
+
+	UIStatsinfo::~UIStatsinfo()
+	{
+		Program::Configuration::setstring("PosSTATS", position.tostring());
 	}
 
 	void UIStatsinfo::draw(float inter) const

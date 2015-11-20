@@ -21,10 +21,10 @@
 
 namespace Character
 {
-	using::std::uint8_t;
-	using::std::map;
-	using::std::string;
-	using::Graphics::DrawArgument;
+	using std::uint8_t;
+	using std::map;
+	using std::string;
+	using Graphics::DrawArgument;
 
 	class CharEquips
 	{

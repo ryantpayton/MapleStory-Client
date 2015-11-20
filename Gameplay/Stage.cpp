@@ -50,6 +50,7 @@ namespace Gameplay
 
 		void init()
 		{
+			// Preload portal animations.
 			portals.init();
 		}
 
@@ -71,18 +72,22 @@ namespace Gameplay
 
 		void loadmap(int32_t mapid)
 		{
+			// Load the map with the given id.
 			active = false;
 
+			// Clear all objects on the last map.
 			layers.clear();
 			portals.clear();
 			chars.clear();
 			npcs.clear();
 			mobs.clear();
 
+			// Get the node that has the new map data.
 			string strid = std::to_string(mapid);
 			strid.insert(0, 9 - strid.length(), '0');
 			node src = nl::nx::map["Map"]["Map" + std::to_string(mapid / 100000000)][strid + ".img"];
 
+			// Load new map data.
 			physics.loadfht(src["foothold"]);
 			mapinfo.loadinfo(src, physics.getfht().getwalls(), physics.getfht().getborders());
 			portals.load(src["portal"], mapid);
@@ -97,10 +102,13 @@ namespace Gameplay
 
 		void respawn()
 		{
+			// Change the background music if required.
 			if (mapinfo.hasnewbgm())
 				Audioplayer::playbgm(mapinfo.getbgm());
 
-			vector2d<int16_t> startpos = portals.getspawnpoint(player.getstats().getportal());
+			// Respawn the player at the spawnpoint defined by the portal id.
+			vector2d<int16_t> startpos = 
+				portals.getspawnpoint(player.getstats().getportal());
 			player.respawn(startpos);
 			camera.setposition(startpos);
 			camera.updateview(mapinfo.getwalls(), mapinfo.getborders());
@@ -158,18 +166,57 @@ namespace Gameplay
 			}
 		}
 
+		void useattack(int32_t skillid)
+		{
+			if (player.isattacking())
+				return;
+
+			if (skillid > 0)
+			{
+				// Skill
+			}
+			else
+			{
+				// Regular attack
+				//Character::Weapon::WpType weapon = player.getlook().getequips().getweapontype();
+
+			}
+		}
+
+		void useitem(int32_t itemid)
+		{
+			// Use the first item with the given id found in the inventory.
+			using Character::Inventory;
+			Inventory::InvType type = player.getinvent().gettypebyid(itemid);
+			int16_t slot = player.getinvent().finditem(type, itemid);
+
+			if (slot < 0)
+				return;
+
+			switch (type)
+			{
+			case Inventory::USE:
+				using Net::UseItemPacket83;
+				Net::Session::dispatch(UseItemPacket83(slot, itemid));
+				break;
+			}
+		}
+
 		void checkportals()
 		{
+			// Check for portals within the player's range.
 			const WarpInfo* warpinfo = portals.findportal(player.getbounds());
 			if (warpinfo)
 			{
 				if (warpinfo->mapid == currentmapid)
 				{
+					// Teleport inside a map.
 					vector2d<int16_t> spawnpoint = portals.getspawnpoint(warpinfo->portal);
 					player.respawn(spawnpoint);
 				}
 				else if (warpinfo->valid)
 				{
+					// Warp to a different map.
 					using::Net::ChangeMapPacket83;
 					Net::Session::dispatch(ChangeMapPacket83(false, warpinfo->mapid, warpinfo->portal, false));
 				}
@@ -194,33 +241,48 @@ namespace Gameplay
 			player.setladder(ladder);
 		}
 
-		void sendkey(IO::Keytype type, int32_t action, bool down)
+		void sendkey(IO::Keyboard::Keytype type, int32_t action, bool down)
 		{
+			if (!playable)
+				return;
+
+			using IO::Keyboard;
+
 			switch (type)
 			{
-			case IO::KT_ACTION:
-				if (playable)
+			case Keyboard::KT_ACTION:
+				if (down)
 				{
-					if (down)
+					// Handle key actions which require parts of map data.
+					switch (action)
 					{
-						switch (action)
-						{
-						case IO::KA_UP:
-							checkladders(true);
-							checkportals();
-							break;
-						case IO::KA_DOWN:
-							checkladders(false);
-							break;
-						case IO::KA_SIT:
-							checkseats();
-							break;
-						}
+					case Keyboard::KA_UP:
+						checkladders(true);
+						checkportals();
+						break;
+					case Keyboard::KA_DOWN:
+						checkladders(false);
+						break;
+					case Keyboard::KA_SIT:
+						checkseats();
+						break;
+					case Keyboard::KA_ATTACK:
+						useattack(0);
+						break;
 					}
-
-					Keyaction ka = static_cast<Keyaction>(action);
-					playable->sendaction(ka, down);
 				}
+
+				// Pass the action to the playable mapobject.
+				playable->sendaction(static_cast<Keyboard::Keyaction>(action), down);
+				break;
+			case Keyboard::KT_SKILL:
+				useattack(action);
+				break;
+			case Keyboard::KT_ITEM:
+				useitem(action);
+				break;
+			case Keyboard::KT_FACE:
+				player.sendface(action);
 				break;
 			}
 		}

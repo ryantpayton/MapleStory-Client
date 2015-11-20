@@ -37,6 +37,7 @@ namespace Graphics
 
 	private:
 		node source;
+		size_t id;
 		vector2d<int16_t> origin;
 		vector2d<int16_t> dimensions;
 		vector2d<int16_t> shift;

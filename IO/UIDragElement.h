@@ -16,26 +16,41 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include <cstdint>
-#include <string>
+#include "UIElement.h"
 
-namespace Util
+namespace IO
 {
-	namespace NxFiles
+	// Base class for UI Windows which can be moved with the mouse cursor.
+	class UIDragElement : public UIElement
 	{
-		using std::int64_t;
-		using std::string;
+	public:
+		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> cursorpos)
+		{
+			if (pressed)
+			{
+				if (dragged)
+				{
+					position = cursorpos - cursoroffset;
+					return Cursor::MST_CLICKING;
+				}
+				else if (rectangle2d<int16_t>(position, position + dragarea).contains(cursorpos))
+				{
+					cursoroffset = cursorpos - position;
+					dragged = true;
+					return Cursor::MST_CLICKING;
+				}
+			}
+			else
+			{
+				if (dragged)
+					dragged = false;
+			}
+			return UIElement::sendmouse(pressed, cursorpos);
+		}
 
-		const size_t NUM_FILES = 14;
-
-		// Makes sure that all game files exist. 
-		// When successfull also tests if the UI file contains valid images.
-		bool init();
-
-		// Obtains a hash value for a file of game assets. Fast version.
-		string gethash(size_t fileindex, uint64_t seed);
-		// Obtains a hash value for a file of game assets. Slow version.
-		string gethash(size_t fileindex);
-	}
+	protected:
+		bool dragged;
+		vector2d<int16_t> dragarea;
+		vector2d<int16_t> cursoroffset;
+	};
 }
-

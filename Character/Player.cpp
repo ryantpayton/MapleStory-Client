@@ -76,7 +76,7 @@ namespace Character
 		ladder = nullptr;
 	}
 
-	void Player::sendaction(Keyaction ka, bool down)
+	void Player::sendaction(IO::Keyboard::Keyaction ka, bool down)
 	{
 		const PlayerState* pst = getstate(stance);
 		if (pst)
@@ -178,6 +178,11 @@ namespace Character
 			setflip(false);
 		}
 	}
+
+	bool Player::isattacking() const
+	{
+		return false;
+	}
 	
 	float Player::getwforce() const
 	{
@@ -203,7 +208,7 @@ namespace Character
 		return FLYFORCE;
 	}
 
-	bool Player::keydown(Keyaction ka) const
+	bool Player::keydown(IO::Keyboard::Keyaction ka) const
 	{
 		return keysdown.count(ka) ? keysdown.at(ka) : false;
 	}

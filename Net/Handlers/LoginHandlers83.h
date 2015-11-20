@@ -36,10 +36,9 @@ namespace Net
 	{
 		void handle(InPacket& recv) const override
 		{
-			// Remove waiting information and make sure textfields are not focused anymore.
+			// Remove login information.
 			IO::UI::remove(Element::LOGINNOTICE);
 			IO::UI::remove(Element::LOGINWAIT);
-			IO::UI::getkeyboard().focustarget(nullptr);
 
 			// The packet should contain a 'reason' integer which can signify various things.
 			int32_t reason = recv.readint();

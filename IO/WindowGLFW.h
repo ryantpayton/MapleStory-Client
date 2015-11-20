@@ -20,7 +20,6 @@
 #ifdef JOURNEY_USE_OPENGL
 #include "GL\glew.h"
 #include "glfw3.h"
-#include "UI.h"
 
 namespace IO
 {
@@ -29,15 +28,16 @@ namespace IO
 	public:
 		WindowGLFW();
 		~WindowGLFW();
-		bool init(UI*);
+
+		bool init();
 		bool initwindow();
 		void update();
 		void begin() const;
 		void end() const;
+
 	private:
 		GLFWwindow* glwnd;
 		GLFWwindow* context;
-		UI* ui;
 		bool fullscreen;
 	};
 }

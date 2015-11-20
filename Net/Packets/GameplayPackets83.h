@@ -46,4 +46,16 @@ namespace Net
 			writemoves(movements);
 		}
 	};
+
+	// A packet which requests that an 'USE' item is used.
+	class UseItemPacket83 : public OutPacket
+	{
+	public:
+		UseItemPacket83(int16_t slot, int32_t itemid) : OutPacket(USE_ITEM)
+		{
+			writeint(0);
+			writesh(slot);
+			writeint(itemid);
+		}
+	};
 }

@@ -34,7 +34,9 @@ namespace IO
 			CHARCREATION,
 			SOFTKEYBOARD,
 			STATUSBAR,
-			STATSINFO
+			STATSINFO,
+			INVENTORY,
+			EQUIPINVENTORY,
 		};
 
 		virtual ~Element() {}

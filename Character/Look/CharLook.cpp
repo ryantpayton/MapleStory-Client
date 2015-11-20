@@ -116,11 +116,13 @@ namespace Character
 		setstance("stand");
 		lastframe = 0;
 		frame = 0;
+		lastelapsed = 0;
 		elapsed = 0;
 
 		setexpression("default");
 		lastfcframe = 0;
 		fcframe = 0;
+		lastfcelapsed = 0;
 		fcelapsed = 0;
 
 		action = nullptr;
@@ -135,34 +137,28 @@ namespace Character
 		if (!body || !hair || !face)
 			return;
 
-		uint16_t delay = (action) ? action->getdelay() : drawinfo.getdelay(laststance, lastframe);
+		uint16_t delay;
+		if (action)
+			delay = action->getdelay();
+		else
+			delay = drawinfo.getdelay(laststance, lastframe);
 		uint8_t interframe;
-		if (elapsed + Constants::TIMESTEP * inter > delay)
+		if (lastelapsed + Constants::TIMESTEP * inter > delay)
 			interframe = frame;
 		else
 			interframe = lastframe;
+
 		uint16_t fcdelay = face->getdelay(lastexpression, lastfcframe);
 		uint8_t fcinterframe;
-		if (fcelapsed + Constants::TIMESTEP * inter > fcdelay)
+		if (lastfcelapsed + Constants::TIMESTEP * inter > fcdelay)
 			fcinterframe = fcframe;
 		else
 			fcinterframe = lastfcframe;
-		string interexp;
-		if (fcinterframe == 0)
-		{
-			if (lastexpression == "default")
-				interexp = "blink";
-			else
-				interexp = "default";
-		}
-		else
-		{
-			interexp = lastexpression;
-		}
 
-		using::Graphics::DrawArgument;
+		using Graphics::DrawArgument;
 		DrawArgument args = DrawArgument(pos, flip);
-		DrawArgument faceargs = DrawArgument(pos + drawinfo.getfacepos(laststance, interframe), flip, pos);
+		vector2d<int16_t> faceshift = drawinfo.getfacepos(laststance, interframe);
+		DrawArgument faceargs = DrawArgument(pos + faceshift, flip, pos);
 
 		if (laststance == "ladder" || laststance == "rope")
 		{
@@ -206,7 +202,7 @@ namespace Character
 			equips.draw(EQL_EARRINGS, laststance, CL_EARRINGS, interframe, args);
 			body->draw(laststance, CL_HEAD, interframe, args);
 			hair->draw(laststance, CL_HAIRSHADE, interframe, args);
-			face->draw(interexp, CL_FACE, fcinterframe, faceargs);
+			face->draw(lastexpression, CL_FACE, fcinterframe, faceargs);
 			equips.draw(EQL_FACEACC, "blink", CL_FACEACC, 0, faceargs);
 			equips.draw(EQL_EYEACC, laststance, CL_EYEACC, interframe, args);
 			equips.draw(EQL_SHIELD, laststance, CL_SHIELD, interframe, args);
@@ -240,80 +236,83 @@ namespace Character
 
 	bool CharLook::update(uint16_t timestep)
 	{
+		if (timestep == 0)
+			return false;
+
+		lastframe = frame;
+		laststance = stance;
+		lastelapsed = elapsed;
+		lastfcframe = fcframe;
+		lastexpression = expression;
+		lastfcelapsed = fcelapsed;
+
+		elapsed += timestep;
+
 		bool aniend = false;
-		if (timestep > 0)
+		if (action == nullptr)
 		{
-			lastframe = frame;
-			laststance = stance;
-			lastfcframe = fcframe;
-			lastexpression = expression;
-
-			elapsed += timestep;
-
-			if (action == nullptr)
+			uint16_t delay = drawinfo.getdelay(stance, frame);
+			if (elapsed > delay)
 			{
-				uint16_t delay = drawinfo.getdelay(stance, frame);
-				if (elapsed > delay)
+				elapsed -= delay;
+				frame = drawinfo.nextframe(stance, frame);
+
+				if (frame == 0)
 				{
-					elapsed -= delay;
-					frame = drawinfo.nextframe(stance, frame);
+					aniend = true;
 
-					if (frame == 0)
+					if (stance == "attack")
 					{
-						aniend = true;
-
-						if (stance == "attack")
-						{
-							setstance("stand");
-						}
-					}
-				}
-			}
-			else
-			{
-				uint16_t delay = action->getdelay();
-				if (elapsed > delay)
-				{
-					elapsed -= delay;
-
-					actframe = drawinfo.nextacframe(actionstr, actframe);
-					if (actframe > 0)
-					{
-						action = drawinfo.getaction(actionstr, actframe);
-						frame = action->getframe();
-						laststance = stance;
-						stance = action->getstance();
-					}
-					else
-					{
-						aniend = true;
-						action = nullptr;
 						setstance("stand");
 					}
 				}
 			}
-
-			fcelapsed += timestep;
-
-			uint16_t fcdelay = face->getdelay(expression, fcframe);
-			if (fcelapsed > fcdelay)
+		}
+		else
+		{
+			uint16_t delay = action->getdelay();
+			if (elapsed > delay)
 			{
-				fcelapsed -= fcdelay;
-				fcframe = face->nextframe(expression, fcframe);
+				elapsed -= delay;
 
-				if (fcframe == 0)
+				actframe = drawinfo.nextacframe(actionstr, actframe);
+				if (actframe > 0)
 				{
-					if (expression == "default")
-					{
-						setexpression("blink");
-					}
-					else
-					{
-						setexpression("default");
-					}
+					action = drawinfo.getaction(actionstr, actframe);
+					frame = action->getframe();
+					laststance = stance;
+					stance = action->getstance();
+				}
+				else
+				{
+					aniend = true;
+					action = nullptr;
+					setstance("stand");
 				}
 			}
 		}
+
+		fcelapsed += timestep;
+
+		uint16_t fcdelay = face->getdelay(expression, fcframe);
+		if (fcelapsed > fcdelay)
+		{
+			fcelapsed -= fcdelay;
+			fcframe = face->nextframe(expression, fcframe);
+
+			if (fcframe == 0)
+			{
+				if (expression == "default")
+				{
+					setexpression("blink");
+				}
+				else
+				{
+					setexpression("default");
+				}
+			}
+		}
+
 		return aniend;
 	}
 

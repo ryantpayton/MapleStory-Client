@@ -19,16 +19,6 @@
 
 namespace Character
 {
-	// Number of stances that are currently implemented.
-	const size_t NUM_STANCES = 11;
-
-	// Names of the character stances used in the game's files.
-	const string stances[NUM_STANCES] =
-	{
-		"", "walk", "stand", "jump", "alert", "prone", "fly", "ladder", "rope",
-		"dead", "sit"
-	};
-
 	void Char::draw(vector2d<int16_t> viewpos, float inter) const
 	{
 		vector2d<int16_t> absp = phobj.getposition(inter) + viewpos;
@@ -66,6 +56,19 @@ namespace Character
 		return 0;
 	}
 
+	void Char::sendface(int32_t expression)
+	{
+		// Names of face expressions used in the game's files.
+		static const string expnames[7] =
+		{
+			"hit", "smile", "troubled", "cry", "angry", "bewildered", "stunned"
+		};
+
+		int32_t expid = expression - 100;
+		if (expid >= 0 && expid < 7)
+			look.setexpression(expnames[expid]);
+	}
+
 	void Char::setflip(bool f)
 	{
 		flip = f;
@@ -74,11 +77,21 @@ namespace Character
 
 	void Char::setstance(Stance st)
 	{
-		if (stance != st)
+		if (stance == st)
+			return;
+
+		stance = st;
+
+		// Names of the character stances used in the game's files.
+		static const string stancenames[11] =
 		{
-			stance = st;
-			look.setstance(stances[st / 2]);
-		}
+			"", "walk", "stand", "jump", "alert", "prone", "fly", "ladder", "rope",
+			"dead", "sit"
+		};
+
+		int32_t index = st / 2;
+		if (index >= 0 && index < 11)
+			look.setstance(stancenames[index]);
 	}
 
 	void Char::setposition(int16_t x, int16_t y)

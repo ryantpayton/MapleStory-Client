@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "Hairstyle.h"
 #include "nlnx\nx.hpp"
 
@@ -28,7 +27,7 @@ namespace Character
 
 	Hairstyle::Hairstyle(int32_t hairid, const BodyDrawinfo& drawinfo)
 	{
-		using::nl::node;
+		using nl::node;
 		node hairnode = nl::nx::character["Hair"]["000" + std::to_string(hairid) + ".img"];
 		for (node stancenode : hairnode)
 		{
@@ -82,18 +81,19 @@ namespace Character
 
 	Hairstyle::~Hairstyle() {}
 
-	void Hairstyle::draw(string stance, CharacterLayer layer, uint8_t frame, const DrawArgument& args) const
-	{
-		if (stances.count(stance))
-		{
-			if (stances.at(stance).count(layer))
-			{
-				if (stances.at(stance).at(layer).count(frame))
-				{
-					stances.at(stance).at(layer).at(frame).draw(args);
-				}
-			}
-		}
+	void Hairstyle::draw(string stance, CharacterLayer layer, 
+		uint8_t frame, const DrawArgument& args) const {
+
+		if (!stances.count(stance))
+			return;
+
+		if (!stances.at(stance).count(layer))
+			return;
+
+		if (!stances.at(stance).at(layer).count(frame))
+			return;
+
+		stances.at(stance).at(layer).at(frame).draw(args);
 	}
 
 	const string& Hairstyle::getname() const

@@ -47,19 +47,10 @@ namespace Character
 	{
 		if (equips.count(slot))
 		{
-			if (equips.at(slot)->istransparent())
-			{
-				return false;
-			}
-			else
-			{
+			if (!equips.at(slot)->istransparent())
 				return true;
-			}
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 
 	bool CharEquips::istwohanded() const
@@ -81,21 +72,16 @@ namespace Character
 				reinterpret_cast<const Weapon*>(equips.at(EQL_WEAPON));
 			return weapon->getweptype();
 		}
-		else
-		{
-			return Weapon::WEP_NONE;
-		}
+		return Weapon::WEP_NONE;
 	}
 
 	const Clothing& CharEquips::getequip(Equipslot slot) const
 	{
 		if (equips.count(slot))
 		{
-			return *equips.at(slot);
+			if (equips.at(slot) != nullptr)
+				return *equips.at(slot);
 		}
-		else
-		{
-			return nullequip;
-		}
+		return nullequip;
 	}
 }

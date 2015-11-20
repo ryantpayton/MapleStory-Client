@@ -216,12 +216,12 @@ namespace IO
 					wasHandled = true;
 					break;
 				case WM_KEYDOWN:
-					UI::getkeyboard().sendinput(true, static_cast<uint8_t>(wParam));
+					UI::sendkey(static_cast<uint8_t>(wParam), true);
 					result = 0;
 					wasHandled = true;
 					break;
 				case WM_KEYUP:
-					UI::getkeyboard().sendinput(false, static_cast<uint8_t>(wParam));
+					UI::sendkey(static_cast<uint8_t>(wParam), false);
 					result = 0;
 					wasHandled = true;
 					break;

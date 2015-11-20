@@ -23,9 +23,9 @@
 
 namespace Graphics
 {
-	using::nl::bitmap;
-	using::Util::vector2d;
-	using::Util::rectangle2d;
+	using nl::bitmap;
+	using Util::vector2d;
+	using Util::rectangle2d;
 
 	namespace GraphicsGL
 	{
@@ -33,7 +33,7 @@ namespace Graphics
 		void clear();
 		void addbitmap(const bitmap&);
 		bool available(size_t);
-		void draw(size_t, rectangle2d<int32_t>, float, float, vector2d<int32_t>, float);
+		void draw(size_t, rectangle2d<int16_t>, float, float, vector2d<int16_t>, float);
 		void flush();
 	};
 }

@@ -27,13 +27,11 @@ namespace Net
 		{
 			recv.readbyte();
 
-			using IO::Keytype;
-
 			for (uint8_t i = 0; i < 90; i++)
 			{
-				Keytype type = static_cast<Keytype>(recv.readbyte());
+				uint8_t type = recv.readbyte();
 				int32_t action = recv.readint();
-				IO::UI::getkeyboard().addmapping(i, type, action);
+				IO::UI::addkeymapping(i, type, action);
 			}
 
 			/*quickslot* qslot = uinterface.getelement<quickslot>(UI_QUICKSLOTS);

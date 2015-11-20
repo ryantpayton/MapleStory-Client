@@ -15,114 +15,64 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include <map>
+
+#include "NxFileMethods.h"
+#include "HashUtility.h"
+#include "nlnx\nx.hpp"
+#include "nlnx\node.hpp"
+#include "nlnx\bitmap.hpp"
+#include <string>
+#include <fstream>
+#include <stdio.h>
 
 namespace Util
 {
-	using::std::map;
-
-	template <typename K, typename V>
-	class Ptrmap
+	namespace NxFileMethods
 	{
-	public:
-		Ptrmap()
+		// Names of game files in alphabetical order.
+		const string nxfiles[NUM_FILES] =
 		{
+			"Character.nx", "Effect.nx", "Etc.nx", "Item.nx", "Map.nx", "Mob.nx", "Npc.nx",
+			"Quest.nx", "Reactor.nx", "Skill.nx", "Sound.nx", "String.nx", "TamingMob.nx", "UI.nx"
+		};
+
+		bool exists(size_t index)
+		{
+			// Open file, store if loading successfull and close it.
+			using::std::ifstream;
+			ifstream f;
+			f.open(nxfiles[index].c_str());
+			bool success = f.good();
+			f.close();
+			return success;
 		}
 
-		~Ptrmap()
+		bool init()
 		{
-			clear();
-		}
-
-		V* get(K key) const
-		{
-			return contains(key) ? stdmap.at(key) : nullptr;
-		}
-
-		bool contains(K k) const
-		{
-			return stdmap.count(k) > 0;
-		}
-
-		typename map<K, V*>::const_iterator getbegin() const
-		{
-			return stdmap.begin();
-		}
-
-		typename map<K, V*>::const_iterator getend() const
-		{
-			return stdmap.end();
-		}
-
-		typename map<K, V*>::iterator getbegin()
-		{
-			return stdmap.begin();
-		}
-
-		typename map<K, V*>::iterator getend()
-		{
-			return stdmap.end();
-		}
-
-		void add(K key, V* value)
-		{
-			if (value != 0)
+			// Check if all files exists.
+			for (size_t i = 0; i < NUM_FILES; i++)
 			{
-				if (contains(key))
+				if (!exists(i))
 				{
-					remove(key);
-				}
-				stdmap[key] = value;
-			}
-		}
-
-		void remove(K key)
-		{
-			if (contains(key))
-			{
-				delete stdmap[key];
-				stdmap.erase(key);
-			}
-		}
-
-		void changekey(K from, K to)
-		{
-			if (contains(from))
-			{
-				remove(to);
-				stdmap[to] = stdmap[from];
-				stdmap[from] = 0;
-			}
-		}
-
-		V* extract(K key)
-		{
-			if (contains(key))
-			{
-				V* ret = stdmap[key];
-				stdmap[key] = 0;
-				return ret;
-			}
-			else
-			{
-				return 0;
-			}
-		}
-
-		void clear()
-		{
-			for (map<K, V*>::iterator mpit = stdmap.begin(); mpit != stdmap.end(); ++mpit)
-			{
-				if (mpit->second != 0)
-				{
-					delete mpit->second;
-					mpit->second = 0;
+					return false;
 				}
 			}
-			stdmap.clear();
+
+			// Initialise nolifenx. Load a test bitmap incase someone forgot 
+			// to set the flag for including bitmaps in their .nx files.
+			nl::nx::load_all();
+			nl::bitmap bmptest = nl::nx::ui["Login.img"]["Common"]["frame"].get_bitmap();
+			return bmptest.data() != nullptr;
 		}
-	private:
-		map<K, V*> stdmap;
-	};
+
+		string gethash(size_t index, uint64_t seed)
+		{
+			return (index < NUM_FILES) ? HashUtility::getfilehash(nxfiles[index].c_str(), seed) : 0;
+		}
+
+		string gethash(size_t index)
+		{
+			return (index < NUM_FILES) ? HashUtility::getfilehash(nxfiles[index].c_str()) : 0;
+		}
+	}
 }

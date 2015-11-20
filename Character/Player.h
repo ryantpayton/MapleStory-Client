@@ -52,13 +52,16 @@ namespace Character
 		// Respawn the player at the given position.
 		void respawn(vector2d<int16_t> position);
 		// Sends a Keyaction to the player's state, to apply forces, change the state and other behaviour.
-		void sendaction(Keyaction keycode, bool pressed);
+		void sendaction(IO::Keyboard::Keyaction keycode, bool pressed);
 		// Can be called after sending player movement to the server to start a new stack.
 		void clearmovement();
 		// Recalculates the total stats from base stats, inventories and skills.
 		void recalcstats(bool equipchanged);
 		// Update the player's animation, physics and states.
 		int8_t update(const Physics& physics) override;
+
+		// Return if the player is using an attack.
+		bool isattacking() const;
 
 		// Returns the current walking force, calculated from the total ES_SPEED stat.
 		float getwforce() const override;
@@ -68,8 +71,8 @@ namespace Character
 		float getclimbforce() const override;
 		// Returns the flying force.
 		float getflyforce() const override;
-		// Returns if a Keyaction is currently active. Used by player states for some behaviour (ex. jumpdown).
-		bool keydown(Keyaction) const override;
+		// Returns if a Keyaction is currently active. 
+		bool keydown(IO::Keyboard::Keyaction) const override;
 		// Return a pointer to the ladder the player is on.
 		const Ladder* getladder() const override;
 
@@ -102,7 +105,7 @@ namespace Character
 		Telerock telerock;
 		Monsterbook monsterbook;
 
-		map<Keyaction, bool> keysdown;
+		map<IO::Keyboard::Keyaction, bool> keysdown;
 		MovementInfo movementinfo;
 		MovementFragment lastmove;
 

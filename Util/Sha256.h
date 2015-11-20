@@ -21,40 +21,27 @@
 
 namespace Util
 {
-	using::std::uint8_t;
-	using::std::uint32_t;
-	using::std::string;
-
-	// Used to calculate hash values of game files. The server can then check with the client if all files are up-to-date.
-	class Sha256
+	// Functions for Sha256 encryption.
+	namespace Sha256
 	{
-	public:
-		Sha256();
-		~Sha256();
+		using std::uint8_t;
+		using std::uint32_t;
+		using std::string;
+
 		// Calculates the hash value of data as byte array with the given length.
 		// Parameters: uint8_t*(data in bytes), size_t(array length)
-		string gethash(const uint8_t*, size_t) const;
+		string gethash(const uint8_t*, size_t);
+
 		// Initialises a result array stored by the caller.
-		void init(uint32_t*) const;
+		void init(uint32_t*);
 		// Calculates the hash value for data that is not fully read in. The size needs to congruent 0 modulo 64-byte.
 		// Uses the array passed in to store the result.
 		// Parameters: uint8_t*(data in bytes), size_t(array length), uint32_t*(result array)
-		void feed(const uint8_t*, size_t, uint32_t*) const;
+		void feed(const uint8_t*, size_t, uint32_t*);
 		// Processes the last bytes of data. Data is padded and does not need the correct size.
 		// Parameters: uint8_t*(data in bytes), size_t(array length), uint32_t*(result array)
-		void feedremains(const uint8_t*, size_t, uint32_t*) const;
+		void feedremains(const uint8_t*, size_t, uint32_t*);
 		// Returns the result from the array passed in.
-		string digest(uint32_t*) const;
-	private:
-		// Extends the byte array for processing in 64-byte chunks.
-		void padbytes(uint8_t*, size_t) const;
-		// Processes a 64-byte chunk of data to update hash value.
-		void process(const uint8_t*, uint32_t*) const;
-		// Rotate right.
-		uint32_t rotr(uint32_t, size_t) const;
-		// Rotate left.
-		uint32_t rotl(uint32_t, size_t) const;
-		// Shift right.
-		uint32_t shfr(uint32_t, size_t) const;
-	};
+		string digest(uint32_t*);
+	}
 }

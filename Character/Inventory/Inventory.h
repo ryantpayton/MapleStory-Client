@@ -16,18 +16,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Character\Inventory\Item.h"
-#include "Character\Inventory\Pet.h"
-#include "Character\Inventory\Equip.h"
-#include "Util\Ptrmap.h"
+#include "Item.h"
+#include "Pet.h"
+#include "Equip.h"
 
 namespace Character
 {
-	using::Util::Ptrmap;
-
+	// The player's inventory.
 	class Inventory
 	{
 	public:
+		// Inventorytypes used by the server.
 		enum InvType
 		{
 			EQUIPPED = -1,
@@ -42,9 +41,13 @@ namespace Character
 		Inventory();
 		~Inventory();
 
+		// Recalculate sums of equip stats.
 		void recalcstats();
+		// Set the meso amount.
 		void setmeso(int64_t meso);
+		// Set the number of slots for a given inventory.
 		void setslots(InvType type, uint8_t value);
+
 
 		void additem(
 			InvType type, int16_t slot, int32_t itemid, bool cash,
@@ -60,12 +63,19 @@ namespace Character
 			string owner, int16_t flag, uint8_t itemlevel, uint16_t itemexp, int32_t vicious
 			);
 
+		void remove(InvType type, int16_t slot);
+
 		uint16_t getstat(Equipstat type) const;
+		int64_t getmeso() const;
+		int16_t finditem(InvType type, int32_t itemid) const;
+		InvType gettypebyid(int32_t itemid) const;
 
 	private:
+		void add(InvType type, int16_t slot, Item* toadd);
+
 		int64_t meso;
 		map<InvType, uint8_t> slots;
-		map<InvType, Ptrmap<int16_t, Item>> inventoryitems;
+		map<InvType, map<int16_t, Item*>> inventoryitems;
 		map<Equipstat, uint16_t> totalstats;
 	};
 }

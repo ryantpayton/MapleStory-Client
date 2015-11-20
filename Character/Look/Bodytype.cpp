@@ -98,18 +98,19 @@ namespace Character
 
 	Bodytype::~Bodytype() {}
 
-	void Bodytype::draw(string stance, CharacterLayer layer, uint8_t frame, const DrawArgument& args) const
-	{
-		if (stances.count(stance))
-		{
-			if (stances.at(stance).count(layer))
-			{
-				if (stances.at(stance).at(layer).count(frame))
-				{
-					stances.at(stance).at(layer).at(frame).draw(args);
-				}
-			}
-		}
+	void Bodytype::draw(string stance, CharacterLayer layer, 
+		uint8_t frame, const DrawArgument& args) const {
+
+		if (!stances.count(stance))
+			return;
+
+		if (!stances.at(stance).count(layer))
+			return;
+
+		if (!stances.at(stance).at(layer).count(frame))
+			return;
+
+		stances.at(stance).at(layer).at(frame).draw(args);
 	}
 
 	const string& Bodytype::getname() const

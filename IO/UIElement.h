@@ -32,15 +32,18 @@ namespace IO
 	{
 	public:
 		virtual ~UIElement() {}
-		virtual void togglehide() { active = !active; }
-		virtual void makeactive() { active = true; }
-		virtual void deactivate() { active = false; }
-		virtual void draw(float) const;
+
+		void togglehide() { active = !active; }
+		void makeactive() { active = true; }
+		void deactivate() { active = false; }
+		bool isactive() const { return active; }
+
+		virtual void draw(float inter) const;
 		virtual void update();
 		virtual void buttonpressed(uint16_t) = 0;
 		virtual Cursor::Mousestate sendmouse(bool, vector2d<int16_t>);
 		virtual rectangle2d<int16_t> bounds() const;
-		bool isactive() const { return active; }
+
 	protected:
 		bool active;
 		vector2d<int16_t> position;

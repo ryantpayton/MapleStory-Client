@@ -17,7 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UI.h"
 #include "Cursor.h"
+#include "Keyboard.h"
 #include "UITypes\UIStatsinfo.h"
+#include "UITypes\UIEquipInventory.h"
 #include "Gameplay\Stage.h"
 #include <unordered_map>
 #include <memory>
@@ -27,14 +29,17 @@ namespace IO
 	namespace UI
 	{
 		using std::unique_ptr;
-		using std::unordered_map;
-
-		unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
-		Element::UIType focused = Element::NONE;
-		bool enabled = false;
 
 		Keyboard keyboard;
 		Cursor cursor;
+
+		std::unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
+		std::map<int32_t, bool> keydown;
+
+		Element::UIType focused = Element::NONE;
+		Textfield* focusedtextfield = nullptr;
+		bool enabled = false;
+		bool gamekeysenabled = false;
 
 		void init()
 		{
@@ -122,17 +127,91 @@ namespace IO
 			cursor.setstate(mst);
 		}
 
-		void sendkey(Keytype type, int action, bool down)
+		void addelementbykey(int32_t key)
 		{
-			if (type == KT_MENU && down)
+			switch (key)
 			{
-				switch (action)
+			case Keyboard::KA_CHARSTATS:
+				add(ElementStatsinfo(Gameplay::Stage::getplayer().getstats()));
+				break;
+			case Keyboard::KA_EQUIPS:
+				add(ElementEquipInventory(Gameplay::Stage::getplayer().getinvent()));
+				break;
+			}
+		}
+
+		void sendkey(int32_t keycode, bool pressed)
+		{
+			if (focusedtextfield)
+			{
+				Keyboard::Keymapping mapping = keyboard.gettextmapping(keycode);
+
+				switch (mapping.type)
 				{
-				case KA_CHARSTATS:
-					add(ElementStatsinfo(Gameplay::Stage::getplayer().getstats()));
+				case Keyboard::KT_ACTION:
+					focusedtextfield->sendkey(Keyboard::KT_ACTION, mapping.action, pressed);
+					break;
+				case Keyboard::KT_LETTER:
+					if (!pressed)
+					{
+						int8_t letter;
+						if (keydown[keyboard.getshiftkeycode()])
+							letter = static_cast<int8_t>(mapping.action);
+						else
+							letter = static_cast<int8_t>(mapping.action + 32);
+
+						focusedtextfield->sendkey(Keyboard::KT_LETTER, letter, pressed);
+					}
+					break;
+				case Keyboard::KT_NUMBER:
+					focusedtextfield->sendkey(Keyboard::KT_NUMBER, mapping.action, pressed);
 					break;
 				}
 			}
+			else if (gamekeysenabled)
+			{
+				const Keyboard::Keymapping* mapping = keyboard.getmapping(keycode);
+
+				if (!mapping)
+					return;
+
+				Keyboard::Keytype type = mapping->type;
+				int32_t action = mapping->action;
+
+				switch (type)
+				{
+				case Keyboard::KT_MENU:
+					if (pressed)
+					{
+						addelementbykey(action);
+					}
+					break;
+				case Keyboard::KT_ACTION:
+				case Keyboard::KT_FACE:
+				case Keyboard::KT_ITEM:
+				case Keyboard::KT_SKILL:
+					Gameplay::Stage::sendkey(type, action, pressed);
+					break;
+				}
+			}
+
+			keydown[keycode] = pressed;
+		}
+
+		void focustextfield(Textfield* tofocus)
+		{
+			focusedtextfield = tofocus;
+		}
+
+		void addkeymapping(uint8_t no, uint8_t t, int32_t action)
+		{
+			Keyboard::Keytype type = static_cast<Keyboard::Keytype>(t);
+			keyboard.addmapping(no, type, action);
+		}
+
+		void enablegamekeys(bool enable)
+		{
+			gamekeysenabled = enable;
 		}
 
 		void add(const Element& element)
@@ -162,6 +241,8 @@ namespace IO
 
 		void remove(Element::UIType type)
 		{
+			focusedtextfield = nullptr;
+
 			if (type == focused)
 			{
 				focused = Element::NONE;
@@ -181,11 +262,6 @@ namespace IO
 				return elements.at(type).get();
 			else
 				return nullptr;
-		}
-
-		Keyboard& getkeyboard()
-		{
-			return keyboard;
 		}
 	}
 }

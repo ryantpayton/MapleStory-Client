@@ -66,12 +66,12 @@ namespace IO
 		if (saveid)
 		{
 			account.settext(Configuration::getsetting("Account"));
-			UI::getkeyboard().focustarget(&password);
+			UI::focustextfield(&password);
 			password.setstate(Textfield::FOCUSED);
 		}
 		else
 		{
-			UI::getkeyboard().focustarget(&account);
+			UI::focustextfield(&account);
 			account.setstate(Textfield::FOCUSED);
 		}
 
@@ -110,7 +110,7 @@ namespace IO
 		{
 		case BT_LOGIN:
 			UI::disable();
-			UI::getkeyboard().focustarget(nullptr);
+			UI::focustextfield(nullptr);
 			account.setstate(Textfield::NORMAL);
 			password.setstate(Textfield::NORMAL);
 			buttons[BT_LOGIN]->setstate(Button::MOUSEOVER);
@@ -138,7 +138,7 @@ namespace IO
 		{
 			if (down)
 			{
-				UI::getkeyboard().focustarget(&account);
+				UI::focustextfield(&account);
 				account.setstate(Textfield::FOCUSED);
 				password.setstate(Textfield::NORMAL);
 			}
@@ -151,7 +151,7 @@ namespace IO
 		{
 			if (down)
 			{
-				UI::getkeyboard().focustarget(&password);
+				UI::focustextfield(&password);
 				password.setstate(Textfield::FOCUSED);
 				account.setstate(Textfield::NORMAL);
 			}
@@ -162,7 +162,7 @@ namespace IO
 		}
 		else if (down)
 		{
-			UI::getkeyboard().focustarget(nullptr);
+			UI::focustextfield(nullptr);
 			account.setstate(Textfield::NORMAL);
 			password.setstate(Textfield::NORMAL);
 		}

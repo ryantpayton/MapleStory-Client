@@ -26,16 +26,18 @@ namespace Program
 	{
 		const string FILENAME = "Settings";
 
-		const size_t NUM_SETTINGS = 9;
+		const size_t NUM_SETTINGS = 10;
 
 		const string setnames[NUM_SETTINGS] =
 		{
-			"Fullscreen", "DPF", "BGMVolume", "SFXVolume", "SaveLogin", "Account", "World", "Channel", "Character"
+			"Fullscreen", "BGMVolume", "SFXVolume", "SaveLogin", "Account", "World", "Channel", 
+			"Character", "PosSTATS", "PosEQINV"
 		};
 
 		const string defaultvalues[NUM_SETTINGS] =
 		{
-			"false", "16", "50", "50", "false", "", "0", "1", "0"
+			"false", "50", "50", "false", "", "0", "1", 
+			"0", "(100,150)", "(250,150)"
 		};
 
 		std::map<string, string> settings;
@@ -140,6 +142,25 @@ namespace Program
 		string getsetting(string name)
 		{
 			return settings.count(name) ? settings.at(name) : "";
+		}
+
+		vector2d<int16_t> getvector2d(string name)
+		{
+			try
+			{
+				string xstr = settings.at(name)
+					.substr(1, settings.at(name).find(",") - 1);
+				string ystr = settings.at(name)
+					.substr(settings.at(name).find(",") + 1, settings.at(name).find(")") - settings.at(name).find(",") - 1);
+
+				return vector2d<int16_t>
+					(static_cast<int16_t>(std::stoi(xstr)), static_cast<int16_t>(std::stoi(ystr))
+					);
+			}
+			catch (std::exception&)
+			{
+				return vector2d<int16_t>();
+			}
 		}
 	}
 }

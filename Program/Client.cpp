@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Client.h"
 #include "Configuration.h"
-#include "Util\NxFileManager.h"
+#include "Util\NxFileMethods.h"
 #include "IO\UI.h"
 #include "Gameplay\Stage.h"
 #include "Net\Session.h"
@@ -35,11 +35,12 @@ namespace Program
 	Client::~Client() 
 	{
 		Audioplayer::close();
+		Configuration::save();
 	}
 
 	Client::Error Client::init()
 	{
-		if (!Util::NxFiles::init())
+		if (!Util::NxFileMethods::init())
 			return NXFILES;
 
 		if (!Net::Session::init())

@@ -51,19 +51,33 @@ namespace Character
 
 		// Draw look, nametag, effects and chat bubble.
 		void draw(vector2d<int16_t> viewpos, float inter) const override;
+		// Update look and movements.
 		int8_t update(const Physics& physics) override;
+		// Set the position as specified
 		void setposition(int16_t xpos, int16_t ypos) override;
+		// Return the layer the character is currently on.
 		int8_t getlayer() const override;
+		// Return the unique character id.
 		int32_t getoid() const override;
+		// Return the current position.
 		vector2d<int16_t> getposition() const override;
 
+		// Add a pet with the specified stats.
 		void addpet(uint8_t index, int32_t iid, string name, 
 			int32_t uniqueid, vector2d<int16_t> pos, uint8_t stance, int32_t fhid);
+		// Remove a pet with the specified index and reason.
 		void removepet(uint8_t index, bool hunger);
 
+		// Change the character's face expression by id.
+		void sendface(int32_t expression);
+		// Set if the character sprite is mirrored (true = facing left)
 		void setflip(bool flipped);
+		// Change the character's stance.
 		void setstance(Stance newstance);
+
+		// Return if the character is facing left.
 		bool getflip() const;
+		// Return the character's collision mask.
 		rectangle2d<int16_t> getbounds() const;
 
 		// Return if the char is in the Char::SIT state.
@@ -71,15 +85,17 @@ namespace Character
 		// Return if the char is in the Char::LADDER or Char::ROPE state.
 		bool isclimbing() const;
 
+		// Obtain a reference to the character's sprite.
 		CharLook& getlook();
+		// Obtain a reference to the character's physics.
 		PhysicsObject& getphobj();
 
 	protected:
 		CharLook look;
 		Textlabel namelabel;
 		PetLook pets[3];
-
 		PhysicsObject phobj;
+
 		int32_t cid;
 		Stance stance;
 		bool flip;

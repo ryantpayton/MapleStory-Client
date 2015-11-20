@@ -23,7 +23,7 @@ namespace Character
 {
 	ItemData::ItemData(int32_t id)
 	{
-		using::nl::node;
+		using nl::node;
 		node src;
 		node strsrc;
 
@@ -87,39 +87,20 @@ namespace Character
 
 	string ItemData::geteqcategory(int32_t id) const
 	{
-		int32_t prefix = id / 10000;
-		switch (prefix)
+		static const string categorynames[15] =
 		{
-		case 100:
-			return "Cap";
-		case 104:
-			return "Coat";
-		case 105:
-			return "Longcoat";
-		case 106:
-			return "Pants";
-		case 107:
-			return "Shoes";
-		case 108:
-			return "Glove";
-		case 109:
-			return "Shield";
-		case 110:
-			return "Cape";
-		case 111:
-			return "Ring";
-		case 101:
-		case 102:
-		case 103:
-		case 112:
-		case 113:
-		case 114:
-			return "Accessory";
-		default:
-			if (prefix >= 130 && prefix <= 170)
-				return "Weapon";
-		}
-		return "";
+			"Cap", "Accessory", "Accessory", "Accessory", "Coat", "Longcoat",
+			"Pants", "Shoes", "Glove", "Shield", "Cape", "Ring", "Accessory",
+			"Accessory", "Accessory"
+		};
+
+		int32_t prefix = (id / 10000) - 100;
+		if (prefix >= 0 && prefix < 15)
+			return categorynames[prefix];
+		else if (prefix >= 30 && prefix <= 70)
+			return "Weapon";
+		else
+			return "";
 	}
 
 	const string& ItemData::getcategory() const

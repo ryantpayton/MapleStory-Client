@@ -18,14 +18,14 @@
 #pragma once
 #include "Graphics\Textlabel.h"
 #include "Util\rectangle2d.h"
-#include "IO\InputConstants.h"
+#include "IO\Keyboard.h"
 
 namespace IO
 {
-	using::std::string;
-	using::Util::vector2d;
-	using::Util::rectangle2d;
-	using::Graphics::Textlabel;
+	using std::string;
+	using Util::vector2d;
+	using Util::rectangle2d;
+	using Graphics::Textlabel;
 
 	class Textfield
 	{
@@ -39,9 +39,10 @@ namespace IO
 
 		Textfield(Textlabel::Font, Textlabel::Textcolor, vector2d<int16_t>, size_t);
 		Textfield();
+
 		void draw(vector2d<int16_t>) const;
 		void update();
-		void sendkey(Keytype, int32_t, bool);
+		void sendkey(Keyboard::Keytype, int32_t, bool);
 		void setstate(TfState);
 		void settext(string);
 		void setcrypt(int8_t);

@@ -21,6 +21,7 @@
 
 namespace Net
 {
+	// Packet which accepts the Terms of Service.
 	class TOSPacket83 : public OutPacket
 	{
 	public:
@@ -30,6 +31,7 @@ namespace Net
 		}
 	};
 
+	// Packet which requests login to an account.
 	class LoginPacket83 : public OutPacket
 	{
 	public:
@@ -40,12 +42,14 @@ namespace Net
 		}
 	};
 
+	// Packet which requests the list of worlds and channels.
 	class ServerRequestPacket83 : public OutPacket
 	{
 	public:
 		ServerRequestPacket83() : OutPacket(SERVERLIST_REQUEST) {}
 	};
 
+	// Packet which requests the list of characters on a world.
 	class CharlistRequestPacket83 : public OutPacket
 	{
 	public:
@@ -57,10 +61,11 @@ namespace Net
 		}
 	};
 
+	// Packet which requests login to a channel server for the specified character.
 	class PlayerLoginPacket83 : public OutPacket
 	{
 	public:
-		PlayerLoginPacket83(int cid) : OutPacket(PLAYER_LOGIN)
+		PlayerLoginPacket83(int32_t cid) : OutPacket(PLAYER_LOGIN)
 		{
 			writeint(cid);
 		}

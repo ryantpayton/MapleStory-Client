@@ -22,7 +22,6 @@
 
 namespace Character
 {
-	using IO::Keyaction;
 	using Gameplay::Playable;
 	using Gameplay::Seat;
 	using Gameplay::Ladder;
@@ -47,7 +46,7 @@ namespace Character
 		virtual float getflyforce() const = 0;
 
 		// Returns if the keyaction is active.
-		virtual bool keydown(Keyaction keycode) const = 0;
+		virtual bool keydown(IO::Keyboard::Keyaction keycode) const = 0;
 		// Returns the ladder.
 		virtual const Ladder* getladder() const = 0;
 	};

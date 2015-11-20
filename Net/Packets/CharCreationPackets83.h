@@ -21,6 +21,7 @@
 
 namespace Net
 {
+	// Packet which requests reserving a name for the character to be created.
 	class NameCharPacket83 : public OutPacket
 	{
 	public:
@@ -30,6 +31,7 @@ namespace Net
 		}
 	};
 
+	// Packets which requests creation of a character with the specified stats.
 	class CreateCharPacket83 : public OutPacket
 	{
 	public:

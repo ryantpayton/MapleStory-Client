@@ -43,7 +43,7 @@ namespace Gameplay
 		// Also plays the bgm associated with the newly loaded map.
 		void respawn();
 		// Send a key input to the stage.
-		void sendkey(IO::Keytype keytype, int32_t keycode, bool pressed);
+		void sendkey(IO::Keyboard::Keytype keytype, int32_t keycode, bool pressed);
 
 		// Returns a reference to the npcs on the current map.
 		MapNpcs& getnpcs();

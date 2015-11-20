@@ -22,14 +22,15 @@
 #include "IO\Components\TwoSpriteButton.h"
 #include "Graphics\Sprite.h"
 #include "Net\Packets\LoginPackets83.h"
+#include "Program\Configuration.h"
 #include "nlnx\nx.hpp"
 
 namespace IO
 {
 	UIWorldSelect::UIWorldSelect()
 	{
-		worldid = 0;
-		channelid = 0;
+		worldid = Program::Configuration::getbyte("World");
+		channelid = Program::Configuration::getbyte("Channel");
 
 		node back = nl::nx::map["Back"]["login.img"]["back"];
 		node worlds = nl::nx::ui["Login.img"]["WorldSelect"]["BtWorld"]["release"];
@@ -52,7 +53,9 @@ namespace IO
 		sprites.push_back(Sprite(channels["layer:bg"], vector2d<int16_t>(200, 170)));
 		sprites.push_back(Sprite(channels["release"]["layer:15"], vector2d<int16_t>(200, 170)));
 
-		uint8_t chcount = Net::Session::getlogin().getworld(0).getchcount();
+		uint8_t chcount = Net::Session::getlogin().getworld(worldid).getchcount();
+		if (channelid >= chcount)
+			channelid = 0;
 
 		for (uint8_t i = 0; i < chcount; i++)
 		{

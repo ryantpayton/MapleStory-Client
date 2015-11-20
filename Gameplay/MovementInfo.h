@@ -16,16 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Gameplay\Physics\PhysicsObject.h"
+#include "Physics\PhysicsObject.h"
 #include <vector>
 
 namespace Gameplay
 {
-	using::std::uint8_t;
-	using::std::int16_t;
-	using::std::uint16_t;
-	using::std::vector;
-	using::Gameplay::PhysicsObject;
+	using std::uint8_t;
+	using std::int16_t;
+	using std::uint16_t;
+	using std::vector;
+	using Gameplay::PhysicsObject;
 
 	// Contains information on a single movement.
 	struct MovementFragment
@@ -82,13 +82,13 @@ namespace Gameplay
 		}
 
 		// Return a begin iterator for iteration.
-		vector<MovementFragment>::const_iterator getbegin() const
+		vector<MovementFragment>::const_iterator begin() const
 		{
 			return fragments.begin();
 		}
 
 		// Return an end iterator for iteration.
-		vector<MovementFragment>::const_iterator getend() const
+		vector<MovementFragment>::const_iterator end() const
 		{
 			return fragments.end();
 		}

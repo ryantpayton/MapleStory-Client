@@ -20,6 +20,7 @@
 #include "IO\UITypes\UIStatusbar.h"
 #include "IO\UI.h"
 #include "Gameplay\Stage.h"
+#include "Program\Configuration.h"
 
 #include "Journey.h"
 #ifdef JOURNEY_USE_OPENGL
@@ -71,8 +72,7 @@ namespace Net
 			{
 				// Change map.
 #ifdef JOURNEY_USE_OPENGL
-				using::Graphics::GraphicsGL;
-				GraphicsGL::clear();
+				Graphics::GraphicsGL::clear();
 #else
 				using::Graphics::GraphicsD2D;
 				GraphicsD2D::clear();
@@ -127,8 +127,7 @@ namespace Net
 				IO::UI::remove(Element::SOFTKEYBOARD);
 
 #ifdef JOURNEY_USE_OPENGL
-				using::Graphics::GraphicsGL;
-				GraphicsGL::clear();
+				Graphics::GraphicsGL::clear();
 #else
 				using::Graphics::GraphicsD2D;
 				GraphicsD2D::clear();
@@ -147,8 +146,7 @@ namespace Net
 				Gameplay::Stage::respawn();
 
 				IO::UI::enable();
-				IO::UI::getkeyboard().setenabled(IO::KT_MENU, true);
-				IO::UI::getkeyboard().setenabled(IO::KT_ACTION, true);
+				IO::UI::enablegamekeys(true);
 			}
 		}
 

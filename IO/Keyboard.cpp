@@ -41,11 +41,56 @@ namespace IO
 
 	Keyboard::Keyboard()
 	{
-		keymap[GLFW_KEY_LEFT] = std::make_pair(KT_ACTION, KA_LEFT);
-		keymap[GLFW_KEY_RIGHT] = std::make_pair(KT_ACTION, KA_RIGHT);
-		keymap[GLFW_KEY_UP] = std::make_pair(KT_ACTION, KA_UP);
-		keymap[GLFW_KEY_DOWN] = std::make_pair(KT_ACTION, KA_DOWN);
-		keymap[GLFW_KEY_BACKSPACE] = std::make_pair(KT_ACTION, KA_BACK);
+		Keymapping left;
+		left.type = KT_ACTION;
+		left.action = KA_LEFT;
+		Keymapping right;
+		right.type = KT_ACTION;
+		right.action = KA_RIGHT;
+		Keymapping up;
+		up.type = KT_ACTION;
+		up.action = KA_UP;
+		Keymapping down;
+		down.type = KT_ACTION;
+		down.action = KA_DOWN;
+		Keymapping back;
+		back.type = KT_ACTION;
+		back.action = KA_BACK;
+
+		keymap[GLFW_KEY_LEFT] = left;
+		keymap[GLFW_KEY_RIGHT] = right;
+		keymap[GLFW_KEY_UP] = up;
+		keymap[GLFW_KEY_DOWN] = down;
+		keymap[GLFW_KEY_BACKSPACE] = back;
+	}
+
+	int32_t Keyboard::getshiftkeycode() const
+	{
+		return GLFW_KEY_LEFT_SHIFT;
+	}
+
+	Keyboard::Keymapping Keyboard::gettextmapping(int32_t keycode) const
+	{
+		switch (keycode)
+		{
+		case GLFW_KEY_LEFT:
+		case GLFW_KEY_RIGHT:
+		case GLFW_KEY_UP:
+		case GLFW_KEY_DOWN:
+		case GLFW_KEY_BACKSPACE:
+			return keymap.at(keycode);
+		default:
+			if (keycode > 64 && keycode < 91)
+			{
+				Keymapping mapping;
+				mapping.type = KT_LETTER;
+				mapping.action = keycode;
+				return mapping;
+			}
+			break;
+		}
+
+		return Keymapping();
 	}
 #else
 	const int32_t Keytable[90] =
@@ -60,67 +105,81 @@ namespace IO
 
 	Keyboard::Keyboard()
 	{
-		keymap[VK_LEFT] = std::make_pair(KT_ACTION, KA_LEFT);
-		keymap[VK_RIGHT] = std::make_pair(KT_ACTION, KA_RIGHT);
-		keymap[VK_UP] = std::make_pair(KT_ACTION, KA_UP);
-		keymap[VK_DOWN] = std::make_pair(KT_ACTION, KA_DOWN);
-		keymap[VK_BACK] = std::make_pair(KT_ACTION, KA_BACK);
+		Keymapping left;
+		left.type = KT_ACTION;
+		left.action = KA_LEFT;
+		Keymapping right;
+		right.type = KT_ACTION;
+		right.action = KA_RIGHT;
+		Keymapping up;
+		up.type = KT_ACTION;
+		up.action = KA_UP;
+		Keymapping down;
+		down.type = KT_ACTION;
+		down.action = KA_DOWN;
+		Keymapping back;
+		back.type = KT_ACTION;
+		back.action = KA_BACK;
+
+		keymap[VK_LEFT] = left;
+		keymap[VK_RIGHT] = right;
+		keymap[VK_UP] = up;
+		keymap[VK_DOWN] = down;
+		keymap[VK_BACK] = back;
+	}
+
+	int32_t Keyboard::getshiftkeycode() const
+	{
+		return VK_SHIFT;
+	}
+
+	Keyboard::Keymapping Keyboard::gettextmapping(int32_t keycode) const
+	{
+		switch (keycode)
+		{
+		case VK_LEFT:
+		case VK_RIGHT:
+		case VK_UP:
+		case VK_DOWN:
+		case VK_BACK:
+			return keymap.at(keycode);
+		default:
+			if (keycode > 47 && keycode < 58)
+			{
+				Keymapping mapping;
+				mapping.type = KT_NUMBER;
+				mapping.action = keycode;
+				return mapping;
+			}
+			else if (keycode > 64 && keycode < 91)
+			{
+				Keymapping mapping;
+				mapping.type = KT_LETTER;
+				mapping.action = keycode;
+				return mapping;
+			}
+			break;
+		}
+
+		return Keymapping();
 	}
 #endif
-
-	void Keyboard::setenabled(Keytype type, bool en)
-	{
-		enabledtypes[type] = en;
-	}
 
 	void Keyboard::addmapping(uint8_t key, Keytype type, int32_t action)
 	{
-		keymap[Keytable[key]] = std::make_pair(type, action);
-		maplekeys[key] = std::make_pair(type, action);
+		Keymapping mapping;
+		mapping.type = type;
+		mapping.action = action;
+
+		keymap[Keytable[key]] = mapping;
+		maplekeys[key] = mapping;
 	}
 
-	void Keyboard::focustarget(Textfield* kt)
+	const Keyboard::Keymapping* Keyboard::getmapping(int32_t keycode) const
 	{
-		focused = kt;
-	}
-
-	void Keyboard::sendinput(bool down, int32_t key)
-	{
-		if (focused)
-		{
-			if (down)
-			{
-				focused->sendkey(KT_ACTION, keymap[key].second, down);
-			}
-			else if (key > 64 && key < 91)
-			{
-#ifdef JOURNEY_USE_OPENGL
-				int8_t letter = keystate[GLFW_KEY_LEFT_SHIFT] ? static_cast<int8_t>(key) : static_cast<int8_t>(key + 32);
-#else
-				int8_t letter = keystate[VK_SHIFT] ? static_cast<int8_t>(key) : static_cast<int8_t>(key + 32);
-#endif
-				focused->sendkey(KT_LETTER, letter, down);
-			}
-		}
+		if (keymap.count(keycode))
+			return &keymap.at(keycode);
 		else
-		{
-			Keytype type = keymap[key].first;
-			int action = keymap[key].second;
-
-			if (enabledtypes[type])
-			{
-				switch (type)
-				{
-				case KT_MENU:
-					UI::sendkey(type, action, down);
-					break;
-				case KT_ACTION:
-					Gameplay::Stage::sendkey(type, action, down);
-					break;
-				}
-			}
-		}
-
-		keystate[key] = down;
+			return nullptr;
 	}
 }

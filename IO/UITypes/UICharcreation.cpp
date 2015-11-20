@@ -142,7 +142,7 @@ namespace IO
 		namechar = Textfield(Textlabel::DWF_14ML, Textlabel::TXC_WHITE, vector2d<int16_t>(490, 217), 12);
 		namechar.setstate(Textfield::FOCUSED);
 
-		UI::getkeyboard().focustarget(&namechar);
+		UI::focustextfield(&namechar);
 
 		facename = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_BLACK, "", 0);
 		hairname = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_BLACK, "", 0);
@@ -267,7 +267,7 @@ namespace IO
 				if (name.size() >= 4)
 				{
 					UI::disable();
-					UI::getkeyboard().focustarget(nullptr);
+					UI::focustextfield(nullptr);
 					namechar.setstate(Textfield::NORMAL);
 
 					using::Net::NameCharPacket83;
@@ -310,7 +310,7 @@ namespace IO
 			else
 			{
 				active = false;
-				UI::getkeyboard().focustarget(nullptr);
+				UI::focustextfield(nullptr);
 				UI::remove(Element::CHARSELECT);
 				UI::add(ElementCharSelect());
 			}
@@ -324,66 +324,82 @@ namespace IO
 			case BT_CHARC_FACEL:
 				face = (face > 0) ? face - 1 : faces[female].size() - 1;
 				newchar.setface(faces[female][face]);
+				facename.settext(newchar.getfacetype()->getname());
 				break;
 			case BT_CHARC_FACER:
 				face = (face < faces[female].size() - 1) ? face + 1 : 0;
 				newchar.setface(faces[female][face]);
+				facename.settext(newchar.getfacetype()->getname());
 				break;
 			case BT_CHARC_HAIRL:
 				hair = (hair > 0) ? hair - 1 : hairs[female].size() - 1;
 				newchar.sethair(hairs[female][hair] + haircolors[female][haircolor]);
+				hairname.settext(newchar.gethairstyle()->getname());
 				break;
 			case BT_CHARC_HAIRR:
 				hair = (hair < hairs[female].size() - 1) ? hair + 1 : 0;
 				newchar.sethair(hairs[female][hair] + haircolors[female][haircolor]);
+				hairname.settext(newchar.gethairstyle()->getname());
 				break;
 			case BT_CHARC_HAIRCL:
 				haircolor = (haircolor > 0) ? haircolor - 1 : haircolors[female].size() - 1;
 				newchar.sethair(hairs[female][hair] + haircolors[female][haircolor]);
+				haircname.settext(newchar.gethairstyle()->getcolor());
 				break;
 			case BT_CHARC_HAIRCR:
 				haircolor = (haircolor < haircolors[female].size() - 1) ? haircolor + 1 : 0;
 				newchar.sethair(hairs[female][hair] + haircolors[female][haircolor]);
+				haircname.settext(newchar.gethairstyle()->getcolor());
 				break;
 			case BT_CHARC_SKINL:
 				skin = (skin > 0) ? skin - 1 : skins[female].size() - 1;
 				newchar.setbody(skins[female][skin]);
+				bodyname.settext(newchar.getbodytype()->getname());
 				break;
 			case BT_CHARC_SKINR:
 				skin = (skin < skins[female].size() - 1) ? skin + 1 : 0;
 				newchar.setbody(skins[female][skin]);
+				bodyname.settext(newchar.getbodytype()->getname());
 				break;
 			case BT_CHARC_TOPL:
 				top = (top > 0) ? top - 1 : tops[female].size() - 1;
 				newchar.addequip(tops[female][top]);
+				topname.settext(newchar.getequips().getequip(Character::EQL_TOP).getname());
 				break;
 			case BT_CHARC_TOPR:
 				top = (top < tops[female].size() - 1) ? top + 1 : 0;
 				newchar.addequip(tops[female][top]);
+				topname.settext(newchar.getequips().getequip(Character::EQL_TOP).getname());
 				break;
 			case BT_CHARC_BOTL:
 				bot = (bot > 0) ? bot - 1 : bots[female].size() - 1;
 				newchar.addequip(bots[female][bot]);
+				botname.settext(newchar.getequips().getequip(Character::EQL_PANTS).getname());
 				break;
 			case BT_CHARC_BOTR:
 				bot = (bot < bots[female].size() - 1) ? bot + 1 : 0;
 				newchar.addequip(bots[female][bot]);
+				botname.settext(newchar.getequips().getequip(Character::EQL_PANTS).getname());
 				break;
 			case BT_CHARC_SHOESL:
 				shoe = (shoe > 0) ? shoe - 1 : shoes[female].size() - 1;
 				newchar.addequip(shoes[female][shoe]);
+				shoename.settext(newchar.getequips().getequip(Character::EQL_SHOES).getname());
 				break;
 			case BT_CHARC_SHOESR:
 				shoe = (shoe < shoes[female].size() - 1) ? shoe + 1 : 0;
 				newchar.addequip(shoes[female][shoe]);
+				shoename.settext(newchar.getequips().getequip(Character::EQL_SHOES).getname());
 				break;
 			case BT_CHARC_WEPL:
 				weapon = (weapon > 0) ? weapon - 1 : weapons[female].size() - 1;
 				newchar.addequip(weapons[female][weapon]);
+				wepname.settext(newchar.getequips().getequip(Character::EQL_WEAPON).getname());
 				break;
 			case BT_CHARC_WEPR:
 				weapon = (weapon < weapons[female].size() - 1) ? weapon + 1 : 0;
 				newchar.addequip(weapons[female][weapon]);
+				wepname.settext(newchar.getequips().getequip(Character::EQL_WEAPON).getname());
 				break;
 			case BT_CHARC_GENDERL:
 			case BT_CHARC_GEMDERR:
@@ -403,7 +419,7 @@ namespace IO
 		{
 			if (down)
 			{
-				UI::getkeyboard().focustarget(&namechar);
+				UI::focustextfield(&namechar);
 				namechar.setstate(Textfield::FOCUSED);
 			}
 			else if (namechar.getstate() == Textfield::NORMAL)
@@ -413,7 +429,7 @@ namespace IO
 		}
 		else if (down)
 		{
-			UI::getkeyboard().focustarget(nullptr);
+			UI::focustextfield(nullptr);
 			namechar.setstate(Textfield::NORMAL);
 		}
 

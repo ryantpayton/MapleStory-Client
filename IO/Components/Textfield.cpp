@@ -74,43 +74,51 @@ namespace IO
 		}
 	}
 
-	void Textfield::sendkey(Keytype type, int32_t key, bool)
+	void Textfield::sendkey(Keyboard::Keytype type, int32_t key, bool pressed)
 	{
-		if (type == KT_ACTION)
+		switch (type)
 		{
-			switch (key)
+		case Keyboard::KT_ACTION:
+			if (pressed)
 			{
-			case KA_LEFT:
-				if (markerpos > 0)
+				switch (key)
 				{
-					markerpos--;
+				case Keyboard::KA_LEFT:
+					if (markerpos > 0)
+					{
+						markerpos--;
+					}
+					break;
+				case Keyboard::KA_RIGHT:
+					if (markerpos < text.size())
+					{
+						markerpos++;
+					}
+					break;
+				case Keyboard::KA_BACK:
+					if (text.size() > 0 && markerpos > 0)
+					{
+						text.erase(markerpos - 1, 1);
+						markerpos--;
+						modifytext(text);
+					}
+					break;
 				}
-				break;
-			case KA_RIGHT:
-				if (markerpos < text.size())
+			}
+			break;
+		case Keyboard::KT_LETTER:
+		case Keyboard::KT_NUMBER:
+			if (!pressed)
+			{
+				int8_t c = static_cast<int8_t>(key);
+				if (text.size() < limit)
 				{
+					text.insert(markerpos, 1, c);
 					markerpos++;
-				}
-				break;
-			case KA_BACK:
-				if (text.size() > 0 && markerpos > 0)
-				{
-					text.erase(markerpos - 1, 1);
-					markerpos--;
 					modifytext(text);
 				}
-				break;
 			}
-		}
-		else if (type == KT_LETTER)
-		{
-			int8_t c = static_cast<int8_t>(key);
-			if (text.size() < limit)
-			{
-				text.insert(markerpos, 1, c);
-				markerpos++;
-				modifytext(text);
-			}
+			break;
 		}
 	}
 

@@ -20,35 +20,37 @@
 
 namespace Character
 {
+	using IO::Keyboard;
+
 	class PlayerState
 	{
 	public:
 		virtual ~PlayerState(){}
-		virtual void sendaction(PlayableChar&, Keyaction, bool) const = 0;
-		virtual void update(PlayableChar&) const = 0;
-		virtual void nextstate(PlayableChar&) const = 0;
+		virtual void sendaction(PlayableChar& player, Keyboard::Keyaction keycode, bool pressed) const = 0;
+		virtual void update(PlayableChar& player) const = 0;
+		virtual void nextstate(PlayableChar& player) const = 0;
 	};
 
 	class PlayerStandState : public PlayerState
 	{
-		void sendaction(PlayableChar& player, Keyaction ka, bool down) const override
+		void sendaction(PlayableChar& player, Keyboard::Keyaction ka, bool down) const override
 		{
 			if (down)
 			{
 				switch (ka)
 				{
-				case IO::KA_LEFT:
+				case Keyboard::KA_LEFT:
 					player.setflip(false);
 					player.setstance(Char::WALK);
 					break;
-				case IO::KA_RIGHT:
+				case Keyboard::KA_RIGHT:
 					player.setflip(true);
 					player.setstance(Char::WALK);
 					break;
-				case IO::KA_JUMP:
+				case Keyboard::KA_JUMP:
 					player.getphobj().vforce = -player.getjforce();
 					break;
-				case IO::KA_DOWN:
+				case Keyboard::KA_DOWN:
 					player.setstance(Char::PRONE);
 					break;
 				}
@@ -68,22 +70,22 @@ namespace Character
 
 	class PlayerWalkState : public PlayerState
 	{
-		void sendaction(PlayableChar& player, Keyaction ka, bool down) const override
+		void sendaction(PlayableChar& player, Keyboard::Keyaction ka, bool down) const override
 		{
 			if (down)
 			{
 				switch (ka)
 				{
-				case IO::KA_LEFT:
+				case Keyboard::KA_LEFT:
 					player.setflip(false);
 					break;
-				case IO::KA_RIGHT:
+				case Keyboard::KA_RIGHT:
 					player.setflip(true);
 					break;
-				case IO::KA_JUMP:
+				case Keyboard::KA_JUMP:
 					player.getphobj().vforce = -player.getjforce();
 					break;
-				case IO::KA_DOWN:
+				case Keyboard::KA_DOWN:
 					player.getphobj().hspeed = 0.0f;
 					player.setstance(Char::PRONE);
 					break;
@@ -93,11 +95,11 @@ namespace Character
 
 		void update(PlayableChar& player) const override
 		{
-			if (player.keydown(IO::KA_LEFT))
+			if (player.keydown(Keyboard::KA_LEFT))
 			{
 				player.getphobj().hforce = -player.getwforce();
 			}
-			else if (player.keydown(IO::KA_RIGHT))
+			else if (player.keydown(Keyboard::KA_RIGHT))
 			{
 				player.getphobj().hforce = player.getwforce();
 			}
@@ -121,7 +123,7 @@ namespace Character
 
 	class PlayerFallState : public PlayerState
 	{
-		void sendaction(PlayableChar&, Keyaction, bool) const override {}
+		void sendaction(PlayableChar&, Keyboard::Keyaction, bool) const override {}
 
 		void update(PlayableChar&) const override {}
 
@@ -129,11 +131,11 @@ namespace Character
 		{
 			if (player.getphobj().onground)
 			{
-				if (player.keydown(IO::KA_LEFT))
+				if (player.keydown(Keyboard::KA_LEFT))
 				{
 					player.setflip(false);
 				}
-				else if (player.keydown(IO::KA_RIGHT))
+				else if (player.keydown(Keyboard::KA_RIGHT))
 				{
 					player.setflip(true);
 				}
@@ -152,13 +154,13 @@ namespace Character
 
 	class PlayerProneState : public PlayerState
 	{
-		void sendaction(PlayableChar& player, Keyaction ka, bool down) const override
+		void sendaction(PlayableChar& player, Keyboard::Keyaction ka, bool down) const override
 		{
 			if (down)
 			{
 				switch (ka)
 				{
-				case IO::KA_JUMP:
+				case Keyboard::KA_JUMP:
 					player.setstance(Char::STAND);
 					player.sendaction(ka, down);
 					break;
@@ -168,7 +170,7 @@ namespace Character
 			{
 				switch (ka)
 				{
-				case IO::KA_DOWN:
+				case Keyboard::KA_DOWN:
 					player.setstance(Char::STAND);
 					break;
 				}
@@ -182,24 +184,24 @@ namespace Character
 
 	class PlayerSitState : public PlayerState
 	{
-		void sendaction(PlayableChar& player, Keyaction ka, bool down) const override
+		void sendaction(PlayableChar& player, Keyboard::Keyaction ka, bool down) const override
 		{
 			if (down)
 			{
 				switch (ka)
 				{
-				case IO::KA_LEFT:
+				case Keyboard::KA_LEFT:
 					player.setflip(false);
 					player.setstance(Char::WALK);
 					break;
-				case IO::KA_RIGHT:
+				case Keyboard::KA_RIGHT:
 					player.setflip(true);
 					player.setstance(Char::WALK);
 					break;
-				case IO::KA_JUMP:
+				case Keyboard::KA_JUMP:
 					player.setstance(Char::STAND);
 					break;
-				case IO::KA_UP:
+				case Keyboard::KA_UP:
 					player.setstance(Char::SWIM);
 					break;
 				}
@@ -213,19 +215,19 @@ namespace Character
 
 	class PlayerFlyState : public PlayerState
 	{
-		void sendaction(PlayableChar& player, Keyaction ka, bool down) const override
+		void sendaction(PlayableChar& player, Keyboard::Keyaction ka, bool down) const override
 		{
 			if (down)
 			{
 				switch (ka)
 				{
-				case IO::KA_LEFT:
+				case Keyboard::KA_LEFT:
 					player.setflip(false);
 					break;
-				case IO::KA_RIGHT:
+				case Keyboard::KA_RIGHT:
 					player.setflip(true);
 					break;
-				case IO::KA_JUMP:
+				case Keyboard::KA_JUMP:
 					if (abs(player.getphobj().hspeed) < 2.5f && abs(player.getphobj().vspeed) < 2.5f)
 					{
 						float FLYJUMPFORCE = player.getflyforce() * 20;
@@ -249,20 +251,20 @@ namespace Character
 		{
 			player.getphobj().type = PhysicsObject::FLYING;
 
-			if (player.keydown(IO::KA_LEFT))
+			if (player.keydown(Keyboard::KA_LEFT))
 			{
 				player.getphobj().hforce = -player.getflyforce();
 			}
-			else if (player.keydown(IO::KA_RIGHT))
+			else if (player.keydown(Keyboard::KA_RIGHT))
 			{
 				player.getphobj().hforce = player.getflyforce();
 			}
 
-			if (player.keydown(IO::KA_UP))
+			if (player.keydown(Keyboard::KA_UP))
 			{
 				player.getphobj().vforce = -player.getflyforce();
 			}
-			else if (player.keydown(IO::KA_DOWN))
+			else if (player.keydown(Keyboard::KA_DOWN))
 			{
 				player.getphobj().vforce = player.getflyforce();
 			}
@@ -274,21 +276,21 @@ namespace Character
 	class PlayerClimbState : public PlayerState
 	{
 	public:
-		void sendaction(PlayableChar& player, Keyaction ka, bool down) const override
+		void sendaction(PlayableChar& player, Keyboard::Keyaction ka, bool down) const override
 		{
 			if (down)
 			{
 				switch (ka)
 				{
-				case IO::KA_JUMP:
-					if (player.keydown(IO::KA_LEFT))
+				case Keyboard::KA_JUMP:
+					if (player.keydown(Keyboard::KA_LEFT))
 					{
 						player.setflip(false);
 						player.getphobj().hspeed = -player.getwforce() * 3.0f;
 						player.getphobj().vforce = -player.getjforce() / 1.5f;
 						cancelladder(player);
 					}
-					else if (player.keydown(IO::KA_RIGHT))
+					else if (player.keydown(Keyboard::KA_RIGHT))
 					{
 						player.setflip(true);
 						player.getphobj().hspeed = player.getwforce() * 3.0f;
@@ -302,11 +304,11 @@ namespace Character
 
 		void update(PlayableChar& player) const override
 		{
-			if (player.keydown(IO::KA_UP))
+			if (player.keydown(Keyboard::KA_UP))
 			{
 				player.getphobj().vspeed = -player.getclimbforce();
 			}
-			else if (player.keydown(IO::KA_DOWN))
+			else if (player.keydown(Keyboard::KA_DOWN))
 			{
 				player.getphobj().vspeed = player.getclimbforce();
 			}
@@ -322,7 +324,7 @@ namespace Character
 			if (ladder)
 			{
 				float cfy;
-				if (player.keydown(IO::KA_DOWN))
+				if (player.keydown(Keyboard::KA_DOWN))
 					cfy = player.getphobj().fy;
 				else
 					cfy = player.getphobj().fy - 15;

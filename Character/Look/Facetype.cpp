@@ -30,9 +30,8 @@ namespace Character
 			string state = expnode.name();
 			if (state == "default")
 			{
-				node shiftnode = expnode["face"]["map"]["brow"];
 				stances[state][CL_FACE][0] = Texture(expnode["face"]);
-				stances[state][CL_FACE][0].setshift(vector2d<int16_t>() - vector2d<int16_t>(shiftnode));
+				stances[state][CL_FACE][0].setshift(-vector2d<int16_t>(expnode["face"]["map"]["brow"]));
 				delays[state][0] = 2500;
 			}
 			else if (state != "info")
@@ -43,9 +42,8 @@ namespace Character
 				{
 					if (framenode["face"].data_type() == node::type::bitmap)
 					{
-						node shiftnode = framenode["face"]["map"]["brow"];
 						stances[state][CL_FACE][frame] = Texture(framenode["face"]);
-						stances[state][CL_FACE][frame].setshift(vector2d<int16_t>() - vector2d<int16_t>(shiftnode));
+						stances[state][CL_FACE][frame].setshift(-vector2d<int16_t>(framenode["face"]["map"]["brow"]));
 
 						if (framenode["delay"].data_type() == node::type::integer)
 							delays[state][frame] = framenode["delay"];
@@ -66,18 +64,19 @@ namespace Character
 
 	Facetype::~Facetype() {}
 
-	void Facetype::draw(string stance, CharacterLayer layer, uint8_t frame, const DrawArgument& args) const
-	{
-		if (stances.count(stance))
-		{
-			if (stances.at(stance).count(layer))
-			{
-				if (stances.at(stance).at(layer).count(frame))
-				{
-					stances.at(stance).at(layer).at(frame).draw(args);
-				}
-			}
-		}
+	void Facetype::draw(string stance, CharacterLayer layer, 
+		uint8_t frame, const DrawArgument& args) const {
+
+		if (!stances.count(stance))
+			return;
+
+		if (!stances.at(stance).count(layer))
+			return;
+
+		if (!stances.at(stance).at(layer).count(frame))
+			return;
+
+		stances.at(stance).at(layer).at(frame).draw(args);
 	}
 
 	uint8_t Facetype::nextframe(string exp, uint8_t frame) const

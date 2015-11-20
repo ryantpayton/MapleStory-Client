@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Util\vector2d.h"
 #include <cstdint>
 #include <string>
 #include <map>
@@ -28,6 +29,7 @@ namespace Program
 		using std::uint16_t;
 		using std::uint32_t;
 		using std::string;
+		using Util::vector2d;
 
 		// Load all settings. If something is missing, set the default value. Can be used for reloading.
 		void load();
@@ -42,15 +44,22 @@ namespace Program
 		void setstring(string setting, string value);
 
 		// Returns a bool based on the value of the setting specified.
+		// Returns false if the setting is anything but "true".
 		bool getbool(string setting);
-		// Returns a byte based on the value of the setting specified. Returns 0 if an exception occurs.
+		// Returns a byte based on the value of the setting specified. 
+		// Returns 0 if an exception occurs.
 		uint8_t getbyte(string setting);
-		// Returns a short based on the value of the setting specified. Returns 0 if an exception occurs.
+		// Returns a short based on the value of the setting specified. 
+		// Returns 0 if an exception occurs.
 		uint16_t getshort(string setting);
-		// Returns an int based on the value of the setting specified. Returns 0 if an exception occurs.
+		// Returns an int based on the value of the setting specified. 
+		// Returns 0 if an exception occurs.
 		uint32_t getinteger(string setting);
 		// Returns a string based on the value of the setting specified.
 		string getsetting(string setting);
+		// Returns a short vector2d based on the value of the setting specified.
+		// Returns (0, 0) if an exception occurs.
+		vector2d<int16_t> getvector2d(string setting);
 	}
 }
 

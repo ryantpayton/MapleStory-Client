@@ -41,7 +41,7 @@ namespace Util
 		bool contains(T p) const { return (p >= a && p <= b); }
 		bool straight() const { return a == b; }
 		bool overlaps(vector2d<T> v) const { return (b >= v.x() && a <= v.x()) || (a <= v.y() && b >= v.y()) || (a >= v.x() && b <= v.y()) || (a <= v.x() && b >= v.y()); }
-		string tostring() const { return to_string(a) + "," + to_string(b); }
+		string tostring() const { return "(" + to_string(a) + "," + to_string(b) + ")"; }
 		vector2d<T> operator + (vector2d<T> v) const { return vector2d<T>(a + v.x(), b + v.y()); }
 		vector2d<T> operator - (vector2d<T> v) const { return vector2d<T>(a - v.x(), b - v.y()); }
 		vector2d<T> operator * (vector2d<T> v) const { return vector2d<T>(a / v.x(), b / v.y()); }
@@ -56,6 +56,7 @@ namespace Util
 		void shift(vector2d<T> v) { a += v.x(); b += v.y(); }
 		void operator += (vector2d<T> v) { a += v.x(); b += v.y(); }
 		void operator -= (vector2d<T> v) { a -= v.x(); b -= v.y(); }
+		vector2d<T> operator - () { return vector2d<T>(-a, -b); }
 	private:
 		T a;
 		T b;

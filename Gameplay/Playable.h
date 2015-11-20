@@ -16,20 +16,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\InputConstants.h"
+#include "IO\Keyboard.h"
 
 namespace Gameplay
 {
-	using::IO::Keyaction;
-
 	// Interface for classes which can be controlled through key inputs.
 	class Playable
 	{
 	public:
 		virtual ~Playable(){}
 		// Sends a keystate to the object.
-		// Parameters: Keyaction(maple-keycode), bool(is key down)
-		virtual void sendaction(Keyaction, bool) = 0;
+		virtual void sendaction(IO::Keyboard::Keyaction keycode, bool pressed) = 0;
 	};
 }
 

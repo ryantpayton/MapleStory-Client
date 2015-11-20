@@ -47,6 +47,7 @@ namespace Graphics
 	{
 		str = string(t);
 		text = wstring(t.begin(), t.end());
+		wmax = wmax;
 
 #ifdef JOURNEY_USE_OPENGL
 #else

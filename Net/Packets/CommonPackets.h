@@ -18,7 +18,7 @@
 #pragma once
 #include "OutPacket.h"
 #include "SendOpcodes83.h"
-#include "Util\NxFileManager.h"
+#include "Util\NxFileMethods.h"
 
 namespace Net
 {
@@ -35,19 +35,19 @@ namespace Net
 	public:
 		NxCheckPacket(uint64_t seed) : OutPacket(HASH_CHECK)
 		{
-			writech(static_cast<uint8_t>(Util::NxFiles::NUM_FILES));
-			for (size_t i = 0; i < Util::NxFiles::NUM_FILES; i++)
+			writech(static_cast<uint8_t>(Util::NxFileMethods::NUM_FILES));
+			for (size_t i = 0; i < Util::NxFileMethods::NUM_FILES; i++)
 			{
-				writestr(Util::NxFiles::gethash(i, seed));
+				writestr(Util::NxFileMethods::gethash(i, seed));
 			}
 		}
 
 		NxCheckPacket() : OutPacket(HASH_CHECK)
 		{
-			writech(static_cast<uint8_t>(Util::NxFiles::NUM_FILES));
-			for (size_t i = 0; i < Util::NxFiles::NUM_FILES; i++)
+			writech(static_cast<uint8_t>(Util::NxFileMethods::NUM_FILES));
+			for (size_t i = 0; i < Util::NxFileMethods::NUM_FILES; i++)
 			{
-				writestr(Util::NxFiles::gethash(i));
+				writestr(Util::NxFileMethods::gethash(i));
 			}
 		}
 	};

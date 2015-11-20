@@ -16,28 +16,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Sha256.h"
+#include <cstdint>
+#include <string>
 
 namespace Util
 {
-	using::std::uint64_t;
-
 	// Uses hashing to calculate the hash value of a game file. 
-	class HashUtility
+	namespace HashUtility
 	{
-	public:
-		HashUtility();
-		~HashUtility();
+		using std::uint64_t;
+		using std::string;
 
 		// Calculate file hash using the fast xxhash algorithm.
-		string getfilehash(const char* filename, uint64_t seed) const;
+		string getfilehash(const char* filename, uint64_t seed);
 		// Calculate file hash using the slower Sha-256 algorithm.
-		string getfilehash(const char* filename) const;
-
-	private:
-		HashUtility& operator = (const HashUtility&) = delete;
-
-		const Sha256 sha256;
-	};
+		string getfilehash(const char* filename);
+	}
 }
 
