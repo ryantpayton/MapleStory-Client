@@ -19,7 +19,7 @@
 
 namespace Character
 {
-	CharJob::CharJob(short i)
+	CharJob::CharJob(uint16_t i)
 	{
 		changejob(i);
 	}
@@ -29,10 +29,13 @@ namespace Character
 		changejob(0);
 	}
 
-	void CharJob::changejob(short i)
+	CharJob::~CharJob() {}
+
+	void CharJob::changejob(uint16_t i)
 	{
 		id = i;
 		name = getname(id);
+
 		if (id == 0)
 		{
 			level = JOB_BEGINNER;
@@ -55,12 +58,12 @@ namespace Character
 		}
 	}
 
-	short CharJob::getid() const
+	uint16_t CharJob::getid() const
 	{
 		return id;
 	}
 
-	short CharJob::getsubjob(Joblevel lv) const
+	uint16_t CharJob::getsubjob(Joblevel lv) const
 	{
 		if (lv <= level)
 		{
@@ -91,9 +94,9 @@ namespace Character
 		return level;
 	}
 
-	string CharJob::getname(short i)
+	string CharJob::getname(uint16_t id) const
 	{
-		switch (i)
+		switch (id)
 		{
 		case 0:
 			return "Beginner";

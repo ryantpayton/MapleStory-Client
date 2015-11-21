@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include <cstdint>
 #include <string>
 
 namespace Character
@@ -29,24 +30,27 @@ namespace Character
 		JOB_FOURTHT
 	};
 
-	using::std::string;
+	using std::uint16_t;
+	using std::string;
 
 	class CharJob
 	{
 	public:
-		CharJob(short);
+		CharJob(uint16_t id);
 		CharJob();
-		~CharJob(){}
-		void changejob(short);
-		short getid() const;
-		short getsubjob(Joblevel) const;
+		~CharJob();
+
+		void changejob(uint16_t id);
+		uint16_t getid() const;
+		uint16_t getsubjob(Joblevel level) const;
 		string getname() const;
-		string getname(short);
 		Joblevel getlevel() const;
+
 	private:
-		short id;
+		string getname(uint16_t id) const;
+
+		uint16_t id;
 		string name;
 		Joblevel level;
 	};
 }
-

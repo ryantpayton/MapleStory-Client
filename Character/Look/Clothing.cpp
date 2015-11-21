@@ -21,159 +21,64 @@
 
 namespace Character
 {
-	const size_t NUM_TRANSPARENT = 1;
-
-	const int32_t transparentequips[NUM_TRANSPARENT] =
-	{
-		1002186
-	};
-
 	Clothing::Clothing(int32_t equipid, const BodyDrawinfo& drawinfo) : ItemData(equipid)
 	{
-		CharacterLayer chlayer;
-		int32_t prefix = equipid / 10000;
-		switch (prefix)
+		static const CharacterLayer layers[15] = 
 		{
-		case 100:
-			chlayer = CL_HAT;
-			eqslot = EQL_CAP;
-			type = "HAT";
-			break;
-		case 101:
-			chlayer = CL_FACEACC;
-			eqslot = EQL_FACEACC;
-			type = "FACE ACCESSORY";
-			break;
-		case 102:
-			chlayer = CL_EYEACC;
-			eqslot = EQL_EYEACC;
-			type = "EYE ACCESSORY";
-			break;
-		case 103:
-			chlayer = CL_EARRINGS;
-			eqslot = EQL_EARRINGS;
-			type = "EARRINGS";
-			break;
-		case 104:
-			chlayer = CL_TOP;
-			eqslot = EQL_TOP;
-			type = "TOP";
-			break;
-		case 105:
-			chlayer = CL_MAIL;
-			eqslot = EQL_TOP;
-			type = "OVERALL";
-			break;
-		case 106:
-			chlayer = CL_PANTS;
-			eqslot = EQL_PANTS;
-			type = "BOTTOM";
-			break;
-		case 107:
-			chlayer = CL_SHOES;
-			eqslot = EQL_SHOES;
-			type = "SHOES";
-			break;
-		case 108:
-			chlayer = CL_GLOVE;
-			eqslot = EQL_GLOVES;
-			type = "GLOVES";
-			break;
-		case 109:
-			chlayer = CL_SHIELD;
-			eqslot = EQL_SHIELD;
-			type = "SHIELD";
-			break;
-		case 110:
-			chlayer = CL_CAPE;
-			eqslot = EQL_CAPE;
-			type = "CAPE";
-			break;
-		case 111:
-			chlayer = CL_RING;
-			eqslot = EQL_RING;
-			type = "RING";
-			break;
-		case 112:
-			chlayer = CL_PENDANT;
-			eqslot = EQL_PENDANT;
-			type = "PENDANT";
-			break;
-		case 113:
-			chlayer = CL_BELT;
-			eqslot = EQL_BELT;
-			type = "BELT";
-			break;
-		case 114:
-			chlayer = CL_MEDAL;
-			eqslot = EQL_MEDAL;
-			type = "MEDAL";
-			break;
-		default:
-			if (prefix >= 130 && prefix <= 170)
-			{
-				chlayer = CL_WEAPON;
-				eqslot = EQL_WEAPON;
+			CL_HAT, CL_FACEACC, CL_EYEACC, CL_EARRINGS, CL_TOP, CL_MAIL,
+			CL_PANTS, CL_SHOES, CL_GLOVE, CL_SHIELD, CL_CAPE, CL_RING,
+			CL_PENDANT, CL_BELT, CL_MEDAL
+		};
 
-				switch (prefix)
-				{
-				case 130:
-					type = "ONE-HANDED SWORD";
-					break;
-				case 131:
-					type = "ONE-HANDED AXE";
-					break;
-				case 132:
-					type = "ONE-HANDED MACE";
-					break;
-				case 133:
-					type = "DAGGER";
-					break;
-				case 137:
-					type = "WAND";
-					break;
-				case 138:
-					type = "STAFF";
-					break;
-				case 140:
-					type = "TWO-HANDED SWORD";
-					break;
-				case 141:
-					type = "TWO-HANDED AXE";
-					break;
-				case 142:
-					type = "TWO-HANDED MACE";
-					break;
-				case 143:
-					type = "SPEAR";
-					break;
-				case 144:
-					type = "POLEARM";
-					break;
-				case 145:
-					type = "BOW";
-					break;
-				case 146:
-					type = "CROSSBOW";
-					break;
-				case 147:
-					type = "CLAW";
-					break;
-				case 148:
-					type = "KNUCKLE";
-					break;
-				case 149:
-					type = "GUN";
-					break;
-				}
-			}
-			else
+		static const Equipslot equipslots[15] =
+		{
+			EQL_CAP, EQL_FACEACC, EQL_EYEACC, EQL_EARRINGS, EQL_TOP, EQL_TOP,
+			EQL_PANTS, EQL_SHOES, EQL_GLOVES, EQL_SHIELD, EQL_CAPE, EQL_RING,
+			EQL_PENDANT, EQL_BELT, EQL_MEDAL
+		};
+
+		static const string equiptypes[15] = 
+		{
+			"HAT", "FACE ACCESSORY", "EYE ACCESSORY", "EARRINGS", "TOP", "OVERALL",
+			"BOTTOM", "SHOES", "GLOVES", "SHIELD", "CAPE", "RING",
+			"PENDANT", "BELT", "MEDAL"
+		};
+
+		CharacterLayer chlayer;
+		int32_t index = (equipid / 10000) - 100;
+		if (index >= 0 && index < 15)
+		{
+			chlayer = layers[index];
+			eqslot = equipslots[index];
+			type = equiptypes[index];
+		}
+		else if (index >= 30 && index <= 49)
+		{
+			chlayer = CL_WEAPON;
+			eqslot = EQL_WEAPON;
+
+			static const string weapontypes[20] =
 			{
-				chlayer = CL_BASE;
-			}
+				"ONE-HANDED SWORD", "ONE-HANDED AXE", "ONE-HANDED MACE", "DAGGER",
+				"", "", "", "WAND", "STAFF", "", "TWO-HANDED SWORD", "TWO-HANDED AXE",
+				"TWO-HANDED MACE", "SPEAR", "POLEARM", "BOW", "CROSSBOW", "CLAW",
+				"KNUCKLE", "GUN"
+			};
+
+			int32_t weaponindex = index - 30;
+			if (weaponindex >= 0 && weaponindex < 20)
+				type = weapontypes[weaponindex];
+			else
+				type = "CASH";
+		}
+		else
+		{
+			chlayer = CL_BASE;
+			eqslot = EQL_NONE;
+			type = "";
 		}
 
-		using::nl::node;
+		using nl::node;
 		node equipnode = nl::nx::character[getcategory()]["0" + std::to_string(equipid) + ".img"];
 		for (node stancenode : equipnode)
 		{
@@ -308,8 +213,13 @@ namespace Character
 			}
 		}
 
+		static const int32_t transparentequips[1] =
+		{
+			1002186
+		};
+
 		transparent = false;
-		for (size_t i = 0; i < NUM_TRANSPARENT; i++)
+		for (size_t i = 0; i < 1; i++)
 		{
 			if (equipid == transparentequips[i])
 				transparent = true;

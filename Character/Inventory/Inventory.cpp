@@ -148,7 +148,10 @@ namespace Character
 			return itit.second->getid() == itemid;
 		});
 
-		return result->first;
+		if (result == inventoryitems.at(type).end())
+			return -1;
+		else
+			return result->first;
 	}
 
 	Inventory::InvType Inventory::gettypebyid(int32_t itemid) const

@@ -21,8 +21,8 @@
 
 namespace Util
 {
-	using::std::string;
-	using::nl::node;
+	using std::string;
+	using nl::node;
 
 	template <class T>
 	class vector2d
@@ -32,20 +32,24 @@ namespace Util
 		vector2d() { a = 0; b = 0; }
 		vector2d(T v1, T v2) { a = v1; b = v2; }
 		~vector2d() {}
+
 		T x() const { return a; }
 		T y() const { return b; }
 		T smaller() const { return (a < b) ? a : b; }
 		T greater() const { return (a < b) ? b : a; }
 		T length() const { return static_cast<T>(std::sqrt(std::pow(a, 2) + std::pow(b, 2))); }
 		T center() const { return ((a > b) ? a - b : b - a) / 2; }
+
 		bool contains(T p) const { return (p >= a && p <= b); }
 		bool straight() const { return a == b; }
 		bool overlaps(vector2d<T> v) const { return (b >= v.x() && a <= v.x()) || (a <= v.y() && b >= v.y()) || (a >= v.x() && b <= v.y()) || (a <= v.x() && b >= v.y()); }
-		string tostring() const { return "(" + to_string(a) + "," + to_string(b) + ")"; }
+
+		string tostring() const { return "(" + std::to_string(a) + "," + std::to_string(b) + ")"; }
 		vector2d<T> operator + (vector2d<T> v) const { return vector2d<T>(a + v.x(), b + v.y()); }
 		vector2d<T> operator - (vector2d<T> v) const { return vector2d<T>(a - v.x(), b - v.y()); }
 		vector2d<T> operator * (vector2d<T> v) const { return vector2d<T>(a / v.x(), b / v.y()); }
 		vector2d<T> operator / (vector2d<T> v) const { return vector2d<T>(a / ((v.x() == 0) ? 1 : v.x()), b / ((v.y() == 0) ? 1 : v.y())); }
+
 		bool operator == (vector2d<T> v) const { return a == v.x() && b == v.y(); }
 		bool operator != (vector2d<T> v) const { return a != v.x() || b != v.y(); }
 		void setx(T v) { a = v; }
@@ -57,6 +61,7 @@ namespace Util
 		void operator += (vector2d<T> v) { a += v.x(); b += v.y(); }
 		void operator -= (vector2d<T> v) { a -= v.x(); b -= v.y(); }
 		vector2d<T> operator - () { return vector2d<T>(-a, -b); }
+
 	private:
 		T a;
 		T b;

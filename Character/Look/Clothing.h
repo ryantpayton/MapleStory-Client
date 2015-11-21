@@ -22,17 +22,19 @@
 
 namespace Character
 {
-	using::Graphics::DrawArgument;
+	using Graphics::DrawArgument;
 
 	class Clothing : public ItemData
 	{
 	public:
 		Clothing(int32_t, const BodyDrawinfo&);
 		Clothing();
+
 		void draw(string, CharacterLayer, uint8_t, const DrawArgument&) const;
 		bool istransparent() const;
 		const string& gettype() const;
 		Equipslot geteqslot() const;
+
 	private:
 		map<string, map<CharacterLayer, map<uint8_t, Texture>>> stances;
 		string type;
