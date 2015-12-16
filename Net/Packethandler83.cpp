@@ -75,7 +75,6 @@ namespace Net
 		handlers[TOGGLE_UI] = unique_ptr<vhandler>(new toggle_ui_h());*/
 		handlers[SPAWN_MOB] = handler_ptr(new SpawnMobHandler83());
 		handlers[KILL_MOB] = handler_ptr(new KillMobHandler83());
-		handlers[SPAWN_MOB_C] = handler_ptr(new SpawnMobControllerHandler83());
 		//handlers[MOB_MOVED] = unique_ptr<vhandler>(new mob_moved_h());
 		//handlers[MOVE_MOB_RESPONSE] = unique_ptr<vhandler>(new move_mob_response_h());
 		handlers[SHOW_MOB_HP] = handler_ptr(new ShowMobHpHandler83());
@@ -94,29 +93,21 @@ namespace Net
 
 	void PacketHandler83::handle(InPacket& recv) const
 	{
-		try
+		// Read the opcode to determine handler responsible.
+		uint16_t opcode = recv.readshort();
+		if (opcode < NUM_HANDLERS)
 		{
-			// Read the opcode to determine handler responsible.
-			uint16_t opcode = recv.readshort();
-			if (opcode < NUM_HANDLERS)
+			const PacketHandler* handler = handlers[opcode].get();
+			if (handler)
 			{
-				const PacketHandler* handler = handlers[opcode].get();
-				if (handler)
-				{
-					// Handler ok. Packet is passed on.
-					handler->handle(recv);
-				}
-				else
-				{
-					// Notice about unhandled packet.
-					std::cout << "Received Unhandled Packet. Opcode: " << opcode << std::endl;
-				}
+				// Handler ok. Packet is passed on.
+				handler->handle(recv);
 			}
-		}
-		catch (const PacketError& pe)
-		{
-			// This occurs when the data sent by the server is incorrect.
-			std::cout << "Packet Error. Message: " << pe.what() << std::endl;
+			else
+			{
+				// Notice about unhandled packet.
+				std::cout << "Received Unhandled Packet. Opcode: " << opcode << std::endl;
+			}
 		}
 	}
 }

@@ -65,7 +65,7 @@ namespace Net
 			size_t all = 0;
 			for (size_t i = 0; i < count; i++)
 			{
-				all += static_cast<uint8_t>(bytes[pos]) * static_cast<size_t>(pow(256, i));
+				all += static_cast<uint8_t>(bytes[pos]) << (8 * i);
 				pos++;
 			}
 			return static_cast<T>(all);

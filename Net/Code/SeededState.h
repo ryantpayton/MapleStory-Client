@@ -15,25 +15,24 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "StatsEntry.h"
-#include "LookEntry.h"
+#include <cstdint>
 
 namespace Net
 {
-	class CharEntry
+	class SeededState
 	{
 	public:
-		CharEntry(InPacket&);
-		CharEntry();
-		~CharEntry() {}
-		const StatsEntry& getstats() const;
-		const LookEntry& getlook() const;
-		const int getcid() const;
+		SeededState(int32_t, uint8_t, uint8_t);
+		SeededState();
+		~SeededState();
+
+		int32_t getvalue();
+		void nextstate();
+		uint8_t getstate();
+
 	private:
-		StatsEntry stats;
-		LookEntry look;
-		int cid;
+		uint8_t value[4];
+		uint8_t numstates;
+		uint8_t state;
 	};
 }
-

@@ -29,7 +29,7 @@ namespace IO
 {
 	UICharcreation::UICharcreation()
 	{
-		female = Net::Session::getlogin().getaccount().isfemale();
+		female = Net::Session::getlogin().getaccount().female;
 
 		using nl::node;
 		node src = nl::nx::ui["Login.img"];
@@ -240,6 +240,7 @@ namespace IO
 		facename.settext(newchar.getfacetype()->getname());
 		hairname.settext(newchar.gethairstyle()->getname());
 		haircname.settext(newchar.gethairstyle()->getcolor());
+
 		topname.settext(newchar.getequips().getequip(Character::EQL_TOP).getname());
 		botname.settext(newchar.getequips().getequip(Character::EQL_PANTS).getname());
 		shoename.settext(newchar.getequips().getequip(Character::EQL_SHOES).getname());

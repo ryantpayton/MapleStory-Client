@@ -16,9 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\Login\CharEntry.h"
 #include "Character\PlayableChar.h"
-#include "Character\Charstats.h"
+#include "Character\CharStats.h"
 #include "Character\Look\CharLook.h"
 #include "Character\Inventory\Inventory.h"
 #include "Character\Skillbook.h"
@@ -60,8 +59,7 @@ namespace Character
 		// Update the player's animation, physics and states.
 		int8_t update(const Physics& physics) override;
 
-		// Return if the player is using an attack.
-		bool isattacking() const;
+		bool tryattack();
 
 		// Returns the current walking force, calculated from the total ES_SPEED stat.
 		float getwforce() const override;
@@ -71,6 +69,8 @@ namespace Character
 		float getclimbforce() const override;
 		// Returns the flying force.
 		float getflyforce() const override;
+
+		bool isattacking() const override;
 		// Returns if a Keyaction is currently active. 
 		bool keydown(IO::Keyboard::Keyaction) const override;
 		// Return a pointer to the ladder the player is on.
@@ -81,8 +81,11 @@ namespace Character
 		// Change players xpos to the ladder x and change stance to Char::LADDER or Char::ROPE.
 		void setladder(const Ladder* ladder);
 
+		void setflip(bool flipped) override;
+		void setstance(Stance stance) override;
+
 		// Obtain a reference to the player's stats.
-		Charstats& getstats();
+		CharStats& getstats();
 		// Obtain a reference to the player's inventory.
 		Inventory& getinvent();
 		// Obtain a reference to the player's skills.
@@ -98,7 +101,13 @@ namespace Character
 		const MovementInfo& getmovement() const;
 
 	private:
-		Charstats stats;
+		void updatestate(const Physics& physics);
+		void writemovement();
+		void updatelook();
+		float getattackspeed() const;
+		uint16_t getstancespeed() const;
+
+		CharStats stats;
 		Inventory inventory;
 		Skillbook skillbook;
 		Questlog questlog;
@@ -110,6 +119,8 @@ namespace Character
 		MovementFragment lastmove;
 
 		const Ladder* ladder;
+
+		bool attacking;
 	};
 }
 

@@ -23,6 +23,30 @@ namespace Net
 
 	Cryptography::~Cryptography() {}
 
+#ifndef CRYPTO_ENABLED
+
+	size_t Cryptography::getlength(const int8_t* bytes) const
+	{
+		size_t length = 0;
+		for (int32_t i = 0; i < 4; i++)
+		{
+			length += static_cast<uint8_t>(bytes[i]) << (8 * i);
+		}
+		return length;
+	}
+
+#else
+
+	size_t Cryptography::getlength(const int8_t* bytes) const
+	{
+		uint32_t headermask = 0;
+		for (size_t i = 0; i < 4; i++)
+		{
+			headermask |= static_cast<uint8_t>(bytes[i]) << (8 * i);
+		}
+		return static_cast<int16_t>((headermask >> 16) ^ (headermask & 0xFFFF));
+	}
+
 	void Cryptography::encrypt(int8_t* bytes, size_t packetlen, uint8_t* sendiv) const
 	{
 		static const uint8_t MAPLEVERSION = 83;
@@ -41,16 +65,6 @@ namespace Net
 	{
 		aesofb(bytes, length, recviv);
 		mapledecrypt(bytes, length);
-	}
-
-	size_t Cryptography::getlength(const int8_t* bytes) const
-	{
-		uint32_t headermask = 0;
-		for (size_t i = 0; i < 4; i++)
-		{
-			headermask |= static_cast<uint8_t>(bytes[i]) << (8 * i);
-		}
-		return static_cast<int16_t>((headermask >> 16) ^ (headermask & 0xFFFF));
 	}
 
 	void Cryptography::mapleencrypt(int8_t* bytes, size_t length) const
@@ -334,4 +348,5 @@ namespace Net
 			bytes[i + 3] = mul3 ^ cpy2 ^ cpy1 ^ mul0 ^ cpy0;
 		}
 	}
+#endif
 }

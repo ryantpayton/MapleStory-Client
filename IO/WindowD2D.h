@@ -20,11 +20,10 @@
 #ifndef JOURNEY_USE_OPENGL
 #include "Graphics\GraphicsD2D.h"
 #include <windowsx.h>
-#include <math.h>
 
 namespace IO
 {
-	using::Graphics::GraphicsD2D;
+	using Graphics::GraphicsD2D;
 
 	class WindowD2D
 	{

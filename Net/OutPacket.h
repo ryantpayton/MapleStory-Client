@@ -31,6 +31,7 @@ namespace Net
 		OutPacket(int16_t);
 		size_t length() const;
 		const int8_t* getbytes() const;
+
 	protected:
 		void skip(size_t);
 		void writestr(string);
@@ -38,6 +39,7 @@ namespace Net
 		void writesh(int16_t s) { write<int16_t>(s); }
 		void writeint(int32_t i) { write<int32_t>(i); }
 		void writelg(int64_t l) { write<int64_t>(l); }
+
 	private:
 		template <class T>
 		void write(T num)

@@ -45,43 +45,41 @@ namespace Character
 
 	bool CharEquips::isvisible(Equipslot slot) const
 	{
-		if (equips.count(slot))
-		{
-			if (!equips.at(slot)->istransparent())
-				return true;
-		}
-		return false;
+		return !getequip(slot).istransparent();
 	}
 
 	bool CharEquips::istwohanded() const
 	{
-		if (equips.count(EQL_WEAPON))
-		{
-			const Weapon* weapon = 
-				reinterpret_cast<const Weapon*>(equips.at(EQL_WEAPON));
+		const Weapon* weapon = getweapon();
+		if (weapon)
 			return weapon->istwohanded();
-		}
-		return false;
+		else
+			return false;
 	}
 
 	Weapon::WpType CharEquips::getweapontype() const
 	{
-		if (equips.count(EQL_WEAPON))
-		{
-			const Weapon* weapon = 
-				reinterpret_cast<const Weapon*>(equips.at(EQL_WEAPON));
+		const Weapon* weapon = getweapon();
+		if (weapon)
 			return weapon->getweptype();
-		}
-		return Weapon::WEP_NONE;
+		else
+			return Weapon::WEP_NONE;
 	}
 
 	const Clothing& CharEquips::getequip(Equipslot slot) const
 	{
 		if (equips.count(slot))
-		{
-			if (equips.at(slot) != nullptr)
-				return *equips.at(slot);
-		}
-		return nullequip;
+			return *equips.at(slot);
+		else
+			return nullequip;
+	}
+
+	const Weapon* CharEquips::getweapon() const
+	{
+		const Clothing& weapon = getequip(EQL_WEAPON);
+		if (weapon.geteqslot() == EQL_WEAPON)
+			return static_cast<const Weapon*>(&weapon);
+		else
+			return nullptr;
 	}
 }

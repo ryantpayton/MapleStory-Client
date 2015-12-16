@@ -86,16 +86,20 @@ namespace Character
 	{
 		reset();
 
-		setbody(entry.getskin());
-		sethair(entry.gethair());
-		setface(entry.getface());
+		setbody(entry.skin);
+		sethair(entry.hairid);
+		setface(entry.faceid);
 
 		for (Equipslot e = EQL_CAP; e <= EQL_WEAPON; e = static_cast<Equipslot>(e + 1))
 		{
-			int32_t equipid = entry.getequip(e);
-			if (equipid > 0)
+			int8_t val = static_cast<int8_t>(e);
+			if (entry.equips.count(val))
 			{
-				addequip(equipid);
+				int32_t equipid = entry.equips.at(val);
+				if (equipid > 0)
+				{
+					addequip(equipid);
+				}
 			}
 		}
 	}
@@ -354,40 +358,67 @@ namespace Character
 		}
 	}
 
-	void CharLook::setstance(string ststr)
+	void CharLook::setstance(string newstance)
 	{
-		if (ststr != stance && action == nullptr)
+		if (newstance == stance || action)
+			return;
+
+		if (newstance == "attack")
+			newstance = getattackstance();
+		else if (newstance == "stand" || newstance == "walk")
+			newstance.push_back(equips.istwohanded() ? '2' : '1');
+
+		if (newstance != "")
 		{
 			frame = 0;
 			elapsed = 0;
-			if (ststr == "stand" || ststr == "walk")
-			{
-				ststr.push_back(equips.istwohanded() ? '2' : '1');
-			}
-			stance = ststr;
+			stance = newstance;
+		}
+	}
+
+	string CharLook::getattackstance() const
+	{
+		const Weapon* weapon = equips.getweapon();
+		if (weapon == nullptr)
+			return "";
+
+		if (stance == "prone")
+			return "proneStab";
+
+		uint8_t attack = weapon->getattack();
+		switch (attack)
+		{
+		case 1:
+			return randomizer.nextbool() ? "stabO1" : "swingO1";
+		case 2:
+			return randomizer.nextbool() ? "stabT1" : "swingP1";
+		case 5:
+			return randomizer.nextbool() ? "stabT1" : "swingT1";
+		default:
+			return "";
 		}
 	}
 
 	void CharLook::setexpression(string exstr)
 	{
-		if (exstr != expression)
-		{
-			fcframe = 0;
-			fcelapsed = 0;
-			expression = exstr;
-		}
+		if (exstr == expression)
+			return;
+		
+		fcframe = 0;
+		fcelapsed = 0;
+		expression = exstr;
 	}
 
 	void CharLook::setaction(string acstr)
 	{
-		if (acstr != actionstr)
-		{
-			actframe = 0;
-			frame = 0;
-			elapsed = 0;
-			actionstr = acstr;
-			action = drawinfo.getaction(acstr, 0);
-		}
+		if (acstr == actionstr)
+			return;
+
+		actframe = 0;
+		frame = 0;
+		elapsed = 0;
+		actionstr = acstr;
+		action = drawinfo.getaction(acstr, 0);
 	}
 
 	void CharLook::setflip(bool f)

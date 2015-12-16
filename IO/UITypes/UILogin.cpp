@@ -21,6 +21,7 @@
 #include "IO\UI.h"
 #include "Net\Session.h"
 #include "Program\Configuration.h"
+#include "Audio\Audioplayer.h"
 #include "Net\Packets\LoginPackets83.h"
 #include "IO\Components\MapleButton.h"
 #include "Graphics\Sprite.h"
@@ -34,6 +35,8 @@ namespace IO
 
 	UILogin::UILogin()
 	{
+		Audioplayer::playbgm("BgmUI.img/Title");
+
 		node title = nl::nx::ui["Login.img"]["Title"];
 		node common = nl::nx::ui["Login.img"]["Common"];
 

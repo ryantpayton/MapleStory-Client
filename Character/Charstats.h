@@ -16,33 +16,33 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\Login\StatsEntry.h"
+#include "Net\Login.h"
 #include "Character\EquipConstants.h"
 #include "Character\Look\Weapon.h"
 
 namespace Character
 {
-	using::std::uint8_t;
-	using::std::int16_t;
-	using::std::int32_t;
-	using::std::int64_t;
-	using::std::vector;
-	using::std::map;
-	using::Net::StatsEntry;
+	using std::uint8_t;
+	using std::int16_t;
+	using std::int32_t;
+	using std::int64_t;
+	using std::vector;
+	using std::map;
+	using Net::StatsEntry;
 
-	class Charstats
+	class CharStats
 	{
 	public:
-		Charstats(const StatsEntry&);
-		Charstats();
-		~Charstats();
+		CharStats(StatsEntry);
+		CharStats();
+		~CharStats();
 
 		void calculatedamage(Weapon::WpType weapontype);
 		void setstat(Maplestat type, uint16_t value);
 		void settotal(Equipstat type, int32_t value);
 
-		void setexp(int64_t ex) { exp = ex; }
-		void setportal(uint8_t pt) { portal = pt; }
+		void setexp(int64_t ex) { stats.exp = ex; }
+		void setportal(uint8_t pt) { stats.portal = pt; }
 		void setattack(uint16_t at) { attack = at; }
 
 		uint16_t calculateaccuracy() const;
@@ -50,11 +50,11 @@ namespace Character
 		uint16_t getstat(Maplestat) const;
 		int32_t gettotal(Equipstat) const;
 
-		int32_t getmapid() const { return mapid; }
-		uint8_t getportal() const { return portal; }
-		int64_t getexp() const { return exp; }
-		string getname() const { return name; }
-		string getjobname() const { return job.getname(); }
+		int32_t getmapid() const { return stats.mapid; }
+		uint8_t getportal() const { return stats.portal; }
+		int64_t getexp() const { return stats.exp; }
+		string getname() const { return stats.name; }
+		string getjobname() const { return stats.job.getname(); }
 		float getmastery() const { return mastery; }
 		float getcritical() const { return critical; }
 		float getmincrit() const { return mincrit; }
@@ -72,15 +72,9 @@ namespace Character
 		int32_t getprimary(Weapon::WpType weapontype);
 		int32_t getsecondary(Weapon::WpType weapontype);
 
-		string name;
-		vector<int64_t> petids;
-		map<Maplestat, uint16_t> stats;
-		CharJob job;
-		int64_t exp;
-		int32_t mapid;
-		uint8_t portal;
-		map<Equipstat, int32_t> totalstats;
+		StatsEntry stats;
 
+		map<Equipstat, int32_t> totalstats;
 		int32_t maxdamage;
 		int32_t mindamage;
 		uint16_t attack;

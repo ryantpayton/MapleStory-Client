@@ -46,16 +46,16 @@ namespace IO
 		void draw(float) const override;
 		void update() override;
 		void buttonpressed(uint16_t) override;
-
-		void addchar(uint8_t);
 		void removechar(uint8_t);
 
 	private:
+		void addchar(uint8_t);
 		void selectchar();
 		vector2d<int16_t> getcharpos(size_t) const;
 
 		vector<CharLook> charlooks;
 		uint8_t charcount;
+		uint8_t charslots;
 		uint8_t selected;
 		uint8_t page;
 		Textlabel namelabel;

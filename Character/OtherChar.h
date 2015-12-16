@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Char.h"
-#include "Net\Login\LookEntry.h"
+#include "Net\Login.h"
 #include "Gameplay\MovementInfo.h"
 
 namespace Character

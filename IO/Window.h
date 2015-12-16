@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -15,29 +15,14 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Net\InPacket.h"
-#include <vector>
 
-namespace Net
+namespace IO
 {
-	using::std::vector;
-
-	class World
+	namespace Window
 	{
-	public:
-		World(uint8_t, InPacket&);
-		~World() {}
-		uint8_t getid() const;
-		uint8_t getchcount() const;
-		int8_t getchload(size_t) const;
-	private:
-		uint8_t wid;
-		string name;
-		int8_t flag;
-		string message;
-		uint8_t channelcount;
-		vector<int8_t> chloads;
-	};
+		bool init();
+		void update();
+		void begin();
+		void end();
+	}
 }
-

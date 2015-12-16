@@ -25,7 +25,7 @@
 
 namespace IO
 {
-	UIStatsinfo::UIStatsinfo(const Charstats& st) : stats(st) 
+	UIStatsinfo::UIStatsinfo(const CharStats& st) : stats(st)
 	{
 		using nl::node;
 		node src = nl::nx::ui["UIWindow4.img"]["Stat"]["main"];

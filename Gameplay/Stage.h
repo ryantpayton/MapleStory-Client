@@ -28,8 +28,6 @@ namespace Gameplay
 		using Character::Player;
 		using Character::Char;
 
-		// Preload assets.
-		void init();
 		// Call 'draw()' of  all objects on stage.
 		void draw(float inter);
 		// Calls 'update()' of all objects on stage.

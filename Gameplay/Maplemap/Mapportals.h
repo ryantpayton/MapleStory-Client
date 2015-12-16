@@ -34,7 +34,6 @@ namespace Gameplay
 		MapPortals();
 		~MapPortals();
 
-		void init();
 		void load(node, int32_t);
 		void clear();
 		void update(rectangle2d<int16_t>);
@@ -47,7 +46,6 @@ namespace Gameplay
 	private:
 		map<uint8_t, Portal> portals;
 		map<string, uint8_t> portalnames;
-		map<Portal::PtType, Animation> animations;
 		uint16_t findportalcd;
 	};
 }

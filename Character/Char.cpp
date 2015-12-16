@@ -77,16 +77,13 @@ namespace Character
 
 	void Char::setstance(Stance st)
 	{
-		if (stance == st)
-			return;
-
 		stance = st;
 
 		// Names of the character stances used in the game's files.
-		static const string stancenames[11] =
+		static const string stancenames[13] =
 		{
 			"", "walk", "stand", "jump", "alert", "prone", "fly", "ladder", "rope",
-			"dead", "sit"
+			"dead", "sit", "", "proneStab"
 		};
 
 		int32_t index = st / 2;

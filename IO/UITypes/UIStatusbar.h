@@ -19,13 +19,13 @@
 #include "IO\Element.h"
 #include "IO\Components\Charset.h"
 #include "IO\Components\Bar.h"
-#include "Character\Charstats.h"
+#include "Character\CharStats.h"
 #include "Graphics\Animation.h"
 #include "Graphics\Textlabel.h"
 
 namespace IO
 {
-	using Character::Charstats;
+	using Character::CharStats;
 	using Graphics::Textlabel;
 	using Graphics::Animation;
 
@@ -48,7 +48,7 @@ namespace IO
 			BT_SKILL
 		};
 
-		UIStatusbar(const Charstats&);
+		UIStatusbar(const CharStats&);
 
 		void draw(float) const override;
 		void buttonpressed(uint16_t) override;
@@ -57,7 +57,7 @@ namespace IO
 	private:
 		UIStatusbar& operator = (const UIStatusbar&) = delete;
 
-		const Charstats& stats;
+		const CharStats& stats;
 
 		Bar expbar;
 		Bar hpbar;
@@ -73,7 +73,7 @@ namespace IO
 	class ElementStatusbar : public Element
 	{
 	public:
-		ElementStatusbar(const Charstats& st) : stats(st) {}
+		ElementStatusbar(const CharStats& st) : stats(st) {}
 
 		bool isunique() const override
 		{
@@ -93,6 +93,6 @@ namespace IO
 	private:
 		ElementStatusbar& operator = (const ElementStatusbar&) = delete;
 
-		const Charstats& stats;
+		const CharStats& stats;
 	};
 }

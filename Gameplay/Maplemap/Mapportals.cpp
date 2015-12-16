@@ -22,19 +22,33 @@
 
 namespace Gameplay
 {
+	Animation* getanimation(Portal::PtType type)
+	{
+		static std::map<Portal::PtType, Animation> animations;
+		if (!animations.count(type))
+		{
+			node pnode = nl::nx::map["MapHelper.img"]["portal"]["game"];
+			switch (type)
+			{
+			case Portal::HIDDEN:
+				animations[Portal::HIDDEN] = Animation(pnode["ph"]["default"]["portalContinue"]);
+				break;
+			case Portal::REGULAR:
+				animations[Portal::REGULAR] = Animation(pnode["pv"]);
+				break;
+			default:
+				return nullptr;
+			}
+		}
+		return &animations[type];
+	}
+
 	MapPortals::MapPortals()
 	{
 		findportalcd = 0;
 	}
 
 	MapPortals::~MapPortals() {}
-
-	void MapPortals::init()
-	{
-		node pnode = nl::nx::map["MapHelper.img"]["portal"]["game"];
-		animations[Portal::HIDDEN] = Animation(pnode["ph"]["default"]["portalContinue"]);
-		animations[Portal::REGULAR] = Animation(pnode["pv"]);
-	}
 
 	void MapPortals::load(node src, int32_t mapid)
 	{
@@ -48,13 +62,7 @@ namespace Gameplay
 			string targetname = ptnode["tn"];
 			vector2d<int16_t> pos = vector2d<int16_t>(ptnode["x"], ptnode["y"]);
 
-			const Animation* animation;
-			if (animations.count(type))
-				animation = &animations[type];
-			else
-				animation = nullptr;
-
-			portals[pid] = Portal(animation, type, name, targetid == mapid, pos, targetid, targetname);
+			portals[pid] = Portal(getanimation(type), type, name, targetid == mapid, pos, targetid, targetname);
 			portalnames[name] = pid;
 
 			pid++;
@@ -69,10 +77,9 @@ namespace Gameplay
 
 	void MapPortals::update(rectangle2d<int16_t> player)
 	{
-		for (auto& anit : animations)
-		{
-			anit.second.update(Constants::TIMESTEP / 2);
-		}
+		getanimation(Portal::REGULAR)->update(Constants::TIMESTEP / 2);
+		getanimation(Portal::HIDDEN)->update(Constants::TIMESTEP / 2);
+
 		for (auto& ptit : portals)
 		{
 			if (ptit.second.gettype() == Portal::HIDDEN)

@@ -16,10 +16,23 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Program\Client.h"
+#include "Program\Configuration.h"
 #include "Program\Constants.h"
+#include "Audio\Audioplayer.h"
+#include "Net\Session.h"
+#include "IO\UI.h"
+#include "IO\Window.h"
+#include "IO\UITypes\UILogin.h"
+#include "Gameplay\Stage.h"
+#include "Util\NxFileMethods.h"
 #include "Util\StopWatch.h"
 #include <iostream>
+
+using namespace Program;
+using namespace Net;
+using namespace IO;
+using namespace Gameplay;
+using namespace Util;
 
 // Print errors to the console while testing.
 void showerror(const char* error)
@@ -27,58 +40,104 @@ void showerror(const char* error)
 	std::cout << error << std::endl;
 }
 
-// Main entry point.
+// Error codes to be checked after initialisation.
+enum Error
+{
+	NONE,
+	NXFILES,
+	CONNECTION,
+	WINDOW,
+	AUDIO
+};
+
+Error init()
+{
+	if (!NxFileMethods::init())
+		return NXFILES;
+
+	if (!Session::init())
+		return CONNECTION;
+
+	if (!Window::init())
+		return WINDOW;
+
+	if (!Audioplayer::init())
+		return AUDIO;
+
+	return NONE;
+}
+
+void update()
+{
+	Window::update();
+	Stage::update();
+	UI::update();
+}
+
+void draw(float inter)
+{
+	Window::begin();
+	Stage::draw(inter);
+	UI::draw(inter);
+	Window::end();
+}
+
 int main()
 {
-	// Create our game.
-	using::Program::Client;
-	Client client;
-
 	// Initialise and check for errors.
-	Client::Error error = client.init();
-	if (error == Client::NONE)
+	Error error = init();
+	if (error == NONE)
 	{
-		// No error occured. We can start the main loop.
-		Util::StopWatch stopwatch;
+		Program::Configuration::load();
+		Audioplayer::setbgmvolume(Configuration::getbyte("BGMVolume"));
+		Audioplayer::setsfxvolume(Configuration::getbyte("SFXVolume"));
+
+		Character::CharLook::init();
+		IO::UI::add(IO::ElementLogin());
+
+		StopWatch stopwatch;
 		int64_t remain = 0;
 
 		// Run the game as long as the connection is alive.
-		while (client.receive())
+		while (Session::receive())
 		{
 			remain += stopwatch.stop();
 			while (remain >= Constants::TIMESTEP)
 			{
 				// Update game with constant timestep as many times as possible.
-				client.update();
+				update();
 				remain -= Constants::TIMESTEP;
 			}
 
 			// Draw the game. Interpolate to account for remaining time.
 			float inter = static_cast<float>(remain) / Constants::TIMESTEP;
-			client.draw(inter);
+			draw(inter);
 		}
+
+		Audioplayer::close();
+		Configuration::save();
 	}
 	else
 	{
 		// Display a critical error. These are errors that prevent the game from starting.
 		switch (error)
 		{
-		case Client::NXFILES :
+		case NXFILES :
 			showerror("Error: Could not find valid game files.");
 			break;
-		case Client::CONNECTION :
+		case CONNECTION :
 			showerror("Error: Could not connect to server.");
 			break;
-		case Client::WINDOW:
+		case WINDOW:
 			showerror("Error: Could not initialize graphics.");
 			break;
-		case Client::AUDIO:
+		case AUDIO:
 			showerror("Error: Could not initialize audio.");
 			break;
 		}
 
 		// Run an infinite loop to keep the console on screen.
-		while (error != Client::NONE) {}
+		while (error != NONE) {}
 	}
 
 	return 0;

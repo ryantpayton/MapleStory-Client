@@ -53,7 +53,7 @@ namespace IO
 		sprites.push_back(Sprite(channels["layer:bg"], vector2d<int16_t>(200, 170)));
 		sprites.push_back(Sprite(channels["release"]["layer:15"], vector2d<int16_t>(200, 170)));
 
-		uint8_t chcount = Net::Session::getlogin().getworld(worldid).getchcount();
+		uint8_t chcount = Net::Session::getlogin().getworld(worldid).channelcount;
 		if (channelid >= chcount)
 			channelid = 0;
 

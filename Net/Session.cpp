@@ -49,6 +49,7 @@ namespace Net
 
 		bool init(const char* host, const char* port)
 		{
+#ifdef CRYPTO_ENABLED
 			// Connect to the server and attempt to read the handshake packet.
 			connected = socket.open(host, port);
 			if (connected)
@@ -61,6 +62,10 @@ namespace Net
 			}
 			// Return if connected successfully.
 			return connected;
+#else
+			connected = socket.open(host, port);
+			return connected;
+#endif
 		}
 
 		bool init()
@@ -98,19 +103,22 @@ namespace Net
 			// Determine how much we can write. Write data into the buffer.
 			size_t towrite = length - pos;
 			if (towrite > available)
-			{
 				towrite = available;
-			}
 			memcpy(buffer + pos, bytes, towrite);
 			pos += towrite;
 
 			// Check if the current packet has been fully processed.
 			if (pos >= length)
 			{
+#ifdef CRYPTO_ENABLED
 				// Create InPacket from the buffer, decrypt it and pass it on to the PacketHandler.
 				InPacket recv = InPacket(buffer, length);
 				crypto.decrypt(buffer, length, recviv);
 				phandler.handle(recv);
+#else
+				InPacket recv = InPacket(buffer, length);
+				phandler.handle(recv);
+#endif
 
 				pos = 0;
 
@@ -140,6 +148,7 @@ namespace Net
 
 		void dispatch(const OutPacket& tosend)
 		{
+#ifdef CRYPTO_ENABLED
 			// The packet 'tosend' arrives without header so total length is + 4.
 			size_t total = tosend.length() + 4;
 			// Create a temporary buffer and copy packet's bytes.
@@ -150,6 +159,19 @@ namespace Net
 			// Send packet and delete buffer.
 			socket.dispatch(bytes, total);
 			delete[] bytes;
+#else
+
+			size_t total = tosend.length() + 4;
+			int8_t* bytes = new int8_t[total];
+			int32_t length = static_cast<int32_t>(tosend.length());
+			for (int32_t i = 0; i < 4; i++) 
+			{
+				bytes[i] = static_cast<int8_t>(length);
+				length = length >> 8;
+			}
+			memcpy(bytes + 4, tosend.getbytes(), tosend.length());
+			socket.dispatch(bytes, total);
+#endif
 		}
 
 		Login& getlogin()

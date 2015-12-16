@@ -48,17 +48,10 @@ namespace Gameplay
 		int32_t currentmapid = 0;
 		bool active = false;
 
-		void init()
-		{
-			// Preload portal animations.
-			portals.init();
-		}
-
 		bool loadplayer(int32_t charid)
 		{
-			const Net::CharEntry& entry = 
-				Net::Session::getlogin().getaccount().getcharbyid(charid);
-			if (entry.getcid() == charid)
+			const Net::CharEntry& entry = Net::Session::getlogin().getcharbyid(charid);
+			if (entry.cid == charid)
 			{
 				player = Player(entry);
 				playable = &player;
@@ -154,11 +147,11 @@ namespace Gameplay
 				portals.update(player.getbounds());
 				camera.update(player.getposition());
 
-				using::Gameplay::MovementInfo;
+				using Gameplay::MovementInfo;
 				const MovementInfo& playermovement = player.getmovement();
 				if (playermovement.getsize() > 0)
 				{
-					using::Net::MovePlayerPacket83;
+					using Net::MovePlayerPacket83;
 					Net::Session::dispatch(MovePlayerPacket83(playermovement));
 
 					player.clearmovement();
@@ -168,7 +161,21 @@ namespace Gameplay
 
 		void useattack(int32_t skillid)
 		{
-			if (player.isattacking())
+			if (!player.tryattack())
+				return;
+
+			Attack attack;
+
+			const Character::CharStats& stats = player.getstats();
+			attack.mindamage = stats.getmindamage();
+			attack.maxdamage = stats.getmaxdamage();
+			attack.critical = stats.getcritical();
+			attack.ignoredef = stats.getignoredef();
+			attack.accuracy = stats.gettotal(Character::ES_ACC);
+			attack.playerlevel = stats.getstat(Character::MS_LEVEL);
+
+			const Character::Weapon* weapon = player.getlook().getequips().getweapon();
+			if (weapon == nullptr)
 				return;
 
 			if (skillid > 0)
@@ -178,9 +185,23 @@ namespace Gameplay
 			else
 			{
 				// Regular attack
-				//Character::Weapon::WpType weapon = player.getlook().getequips().getweapontype();
-
+				attack.direction = player.getflip() ? Attack::TORIGHT : Attack::TOLEFT;
+				attack.mobcount = 1;
+				attack.hitcount = 1;
+				attack.origin = player.getposition();
+				attack.delay = weapon->getattackdelay();
+				attack.range = weapon->getrange();
+				attack.hiteffect = weapon->gethiteffect();
 			}
+
+			AttackResult result = mobs.sendattack(attack);
+			result.direction = player.getflip() ? 0 : 1;
+			result.hitcount = attack.hitcount;
+			result.skill = skillid;
+			result.speed = weapon->getspeed();
+			result.display = attack.delay;
+
+			Net::Session::dispatch(Net::CloseRangeAttackPacket83(result));
 		}
 
 		void useitem(int32_t itemid)
@@ -204,6 +225,9 @@ namespace Gameplay
 
 		void checkportals()
 		{
+			if (player.isattacking())
+				return;
+
 			// Check for portals within the player's range.
 			const WarpInfo* warpinfo = portals.findportal(player.getbounds());
 			if (warpinfo)
@@ -217,7 +241,7 @@ namespace Gameplay
 				else if (warpinfo->valid)
 				{
 					// Warp to a different map.
-					using::Net::ChangeMapPacket83;
+					using Net::ChangeMapPacket83;
 					Net::Session::dispatch(ChangeMapPacket83(false, warpinfo->mapid, warpinfo->portal, false));
 				}
 			}
@@ -225,7 +249,7 @@ namespace Gameplay
 
 		void checkseats()
 		{
-			if (player.issitting())
+			if (player.issitting() || player.isattacking())
 				return;
 
 			const Seat* seat = mapinfo.findseat(player.getposition());
@@ -234,7 +258,7 @@ namespace Gameplay
 
 		void checkladders(bool up)
 		{
-			if (player.isclimbing())
+			if (player.isclimbing() || player.isattacking())
 				return;
 
 			const Ladder* ladder = mapinfo.findladder(player.getposition(), up);

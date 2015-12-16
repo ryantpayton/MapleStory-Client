@@ -17,9 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Clothing.h"
+#include "Util\rectangle2d.h"
+#include "Graphics\Animation.h"
 
 namespace Character
 {
+	using Util::rectangle2d;
+	using Graphics::Animation;
+
 	class Weapon : public Clothing
 	{
 	public:
@@ -47,11 +52,16 @@ namespace Character
 
 		Weapon(int32_t, const BodyDrawinfo&);
 		Weapon();
+
 		WpType getweptype() const;
 		bool istwohanded() const;
 		string getafterimage() const;
 		uint8_t getspeed() const;
 		uint8_t getattack() const;
+
+		uint8_t getattackdelay() const;
+		rectangle2d<int16_t> getrange() const;
+		Animation gethiteffect() const;
 
 	private:
 		WpType weptype;

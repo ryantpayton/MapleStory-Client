@@ -18,6 +18,7 @@
 #pragma once
 #include "MapObjects.h"
 #include "Mob.h"
+#include "Gameplay\Attack.h"
 
 namespace Gameplay
 {
@@ -25,9 +26,11 @@ namespace Gameplay
 	{
 	public:
 		MapMobs();
-		void addmob(int32_t, int32_t, bool, int8_t, uint16_t, int8_t, bool, int8_t, int16_t, int16_t);
-		void killmob(int32_t, int8_t);
-		void sendmobhp(int32_t, int8_t, uint16_t);
+
+		void addmob(int32_t, int32_t, int8_t, uint16_t, bool, int8_t, int16_t, int16_t);
+		void killmob(int32_t oid, int8_t effect);
+		void sendmobhp(int32_t oid, int8_t percent, uint16_t playerlevel);
+		AttackResult sendattack(const Attack& attack);
 
 	private:
 		Mob* getmob(int32_t);

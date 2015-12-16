@@ -96,10 +96,9 @@ namespace Net
 			bool loaded = Gameplay::Stage::loadplayer(cid);
 			if (loaded)
 			{
-				using::Character::Player;
-				Player& player = Gameplay::Stage::getplayer();
+				Character::Player& player = Gameplay::Stage::getplayer();
 
-				StatsEntry trash(recv);
+				Net::Session::getlogin().parsestats(recv);
 				recv.readbyte(); // 'buddycap'
 				if (recv.readbool())
 				{

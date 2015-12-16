@@ -46,7 +46,7 @@ namespace Character
 			ROPE = 16,
 			DIED = 18,
 			SIT = 20,
-			SKILL = 22
+			ATTACK = 22
 		};
 
 		// Draw look, nametag, effects and chat bubble.
@@ -71,9 +71,9 @@ namespace Character
 		// Change the character's face expression by id.
 		void sendface(int32_t expression);
 		// Set if the character sprite is mirrored (true = facing left)
-		void setflip(bool flipped);
+		virtual void setflip(bool flipped);
 		// Change the character's stance.
-		void setstance(Stance newstance);
+		virtual void setstance(Stance newstance);
 
 		// Return if the character is facing left.
 		bool getflip() const;

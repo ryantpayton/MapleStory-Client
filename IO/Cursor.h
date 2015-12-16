@@ -52,7 +52,6 @@ namespace IO
 		Cursor();
 		~Cursor();
 
-		void init();
 		void draw(float) const;
 		void update();
 		void setstate(Mousestate);
@@ -60,7 +59,6 @@ namespace IO
 		Mousestate getstate() const;
 
 	private:
-		map<Mousestate, Animation> animations;
 		Mousestate state;
 		vector2d<int16_t> position;
 	};

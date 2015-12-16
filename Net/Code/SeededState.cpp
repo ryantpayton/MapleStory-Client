@@ -15,75 +15,53 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Client.h"
-#include "Configuration.h"
-#include "Util\NxFileMethods.h"
-#include "IO\UI.h"
-#include "Gameplay\Stage.h"
-#include "Net\Session.h"
-#include "Audio\Audioplayer.h"
+#include "SeededState.h"
+#include <stdexcept>
 
-#include "IO\UITypes\UILogin.h"
-#include "Character\Look\CharLook.h"
-#include "nlnx\nx.hpp"
-#include "nlnx\audio.hpp"
-
-namespace Program
+namespace Net
 {
-	Client::Client() {}
-
-	Client::~Client() 
+	SeededState::SeededState(int32_t seed, uint8_t nms, uint8_t st)
 	{
-		Audioplayer::close();
-		Configuration::save();
+		for (int32_t i = 0; i < 4; i++)
+		{
+			value[i] = static_cast<uint8_t>(seed);
+			seed = seed >> 8;
+		}
+
+		numstates = nms;
+		state = st;
 	}
 
-	Client::Error Client::init()
+	SeededState::SeededState() {}
+
+	SeededState::~SeededState() {}
+
+	int32_t SeededState::getvalue()
 	{
-		if (!Util::NxFileMethods::init())
-			return NXFILES;
-
-		if (!Net::Session::init())
-			return CONNECTION;
-
-		if (!window.init())
-			return WINDOW;
-
-		if (!Audioplayer::init())
-			return AUDIO;
-
-		Configuration::load();
-
-		IO::UI::init();
-		Gameplay::Stage::init();
-		Character::CharLook::init();
-
-		IO::UI::add(IO::ElementLogin());
-
-		Audioplayer::setbgmvolume(Configuration::getbyte("BGMVolume"));
-		Audioplayer::setsfxvolume(Configuration::getbyte("SFXVolume"));
-		Audioplayer::playbgm("BgmUI.img/Title");
-
-		return NONE;
+		int32_t all = 0;
+		for (int32_t i = 0; i < 4; i++)
+		{
+			all += value[i] << (8 * i);
+		}
+		return all;
 	}
 
-	bool Client::receive() const
+	void SeededState::nextstate()
 	{
-		return Net::Session::receive();
+		static uint8_t bytes[4] = 
+		{ 
+			69, 42, 13, 124 
+		};
+
+		for (int32_t i = 0; i < 4; i++)
+		{
+			value[i] = bytes[i] + bytes[value[3 - i] % 4] - value[i];
+		}
+		state = static_cast<uint8_t>(getvalue()) % numstates;
 	}
 
-	void Client::draw(float inter) const
+	uint8_t SeededState::getstate()
 	{
-		window.begin();
-		Gameplay::Stage::draw(inter);
-		IO::UI::draw(inter);
-		window.end();
-	}
-
-	void Client::update()
-	{
-		window.update();
-		Gameplay::Stage::update();
-		IO::UI::update();
+		return state;
 	}
 }

@@ -15,47 +15,56 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "CharEntry.h"
+#pragma once
+#include <cstdint>
+#include "Util\rectangle2d.h"
+#include "Graphics\Animation.h"
 
-namespace Net
+namespace Gameplay
 {
-	CharEntry::CharEntry(InPacket& recv)
+	using std::uint8_t;
+	using std::int16_t;
+	using std::uint16_t;
+	using std::int32_t;
+	using std::vector;
+	using std::map;
+
+	struct Attack 
 	{
-		cid = recv.readint();
-		stats = StatsEntry(recv);
-		look = LookEntry(recv);
-		recv.readbool(); // 'rankinfo' bool
-		bool notgm = recv.readbool();
-		if (notgm)
+		enum Direction
 		{
-			int32_t currank = recv.readint();
-			int32_t rankmv = recv.readint();
-			int32_t curjobrank = recv.readint();
-			int32_t jobrankmv = recv.readint();
-			int8_t rankmc = (rankmv > 0) ? '+' : (rankmv < 0) ? '-' : '=';
-			int8_t jobrankmc = (jobrankmv > 0) ? '+' : (jobrankmv < 0) ? '-' : '=';
-			stats.setrank(std::make_pair(currank, rankmc));
-			stats.setjobrank(std::make_pair(curjobrank, jobrankmc));
-		}
-	}
+			CENTERED,
+			TOLEFT,
+			TORIGHT
+		};
 
-	CharEntry::CharEntry()
-	{
-		cid = 0;
-	}
+		int32_t mindamage = 0;
+		int32_t maxdamage = 0;
+		float critical = 0.0f;
+		float ignoredef = 0.0f;
+		int32_t accuracy = 0;
+		int16_t playerlevel = 1;
 
-	const StatsEntry& CharEntry::getstats() const
-	{
-		return stats;
-	}
+		uint8_t delay = 0;
+		uint8_t hitcount = 0;
+		uint8_t mobcount = 0;
 
-	const LookEntry& CharEntry::getlook() const
-	{
-		return look;
-	}
+		Direction direction;
+		Util::vector2d<int16_t> origin;
+		Util::rectangle2d<int16_t> range;
 
-	const int32_t CharEntry::getcid() const
+		Graphics::Animation hiteffect;
+	};
+
+	struct AttackResult
 	{
-		return cid;
-	}
+		map<int32_t, vector<int32_t>> damagelines;
+		uint8_t hitcount = 0;
+		int32_t skill = 0;
+		int32_t charge = 0;
+		uint8_t display = 0;
+		uint8_t direction = 0;
+		uint8_t stance = 0;
+		uint8_t speed = 0;
+	};
 }

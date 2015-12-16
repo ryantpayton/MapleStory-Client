@@ -18,6 +18,8 @@
 #pragma once
 #include <cstdint>
 
+//#define CRYPTO_EnABLED
+
 namespace Net
 {
 	// Used to encrypt and decrypt packets for communication with the server.

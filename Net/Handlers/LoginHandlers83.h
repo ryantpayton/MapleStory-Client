@@ -41,7 +41,7 @@ namespace Net
 			IO::UI::remove(Element::LOGINWAIT);
 
 			// The packet should contain a 'reason' integer which can signify various things.
-			int32_t reason = recv.readint();
+			int8_t reason = recv.readbyte();
 			if (reason != 0)
 			{
 				// Login unsuccessfull. The LoginNotice displayed will contain the specific information.
@@ -61,10 +61,7 @@ namespace Net
 				default:
 					// Other reasons.
 					if (reason > 0)
-					{
-						int8_t rbyte = static_cast<int8_t>(reason - 1);
-						IO::UI::add(ElementLoginNotice(rbyte));
-					}
+						IO::UI::add(ElementLoginNotice(reason - 1));
 				}
 				IO::UI::enable();
 			}
@@ -72,11 +69,12 @@ namespace Net
 			{
 				// Login successfull. The packet contains information on the account, so we initialise the account with it.
 				Session::getlogin().parseaccount(recv);
+
 				// Save the Login ID if the box for it on the login panel is checked.
 				if (Program::Configuration::getbool("SaveLogin"))
 				{
 					Program::Configuration::setstring(
-						"Account", Session::getlogin().getaccount().getname()
+						"Account", Session::getlogin().getaccount().name
 						);
 				}
 
@@ -93,8 +91,9 @@ namespace Net
 		{
 			// Remove the Login UI.
 			IO::UI::remove(Element::LOGIN);
+
 			// Parse all worlds.
-			Session::getlogin().parseworld(recv);
+			Session::getlogin().parseworlds(recv);
 
 			// Add the world selection screen to the ui.
 			using::IO::ElementWorldSelect;
@@ -108,18 +107,8 @@ namespace Net
 	{
 		void handle(InPacket& recv) const override
 		{
-			recv.skip(1);
-
 			// Parse all characters.
-			size_t numchars = recv.readbyte();
-			for (size_t i = 0; i < numchars; i++)
-			{
-				Session::getlogin().getaccount().parsecharentry(recv);
-			}
-
-			// Additional information for login: Wether to use a pic and how many characters can be created.
-			Session::getlogin().getaccount().setpic(recv.readbyte());
-			Session::getlogin().getaccount().setslots(static_cast<int8_t>(recv.readint()));
+			Session::getlogin().parsecharlist(recv);
 
 			// Remove the world selection screen.
 			IO::UI::remove(Element::WORLDSELECT);
@@ -137,7 +126,7 @@ namespace Net
 		void handle(InPacket& recv) const override
 		{
 			// Read the name and if it is already in use.
-			string name = recv.readascii();
+			//string name = recv.readascii();
 			bool used = recv.readbool();
 
 			if (used)
@@ -164,28 +153,21 @@ namespace Net
 	{
 		void handle(InPacket& recv) const override
 		{
-			// Some check.
-			int8_t stuff = recv.readbyte();
-			if (stuff == 0)
+			// Parse info on the new character.
+			Session::getlogin().addcharentry(recv);
+
+			// Remove the character creation ui.
+			IO::UIElement* uicc = IO::UI::getelement(Element::CHARCREATION);
+			if (uicc)
 			{
-				// Parse info on the new character.
-				Session::getlogin().getaccount().parsecharentry(recv);
-
-				// Remove the character creation ui.
-				using::IO::UIElement;
-				UIElement* uicc = IO::UI::getelement(Element::CHARCREATION);
-				if (uicc)
-				{
-					uicc->deactivate();
-					IO::UI::remove(Element::CHARCREATION);
-				}
-
-				// Readd the updated character selection.
-				using::IO::ElementCharSelect;
-				IO::UI::remove(Element::CHARSELECT);
-				IO::UI::add(ElementCharSelect());
-				IO::UI::enable();
+				uicc->deactivate();
+				IO::UI::remove(Element::CHARCREATION);
 			}
+
+			// Readd the updated character selection.
+			IO::UI::remove(Element::CHARSELECT);
+			IO::UI::add(IO::ElementCharSelect());
+			IO::UI::enable();
 		}
 	};
 
@@ -199,15 +181,10 @@ namespace Net
 			bool success = recv.readbool();
 
 			// Show the result to the user.
-			using::IO::ElementLoginNotice;
 			if (success)
-			{
-				IO::UI::add(ElementLoginNotice(55));
-			}
+				IO::UI::add(IO::ElementLoginNotice(55));
 			else
-			{
-				IO::UI::add(ElementLoginNotice(93));
-			}
+				IO::UI::add(IO::ElementLoginNotice(93));
 		}
 	};
 
@@ -216,8 +193,6 @@ namespace Net
 	{
 		void handle(InPacket& recv) const override
 		{
-			recv.skip(2);
-
 			// Read the ipv4 adress in a string.
 			string addrstr;
 			for (int i = 0; i < 4; i++)
@@ -237,13 +212,9 @@ namespace Net
 			int32_t cid = recv.readint();
 			bool connected = Session::reconnect(addrstr.c_str(), portstr.c_str());
 			if (connected)
-			{
 				Session::dispatch(PlayerLoginPacket83(cid));
-			}
 			else
-			{
 				Session::disconnect();
-			}
 		}
 	};
 }

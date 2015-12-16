@@ -45,6 +45,7 @@ namespace Character
 		// Returns the flying force.
 		virtual float getflyforce() const = 0;
 
+		virtual bool isattacking() const = 0;
 		// Returns if the keyaction is active.
 		virtual bool keydown(IO::Keyboard::Keyaction keycode) const = 0;
 		// Returns the ladder.

@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Charstats.h"
+#include "CharStats.h"
 
 namespace Character
 {
@@ -42,15 +42,9 @@ namespace Character
 		1299680571, 1370903066, 1446028554, 1525246918, 1608855764, 1697021059 
 	};
 
-	Charstats::Charstats(const StatsEntry& entry)
+	CharStats::CharStats(StatsEntry st)
 	{
-		name = entry.getname();
-		petids = entry.getpets();
-		stats = entry.getstats();
-		job = CharJob(entry.getjob());
-		exp = entry.getexp();
-		mapid = entry.getmapid();
-		portal = entry.getportal();
+		stats = st;
 
 		maxdamage = 0;
 		mindamage = 0;
@@ -66,11 +60,11 @@ namespace Character
 		resiststatus = 0.0f;
 	}
 
-	Charstats::Charstats() {}
+	CharStats::CharStats() {}
 
-	Charstats::~Charstats() {}
+	CharStats::~CharStats() {}
 
-	void Charstats::calculatedamage(Weapon::WpType wtype)
+	void CharStats::calculatedamage(Weapon::WpType wtype)
 	{
 		int32_t primary = getprimary(wtype);
 		int32_t secondary = getsecondary(wtype);
@@ -82,7 +76,7 @@ namespace Character
 			);
 	}
 
-	int32_t Charstats::getprimary(Weapon::WpType wtype)
+	int32_t CharStats::getprimary(Weapon::WpType wtype)
 	{
 		if (wtype != Weapon::WEP_NONE)
 		{
@@ -110,7 +104,7 @@ namespace Character
 		return 0;
 	}
 
-	int32_t Charstats::getsecondary(Weapon::WpType wtype)
+	int32_t CharStats::getsecondary(Weapon::WpType wtype)
 	{
 		if (wtype != Weapon::WEP_NONE)
 		{
@@ -138,34 +132,34 @@ namespace Character
 		return 0;
 	}
 
-	void Charstats::setstat(Maplestat stat, uint16_t value)
+	void CharStats::setstat(Maplestat stat, uint16_t value)
 	{
-		stats[stat] = value;
+		stats.stats[stat] = value;
 	}
 
-	void Charstats::settotal(Equipstat stat, int32_t value)
+	void CharStats::settotal(Equipstat stat, int32_t value)
 	{
 		totalstats[stat] = value;
 	}
 
-	uint16_t Charstats::calculateaccuracy() const
+	uint16_t CharStats::calculateaccuracy() const
 	{
 		float dexacc = static_cast<float>(getstat(MS_DEX)) * 0.8f;
 		float lukacc = static_cast<float>(getstat(MS_LUK)) * 0.5f;
 		return static_cast<uint16_t>(dexacc + lukacc);
 	}
 
-	int64_t Charstats::getexpneeded() const
+	int64_t CharStats::getexpneeded() const
 	{
 		return exptable[getstat(MS_LEVEL)];
 	}
 
-	uint16_t Charstats::getstat(Maplestat stat) const
+	uint16_t CharStats::getstat(Maplestat stat) const
 	{
-		return stats.count(stat) ? stats.at(stat) : 0;
+		return stats.stats.count(stat) ? stats.stats.at(stat) : 0;
 	}
 
-	int32_t Charstats::gettotal(Equipstat stat) const
+	int32_t CharStats::gettotal(Equipstat stat) const
 	{
 		return totalstats.count(stat) ? totalstats.at(stat) : 0;
 	}

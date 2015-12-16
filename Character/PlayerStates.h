@@ -31,6 +31,49 @@ namespace Character
 		virtual void nextstate(PlayableChar& player) const = 0;
 	};
 
+	class PlayerNullState : public PlayerState
+	{
+	public:
+		void sendaction(PlayableChar&, Keyboard::Keyaction, bool) const override {}
+
+		void update(PlayableChar&) const override {}
+
+		void nextstate(PlayableChar& player) const override
+		{
+			Char::Stance stance;
+			if (player.getphobj().onground)
+			{
+				if (player.keydown(Keyboard::KA_LEFT) || player.keydown(Keyboard::KA_RIGHT))
+					stance = Char::WALK;
+				else if (player.keydown(Keyboard::KA_DOWN))
+					stance = Char::PRONE;
+				else
+					stance = Char::STAND;
+			}
+			else
+			{
+				PhysicsObject::PhType phtype = player.getphobj().type;
+				if (phtype == PhysicsObject::CLIMBING)
+				{
+					const Ladder* ladder = player.getladder();
+					if (ladder)
+						stance = ladder->ladder ? Char::LADDER : Char::ROPE;
+					else
+						stance = Char::FALL;
+				}
+				else if (phtype == PhysicsObject::FLYING || phtype == PhysicsObject::SWIMMING)
+				{
+					stance = Char::SWIM;
+				}
+				else
+				{
+					stance = Char::FALL;
+				}
+			}
+			player.setstance(stance);
+		}
+	};
+
 	class PlayerStandState : public PlayerState
 	{
 		void sendaction(PlayableChar& player, Keyboard::Keyaction ka, bool down) const override
@@ -95,14 +138,13 @@ namespace Character
 
 		void update(PlayableChar& player) const override
 		{
+			if (player.isattacking())
+				return;
+
 			if (player.keydown(Keyboard::KA_LEFT))
-			{
 				player.getphobj().hforce = -player.getwforce();
-			}
 			else if (player.keydown(Keyboard::KA_RIGHT))
-			{
 				player.getphobj().hforce = player.getwforce();
-			}
 		}
 
 		void nextstate(PlayableChar& player) const override
@@ -110,9 +152,7 @@ namespace Character
 			if (player.getphobj().onground)
 			{
 				if (player.getphobj().hspeed == 0.0f)
-				{
 					player.setstance(Char::STAND);
-				}
 			}
 			else
 			{
@@ -129,26 +169,18 @@ namespace Character
 
 		void nextstate(PlayableChar& player) const override
 		{
-			if (player.getphobj().onground)
-			{
-				if (player.keydown(Keyboard::KA_LEFT))
-				{
-					player.setflip(false);
-				}
-				else if (player.keydown(Keyboard::KA_RIGHT))
-				{
-					player.setflip(true);
-				}
+			if (!player.getphobj().onground)
+				return;
 
-				if (player.getphobj().hspeed != 0.0f)
-				{
-					player.setstance(Char::WALK);
-				}
-				else
-				{
-					player.setstance(Char::STAND);
-				}
-			}
+			if (player.keydown(Keyboard::KA_LEFT))
+				player.setflip(false);
+			else if (player.keydown(Keyboard::KA_RIGHT))
+				player.setflip(true);
+
+			if (player.getphobj().hspeed != 0.0f)
+				player.setstance(Char::WALK);
+			else
+				player.setstance(Char::STAND);
 		}
 	};
 
@@ -233,14 +265,7 @@ namespace Character
 						float FLYJUMPFORCE = player.getflyforce() * 20;
 
 						player.getphobj().vforce = -FLYJUMPFORCE;
-						if (player.getflip())
-						{
-							player.getphobj().hforce = FLYJUMPFORCE;
-						}
-						else
-						{
-							player.getphobj().hforce = -FLYJUMPFORCE;
-						}
+						player.getphobj().hforce = player.getflip() ? FLYJUMPFORCE : -FLYJUMPFORCE;
 					}
 					break;
 				}
@@ -252,22 +277,14 @@ namespace Character
 			player.getphobj().type = PhysicsObject::FLYING;
 
 			if (player.keydown(Keyboard::KA_LEFT))
-			{
 				player.getphobj().hforce = -player.getflyforce();
-			}
 			else if (player.keydown(Keyboard::KA_RIGHT))
-			{
 				player.getphobj().hforce = player.getflyforce();
-			}
 
 			if (player.keydown(Keyboard::KA_UP))
-			{
 				player.getphobj().vforce = -player.getflyforce();
-			}
 			else if (player.keydown(Keyboard::KA_DOWN))
-			{
 				player.getphobj().vforce = player.getflyforce();
-			}
 		}
 
 		void nextstate(PlayableChar&) const override {}
@@ -305,17 +322,11 @@ namespace Character
 		void update(PlayableChar& player) const override
 		{
 			if (player.keydown(Keyboard::KA_UP))
-			{
 				player.getphobj().vspeed = -player.getclimbforce();
-			}
 			else if (player.keydown(Keyboard::KA_DOWN))
-			{
 				player.getphobj().vspeed = player.getclimbforce();
-			}
 			else
-			{
 				player.getphobj().vspeed = 0.0f;
-			}
 		}
 
 		void nextstate(PlayableChar& player) const override

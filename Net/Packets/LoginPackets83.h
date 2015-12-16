@@ -55,7 +55,6 @@ namespace Net
 	public:
 		CharlistRequestPacket83(uint8_t world, uint8_t channel) : OutPacket(CHARLIST_REQUEST)
 		{
-			writech(0);
 			writech(world);
 			writech(channel);
 		}

@@ -17,38 +17,52 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Mapobject.h"
+#include "Gameplay\Attack.h"
 #include "Gameplay\Physics\PhysicsObject.h"
+#include "Gameplay\MovementInfo.h"
 #include "Graphics\Animation.h"
 #include "Graphics\Textlabel.h"
+#include "IO\Components\DamageNumber.h"
 #include "Util\rectangle2d.h"
 #include "Util\Randomizer.h"
+#include "Net\Code\SeededState.h"
 
 namespace Gameplay
 {
 	using std::string;
+	using std::pair;
+	using std::vector;
 	using std::map;
 	using Util::rectangle2d;
 	using Util::Randomizer;
+	using Net::SeededState;
 	using Graphics::Animation;
 	using Graphics::Textlabel;
+	using IO::DamageNumber;
 
 	class Mob : public MapObject
 	{
 	public:
 		enum Stance
 		{
-			STAND = 2,
-			MOVE = 4,
+			MOVE = 2,
+			STAND = 4,
 			JUMP = 6,
 			HIT = 8,
 			DIE = 10
 		};
 
+		enum Behaviour
+		{
+			MOVELEFT,
+			MOVERIGHT,
+			STOP
+		};
+
 		// Construct a mob by combining data from game files with
 		// data sent by the server.
-		Mob(int32_t oid, int32_t mobid, bool control, int8_t stance, 
-			uint16_t fhid, int8_t effect, bool newspawn, int8_t team, 
-			int16_t xpos, int16_t ypos);
+		Mob(int32_t oid, int32_t mobid, int32_t seed, int8_t stance, uint16_t fhid, 
+			bool newspawn, int8_t team, int16_t xpos, int16_t ypos);
 
 		// Update movement and animations.
 		int8_t update(const Physics& physics) override;
@@ -63,6 +77,11 @@ namespace Gameplay
 		// Return position.
 		vector2d<int16_t> getposition() const override;
 
+		bool isactive() const;
+		bool isinrange(const rectangle2d<int16_t>& range) const;
+
+		vector<int32_t> damage(const Attack& attack);
+
 		// Kill the mob with the appropriate type:
 		// 0: make inactive 1: death animation 2: fade out
 		void kill(int8_t killtype);
@@ -75,11 +94,13 @@ namespace Gameplay
 	private:
 		void parsestance(Stance toparse, node source);
 		//void parsesound(Stance toparse, node source);
-		void nextmove();
 		void setstance(Stance newstance);
 
+		pair<int32_t, bool> randomdamage(int32_t mindamage, 
+			int32_t maxdamage, float hitchance, float critical) const;
+
 		map<Stance, Animation> animations;
-		map<Stance, rectangle2d<int32_t>> bounds;
+		map<Stance, rectangle2d<int16_t>> bounds;
 		string name;
 		uint16_t level;
 		uint16_t speed;
@@ -95,21 +116,25 @@ namespace Gameplay
 
 		Textlabel namelabel;
 		Randomizer randomizer;
+		vector<DamageNumber> damagenumbers;
+
+		SeededState behaviour;
+		uint16_t counter;
 
 		int32_t oid;
 		int32_t id;
-		bool control;
 		int8_t effect;
 		int8_t team;
 
 		bool active;
 		Stance stance;
 		PhysicsObject phobj;
-		uint16_t moved;
 		bool flip;
 		float walkforce;
 		int8_t hppercent;
 		bool fading;
+		bool fadein;
+		float alpha;
 	};
 }
 

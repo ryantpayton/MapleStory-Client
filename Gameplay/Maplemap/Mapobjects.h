@@ -42,25 +42,20 @@ namespace Gameplay
 
 		virtual ~MapObjects() {}
 		// Draw all mapobjects that are on the specified layer.
-		void draw(int8_t, vector2d<int16_t>, float) const;
+		void draw(int8_t layer, vector2d<int16_t> viewpos, float inter) const;
 		// Update all mapobjects of this type. Also updates layers eg. drawing order.
-		// Parameters: Physics&(engine to use)
-		void update(const Physics&);
+		void update(const Physics& physics);
 		// Removes all mapobjects of this type.
 		void clear();
 		// Adds a mapobject of this type.
-		// Parameters: Mapobject*(new Mapobject)
-		void add(MapObject*);
+		void add(MapObject* mapobject);
 		// Removes the mapobject with the given oid.
-		// Parameters: int(object id)
-		void remove(int32_t);
+		void remove(int32_t oid);
 
 	protected:
 		// Obtains a pointer to the mapobject with the given oid.
-		// Parameters: int(object id)
-		MapObject* get(int32_t);
+		MapObject* get(int32_t oid);
 
-	private:
 		map<int32_t, unique_ptr<MapObject>> objects;
 		map<int8_t, map<int32_t, int32_t>> layers;
 	};

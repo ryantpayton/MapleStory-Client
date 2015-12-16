@@ -23,7 +23,6 @@ namespace IO
 {
 	namespace UI
 	{
-		void init();
 		void draw(float inter);
 		void update();
 

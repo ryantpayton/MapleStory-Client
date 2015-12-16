@@ -23,7 +23,7 @@
 
 namespace IO
 {
-	UIStatusbar::UIStatusbar(const Charstats& st) : stats(st) 
+	UIStatusbar::UIStatusbar(const CharStats& st) : stats(st)
 	{
 		node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
 		node chat = nl::nx::ui["StatusBar2.img"]["chat"];

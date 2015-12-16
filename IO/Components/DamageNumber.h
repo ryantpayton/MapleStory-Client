@@ -16,38 +16,41 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "CharEntry.h"
+#include "Charset.h"
+#include "Util\vector2d.h"
 
-namespace Net
+namespace IO
 {
-	class Account
+	using Util::vector2d;
+
+	class DamageNumber
 	{
 	public:
-		Account(InPacket&);
-		Account() {}
-		~Account() {}
-		void parsecharentry(InPacket&);
-		void setpic(char);
-		void setslots(char);
-		bool isfemale() const;
-		char getpic() const;
-		char getslots() const;
-		size_t getcharcount() const;
-		string getname() const;
-		const CharEntry& getchar(size_t) const;
-		const CharEntry& getcharbyid(int) const;
+		enum Type
+		{
+			NORMAL,
+			CRITICAL,
+			TOPLAYER
+		};
+
+		static void init();
+
+		DamageNumber(Type type, int damage, float alpha, vector2d<int16_t> position);
+		DamageNumber();
+		~DamageNumber();
+
+		void draw(vector2d<int16_t> viewpos) const;
+		bool update();
+
 	private:
-		vector<CharEntry> chars;
-		CharEntry nullchar;
-		string name;
-		int accid;
-		bool female;
-		bool muted;
-		short pin;
-		char gmlevel;
-		char pic;
-		char slots;
-		char selected;
+		Type type;
+		bool miss;
+		int8_t firstnum;
+		string restnum;
+		int16_t shift;
+		float fx;
+		float fy;
+		float alpha;
 	};
 }
 

@@ -56,13 +56,14 @@ namespace Character
 
 	Player::Player(const CharEntry& entry)
 	{
-		cid = entry.getcid();
+		cid = entry.cid;
 		look = CharLook(entry.getlook());
-		stats = Charstats(entry.getstats());
+		stats = CharStats(entry.stats);
 
 		namelabel = Textlabel(Textlabel::DWF_14MC, Textlabel::TXC_WHITE, stats.getname(), 0);
 		namelabel.setback(Textlabel::TXB_NAMETAG);
 
+		attacking = false;
 		setstance(STAND);
 		setflip(false);
 	}
@@ -74,6 +75,7 @@ namespace Character
 		setposition(pos.x(), pos.y());
 		movementinfo.clear();
 		ladder = nullptr;
+		attacking = false;
 	}
 
 	void Player::sendaction(IO::Keyboard::Keyaction ka, bool down)
@@ -116,6 +118,14 @@ namespace Character
 
 	int8_t Player::update(const Physics& physics)
 	{
+		updatestate(physics);
+		writemovement();
+		updatelook();
+		return isclimbing() ? 7 : phobj.fhlayer;
+	}
+
+	void Player::updatestate(const Physics& physics)
+	{
 		const PlayerState* pst = getstate(stance);
 		if (pst)
 		{
@@ -124,7 +134,10 @@ namespace Character
 			Char::update(physics);
 			pst->nextstate(*this);
 		}
+	}
 
+	void Player::writemovement()
+	{
 		uint8_t dirstance;
 		if (flip)
 			dirstance = static_cast<uint8_t>(stance);
@@ -133,27 +146,60 @@ namespace Character
 
 		int16_t shortx = static_cast<int16_t>(phobj.fx);
 		int16_t shorty = static_cast<int16_t>(phobj.fy);
-		using::Gameplay::MovementFragment;
-		if (dirstance != lastmove.newstate ||  shortx != lastmove.xpos ||  shorty != lastmove.ypos) 
+		using Gameplay::MovementFragment;
+		if (dirstance != lastmove.newstate || shortx != lastmove.xpos || shorty != lastmove.ypos)
 		{
 			movementinfo.addmovement(phobj, 0, dirstance, Constants::TIMESTEP);
 			lastmove = movementinfo.gettop();
 		}
+	}
 
-		uint16_t lookts = Constants::TIMESTEP;
+	void Player::updatelook()
+	{
+		bool aniend = look.update(getstancespeed());
+		if (aniend && attacking)
+		{
+			attacking = false;
+
+			static PlayerNullState nullstate;
+			nullstate.nextstate(*this);
+		}
+	}
+
+	uint16_t Player::getstancespeed() const
+	{
+		if (attacking)
+			return static_cast<uint16_t>(Constants::TIMESTEP * getattackspeed());
+
 		switch (stance)
 		{
 		case WALK:
-			lookts = static_cast<uint16_t>(Constants::TIMESTEP * (1.0f + abs(phobj.hspeed) / 25));
-			break;
+			return static_cast<uint16_t>(Constants::TIMESTEP * (1.0f + abs(phobj.hspeed) / 25));
 		case LADDER:
 		case ROPE:
-			lookts = static_cast<uint16_t>(Constants::TIMESTEP * abs(phobj.vspeed));
-			break;
+			return static_cast<uint16_t>(Constants::TIMESTEP * abs(phobj.vspeed));
+		default:
+			return Constants::TIMESTEP;
 		}
-		look.update(lookts);
+	}
 
-		return isclimbing() ? 7 : phobj.fhlayer;
+	bool Player::tryattack()
+	{
+		if (attacking || isclimbing() || issitting())
+			return false;
+
+		look.setstance("attack");
+		attacking = true;
+		return true;
+	}
+
+	float Player::getattackspeed() const
+	{
+		const Weapon* weapon = look.getequips().getweapon();
+		if (weapon)
+			return 1.7f - static_cast<float>(weapon->getspeed()) / 10;
+		else
+			return 0.0f;
 	}
 
 	void Player::setseat(const Seat* seat)
@@ -179,33 +225,41 @@ namespace Character
 		}
 	}
 
-	bool Player::isattacking() const
+	void Player::setflip(bool flipped)
 	{
-		return false;
+		if (!attacking)
+			Char::setflip(flipped);
+	}
+
+	void Player::setstance(Stance st)
+	{
+		if (!attacking)
+			Char::setstance(st);
 	}
 	
 	float Player::getwforce() const
 	{
-		static const float WALKFORCE = 0.5f;
-		return WALKFORCE * static_cast<float>(stats.gettotal(ES_SPEED)) / 100;
+		return 0.5f * static_cast<float>(stats.gettotal(ES_SPEED)) / 100;
 	}
 
 	float Player::getjforce() const
 	{
-		static const float JUMPFORCE = 5.0f;
-		return JUMPFORCE * static_cast<float>(stats.gettotal(ES_JUMP)) / 100;
+		return 5.0f * static_cast<float>(stats.gettotal(ES_JUMP)) / 100;
 	}
 
 	float Player::getclimbforce() const
 	{
-		static const float CLIMBFORCE = 1.0f;
-		return CLIMBFORCE * static_cast<float>(stats.gettotal(ES_SPEED)) / 100;
+		return 1.0f * static_cast<float>(stats.gettotal(ES_SPEED)) / 100;
 	}
 
 	float Player::getflyforce() const
 	{
-		static const float FLYFORCE = 0.25f;
-		return FLYFORCE;
+		return 0.25f;
+	}
+
+	bool Player::isattacking() const
+	{
+		return attacking;
 	}
 
 	bool Player::keydown(IO::Keyboard::Keyaction ka) const
@@ -213,7 +267,7 @@ namespace Character
 		return keysdown.count(ka) ? keysdown.at(ka) : false;
 	}
 
-	Charstats& Player::getstats()
+	CharStats& Player::getstats()
 	{
 		return stats;
 	}

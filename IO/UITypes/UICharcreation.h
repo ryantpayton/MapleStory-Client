@@ -22,7 +22,6 @@
 #include "Graphics\Textlabel.h"
 #include "Character\Look\CharLook.h"
 #include "Util\Randomizer.h"
-#include "Net\Login\Login.h"
 #include <map>
 
 namespace IO

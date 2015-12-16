@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "OutPacket.h"
-#include "Login\Login.h"
+#include "Login.h"
 
 namespace Net
 {

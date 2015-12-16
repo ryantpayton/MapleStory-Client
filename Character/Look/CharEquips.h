@@ -40,6 +40,7 @@ namespace Character
 		bool istwohanded() const;
 		Weapon::WpType getweapontype() const;
 		const Clothing& getequip(Equipslot) const;
+		const Weapon* getweapon() const;
 
 	private:
 		map<Equipslot, const Clothing*> equips;

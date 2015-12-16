@@ -20,11 +20,13 @@
 #include "Hairstyle.h"
 #include "Facetype.h"
 #include "CharEquips.h"
-#include "Net\Login\LookEntry.h"
+#include "Net\Login.h"
+#include "Util\Randomizer.h"
 
 namespace Character
 {
 	using Net::LookEntry;
+	using Util::Randomizer;
 
 	class CharLook
 	{
@@ -55,6 +57,8 @@ namespace Character
 		const CharEquips& getequips() const;
 
 	private:
+		string getattackstance() const;
+
 		string stance;
 		uint8_t frame;
 		uint16_t elapsed;
@@ -73,6 +77,8 @@ namespace Character
 		const Hairstyle* hair;
 		const Facetype* face;
 		CharEquips equips;
+
+		Randomizer randomizer;
 
 		string laststance;
 		uint8_t lastframe;

@@ -74,74 +74,15 @@ namespace Net
 		void handle(InPacket& recv) const override
 		{
 			int32_t oid = recv.readint();
-			bool hascontrol = recv.readbyte() == 5;
 			int32_t id = recv.readint();
-			recv.skip(22);
 			int16_t posx = recv.readshort();
 			int16_t posy = recv.readshort();
 			int8_t stance = recv.readbyte();
-			recv.readshort();
 			uint16_t fh = recv.readshort();
-			bool fadein = false;
-			int8_t effect = recv.readbyte();
-			if (effect > 0)
-			{
-				recv.readbyte();
-				recv.readshort();
-				if (effect == 15)
-				{
-					recv.readbyte();
-				}
-			}
-			else
-			{
-				fadein = effect == -2;
-			}
+			bool fadein = recv.readbool();
 			int8_t team = recv.readbyte();
-			recv.skip(4);
 
-			Gameplay::Stage::getmobs().addmob(oid, id, hascontrol, stance, fh, effect, fadein, team, posx, posy);
-		}
-	};
-
-	// Handles a packet which tells the client to spawn a mob and control it.
-	class SpawnMobControllerHandler83 : public PacketHandler
-	{
-		void handle(InPacket& recv) const override
-		{
-			int8_t aggro = recv.readbyte();
-			int32_t oid = recv.readint();
-			if (aggro == 0)
-			{
-				return;
-			}
-			recv.readbyte();
-			int32_t id = recv.readint();
-			recv.skip(22);
-			int16_t posx = recv.readshort();
-			int16_t posy = recv.readshort();
-			int8_t stance = recv.readbyte();
-			recv.readshort();
-			uint16_t fh = recv.readshort();
-			bool fadein = false;
-			int8_t effect = recv.readbyte();
-			if (effect > 0)
-			{
-				recv.readbyte();
-				recv.readshort();
-				if (effect == 15)
-				{
-					recv.readbyte();
-				}
-			}
-			else
-			{
-				fadein = effect == -2;
-			}
-			int8_t team = recv.readbyte();
-			recv.skip(4);
-
-			Gameplay::Stage::getmobs().addmob(oid, id, true, stance, fh, effect, fadein, team, posx, posy);
+			Gameplay::Stage::getmobs().addmob(oid, id, stance, fh, fadein, team, posx, posy);
 		}
 	};
 
@@ -269,7 +210,7 @@ namespace Net
 			recv.skip(61);
 
 			int16_t job = recv.readshort();
-			LookEntry look = LookEntry(recv);
+			LookEntry look = Session::getlogin().parselook(recv);
 
 			recv.readint(); //count of 5110000 
 			recv.readint(); // 'itemeffect'

@@ -18,6 +18,7 @@
 #pragma once
 #include "MovementPacket83.h"
 #include "Net\SendOpcodes83.h"
+#include "Gameplay\Attack.h"
 
 namespace Net
 {
@@ -30,7 +31,7 @@ namespace Net
 			writech(died);
 			writeint(targetid);
 			writestr(targetp);
-			writech(0);
+			skip(1);
 			writesh(usewheel ? 1 : 0);
 		}
 	};
@@ -41,8 +42,31 @@ namespace Net
 	public:
 		MovePlayerPacket83(const MovementInfo& movements) : MovementPacket83(MOVE_PLAYER)
 		{
+			skip(9);
+			writemoves(movements);
+		}
+	};
+
+	class MoveMobPacket83 : public MovementPacket83
+	{
+	public:
+		MoveMobPacket83(int32_t oid, int16_t type, int8_t skillb, int8_t skill0, int8_t skill1, 
+			int8_t skill2, int8_t skill3, int8_t skill4, vector2d<int16_t> startpos, 
+			const MovementInfo& movements) : MovementPacket83(MOVE_MONSTER) {
+
+			writeint(oid);
+			writesh(type);
+			writech(skillb);
+			writech(skill0);
+			writech(skill1);
+			writech(skill2);
+			writech(skill3);
+			writech(skill4);
 			writelg(0);
 			writech(0);
+			writeint(0);
+			writesh(startpos.x());
+			writesh(startpos.y());
 			writemoves(movements);
 		}
 	};
@@ -56,6 +80,40 @@ namespace Net
 			writeint(0);
 			writesh(slot);
 			writeint(itemid);
+		}
+	};
+
+	class CloseRangeAttackPacket83 : public OutPacket
+	{
+	public:
+		CloseRangeAttackPacket83(const Gameplay::AttackResult& attack) : OutPacket(CLOSE_ATTACK)
+		{
+			skip(1);
+			writech((attack.hitcount << 4) | attack.hitcount);
+			writeint(attack.skill);
+			if (attack.charge > 0)
+				writeint(attack.charge);
+			skip(8);
+			writech(attack.display);
+			writech(attack.direction);
+			writech(attack.stance);
+			skip(1);
+			writech(attack.speed);
+			skip(4);
+
+			for (auto& damagetomob : attack.damagelines)
+			{
+				writeint(damagetomob.first);
+				skip(14);
+
+				for (auto& singledamage : damagetomob.second)
+				{
+					writeint(singledamage);
+				}
+
+				if (attack.skill != 5221004)
+					skip(4);
+			}
 		}
 	};
 }

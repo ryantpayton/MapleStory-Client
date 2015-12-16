@@ -109,4 +109,38 @@ namespace Character
 	{
 		return attack;
 	}
+
+	uint8_t Weapon::getattackdelay() const
+	{
+		if (weptype == WEP_NONE)
+			return 0;
+		else
+			return 50 - 25 / attackspeed;
+	}
+
+	rectangle2d<int16_t> Weapon::getrange() const
+	{
+		switch (weptype)
+		{
+		case WEP_1H_SWORD:
+		case WEP_1H_AXE:
+		case WEP_1H_MACE:
+		case WEP_KNUCKLE:
+			return rectangle2d<int16_t>(-75, -5, -50, 0);
+		case WEP_2H_SWORD:
+		case WEP_2H_AXE:
+		case WEP_2H_MACE:
+			return rectangle2d<int16_t>(-100, -5, -50, 0);
+		case WEP_SPEAR:
+		case WEP_POLEARM:
+			return rectangle2d<int16_t>(-130, -5, -50, 0);
+		default:
+			return rectangle2d<int16_t>();
+		}
+	}
+
+	Animation Weapon::gethiteffect() const
+	{
+		return Animation();
+	}
 }

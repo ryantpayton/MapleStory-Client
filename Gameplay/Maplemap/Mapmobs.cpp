@@ -16,19 +16,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "MapMobs.h"
+#include "Net\Session.h"
+#include "Net\Packets\GameplayPackets83.h"
 
 namespace Gameplay
 {
 	MapMobs::MapMobs() {}
 
-	void MapMobs::addmob(int32_t oid, int32_t id, bool control, int8_t stance, 
-		uint16_t fhid, int8_t effect, bool fadein, int8_t team, int16_t x, int16_t y) {
+	void MapMobs::addmob(int32_t oid, int32_t id, int8_t stance, 
+		uint16_t fhid, bool fadein, int8_t team, int16_t x, int16_t y) {
 
 		Mob* mob = getmob(oid);
 		if (mob)
 			mob->makeactive();
 		else
-			add(new Mob(oid, id, control, stance, fhid, effect, fadein, team, x, y));
+			add(new Mob(oid, id, 0, stance, fhid, fadein, team, x, y));
 	}
 
 	void MapMobs::killmob(int32_t oid, int8_t animation)
@@ -47,6 +49,40 @@ namespace Gameplay
 		{
 			mob->sendhp(percent, playerlevel);
 		}
+	}
+
+	AttackResult MapMobs::sendattack(const Attack& attack)
+	{
+		rectangle2d<int16_t> range;
+		if (attack.direction == Attack::TOLEFT)
+		{
+			range = rectangle2d<int16_t>(
+				attack.range.getlt() + attack.origin,
+				attack.range.getrb() + attack.origin);
+		}
+		else if (attack.direction == Attack::TORIGHT)
+		{
+			range = rectangle2d<int16_t>(
+				attack.origin.x() - attack.range.r(),
+				attack.origin.x() - attack.range.l(),
+				attack.origin.y() + attack.range.t(),
+				attack.origin.y() + attack.range.b());
+		}
+
+		AttackResult result;
+		for (auto& mmo : objects)
+		{
+			if (result.damagelines.size() == attack.mobcount)
+				break;
+
+			if (mmo.second == nullptr)
+				continue;
+
+			Mob* mob = reinterpret_cast<Mob*>(mmo.second.get());
+			if (mob->isactive() && mob->isinrange(range))
+				result.damagelines[mob->getoid()] = mob->damage(attack);
+		}
+		return result;
 	}
 
 	Mob* MapMobs::getmob(int32_t oid)

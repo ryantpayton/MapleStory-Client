@@ -21,6 +21,16 @@
 
 namespace IO
 {
+	Animation& getanimation(Cursor::Mousestate state)
+	{
+		static std::map<Cursor::Mousestate, Animation> animations;
+		if (!animations.count(state))
+		{
+			animations[state] = Animation(nl::nx::ui["Basic.img"]["Cursor"][std::to_string(state)]);
+		}
+		return animations[state];
+	}
+
 	Cursor::Cursor()
 	{
 		state = MST_IDLE;
@@ -28,31 +38,15 @@ namespace IO
 
 	Cursor::~Cursor() {}
 
-	void Cursor::init()
-	{
-		using::nl::node;
-		node cursornode = nl::nx::ui["Basic.img"]["Cursor"];
-		for (Mousestate i = MST_IDLE; i <= MST_RCLICK; i = static_cast<Mousestate>(i + 1))
-		{
-			animations[i] = Animation(cursornode[std::to_string(i)]);
-		}
-	}
-
 	void Cursor::draw(float inter) const
 	{
-		using::Graphics::DrawArgument;
-		if (animations.count(state))
-		{
-			animations.at(state).draw(DrawArgument(position), inter);
-		}
+		using Graphics::DrawArgument;
+		getanimation(state).draw(DrawArgument(position), inter);
 	}
 
 	void Cursor::update()
 	{
-		if (animations.count(state))
-		{
-			animations.at(state).update();
-		}
+		getanimation(state).update();
 	}
 
 	void Cursor::setstate(Mousestate s)

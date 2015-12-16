@@ -18,13 +18,13 @@
 #pragma once
 #include "IO\Element.h"
 #include "IO\UIDragElement.h"
-#include "Character\Charstats.h"
+#include "Character\CharStats.h"
 #include "Graphics\Textlabel.h"
 
 namespace IO
 {
 	using std::string;
-	using Character::Charstats;
+	using Character::CharStats;
 	using Graphics::Textlabel;
 	using Graphics::Texture;
 
@@ -43,7 +43,7 @@ namespace IO
 			BT_DETAILCLOSE
 		};
 
-		UIStatsinfo(const Charstats& stats);
+		UIStatsinfo(const CharStats& stats);
 		~UIStatsinfo();
 
 		void draw(float inter) const override;
@@ -52,7 +52,7 @@ namespace IO
 	private:
 		UIStatsinfo& operator = (const UIStatsinfo&) = delete;
 
-		const Charstats& stats;
+		const CharStats& stats;
 
 		vector<Texture> detailtextures;
 		map<string, Texture> abilities;
@@ -63,7 +63,7 @@ namespace IO
 	class ElementStatsinfo : public Element
 	{
 	public:
-		ElementStatsinfo(const Charstats& st) : stats(st) {}
+		ElementStatsinfo(const CharStats& st) : stats(st) {}
 
 		bool isunique() const override
 		{
@@ -83,6 +83,6 @@ namespace IO
 	private:
 		ElementStatsinfo& operator = (const ElementStatsinfo&) = delete;
 
-		const Charstats& stats;
+		const CharStats& stats;
 	};
 }

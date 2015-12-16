@@ -38,14 +38,8 @@ namespace IO
 
 		Element::UIType focused = Element::NONE;
 		Textfield* focusedtextfield = nullptr;
-		bool enabled = false;
+		bool enabled = true;
 		bool gamekeysenabled = false;
-
-		void init()
-		{
-			cursor.init();
-			enabled = true;
-		}
 
 		void draw(float inter)
 		{

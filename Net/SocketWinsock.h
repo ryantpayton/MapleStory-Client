@@ -30,7 +30,7 @@
 namespace Net
 {
 	const size_t MAX_PACKET_LEN = 40960;
-	const size_t HANDSHAKE_LEN = 16;
+	const size_t HANDSHAKE_LEN = 2;
 
 	class SocketWinsock
 	{
