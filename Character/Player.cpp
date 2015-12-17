@@ -183,14 +183,15 @@ namespace Character
 		}
 	}
 
-	bool Player::tryattack()
+	bool Player::canattack()
 	{
-		if (attacking || isclimbing() || issitting())
-			return false;
+		return !attacking && !isclimbing() && !issitting();
+	}
 
+	void Player::regularattack()
+	{
 		look.setstance("attack");
 		attacking = true;
-		return true;
 	}
 
 	float Player::getattackspeed() const

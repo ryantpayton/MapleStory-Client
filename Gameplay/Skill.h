@@ -15,58 +15,54 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Net\OutPacket.h"
-#include "Net\SendOpcodes83.h"
+#include "Graphics\Texture.h"
+#include "Graphics\Animation.h"
+#include "Util\rectangle2d.h"
+#include <cstdint>
+#include <string>
+#include <map>
 
-namespace Net
+namespace Gameplay
 {
-	// Packet which accepts the Terms of Service.
-	class TOSPacket83 : public OutPacket
+	using std::int32_t;
+	using std::string;
+	using std::map;
+	using std::vector;
+	using Util::vector2d;
+	using Util::rectangle2d;
+	using Graphics::Texture;
+	using Graphics::Animation;
+
+	struct SkillLevel
 	{
-	public:
-		TOSPacket83() : OutPacket(ACCEPT_TOS)
-		{
-			writech(1);
-		}
+		float chance;
+		float damage;
+		uint8_t attackcount;
+		uint8_t mobcount;
+		int32_t hpcost;
+		int32_t mpcost;
+		rectangle2d<int16_t> range;
 	};
 
-	// Packet which requests login to an account.
-	class LoginPacket83 : public OutPacket
+	class Skill
 	{
 	public:
-		LoginPacket83(string acc, string pass) : OutPacket(LOGIN)
-		{
-			writestr(acc);
-			writestr(pass);
-		}
-	};
+		Skill(int32_t);
+		Skill();
+		~Skill();
 
-	// Packet which requests the list of worlds and channels.
-	class ServerRequestPacket83 : public OutPacket
-	{
-	public:
-		ServerRequestPacket83() : OutPacket(SERVERLIST_REQUEST) {}
-	};
+		bool isoffensive() const;
+		string getaction(bool twohanded) const;
 
-	// Packet which requests the list of characters on a world.
-	class CharlistRequestPacket83 : public OutPacket
-	{
-	public:
-		CharlistRequestPacket83(uint8_t world, uint8_t channel) : OutPacket(CHARLIST_REQUEST)
-		{
-			writech(world);
-			writech(channel);
-		}
-	};
-
-	// Packet which requests login to a channel server for the specified character.
-	class PlayerLoginPacket83 : public OutPacket
-	{
-	public:
-		PlayerLoginPacket83(int32_t cid) : OutPacket(PLAYER_LOGIN)
-		{
-			writeint(cid);
-		}
+	private:
+		map<uint8_t, Texture> icons;
+		vector<Animation> effects;
+		Animation hit;
+		Animation affected;
+		string preparestance;
+		int32_t preparetime;
+		bool offensive;
+		vector<string> actions;
+		map<uint8_t, SkillLevel> levels;
 	};
 }

@@ -18,7 +18,7 @@
 #include "UICharcreation.h"
 #include "IO\UI.h"
 #include "Net\Session.h"
-#include "Net\Packets\CharCreationPackets83.h"
+#include "Net\Packets\CharCreationPackets.h"
 #include "IO\Components\MapleButton.h"
 #include "IO\UITypes\UILoginNotice.h"
 #include "IO\UITypes\UICharSelect.h"
@@ -253,10 +253,10 @@ namespace IO
 		switch (id)
 		{
 		case BT_CHARC_OK:
+			using namespace Net;
 			if (named)
 			{
-				using::Net::CreateCharPacket83;
-				Net::Session::dispatch(CreateCharPacket83(
+				Session::dispatch(CreateCharPacket(
 					namechar.gettext(), 1, faces[female][face], hairs[female][hair], 
 					haircolors[female][haircolor], skins[female][skin], tops[female][top], 
 					bots[female][bot], shoes[female][shoe], weapons[female][weapon], female)
@@ -270,9 +270,7 @@ namespace IO
 					UI::disable();
 					UI::focustextfield(nullptr);
 					namechar.setstate(Textfield::NORMAL);
-
-					using::Net::NameCharPacket83;
-					Net::Session::dispatch(NameCharPacket83(name));
+					Session::dispatch(NameCharPacket(name));
 				}
 				else
 				{

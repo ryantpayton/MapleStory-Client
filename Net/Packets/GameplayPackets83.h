@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "MovementPacket83.h"
-#include "Net\SendOpcodes83.h"
+#include "Net\SendOpcodes.h"
 #include "Gameplay\Attack.h"
 
 namespace Net
@@ -43,30 +43,6 @@ namespace Net
 		MovePlayerPacket83(const MovementInfo& movements) : MovementPacket83(MOVE_PLAYER)
 		{
 			skip(9);
-			writemoves(movements);
-		}
-	};
-
-	class MoveMobPacket83 : public MovementPacket83
-	{
-	public:
-		MoveMobPacket83(int32_t oid, int16_t type, int8_t skillb, int8_t skill0, int8_t skill1, 
-			int8_t skill2, int8_t skill3, int8_t skill4, vector2d<int16_t> startpos, 
-			const MovementInfo& movements) : MovementPacket83(MOVE_MONSTER) {
-
-			writeint(oid);
-			writesh(type);
-			writech(skillb);
-			writech(skill0);
-			writech(skill1);
-			writech(skill2);
-			writech(skill3);
-			writech(skill4);
-			writelg(0);
-			writech(0);
-			writeint(0);
-			writesh(startpos.x());
-			writesh(startpos.y());
 			writemoves(movements);
 		}
 	};

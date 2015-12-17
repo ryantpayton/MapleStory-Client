@@ -17,39 +17,51 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Net\OutPacket.h"
-#include "Net\SendOpcodes83.h"
+#include "Net\SendOpcodes.h"
 
 namespace Net
 {
-	// Packet which requests reserving a name for the character to be created.
-	class NameCharPacket83 : public OutPacket
+	const string MACS = "68-5D-43-F8-B8-6C, 7A-79-19-8B-31-3F";
+	const string HWID = "685D43F8_B86C7A79";
+
+	// Packet which tells the server which character was picked.
+	// Also sends (fake) Mac-adress and Hardware Id.
+	class SelectCharPacket : public OutPacket
 	{
 	public:
-		NameCharPacket83(string name) : OutPacket(NAME_CHAR)
+		SelectCharPacket(int32_t cid) : OutPacket(SELECT_CHAR)
 		{
-			writestr(name);
+			writeint(cid);
+			writestr(MACS);
+			writestr(HWID);
 		}
 	};
 
-	// Packets which requests creation of a character with the specified stats.
-	class CreateCharPacket83 : public OutPacket
+	// Packet which registers a pic and tells the server which character was picked.
+	// Also sends (fake) Mac-adress and Hardware Id.
+	class RegisterPicPacket : public OutPacket
 	{
 	public:
-		CreateCharPacket83(string name, uint16_t job, int32_t face, int32_t hair, 
-			uint8_t hairc, uint8_t skin, int32_t top, int32_t bot, int32_t shoes, 
-			int32_t weapon, bool female) : OutPacket(CREATE_CHAR) {
+		RegisterPicPacket(int32_t cid, string pic) : OutPacket(REGISTER_PIC)
+		{
+			writeint(cid);
+			writestr(MACS);
+			writestr(HWID);
+			writestr(pic);
+		}
+	};
 
-			writestr(name);
-			writeint(job);
-			writeint(face);
-			writeint(hair);
-			writeint(hairc);
-			writeint(skin);
-			writeint(top);
-			writeint(bot);
-			writeint(shoes);
-			writeint(weapon);
-			writech(female);
+	// Packet which requests using the specified character with the specified pic.
+	// Also sends (fake) mac-adress and hardware id.
+	class SelectCharPicPacket : public OutPacket
+	{
+	public:
+		SelectCharPicPacket(string pic, int32_t cid) : OutPacket(SELECT_CHAR_PIC)
+		{
+			writestr(pic);
+			writeint(cid);
+			writestr(MACS);
+			writestr(HWID);
 		}
 	};
 }

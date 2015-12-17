@@ -21,7 +21,7 @@
 #include "IO\Components\MapleButton.h"
 #include "IO\Components\TwoSpriteButton.h"
 #include "Graphics\Sprite.h"
-#include "Net\Packets\LoginPackets83.h"
+#include "Net\Packets\LoginPackets.h"
 #include "Program\Configuration.h"
 #include "nlnx\nx.hpp"
 
@@ -36,7 +36,7 @@ namespace IO
 		node worlds = nl::nx::ui["Login.img"]["WorldSelect"]["BtWorld"]["release"];
 		node channels = nl::nx::ui["Login.img"]["WorldSelect"]["BtChannel"];
 
-		using::Graphics::Sprite;
+		using Graphics::Sprite;
 		sprites.push_back(Sprite(back["11"], vector2d<int16_t>(370, 300)));
 		sprites.push_back(Sprite(worlds["layer:bg"], vector2d<int16_t>(650, 45)));
 		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Common"]["frame"], vector2d<int16_t>(400, 290)));
@@ -78,10 +78,10 @@ namespace IO
 		{
 			UI::disable();
 
-			using Net::CharlistRequestPacket83;
-			Net::Session::getlogin().setworldid(worldid);
-			Net::Session::getlogin().setchannelid(channelid);
-			Net::Session::dispatch(CharlistRequestPacket83(worldid, channelid));
+			using namespace Net;
+			Session::getlogin().setworldid(worldid);
+			Session::getlogin().setchannelid(channelid);
+			Session::dispatch(CharlistRequestPacket(worldid, channelid));
 		}
 		else if (id >= BT_WORLD0 && id < BT_CHANNEL0)
 		{

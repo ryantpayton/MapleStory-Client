@@ -16,30 +16,57 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "PacketHandler.h"
-#include <memory>
+#include "Net\OutPacket.h"
+#include "Net\SendOpcodes.h"
 
 namespace Net
 {
-	using std::unique_ptr;
-
-	// Maximum number of handler classes needed for now.
-	const uint16_t NUM_HANDLERS = 500;
-
-	// Class which contains the array of handler classes to use. Also responsible for dealing with errors.
-	class PacketHandler83
+	// Packet which accepts the Terms of Service.
+	class TOSPacket : public OutPacket
 	{
 	public:
-		// Register all handlers.
-		PacketHandler83();
-		// Empty destructor.
-		~PacketHandler83();
+		TOSPacket() : OutPacket(ACCEPT_TOS)
+		{
+			writech(1);
+		}
+	};
 
-		// Handle a packet.
-		void handle(InPacket&) const;
+	// Packet which requests login to an account.
+	class LoginPacket : public OutPacket
+	{
+	public:
+		LoginPacket(string acc, string pass) : OutPacket(LOGIN)
+		{
+			writestr(acc);
+			writestr(pass);
+		}
+	};
 
-	private:
-		unique_ptr<PacketHandler> handlers[NUM_HANDLERS];
+	// Packet which requests the list of worlds and channels.
+	class ServerRequestPacket : public OutPacket
+	{
+	public:
+		ServerRequestPacket() : OutPacket(WORLD_REQUEST) {}
+	};
+
+	// Packet which requests the list of characters on a world.
+	class CharlistRequestPacket : public OutPacket
+	{
+	public:
+		CharlistRequestPacket(uint8_t world, uint8_t channel) : OutPacket(CHARLIST_REQUEST)
+		{
+			writech(world);
+			writech(channel);
+		}
+	};
+
+	// Packet which requests login to a channel server for the specified character.
+	class PlayerLoginPacket : public OutPacket
+	{
+	public:
+		PlayerLoginPacket(int32_t cid) : OutPacket(PLAYER_LOGIN)
+		{
+			writeint(cid);
+		}
 	};
 }
-

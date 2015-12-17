@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "OutPacket.h"
-#include "SendOpcodes83.h"
+#include "SendOpcodes.h"
 #include "Util\NxFileMethods.h"
 
 namespace Net

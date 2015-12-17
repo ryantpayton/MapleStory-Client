@@ -22,7 +22,7 @@
 #include "Net\Session.h"
 #include "Program\Configuration.h"
 #include "Audio\Audioplayer.h"
-#include "Net\Packets\LoginPackets83.h"
+#include "Net\Packets\LoginPackets.h"
 #include "IO\Components\MapleButton.h"
 #include "Graphics\Sprite.h"
 #include "nlnx\nx.hpp"
@@ -119,8 +119,7 @@ namespace IO
 			buttons[BT_LOGIN]->setstate(Button::MOUSEOVER);
 			UI::add(ElementLoginwait());
 
-			using::Net::LoginPacket83;
-			Session::dispatch(LoginPacket83(account.gettext(), password.gettext()));
+			Session::dispatch(LoginPacket(account.gettext(), password.gettext()));
 			return;
 		case BT_QUIT:
 			Session::disconnect();

@@ -59,7 +59,8 @@ namespace Character
 		// Update the player's animation, physics and states.
 		int8_t update(const Physics& physics) override;
 
-		bool tryattack();
+		bool canattack();
+		void regularattack();
 
 		// Returns the current walking force, calculated from the total ES_SPEED stat.
 		float getwforce() const override;

@@ -284,13 +284,13 @@ namespace Character
 				{
 					action = drawinfo.getaction(actionstr, actframe);
 					frame = action->getframe();
-					laststance = stance;
 					stance = action->getstance();
 				}
 				else
 				{
 					aniend = true;
 					action = nullptr;
+					actionstr = "";
 					setstance("stand");
 				}
 			}
@@ -411,14 +411,18 @@ namespace Character
 
 	void CharLook::setaction(string acstr)
 	{
-		if (acstr == actionstr)
+		if (acstr == actionstr || acstr == "")
 			return;
 
 		actframe = 0;
-		frame = 0;
 		elapsed = 0;
 		actionstr = acstr;
 		action = drawinfo.getaction(acstr, 0);
+		if (action)
+		{
+			stance = action->getstance();
+			frame = action->getframe();
+		}
 	}
 
 	void CharLook::setflip(bool f)

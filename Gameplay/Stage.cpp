@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Stage.h"
 #include "Camera.h"
+#include "Skill.h"
 #include "Maplemap\MapInfo.h"
 #include "Maplemap\MapLayer.h"
 #include "Maplemap\MapPortals.h"
@@ -61,6 +62,12 @@ namespace Gameplay
 			{
 				return false;
 			}
+		}
+
+		void warptomap(uint8_t portalid, int32_t mapid)
+		{
+			player.getstats().setportal(portalid);
+			loadmap(mapid);
 		}
 
 		void loadmap(int32_t mapid)
@@ -161,7 +168,7 @@ namespace Gameplay
 
 		void useattack(int32_t skillid)
 		{
-			if (!player.tryattack())
+			if (!player.canattack())
 				return;
 
 			Attack attack;
@@ -181,6 +188,22 @@ namespace Gameplay
 			if (skillid > 0)
 			{
 				// Skill
+				static map<int32_t, Skill> skillcache;
+				if (!skillcache.count(skillid))
+					skillcache[skillid] = Skill(skillid);
+
+				const Skill& skill = skillcache[skillid];
+				player.getlook().setaction(skill.getaction(weapon->istwohanded()));
+				
+				if (skill.isoffensive())
+				{
+
+				}
+				else
+				{
+
+					return;
+				}
 			}
 			else
 			{
@@ -192,6 +215,7 @@ namespace Gameplay
 				attack.delay = weapon->getattackdelay();
 				attack.range = weapon->getrange();
 				attack.hiteffect = weapon->gethiteffect();
+				player.regularattack();
 			}
 
 			AttackResult result = mobs.sendattack(attack);

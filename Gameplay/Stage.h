@@ -35,6 +35,7 @@ namespace Gameplay
 
 		// Adds a player object with the given properties.
 		bool loadplayer(int32_t charid);
+		void warptomap(uint8_t portalid, int32_t mapid);
 		// Loads the map to display. 
 		void loadmap(int32_t mapid);
 		// Repositions the player and reactivates the stage after loading.

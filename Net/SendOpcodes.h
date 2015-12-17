@@ -15,52 +15,39 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "SeededState.h"
+#pragma once
+#include <cstdint>
 
 namespace Net
 {
-	SeededState::SeededState(int32_t seed, uint8_t nms, uint8_t st)
+	// Opcodes for outgoing packets.
+	enum SendOpcode : uint16_t
 	{
-		for (int32_t i = 0; i < 4; i++)
-		{
-			value[i] = static_cast<uint8_t>(seed);
-			seed = seed >> 8;
-		}
+		// Login opcodes
+		ACCEPT_TOS = 0,
+		LOGIN = 1,
+		WORLD_REQUEST = 2,
+		CHARLIST_REQUEST = 3,
+		NAME_CHAR = 4,
+		CREATE_CHAR = 5,
+		DELETE_CHAR = 6,
+		SELECT_CHAR = 7,
+		REGISTER_PIC = 8,
+		SELECT_CHAR_PIC = 9,
+		PLAYER_LOGIN = 10,
 
-		numstates = nms;
-		state = st;
-	}
-
-	SeededState::SeededState() {}
-
-	SeededState::~SeededState() {}
-
-	int32_t SeededState::getvalue()
-	{
-		int32_t all = 0;
-		for (int32_t i = 0; i < 4; i++)
-		{
-			all += value[i] << (8 * i);
-		}
-		return all;
-	}
-
-	void SeededState::nextstate()
-	{
-		static uint8_t bytes[4] = 
-		{ 
-			69, 42, 13, 124 
-		};
-
-		for (int32_t i = 0; i < 4; i++)
-		{
-			value[i] = bytes[i] + bytes[value[3 - i] % 4] - value[i];
-		}
-		state = static_cast<uint8_t>(getvalue()) % numstates;
-	}
-
-	uint8_t SeededState::getstate()
-	{
-		return state;
-	}
+		PONG = 24,
+		CHANGEMAP = 38,
+		MOVE_PLAYER = 41,
+		CLOSE_ATTACK = 44,
+		GENERAL_CHAT = 49,
+		TALK_TO_NPC = 58,
+		MOVE_ITEM = 71,
+		USE_ITEM = 72,
+		SCROLL_EQUIP = 86,
+		SPEND_AP = 87,
+		MOVE_MONSTER = 188,
+		PICKUP_ITEM = 202,
+		HASH_CHECK = 30000
+	};
 }

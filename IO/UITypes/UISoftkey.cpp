@@ -19,7 +19,7 @@
 #include "IO\UI.h"
 #include "Net\Session.h"
 #include "IO\Components\MapleButton.h"
-#include "Net\Packets\SelectCharPackets83.h"
+#include "Net\Packets\SelectCharPackets.h"
 #include "nlnx\nx.hpp"
 #include "nlnx\node.hpp"
 
@@ -110,16 +110,15 @@ namespace IO
 			{
 				UI::disable();
 
-				int32_t cid = Net::Session::getlogin().getcharid();
+				using namespace Net;
+				int32_t cid = Session::getlogin().getcharid();
 				switch (type)
 				{
 				case CHARSELECT:
-					using Net::SelectCharPicPacket83;
-					Net::Session::dispatch(SelectCharPicPacket83(entered, cid));
+					Session::dispatch(SelectCharPicPacket(entered, cid));
 					break;
 				case REGISTER:
-					using Net::RegisterPicPacket83;
-					Net::Session::dispatch(RegisterPicPacket83(cid, entered));
+					Session::dispatch(RegisterPicPacket(cid, entered));
 					break;
 				}
 				active = false;

@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Net\OutPacket.h"
-#include "Net\SendOpcodes83.h"
+#include "Net\SendOpcodes.h"
 #include "Character\CharConstants.h"
 
 namespace Net

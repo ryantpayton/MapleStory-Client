@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Session.h"
 #include "Cryptography.h"
-#include "PacketHandler83.h"
+#include "PacketSwitch.h"
 
 #include "Journey.h"
 #ifdef JOURNEY_USE_ASIO
@@ -31,7 +31,7 @@ namespace Net
 	namespace Session
 	{
 		const Cryptography crypto;
-		const PacketHandler83 phandler;
+		const PacketSwitch packetswitch;
 
 		uint8_t sendiv[4] = {};
 		uint8_t recviv[4] = {};
@@ -114,10 +114,9 @@ namespace Net
 				// Create InPacket from the buffer, decrypt it and pass it on to the PacketHandler.
 				InPacket recv = InPacket(buffer, length);
 				crypto.decrypt(buffer, length, recviv);
-				phandler.handle(recv);
+				packetswitch.handle(recv);
 #else
-				InPacket recv = InPacket(buffer, length);
-				phandler.handle(recv);
+				packetswitch.forward(buffer, length);
 #endif
 
 				pos = 0;

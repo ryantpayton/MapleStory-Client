@@ -20,16 +20,24 @@
 
 namespace Net
 {
-	// Opcodes for InPacket Handlers associated with version 83 of the game.
-	enum RecvOpcode83 : int16_t
+	// Opcodes for incoming packets.
+	enum RecvOpcode : uint16_t
 	{
-		LOGIN_RESULT = 0,
-		SERVERLIST = 10,
-		CHARLIST = 11,
-		SERVER_IP = 12,
-		CHARNAME_RESPONSE = 13,
-		ADD_NEWCHAR_ENTRY = 14,
-		DELCHAR_RESPONSE = 15,
+		// Login Opcodes
+		LOGIN_STATUS = 0,
+		WORLD_STATUS = 1,
+		CHARLIST = 2,
+		NAME_RESPONSE = 3,
+		NEW_CHAR_RESPONSE = 4,
+		DELETE_RESPONSE = 5,
+		WRONG_PIC = 6,
+		SERVER_IP = 7,
+
+		// 'Setfield' Opcodes
+		CHARACTER_INFO = 8,
+		WARP_TO_MAP = 9,
+		CHANGE_CHANNEL = 10,
+
 		PING = 17,
 		SELECT_WORLD = 26,
 		RECOMMENDED_WORLDS = 27,
@@ -52,7 +60,6 @@ namespace Net
 		SCRIPT_PROGRESS_MESSAGE = 122,
 		RECEIVE_POLICE = 123,
 		SKILL_MACROS = 124,
-		SET_FIELD = 125,
 		FIELD_EFFECT = 138,
 		CLOCK = 147,
 		SPAWN_PLAYER = 160,

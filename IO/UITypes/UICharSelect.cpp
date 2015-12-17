@@ -25,7 +25,7 @@
 #include "IO\Components\MapleButton.h"
 #include "IO\Components\AreaButton.h"
 #include "Graphics\Sprite.h"
-#include "Net\Packets\SelectCharPackets83.h"
+#include "Net\Packets\SelectCharPackets.h"
 #include "Program\Configuration.h"
 #include "nlnx\nx.hpp"
 
@@ -216,7 +216,7 @@ namespace IO
 				break;
 			case 2:
 				UI::disable();
-				Net::Session::dispatch(Net::SelectCharPacket83(cid));
+				Net::Session::dispatch(Net::SelectCharPacket(cid));
 				break;
 			}
 		}

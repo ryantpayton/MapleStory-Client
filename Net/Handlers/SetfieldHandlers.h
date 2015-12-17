@@ -21,6 +21,7 @@
 #include "IO\UI.h"
 #include "Gameplay\Stage.h"
 #include "Program\Configuration.h"
+#include "Net\Session.h"
 
 #include "Journey.h"
 #ifdef JOURNEY_USE_OPENGL
@@ -37,116 +38,54 @@ namespace Net
 	using Character::Monsterbook;
 	using Character::Telerock;
 
-	// Handler for a packet which either contains all character information on first login,
-	// or warps the player to a different map.
-	class SetfieldHandler83 : public AbstractItemHandler83
+	// Handler for a packet which contains all character information on first login.
+	class CharacterInfoHandler : public AbstractItemHandler83
 	{
 		void handle(InPacket& recv) const override
 		{
-			int32_t channel = recv.readint();
-			int8_t mode1 = recv.readbyte();
-			int8_t mode2 = recv.readbyte();
-			if (mode1 == 0 && mode2 == 0)
-			{
-				changemap(recv, channel);
-			}
-			else
-			{
-				setfield(recv);
-			}
-		}
-
-		void changemap(InPacket& recv, int32_t channel) const
-		{
-			recv.skip(3);
-
-			// Spawn information.
-			int32_t mapid = recv.readint();
-			int8_t portalid = recv.readbyte();
-
-			// Timestamp
-			recv.skip(8);
-
-			Gameplay::Stage::getplayer().getstats().setportal(portalid);
-			if (channel == Session::getlogin().getchannelid())
-			{
-				// Change map.
-#ifdef JOURNEY_USE_OPENGL
-				Graphics::GraphicsGL::clear();
-#else
-				using::Graphics::GraphicsD2D;
-				GraphicsD2D::clear();
-#endif
-
-				Gameplay::Stage::loadmap(mapid);
-				Gameplay::Stage::respawn();
-				IO::UI::enable();
-			}
-			else
-			{
-				// Change channel.
-			}
-		}
-
-		void setfield(InPacket& recv) const
-		{
-			recv.skip(23);
-
 			int32_t cid = recv.readint();
-			bool loaded = Gameplay::Stage::loadplayer(cid);
-			if (loaded)
+			if (!Gameplay::Stage::loadplayer(cid))
+				return;
+
+			Character::Player& player = Gameplay::Stage::getplayer();
+			recv.readbyte(); // 'buddycap'
+			if (recv.readbool())
 			{
-				Character::Player& player = Gameplay::Stage::getplayer();
+				recv.readascii(); // 'linkedname'
+			}
+			parseinventory(recv, player.getinvent());
+			parseskillbook(recv, player.getskills());
+			parsequestlog(recv, player.getquests());
+			parsetelerock(recv, player.gettrock());
+			parsemonsterbook(recv, player.getmonsterbook());
 
-				Net::Session::getlogin().parsestats(recv);
-				recv.readbyte(); // 'buddycap'
-				if (recv.readbool())
-				{
-					string lname = recv.readascii();
-				}
+			player.recalcstats(true);
 
-				parseinventory(recv, player.getinvent());
-				parseskillbook(recv, player.getskills());
-				parsequestlog(recv, player.getquests());
-				parseminigame(recv);
-				parsering1(recv);
-				parsering2(recv);
-				parsering3(recv);
-				parsetelerock(recv, player.gettrock());
-				parsemonsterbook(recv, player.getmonsterbook());
-				parsenewyear(recv);
-				parseareainfo(recv);
-
-				recv.skip(10);
-
-				player.recalcstats(true);
-
-				using IO::Element;
-				IO::UI::remove(Element::CHARSELECT);
-				IO::UI::remove(Element::SOFTKEYBOARD);
+			using IO::Element;
+			IO::UI::remove(Element::CHARSELECT);
+			IO::UI::remove(Element::SOFTKEYBOARD);
 
 #ifdef JOURNEY_USE_OPENGL
-				Graphics::GraphicsGL::clear();
+			Graphics::GraphicsGL::clear();
 #else
-				using::Graphics::GraphicsD2D;
-				GraphicsD2D::clear();
+			using::Graphics::GraphicsD2D;
+			GraphicsD2D::clear();
 #endif
 
-				//parent.getui()add(UI_QUICKSLOTS);
-				using::IO::ElementStatusbar;
-				IO::UI::add(ElementStatusbar(player.getstats()));
-				//parent.getui()add(UI_CHATBAR);
-				//parent.getui()add(UI_INVENTORY);
-				//parent.getui()getbase()->setactive(true);
+			//parent.getui()add(UI_QUICKSLOTS);
+			using::IO::ElementStatusbar;
+			IO::UI::add(ElementStatusbar(player.getstats()));
+			//parent.getui()add(UI_CHATBAR);
+			//parent.getui()add(UI_INVENTORY);
+			//parent.getui()getbase()->setactive(true);
 
-				//Game::getcache()->getsounds()->play(MSN_GAMEIN);
-				int32_t mapid = player.getstats().getmapid();
-				Gameplay::Stage::loadmap(mapid);
-				Gameplay::Stage::respawn();
+			//Game::getcache()->getsounds()->play(MSN_GAMEIN);
+			int32_t mapid = player.getstats().getmapid();
+			Gameplay::Stage::loadmap(mapid);
+			Gameplay::Stage::respawn();
 
-				IO::UI::enable();
-				IO::UI::enablegamekeys(true);
-			}
+			IO::UI::enable();
+			IO::UI::enablegamekeys(true);
 		}
 
 		void parseinventory(InPacket& recv, Inventory& invent) const
@@ -157,8 +96,6 @@ namespace Net
 			invent.setslots(Inventory::SETUP, recv.readbyte());
 			invent.setslots(Inventory::ETC, recv.readbyte());
 			invent.setslots(Inventory::CASH, recv.readbyte());
-
-			recv.skip(8);
 
 			for (size_t i = 0; i < 3; i++)
 			{
@@ -253,59 +190,6 @@ namespace Net
 			}
 		}
 
-		void parsering1(InPacket& recv) const
-		{
-			int16_t rsize = recv.readshort();
-			for (int16_t i = 0; i < rsize; i++)
-			{
-				recv.readint();
-				recv.readpadascii(13);
-				recv.readint();
-				recv.readint();
-				recv.readint();
-				recv.readint();
-			}
-		}
-
-		void parsering2(InPacket& recv) const
-		{
-			int16_t rsize = recv.readshort();
-			for (int16_t i = 0; i < rsize; i++)
-			{
-				recv.readint();
-				recv.readpadascii(13);
-				recv.readint();
-				recv.readint();
-				recv.readint();
-				recv.readint();
-				recv.readint();
-			}
-		}
-
-		void parsering3(InPacket& recv) const
-		{
-			int16_t rsize = recv.readshort();
-			for (int16_t i = 0; i < rsize; i++)
-			{
-				recv.readint();
-				recv.readint();
-				recv.readint();
-				recv.readshort();
-				recv.readint();
-				recv.readint();
-				recv.readpadascii(13);
-				recv.readpadascii(13);
-			}
-		}
-
-		void parseminigame(InPacket& recv) const
-		{
-			int16_t mgsize = recv.readshort();
-			for (int16_t i = 0; i < mgsize; i++)
-			{
-			}
-		}
-
 		void parsetelerock(InPacket& recv, Telerock& trock) const
 		{
 			for (size_t i = 0; i < 5; i++)
@@ -319,24 +203,39 @@ namespace Net
 				trock.addviplocation(mapid);
 			}
 		}
+	};
 
-		void parsenewyear(InPacket& recv) const
+	// Handler for a packet which warps the player to a different map.
+	class WarpToMapHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override
 		{
-			int16_t nysize = recv.readshort();
-			for (int16_t i = 0; i < nysize; i++)
-			{
-			}
+			// Spawn information.
+			int32_t mapid = recv.readint();
+			uint8_t portalid = static_cast<uint8_t>(recv.readint());
+
+			// Change map.
+#ifdef JOURNEY_USE_OPENGL
+			Graphics::GraphicsGL::clear();
+#else
+			using::Graphics::GraphicsD2D;
+			GraphicsD2D::clear();
+#endif
+
+			Gameplay::Stage::warptomap(portalid, mapid);
+			Gameplay::Stage::respawn();
+			IO::UI::enable();
 		}
+	};
 
-		void parseareainfo(InPacket& recv) const
+	// Handler for a packet which warps the player to a different channel.
+	class ChangeChannelHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override
 		{
-			map<int16_t, string> areainfo;
-			int16_t arsize = recv.readshort();
-			for (int16_t i = 0; i < arsize; i++)
-			{
-				int16_t area = recv.readshort();
-				areainfo[area] = recv.readascii();
-			}
+			// Spawn information.
+			recv.readbyte(); // channel
+			// ip adress etc.
 		}
 	};
 }

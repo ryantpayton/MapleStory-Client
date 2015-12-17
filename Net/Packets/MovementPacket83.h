@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Net\OutPacket.h"
-#include "Net\SendOpcodes83.h"
+#include "Net\SendOpcodes.h"
 #include "Gameplay\MovementInfo.h"
 
 namespace Net
@@ -29,7 +29,7 @@ namespace Net
 	class MovementPacket83 : public OutPacket
 	{
 	public:
-		MovementPacket83(SendOpcode83 opc) : OutPacket(opc) {}
+		MovementPacket83(SendOpcode opc) : OutPacket(opc) {}
 	protected:
 		void writemoves(const MovementInfo& movement)
 		{

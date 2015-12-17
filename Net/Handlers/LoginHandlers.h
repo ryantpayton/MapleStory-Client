@@ -16,8 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "PacketHandler.h"
-#include "Net\Packets\LoginPackets83.h"
+#include "Net\PacketHandler.h"
+#include "Net\Packets\LoginPackets.h"
 #include "Net\Session.h"
 #include "IO\UITypes\UILogin.h"
 #include "IO\UITypes\UILoginNotice.h"
@@ -32,7 +32,7 @@ namespace Net
 	using IO::Element;
 
 	// Handler for a packet that contains the response to an attempt at logging in.
-	class LoginResultHandler83 : public PacketHandler
+	class LoginStatusHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override
 		{
@@ -56,7 +56,7 @@ namespace Net
 					return;
 				case 23:
 					// The server sends a request to accept the terms of service. For convenience, just auto-accept.
-					Session::dispatch(TOSPacket83());
+					Session::dispatch(TOSPacket());
 					return;
 				default:
 					// Other reasons.
@@ -79,13 +79,13 @@ namespace Net
 				}
 
 				// Request the list of worlds and channels online.
-				Session::dispatch(ServerRequestPacket83());
+				Session::dispatch(ServerRequestPacket());
 			}
 		}
 	};
 
 	// Handles the packet that contains information on worlds and channels.
-	class ServerlistHandler83 : public PacketHandler
+	class WorldStatusHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override
 		{
@@ -103,7 +103,7 @@ namespace Net
 	};
 
 	// Handler for a packet that contains information on all chars on this world.
-	class CharlistHandler83 : public PacketHandler
+	class CharlistHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override
 		{
@@ -121,7 +121,7 @@ namespace Net
 	};
 
 	// Handler for a packet which responds to the request for a character name.
-	class CharnameResultHandler83 : public PacketHandler
+	class NameResultHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override
 		{
@@ -149,7 +149,7 @@ namespace Net
 	};
 
 	// Handler for the packet that notifies that a char was successfully created.
-	class AddNewcharHandler83 : public PacketHandler
+	class NewCharResponseHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override
 		{
@@ -172,7 +172,7 @@ namespace Net
 	};
 
 	// Handler for a packet that responds to the request to the delete a character.
-	class DeleteCharResultHandler83 : public PacketHandler
+	class DeleteResponseHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override
 		{
@@ -189,7 +189,7 @@ namespace Net
 	};
 
 	// Handles the packet which contains the IP of a channel server to connect to.
-	class ServerIPHandler83 : public PacketHandler
+	class ServerIPHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override
 		{
@@ -212,7 +212,7 @@ namespace Net
 			int32_t cid = recv.readint();
 			bool connected = Session::reconnect(addrstr.c_str(), portstr.c_str());
 			if (connected)
-				Session::dispatch(PlayerLoginPacket83(cid));
+				Session::dispatch(PlayerLoginPacket(cid));
 			else
 				Session::disconnect();
 		}

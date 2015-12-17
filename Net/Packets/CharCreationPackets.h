@@ -16,41 +16,40 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include <cstdint>
+#include "Net\OutPacket.h"
+#include "Net\SendOpcodes.h"
 
 namespace Net
 {
-	// Opcodes for OutPackets associated with version 83 of the game.
-	enum SendOpcode83 : int16_t
+	// Packet which requests reserving a name for the character to be created.
+	class NameCharPacket : public OutPacket
 	{
-		LOGIN = 1,
-		SERVERLIST_REREQUEST = 4,
-		CHARLIST_REQUEST = 5,
-		STATUS_REQUEST = 6,
-		ACCEPT_TOS = 7,
-		SET_GENDER = 8,
-		AFTER_LOGIN = 9,
-		REGISTER_PIN = 10,
-		SERVERLIST_REQUEST = 11,
-		SELECT_CHAR = 19,
-		PLAYER_LOGIN = 20,
-		NAME_CHAR = 21,
-		CREATE_CHAR = 22,
-		DELETE_CHAR = 23,
-		PONG = 24,
-		REGISTER_PIC = 29,
-		SELECT_CHAR_PIC = 30,
-		CHANGEMAP = 38,
-		MOVE_PLAYER = 41,
-		CLOSE_ATTACK = 44,
-		GENERAL_CHAT = 49,
-		TALK_TO_NPC = 58,
-		MOVE_ITEM = 71,
-		USE_ITEM = 72,
-		SCROLL_EQUIP = 86,
-		SPEND_AP = 87,
-		MOVE_MONSTER = 188,
-		PICKUP_ITEM = 202,
-		HASH_CHECK = 30000
+	public:
+		NameCharPacket(string name) : OutPacket(NAME_CHAR)
+		{
+			writestr(name);
+		}
+	};
+
+	// Packets which requests creation of a character with the specified stats.
+	class CreateCharPacket : public OutPacket
+	{
+	public:
+		CreateCharPacket(string name, uint16_t job, int32_t face, int32_t hair, 
+			uint8_t hairc, uint8_t skin, int32_t top, int32_t bot, int32_t shoes, 
+			int32_t weapon, bool female) : OutPacket(CREATE_CHAR) {
+
+			writestr(name);
+			writeint(job);
+			writeint(face);
+			writeint(hair);
+			writeint(hairc);
+			writeint(skin);
+			writeint(top);
+			writeint(bot);
+			writeint(shoes);
+			writeint(weapon);
+			writech(female);
+		}
 	};
 }

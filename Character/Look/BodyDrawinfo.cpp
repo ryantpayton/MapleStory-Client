@@ -42,7 +42,10 @@ namespace Character
 			{
 				uint16_t delay;
 				if (framenode["delay"].data_type() == node::type::integer)
-					delay = framenode["delay"];
+				{
+					int16_t sdelay = framenode["delay"];
+					delay = (sdelay < 0) ? -sdelay : sdelay;
+				}
 				else
 					delay = 50;
 
@@ -51,8 +54,7 @@ namespace Character
 				{
 					string acstance = actionnode.get_string();
 					uint8_t acframe = framenode["frame"];
-					uint16_t acdelay = (delay < 0) ? -delay : delay;
-					bodyactions[stance][frame] = BodyAction(acstance, acframe, acdelay);
+					bodyactions[stance][frame] = BodyAction(acstance, acframe, delay);
 				}
 				else
 				{
