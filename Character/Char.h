@@ -27,6 +27,7 @@ namespace Character
 	using std::unique_ptr;
 	using Util::rectangle2d;
 	using Gameplay::MapObject;
+	using Gameplay::Camera;
 
 	// Base for characters, e.g. the player and other clients on the same map.
 	class Char : public MapObject
@@ -50,17 +51,10 @@ namespace Character
 		};
 
 		// Draw look, nametag, effects and chat bubble.
-		void draw(vector2d<int16_t> viewpos, float inter) const override;
+		void draw(const Camera& camera, float inter) const override;
 		// Update look and movements.
 		int8_t update(const Physics& physics) override;
-		// Set the position as specified
-		void setposition(int16_t xpos, int16_t ypos) override;
-		// Return the layer the character is currently on.
 		int8_t getlayer() const override;
-		// Return the unique character id.
-		int32_t getoid() const override;
-		// Return the current position.
-		vector2d<int16_t> getposition() const override;
 
 		// Add a pet with the specified stats.
 		void addpet(uint8_t index, int32_t iid, string name, 
@@ -87,16 +81,12 @@ namespace Character
 
 		// Obtain a reference to the character's sprite.
 		CharLook& getlook();
-		// Obtain a reference to the character's physics.
-		PhysicsObject& getphobj();
 
 	protected:
 		CharLook look;
 		Textlabel namelabel;
 		PetLook pets[3];
-		PhysicsObject phobj;
 
-		int32_t cid;
 		Stance stance;
 		bool flip;
 	};

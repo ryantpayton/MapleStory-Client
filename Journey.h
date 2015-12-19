@@ -17,7 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 
 //Define things here.
+
 // JOURNEY_USE_OPENGL : Use opengl for graphics, if not defined use D2D.
-//#define JOURNEY_USE_OPENGL
+// #define JOURNEY_USE_OPENGL
+
 // JOURNEY_USE_ASIO : Use asio for networking , if not defined use Winsock.
-//#define JOURNEY_USE_ASIO
+// #define JOURNEY_USE_ASIO
+
+// JOURNEY_USE_CRYPTO : Use cryptography when communicating with the server.
+// #define JOURNEY_USE_CRYPTO

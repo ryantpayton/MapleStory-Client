@@ -22,13 +22,7 @@
 #include "Gameplay\Stage.h"
 #include "Program\Configuration.h"
 #include "Net\Session.h"
-
-#include "Journey.h"
-#ifdef JOURNEY_USE_OPENGL
-#include "Graphics\GraphicsGL.h"
-#else
-#include "Graphics\GraphicsD2D.h"
-#endif
+#include "Graphics\GraphicsEngine.h"
 
 namespace Net
 {
@@ -61,20 +55,13 @@ namespace Net
 
 			player.recalcstats(true);
 
-			using IO::Element;
-			IO::UI::remove(Element::CHARSELECT);
-			IO::UI::remove(Element::SOFTKEYBOARD);
+			IO::UI::remove(IO::Element::CHARSELECT);
+			IO::UI::remove(IO::Element::SOFTKEYBOARD);
 
-#ifdef JOURNEY_USE_OPENGL
-			Graphics::GraphicsGL::clear();
-#else
-			using::Graphics::GraphicsD2D;
-			GraphicsD2D::clear();
-#endif
+			Graphics::GraphicsEngine::clear();
 
 			//parent.getui()add(UI_QUICKSLOTS);
-			using::IO::ElementStatusbar;
-			IO::UI::add(ElementStatusbar(player.getstats()));
+			IO::UI::add(IO::ElementStatusbar(player.getstats()));
 			//parent.getui()add(UI_CHATBAR);
 			//parent.getui()add(UI_INVENTORY);
 			//parent.getui()getbase()->setactive(true);
@@ -214,13 +201,7 @@ namespace Net
 			int32_t mapid = recv.readint();
 			uint8_t portalid = static_cast<uint8_t>(recv.readint());
 
-			// Change map.
-#ifdef JOURNEY_USE_OPENGL
-			Graphics::GraphicsGL::clear();
-#else
-			using::Graphics::GraphicsD2D;
-			GraphicsD2D::clear();
-#endif
+			Graphics::GraphicsEngine::clear();
 
 			Gameplay::Stage::warptomap(portalid, mapid);
 			Gameplay::Stage::respawn();

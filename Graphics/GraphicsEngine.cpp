@@ -15,30 +15,26 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include <cstdint>
-#include <map>
+#include "GraphicsEngine.h"
 
-namespace Character
+#include "Journey.h"
+#ifdef JOURNEY_USE_OPENGL
+#include "GraphicsGL.h"
+#else
+#include "GraphicsD2D.h"
+#endif
+
+namespace Graphics
 {
-	using::std::int32_t;
-	using::std::int64_t;
-	using::std::map;
-	// Class that stores all information about the skills of an individual character.
-	class Skillbook
+	namespace GraphicsEngine
 	{
-	public:
-		Skillbook();
-		~Skillbook();
-		void setskill(int32_t, int32_t, int32_t, int64_t);
-		void setcd(int32_t, int32_t);
-		int32_t getlevelof(int32_t skillid) const;
-
-	private:
-		map<int32_t, int32_t> levels;
-		map<int32_t, int32_t> masterlevels;
-		map<int32_t, int32_t> cooldowns;
-		map<int32_t, int64_t> expirations;
-	};
+		void clear()
+		{
+#ifdef JOURNEY_USE_OPENGL
+			GraphicsGL::clear();
+#else
+			GraphicsD2D::clear();
+#endif
+		}
+	}
 }
-

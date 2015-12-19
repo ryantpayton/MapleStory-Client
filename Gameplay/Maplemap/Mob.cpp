@@ -167,21 +167,24 @@ namespace Gameplay
 			damagenumbers.erase(damagenumbers.begin());
 		}
 
-		switch (behaviour.getstate())
+		if (stance != HIT && stance != DIE)
 		{
-		case MOVELEFT:
-			phobj.hforce = -static_cast<float>(speed) * MONSTERSPEED / 100;
-			flip = false;
-			setstance(MOVE);
-			break;
-		case MOVERIGHT:
-			phobj.hforce = static_cast<float>(speed) * MONSTERSPEED / 100;
-			flip = true;
-			setstance(MOVE);
-			break;
-		case STOP:
-			setstance(STAND);
-			break;
+			switch (behaviour.getstate())
+			{
+			case MOVELEFT:
+				phobj.hforce = -static_cast<float>(speed)* MONSTERSPEED / 100;
+				flip = false;
+				setstance(MOVE);
+				break;
+			case MOVERIGHT:
+				phobj.hforce = static_cast<float>(speed)* MONSTERSPEED / 100;
+				flip = true;
+				setstance(MOVE);
+				break;
+			case STOP:
+				setstance(STAND);
+				break;
+			}
 		}
 
 		counter++;
@@ -196,12 +199,12 @@ namespace Gameplay
 		return phobj.fhlayer;
 	}
 
-	void Mob::draw(vector2d<int16_t> viewpos, float inter) const
+	void Mob::draw(const Camera& camera, float inter) const
 	{
 		if (!active)
 			return;
 
-		vector2d<int16_t> absp = phobj.getposition(inter) + viewpos;
+		vector2d<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
 		if (animations.count(stance))
 		{
 			using Graphics::DrawArgument;
@@ -215,7 +218,7 @@ namespace Gameplay
 
 		for (auto& dmg : damagenumbers)
 		{
-			dmg.draw(viewpos);
+			dmg.draw(camera.getposition(inter));
 		}
 	}
 
@@ -236,11 +239,6 @@ namespace Gameplay
 		}
 	}
 
-	void Mob::makeactive()
-	{
-		active = true;
-	}
-
 	void Mob::sendhp(int8_t percent, uint16_t playerlevel)
 	{
 		if (hppercent == 0)
@@ -252,30 +250,6 @@ namespace Gameplay
 				namelabel.setcolor(Textlabel::TXC_RED);
 		}
 		hppercent = percent;
-	}
-
-	void Mob::setposition(int16_t x, int16_t y)
-	{
-		phobj.fx = static_cast<float>(x);
-		phobj.fy = static_cast<float>(y);
-	}
-
-	int8_t Mob::getlayer() const
-	{
-		return phobj.fhlayer;
-	}
-
-	int32_t Mob::getoid() const
-	{
-		return oid;
-	}
-
-	vector2d<int16_t> Mob::getposition() const
-	{
-		return vector2d<int16_t>(
-			static_cast<int16_t>(phobj.fx),
-			static_cast<int16_t>(phobj.fy)
-			);
 	}
 
 	bool Mob::isactive() const

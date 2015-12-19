@@ -53,6 +53,7 @@ namespace Gameplay
 
 		bool isoffensive() const;
 		string getaction(bool twohanded) const;
+		const SkillLevel* getlevel(int32_t level) const;
 
 	private:
 		map<uint8_t, Texture> icons;
@@ -63,6 +64,6 @@ namespace Gameplay
 		int32_t preparetime;
 		bool offensive;
 		vector<string> actions;
-		map<uint8_t, SkillLevel> levels;
+		map<int32_t, SkillLevel> levels;
 	};
 }

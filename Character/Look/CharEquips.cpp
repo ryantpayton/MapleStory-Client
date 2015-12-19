@@ -48,6 +48,11 @@ namespace Character
 		return !getequip(slot).istransparent();
 	}
 
+	bool CharEquips::hasoverall() const
+	{
+		return (getequip(EQL_TOP).getid() / 10000) == 105;
+	}
+
 	bool CharEquips::istwohanded() const
 	{
 		const Weapon* weapon = getweapon();

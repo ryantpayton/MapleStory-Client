@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Cryptography.h"
+#include "Journey.h"
 
 namespace Net
 {
@@ -23,7 +24,7 @@ namespace Net
 
 	Cryptography::~Cryptography() {}
 
-#ifndef CRYPTO_ENABLED
+#ifndef JOURNEY_USE_CRYPTO
 
 	size_t Cryptography::getlength(const int8_t* bytes) const
 	{
@@ -35,6 +36,16 @@ namespace Net
 		return length;
 	}
 
+	void Cryptography::getheader(int8_t* buffer, size_t slength) const
+	{
+		int32_t length = static_cast<int32_t>(slength);
+		for (int32_t i = 0; i < 4; i++)
+		{
+			buffer[i] = static_cast<int8_t>(length);
+			length = length >> 8;
+		}
+	}
+}
 #else
 
 	size_t Cryptography::getlength(const int8_t* bytes) const
@@ -349,4 +360,3 @@ namespace Net
 		}
 	}
 #endif
-}

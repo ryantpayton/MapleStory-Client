@@ -33,13 +33,15 @@ namespace Net
 		const Cryptography crypto;
 		const PacketSwitch packetswitch;
 
-		uint8_t sendiv[4] = {};
-		uint8_t recviv[4] = {};
+		uint8_t sendiv[HEADERLEN] = {};
+		uint8_t recviv[HEADERLEN] = {};
 		bool connected = false;
 
 		int8_t buffer[MAX_PACKET_LEN] = {};
 		size_t length = 0;
 		size_t pos = 0;
+
+		const size_t MIN_PACKET_LEN = HEADERLEN + 2;
 
 #ifdef JOURNEY_USE_ASIO
 		SocketAsio socket;
@@ -49,9 +51,9 @@ namespace Net
 
 		bool init(const char* host, const char* port)
 		{
-#ifdef CRYPTO_ENABLED
 			// Connect to the server and attempt to read the handshake packet.
 			connected = socket.open(host, port);
+#ifdef JOURNEY_USE_CRYPTO
 			if (connected)
 			{
 				InPacket handshake = InPacket(socket.getbuffer(), HANDSHAKE_LEN);
@@ -60,12 +62,8 @@ namespace Net
 				handshake.readarray<uint8_t>(sendiv, 4);
 				handshake.readarray<uint8_t>(recviv, 4);
 			}
-			// Return if connected successfully.
-			return connected;
-#else
-			connected = socket.open(host, port);
-			return connected;
 #endif
+			return connected;
 		}
 
 		bool init()
@@ -95,9 +93,9 @@ namespace Net
 			{
 				// Pos is 0, meaning this is the start of a new packet. Start by determining length.
 				length = crypto.getlength(bytes);
-				// Reading the length means we processed the header. Move forward by 4.
-				bytes = bytes + 4;
-				available -= 4;
+				// Reading the length means we processed the header. Move forward by the header length.
+				bytes = bytes + HEADERLEN;
+				available -= HEADERLEN;
 			}
 
 			// Determine how much we can write. Write data into the buffer.
@@ -110,11 +108,10 @@ namespace Net
 			// Check if the current packet has been fully processed.
 			if (pos >= length)
 			{
-#ifdef CRYPTO_ENABLED
+#ifdef JOURNEY_USE_CRYPTO
 				// Create InPacket from the buffer, decrypt it and pass it on to the PacketHandler.
-				InPacket recv = InPacket(buffer, length);
 				crypto.decrypt(buffer, length, recviv);
-				packetswitch.handle(recv);
+				packetswitch.forward(buffer, length);
 #else
 				packetswitch.forward(buffer, length);
 #endif
@@ -123,7 +120,7 @@ namespace Net
 
 				// Check if there is more available.
 				size_t remaining = available - towrite;
-				if (remaining > 0)
+				if (remaining >= MIN_PACKET_LEN)
 				{
 					// More packets are available, so we start over.
 					process(bytes + towrite, remaining);
@@ -135,7 +132,7 @@ namespace Net
 		{
 			// Check if a packet has arrived. Handle if data is sufficient: 4 bytes(header) + 2 bytes(opcode) = 6.
 			size_t result = socket.receive(&connected);
-			if (result > 5)
+			if (result >= MIN_PACKET_LEN)
 			{
 				// Retrieve buffer from the socket and process it.
 				const int8_t* bytes = socket.getbuffer();
@@ -147,7 +144,7 @@ namespace Net
 
 		void dispatch(const OutPacket& tosend)
 		{
-#ifdef CRYPTO_ENABLED
+#ifdef JOURNEY_USE_CRYPTO
 			// The packet 'tosend' arrives without header so total length is + 4.
 			size_t total = tosend.length() + 4;
 			// Create a temporary buffer and copy packet's bytes.
@@ -159,17 +156,10 @@ namespace Net
 			socket.dispatch(bytes, total);
 			delete[] bytes;
 #else
-
-			size_t total = tosend.length() + 4;
-			int8_t* bytes = new int8_t[total];
-			int32_t length = static_cast<int32_t>(tosend.length());
-			for (int32_t i = 0; i < 4; i++) 
-			{
-				bytes[i] = static_cast<int8_t>(length);
-				length = length >> 8;
-			}
-			memcpy(bytes + 4, tosend.getbytes(), tosend.length());
-			socket.dispatch(bytes, total);
+			int8_t header[HEADERLEN];
+			crypto.getheader(header, tosend.length());
+			socket.dispatch(header, HEADERLEN);
+			socket.dispatch(tosend.getbytes(), tosend.length());
 #endif
 		}
 

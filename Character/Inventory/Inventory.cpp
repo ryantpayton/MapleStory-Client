@@ -16,21 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Inventory.h"
+#include "Data\DataFactory.h"
 #include <numeric>
 #include <algorithm>
 
 namespace Character
 {
-	const ItemData& getitem(int32_t itemid)
-	{
-		static map<int32_t, ItemData> items;
-		if (!items.count(itemid))
-		{
-			items[itemid] = ItemData(itemid);
-		}
-		return items[itemid];
-	}
-
 	Inventory::Inventory()
 	{
 		meso = 0;
@@ -68,7 +59,7 @@ namespace Character
 		if (slot >= slots[invtype])
 			return;
 
-		const ItemData& idata = getitem(iid);
+		const ItemData& idata = Data::getitemdata(iid);
 		if (idata.isloaded())
 		{
 			add(invtype, slot, new Item(
@@ -83,7 +74,7 @@ namespace Character
 		if (slot >= slots[invtype])
 			return;
 
-		const ItemData& idata = getitem(iid);
+		const ItemData& idata = Data::getitemdata(iid);
 		if (idata.isloaded())
 		{
 			add(invtype, slot, new Pet(
@@ -99,7 +90,7 @@ namespace Character
 		if (slot >= slots[invtype])
 			return;
 
-		const ItemData& idata = getitem(iid);
+		const ItemData& idata = Data::getitemdata(iid);
 		if (idata.isloaded())
 		{
 			add(invtype, slot, new Equip(

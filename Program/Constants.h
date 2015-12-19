@@ -27,9 +27,9 @@ namespace Constants
 	const uint16_t TIMESTEP = 8;
 
 	// Game width (float).
-	const float fVIEWWIDTH = 800.0f;
+	const double fVIEWWIDTH = 800.0;
 	// Game heihgt (float).
-	const float fVIEWHEIGHT = 600.0f;
+	const double fVIEWHEIGHT = 600.0;
 	// Game width (int).
 	const int32_t VIEWWIDTH = 800;
 	// Game height (int).

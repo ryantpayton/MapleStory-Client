@@ -49,6 +49,9 @@ namespace Gameplay
 		uint8_t hitcount = 0;
 		uint8_t mobcount = 0;
 
+		int32_t skill = 0;
+		uint8_t speed = 0;
+
 		Direction direction;
 		Util::vector2d<int16_t> origin;
 		Util::rectangle2d<int16_t> range;

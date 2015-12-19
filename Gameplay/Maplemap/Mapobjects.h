@@ -42,9 +42,9 @@ namespace Gameplay
 
 		virtual ~MapObjects() {}
 		// Draw all mapobjects that are on the specified layer.
-		void draw(int8_t layer, vector2d<int16_t> viewpos, float inter) const;
+		void draw(int8_t layer, const Camera& camera, float inter) const;
 		// Update all mapobjects of this type. Also updates layers eg. drawing order.
-		void update(const Physics& physics);
+		virtual void update(const Physics& physics);
 		// Removes all mapobjects of this type.
 		void clear();
 		// Adds a mapobject of this type.

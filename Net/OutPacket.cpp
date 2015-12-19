@@ -51,4 +51,10 @@ namespace Net
 			bytes.push_back(str[i]);
 		}
 	}
+
+	void OutPacket::writepoint(vector2d<int16_t> position)
+	{
+		write<int16_t>(position.x());
+		write<int16_t>(position.y());
+	}
 }

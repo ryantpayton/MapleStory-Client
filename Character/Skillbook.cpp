@@ -34,4 +34,12 @@ namespace Character
 	{
 		cooldowns[id] = cd;
 	}
+
+	int32_t Skillbook::getlevelof(int32_t id) const
+	{
+		if (levels.count(id))
+			return levels.at(id);
+		else
+			return 0;
+	}
 }

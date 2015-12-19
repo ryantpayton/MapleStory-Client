@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -15,30 +15,57 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include <cstdint>
-#include <map>
+#include "MapObject.h"
 
-namespace Character
-{
-	using::std::int32_t;
-	using::std::int64_t;
-	using::std::map;
-	// Class that stores all information about the skills of an individual character.
-	class Skillbook
+namespace Gameplay
+{ 
+	int8_t MapObject::update(const Physics& physics)
 	{
-	public:
-		Skillbook();
-		~Skillbook();
-		void setskill(int32_t, int32_t, int32_t, int64_t);
-		void setcd(int32_t, int32_t);
-		int32_t getlevelof(int32_t skillid) const;
+		physics.moveobject(phobj);
+		return phobj.fhlayer;
+	}
 
-	private:
-		map<int32_t, int32_t> levels;
-		map<int32_t, int32_t> masterlevels;
-		map<int32_t, int32_t> cooldowns;
-		map<int32_t, int64_t> expirations;
-	};
+	void MapObject::setposition(int16_t x, int16_t y)
+	{
+		phobj.fx = static_cast<float>(x);
+		phobj.fy = static_cast<float>(y);
+	}
+
+	void MapObject::setactive(bool a)
+	{
+		active = a;
+	}
+
+	bool MapObject::isactive() const
+	{
+		return active;
+	}
+
+	int8_t MapObject::getlayer() const
+	{
+		return phobj.fhlayer;
+	}
+
+	int32_t MapObject::getoid() const
+	{
+		return oid;
+	}
+
+	vector2d<int16_t> MapObject::getposition() const
+	{
+		return vector2d<int16_t>(
+			static_cast<int16_t>(phobj.fx),
+			static_cast<int16_t>(phobj.fy)
+			);
+	}
+
+	vector2d<double> MapObject::getrealposition() const
+	{
+		return vector2d<double>(phobj.fx, phobj.fy);
+	}
+
+	PhysicsObject& MapObject::getphobj()
+	{
+		return phobj;
+	}
 }
-

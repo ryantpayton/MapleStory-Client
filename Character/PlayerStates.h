@@ -43,12 +43,24 @@ namespace Character
 			Char::Stance stance;
 			if (player.getphobj().onground)
 			{
-				if (player.keydown(Keyboard::KA_LEFT) || player.keydown(Keyboard::KA_RIGHT))
+				if (player.keydown(Keyboard::KA_LEFT))
+				{
 					stance = Char::WALK;
+					player.setflip(false);
+				}
+				else if (player.keydown(Keyboard::KA_RIGHT))
+				{
+					stance = Char::WALK;
+					player.setflip(true);
+				}
 				else if (player.keydown(Keyboard::KA_DOWN))
+				{
 					stance = Char::PRONE;
+				}
 				else
+				{
 					stance = Char::STAND;
+				}
 			}
 			else
 			{
@@ -334,7 +346,7 @@ namespace Character
 			const Ladder* ladder = player.getladder();
 			if (ladder)
 			{
-				float cfy;
+				double cfy;
 				if (player.keydown(Keyboard::KA_DOWN))
 					cfy = player.getphobj().fy;
 				else

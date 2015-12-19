@@ -338,23 +338,23 @@ namespace Net
 			vector2d pos = recv.readpoint();
 			//uinterface.getfield()->getmap()->addreactor(oid, id, state, pos);
 		}
-	};
+	};*/
 
 	
-	class drop_item_from_mapobject_h : public vhandler
+	class DropItemHandler : public PacketHandler
 	{
-		void drop_item_from_mapobject_h::handle(packet recv)
+		void handle(InPacket& recv) const override
 		{
-			char mod = recv.readbyte(); //0 - from player, 1 - normal drop, 2 - spawn, 3 - dissapearing
-			int oid = recv.readint();
+			int8_t mode = recv.readbyte(); //0 - from player, 1 - normal drop, 2 - spawn, 3 - dissapearing
+			int32_t oid = recv.readint();
 			bool meso = recv.readbool();
-			int itemid = recv.readint();
-			int owner = recv.readint();
-			char pickuptype = recv.readbyte();
-			vector2d dropto = recv.readpoint();
-			vector2d dropfrom;
+			int32_t itemid = recv.readint();
+			int32_t owner = recv.readint();
+			int8_t pickuptype = recv.readbyte();
+			vector2d<int16_t> dropto = recv.readpoint();
+			vector2d<int16_t> dropfrom;
 			recv.readint();
-			if (mod != 2)
+			if (mode != 2)
 			{
 				dropfrom = recv.readpoint();
 				recv.readshort();
@@ -366,35 +366,40 @@ namespace Net
 
 			if (!meso)
 			{
-				int64_t expire = recv.readlong();
+				//int64_t expire = recv.readlong();
 			}
-			bool playerdrop = recv.readbool();
-			Game::getfield()->getdrops()->adddrop(oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mod);
+			recv.readbool(); // playerdrop
+			Gameplay::Stage::getdrops().adddrop(oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mode);
 		}
 	};
 
-	class remove_mapitem_h : public vhandler
+	class RemoveDropHandler : public PacketHandler
 	{
-		void remove_mapitem_h::handle(packet recv)
+		void handle(InPacket& recv) const override
 		{
-			char anim = recv.readbyte();
-			int oid = recv.readint();
-			moveobject* looter = 0;
+			int8_t anim = recv.readbyte();
+			int32_t oid = recv.readint();
+			const Gameplay::PhysicsObject* looter = nullptr;
 			if (anim > 1)
 			{
-				int cid = recv.readint();
+				int32_t cid = recv.readint();
 				if (recv.length() > 0)
 				{
-					char pet = recv.readbyte();
+					//int8_t pet = recv.readbyte();
 				}
-
-				if (cid == Game::getfield()->getplayer()->getoid())
+				else
+				{
+					Character::Char* charlooter = Gameplay::Stage::getcharacter(cid);
+					if (charlooter)
+						looter = &charlooter->getphobj();
+				}
+				/*if (cid == Game::getfield()->getplayer()->getoid())
 				{
 					Game::getcache()->getsounds()->play(MSN_PICKUP);
 				}
-				looter = Game::getfield()->getchar(cid);
+				looter = Game::getfield()->getchar(cid);*/
 			}
-			Game::getfield()->getdrops()->removedrop(oid, anim, looter);
+			Gameplay::Stage::getdrops().removedrop(oid, anim, looter);
 		}
-	};*/
+	};
 }

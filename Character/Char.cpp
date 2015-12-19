@@ -19,14 +19,14 @@
 
 namespace Character
 {
-	void Char::draw(vector2d<int16_t> viewpos, float inter) const
+	void Char::draw(const Camera& camera, float inter) const
 	{
-		vector2d<int16_t> absp = phobj.getposition(inter) + viewpos;
+		vector2d<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
 		look.draw(absp, inter);
 		for (int32_t i = 0; i < 3; i++)
 		{
 			if (pets[i].getiid() > 0)
-				pets[i].draw(viewpos, inter);
+				pets[i].draw(camera, inter);
 		}
 		namelabel.draw(absp);
 	}
@@ -53,7 +53,12 @@ namespace Character
 				pets[i].update(physics, phobj.getposition(1.0f));
 			}
 		}
-		return 0;
+		return getlayer();
+	}
+
+	int8_t Char::getlayer() const
+	{
+		return isclimbing() ? 7 : phobj.fhlayer;
 	}
 
 	void Char::sendface(int32_t expression)
@@ -89,12 +94,6 @@ namespace Character
 		int32_t index = st / 2;
 		if (index >= 0 && index < 11)
 			look.setstance(stancenames[index]);
-	}
-
-	void Char::setposition(int16_t x, int16_t y)
-	{
-		phobj.fx = static_cast<float>(x);
-		phobj.fy = static_cast<float>(y);
 	}
 
 	void Char::addpet(uint8_t index, int32_t iid, string name,
@@ -133,24 +132,6 @@ namespace Character
 		return flip;
 	}
 
-	int8_t Char::getlayer() const
-	{
-		return isclimbing() ? 7 : phobj.fhlayer;
-	}
-
-	int32_t Char::getoid() const
-	{
-		return cid;
-	}
-
-	vector2d<int16_t> Char::getposition() const
-	{
-		return vector2d<int16_t>(
-			static_cast<int16_t>(phobj.fx),
-			static_cast<int16_t>(phobj.fy)
-			);
-	}
-
 	rectangle2d<int16_t> Char::getbounds() const
 	{
 		return rectangle2d<int16_t>(
@@ -162,10 +143,5 @@ namespace Character
 	CharLook& Char::getlook()
 	{
 		return look;
-	}
-
-	PhysicsObject& Char::getphobj()
-	{
-		return phobj;
 	}
 }

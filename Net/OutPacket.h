@@ -16,14 +16,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include <stdint.h>
+#include "Util\vector2d.h"
+#include <cstdint>
 #include <string>
 #include <vector>
 
 namespace Net
 {
-	using::std::string;
-	using::std::vector;
+	using std::string;
+	using std::vector;
+	using Util::vector2d;
+
 	// A packet to be sent by the client. Used as a base class to create specific packets.
 	class OutPacket
 	{
@@ -35,6 +38,8 @@ namespace Net
 	protected:
 		void skip(size_t);
 		void writestr(string);
+		void writepoint(vector2d<int16_t> point);
+
 		void writech(int8_t c) { bytes.push_back(c); }
 		void writesh(int16_t s) { write<int16_t>(s); }
 		void writeint(int32_t i) { write<int32_t>(i); }

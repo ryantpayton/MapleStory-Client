@@ -29,16 +29,16 @@ namespace IO
 			switch (type)
 			{
 			case DamageNumber::NORMAL:
-				charsets[type].first = Charset(nl::nx::effect["BasicEff.img"]["NoRed0"], Charset::LEFT);
-				charsets[type].second = Charset(nl::nx::effect["BasicEff.img"]["NoRed1"], Charset::LEFT);
+				charsets[type].first = Charset(nl::nx::effect["BasicEff.img"]["NoRed1"], Charset::LEFT);
+				charsets[type].second = Charset(nl::nx::effect["BasicEff.img"]["NoRed0"], Charset::LEFT);
 				break;
 			case DamageNumber::CRITICAL:
-				charsets[type].first = Charset(nl::nx::effect["BasicEff.img"]["NoCri0"], Charset::LEFT);
-				charsets[type].second = Charset(nl::nx::effect["BasicEff.img"]["NoCri1"], Charset::LEFT);
+				charsets[type].first = Charset(nl::nx::effect["BasicEff.img"]["NoCri1"], Charset::LEFT);
+				charsets[type].second = Charset(nl::nx::effect["BasicEff.img"]["NoCri0"], Charset::LEFT);
 				break;
 			case DamageNumber::TOPLAYER:
-				charsets[type].first = Charset(nl::nx::effect["BasicEff.img"]["NoViolet0"], Charset::LEFT);
-				charsets[type].second = Charset(nl::nx::effect["BasicEff.img"]["NoViolet1"], Charset::LEFT);
+				charsets[type].first = Charset(nl::nx::effect["BasicEff.img"]["NoViolet1"], Charset::LEFT);
+				charsets[type].second = Charset(nl::nx::effect["BasicEff.img"]["NoViolet0"], Charset::LEFT);
 				break;
 			default:
 				return nullptr;
@@ -92,7 +92,7 @@ namespace IO
 		{
 			drawpos.shiftx(-shift);
 			charsets->first.draw(firstnum, DrawArgument(drawpos, alpha));
-			drawpos.shiftx(charsets->first.getw(firstnum) - 9);
+			drawpos.shiftx(charsets->first.getw(firstnum) - 7);
 
 			for (size_t i = 0; i < restnum.length(); i++)
 			{

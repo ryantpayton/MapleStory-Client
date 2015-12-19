@@ -41,21 +41,21 @@ namespace Gameplay
 
 		PhType type = NORMAL;
 		uint16_t fhid = 0;
-		float fhslope = 0.0f;
+		double fhslope = 0.0f;
 		int8_t fhlayer = 0;
 		bool onground = true;
-		float mass = 1.0f;
-		float fx = 0.0f;
-		float fy = 0.0f;
-		float hforce = 0.0f;
-		float vforce = 0.0f;
-		float hacc = 0.0f;
-		float vacc = 0.0f;
-		float hspeed = 0.0f;
-		float vspeed = 0.0f;
+		double mass = 1.0f;
+		double fx = 0.0f;
+		double fy = 0.0f;
+		double hforce = 0.0f;
+		double vforce = 0.0f;
+		double hacc = 0.0f;
+		double vacc = 0.0f;
+		double hspeed = 0.0f;
+		double vspeed = 0.0f;
 
-		float lastx = 0.0f;
-		float lasty = 0.0f;
+		double lastx = 0.0f;
+		double lasty = 0.0f;
 
 		vector2d<int16_t> getposition(float inter) const
 		{

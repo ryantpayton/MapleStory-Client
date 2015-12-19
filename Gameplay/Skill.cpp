@@ -57,7 +57,7 @@ namespace Gameplay
 
 		for (auto leveln : src["level"])
 		{
-			uint8_t lvlid = static_cast<uint8_t>(std::stoi(leveln.name()));
+			int32_t lvlid = std::stoi(leveln.name());
 			SkillLevel level;
 			if (leveln["prop"].data_type() == nl::node::type::integer)
 				level.chance = static_cast<float>(leveln["prop"]) / 100.0f;
@@ -101,5 +101,13 @@ namespace Gameplay
 			return actions[1];
 		else
 			return actions[0];
+	}
+
+	const SkillLevel* Skill::getlevel(int32_t level) const
+	{
+		if (levels.count(level))
+			return &levels.at(level);
+		else
+			return nullptr;
 	}
 }

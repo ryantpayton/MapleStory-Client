@@ -65,9 +65,9 @@ namespace Gameplay
 		// Returns the height.
 		int16_t getvdelta() const { return vertical.y() - vertical.x(); }
 		// Returns the slope as a ratio of vertical/horizontal.
-		float getslope() const;
+		double getslope() const;
 		// Returns a y-coordinate right above the given x-coordinate. Used for slopes.
-		float resolvex(float x) const;
+		double resolvex(double x) const;
 
 	private:
 		uint16_t id;

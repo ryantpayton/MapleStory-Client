@@ -144,6 +144,11 @@ namespace Character
 								else if (zs == "backShield")
 									z = CL_BACKSHIELD;
 							}
+							else if (z == CL_HAT)
+							{
+								if (zs == "capOverHair")
+									z = CL_HATOVERHAIR;
+							}
 							else if (part == "mailArm")
 							{
 								z = CL_MAILARM;
@@ -246,6 +251,14 @@ namespace Character
 			return;
 
 		stances.at(stance).at(layer).at(frame).draw(args);
+	}
+
+	bool Clothing::islayer(string stance, CharacterLayer layer) const
+	{
+		if (!stances.count(stance))
+			return false;
+		else
+			return stances.at(stance).count(layer) > 0;
 	}
 
 	bool Clothing::istransparent() const

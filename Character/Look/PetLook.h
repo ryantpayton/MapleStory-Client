@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Gameplay\Physics\PhysicsObject.h"
 #include "Gameplay\Physics\Physics.h"
+#include "Gameplay\Camera.h"
 #include "Graphics\Textlabel.h"
 #include "Graphics\Animation.h"
 #include "Util\vector2d.h"
@@ -26,14 +27,12 @@
 
 namespace Character
 {
-	using std::uint8_t;
-	using std::int16_t;
-	using std::int32_t;
 	using std::string;
 	using std::map;
 	using Util::vector2d;
 	using Gameplay::Physics;
 	using Gameplay::PhysicsObject;
+	using Gameplay::Camera;
 	using Graphics::Textlabel;
 	using Graphics::Animation;
 
@@ -52,7 +51,7 @@ namespace Character
 			vector2d<int16_t> pos, uint8_t stance, int32_t fhid);
 		PetLook();
 
-		void draw(vector2d<int16_t> viewpos, float inter) const;
+		void draw(const Camera& camera, float inter) const;
 		void update(const Physics& physics, vector2d<int16_t> charpos);
 
 		void setposition(int16_t xpos, int16_t ypos);

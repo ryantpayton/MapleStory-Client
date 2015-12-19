@@ -43,22 +43,12 @@ namespace Gameplay
 			bool control, int16_t xpos, int16_t ypos);
 
 		// Draws the current animation and name/function tags.
-		void draw(vector2d<int16_t> viewpos, float inter) const override;
+		void draw(const Camera& camera, float inter) const override;
 		// Updates the current animation and physics.
 		int8_t update(const Physics& physics) override;
-		// Set the PhysicsObject's position as specified.
-		void setposition(int16_t xpos, int16_t ypos) override;
-		// Returns object id of this npc.
-		int32_t getoid() const override;
-		// Returns layer of this npc's foothold.
-		int8_t getlayer() const override;
-		// Returns the current position as a point from the PhysicsObject's position.
-		vector2d<int16_t> getposition() const override;
 
 		// Changes stance and resets animation.
 		void setstance(string stance);
-		// Change object activity.
-		void setactive(bool newvalue);
 		// Returns width and height of the current animation.
 		vector2d<int16_t> getdimensions() const;
 
@@ -72,13 +62,9 @@ namespace Gameplay
 		bool scripted;
 		bool mouseonly;
 
-		bool control;
-		PhysicsObject phobj;
-		int32_t oid;
 		int32_t npcid;
 		bool flip;
 		string stance;
-		bool active;
 
 		Randomizer random;
 		Textlabel namelabel;

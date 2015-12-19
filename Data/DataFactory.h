@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015 SYJourney                                               //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,30 +15,11 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include <cstdint>
-#include <map>
+#include "Character\Inventory\ItemData.h"
 
-namespace Character
+namespace Data
 {
-	using::std::int32_t;
-	using::std::int64_t;
-	using::std::map;
-	// Class that stores all information about the skills of an individual character.
-	class Skillbook
-	{
-	public:
-		Skillbook();
-		~Skillbook();
-		void setskill(int32_t, int32_t, int32_t, int64_t);
-		void setcd(int32_t, int32_t);
-		int32_t getlevelof(int32_t skillid) const;
+	using Character::ItemData;
 
-	private:
-		map<int32_t, int32_t> levels;
-		map<int32_t, int32_t> masterlevels;
-		map<int32_t, int32_t> cooldowns;
-		map<int32_t, int64_t> expirations;
-	};
+	const ItemData& getitemdata(int32_t itemid);
 }
-

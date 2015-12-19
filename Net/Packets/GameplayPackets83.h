@@ -59,6 +59,18 @@ namespace Net
 		}
 	};
 
+	class PickupItemPacket : public OutPacket
+	{
+	public:
+		PickupItemPacket(int32_t oid, vector2d<int16_t> position) : OutPacket(PICKUP_ITEM)
+		{
+			writeint(0);
+			writech(0);
+			writepoint(position);
+			writeint(oid);
+		}
+	};
+
 	class CloseRangeAttackPacket83 : public OutPacket
 	{
 	public:

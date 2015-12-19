@@ -76,8 +76,8 @@ namespace Gameplay
 
 	void Footholdtree::limitmoves(PhysicsObject& phobj) const
 	{
-		float nextx = phobj.fx + phobj.hspeed;
-		float nexty = phobj.fy + phobj.vspeed;
+		double nextx = phobj.fx + phobj.hspeed;
+		double nexty = phobj.fy + phobj.vspeed;
 
 		if (nextx != phobj.fx)
 		{
@@ -85,7 +85,7 @@ namespace Gameplay
 				static_cast<int16_t>(phobj.fy - 40),
 				static_cast<int16_t>(phobj.fy - 10)
 				);
-			float wall = getwall(phobj.fhid, phobj.hspeed < 0.0f, vertical);
+			double wall = getwall(phobj.fhid, phobj.hspeed < 0.0f, vertical);
 			if ((phobj.hspeed < 0) ? nextx < wall : nextx > wall)
 			{
 				phobj.hspeed = 0.0f;
@@ -94,7 +94,7 @@ namespace Gameplay
 
 		if (nexty > phobj.fy)
 		{
-			float ground = getfh(phobj.fhid).resolvex(nextx);
+			double ground = getfh(phobj.fhid).resolvex(nextx);
 			if (nexty >= ground && ground >= phobj.fy)
 			{
 				phobj.vspeed = 0.0f;
@@ -114,11 +114,11 @@ namespace Gameplay
 
 	void Footholdtree::updatefh(PhysicsObject& phobj) const
 	{
+		const Foothold& curfh = getfh(phobj.fhid);
 		bool checkslope = false;
+
 		if (phobj.onground)
 		{
-			const Foothold& curfh = getfh(phobj.fhid);
-
 			if (phobj.fx > curfh.getr())
 				phobj.fhid = curfh.getnext();
 			else if (phobj.fx < curfh.getl())
@@ -135,19 +135,18 @@ namespace Gameplay
 		}
 
 		const Foothold& nextfh = getfh(phobj.fhid);
-		phobj.fhlayer = nextfh.getlayer();
 		phobj.fhslope = nextfh.getslope();
 
-		float ground = nextfh.resolvex(phobj.fx);
-		if (phobj.vspeed == 0.0f && checkslope)
+		double ground = nextfh.resolvex(phobj.fx);
+		if (phobj.vspeed == 0.0 && checkslope)
 		{
-			float vdelta = abs(phobj.fhslope);
+			double vdelta = abs(phobj.fhslope);
 			if (phobj.fhslope < 0.0f)
 				vdelta *= (ground - phobj.fy);
 			else if (phobj.fhslope > 0.0f)
 				vdelta *= (phobj.fy - ground);
 
-			if (vdelta != 0.0f)
+			if (curfh.getslope() != 0.0 || nextfh.getslope() != 0.0)
 			{
 				if (phobj.hspeed > 0.0f && vdelta <= phobj.hspeed)
 					phobj.fy = ground;
@@ -155,7 +154,11 @@ namespace Gameplay
 					phobj.fy = ground;
 			}
 		}
+
 		phobj.onground = phobj.fy == ground;
+
+		if (phobj.fhlayer == 0 || phobj.onground)
+			phobj.fhlayer = nextfh.getlayer();
 	}
 
 	const Foothold& Footholdtree::getfh(uint16_t fhid) const
@@ -166,7 +169,7 @@ namespace Gameplay
 			return nullfh;
 	}
 
-	float Footholdtree::getwall(uint16_t curid, bool left, vector2d<int16_t> ver) const
+	double Footholdtree::getwall(uint16_t curid, bool left, vector2d<int16_t> ver) const
 	{
 		if (left)
 		{
@@ -175,10 +178,10 @@ namespace Gameplay
 			{
 				if (getfh(previd).iswall() && getfh(previd).getver().overlaps(ver))
 				{
-					return static_cast<float>(getfh(curid).getl());
+					return static_cast<double>(getfh(curid).getl());
 				}
 			}
-			return static_cast<float>(walls.x());
+			return static_cast<double>(walls.x());
 		}
 		else
 		{
@@ -187,24 +190,24 @@ namespace Gameplay
 			{
 				if (getfh(nextid).iswall() && getfh(nextid).getver().overlaps(ver))
 				{
-					return static_cast<float>(getfh(curid).getr());
+					return static_cast<double>(getfh(curid).getr());
 				}
 			}
-			return static_cast<float>(walls.y());
+			return static_cast<double>(walls.y());
 		}
 	}
 
-	uint16_t Footholdtree::getbelow(float fx, float fy) const
+	uint16_t Footholdtree::getbelow(double fx, double fy) const
 	{
 		uint16_t ret = 0;
 		int16_t x = static_cast<int16_t>(fx);
 		if (footholdsbyx.count(x))
 		{
-			float comp = static_cast<float>(borders.y());
+			double comp = static_cast<double>(borders.y());
 			for (auto fhit = footholdsbyx.lower_bound(x); fhit != footholdsbyx.upper_bound(x); ++fhit)
 			{
 				const Foothold& fh = footholds.at(fhit->second);
-				float ycomp = fh.resolvex(fx);
+				double ycomp = fh.resolvex(fx);
 				if (comp >= ycomp && ycomp >= fy)
 				{
 					comp = ycomp;

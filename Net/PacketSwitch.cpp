@@ -84,8 +84,8 @@ namespace Net
 		handlers[SPAWN_NPC] = unique_ptr<PacketHandler>(new SpawnNpcHandler83());
 		handlers[SPAWN_NPC_C] = unique_ptr<PacketHandler>(new SpawnNpcControllerHandler83());
 		handlers[MAKE_NPC_SCRIPTED] = unique_ptr<PacketHandler>(new NullHandler());
-		//handlers[DROP_ITEM_FROMOBJECT] = unique_ptr<vhandler>(new drop_item_from_mapobject_h());
-		//handlers[REMOVE_MAPITEM] = unique_ptr<vhandler>(new remove_mapitem_h());
+		handlers[DROP_ITEM_FROMOBJECT] = unique_ptr<PacketHandler>(new DropItemHandler());
+		handlers[REMOVE_MAPITEM] = unique_ptr<PacketHandler>(new RemoveDropHandler());
 		//handlers[SPAWN_REACTOR] = unique_ptr<vhandler>(new spawn_reactor_h());
 		//handlers[REMOVE_REACTOR] = unique_ptr<vhandler>(new remove_reactor_h());
 		//handlers[NPC_DIALOGUE] = unique_ptr<vhandler>(new npc_dialogue_h());

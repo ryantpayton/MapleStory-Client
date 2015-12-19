@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015 SYJourney                                               //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,29 +16,43 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include <cstdint>
-#include <map>
+#include "MapObject.h"
+#include "Util\rectangle2d.h"
 
-namespace Character
+namespace Gameplay
 {
-	using::std::int32_t;
-	using::std::int64_t;
-	using::std::map;
-	// Class that stores all information about the skills of an individual character.
-	class Skillbook
+	using Util::rectangle2d;
+
+	class Drop : public MapObject
 	{
 	public:
-		Skillbook();
-		~Skillbook();
-		void setskill(int32_t, int32_t, int32_t, int64_t);
-		void setcd(int32_t, int32_t);
-		int32_t getlevelof(int32_t skillid) const;
+		enum State
+		{
+			DROPPED,
+			FLOATING,
+			PICKEDUP
+		};
 
-	private:
-		map<int32_t, int32_t> levels;
-		map<int32_t, int32_t> masterlevels;
-		map<int32_t, int32_t> cooldowns;
-		map<int32_t, int64_t> expirations;
+		virtual int8_t update(const Physics& physics) override;
+
+		void init(int8_t);
+		void expire(int8_t, const PhysicsObject*);
+		rectangle2d<int16_t> bounds();
+
+	protected:
+		Drop(int32_t oid, int32_t owner, vector2d<int16_t> start,
+			vector2d<int16_t> dest, int8_t type, int8_t mode);
+
+		int32_t owner;
+		vector2d<int16_t> dest;
+		int8_t pickuptype;
+		bool playerdrop;
+
+		const PhysicsObject* looter;
+		State state;
+		float opacity;
+		double basey;
+		double moved;
 	};
 }
 

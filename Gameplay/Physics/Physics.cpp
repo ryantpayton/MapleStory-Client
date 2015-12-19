@@ -20,10 +20,10 @@
 
 namespace Gameplay
 {
-	const float GRAVFORCE = 0.2f;
-	const float FRICTION = 0.3f;
-	const float SLOPEFACTOR = 0.1f;
-	const float FLYFRICTION = 0.05f;
+	const double GRAVFORCE = 0.2f;
+	const double FRICTION = 0.3f;
+	const double SLOPEFACTOR = 0.1f;
+	const double FLYFRICTION = 0.05f;
 
 	Physics::Physics() {}
 
@@ -76,7 +76,7 @@ namespace Gameplay
 			{
 				phobj.hspeed = 0.0f;
 			}
-			float slopef = phobj.fhslope;
+			double slopef = phobj.fhslope;
 			if (slopef > 0.5f)
 				slopef = 0.5f;
 			else if (slopef < -0.5f)

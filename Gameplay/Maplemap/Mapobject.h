@@ -17,25 +17,39 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Gameplay\Physics\Physics.h"
+#include "Gameplay\Camera.h"
 
 namespace Gameplay
 {
-	// Interface for objects on a map, eg. mobs, npcs, characters etc.
+	// Base for objects on a map, eg. mobs, npcs, characters etc.
 	class MapObject
 	{
 	public:
 		virtual ~MapObject(){}
-		// Updates the object and returns the updated layer.
-		virtual int8_t update(const Physics&) = 0;
+
 		// Draws the object.
-		virtual void draw(vector2d<int16_t>, float) const = 0;
+		virtual void draw(const Camera& camera, float inter) const = 0;
+
+		// Updates the object and returns the updated layer.
+		virtual int8_t update(const Physics& physics);
+		virtual void setactive(bool active);
+		virtual bool isactive() const;
+
 		// Changes the objects position.
-		virtual void setposition(int16_t, int16_t) = 0;
+		void setposition(int16_t x, int16_t y);
+
 		// Obtains the layer used to determine the drawing order on the map.
-		virtual int8_t getlayer() const = 0;
+		virtual int8_t getlayer() const;
 		// Returns the object id unique to every object on one map.
-		virtual int32_t getoid() const = 0;
+		int32_t getoid() const;
 		// Returns the current position.
-		virtual vector2d<int16_t> getposition() const = 0;
+		vector2d<int16_t> getposition() const;
+		vector2d<double> getrealposition() const;
+		PhysicsObject& getphobj();
+
+	protected:
+		PhysicsObject phobj;
+		int32_t oid;
+		bool active;
 	};
 }

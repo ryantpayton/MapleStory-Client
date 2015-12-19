@@ -39,12 +39,12 @@ namespace Gameplay
 
 	Foothold::~Foothold() {}
 
-	float Foothold::getslope() const
+	double Foothold::getslope() const
 	{ 
-		return iswall() ? 0 : static_cast<float>(getvdelta()) / gethdelta(); 
+		return iswall() ? 0.0f : static_cast<double>(getvdelta()) / gethdelta();
 	}
 
-	float Foothold::resolvex(float x) const
+	double Foothold::resolvex(double x) const
 	{ 
 		return isfloor() ? vertical.x() : getslope() * (x - horizontal.x()) + vertical.x(); 
 	}

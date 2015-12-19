@@ -67,18 +67,10 @@ namespace Gameplay
 		// Update movement and animations.
 		int8_t update(const Physics& physics) override;
 		// Draw the object.
-		void draw(vector2d<int16_t> viewpos, float inter) const override;
-		// Change position.
-		void setposition(int16_t xpos, int16_t ypos) override;
-		// Return the layer of the current platform.
-		int8_t getlayer() const override;
-		// Return object id.
-		int32_t getoid() const override;
-		// Return position.
-		vector2d<int16_t> getposition() const override;
+		void draw(const Camera& camera, float inter) const override;
 
-		bool isactive() const;
 		bool isinrange(const rectangle2d<int16_t>& range) const;
+		bool isactive() const override;
 
 		vector<int32_t> damage(const Attack& attack);
 
@@ -88,8 +80,6 @@ namespace Gameplay
 		// Display the hp percentage above the mob.
 		// Use the playerlevel to determine color of nametag.
 		void sendhp(int8_t percentage, uint16_t playerlevel);
-		// Make an inactive (out of viewrange) mob active again.
-		void makeactive();
 
 	private:
 		void parsestance(Stance toparse, node source);
@@ -121,14 +111,11 @@ namespace Gameplay
 		SeededState behaviour;
 		uint16_t counter;
 
-		int32_t oid;
 		int32_t id;
 		int8_t effect;
 		int8_t team;
 
-		bool active;
 		Stance stance;
-		PhysicsObject phobj;
 		bool flip;
 		float walkforce;
 		int8_t hppercent;

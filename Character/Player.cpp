@@ -19,6 +19,8 @@
 #include "Player.h"
 #include "PlayerStates.h"
 #include "Program\Constants.h"
+#include "Net\Session.h"
+#include "Net\Packets\GameplayPackets83.h"
 
 namespace Character
 {
@@ -56,7 +58,7 @@ namespace Character
 
 	Player::Player(const CharEntry& entry)
 	{
-		cid = entry.cid;
+		oid = entry.cid;
 		look = CharLook(entry.getlook());
 		stats = CharStats(entry.stats);
 
@@ -88,11 +90,6 @@ namespace Character
 		keysdown[ka] = down;
 	}
 
-	void Player::clearmovement()
-	{
-		movementinfo.clear();
-	}
-
 	void Player::recalcstats(bool equipchanged)
 	{
 		if (equipchanged)
@@ -121,7 +118,7 @@ namespace Character
 		updatestate(physics);
 		writemovement();
 		updatelook();
-		return isclimbing() ? 7 : phobj.fhlayer;
+		return getlayer();
 	}
 
 	void Player::updatestate(const Physics& physics)
@@ -151,6 +148,12 @@ namespace Character
 		{
 			movementinfo.addmovement(phobj, 0, dirstance, Constants::TIMESTEP);
 			lastmove = movementinfo.gettop();
+		}
+
+		if (movementinfo.getsize() >= 2)
+		{
+			Net::Session::dispatch(Net::MovePlayerPacket83(movementinfo));
+			movementinfo.clear();
 		}
 	}
 
@@ -185,13 +188,37 @@ namespace Character
 
 	bool Player::canattack()
 	{
-		return !attacking && !isclimbing() && !issitting();
+		return !attacking && !isclimbing() && !issitting() && look.getequips().getweapon() != nullptr;
 	}
 
-	void Player::regularattack()
+	Attack Player::prepareattack()
+	{
+		Attack attack;
+		attack.mindamage = stats.getmindamage();
+		attack.maxdamage = stats.getmaxdamage();
+		attack.critical = stats.getcritical();
+		attack.ignoredef = stats.getignoredef();
+		attack.accuracy = stats.gettotal(Character::ES_ACC);
+		attack.playerlevel = stats.getstat(Character::MS_LEVEL);
+		attack.speed = look.getequips().getweapon()->getspeed();
+		attack.origin = getposition();
+		attack.direction = flip ? Attack::TORIGHT : Attack::TOLEFT;
+		return attack;
+	}
+
+	Attack Player::regularattack()
 	{
 		look.setstance("attack");
 		attacking = true;
+
+		Attack attack = prepareattack();
+		attack.skill = 0;
+		attack.mobcount = 1;
+		attack.hitcount = 1;
+		attack.delay = look.getequips().getweapon()->getattackdelay();
+		attack.range = look.getequips().getweapon()->getrange();
+		attack.hiteffect = look.getequips().getweapon()->gethiteffect();
+		return attack;
 	}
 
 	float Player::getattackspeed() const
@@ -296,11 +323,6 @@ namespace Character
 	Monsterbook& Player::getmonsterbook()
 	{
 		return monsterbook;
-	}
-
-	const MovementInfo& Player::getmovement() const
-	{
-		return movementinfo;
 	}
 
 	const Ladder* Player::getladder() const

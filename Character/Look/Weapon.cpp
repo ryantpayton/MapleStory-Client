@@ -27,8 +27,7 @@ namespace Character
 		weptype = static_cast<WpType>(prefix);
 		twohanded = (prefix == 138) || (prefix >= 140 && prefix <= 144);
 
-		using::nl::node;
-		node infonode = nl::nx::character["Weapon"]["0" + std::to_string(equipid) + ".img"]["info"];
+		nl::node infonode = nl::nx::character["Weapon"]["0" + std::to_string(equipid) + ".img"]["info"];
 		afterimage = infonode["afterImage"];
 		attackspeed = static_cast<uint8_t>(infonode["attackSpeed"]);
 		attack = static_cast<uint8_t>(infonode["attack"]);
@@ -126,6 +125,7 @@ namespace Character
 		case WEP_1H_AXE:
 		case WEP_1H_MACE:
 		case WEP_KNUCKLE:
+		case WEP_DAGGER:
 			return rectangle2d<int16_t>(-75, -5, -50, 0);
 		case WEP_2H_SWORD:
 		case WEP_2H_AXE:
@@ -133,7 +133,7 @@ namespace Character
 			return rectangle2d<int16_t>(-100, -5, -50, 0);
 		case WEP_SPEAR:
 		case WEP_POLEARM:
-			return rectangle2d<int16_t>(-130, -5, -50, 0);
+			return rectangle2d<int16_t>(-125, -5, -50, 0);
 		default:
 			return rectangle2d<int16_t>();
 		}

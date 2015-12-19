@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015 SYJourney                                               //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,29 +16,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include <cstdint>
-#include <map>
+#include "Drop.h"
+#include "Graphics\Animation.h"
 
-namespace Character
+namespace Gameplay
 {
-	using::std::int32_t;
-	using::std::int64_t;
-	using::std::map;
-	// Class that stores all information about the skills of an individual character.
-	class Skillbook
+	using Graphics::Animation;
+
+	class MesoDrop : public Drop
 	{
 	public:
-		Skillbook();
-		~Skillbook();
-		void setskill(int32_t, int32_t, int32_t, int64_t);
-		void setcd(int32_t, int32_t);
-		int32_t getlevelof(int32_t skillid) const;
+		MesoDrop(int32_t oid, int32_t owner, vector2d<int16_t> start,
+			vector2d<int16_t> dest, int8_t type, int8_t mode, const Animation* icon);
+
+		void draw(const Camera& camera, float inter) const override;
 
 	private:
-		map<int32_t, int32_t> levels;
-		map<int32_t, int32_t> masterlevels;
-		map<int32_t, int32_t> cooldowns;
-		map<int32_t, int64_t> expirations;
+		const Animation* icon;
 	};
 }
-

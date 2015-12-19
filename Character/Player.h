@@ -28,6 +28,7 @@
 #include "Gameplay\Physics\Physics.h"
 #include "Gameplay\MovementInfo.h"
 #include "Gameplay\Maplemap\MapInfo.h"
+#include "Gameplay\Attack.h"
 
 namespace Character
 {
@@ -37,6 +38,7 @@ namespace Character
 	using Gameplay::MovementFragment;
 	using Gameplay::Ladder;
 	using Gameplay::Seat;
+	using Gameplay::Attack;
 
 	// A class that represents the player.
 	class Player : public PlayableChar
@@ -52,15 +54,14 @@ namespace Character
 		void respawn(vector2d<int16_t> position);
 		// Sends a Keyaction to the player's state, to apply forces, change the state and other behaviour.
 		void sendaction(IO::Keyboard::Keyaction keycode, bool pressed);
-		// Can be called after sending player movement to the server to start a new stack.
-		void clearmovement();
 		// Recalculates the total stats from base stats, inventories and skills.
 		void recalcstats(bool equipchanged);
 		// Update the player's animation, physics and states.
 		int8_t update(const Physics& physics) override;
 
 		bool canattack();
-		void regularattack();
+		Attack prepareattack();
+		Attack regularattack();
 
 		// Returns the current walking force, calculated from the total ES_SPEED stat.
 		float getwforce() const override;
@@ -97,9 +98,6 @@ namespace Character
 		Telerock& gettrock();
 		// Obtain a reference to the player's monsterbook.
 		Monsterbook& getmonsterbook();
-
-		// Obtain a reference to this object's movement info so it can be sent to the server.
-		const MovementInfo& getmovement() const;
 
 	private:
 		void updatestate(const Physics& physics);

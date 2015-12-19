@@ -44,8 +44,8 @@ namespace Gameplay
 		vector2d<int16_t> getborders() const;
 
 	private:
-		uint16_t getbelow(float fx, float fy) const;
-		float getwall(uint16_t fhid, bool left, vector2d<int16_t> vertical) const;
+		uint16_t getbelow(double fx, double fy) const;
+		double getwall(uint16_t fhid, bool left, vector2d<int16_t> vertical) const;
 		const Foothold& getfh(uint16_t fhid) const;
 
 		unordered_map<uint16_t, Foothold> footholds;

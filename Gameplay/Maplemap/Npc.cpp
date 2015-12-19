@@ -22,7 +22,7 @@
 
 namespace Gameplay
 {
-	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, bool c, int16_t x, int16_t y)
+	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, bool, int16_t x, int16_t y)
 	{
 		string strid = std::to_string(id);
 		strid.insert(0, 7 - strid.size(), '0');
@@ -73,17 +73,16 @@ namespace Gameplay
 		flip = !fl;
 		stance = "stand";
 		active = true;
-		control = c;
 
 		phobj.fhid = f;
 		setposition(x, y);
 	}
 
-	void Npc::draw(vector2d<int16_t> viewpos, float inter) const
+	void Npc::draw(const Camera& camera, float inter) const
 	{
 		if (active)
 		{
-			vector2d<int16_t> absp = phobj.getposition(inter) + viewpos;
+			vector2d<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
 
 			if (animations.count(stance))
 			{
@@ -127,35 +126,6 @@ namespace Gameplay
 				animations.at(stance).reset();
 			}
 		}
-	}
-
-	void Npc::setactive(bool a)
-	{
-		active = a;
-	}
-
-	void Npc::setposition(int16_t x, int16_t y)
-	{
-		phobj.fx = static_cast<float>(x);
-		phobj.fy = static_cast<float>(y);
-	}
-
-	int32_t Npc::getoid() const
-	{
-		return oid;
-	}
-
-	int8_t Npc::getlayer() const
-	{
-		return phobj.fhlayer;
-	}
-
-	vector2d<int16_t> Npc::getposition() const
-	{
-		return vector2d<int16_t>(
-			static_cast<int16_t>(phobj.fx),
-			static_cast<int16_t>(phobj.fy)
-			);
 	}
 
 	vector2d<int16_t> Npc::getdimensions() const

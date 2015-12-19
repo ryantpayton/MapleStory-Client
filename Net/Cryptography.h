@@ -18,10 +18,10 @@
 #pragma once
 #include <cstdint>
 
-//#define CRYPTO_EnABLED
-
 namespace Net
 {
+	const size_t HEADERLEN = 4;
+
 	// Used to encrypt and decrypt packets for communication with the server.
 	class Cryptography
 	{
@@ -35,6 +35,7 @@ namespace Net
 		void decrypt(int8_t* bytes, size_t length, uint8_t* sendiv) const;
 		// Use the 4-byte header of a received packet to determine its length.
 		size_t getlength(const int8_t* header) const;
+		void getheader(int8_t* buffer, size_t length) const;
 
 	private:
 		void mapleencrypt(int8_t*, size_t) const;

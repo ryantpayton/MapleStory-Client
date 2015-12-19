@@ -42,6 +42,7 @@ namespace Gameplay
 		MapNpcs npcs;
 		MapChars chars;
 		MapMobs mobs;
+		MapDrops drops;
 
 		Player player;
 
@@ -81,6 +82,7 @@ namespace Gameplay
 			chars.clear();
 			npcs.clear();
 			mobs.clear();
+			drops.clear();
 
 			// Get the node that has the new map data.
 			string strid = std::to_string(mapid);
@@ -106,7 +108,7 @@ namespace Gameplay
 			if (mapinfo.hasnewbgm())
 				Audioplayer::playbgm(mapinfo.getbgm());
 
-			// Respawn the player at the spawnpoint defined by the portal id.
+			// Respawn the player at the spawnpoint associated with the portal id.
 			vector2d<int16_t> startpos = 
 				portals.getspawnpoint(player.getstats().getportal());
 			player.respawn(startpos);
@@ -118,114 +120,92 @@ namespace Gameplay
 
 		void draw(float inter)
 		{
-			if (active)
+			if (!active)
+				return;
+
+			vector2d<int16_t> viewpos = camera.getposition(inter);
+			for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
 			{
-				vector2d<int16_t> viewpos = camera.getposition(inter);
-
-				for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
+				layers.at(i).draw(viewpos, inter);
+				npcs.draw(i, camera, inter);
+				mobs.draw(i, camera, inter);
+				chars.draw(i, camera, inter);
+				if (i == player.getlayer())
 				{
-					layers.at(i).draw(viewpos, inter);
-					npcs.draw(i, viewpos, inter);
-					mobs.draw(i, viewpos, inter);
-					chars.draw(i, viewpos, inter);
-
-					if (i == player.getlayer())
-					{
-						player.draw(viewpos, inter);
-					}
+					player.draw(camera, inter);
 				}
-				portals.draw(viewpos, inter);
+				drops.draw(i, camera, inter);
 			}
+			portals.draw(viewpos, inter);
 		}
 
 		void update()
 		{
-			if (active)
-			{
-				for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
-				{
-					layers[i].update();
-				}
-
-				npcs.update(physics);
-				mobs.update(physics);
-				chars.update(physics);
-				player.update(physics);
-				portals.update(player.getbounds());
-				camera.update(player.getposition());
-
-				using Gameplay::MovementInfo;
-				const MovementInfo& playermovement = player.getmovement();
-				if (playermovement.getsize() > 0)
-				{
-					using Net::MovePlayerPacket83;
-					Net::Session::dispatch(MovePlayerPacket83(playermovement));
-
-					player.clearmovement();
-				}
-			}
-		}
-
-		void useattack(int32_t skillid)
-		{
-			if (!player.canattack())
+			if (!active)
 				return;
 
-			Attack attack;
+			for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
+			{
+				layers[i].update();
+			}
 
-			const Character::CharStats& stats = player.getstats();
-			attack.mindamage = stats.getmindamage();
-			attack.maxdamage = stats.getmaxdamage();
-			attack.critical = stats.getcritical();
-			attack.ignoredef = stats.getignoredef();
-			attack.accuracy = stats.gettotal(Character::ES_ACC);
-			attack.playerlevel = stats.getstat(Character::MS_LEVEL);
+			npcs.update(physics);
+			mobs.update(physics);
+			chars.update(physics);
+			drops.update(physics);
+			player.update(physics);
+			portals.update(player.getbounds());
+			camera.update(player.getrealposition());
+		}
+
+		void sendattack(const Attack& attack)
+		{
+			AttackResult result = mobs.sendattack(attack);
+			Net::Session::dispatch(Net::CloseRangeAttackPacket83(result));
+		}
+
+		void useskill(int32_t skillid)
+		{
+			static map<int32_t, Skill> skillcache;
+			if (!skillcache.count(skillid))
+				skillcache[skillid] = Skill(skillid);
+			const Skill& skill = skillcache[skillid];
+
+			const SkillLevel* skilllevel = skill.getlevel(player.getskills().getlevelof(skillid));
+			if (skilllevel == nullptr)
+				return;
 
 			const Character::Weapon* weapon = player.getlook().getequips().getweapon();
 			if (weapon == nullptr)
 				return;
 
-			if (skillid > 0)
+			player.getlook().setaction(skill.getaction(weapon->istwohanded()));
+
+			if (skill.isoffensive())
 			{
-				// Skill
-				static map<int32_t, Skill> skillcache;
-				if (!skillcache.count(skillid))
-					skillcache[skillid] = Skill(skillid);
-
-				const Skill& skill = skillcache[skillid];
-				player.getlook().setaction(skill.getaction(weapon->istwohanded()));
-				
-				if (skill.isoffensive())
-				{
-
-				}
-				else
-				{
-
+				if (!player.canattack())
 					return;
-				}
+
+				Attack attack = player.prepareattack();
+				attack.skill = skillid;
+				attack.mobcount = skilllevel->mobcount;
+				attack.hitcount = skilllevel->attackcount;
+				attack.range = skilllevel->range;
+				sendattack(attack);
 			}
 			else
 			{
-				// Regular attack
-				attack.direction = player.getflip() ? Attack::TORIGHT : Attack::TOLEFT;
-				attack.mobcount = 1;
-				attack.hitcount = 1;
-				attack.origin = player.getposition();
-				attack.delay = weapon->getattackdelay();
-				attack.range = weapon->getrange();
-				attack.hiteffect = weapon->gethiteffect();
-				player.regularattack();
+
 			}
+		}
 
-			AttackResult result = mobs.sendattack(attack);
-			result.direction = player.getflip() ? 0 : 1;
-			result.hitcount = attack.hitcount;
-			result.skill = skillid;
-			result.speed = weapon->getspeed();
-			result.display = attack.delay;
+		void useattack()
+		{
+			if (!player.canattack())
+				return;
 
-			Net::Session::dispatch(Net::CloseRangeAttackPacket83(result));
+			Attack attack = player.regularattack();
+			sendattack(attack);
 		}
 
 		void useitem(int32_t itemid)
@@ -289,6 +269,15 @@ namespace Gameplay
 			player.setladder(ladder);
 		}
 
+		void checkdrops()
+		{
+			const Drop* drop = drops.findinrange(player.getbounds());
+			if (drop)
+			{
+				Net::Session::dispatch(Net::PickupItemPacket(drop->getoid(), drop->getposition()));
+			}
+		}
+
 		void sendkey(IO::Keyboard::Keytype type, int32_t action, bool down)
 		{
 			if (!playable)
@@ -315,7 +304,10 @@ namespace Gameplay
 						checkseats();
 						break;
 					case Keyboard::KA_ATTACK:
-						useattack(0);
+						useattack();
+						break;
+					case Keyboard::KA_PICKUP:
+						checkdrops();
 						break;
 					}
 				}
@@ -324,7 +316,7 @@ namespace Gameplay
 				playable->sendaction(static_cast<Keyboard::Keyaction>(action), down);
 				break;
 			case Keyboard::KT_SKILL:
-				useattack(action);
+				useskill(action);
 				break;
 			case Keyboard::KT_ITEM:
 				useitem(action);
@@ -348,6 +340,11 @@ namespace Gameplay
 		MapMobs& getmobs()
 		{
 			return mobs;
+		}
+
+		MapDrops& getdrops()
+		{
+			return drops;
 		}
 
 		Player& getplayer()

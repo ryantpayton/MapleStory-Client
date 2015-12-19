@@ -196,9 +196,17 @@ namespace Character
 			equips.draw(EQL_SHIELD, laststance, CL_SHIELDBBODY, interframe, args);
 			body->draw(laststance, CL_BODY, interframe, args);
 			equips.draw(EQL_SHOES, laststance, CL_SHOES, interframe, args);
-			equips.draw(EQL_PANTS, laststance, CL_PANTS, interframe, args);
-			equips.draw(EQL_TOP, laststance, CL_TOP, interframe, args);
-			equips.draw(EQL_TOP, laststance, CL_MAIL, interframe, args);
+
+			if (equips.hasoverall())
+			{
+				equips.draw(EQL_TOP, laststance, CL_MAIL, interframe, args);
+			}
+			else
+			{
+				equips.draw(EQL_PANTS, laststance, CL_PANTS, interframe, args);
+				equips.draw(EQL_TOP, laststance, CL_TOP, interframe, args);
+			}
+
 			body->draw(laststance, CL_LHAND, interframe, args);
 			equips.draw(EQL_GLOVES, laststance, CL_GLOVE, interframe, args);
 			hair->draw(laststance, CL_HAIR, interframe, args);
@@ -212,9 +220,21 @@ namespace Character
 			equips.draw(EQL_SHIELD, laststance, CL_SHIELD, interframe, args);
 
 			if (equips.isvisible(EQL_CAP))
-				equips.draw(EQL_CAP, laststance, CL_HAT, interframe, args);
+			{
+				if (equips.getequip(EQL_CAP).islayer(laststance, CL_HATOVERHAIR))
+				{
+					hair->draw(laststance, CL_HAIROHEAD, interframe, args);
+					equips.draw(EQL_CAP, laststance, CL_HATOVERHAIR, interframe, args);
+				}
+				else
+				{
+					equips.draw(EQL_CAP, laststance, CL_HAT, interframe, args);
+				}
+			}
 			else
+			{
 				hair->draw(laststance, CL_HAIROHEAD, interframe, args);
+			}
 
 			if (equips.istwohanded())
 			{

@@ -51,8 +51,6 @@ namespace Gameplay
 		int16_t duration;
 	};
 
-	// Class that stores multiple movement fragments.
-	// This is neccessary for updating the movement of controlled objects with the server.
 	class MovementInfo
 	{
 	public:

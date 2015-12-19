@@ -19,6 +19,7 @@
 #include "Maplemap\MapChars.h"
 #include "Maplemap\MapMobs.h"
 #include "Maplemap\MapNpcs.h"
+#include "Maplemap\MapDrops.h"
 #include "Character\Player.h"
 
 namespace Gameplay
@@ -50,6 +51,8 @@ namespace Gameplay
 		MapChars& getchars();
 		// Returns a reference to the mobs on the current map.
 		MapMobs& getmobs();
+		// Returns a reference to the drops on the current map.
+		MapDrops& getdrops();
 		// Returns a reference to the Player.
 		Player& getplayer();
 

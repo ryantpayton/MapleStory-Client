@@ -19,7 +19,7 @@
 
 namespace Gameplay
 {
-	void MapObjects::draw(int8_t layer, vector2d<int16_t> pos, float inter) const
+	void MapObjects::draw(int8_t layer, const Camera& camera, float inter) const
 	{
 		if (layers.count(layer))
 		{
@@ -28,7 +28,7 @@ namespace Gameplay
 				int32_t oid = lyit.second;
 				if (objects.count(oid))
 				{
-					objects.at(oid)->draw(pos, inter);
+					objects.at(oid)->draw(camera, inter);
 				}
 			}
 		}

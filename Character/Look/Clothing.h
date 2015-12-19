@@ -30,7 +30,9 @@ namespace Character
 		Clothing(int32_t, const BodyDrawinfo&);
 		Clothing();
 
-		void draw(string, CharacterLayer, uint8_t, const DrawArgument&) const;
+		void draw(string stance, CharacterLayer layer, 
+			uint8_t frame, const DrawArgument& args) const;
+		bool islayer(string stance, CharacterLayer layer) const;
 		bool istransparent() const;
 		const string& gettype() const;
 		Equipslot geteqslot() const;

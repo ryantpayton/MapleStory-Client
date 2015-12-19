@@ -37,6 +37,7 @@ namespace Character
 		void removeequip(Equipslot);
 
 		bool isvisible(Equipslot) const;
+		bool hasoverall() const;
 		bool istwohanded() const;
 		Weapon::WpType getweapontype() const;
 		const Clothing& getequip(Equipslot) const;

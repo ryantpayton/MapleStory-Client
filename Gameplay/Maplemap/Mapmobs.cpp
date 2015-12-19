@@ -28,7 +28,7 @@ namespace Gameplay
 
 		Mob* mob = getmob(oid);
 		if (mob)
-			mob->makeactive();
+			mob->setactive(true);
 		else
 			add(new Mob(oid, id, 0, stance, fhid, fadein, team, x, y));
 	}
@@ -82,6 +82,11 @@ namespace Gameplay
 			if (mob->isactive() && mob->isinrange(range))
 				result.damagelines[mob->getoid()] = mob->damage(attack);
 		}
+		result.direction = static_cast<uint8_t>(attack.direction);
+		result.hitcount = attack.hitcount;
+		result.skill = attack.skill;
+		result.speed = attack.speed;
+		result.display = attack.delay;
 		return result;
 	}
 
