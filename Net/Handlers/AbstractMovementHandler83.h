@@ -21,84 +21,76 @@
 
 namespace Net
 {
-	using::Gameplay::MovementInfo;
 	using::Gameplay::MovementFragment;
 
 	class AbstractMovementHandler83 : public PacketHandler
 	{
 	protected:
-		void parsemovement(InPacket& recv, MovementInfo& movements) const
+		MovementFragment parsemovement(InPacket& recv) const
 		{
-			uint8_t length = recv.readbyte();
-			for (uint8_t i = 0; i < length; i++)
+			MovementFragment fragment;
+
+			fragment.command = recv.readbyte();
+			switch (fragment.command)
 			{
-				MovementFragment fragment = MovementFragment();
-
-				fragment.command = recv.readbyte();
-				switch (fragment.command)
-				{
-				case 0:
-				case 5:
-				case 17:
-					fragment.type = MovementFragment::MVT_ABSOLUTE;
-					fragment.xpos = recv.readshort();
-					fragment.ypos = recv.readshort();
-					fragment.lastx = recv.readshort();
-					fragment.lasty = recv.readshort();
-					recv.skip(2);
-					fragment.newstate = recv.readbyte();
-					fragment.duration = recv.readshort();
-					break;
-				case 1:
-				case 2:
-				case 6:
-				case 12:
-				case 13:
-				case 16:
-					fragment.type = MovementFragment::MVT_RELATIVE;
-					fragment.xpos = recv.readshort();
-					fragment.ypos = recv.readshort();
-					fragment.newstate = recv.readbyte();
-					fragment.duration = recv.readshort();
-					break;
-				case 11:
-					fragment.type = MovementFragment::MVT_CHAIR;
-					fragment.xpos = recv.readshort();
-					fragment.ypos = recv.readshort();
-					recv.skip(2);
-					fragment.newstate = recv.readbyte();
-					fragment.duration = recv.readshort();
-					break;
-				case 15:
-					fragment.type = MovementFragment::MVT_JUMPDOWN;
-					fragment.xpos = recv.readshort();
-					fragment.ypos = recv.readshort();
-					fragment.lastx = recv.readshort();
-					fragment.lasty = recv.readshort();
-					recv.skip(2);
-					fragment.fh = recv.readshort();
-					fragment.newstate = recv.readbyte();
-					fragment.duration = recv.readshort();
-					break;
-				case 3:
-				case 4:
-				case 7:
-				case 8:
-				case 9:
-				case 14:
-					fragment.type = MovementFragment::MVT_NONE;
-					break;
-				case 10:
-					fragment.type = MovementFragment::MVT_NONE;
-					//change equip
-					break;
-				}
-
-				if (fragment.type != MovementFragment::MVT_NONE)
-				{
-					movements.addmovement(fragment);
-				}
+			case 0:
+			case 5:
+			case 17:
+				fragment.type = MovementFragment::MVT_ABSOLUTE;
+				fragment.xpos = recv.readshort();
+				fragment.ypos = recv.readshort();
+				fragment.lastx = recv.readshort();
+				fragment.lasty = recv.readshort();
+				recv.skip(2);
+				fragment.newstate = recv.readbyte();
+				fragment.duration = recv.readshort();
+				break;
+			case 1:
+			case 2:
+			case 6:
+			case 12:
+			case 13:
+			case 16:
+				fragment.type = MovementFragment::MVT_RELATIVE;
+				fragment.xpos = recv.readshort();
+				fragment.ypos = recv.readshort();
+				fragment.newstate = recv.readbyte();
+				fragment.duration = recv.readshort();
+				break;
+			case 11:
+				fragment.type = MovementFragment::MVT_CHAIR;
+				fragment.xpos = recv.readshort();
+				fragment.ypos = recv.readshort();
+				recv.skip(2);
+				fragment.newstate = recv.readbyte();
+				fragment.duration = recv.readshort();
+				break;
+			case 15:
+				fragment.type = MovementFragment::MVT_JUMPDOWN;
+				fragment.xpos = recv.readshort();
+				fragment.ypos = recv.readshort();
+				fragment.lastx = recv.readshort();
+				fragment.lasty = recv.readshort();
+				recv.skip(2);
+				fragment.fh = recv.readshort();
+				fragment.newstate = recv.readbyte();
+				fragment.duration = recv.readshort();
+				break;
+			case 3:
+			case 4:
+			case 7:
+			case 8:
+			case 9:
+			case 14:
+				fragment.type = MovementFragment::MVT_NONE;
+				break;
+			case 10:
+				fragment.type = MovementFragment::MVT_NONE;
+				//change equip
+				break;
 			}
+
+			return fragment;
 		}
 	};
 }

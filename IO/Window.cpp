@@ -54,5 +54,10 @@ namespace IO
 		{
 			window.end();
 		}
+
+		void fadeout()
+		{
+			window.fadeout();
+		}
 	}
 }

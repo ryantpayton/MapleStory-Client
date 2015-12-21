@@ -70,6 +70,60 @@ namespace Gameplay
 		borders = vector2d<int16_t>(topb - 400, botb + 400);
 	}
 
+	Footholdtree::Footholdtree(InPacket& recv)
+	{
+		int16_t leftw = 30000;
+		int16_t rightw = -30000;
+		int16_t botb = -30000;
+		int16_t topb = 30000;
+
+		uint16_t numbase = recv.readshort();
+		for (uint16_t i = 0; i < numbase; i++)
+		{
+			int8_t layer = recv.readbyte();
+			uint16_t nummid = recv.readshort();
+			for (uint16_t j = 0; j < nummid; j++)
+			{
+				uint16_t numlast = recv.readshort();
+				for (uint16_t k = 0; k < numlast; k++)
+				{
+					Foothold foothold = Foothold(recv, layer);
+
+					if (foothold.getl() < leftw)
+					{
+						leftw = foothold.getl();
+					}
+					else if (foothold.getr() > rightw)
+					{
+						rightw = foothold.getr();
+					}
+
+					if (foothold.getb() > botb)
+					{
+						botb = foothold.getb();
+					}
+					else if (foothold.gett() < topb)
+					{
+						topb = foothold.gett();
+					}
+
+					uint16_t id = foothold.getid();
+					footholds[id] = foothold;
+
+					int16_t start = foothold.getl();
+					int16_t end = foothold.getr();
+					for (int16_t i = start; i <= end; i++)
+					{
+						footholdsbyx.insert(std::make_pair(i, id));
+					}
+				}
+			}
+		}
+
+		walls = vector2d<int16_t>(leftw + 25, rightw - 25);
+		borders = vector2d<int16_t>(topb - 400, botb + 400);
+	}
+
 	Footholdtree::Footholdtree() {}
 
 	Footholdtree::~Footholdtree() {}
@@ -216,6 +270,20 @@ namespace Gameplay
 			}
 		}
 		return ret;
+	}
+
+	int16_t Footholdtree::getgroundbelow(vector2d<int16_t> position) const
+	{
+		uint16_t fhid = getbelow(
+			static_cast<double>(position.x()), 
+			static_cast<double>(position.y())
+			);
+
+		const Foothold& fh = getfh(fhid);
+		if (fh.getid() > 0)
+			return static_cast<int16_t>(fh.resolvex(static_cast<double>(position.x())));
+		else
+			return borders.y();
 	}
 
 	vector2d<int16_t> Footholdtree::getwalls() const

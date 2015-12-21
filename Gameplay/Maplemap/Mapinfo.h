@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Util\vector2d.h"
+#include "Net\InPacket.h"
 #include "nlnx\node.hpp"
 #include <vector>
 
@@ -27,6 +28,7 @@ namespace Gameplay
 	using std::string;
 	using nl::node;
 	using Util::vector2d;
+	using Net::InPacket;
 
 	struct Seat
 	{
@@ -44,12 +46,12 @@ namespace Gameplay
 	class MapInfo
 	{
 	public:
+		MapInfo(node src, vector2d<int16_t> walls, vector2d<int16_t> borders);
+		MapInfo(InPacket& recv);
 		MapInfo();
 		~MapInfo();
 
-		void loadinfo(node, vector2d<int16_t>, vector2d<int16_t>);
-		bool hasnewbgm() const;
-		const string& getbgm() const;
+		string getbgm() const;
 		vector2d<int16_t> getwalls() const;
 		vector2d<int16_t> getborders() const;
 
@@ -57,7 +59,6 @@ namespace Gameplay
 		const Ladder* findladder(vector2d<int16_t>, bool) const;
 
 	private:
-		bool newbgm;
 		int32_t fieldlimit;
 		bool cloud;
 		string bgm;

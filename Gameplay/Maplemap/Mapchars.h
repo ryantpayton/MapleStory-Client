@@ -34,7 +34,7 @@ namespace Gameplay
 		void addchar(int32_t cid, const LookEntry& look, uint8_t level, 
 			int16_t job, string name, int8_t stance, vector2d<int16_t> pos);
 		void removechar(int32_t cid);
-		void movechar(int32_t cid, const MovementInfo& moves);
+		void movechar(int32_t cid, MovementFragment movement);
 
 		OtherChar* getchar(int32_t cid);
 	};

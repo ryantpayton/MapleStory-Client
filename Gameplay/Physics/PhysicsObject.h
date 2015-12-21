@@ -21,9 +21,6 @@
 
 namespace Gameplay
 {
-	using std::int8_t;
-	using std::int16_t;
-	using std::uint16_t;
 	using Util::vector2d;
 
 	// Struct that contains all properties neccessary for physics calculations.
@@ -41,21 +38,21 @@ namespace Gameplay
 
 		PhType type = NORMAL;
 		uint16_t fhid = 0;
-		double fhslope = 0.0f;
+		double fhslope = 0.0;
 		int8_t fhlayer = 0;
 		bool onground = true;
-		double mass = 1.0f;
-		double fx = 0.0f;
-		double fy = 0.0f;
-		double hforce = 0.0f;
-		double vforce = 0.0f;
-		double hacc = 0.0f;
-		double vacc = 0.0f;
-		double hspeed = 0.0f;
-		double vspeed = 0.0f;
+		double mass = 1.0;
+		double fx = 0.0;
+		double fy = 0.0;
+		double hforce = 0.0;
+		double vforce = 0.0;
+		double hacc = 0.0;
+		double vacc = 0.0;
+		double hspeed = 0.0;
+		double vspeed = 0.0;
 
-		double lastx = 0.0f;
-		double lasty = 0.0f;
+		double lastx = 0.0;
+		double lasty = 0.0;
 
 		vector2d<int16_t> getposition(float inter) const
 		{

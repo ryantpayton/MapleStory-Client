@@ -19,17 +19,8 @@
 
 namespace Gameplay
 {
-	MapInfo::MapInfo()
+	MapInfo::MapInfo(node src, vector2d<int16_t> walls, vector2d<int16_t> borders)
 	{
-		bgm = "";
-	}
-
-	MapInfo::~MapInfo() {}
-
-	void MapInfo::loadinfo(node src, vector2d<int16_t> walls, vector2d<int16_t> borders)
-	{
-		string oldbgm = bgm;
-
 		node info = src["info"];
 		if (info["VRLeft"].data_type() == node::type::integer)
 		{
@@ -45,7 +36,6 @@ namespace Gameplay
 		string bgmpath = info["bgm"];
 		size_t split = bgmpath.find('/');
 		bgm = bgmpath.substr(0, split) + ".img/" + bgmpath.substr(split + 1);
-		newbgm = bgm != oldbgm;
 
 		cloud = info["cloud"].get_bool();
 		fieldlimit = info["fieldLimit"];
@@ -72,12 +62,43 @@ namespace Gameplay
 		}
 	}
 
-	bool MapInfo::hasnewbgm() const
+	MapInfo::MapInfo(InPacket& recv)
 	{
-		return newbgm;
+		mapwalls = recv.readpoint();
+		mapborders = recv.readpoint();
+		bgm = recv.readascii();
+		cloud = recv.readbool();
+		fieldlimit = recv.readint();
+		hideminimap = recv.readbool();
+		mapmark = recv.readascii();
+		swim = recv.readbool();
+		town = recv.readbool();
+
+		uint16_t numseats = recv.readshort();
+		for (uint16_t i = 0; i < numseats; i++)
+		{
+			Seat seat;
+			seat.pos = recv.readpoint();
+			seats.push_back(seat);
+		}
+
+		uint16_t numladders = recv.readshort();
+		for (uint16_t i = 0; i < numladders; i++)
+		{
+			Ladder ladder;
+			ladder.x = recv.readshort();
+			ladder.y1 = recv.readshort();
+			ladder.y2 = recv.readshort();
+			ladder.ladder = recv.readbool();
+			ladders.push_back(ladder);
+		}
 	}
 
-	const string& MapInfo::getbgm() const
+	MapInfo::MapInfo() {}
+
+	MapInfo::~MapInfo() {}
+
+	string MapInfo::getbgm() const
 	{
 		return bgm;
 	}

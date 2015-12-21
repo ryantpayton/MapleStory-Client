@@ -37,6 +37,7 @@ namespace Net
 		CHARACTER_INFO = 8,
 		WARP_TO_MAP = 9,
 		CHANGE_CHANNEL = 10,
+		MAP_PACKET = 11,
 
 		PING = 17,
 		SELECT_WORLD = 26,

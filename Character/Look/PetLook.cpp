@@ -77,8 +77,8 @@ namespace Character
 
 	void PetLook::update(const Physics& physics, vector2d<int16_t> charpos)
 	{
-		static const float PETWALKFORCE = 0.35f;
-		static const float PETFLYFORCE = 0.2f;
+		static const double PETWALKFORCE = 0.35;
+		static const double PETFLYFORCE = 0.2;
 
 		vector2d<int16_t> curpos = phobj.getposition(1.0f);
 		switch (stance)
@@ -91,13 +91,13 @@ namespace Character
 			}
 			else
 			{
-				if (charpos.x() - curpos.x() > 50.0f)
+				if (charpos.x() - curpos.x() > 50)
 				{
 					phobj.hforce = PETWALKFORCE;
 					flip = true;
 					setstance(MOVE);
 				}
-				else if (charpos.x() - curpos.x() < -50.0f)
+				else if (charpos.x() - curpos.x() < -50)
 				{
 					phobj.hforce = -PETWALKFORCE;
 					flip = false;
@@ -105,7 +105,7 @@ namespace Character
 				}
 				else
 				{
-					phobj.hforce = 0.0f;
+					phobj.hforce = 0.0;
 					setstance(STAND);
 				}
 			}
@@ -122,12 +122,12 @@ namespace Character
 			}
 			else
 			{
-				if (charpos.x() - curpos.x() > 50.0f)
+				if (charpos.x() - curpos.x() > 50)
 				{
 					phobj.hforce = PETFLYFORCE;
 					flip = true;
 				}
-				else if (charpos.x() - curpos.x() < -50.0f)
+				else if (charpos.x() - curpos.x() < -50)
 				{
 					phobj.hforce = -PETFLYFORCE;
 					flip = false;

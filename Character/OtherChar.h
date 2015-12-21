@@ -25,7 +25,6 @@ namespace Character
 	using std::vector;
 	using Net::LookEntry;
 	using Gameplay::Physics;
-	using Gameplay::MovementInfo;
 	using Gameplay::MovementFragment;
 
 	class OtherChar : public Char
@@ -34,7 +33,7 @@ namespace Character
 		OtherChar(int32_t, const LookEntry&, uint8_t, int16_t, string, int8_t, vector2d<int16_t>);
 
 		int8_t update(const Physics&);
-		void sendmovement(const MovementInfo&);
+		void sendmovement(MovementFragment);
 
 	private:
 		uint8_t level;

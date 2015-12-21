@@ -45,6 +45,6 @@ namespace Gameplay
 		};
 
 		map<MesoType, Animation> mesos;
-		int32_t lootcd;
+		bool lootenabled;
 	};
 }

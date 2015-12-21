@@ -20,18 +20,9 @@
 
 namespace Constants
 {
-	using std::uint16_t;
-	using std::int32_t;
-
 	// Timestep, e.g. the granularity in which the game advances.
-	const uint16_t TIMESTEP = 8;
+	const std::uint16_t TIMESTEP = 8;
 
-	// Game width (float).
-	const double fVIEWWIDTH = 800.0;
-	// Game heihgt (float).
-	const double fVIEWHEIGHT = 600.0;
-	// Game width (int).
-	const int32_t VIEWWIDTH = 800;
-	// Game height (int).
-	const int32_t VIEWHEIGHT = 600;
+	const double VIEWWIDTH = 800.0;
+	const double VIEWHEIGHT = 600.0;
 }

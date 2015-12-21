@@ -23,8 +23,20 @@ namespace Gameplay
 	Tile::Tile(node src, string ts)
 	{
 		node dsrc = nl::nx::map["Tile"][ts][src["u"]][src["no"]];
-		texture = Texture(dsrc);
+		texture = Texture(nl::nx::map["Tile"][ts][src["u"]][src["no"]]);
 		pos = vector2d<int16_t>(src["x"], src["y"]);
+		z = dsrc["z"];
+		if (z == 0)
+			z = dsrc["zM"];
+	}
+
+	Tile::Tile(InPacket& recv, string ts)
+	{
+		string u = recv.readascii();
+		string no = recv.readascii();
+		node dsrc = nl::nx::map["Tile"][ts][u][no];
+		texture = Texture(dsrc);
+		pos = recv.readpoint();
 		z = dsrc["z"];
 		if (z == 0)
 			z = dsrc["zM"];

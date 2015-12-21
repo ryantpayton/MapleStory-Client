@@ -23,9 +23,11 @@
 #include "Maplemap\MapPortals.h"
 #include "Physics\Physics.h"
 
+#include "Net\InPacket.h"
 #include "Net\Packets\GameplayPackets83.h"
 #include "Net\Session.h"
 #include "Audio\Audioplayer.h"
+
 #include "nlnx\nx.hpp"
 #include "nlnx\audio.hpp"
 
@@ -33,8 +35,16 @@ namespace Gameplay
 {
 	namespace Stage
 	{
+		enum State
+		{
+			STG_INACTIVE,
+			STG_TRANSITION,
+			STG_ACTIVE
+		};
+
 		Camera camera;
 		Physics physics;
+		Player player;
 
 		map<uint8_t, MapLayer> layers;
 		MapInfo mapinfo;
@@ -44,11 +54,10 @@ namespace Gameplay
 		MapMobs mobs;
 		MapDrops drops;
 
-		Player player;
-
+		State state = STG_INACTIVE;
 		Playable* playable = nullptr;
-		int32_t currentmapid = 0;
-		bool active = false;
+		int32_t mapid = 0;
+		uint8_t portalid = 0;
 
 		bool loadplayer(int32_t charid)
 		{
@@ -65,68 +74,96 @@ namespace Gameplay
 			}
 		}
 
-		void warptomap(uint8_t portalid, int32_t mapid)
+		void setmap(uint8_t pid, int32_t mid)
 		{
-			player.getstats().setportal(portalid);
-			loadmap(mapid);
+			portalid = pid;
+			mapid = mid;
 		}
 
-		void loadmap(int32_t mapid)
+		void clear()
 		{
-			// Load the map with the given id.
-			active = false;
+			state = STG_INACTIVE;
 
-			// Clear all objects on the last map.
 			layers.clear();
 			portals.clear();
 			chars.clear();
 			npcs.clear();
 			mobs.clear();
 			drops.clear();
+		}
 
-			// Get the node that has the new map data.
+		void loadmap()
+		{
 			string strid = std::to_string(mapid);
 			strid.insert(0, 9 - strid.length(), '0');
 			node src = nl::nx::map["Map"]["Map" + std::to_string(mapid / 100000000)][strid + ".img"];
 
-			// Load new map data.
 			physics.loadfht(src["foothold"]);
-			mapinfo.loadinfo(src, physics.getfht().getwalls(), physics.getfht().getborders());
+			mapinfo = MapInfo(src, physics.getfht().getwalls(), physics.getfht().getborders());
 			portals.load(src["portal"], mapid);
 			//backgrounds = mapbackgrounds(src["back"]);
+
 			for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
 			{
 				layers[i] = MapLayer(src[std::to_string(i)]);
 			}
+		}
 
-			currentmapid = mapid;
+		void parsemap(InPacket& recv)
+		{
+			if (state != STG_INACTIVE)
+				return;
+
+			mapid = recv.readint();
+			portalid = recv.readbyte();
+			mapinfo = MapInfo(recv);
+			physics.parsefht(recv);
+			portals.parseportals(recv, mapid);
+
+			for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
+			{
+				layers[i] = MapLayer(recv);
+			}
+
+			state = STG_TRANSITION;
 		}
 
 		void respawn()
 		{
-			// Change the background music if required.
-			if (mapinfo.hasnewbgm())
-				Audioplayer::playbgm(mapinfo.getbgm());
+			Audioplayer::playbgm(mapinfo.getbgm());
 
-			// Respawn the player at the spawnpoint associated with the portal id.
 			vector2d<int16_t> startpos = 
-				portals.getspawnpoint(player.getstats().getportal());
+				physics.getgroundbelow(portals.getspawnpoint(portalid));
 			player.respawn(startpos);
 			camera.setposition(startpos);
 			camera.updateview(mapinfo.getwalls(), mapinfo.getborders());
+		}
 
-			active = true;
+		void reload()
+		{
+			switch (state)
+			{
+			case STG_INACTIVE:
+				loadmap();
+				respawn();
+				break;
+			case STG_TRANSITION:
+				respawn();
+				break;
+			}
+
+			state = STG_ACTIVE;
 		}
 
 		void draw(float inter)
 		{
-			if (!active)
+			if (state != STG_ACTIVE)
 				return;
 
 			vector2d<int16_t> viewpos = camera.getposition(inter);
 			for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
 			{
-				layers.at(i).draw(viewpos, inter);
+				layers[i].draw(viewpos, inter);
 				npcs.draw(i, camera, inter);
 				mobs.draw(i, camera, inter);
 				chars.draw(i, camera, inter);
@@ -141,7 +178,7 @@ namespace Gameplay
 
 		void update()
 		{
-			if (!active)
+			if (state != STG_ACTIVE)
 				return;
 
 			for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
@@ -221,8 +258,7 @@ namespace Gameplay
 			switch (type)
 			{
 			case Inventory::USE:
-				using Net::UseItemPacket83;
-				Net::Session::dispatch(UseItemPacket83(slot, itemid));
+				Net::Session::dispatch(Net::UseItemPacket83(slot, itemid));
 				break;
 			}
 		}
@@ -236,7 +272,7 @@ namespace Gameplay
 			const WarpInfo* warpinfo = portals.findportal(player.getbounds());
 			if (warpinfo)
 			{
-				if (warpinfo->mapid == currentmapid)
+				if (warpinfo->mapid == mapid)
 				{
 					// Teleport inside a map.
 					vector2d<int16_t> spawnpoint = portals.getspawnpoint(warpinfo->portal);
@@ -245,8 +281,7 @@ namespace Gameplay
 				else if (warpinfo->valid)
 				{
 					// Warp to a different map.
-					using Net::ChangeMapPacket83;
-					Net::Session::dispatch(ChangeMapPacket83(false, warpinfo->mapid, warpinfo->portal, false));
+					Net::Session::dispatch(Net::ChangeMapPacket83(false, warpinfo->mapid, warpinfo->portal, false));
 				}
 			}
 		}
@@ -280,7 +315,7 @@ namespace Gameplay
 
 		void sendkey(IO::Keyboard::Keytype type, int32_t action, bool down)
 		{
-			if (!playable)
+			if (state != STG_ACTIVE || !playable)
 				return;
 
 			using IO::Keyboard;

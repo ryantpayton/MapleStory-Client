@@ -24,5 +24,6 @@ namespace IO
 		void update();
 		void begin();
 		void end();
+		void fadeout();
 	}
 }

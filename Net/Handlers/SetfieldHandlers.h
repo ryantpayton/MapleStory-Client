@@ -19,6 +19,7 @@
 #include "AbstractItemHandler83.h"
 #include "IO\UITypes\UIStatusbar.h"
 #include "IO\UI.h"
+#include "IO\Window.h"
 #include "Gameplay\Stage.h"
 #include "Program\Configuration.h"
 #include "Net\Session.h"
@@ -31,6 +32,14 @@ namespace Net
 	using Character::Questlog;
 	using Character::Monsterbook;
 	using Character::Telerock;
+
+	void stagetransition(uint8_t portalid, int32_t mapid)
+	{
+		IO::Window::fadeout();
+		Gameplay::Stage::clear();
+		Graphics::GraphicsEngine::clear();
+		Gameplay::Stage::setmap(portalid, mapid);
+	}
 
 	// Handler for a packet which contains all character information on first login.
 	class CharacterInfoHandler : public AbstractItemHandler83
@@ -58,21 +67,9 @@ namespace Net
 			IO::UI::remove(IO::Element::CHARSELECT);
 			IO::UI::remove(IO::Element::SOFTKEYBOARD);
 
-			Graphics::GraphicsEngine::clear();
+			stagetransition(player.getstats().getportal(), player.getstats().getmapid());
 
-			//parent.getui()add(UI_QUICKSLOTS);
 			IO::UI::add(IO::ElementStatusbar(player.getstats()));
-			//parent.getui()add(UI_CHATBAR);
-			//parent.getui()add(UI_INVENTORY);
-			//parent.getui()getbase()->setactive(true);
-
-			//Game::getcache()->getsounds()->play(MSN_GAMEIN);
-			int32_t mapid = player.getstats().getmapid();
-			Gameplay::Stage::loadmap(mapid);
-			Gameplay::Stage::respawn();
-
-			IO::UI::enable();
-			IO::UI::enablegamekeys(true);
 		}
 
 		void parseinventory(InPacket& recv, Inventory& invent) const
@@ -200,12 +197,7 @@ namespace Net
 			// Spawn information.
 			int32_t mapid = recv.readint();
 			uint8_t portalid = static_cast<uint8_t>(recv.readint());
-
-			Graphics::GraphicsEngine::clear();
-
-			Gameplay::Stage::warptomap(portalid, mapid);
-			Gameplay::Stage::respawn();
-			IO::UI::enable();
+			stagetransition(portalid, mapid);
 		}
 	};
 
@@ -217,6 +209,16 @@ namespace Net
 			// Spawn information.
 			recv.readbyte(); // channel
 			// ip adress etc.
+		}
+	};
+
+	// Handler for a packet which contains a custom, server-sided map.
+	class MapPacketHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override
+		{
+			stagetransition(0, 0);
+			Gameplay::Stage::parsemap(recv);
 		}
 	};
 }

@@ -19,7 +19,10 @@
 
 namespace Character
 {
-	Monsterbook::Monsterbook() {}
+	Monsterbook::Monsterbook() 
+	{
+		cover = 0;
+	}
 
 	Monsterbook::~Monsterbook() {}
 

@@ -34,14 +34,15 @@ namespace Gameplay
 		// Calls 'update()' of all objects on stage.
 		void update();
 
+
+		void clear();
 		// Adds a player object with the given properties.
 		bool loadplayer(int32_t charid);
-		void warptomap(uint8_t portalid, int32_t mapid);
+		void setmap(uint8_t portalid, int32_t mapid);
 		// Loads the map to display. 
-		void loadmap(int32_t mapid);
-		// Repositions the player and reactivates the stage after loading.
-		// Also plays the bgm associated with the newly loaded map.
-		void respawn();
+		void reload();
+		// Parses and displays a map from a packet.
+		void parsemap(InPacket& recv);
 		// Send a key input to the stage.
 		void sendkey(IO::Keyboard::Keytype keytype, int32_t keycode, bool pressed);
 

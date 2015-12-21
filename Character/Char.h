@@ -20,11 +20,9 @@
 #include "Look\CharLook.h"
 #include "Look\PetLook.h"
 #include "Util\rectangle2d.h"
-#include <memory>
 
 namespace Character
 {
-	using std::unique_ptr;
 	using Util::rectangle2d;
 	using Gameplay::MapObject;
 	using Gameplay::Camera;

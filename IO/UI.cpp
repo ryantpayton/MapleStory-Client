@@ -18,6 +18,7 @@
 #include "UI.h"
 #include "Cursor.h"
 #include "Keyboard.h"
+#include "Window.h"
 #include "UITypes\UIStatsinfo.h"
 #include "UITypes\UIEquipInventory.h"
 #include "Gameplay\Stage.h"

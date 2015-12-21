@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Physics\PhysicsObject.h"
+#include <cstdint>
 #include <vector>
 
 namespace Gameplay
@@ -24,8 +24,6 @@ namespace Gameplay
 	using std::uint8_t;
 	using std::int16_t;
 	using std::uint16_t;
-	using std::vector;
-	using Gameplay::PhysicsObject;
 
 	// Contains information on a single movement.
 	struct MovementFragment
@@ -40,75 +38,14 @@ namespace Gameplay
 			MVT_JUMPDOWN
 		};
 
-		MovementType type;
-		uint8_t command;
-		int16_t xpos;
-		int16_t ypos;
-		int16_t lastx;
-		int16_t lasty;
-		uint16_t fh;
-		uint8_t newstate;
-		int16_t duration;
-	};
-
-	class MovementInfo
-	{
-	public:
-		MovementInfo() {}
-		~MovementInfo() {}
-
-		// Add a movement to the vector of store movements.
-		void addmovement(const PhysicsObject& phobj, uint8_t command, uint8_t state, int16_t duration)
-		{
-			MovementFragment toadd;
-			toadd.type = MovementFragment::MVT_ABSOLUTE;
-			toadd.command = command;
-			toadd.xpos = static_cast<int16_t>(phobj.fx);
-			toadd.ypos = static_cast<int16_t>(phobj.fy);
-			toadd.lastx = static_cast<int16_t>(phobj.lastx);
-			toadd.lasty = static_cast<int16_t>(phobj.lasty);
-			toadd.fh = phobj.fhid;
-			toadd.newstate = state;
-			toadd.duration = duration;
-			fragments.push_back(toadd);
-		}
-
-		// Add a movement to the vector of store movements.
-		void addmovement(MovementFragment toadd)
-		{
-			fragments.push_back(toadd);
-		}
-
-		// Return a begin iterator for iteration.
-		vector<MovementFragment>::const_iterator begin() const
-		{
-			return fragments.begin();
-		}
-
-		// Return an end iterator for iteration.
-		vector<MovementFragment>::const_iterator end() const
-		{
-			return fragments.end();
-		}
-
-		// Return the last movement stored.
-		const MovementFragment& gettop() const
-		{
-			return fragments.back();
-		}
-
-		// Return the amount of movements stored. 
-		size_t getsize() const
-		{
-			return fragments.size();
-		}
-
-		// Clear the fragments vector. That way a MovementInfo can be reused as a member variable.
-		void clear()
-		{
-			fragments.clear();
-		}
-	private:
-		vector<MovementFragment> fragments;
+		MovementType type = MVT_NONE;
+		uint8_t command = 0;
+		int16_t xpos = 0;
+		int16_t ypos = 0;
+		int16_t lastx = 0;
+		int16_t lasty = 0;
+		uint16_t fh = 0;
+		uint8_t newstate = 0;
+		int16_t duration = 0;
 	};
 }

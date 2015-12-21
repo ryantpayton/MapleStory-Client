@@ -83,6 +83,7 @@ namespace Gameplay
 				result.damagelines[mob->getoid()] = mob->damage(attack);
 		}
 		result.direction = static_cast<uint8_t>(attack.direction);
+		result.mobcount = static_cast<uint8_t>(result.damagelines.size());
 		result.hitcount = attack.hitcount;
 		result.skill = attack.skill;
 		result.speed = attack.speed;

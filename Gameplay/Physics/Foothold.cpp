@@ -29,6 +29,16 @@ namespace Gameplay
 		vertical = vector2d<int16_t>(src["y1"], src["y2"]);
 	}
 
+	Foothold::Foothold(InPacket& recv, int8_t l)
+	{
+		id = recv.readshort();
+		layer = l;
+		prev = recv.readshort();
+		next = recv.readshort();
+		horizontal = recv.readpoint();
+		vertical = recv.readpoint();
+	}
+
 	Foothold::Foothold()
 	{
 		id = 0;

@@ -31,12 +31,13 @@ namespace Gameplay
 	public:
 		static const uint8_t NUM_LAYERS = 8;
 
-		MapLayer(node);
+		MapLayer(node src);
+		MapLayer(InPacket& recv);
 		MapLayer();
 		~MapLayer();
 
 		void update();
-		void draw(vector2d<int16_t>, float) const;
+		void draw(vector2d<int16_t> viewpos, float inter) const;
 
 	private:
 		map<uint8_t, vector<Tile>> tiles;

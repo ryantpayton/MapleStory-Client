@@ -66,8 +66,8 @@ namespace Character
 		return phobj.fhlayer;
 	}
 
-	void OtherChar::sendmovement(const MovementInfo& movements)
+	void OtherChar::sendmovement(MovementFragment movement)
 	{
-		lastmove = movements.gettop();
+		lastmove = movement;
 	}
 }

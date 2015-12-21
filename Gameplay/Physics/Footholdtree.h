@@ -18,6 +18,7 @@
 #pragma once
 #include "Foothold.h"
 #include "PhysicsObject.h"
+#include "Net\InPacket.h"
 #include <unordered_map>
 
 namespace Gameplay
@@ -30,6 +31,7 @@ namespace Gameplay
 	{
 	public:
 		Footholdtree(node source);
+		Footholdtree(InPacket& recv);
 		Footholdtree();
 		~Footholdtree();
 
@@ -38,6 +40,7 @@ namespace Gameplay
 		// Updates a PhysicsObject's fhid based on it's position.
 		void updatefh(PhysicsObject& touse) const;
 
+		int16_t getgroundbelow(vector2d<int16_t> position) const;
 		// Returns the leftmost and rightmost platform positions of the map.
 		vector2d<int16_t> getwalls() const;
 		// Returns the topmost and bottommost platform positions of the map.

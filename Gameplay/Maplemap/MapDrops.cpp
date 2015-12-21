@@ -27,7 +27,7 @@ namespace Gameplay
 {
 	MapDrops::MapDrops() 
 	{
-		lootcd = 0;
+		lootenabled = false;
 	}
 
 	void MapDrops::adddrop(int32_t oid, int32_t itemid, bool meso, int32_t owner, 
@@ -80,8 +80,8 @@ namespace Gameplay
 	{
 		MapObjects::update(physics);
 
-		if (lootcd > 0)
-			lootcd -= Constants::TIMESTEP;
+		if (!lootenabled)
+			lootenabled = true;
 
 		for (auto& msani : mesos)
 		{
@@ -91,7 +91,7 @@ namespace Gameplay
 
 	const Drop* MapDrops::findinrange(rectangle2d<int16_t> range)
 	{
-		if (lootcd > 0)
+		if (!lootenabled)
 			return nullptr;
 
 		for (auto& mmo : objects)
@@ -102,7 +102,7 @@ namespace Gameplay
 			Drop* drop = reinterpret_cast<Drop*>(mmo.second.get());
 			if (range.overlaps(drop->bounds()))
 			{
-				lootcd = Constants::TIMESTEP * 3;
+				lootenabled = false;
 				return drop;
 			}
 		}

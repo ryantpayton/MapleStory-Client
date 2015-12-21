@@ -69,9 +69,14 @@ namespace Character
 				{
 					const Ladder* ladder = player.getladder();
 					if (ladder)
+					{
 						stance = ladder->ladder ? Char::LADDER : Char::ROPE;
+					}
 					else
+					{
 						stance = Char::FALL;
+						player.getphobj().type = PhysicsObject::NORMAL;
+					}
 				}
 				else if (phtype == PhysicsObject::FLYING || phtype == PhysicsObject::SWIMMING)
 				{

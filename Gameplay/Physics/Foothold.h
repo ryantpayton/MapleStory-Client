@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Net\InPacket.h"
 #include "Util\vector2d.h"
 #include "nlnx\node.hpp"
 
@@ -23,12 +24,14 @@ namespace Gameplay
 {
 	using nl::node;
 	using Util::vector2d;
+	using Net::InPacket;
 
 	// Represents a platform part on a maple-map. Contains methods for usage with physics.
 	class Foothold
 	{
 	public:
 		Foothold(node src, int8_t layer);
+		Foothold(InPacket& recv, int8_t layer);
 		Foothold();
 		~Foothold();
 

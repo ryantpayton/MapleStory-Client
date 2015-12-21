@@ -18,6 +18,7 @@
 #pragma once
 #include "Graphics\Animation.h"
 #include "Util\vector2d.h"
+#include "Net\InPacket.h"
 
 namespace Gameplay
 {
@@ -25,12 +26,14 @@ namespace Gameplay
 	using nl::node;
 	using Util::vector2d;
 	using Graphics::Animation;
+	using Net::InPacket;
 
 	// Represents an obj (map decoration) on a map.
 	class Obj
 	{
 	public:
 		Obj(node source);
+		Obj(InPacket& recv);
 		// Empty destructor.
 		~Obj();
 

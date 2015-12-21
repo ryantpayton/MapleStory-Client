@@ -18,6 +18,7 @@
 #pragma once
 #include "Gameplay\Maplemap\Portal.h"
 #include "Graphics\Animation.h"
+#include "Net\InPacket.h"
 #include "nlnx\node.hpp"
 
 namespace Gameplay
@@ -25,6 +26,7 @@ namespace Gameplay
 	using std::map;
 	using nl::node;
 	using Graphics::Animation;
+	using Net::InPacket;
 
 	// Collecton of portals on a map. Draws and updates portals.
 	// Also contains methods for using portals and obtaining spawn points.
@@ -34,14 +36,17 @@ namespace Gameplay
 		MapPortals();
 		~MapPortals();
 
-		void load(node, int32_t);
+		void load(node source, int32_t mapid);
+		void parseportals(InPacket& recv, int32_t mapid);
+
 		void clear();
-		void update(rectangle2d<int16_t>);
-		void draw(vector2d<int16_t>, float) const;
-		uint8_t getportalbyname(string) const;
-		vector2d<int16_t> getspawnpoint(uint8_t) const;
-		vector2d<int16_t> getspawnpoint(string) const;
-		const WarpInfo* findportal(rectangle2d<int16_t>);
+		void update(rectangle2d<int16_t> playerbounds);
+		void draw(vector2d<int16_t> viewpos, float inter) const;
+
+		uint8_t getportalbyname(string name) const;
+		vector2d<int16_t> getspawnpoint(uint8_t id) const;
+		vector2d<int16_t> getspawnpoint(string name) const;
+		const WarpInfo* findportal(rectangle2d<int16_t> playerbounds);
 
 	private:
 		map<uint8_t, Portal> portals;

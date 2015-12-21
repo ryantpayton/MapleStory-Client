@@ -24,6 +24,10 @@
 
 namespace Character
 {
+	const uint16_t SENDMOVEMENTCD = Constants::TIMESTEP * 12;
+
+	static PlayerNullState nullstate;
+
 	const PlayerState* getstate(Char::Stance stance)
 	{
 		static PlayerStandState standing;
@@ -65,7 +69,11 @@ namespace Character
 		namelabel = Textlabel(Textlabel::DWF_14MC, Textlabel::TXC_WHITE, stats.getname(), 0);
 		namelabel.setback(Textlabel::TXB_NAMETAG);
 
+		sendcd = SENDMOVEMENTCD;
+		active = true;
 		attacking = false;
+		ladder = nullptr;
+
 		setstance(STAND);
 		setflip(false);
 	}
@@ -75,9 +83,10 @@ namespace Character
 	void Player::respawn(vector2d<int16_t> pos)
 	{
 		setposition(pos.x(), pos.y());
-		movementinfo.clear();
-		ladder = nullptr;
+		sendcd = SENDMOVEMENTCD;
 		attacking = false;
+		ladder = nullptr;
+		nullstate.nextstate(*this);
 	}
 
 	void Player::sendaction(IO::Keyboard::Keyaction ka, bool down)
@@ -115,14 +124,6 @@ namespace Character
 
 	int8_t Player::update(const Physics& physics)
 	{
-		updatestate(physics);
-		writemovement();
-		updatelook();
-		return getlayer();
-	}
-
-	void Player::updatestate(const Physics& physics)
-	{
 		const PlayerState* pst = getstate(stance);
 		if (pst)
 		{
@@ -131,42 +132,47 @@ namespace Character
 			Char::update(physics);
 			pst->nextstate(*this);
 		}
-	}
 
-	void Player::writemovement()
-	{
-		uint8_t dirstance;
-		if (flip)
-			dirstance = static_cast<uint8_t>(stance);
+		if (sendcd > 0)
+		{
+			sendcd -= Constants::TIMESTEP;
+		}
 		else
-			dirstance = static_cast<uint8_t>(stance + 1);
-
-		int16_t shortx = static_cast<int16_t>(phobj.fx);
-		int16_t shorty = static_cast<int16_t>(phobj.fy);
-		using Gameplay::MovementFragment;
-		if (dirstance != lastmove.newstate || shortx != lastmove.xpos || shorty != lastmove.ypos)
 		{
-			movementinfo.addmovement(phobj, 0, dirstance, Constants::TIMESTEP);
-			lastmove = movementinfo.gettop();
-		}
+			uint8_t dirstance;
+			if (flip)
+				dirstance = static_cast<uint8_t>(stance);
+			else
+				dirstance = static_cast<uint8_t>(stance + 1);
 
-		if (movementinfo.getsize() >= 2)
-		{
-			Net::Session::dispatch(Net::MovePlayerPacket83(movementinfo));
-			movementinfo.clear();
-		}
-	}
+			int16_t shortx = static_cast<int16_t>(phobj.fx);
+			int16_t shorty = static_cast<int16_t>(phobj.fy);
+			if (dirstance != lastmove.newstate || shortx != lastmove.xpos || shorty != lastmove.ypos)
+			{
+				lastmove.type = MovementFragment::MVT_ABSOLUTE;
+				lastmove.command = 0;
+				lastmove.xpos = static_cast<int16_t>(phobj.fx);
+				lastmove.ypos = static_cast<int16_t>(phobj.fy);
+				lastmove.lastx = static_cast<int16_t>(phobj.lastx);
+				lastmove.lasty = static_cast<int16_t>(phobj.lasty);
+				lastmove.fh = phobj.fhid;
+				lastmove.newstate = dirstance;
+				lastmove.duration = SENDMOVEMENTCD;
 
-	void Player::updatelook()
-	{
+				using Net::MovePlayerPacket83;
+				Net::Session::dispatch(MovePlayerPacket83(lastmove));
+				sendcd = SENDMOVEMENTCD;
+			}
+		}
+		
 		bool aniend = look.update(getstancespeed());
 		if (aniend && attacking)
 		{
 			attacking = false;
-
-			static PlayerNullState nullstate;
 			nullstate.nextstate(*this);
 		}
+
+		return getlayer();
 	}
 
 	uint16_t Player::getstancespeed() const

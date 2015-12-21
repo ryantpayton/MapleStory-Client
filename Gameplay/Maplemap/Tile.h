@@ -18,6 +18,7 @@
 #pragma once
 #include "Graphics\Texture.h"
 #include "Util\vector2d.h"
+#include "Net\InPacket.h"
 #include "nlnx\node.hpp"
 #include <cstdint>
 #include <string>
@@ -29,12 +30,14 @@ namespace Gameplay
 	using nl::node;
 	using Util::vector2d;
 	using Graphics::Texture;
+	using Net::InPacket;
 
 	// Represents a tile on a map.
 	class Tile
 	{
 	public:
 		Tile(node src, string tileset);
+		Tile(InPacket& recv, string tileset);
 		// Empty destructor.
 		~Tile();
 

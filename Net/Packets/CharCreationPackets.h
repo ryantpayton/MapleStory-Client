@@ -44,7 +44,7 @@ namespace Net
 			writeint(face);
 			writeint(hair);
 			writeint(hairc);
-			writeint(skin);
+			writech(skin);
 			writeint(top);
 			writeint(bot);
 			writeint(shoes);

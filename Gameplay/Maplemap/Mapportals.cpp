@@ -70,6 +70,22 @@ namespace Gameplay
 		}
 	}
 
+	void MapPortals::parseportals(InPacket& recv, int32_t mapid)
+	{
+		uint8_t numportals = recv.readbyte();
+		for (uint8_t pid = 0; pid < numportals; pid++)
+		{
+			Portal::PtType type = static_cast<Portal::PtType>(recv.readint());
+			string name = recv.readascii();
+			int32_t targetid = recv.readint();
+			string targetname = recv.readascii();
+			vector2d<int16_t> pos = recv.readpoint();
+
+			portals[pid] = Portal(getanimation(type), type, name, targetid == mapid, pos, targetid, targetname);
+			portalnames[name] = pid;
+		}
+	}
+
 	void MapPortals::clear()
 	{
 		portals.clear();

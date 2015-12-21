@@ -41,7 +41,6 @@ namespace IO
 		float getdpiy() { return dpiY; }
 
 	private:
-		void endtransition();
 		HRESULT initfactories();
 		HRESULT inittargets();
 		static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -59,6 +58,7 @@ namespace IO
 		short screencd;
 		bool fullscreen;
 		bool draw_finished;
+		bool transition;
 	};
 }
 #endif

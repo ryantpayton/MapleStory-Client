@@ -274,11 +274,9 @@ namespace Net
 		{
 			int32_t cid = recv.readint();
 			recv.skip(4);
+			MovementFragment movement = parsemovement(recv);
 
-			MovementInfo movements;
-			parsemovement(recv, movements);
-
-			Gameplay::Stage::getchars().movechar(cid, movements);
+			Gameplay::Stage::getchars().movechar(cid, movement);
 		}
 	};
 

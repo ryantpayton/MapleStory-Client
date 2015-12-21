@@ -37,6 +37,24 @@ namespace Gameplay
 		}
 	}
 
+	MapLayer::MapLayer(InPacket& recv)
+	{
+		string tileset = recv.readascii();
+		uint16_t numtiles = recv.readshort();
+		for (uint16_t i = 0; i < numtiles; i++)
+		{
+			Tile tile = Tile(recv, tileset);
+			tiles[tile.getz()].push_back(tile);
+		}
+
+		uint16_t numobjs = recv.readshort();
+		for (uint16_t i = 0; i < numobjs; i++)
+		{
+			Obj obj = Obj(recv);
+			objs[obj.getz()].push_back(obj);
+		}
+	}
+
 	MapLayer::MapLayer() {}
 
 	MapLayer::~MapLayer() {}

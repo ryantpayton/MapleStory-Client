@@ -35,12 +35,12 @@ namespace Gameplay
 
 	struct SkillLevel
 	{
-		float chance;
-		float damage;
-		uint8_t attackcount;
-		uint8_t mobcount;
-		int32_t hpcost;
-		int32_t mpcost;
+		float chance = 0.0f;
+		float damage = 0.0f;
+		uint8_t attackcount = 1;
+		uint8_t mobcount = 1;
+		int32_t hpcost = 0;
+		int32_t mpcost = 0;
 		rectangle2d<int16_t> range;
 	};
 

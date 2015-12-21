@@ -42,8 +42,6 @@ namespace Gameplay
 		void updateview(vector2d<int16_t> hborders, vector2d<int16_t> vborders);
 		// Return the current position for drawing.
 		vector2d<int16_t> getposition(float inter) const;
-		vector2d<double> getposition() const;
-		vector2d<double> getlastposition() const;
 
 	private:
 		// Movement variables.

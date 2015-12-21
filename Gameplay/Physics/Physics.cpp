@@ -34,6 +34,11 @@ namespace Gameplay
 		fht = Footholdtree(src);
 	}
 
+	void Physics::parsefht(InPacket& recv)
+	{
+		fht = Footholdtree(recv);
+	}
+
 	void Physics::moveobject(PhysicsObject& phobj) const
 	{
 		// Determine which platform the object is currently on.
@@ -113,6 +118,12 @@ namespace Gameplay
 		{
 			phobj.vspeed = 0.0f;
 		}
+	}
+
+	vector2d<int16_t> Physics::getgroundbelow(vector2d<int16_t> position)
+	{
+		int16_t ground = fht.getgroundbelow(position);
+		return vector2d<int16_t>(position.x(), ground - 1);
 	}
 
 	const Footholdtree& Physics::getfht() const

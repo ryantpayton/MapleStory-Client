@@ -117,6 +117,7 @@ namespace Net
 #endif
 
 				pos = 0;
+				length = 0;
 
 				// Check if there is more available.
 				size_t remaining = available - towrite;
@@ -132,7 +133,7 @@ namespace Net
 		{
 			// Check if a packet has arrived. Handle if data is sufficient: 4 bytes(header) + 2 bytes(opcode) = 6.
 			size_t result = socket.receive(&connected);
-			if (result >= MIN_PACKET_LEN)
+			if (result >= MIN_PACKET_LEN || length > 0)
 			{
 				// Retrieve buffer from the socket and process it.
 				const int8_t* bytes = socket.getbuffer();

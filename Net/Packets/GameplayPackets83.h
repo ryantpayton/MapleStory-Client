@@ -40,10 +40,10 @@ namespace Net
 	class MovePlayerPacket83 : public MovementPacket83
 	{
 	public:
-		MovePlayerPacket83(const MovementInfo& movements) : MovementPacket83(MOVE_PLAYER)
+		MovePlayerPacket83(const MovementFragment& movement) : MovementPacket83(MOVE_PLAYER)
 		{
 			skip(9);
-			writemoves(movements);
+			writemoves(movement);
 		}
 	};
 
@@ -77,7 +77,7 @@ namespace Net
 		CloseRangeAttackPacket83(const Gameplay::AttackResult& attack) : OutPacket(CLOSE_ATTACK)
 		{
 			skip(1);
-			writech((attack.hitcount << 4) | attack.hitcount);
+			writech((attack.mobcount << 4) | attack.hitcount);
 			writeint(attack.skill);
 			if (attack.charge > 0)
 				writeint(attack.charge);

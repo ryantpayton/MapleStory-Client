@@ -26,6 +26,7 @@ namespace Audioplayer
 {
 	HSTREAM bgm;
 	std::map<size_t, HSAMPLE> soundcache;
+	string bgmpath = "";
 
 	bool init()
 	{
@@ -70,9 +71,15 @@ namespace Audioplayer
 
 	void playbgm(string path)
 	{
+		if (path == bgmpath)
+			return;
+
 		nl::audio toplay = nl::nx::sound.resolve(path);
 		if (toplay.data())
+		{
 			playbgm(reinterpret_cast<const void*>(toplay.data()), toplay.length());
+			bgmpath = path;
+		}
 	}
 
 	void playsound(size_t id)

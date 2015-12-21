@@ -23,21 +23,21 @@ namespace Gameplay
 {
 	Camera::Camera()
 	{
-		fx = 0.0f;
-		fy = 0.0f;
-		lastx = 0.0f;
-		lasty = 0.0f;
+		fx = 0.0;
+		fy = 0.0;
+		lastx = 0.0;
+		lasty = 0.0;
 	}
 
 	Camera::~Camera() {}
 
 	void Camera::update(vector2d<double> playerpos)
 	{
-		static const double hspeed = 12.0 / Constants::fVIEWWIDTH;
-		static const double vspeed = 12.0 / Constants::fVIEWHEIGHT;
+		static const double hspeed = 12.0 / Constants::VIEWWIDTH;
+		static const double vspeed = 12.0 / Constants::VIEWHEIGHT;
 
-		double destx = (Constants::fVIEWWIDTH / 2.0) - playerpos.x();
-		double desty = (Constants::fVIEWHEIGHT / 2.0) - playerpos.y();
+		double destx = (Constants::VIEWWIDTH / 2.0) - playerpos.x();
+		double desty = (Constants::VIEWHEIGHT / 2.0) - playerpos.y();
 
 		lastx = fx;
 		lasty = fy;
@@ -48,19 +48,19 @@ namespace Gameplay
 		if (abs(desty - fy) > 1.0)
 			fy += vspeed * (desty - fy);
 
-		if (fx > hbounds.x() || hbounds.length() < Constants::fVIEWWIDTH)
+		if (fx > hbounds.x() || hbounds.length() < Constants::VIEWWIDTH)
 			fx = hbounds.x();
-		else if (fx < hbounds.y() + Constants::fVIEWWIDTH)
-			fx = hbounds.y() + Constants::fVIEWWIDTH;
+		else if (fx < hbounds.y() + Constants::VIEWWIDTH)
+			fx = hbounds.y() + Constants::VIEWWIDTH;
 
-		if (fy < vbounds.y() + Constants::fVIEWHEIGHT || vbounds.length() < Constants::fVIEWHEIGHT)
-			fy = vbounds.y() + Constants::fVIEWHEIGHT;
+		if (fy < vbounds.y() + Constants::VIEWHEIGHT || vbounds.length() < Constants::VIEWHEIGHT)
+			fy = vbounds.y() + Constants::VIEWHEIGHT;
 	}
 
 	void Camera::setposition(vector2d<int16_t> pos)
 	{
-		fx = (Constants::fVIEWWIDTH / 2) - static_cast<double>(pos.x());
-		fy = (Constants::fVIEWHEIGHT / 2) - static_cast<double>(pos.y());
+		fx = (Constants::VIEWWIDTH / 2) - static_cast<double>(pos.x());
+		fy = (Constants::VIEWHEIGHT / 2) - static_cast<double>(pos.y());
 	}
 
 	void Camera::updateview(vector2d<int16_t> mapwalls, vector2d<int16_t> mapborders)

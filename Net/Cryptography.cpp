@@ -29,7 +29,7 @@ namespace Net
 	size_t Cryptography::getlength(const int8_t* bytes) const
 	{
 		size_t length = 0;
-		for (int32_t i = 0; i < 4; i++)
+		for (int32_t i = 0; i < HEADERLEN; i++)
 		{
 			length += static_cast<uint8_t>(bytes[i]) << (8 * i);
 		}
@@ -39,7 +39,7 @@ namespace Net
 	void Cryptography::getheader(int8_t* buffer, size_t slength) const
 	{
 		int32_t length = static_cast<int32_t>(slength);
-		for (int32_t i = 0; i < 4; i++)
+		for (int32_t i = 0; i < HEADERLEN; i++)
 		{
 			buffer[i] = static_cast<int8_t>(length);
 			length = length >> 8;

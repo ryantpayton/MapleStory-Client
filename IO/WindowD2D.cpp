@@ -20,6 +20,7 @@
 #ifndef JOURNEY_USE_OPENGL
 #include "WindowD2D.h"
 #include "UI.h"
+#include "Gameplay\Stage.h"
 
 namespace IO
 {
@@ -48,7 +49,6 @@ namespace IO
 			wcex.lpfnWndProc = WindowD2D::WndProc;
 			wcex.cbClsExtra = 0;
 			wcex.cbWndExtra = sizeof(LONG_PTR);
-			//wcex.hInstance = HINST_THISCOMPONENT;
 			wcex.hbrBackground = NULL;
 			wcex.lpszMenuName = NULL;
 			wcex.hCursor = LoadCursor(NULL, IDI_APPLICATION);
@@ -83,6 +83,7 @@ namespace IO
 					screencd = 0;
 					scralpha = 1.0f;
 					draw_finished = true;
+					transition = false;
 
 					SetPriorityClass(wnd, REALTIME_PRIORITY_CLASS);
 					SetFocus(wnd);
@@ -216,7 +217,10 @@ namespace IO
 					wasHandled = true;
 					break;
 				case WM_KEYDOWN:
-					UI::sendkey(static_cast<uint8_t>(wParam), true);
+					if (wParam == VK_TAB)
+						app->togglemode();
+					else
+						UI::sendkey(static_cast<uint8_t>(wParam), true);
 					result = 0;
 					wasHandled = true;
 					break;
@@ -246,8 +250,8 @@ namespace IO
 				SetWindowPos(
 					wnd,
 					HWND_TOP, 0, 0,
-					static_cast<int>(ceil(816.f * dpiX / 96.f)),
-					static_cast<int>(ceil(624.f * dpiX / 96.f)),
+					static_cast<int32_t>(ceil(816.f * dpiX / 96.f)),
+					static_cast<int32_t>(ceil(624.f * dpiY / 96.f)),
 					SWP_FRAMECHANGED);
 			}
 			else
@@ -266,7 +270,8 @@ namespace IO
 
 	void WindowD2D::fadeout()
 	{
-		alphastep = -0.05f;
+		alphastep = -0.025f;
+		transition = true;
 	}
 
 	void WindowD2D::update()
@@ -286,45 +291,45 @@ namespace IO
 			if (scralpha >= 1.0f)
 			{
 				scralpha = 1.0f;
-				endtransition();
 			}
 			else if (scralpha <= 0.0f)
 			{
 				scralpha = 0.0f;
-				endtransition();
+				alphastep = 0.025f;
+				transition = false;
+
+				Gameplay::Stage::reload();
+				UI::enable();
+				UI::enablegamekeys(true);
 			}
 		}
 	}
 
-	void WindowD2D::endtransition()
-	{
-		alphastep = 0.05f;
-	}
-
 	void WindowD2D::begin() const
 	{
-		bitmaptarget->BeginDraw();
-		bitmaptarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+		if (!transition)
+		{
+			bitmaptarget->BeginDraw();
+			bitmaptarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+		}
 	}
 
 	void WindowD2D::end() const
 	{
-		bitmaptarget->EndDraw();
+		if (!transition)
+			bitmaptarget->EndDraw();
 
-		if (alphastep >= 0.0f)
-		{
-			ID2D1Bitmap* scene;
-			bitmaptarget->GetBitmap(&scene);
+		ID2D1Bitmap* scene;
+		bitmaptarget->GetBitmap(&scene);
 
-			RECT rc;
-			GetClientRect(wnd, &rc);
-			D2D1_RECT_F drc = D2D1::RectF((FLOAT)rc.left, (FLOAT)rc.top, (FLOAT)rc.right, (FLOAT)rc.bottom);
+		RECT rc;
+		GetClientRect(wnd, &rc);
+		D2D1_RECT_F drc = D2D1::RectF((FLOAT)rc.left, (FLOAT)rc.top, (FLOAT)rc.right, (FLOAT)rc.bottom);
 
-			d2d_rtarget->BeginDraw();
-			d2d_rtarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-			d2d_rtarget->DrawBitmap(scene, drc, scralpha);
-			d2d_rtarget->EndDraw();
-		}
+		d2d_rtarget->BeginDraw();
+		d2d_rtarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+		d2d_rtarget->DrawBitmap(scene, drc, scralpha);
+		d2d_rtarget->EndDraw();
 	}
 }
 #endif

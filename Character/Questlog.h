@@ -27,17 +27,20 @@ namespace Character
 	using::std::string;
 	using::std::map;
 	using::std::pair;
+
 	// Class that stores information on the questlog of an individual character.
 	class Questlog
 	{
 	public:
 		Questlog();
 		~Questlog();
+
 		void addstarted(int16_t, string);
 		void addprogress(int16_t, int16_t, string);
 		void addcompleted(int16_t, int64_t);
 		bool isstarted(int16_t);
 		int16_t getlaststarted();
+
 	private:
 		map<int16_t, string> started;
 		map<int16_t, pair<int16_t, string>> progress;

@@ -34,7 +34,6 @@ namespace Character
 {
 	using Net::CharEntry;
 	using Gameplay::Physics;
-	using Gameplay::MovementInfo;
 	using Gameplay::MovementFragment;
 	using Gameplay::Ladder;
 	using Gameplay::Seat;
@@ -114,8 +113,9 @@ namespace Character
 		Monsterbook monsterbook;
 
 		map<IO::Keyboard::Keyaction, bool> keysdown;
-		MovementInfo movementinfo;
+
 		MovementFragment lastmove;
+		uint16_t sendcd;
 
 		const Ladder* ladder;
 
