@@ -34,6 +34,7 @@ namespace IO
 		void update();
 		void begin() const;
 		void end() const;
+		void fadeout();
 
 	private:
 		GLFWwindow* glwnd;

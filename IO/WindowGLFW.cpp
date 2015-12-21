@@ -41,13 +41,9 @@ namespace IO
 		std::cout << "Error no.:" << error << " : " << description << std::endl;
 	}
 
-	static void key_callback(GLFWwindow* window, int key, int, int action, int)
+	static void key_callback(GLFWwindow*, int key, int, int action, int)
 	{
-		Keyboard* keyboard = reinterpret_cast<Keyboard*>(glfwGetWindowUserPointer(window));
-		if (keyboard)
-		{
-			keyboard->sendinput(action != GLFW_RELEASE, key);
-		}
+		IO::UI::sendkey(key, action != GLFW_RELEASE);
 	}
 
 	bool WindowGLFW::init()
@@ -80,7 +76,6 @@ namespace IO
 			glfwSetInputMode(glwnd, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 			glfwSetInputMode(glwnd, GLFW_STICKY_KEYS, 1);
 			glfwSetKeyCallback(glwnd, key_callback);
-			glfwSetWindowUserPointer(glwnd, &UI::getkeyboard());
 
 			glLoadIdentity();
 			glOrtho(0.0, 800, 590, -10, -1.0, 1.0);
@@ -117,14 +112,17 @@ namespace IO
 	{
 		glClearColor(0, 0, 0, 0);
 		glClear(GL_COLOR_BUFFER_BIT);
-		//glEnable(GL_TEXTURE_2D);
 	}
 
 	void WindowGLFW::end() const
 	{
-		//glDisable(GL_TEXTURE_2D);
 		glfwPollEvents();
 		glfwSwapBuffers(glwnd);
+	}
+
+	void WindowGLFW::fadeout()
+	{
+
 	}
 }
 #endif

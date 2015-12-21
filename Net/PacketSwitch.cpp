@@ -18,17 +18,29 @@
 #include "PacketSwitch.h"
 #include "RecvOpcodes.h"
 #include "Handlers\CommonHandlers.h"
+
+#include "Journey.h"
+#ifdef JOURNEY_CUSTOM_VERSION
 #include "Handlers\LoginHandlers.h"
 #include "Handlers\SetfieldHandlers.h"
 #include "Handlers\KeyboardHandlers83.h"
 #include "Handlers\PlayerHandlers83.h"
-#include "Handlers\MapobjectHandlers83.h"
+#include "Handlers\MapobjectHandlers.h"
+#else
+#include "Handlers83\LoginHandlers83.h"
+#include "Handlers83\SetfieldHandler83.h"
+#include "Handlers\KeyboardHandlers83.h"
+#include "Handlers\PlayerHandlers83.h"
+#include "Handlers83\MapobjectHandlers83.h"
+#endif
 #include <iostream>
 
 namespace Net
 {
 	PacketSwitch::PacketSwitch()
 	{
+
+#ifdef JOURNEY_CUSTOM_VERSION
 		// Login handlers
 		handlers[LOGIN_STATUS] = unique_ptr<PacketHandler>(new LoginStatusHandler());
 		handlers[WORLD_STATUS] = unique_ptr<PacketHandler>(new WorldStatusHandler());
@@ -42,6 +54,19 @@ namespace Net
 		handlers[CHARACTER_INFO] = unique_ptr<PacketHandler>(new CharacterInfoHandler());
 		handlers[WARP_TO_MAP] = unique_ptr<PacketHandler>(new WarpToMapHandler());
 		handlers[CHANGE_CHANNEL] = unique_ptr<PacketHandler>(new ChangeChannelHandler());
+#else
+		// Login handlers
+		handlers[LOGIN_RESULT] = unique_ptr<PacketHandler>(new LoginResultHandler83());
+		handlers[SERVERLIST] = unique_ptr<PacketHandler>(new ServerlistHandler83());
+		handlers[CHARLIST] = unique_ptr<PacketHandler>(new CharlistHandler83());
+		handlers[CHARNAME_RESPONSE] = unique_ptr<PacketHandler>(new CharnameResponseHandler83());
+		handlers[ADD_NEWCHAR_ENTRY] = unique_ptr<PacketHandler>(new AddNewCharEntryHandler83());
+		handlers[DELCHAR_RESPONSE] = unique_ptr<PacketHandler>(new DeleteCharResponseHandler83());
+		handlers[SERVER_IP] = unique_ptr<PacketHandler>(new ServerIPHandler83());
+
+		// 'Setfield' handlers
+		handlers[SET_FIELD] = unique_ptr<PacketHandler>(new SetfieldHandler83());
+#endif
 
 		handlers[PING] = unique_ptr<PacketHandler>(new PingHandler());
 		handlers[SELECT_WORLD] = unique_ptr<PacketHandler>(new NullHandler()); //commonly unused

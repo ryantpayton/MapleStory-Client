@@ -80,7 +80,14 @@ namespace IO
 		case GLFW_KEY_BACKSPACE:
 			return keymap.at(keycode);
 		default:
-			if (keycode > 64 && keycode < 91)
+			if (keycode > 47 && keycode < 58)
+			{
+				Keymapping mapping;
+				mapping.type = KT_NUMBER;
+				mapping.action = keycode;
+				return mapping;
+			}
+			else if (keycode > 64 && keycode < 91)
 			{
 				Keymapping mapping;
 				mapping.type = KT_LETTER;

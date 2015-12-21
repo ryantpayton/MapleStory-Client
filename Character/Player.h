@@ -114,6 +114,7 @@ namespace Character
 
 		map<IO::Keyboard::Keyaction, bool> keysdown;
 
+		vector<MovementFragment> movements;
 		MovementFragment lastmove;
 		uint16_t sendcd;
 

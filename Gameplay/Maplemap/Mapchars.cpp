@@ -36,12 +36,12 @@ namespace Gameplay
 		remove(cid);
 	}
 
-	void MapChars::movechar(int32_t cid, MovementFragment movement)
+	void MapChars::movechar(int32_t cid, const vector<MovementFragment>& movements)
 	{
 		OtherChar* otherchar = getchar(cid);
 		if (otherchar)
 		{
-			otherchar->sendmovement(movement);
+			otherchar->sendmovement(movements);
 		}
 	}
 

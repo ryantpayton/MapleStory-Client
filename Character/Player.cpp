@@ -24,7 +24,7 @@
 
 namespace Character
 {
-	const uint16_t SENDMOVEMENTCD = Constants::TIMESTEP * 12;
+	const uint16_t SENDMOVEMENTCD = Constants::TIMESTEP;
 
 	static PlayerNullState nullstate;
 
@@ -147,7 +147,7 @@ namespace Character
 
 			int16_t shortx = static_cast<int16_t>(phobj.fx);
 			int16_t shorty = static_cast<int16_t>(phobj.fy);
-			if (dirstance != lastmove.newstate || shortx != lastmove.xpos || shorty != lastmove.ypos)
+			if (dirstance != lastmove.newstate || shortx != lastmove.xpos || shorty != lastmove.ypos || movements.size() > 0)
 			{
 				lastmove.type = MovementFragment::MVT_ABSOLUTE;
 				lastmove.command = 0;
@@ -157,11 +157,15 @@ namespace Character
 				lastmove.lasty = static_cast<int16_t>(phobj.lasty);
 				lastmove.fh = phobj.fhid;
 				lastmove.newstate = dirstance;
-				lastmove.duration = SENDMOVEMENTCD;
+				lastmove.duration = Constants::TIMESTEP;
+				movements.push_back(lastmove);
 
-				using Net::MovePlayerPacket83;
-				Net::Session::dispatch(MovePlayerPacket83(lastmove));
-				sendcd = SENDMOVEMENTCD;
+				if (movements.size() > 4)
+				{
+					using Net::MovePlayerPacket83;
+					Net::Session::dispatch(MovePlayerPacket83(movements));
+					movements.clear();
+				}
 			}
 		}
 		

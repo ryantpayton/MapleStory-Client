@@ -18,13 +18,13 @@
 #include "Cryptography.h"
 #include "Journey.h"
 
+#ifndef JOURNEY_USE_CRYPTO
+
 namespace Net
 {
 	Cryptography::Cryptography() {}
 
 	Cryptography::~Cryptography() {}
-
-#ifndef JOURNEY_USE_CRYPTO
 
 	size_t Cryptography::getlength(const int8_t* bytes) const
 	{
@@ -47,6 +47,12 @@ namespace Net
 	}
 }
 #else
+
+namespace Net
+{
+	Cryptography::Cryptography() {}
+
+	Cryptography::~Cryptography() {}
 
 	size_t Cryptography::getlength(const int8_t* bytes) const
 	{
@@ -80,7 +86,7 @@ namespace Net
 
 	void Cryptography::mapleencrypt(int8_t* bytes, size_t length) const
 	{
-		for (size_t j = 0; j < 3; j++) 
+		for (size_t j = 0; j < 3; j++)
 		{
 			int8_t remember = 0;
 			int8_t datalen = static_cast<int8_t>(length & 0xFF);
@@ -88,7 +94,7 @@ namespace Net
 			{
 				int8_t cur = (rollleft(bytes[i], 3) + datalen) ^ remember;
 				remember = cur;
-				cur = rollright(cur, static_cast<int32_t>(datalen) & 0xFF);
+				cur = rollright(cur, static_cast<int32_t>(datalen)& 0xFF);
 				bytes[i] = static_cast<int8_t>((~cur) & 0xFF) + 0x48;
 				datalen--;
 			}
@@ -125,7 +131,7 @@ namespace Net
 			for (size_t i = 0; i < length; i++)
 			{
 				uint8_t cur = (~(bytes[i] - 0x48)) & 0xFF;
-				cur = rollleft(cur, static_cast<int32_t>(datalen) & 0xFF);
+				cur = rollleft(cur, static_cast<int32_t>(datalen)& 0xFF);
 				bytes[i] = rollright((cur ^ remember) - datalen, 3);
 				remember = cur;
 				datalen--;
@@ -283,7 +289,7 @@ namespace Net
 	}
 
 	void Cryptography::subbytes(uint8_t* bytes) const
-	{ 
+	{
 		// Rijndael substitution box.
 		static const uint8_t subbox[256] =
 		{
@@ -359,4 +365,5 @@ namespace Net
 			bytes[i + 3] = mul3 ^ cpy2 ^ cpy1 ^ mul0 ^ cpy0;
 		}
 	}
+}
 #endif

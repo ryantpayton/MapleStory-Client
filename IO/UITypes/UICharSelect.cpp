@@ -60,6 +60,7 @@ namespace IO
 		const Net::Login& login = Net::Session::getlogin();
 		charcount = static_cast<uint8_t>(login.getaccount().chars.size());
 		charslots = static_cast<uint8_t>(login.getaccount().slots);
+		haschars = charcount > 0;
 
 		if (charslots == charcount)
 			buttons[BT_CREATECHAR]->setstate(Button::DISABLED);
@@ -100,10 +101,11 @@ namespace IO
 				login.getchar(i).getstats().name
 				));
 		}
-		nametags[selected].setselected(true);
 
-		if (charcount > 0)
+		if (haschars)
 		{
+			nametags[selected].setselected(true);
+
 			const Net::StatsEntry& stats = login.getchar(selected).getstats();
 			namelabel = Textlabel(Textlabel::DWF_20MC, Textlabel::TXC_WHITE, stats.name, 0);
 			joblabel = Textlabel(Textlabel::DWF_12MR, Textlabel::TXC_WHITE, stats.job.getname(), 0);
@@ -117,6 +119,9 @@ namespace IO
 	void UICharSelect::draw(float inter) const
 	{
 		UIElement::draw(inter);
+
+		if (!haschars)
+			return;
 
 		for (uint8_t i = 0; i < charcount; i++)
 		{

@@ -30,15 +30,17 @@ namespace Character
 	class OtherChar : public Char
 	{
 	public:
-		OtherChar(int32_t, const LookEntry&, uint8_t, int16_t, string, int8_t, vector2d<int16_t>);
+		OtherChar(int32_t charid, const LookEntry& look, uint8_t level, 
+			int16_t job, string name, int8_t stance, vector2d<int16_t> position);
 
-		int8_t update(const Physics&);
-		void sendmovement(MovementFragment);
+		int8_t update(const Physics& physics);
+		void sendmovement(const vector<MovementFragment>& movements);
 
 	private:
 		uint8_t level;
 		int16_t job;
 		string name;
+		vector<MovementFragment> movements;
 		MovementFragment lastmove;
 	};
 }

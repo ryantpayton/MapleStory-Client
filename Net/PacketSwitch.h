@@ -42,4 +42,3 @@ namespace Net
 		unique_ptr<PacketHandler> handlers[NUM_HANDLERS];
 	};
 }
-

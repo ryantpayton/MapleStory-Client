@@ -33,8 +33,6 @@ namespace Net
 		const Cryptography crypto;
 		const PacketSwitch packetswitch;
 
-		uint8_t sendiv[HEADERLEN] = {};
-		uint8_t recviv[HEADERLEN] = {};
 		bool connected = false;
 
 		int8_t buffer[MAX_PACKET_LEN] = {};
@@ -47,6 +45,11 @@ namespace Net
 		SocketAsio socket;
 #else
 		SocketWinsock socket;
+#endif
+
+#ifdef JOURNEY_USE_CRYPTO
+		uint8_t sendiv[HEADERLEN] = {};
+		uint8_t recviv[HEADERLEN] = {};
 #endif
 
 		bool init(const char* host, const char* port)
@@ -108,13 +111,11 @@ namespace Net
 			// Check if the current packet has been fully processed.
 			if (pos >= length)
 			{
+
 #ifdef JOURNEY_USE_CRYPTO
-				// Create InPacket from the buffer, decrypt it and pass it on to the PacketHandler.
 				crypto.decrypt(buffer, length, recviv);
-				packetswitch.forward(buffer, length);
-#else
-				packetswitch.forward(buffer, length);
 #endif
+				packetswitch.forward(buffer, length);
 
 				pos = 0;
 				length = 0;

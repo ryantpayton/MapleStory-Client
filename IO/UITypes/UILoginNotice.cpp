@@ -42,9 +42,8 @@ namespace IO
 		active = true;
 	}
 
-	void UILoginNotice::buttonpressed(uint16_t id)
+	void UILoginNotice::buttonpressed(uint16_t)
 	{
-		if (id == BT_OK)
-			active = false;
+		active = false;
 	}
 }

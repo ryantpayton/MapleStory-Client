@@ -16,8 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "MovementPacket83.h"
-#include "Net\SendOpcodes.h"
+#include "Net\Packets\MovementPacket.h"
 #include "Gameplay\Attack.h"
 
 namespace Net
@@ -37,13 +36,17 @@ namespace Net
 	};
 
 	// A packet which updates the player's position with the server.
-	class MovePlayerPacket83 : public MovementPacket83
+	class MovePlayerPacket83 : public MovementPacket
 	{
 	public:
-		MovePlayerPacket83(const MovementFragment& movement) : MovementPacket83(MOVE_PLAYER)
+		MovePlayerPacket83(const vector<MovementFragment>& movements) : MovementPacket(MOVE_PLAYER)
 		{
 			skip(9);
-			writemoves(movement);
+			writech(static_cast<int8_t>(movements.size()));
+			for (auto& mv : movements)
+			{
+				writemovement(mv);
+			}
 		}
 	};
 

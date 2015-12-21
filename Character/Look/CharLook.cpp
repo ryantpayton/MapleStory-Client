@@ -380,13 +380,16 @@ namespace Character
 
 	void CharLook::setstance(string newstance)
 	{
-		if (newstance == stance || action)
+		if (action)
 			return;
 
 		if (newstance == "attack")
 			newstance = getattackstance();
 		else if (newstance == "stand" || newstance == "walk")
 			newstance.push_back(equips.istwohanded() ? '2' : '1');
+
+		if (newstance == stance)
+			return;
 
 		if (newstance != "")
 		{

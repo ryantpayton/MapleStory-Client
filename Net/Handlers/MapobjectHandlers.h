@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Net\PacketHandler.h"
+#include "Net\Session.h"
 #include "AbstractMovementHandler83.h"
 #include "Gameplay\Stage.h"
 
@@ -274,9 +275,15 @@ namespace Net
 		{
 			int32_t cid = recv.readint();
 			recv.skip(4);
-			MovementFragment movement = parsemovement(recv);
 
-			Gameplay::Stage::getchars().movechar(cid, movement);
+			vector<MovementFragment> movements;
+			uint8_t nummoves = recv.readbyte();
+			for (uint8_t i = 0; i < nummoves; i++)
+			{
+				movements.push_back(parsemovement(recv));
+			}
+
+			Gameplay::Stage::getchars().movechar(cid, movements);
 		}
 	};
 

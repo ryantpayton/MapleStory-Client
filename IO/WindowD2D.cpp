@@ -20,6 +20,7 @@
 #ifndef JOURNEY_USE_OPENGL
 #include "WindowD2D.h"
 #include "UI.h"
+#include "Program\Constants.h"
 #include "Gameplay\Stage.h"
 
 namespace IO
@@ -79,7 +80,6 @@ namespace IO
 				{
 					graphicsd2d.init();
 
-					fullscreen = false;
 					screencd = 0;
 					scralpha = 1.0f;
 					draw_finished = true;
@@ -241,29 +241,35 @@ namespace IO
 		return result;
 	}
 
+	WINDOWPLACEMENT g_wpPrev = { sizeof(g_wpPrev) };
+
 	void WindowD2D::togglemode()
 	{
 		if (screencd <= 0)
 		{
-			if (fullscreen)
-			{
-				SetWindowPos(
-					wnd,
-					HWND_TOP, 0, 0,
-					static_cast<int32_t>(ceil(816.f * dpiX / 96.f)),
-					static_cast<int32_t>(ceil(624.f * dpiY / 96.f)),
-					SWP_FRAMECHANGED);
+			DWORD dwStyle = GetWindowLong(wnd, GWL_STYLE);
+			if (dwStyle & WS_OVERLAPPEDWINDOW) {
+				MONITORINFO mi = { sizeof(mi) };
+				if (GetWindowPlacement(wnd, &g_wpPrev) &&
+					GetMonitorInfo(MonitorFromWindow(wnd,
+					MONITOR_DEFAULTTOPRIMARY), &mi)) {
+					SetWindowLong(wnd, GWL_STYLE,
+						dwStyle & ~WS_OVERLAPPEDWINDOW);
+					SetWindowPos(wnd, HWND_TOP,
+						mi.rcMonitor.left, mi.rcMonitor.top,
+						mi.rcMonitor.right - mi.rcMonitor.left,
+						mi.rcMonitor.bottom - mi.rcMonitor.top,
+						SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+				}
 			}
-			else
-			{
-				SetWindowPos(
-					wnd,
-					HWND_TOPMOST, 0, 0,
-					GetSystemMetrics(SM_CXSCREEN),
-					GetSystemMetrics(SM_CYSCREEN),
-					SWP_FRAMECHANGED);
+			else {
+				SetWindowLong(wnd, GWL_STYLE,
+					dwStyle | WS_OVERLAPPEDWINDOW);
+				SetWindowPlacement(wnd, &g_wpPrev);
+				SetWindowPos(wnd, NULL, 0, 0, 0, 0,
+					SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
+					SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
 			}
-			fullscreen = !fullscreen;
 			screencd = 16;
 		}
 	}
@@ -322,9 +328,7 @@ namespace IO
 		ID2D1Bitmap* scene;
 		bitmaptarget->GetBitmap(&scene);
 
-		RECT rc;
-		GetClientRect(wnd, &rc);
-		D2D1_RECT_F drc = D2D1::RectF((FLOAT)rc.left, (FLOAT)rc.top, (FLOAT)rc.right, (FLOAT)rc.bottom);
+		D2D1_RECT_F drc = D2D1::RectF(0.0f, 0.0f, 800.0f, 589.0f);
 
 		d2d_rtarget->BeginDraw();
 		d2d_rtarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));

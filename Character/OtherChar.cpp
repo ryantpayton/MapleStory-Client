@@ -40,6 +40,12 @@ namespace Character
 
 	int8_t OtherChar::update(const Physics& physics)
 	{
+		if (movements.size() > 0)
+		{
+			lastmove = movements.front();
+			movements.erase(movements.begin());
+		}
+
 		uint8_t laststate = lastmove.newstate;
 		if (laststate % 2 == 1)
 		{
@@ -66,8 +72,11 @@ namespace Character
 		return phobj.fhlayer;
 	}
 
-	void OtherChar::sendmovement(MovementFragment movement)
+	void OtherChar::sendmovement(const vector<MovementFragment>& mvts)
 	{
-		lastmove = movement;
+		for (auto& mv : mvts)
+		{
+			movements.push_back(mv);
+		}
 	}
 }

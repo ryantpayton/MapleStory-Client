@@ -19,6 +19,9 @@
 #include "Net\OutPacket.h"
 #include "Net\SendOpcodes.h"
 
+#include "Journey.h"
+#ifdef JOURNEY_CUSTOM_VERSION
+
 namespace Net
 {
 	// Packet which requests reserving a name for the character to be created.
@@ -53,3 +56,40 @@ namespace Net
 		}
 	};
 }
+#else
+
+namespace Net
+{
+	// Packet which requests reserving a name for the character to be created.
+	class NameCharPacket : public OutPacket
+	{
+	public:
+		NameCharPacket(string name) : OutPacket(NAME_CHAR)
+		{
+			writestr(name);
+		}
+	};
+
+	// Packets which requests creation of a character with the specified stats.
+	class CreateCharPacket : public OutPacket
+	{
+	public:
+		CreateCharPacket(string name, uint16_t job, int32_t face, int32_t hair,
+			uint8_t hairc, uint8_t skin, int32_t top, int32_t bot, int32_t shoes,
+			int32_t weapon, bool female) : OutPacket(CREATE_CHAR) {
+
+			writestr(name);
+			writeint(job);
+			writeint(face);
+			writeint(hair);
+			writeint(hairc);
+			writeint(skin);
+			writeint(top);
+			writeint(bot);
+			writeint(shoes);
+			writeint(weapon);
+			writech(female);
+		}
+	};
+}
+#endif

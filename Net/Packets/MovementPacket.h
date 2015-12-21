@@ -25,14 +25,13 @@ namespace Net
 	using Gameplay::MovementFragment;
 
 	// Base class for packets which update object movements with the server.
-	class MovementPacket83 : public OutPacket
+	class MovementPacket : public OutPacket
 	{
 	public:
-		MovementPacket83(SendOpcode opc) : OutPacket(opc) {}
+		MovementPacket(SendOpcode opc) : OutPacket(opc) {}
 	protected:
-		void writemoves(const MovementFragment& movement)
+		void writemovement(const MovementFragment& movement)
 		{
-			writech(1);
 			writech(movement.command);
 			writesh(movement.xpos);
 			writesh(movement.ypos);

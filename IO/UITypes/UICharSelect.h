@@ -53,6 +53,7 @@ namespace IO
 		void selectchar();
 		vector2d<int16_t> getcharpos(size_t) const;
 
+		bool haschars;
 		vector<CharLook> charlooks;
 		uint8_t charcount;
 		uint8_t charslots;
