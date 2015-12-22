@@ -38,6 +38,7 @@ namespace Character
 
 		bool isvisible(Equipslot) const;
 		bool hasoverall() const;
+		bool hasweapon() const;
 		bool istwohanded() const;
 		Weapon::WpType getweapontype() const;
 		const Clothing& getequip(Equipslot) const;

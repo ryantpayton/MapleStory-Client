@@ -26,6 +26,8 @@ namespace IO
 		void draw(float inter);
 		void update();
 
+		void showstatus(Textlabel::Textcolor color, string message);
+
 		void sendmouse(vector2d<int16_t> pos);
 		void sendmouse(Cursor::Mousestate state, vector2d<int16_t> pos);
 		void sendkey(int32_t keycode, bool pressed);

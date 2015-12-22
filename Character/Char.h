@@ -44,14 +44,14 @@ namespace Character
 			LADDER = 14,
 			ROPE = 16,
 			DIED = 18,
-			SIT = 20,
-			ATTACK = 22
+			SIT = 20
 		};
 
 		// Draw look, nametag, effects and chat bubble.
 		void draw(const Camera& camera, float inter) const override;
 		// Update look and movements.
 		int8_t update(const Physics& physics) override;
+		// Return the current map layer, or 7 if on a ladder or rope.
 		int8_t getlayer() const override;
 
 		// Add a pet with the specified stats.

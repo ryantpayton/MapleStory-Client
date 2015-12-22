@@ -31,6 +31,11 @@ namespace Gameplay
 		phobj.fy = static_cast<float>(y);
 	}
 
+	void MapObject::setposition(vector2d<int16_t> position)
+	{
+		setposition(position.x(), position.y());
+	}
+
 	void MapObject::setactive(bool a)
 	{
 		active = a;

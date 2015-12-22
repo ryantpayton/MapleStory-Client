@@ -22,13 +22,13 @@
 
 namespace Gameplay
 {
-	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, bool, int16_t x, int16_t y)
+	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, bool cnt, vector2d<int16_t> position)
 	{
 		string strid = std::to_string(id);
 		strid.insert(0, 7 - strid.size(), '0');
 		strid.append(".img");
 
-		using::nl::node;
+		using nl::node;
 		node src = nl::nx::npc[strid];
 		node strsrc = nl::nx::string["Npc.img"][std::to_string(id)];
 
@@ -71,29 +71,30 @@ namespace Gameplay
 		npcid = id;
 		oid = o;
 		flip = !fl;
+		control = cnt;
 		stance = "stand";
 		active = true;
 
 		phobj.fhid = f;
-		setposition(x, y);
+		setposition(position);
 	}
 
 	void Npc::draw(const Camera& camera, float inter) const
 	{
-		if (active)
-		{
-			vector2d<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
+		if (!active)
+			return;
 
-			if (animations.count(stance))
-			{
-				using::Graphics::DrawArgument;
-				animations.at(stance).draw(DrawArgument(absp, flip), inter);
-			}
-			if (!hidename)
-			{
-				namelabel.draw(absp);
-				funclabel.draw(absp + vector2d<int16_t>(0, 18));
-			}
+		vector2d<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
+
+		if (animations.count(stance))
+		{
+			using Graphics::DrawArgument;
+			animations.at(stance).draw(DrawArgument(absp, flip), inter);
+		}
+		if (!hidename)
+		{
+			namelabel.draw(absp);
+			funclabel.draw(absp + vector2d<int16_t>(0, 18));
 		}
 	}
 
@@ -113,6 +114,7 @@ namespace Gameplay
 				}
 			}
 		}
+
 		return phobj.fhlayer;
 	}
 

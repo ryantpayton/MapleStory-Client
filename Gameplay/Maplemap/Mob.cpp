@@ -26,8 +26,8 @@ namespace Gameplay
 	const int32_t DAMAGECAP = 999999;
 	const float MONSTERSPEED = 0.4f;
 
-	Mob::Mob(int32_t oi, int32_t mid, int32_t, int8_t st, uint16_t fh, 
-		bool newspawn, int8_t tm, int16_t x, int16_t y) {
+	Mob::Mob(int32_t oi, int32_t mid, bool cnt, int8_t st, uint16_t fh, 
+		bool newspawn, int8_t tm, vector2d<int16_t> position) {
 
 		string path = std::to_string(mid);
 		path.insert(0, 7 - path.size(), '0');
@@ -64,9 +64,9 @@ namespace Gameplay
 		oid = oi;
 		id = mid;
 		team = tm;
-
+		control = cnt;
 		phobj.fhid = fh;
-		setposition(x, y);
+		setposition(position);
 
 		active = true;
 		hppercent = 0;
@@ -167,36 +167,65 @@ namespace Gameplay
 			damagenumbers.erase(damagenumbers.begin());
 		}
 
-		if (stance != HIT && stance != DIE)
+		if (control)
 		{
-			switch (behaviour.getstate())
+			if (stance != HIT && stance != DIE)
 			{
-			case MOVELEFT:
-				phobj.hforce = -static_cast<float>(speed)* MONSTERSPEED / 100;
-				flip = false;
-				setstance(MOVE);
-				break;
-			case MOVERIGHT:
-				phobj.hforce = static_cast<float>(speed)* MONSTERSPEED / 100;
-				flip = true;
-				setstance(MOVE);
-				break;
-			case STOP:
-				setstance(STAND);
-				break;
+				switch (behaviour.getstate())
+				{
+				case MOVELEFT:
+					phobj.hforce = -static_cast<float>(speed)* MONSTERSPEED / 100;
+					flip = false;
+					setstance(MOVE);
+					break;
+				case MOVERIGHT:
+					phobj.hforce = static_cast<float>(speed)* MONSTERSPEED / 100;
+					flip = true;
+					setstance(MOVE);
+					break;
+				case STOP:
+					setstance(STAND);
+					break;
+				}
 			}
-		}
 
-		counter++;
-		if (counter > 200)
-		{
-			behaviour.nextstate();
-			counter = 0;
+			counter++;
+			if (counter > 200)
+			{
+				behaviour.nextstate();
+				counter = 0;
+			}
+
+			writemovement();
 		}
 
 		physics.moveobject(phobj);
 
 		return phobj.fhlayer;
+	}
+
+	void Mob::writemovement()
+	{
+		MovementFragment lastmove;
+		lastmove.type = MovementFragment::MVT_ABSOLUTE;
+		lastmove.command = 0;
+		if (flip)
+			lastmove.newstate = static_cast<uint8_t>(stance);
+		else
+			lastmove.newstate = static_cast<uint8_t>(stance + 1);
+		lastmove.xpos = static_cast<int16_t>(phobj.fx);
+		lastmove.ypos = static_cast<int16_t>(phobj.fy);
+		lastmove.lastx = static_cast<int16_t>(phobj.lastx);
+		lastmove.lasty = static_cast<int16_t>(phobj.lasty);
+		lastmove.duration = Constants::TIMESTEP;
+		movements.push_back(lastmove);
+
+		if (movements.size() > 4)
+		{
+			using Net::MoveMobPacket83;
+			Net::Session::dispatch(MoveMobPacket83(oid, 1, 0, 0, 0, 0, 0, 0, getposition(), movements));
+			movements.clear();
+		}
 	}
 
 	void Mob::draw(const Camera& camera, float inter) const

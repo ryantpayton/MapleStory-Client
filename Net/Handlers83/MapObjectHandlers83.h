@@ -30,14 +30,13 @@ namespace Net
 		{
 			int32_t oid = recv.readint();
 			int32_t id = recv.readint();
-			int16_t posx = recv.readshort();
-			int16_t posy = recv.readshort();
+			vector2d<int16_t> position = recv.readpoint();
 			bool f = recv.readbool();
 			uint16_t fh = recv.readshort();
 			recv.readshort(); // 'rx'
 			recv.readshort(); // 'ry'
 
-			Gameplay::Stage::getnpcs().addnpc(id, oid, f, fh, false, posx, posy);
+			Gameplay::Stage::getnpcs().addnpc(id, oid, f, fh, false, position);
 		}
 	};
 
@@ -56,15 +55,14 @@ namespace Net
 			else
 			{
 				int32_t id = recv.readint();
-				int16_t posx = recv.readshort();
-				int16_t posy = recv.readshort();
+				vector2d<int16_t> position = recv.readpoint();
 				bool f = recv.readbool();
 				uint16_t fh = recv.readshort();
 				recv.readshort(); // 'rx'
 				recv.readshort(); // 'ry'
 				recv.readbool(); // 'minimap'
 
-				Gameplay::Stage::getnpcs().addnpc(id, oid, f, fh, true, posx, posy);
+				Gameplay::Stage::getnpcs().addnpc(id, oid, f, fh, true, position);
 			}
 		}
 	};
@@ -75,11 +73,10 @@ namespace Net
 		void handle(InPacket& recv) const override
 		{
 			int32_t oid = recv.readint();
-			recv.readbyte(); // has control
+			bool hascontrol = recv.readbyte() == 5;
 			int32_t id = recv.readint();
 			recv.skip(22);
-			int16_t posx = recv.readshort();
-			int16_t posy = recv.readshort();
+			vector2d<int16_t> position = recv.readpoint();
 			int8_t stance = recv.readbyte();
 			recv.readshort();
 			uint16_t fh = recv.readshort();
@@ -101,7 +98,7 @@ namespace Net
 			int8_t team = recv.readbyte();
 			recv.skip(4);
 
-			Gameplay::Stage::getmobs().addmob(oid, id, stance, fh, fadein, team, posx, posy);
+			Gameplay::Stage::getmobs().addmob(oid, id, hascontrol, stance, fh, fadein, team, position);
 		}
 	};
 
@@ -119,8 +116,7 @@ namespace Net
 			recv.readbyte();
 			int32_t id = recv.readint();
 			recv.skip(22);
-			int16_t posx = recv.readshort();
-			int16_t posy = recv.readshort();
+			vector2d<int16_t> position = recv.readpoint();
 			int8_t stance = recv.readbyte();
 			recv.readshort();
 			uint16_t fh = recv.readshort();
@@ -142,7 +138,7 @@ namespace Net
 			int8_t team = recv.readbyte();
 			recv.skip(4);
 
-			Gameplay::Stage::getmobs().addmob(oid, id,  stance, fh,  fadein, team, posx, posy);
+			Gameplay::Stage::getmobs().addmob(oid, id, true, stance, fh,  fadein, team, position);
 		}
 	};
 
@@ -406,7 +402,7 @@ namespace Net
 	};*/
 
 
-	class DropItemHandler : public PacketHandler
+	class DropItemHandler83 : public PacketHandler
 	{
 		void handle(InPacket& recv) const override
 		{
@@ -433,12 +429,13 @@ namespace Net
 			{
 				//int64_t expire = recv.readlong();
 			}
-			recv.readbool(); // playerdrop
-			Gameplay::Stage::getdrops().adddrop(oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mode);
+			bool playerdrop = !recv.readbool();
+
+			Gameplay::Stage::getdrops().adddrop(oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mode, playerdrop);
 		}
 	};
 
-	class RemoveDropHandler : public PacketHandler
+	class RemoveDropHandler83 : public PacketHandler
 	{
 		void handle(InPacket& recv) const override
 		{

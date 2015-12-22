@@ -30,8 +30,8 @@ namespace Gameplay
 
 		void update(const Physics& physics) override;
 
-		void adddrop(int32_t oid, int32_t itemid, bool meso, int32_t owner,
-			vector2d<int16_t> pos, vector2d<int16_t> dest, int8_t type, int8_t mod);
+		void adddrop(int32_t oid, int32_t itemid, bool meso, int32_t owner, vector2d<int16_t> pos, 
+			vector2d<int16_t> dest, int8_t type, int8_t mod, bool playerdrop);
 		void removedrop(int32_t oid, int8_t mode, const PhysicsObject* looter);
 		const Drop* findinrange(rectangle2d<int16_t> range);
 

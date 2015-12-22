@@ -15,26 +15,57 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "MapObjects.h"
-#include "Mob.h"
-#include "Gameplay\Attack.h"
+#include "StatusMessenger.h"
+#include <map>
 
-namespace Gameplay
+namespace IO
 {
-	class MapMobs : public MapObjects
+	Textlabel& getlabel(Textlabel::Textcolor color)
 	{
-	public:
-		MapMobs();
+		using std::map;
+		static map<Textlabel::Textcolor, Textlabel> labels;
+		if (!labels.count(color))
+			labels[color] = Textlabel(Textlabel::DWF_12MR, color, "", 0);
+		return labels[color];
+	}
 
-		void addmob(int32_t oid, int32_t mobid, bool control, int8_t stance, 
-			uint16_t fhid, bool fadein, int8_t team, vector2d<int16_t> position);
-		void killmob(int32_t oid, int8_t effect);
-		void sendmobhp(int32_t oid, int8_t percent, uint16_t playerlevel);
-		AttackResult sendattack(const Attack& attack);
+	StatusMessenger::StatusMessenger() {}
 
-	private:
-		Mob* getmob(int32_t);
-	};
+	StatusMessenger::~StatusMessenger() {}
+
+	void StatusMessenger::draw(vector2d<int16_t> position, float inter) const
+	{
+		int16_t offset = static_cast<int16_t>(statusinfos.size()) * 16;
+		position.shifty(-offset);
+
+		for (auto& inf : statusinfos)
+		{
+			Textlabel& label = getlabel(inf.color);
+			label.setalpha(inf.getalpha(inter));
+			label.drawline(inf.text, position);
+			position.shifty(16);
+		}
+	}
+
+	void StatusMessenger::update()
+	{
+		int32_t remove = 0;
+		for (auto& inf : statusinfos)
+		{
+			inf.lastalpha = inf.alpha;
+			inf.alpha -= 0.00125f;
+			if (inf.alpha < 0.00125f)
+				remove++;
+		}
+
+		statusinfos.erase(statusinfos.begin(), statusinfos.begin() + remove);
+	}
+
+	void StatusMessenger::showstatus(Textlabel::Textcolor color, string message)
+	{
+		StatusInfo sinf;
+		sinf.color = color;
+		sinf.text = message;
+		statusinfos.push_back(sinf);
+	}
 }
-

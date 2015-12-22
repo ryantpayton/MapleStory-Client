@@ -20,13 +20,14 @@
 namespace Gameplay
 {
 	Drop::Drop(int32_t id, int32_t own, vector2d<int16_t> start,
-		vector2d<int16_t> dst, int8_t type, int8_t mode) {
+		vector2d<int16_t> dst, int8_t type, int8_t mode, bool pldrp) {
 
 		oid = id;
 		owner = own;
 		setposition(start.x(), start.y() - 4);
 		dest = dst;
 		pickuptype = type;
+		playerdrop = pldrp;
 
 		opacity = 1.0f;
 		moved = 0.0f;

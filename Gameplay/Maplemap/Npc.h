@@ -40,7 +40,7 @@ namespace Gameplay
 		// Constructs an npc by combining data from game files with
 		// data sent by the server.
 		Npc(int32_t npcid, int32_t oid, bool mirrored, uint16_t fhid, 
-			bool control, int16_t xpos, int16_t ypos);
+			bool control, vector2d<int16_t> position);
 
 		// Draws the current animation and name/function tags.
 		void draw(const Camera& camera, float inter) const override;
@@ -65,6 +65,7 @@ namespace Gameplay
 		int32_t npcid;
 		bool flip;
 		string stance;
+		bool control;
 
 		Randomizer random;
 		Textlabel namelabel;

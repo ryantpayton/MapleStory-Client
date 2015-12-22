@@ -23,14 +23,14 @@ namespace Gameplay
 {
 	MapMobs::MapMobs() {}
 
-	void MapMobs::addmob(int32_t oid, int32_t id, int8_t stance, 
-		uint16_t fhid, bool fadein, int8_t team, int16_t x, int16_t y) {
+	void MapMobs::addmob(int32_t oid, int32_t id, bool control, int8_t stance, 
+		uint16_t fhid, bool fadein, int8_t team, vector2d<int16_t> position) {
 
 		Mob* mob = getmob(oid);
 		if (mob)
 			mob->setactive(true);
 		else
-			add(new Mob(oid, id, 0, stance, fhid, fadein, team, x, y));
+			add(new Mob(oid, id, control, stance, fhid, fadein, team, position));
 	}
 
 	void MapMobs::killmob(int32_t oid, int8_t animation)

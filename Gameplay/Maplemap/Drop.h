@@ -41,7 +41,7 @@ namespace Gameplay
 
 	protected:
 		Drop(int32_t oid, int32_t owner, vector2d<int16_t> start,
-			vector2d<int16_t> dest, int8_t type, int8_t mode);
+			vector2d<int16_t> dest, int8_t type, int8_t mode, bool playerdrop);
 
 		int32_t owner;
 		vector2d<int16_t> dest;

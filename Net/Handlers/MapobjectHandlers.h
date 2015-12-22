@@ -24,66 +24,34 @@
 namespace Net
 {
 	// Handles a packet which tells the client to spawn an npc on the current map.
-	class SpawnNpcHandler83 : public PacketHandler
+	class SpawnNpcHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override
 		{
 			int32_t oid = recv.readint();
 			int32_t id = recv.readint();
-			int16_t posx = recv.readshort();
-			int16_t posy = recv.readshort();
-			bool f = recv.readbool();
+			vector2d<int16_t> position = recv.readpoint();
+			bool flip = recv.readbool();
 			uint16_t fh = recv.readshort();
-			recv.readshort(); // 'rx'
-			recv.readshort(); // 'ry'
 
-			Gameplay::Stage::getnpcs().addnpc(id, oid, f, fh, false, posx, posy);
-		}
-	};
-
-
-	// Handles a packet which tells the client to spawn and control an npc on the current map.
-	class SpawnNpcControllerHandler83 : public PacketHandler
-	{
-		void handle(InPacket& recv) const override
-		{
-			int8_t mode = recv.readbyte();
-			int32_t oid = recv.readint();
-			if (mode == 0)
-			{
-
-			}
-			else
-			{
-				int32_t id = recv.readint();
-				int16_t posx = recv.readshort();
-				int16_t posy = recv.readshort();
-				bool f = recv.readbool();
-				uint16_t fh = recv.readshort();
-				recv.readshort(); // 'rx'
-				recv.readshort(); // 'ry'
-				recv.readbool(); // 'minimap'
-
-				Gameplay::Stage::getnpcs().addnpc(id, oid, f, fh, true, posx, posy);
-			}
+			Gameplay::Stage::getnpcs().addnpc(id, oid, flip, fh, true, position);
 		}
 	};
 
 	// Handles a packet which tells the client to spawn a mob.
-	class SpawnMobHandler83 : public PacketHandler
+	class SpawnMobHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override
 		{
 			int32_t oid = recv.readint();
 			int32_t id = recv.readint();
-			int16_t posx = recv.readshort();
-			int16_t posy = recv.readshort();
+			vector2d<int16_t> position = recv.readpoint();
 			int8_t stance = recv.readbyte();
 			uint16_t fh = recv.readshort();
 			bool fadein = recv.readbool();
 			int8_t team = recv.readbyte();
 
-			Gameplay::Stage::getmobs().addmob(oid, id, stance, fh, fadein, team, posx, posy);
+			Gameplay::Stage::getmobs().addmob(oid, id, true, stance, fh, fadein, team, position);
 		}
 	};
 
@@ -109,75 +77,6 @@ namespace Net
 			Gameplay::Stage::getmobs().killmob(oid, animation);
 		}
 	};
-	/*
-	
-
-	class mob_moved_h : public vhandler
-	{
-		void mob_moved_h::handle(packet recv)
-		{
-			int oid = recv.readint();
-			recv.readbyte();
-			char useskill = recv.readbyte();
-			char skill = recv.readbyte();
-			char skill1 = recv.readbyte();
-			char skill2 = recv.readbyte();
-			char skill3 = recv.readbyte();
-			char skill4 = recv.readbyte();
-			vector2d startpos = recv.readpoint();
-		}
-	};
-
-	class move_mob_response_h : public vhandler
-	{
-		void move_mob_response_h::handle(packet recv)
-		{
-			int oid = recv.readint();
-			short moveid = recv.readshort();
-			bool useskills = recv.readbool();
-			short curmp = recv.readshort();
-			char skill = recv.readbyte();
-			char skilllvl = recv.readbyte();
-		}
-	};
-
-	class clock_h : public vhandler
-	{
-		void clock_h::handle(packet recv)
-		{
-			char ctype = recv.readbyte();
-			if (ctype == 1)
-			{
-				char hour = recv.readbyte();
-				char minute = recv.readbyte();
-				char second = recv.readbyte();
-			}
-			else if (ctype == 2)
-			{
-				int time = recv.readint();
-			}
-			//TO DO
-		}
-	};
-
-	class show_foreign_effect_h : public vhandler
-	{
-		void show_foreign_effect_h::handle(packet recv)
-		{
-			int cid = recv.readint();
-			char effect = recv.readbyte();
-			Game::getfield()->showchareffect(cid, effect);
-		}
-	};
-
-	class toggle_ui_h : public vhandler
-	{
-		void toggle_ui_h::handle(packet recv)
-		{
-			bool enable = recv.readbool();
-			//uinterface.setactive(enable);
-		}
-	};*/
 
 	class SpawnCharHandler83 : public PacketHandler
 	{
@@ -322,35 +221,11 @@ namespace Net
 		}
 	};
 
-	/*class spawn_reactor_h : public vhandler
-	{
-		void spawn_reactor_h::handle(packet recv)
-		{
-			int oid = recv.readint();
-			int id = recv.readint();
-			char state = recv.readbyte();
-			vector2d pos = recv.readpoint();
-			//uinterface.getfield()->getmap()->addreactor(oid, id, state, pos);
-		}
-	};
-
-	class remove_reactor_h : public vhandler
-	{
-		void remove_reactor_h::handle(packet recv)
-		{
-			int oid = recv.readint();
-			char state = recv.readbyte();
-			vector2d pos = recv.readpoint();
-			//uinterface.getfield()->getmap()->addreactor(oid, id, state, pos);
-		}
-	};*/
-
-	
 	class DropItemHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override
 		{
-			int8_t mode = recv.readbyte(); //0 - from player, 1 - normal drop, 2 - spawn, 3 - dissapearing
+			int8_t mode = recv.readbyte();
 			int32_t oid = recv.readint();
 			bool meso = recv.readbool();
 			int32_t itemid = recv.readint();
@@ -358,23 +233,13 @@ namespace Net
 			int8_t pickuptype = recv.readbyte();
 			vector2d<int16_t> dropto = recv.readpoint();
 			vector2d<int16_t> dropfrom;
-			recv.readint();
 			if (mode != 2)
-			{
 				dropfrom = recv.readpoint();
-				recv.readshort();
-			}
 			else
-			{
 				dropfrom = dropto;
-			}
+			bool playerdrop = recv.readbool();
 
-			if (!meso)
-			{
-				//int64_t expire = recv.readlong();
-			}
-			recv.readbool(); // playerdrop
-			Gameplay::Stage::getdrops().adddrop(oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mode);
+			Gameplay::Stage::getdrops().adddrop(oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mode, playerdrop);
 		}
 	};
 

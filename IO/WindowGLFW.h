@@ -40,6 +40,8 @@ namespace IO
 		GLFWwindow* glwnd;
 		GLFWwindow* context;
 		bool fullscreen;
+		float opacity;
+		float opcstep;
 	};
 }
 #endif

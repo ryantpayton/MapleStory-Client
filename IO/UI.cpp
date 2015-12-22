@@ -19,6 +19,7 @@
 #include "Cursor.h"
 #include "Keyboard.h"
 #include "Window.h"
+#include "Components\StatusMessenger.h"
 #include "UITypes\UIStatsinfo.h"
 #include "UITypes\UIEquipInventory.h"
 #include "Gameplay\Stage.h"
@@ -30,12 +31,19 @@ namespace IO
 	namespace UI
 	{
 		using std::unique_ptr;
+		using std::vector;
+		using std::map;
+		using std::unordered_map;
 
 		Keyboard keyboard;
 		Cursor cursor;
+		StatusMessenger messenger;
 
-		std::unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
-		std::map<int32_t, bool> keydown;
+		unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
+		map<int32_t, bool> keydown;
+
+		Textlabel whiteinfo = Textlabel(Textlabel::DWF_12MR, Textlabel::TXC_WHITE, "", 0);
+		Textlabel yellowinfo = Textlabel(Textlabel::DWF_12MR, Textlabel::TXC_YELLOW, "", 0);
 
 		Element::UIType focused = Element::NONE;
 		Textfield* focusedtextfield = nullptr;
@@ -44,6 +52,8 @@ namespace IO
 
 		void draw(float inter)
 		{
+			messenger.draw(vector2d<int16_t>(790, 510), inter);
+
 			for (auto& elit : elements)
 			{
 				if (elit.second->isactive())
@@ -55,6 +65,8 @@ namespace IO
 
 		void update()
 		{
+			messenger.update();
+
 			for (auto& elit : elements)
 			{
 				if (elit.second->isactive())
@@ -62,6 +74,11 @@ namespace IO
 			}
 
 			cursor.update();
+		}
+
+		void showstatus(Textlabel::Textcolor color, string message)
+		{
+			messenger.showstatus(color, message);
 		}
 
 		void enable()

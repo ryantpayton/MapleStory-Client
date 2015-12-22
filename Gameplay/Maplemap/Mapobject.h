@@ -37,6 +37,8 @@ namespace Gameplay
 
 		// Changes the objects position.
 		void setposition(int16_t x, int16_t y);
+		// Changes the objects position.
+		void setposition(vector2d<int16_t> position);
 
 		// Obtains the layer used to determine the drawing order on the map.
 		virtual int8_t getlayer() const;

@@ -78,7 +78,10 @@ namespace Character
 		setflip(false);
 	}
 
-	Player::Player() {}
+	Player::Player() 
+	{
+		oid = 0;
+	}
 
 	void Player::respawn(vector2d<int16_t> pos)
 	{
@@ -89,7 +92,7 @@ namespace Character
 		nullstate.nextstate(*this);
 	}
 
-	void Player::sendaction(IO::Keyboard::Keyaction ka, bool down)
+	void Player::sendaction(Keyboard::Keyaction ka, bool down)
 	{
 		const PlayerState* pst = getstate(stance);
 		if (pst)
@@ -120,6 +123,23 @@ namespace Character
 		stats.setattack(inventory.getstat(ES_WATK));
 
 		stats.calculatedamage(look.getequips().getweapontype());
+	}
+
+	void Player::useitem(int32_t itemid)
+	{
+		Inventory::InvType type = inventory.gettypebyid(itemid);
+		int16_t slot = inventory.finditem(type, itemid);
+
+		if (slot >= 0)
+		{
+			switch (type)
+			{
+			case Inventory::USE:
+				using Net::UseItemPacket83;
+				Net::Session::dispatch(UseItemPacket83(slot, itemid));
+				break;
+			}
+		}
 	}
 
 	int8_t Player::update(const Physics& physics)
@@ -196,9 +216,14 @@ namespace Character
 		}
 	}
 
-	bool Player::canattack()
+	bool Player::isattacking() const
 	{
-		return !attacking && !isclimbing() && !issitting() && look.getequips().getweapon() != nullptr;
+		return attacking;
+	}
+
+	bool Player::canattack() const
+	{
+		return !attacking && !isclimbing() && !issitting() && look.getequips().hasweapon();
 	}
 
 	Attack Player::prepareattack()
@@ -252,11 +277,12 @@ namespace Character
 	void Player::setladder(const Ladder* ldr)
 	{
 		ladder = ldr;
+
 		if (ladder)
 		{
-			phobj.fx = static_cast<float>(ldr->x);
-			phobj.hspeed = 0.0f;
-			phobj.vspeed = 0.0f;
+			phobj.fx = static_cast<double>(ldr->x);
+			phobj.hspeed = 0.0;
+			phobj.vspeed = 0.0;
 			phobj.type = PhysicsObject::CLIMBING;
 			setstance(ldr->ladder ? Char::LADDER : Char::ROPE);
 			setflip(false);
@@ -295,12 +321,7 @@ namespace Character
 		return 0.25f;
 	}
 
-	bool Player::isattacking() const
-	{
-		return attacking;
-	}
-
-	bool Player::keydown(IO::Keyboard::Keyaction ka) const
+	bool Player::keydown(Keyboard::Keyaction ka) const
 	{
 		return keysdown.count(ka) ? keysdown.at(ka) : false;
 	}

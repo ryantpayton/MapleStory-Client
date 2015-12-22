@@ -21,6 +21,7 @@
 #include "WindowGLFW.h"
 #include "glm.hpp"
 #include "UI.h"
+#include "Gameplay\Stage.h"
 #include <iostream>
 
 namespace IO
@@ -28,6 +29,8 @@ namespace IO
 	WindowGLFW::WindowGLFW()
 	{
 		glwnd = nullptr;
+		opacity = 1.0f;
+		opcstep = 0.0f;
 	}
 
 	WindowGLFW::~WindowGLFW()
@@ -106,6 +109,25 @@ namespace IO
 			fullscreen = !fullscreen;
 			initwindow();
 		}
+
+		if (opcstep != 0.0f)
+		{
+			opacity += opcstep;
+
+			if (opacity >= 1.0f)
+			{
+				opacity = 1.0f;
+			}
+			else if (opacity <= 0.0f)
+			{
+				opacity = 0.0f;
+				opcstep = 0.025f;
+
+				Gameplay::Stage::reload();
+				UI::enable();
+				UI::enablegamekeys(true);
+			}
+		}
 	}
 
 	void WindowGLFW::begin() const
@@ -122,7 +144,7 @@ namespace IO
 
 	void WindowGLFW::fadeout()
 	{
-
+		opcstep = -0.025f;
 	}
 }
 #endif

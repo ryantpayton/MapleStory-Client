@@ -16,15 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Character\PlayableChar.h"
-#include "Character\CharStats.h"
-#include "Character\Look\CharLook.h"
-#include "Character\Inventory\Inventory.h"
-#include "Character\Skillbook.h"
-#include "Character\Questlog.h"
-#include "Character\Telerock.h"
-#include "Character\Monsterbook.h"
-#include "Character\PlayerStates.h"
+#include "Char.h"
+#include "CharStats.h"
+#include "Skillbook.h"
+#include "Questlog.h"
+#include "Telerock.h"
+#include "Monsterbook.h"
+#include "Look\CharLook.h"
+#include "Inventory\Inventory.h"
+
+#include "Gameplay\Playable.h"
 #include "Gameplay\Physics\Physics.h"
 #include "Gameplay\MovementInfo.h"
 #include "Gameplay\Maplemap\MapInfo.h"
@@ -33,6 +34,7 @@
 namespace Character
 {
 	using Net::CharEntry;
+	using Gameplay::Playable;
 	using Gameplay::Physics;
 	using Gameplay::MovementFragment;
 	using Gameplay::Ladder;
@@ -40,14 +42,19 @@ namespace Character
 	using Gameplay::Attack;
 
 	// A class that represents the player.
-	class Player : public PlayableChar
+	class Player : public Playable, public Char
 	{
 	public:
-		// Construct a player object from the given char entry.
-		// Also initializes nametag, and stance.
+		// Construct a player object from the given character entry.
 		Player(const CharEntry& entry);
-		// Empty destructor.
 		Player();
+
+		// Update the player's animation, physics and states.
+		int8_t update(const Physics& physics) override;
+		// Set flipped ignore if attacking.
+		void setflip(bool flipped) override;
+		// Set stance ignore if attacking.
+		void setstance(Stance stance) override;
 
 		// Respawn the player at the given position.
 		void respawn(vector2d<int16_t> position);
@@ -55,35 +62,37 @@ namespace Character
 		void sendaction(IO::Keyboard::Keyaction keycode, bool pressed);
 		// Recalculates the total stats from base stats, inventories and skills.
 		void recalcstats(bool equipchanged);
-		// Update the player's animation, physics and states.
-		int8_t update(const Physics& physics) override;
 
-		bool canattack();
+		// Use the item from the player's inventory with the given id.
+		void useitem(int32_t itemid);
+
+		// Return if the player is attacking.
+		bool isattacking() const;
+		// Return wether the player can attack or not.
+		bool canattack() const;
+		// Create an attack struct using the player's stats.
 		Attack prepareattack();
+		// Create an attack struct for a regular attack.
 		Attack regularattack();
 
 		// Returns the current walking force, calculated from the total ES_SPEED stat.
-		float getwforce() const override;
+		float getwforce() const;
 		// Returns the current jumping force, calculated from the total ES_JUMP stat.
-		float getjforce() const override;
+		float getjforce() const;
 		// Returns the climbing force, calculated from the total ES_SPEED stat.
-		float getclimbforce() const override;
+		float getclimbforce() const;
 		// Returns the flying force.
-		float getflyforce() const override;
+		float getflyforce() const;
 
-		bool isattacking() const override;
 		// Returns if a Keyaction is currently active. 
-		bool keydown(IO::Keyboard::Keyaction) const override;
+		bool keydown(IO::Keyboard::Keyaction) const;
 		// Return a pointer to the ladder the player is on.
-		const Ladder* getladder() const override;
+		const Ladder* getladder() const;
 
 		// Change players position to the seat's position and stance to Char::SIT.
 		void setseat(const Seat* seat);
 		// Change players xpos to the ladder x and change stance to Char::LADDER or Char::ROPE.
 		void setladder(const Ladder* ladder);
-
-		void setflip(bool flipped) override;
-		void setstance(Stance stance) override;
 
 		// Obtain a reference to the player's stats.
 		CharStats& getstats();

@@ -30,8 +30,8 @@ namespace Gameplay
 		lootenabled = false;
 	}
 
-	void MapDrops::adddrop(int32_t oid, int32_t itemid, bool meso, int32_t owner, 
-		vector2d<int16_t> pos, vector2d<int16_t> dest, int8_t type, int8_t mode) {
+	void MapDrops::adddrop(int32_t oid, int32_t itemid, bool meso, int32_t owner, vector2d<int16_t> pos, 
+		vector2d<int16_t> dest, int8_t type, int8_t mode, bool playerdrop) {
 
 		MapObject* mmo = get(oid);
 		if (mmo)
@@ -49,7 +49,7 @@ namespace Gameplay
 				std::string msstr = std::to_string(mstype);
 				mesos[mstype] = Animation(nl::nx::item["Special"]["0900.img"]["0900000" + msstr]["iconRaw"]);
 			}
-			add(new MesoDrop(oid, owner, pos, dest, type, mode, &mesos[mstype]));
+			add(new MesoDrop(oid, owner, pos, dest, type, mode, &mesos[mstype], playerdrop));
 		}
 		else
 		{
@@ -57,7 +57,7 @@ namespace Gameplay
 			if (!itemdata.isloaded())
 				return;
 
-			add(new ItemDrop(oid, owner, pos, dest, type, mode, itemdata.geticon(true), itemid));
+			add(new ItemDrop(oid, owner, pos, dest, type, mode, itemdata.geticon(true), itemid, playerdrop));
 		}
 
 		/*if (mode != 2)

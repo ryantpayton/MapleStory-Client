@@ -30,8 +30,9 @@
 #include "Handlers83\LoginHandlers83.h"
 #include "Handlers83\SetfieldHandler83.h"
 #include "Handlers\KeyboardHandlers83.h"
-#include "Handlers\PlayerHandlers83.h"
 #include "Handlers83\MapobjectHandlers83.h"
+#include "Handlers\PlayerHandlers83.h"
+#include "Handlers\MessagingHandlers.h"
 #endif
 #include <iostream>
 
@@ -54,6 +55,12 @@ namespace Net
 		handlers[CHARACTER_INFO] = unique_ptr<PacketHandler>(new CharacterInfoHandler());
 		handlers[WARP_TO_MAP] = unique_ptr<PacketHandler>(new WarpToMapHandler());
 		handlers[CHANGE_CHANNEL] = unique_ptr<PacketHandler>(new ChangeChannelHandler());
+
+		// Mapobject handlers
+		handlers[SPAWN_MOB] = unique_ptr<PacketHandler>(new SpawnMobHandler());
+		handlers[SPAWN_NPC] = unique_ptr<PacketHandler>(new SpawnNpcHandler());
+		handlers[DROP_ITEM_FROMOBJECT] = unique_ptr<PacketHandler>(new DropItemHandler());
+		handlers[REMOVE_MAPITEM] = unique_ptr<PacketHandler>(new RemoveDropHandler());
 #else
 		// Login handlers
 		handlers[LOGIN_RESULT] = unique_ptr<PacketHandler>(new LoginResultHandler83());
@@ -66,6 +73,14 @@ namespace Net
 
 		// 'Setfield' handlers
 		handlers[SET_FIELD] = unique_ptr<PacketHandler>(new SetfieldHandler83());
+
+		// Mapobject handlers
+		handlers[SPAWN_MOB] = unique_ptr<PacketHandler>(new SpawnMobHandler83());
+		handlers[SPAWN_MOB_C] = unique_ptr<PacketHandler>(new SpawnMobControllerHandler83());
+		handlers[SPAWN_NPC] = unique_ptr<PacketHandler>(new SpawnNpcHandler83());
+		handlers[SPAWN_NPC_C] = unique_ptr<PacketHandler>(new SpawnNpcControllerHandler83());
+		handlers[DROP_ITEM_FROMOBJECT] = unique_ptr<PacketHandler>(new DropItemHandler83());
+		handlers[REMOVE_MAPITEM] = unique_ptr<PacketHandler>(new RemoveDropHandler83());
 #endif
 
 		handlers[PING] = unique_ptr<PacketHandler>(new PingHandler());
@@ -76,7 +91,7 @@ namespace Net
 		//handlers[GIVE_BUFF] = unique_ptr<vhandler>(new give_buff_h());
 		handlers[FORCED_STAT_RESET] = unique_ptr<PacketHandler>(new StatresetHandler83()); // recalcstats?
 		handlers[UPDATE_SKILLS] = unique_ptr<PacketHandler>(new UpdateskillsHandler83());
-		//handlers[SHOW_STATUS_INFO] = unique_ptr<vhandler>(new show_status_info_h());
+		handlers[SHOW_STATUS_INFO] = unique_ptr<PacketHandler>(new ShowStatusInfoHandler());
 		handlers[MEMO_RESULT] = unique_ptr<PacketHandler>(new NullHandler()); //TO DO
 		handlers[ENABLE_REPORT] = unique_ptr<PacketHandler>(new NullHandler()); //idk what it does
 		handlers[UPDATE_GENDER] = unique_ptr<PacketHandler>(new NullHandler()); // useless
@@ -101,16 +116,11 @@ namespace Net
 		handlers[SHOW_FOREIGN_EFFECT] = unique_ptr<vhandler>(new show_foreign_effect_h()); //TO DO
 		handlers[LOCK_UI] = unique_ptr<vhandler>(new unhandled()); //not sure what this does
 		handlers[TOGGLE_UI] = unique_ptr<vhandler>(new toggle_ui_h());*/
-		handlers[SPAWN_MOB] = unique_ptr<PacketHandler>(new SpawnMobHandler83());
 		handlers[KILL_MOB] = unique_ptr<PacketHandler>(new KillMobHandler83());
 		//handlers[MOB_MOVED] = unique_ptr<vhandler>(new mob_moved_h());
-		//handlers[MOVE_MOB_RESPONSE] = unique_ptr<vhandler>(new move_mob_response_h());
+		handlers[MOVE_MOB_RESPONSE] = unique_ptr<PacketHandler>(new NullHandler());
 		handlers[SHOW_MOB_HP] = unique_ptr<PacketHandler>(new ShowMobHpHandler83());
-		handlers[SPAWN_NPC] = unique_ptr<PacketHandler>(new SpawnNpcHandler83());
-		handlers[SPAWN_NPC_C] = unique_ptr<PacketHandler>(new SpawnNpcControllerHandler83());
 		handlers[MAKE_NPC_SCRIPTED] = unique_ptr<PacketHandler>(new NullHandler());
-		handlers[DROP_ITEM_FROMOBJECT] = unique_ptr<PacketHandler>(new DropItemHandler());
-		handlers[REMOVE_MAPITEM] = unique_ptr<PacketHandler>(new RemoveDropHandler());
 		//handlers[SPAWN_REACTOR] = unique_ptr<vhandler>(new spawn_reactor_h());
 		//handlers[REMOVE_REACTOR] = unique_ptr<vhandler>(new remove_reactor_h());
 		//handlers[NPC_DIALOGUE] = unique_ptr<vhandler>(new npc_dialogue_h());

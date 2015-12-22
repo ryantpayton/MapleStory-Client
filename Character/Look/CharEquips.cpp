@@ -53,6 +53,11 @@ namespace Character
 		return (getequip(EQL_TOP).getid() / 10000) == 105;
 	}
 
+	bool CharEquips::hasweapon() const
+	{
+		return getweapon() != nullptr;
+	}
+
 	bool CharEquips::istwohanded() const
 	{
 		const Weapon* weapon = getweapon();

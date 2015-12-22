@@ -61,8 +61,8 @@ namespace Gameplay
 
 		// Construct a mob by combining data from game files with
 		// data sent by the server.
-		Mob(int32_t oid, int32_t mobid, int32_t seed, int8_t stance, uint16_t fhid, 
-			bool newspawn, int8_t team, int16_t xpos, int16_t ypos);
+		Mob(int32_t oid, int32_t mobid, bool control, int8_t stance, uint16_t fhid, 
+			bool newspawn, int8_t team, vector2d<int16_t> position);
 
 		// Update movement and animations.
 		int8_t update(const Physics& physics) override;
@@ -82,6 +82,7 @@ namespace Gameplay
 		void sendhp(int8_t percentage, uint16_t playerlevel);
 
 	private:
+		void writemovement();
 		void parsestance(Stance toparse, node source);
 		//void parsesound(Stance toparse, node source);
 		void setstance(Stance newstance);
@@ -110,11 +111,12 @@ namespace Gameplay
 
 		SeededState behaviour;
 		uint16_t counter;
+		vector<MovementFragment> movements;
 
 		int32_t id;
 		int8_t effect;
 		int8_t team;
-
+		bool control;
 		Stance stance;
 		bool flip;
 		float walkforce;

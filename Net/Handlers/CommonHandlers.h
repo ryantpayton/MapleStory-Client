@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "PacketHandler.h"
+#include "Net\PacketHandler.h"
 #include "Net\Session.h"
 #include "Net\Packets\CommonPackets.h"
 

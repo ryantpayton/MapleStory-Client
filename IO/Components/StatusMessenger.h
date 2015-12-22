@@ -15,40 +15,40 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Char.h"
-#include "Gameplay\Playable.h"
-#include "Gameplay\Maplemap\MapInfo.h"
+#include "Graphics\Textlabel.h"
+#include <vector>
 
-namespace Character
+namespace IO
 {
-	using Gameplay::Playable;
-	using Gameplay::Seat;
-	using Gameplay::Ladder;
+	using std::string;
+	using std::vector;
+	using Util::vector2d;
+	using Graphics::Textlabel;
 
-	// Interface for a class that is both playable and a character. 
-	// Currently only used by the player, but could be extended to control androids or player npcs.
-	class PlayableChar : public Playable, public Char
+	struct StatusInfo
+	{
+		Textlabel::Textcolor color = Textlabel::TXC_WHITE;
+		string text = "";
+		float alpha = 1.0f;
+		float lastalpha = 1.0f;
+
+		float getalpha(float inter) const
+		{
+			return (1.0f - inter) * lastalpha + inter * alpha;
+		}
+	};
+
+	class StatusMessenger
 	{
 	public:
-		// Change players position to the seat's position and stance to Char::SIT.
-		virtual void setseat(const Seat* seat) = 0;
-		// Change players xpos to the ladder x and change stance to Char::LADDER or Char::ROPE.
-		virtual void setladder(const Ladder* ladder) = 0;
+		StatusMessenger();
+		~StatusMessenger();
 
-		// Returns the walking force.
-		virtual float getwforce() const = 0;
-		// Returns the jumping force.
-		virtual float getjforce() const = 0;
-		// Returns the climbing force.
-		virtual float getclimbforce() const = 0;
-		// Returns the flying force.
-		virtual float getflyforce() const = 0;
+		void draw(vector2d<int16_t> position, float inter) const;
+		void update();
+		void showstatus(Textlabel::Textcolor color, string message);
 
-		virtual bool isattacking() const = 0;
-		// Returns if the keyaction is active.
-		virtual bool keydown(IO::Keyboard::Keyaction keycode) const = 0;
-		// Returns the ladder.
-		virtual const Ladder* getladder() const = 0;
+	private:
+		vector<StatusInfo> statusinfos;
 	};
 }

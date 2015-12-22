@@ -61,7 +61,9 @@ namespace Gameplay
 
 		bool loadplayer(int32_t charid)
 		{
-			const Net::CharEntry& entry = Net::Session::getlogin().getcharbyid(charid);
+			using Net::CharEntry;
+			const CharEntry& entry = Net::Session::getlogin().getcharbyid(charid);
+
 			if (entry.cid == charid)
 			{
 				player = Player(entry);
@@ -198,7 +200,9 @@ namespace Gameplay
 		void sendattack(const Attack& attack)
 		{
 			AttackResult result = mobs.sendattack(attack);
-			Net::Session::dispatch(Net::CloseRangeAttackPacket83(result));
+
+			using Net::CloseRangeAttackPacket83;
+			Net::Session::dispatch(CloseRangeAttackPacket83(result));
 		}
 
 		void useskill(int32_t skillid)
@@ -245,43 +249,23 @@ namespace Gameplay
 			sendattack(attack);
 		}
 
-		void useitem(int32_t itemid)
-		{
-			// Use the first item with the given id found in the inventory.
-			using Character::Inventory;
-			Inventory::InvType type = player.getinvent().gettypebyid(itemid);
-			int16_t slot = player.getinvent().finditem(type, itemid);
-
-			if (slot < 0)
-				return;
-
-			switch (type)
-			{
-			case Inventory::USE:
-				Net::Session::dispatch(Net::UseItemPacket83(slot, itemid));
-				break;
-			}
-		}
-
 		void checkportals()
 		{
 			if (player.isattacking())
 				return;
 
-			// Check for portals within the player's range.
 			const WarpInfo* warpinfo = portals.findportal(player.getbounds());
 			if (warpinfo)
 			{
 				if (warpinfo->mapid == mapid)
 				{
-					// Teleport inside a map.
 					vector2d<int16_t> spawnpoint = portals.getspawnpoint(warpinfo->portal);
 					player.respawn(spawnpoint);
 				}
 				else if (warpinfo->valid)
 				{
-					// Warp to a different map.
-					Net::Session::dispatch(Net::ChangeMapPacket83(false, warpinfo->mapid, warpinfo->portal, false));
+					using Net::ChangeMapPacket83;
+					Net::Session::dispatch(ChangeMapPacket83(false, warpinfo->mapid, warpinfo->portal, false));
 				}
 			}
 		}
@@ -309,7 +293,8 @@ namespace Gameplay
 			const Drop* drop = drops.findinrange(player.getbounds());
 			if (drop)
 			{
-				Net::Session::dispatch(Net::PickupItemPacket(drop->getoid(), drop->getposition()));
+				using Net::PickupItemPacket;
+				Net::Session::dispatch(PickupItemPacket(drop->getoid(), drop->getposition()));
 			}
 		}
 
@@ -354,7 +339,7 @@ namespace Gameplay
 				useskill(action);
 				break;
 			case Keyboard::KT_ITEM:
-				useitem(action);
+				player.useitem(action);
 				break;
 			case Keyboard::KT_FACE:
 				player.sendface(action);
