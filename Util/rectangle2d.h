@@ -44,6 +44,7 @@ namespace Util
 			return rhor.overlaps(ahor) && rver.overlaps(aver);
 		}
 		bool straight() const { return lt == rb; }
+		bool empty() const { return lt.straight() && rb.straight() && straight(); }
 		vector2d<T> getlt() const { return lt; }
 		vector2d<T> getrb() const { return rb; }
 		vector2d<T> gethor() const { return vector2d<T>(lt.x(), rb.x()); }

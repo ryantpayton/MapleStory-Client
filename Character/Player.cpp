@@ -226,6 +226,12 @@ namespace Character
 		return !attacking && !isclimbing() && !issitting() && look.getequips().hasweapon();
 	}
 
+	void Player::useattack()
+	{
+		look.setstance("attack");
+		attacking = true;
+	}
+
 	Attack Player::prepareattack()
 	{
 		Attack attack;
@@ -243,8 +249,7 @@ namespace Character
 
 	Attack Player::regularattack()
 	{
-		look.setstance("attack");
-		attacking = true;
+		useattack();
 
 		Attack attack = prepareattack();
 		attack.skill = 0;

@@ -92,6 +92,9 @@ namespace Graphics
 
 	void Animation::draw(const DrawArgument& args, float inter) const
 	{
+		if (textures.size() == 0)
+			return;
+
 		uint8_t interframe;
 		float interalpha;
 		if (animated)

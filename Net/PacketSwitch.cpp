@@ -26,6 +26,7 @@
 #include "Handlers\KeyboardHandlers83.h"
 #include "Handlers\PlayerHandlers83.h"
 #include "Handlers\MapobjectHandlers.h"
+#include "Handlers\MessagingHandlers.h"
 #else
 #include "Handlers83\LoginHandlers83.h"
 #include "Handlers83\SetfieldHandler83.h"

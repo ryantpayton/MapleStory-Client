@@ -43,7 +43,18 @@ namespace Gameplay
 			}
 		}
 
-		hit = Animation(src["hit"]);
+		if (src["hit"]["0"].data_type() == nl::node::type::bitmap)
+		{
+			hit.push_back(Animation(src["hit"]));
+		}
+		else
+		{
+			for (auto effectn : src["hit"])
+			{
+				hit.push_back(Animation(effectn));
+			}
+		}
+
 		affected = Animation(src["affected"]);
 
 		preparestance = src["prepare"]["action"];
@@ -92,6 +103,11 @@ namespace Gameplay
 		return offensive;
 	}
 
+	int32_t Skill::getid() const
+	{
+		return id;
+	}
+
 	string Skill::getaction(bool twohanded) const
 	{
 		if (actions.size() == 0)
@@ -101,6 +117,28 @@ namespace Gameplay
 			return actions[1];
 		else
 			return actions[0];
+	}
+
+	Animation Skill::gethitanimation(bool twohanded) const
+	{
+		if (effects.size() == 0)
+			return Animation();
+
+		if (effects.size() > 1 && twohanded)
+			return hit[1];
+		else
+			return hit[0];
+	}
+
+	Animation Skill::geteffect(bool twohanded) const
+	{
+		if (effects.size() == 0)
+			return Animation();
+
+		if (effects.size() > 1 && twohanded)
+			return effects[1];
+		else
+			return effects[0];
 	}
 
 	const SkillLevel* Skill::getlevel(int32_t level) const

@@ -23,16 +23,21 @@ namespace Character
 	{
 		vector2d<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
 		look.draw(absp, inter);
+
 		for (int32_t i = 0; i < 3; i++)
 		{
 			if (pets[i].getiid() > 0)
 				pets[i].draw(camera, inter);
 		}
+
+		effects.draw(absp, inter);
 		namelabel.draw(absp);
 	}
 
 	int8_t Char::update(const Physics& physics)
 	{
+		effects.update();
+
 		for (int32_t i = 0; i < 3; i++)
 		{
 			if (pets[i].getiid() > 0)
@@ -53,12 +58,18 @@ namespace Character
 				pets[i].update(physics, phobj.getposition(1.0f));
 			}
 		}
+
 		return getlayer();
 	}
 
 	int8_t Char::getlayer() const
 	{
 		return isclimbing() ? 7 : phobj.fhlayer;
+	}
+
+	void Char::showeffect(Animation toshow)
+	{
+		effects.add(toshow);
 	}
 
 	void Char::sendface(int32_t expression)

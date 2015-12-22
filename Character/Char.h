@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Gameplay\Maplemap\Mapobject.h"
+#include "Graphics\EffectLayer.h"
 #include "Look\CharLook.h"
 #include "Look\PetLook.h"
 #include "Util\rectangle2d.h"
@@ -26,6 +27,7 @@ namespace Character
 	using Util::rectangle2d;
 	using Gameplay::MapObject;
 	using Gameplay::Camera;
+	using Graphics::EffectLayer;
 
 	// Base for characters, e.g. the player and other clients on the same map.
 	class Char : public MapObject
@@ -53,6 +55,9 @@ namespace Character
 		int8_t update(const Physics& physics) override;
 		// Return the current map layer, or 7 if on a ladder or rope.
 		int8_t getlayer() const override;
+
+		// Display an animation as an effect ontop of the character.
+		void showeffect(Animation toshow);
 
 		// Add a pet with the specified stats.
 		void addpet(uint8_t index, int32_t iid, string name, 
@@ -82,6 +87,7 @@ namespace Character
 
 	protected:
 		CharLook look;
+		EffectLayer effects;
 		Textlabel namelabel;
 		PetLook pets[3];
 

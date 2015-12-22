@@ -42,9 +42,6 @@ namespace IO
 		unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
 		map<int32_t, bool> keydown;
 
-		Textlabel whiteinfo = Textlabel(Textlabel::DWF_12MR, Textlabel::TXC_WHITE, "", 0);
-		Textlabel yellowinfo = Textlabel(Textlabel::DWF_12MR, Textlabel::TXC_YELLOW, "", 0);
-
 		Element::UIType focused = Element::NONE;
 		Textfield* focusedtextfield = nullptr;
 		bool enabled = true;

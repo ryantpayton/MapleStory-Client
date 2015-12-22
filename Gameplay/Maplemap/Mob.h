@@ -20,8 +20,8 @@
 #include "Gameplay\Attack.h"
 #include "Gameplay\Physics\PhysicsObject.h"
 #include "Gameplay\MovementInfo.h"
-#include "Graphics\Animation.h"
 #include "Graphics\Textlabel.h"
+#include "Graphics\EffectLayer.h"
 #include "IO\Components\DamageNumber.h"
 #include "Util\rectangle2d.h"
 #include "Util\Randomizer.h"
@@ -38,6 +38,7 @@ namespace Gameplay
 	using Net::SeededState;
 	using Graphics::Animation;
 	using Graphics::Textlabel;
+	using Graphics::EffectLayer;
 	using IO::DamageNumber;
 
 	class Mob : public MapObject
@@ -105,6 +106,7 @@ namespace Gameplay
 		bool undead;
 		bool touchdamage;
 
+		EffectLayer effects;
 		Textlabel namelabel;
 		Randomizer randomizer;
 		vector<DamageNumber> damagenumbers;

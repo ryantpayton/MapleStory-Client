@@ -17,7 +17,6 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Stage.h"
 #include "Camera.h"
-#include "Skill.h"
 #include "Maplemap\MapInfo.h"
 #include "Maplemap\MapLayer.h"
 #include "Maplemap\MapPortals.h"
@@ -212,26 +211,33 @@ namespace Gameplay
 				skillcache[skillid] = Skill(skillid);
 			const Skill& skill = skillcache[skillid];
 
+			if (skill.isoffensive() && !player.canattack())
+				return;
+
 			const SkillLevel* skilllevel = skill.getlevel(player.getskills().getlevelof(skillid));
 			if (skilllevel == nullptr)
 				return;
 
-			const Character::Weapon* weapon = player.getlook().getequips().getweapon();
+			using Character::Weapon;
+			const Weapon* weapon = player.getlook().getequips().getweapon();
 			if (weapon == nullptr)
 				return;
 
-			player.getlook().setaction(skill.getaction(weapon->istwohanded()));
+			bool twohanded = weapon->istwohanded();
+			string action = skill.getaction(twohanded);
+			if (action == "" && skill.isoffensive())
+				player.useattack();
+			else
+				player.getlook().setaction(action);
+			player.showeffect(skill.geteffect(twohanded));
 
 			if (skill.isoffensive())
 			{
-				if (!player.canattack())
-					return;
-
 				Attack attack = player.prepareattack();
-				attack.skill = skillid;
-				attack.mobcount = skilllevel->mobcount;
-				attack.hitcount = skilllevel->attackcount;
-				attack.range = skilllevel->range;
+				attack.applyskill(skillid, skill.gethitanimation(twohanded), *skilllevel);
+				if (attack.range.empty())
+					attack.range = weapon->getrange();
+
 				sendattack(attack);
 			}
 			else

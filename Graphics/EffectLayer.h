@@ -15,61 +15,26 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Graphics\Texture.h"
-#include "Graphics\Animation.h"
-#include "Util\rectangle2d.h"
-#include <cstdint>
-#include <string>
+#pragma once
+#include "Animation.h"
 #include <map>
 
-namespace Gameplay
+namespace Graphics
 {
-	using std::int32_t;
-	using std::string;
 	using std::map;
-	using std::vector;
-	using Util::vector2d;
-	using Util::rectangle2d;
-	using Graphics::Texture;
-	using Graphics::Animation;
 
-	struct SkillLevel
-	{
-		float chance = 0.0f;
-		float damage = 0.0f;
-		float critical = 0.0f;
-		float ignoredef = 0.0f;
-		uint8_t attackcount = 1;
-		uint8_t mobcount = 1;
-		int32_t hpcost = 0;
-		int32_t mpcost = 0;
-		rectangle2d<int16_t> range;
-	};
-
-	class Skill
+	class EffectLayer
 	{
 	public:
-		Skill(int32_t);
-		Skill();
-		~Skill();
+		EffectLayer();
+		~EffectLayer();
 
-		bool isoffensive() const;
-		int32_t getid() const;
-		string getaction(bool twohanded) const;
-		Animation gethitanimation(bool twohanded) const;
-		Animation geteffect(bool twohanded) const;
-		const SkillLevel* getlevel(int32_t level) const;
+		void draw(vector2d<int16_t> position, float inter) const;
+		void update();
+		void add(Animation effect);
 
 	private:
-		int32_t id;
-		map<uint8_t, Texture> icons;
-		vector<Animation> effects;
-		vector<Animation> hit;
-		Animation affected;
-		string preparestance;
-		int32_t preparetime;
-		bool offensive;
-		vector<string> actions;
-		map<int32_t, SkillLevel> levels;
+		map<uint8_t, Animation> effects;
+		uint8_t reid;
 	};
 }

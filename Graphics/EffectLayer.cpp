@@ -15,61 +15,44 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Graphics\Texture.h"
-#include "Graphics\Animation.h"
-#include "Util\rectangle2d.h"
-#include <cstdint>
-#include <string>
-#include <map>
+#include "EffectLayer.h"
 
-namespace Gameplay
+namespace Graphics
 {
-	using std::int32_t;
-	using std::string;
-	using std::map;
-	using std::vector;
-	using Util::vector2d;
-	using Util::rectangle2d;
-	using Graphics::Texture;
-	using Graphics::Animation;
-
-	struct SkillLevel
+	EffectLayer::EffectLayer() 
 	{
-		float chance = 0.0f;
-		float damage = 0.0f;
-		float critical = 0.0f;
-		float ignoredef = 0.0f;
-		uint8_t attackcount = 1;
-		uint8_t mobcount = 1;
-		int32_t hpcost = 0;
-		int32_t mpcost = 0;
-		rectangle2d<int16_t> range;
-	};
+		reid = 0;
+	}
 
-	class Skill
+	EffectLayer::~EffectLayer() {}
+
+	void EffectLayer::draw(vector2d<int16_t> position, float inter) const
 	{
-	public:
-		Skill(int32_t);
-		Skill();
-		~Skill();
+		for (auto& eff : effects)
+		{
+			eff.second.draw(DrawArgument(position), inter);
+		}
+	}
 
-		bool isoffensive() const;
-		int32_t getid() const;
-		string getaction(bool twohanded) const;
-		Animation gethitanimation(bool twohanded) const;
-		Animation geteffect(bool twohanded) const;
-		const SkillLevel* getlevel(int32_t level) const;
+	void EffectLayer::update()
+	{
+		vector<uint8_t> toremove;
+		for (auto& eff : effects)
+		{
+			bool expired = eff.second.update();
+			if (expired)
+				toremove.push_back(eff.first);
+		}
 
-	private:
-		int32_t id;
-		map<uint8_t, Texture> icons;
-		vector<Animation> effects;
-		vector<Animation> hit;
-		Animation affected;
-		string preparestance;
-		int32_t preparetime;
-		bool offensive;
-		vector<string> actions;
-		map<int32_t, SkillLevel> levels;
-	};
+		for (auto& rm : toremove)
+		{
+			effects.erase(rm);
+		}
+	}
+
+	void EffectLayer::add(Animation animation)
+	{
+		effects[reid] = animation;
+		reid++;
+	}
 }

@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include <cstdint>
+#include "Skill.h"
 #include "Util\rectangle2d.h"
 #include "Graphics\Animation.h"
 
@@ -28,6 +29,9 @@ namespace Gameplay
 	using std::int32_t;
 	using std::vector;
 	using std::map;
+	using Util::vector2d;
+	using Util::rectangle2d;
+	using Graphics::Animation;
 
 	struct Attack 
 	{
@@ -53,10 +57,23 @@ namespace Gameplay
 		uint8_t speed = 0;
 
 		Direction direction = CENTERED;
-		Util::vector2d<int16_t> origin;
-		Util::rectangle2d<int16_t> range;
+		vector2d<int16_t> origin;
+		rectangle2d<int16_t> range;
 
-		Graphics::Animation hiteffect;
+		Animation hiteffect;
+
+		void applyskill(int32_t skillid, Animation effect, const SkillLevel& level)
+		{
+			skill = skillid;
+			hiteffect = effect;
+			hitcount = level.attackcount;
+			mobcount = level.mobcount;
+			range = level.range;
+			critical += level.critical;
+			ignoredef += level.ignoredef;
+			mindamage = static_cast<int32_t>(mindamage * level.damage);
+			maxdamage = static_cast<int32_t>(maxdamage * level.damage);
+		}
 	};
 
 	struct AttackResult

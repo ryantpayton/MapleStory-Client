@@ -167,6 +167,8 @@ namespace Gameplay
 			damagenumbers.erase(damagenumbers.begin());
 		}
 
+		effects.update();
+
 		if (control)
 		{
 			if (stance != HIT && stance != DIE)
@@ -239,6 +241,8 @@ namespace Gameplay
 			using Graphics::DrawArgument;
 			animations.at(stance).draw(DrawArgument(absp, flip), inter);
 		}
+
+		effects.draw(absp, inter);
 
 		if (hppercent > 0)
 		{
@@ -335,6 +339,8 @@ namespace Gameplay
 			yshift += 24;
 			alphashift += 0.1f;
 		}
+
+		effects.add(attack.hiteffect);
 
 		return damagelines;
 	}

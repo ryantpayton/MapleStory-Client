@@ -70,6 +70,8 @@ namespace Character
 		bool isattacking() const;
 		// Return wether the player can attack or not.
 		bool canattack() const;
+		// Change the character stance to the default attack.
+		void useattack();
 		// Create an attack struct using the player's stats.
 		Attack prepareattack();
 		// Create an attack struct for a regular attack.
