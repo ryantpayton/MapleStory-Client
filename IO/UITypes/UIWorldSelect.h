@@ -34,6 +34,7 @@ namespace IO
 		void buttonpressed(uint16_t) override;
 
 	private:
+		size_t worldcount;
 		uint8_t worldid;
 		uint8_t channelid;
 	};

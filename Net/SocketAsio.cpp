@@ -75,7 +75,7 @@ namespace Net
 	bool SocketAsio::dispatch(const int8_t* bytes, size_t length)
 	{
 		error_code error;
-		size_t result = socket.write_some(asio::buffer(bytes, length), error);
+		size_t result = asio::write(socket, asio::buffer(bytes, length), error);
 		return !error && (result == length);
 	}
 }

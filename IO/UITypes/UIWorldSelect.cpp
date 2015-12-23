@@ -45,27 +45,31 @@ namespace IO
 			new MapleButton(channels["button:GoWorld"], vector2d<int16_t>(200, 170))
 			);
 
-		buttons[BT_WORLD0] = unique_ptr<Button>(
-			new MapleButton(worlds["button:15"], vector2d<int16_t>(650, 20))
-			);
-		buttons[BT_WORLD0]->setstate(Button::PRESSED);
-
-		sprites.push_back(Sprite(channels["layer:bg"], vector2d<int16_t>(200, 170)));
-		sprites.push_back(Sprite(channels["release"]["layer:15"], vector2d<int16_t>(200, 170)));
-
-		uint8_t chcount = Net::Session::getlogin().getworld(worldid).channelcount;
-		if (channelid >= chcount)
-			channelid = 0;
-
-		for (uint8_t i = 0; i < chcount; i++)
+		worldcount = Net::Session::getlogin().getnumworlds();
+		if (worldcount > 0)
 		{
-			node chnode = channels["button:" + std::to_string(i)];
-			buttons[BT_CHANNEL0 + i] = unique_ptr<Button>(
-				new TwoSpriteButton(chnode["normal"]["0"], chnode["keyFocused"]["0"], 
-				vector2d<int16_t>(200, 170))
+			buttons[BT_WORLD0] = unique_ptr<Button>(
+				new MapleButton(worlds["button:15"], vector2d<int16_t>(650, 20))
 				);
+			buttons[BT_WORLD0]->setstate(Button::PRESSED);
+
+			sprites.push_back(Sprite(channels["layer:bg"], vector2d<int16_t>(200, 170)));
+			sprites.push_back(Sprite(channels["release"]["layer:15"], vector2d<int16_t>(200, 170)));
+
+			uint8_t chcount = Net::Session::getlogin().getworld(worldid).channelcount;
+			if (channelid >= chcount)
+				channelid = 0;
+
+			for (uint8_t i = 0; i < chcount; i++)
+			{
+				node chnode = channels["button:" + std::to_string(i)];
+				buttons[BT_CHANNEL0 + i] = unique_ptr<Button>(
+					new TwoSpriteButton(chnode["normal"]["0"], chnode["keyFocused"]["0"],
+					vector2d<int16_t>(200, 170))
+					);
+			}
+			buttons[BT_CHANNEL0 + channelid]->setstate(Button::PRESSED);
 		}
-		buttons[BT_CHANNEL0 + channelid]->setstate(Button::PRESSED);
 
 		position = vector2d<int16_t>(0, 0);
 		dimension = vector2d<int16_t>(800, 600);

@@ -185,6 +185,7 @@ namespace Character
 								shift = drawinfo.getbodypos(stance, frame) - parentpos;
 								break;
 							case CL_HAT:
+							case CL_HATOVERHAIR:
 							case CL_EARRINGS:
 							case CL_EYEACC:
 								shift = drawinfo.getfacepos(stance, frame) - parentpos;

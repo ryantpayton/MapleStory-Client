@@ -192,13 +192,12 @@ namespace Gameplay
 			}
 
 			counter++;
-			if (counter > 200)
+			if (counter > 100)
 			{
 				behaviour.nextstate();
+				writemovement();
 				counter = 0;
 			}
-
-			writemovement();
 		}
 
 		physics.moveobject(phobj);
@@ -222,7 +221,7 @@ namespace Gameplay
 		lastmove.duration = Constants::TIMESTEP;
 		movements.push_back(lastmove);
 
-		if (movements.size() > 4)
+		if (movements.size() > 0)
 		{
 			using Net::MoveMobPacket83;
 			Net::Session::dispatch(MoveMobPacket83(oid, 1, 0, 0, 0, 0, 0, 0, getposition(), movements));
