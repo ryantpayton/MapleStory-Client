@@ -28,6 +28,34 @@ namespace Graphics
 {
 	namespace GraphicsEngine
 	{
+		void addbitmap(const bitmap& bmp)
+		{
+#ifdef JOURNEY_USE_OPENGL
+			GraphicsGL::addbitmap(bmp);
+#else
+			GraphicsD2D::addbitmap(bmp);
+#endif
+		}
+
+		bool available(size_t id)
+		{
+#ifdef JOURNEY_USE_OPENGL
+			return GraphicsGL::available(id);
+#else
+			return GraphicsD2D::available(id);
+#endif
+		}
+
+		void draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h,
+			float alpha, float xscale, float yscale, int16_t centerx, int16_t centery) {
+
+#ifdef JOURNEY_USE_OPENGL
+
+#else
+			GraphicsD2D::draw(id, x, y, w, h, alpha, xscale, yscale, centerx, centery);
+#endif
+		}
+
 		void clear()
 		{
 #ifdef JOURNEY_USE_OPENGL

@@ -63,4 +63,9 @@ namespace IO
 	{
 		return state;
 	}
+
+	vector2d<int16_t> Cursor::getposition() const
+	{
+		return position;
+	}
 }

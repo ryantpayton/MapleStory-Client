@@ -20,6 +20,7 @@
 #ifndef JOURNEY_USE_OPENGL
 #include "WindowD2D.h"
 #include "UI.h"
+#include "Program\Configuration.h"
 #include "Program\Constants.h"
 #include "Gameplay\Stage.h"
 
@@ -84,6 +85,9 @@ namespace IO
 					scralpha = 1.0f;
 					draw_finished = true;
 					transition = false;
+
+					if (Program::Configuration::getbool("Fullscreen"))
+						togglemode();
 
 					SetPriorityClass(wnd, REALTIME_PRIORITY_CLASS);
 					SetFocus(wnd);
@@ -197,7 +201,7 @@ namespace IO
 					switch (wParam)
 					{
 					case MK_LBUTTON:
-						UI::sendmouse(Cursor::MST_CLICKING, vector2d<int16_t>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+						UI::sendmouse(true, vector2d<int16_t>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 						break;
 					}
 					result = 0;
@@ -211,7 +215,7 @@ namespace IO
 				case WM_LBUTTONUP:
 					if (wParam != MK_LBUTTON)
 					{
-						UI::sendmouse(Cursor::MST_IDLE, vector2d<int16_t>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
+						UI::sendmouse(false, vector2d<int16_t>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 					}
 					result = 0;
 					wasHandled = true;

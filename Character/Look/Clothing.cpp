@@ -209,7 +209,7 @@ namespace Character
 								shift = vector2d<int16_t>();
 							}
 
-							stances[stance][z][frame].setshift(shift);
+							stances[stance][z][frame].shift(shift);
 						}
 					}
 
@@ -267,7 +267,67 @@ namespace Character
 		return transparent;
 	}
 
-	const string& Clothing::gettype() const
+	bool Clothing::isweapon() const
+	{
+		return eqslot == EQL_WEAPON;
+	}
+
+	int16_t Clothing::getreqstat(Maplestat stat) const
+	{
+		if (reqstats.count(stat))
+			return reqstats.at(stat);
+		else
+			return 0;
+	}
+
+	int16_t Clothing::getdefstat(Equipstat stat) const
+	{
+		if (defstats.count(stat))
+			return defstats.at(stat);
+		else
+			return 0;
+	}
+
+	string Clothing::getstatstr(Equipstat stat) const
+	{
+		switch (stat)
+		{
+		case ES_STR:
+			return "STR";
+		case ES_DEX:
+			return "DEX";
+		case ES_INT:
+			return "INT";
+		case ES_LUK:
+			return "LUK";
+		case ES_WATK:
+			return "WEAPON ATT";
+		case ES_WDEF:
+			return "WEAPON DEFENSE";
+		case ES_MAGIC:
+			return "MAGIC ATT";
+		case ES_MDEF:
+			return "MAGIC DEFENSE";
+		case ES_ACC:
+			return "ACCURACY";
+		case ES_AVOID:
+			return "AVOID";
+		case ES_HP:
+			return "MAX HP";
+		case ES_MP:
+			return "MAX MP";
+		case ES_HANDS:
+			return "HANDS";
+		case ES_SPEED:
+			return "SPEED";
+		case ES_JUMP:
+			return "JUMP";
+		default:
+			return "";
+		}
+	}
+
+	string Clothing::gettype() const
 	{
 		return type;
 	}

@@ -18,6 +18,7 @@
 #include "Session.h"
 #include "Cryptography.h"
 #include "PacketSwitch.h"
+#include "Program\Configuration.h"
 
 #include "Journey.h"
 #ifdef JOURNEY_USE_ASIO
@@ -73,7 +74,8 @@ namespace Net
 		{
 			// solstice: 142.68.131.65
 			// oasis: 104.27.167.91
-			static const string HOST = "142.68.131.65";
+			//string HOST = Program::Configuration::getsetting("ServerIP");
+			static const string HOST = "127.0.0.1";
 			static const string PORT = "8484";
 
 			return init(HOST.c_str(), PORT.c_str());

@@ -87,4 +87,33 @@ namespace IO
 		}
 		return shift;
 	}
+
+	int16_t Charset::draw(string str, int16_t space, const DrawArgument& args) const
+	{
+		size_t length = str.size();
+		int16_t shift = 0;
+
+		using Util::vector2d;
+		using Graphics::DrawArgument;
+		switch (alignment)
+		{
+		case CENTER:
+			shift -= (space * static_cast<int16_t>(length)) / 2;
+		case LEFT:
+			for (size_t i = 0; i < length; i++)
+			{
+				draw(str[i], DrawArgument(args.getpos() + vector2d<int16_t>(shift, 0), args.getalpha()));
+				shift += space;
+			}
+			break;
+		case RIGHT:
+			for (size_t i = length - 1; i >= 0 && i < length; i--)
+			{
+				shift += space;
+				draw(str[i], DrawArgument(args.getpos() - vector2d<int16_t>(shift, 0), args.getalpha()));
+			}
+			break;
+		}
+		return shift;
+	}
 }

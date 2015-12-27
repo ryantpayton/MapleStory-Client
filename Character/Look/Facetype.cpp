@@ -23,7 +23,7 @@ namespace Character
 {
 	Facetype::Facetype(int32_t faceid)
 	{
-		using::nl::node;
+		using nl::node;
 		node facenode = nl::nx::character["Face"]["000" + std::to_string(faceid) + ".img"];
 		for (node expnode : facenode)
 		{
@@ -31,7 +31,7 @@ namespace Character
 			if (state == "default")
 			{
 				stances[state][CL_FACE][0] = Texture(expnode["face"]);
-				stances[state][CL_FACE][0].setshift(-vector2d<int16_t>(expnode["face"]["map"]["brow"]));
+				stances[state][CL_FACE][0].shift(-vector2d<int16_t>(expnode["face"]["map"]["brow"]));
 				delays[state][0] = 2500;
 			}
 			else if (state != "info")
@@ -43,7 +43,7 @@ namespace Character
 					if (framenode["face"].data_type() == node::type::bitmap)
 					{
 						stances[state][CL_FACE][frame] = Texture(framenode["face"]);
-						stances[state][CL_FACE][frame].setshift(-vector2d<int16_t>(framenode["face"]["map"]["brow"]));
+						stances[state][CL_FACE][frame].shift(-vector2d<int16_t>(framenode["face"]["map"]["brow"]));
 
 						if (framenode["delay"].data_type() == node::type::integer)
 							delays[state][frame] = framenode["delay"];
@@ -91,7 +91,7 @@ namespace Character
 		return 0;
 	}
 
-	short Facetype::getdelay(string exp, uint8_t frame) const
+	int16_t Facetype::getdelay(string exp, uint8_t frame) const
 	{
 		if (delays.count(exp))
 		{
@@ -103,7 +103,7 @@ namespace Character
 		return 50;
 	}
 
-	const string& Facetype::getname() const
+	string Facetype::getname() const
 	{
 		return name;
 	}

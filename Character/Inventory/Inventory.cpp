@@ -117,6 +117,58 @@ namespace Character
 		inventoryitems[type].erase(slot);
 	}
 
+	void Inventory::swap(InvType firsttype, int16_t firstslot, InvType secondtype, int16_t secondslot)
+	{
+		Item* temp = inventoryitems[firsttype][firstslot];
+		inventoryitems[firsttype][firstslot] = inventoryitems[secondtype][secondslot];
+		inventoryitems[secondtype][secondslot] = temp;
+	}
+
+	void Inventory::changecount(InvType type, int16_t slot, int16_t count)
+	{
+		Item* item = inventoryitems[type][slot];
+		if (item)
+			item->setcount(count);
+	}
+
+	void Inventory::modify(InvType type, int16_t slot, int8_t mode, int16_t arg, Movetype move)
+	{
+		slot = (slot < 0) ? -slot : slot;
+		arg = (arg < 0) ? -arg : arg;
+
+		switch (mode)
+		{
+		case 1:
+			changecount(type, slot, arg);
+			break;
+		case 2:
+			switch (move)
+			{
+			case MOVE_INTERNAL:
+				swap(type, slot, type, arg);
+				break;
+			case MOVE_UNEQUIP:
+				swap(EQUIPPED, slot, EQUIP, arg);
+				break;
+			case MOVE_EQUIP:
+				swap(EQUIP, slot, EQUIPPED, arg);
+				break;
+			}
+			break;
+		case 3:
+			remove(type, slot);
+			break;
+		}
+	}
+
+	uint8_t Inventory::getslots(InvType type) const
+	{
+		if (slots.count(type))
+			return slots.at(type);
+		else
+			return 0;
+	}
+
 	uint16_t Inventory::getstat(Equipstat type) const
 	{
 		return totalstats.count(type) ? totalstats.at(type) : 0;
@@ -157,5 +209,28 @@ namespace Character
 			return typesbyid[prefix];
 		else
 			return NONE;
+	}
+
+	const Item* Inventory::getitem(InvType type, int16_t slot) const
+	{
+		if (inventoryitems.count(type) == 0)
+			return nullptr;
+
+		if (inventoryitems.at(type).count(slot) == 0)
+			return nullptr;
+
+		return inventoryitems.at(type).at(slot);
+	}
+
+	const Equip* Inventory::getequip(InvType type, int16_t slot) const
+	{
+		if (type != EQUIP && type != EQUIPPED)
+			return nullptr;
+
+		const Item* item = getitem(type, slot);
+		if (item)
+			return reinterpret_cast<const Equip*>(item);
+		else
+			return nullptr;
 	}
 }

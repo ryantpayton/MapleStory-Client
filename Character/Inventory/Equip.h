@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Item.h"
+#include "Character\Look\Clothing.h"
 #include "Character\EquipConstants.h"
 
 namespace Character
@@ -26,16 +27,43 @@ namespace Character
 	class Equip : public Item
 	{
 	public:
-		enum Potential;
-		enum Quality;
+		enum Potential
+		{
+			POT_NONE,
+			POT_HIDDEN,
+			POT_RARE,
+			POT_EPIC,
+			POT_UNIQUE,
+			POT_LEGENDARY
+		};
+
+		enum Quality
+		{
+			EQQ_GREY,
+			EQQ_WHITE,
+			EQQ_ORANGE,
+			EQQ_BLUE,
+			EQQ_VIOLET,
+			EQQ_GOLD
+		};
 
 		Equip(const ItemData&, int32_t, bool, int64_t, int64_t, uint8_t, uint8_t, 
 			map<Equipstat, uint16_t>, string, int16_t, uint8_t, int16_t, int32_t);
 		~Equip();
 
+		uint8_t getslots() const;
+		uint8_t getlevel() const;
+		uint8_t getitemlevel() const;
 		uint16_t getstat(Equipstat type) const;
+		int32_t getvicious() const;
+		Potential getpotrank() const;
+		Quality getquality() const;
+
+		const Clothing& getcloth() const;
 
 	private:
+		void checkquality();
+
 		uint8_t slots;
 		uint8_t level;
 		map<Equipstat, uint16_t> stats;

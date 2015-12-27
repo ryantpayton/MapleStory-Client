@@ -19,8 +19,8 @@
 
 namespace Character
 {
-	Item::Item(const ItemData& idt, int id, bool cs, int64_t uqi, 
-		int64_t exp, short ct, string ow, short fl) : idata(idt) {
+	Item::Item(const ItemData& idt, int32_t id, bool cs, int64_t uqi, 
+		int64_t exp, int16_t ct, string ow, int16_t fl) : idata(idt) {
 
 		iid = id;
 		cash = cs;
@@ -31,8 +31,18 @@ namespace Character
 		flag = fl;
 	}
 
-	int Item::getid() const
+	void Item::setcount(int16_t c)
+	{
+		count = c;
+	}
+
+	int32_t Item::getid() const
 	{
 		return iid;
+	}
+
+	const ItemData& Item::getidata() const
+	{
+		return idata;
 	}
 }

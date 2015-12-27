@@ -18,28 +18,31 @@
 #pragma once
 #include "Graphics\DrawArgument.h"
 #include "nlnx\node.hpp"
+#include "nlnx\bitmap.hpp"
 
 namespace Graphics
 {
-	using::nl::node;
+	using nl::node;
+	using nl::bitmap;
 	
 	// Represents a single image loaded from a node of game data.
 	class Texture
 	{
 	public:
-		Texture(node);
+		Texture(node source);
 		Texture();
 		~Texture();
-		void draw(const DrawArgument&) const;
-		void setshift(vector2d<int16_t>);
+
+		void draw(const DrawArgument& args) const;
+		void shift(vector2d<int16_t> amount);
+
+		bool isloaded() const;
 		vector2d<int16_t> getorigin() const;
 		vector2d<int16_t> getdimensions() const;
 
 	private:
-		node source;
-		size_t id;
+		bitmap source;
 		vector2d<int16_t> origin;
 		vector2d<int16_t> dimensions;
-		vector2d<int16_t> shift;
 	};
 }

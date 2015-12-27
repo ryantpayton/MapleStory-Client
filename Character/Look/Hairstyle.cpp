@@ -64,7 +64,7 @@ namespace Character
 						}
 						shift += drawinfo.gethairpos(stance, frame);
 
-						stances[stance][z][frame].setshift(shift);
+						stances[stance][z][frame].shift(shift);
 					}
 
 					frame++;

@@ -16,30 +16,66 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Character\Inventory\ItemData.h"
-#include "Character\Look\Bodytype.h"
-#include "Character\Look\Hairstyle.h"
-#include "Character\Look\Facetype.h"
+#include "Charset.h"
+#include "Graphics\Textlabel.h"
 #include "Character\Look\Clothing.h"
 #include "Character\Look\Weapon.h"
+#include "Character\Inventory\Equip.h"
 
-namespace Data
+namespace IO
 {
-	using Character::BodyDrawinfo;
-	using Character::Bodytype;
-	using Character::Hairstyle;
-	using Character::Facetype;
-	using Character::ItemData;
-	using Character::Clothing;
-	using Character::Weapon;
+	using std::vector;
+	using Util::vector2d;
+	using Character::Equip;
+	using Graphics::Textlabel;
 
-	void init();
-	const BodyDrawinfo& getdrawinfo();
+	class EquipTooltip
+	{
+	public:
+		EquipTooltip();
+		~EquipTooltip();
 
-	const Bodytype& getbodytype(uint8_t skin);
-	const Hairstyle& gethairstyle(int32_t hairid);
-	const Facetype& getfacetype(int32_t faceid);
-	const ItemData& getitemdata(int32_t itemid);
-	const Clothing& getclothing(int32_t itemid);
-	const Weapon& getweapon(int32_t itemid);
+		void setequip(const Equip* equip, int16_t invpos);
+		void draw(vector2d<int16_t> position) const;
+		void clear();
+
+	private:
+		int16_t invpos;
+		int16_t filllength;
+		bool hasslots;
+		bool isweapon;
+		map<Character::Maplestat, string> reqstatstrings;
+		Texture itemicon;
+
+		Textlabel name;
+		Textlabel potflag;
+		Textlabel flag;
+		Textlabel category;
+		Textlabel wepspeed;
+		Textlabel slots;
+		Textlabel hammers;
+		map<Character::Equipstat, Textlabel> statlabels;
+
+		Texture top;
+		Texture mid;
+		Texture line;
+		Texture bot;
+		Texture base;
+
+		map<Equip::Potential, Texture> potential;
+		Equip::Potential prank;
+
+		Texture cover;
+		Texture shade;
+
+		vector<Character::Maplestat> requirements;
+		map<Character::Maplestat, map<bool, Texture>> reqstattextures;
+		map<Character::Maplestat, bool> canequip;
+		map<Character::Maplestat, vector2d<int16_t>> reqstatpositions;
+		map<bool, Charset> reqset;
+
+		Texture jobsback;
+		map<bool, map<uint8_t, Texture>> jobs;
+		vector<uint8_t> okjobs;
+	};
 }

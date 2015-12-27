@@ -75,8 +75,6 @@ namespace Gameplay
 			st -= 1;
 		stance = static_cast<Stance>(st);
 		fading = false;
-
-		behaviour = SeededState(randomizer.nextint(200000000), 3, STOP);
 		counter = 0;
 
 		namelabel = Textlabel(Textlabel::DWF_14MC, Textlabel::TXC_WHITE, name, 0);
@@ -173,7 +171,7 @@ namespace Gameplay
 		{
 			if (stance != HIT && stance != DIE)
 			{
-				switch (behaviour.getstate())
+				switch (behaviour)
 				{
 				case MOVELEFT:
 					phobj.hforce = -static_cast<float>(speed)* MONSTERSPEED / 100;
@@ -192,9 +190,9 @@ namespace Gameplay
 			}
 
 			counter++;
-			if (counter > 100)
+			if (counter > 200)
 			{
-				behaviour.nextstate();
+				nextmove();
 				writemovement();
 				counter = 0;
 			}
@@ -203,6 +201,20 @@ namespace Gameplay
 		physics.moveobject(phobj);
 
 		return phobj.fhlayer;
+	}
+
+	void Mob::nextmove()
+	{
+		switch (behaviour)
+		{
+		case STOP:
+			behaviour = randomizer.nextbool() ? MOVELEFT : MOVERIGHT;
+			break;
+		case MOVELEFT:
+		case MOVERIGHT:
+			behaviour = static_cast<Behaviour>(randomizer.nextint(2));
+			break;
+		}
 	}
 
 	void Mob::writemovement()
@@ -340,6 +352,7 @@ namespace Gameplay
 		}
 
 		effects.add(attack.hiteffect);
+		writemovement();
 
 		return damagelines;
 	}

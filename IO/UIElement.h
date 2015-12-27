@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Components\Button.h"
 #include "Cursor.h"
 #include "Graphics\Sprite.h"
+#include "Components\Button.h"
 #include <memory>
 
 namespace IO
@@ -33,7 +33,8 @@ namespace IO
 	public:
 		virtual ~UIElement() {}
 
-		void togglehide() { active = !active; }
+		virtual void togglehide() { active = !active; }
+
 		void makeactive() { active = true; }
 		void deactivate() { active = false; }
 		bool isactive() const { return active; }

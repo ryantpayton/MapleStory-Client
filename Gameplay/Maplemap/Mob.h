@@ -25,7 +25,6 @@
 #include "IO\Components\DamageNumber.h"
 #include "Util\rectangle2d.h"
 #include "Util\Randomizer.h"
-#include "Net\Code\SeededState.h"
 
 namespace Gameplay
 {
@@ -35,7 +34,6 @@ namespace Gameplay
 	using std::map;
 	using Util::rectangle2d;
 	using Util::Randomizer;
-	using Net::SeededState;
 	using Graphics::Animation;
 	using Graphics::Textlabel;
 	using Graphics::EffectLayer;
@@ -87,6 +85,7 @@ namespace Gameplay
 		void parsestance(Stance toparse, node source);
 		//void parsesound(Stance toparse, node source);
 		void setstance(Stance newstance);
+		void nextmove();
 
 		pair<int32_t, bool> randomdamage(int32_t mindamage, 
 			int32_t maxdamage, float hitchance, float critical) const;
@@ -111,7 +110,7 @@ namespace Gameplay
 		Randomizer randomizer;
 		vector<DamageNumber> damagenumbers;
 
-		SeededState behaviour;
+		Behaviour behaviour;
 		uint16_t counter;
 		vector<MovementFragment> movements;
 

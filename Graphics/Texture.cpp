@@ -17,15 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Graphics\Texture.h"
+#include "GraphicsEngine.h"
 #include "nlnx\nx.hpp"
-#include "nlnx\bitmap.hpp"
-
-#include "Journey.h"
-#ifdef JOURNEY_USE_OPENGL
-#include "Graphics\GraphicsGL.h"
-#else
-#include "Graphics\GraphicsD2D.h"
-#endif
 
 namespace Graphics
 {
@@ -33,28 +26,26 @@ namespace Graphics
 	{
 		if (src.data_type() == node::type::bitmap)
 		{
-			if (src["source"].data_type() == node::type::string)
+			using std::string;
+			string link = src["source"];
+			if (link != "")
 			{
-				using std::string;
-				string link = src["source"].get_string();
-				string file = link.substr(0, link.find('/'));
-				link = link.substr(link.find('/') + 1);
-				src = nl::nx::base[file].resolve(link);
+				node srcfile = src;
+				while (srcfile != srcfile.root())
+				{
+					srcfile = srcfile.root();
+				}
+				src = srcfile.resolve(link.substr(link.find('/') + 1));
 			}
 
-			source = src;
-			id = src.get_bitmap().id();
-			origin = vector2d<int16_t>(source["origin"]);
+			source = src.get_bitmap();
+			origin = vector2d<int16_t>(src["origin"]);
 			dimensions = vector2d<int16_t>(
-				source.get_bitmap().width(), source.get_bitmap().height()
+				source.width(), 
+				source.height()
 				);
 
-#ifdef JOURNEY_USE_OPENGL
-			GraphicsGL::addbitmap(source.get_bitmap());
-#else
-			GraphicsD2D::addbitmap(source.get_bitmap());
-#endif
-
+			GraphicsEngine::addbitmap(source);
 		}
 	}
 
@@ -64,6 +55,7 @@ namespace Graphics
 
 	void Texture::draw(const DrawArgument& args) const
 	{
+		size_t id = source.id();
 		if (id == 0)
 			return;
 
@@ -75,33 +67,26 @@ namespace Graphics
 		if (h == 0)
 			h = dimensions.y();
 
-		vector2d<int16_t> absp = args.getpos() - origin + shift;
-
+		vector2d<int16_t> absp = args.getpos() - origin;
 		if (absp.x() <= 816 && absp.y() <= 624 && absp.x() > -w && absp.y() > -h)
 		{
-
-#ifdef JOURNEY_USE_OPENGL
-			if (!GraphicsGL::available(id))
+			if (!GraphicsEngine::available(id))
 			{
-				GraphicsGL::addbitmap(source.get_bitmap());
+				GraphicsEngine::addbitmap(source);
 			}
-			GraphicsGL::draw(id, rectangle2d<int16_t>(absp.x(), absp.x() + w, absp.y(), absp.y() + h),
-				args.getxscale(), args.getyscale(), args.getcenter(), args.getalpha());
-#else
-			if (!GraphicsD2D::available(id))
-			{
-				GraphicsD2D::addbitmap(source.get_bitmap());
-			}
-			GraphicsD2D::draw(id, absp.x(), absp.y(), w, h, args.getalpha(), args.getxscale(),
+			GraphicsEngine::draw(id, absp.x(), absp.y(), w, h, args.getalpha(), args.getxscale(),
 				args.getyscale(), args.getcenter().x(), args.getcenter().y());
-#endif
-
 		}
 	}
 
-	void Texture::setshift(vector2d<int16_t> shf)
+	void Texture::shift(vector2d<int16_t> amount)
 	{
-		shift = shf;
+		origin -= amount;
+	}
+
+	bool Texture::isloaded() const
+	{
+		return source.id() > 0;
 	}
 
 	vector2d<int16_t> Texture::getorigin() const

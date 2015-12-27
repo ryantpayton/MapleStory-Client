@@ -109,6 +109,33 @@ namespace Character
 		return attack;
 	}
 
+	string Weapon::getspeedstring() const
+	{
+		switch (attackspeed)
+		{
+		case 1:
+			return "FAST (1)";
+		case 2:
+			return "FAST (2)";
+		case 3:
+			return "FAST (3)";
+		case 4:
+			return "FAST (4)";
+		case 5:
+			return "NORMAL (5)";
+		case 6:
+			return "NORMAL (6)";
+		case 7:
+			return "SLOW (7)";
+		case 8:
+			return "SLOW (8)";
+		case 9:
+			return "SLOW (9)";
+		default:
+			return "";
+		}
+	}
+
 	uint8_t Weapon::getattackdelay() const
 	{
 		if (weptype == WEP_NONE)

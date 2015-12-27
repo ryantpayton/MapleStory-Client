@@ -26,6 +26,7 @@
 #include "Gameplay\Stage.h"
 #include "Util\NxFileMethods.h"
 #include "Util\StopWatch.h"
+#include "Data\DataFactory.h"
 #include <iostream>
 
 using namespace Program;
@@ -84,16 +85,17 @@ void draw(float inter)
 
 int main()
 {
+	Configuration::load();
+
 	// Initialise and check for errors.
 	Error error = init();
 	if (error == NONE)
 	{
-		Program::Configuration::load();
+		Data::init();
 		Audioplayer::setbgmvolume(Configuration::getbyte("BGMVolume"));
 		Audioplayer::setsfxvolume(Configuration::getbyte("SFXVolume"));
 
-		Character::CharLook::init();
-		IO::UI::add(IO::ElementLogin());
+		UI::add(ElementLogin());
 
 		StopWatch stopwatch;
 		int64_t remain = 0;

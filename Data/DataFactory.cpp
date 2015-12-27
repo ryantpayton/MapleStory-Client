@@ -20,13 +20,81 @@
 
 namespace Data
 {
+	using std::map;
+
+	BodyDrawinfo drawinfo;
+
+	void init()
+	{
+		drawinfo.init();
+	}
+
+	const BodyDrawinfo& getdrawinfo()
+	{
+		return drawinfo;
+	}
+
+	const Bodytype& getbodytype(uint8_t skin)
+	{
+		static map<uint8_t, Bodytype> bodytypes;
+		if (!bodytypes.count(skin))
+			bodytypes[skin] = Bodytype(skin, drawinfo);
+		return bodytypes[skin];
+	}
+
+	const Hairstyle& gethairstyle(int32_t hairid)
+	{
+		static map<int32_t, Hairstyle> hairstyles;
+		if (!hairstyles.count(hairid))
+			hairstyles[hairid] = Hairstyle(hairid, drawinfo);
+		return hairstyles[hairid];
+	}
+
+	const Facetype& getfacetype(int32_t faceid)
+	{
+		static map<int32_t, Facetype> faces;
+		if (!faces.count(faceid))
+			faces[faceid] = Facetype(faceid);
+		return faces[faceid];
+	}
+
 	const ItemData& getitemdata(int32_t itemid)
 	{
-		static std::map<int32_t, ItemData> items;
-		if (!items.count(itemid))
+		int32_t prefix = itemid / 1000000;
+		if (prefix == 1)
 		{
-			items[itemid] = ItemData(itemid);
+			return getclothing(itemid);
 		}
-		return items[itemid];
+		else
+		{
+			static map<int32_t, ItemData> items;
+			if (!items.count(itemid))
+				items[itemid] = ItemData(itemid);
+			return items[itemid];
+		}
+	}
+
+	const Clothing& getclothing(int32_t itemid)
+	{
+		int32_t prefix = itemid / 10000;
+		if (prefix > 129 && prefix < 200)
+		{
+			return getweapon(itemid);
+		}
+		else
+		{
+			static map<int32_t, Clothing> equips;
+			if (!equips.count(itemid))
+				equips[itemid] = Clothing(itemid, drawinfo);
+			return equips[itemid];
+		}
+	}
+
+	const Weapon& getweapon(int32_t itemid)
+	{
+		static map<int32_t, Weapon> weapons;
+		if (!weapons.count(itemid))
+			weapons[itemid] = Weapon(itemid, drawinfo);
+		return weapons[itemid];
 	}
 }

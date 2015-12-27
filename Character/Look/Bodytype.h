@@ -21,8 +21,8 @@
 
 namespace Character
 {
-	using::Graphics::Texture;
-	using::Graphics::DrawArgument;
+	using Graphics::Texture;
+	using Graphics::DrawArgument;
 
 	class Bodytype
 	{
@@ -31,7 +31,7 @@ namespace Character
 		Bodytype();
 		~Bodytype();
 		void draw(string, CharacterLayer, uint8_t, const DrawArgument&) const;
-		const string& getname() const;
+		string getname() const;
 	private:
 		map<string, map<CharacterLayer, map<uint8_t, Texture>>> stances;
 		string name;

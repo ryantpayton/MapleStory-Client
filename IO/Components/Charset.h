@@ -42,9 +42,12 @@ namespace IO
 		Charset(node, Alignment);
 		Charset(){}
 		~Charset();
+
 		void draw(int8_t, const DrawArgument&) const;
 		int16_t draw(string, const DrawArgument&) const;
+		int16_t draw(string, int16_t, const DrawArgument&) const;
 		int16_t getw(int8_t) const;
+
 	private:
 		Alignment alignment;
 		map<int8_t, Texture> chars;

@@ -25,7 +25,11 @@ namespace Character
 	public:
 		Item(const ItemData&, int32_t, bool, int64_t, int64_t, int16_t, string, int16_t);
 
-		int getid() const;
+		void setcount(int16_t count);
+
+		int32_t getid() const;
+
+		const ItemData& getidata() const;
 
 	protected:
 		const ItemData& idata;

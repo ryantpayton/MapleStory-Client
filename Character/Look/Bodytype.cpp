@@ -21,11 +21,6 @@
 
 namespace Character
 {
-	const string skintypes[12] =
-	{
-		"Light", "Tan", "Dark", "Pale", "Blue", "Green", "", "", "", "Grey", "Pink", "Red"
-	};
-
 	Bodytype::Bodytype(int8_t skin, const BodyDrawinfo& drawinfo)
 	{
 		string sk;
@@ -35,7 +30,7 @@ namespace Character
 		}
 		sk.append(std::to_string(skin));
 
-		using::nl::node;
+		using nl::node;
 		node bodynode = nl::nx::character["000020" + sk + ".img"];
 		node headnode = nl::nx::character["000120" + sk + ".img"];
 
@@ -75,14 +70,14 @@ namespace Character
 						}
 						shift += drawinfo.getbodypos(stance, frame);
 
-						stances[stance][z][frame].setshift(shift);
+						stances[stance][z][frame].shift(shift);
 					}
 
 					node headsfnode = headnode[stance][std::to_string(frame)]["head"];
 					if (headsfnode.data_type() == node::type::bitmap)
 					{
 						stances[stance][CL_HEAD][frame] = Texture(headsfnode);
-						stances[stance][CL_HEAD][frame].setshift(drawinfo.getheadpos(stance, frame));
+						stances[stance][CL_HEAD][frame].shift(drawinfo.getheadpos(stance, frame));
 					}
 				}
 
@@ -91,10 +86,18 @@ namespace Character
 			}
 		}
 
+		static const string skintypes[12] =
+		{
+			"Light", "Tan", "Dark", "Pale", "Blue", "Green", "", "", "", "Grey", "Pink", "Red"
+		};
+
 		name = (skin < 12) ? skintypes[skin] : "";
 	}
 
-	Bodytype::Bodytype() {}
+	Bodytype::Bodytype() 
+	{
+		name = "";
+	}
 
 	Bodytype::~Bodytype() {}
 
@@ -113,7 +116,7 @@ namespace Character
 		stances.at(stance).at(layer).at(frame).draw(args);
 	}
 
-	const string& Bodytype::getname() const
+	string Bodytype::getname() const
 	{
 		return name;
 	}

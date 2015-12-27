@@ -33,7 +33,7 @@ namespace Graphics
 			defaults();
 		}
 
-		DrawArgument(vector2d<int16_t> p)
+		explicit DrawArgument(vector2d<int16_t> p)
 		{
 			pos = p;
 			defaults();
@@ -44,6 +44,14 @@ namespace Graphics
 			pos = p;
 			defaults();
 			alpha = a;
+		}
+
+		DrawArgument(vector2d<int16_t> p, float xs, float ys)
+		{
+			pos = p;
+			defaults();
+			xscale = xs;
+			yscale = ys;
 		}
 
 		DrawArgument(vector2d<int16_t> p, vector2d<int16_t> str)

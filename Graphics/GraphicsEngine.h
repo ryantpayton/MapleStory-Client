@@ -15,11 +15,19 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
+#pragma once
+#include "nlnx\bitmap.hpp"
 
 namespace Graphics
 {
 	namespace GraphicsEngine
 	{
+		using nl::bitmap;
+
+		void addbitmap(const bitmap& bmp);
+		void draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, 
+			float alpha, float xscale, float yscale, int16_t centerx, int16_t centery);
+		bool available(size_t id);
 		void clear();
 	}
 }

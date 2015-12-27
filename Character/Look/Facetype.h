@@ -21,8 +21,8 @@
 
 namespace Character
 {
-	using::Graphics::Texture;
-	using::Graphics::DrawArgument;
+	using Graphics::Texture;
+	using Graphics::DrawArgument;
 
 	class Facetype
 	{
@@ -30,13 +30,15 @@ namespace Character
 		Facetype(int32_t);
 		Facetype();
 		~Facetype();
+
 		void draw(string, CharacterLayer, uint8_t, const DrawArgument&) const;
 		uint8_t nextframe(string, uint8_t) const;
-		short getdelay(string, uint8_t) const;
-		const string& getname() const;
+		int16_t getdelay(string, uint8_t) const;
+		string getname() const;
+
 	private:
 		map<string, map<CharacterLayer, map<uint8_t, Texture>>> stances;
-		map<string, map<uint8_t, short>> delays;
+		map<string, map<uint8_t, int16_t>> delays;
 		string name;
 	};
 }

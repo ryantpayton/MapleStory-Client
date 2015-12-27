@@ -20,9 +20,12 @@
 #include "Keyboard.h"
 #include "Window.h"
 #include "Components\StatusMessenger.h"
+#include "Components\EquipTooltip.h"
 #include "UITypes\UIStatsinfo.h"
 #include "UITypes\UIEquipInventory.h"
 #include "Gameplay\Stage.h"
+#include "Net\Session.h"
+#include "Net\Packets\GameplayPackets83.h"
 #include <unordered_map>
 #include <memory>
 
@@ -44,6 +47,7 @@ namespace IO
 
 		Element::UIType focused = Element::NONE;
 		Textfield* focusedtextfield = nullptr;
+		Icon* draggedicon = nullptr;
 		bool enabled = true;
 		bool gamekeysenabled = false;
 
@@ -56,6 +60,9 @@ namespace IO
 				if (elit.second->isactive())
 					elit.second->draw(inter);
 			}
+
+			if (draggedicon)
+				draggedicon->dragdraw(cursor.getposition());
 
 			cursor.draw(inter);
 		}
@@ -88,52 +95,99 @@ namespace IO
 			enabled = false;
 		}
 
-		void sendmouse(vector2d<int16_t> pos)
+		void dropicon(vector2d<int16_t> pos)
 		{
-			sendmouse(cursor.getstate(), pos);
+			UIElement* front = nullptr;
+			for (auto& elit : elements)
+			{
+				if (elit.second->isactive() && elit.second->bounds().contains(pos))
+				{
+					front = elit.second.get();
+				}
+			}
+
+			if (front)
+			{
+
+			}
+			else
+			{
+				switch (draggedicon->getparent())
+				{
+				case Element::EQUIPINVENTORY:
+					using Net::MoveItemPacket;
+					Net::Session::dispatch(MoveItemPacket(Inventory::EQUIPPED, -draggedicon->getidentifier(), 0, 1));
+					break;
+				}
+			}
 		}
 
 		void sendmouse(Cursor::Mousestate mst, vector2d<int16_t> pos)
 		{
-			cursor.setposition(pos);
-
-			if (focused != Element::NONE)
+			if (draggedicon)
 			{
-				if (elements[focused]->isactive())
-					elements[focused]->sendmouse(mst == Cursor::MST_CLICKING, pos);
-				else
-					focused = Element::NONE;
-			}
-
-			if (focused == Element::NONE)
-			{
-				UIElement* front = nullptr;
-				if (enabled)
+				switch (mst)
 				{
-					for (auto& elit : elements)
+				case Cursor::MST_IDLE:
+					dropicon(pos);
+					draggedicon->resetdrag();
+					draggedicon = nullptr;
+					break;
+				default:
+					mst = Cursor::MST_GRABBING;
+				}
+			}
+			else
+			{
+				if (focused != Element::NONE)
+				{
+					if (elements[focused]->isactive())
+						elements[focused]->sendmouse(mst == Cursor::MST_CLICKING, pos);
+					else
+						focused = Element::NONE;
+				}
+
+				if (focused == Element::NONE)
+				{
+					UIElement* front = nullptr;
+					if (enabled)
 					{
-						if (elit.second->isactive() && elit.second->bounds().contains(pos))
+						for (auto& elit : elements)
 						{
-							if (front)
+							if (elit.second->isactive() && elit.second->bounds().contains(pos))
 							{
-								front->sendmouse(false, pos);
+								if (front)
+								{
+									front->sendmouse(false, pos);
+								}
+								front = elit.second.get();
 							}
-							front = elit.second.get();
 						}
 					}
-				}
 
-				if (front)
-				{
-					mst = front->sendmouse(mst == Cursor::MST_CLICKING, pos);
-				}
-				else
-				{
-					mst = Cursor::MST_IDLE;
+					if (front)
+					{
+						mst = front->sendmouse(mst == Cursor::MST_CLICKING, pos);
+					}
+					else
+					{
+						mst = Cursor::MST_IDLE;
+					}
 				}
 			}
 
+			cursor.setposition(pos);
 			cursor.setstate(mst);
+		}
+
+		void sendmouse(bool pressed, vector2d<int16_t> pos)
+		{
+			sendmouse(pressed ? Cursor::MST_CLICKING : Cursor::MST_IDLE, pos);
+		}
+
+		void sendmouse(vector2d<int16_t> pos)
+		{
+			sendmouse(cursor.getstate(), pos);
 		}
 
 		void addelementbykey(int32_t key)
@@ -210,6 +264,11 @@ namespace IO
 		void focustextfield(Textfield* tofocus)
 		{
 			focusedtextfield = tofocus;
+		}
+
+		void dragicon(Icon* icon)
+		{
+			draggedicon = icon;
 		}
 
 		void addkeymapping(uint8_t no, uint8_t t, int32_t action)

@@ -18,7 +18,7 @@
 #include "UIEquipInventory.h"
 #include "IO\Components\MapleButton.h"
 #include "Program\Configuration.h"
-#include "Character\EquipConstants.h"
+#include "IO\UI.h"
 #include "nlnx\nx.hpp"
 
 namespace IO
@@ -84,17 +84,23 @@ namespace IO
 	{
 		UIElement::draw(inter);
 
+		for (auto& icit : icons)
+		{
+			int16_t slot = icit.first;
+			if (iconpositions.count(slot))
+				icit.second.draw(position + iconpositions.at(slot));
+		}
+
 		if (showpetequips)
 		{
-			Graphics::DrawArgument args = Graphics::DrawArgument(
-				position + vector2d<int16_t>(184, 0)
-				);
-
+			using Graphics::DrawArgument;
 			for (auto& ptit : pettextures)
 			{
-				ptit.draw(args);
+				ptit.draw(DrawArgument(position + vector2d<int16_t>(184, 0)));
 			}
 		}
+
+		tooltip.draw(cursorposition);
 	}
 
 	void UIEquipInventory::buttonpressed(uint16_t id)
@@ -108,6 +114,85 @@ namespace IO
 
 	void UIEquipInventory::loadicons()
 	{
+		uint8_t numslots = inventory.getslots(Inventory::EQUIPPED);
+		for (uint8_t i = 1; i < numslots; i++)
+		{
+			addicon(i);
+		}
+	}
 
+	Cursor::Mousestate UIEquipInventory::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
+	{
+		cursorposition = cursorpos;
+
+		for (auto& icit : iconpositions)
+		{
+			int16_t slot = icit.first;
+			if (icons.count(slot) == 0)
+				continue;
+
+			rectangle2d<int16_t> iconrect = rectangle2d<int16_t>(
+				position + icit.second,
+				position + icit.second + vector2d<int16_t>(32, 32)
+				);
+			if (iconrect.contains(cursorpos))
+			{
+				if (pressed)
+				{
+					icons[slot].startdrag(cursorpos - position - icit.second);
+					tooltip.setequip(nullptr, 0);
+					UI::dragicon(&icons[slot]);
+					return Cursor::MST_GRABBING;
+				}
+				else
+				{
+					const Equip* equip = inventory.getequip(Inventory::EQUIPPED, slot);
+					if (equip == nullptr)
+						continue;
+
+					tooltip.setequip(equip, slot);
+					return Cursor::MST_CANGRAB;
+				}
+			}
+		}
+
+		tooltip.setequip(nullptr, 0);
+		return UIDragElement::sendmouse(pressed, cursorpos);
+	}
+
+	void UIEquipInventory::togglehide()
+	{
+		tooltip.setequip(nullptr, 0);
+		UIElement::togglehide();
+	}
+
+	void UIEquipInventory::addicon(int16_t slot)
+	{
+		using Character::Item;
+		const Item* item = inventory.getitem(Inventory::EQUIPPED, slot);
+		if (item == nullptr)
+			return;
+
+		icons[slot] = Icon(item->getidata().geticon(false), Element::EQUIPINVENTORY, slot);
+	}
+
+	void UIEquipInventory::modify(int16_t pos, int8_t mode, int16_t arg)
+	{
+		if (mode != 0 && icons.count(pos) == 0)
+			return;
+
+		switch (mode)
+		{
+		case 0:
+			addicon(pos);
+			break;
+		case 2:
+			icons[arg] = icons[pos];
+			icons.erase(pos);
+			break;
+		case 3:
+			icons.erase(pos);
+			break;
+		}
 	}
 }

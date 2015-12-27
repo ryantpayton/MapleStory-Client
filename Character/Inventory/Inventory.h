@@ -38,6 +38,13 @@ namespace Character
 			CASH = 5
 		};
 
+		enum Movetype
+		{
+			MOVE_INTERNAL,
+			MOVE_UNEQUIP,
+			MOVE_EQUIP
+		};
+
 		Inventory();
 		~Inventory();
 
@@ -48,27 +55,44 @@ namespace Character
 		// Set the number of slots for a given inventory.
 		void setslots(InvType type, uint8_t value);
 
-
+		// Add a general item.
 		void additem(
 			InvType type, int16_t slot, int32_t itemid, bool cash,
 			int64_t uniqueid, int64_t expire, uint16_t coundt, string owner, int16_t flag
 			);
+		// Add a pet item.
 		void addpet(
 			InvType type, int16_t slot, int32_t itemid, bool cash, int64_t uniqueid,
 			int64_t expire, string name, int8_t level, int16_t closeness, int8_t fullness
 			);
+		// Add an equip item.
 		void addequip(
 			InvType type, int16_t slot, int32_t itemid, bool cash, int64_t uniqueid, 
 			int64_t expire, uint8_t slots, uint8_t level, map<Equipstat, uint16_t> stats, 
 			string owner, int16_t flag, uint8_t itemlevel, uint16_t itemexp, int32_t vicious
 			);
-
+		// Remove an item.
 		void remove(InvType type, int16_t slot);
+		// Swap two items.
+		void swap(InvType firsttype, int16_t firstslot, InvType secondtype, int16_t secondslot);
+		// Modify the inventory with info from a packet.
+		void modify(InvType type, int16_t pos, int8_t mode, int16_t arg, Movetype move);
+		// Change the quantity of an item.
+		void changecount(InvType type, int16_t slot, int16_t count);
 
+		// Return the number of slots for the specified inventory.
+		uint8_t getslots(InvType type) const;
+		// Return a total stat.
 		uint16_t getstat(Equipstat type) const;
+		// Return the amount of meso.
 		int64_t getmeso() const;
+		// Return the first slot which contains the specified item.
 		int16_t finditem(InvType type, int32_t itemid) const;
+		// Return the inventory type by itemid.
 		InvType gettypebyid(int32_t itemid) const;
+
+		const Item* getitem(InvType type, int16_t slot) const;
+		const Equip* getequip(InvType type, int16_t slot) const;
 
 	private:
 		void add(InvType type, int16_t slot, Item* toadd);

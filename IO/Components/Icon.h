@@ -15,24 +15,36 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include <cstdint>
+#pragma once
+#include "Graphics\Texture.h"
+#include "IO\Element.h"
 
-namespace Net
+namespace IO
 {
-	class SeededState
+	using Util::vector2d;
+	using Graphics::Texture;
+
+	class Icon
 	{
 	public:
-		SeededState(int32_t, uint8_t, uint8_t);
-		SeededState();
-		~SeededState();
+		explicit Icon(Texture texture, Element::UIType parent, int16_t identifier);
+		Icon();
+		~Icon();
 
-		int32_t getvalue();
-		void nextstate();
-		uint8_t getstate();
+		void draw(vector2d<int16_t> position) const;
+		void dragdraw(vector2d<int16_t> cursorpos) const;
+
+		void startdrag(vector2d<int16_t> offset);
+		void resetdrag();
+
+		int16_t getidentifier() const;
+		Element::UIType getparent() const;
 
 	private:
-		uint8_t value[4];
-		uint8_t numstates;
-		uint8_t state;
+		Texture texture;
+		Element::UIType parent; 
+		int16_t identifier;
+		bool dragged;
+		vector2d<int16_t> cursoroffset;
 	};
 }

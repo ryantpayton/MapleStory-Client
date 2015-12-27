@@ -141,14 +141,16 @@ namespace IO
 
 		if (showdetail)
 		{
+			using Graphics::DrawArgument;
 			vector2d<int16_t> detailpos = position + vector2d<int16_t>(213, 0);
+			DrawArgument detailargs = DrawArgument(detailpos);
 
 			for (vector<Texture>::const_iterator dtit = detailtextures.begin(); dtit != detailtextures.end(); ++dtit)
 			{
-				dtit->draw(detailpos);
+				dtit->draw(detailargs);
 			}
 
-			abilities.at("none").draw(detailpos);
+			abilities.at("none").draw(detailargs);
 
 			string critstr = std::to_string(static_cast<int32_t>(stats.getcritical() * 100));
 			string mincritstr = std::to_string(static_cast<int32_t>(stats.getmincrit() * 100));

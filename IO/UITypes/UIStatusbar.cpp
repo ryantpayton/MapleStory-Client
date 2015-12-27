@@ -98,19 +98,19 @@ namespace IO
 		string expstring = std::to_string(100 * exppercent);
 		statset.draw(
 			std::to_string(currentexp) + "[" + expstring.substr(0, expstring.find('.') + 3) + "%]",
-			position + vector2d<int16_t>(47, -13)
+			DrawArgument(position + vector2d<int16_t>(47, -13))
 			);
 		statset.draw(
 			"[" + std::to_string(currenthp) + "/" + std::to_string(maxhp) + "]",
-			position + vector2d<int16_t>(-124, -29)
+			DrawArgument(position + vector2d<int16_t>(-124, -29))
 			);
 		statset.draw(
 			"[" + std::to_string(currentmp) + "/" + std::to_string(maxmp) + "]",
-			position + vector2d<int16_t>(47, -29)
+			DrawArgument(position + vector2d<int16_t>(47, -29))
 			);
 		levelset.draw(
 			std::to_string(stats.getstat(Character::MS_LEVEL)),
-			position + vector2d<int16_t>(-480, -24)
+			DrawArgument(position + vector2d<int16_t>(-480, -24))
 			);
 
 		joblabel.draw(position + vector2d<int16_t>(-435, -22));

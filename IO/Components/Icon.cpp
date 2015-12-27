@@ -15,52 +15,62 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "SeededState.h"
+#include "Icon.h"
 
-namespace Net
+namespace IO
 {
-	SeededState::SeededState(int32_t seed, uint8_t nms, uint8_t st)
+	Icon::Icon(Texture t, Element::UIType p, int16_t i)
 	{
-		for (int32_t i = 0; i < 4; i++)
-		{
-			value[i] = static_cast<uint8_t>(seed);
-			seed = seed >> 8;
-		}
+		texture = t;
+		parent = p;
+		identifier = i;
 
-		numstates = nms;
-		state = st;
+		texture.shift(vector2d<int16_t>(0, 32));
+		dragged = false;
 	}
 
-	SeededState::SeededState() {}
-
-	SeededState::~SeededState() {}
-
-	int32_t SeededState::getvalue()
+	Icon::Icon() 
 	{
-		int32_t all = 0;
-		for (int32_t i = 0; i < 4; i++)
-		{
-			all += value[i] << (8 * i);
-		}
-		return all;
+		parent = Element::NONE;
+		identifier = 0;
+		dragged = false;
 	}
 
-	void SeededState::nextstate()
-	{
-		static uint8_t bytes[4] = 
-		{ 
-			69, 42, 13, 124 
-		};
+	Icon::~Icon() {}
 
-		for (int32_t i = 0; i < 4; i++)
-		{
-			value[i] = bytes[i] + bytes[value[3 - i] % 4] - value[i];
-		}
-		state = static_cast<uint8_t>(getvalue()) % numstates;
+	void Icon::draw(vector2d<int16_t> position) const
+	{
+		using Graphics::DrawArgument;
+		texture.draw(DrawArgument(position, dragged ? 0.5f : 1.0f));
 	}
 
-	uint8_t SeededState::getstate()
+	void Icon::dragdraw(vector2d<int16_t> cursorpos) const
 	{
-		return state;
+		if (dragged)
+		{
+			using Graphics::DrawArgument;
+			texture.draw(DrawArgument(cursorpos - cursoroffset, 0.5f));
+		}
+	}
+
+	void Icon::startdrag(vector2d<int16_t> offset)
+	{
+		cursoroffset = offset;
+		dragged = true;
+	}
+
+	void Icon::resetdrag()
+	{
+		dragged = false;
+	}
+
+	int16_t Icon::getidentifier() const
+	{
+		return identifier;
+	}
+
+	Element::UIType Icon::getparent() const
+	{
+		return parent;
 	}
 }

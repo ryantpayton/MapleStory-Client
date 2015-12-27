@@ -18,6 +18,8 @@
 #pragma once
 #include "IO\Element.h"
 #include "IO\UIDragElement.h"
+#include "IO\Components\Icon.h"
+#include "IO\Components\EquipTooltip.h"
 #include "Character\Inventory\Inventory.h"
 
 namespace IO
@@ -40,16 +42,25 @@ namespace IO
 
 		void draw(float inter) const override;
 		void buttonpressed(uint16_t buttonid) override;
+		void togglehide() override;
+		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> position) override;
+
+		void modify(int16_t pos, int8_t mode, int16_t arg);
 
 	private:
 		UIEquipInventory& operator = (const UIEquipInventory&) = delete;
 		void loadicons();
+		void addicon(int16_t slot);
 
 		const Inventory& inventory;
 		map<int16_t, vector2d<int16_t>> iconpositions;
+		EquipTooltip tooltip;
+		vector2d<int16_t> cursorposition;
 
 		vector<Texture> pettextures;
 		bool showpetequips;
+
+		map<int16_t, Icon> icons;
 	};
 
 	class ElementEquipInventory : public Element

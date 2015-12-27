@@ -104,6 +104,19 @@ namespace Net
 		}
 	};
 
+	class MoveItemPacket : public OutPacket
+	{
+	public:
+		MoveItemPacket(int8_t invtype, int16_t slot, int8_t action, int16_t qty) : OutPacket(MOVE_ITEM)
+		{
+			writeint(0);
+			writech(invtype);
+			writesh(slot);
+			writesh(action);
+			writesh(qty);
+		}
+	};
+
 	class CloseRangeAttackPacket83 : public OutPacket
 	{
 	public:

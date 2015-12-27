@@ -32,9 +32,14 @@ namespace Character
 
 		void draw(string stance, CharacterLayer layer, 
 			uint8_t frame, const DrawArgument& args) const;
+
 		bool islayer(string stance, CharacterLayer layer) const;
 		bool istransparent() const;
-		const string& gettype() const;
+		bool isweapon() const;
+		int16_t getreqstat(Maplestat stat) const;
+		int16_t getdefstat(Equipstat stat) const;
+		string getstatstr(Equipstat stat) const;
+		string gettype() const;
 		Equipslot geteqslot() const;
 
 	private:

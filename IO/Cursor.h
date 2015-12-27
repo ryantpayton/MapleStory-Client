@@ -57,6 +57,7 @@ namespace IO
 		void setstate(Mousestate);
 		void setposition(vector2d<int16_t>);
 		Mousestate getstate() const;
+		vector2d<int16_t> getposition() const;
 
 	private:
 		Mousestate state;

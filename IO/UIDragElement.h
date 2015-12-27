@@ -24,7 +24,7 @@ namespace IO
 	class UIDragElement : public UIElement
 	{
 	public:
-		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> cursorpos)
+		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> cursorpos) override
 		{
 			if (pressed)
 			{

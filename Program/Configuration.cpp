@@ -26,18 +26,18 @@ namespace Program
 	{
 		const string FILENAME = "Settings";
 
-		const size_t NUM_SETTINGS = 10;
+		const size_t NUM_SETTINGS = 11;
 
 		const string setnames[NUM_SETTINGS] =
 		{
-			"Fullscreen", "BGMVolume", "SFXVolume", "SaveLogin", "Account", "World", "Channel", 
-			"Character", "PosSTATS", "PosEQINV"
+			"ServerIP", "Fullscreen", "BGMVolume", "SFXVolume", "SaveLogin", "Account", 
+			"World", "Channel", "Character", "PosSTATS", "PosEQINV"
 		};
 
 		const string defaultvalues[NUM_SETTINGS] =
 		{
-			"false", "50", "50", "false", "", "0", "1", 
-			"0", "(100,150)", "(250,150)"
+			"127.0.0.1", "false", "50", "50", "false", "", 
+			"0", "0", "0", "(100,150)", "(250,150)"
 		};
 
 		std::map<string, string> settings;

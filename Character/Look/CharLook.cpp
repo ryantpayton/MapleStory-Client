@@ -16,72 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "CharLook.h"
-#include "BodyDrawinfo.h"
-#include "Weapon.h"
+#include "Data\DataFactory.h"
 #include "Program\Constants.h"
 
 namespace Character
 {
-	BodyDrawinfo drawinfo;
-
-	const Bodytype& getbody(uint8_t skin)
-	{
-		static map<uint8_t, Bodytype> bodytypes;
-		if (!bodytypes.count(skin))
-		{
-			bodytypes[skin] = Bodytype(skin, drawinfo);
-		}
-		return bodytypes[skin];
-	}
-
-	const Hairstyle& gethair(int32_t hairid)
-	{
-		static map<int32_t, Hairstyle> hairstyles;
-		if (!hairstyles.count(hairid))
-		{
-			hairstyles[hairid] = Hairstyle(hairid, drawinfo);
-		}
-		return hairstyles[hairid];
-	}
-
-	const Facetype& getface(int32_t faceid)
-	{
-		static map<int32_t, Facetype> faces;
-		if (!faces.count(faceid))
-		{
-			faces[faceid] = Facetype(faceid);
-		}
-		return faces[faceid];
-	}
-
-	const Clothing& getequip(int32_t equipid)
-	{
-		int32_t prefix = equipid / 10000;
-		if (prefix > 129 && prefix < 200)
-		{
-			static map<int32_t, Weapon> weapons;
-			if (!weapons.count(equipid))
-			{
-				weapons[equipid] = Weapon(equipid, drawinfo);
-			}
-			return weapons[equipid];
-		}
-		else
-		{
-			static map<int32_t, Clothing> equips;
-			if (!equips.count(equipid))
-			{
-				equips[equipid] = Clothing(equipid, drawinfo);
-			}
-			return equips[equipid];
-		}
-	}
-
-	void CharLook::init()
-	{
-		drawinfo.init();
-	}
-
 	CharLook::CharLook(const LookEntry& entry)
 	{
 		reset();
@@ -145,7 +84,7 @@ namespace Character
 		if (action)
 			delay = action->getdelay();
 		else
-			delay = drawinfo.getdelay(laststance, lastframe);
+			delay = Data::getdrawinfo().getdelay(laststance, lastframe);
 		uint8_t interframe;
 		if (lastelapsed + Constants::TIMESTEP * inter > delay)
 			interframe = frame;
@@ -161,7 +100,7 @@ namespace Character
 
 		using Graphics::DrawArgument;
 		DrawArgument args = DrawArgument(pos, flip);
-		vector2d<int16_t> faceshift = drawinfo.getfacepos(laststance, interframe);
+		vector2d<int16_t> faceshift = Data::getdrawinfo().getfacepos(laststance, interframe);
 		DrawArgument faceargs = DrawArgument(pos + faceshift, flip, pos);
 
 		if (laststance == "ladder" || laststance == "rope")
@@ -275,11 +214,11 @@ namespace Character
 		bool aniend = false;
 		if (action == nullptr)
 		{
-			uint16_t delay = drawinfo.getdelay(stance, frame);
+			uint16_t delay = Data::getdrawinfo().getdelay(stance, frame);
 			if (elapsed > delay)
 			{
 				elapsed -= delay;
-				frame = drawinfo.nextframe(stance, frame);
+				frame = Data::getdrawinfo().nextframe(stance, frame);
 
 				if (frame == 0)
 				{
@@ -299,10 +238,10 @@ namespace Character
 			{
 				elapsed -= delay;
 
-				actframe = drawinfo.nextacframe(actionstr, actframe);
+				actframe = Data::getdrawinfo().nextacframe(actionstr, actframe);
 				if (actframe > 0)
 				{
-					action = drawinfo.getaction(actionstr, actframe);
+					action = Data::getdrawinfo().getaction(actionstr, actframe);
 					frame = action->getframe();
 					stance = action->getstance();
 				}
@@ -342,22 +281,22 @@ namespace Character
 
 	void CharLook::setbody(uint8_t bd)
 	{
-		body = &getbody(bd);
+		body = &Data::getbodytype(bd);
 	}
 
 	void CharLook::sethair(int32_t hd)
 	{
-		hair = &gethair(hd);
+		hair = &Data::gethairstyle(hd);
 	}
 
 	void CharLook::setface(int32_t fd)
 	{
-		face = &getface(fd);
+		face = &Data::getfacetype(fd);
 	}
 
 	void CharLook::addequip(int32_t eq)
 	{
-		const Clothing& equip = getequip(eq);
+		const Clothing& equip = Data::getclothing(eq);
 		bool changestance = false;
 		if (equip.geteqslot() == EQL_WEAPON)
 		{
@@ -440,7 +379,7 @@ namespace Character
 		actframe = 0;
 		elapsed = 0;
 		actionstr = acstr;
-		action = drawinfo.getaction(acstr, 0);
+		action = Data::getdrawinfo().getaction(acstr, 0);
 		if (action)
 		{
 			stance = action->getstance();

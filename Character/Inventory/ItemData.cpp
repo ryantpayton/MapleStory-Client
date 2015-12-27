@@ -32,7 +32,7 @@ namespace Character
 		{
 		case 1:
 			category = geteqcategory(id);
-			src = nl::nx::character[category]["0" + std::to_string(id) + ".img"];
+			src = nl::nx::character[category]["0" + std::to_string(id) + ".img"]["info"];
 			strsrc = nl::nx::string["Eqp.img"]["Eqp"][category][std::to_string(id)];
 			break;
 		case 2:

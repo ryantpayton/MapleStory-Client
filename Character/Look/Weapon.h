@@ -59,6 +59,8 @@ namespace Character
 		uint8_t getspeed() const;
 		uint8_t getattack() const;
 
+		string getspeedstring() const;
+
 		uint8_t getattackdelay() const;
 		rectangle2d<int16_t> getrange() const;
 		Animation gethiteffect() const;

@@ -19,26 +19,6 @@
 
 namespace Character
 {
-	enum Equip::Potential
-	{
-		POT_NONE,
-		POT_HIDDEN,
-		POT_RARE,
-		POT_EPIC,
-		POT_UNIQUE,
-		POT_LEGEND
-	};
-
-	enum Equip::Quality
-	{
-		EQQ_GREY,
-		EQQ_WHITE,
-		EQQ_ORANGE,
-		EQQ_BLUE,
-		EQQ_VIOLET,
-		EQQ_GOLD
-	};
-
 	Equip::Equip(const ItemData& eqd, int32_t id, bool cs, int64_t uqi, int64_t exp, 
 		uint8_t sl, uint8_t lv, map<Equipstat, uint16_t> st, string ow, int16_t fl, 
 		uint8_t ilv, int16_t iexp, int32_t vic) : Item(eqd, id, cs, uqi, exp, 1, ow, fl) {
@@ -49,10 +29,79 @@ namespace Character
 		itemlevel = ilv;
 		itemexp = iexp;
 		vicious = vic;
+
+		potrank = POT_NONE;
+		checkquality();
+	}
+
+	void Equip::checkquality()
+	{
+		int16_t totaldelta = 0;
+		const Clothing& cloth = getcloth();
+		for (Equipstat es = ES_STR; es <= ES_JUMP; es = static_cast<Equipstat>(es + 1))
+		{
+			if (stats.count(es))
+			{
+				totaldelta += stats[es] - cloth.getdefstat(es);
+			}
+			else
+			{
+				if (cloth.getdefstat(es) > 0)
+				{
+					totaldelta -= cloth.getdefstat(es);
+				}
+			}
+		}
+
+		if (totaldelta < -4)
+			quality = EQQ_GREY;
+		else if (totaldelta < 7)
+			quality = (level > 0) ? (totaldelta > 0) ? EQQ_ORANGE : EQQ_GREY : EQQ_WHITE;
+		else if (totaldelta < 14)
+			quality = EQQ_BLUE;
+		else if (totaldelta < 21)
+			quality = EQQ_VIOLET;
+		else
+			quality = EQQ_GOLD;
+	}
+
+	uint8_t Equip::getslots() const
+	{
+		return slots;
+	}
+
+	uint8_t Equip::getlevel() const
+	{
+		return level;
+	}
+
+	uint8_t Equip::getitemlevel() const
+	{
+		return itemlevel;
 	}
 
 	uint16_t Equip::getstat(Equipstat type) const
 	{
 		return stats.count(type) ? stats.at(type) : 0;
+	}
+
+	int32_t Equip::getvicious() const
+	{
+		return vicious;
+	}
+
+	Equip::Potential Equip::getpotrank() const
+	{
+		return potrank;
+	}
+
+	Equip::Quality Equip::getquality() const
+	{
+		return quality;
+	}
+
+	const Clothing& Equip::getcloth() const
+	{
+		return reinterpret_cast<const Clothing&>(idata);
 	}
 }

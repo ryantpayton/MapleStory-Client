@@ -87,7 +87,7 @@ namespace Net
 		handlers[PING] = unique_ptr<PacketHandler>(new PingHandler());
 		handlers[SELECT_WORLD] = unique_ptr<PacketHandler>(new NullHandler()); //commonly unused
 		handlers[RECOMMENDED_WORLDS] = unique_ptr<PacketHandler>(new NullHandler()); //commonly unused
-		handlers[MODIFY_INVENTORY] = unique_ptr<PacketHandler>(new NullHandler()); //TO DO
+		handlers[MODIFY_INVENTORY] = unique_ptr<PacketHandler>(new ModifyInventoryHandler()); //TO DO
 		handlers[STATS_CHANGED] = unique_ptr<PacketHandler>(new StatschangedHandler83());
 		//handlers[GIVE_BUFF] = unique_ptr<vhandler>(new give_buff_h());
 		handlers[FORCED_STAT_RESET] = unique_ptr<PacketHandler>(new StatresetHandler83()); // recalcstats?
