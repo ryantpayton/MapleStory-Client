@@ -107,7 +107,8 @@ namespace Net
 			uint8_t level = recv.readbyte();
 
 			// Read equip stats.
-			using::Character::Equipstat;
+			using std::map;
+			using Character::Equipstat;
 			map<Equipstat, uint16_t> stats;
 			for (Equipstat e = Character::ES_STR; e <= Character::ES_JUMP; e = (Equipstat)(e + 1))
 			{

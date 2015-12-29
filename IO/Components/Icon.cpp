@@ -19,11 +19,12 @@
 
 namespace IO
 {
-	Icon::Icon(Texture t, Element::UIType p, int16_t i)
+	Icon::Icon(Texture t, Element::UIType p, int16_t i, int16_t c = 1)
 	{
 		texture = t;
 		parent = p;
 		identifier = i;
+		count = c;
 
 		texture.shift(vector2d<int16_t>(0, 32));
 		dragged = false;
@@ -62,6 +63,11 @@ namespace IO
 	void Icon::resetdrag()
 	{
 		dragged = false;
+	}
+
+	void Icon::setcount(int16_t c)
+	{
+		count = c;
 	}
 
 	int16_t Icon::getidentifier() const

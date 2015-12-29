@@ -31,8 +31,6 @@ namespace Character
 	class CharLook
 	{
 	public:
-		static void init();
-
 		CharLook(const LookEntry& entry);
 		CharLook();
 		~CharLook();
@@ -45,6 +43,7 @@ namespace Character
 		void setbody(uint8_t skinid);
 		void setface(int32_t faceid);
 		void addequip(int32_t equipid);
+		void removeequip(Equipslot slot);
 
 		void setstance(string stance);
 		void setexpression(string expression);
@@ -57,6 +56,7 @@ namespace Character
 		const CharEquips& getequips() const;
 
 	private:
+		void updatetwohanded();
 		string getattackstance() const;
 
 		string stance;

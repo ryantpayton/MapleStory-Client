@@ -100,8 +100,10 @@ namespace IO
 		glfwGetCursorPos(glwnd, &cursorx, &cursory);
 		int32_t state = glfwGetMouseButton(glwnd, GLFW_MOUSE_BUTTON_LEFT);
 
-		Cursor::Mousestate mst = (state == GLFW_PRESS) ? Cursor::MST_CLICKING : Cursor::MST_IDLE;
-		UI::sendmouse(mst, vector2d<int16_t>(static_cast<int16_t>(cursorx), static_cast<int16_t>(cursory)));
+		UI::sendmouse(state == GLFW_PRESS, vector2d<int16_t>(
+			static_cast<int16_t>(cursorx), 
+			static_cast<int16_t>(cursory))
+			);
 
 		int32_t tabstate = glfwGetKey(glwnd, GLFW_KEY_TAB);
 		if (tabstate == GLFW_PRESS)

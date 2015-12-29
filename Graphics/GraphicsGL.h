@@ -31,10 +31,10 @@ namespace Graphics
 	{
 		void init();
 		void clear();
-		void addbitmap(const bitmap&);
-		bool available(size_t);
-		void draw(size_t, rectangle2d<int16_t>, float, float, vector2d<int16_t>, float);
-		void flush();
+		void addbitmap(const bitmap& toadd);
+		bool available(size_t id);
+		void draw(size_t id, int16_t x, int16_t y, int16_t w, 
+			int16_t h, float, float, float, int16_t centerx, int16_t centery);
 	};
 }
 #endif

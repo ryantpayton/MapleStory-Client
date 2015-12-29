@@ -18,13 +18,14 @@
 #pragma once
 #include "Journey.h"
 #ifndef JOURNEY_USE_OPENGL
-#include "Graphics\GraphicsD2D.h"
+#include <d2d1.h>
+#include <d2d1helper.h>
+#include <dwrite.h>
+#include <wincodecsdk.h>
 #include <windowsx.h>
 
 namespace IO
 {
-	using Graphics::GraphicsD2D;
-
 	class WindowD2D
 	{
 	public:
@@ -37,27 +38,24 @@ namespace IO
 		void end() const;
 		void togglemode();
 		void fadeout();
-		float getdpix() { return dpiX; }
-		float getdpiy() { return dpiY; }
 
 	private:
 		HRESULT initfactories();
 		HRESULT inittargets();
-		static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+		void updateopc();
+
 		HWND wnd;
+		WINDOWPLACEMENT placement;
+
 		IWICImagingFactory* imgfactory;
-		ID2D1Factory* d2d_factory;
+		ID2D1Factory* d2dfactory;
 		IDWriteFactory* dwfactory;
-		ID2D1HwndRenderTarget* d2d_rtarget;
-		ID2D1BitmapRenderTarget* bitmaptarget;
-		GraphicsD2D graphicsd2d;
-		float dpiX;
-		float dpiY;
-		float scralpha;
-		float alphastep;
+		ID2D1HwndRenderTarget* d2dtarget;
+		ID2D1BitmapRenderTarget* bmptarget;
+
+		float opacity;
+		float opcstep;
 		short screencd;
-		bool fullscreen;
-		bool draw_finished;
 		bool transition;
 	};
 }

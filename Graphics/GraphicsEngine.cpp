@@ -50,7 +50,7 @@ namespace Graphics
 			float alpha, float xscale, float yscale, int16_t centerx, int16_t centery) {
 
 #ifdef JOURNEY_USE_OPENGL
-
+			GraphicsGL::draw(id, x, y, w, h, alpha, xscale, yscale, centerx, centery);
 #else
 			GraphicsD2D::draw(id, x, y, w, h, alpha, xscale, yscale, centerx, centery);
 #endif

@@ -36,6 +36,11 @@ namespace Character
 		count = c;
 	}
 
+	int16_t Item::getcount() const
+	{
+		return count;
+	}
+
 	int32_t Item::getid() const
 	{
 		return iid;

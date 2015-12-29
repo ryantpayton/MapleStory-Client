@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Net\Packets\MovementPacket.h"
+#include "Character\Inventory\Inventory.h"
 #include "Gameplay\Attack.h"
 
 namespace Net
@@ -104,23 +105,39 @@ namespace Net
 		}
 	};
 
+	using Character::Inventory;
 	class MoveItemPacket : public OutPacket
 	{
 	public:
-		MoveItemPacket(int8_t invtype, int16_t slot, int8_t action, int16_t qty) : OutPacket(MOVE_ITEM)
+		MoveItemPacket(Inventory::InvType type, int16_t slot, int16_t action, int16_t qty) : OutPacket(MOVE_ITEM)
 		{
 			writeint(0);
-			writech(invtype);
+			writech(type);
 			writesh(slot);
 			writesh(action);
 			writesh(qty);
 		}
 	};
 
+	class EquipItemPacket : public MoveItemPacket
+	{
+	public:
+		EquipItemPacket(int16_t src, Character::Equipslot dest) : 
+			MoveItemPacket(Inventory::EQUIP, src, -dest, 1) {}
+	};
+
+	class UnequipItemPacket : public MoveItemPacket
+	{
+	public:
+		UnequipItemPacket(int16_t src, int16_t dest) :
+			MoveItemPacket(Inventory::EQUIPPED, -src, dest, 1) {}
+	};
+
+	using Gameplay::AttackResult;
 	class CloseRangeAttackPacket83 : public OutPacket
 	{
 	public:
-		CloseRangeAttackPacket83(const Gameplay::AttackResult& attack) : OutPacket(CLOSE_ATTACK)
+		CloseRangeAttackPacket83(const AttackResult& attack) : OutPacket(CLOSE_ATTACK)
 		{
 			skip(1);
 			writech((attack.mobcount << 4) | attack.hitcount);

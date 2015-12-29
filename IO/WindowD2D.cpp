@@ -15,88 +15,165 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Journey.h"
-#ifndef JOURNEY_USE_OPENGL
 #include "WindowD2D.h"
 #include "UI.h"
 #include "Program\Configuration.h"
 #include "Program\Constants.h"
 #include "Gameplay\Stage.h"
+#include "Graphics\GraphicsD2D.h"
 
 namespace IO
 {
-	WindowD2D::WindowD2D() : graphicsd2d(&imgfactory, &bitmaptarget, &dwfactory)
+	WindowD2D::WindowD2D()
 	{
 		HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
-		CoInitialize(NULL);
+		CoInitialize(NULL); 
+
+		placement = { sizeof(placement) };
 	}
 
 	WindowD2D::~WindowD2D()
 	{
+		Graphics::GraphicsD2D::clear();
 		CoUninitialize();
-		if (d2d_factory) d2d_factory->Release();
-		if (dwfactory) dwfactory->Release();
+
+		if (d2dfactory) 
+			d2dfactory->Release();
+		if (dwfactory) 
+			dwfactory->Release();
+	}
+
+	vector2d<int16_t> paramtov2d(LPARAM lParam)
+	{
+		return vector2d<int16_t>(
+			GET_X_LPARAM(lParam),
+			GET_Y_LPARAM(lParam)
+			);
+	}
+
+	LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+	{
+		WindowD2D* app = reinterpret_cast<WindowD2D*>(
+			::GetWindowLongPtrW(hwnd, GWLP_USERDATA)
+			);
+
+		if (message != WM_CREATE && app == nullptr)
+			return DefWindowProc(hwnd, message, wParam, lParam);
+
+		switch (message)
+		{
+		case WM_CREATE:
+			::SetWindowLongPtrW(
+				hwnd,
+				GWLP_USERDATA,
+				(LONG_PTR)(((LPCREATESTRUCT)lParam)->lpCreateParams)
+				);
+			return 1;
+		case WM_SIZE:
+			return 0;
+		case WM_DISPLAYCHANGE:
+			InvalidateRect(hwnd, NULL, FALSE);
+			return 0;
+		case WM_DESTROY:
+		case WM_QUIT:
+			return 1;
+		case WM_MOUSEMOVE:
+			UI::sendmouse(paramtov2d(lParam));
+			return 0;
+		case WM_SETCURSOR:
+			SetCursor(NULL);
+			return 1;
+		case WM_LBUTTONDOWN:
+			switch (wParam)
+			{
+			case MK_LBUTTON:
+				UI::sendmouse(true, paramtov2d(lParam));
+				break;
+			}
+			return 0;
+		case WM_LBUTTONDBLCLK:
+			UI::doubleclick(paramtov2d(lParam));
+			return 0;
+		case WM_LBUTTONUP:
+			if (wParam != MK_LBUTTON)
+				UI::sendmouse(false, paramtov2d(lParam));
+			return 0;
+		case WM_KEYDOWN:
+			if (wParam == VK_TAB)
+				app->togglemode();
+			else
+				UI::sendkey(static_cast<uint8_t>(wParam), true);
+			return 0;
+		case WM_KEYUP:
+			UI::sendkey(static_cast<uint8_t>(wParam), false);
+			return 0;
+		}
+
+		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 
 	bool WindowD2D::init()
 	{
-		HRESULT result = initfactories();
-		if (result == S_OK)
-		{
-			LPCSTR title = (LPCSTR)"Journey";
+		if (initfactories() != S_OK)
+			return false;
 
-			WNDCLASSEX wcex = { sizeof(WNDCLASSEX) };
-			wcex.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
-			wcex.lpfnWndProc = WindowD2D::WndProc;
-			wcex.cbClsExtra = 0;
-			wcex.cbWndExtra = sizeof(LONG_PTR);
-			wcex.hbrBackground = NULL;
-			wcex.lpszMenuName = NULL;
-			wcex.hCursor = LoadCursor(NULL, IDI_APPLICATION);
-			wcex.lpszClassName = title;
+		LPCSTR title = (LPCSTR)"Journey";
 
-			RegisterClassEx(&wcex);
+		WNDCLASSEX wcex = { sizeof(WNDCLASSEX) };
+		wcex.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+		wcex.lpfnWndProc = WndProc;
+		wcex.cbClsExtra = 0;
+		wcex.cbWndExtra = sizeof(LONG_PTR);
+		wcex.hbrBackground = NULL;
+		wcex.lpszMenuName = NULL;
+		wcex.hCursor = LoadCursor(NULL, IDI_APPLICATION);
+		wcex.lpszClassName = title;
 
-			d2d_factory->GetDesktopDpi(&dpiX, &dpiY);
+		RegisterClassEx(&wcex);
 
-			wnd = CreateWindow(
-				title,
-				title,
-				WS_OVERLAPPED,
-				CW_USEDEFAULT,
-				CW_USEDEFAULT,
-				static_cast<int>(ceil(816.f * dpiX / 96.f)),
-				static_cast<int>(ceil(628.f * dpiY / 96.f)),
-				NULL,
-				NULL,
-				NULL,
-				this
-				);
+		float dpiX;
+		float dpiY;
+		d2dfactory->GetDesktopDpi(&dpiX, &dpiY);
 
-			if (wnd)
-			{
-				result = inittargets();
-				if (result == S_OK)
-				{
-					graphicsd2d.init();
+		wnd = CreateWindow(
+			title,
+			title,
+			WS_OVERLAPPED,
+			CW_USEDEFAULT,
+			CW_USEDEFAULT,
+			static_cast<int32_t>(ceil(816.f * dpiX / 96.f)),
+			static_cast<int32_t>(ceil(628.f * dpiY / 96.f)),
+			NULL,
+			NULL,
+			NULL,
+			this
+			);
 
-					screencd = 0;
-					scralpha = 1.0f;
-					draw_finished = true;
-					transition = false;
+		if (wnd == nullptr)
+			return false;
 
-					if (Program::Configuration::getbool("Fullscreen"))
-						togglemode();
+		if (inittargets() != S_OK)
+			return false;
 
-					SetPriorityClass(wnd, REALTIME_PRIORITY_CLASS);
-					SetFocus(wnd);
-					ShowWindow(wnd, SW_SHOWNORMAL);
-					UpdateWindow(wnd);
-				}
-			}
-		}
-		return wnd != 0 && result == S_OK;
+		Graphics::GraphicsD2D::init(
+			&imgfactory, 
+			&bmptarget, 
+			&dwfactory
+			);
+
+		screencd = 0;
+		opacity = 1.0f;
+		transition = false;
+
+		if (Program::Configuration::getbool("Fullscreen"))
+			togglemode();
+
+		SetPriorityClass(wnd, REALTIME_PRIORITY_CLASS);
+		SetFocus(wnd);
+		ShowWindow(wnd, SW_SHOWNORMAL);
+		UpdateWindow(wnd);
+
+		return true;
 	}
 
 	HRESULT WindowD2D::initfactories()
@@ -108,14 +185,23 @@ namespace IO
 			IID_PPV_ARGS(&imgfactory)
 			);
 
-		if (result == S_OK)
-		{
-			result = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &d2d_factory);
-			if (result == S_OK)
-			{
-				result = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&dwfactory));
-			}
-		}
+		if (result != S_OK)
+			return result;
+
+		result = D2D1CreateFactory(
+			D2D1_FACTORY_TYPE_SINGLE_THREADED, 
+			&d2dfactory
+			);
+
+		if (result != S_OK)
+			return result;
+
+		result = DWriteCreateFactory(
+			DWRITE_FACTORY_TYPE_SHARED,
+			__uuidof(IDWriteFactory),
+			reinterpret_cast<IUnknown**>(&dwfactory)
+			);
+
 		return result;
 	}
 
@@ -125,162 +211,66 @@ namespace IO
 		GetClientRect(wnd, &rc);
 		D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
 
-		HRESULT result = d2d_factory->CreateHwndRenderTarget(
-			D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_DEFAULT, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE)),
-			D2D1::HwndRenderTargetProperties(wnd, size),
-			&d2d_rtarget
+		D2D1_PIXEL_FORMAT pixelformat = D2D1::PixelFormat(
+			DXGI_FORMAT_B8G8R8A8_UNORM, 
+			D2D1_ALPHA_MODE_IGNORE
 			);
 
-		if (result == S_OK)
-		{
-			result = d2d_rtarget->CreateCompatibleRenderTarget(&bitmaptarget);
-			if (result == S_OK)
-			{
-				d2d_rtarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
-				bitmaptarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
-			}
-		}
-		return result;
-	}
+		HRESULT result = d2dfactory->CreateHwndRenderTarget(
+			D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_DEFAULT, pixelformat),
+			D2D1::HwndRenderTargetProperties(wnd, size),
+			&d2dtarget
+			);
 
-	LRESULT CALLBACK WindowD2D::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
-	{
-		LRESULT result = 0;
-		UINT width, height;
+		if (result != S_OK)
+			return result;
 
-		if (message == WM_CREATE)
-		{
-			LPCREATESTRUCT pcs = (LPCREATESTRUCT)lParam;
-			WindowD2D* app = (WindowD2D*)pcs->lpCreateParams;
+		result = d2dtarget->CreateCompatibleRenderTarget(&bmptarget);
 
-			::SetWindowLongPtrW(
-				hwnd,
-				GWLP_USERDATA,
-				(long long)app
-				);
+		if (result != S_OK)
+			return result;
 
-			result = 1;
-		}
-		else
-		{
-			WindowD2D* app = reinterpret_cast<WindowD2D*>(::GetWindowLongPtrW(hwnd, GWLP_USERDATA));
-
-			bool wasHandled = false;
-
-			if (app)
-			{
-				switch (message)
-				{
-				case WM_SIZE:
-					width = LOWORD(lParam);
-					height = HIWORD(lParam);
-					result = 0;
-					wasHandled = true;
-					break;
-				case WM_DISPLAYCHANGE:
-					InvalidateRect(hwnd, NULL, FALSE);
-					result = 0;
-					wasHandled = true;
-					break;
-				case WM_DESTROY:
-				case WM_QUIT:
-					result = 1;
-					wasHandled = true;
-					break;
-				case WM_MOUSEMOVE:
-					UI::sendmouse(vector2d<int16_t>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
-					result = 0;
-					wasHandled = true;
-					break;
-				case WM_SETCURSOR:
-					SetCursor(NULL);
-					result = 1;
-					wasHandled = true;
-					break;
-				case WM_LBUTTONDOWN:
-					switch (wParam)
-					{
-					case MK_LBUTTON:
-						UI::sendmouse(true, vector2d<int16_t>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
-						break;
-					}
-					result = 0;
-					wasHandled = true;
-					break;
-				case WM_LBUTTONDBLCLK:
-					//app->getui()->doubleclick(vector2d(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
-					result = 0;
-					wasHandled = true;
-					break;
-				case WM_LBUTTONUP:
-					if (wParam != MK_LBUTTON)
-					{
-						UI::sendmouse(false, vector2d<int16_t>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
-					}
-					result = 0;
-					wasHandled = true;
-					break;
-				case WM_KEYDOWN:
-					if (wParam == VK_TAB)
-						app->togglemode();
-					else
-						UI::sendkey(static_cast<uint8_t>(wParam), true);
-					result = 0;
-					wasHandled = true;
-					break;
-				case WM_KEYUP:
-					UI::sendkey(static_cast<uint8_t>(wParam), false);
-					result = 0;
-					wasHandled = true;
-					break;
-				}
-			}
-
-			if (!wasHandled)
-			{
-				result = DefWindowProc(hwnd, message, wParam, lParam);
-			}
-		}
+		d2dtarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
+		bmptarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
 
 		return result;
 	}
-
-	WINDOWPLACEMENT g_wpPrev = { sizeof(g_wpPrev) };
 
 	void WindowD2D::togglemode()
 	{
-		if (screencd <= 0)
-		{
-			DWORD dwStyle = GetWindowLong(wnd, GWL_STYLE);
-			if (dwStyle & WS_OVERLAPPEDWINDOW) {
-				MONITORINFO mi = { sizeof(mi) };
-				if (GetWindowPlacement(wnd, &g_wpPrev) &&
-					GetMonitorInfo(MonitorFromWindow(wnd,
-					MONITOR_DEFAULTTOPRIMARY), &mi)) {
-					SetWindowLong(wnd, GWL_STYLE,
-						dwStyle & ~WS_OVERLAPPEDWINDOW);
-					SetWindowPos(wnd, HWND_TOP,
-						mi.rcMonitor.left, mi.rcMonitor.top,
-						mi.rcMonitor.right - mi.rcMonitor.left,
-						mi.rcMonitor.bottom - mi.rcMonitor.top,
-						SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-				}
-			}
-			else {
+		if (screencd > 0)
+			return;
+
+		DWORD dwStyle = GetWindowLong(wnd, GWL_STYLE);
+		if (dwStyle & WS_OVERLAPPEDWINDOW) {
+			MONITORINFO mi = { sizeof(mi) };
+			if (GetWindowPlacement(wnd, &placement) &&
+				GetMonitorInfo(MonitorFromWindow(wnd,
+				MONITOR_DEFAULTTOPRIMARY), &mi)) {
 				SetWindowLong(wnd, GWL_STYLE,
-					dwStyle | WS_OVERLAPPEDWINDOW);
-				SetWindowPlacement(wnd, &g_wpPrev);
-				SetWindowPos(wnd, NULL, 0, 0, 0, 0,
-					SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
+					dwStyle & ~WS_OVERLAPPEDWINDOW);
+				SetWindowPos(wnd, HWND_TOP,
+					mi.rcMonitor.left, mi.rcMonitor.top,
+					mi.rcMonitor.right - mi.rcMonitor.left,
+					mi.rcMonitor.bottom - mi.rcMonitor.top,
 					SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
 			}
-			screencd = 16;
 		}
+		else {
+			SetWindowLong(wnd, GWL_STYLE,
+				dwStyle | WS_OVERLAPPEDWINDOW);
+			SetWindowPlacement(wnd, &placement);
+			SetWindowPos(wnd, NULL, 0, 0, 0, 0,
+				SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
+				SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+		}
+
+		screencd = 50;
 	}
 
 	void WindowD2D::fadeout()
 	{
-		alphastep = -0.025f;
+		opcstep = -0.025f;
 		transition = true;
 	}
 
@@ -293,25 +283,31 @@ namespace IO
 			DispatchMessage(&winmsg);
 		}
 
+		updateopc();
+	}
+
+	void WindowD2D::updateopc()
+	{
 		screencd -= 1;
-		if (alphastep != 0.0f)
+
+		if (opcstep == 0.0f)
+			return;
+
+		opacity += opcstep;
+
+		if (opacity >= 1.0f)
 		{
-			scralpha += alphastep;
+			opacity = 1.0f;
+		}
+		else if (opacity <= 0.0f)
+		{
+			opacity = 0.0f;
+			opcstep = 0.025f;
+			transition = false;
 
-			if (scralpha >= 1.0f)
-			{
-				scralpha = 1.0f;
-			}
-			else if (scralpha <= 0.0f)
-			{
-				scralpha = 0.0f;
-				alphastep = 0.025f;
-				transition = false;
-
-				Gameplay::Stage::reload();
-				UI::enable();
-				UI::enablegamekeys(true);
-			}
+			Gameplay::Stage::reload();
+			UI::enable();
+			UI::enablegamekeys(true);
 		}
 	}
 
@@ -319,25 +315,25 @@ namespace IO
 	{
 		if (!transition)
 		{
-			bitmaptarget->BeginDraw();
-			bitmaptarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+			bmptarget->BeginDraw();
+			bmptarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
 		}
 	}
 
 	void WindowD2D::end() const
 	{
 		if (!transition)
-			bitmaptarget->EndDraw();
+			bmptarget->EndDraw();
+
+		static const D2D1_RECT_F drc = 
+			D2D1::RectF(0.0f, 0.0f, 800.0f, 589.0f);
 
 		ID2D1Bitmap* scene;
-		bitmaptarget->GetBitmap(&scene);
+		bmptarget->GetBitmap(&scene);
 
-		D2D1_RECT_F drc = D2D1::RectF(0.0f, 0.0f, 800.0f, 589.0f);
-
-		d2d_rtarget->BeginDraw();
-		d2d_rtarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-		d2d_rtarget->DrawBitmap(scene, drc, scralpha);
-		d2d_rtarget->EndDraw();
+		d2dtarget->BeginDraw();
+		d2dtarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+		d2dtarget->DrawBitmap(scene, drc, opacity);
+		d2dtarget->EndDraw();
 	}
 }
-#endif

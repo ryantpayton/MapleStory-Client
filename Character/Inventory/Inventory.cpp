@@ -122,6 +122,9 @@ namespace Character
 		Item* temp = inventoryitems[firsttype][firstslot];
 		inventoryitems[firsttype][firstslot] = inventoryitems[secondtype][secondslot];
 		inventoryitems[secondtype][secondslot] = temp;
+
+		if (inventoryitems[firsttype][firstslot] == nullptr)
+			inventoryitems[firsttype].erase(firstslot);
 	}
 
 	void Inventory::changecount(InvType type, int16_t slot, int16_t count)
@@ -133,7 +136,11 @@ namespace Character
 
 	void Inventory::modify(InvType type, int16_t slot, int8_t mode, int16_t arg, Movetype move)
 	{
-		slot = (slot < 0) ? -slot : slot;
+		if (slot < 0)
+		{
+			slot = -slot;
+			type = EQUIPPED;
+		}
 		arg = (arg < 0) ? -arg : arg;
 
 		switch (mode)
@@ -177,6 +184,55 @@ namespace Character
 	int64_t Inventory::getmeso() const
 	{
 		return meso;
+	}
+
+	bool Inventory::hasequipped(Equipslot slot) const
+	{
+		int16_t intslot = static_cast<int16_t>(slot);
+		return inventoryitems.at(Inventory::EQUIPPED).count(intslot) > 0;
+	}
+
+	Equipslot Inventory::findequipslot(int32_t itemid) const
+	{
+		const Clothing& cloth = Data::getclothing(itemid);
+		if (!cloth.isloaded())
+			return EQL_NONE;
+
+		Equipslot eqslot = cloth.geteqslot();
+		if (hasequipped(eqslot))
+		{
+			if (eqslot == EQL_RING)
+			{
+				if (!hasequipped(EQL_RING2))
+					return EQL_RING2;
+
+				if (!hasequipped(EQL_RING3))
+					return EQL_RING3;
+
+				if (!hasequipped(EQL_RING4))
+					return EQL_RING4;
+			}
+
+			return EQL_NONE;
+		}
+		else
+		{
+			return eqslot;
+		}
+	}
+
+	int16_t Inventory::findslot(InvType type) const
+	{
+		uint8_t numslots = slots.at(type);
+		for (uint8_t i = 1; i < numslots; i++)
+		{
+			if (inventoryitems.count(type) == 0)
+				return 1;
+
+			if (inventoryitems.at(type).count(i) == 0)
+				return i;
+		}
+		return 0;
 	}
 
 	int16_t Inventory::finditem(InvType type, int32_t itemid) const

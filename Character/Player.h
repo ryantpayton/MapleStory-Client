@@ -62,7 +62,8 @@ namespace Character
 		void sendaction(IO::Keyboard::Keyaction keycode, bool pressed);
 		// Recalculates the total stats from base stats, inventories and skills.
 		void recalcstats(bool equipchanged);
-
+		// Change the equipment at the specified slot and recalculate stats.
+		void changecloth(int16_t slot);
 		// Use the item from the player's inventory with the given id.
 		void useitem(int32_t itemid);
 

@@ -25,25 +25,22 @@
 #include <d2d1helper.h>
 #include <wincodecsdk.h>
 #include <dwrite.h>
-#include <map>
 
 namespace Graphics
 {
 	using::nl::bitmap;
 
-	class GraphicsD2D
+	namespace GraphicsD2D
 	{
-	public:
-		GraphicsD2D(IWICImagingFactory**, ID2D1BitmapRenderTarget**, IDWriteFactory**);
-		~GraphicsD2D();
+		void init(IWICImagingFactory**, ID2D1BitmapRenderTarget**, IDWriteFactory**);
+		void clear();
 
-		static void init();
-		static void clear();
-		static void addbitmap(const bitmap&);
-		static bool available(size_t);
-		static void draw(size_t, int16_t, int16_t, int16_t, int16_t, float, float, float, int16_t, int16_t);
-		static vector2d<uint16_t> createlayout(const wstring&, Textlabel::Font, uint16_t, map<size_t, float>&);
-		static void drawtext(const wstring&, Textlabel::Font, Textlabel::Textcolor, 
+		void addbitmap(const bitmap& toadd);
+		bool available(size_t id);
+		void draw(size_t, int16_t, int16_t, int16_t, int16_t, float, float, float, int16_t, int16_t);
+
+		vector2d<uint16_t> createlayout(const wstring&, Textlabel::Font, uint16_t, map<size_t, float>&);
+		void drawtext(const wstring&, Textlabel::Font, Textlabel::Textcolor, 
 			Textlabel::Background, float, vector2d<float>, vector2d<uint16_t>);
 	};
 }

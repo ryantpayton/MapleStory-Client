@@ -27,6 +27,7 @@ namespace Character
 
 		void setcount(int16_t count);
 
+		int16_t getcount() const;
 		int32_t getid() const;
 
 		const ItemData& getidata() const;

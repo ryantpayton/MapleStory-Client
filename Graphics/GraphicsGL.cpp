@@ -43,16 +43,16 @@ namespace Graphics
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		}
 
-		void draw(size_t id, rectangle2d<int16_t> rect, float xscale, 
-			float yscale, vector2d<int16_t> center, float alpha) {
+		void draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, float alpha, 
+			float xscale, float yscale, int16_t centerx, int16_t centery) {
 
 			if (!available(id))
 				return;
 
-			GLfloat left = center.x() + xscale * (rect.l() - center.x());
-			GLfloat right = center.x() + xscale * (rect.r() - center.x());
-			GLfloat top = center.y() + yscale * (rect.t() - center.y());
-			GLfloat bottom = center.y() + yscale * (rect.b() - center.y());
+			GLfloat left = centerx + xscale * (x - centerx);
+			GLfloat right = centerx + xscale * (x + w - centerx);
+			GLfloat top = centery + yscale * (y- centery);
+			GLfloat bottom = centery + yscale * (y + h - centery);
 
 			glBindTexture(GL_TEXTURE_2D, bitmaps[id]);
 			glBegin(GL_QUADS);

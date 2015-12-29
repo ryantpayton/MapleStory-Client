@@ -41,6 +41,10 @@ namespace IO
 		}
 	}
 
+	void UIElement::buttonpressed(uint16_t) {}
+
+	void UIElement::doubleclick(vector2d<int16_t>) {}
+
 	Cursor::Mousestate UIElement::sendmouse(bool down, vector2d<int16_t> pos)
 	{
 		Cursor::Mousestate ret = down ? Cursor::MST_CLICKING : Cursor::MST_IDLE;

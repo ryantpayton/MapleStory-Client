@@ -27,7 +27,7 @@ namespace Character
 	{
 	public:
 		// Inventorytypes used by the server.
-		enum InvType
+		enum InvType : int8_t
 		{
 			EQUIPPED = -1,
 			NONE = 0,
@@ -38,7 +38,7 @@ namespace Character
 			CASH = 5
 		};
 
-		enum Movetype
+		enum Movetype : int8_t
 		{
 			MOVE_INTERNAL,
 			MOVE_UNEQUIP,
@@ -80,12 +80,18 @@ namespace Character
 		// Change the quantity of an item.
 		void changecount(InvType type, int16_t slot, int16_t count);
 
+		// Return if an equip is equipped in the specfied slot.
+		bool hasequipped(Equipslot slot) const;
 		// Return the number of slots for the specified inventory.
 		uint8_t getslots(InvType type) const;
 		// Return a total stat.
 		uint16_t getstat(Equipstat type) const;
 		// Return the amount of meso.
 		int64_t getmeso() const;
+		// Find a free slot for the specified equip.
+		Equipslot findequipslot(int32_t itemid) const;
+		// Find a free slot in the specfified inventory.
+		int16_t findslot(InvType type) const;
 		// Return the first slot which contains the specified item.
 		int16_t finditem(InvType type, int32_t itemid) const;
 		// Return the inventory type by itemid.

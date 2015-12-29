@@ -35,7 +35,9 @@ namespace Graphics
 				{
 					srcfile = srcfile.root();
 				}
-				src = srcfile.resolve(link.substr(link.find('/') + 1));
+				src = srcfile.resolve(
+					link.substr(link.find('/') + 1)
+					);
 			}
 
 			source = src.get_bitmap();

@@ -160,16 +160,11 @@ namespace Net
 			Session::getlogin().addcharentry(recv);
 
 			// Remove the character creation ui.
-			IO::UIElement* uicc = IO::UI::getelement(Element::CHARCREATION);
-			if (uicc)
-			{
-				uicc->deactivate();
-				IO::UI::remove(Element::CHARCREATION);
-			}
+			IO::UI::remove(Element::CHARCREATION);
 
 			// Readd the updated character selection.
-			IO::UI::remove(Element::CHARSELECT);
-			IO::UI::add(IO::ElementCharSelect());
+			using IO::ElementCharSelect;
+			IO::UI::add(ElementCharSelect());
 			IO::UI::enable();
 		}
 	};
@@ -184,10 +179,11 @@ namespace Net
 			bool success = recv.readbool();
 
 			// Show the result to the user.
+			using IO::ElementLoginNotice;
 			if (success)
-				IO::UI::add(IO::ElementLoginNotice(55));
+				IO::UI::add(ElementLoginNotice(55));
 			else
-				IO::UI::add(IO::ElementLoginNotice(93));
+				IO::UI::add(ElementLoginNotice(93));
 		}
 	};
 

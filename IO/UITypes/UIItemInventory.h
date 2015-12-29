@@ -24,52 +24,77 @@
 
 namespace IO
 {
-	using std::map;
+	using std::pair;
+	using Graphics::Animation;
+	using Graphics::Textlabel;
 	using Character::Inventory;
-	using Graphics::Texture;
 
-	// The Equip inventory.
-	class UIEquipInventory : public UIDragElement
+	// The Item inventory.
+	class UIItemInventory : public UIDragElement
 	{
 	public:
 		enum Buttons
 		{
-			BT_TOGGLEPETS
+			BT_TAB_EQUIP,
+			BT_TAB_USE,
+			BT_TAB_ETC,
+			BT_TAB_SETUP,
+			BT_TAB_CASH,
+			BT_DROPMESO,
+			BT_POINTS,
+			BT_GATHER,
+			BT_SORT,
+			BT_EXPAND,
+			BT_ITEMPOT,
+			BT_UPGRADE,
+			BT_MAGNIFY,
+			BT_BITCASE
 		};
 
-		UIEquipInventory(const Inventory& inventory);
-		~UIEquipInventory();
+		UIItemInventory(const Inventory& inventory);
+		~UIItemInventory();
 
 		void draw(float inter) const override;
+		void update() override;
 		void buttonpressed(uint16_t buttonid) override;
-		void togglehide() override;
 		void doubleclick(vector2d<int16_t> position) override;
+		void togglehide() override;
 		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> position) override;
 
-		void modify(int16_t pos, int8_t mode, int16_t arg);
+		void modify(Inventory::InvType type, int16_t pos, int8_t mode, int16_t arg);
 
 	private:
-		UIEquipInventory& operator = (const UIEquipInventory&) = delete;
+		UIItemInventory& operator = (const UIItemInventory&) = delete;
 
 		void loadicons();
 		void addicon(int16_t slot);
+
+		string getmesostr() const;
 		int16_t slotbypos(vector2d<int16_t> position) const;
+		vector2d<int16_t> getslotpos(int16_t slot) const;
+		vector2d<int16_t> gettabpos(Inventory::InvType tab) const;
+		uint16_t buttonbytab(Inventory::InvType tab) const;
 
 		const Inventory& inventory;
-		map<int16_t, vector2d<int16_t>> iconpositions;
-		EquipTooltip tooltip;
+
+		Animation newitemslot;
+		Animation newitemtab;
+		Textlabel mesolabel;
+
+		EquipTooltip eqtooltip;
 		vector2d<int16_t> cursorposition;
-
-		vector<Texture> pettextures;
-		bool showpetequips;
-
 		map<int16_t, Icon> icons;
+
+		Inventory::InvType tab;
+		pair<int16_t, int16_t> slotrange;
+		Inventory::InvType newtab;
+		int16_t newslot;
 	};
 
-	class ElementEquipInventory : public Element
+	class ElementItemInventory : public Element
 	{
 	public:
-		ElementEquipInventory(const Inventory& inv) : inventory(inv) {}
+		ElementItemInventory(const Inventory& inv) : inventory(inv) {}
 
 		bool isunique() const override
 		{
@@ -78,16 +103,16 @@ namespace IO
 
 		UIType type() const override
 		{
-			return EQUIPINVENTORY;
+			return ITEMINVENTORY;
 		}
 
 		UIElement* instantiate() const override
 		{
-			return new UIEquipInventory(inventory);
+			return new UIItemInventory(inventory);
 		}
 
 	private:
-		ElementEquipInventory& operator = (const ElementEquipInventory&) = delete;
+		ElementItemInventory& operator = (const ElementItemInventory&) = delete;
 
 		const Inventory& inventory;
 	};

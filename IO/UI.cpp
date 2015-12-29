@@ -19,13 +19,17 @@
 #include "Cursor.h"
 #include "Keyboard.h"
 #include "Window.h"
+
 #include "Components\StatusMessenger.h"
-#include "Components\EquipTooltip.h"
+
 #include "UITypes\UIStatsinfo.h"
+#include "UITypes\UIItemInventory.h"
 #include "UITypes\UIEquipInventory.h"
+
 #include "Gameplay\Stage.h"
 #include "Net\Session.h"
 #include "Net\Packets\GameplayPackets83.h"
+
 #include <unordered_map>
 #include <memory>
 
@@ -34,8 +38,6 @@ namespace IO
 	namespace UI
 	{
 		using std::unique_ptr;
-		using std::vector;
-		using std::map;
 		using std::unordered_map;
 
 		Keyboard keyboard;
@@ -43,11 +45,13 @@ namespace IO
 		StatusMessenger messenger;
 
 		unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
-		map<int32_t, bool> keydown;
+		unordered_map<Element::UIType, Element::UIType> elementorder;
+		unordered_map<int32_t, bool> keydown;
 
-		Element::UIType focused = Element::NONE;
 		Textfield* focusedtextfield = nullptr;
 		Icon* draggedicon = nullptr;
+
+		Element::UIType focused = Element::NONE;
 		bool enabled = true;
 		bool gamekeysenabled = false;
 
@@ -55,10 +59,15 @@ namespace IO
 		{
 			messenger.draw(vector2d<int16_t>(790, 510), inter);
 
-			for (auto& elit : elements)
+			for (auto& elit : elementorder)
 			{
-				if (elit.second->isactive())
-					elit.second->draw(inter);
+				UIElement* element = elements[elit.first].get();
+
+				if (element == nullptr)
+					continue;
+
+				if (element->isactive())
+					element->draw(inter);
 			}
 
 			if (draggedicon)
@@ -95,16 +104,25 @@ namespace IO
 			enabled = false;
 		}
 
-		void dropicon(vector2d<int16_t> pos)
+		UIElement* getfront(vector2d<int16_t> pos)
 		{
 			UIElement* front = nullptr;
-			for (auto& elit : elements)
+			for (auto& elit : elementorder)
 			{
-				if (elit.second->isactive() && elit.second->bounds().contains(pos))
-				{
-					front = elit.second.get();
-				}
+				UIElement* element = elements[elit.first].get();
+
+				if (element == nullptr)
+					continue;
+
+				if (element->isactive() && element->bounds().contains(pos))
+					front = element;
 			}
+			return front;
+		}
+
+		void dropicon(vector2d<int16_t> pos)
+		{
+			UIElement* front = getfront(pos);
 
 			if (front)
 			{
@@ -150,24 +168,37 @@ namespace IO
 				if (focused == Element::NONE)
 				{
 					UIElement* front = nullptr;
+					Element::UIType fronttype = Element::NONE;
+
 					if (enabled)
 					{
-						for (auto& elit : elements)
+						for (auto& elit : elementorder)
 						{
-							if (elit.second->isactive() && elit.second->bounds().contains(pos))
+							UIElement* element = elements[elit.first].get();
+
+							if (element == nullptr)
+								continue;
+
+							if (element->isactive() && element->bounds().contains(pos))
 							{
 								if (front)
-								{
-									front->sendmouse(false, pos);
-								}
-								front = elit.second.get();
+									front->sendmouse(false, element->bounds().getlt() - vector2d<int16_t>(1, 1));
+
+								front = element;
+								fronttype = elit.first;
 							}
 						}
 					}
 
 					if (front)
 					{
-						mst = front->sendmouse(mst == Cursor::MST_CLICKING, pos);
+						bool clicked = mst == Cursor::MST_CLICKING;
+						if (clicked)
+						{
+							elementorder.erase(fronttype);
+							elementorder[fronttype] = fronttype;
+						}
+						mst = front->sendmouse(clicked, pos);
 					}
 					else
 					{
@@ -190,12 +221,22 @@ namespace IO
 			sendmouse(cursor.getstate(), pos);
 		}
 
+		void doubleclick(vector2d<int16_t> pos)
+		{
+			UIElement* front = getfront(pos);
+			if (front)
+				front->doubleclick(pos);
+		}
+
 		void addelementbykey(int32_t key)
 		{
 			switch (key)
 			{
 			case Keyboard::KA_CHARSTATS:
 				add(ElementStatsinfo(Gameplay::Stage::getplayer().getstats()));
+				break;
+			case Keyboard::KA_INVENTORY:
+				add(ElementItemInventory(Gameplay::Stage::getplayer().getinvent()));
 				break;
 			case Keyboard::KA_EQUIPS:
 				add(ElementEquipInventory(Gameplay::Stage::getplayer().getinvent()));
@@ -266,9 +307,9 @@ namespace IO
 			focusedtextfield = tofocus;
 		}
 
-		void dragicon(Icon* icon)
+		void dragicon(Icon* todrag)
 		{
-			draggedicon = icon;
+			draggedicon = todrag;
 		}
 
 		void addkeymapping(uint8_t no, uint8_t t, int32_t action)
@@ -289,6 +330,8 @@ namespace IO
 			{
 				if (element.isunique())
 				{
+					elementorder.erase(type);
+					elementorder[type] = type;
 					elements[type]->togglehide();
 					return;
 				}
@@ -300,6 +343,7 @@ namespace IO
 
 			UIElement* toadd = element.instantiate();
 			elements[type] = unique_ptr<UIElement>(toadd);
+			elementorder[type] = type;
 
 			if (element.isfocused())
 			{
@@ -315,6 +359,8 @@ namespace IO
 			{
 				focused = Element::NONE;
 			}
+
+			elementorder.erase(type);
 
 			if (elements.count(type))
 			{

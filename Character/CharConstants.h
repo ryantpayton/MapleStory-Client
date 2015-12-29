@@ -43,5 +43,11 @@ namespace Character
 		MS_GACHAEXP = 0x200000
 	};
 
-	const Maplestat statvalues[20] = { MS_SKIN, MS_FACE, MS_HAIR, MS_LEVEL, MS_JOB, MS_STR, MS_DEX, MS_INT, MS_LUK, MS_HP, MS_MAXHP, MS_MP, MS_MAXMP, MS_AP, MS_SP, MS_EXP, MS_FAME, MS_MESO, MS_PET, MS_GACHAEXP };
+	const Maplestat statvalues[20] = 
+	{ 
+		MS_SKIN, MS_FACE, MS_HAIR, MS_LEVEL, MS_JOB, 
+		MS_STR, MS_DEX, MS_INT, MS_LUK, MS_HP, MS_MAXHP,
+		MS_MP, MS_MAXMP, MS_AP, MS_SP, MS_EXP, MS_FAME, 
+		MS_MESO, MS_PET, MS_GACHAEXP 
+	};
 }

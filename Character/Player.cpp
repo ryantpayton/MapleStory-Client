@@ -24,8 +24,6 @@
 
 namespace Character
 {
-	const uint16_t SENDMOVEMENTCD = Constants::TIMESTEP;
-
 	static PlayerNullState nullstate;
 
 	const PlayerState* getstate(Char::Stance stance)
@@ -69,7 +67,7 @@ namespace Character
 		namelabel = Textlabel(Textlabel::DWF_14MC, Textlabel::TXC_WHITE, stats.getname(), 0);
 		namelabel.setback(Textlabel::TXB_NAMETAG);
 
-		sendcd = SENDMOVEMENTCD;
+		sendcd = Constants::TIMESTEP;
 		active = true;
 		attacking = false;
 		ladder = nullptr;
@@ -86,7 +84,7 @@ namespace Character
 	void Player::respawn(vector2d<int16_t> pos)
 	{
 		setposition(pos.x(), pos.y());
-		sendcd = SENDMOVEMENTCD;
+		sendcd = Constants::TIMESTEP;
 		attacking = false;
 		ladder = nullptr;
 		nullstate.nextstate(*this);
@@ -109,20 +107,29 @@ namespace Character
 			inventory.recalcstats();
 		}
 
-		int32_t speed = 100;
-		int32_t jump = 100;
-
 		stats.settotal(ES_HP, stats.getstat(MS_MAXHP) + inventory.getstat(ES_HP));
 		stats.settotal(ES_MP, stats.getstat(MS_MAXMP) + inventory.getstat(ES_MP));
 		stats.settotal(ES_STR, stats.getstat(MS_STR) + inventory.getstat(ES_STR));
 		stats.settotal(ES_DEX, stats.getstat(MS_DEX) + inventory.getstat(ES_DEX));
 		stats.settotal(ES_LUK, stats.getstat(MS_LUK) + inventory.getstat(ES_LUK));
 		stats.settotal(ES_INT, stats.getstat(MS_INT) + inventory.getstat(ES_INT));
-		stats.settotal(ES_SPEED, speed + inventory.getstat(ES_SPEED));
-		stats.settotal(ES_JUMP, jump + inventory.getstat(ES_JUMP));
+		stats.settotal(ES_SPEED, 100 + inventory.getstat(ES_SPEED));
+		stats.settotal(ES_JUMP, 100 + inventory.getstat(ES_JUMP));
 		stats.setattack(inventory.getstat(ES_WATK));
 
 		stats.calculatedamage(look.getequips().getweapontype());
+	}
+
+	void Player::changecloth(int16_t slot)
+	{
+		const Equip* equip = inventory.getequip(Inventory::EQUIPPED, slot);
+
+		if (equip)
+			look.addequip(equip->getid());
+		else
+			look.removeequip(static_cast<Equipslot>(slot));
+
+		recalcstats(true);
 	}
 
 	void Player::useitem(int32_t itemid)

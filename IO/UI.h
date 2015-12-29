@@ -27,11 +27,12 @@ namespace IO
 		void draw(float inter);
 		void update();
 
-		void showstatus(Textlabel::Textcolor color, string message);
-
 		void sendmouse(vector2d<int16_t> pos);
 		void sendmouse(bool pressed, vector2d<int16_t> pos);
+		void doubleclick(vector2d<int16_t> pos);
 		void sendkey(int32_t keycode, bool pressed);
+
+		void showstatus(Textlabel::Textcolor color, string message);
 		void focustextfield(Textfield*);
 		void dragicon(Icon*);
 
@@ -39,6 +40,7 @@ namespace IO
 		void enablegamekeys(bool enable);
 		void enable();
 		void disable();
+
 		void add(const Element& type);
 		void remove(Element::UIType type);
 

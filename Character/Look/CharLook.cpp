@@ -294,6 +294,18 @@ namespace Character
 		face = &Data::getfacetype(fd);
 	}
 
+	void CharLook::updatetwohanded()
+	{
+		if (stance == "stand1" || stance == "stand2")
+		{
+			setstance("stand");
+		}
+		else if (stance == "walk1" || stance == "walk2")
+		{
+			setstance("walk");
+		}
+	}
+
 	void CharLook::addequip(int32_t eq)
 	{
 		const Clothing& equip = Data::getclothing(eq);
@@ -305,16 +317,14 @@ namespace Character
 		}
 		equips.addequip(equip);
 		if (changestance)
-		{
-			if (stance == "stand1" || stance == "stand2")
-			{
-				setstance("stand");
-			}
-			else if (stance == "walk1" || stance == "walk2")
-			{
-				setstance("walk");
-			}
-		}
+			updatetwohanded();
+	}
+
+	void CharLook::removeequip(Equipslot slot)
+	{
+		equips.removeequip(slot);
+		if (slot == EQL_WEAPON)
+			updatetwohanded();
 	}
 
 	void CharLook::setstance(string newstance)

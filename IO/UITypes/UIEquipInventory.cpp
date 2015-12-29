@@ -16,9 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UIEquipInventory.h"
+#include "IO\UI.h"
 #include "IO\Components\MapleButton.h"
 #include "Program\Configuration.h"
-#include "IO\UI.h"
+#include "Net\Session.h"
+#include "Net\Packets\GameplayPackets83.h"
 #include "nlnx\nx.hpp"
 
 namespace IO
@@ -114,6 +116,8 @@ namespace IO
 
 	void UIEquipInventory::loadicons()
 	{
+		icons.clear();
+
 		uint8_t numslots = inventory.getslots(Inventory::EQUIPPED);
 		for (uint8_t i = 1; i < numslots; i++)
 		{
@@ -125,31 +129,21 @@ namespace IO
 	{
 		cursorposition = cursorpos;
 
-		for (auto& icit : iconpositions)
+		int16_t slot = slotbypos(cursorpos);
+		if (icons.count(slot))
 		{
-			int16_t slot = icit.first;
-			if (icons.count(slot) == 0)
-				continue;
-
-			rectangle2d<int16_t> iconrect = rectangle2d<int16_t>(
-				position + icit.second,
-				position + icit.second + vector2d<int16_t>(32, 32)
-				);
-			if (iconrect.contains(cursorpos))
+			if (pressed)
 			{
-				if (pressed)
+				icons[slot].startdrag(cursorpos - position - iconpositions[slot]);
+				tooltip.setequip(nullptr, 0);
+				UI::dragicon(&icons[slot]);
+				return Cursor::MST_GRABBING;
+			}
+			else
+			{
+				const Equip* equip = inventory.getequip(Inventory::EQUIPPED, slot);
+				if (equip)
 				{
-					icons[slot].startdrag(cursorpos - position - icit.second);
-					tooltip.setequip(nullptr, 0);
-					UI::dragicon(&icons[slot]);
-					return Cursor::MST_GRABBING;
-				}
-				else
-				{
-					const Equip* equip = inventory.getequip(Inventory::EQUIPPED, slot);
-					if (equip == nullptr)
-						continue;
-
 					tooltip.setequip(equip, slot);
 					return Cursor::MST_CANGRAB;
 				}
@@ -158,6 +152,20 @@ namespace IO
 
 		tooltip.setequip(nullptr, 0);
 		return UIDragElement::sendmouse(pressed, cursorpos);
+	}
+
+	void UIEquipInventory::doubleclick(vector2d<int16_t> cursorpos)
+	{
+		int16_t slot = slotbypos(cursorpos);
+		if (icons.count(slot))
+		{
+			int16_t freeslot = inventory.findslot(Inventory::EQUIP);
+			if (freeslot > 0)
+			{
+				using Net::UnequipItemPacket;
+				Net::Session::dispatch(UnequipItemPacket(slot, freeslot));
+			}
+		}
 	}
 
 	void UIEquipInventory::togglehide()
@@ -173,7 +181,7 @@ namespace IO
 		if (item == nullptr)
 			return;
 
-		icons[slot] = Icon(item->getidata().geticon(false), Element::EQUIPINVENTORY, slot);
+		icons[slot] = Icon(item->getidata().geticon(false), Element::EQUIPINVENTORY, slot, 1);
 	}
 
 	void UIEquipInventory::modify(int16_t pos, int8_t mode, int16_t arg)
@@ -194,5 +202,22 @@ namespace IO
 			icons.erase(pos);
 			break;
 		}
+	}
+
+	int16_t UIEquipInventory::slotbypos(vector2d<int16_t> cursorpos) const
+	{
+		for (auto& icit : iconpositions)
+		{
+			int16_t slot = icit.first;
+			rectangle2d<int16_t> iconrect = rectangle2d<int16_t>(
+				position + icit.second,
+				position + icit.second + vector2d<int16_t>(32, 32)
+				);
+			if (iconrect.contains(cursorpos))
+			{
+				return slot;
+			}
+		}
+		return 0;
 	}
 }
