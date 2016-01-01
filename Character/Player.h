@@ -22,6 +22,7 @@
 #include "Questlog.h"
 #include "Telerock.h"
 #include "Monsterbook.h"
+#include "Buff.h"
 #include "Look\CharLook.h"
 #include "Inventory\Inventory.h"
 
@@ -40,6 +41,7 @@ namespace Character
 	using Gameplay::Ladder;
 	using Gameplay::Seat;
 	using Gameplay::Attack;
+	using IO::Keyboard;
 
 	// A class that represents the player.
 	class Player : public Playable, public Char
@@ -59,7 +61,7 @@ namespace Character
 		// Respawn the player at the given position.
 		void respawn(vector2d<int16_t> position);
 		// Sends a Keyaction to the player's state, to apply forces, change the state and other behaviour.
-		void sendaction(IO::Keyboard::Keyaction keycode, bool pressed);
+		void sendaction(Keyboard::Keyaction keycode, bool pressed);
 		// Recalculates the total stats from base stats, inventories and skills.
 		void recalcstats(bool equipchanged);
 		// Change the equipment at the specified slot and recalculate stats.
@@ -71,12 +73,15 @@ namespace Character
 		bool isattacking() const;
 		// Return wether the player can attack or not.
 		bool canattack() const;
-		// Change the character stance to the default attack.
-		void useattack();
+		// Start attacking.
+		void useattack(string action);
 		// Create an attack struct using the player's stats.
 		Attack prepareattack();
 		// Create an attack struct for a regular attack.
 		Attack regularattack();
+
+		void givebuff(Buff buff);
+		void cancelbuff(Buffstat buffstat);
 
 		// Returns the current walking force, calculated from the total ES_SPEED stat.
 		float getwforce() const;
@@ -88,7 +93,7 @@ namespace Character
 		float getflyforce() const;
 
 		// Returns if a Keyaction is currently active. 
-		bool keydown(IO::Keyboard::Keyaction) const;
+		bool keydown(Keyboard::Keyaction key) const;
 		// Return a pointer to the ladder the player is on.
 		const Ladder* getladder() const;
 
@@ -124,7 +129,9 @@ namespace Character
 		Telerock telerock;
 		Monsterbook monsterbook;
 
-		map<IO::Keyboard::Keyaction, bool> keysdown;
+		map<Buffstat, Buff> buffs;
+
+		map<Keyboard::Keyaction, bool> keysdown;
 
 		vector<MovementFragment> movements;
 		MovementFragment lastmove;

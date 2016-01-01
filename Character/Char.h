@@ -35,7 +35,7 @@ namespace Character
 	public:
 		// Player stances which determine animation and state. 
 		// Values are used in movement packets (add 1 if facing left).
-		enum Stance
+		enum Stance : int8_t
 		{
 			WALK = 2,
 			STAND = 4,

@@ -21,16 +21,14 @@
 #include "IO\Components\TwoSpriteButton.h"
 #include "Program\Configuration.h"
 #include "Net\Session.h"
-#include "Net\Packets\GameplayPackets83.h"
+#include "Net\Packets\InventoryPackets.h"
 #include "nlnx\nx.hpp"
 
 namespace IO
 {
-	UIItemInventory::UIItemInventory(const Inventory& inv) : inventory(inv)
-	{
-		tab = Inventory::EQUIP;
-		slotrange.first = 1;
-		slotrange.second = 24;
+	UIItemInventory::UIItemInventory(const Inventory& inv) : 
+		UIDragElement("PosINV", vector2d<int16_t>(172, 20)), 
+		inventory(inv) {
 
 		node src = nl::nx::ui["UIWindow2.img"]["Item"];
 
@@ -70,29 +68,21 @@ namespace IO
 		buttons[BT_MAGNIFY]= unique_ptr<Button>(new MapleButton(src["BtAppraise3"]));
 		buttons[BT_BITCASE]= unique_ptr<Button>(new MapleButton(src["BtBits3"]));
 
-		buttons[BT_SORT]->setactive(false);
+		tab = Inventory::EQUIP;
+		slotrange.first = 1;
+		slotrange.second = 24;
+		newtab = Inventory::NONE;
+		newslot = 0;
 
+		buttons[BT_SORT]->setactive(false);
 		buttons[buttonbytab(tab)]->setstate(Button::PRESSED);
 
 		mesolabel = Textlabel(Textlabel::DWF_12MR, Textlabel::TXC_BLACK, "", 0);
 
-		position = Program::Configuration::getvector2d("PosINV");
 		dimension = vector2d<int16_t>(172, 335);
 		active = true;
 
-		dragarea = vector2d<int16_t>(172, 20);
-		cursoroffset = vector2d<int16_t>();
-		dragged = false;
-
-		newtab = Inventory::NONE;
-		newslot = 0;
-
 		loadicons();
-	}
-
-	UIItemInventory::~UIItemInventory()
-	{
-		Program::Configuration::setstring("PosINV", position.tostring());
 	}
 
 	void UIItemInventory::draw(float inter) const
@@ -179,6 +169,14 @@ namespace IO
 		case BT_TAB_CASH:
 			tab = Inventory::CASH;
 			break;
+		case BT_GATHER:
+			using Net::GatherItemsPacket;
+			Net::Session::dispatch(GatherItemsPacket(tab));
+			break;
+		case BT_SORT:
+			using Net::SortItemsPacket;
+			Net::Session::dispatch(SortItemsPacket(tab));
+			break;
 		}
 
 		if (tab != oldtab)
@@ -189,6 +187,7 @@ namespace IO
 			loadicons();
 
 			buttons[buttonbytab(oldtab)]->setstate(Button::NORMAL);
+			enablegather();
 		}
 	}
 
@@ -209,11 +208,20 @@ namespace IO
 				Net::Session::dispatch(EquipItemPacket(slot, inventory.findequipslot(item->getid())));
 				break;
 			case Inventory::USE:
-				using Net::UseItemPacket83;
-				Net::Session::dispatch(UseItemPacket83(slot, item->getid()));
+				using Net::UseItemPacket;
+				Net::Session::dispatch(UseItemPacket(slot, item->getid()));
 				break;
 			}
 		}
+	}
+
+	void UIItemInventory::icondropped(int16_t identifier)
+	{
+		if (!icons.count(identifier))
+			return;
+
+		using Net::MoveItemPacket;
+		Net::Session::dispatch(MoveItemPacket(tab, identifier, 0, 1));
 	}
 
 	Cursor::Mousestate UIItemInventory::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
@@ -278,16 +286,36 @@ namespace IO
 			}
 		}
 
-		if (mode == 0 || mode == 1)
+		switch (mode)
 		{
-			newslot = slot;
+		case 0:
+		case 1:
 			newtab = type;
+			newslot = slot;
+			break;
+		case 2:
+		case 3:
+			if (newslot == slot && newtab == type)
+			{
+				newslot = 0;
+				newtab = Inventory::NONE;
+			}
+			break;
 		}
-		else if (newslot == slot && newtab == type)
-		{
-			newslot = 0;
-			newtab = Inventory::NONE;
-		}
+	}
+
+	void UIItemInventory::enablesort()
+	{
+		buttons[BT_GATHER]->setactive(false);
+		buttons[BT_SORT]->setactive(true);
+		buttons[BT_SORT]->setstate(Button::NORMAL);
+	}
+
+	void UIItemInventory::enablegather()
+	{
+		buttons[BT_SORT]->setactive(false);
+		buttons[BT_GATHER]->setactive(true);
+		buttons[BT_GATHER]->setstate(Button::NORMAL);
 	}
 
 	void UIItemInventory::togglehide()
@@ -334,9 +362,9 @@ namespace IO
 			return vector2d<int16_t>(10, 28);
 		case Inventory::USE:
 			return vector2d<int16_t>(42, 28);
-		case Inventory::ETC:
-			return vector2d<int16_t>(74, 28);
 		case Inventory::SETUP:
+			return vector2d<int16_t>(74, 28);
+		case Inventory::ETC:
 			return vector2d<int16_t>(105, 28);
 		case Inventory::CASH:
 			return vector2d<int16_t>(138, 28);

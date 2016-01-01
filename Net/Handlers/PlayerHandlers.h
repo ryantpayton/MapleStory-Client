@@ -16,46 +16,37 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Element.h"
-#include "Components\Textfield.h"
-#include "Components\Icon.h"
+#include "Net\PacketHandler.h"
+#include "Character\Buffstat.h"
 
-namespace IO
+namespace Net
 {
-	namespace UI
+	// Handles a packet which notifies the client of changes in character stats.
+	class ChangeStatsHandler : public PacketHandler
 	{
-		void draw(float inter);
-		void update();
+		void handle(InPacket& recv) const override;
+	};
 
-		void sendmouse(vector2d<int16_t> pos);
-		void sendmouse(bool pressed, vector2d<int16_t> pos);
-		void doubleclick(vector2d<int16_t> pos);
-		void sendkey(int32_t keycode, bool pressed);
+	// Handles a packet which forces a stats recalculation.
+	class RecalculateStatsHandler : public PacketHandler
+	{
+		void handle(InPacket&) const override;
+	};
 
-		void showstatus(Textlabel::Textcolor color, string message);
-		void showbuff(int32_t buffid, int32_t duration);
-		void cancelbuff(int32_t buffid);
-		void focustextfield(Textfield*);
-		void dragicon(Icon*);
+	// Handles a packet which notifies the client of changes in a character's skills.
+	class UpdateskillsHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
 
-		void addkeymapping(uint8_t no, uint8_t type, int32_t action);
-		void enablegamekeys(bool enable);
-		void enable();
-		void disable();
+	using Character::Buffstat;
 
-		void add(const Element& type);
-		void remove(Element::UIType type);
-
-		UIElement* getelement(Element::UIType type);
-
-		template <class T>
-		T* getelement(Element::UIType type)
-		{
-			UIElement* element = getelement(type);
-			if (element)
-				return reinterpret_cast<T*>(element);
-			else
-				return nullptr;
-		}
-	}
+	// Handles a packet which notifies the client that a buff was applied to the player.
+	class ApplyBuffHandler : public PacketHandler
+	{
+	public:
+		void handle(InPacket& recv) const override;
+	private:
+		void handlebuff(InPacket& recv, Buffstat buff) const;
+	};
 }

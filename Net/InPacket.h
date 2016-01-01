@@ -23,26 +23,39 @@
 
 namespace Net
 {
-	using::std::int8_t;
-	using::std::int16_t;
-	using::std::int32_t;
-	using::std::int64_t;
-	using::std::string;
-	using::Util::vector2d;
-	// A packet sent by the server. Contains read functions used by handlers to retrieve meaningful information. 
+	using std::int8_t;
+	using std::int16_t;
+	using std::int32_t;
+	using std::int64_t;
+	using std::string;
+	using Util::vector2d;
+
+	// A packet received from the server. 
+	// Contains reading functions. 
 	class InPacket
 	{
 	public:
+		// Construct a packet from an array of bytes.
 		InPacket(const int8_t*, size_t);
+		// Return the remaining length in bytes.
 		size_t length() const;
+		// Skip a number of bytes (by increasing the offset).
 		void skip(size_t);
+		// Read a string.
 		string readascii();
-		string readpadascii(int16_t);
+		// Read a fixed-length string.
+		string readpadascii(int16_t length);
+		// Read a point.
 		vector2d<int16_t> readpoint();
+		// Read a byte and check if it is 1.
 		bool readbool() { return read<int8_t>() == 1; }
+		// Read a byte.
 		int8_t readbyte() { return read<int8_t>(); }
+		// Read a short.
 		int16_t readshort() { return read<int16_t>(); }
+		// Read an int.
 		int32_t readint() { return read<int32_t>(); }
+		// Read a long.
 		int64_t readlong() { return read<int64_t>(); }
 
 		template <class T>
@@ -65,7 +78,8 @@ namespace Net
 			size_t all = 0;
 			for (size_t i = 0; i < count; i++)
 			{
-				all += static_cast<uint8_t>(bytes[pos]) << (8 * i);
+				size_t val = static_cast<uint8_t>(bytes[pos]);
+				all += val << (8 * i);
 				pos++;
 			}
 			return static_cast<T>(all);

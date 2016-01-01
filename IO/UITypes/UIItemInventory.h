@@ -52,16 +52,18 @@ namespace IO
 		};
 
 		UIItemInventory(const Inventory& inventory);
-		~UIItemInventory();
 
 		void draw(float inter) const override;
 		void update() override;
 		void buttonpressed(uint16_t buttonid) override;
 		void doubleclick(vector2d<int16_t> position) override;
+		void icondropped(int16_t identifier) override;
 		void togglehide() override;
 		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> position) override;
 
 		void modify(Inventory::InvType type, int16_t pos, int8_t mode, int16_t arg);
+		void enablesort();
+		void enablegather();
 
 	private:
 		UIItemInventory& operator = (const UIItemInventory&) = delete;

@@ -40,9 +40,10 @@ namespace Character
 
 		enum Movetype : int8_t
 		{
-			MOVE_INTERNAL,
-			MOVE_UNEQUIP,
-			MOVE_EQUIP
+			MOVE_NONE = -1,
+			MOVE_INTERNAL = 0,
+			MOVE_UNEQUIP = 1,
+			MOVE_EQUIP = 2
 		};
 
 		Inventory();
@@ -96,6 +97,10 @@ namespace Character
 		int16_t finditem(InvType type, int32_t itemid) const;
 		// Return the inventory type by itemid.
 		InvType gettypebyid(int32_t itemid) const;
+		// Return the inventory type by value.
+		InvType typebyvalue(int8_t value) const;
+		// Return the inventory type by value.
+		Movetype movetypebyvalue(int8_t value) const;
 
 		const Item* getitem(InvType type, int16_t slot) const;
 		const Equip* getequip(InvType type, int16_t slot) const;

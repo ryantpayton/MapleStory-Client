@@ -84,9 +84,17 @@ namespace Net
 		CLOSE_ATTACK = 44,
 		GENERAL_CHAT = 49,
 		TALK_TO_NPC = 58,
+
+		// Inventory
+		GATHER_ITEMS = 69,
+		SORT_ITEMS = 70,
 		MOVE_ITEM = 71,
 		USE_ITEM = 72,
 		SCROLL_EQUIP = 86,
+
+		// Skill
+		USE_SKILL = 91,
+
 		SPEND_AP = 87,
 		MOVE_MONSTER = 188,
 		PICKUP_ITEM = 202,

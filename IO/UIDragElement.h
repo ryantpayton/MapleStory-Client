@@ -20,36 +20,19 @@
 
 namespace IO
 {
+	using std::string;
+
 	// Base class for UI Windows which can be moved with the mouse cursor.
 	class UIDragElement : public UIElement
 	{
 	public:
-		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> cursorpos) override
-		{
-			if (pressed)
-			{
-				if (dragged)
-				{
-					position = cursorpos - cursoroffset;
-					return Cursor::MST_CLICKING;
-				}
-				else if (rectangle2d<int16_t>(position, position + dragarea).contains(cursorpos))
-				{
-					cursoroffset = cursorpos - position;
-					dragged = true;
-					return Cursor::MST_CLICKING;
-				}
-			}
-			else
-			{
-				if (dragged)
-					dragged = false;
-			}
-			return UIElement::sendmouse(pressed, cursorpos);
-		}
+		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> cursorpos) override;
 
 	protected:
+		UIDragElement(string cfn, vector2d<int16_t> dga);
+
 		bool dragged;
+		string configname;
 		vector2d<int16_t> dragarea;
 		vector2d<int16_t> cursoroffset;
 	};

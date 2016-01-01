@@ -15,47 +15,43 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Element.h"
-#include "Components\Textfield.h"
-#include "Components\Icon.h"
+#include "BuffInventory.h"
+#include "Data\DataFactory.h"
 
 namespace IO
 {
-	namespace UI
+	BuffInventory::BuffInventory() {}
+
+	BuffInventory::~BuffInventory() {}
+
+	void BuffInventory::draw(vector2d<int16_t> position, float) const
 	{
-		void draw(float inter);
-		void update();
-
-		void sendmouse(vector2d<int16_t> pos);
-		void sendmouse(bool pressed, vector2d<int16_t> pos);
-		void doubleclick(vector2d<int16_t> pos);
-		void sendkey(int32_t keycode, bool pressed);
-
-		void showstatus(Textlabel::Textcolor color, string message);
-		void showbuff(int32_t buffid, int32_t duration);
-		void cancelbuff(int32_t buffid);
-		void focustextfield(Textfield*);
-		void dragicon(Icon*);
-
-		void addkeymapping(uint8_t no, uint8_t type, int32_t action);
-		void enablegamekeys(bool enable);
-		void enable();
-		void disable();
-
-		void add(const Element& type);
-		void remove(Element::UIType type);
-
-		UIElement* getelement(Element::UIType type);
-
-		template <class T>
-		T* getelement(Element::UIType type)
+		for (auto& icon : icons)
 		{
-			UIElement* element = getelement(type);
-			if (element)
-				return reinterpret_cast<T*>(element);
-			else
-				return nullptr;
+			const Texture* texture = icon.second.texture;
+			if (texture)
+			{
+				using Graphics::DrawArgument;
+				texture->draw(DrawArgument(position));
+				position.shiftx(-32);
+			}
 		}
+	}
+
+	void BuffInventory::update()
+	{
+
+	}
+
+	void BuffInventory::addbuff(int32_t buffid, int32_t duration)
+	{
+		const Texture* texture = Data::getskill(buffid).geticon(0);
+		if (texture)
+			icons[buffid] = BuffIcon{ texture, duration };
+	}
+
+	void BuffInventory::cancelbuff(int32_t buffid)
+	{
+		icons.erase(buffid);
 	}
 }

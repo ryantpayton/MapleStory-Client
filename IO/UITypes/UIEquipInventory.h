@@ -38,12 +38,12 @@ namespace IO
 		};
 
 		UIEquipInventory(const Inventory& inventory);
-		~UIEquipInventory();
 
 		void draw(float inter) const override;
 		void buttonpressed(uint16_t buttonid) override;
 		void togglehide() override;
 		void doubleclick(vector2d<int16_t> position) override;
+		void icondropped(int16_t identifier) override;
 		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> position) override;
 
 		void modify(int16_t pos, int8_t mode, int16_t arg);
@@ -56,14 +56,14 @@ namespace IO
 		int16_t slotbypos(vector2d<int16_t> position) const;
 
 		const Inventory& inventory;
+
 		map<int16_t, vector2d<int16_t>> iconpositions;
 		EquipTooltip tooltip;
 		vector2d<int16_t> cursorposition;
+		map<int16_t, Icon> icons;
 
 		vector<Texture> pettextures;
 		bool showpetequips;
-
-		map<int16_t, Icon> icons;
 	};
 
 	class ElementEquipInventory : public Element

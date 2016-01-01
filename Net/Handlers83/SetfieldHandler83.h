@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\Handlers\AbstractItemHandler83.h"
+#include "Net\Handlers\HandlerFunctions.h"
 #include "IO\UITypes\UIStatusbar.h"
 #include "IO\UI.h"
 #include "IO\Window.h"
@@ -43,7 +43,7 @@ namespace Net
 
 	// Handler for a packet which contains all character information on first login
 	// or warps the player to a different map.
-	class SetfieldHandler83 : public AbstractItemHandler83
+	class SetfieldHandler83 : public PacketHandler
 	{
 		void handle(InPacket& recv) const override
 		{
@@ -78,7 +78,9 @@ namespace Net
 			if (!Gameplay::Stage::loadplayer(cid))
 				return;
 
-			Character::Player& player = Gameplay::Stage::getplayer();
+			using Character::Player;
+			Player& player = Gameplay::Stage::getplayer();
+
 			Net::Session::getlogin().parsestats(recv);
 			recv.readbyte(); // 'buddycap'
 			if (recv.readbool())
@@ -127,7 +129,7 @@ namespace Net
 				while (pos != 0)
 				{
 					int16_t slot = (i == 1) ? -pos : pos;
-					parseitem(recv, inv, slot, invent);
+					HandlerFunctions::parseitem(recv, inv, slot, invent);
 					pos = recv.readshort();
 				}
 			}
@@ -145,7 +147,7 @@ namespace Net
 				int8_t pos = recv.readbyte();
 				while (pos != 0)
 				{
-					parseitem(recv, inv, pos, invent);
+					HandlerFunctions::parseitem(recv, inv, pos, invent);
 					pos = recv.readbyte();
 				}
 			}

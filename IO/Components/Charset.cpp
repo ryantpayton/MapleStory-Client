@@ -21,7 +21,7 @@ namespace IO
 {
 	Charset::Charset(node src, Alignment alg)
 	{
-		for (node sub = src.begin(); sub != src.end(); ++sub)
+		for (node sub : src)
 		{
 			if (sub.data_type() == node::type::bitmap)
 			{

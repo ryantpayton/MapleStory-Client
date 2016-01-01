@@ -17,23 +17,23 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "PacketSwitch.h"
 #include "RecvOpcodes.h"
+
 #include "Handlers\CommonHandlers.h"
+#include "Handlers\PlayerHandlers.h"
+#include "Handlers\InventoryHandlers.h"
+#include "Handlers\MessagingHandlers.h"
 
 #include "Journey.h"
 #ifdef JOURNEY_CUSTOM_VERSION
 #include "Handlers\LoginHandlers.h"
 #include "Handlers\SetfieldHandlers.h"
 #include "Handlers\KeyboardHandlers83.h"
-#include "Handlers\PlayerHandlers83.h"
 #include "Handlers\MapobjectHandlers.h"
-#include "Handlers\MessagingHandlers.h"
 #else
 #include "Handlers83\LoginHandlers83.h"
 #include "Handlers83\SetfieldHandler83.h"
 #include "Handlers\KeyboardHandlers83.h"
 #include "Handlers83\MapobjectHandlers83.h"
-#include "Handlers\PlayerHandlers83.h"
-#include "Handlers\MessagingHandlers.h"
 #endif
 #include <iostream>
 
@@ -85,16 +85,24 @@ namespace Net
 #endif
 
 		handlers[PING] = unique_ptr<PacketHandler>(new PingHandler());
+
 		handlers[SELECT_WORLD] = unique_ptr<PacketHandler>(new NullHandler()); //commonly unused
 		handlers[RECOMMENDED_WORLDS] = unique_ptr<PacketHandler>(new NullHandler()); //commonly unused
+
 		handlers[MODIFY_INVENTORY] = unique_ptr<PacketHandler>(new ModifyInventoryHandler()); //TO DO
-		handlers[STATS_CHANGED] = unique_ptr<PacketHandler>(new StatschangedHandler83());
-		//handlers[GIVE_BUFF] = unique_ptr<vhandler>(new give_buff_h());
-		handlers[FORCED_STAT_RESET] = unique_ptr<PacketHandler>(new StatresetHandler83()); // recalcstats?
-		handlers[UPDATE_SKILLS] = unique_ptr<PacketHandler>(new UpdateskillsHandler83());
+
+		handlers[CHANGE_STATS] = unique_ptr<PacketHandler>(new ChangeStatsHandler());
+		handlers[GIVE_BUFF] = unique_ptr<PacketHandler>(new ApplyBuffHandler());
+		handlers[RECALCULATE_STATS] = unique_ptr<PacketHandler>(new RecalculateStatsHandler());
+		handlers[UPDATE_SKILLS] = unique_ptr<PacketHandler>(new UpdateskillsHandler());
+
 		handlers[SHOW_STATUS_INFO] = unique_ptr<PacketHandler>(new ShowStatusInfoHandler());
 		handlers[MEMO_RESULT] = unique_ptr<PacketHandler>(new NullHandler()); //TO DO
 		handlers[ENABLE_REPORT] = unique_ptr<PacketHandler>(new NullHandler()); //idk what it does
+
+		handlers[GATHER_RESULT] = unique_ptr<PacketHandler>(new GatherResultHandler());
+		handlers[SORT_RESULT] = unique_ptr<PacketHandler>(new SortResultHandler());
+
 		handlers[UPDATE_GENDER] = unique_ptr<PacketHandler>(new NullHandler()); // useless
 		handlers[BUDDY_LIST] = unique_ptr<PacketHandler>(new NullHandler()); //TO DO
 		handlers[GUILD_OPERATION] = unique_ptr<PacketHandler>(new NullHandler()); //TO DO

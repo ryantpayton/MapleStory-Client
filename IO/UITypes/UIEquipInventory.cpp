@@ -20,13 +20,15 @@
 #include "IO\Components\MapleButton.h"
 #include "Program\Configuration.h"
 #include "Net\Session.h"
-#include "Net\Packets\GameplayPackets83.h"
+#include "Net\Packets\InventoryPackets.h"
 #include "nlnx\nx.hpp"
 
 namespace IO
 {
-	UIEquipInventory::UIEquipInventory(const Inventory& inv) : inventory(inv)
-	{
+	UIEquipInventory::UIEquipInventory(const Inventory& inv) :
+		UIDragElement("PosEQINV", vector2d<int16_t>(184, 20)),
+		inventory(inv) {
+
 		iconpositions[1] = vector2d<int16_t>(43, 25);
 		iconpositions[2] = vector2d<int16_t>(43, 91);
 		iconpositions[3] = vector2d<int16_t>(43, 68);
@@ -67,19 +69,9 @@ namespace IO
 
 		loadicons();
 
-		dragarea = vector2d<int16_t>(184, 20);
-		cursoroffset = vector2d<int16_t>();
-		dragged = false;
-
-		position = Program::Configuration::getvector2d("PosEQINV");
 		dimension = vector2d<int16_t>(184, 290);
 		active = true;
 		showpetequips = false;
-	}
-
-	UIEquipInventory::~UIEquipInventory()
-	{
-		Program::Configuration::setstring("PosEQINV", position.tostring());
 	}
 
 	void UIEquipInventory::draw(float inter) const
@@ -118,10 +110,9 @@ namespace IO
 	{
 		icons.clear();
 
-		uint8_t numslots = inventory.getslots(Inventory::EQUIPPED);
-		for (uint8_t i = 1; i < numslots; i++)
+		for (auto& icp : iconpositions)
 		{
-			addicon(i);
+			addicon(icp.first);
 		}
 	}
 
@@ -166,6 +157,12 @@ namespace IO
 				Net::Session::dispatch(UnequipItemPacket(slot, freeslot));
 			}
 		}
+	}
+
+	void UIEquipInventory::icondropped(int16_t identifier)
+	{
+		using Net::UnequipItemPacket;
+		Net::Session::dispatch(UnequipItemPacket(identifier, 0));
 	}
 
 	void UIEquipInventory::togglehide()

@@ -15,47 +15,18 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Net\PacketHandler.h"
-#include "Character\Inventory\Inventory.h"
+#include "HandlerFunctions.h"
 
 namespace Net
 {
-	using::Character::Item;
-	using::Character::Pet;
-	using::Character::Equip;
-	using::Character::Inventory;
-
-	// A base class for PacketHandlers which need to create items from a packet.
-	class AbstractItemHandler83 : public PacketHandler
+	namespace HandlerFunctions
 	{
-	protected:
-		// Parses an item from a packet, using the datacache to obtain the item data.
-		void parseitem(InPacket& recv, Inventory::InvType invtype, int16_t slot, Inventory& inventory) const
-		{
-			// Read type and item id.
-			recv.readbyte(); // 'type' byte
-			int32_t iid = recv.readint();
+		using::Character::Item;
+		using::Character::Pet;
+		using::Character::Equip;
 
-			if (invtype == Inventory::EQUIP || invtype == Inventory::EQUIPPED)
-			{
-				// Parse an equip.
-				addequip(recv, invtype, slot, iid, inventory);
-			}
-			else if (iid >= 5000000 && iid <= 5000102)
-			{
-				// Parse a pet.
-				addpet(recv, invtype, slot, iid, inventory);
-			}
-			else
-			{
-				// Parse a normal item.
-				additem(recv, invtype, slot, iid, inventory);
-			}
-		}
-	private:
 		// Parse a normal item from a packet.
-		void additem(InPacket& recv, Inventory::InvType invtype, int16_t slot, int32_t id, Inventory& inventory) const
+		void additem(InPacket& recv, Inventory::InvType invtype, int16_t slot, int32_t id, Inventory& inventory)
 		{
 			// Read all item stats.
 			bool cash = recv.readbool();
@@ -75,7 +46,7 @@ namespace Net
 		}
 
 		// Parse a pet from a packet.
-		void addpet(InPacket& recv, Inventory::InvType invtype, int16_t slot, int32_t id, Inventory& inventory) const
+		void addpet(InPacket& recv, Inventory::InvType invtype, int16_t slot, int32_t id, Inventory& inventory)
 		{
 			// Read all pet stats.
 			bool cash = recv.readbool();
@@ -93,7 +64,7 @@ namespace Net
 		}
 
 		// Parse an equip from a packet.
-		void addequip(InPacket& recv, Inventory::InvType invtype, int16_t slot, int32_t id, Inventory& inventory) const
+		void addequip(InPacket& recv, Inventory::InvType invtype, int16_t slot, int32_t id, Inventory& inventory)
 		{
 			// Read equip information.
 			bool cash = recv.readbool();
@@ -138,8 +109,31 @@ namespace Net
 
 			recv.skip(12);
 
-			inventory.addequip(invtype, slot, id, cash, uniqueid, expire, slots, 
+			inventory.addequip(invtype, slot, id, cash, uniqueid, expire, slots,
 				level, stats, owner, flag, itemlevel, itemexp, vicious);
 		}
-	};
+
+		void parseitem(InPacket& recv, Inventory::InvType invtype, int16_t slot, Inventory& inventory)
+		{
+			// Read type and item id.
+			recv.readbyte(); // 'type' byte
+			int32_t iid = recv.readint();
+
+			if (invtype == Inventory::EQUIP || invtype == Inventory::EQUIPPED)
+			{
+				// Parse an equip.
+				addequip(recv, invtype, slot, iid, inventory);
+			}
+			else if (iid >= 5000000 && iid <= 5000102)
+			{
+				// Parse a pet.
+				addpet(recv, invtype, slot, iid, inventory);
+			}
+			else
+			{
+				// Parse a normal item.
+				additem(recv, invtype, slot, iid, inventory);
+			}
+		}
+	}
 }

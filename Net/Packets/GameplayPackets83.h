@@ -17,7 +17,6 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Net\Packets\MovementPacket.h"
-#include "Character\Inventory\Inventory.h"
 #include "Gameplay\Attack.h"
 
 namespace Net
@@ -81,18 +80,6 @@ namespace Net
 		}
 	};
 
-	// A packet which requests that an 'USE' item is used.
-	class UseItemPacket83 : public OutPacket
-	{
-	public:
-		UseItemPacket83(int16_t slot, int32_t itemid) : OutPacket(USE_ITEM)
-		{
-			writeint(0);
-			writesh(slot);
-			writeint(itemid);
-		}
-	};
-
 	class PickupItemPacket : public OutPacket
 	{
 	public:
@@ -102,69 +89,6 @@ namespace Net
 			writech(0);
 			writepoint(position);
 			writeint(oid);
-		}
-	};
-
-	using Character::Inventory;
-	class MoveItemPacket : public OutPacket
-	{
-	public:
-		MoveItemPacket(Inventory::InvType type, int16_t slot, int16_t action, int16_t qty) : OutPacket(MOVE_ITEM)
-		{
-			writeint(0);
-			writech(type);
-			writesh(slot);
-			writesh(action);
-			writesh(qty);
-		}
-	};
-
-	class EquipItemPacket : public MoveItemPacket
-	{
-	public:
-		EquipItemPacket(int16_t src, Character::Equipslot dest) : 
-			MoveItemPacket(Inventory::EQUIP, src, -dest, 1) {}
-	};
-
-	class UnequipItemPacket : public MoveItemPacket
-	{
-	public:
-		UnequipItemPacket(int16_t src, int16_t dest) :
-			MoveItemPacket(Inventory::EQUIPPED, -src, dest, 1) {}
-	};
-
-	using Gameplay::AttackResult;
-	class CloseRangeAttackPacket83 : public OutPacket
-	{
-	public:
-		CloseRangeAttackPacket83(const AttackResult& attack) : OutPacket(CLOSE_ATTACK)
-		{
-			skip(1);
-			writech((attack.mobcount << 4) | attack.hitcount);
-			writeint(attack.skill);
-			if (attack.charge > 0)
-				writeint(attack.charge);
-			skip(8);
-			writech(attack.display);
-			writech(attack.direction);
-			writech(attack.stance);
-			skip(1);
-			writech(attack.speed);
-			skip(4);
-
-			for (auto& damagetomob : attack.damagelines)
-			{
-				writeint(damagetomob.first);
-				skip(14);
-
-				for (auto& singledamage : damagetomob.second)
-				{
-					writeint(singledamage);
-				}
-
-				if (attack.skill != 5221004)
-					skip(4);
-			}
 		}
 	};
 }

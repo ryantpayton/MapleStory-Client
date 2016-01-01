@@ -38,13 +38,17 @@ namespace IO
 		void end() const;
 		void togglemode();
 		void fadeout();
+		void handlekey(WPARAM, bool);
 
 	private:
 		HRESULT initfactories();
 		HRESULT inittargets();
 		void updateopc();
+		void gofullscreen();
+		void gowindowed();
 
 		HWND wnd;
+		MONITORINFO moninfo;
 		WINDOWPLACEMENT placement;
 
 		IWICImagingFactory* imgfactory;
@@ -56,6 +60,7 @@ namespace IO
 		float opacity;
 		float opcstep;
 		short screencd;
+		bool fullscreen;
 		bool transition;
 	};
 }

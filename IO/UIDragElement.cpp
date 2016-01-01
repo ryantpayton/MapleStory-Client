@@ -15,47 +15,44 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Element.h"
-#include "Components\Textfield.h"
-#include "Components\Icon.h"
+#include "UIDragElement.h"
+#include "Program\Configuration.h"
 
 namespace IO
 {
-	namespace UI
+	UIDragElement::UIDragElement(string cfn, vector2d<int16_t> dga)
 	{
-		void draw(float inter);
-		void update();
+		configname = cfn;
+		dragarea = dga;
 
-		void sendmouse(vector2d<int16_t> pos);
-		void sendmouse(bool pressed, vector2d<int16_t> pos);
-		void doubleclick(vector2d<int16_t> pos);
-		void sendkey(int32_t keycode, bool pressed);
+		dragged = false;
+		position = Program::Configuration::getvector2d(configname);
+	}
 
-		void showstatus(Textlabel::Textcolor color, string message);
-		void showbuff(int32_t buffid, int32_t duration);
-		void cancelbuff(int32_t buffid);
-		void focustextfield(Textfield*);
-		void dragicon(Icon*);
-
-		void addkeymapping(uint8_t no, uint8_t type, int32_t action);
-		void enablegamekeys(bool enable);
-		void enable();
-		void disable();
-
-		void add(const Element& type);
-		void remove(Element::UIType type);
-
-		UIElement* getelement(Element::UIType type);
-
-		template <class T>
-		T* getelement(Element::UIType type)
+	Cursor::Mousestate UIDragElement::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
+	{
+		if (pressed)
 		{
-			UIElement* element = getelement(type);
-			if (element)
-				return reinterpret_cast<T*>(element);
-			else
-				return nullptr;
+			if (dragged)
+			{
+				position = cursorpos - cursoroffset;
+				return Cursor::MST_CLICKING;
+			}
+			else if (rectangle2d<int16_t>(position, position + dragarea).contains(cursorpos))
+			{
+				cursoroffset = cursorpos - position;
+				dragged = true;
+				return Cursor::MST_CLICKING;
+			}
 		}
+		else
+		{
+			if (dragged)
+			{
+				dragged = false;
+				Program::Configuration::setstring(configname, position.tostring());
+			}
+		}
+		return UIElement::sendmouse(pressed, cursorpos);
 	}
 }

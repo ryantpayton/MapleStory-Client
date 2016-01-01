@@ -27,36 +27,38 @@ namespace Net
 	using std::vector;
 	using Util::vector2d;
 
-	// A packet to be sent by the client. Used as a base class to create specific packets.
+	// A packet to be sent to the server. Used as a base class to create specific packets.
 	class OutPacket
 	{
 	public:
-		OutPacket(int16_t);
+		// Construct a packet by writing its opcode.
+		OutPacket(int16_t opcode);
+
+		// Return the length in bytes.
 		size_t length() const;
+		// Return a const pointer to this packet's bytes.
 		const int8_t* getbytes() const;
 
 	protected:
-		void skip(size_t);
-		void writestr(string);
+		// Skip a number of bytes (filled with zeroes).
+		void skip(size_t count);
+		// Write a byte.
+		void writech(int8_t ch);
+		// Write a short.
+		void writesh(int16_t sh);
+		// Write an int.
+		void writeint(int32_t in);
+		// Write a long.
+		void writelg(int64_t lg);
+		// Write a string. Writes the length as a short
+		// and then each individual character as a byte.
+		void writestr(string str);
+		// Write a point, one short for x and one for y.
 		void writepoint(vector2d<int16_t> point);
-
-		void writech(int8_t c) { bytes.push_back(c); }
-		void writesh(int16_t s) { write<int16_t>(s); }
-		void writeint(int32_t i) { write<int32_t>(i); }
-		void writelg(int64_t l) { write<int64_t>(l); }
+		// Write the second count since epoch as an integer.
+		void writetime();
 
 	private:
-		template <class T>
-		void write(T num)
-		{
-			size_t size = sizeof(T) / sizeof(int8_t);
-			for (size_t i = 0; i < size; i++)
-			{
-				bytes.push_back(static_cast<int8_t>(num));
-				num = num >> 8;
-			}
-		}
-
 		vector<int8_t> bytes;
 	};
 }

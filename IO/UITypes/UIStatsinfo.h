@@ -23,7 +23,6 @@
 
 namespace IO
 {
-	using std::string;
 	using Character::CharStats;
 	using Graphics::Textlabel;
 	using Graphics::Texture;
@@ -44,7 +43,6 @@ namespace IO
 		};
 
 		UIStatsinfo(const CharStats& stats);
-		~UIStatsinfo();
 
 		void draw(float inter) const override;
 		void buttonpressed(uint16_t buttonid) override;

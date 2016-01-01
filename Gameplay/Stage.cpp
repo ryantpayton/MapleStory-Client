@@ -24,8 +24,10 @@
 
 #include "Net\InPacket.h"
 #include "Net\Packets\GameplayPackets83.h"
+#include "Net\Packets\AttackAndSkillPackets.h"
 #include "Net\Session.h"
 #include "Audio\Audioplayer.h"
+#include "Data\DataFactory.h"
 
 #include "nlnx\nx.hpp"
 #include "nlnx\audio.hpp"
@@ -200,21 +202,18 @@ namespace Gameplay
 		{
 			AttackResult result = mobs.sendattack(attack);
 
-			using Net::CloseRangeAttackPacket83;
-			Net::Session::dispatch(CloseRangeAttackPacket83(result));
+			using Net::CloseRangeAttackPacket;
+			Net::Session::dispatch(CloseRangeAttackPacket(result));
 		}
 
 		void useskill(int32_t skillid)
 		{
-			static map<int32_t, Skill> skillcache;
-			if (!skillcache.count(skillid))
-				skillcache[skillid] = Skill(skillid);
-			const Skill& skill = skillcache[skillid];
-
-			if (skill.isoffensive() && !player.canattack())
+			if (!player.canattack())
 				return;
 
-			const SkillLevel* skilllevel = skill.getlevel(player.getskills().getlevelof(skillid));
+			const Skill& skill = Data::getskill(skillid);
+			int8_t level = static_cast<int8_t>(player.getskills().getlevelof(skillid));
+			const SkillLevel* skilllevel = skill.getlevel(level);
 			if (skilllevel == nullptr)
 				return;
 
@@ -225,10 +224,7 @@ namespace Gameplay
 
 			bool twohanded = weapon->istwohanded();
 			string action = skill.getaction(twohanded);
-			if (action == "" && skill.isoffensive())
-				player.useattack();
-			else
-				player.getlook().setaction(action);
+			player.useattack(action);
 			player.showeffect(skill.geteffect(twohanded));
 
 			if (skill.isoffensive())
@@ -242,7 +238,8 @@ namespace Gameplay
 			}
 			else
 			{
-
+				using Net::UseSkillPacket;
+				Net::Session::dispatch(UseSkillPacket(skillid, level));
 			}
 		}
 
@@ -342,6 +339,7 @@ namespace Gameplay
 				playable->sendaction(static_cast<Keyboard::Keyaction>(action), down);
 				break;
 			case Keyboard::KT_SKILL:
+				action = 1301007;
 				useskill(action);
 				break;
 			case Keyboard::KT_ITEM:

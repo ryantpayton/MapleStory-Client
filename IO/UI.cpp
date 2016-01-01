@@ -21,6 +21,7 @@
 #include "Window.h"
 
 #include "Components\StatusMessenger.h"
+#include "Components\BuffInventory.h"
 
 #include "UITypes\UIStatsinfo.h"
 #include "UITypes\UIItemInventory.h"
@@ -28,7 +29,7 @@
 
 #include "Gameplay\Stage.h"
 #include "Net\Session.h"
-#include "Net\Packets\GameplayPackets83.h"
+#include "Net\Packets\InventoryPackets.h"
 
 #include <unordered_map>
 #include <memory>
@@ -43,6 +44,7 @@ namespace IO
 		Keyboard keyboard;
 		Cursor cursor;
 		StatusMessenger messenger;
+		BuffInventory buffinventory;
 
 		unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
 		unordered_map<Element::UIType, Element::UIType> elementorder;
@@ -58,6 +60,7 @@ namespace IO
 		void draw(float inter)
 		{
 			messenger.draw(vector2d<int16_t>(790, 510), inter);
+			buffinventory.draw(vector2d<int16_t>(750, 40), inter);
 
 			for (auto& elit : elementorder)
 			{
@@ -87,6 +90,16 @@ namespace IO
 			}
 
 			cursor.update();
+		}
+
+		void showbuff(int32_t buffid, int32_t duration)
+		{
+			buffinventory.addbuff(buffid, duration);
+		}
+
+		void cancelbuff(int32_t buffid)
+		{
+			buffinventory.cancelbuff(buffid);
 		}
 
 		void showstatus(Textlabel::Textcolor color, string message)
@@ -130,13 +143,9 @@ namespace IO
 			}
 			else
 			{
-				switch (draggedicon->getparent())
-				{
-				case Element::EQUIPINVENTORY:
-					using Net::MoveItemPacket;
-					Net::Session::dispatch(MoveItemPacket(Inventory::EQUIPPED, -draggedicon->getidentifier(), 0, 1));
-					break;
-				}
+				UIElement* parent = getelement(draggedicon->getparent());
+				if (parent)
+					parent->icondropped(draggedicon->getidentifier());
 			}
 		}
 

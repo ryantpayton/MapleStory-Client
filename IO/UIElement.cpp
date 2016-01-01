@@ -21,7 +21,7 @@ namespace IO
 {
 	void UIElement::draw(float inter) const
 	{
-		using::Graphics::DrawArgument;
+		using Graphics::DrawArgument;
 		for (auto& sprit : sprites)
 		{
 			sprit.draw(DrawArgument(position), inter);
@@ -44,6 +44,8 @@ namespace IO
 	void UIElement::buttonpressed(uint16_t) {}
 
 	void UIElement::doubleclick(vector2d<int16_t>) {}
+
+	void UIElement::icondropped(int16_t) {}
 
 	Cursor::Mousestate UIElement::sendmouse(bool down, vector2d<int16_t> pos)
 	{

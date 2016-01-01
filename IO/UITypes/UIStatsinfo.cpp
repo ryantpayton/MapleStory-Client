@@ -25,8 +25,10 @@
 
 namespace IO
 {
-	UIStatsinfo::UIStatsinfo(const CharStats& st) : stats(st)
-	{
+	UIStatsinfo::UIStatsinfo(const CharStats& st) :
+		UIDragElement("PosSTATS", vector2d<int16_t>(212, 20)),
+		stats(st) {
+
 		using nl::node;
 		node src = nl::nx::ui["UIWindow4.img"]["Stat"]["main"];
 		node detail = nl::nx::ui["UIWindow4.img"]["Stat"]["detail"];
@@ -68,19 +70,9 @@ namespace IO
 
 		statlabel = Textlabel(Textlabel::DWF_12ML, Textlabel::TXC_BLACK, "", 0);
 
-		dragarea = vector2d<int16_t>(212, 20);
-		cursoroffset = vector2d<int16_t>();
-		dragged = false;
-
-		position = Program::Configuration::getvector2d("PosSTATS");
 		dimension = vector2d<int16_t>(212, 318);
 		active = true;
 		showdetail = false;
-	}
-
-	UIStatsinfo::~UIStatsinfo()
-	{
-		Program::Configuration::setstring("PosSTATS", position.tostring());
 	}
 
 	void UIStatsinfo::draw(float inter) const

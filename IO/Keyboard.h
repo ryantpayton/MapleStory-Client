@@ -75,8 +75,8 @@ namespace IO
 			KA_PICKUP = 50,
 			KA_SIT = 51,
 			KA_ATTACK = 52,
-			KA_JUMP = 54, //switched
-			KA_NPCCHAT = 53, //switched
+			KA_JUMP = 53, //switched
+			KA_NPCCHAT = 54, //switched
 			KA_LEFT = 60,
 			KA_RIGHT = 61,
 			KA_UP = 62,

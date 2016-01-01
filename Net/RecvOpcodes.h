@@ -102,6 +102,7 @@ namespace Net
 	// Opcodes for InPacket Handlers associated with version 83 of the game.
 	enum RecvOpcode : int16_t
 	{
+		// Login 1
 		LOGIN_RESULT = 0,
 		SERVERLIST = 10,
 		CHARLIST = 11,
@@ -110,21 +111,41 @@ namespace Net
 		ADD_NEWCHAR_ENTRY = 14,
 		DELCHAR_RESPONSE = 15,
 		PING = 17,
+
+		// Player 1
+		APPLY_BUFF = 20,
+
+		// Login 2
 		SELECT_WORLD = 26,
 		RECOMMENDED_WORLDS = 27,
+		
+		// Inventory 1
 		MODIFY_INVENTORY = 29,
-		STATS_CHANGED = 31,
+
+		// Player 2
+		CHANGE_STATS = 31,
 		GIVE_BUFF = 32,
-		FORCED_STAT_RESET = 35,
+		RECALCULATE_STATS = 35,
 		UPDATE_SKILLS = 36,
+
+		// Messaging 1
 		SHOW_STATUS_INFO = 39,
 		MEMO_RESULT = 41,
 		ENABLE_REPORT = 47,
+
+		//Inventory 2
+		GATHER_RESULT = 52,
+		SORT_RESULT = 53,
+
+		// Player 3
 		UPDATE_GENDER = 58,
 		BUDDY_LIST = 63,
 		GUILD_OPERATION = 65,
+
+		// Messaging 2
 		SERVER_MESSAGE = 68,
 		WEEK_EVENT_MESSAGE = 77,
+
 		FIELD_SET_VARIABLE = 92,
 		FAMILY_PRIV_LIST = 100,
 		CANCEL_RENAME_BY_OTHER = 120,
@@ -145,6 +166,8 @@ namespace Net
 		SHOW_FOREIGN_EFFECT = 198,
 		LOCK_UI = 221,
 		TOGGLE_UI = 222,
+
+		// Mapobject
 		SPAWN_MOB = 236,
 		KILL_MOB = 237,
 		SPAWN_MOB_C = 238,
@@ -158,6 +181,7 @@ namespace Net
 		REMOVE_MAPITEM = 269,
 		SPAWN_REACTOR = 279,
 		REMOVE_REACTOR = 280,
+
 		NPC_DIALOGUE = 304,
 		KEYMAP = 335
 	};

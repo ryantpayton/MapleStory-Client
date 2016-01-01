@@ -39,6 +39,7 @@ namespace Data
 		static map<uint8_t, Bodytype> bodytypes;
 		if (!bodytypes.count(skin))
 			bodytypes[skin] = Bodytype(skin, drawinfo);
+
 		return bodytypes[skin];
 	}
 
@@ -47,6 +48,7 @@ namespace Data
 		static map<int32_t, Hairstyle> hairstyles;
 		if (!hairstyles.count(hairid))
 			hairstyles[hairid] = Hairstyle(hairid, drawinfo);
+
 		return hairstyles[hairid];
 	}
 
@@ -55,6 +57,7 @@ namespace Data
 		static map<int32_t, Facetype> faces;
 		if (!faces.count(faceid))
 			faces[faceid] = Facetype(faceid);
+
 		return faces[faceid];
 	}
 
@@ -70,6 +73,7 @@ namespace Data
 			static map<int32_t, ItemData> items;
 			if (!items.count(itemid))
 				items[itemid] = ItemData(itemid);
+
 			return items[itemid];
 		}
 	}
@@ -86,6 +90,7 @@ namespace Data
 			static map<int32_t, Clothing> equips;
 			if (!equips.count(itemid))
 				equips[itemid] = Clothing(itemid, drawinfo);
+
 			return equips[itemid];
 		}
 	}
@@ -95,6 +100,16 @@ namespace Data
 		static map<int32_t, Weapon> weapons;
 		if (!weapons.count(itemid))
 			weapons[itemid] = Weapon(itemid, drawinfo);
+
 		return weapons[itemid];
+	}
+
+	const Skill& getskill(int32_t skillid)
+	{
+		static map<int32_t, Skill> skills;
+		if (!skills.count(skillid))
+			skills[skillid] = Skill(skillid);
+
+		return skills[skillid];
 	}
 }

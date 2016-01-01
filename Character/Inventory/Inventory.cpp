@@ -267,6 +267,22 @@ namespace Character
 			return NONE;
 	}
 
+	Inventory::InvType Inventory::typebyvalue(int8_t value) const
+	{
+		if (value < EQUIPPED || value > CASH)
+			return NONE;
+		else
+			return static_cast<InvType>(value);
+	}
+
+	Inventory::Movetype Inventory::movetypebyvalue(int8_t value) const
+	{
+		if (value < MOVE_INTERNAL || value > MOVE_UNEQUIP)
+			return MOVE_NONE;
+		else
+			return static_cast<Movetype>(value);
+	}
+
 	const Item* Inventory::getitem(InvType type, int16_t slot) const
 	{
 		if (inventoryitems.count(type) == 0)

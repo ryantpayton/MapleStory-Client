@@ -16,46 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Element.h"
-#include "Components\Textfield.h"
-#include "Components\Icon.h"
+#include "Net\InPacket.h"
+#include "Character\Inventory\Inventory.h"
 
-namespace IO
+namespace Net
 {
-	namespace UI
+	namespace HandlerFunctions
 	{
-		void draw(float inter);
-		void update();
+		using::Character::Inventory;
 
-		void sendmouse(vector2d<int16_t> pos);
-		void sendmouse(bool pressed, vector2d<int16_t> pos);
-		void doubleclick(vector2d<int16_t> pos);
-		void sendkey(int32_t keycode, bool pressed);
-
-		void showstatus(Textlabel::Textcolor color, string message);
-		void showbuff(int32_t buffid, int32_t duration);
-		void cancelbuff(int32_t buffid);
-		void focustextfield(Textfield*);
-		void dragicon(Icon*);
-
-		void addkeymapping(uint8_t no, uint8_t type, int32_t action);
-		void enablegamekeys(bool enable);
-		void enable();
-		void disable();
-
-		void add(const Element& type);
-		void remove(Element::UIType type);
-
-		UIElement* getelement(Element::UIType type);
-
-		template <class T>
-		T* getelement(Element::UIType type)
-		{
-			UIElement* element = getelement(type);
-			if (element)
-				return reinterpret_cast<T*>(element);
-			else
-				return nullptr;
-		}
+		void parseitem(InPacket& recv, Inventory::InvType invtype, int16_t slot, Inventory& inventory);
 	}
 }

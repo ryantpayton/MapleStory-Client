@@ -16,46 +16,69 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Element.h"
-#include "Components\Textfield.h"
-#include "Components\Icon.h"
+#include "Net\OutPacket.h"
+#include "Net\SendOpcodes.h"
 
-namespace IO
+#include "Gameplay\Attack.h"
+
+namespace Net
 {
-	namespace UI
+	using Gameplay::AttackResult;
+
+	// Packet which notifies the server of a close-range attack.
+	// Opcode: CLOSE_ATTACK(44)
+	class CloseRangeAttackPacket : public OutPacket
 	{
-		void draw(float inter);
-		void update();
-
-		void sendmouse(vector2d<int16_t> pos);
-		void sendmouse(bool pressed, vector2d<int16_t> pos);
-		void doubleclick(vector2d<int16_t> pos);
-		void sendkey(int32_t keycode, bool pressed);
-
-		void showstatus(Textlabel::Textcolor color, string message);
-		void showbuff(int32_t buffid, int32_t duration);
-		void cancelbuff(int32_t buffid);
-		void focustextfield(Textfield*);
-		void dragicon(Icon*);
-
-		void addkeymapping(uint8_t no, uint8_t type, int32_t action);
-		void enablegamekeys(bool enable);
-		void enable();
-		void disable();
-
-		void add(const Element& type);
-		void remove(Element::UIType type);
-
-		UIElement* getelement(Element::UIType type);
-
-		template <class T>
-		T* getelement(Element::UIType type)
+	public:
+		CloseRangeAttackPacket(const AttackResult& attack) : OutPacket(CLOSE_ATTACK)
 		{
-			UIElement* element = getelement(type);
-			if (element)
-				return reinterpret_cast<T*>(element);
-			else
-				return nullptr;
+			skip(1);
+			writech((attack.mobcount << 4) | attack.hitcount);
+			writeint(attack.skill);
+			if (attack.charge > 0)
+				writeint(attack.charge);
+			skip(8);
+			writech(attack.display);
+			writech(attack.direction);
+			writech(attack.stance);
+			skip(1);
+			writech(attack.speed);
+			skip(4);
+
+			for (auto& damagetomob : attack.damagelines)
+			{
+				writeint(damagetomob.first);
+				skip(14);
+
+				for (auto& singledamage : damagetomob.second)
+				{
+					writeint(singledamage);
+				}
+
+				if (attack.skill != 5221004)
+					skip(4);
+			}
 		}
-	}
+	};
+
+
+	// Packet which notifies the server of a skill usage.
+	// Opcode: USE_SKILL(91)
+	class UseSkillPacket : public OutPacket
+	{
+	public:
+		UseSkillPacket(int32_t skillid, uint8_t level) : OutPacket(USE_SKILL)
+		{
+			writetime();
+			writeint(skillid);
+			writech(level);
+
+			// if monster magnet : some more bytes
+
+			if (skillid % 10000000 == 1004)
+				skip(2); // no idea what this could be
+
+			// a point (4 bytes) could be added at the end
+		}
+	};
 }

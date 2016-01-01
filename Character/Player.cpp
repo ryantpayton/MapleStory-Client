@@ -21,6 +21,7 @@
 #include "Program\Constants.h"
 #include "Net\Session.h"
 #include "Net\Packets\GameplayPackets83.h"
+#include "Net\Packets\InventoryPackets.h"
 
 namespace Character
 {
@@ -107,8 +108,26 @@ namespace Character
 			inventory.recalcstats();
 		}
 
-		stats.settotal(ES_HP, stats.getstat(MS_MAXHP) + inventory.getstat(ES_HP));
-		stats.settotal(ES_MP, stats.getstat(MS_MAXMP) + inventory.getstat(ES_MP));
+		int32_t maxhp = stats.getstat(MS_MAXHP) + inventory.getstat(ES_HP);
+		int32_t maxmp = stats.getstat(MS_MAXMP) + inventory.getstat(ES_MP);
+
+		for (auto& buff : buffs)
+		{
+			float floatvalue = static_cast<float>(buff.second.value) / 100;
+
+			switch (buff.first)
+			{
+			case HYPERBODYHP:
+				maxhp += static_cast<int32_t>(maxhp * floatvalue);
+				break;
+			case HYPERBODYMP:
+				maxmp += static_cast<int32_t>(maxmp * floatvalue);
+				break;
+			}
+		}
+
+		stats.settotal(ES_HP, maxhp);
+		stats.settotal(ES_MP, maxmp);
 		stats.settotal(ES_STR, stats.getstat(MS_STR) + inventory.getstat(ES_STR));
 		stats.settotal(ES_DEX, stats.getstat(MS_DEX) + inventory.getstat(ES_DEX));
 		stats.settotal(ES_LUK, stats.getstat(MS_LUK) + inventory.getstat(ES_LUK));
@@ -142,8 +161,8 @@ namespace Character
 			switch (type)
 			{
 			case Inventory::USE:
-				using Net::UseItemPacket83;
-				Net::Session::dispatch(UseItemPacket83(slot, itemid));
+				using Net::UseItemPacket;
+				Net::Session::dispatch(UseItemPacket(slot, itemid));
 				break;
 			}
 		}
@@ -233,9 +252,13 @@ namespace Character
 		return !attacking && !isclimbing() && !issitting() && look.getequips().hasweapon();
 	}
 
-	void Player::useattack()
+	void Player::useattack(string action)
 	{
-		look.setstance("attack");
+		if (action == "")
+			look.setstance("attack");
+		else
+			look.setaction(action);
+
 		attacking = true;
 	}
 
@@ -256,7 +279,7 @@ namespace Character
 
 	Attack Player::regularattack()
 	{
-		useattack();
+		useattack("");
 
 		Attack attack = prepareattack();
 		attack.skill = 0;
@@ -266,6 +289,16 @@ namespace Character
 		attack.range = look.getequips().getweapon()->getrange();
 		attack.hiteffect = look.getequips().getweapon()->gethiteffect();
 		return attack;
+	}
+
+	void Player::givebuff(Buff buff)
+	{
+		buffs[buff.stat] = buff;
+	}
+
+	void Player::cancelbuff(Buffstat buffstat)
+	{
+		buffs.erase(buffstat);
 	}
 
 	float Player::getattackspeed() const

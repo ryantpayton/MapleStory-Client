@@ -15,119 +15,66 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "PlayerHandlers83.h"
-#include "Gameplay\Stage.h"
+#include "InventoryHandlers.h"
+#include "HandlerFunctions.h"
+
 #include "IO\UI.h"
 #include "IO\UITypes\UIEquipInventory.h"
 #include "IO\UITypes\UIItemInventory.h"
+#include "Gameplay\Stage.h"
+#include "Character\Inventory\Inventory.h"
 
 namespace Net
 {
-	void StatschangedHandler83::handle(InPacket& recv) const
+	using Character::Inventory; 
+	using IO::Element;
+	using IO::UIEquipInventory;
+	using IO::UIItemInventory;
+
+	void GatherResultHandler::handle(InPacket&) const
 	{
-		recv.readbool(); // 'itemreaction'
+		UIItemInventory* itinvent = IO::UI::getelement<UIItemInventory>(Element::ITEMINVENTORY);
 
-		int32_t updatemask = recv.readint();
-		if (updatemask == 0)
-		{
-			IO::UI::enable();
-			return;
-		}
-
-		for (size_t i = 0; i < 20; i++)
-		{
-			using Character::Player;
-			Player& player = Gameplay::Stage::getplayer();
-			Maplestat stat = Character::statvalues[i];
-
-			if (updatemask & stat)
-			{
-				switch (stat)
-				{
-				case Character::MS_SKIN:
-					player.getlook().setbody(static_cast<int8_t>(recv.readshort()));
-					break;
-				case Character::MS_FACE:
-					player.getlook().setface(recv.readint());
-					break;
-				case Character::MS_HAIR:
-					player.getlook().sethair(recv.readint());
-					break;
-				case Character::MS_LEVEL:
-					player.getstats().setstat(stat, static_cast<uint8_t>(recv.readbyte()));
-					//parent.getstage().showchareffect(0);
-					break;
-				case Character::MS_EXP:
-					player.getstats().setexp(recv.readint());
-					break;
-				case Character::MS_MESO:
-					player.getinvent().setmeso(recv.readint());
-					break;
-				case Character::MS_AP:
-					player.getstats().setstat(stat, recv.readshort());
-					/*if (uinterface.getelement(UI_STATSINFO))
-					{
-					uinterface.getelement(UI_STATSINFO)->sendbool(player->getstats()->getstat(MS_AP) > 0);
-					}*/
-					break;
-				default:
-					player.getstats().setstat(stat, recv.readshort());
-					player.recalcstats(false);
-					break;
-				}
-			}
-		}
+		if (itinvent)
+			itinvent->enablesort();
 	}
 
-	void StatresetHandler83::handle(InPacket&) const
+	void SortResultHandler::handle(InPacket&) const
 	{
-		Gameplay::Stage::getplayer().recalcstats(false);
-	}
+		UIItemInventory* itinvent = IO::UI::getelement<UIItemInventory>(Element::ITEMINVENTORY);
 
-	void UpdateskillsHandler83::handle(InPacket& recv) const
-	{
-		recv.skip(3);
-
-		int32_t skillid = recv.readint();
-		int32_t level = recv.readint();
-		int32_t masterlevel = recv.readint();
-		int64_t expire = recv.readlong();
-
-		Gameplay::Stage::getplayer().getskills().setskill(skillid, level, masterlevel, expire);
+		if (itinvent)
+			itinvent->enablegather();
 	}
 
 	void ModifyInventoryHandler::handle(InPacket& recv) const
 	{
 		recv.readbool(); // 'updatetick'
 
+		Inventory& inventory = Gameplay::Stage::getplayer().getinvent();
+
 		int8_t size = recv.readbyte();
 		for (int8_t i = 0; i < size; i++)
 		{
 			int8_t mode = recv.readbyte();
-			Inventory::InvType invtype = static_cast<Inventory::InvType>(recv.readbyte());
+			Inventory::InvType invtype = inventory.typebyvalue(recv.readbyte());
 			int16_t pos = recv.readshort();
 			int16_t arg = (mode == 1 || mode == 2) ? recv.readshort() : 0;
 
 			Inventory::Movetype move;
 			if ((mode == 2 && (pos < 0 || arg < 0)) || (mode == 3 && pos < 0))
-				move = static_cast<Inventory::Movetype>(recv.readbyte());
+				move = inventory.movetypebyvalue(recv.readbyte());
 			else
 				move = Inventory::MOVE_INTERNAL;
 
-			Inventory& inventory = Gameplay::Stage::getplayer().getinvent();
 			if (mode == 0)
-				parseitem(recv, invtype, pos, inventory);
+				HandlerFunctions::parseitem(recv, invtype, pos, inventory);
 			else
 				inventory.modify(invtype, pos, mode, arg, move);
-
-			using IO::Element;
-			using IO::UIEquipInventory;
-			using IO::UIItemInventory;
 
 			UIEquipInventory* eqinvent = IO::UI::getelement<UIEquipInventory>(Element::EQUIPINVENTORY);
 			UIItemInventory* itinvent = IO::UI::getelement<UIItemInventory>(Element::ITEMINVENTORY);
 
-			bool equipchanged = false;
 			switch (move)
 			{
 			case Inventory::MOVE_INTERNAL:
@@ -136,7 +83,9 @@ namespace Net
 				case Inventory::EQUIPPED:
 					if (eqinvent)
 						eqinvent->modify(pos, mode, arg);
-					equipchanged = true;
+
+					Gameplay::Stage::getplayer().changecloth(-pos);
+					Gameplay::Stage::getplayer().changecloth(-arg);
 					break;
 				case Inventory::EQUIP:
 				case Inventory::USE:
@@ -172,8 +121,8 @@ namespace Net
 				}
 				break;
 			}
-
-			IO::UI::enable();
 		}
+
+		IO::UI::enable();
 	}
 }

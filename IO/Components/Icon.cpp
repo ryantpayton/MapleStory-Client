@@ -16,10 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Icon.h"
+#include "Charset.h"
+#include "nlnx\nx.hpp"
 
 namespace IO
 {
-	Icon::Icon(Texture t, Element::UIType p, int16_t i, int16_t c = 1)
+	Icon::Icon(Texture t, Element::UIType p, int16_t i, int16_t c)
 	{
 		texture = t;
 		parent = p;
@@ -43,6 +45,13 @@ namespace IO
 	{
 		using Graphics::DrawArgument;
 		texture.draw(DrawArgument(position, dragged ? 0.5f : 1.0f));
+
+		int16_t tempc = dragged ? (count - 1) : count;
+		if (tempc > 1)
+		{
+			static const Charset countset = Charset(nl::nx::ui["Basic.img"]["ItemNo"], Charset::LEFT);
+			countset.draw(std::to_string(tempc), DrawArgument(position + vector2d<int16_t>(0, 20)));
+		}
 	}
 
 	void Icon::dragdraw(vector2d<int16_t> cursorpos) const
@@ -68,6 +77,11 @@ namespace IO
 	void Icon::setcount(int16_t c)
 	{
 		count = c;
+	}
+
+	int16_t Icon::getcount() const
+	{
+		return count;
 	}
 
 	int16_t Icon::getidentifier() const

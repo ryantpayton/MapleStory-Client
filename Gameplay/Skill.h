@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
+#pragma once
 #include "Graphics\Texture.h"
 #include "Graphics\Animation.h"
 #include "Util\rectangle2d.h"
@@ -58,6 +59,7 @@ namespace Gameplay
 		string getaction(bool twohanded) const;
 		Animation gethitanimation(bool twohanded) const;
 		Animation geteffect(bool twohanded) const;
+		const Texture* geticon(uint8_t type) const;
 		const SkillLevel* getlevel(int32_t level) const;
 
 	private:

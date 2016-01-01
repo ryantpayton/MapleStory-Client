@@ -38,6 +38,7 @@ namespace IO
 		void resetdrag();
 		void setcount(int16_t count);
 
+		int16_t getcount() const;
 		int16_t getidentifier() const;
 		Element::UIType getparent() const;
 

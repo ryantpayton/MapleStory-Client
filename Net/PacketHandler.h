@@ -24,7 +24,7 @@ namespace Net
 	class PacketHandler
 	{
 	public:
-		virtual ~PacketHandler(){}
+		virtual ~PacketHandler() {}
 		virtual void handle(InPacket& tohandle) const = 0;
 	};
 }

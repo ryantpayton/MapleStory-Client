@@ -16,12 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "OutPacket.h"
+#include <chrono>
 
 namespace Net
 {
 	OutPacket::OutPacket(int16_t opcode)
 	{
-		write<int16_t>(opcode);
+		writesh(opcode);
 	}
 
 	size_t OutPacket::length() const
@@ -42,10 +43,42 @@ namespace Net
 		}
 	}
 
+	void OutPacket::writech(int8_t ch)
+	{
+		bytes.push_back(ch);
+	}
+
+	void OutPacket::writesh(int16_t sh)
+	{
+		for (size_t i = 0; i < 2; i++)
+		{
+			bytes.push_back(static_cast<int8_t>(sh));
+			sh = sh >> 8;
+		}
+	}
+
+	void OutPacket::writeint(int32_t in)
+	{
+		for (size_t i = 0; i < 4; i++)
+		{
+			bytes.push_back(static_cast<int8_t>(in));
+			in = in >> 8;
+		}
+	}
+
+	void OutPacket::writelg(int64_t lg)
+	{
+		for (size_t i = 0; i < 8; i++)
+		{
+			bytes.push_back(static_cast<int8_t>(lg));
+			lg = lg >> 8;
+		}
+	}
+
 	void OutPacket::writestr(string str)
 	{
 		int16_t len = static_cast<int16_t>(str.length());
-		write<int16_t>(len);
+		writesh(len);
 		for (int16_t i = 0; i < len; i++)
 		{
 			bytes.push_back(str[i]);
@@ -54,7 +87,17 @@ namespace Net
 
 	void OutPacket::writepoint(vector2d<int16_t> position)
 	{
-		write<int16_t>(position.x());
-		write<int16_t>(position.y());
+		writesh(position.x());
+		writesh(position.y());
+	}
+
+	void OutPacket::writetime()
+	{
+		using std::chrono::steady_clock;
+		using std::chrono::seconds;
+
+		seconds since_epoch = std::chrono::duration_cast<seconds>(steady_clock::now().time_since_epoch());
+		int32_t timestamp = static_cast<int32_t>(since_epoch.count());
+		writeint(timestamp);
 	}
 }

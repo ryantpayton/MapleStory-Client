@@ -16,31 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "AbstractItemHandler83.h"
+#include "Buffstat.h"
 
-namespace Net
+namespace Character
 {
-	// Handles a packet which notifies the client of changes in character stats.
-	class StatschangedHandler83 : public PacketHandler
+	struct Buff
 	{
-		void handle(InPacket& recv) const override;
-	};
-
-	// Handles a packet which forces a stats recalculation.
-	class StatresetHandler83 : public PacketHandler
-	{
-		void handle(InPacket&) const override;
-	};
-
-	// Handles a packet which notifies the client of changes in a character's skills.
-	class UpdateskillsHandler83 : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
-
-	// Handler for a packet which modifies the player's inventory.
-	class ModifyInventoryHandler : public AbstractItemHandler83
-	{
-		void handle(InPacket& recv) const override;
+		Buffstat stat;
+		int16_t value;
+		int32_t skillid;
+		int32_t duration;
 	};
 }

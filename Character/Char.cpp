@@ -30,8 +30,12 @@ namespace Character
 				pets[i].draw(camera, inter);
 		}
 
-		effects.draw(absp, inter);
 		namelabel.draw(absp);
+
+		if (!flip)
+			absp.shiftx(-8);
+
+		effects.draw(absp, inter);
 	}
 
 	int8_t Char::update(const Physics& physics)
@@ -102,7 +106,7 @@ namespace Character
 			"dead", "sit", "", "proneStab"
 		};
 
-		int32_t index = st / 2;
+		int8_t index = st / 2;
 		if (index >= 0 && index < 11)
 			look.setstance(stancenames[index]);
 	}

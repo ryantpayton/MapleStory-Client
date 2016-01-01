@@ -119,6 +119,14 @@ namespace Gameplay
 			return actions[0];
 	}
 
+	const Texture* Skill::geticon(uint8_t type) const
+	{
+		if (icons.count(type))
+			return &icons.at(type);
+		else
+			return nullptr;
+	}
+
 	Animation Skill::gethitanimation(bool twohanded) const
 	{
 		if (effects.size() == 0)

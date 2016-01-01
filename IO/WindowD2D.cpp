@@ -29,7 +29,8 @@ namespace IO
 		HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 		CoInitialize(NULL); 
 
-		placement = { sizeof(placement) };
+		moninfo = { sizeof(MONITORINFO) };
+		placement = { sizeof(WINDOWPLACEMENT) };
 	}
 
 	WindowD2D::~WindowD2D()
@@ -69,20 +70,18 @@ namespace IO
 				(LONG_PTR)(((LPCREATESTRUCT)lParam)->lpCreateParams)
 				);
 			return 1;
-		case WM_SIZE:
-			return 0;
 		case WM_DISPLAYCHANGE:
 			InvalidateRect(hwnd, NULL, FALSE);
-			return 0;
-		case WM_DESTROY:
-		case WM_QUIT:
+			return 1;
+		case WM_SETCURSOR:
+			SetCursor(NULL);
 			return 1;
 		case WM_MOUSEMOVE:
 			UI::sendmouse(paramtov2d(lParam));
 			return 0;
-		case WM_SETCURSOR:
-			SetCursor(NULL);
-			return 1;
+		case WM_LBUTTONDBLCLK:
+			UI::doubleclick(paramtov2d(lParam));
+			return 0;
 		case WM_LBUTTONDOWN:
 			switch (wParam)
 			{
@@ -91,25 +90,32 @@ namespace IO
 				break;
 			}
 			return 0;
-		case WM_LBUTTONDBLCLK:
-			UI::doubleclick(paramtov2d(lParam));
-			return 0;
 		case WM_LBUTTONUP:
 			if (wParam != MK_LBUTTON)
 				UI::sendmouse(false, paramtov2d(lParam));
 			return 0;
+		case WM_SYSCOMMAND:
+			if (wParam == SC_KEYMENU)
+				return 0;
+		case WM_SYSKEYDOWN:
 		case WM_KEYDOWN:
-			if (wParam == VK_TAB)
-				app->togglemode();
-			else
-				UI::sendkey(static_cast<uint8_t>(wParam), true);
+			app->handlekey(wParam, true);
 			return 0;
 		case WM_KEYUP:
-			UI::sendkey(static_cast<uint8_t>(wParam), false);
+		case WM_SYSKEYUP:
+			app->handlekey(wParam, false);
 			return 0;
 		}
 
 		return DefWindowProc(hwnd, message, wParam, lParam);
+	}
+
+	void WindowD2D::handlekey(WPARAM keycode, bool down)
+	{
+		if (keycode == VK_F11 && down)
+			togglemode();
+		else
+			UI::sendkey(static_cast<int32_t>(keycode), down);
 	}
 
 	bool WindowD2D::init()
@@ -126,6 +132,7 @@ namespace IO
 		wcex.cbWndExtra = sizeof(LONG_PTR);
 		wcex.hbrBackground = NULL;
 		wcex.lpszMenuName = NULL;
+		wcex.hInstance = NULL;
 		wcex.hCursor = LoadCursor(NULL, IDI_APPLICATION);
 		wcex.lpszClassName = title;
 
@@ -135,10 +142,15 @@ namespace IO
 		float dpiY;
 		d2dfactory->GetDesktopDpi(&dpiX, &dpiY);
 
+		GetMonitorInfo(
+			MonitorFromWindow(wnd, MONITOR_DEFAULTTOPRIMARY), 
+			&moninfo
+			);
+
 		wnd = CreateWindow(
 			title,
 			title,
-			WS_OVERLAPPED,
+			WS_OVERLAPPEDWINDOW,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
 			static_cast<int32_t>(ceil(816.f * dpiX / 96.f)),
@@ -164,6 +176,7 @@ namespace IO
 		screencd = 0;
 		opacity = 1.0f;
 		transition = false;
+		fullscreen = false;
 
 		if (Program::Configuration::getbool("Fullscreen"))
 			togglemode();
@@ -236,35 +249,39 @@ namespace IO
 		return result;
 	}
 
+	void WindowD2D::gofullscreen()
+	{
+		if (!GetWindowPlacement(wnd, &placement))
+			return;
+
+		SetWindowLong(wnd, GWL_STYLE, WS_VISIBLE);
+		SetWindowPos(wnd, HWND_TOP,
+			moninfo.rcMonitor.left, moninfo.rcMonitor.top,
+			moninfo.rcMonitor.right - moninfo.rcMonitor.left,
+			moninfo.rcMonitor.bottom - moninfo.rcMonitor.top,
+			SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+	}
+
+	void WindowD2D::gowindowed()
+	{
+		SetWindowLong(wnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+		SetWindowPlacement(wnd, &placement);
+		SetWindowPos(wnd, NULL, 0, 0, 0, 0,
+			SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
+			SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+	}
+
 	void WindowD2D::togglemode()
 	{
 		if (screencd > 0)
 			return;
 
-		DWORD dwStyle = GetWindowLong(wnd, GWL_STYLE);
-		if (dwStyle & WS_OVERLAPPEDWINDOW) {
-			MONITORINFO mi = { sizeof(mi) };
-			if (GetWindowPlacement(wnd, &placement) &&
-				GetMonitorInfo(MonitorFromWindow(wnd,
-				MONITOR_DEFAULTTOPRIMARY), &mi)) {
-				SetWindowLong(wnd, GWL_STYLE,
-					dwStyle & ~WS_OVERLAPPEDWINDOW);
-				SetWindowPos(wnd, HWND_TOP,
-					mi.rcMonitor.left, mi.rcMonitor.top,
-					mi.rcMonitor.right - mi.rcMonitor.left,
-					mi.rcMonitor.bottom - mi.rcMonitor.top,
-					SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-			}
-		}
-		else {
-			SetWindowLong(wnd, GWL_STYLE,
-				dwStyle | WS_OVERLAPPEDWINDOW);
-			SetWindowPlacement(wnd, &placement);
-			SetWindowPos(wnd, NULL, 0, 0, 0, 0,
-				SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
-				SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-		}
+		if (fullscreen)
+			gowindowed();
+		else
+			gofullscreen();
 
+		fullscreen = !fullscreen;
 		screencd = 50;
 	}
 

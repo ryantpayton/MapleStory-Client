@@ -16,46 +16,34 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Element.h"
-#include "Components\Textfield.h"
-#include "Components\Icon.h"
+#include "Graphics\Texture.h"
+#include <unordered_map>
 
 namespace IO
 {
-	namespace UI
+	using std::unordered_map;
+	using Util::vector2d;
+	using Graphics::Texture;
+
+	struct BuffIcon
 	{
-		void draw(float inter);
+		const Texture* texture;
+		int32_t duration;
+	};
+
+	class BuffInventory
+	{
+	public:
+		BuffInventory();
+		~BuffInventory();
+
+		void draw(vector2d<int16_t> position, float inter) const;
 		void update();
 
-		void sendmouse(vector2d<int16_t> pos);
-		void sendmouse(bool pressed, vector2d<int16_t> pos);
-		void doubleclick(vector2d<int16_t> pos);
-		void sendkey(int32_t keycode, bool pressed);
-
-		void showstatus(Textlabel::Textcolor color, string message);
-		void showbuff(int32_t buffid, int32_t duration);
+		void addbuff(int32_t buffid, int32_t duration);
 		void cancelbuff(int32_t buffid);
-		void focustextfield(Textfield*);
-		void dragicon(Icon*);
 
-		void addkeymapping(uint8_t no, uint8_t type, int32_t action);
-		void enablegamekeys(bool enable);
-		void enable();
-		void disable();
-
-		void add(const Element& type);
-		void remove(Element::UIType type);
-
-		UIElement* getelement(Element::UIType type);
-
-		template <class T>
-		T* getelement(Element::UIType type)
-		{
-			UIElement* element = getelement(type);
-			if (element)
-				return reinterpret_cast<T*>(element);
-			else
-				return nullptr;
-		}
-	}
+	private:
+		unordered_map<int32_t, BuffIcon> icons;
+	};
 }
