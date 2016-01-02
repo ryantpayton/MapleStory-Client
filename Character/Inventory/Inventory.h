@@ -19,6 +19,7 @@
 #include "Item.h"
 #include "Pet.h"
 #include "Equip.h"
+#include "Character\CharStats.h"
 
 namespace Character
 {
@@ -51,6 +52,8 @@ namespace Character
 
 		// Recalculate sums of equip stats.
 		void recalcstats();
+		// Add total stats to the character stats.
+		void addtotalsto(CharStats& stats) const;
 		// Set the meso amount.
 		void setmeso(int64_t meso);
 		// Set the number of slots for a given inventory.

@@ -17,11 +17,21 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Buffstat.h"
+#include "CharStats.h"
 
 namespace Character
 {
-	struct Buff
+	class Buff
 	{
+	public:
+		Buff(Buffstat stat, int16_t value, int32_t id, int32_t duration);
+		Buff();
+		~Buff();
+
+		void applyto(CharStats& stats) const;
+		Buffstat getstat() const;
+
+	private:
 		Buffstat stat;
 		int16_t value;
 		int32_t skillid;

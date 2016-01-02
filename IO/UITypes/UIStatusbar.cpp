@@ -17,14 +17,17 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIStatusbar.h"
 #include "UIStatsinfo.h"
+#include "UIItemInventory.h"
+#include "UIEquipInventory.h"
 #include "IO\UI.h"
 #include "IO\Components\MapleButton.h"
 #include "nlnx\nx.hpp"
 
 namespace IO
 {
-	UIStatusbar::UIStatusbar(const CharStats& st) : stats(st)
-	{
+	UIStatusbar::UIStatusbar(const CharStats& st, const Inventory& inv) 
+		: stats(st), inventory(inv) {
+
 		node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
 		node chat = nl::nx::ui["StatusBar2.img"]["chat"];
 
@@ -76,7 +79,6 @@ namespace IO
 
 		position = vector2d<int16_t>(512, 590);
 		dimension = vector2d<int16_t>(1366, 80);
-		active = true;
 	}
 
 	void UIStatusbar::draw(float inter) const
@@ -89,7 +91,10 @@ namespace IO
 		uint16_t currentmp = stats.getstat(Character::MS_MP);
 		uint32_t maxhp = stats.gettotal(Character::ES_HP);
 		uint32_t maxmp = stats.gettotal(Character::ES_MP);
-		float exppercent = static_cast<float>(static_cast<double>(currentexp) / expneeded);
+
+		float exppercent = static_cast<float>(
+			static_cast<double>(currentexp) / expneeded
+			);
 
 		expbar.draw(position + vector2d<int16_t>(-261, -15), exppercent);
 		hpbar.draw(position + vector2d<int16_t>(-261, -31), static_cast<float>(currenthp) / maxhp);
@@ -127,9 +132,12 @@ namespace IO
 		case BT_STATS:
 			UI::add(ElementStatsinfo(stats));
 			break;
-		/*case BT_BAR_EQUIPS:
-			uinterface.add(UI_EQUIPS);
-			break;*/
+		case BT_INVENTORY:
+			UI::add(ElementItemInventory(inventory));
+			break;
+		case BT_EQUIPS:
+			UI::add(ElementEquipInventory(inventory));
+			break;
 		}
 		buttons[id].get()->setstate(Button::MOUSEOVER);
 	}

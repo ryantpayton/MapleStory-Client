@@ -24,6 +24,12 @@ namespace IO
 {
 	namespace UI
 	{
+		enum Mode
+		{
+			MD_LOGIN,
+			MD_GAME
+		};
+
 		void draw(float inter);
 		void update();
 
@@ -33,19 +39,18 @@ namespace IO
 		void sendkey(int32_t keycode, bool pressed);
 
 		void showstatus(Textlabel::Textcolor color, string message);
-		void showbuff(int32_t buffid, int32_t duration);
-		void cancelbuff(int32_t buffid);
 		void focustextfield(Textfield*);
 		void dragicon(Icon*);
 
 		void addkeymapping(uint8_t no, uint8_t type, int32_t action);
-		void enablegamekeys(bool enable);
 		void enable();
 		void disable();
+		void changemode(Mode mode);
 
 		void add(const Element& type);
 		void remove(Element::UIType type);
 
+		bool haselement(Element::UIType type);
 		UIElement* getelement(Element::UIType type);
 
 		template <class T>

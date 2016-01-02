@@ -31,15 +31,16 @@ namespace IO
 	class UIElement
 	{
 	public:
-		virtual ~UIElement() {}
+		virtual ~UIElement();
 
-		void makeactive() { active = true; }
-		void deactivate() { active = false; }
-		bool isactive() const { return active; }
-
-		virtual void togglehide() { active = !active; }
 		virtual void draw(float inter) const;
 		virtual void update();
+
+		void makeactive();
+		void deactivate();
+		bool isactive() const;
+
+		virtual void togglehide();
 		virtual void buttonpressed(uint16_t buttonid);
 		virtual void doubleclick(vector2d<int16_t> cursorpos);
 		virtual void icondropped(int16_t identifier);
@@ -47,6 +48,8 @@ namespace IO
 		virtual rectangle2d<int16_t> bounds() const;
 
 	protected:
+		UIElement();
+
 		bool active;
 		vector2d<int16_t> position;
 		vector2d<int16_t> dimension;

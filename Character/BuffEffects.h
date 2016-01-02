@@ -16,41 +16,60 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\UIElement.h"
+#include "Buffstat.h"
+#include "CharStats.h"
 
-namespace IO
+namespace Character
 {
-	class Element
+	// Interface for buff effects which are applied to character stats.
+	class BuffEffect
 	{
 	public:
-		enum UIType
-		{
-			NONE,
-			LOGIN,
-			LOGINWAIT,
-			LOGINNOTICE,
-			WORLDSELECT,
-			CHARSELECT,
-			CHARCREATION,
-			SOFTKEYBOARD,
-			STATUSBAR,
-			BUFFLIST,
-			STATSINFO,
-			ITEMINVENTORY,
-			EQUIPINVENTORY,
-		};
-
-		virtual ~Element() {}
-
-		// Return wether the element can only be created once.
-		// Such elements will be activated/deactived when adding them again.
-		virtual bool isunique() const { return false; }
-		// Return wether the element is focused.
-		// These elements always stay on top of the screen.
-		virtual bool isfocused() const { return false; }
-		// Return the type of this element.
-		virtual UIType type() const = 0;
-		// Create the Element instance.
-		virtual UIElement* instantiate() const = 0;
+		virtual ~BuffEffect() {}
+		virtual void applyto(int16_t value, CharStats& stats) const = 0;
 	};
+
+	// Base class for effects which apply an increase by percentage.
+	class PercentageEffect : public BuffEffect
+	{
+	protected:
+		void addpercentage(int16_t value, Equipstat es, CharStats& stats) const
+		{
+			float floatvalue = static_cast<float>(value) / 100;
+			int32_t total = static_cast<int32_t>(stats.gettotal(es) * floatvalue);
+			stats.addtotal(es, total);
+		}
+	};
+
+	// Effect for BOOSTER
+	class BoosterEffect : public BuffEffect
+	{
+		void applyto(int16_t, CharStats& stats) const override
+		{
+			stats.setattackspeed(-2);
+		}
+	};
+
+	// Effect for HYPERBODYHP
+	class HyperbodyHPEffect : public PercentageEffect
+	{
+	public:
+		void applyto(int16_t value, CharStats& stats) const override
+		{
+			addpercentage(value, ES_HP, stats);
+		}
+	};
+
+	// Effect for HYPERBODYMP
+	class HyperbodyMPEffect : public PercentageEffect
+	{
+	public:
+		void applyto(int16_t value, CharStats& stats) const override
+		{
+			addpercentage(value, ES_MP, stats);
+		}
+	};
+
+	// Return the buff effect associated with the buff stat.
+	const BuffEffect* geteffectbystat(Buffstat stat);
 }

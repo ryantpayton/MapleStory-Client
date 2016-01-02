@@ -150,7 +150,7 @@ namespace Net
 		statsentry.stats[Character::MS_MP] = recv.readshort();
 		statsentry.stats[Character::MS_MAXMP] = recv.readshort();
 		statsentry.stats[Character::MS_AP] = recv.readshort();
-		statsentry.stats[Character::MS_MP] = recv.readshort();
+		statsentry.stats[Character::MS_SP] = recv.readshort();
 		statsentry.exp = recv.readint();
 		statsentry.stats[Character::MS_FAME] = recv.readshort();
 
@@ -339,7 +339,7 @@ namespace Net
 		statsentry.stats[Character::MS_MP] = recv.readshort();
 		statsentry.stats[Character::MS_MAXMP] = recv.readshort();
 		statsentry.stats[Character::MS_AP] = recv.readshort();
-		statsentry.stats[Character::MS_MP] = recv.readshort();
+		statsentry.stats[Character::MS_SP] = recv.readshort();
 		statsentry.exp = recv.readint();
 		statsentry.stats[Character::MS_FAME] = recv.readshort();
 

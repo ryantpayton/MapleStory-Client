@@ -324,7 +324,6 @@ namespace IO
 
 			Gameplay::Stage::reload();
 			UI::enable();
-			UI::enablegamekeys(true);
 		}
 	}
 

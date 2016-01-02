@@ -46,10 +46,30 @@ namespace Character
 	{
 		stats = st;
 
+		inittotalstats();
+	}
+
+	CharStats::CharStats() {}
+
+	CharStats::~CharStats() {}
+
+	void CharStats::inittotalstats()
+	{
+		totalstats.clear();
+
+		totalstats[ES_HP] = getstat(MS_MAXHP);
+		totalstats[ES_MP] = getstat(MS_MAXMP);
+		totalstats[ES_STR] = getstat(MS_STR);
+		totalstats[ES_DEX] = getstat(MS_DEX);
+		totalstats[ES_INT] = getstat(MS_INT);
+		totalstats[ES_LUK] = getstat(MS_LUK);
+		totalstats[ES_SPEED] = 100;
+		totalstats[ES_JUMP] = 100;
+
 		maxdamage = 0;
 		mindamage = 0;
-		attack = 0;
 		honor = 0;
+		attackspeed = 0;
 		mastery = 0.5f;
 		critical = 0.05f;
 		mincrit = 0.5f;
@@ -60,12 +80,9 @@ namespace Character
 		resiststatus = 0.0f;
 	}
 
-	CharStats::CharStats() {}
-
-	CharStats::~CharStats() {}
-
 	void CharStats::calculatedamage(Weapon::WpType wtype)
 	{
+		int32_t attack = gettotal(ES_WATK);
 		int32_t primary = getprimary(wtype);
 		int32_t secondary = getsecondary(wtype);
 		maxdamage = static_cast<int32_t>(
@@ -78,58 +95,52 @@ namespace Character
 
 	int32_t CharStats::getprimary(Weapon::WpType wtype)
 	{
-		if (wtype != Weapon::WEP_NONE)
-		{
-			switch (getstat(MS_JOB) / 100)
-			{
-			case 0:
-			case 1:
-			case 20:
-			case 21:
-				return gettotal(ES_STR);
-			case 2:
-				return gettotal(ES_INT);
-			case 3:
-				return gettotal(ES_DEX);
-			case 4:
-				return gettotal(ES_LUK);
-			case 5:
-				if (wtype == Weapon::WEP_GUN)
-					return gettotal(ES_DEX);
-				else
-					return gettotal(ES_STR);
-			}
-		}
+		if (wtype == Weapon::WEP_NONE)
+			return 0;
 
-		return 0;
+		switch (getstat(MS_JOB) / 100)
+		{
+		case 0:
+		case 1:
+		case 20:
+		case 21:
+			return gettotal(ES_STR);
+		case 2:
+			return gettotal(ES_INT);
+		case 3:
+			return gettotal(ES_DEX);
+		case 4:
+			return gettotal(ES_LUK);
+		case 5:
+			return (wtype == Weapon::WEP_GUN) ? gettotal(ES_DEX) : gettotal(ES_STR);
+		default:
+			return 0;
+		}
 	}
 
 	int32_t CharStats::getsecondary(Weapon::WpType wtype)
 	{
-		if (wtype != Weapon::WEP_NONE)
-		{
-			switch (getstat(MS_JOB) / 100)
-			{
-			case 0:
-			case 1:
-			case 20:
-			case 21:
-				return gettotal(ES_DEX);
-			case 2:
-				return gettotal(ES_LUK);
-			case 3:
-				return gettotal(ES_STR);
-			case 4:
-				return gettotal(ES_DEX);
-			case 5:
-				if (wtype == Weapon::WEP_GUN)
-					return gettotal(ES_STR);
-				else
-					return gettotal(ES_DEX);
-			}
-		}
+		if (wtype == Weapon::WEP_NONE)
+			return 0;
 
-		return 0;
+		switch (getstat(MS_JOB) / 100)
+		{
+		case 0:
+		case 1:
+		case 20:
+		case 21:
+			return gettotal(ES_DEX);
+		case 2:
+			return gettotal(ES_LUK);
+		case 3:
+			return gettotal(ES_STR);
+		case 4:
+			return gettotal(ES_DEX);
+		case 5:
+			return (wtype == Weapon::WEP_GUN) ? gettotal(ES_STR) : gettotal(ES_DEX);
+		default:
+			return 0;
+		}
 	}
 
 	void CharStats::setstat(Maplestat stat, uint16_t value)
@@ -139,7 +150,30 @@ namespace Character
 
 	void CharStats::settotal(Equipstat stat, int32_t value)
 	{
+		switch (stat)
+		{
+		case ES_HP:
+		case ES_MP:
+			if (value > 30000)
+				value = 30000;
+			break;
+		case ES_SPEED:
+			if (value > 140)
+				value = 140;
+			break;
+		case ES_JUMP:
+			if (value > 123)
+				value = 123;
+			break;
+		}
+
 		totalstats[stat] = value;
+	}
+
+	void CharStats::addtotal(Equipstat stat, int32_t value)
+	{
+		int32_t current = gettotal(stat);
+		settotal(stat, current + value);
 	}
 
 	uint16_t CharStats::calculateaccuracy() const

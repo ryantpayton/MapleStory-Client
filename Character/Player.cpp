@@ -103,38 +103,17 @@ namespace Character
 
 	void Player::recalcstats(bool equipchanged)
 	{
-		if (equipchanged)
-		{
-			inventory.recalcstats();
-		}
+		stats.inittotalstats();
 
-		int32_t maxhp = stats.getstat(MS_MAXHP) + inventory.getstat(ES_HP);
-		int32_t maxmp = stats.getstat(MS_MAXMP) + inventory.getstat(ES_MP);
+		if (equipchanged)
+			inventory.recalcstats();
+
+		inventory.addtotalsto(stats);
 
 		for (auto& buff : buffs)
 		{
-			float floatvalue = static_cast<float>(buff.second.value) / 100;
-
-			switch (buff.first)
-			{
-			case HYPERBODYHP:
-				maxhp += static_cast<int32_t>(maxhp * floatvalue);
-				break;
-			case HYPERBODYMP:
-				maxmp += static_cast<int32_t>(maxmp * floatvalue);
-				break;
-			}
+			buff.second.applyto(stats);
 		}
-
-		stats.settotal(ES_HP, maxhp);
-		stats.settotal(ES_MP, maxmp);
-		stats.settotal(ES_STR, stats.getstat(MS_STR) + inventory.getstat(ES_STR));
-		stats.settotal(ES_DEX, stats.getstat(MS_DEX) + inventory.getstat(ES_DEX));
-		stats.settotal(ES_LUK, stats.getstat(MS_LUK) + inventory.getstat(ES_LUK));
-		stats.settotal(ES_INT, stats.getstat(MS_INT) + inventory.getstat(ES_INT));
-		stats.settotal(ES_SPEED, 100 + inventory.getstat(ES_SPEED));
-		stats.settotal(ES_JUMP, 100 + inventory.getstat(ES_JUMP));
-		stats.setattack(inventory.getstat(ES_WATK));
 
 		stats.calculatedamage(look.getequips().getweapontype());
 	}
@@ -293,7 +272,7 @@ namespace Character
 
 	void Player::givebuff(Buff buff)
 	{
-		buffs[buff.stat] = buff;
+		buffs[buff.getstat()] = buff;
 	}
 
 	void Player::cancelbuff(Buffstat buffstat)
@@ -305,7 +284,7 @@ namespace Character
 	{
 		const Weapon* weapon = look.getequips().getweapon();
 		if (weapon)
-			return 1.7f - static_cast<float>(weapon->getspeed()) / 10;
+			return 1.7f - static_cast<float>(weapon->getspeed() + stats.getattackspeed()) / 10;
 		else
 			return 0.0f;
 	}

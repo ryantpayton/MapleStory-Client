@@ -20,12 +20,14 @@
 #include "IO\Components\Charset.h"
 #include "IO\Components\Bar.h"
 #include "Character\CharStats.h"
+#include "Character\Inventory\Inventory.h"
 #include "Graphics\Animation.h"
 #include "Graphics\Textlabel.h"
 
 namespace IO
 {
 	using Character::CharStats;
+	using Character::Inventory;
 	using Graphics::Textlabel;
 	using Graphics::Animation;
 
@@ -48,16 +50,17 @@ namespace IO
 			BT_SKILL
 		};
 
-		UIStatusbar(const CharStats&);
+		UIStatusbar(const CharStats&, const Inventory&);
 
-		void draw(float) const override;
-		void buttonpressed(uint16_t) override;
+		void draw(float inter) const override;
+		void buttonpressed(uint16_t buttonid) override;
 		rectangle2d<int16_t> bounds() const override;
 
 	private:
 		UIStatusbar& operator = (const UIStatusbar&) = delete;
 
 		const CharStats& stats;
+		const Inventory& inventory;
 
 		Bar expbar;
 		Bar hpbar;
@@ -73,7 +76,8 @@ namespace IO
 	class ElementStatusbar : public Element
 	{
 	public:
-		ElementStatusbar(const CharStats& st) : stats(st) {}
+		ElementStatusbar(const CharStats& st, const Inventory& inv) 
+			: stats(st), inventory(inv) {}
 
 		bool isunique() const override
 		{
@@ -87,12 +91,13 @@ namespace IO
 
 		UIElement* instantiate() const override
 		{
-			return new UIStatusbar(stats);
+			return new UIStatusbar(stats, inventory);
 		}
 
 	private:
 		ElementStatusbar& operator = (const ElementStatusbar&) = delete;
 
 		const CharStats& stats;
+		const Inventory& inventory;
 	};
 }

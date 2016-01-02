@@ -43,6 +43,15 @@ namespace Character
 		}
 	}
 
+	void Inventory::addtotalsto(CharStats& stats) const
+	{
+		for (auto& tsit : totalstats)
+		{
+			Equipstat es = tsit.first;
+			stats.addtotal(es, tsit.second);
+		}
+	}
+
 	void Inventory::setmeso(int64_t m)
 	{
 		meso = m;

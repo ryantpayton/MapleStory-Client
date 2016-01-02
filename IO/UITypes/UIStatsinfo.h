@@ -24,6 +24,7 @@
 namespace IO
 {
 	using Character::CharStats;
+	using Character::Maplestat;
 	using Graphics::Textlabel;
 	using Graphics::Texture;
 
@@ -47,8 +48,12 @@ namespace IO
 		void draw(float inter) const override;
 		void buttonpressed(uint16_t buttonid) override;
 
+		void updateap();
+
 	private:
 		UIStatsinfo& operator = (const UIStatsinfo&) = delete;
+
+		void sendappacket(Maplestat stat);
 
 		const CharStats& stats;
 

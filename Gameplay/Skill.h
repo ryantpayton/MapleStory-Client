@@ -16,7 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Texture.h"
 #include "Graphics\Animation.h"
 #include "Util\rectangle2d.h"
 #include <cstdint>

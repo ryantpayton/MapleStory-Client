@@ -15,35 +15,42 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Graphics\Texture.h"
+#include "BuffEffects.h"
 #include <unordered_map>
+#include <memory>
 
-namespace IO
+namespace Character
 {
-	using std::unordered_map;
-	using Util::vector2d;
-	using Graphics::Texture;
-
-	struct BuffIcon
+	BuffEffect* ebsswitch(Buffstat stat)
 	{
-		const Texture* texture;
-		int32_t duration;
-	};
+		switch (stat)
+		{
+		case BOOSTER:
+			return new BoosterEffect();
+		case HYPERBODYHP:
+			return new HyperbodyHPEffect();
+		case HYPERBODYMP:
+			return new HyperbodyHPEffect();
+		default:
+			return nullptr;
+		}
+	}
 
-	class BuffInventory
+	const BuffEffect* geteffectbystat(Buffstat stat)
 	{
-	public:
-		BuffInventory();
-		~BuffInventory();
+		using std::unordered_map;
+		using std::unique_ptr;
 
-		void draw(vector2d<int16_t> position, float inter) const;
-		void update();
+		static unordered_map<Buffstat, unique_ptr<BuffEffect>> buffeffects;
+		if (!buffeffects.count(stat))
+		{
+			BuffEffect* neweffect = ebsswitch(stat);
+			if (neweffect == nullptr)
+				return nullptr;
+			else
+				buffeffects[stat] = unique_ptr<BuffEffect>(neweffect);
+		}
 
-		void addbuff(int32_t buffid, int32_t duration);
-		void cancelbuff(int32_t buffid);
-
-	private:
-		unordered_map<int32_t, BuffIcon> icons;
-	};
+		return buffeffects[stat].get();
+	}
 }

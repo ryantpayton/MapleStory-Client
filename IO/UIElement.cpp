@@ -19,6 +19,13 @@
 
 namespace IO
 {
+	UIElement::UIElement()
+	{
+		active = true;
+	}
+
+	UIElement::~UIElement() {}
+
 	void UIElement::draw(float inter) const
 	{
 		using Graphics::DrawArgument;
@@ -39,6 +46,26 @@ namespace IO
 		{
 			sprit.update();
 		}
+	}
+
+	void UIElement::makeactive()
+	{ 
+		active = true; 
+	}
+
+	void UIElement::deactivate()
+	{ 
+		active = false; 
+	}
+
+	bool UIElement::isactive() const
+	{ 
+		return active; 
+	}
+
+	void UIElement::togglehide() 
+	{ 
+		active = !active; 
 	}
 
 	void UIElement::buttonpressed(uint16_t) {}

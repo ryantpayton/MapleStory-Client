@@ -15,43 +15,80 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "BuffInventory.h"
-#include "Data\DataFactory.h"
+#pragma once
+#include "IO\Element.h"
+#include "Graphics\Texture.h"
+#include "Program\Constants.h"
+#include <unordered_map>
 
 namespace IO
 {
-	BuffInventory::BuffInventory() {}
+	using std::unordered_map;
+	using Util::vector2d;
+	using Graphics::Texture;
 
-	BuffInventory::~BuffInventory() {}
-
-	void BuffInventory::draw(vector2d<int16_t> position, float) const
+	class BuffIcon
 	{
-		for (auto& icon : icons)
+	public:
+		BuffIcon(const Texture* t, int32_t d)
 		{
-			const Texture* texture = icon.second.texture;
-			if (texture)
-			{
-				using Graphics::DrawArgument;
-				texture->draw(DrawArgument(position));
-				position.shiftx(-32);
-			}
+			texture = t;
+			duration = d;
+			opacity = 1.0f;
 		}
-	}
 
-	void BuffInventory::update()
+		BuffIcon() {}
+
+		~BuffIcon() {}
+
+		void draw(vector2d<int16_t> position) const
+		{
+			if (texture == nullptr)
+				return;
+
+			using Graphics::DrawArgument;
+			texture->draw(DrawArgument(position, opacity));
+		}
+
+		void update()
+		{
+			duration -= Constants::TIMESTEP;
+			if (duration > 0 && duration < 160)
+				opacity -= 0.05f;
+		}
+
+	private:
+		const Texture* texture;
+		int32_t duration;
+		float opacity;
+	};
+
+	class UIBuffList : public UIElement
 	{
+	public:
+		UIBuffList();
 
-	}
+		void draw(float inter) const override;
+		void update() override;
+		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> position) override;
 
-	void BuffInventory::addbuff(int32_t buffid, int32_t duration)
+		void addbuff(int32_t buffid, int32_t duration);
+		void cancelbuff(int32_t buffid);
+
+	private:
+		unordered_map<int32_t, BuffIcon> icons;
+	};
+
+	class ElementBuffList : public Element
 	{
-		const Texture* texture = Data::getskill(buffid).geticon(0);
-		if (texture)
-			icons[buffid] = BuffIcon{ texture, duration };
-	}
+		UIType type() const override
+		{
+			return BUFFLIST;
+		}
 
-	void BuffInventory::cancelbuff(int32_t buffid)
-	{
-		icons.erase(buffid);
-	}
+		UIElement* instantiate() const override
+		{
+			return new UIBuffList();
+		}
+	};
 }

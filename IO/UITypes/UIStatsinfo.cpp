@@ -54,24 +54,15 @@ namespace IO
 		buttons[BT_LUK] = unique_ptr<Button>(new MapleButton(src["BtLukUp"]));
 		buttons[BT_INT] = unique_ptr<Button>(new MapleButton(src["BtIntUp"]));
 
-		if (stats.getstat(Character::MS_AP) == 0)
-		{
-			buttons[BT_HP]->setstate(Button::DISABLED);
-			buttons[BT_MP]->setstate(Button::DISABLED);
-			buttons[BT_STR]->setstate(Button::DISABLED);
-			buttons[BT_DEX]->setstate(Button::DISABLED);
-			buttons[BT_LUK]->setstate(Button::DISABLED);
-			buttons[BT_INT]->setstate(Button::DISABLED);
-		}
-
 		buttons[BT_DETAILOPEN] = unique_ptr<Button>(new MapleButton(src["BtDetailOpen"]));
 		buttons[BT_DETAILCLOSE] = unique_ptr<Button>(new MapleButton(src["BtDetailClose"]));
 		buttons[BT_DETAILCLOSE]->setactive(false);
 
+		updateap();
+
 		statlabel = Textlabel(Textlabel::DWF_12ML, Textlabel::TXC_BLACK, "", 0);
 
 		dimension = vector2d<int16_t>(212, 318);
-		active = true;
 		showdetail = false;
 	}
 
@@ -104,7 +95,7 @@ namespace IO
 			);
 		statlabel.drawline(
 			std::to_string(stats.getstat(Character::MS_AP)),
-			position + vector2d<int16_t>(79, 175)
+			position + vector2d<int16_t>(70, 175)
 			);
 		statlabel.drawline(
 			std::to_string(stats.gettotal(Character::ES_STR)) + " (" +
@@ -133,17 +124,17 @@ namespace IO
 
 		if (showdetail)
 		{
-			using Graphics::DrawArgument;
 			vector2d<int16_t> detailpos = position + vector2d<int16_t>(213, 0);
+
+			using Graphics::DrawArgument;
 			DrawArgument detailargs = DrawArgument(detailpos);
-
-			for (vector<Texture>::const_iterator dtit = detailtextures.begin(); dtit != detailtextures.end(); ++dtit)
+			for (auto& dtit : detailtextures)
 			{
-				dtit->draw(detailargs);
+				dtit.draw(detailargs);
 			}
-
 			abilities.at("none").draw(detailargs);
 
+			string attstr = std::to_string(stats.gettotal(Character::ES_WATK));
 			string critstr = std::to_string(static_cast<int32_t>(stats.getcritical() * 100));
 			string mincritstr = std::to_string(static_cast<int32_t>(stats.getmincrit() * 100));
 			string maxcritstr = std::to_string(static_cast<int32_t>(stats.getmaxcrit() * 100));
@@ -151,8 +142,15 @@ namespace IO
 			string idefstr = std::to_string(static_cast<int32_t>(stats.getignoredef() * 100));
 			string resistr = std::to_string(static_cast<int32_t>(stats.getresist() * 100));
 			string stancestr = std::to_string(static_cast<int32_t>(stats.getstance() * 100));
+			string wdefstr = std::to_string(stats.gettotal(Character::ES_WDEF));
+			string mdefstr = std::to_string(stats.gettotal(Character::ES_MDEF));
+			string accstr = std::to_string(stats.gettotal(Character::ES_ACC));
+			string evastr = std::to_string(stats.gettotal(Character::ES_AVOID));
+			string speedstr = std::to_string(stats.gettotal(Character::ES_SPEED)) + "%";
+			string jumpstr = std::to_string(stats.gettotal(Character::ES_JUMP)) + "%";
+			string honorstr = std::to_string(stats.gethonor());
 
-			statlabel.drawline(std::to_string(stats.getattack()), detailpos + vector2d<int16_t>(73, 35));
+			statlabel.drawline(attstr, detailpos + vector2d<int16_t>(73, 35));
 			statlabel.drawline(critstr + "%", detailpos + vector2d<int16_t>(73, 53));
 			statlabel.drawline(mincritstr + "%", detailpos + vector2d<int16_t>(73, 71));
 			statlabel.drawline(maxcritstr + "%", detailpos + vector2d<int16_t>(168, 71));
@@ -160,22 +158,20 @@ namespace IO
 			statlabel.drawline(idefstr + "%", detailpos + vector2d<int16_t>(168, 89));
 			statlabel.drawline(resistr + "%", detailpos + vector2d<int16_t>(73, 107));
 			statlabel.drawline(stancestr + "%", detailpos + vector2d<int16_t>(168, 107));
-			statlabel.drawline(std::to_string(stats.gettotal(Character::ES_WDEF)), detailpos + vector2d<int16_t>(73, 125));
-			statlabel.drawline(std::to_string(stats.gettotal(Character::ES_MDEF)), detailpos + vector2d<int16_t>(73, 143));
-			statlabel.drawline(std::to_string(stats.gettotal(Character::ES_ACC)), detailpos + vector2d<int16_t>(73, 161));
+			statlabel.drawline(wdefstr, detailpos + vector2d<int16_t>(73, 125));
+			statlabel.drawline(mdefstr, detailpos + vector2d<int16_t>(73, 143));
+			statlabel.drawline(accstr, detailpos + vector2d<int16_t>(73, 161));
 			statlabel.drawline("0", detailpos + vector2d<int16_t>(73, 179));
-			statlabel.drawline(std::to_string(stats.gettotal(Character::ES_AVOID)), detailpos + vector2d<int16_t>(73, 197));
+			statlabel.drawline(evastr, detailpos + vector2d<int16_t>(73, 197));
 			statlabel.drawline("0", detailpos + vector2d<int16_t>(73, 215));
-			statlabel.drawline(std::to_string(stats.gettotal(Character::ES_SPEED)) + "%", detailpos + vector2d<int16_t>(73, 233));
-			statlabel.drawline(std::to_string(stats.gettotal(Character::ES_JUMP)) + "%", detailpos + vector2d<int16_t>(168, 233));
-			statlabel.drawline(std::to_string(stats.gethonor()), detailpos + vector2d<int16_t>(73, 351));
+			statlabel.drawline(speedstr, detailpos + vector2d<int16_t>(73, 233));
+			statlabel.drawline(jumpstr, detailpos + vector2d<int16_t>(168, 233));
+			statlabel.drawline(honorstr, detailpos + vector2d<int16_t>(73, 351));
 		}
 	}
 
 	void UIStatsinfo::buttonpressed(uint16_t id)
 	{
-		using Net::SpendApPacket83;
-
 		switch (id)
 		{
 		case BT_DETAILOPEN:
@@ -189,31 +185,67 @@ namespace IO
 			buttons[BT_DETAILOPEN]->setactive(true);
 			break;
 		case BT_HP:
-			Net::Session::dispatch(SpendApPacket83(Character::MS_HP));
-			UI::disable();
+			sendappacket(Character::MS_HP);
 			break;
 		case BT_MP:
-			Net::Session::dispatch(SpendApPacket83(Character::MS_MP));
-			UI::disable();
+			sendappacket(Character::MS_MP);
 			break;
 		case BT_STR:
-			Net::Session::dispatch(SpendApPacket83(Character::MS_STR));
-			UI::disable();
+			sendappacket(Character::MS_STR);
 			break;
 		case BT_DEX:
-			Net::Session::dispatch(SpendApPacket83(Character::MS_DEX));
-			UI::disable();
+			sendappacket(Character::MS_DEX);
 			break;
 		case BT_INT:
-			Net::Session::dispatch(SpendApPacket83(Character::MS_INT));
-			UI::disable();
+			sendappacket(Character::MS_INT);
 			break;
 		case BT_LUK:
-			Net::Session::dispatch(SpendApPacket83(Character::MS_LUK));
-			UI::disable();
+			sendappacket(Character::MS_LUK);
 			break;
 		}
 
 		buttons[id]->setstate(Button::NORMAL);
+	}
+
+	void UIStatsinfo::sendappacket(Maplestat stat)
+	{
+		using Net::SpendApPacket83;
+		Net::Session::dispatch(SpendApPacket83(stat));
+
+		UI::disable();
+	}
+
+	void UIStatsinfo::updateap()
+	{
+		Button::State newstate;
+		if (stats.getstat(Character::MS_AP) > 0)
+		{
+			newstate = Button::NORMAL;
+
+			buttons[BT_HP]->setposition(vector2d<int16_t>(20, -36));
+			buttons[BT_MP]->setposition(vector2d<int16_t>(20, -18));
+			buttons[BT_STR]->setposition(vector2d<int16_t>(20, 51));
+			buttons[BT_DEX]->setposition(vector2d<int16_t>(20, 69));
+			buttons[BT_INT]->setposition(vector2d<int16_t>(20, 87));
+			buttons[BT_LUK]->setposition(vector2d<int16_t>(20, 105));
+		}
+		else
+		{
+			newstate = Button::DISABLED;
+
+			buttons[BT_HP]->setposition(vector2d<int16_t>(-48, 14));
+			buttons[BT_MP]->setposition(vector2d<int16_t>(-48, 32));
+			buttons[BT_STR]->setposition(vector2d<int16_t>(-48, 101));
+			buttons[BT_DEX]->setposition(vector2d<int16_t>(-48, 119));
+			buttons[BT_INT]->setposition(vector2d<int16_t>(-48, 137));
+			buttons[BT_LUK]->setposition(vector2d<int16_t>(-48, 155));
+		}
+
+		buttons[BT_HP]->setstate(newstate);
+		buttons[BT_MP]->setstate(newstate);
+		buttons[BT_STR]->setstate(newstate);
+		buttons[BT_DEX]->setstate(newstate);
+		buttons[BT_LUK]->setstate(newstate);
+		buttons[BT_INT]->setstate(newstate);
 	}
 }

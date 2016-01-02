@@ -17,7 +17,6 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Net\Handlers\HandlerFunctions.h"
-#include "IO\UITypes\UIStatusbar.h"
 #include "IO\UI.h"
 #include "IO\Window.h"
 #include "Gameplay\Stage.h"
@@ -108,7 +107,7 @@ namespace Net
 
 			stagetransition(player.getstats().getportal(), player.getstats().getmapid());
 
-			IO::UI::add(IO::ElementStatusbar(player.getstats()));
+			IO::UI::changemode(IO::UI::MD_GAME);
 		}
 
 		void parseinventory(InPacket& recv, Inventory& invent) const

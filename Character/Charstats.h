@@ -22,10 +22,6 @@
 
 namespace Character
 {
-	using std::uint8_t;
-	using std::int16_t;
-	using std::int32_t;
-	using std::int64_t;
 	using std::vector;
 	using std::map;
 	using Net::StatsEntry;
@@ -37,18 +33,19 @@ namespace Character
 		CharStats();
 		~CharStats();
 
-		void calculatedamage(Weapon::WpType weapontype);
+		void inittotalstats();
 		void setstat(Maplestat type, uint16_t value);
 		void settotal(Equipstat type, int32_t value);
-
-		void setexp(int64_t ex) { stats.exp = ex; }
-		void setportal(uint8_t pt) { stats.portal = pt; }
-		void setattack(uint16_t at) { attack = at; }
+		void addtotal(Equipstat type, int32_t value);
+		void calculatedamage(Weapon::WpType weapontype);
 
 		uint16_t calculateaccuracy() const;
 		int64_t getexpneeded() const;
 		uint16_t getstat(Maplestat) const;
 		int32_t gettotal(Equipstat) const;
+
+		void setexp(int64_t ex) { stats.exp = ex; }
+		void setportal(uint8_t pt) { stats.portal = pt; }
 
 		int32_t getmapid() const { return stats.mapid; }
 		uint8_t getportal() const { return stats.portal; }
@@ -65,8 +62,9 @@ namespace Character
 		float getresist() const { return resiststatus; }
 		int32_t getmaxdamage() const { return maxdamage; }
 		int32_t getmindamage() const { return mindamage; }
-		uint16_t getattack() const { return attack; }
 		uint16_t gethonor() const { return honor; }
+		void setattackspeed(int8_t as) { attackspeed = as; }
+		int8_t getattackspeed() const { return attackspeed; }
 
 	private:
 		int32_t getprimary(Weapon::WpType weapontype);
@@ -77,8 +75,8 @@ namespace Character
 		map<Equipstat, int32_t> totalstats;
 		int32_t maxdamage;
 		int32_t mindamage;
-		uint16_t attack;
 		uint16_t honor;
+		int8_t attackspeed;
 		float mastery;
 		float critical;
 		float mincrit;

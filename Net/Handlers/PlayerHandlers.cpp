@@ -16,17 +16,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "PlayerHandlers.h"
-#include "HandlerFunctions.h"
 #include "Character\Buff.h"
 #include "Gameplay\Stage.h"
 #include "IO\UI.h"
-#include "IO\UITypes\UIEquipInventory.h"
-#include "IO\UITypes\UIItemInventory.h"
+#include "IO\UITypes\UIBuffList.h"
+#include "IO\UITypes\UIStatsinfo.h"
 
 namespace Net
 {
 	using Character::Player;
 	using Character::Buff;
+	using IO::Element;
+	using IO::UIBuffList;
+	using IO::UIStatsinfo;
+
+	Player& getplayer()
+	{
+		return Gameplay::Stage::getplayer();
+	}
 
 	void ChangeStatsHandler::handle(InPacket& recv) const
 	{
@@ -39,7 +46,7 @@ namespace Net
 			return;
 		}
 
-		Player& player = Gameplay::Stage::getplayer();
+		Player& player = getplayer();
 
 		for (size_t i = 0; i < 20; i++)
 		{
@@ -70,10 +77,8 @@ namespace Net
 					break;
 				case Character::MS_AP:
 					player.getstats().setstat(stat, recv.readshort());
-					/*if (uinterface.getelement(UI_STATSINFO))
-					{
-					uinterface.getelement(UI_STATSINFO)->sendbool(player->getstats()->getstat(MS_AP) > 0);
-					}*/
+					if (IO::UI::haselement(Element::STATSINFO))
+						IO::UI::getelement<UIStatsinfo>(Element::STATSINFO)->updateap();
 					break;
 				default:
 					player.getstats().setstat(stat, recv.readshort());
@@ -86,7 +91,7 @@ namespace Net
 
 	void RecalculateStatsHandler::handle(InPacket&) const
 	{
-		Gameplay::Stage::getplayer().recalcstats(false);
+		getplayer().recalcstats(false);
 	}
 
 	void UpdateskillsHandler::handle(InPacket& recv) const
@@ -98,15 +103,13 @@ namespace Net
 		int32_t masterlevel = recv.readint();
 		int64_t expire = recv.readlong();
 
-		Gameplay::Stage::getplayer().getskills().setskill(skillid, level, masterlevel, expire);
+		getplayer().getskills().setskill(skillid, level, masterlevel, expire);
 	}
 
 	void ApplyBuffHandler::handle(InPacket& recv) const
 	{
 		int64_t firstmask = recv.readlong();
 		int64_t secondmask = recv.readlong();
-
-		Player& player = Gameplay::Stage::getplayer();
 
 		vector<Buffstat> newbuffs;
 		for (size_t i = 0; i < Character::FIRST_BUFFS; i++)
@@ -122,18 +125,20 @@ namespace Net
 				handlebuff(recv, buffvalue);
 		}
 
-		player.recalcstats(false);
+		getplayer().recalcstats(false);
 	}
 
 	void ApplyBuffHandler::handlebuff(InPacket& recv, Buffstat bs) const
 	{
-		Buff buff;
-		buff.stat = bs;
-		buff.value = recv.readshort();
-		buff.skillid = recv.readint();
-		buff.duration = recv.readint();
+		int16_t value = recv.readshort();
+		int32_t skillid = recv.readint();
+		int32_t duration = recv.readint();
 
-		IO::UI::showbuff(buff.skillid, buff.duration);
-		Gameplay::Stage::getplayer().givebuff(buff);
+		Buff buff = Buff(bs, value, skillid, duration);
+		getplayer().givebuff(buff);
+
+		UIBuffList* bufflist = IO::UI::getelement<UIBuffList>(IO::Element::BUFFLIST);
+		if (bufflist)
+			bufflist->addbuff(skillid, duration);
 	}
 }

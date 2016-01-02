@@ -15,42 +15,32 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "IO\UIElement.h"
+#include "Buff.h"
+#include "BuffEffects.h"
 
-namespace IO
+namespace Character
 {
-	class Element
+	Buff::Buff(Buffstat s, int16_t v, int32_t i, int32_t d)
 	{
-	public:
-		enum UIType
-		{
-			NONE,
-			LOGIN,
-			LOGINWAIT,
-			LOGINNOTICE,
-			WORLDSELECT,
-			CHARSELECT,
-			CHARCREATION,
-			SOFTKEYBOARD,
-			STATUSBAR,
-			BUFFLIST,
-			STATSINFO,
-			ITEMINVENTORY,
-			EQUIPINVENTORY,
-		};
+		stat = s;
+		value = v;
+		skillid = i;
+		duration = d;
+	}
 
-		virtual ~Element() {}
+	Buff::Buff() {}
 
-		// Return wether the element can only be created once.
-		// Such elements will be activated/deactived when adding them again.
-		virtual bool isunique() const { return false; }
-		// Return wether the element is focused.
-		// These elements always stay on top of the screen.
-		virtual bool isfocused() const { return false; }
-		// Return the type of this element.
-		virtual UIType type() const = 0;
-		// Create the Element instance.
-		virtual UIElement* instantiate() const = 0;
-	};
+	Buff::~Buff() {}
+
+	void Buff::applyto(CharStats& stats) const
+	{
+		const BuffEffect* effect = geteffectbystat(stat);
+		if (effect)
+			effect->applyto(value, stats);
+	}
+
+	Buffstat Buff::getstat() const
+	{
+		return stat;
+	}
 }

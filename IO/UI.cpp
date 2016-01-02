@@ -21,12 +21,11 @@
 #include "Window.h"
 
 #include "Components\StatusMessenger.h"
-#include "Components\BuffInventory.h"
-
+#include "UITypes\UIBuffList.h"
+#include "UITypes\UIStatusbar.h"
 #include "UITypes\UIStatsinfo.h"
 #include "UITypes\UIItemInventory.h"
 #include "UITypes\UIEquipInventory.h"
-
 #include "Gameplay\Stage.h"
 #include "Net\Session.h"
 #include "Net\Packets\InventoryPackets.h"
@@ -44,7 +43,6 @@ namespace IO
 		Keyboard keyboard;
 		Cursor cursor;
 		StatusMessenger messenger;
-		BuffInventory buffinventory;
 
 		unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
 		unordered_map<Element::UIType, Element::UIType> elementorder;
@@ -54,13 +52,12 @@ namespace IO
 		Icon* draggedicon = nullptr;
 
 		Element::UIType focused = Element::NONE;
+		Mode mode = MD_LOGIN;
 		bool enabled = true;
-		bool gamekeysenabled = false;
 
 		void draw(float inter)
 		{
 			messenger.draw(vector2d<int16_t>(790, 510), inter);
-			buffinventory.draw(vector2d<int16_t>(750, 40), inter);
 
 			for (auto& elit : elementorder)
 			{
@@ -92,16 +89,6 @@ namespace IO
 			cursor.update();
 		}
 
-		void showbuff(int32_t buffid, int32_t duration)
-		{
-			buffinventory.addbuff(buffid, duration);
-		}
-
-		void cancelbuff(int32_t buffid)
-		{
-			buffinventory.cancelbuff(buffid);
-		}
-
 		void showstatus(Textlabel::Textcolor color, string message)
 		{
 			messenger.showstatus(color, message);
@@ -115,6 +102,20 @@ namespace IO
 		void disable()
 		{
 			enabled = false;
+		}
+
+		void changemode(Mode md)
+		{
+			if (md == MD_GAME)
+			{
+				add(ElementStatusbar(
+					Gameplay::Stage::getplayer().getstats(),
+					Gameplay::Stage::getplayer().getinvent()
+					));
+				add(ElementBuffList());
+			}
+
+			mode = md;
 		}
 
 		UIElement* getfront(vector2d<int16_t> pos)
@@ -281,7 +282,7 @@ namespace IO
 					break;
 				}
 			}
-			else if (gamekeysenabled)
+			else if (mode == MD_GAME)
 			{
 				const Keyboard::Keymapping* mapping = keyboard.getmapping(keycode);
 
@@ -325,11 +326,6 @@ namespace IO
 		{
 			Keyboard::Keytype type = static_cast<Keyboard::Keytype>(t);
 			keyboard.addmapping(no, type, action);
-		}
-
-		void enablegamekeys(bool enable)
-		{
-			gamekeysenabled = enable;
 		}
 
 		void add(const Element& element)
@@ -377,6 +373,11 @@ namespace IO
 				elements[type].release();
 				elements.erase(type);
 			}
+		}
+
+		bool haselement(Element::UIType type)
+		{
+			return getelement(type) != nullptr;
 		}
 
 		UIElement* getelement(Element::UIType type)

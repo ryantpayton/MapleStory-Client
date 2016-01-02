@@ -15,42 +15,49 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "IO\UIElement.h"
+#include "UIBuffList.h"
+#include "Data\DataFactory.h"
 
 namespace IO
 {
-	class Element
+	UIBuffList::UIBuffList() 
 	{
-	public:
-		enum UIType
+		position = vector2d<int16_t>(750, 40);
+		active = true;
+	}
+
+	void UIBuffList::draw(float) const
+	{
+		vector2d<int16_t> icpos = position;
+		for (auto& icon : icons)
 		{
-			NONE,
-			LOGIN,
-			LOGINWAIT,
-			LOGINNOTICE,
-			WORLDSELECT,
-			CHARSELECT,
-			CHARCREATION,
-			SOFTKEYBOARD,
-			STATUSBAR,
-			BUFFLIST,
-			STATSINFO,
-			ITEMINVENTORY,
-			EQUIPINVENTORY,
-		};
+			icon.second.draw(icpos);
+			icpos.shiftx(-32);
+		}
+	}
 
-		virtual ~Element() {}
+	void UIBuffList::update()
+	{
+		for (auto& icon : icons)
+		{
+			icon.second.update();
+		}
+	}
 
-		// Return wether the element can only be created once.
-		// Such elements will be activated/deactived when adding them again.
-		virtual bool isunique() const { return false; }
-		// Return wether the element is focused.
-		// These elements always stay on top of the screen.
-		virtual bool isfocused() const { return false; }
-		// Return the type of this element.
-		virtual UIType type() const = 0;
-		// Create the Element instance.
-		virtual UIElement* instantiate() const = 0;
-	};
+	Cursor::Mousestate UIBuffList::sendmouse(bool pressed, vector2d<int16_t> position)
+	{
+		return UIElement::sendmouse(pressed, position);
+	}
+
+	void UIBuffList::addbuff(int32_t buffid, int32_t duration)
+	{
+		const Texture* texture = Data::getskill(buffid).geticon(0);
+		if (texture)
+			icons[buffid] = BuffIcon(texture, duration);
+	}
+
+	void UIBuffList::cancelbuff(int32_t buffid)
+	{
+		icons.erase(buffid);
+	}
 }
