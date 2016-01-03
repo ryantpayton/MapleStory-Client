@@ -21,6 +21,8 @@
 
 namespace Net
 {
+	using Character::Buffstat;
+
 	// Handles a packet which notifies the client of changes in character stats.
 	class ChangeStatsHandler : public PacketHandler
 	{
@@ -39,14 +41,26 @@ namespace Net
 		void handle(InPacket& recv) const override;
 	};
 
-	using Character::Buffstat;
-
-	// Handles a packet which notifies the client that a buff was applied to the player.
-	class ApplyBuffHandler : public PacketHandler
+	// Base class for packets which need to parse buffs.
+	class BuffHandler : public PacketHandler
 	{
 	public:
 		void handle(InPacket& recv) const override;
-	private:
-		void handlebuff(InPacket& recv, Buffstat buff) const;
+	protected:
+		virtual void handlebuff(InPacket& recv, Buffstat buff) const = 0;
+	};
+
+	// Handles a packet which notifies the client that a buff was applied to the player.
+	class ApplyBuffHandler : public BuffHandler
+	{
+	protected:
+		void handlebuff(InPacket& recv, Buffstat buff) const override;
+	};
+
+	// Handles a packet which contains buffs to cancel.
+	class CancelBuffHandler : public BuffHandler
+	{
+	protected:
+		void handlebuff(InPacket& recv, Buffstat buff) const override;
 	};
 }

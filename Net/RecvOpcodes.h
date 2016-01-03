@@ -125,6 +125,7 @@ namespace Net
 		// Player 2
 		CHANGE_STATS = 31,
 		GIVE_BUFF = 32,
+		CANCEL_BUFF = 33,
 		RECALCULATE_STATS = 35,
 		UPDATE_SKILLS = 36,
 

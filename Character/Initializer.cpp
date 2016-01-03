@@ -15,37 +15,13 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
+#include "Initializer.h"
 #include "BuffEffects.h"
-#include <unordered_map>
-#include <memory>
 
 namespace Character
 {
-	using std::unordered_map;
-	using std::unique_ptr;
-
-	unordered_map<Buffstat, unique_ptr<BuffEffect>> buffeffects;
-
-	void initbuffeffects()
+	void init()
 	{
-		buffeffects[MAPLE_WARRIOR] = unique_ptr<BuffEffect>(new MapleWarriorEffect());
-		buffeffects[STANCE] = unique_ptr<BuffEffect>(new StanceEffect());
-		buffeffects[BOOSTER] = unique_ptr<BuffEffect>(new BoosterEffect());
-		buffeffects[WATK] = unique_ptr<BuffEffect>(new WATKEffect());
-		buffeffects[WDEF] = unique_ptr<BuffEffect>(new WDEFEffect());
-		buffeffects[MATK] = unique_ptr<BuffEffect>(new MATKEffect());
-		buffeffects[MDEF] = unique_ptr<BuffEffect>(new MDEFEffect());
-		buffeffects[SPEED] = unique_ptr<BuffEffect>(new SPEEDEffect());
-		buffeffects[JUMP] = unique_ptr<BuffEffect>(new JUMPEffect());
-		buffeffects[HYPERBODYHP] = unique_ptr<BuffEffect>(new HyperbodyHPEffect());
-		buffeffects[HYPERBODYMP] = unique_ptr<BuffEffect>(new HyperbodyMPEffect());
-	}
-
-	const BuffEffect* geteffectbystat(Buffstat stat)
-	{
-		if (buffeffects.count(stat))
-			return buffeffects[stat].get();
-		else
-			return nullptr;
+		initbuffeffects();
 	}
 }

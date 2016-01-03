@@ -208,21 +208,18 @@ namespace Character
 			return EQL_NONE;
 
 		Equipslot eqslot = cloth.geteqslot();
-		if (hasequipped(eqslot))
+		if (eqslot == EQL_RING)
 		{
-			if (eqslot == EQL_RING)
-			{
-				if (!hasequipped(EQL_RING2))
-					return EQL_RING2;
+			if (!hasequipped(EQL_RING2))
+				return EQL_RING2;
 
-				if (!hasequipped(EQL_RING3))
-					return EQL_RING3;
+			if (!hasequipped(EQL_RING3))
+				return EQL_RING3;
 
-				if (!hasequipped(EQL_RING4))
-					return EQL_RING4;
-			}
+			if (!hasequipped(EQL_RING4))
+				return EQL_RING4;
 
-			return EQL_NONE;
+			return EQL_RING;
 		}
 		else
 		{
@@ -286,7 +283,7 @@ namespace Character
 
 	Inventory::Movetype Inventory::movetypebyvalue(int8_t value) const
 	{
-		if (value < MOVE_INTERNAL || value > MOVE_UNEQUIP)
+		if (value < MOVE_INTERNAL || value > MOVE_EQUIP)
 			return MOVE_NONE;
 		else
 			return static_cast<Movetype>(value);

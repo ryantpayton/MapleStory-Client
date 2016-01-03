@@ -41,13 +41,96 @@ namespace Character
 		}
 	};
 
+	// Base class for effects which just add their value to a stat.
+	class SimpleStatEffect : public BuffEffect
+	{
+	public:
+		void applyto(int16_t value, CharStats& stats) const override
+		{
+			stats.addtotal(stat, value);
+		}
+
+	protected:
+		SimpleStatEffect(Equipstat s)
+		{
+			stat = s;
+		}
+
+	private:
+		Equipstat stat;
+	};
+
+	// Effect for MAPLE_WARRIOR
+	class MapleWarriorEffect : public PercentageEffect
+	{
+	public:
+		void applyto(int16_t value, CharStats& stats) const override
+		{
+			addpercentage(value, ES_STR, stats);
+			addpercentage(value, ES_DEX, stats);
+			addpercentage(value, ES_INT, stats);
+			addpercentage(value, ES_LUK, stats);
+		}
+	};
+
+	// Effect for STANCE
+	class StanceEffect : public BuffEffect
+	{
+		void applyto(int16_t value, CharStats& stats) const override
+		{
+			stats.setstance(static_cast<float>(value) / 100);
+		}
+	};
+
 	// Effect for BOOSTER
 	class BoosterEffect : public BuffEffect
 	{
-		void applyto(int16_t, CharStats& stats) const override
+		void applyto(int16_t value, CharStats& stats) const override
 		{
-			stats.setattackspeed(-2);
+			stats.setattackspeed(static_cast<int8_t>(value));
 		}
+	};
+
+	// Effect for WATK
+	class WATKEffect : public SimpleStatEffect
+	{
+	public:
+		WATKEffect() : SimpleStatEffect(ES_WATK) {}
+	};
+
+	// Effect for WDEF
+	class WDEFEffect : public SimpleStatEffect
+	{
+	public:
+		WDEFEffect() : SimpleStatEffect(ES_WDEF) {}
+	};
+
+	// Effect for MATK
+	class MATKEffect : public SimpleStatEffect
+	{
+	public:
+		MATKEffect() : SimpleStatEffect(ES_MAGIC) {}
+	};
+
+	// Effect for MDEF
+	class MDEFEffect : public SimpleStatEffect
+	{
+	public:
+		MDEFEffect() : SimpleStatEffect(ES_MDEF) {}
+	};
+
+	// Effect for SPEED
+	class SPEEDEffect : public SimpleStatEffect
+	{
+	public:
+		SPEEDEffect() : SimpleStatEffect(ES_SPEED) {}
+	};
+
+	// Effect for JUMP
+	class JUMPEffect : public SimpleStatEffect
+	{
+	public:
+		JUMPEffect() : SimpleStatEffect(ES_JUMP) {}
 	};
 
 	// Effect for HYPERBODYHP
@@ -69,6 +152,9 @@ namespace Character
 			addpercentage(value, ES_MP, stats);
 		}
 	};
+
+	// Register all buffs effects.
+	void initbuffeffects();
 
 	// Return the buff effect associated with the buff stat.
 	const BuffEffect* geteffectbystat(Buffstat stat);

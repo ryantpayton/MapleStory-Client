@@ -31,6 +31,7 @@
 #include "Net\Packets\InventoryPackets.h"
 
 #include <unordered_map>
+#include <list>
 #include <memory>
 
 namespace IO
@@ -39,13 +40,14 @@ namespace IO
 	{
 		using std::unique_ptr;
 		using std::unordered_map;
+		using std::list;
 
 		Keyboard keyboard;
 		Cursor cursor;
 		StatusMessenger messenger;
 
 		unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
-		unordered_map<Element::UIType, Element::UIType> elementorder;
+		list<Element::UIType> elementorder;
 		unordered_map<int32_t, bool> keydown;
 
 		Textfield* focusedtextfield = nullptr;
@@ -61,7 +63,7 @@ namespace IO
 
 			for (auto& elit : elementorder)
 			{
-				UIElement* element = elements[elit.first].get();
+				UIElement* element = elements[elit].get();
 
 				if (element == nullptr)
 					continue;
@@ -123,7 +125,7 @@ namespace IO
 			UIElement* front = nullptr;
 			for (auto& elit : elementorder)
 			{
-				UIElement* element = elements[elit.first].get();
+				UIElement* element = elements[elit].get();
 
 				if (element == nullptr)
 					continue;
@@ -184,7 +186,7 @@ namespace IO
 					{
 						for (auto& elit : elementorder)
 						{
-							UIElement* element = elements[elit.first].get();
+							UIElement* element = elements[elit].get();
 
 							if (element == nullptr)
 								continue;
@@ -195,7 +197,7 @@ namespace IO
 									front->sendmouse(false, element->bounds().getlt() - vector2d<int16_t>(1, 1));
 
 								front = element;
-								fronttype = elit.first;
+								fronttype = elit;
 							}
 						}
 					}
@@ -205,8 +207,8 @@ namespace IO
 						bool clicked = mst == Cursor::MST_CLICKING;
 						if (clicked)
 						{
-							elementorder.erase(fronttype);
-							elementorder[fronttype] = fronttype;
+							elementorder.remove(fronttype);
+							elementorder.push_back(fronttype);
 						}
 						mst = front->sendmouse(clicked, pos);
 					}
@@ -335,8 +337,8 @@ namespace IO
 			{
 				if (element.isunique())
 				{
-					elementorder.erase(type);
-					elementorder[type] = type;
+					elementorder.remove(type);
+					elementorder.push_back(type);
 					elements[type]->togglehide();
 					return;
 				}
@@ -348,7 +350,7 @@ namespace IO
 
 			UIElement* toadd = element.instantiate();
 			elements[type] = unique_ptr<UIElement>(toadd);
-			elementorder[type] = type;
+			elementorder.push_back(type);
 
 			if (element.isfocused())
 			{
@@ -365,7 +367,7 @@ namespace IO
 				focused = Element::NONE;
 			}
 
-			elementorder.erase(type);
+			elementorder.remove(type);
 
 			if (elements.count(type))
 			{

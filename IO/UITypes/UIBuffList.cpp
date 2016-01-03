@@ -38,9 +38,17 @@ namespace IO
 
 	void UIBuffList::update()
 	{
+		vector<int32_t> expiredbuffs;
 		for (auto& icon : icons)
 		{
-			icon.second.update();
+			bool expired = icon.second.update();
+			if (expired)
+				expiredbuffs.push_back(icon.first);
+		}
+
+		for (auto& exp : expiredbuffs)
+		{
+			icons.erase(exp);
 		}
 	}
 
@@ -54,10 +62,5 @@ namespace IO
 		const Texture* texture = Data::getskill(buffid).geticon(0);
 		if (texture)
 			icons[buffid] = BuffIcon(texture, duration);
-	}
-
-	void UIBuffList::cancelbuff(int32_t buffid)
-	{
-		icons.erase(buffid);
 	}
 }

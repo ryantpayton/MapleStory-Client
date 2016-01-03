@@ -80,8 +80,12 @@ namespace Character
 		// Create an attack struct for a regular attack.
 		Attack regularattack();
 
+		// Apply a buff to the player.
 		void givebuff(Buff buff);
+		// Cancel a buff.
 		void cancelbuff(Buffstat buffstat);
+		// Return wether the buff is active.
+		bool hasbuff(Buffstat buffstat);
 
 		// Returns the current walking force, calculated from the total ES_SPEED stat.
 		float getwforce() const;

@@ -15,37 +15,43 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "BuffEffects.h"
-#include <unordered_map>
-#include <memory>
+#pragma once
+#include "Graphics\Texture.h"
+#include "nlnx\node.hpp"
 
-namespace Character
+namespace IO
 {
-	using std::unordered_map;
-	using std::unique_ptr;
+	using nl::node;
+	using Util::vector2d;
+	using Graphics::Texture;
 
-	unordered_map<Buffstat, unique_ptr<BuffEffect>> buffeffects;
-
-	void initbuffeffects()
+	class Slider
 	{
-		buffeffects[MAPLE_WARRIOR] = unique_ptr<BuffEffect>(new MapleWarriorEffect());
-		buffeffects[STANCE] = unique_ptr<BuffEffect>(new StanceEffect());
-		buffeffects[BOOSTER] = unique_ptr<BuffEffect>(new BoosterEffect());
-		buffeffects[WATK] = unique_ptr<BuffEffect>(new WATKEffect());
-		buffeffects[WDEF] = unique_ptr<BuffEffect>(new WDEFEffect());
-		buffeffects[MATK] = unique_ptr<BuffEffect>(new MATKEffect());
-		buffeffects[MDEF] = unique_ptr<BuffEffect>(new MDEFEffect());
-		buffeffects[SPEED] = unique_ptr<BuffEffect>(new SPEEDEffect());
-		buffeffects[JUMP] = unique_ptr<BuffEffect>(new JUMPEffect());
-		buffeffects[HYPERBODYHP] = unique_ptr<BuffEffect>(new HyperbodyHPEffect());
-		buffeffects[HYPERBODYMP] = unique_ptr<BuffEffect>(new HyperbodyMPEffect());
-	}
+	public:
+		Slider(node src, vector2d<int16_t> vertical, int16_t x);
+		Slider();
+		~Slider();
 
-	const BuffEffect* geteffectbystat(Buffstat stat)
-	{
-		if (buffeffects.count(stat))
-			return buffeffects[stat].get();
-		else
-			return nullptr;
-	}
+		bool isenabled() const;
+		void setenabled(bool enabled);
+		void draw(vector2d<int16_t> position) const;
+
+	private:
+		vector2d<int16_t> vertical;
+		int16_t x;
+		int16_t slidery;
+		bool enabled;
+
+		Texture dbase;
+		Texture dnext;
+		Texture dprev;
+
+		Texture base;
+		Texture next0;
+		Texture next1;
+		Texture prev0;
+		Texture prev1;
+		Texture thump0;
+		Texture thump1;
+	};
 }

@@ -280,13 +280,23 @@ namespace Character
 		buffs.erase(buffstat);
 	}
 
+	bool Player::hasbuff(Buffstat buff)
+	{
+		return buffs.count(buff) > 0;
+	}
+
 	float Player::getattackspeed() const
 	{
 		const Weapon* weapon = look.getequips().getweapon();
 		if (weapon)
-			return 1.7f - static_cast<float>(weapon->getspeed() + stats.getattackspeed()) / 10;
+		{
+			float delay = static_cast<float>(weapon->getspeed() + stats.getattackspeed());
+			return 1.7f - (delay / 10);
+		}
 		else
+		{
 			return 0.0f;
+		}
 	}
 
 	void Player::setseat(const Seat* seat)

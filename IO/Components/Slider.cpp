@@ -15,84 +15,83 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "IO\Element.h"
-#include "Graphics\Texture.h"
-#include "Program\Constants.h"
-#include <unordered_map>
+#include "Slider.h"
 
 namespace IO
 {
-	using std::unordered_map;
-	using Util::vector2d;
-	using Graphics::Texture;
-
-	class BuffIcon
+	Slider::Slider(node src, vector2d<int16_t> ver, int16_t xp)
 	{
-	public:
-		BuffIcon(const Texture* t, int32_t d)
-		{
-			texture = t;
-			duration = d;
-			opacity = 1.0f;
-		}
+		node dsrc = src["disabled"];
 
-		BuffIcon() {}
+		dbase = dsrc["base"];
+		dnext = dsrc["next"];
+		dprev = dsrc["prev"];
 
-		~BuffIcon() {}
+		node esrc = src["enabled"];
 
-		void draw(vector2d<int16_t> position) const
-		{
-			if (texture == nullptr)
-				return;
+		base = esrc["base"];
+		next0 = esrc["next0"];
+		next1 = esrc["next1"];
+		prev0 = esrc["prev0"];
+		prev1 = esrc["prev1"];
+		thump0 = esrc["thump0"];
+		thump1 = esrc["thump1"];
 
-			using Graphics::DrawArgument;
-			texture->draw(DrawArgument(position, opacity));
-		}
+		vertical = ver;
+		x = xp;
+		enabled = true;
+		slidery = 0;
+	}
 
-		bool update()
-		{
-			duration -= Constants::TIMESTEP;
-			if (duration < 160)
-			{
-				opacity -= 0.05f;
-				if (opacity < 0.05f)
-					return true;
-			}
-			return false;
-		}
+	Slider::Slider() {}
 
-	private:
-		const Texture* texture;
-		int32_t duration;
-		float opacity;
-	};
+	Slider::~Slider() {}
 
-	class UIBuffList : public UIElement
+	bool Slider::isenabled() const
 	{
-	public:
-		UIBuffList();
+		return enabled;
+	}
 
-		void draw(float inter) const override;
-		void update() override;
-		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> position) override;
-
-		void addbuff(int32_t buffid, int32_t duration);
-
-	private:
-		unordered_map<int32_t, BuffIcon> icons;
-	};
-
-	class ElementBuffList : public Element
+	void Slider::setenabled(bool en)
 	{
-		UIType type() const override
-		{
-			return BUFFLIST;
-		}
+		enabled = en;
+	}
 
-		UIElement* instantiate() const override
+	void Slider::draw(vector2d<int16_t> position) const
+	{
+		vector2d<int16_t> start = vector2d<int16_t>(
+			position.x() + x, 
+			position.y() + vertical.x()
+			);
+
+		vector2d<int16_t> fill = vector2d<int16_t>(
+			0,
+			vertical.length() - 48
+			);
+
+		vector2d<int16_t> mid = vector2d<int16_t>(
+			position.x() + x,
+			position.y() + vertical.x() + slidery
+			);
+
+		vector2d<int16_t> end = vector2d<int16_t>(
+			position.x() + x,
+			position.y() + vertical.y()
+			);
+
+		using Graphics::DrawArgument;
+		if (enabled)
 		{
-			return new UIBuffList();
+			base.draw(DrawArgument(start, fill));
+			prev0.draw(DrawArgument(start));
+			thump0.draw(DrawArgument(mid));
+			next0.draw(DrawArgument(end));
 		}
-	};
+		else
+		{
+			dbase.draw(DrawArgument(start, fill));
+			dprev.draw(DrawArgument(start));
+			dnext.draw(DrawArgument(end));
+		}
+	}
 }

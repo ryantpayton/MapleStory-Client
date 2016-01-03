@@ -78,6 +78,7 @@ namespace IO
 		buttons[buttonbytab(tab)]->setstate(Button::PRESSED);
 
 		mesolabel = Textlabel(Textlabel::DWF_12MR, Textlabel::TXC_BLACK, "", 0);
+		slider = Slider(nl::nx::ui["Basic.img"]["VScr11"], vector2d<int16_t>(50, 248), 152);
 
 		dimension = vector2d<int16_t>(172, 335);
 		active = true;
@@ -88,6 +89,8 @@ namespace IO
 	void UIItemInventory::draw(float inter) const
 	{
 		UIElement::draw(inter);
+
+		slider.draw(position);
 
 		for (auto& icon : icons)
 		{
@@ -125,17 +128,21 @@ namespace IO
 		newitemslot.update(4);
 	}
 
-	void UIItemInventory::addicon(int16_t slot)
+	void UIItemInventory::updateslot(int16_t slot)
 	{
 		using Character::Item;
 		using Character::ItemData;
 
 		const Item* item = inventory.getitem(tab, slot);
-		if (item == nullptr)
-			return;
-
-		const ItemData& idata = item->getidata();
-		icons[slot] = Icon(idata.geticon(false), Element::ITEMINVENTORY, slot, item->getcount());
+		if (item)
+		{
+			const ItemData& idata = item->getidata();
+			icons[slot] = Icon(idata.geticon(false), Element::ITEMINVENTORY, slot, item->getcount());
+		}
+		else if (icons.count(slot))
+		{
+			icons.erase(slot);
+		}
 	}
 
 	void UIItemInventory::loadicons()
@@ -143,9 +150,9 @@ namespace IO
 		icons.clear();
 
 		uint8_t numslots = inventory.getslots(tab);
-		for (uint8_t i = 0; i < numslots; i++)
+		for (uint8_t i = 1; i < numslots; i++)
 		{
-			addicon(i);
+			updateslot(i);
 		}
 	}
 
@@ -265,7 +272,8 @@ namespace IO
 			switch (mode)
 			{
 			case 0:
-				addicon(slot);
+			case 3:
+				updateslot(slot);
 				break;
 			case 1:
 				if (icons.count(slot))
@@ -279,9 +287,6 @@ namespace IO
 					icons[arg] = icons[slot];
 					icons.erase(slot);
 				}
-				break;
-			case 3:
-				icons.erase(slot);
 				break;
 			}
 		}

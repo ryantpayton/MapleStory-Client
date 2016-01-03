@@ -20,6 +20,7 @@
 #include "IO\UIDragElement.h"
 #include "IO\Components\Icon.h"
 #include "IO\Components\EquipTooltip.h"
+#include "IO\Components\Slider.h"
 #include "Character\Inventory\Inventory.h"
 
 namespace IO
@@ -69,7 +70,7 @@ namespace IO
 		UIItemInventory& operator = (const UIItemInventory&) = delete;
 
 		void loadicons();
-		void addicon(int16_t slot);
+		void updateslot(int16_t slot);
 
 		string getmesostr() const;
 		int16_t slotbypos(vector2d<int16_t> position) const;
@@ -82,6 +83,7 @@ namespace IO
 		Animation newitemslot;
 		Animation newitemtab;
 		Textlabel mesolabel;
+		Slider slider;
 
 		EquipTooltip eqtooltip;
 		vector2d<int16_t> cursorposition;

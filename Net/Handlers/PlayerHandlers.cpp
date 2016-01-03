@@ -106,12 +106,11 @@ namespace Net
 		getplayer().getskills().setskill(skillid, level, masterlevel, expire);
 	}
 
-	void ApplyBuffHandler::handle(InPacket& recv) const
+	void BuffHandler::handle(InPacket& recv) const
 	{
 		int64_t firstmask = recv.readlong();
 		int64_t secondmask = recv.readlong();
 
-		vector<Buffstat> newbuffs;
 		for (size_t i = 0; i < Character::FIRST_BUFFS; i++)
 		{
 			Buffstat buffvalue = Character::firstbuffs[i];
@@ -140,5 +139,10 @@ namespace Net
 		UIBuffList* bufflist = IO::UI::getelement<UIBuffList>(IO::Element::BUFFLIST);
 		if (bufflist)
 			bufflist->addbuff(skillid, duration);
+	}
+
+	void CancelBuffHandler::handlebuff(InPacket&, Buffstat bs) const
+	{
+		getplayer().cancelbuff(bs);
 	}
 }

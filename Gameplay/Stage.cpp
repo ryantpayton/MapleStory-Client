@@ -339,7 +339,6 @@ namespace Gameplay
 				playable->sendaction(static_cast<Keyboard::Keyaction>(action), down);
 				break;
 			case Keyboard::KT_SKILL:
-				action = 1101004;
 				useskill(action);
 				break;
 			case Keyboard::KT_ITEM:

@@ -58,6 +58,7 @@ namespace Character
 		float getmaxcrit() const { return maxcrit; }
 		float getbossdmg() const { return bossdmg; }
 		float getignoredef() const { return ignoredef; }
+		void setstance(float st) { stance = st; }
 		float getstance() const { return stance; }
 		float getresist() const { return resiststatus; }
 		int32_t getmaxdamage() const { return maxdamage; }
