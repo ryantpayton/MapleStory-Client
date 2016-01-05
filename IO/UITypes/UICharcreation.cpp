@@ -139,7 +139,11 @@ namespace IO
 		buttons[BT_CHARC_GENDERL]->setactive(false);
 		buttons[BT_CHARC_GEMDERR]->setactive(false);
 
-		namechar = Textfield(Textlabel::DWF_14ML, Textlabel::TXC_WHITE, vector2d<int16_t>(490, 217), 12);
+		rectangle2d<int16_t> txfae = rectangle2d<int16_t>(
+			vector2d<int16_t>(490, 217),
+			vector2d<int16_t>(630, 241)
+			);
+		namechar = Textfield(Textlabel::DWF_TEXTFIELD, Textlabel::TXC_WHITE, txfae, 12);
 		namechar.setstate(Textfield::FOCUSED);
 
 		UI::focustextfield(&namechar);
@@ -414,7 +418,7 @@ namespace IO
 	{
 		Cursor::Mousestate ret = UIElement::sendmouse(down, pos);
 
-		if (namechar.bounds(position).contains(pos))
+		if (namechar.getbounds(position).contains(pos))
 		{
 			if (down)
 			{

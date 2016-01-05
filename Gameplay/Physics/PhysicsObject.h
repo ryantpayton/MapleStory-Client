@@ -16,8 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\vector2d.h"
-#include <cstdint>
+#include "Foothold.h"
 
 namespace Gameplay
 {
@@ -37,10 +36,12 @@ namespace Gameplay
 		};
 
 		PhType type = NORMAL;
+		const Foothold* fh = nullptr;
 		uint16_t fhid = 0;
 		double fhslope = 0.0;
 		int8_t fhlayer = 0;
 		bool onground = true;
+		bool enablejd = false;
 		double mass = 1.0;
 		double fx = 0.0;
 		double fy = 0.0;
@@ -53,6 +54,12 @@ namespace Gameplay
 
 		double lastx = 0.0;
 		double lasty = 0.0;
+
+		void gobelowground()
+		{
+			if (fh && enablejd)
+				fy = fh->resolvex(fx) + 1.0;
+		}
 
 		vector2d<int16_t> getposition(float inter) const
 		{

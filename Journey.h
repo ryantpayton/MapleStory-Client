@@ -26,6 +26,3 @@
 
 // JOURNEY_USE_CRYPTO : Use cryptography for communication with the server.
 #define JOURNEY_USE_CRYPTO
-
-// JOURNEY_CUSTOM_VERSION : Use custom packets.
-//#define JOURNEY_CUSTOM_VERSION

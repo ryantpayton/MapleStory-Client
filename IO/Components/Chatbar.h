@@ -15,13 +15,68 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Initializer.h"
-#include "BuffEffects.h"
+#pragma once
+#include "IO\UIElement.h"
+#include "Textfield.h"
+#include "Button.h"
+#include "IO\Cursor.h"
+#include "Graphics\Texture.h"
+#include "Graphics\Textlabel.h"
+#include <vector>
+#include <memory>
 
-namespace Character
+namespace IO
 {
-	void init()
+	using std::vector;
+	using std::unique_ptr;
+	using Graphics::Textlabel;
+	using Graphics::Texture;
+
+	class Chatbar : public UIElement
 	{
-		initbuffeffects();
-	}
+	public:
+		enum Buttons : uint16_t
+		{
+			BT_OPENCHAT,
+			BT_CLOSECHAT,
+			BT_SCROLLUP,
+			BT_SCROLLDOWN,
+			BT_CHATTARGETS
+		};
+
+		enum ChatTarget
+		{
+			CHT_ALL,
+			CHT_BUDDY,
+			CHT_GUILD,
+			CHT_ALLIANCE,
+			CHT_PARTY,
+			CHT_SQUAD
+		};
+
+		Chatbar(vector2d<int16_t> position);
+		~Chatbar();
+
+		void draw(float inter) const override;
+		void update() override;
+		void buttonpressed(uint16_t buttonid) override;
+		rectangle2d<int16_t> bounds() const override;
+		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> position) override;
+
+		void sendline(string line, int8_t type);
+
+	private:
+		Textfield chatfield;
+		map<bool, Texture> chatspace;
+		map<ChatTarget, Texture> chattargets;
+		Texture chatenter;
+		Texture chatcover;
+		Textlabel closedtext;
+
+		bool chatopen;
+		ChatTarget chattarget;
+		vector<string> lines;
+		vector<string> lastentered;
+		size_t lastpos;
+	};
 }

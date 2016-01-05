@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015 SYJourney                                               //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,19 +16,46 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\OutPacket.h"
-#include "Net\SendOpcodes.h"
-#include "Character\CharConstants.h"
+#include "Graphics\Textlabel.h"
+#include "Graphics\Texture.h"
 
-namespace Net
+namespace IO
 {
-	class SpendApPacket83 : public OutPacket
+	using std::string;
+	using Util::vector2d;
+	using Graphics::Texture;
+	using Graphics::Textlabel;
+
+	class ChatBalloon
 	{
 	public:
-		SpendApPacket83(Character::Maplestat stat) : OutPacket(SPEND_AP)
-		{
-			writeint(0);
-			writeint(stat);
-		}
+		ChatBalloon(int8_t);
+		ChatBalloon();
+		~ChatBalloon();
+
+		void draw(vector2d<int16_t> position) const;
+		void update();
+		void settext(string text);
+		void expire();
+
+	private:
+		Textlabel textlabel;
+		Texture arrow;
+		Texture center;
+		Texture east;
+		Texture northeast;
+		Texture north;
+		Texture northwest;
+		Texture west;
+		Texture southwest;
+		Texture south;
+		Texture southeast;
+		int16_t xtile;
+		int16_t ytile;
+
+		int16_t width;
+		int16_t height;
+		int16_t duration;
 	};
 }
+

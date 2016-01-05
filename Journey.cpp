@@ -27,7 +27,7 @@
 #include "Util\NxFileMethods.h"
 #include "Util\StopWatch.h"
 #include "Data\DataFactory.h"
-#include "Character\Initializer.h"
+#include "Character\BuffEffects.h"
 #include <iostream>
 
 using namespace Program;
@@ -93,10 +93,7 @@ int main()
 	if (error == NONE)
 	{
 		Data::init();
-		Character::init();
-
-		Audioplayer::setbgmvolume(Configuration::getbyte("BGMVolume"));
-		Audioplayer::setsfxvolume(Configuration::getbyte("SFXVolume"));
+		Character::initbuffeffects();
 
 		UI::add(ElementLogin());
 

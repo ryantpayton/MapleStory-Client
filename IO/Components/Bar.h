@@ -26,16 +26,22 @@ namespace IO
 	class Bar
 	{
 	public:
-		Bar(Texture, Texture, Texture, int16_t);
+		Bar(Texture front, Texture mid, Texture end, int16_t maximum, float percentage);
 		Bar();
 		~Bar();
-		void draw(vector2d<int16_t>, float) const;
+
+		void draw(vector2d<int16_t>) const;
+		void update(float target);
 
 	private:
 		Texture barfront;
 		Texture barmid;
 		Texture barend;
-		int16_t maxlength;
+		int16_t maximum;
+
+		float percentage;
+		float target;
+		float step;
 	};
 }
 

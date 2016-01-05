@@ -21,14 +21,11 @@
 #include "Maplemap\MapLayer.h"
 #include "Maplemap\MapPortals.h"
 #include "Physics\Physics.h"
-
 #include "Net\InPacket.h"
-#include "Net\Packets\GameplayPackets83.h"
+#include "Net\Packets\GameplayPackets.h"
 #include "Net\Packets\AttackAndSkillPackets.h"
 #include "Net\Session.h"
 #include "Audio\Audioplayer.h"
-#include "Data\DataFactory.h"
-
 #include "nlnx\nx.hpp"
 #include "nlnx\audio.hpp"
 
@@ -208,46 +205,31 @@ namespace Gameplay
 
 		void useskill(int32_t skillid)
 		{
-			if (!player.canattack())
-				return;
-
-			const Skill& skill = Data::getskill(skillid);
-			int8_t level = static_cast<int8_t>(player.getskills().getlevelof(skillid));
-			const SkillLevel* skilllevel = skill.getlevel(level);
-			if (skilllevel == nullptr)
-				return;
-
-			using Character::Weapon;
-			const Weapon* weapon = player.getlook().getequips().getweapon();
-			if (weapon == nullptr)
-				return;
-
-			bool twohanded = weapon->istwohanded();
-			string action = skill.getaction(twohanded);
-			player.useattack(action);
-			player.showeffect(skill.geteffect(twohanded));
+			using Character::Skill;
+			const Skill& skill = player.useskill(skillid);
 
 			if (skill.isoffensive())
 			{
-				Attack attack = player.prepareattack();
-				attack.applyskill(skillid, skill.gethitanimation(twohanded), *skilllevel);
-				if (attack.range.empty())
-					attack.range = weapon->getrange();
+				Attack attack = player.prepareskillattack(skillid);
+				attack.hiteffect = skill.gethitanimation(
+					player.getlook().getequips().istwohanded()
+					);
 
 				sendattack(attack);
 			}
 			else
 			{
+				uint8_t levelbyte = static_cast<uint8_t>(
+					player.getskills().getlevel(skillid)
+					);
+
 				using Net::UseSkillPacket;
-				Net::Session::dispatch(UseSkillPacket(skillid, level));
+				Net::Session::dispatch(UseSkillPacket(skillid, levelbyte));
 			}
 		}
 
 		void useattack()
 		{
-			if (!player.canattack())
-				return;
-
 			Attack attack = player.regularattack();
 			sendattack(attack);
 		}
@@ -267,8 +249,8 @@ namespace Gameplay
 				}
 				else if (warpinfo->valid)
 				{
-					using Net::ChangeMapPacket83;
-					Net::Session::dispatch(ChangeMapPacket83(false, warpinfo->mapid, warpinfo->portal, false));
+					using Net::ChangeMapPacket;
+					Net::Session::dispatch(ChangeMapPacket(false, warpinfo->mapid, warpinfo->portal, false));
 				}
 			}
 		}
@@ -327,7 +309,8 @@ namespace Gameplay
 						checkseats();
 						break;
 					case Keyboard::KA_ATTACK:
-						useattack();
+						if (player.canattack())
+							useattack();
 						break;
 					case Keyboard::KA_PICKUP:
 						checkdrops();
@@ -339,7 +322,8 @@ namespace Gameplay
 				playable->sendaction(static_cast<Keyboard::Keyaction>(action), down);
 				break;
 			case Keyboard::KT_SKILL:
-				useskill(action);
+				if (player.canuseskill(action))
+					useskill(action);
 				break;
 			case Keyboard::KT_ITEM:
 				player.useitem(action);

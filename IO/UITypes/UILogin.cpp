@@ -58,10 +58,20 @@ namespace IO
 		checkbox[false] = Texture(title["check"]["0"]);
 		checkbox[true] = Texture(title["check"]["1"]);
 
-		account = Textfield(Textlabel::DWF_TEXTFIELD, Textlabel::TXC_WHITE, vector2d<int16_t>(315, 249), 12);
+		account = Textfield(
+			Textlabel::DWF_TEXTFIELD, Textlabel::TXC_WHITE, 
+			rectangle2d<int16_t>(
+			vector2d<int16_t>(315, 249), 
+			vector2d<int16_t>(465, 273)), 12
+			);
 		accountbg = Texture(title["ID"]);
 
-		password = Textfield(Textlabel::DWF_TEXTFIELD, Textlabel::TXC_WHITE, vector2d<int16_t>(315, 275), 12);
+		password = Textfield(
+			Textlabel::DWF_TEXTFIELD, Textlabel::TXC_WHITE, 
+			rectangle2d<int16_t>(
+			vector2d<int16_t>(315, 275),
+			vector2d<int16_t>(465, 299)), 12
+			);
 		passwordbg = Texture(title["PW"]);
 		password.setcrypt('*');
 
@@ -136,7 +146,7 @@ namespace IO
 	{
 		Cursor::Mousestate ret = UIElement::sendmouse(down, pos);
 
-		if (account.bounds(position).contains(pos))
+		if (account.getbounds(position).contains(pos))
 		{
 			if (down)
 			{
@@ -149,7 +159,7 @@ namespace IO
 				ret = Cursor::MST_CANCLICK;
 			}
 		}
-		else if (password.bounds(position).contains(pos))
+		else if (password.getbounds(position).contains(pos))
 		{
 			if (down)
 			{

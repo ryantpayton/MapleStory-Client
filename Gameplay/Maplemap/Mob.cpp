@@ -18,7 +18,7 @@
 #include "Mob.h"
 #include "Program\Constants.h"
 #include "Net\Session.h"
-#include "Net\Packets\GameplayPackets83.h"
+#include "Net\Packets\GameplayPackets.h"
 #include "nlnx\nx.hpp"
 
 namespace Gameplay
@@ -235,8 +235,8 @@ namespace Gameplay
 
 		if (movements.size() > 0)
 		{
-			using Net::MoveMobPacket83;
-			Net::Session::dispatch(MoveMobPacket83(oid, 1, 0, 0, 0, 0, 0, 0, getposition(), movements));
+			using Net::MoveMobPacket;
+			Net::Session::dispatch(MoveMobPacket(oid, 1, 0, 0, 0, 0, 0, 0, getposition(), movements));
 			movements.clear();
 		}
 	}

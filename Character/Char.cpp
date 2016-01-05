@@ -31,6 +31,7 @@ namespace Character
 		}
 
 		namelabel.draw(absp);
+		chatballoon.draw(absp);
 
 		if (!flip)
 			absp.shiftx(-8);
@@ -41,6 +42,7 @@ namespace Character
 	int8_t Char::update(const Physics& physics)
 	{
 		effects.update();
+		chatballoon.update();
 
 		for (int32_t i = 0; i < 3; i++)
 		{
@@ -74,6 +76,11 @@ namespace Character
 	void Char::showeffect(Animation toshow)
 	{
 		effects.add(toshow);
+	}
+
+	void Char::speak(string line)
+	{
+		chatballoon.settext(line);
 	}
 
 	void Char::sendface(int32_t expression)
@@ -145,6 +152,11 @@ namespace Character
 	bool Char::getflip() const
 	{
 		return flip;
+	}
+
+	string Char::getname() const
+	{
+		return namelabel.gettext();
 	}
 
 	rectangle2d<int16_t> Char::getbounds() const

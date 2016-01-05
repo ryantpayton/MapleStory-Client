@@ -22,8 +22,7 @@
 #include "Character\Look\Facetype.h"
 #include "Character\Look\Clothing.h"
 #include "Character\Look\Weapon.h"
-
-#include "Gameplay\Skill.h"
+#include "Character\Skill.h"
 
 namespace Data
 {
@@ -34,8 +33,7 @@ namespace Data
 	using Character::ItemData;
 	using Character::Clothing;
 	using Character::Weapon;
-
-	using Gameplay::Skill;
+	using Character::Skill;
 
 	void init();
 	const BodyDrawinfo& getdrawinfo();
@@ -46,6 +44,5 @@ namespace Data
 	const ItemData& getitemdata(int32_t itemid);
 	const Clothing& getclothing(int32_t itemid);
 	const Weapon& getweapon(int32_t itemid);
-
 	const Skill& getskill(int32_t skillid);
 }

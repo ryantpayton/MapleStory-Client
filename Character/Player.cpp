@@ -19,8 +19,9 @@
 #include "Player.h"
 #include "PlayerStates.h"
 #include "Program\Constants.h"
+#include "Data\DataFactory.h"
 #include "Net\Session.h"
-#include "Net\Packets\GameplayPackets83.h"
+#include "Net\Packets\GameplayPackets.h"
 #include "Net\Packets\InventoryPackets.h"
 
 namespace Character
@@ -187,8 +188,8 @@ namespace Character
 
 				if (movements.size() > 4)
 				{
-					using Net::MovePlayerPacket83;
-					Net::Session::dispatch(MovePlayerPacket83(movements));
+					using Net::MovePlayerPacket;
+					Net::Session::dispatch(MovePlayerPacket(movements));
 					movements.clear();
 				}
 			}
@@ -231,17 +232,46 @@ namespace Character
 		return !attacking && !isclimbing() && !issitting() && look.getequips().hasweapon();
 	}
 
-	void Player::useattack(string action)
+	bool Player::canuseskill(int32_t skillid) const
 	{
-		if (action == "")
-			look.setstance("attack");
-		else
-			look.setaction(action);
+		const SkillLevel* level = skillbook.getlevelof(skillid);
+		if (level == nullptr)
+			return false;
 
+		if (level->hpcost >= stats.getstat(MS_HP))
+			return false;
+
+		if (level->mpcost > stats.getstat(MS_MP))
+			return false;
+
+		return canattack();
+	}
+
+	const Skill& Player::useskill(int32_t skillid)
+	{
+		const Skill& skill = Data::getskill(skillid);
+		bool twohanded = look.getequips().istwohanded();
+		string action = skill.getaction(twohanded);
+		if (action == "")
+		{
+			useattack();
+		}
+		else
+		{
+			look.setaction(action);
+			attacking = true;
+		}
+		showeffect(skill.geteffect(twohanded));
+		return skill;
+	}
+
+	void Player::useattack()
+	{
+		look.setstance("attack");
 		attacking = true;
 	}
 
-	Attack Player::prepareattack()
+	Attack Player::prepareattack() const
 	{
 		Attack attack;
 		attack.mindamage = stats.getmindamage();
@@ -258,7 +288,7 @@ namespace Character
 
 	Attack Player::regularattack()
 	{
-		useattack("");
+		useattack();
 
 		Attack attack = prepareattack();
 		attack.skill = 0;
@@ -267,6 +297,24 @@ namespace Character
 		attack.delay = look.getequips().getweapon()->getattackdelay();
 		attack.range = look.getequips().getweapon()->getrange();
 		attack.hiteffect = look.getequips().getweapon()->gethiteffect();
+		return attack;
+	}
+
+	Attack Player::prepareskillattack(int32_t skillid) const
+	{
+		const SkillLevel* level = skillbook.getlevelof(skillid);
+
+		Attack attack = prepareattack();
+		attack.skill = skillid;
+		attack.hitcount = level->attackcount;
+		attack.mobcount = level->mobcount;
+		attack.critical += level->critical;
+		attack.ignoredef += level->ignoredef;
+		attack.range = level->range;
+		if (attack.range.empty())
+			attack.range = look.getequips().getweapon()->getrange();
+		attack.mindamage = static_cast<int32_t>(attack.mindamage * level->damage);
+		attack.maxdamage = static_cast<int32_t>(attack.maxdamage * level->damage);
 		return attack;
 	}
 
@@ -280,7 +328,7 @@ namespace Character
 		buffs.erase(buffstat);
 	}
 
-	bool Player::hasbuff(Buffstat buff)
+	bool Player::hasbuff(Buffstat buff) const
 	{
 		return buffs.count(buff) > 0;
 	}

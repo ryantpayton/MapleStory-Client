@@ -15,41 +15,107 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Net\OutPacket.h"
-#include "Net\SendOpcodes.h"
 
-namespace Net
+namespace Util
 {
-	// Packet which requests reserving a name for the character to be created.
-	class NameCharPacket : public OutPacket
+	template <typename T>
+	class Consumer
 	{
 	public:
-		NameCharPacket(string name) : OutPacket(NAME_CHAR)
+		Consumer(void(*f)(T))
 		{
-			writestr(name);
+			fun = f;
 		}
+
+		Consumer()
+		{
+			fun = nullptr;
+		}
+
+		~Consumer() {}
+
+		bool available()
+		{
+			return fun != nullptr;
+		}
+
+		void consume(T arg)
+		{
+			if (available())
+				fun(arg);
+		}
+
+	private:
+		void(*fun)(T);
 	};
 
-	// Packets which requests creation of a character with the specified stats.
-	class CreateCharPacket : public OutPacket
+	template <typename R, typename A>
+	class Function
 	{
 	public:
-		CreateCharPacket(string name, uint16_t job, int32_t face, int32_t hair,
-			uint8_t hairc, uint8_t skin, int32_t top, int32_t bot, int32_t shoes,
-			int32_t weapon, bool female) : OutPacket(CREATE_CHAR) {
-
-			writestr(name);
-			writeint(job);
-			writeint(face);
-			writeint(hair);
-			writeint(hairc);
-			writeint(skin);
-			writeint(top);
-			writeint(bot);
-			writeint(shoes);
-			writeint(weapon);
-			writech(female);
+		Function(R(*f)(A))
+		{
+			fun = f;
 		}
+
+		Function(R nv)
+		{
+			fun = nullptr;
+			nullvalue = nv;
+		}
+
+		~Function() {}
+
+		bool available()
+		{
+			return fun != nullptr;
+		}
+
+		R map(A arg)
+		{
+			if (available())
+				return fun(arg);
+			else
+				return nullvalue;
+		}
+
+	private:
+		R(*fun)(A);
+		R nullvalue;
+	};
+
+	template <typename R>
+	class Producer
+	{
+	public:
+		Producer(R(*f)())
+		{
+			fun = f;
+		}
+
+		Producer(R nv)
+		{
+			fun = nullptr;
+			nullvalue = nv;
+		}
+
+		~Producer() {}
+
+		bool available()
+		{
+			return fun != nullptr;
+		}
+
+		R produce()
+		{
+			if (available())
+				return fun();
+			else
+				return nullvalue;
+		}
+
+	private:
+		R(*fun)();
+		R nullvalue;
 	};
 }

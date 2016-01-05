@@ -35,6 +35,32 @@ namespace Net
 		return Gameplay::Stage::getplayer();
 	}
 
+	void KeymapHandler::handle(InPacket& recv) const
+	{
+		recv.skip(1);
+
+		for (uint8_t i = 0; i < 90; i++)
+		{
+			uint8_t type = recv.readbyte();
+			int32_t action = recv.readint();
+
+			IO::UI::addkeymapping(i, type, action);
+		}
+	}
+
+	void SkillMacrosHandler::handle(InPacket& recv) const
+	{
+		uint8_t size = recv.readbyte();
+		for (uint8_t i = 0; i < size; i++)
+		{
+			recv.readascii(); // name
+			recv.readbyte(); // 'shout' byte
+			recv.readint(); // skill 1
+			recv.readint(); // skill 2
+			recv.readint(); // skill 3
+		}
+	}
+
 	void ChangeStatsHandler::handle(InPacket& recv) const
 	{
 		recv.readbool(); // 'itemreaction'

@@ -19,27 +19,54 @@
 
 namespace IO
 {
-	Bar::Bar(Texture front, Texture mid, Texture end, int16_t max)
+	Bar::Bar(Texture front, Texture mid, Texture end, int16_t max, float percent)
 	{
 		barfront = front;
 		barmid = mid;
 		barend = end;
-		maxlength = max;
+		maximum = max;
+		percentage = percent;
+
+		target = percentage;
 	}
 
 	Bar::Bar() {}
 
 	Bar::~Bar() {}
 
-	void Bar::draw(vector2d<int16_t> position, float percent) const
+	void Bar::draw(vector2d<int16_t> position) const
 	{
-		int16_t length = static_cast<int16_t>(percent * maxlength);
+		int16_t length = static_cast<int16_t>(percentage * maximum);
 		if (length > 0)
 		{
 			using::Graphics::DrawArgument;
 			barfront.draw(DrawArgument(position));
 			barmid.draw(DrawArgument(position + vector2d<int16_t>(1, 0), vector2d<int16_t>(length, 0)));
 			barend.draw(DrawArgument(position + vector2d<int16_t>(length + 1, 0)));
+		}
+	}
+
+	void Bar::update(float t)
+	{
+		if (target != t)
+		{
+			target = t;
+			step = (target - percentage) / 24;
+		}
+
+		if (percentage != target)
+		{
+			percentage += step;
+			if (step < 0.0f)
+			{
+				if (target - percentage >= step)
+					percentage = target;
+			}
+			else if (step > 0.0f)
+			{
+				if (target - percentage <= step)
+					percentage = target;
+			}
 		}
 	}
 }

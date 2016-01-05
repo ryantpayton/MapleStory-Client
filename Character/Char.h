@@ -17,9 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Gameplay\Maplemap\Mapobject.h"
-#include "Graphics\EffectLayer.h"
 #include "Look\CharLook.h"
 #include "Look\PetLook.h"
+#include "IO\Components\ChatBalloon.h"
+#include "Graphics\EffectLayer.h"
 #include "Util\rectangle2d.h"
 
 namespace Character
@@ -27,6 +28,7 @@ namespace Character
 	using Util::rectangle2d;
 	using Gameplay::MapObject;
 	using Gameplay::Camera;
+	using IO::ChatBalloon;
 	using Graphics::EffectLayer;
 
 	// Base for characters, e.g. the player and other clients on the same map.
@@ -58,6 +60,8 @@ namespace Character
 
 		// Display an animation as an effect ontop of the character.
 		void showeffect(Animation toshow);
+		// Display a chat bubble with the specified line in it.
+		void speak(string line);
 
 		// Add a pet with the specified stats.
 		void addpet(uint8_t index, int32_t iid, string name, 
@@ -74,6 +78,8 @@ namespace Character
 
 		// Return if the character is facing left.
 		bool getflip() const;
+		// Return the IGN of this character.
+		string getname() const;
 		// Return the character's collision mask.
 		rectangle2d<int16_t> getbounds() const;
 
@@ -87,6 +93,7 @@ namespace Character
 
 	protected:
 		CharLook look;
+		ChatBalloon chatballoon;
 		EffectLayer effects;
 		Textlabel namelabel;
 		PetLook pets[3];

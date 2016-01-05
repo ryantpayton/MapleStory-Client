@@ -65,10 +65,7 @@ namespace IO
 			{
 				UIElement* element = elements[elit].get();
 
-				if (element == nullptr)
-					continue;
-
-				if (element->isactive())
+				if (element && element->isactive())
 					element->draw(inter);
 			}
 
@@ -268,16 +265,11 @@ namespace IO
 					focusedtextfield->sendkey(Keyboard::KT_ACTION, mapping.action, pressed);
 					break;
 				case Keyboard::KT_LETTER:
-					if (!pressed)
-					{
-						int8_t letter;
-						if (keydown[keyboard.getshiftkeycode()])
-							letter = static_cast<int8_t>(mapping.action);
-						else
-							letter = static_cast<int8_t>(mapping.action + 32);
-
-						focusedtextfield->sendkey(Keyboard::KT_LETTER, letter, pressed);
-					}
+					focusedtextfield->sendkey(
+						Keyboard::KT_LETTER,
+						static_cast<int8_t>(mapping.action) + (keydown[keyboard.shiftcode()] ? 0 : 32),
+						pressed
+						);
 					break;
 				case Keyboard::KT_NUMBER:
 					focusedtextfield->sendkey(Keyboard::KT_NUMBER, mapping.action, pressed);
@@ -288,26 +280,24 @@ namespace IO
 			{
 				const Keyboard::Keymapping* mapping = keyboard.getmapping(keycode);
 
-				if (!mapping)
-					return;
-
-				Keyboard::Keytype type = mapping->type;
-				int32_t action = mapping->action;
-
-				switch (type)
+				if (mapping)
 				{
-				case Keyboard::KT_MENU:
-					if (pressed)
+					Keyboard::Keytype type = mapping->type;
+					int32_t action = mapping->action;
+
+					switch (type)
 					{
-						addelementbykey(action);
+					case Keyboard::KT_MENU:
+						if (pressed)
+							addelementbykey(action);
+						break;
+					case Keyboard::KT_ACTION:
+					case Keyboard::KT_FACE:
+					case Keyboard::KT_ITEM:
+					case Keyboard::KT_SKILL:
+						Gameplay::Stage::sendkey(type, action, pressed);
+						break;
 					}
-					break;
-				case Keyboard::KT_ACTION:
-				case Keyboard::KT_FACE:
-				case Keyboard::KT_ITEM:
-				case Keyboard::KT_SKILL:
-					Gameplay::Stage::sendkey(type, action, pressed);
-					break;
 				}
 			}
 
@@ -327,7 +317,7 @@ namespace IO
 		void addkeymapping(uint8_t no, uint8_t t, int32_t action)
 		{
 			Keyboard::Keytype type = static_cast<Keyboard::Keytype>(t);
-			keyboard.addmapping(no, type, action);
+			keyboard.assign(no, type, action);
 		}
 
 		void add(const Element& element)
@@ -384,10 +374,7 @@ namespace IO
 
 		UIElement* getelement(Element::UIType type)
 		{
-			if (elements.count(type))
-				return elements.at(type).get();
-			else
-				return nullptr;
+			return elements.count(type) ? elements.at(type).get() : nullptr;
 		}
 	}
 }

@@ -20,14 +20,14 @@
 
 namespace IO
 {
-	Textfield::Textfield(Textlabel::Font fnt, Textlabel::Textcolor col, vector2d<int16_t> pos, size_t lim)
+	Textfield::Textfield(Textlabel::Font fnt, Textlabel::Textcolor col, rectangle2d<int16_t> bnd, size_t lim)
 	{
 		textlabel = Textlabel(fnt, col, "", 0);
 		marker = Textlabel(fnt, col, "|", 0);
+		bounds = bnd;
+		limit = lim;
 		text = "";
 		markerpos = 0;
-		position = pos;
-		limit = lim;
 		crypt = 0;
 		state = NORMAL;
 	}
@@ -37,25 +37,31 @@ namespace IO
 		text = "";
 	}
 
+	Textfield::~Textfield() {}
+
 	void Textfield::draw(vector2d<int16_t> parentpos) const
 	{
-		if (state != DISABLED)
+		if (state == DISABLED)
+			return;
+		
+		vector2d<int16_t> absp = bounds.getlt() + parentpos;
+		if (text.size() > 0)
 		{
-			vector2d<int16_t> absp = position + parentpos;
-			if (text.size() > 0)
-			{
-				textlabel.draw(absp);
-			}
-			if (state == FOCUSED && showmarker)
-			{
-				vector2d<int16_t> mpos = absp + vector2d<int16_t>(textlabel.getadvance(markerpos), 0);
-				marker.draw(mpos);
-			}
+			textlabel.draw(absp);
+		}
+
+		if (state == FOCUSED && showmarker)
+		{
+			vector2d<int16_t> mpos = absp + vector2d<int16_t>(textlabel.getadvance(markerpos), -1);
+			marker.draw(mpos);
 		}
 	}
 
 	void Textfield::update()
 	{
+		if (state == DISABLED)
+			return;
+
 		elapsed += Constants::TIMESTEP;
 		if (elapsed > 256)
 		{
@@ -64,7 +70,7 @@ namespace IO
 		}
 	}
 
-	void Textfield::setstate(TfState st)
+	void Textfield::setstate(State st)
 	{
 		if (state != st)
 		{
@@ -72,6 +78,11 @@ namespace IO
 			elapsed = 0;
 			showmarker = true;
 		}
+	}
+
+	void Textfield::setonreturn(Consumer<string> onret)
+	{
+		onreturn = onret;
 	}
 
 	void Textfield::sendkey(Keyboard::Keytype type, int32_t key, bool pressed)
@@ -103,6 +114,23 @@ namespace IO
 						modifytext(text);
 					}
 					break;
+				case Keyboard::KA_RETURN:
+					if (onreturn.available())
+					{
+						onreturn.consume(text);
+						text = "";
+						markerpos = 0;
+						modifytext(text);
+					}
+					break;
+				case Keyboard::KA_SPACE:
+					if (belowlimit())
+					{
+						text.insert(markerpos, 1, ' ');
+						markerpos++;
+						modifytext(text);
+					}
+					break;
 				}
 			}
 			break;
@@ -111,7 +139,7 @@ namespace IO
 			if (!pressed)
 			{
 				int8_t c = static_cast<int8_t>(key);
-				if (text.size() < limit)
+				if (belowlimit())
 				{
 					text.insert(markerpos, 1, c);
 					markerpos++;
@@ -149,19 +177,34 @@ namespace IO
 		crypt = c;
 	}
 
+	bool Textfield::belowlimit() const
+	{
+		if (limit > 0)
+		{
+			return text.size() < limit;
+		}
+		else
+		{
+			uint16_t advance = textlabel.getadvance(text.size());
+			return (advance + 50) < bounds.gethor().length();
+		}
+	}
+
 	string Textfield::gettext() const
 	{
 		return text;
 	}
 
-	Textfield::TfState Textfield::getstate() const
+	Textfield::State Textfield::getstate() const
 	{
 		return state;
 	}
 
-	rectangle2d<int16_t> Textfield::bounds(vector2d<int16_t> parentpos) const
+	rectangle2d<int16_t> Textfield::getbounds(vector2d<int16_t> parentpos) const
 	{
-		vector2d<int16_t> absp = position + parentpos;
-		return rectangle2d<int16_t>(absp, absp + vector2d<int16_t>(14 * (int16_t)limit, 24));
+		return rectangle2d<int16_t>(
+			bounds.getlt() + parentpos,
+			bounds.getrb() + parentpos
+			);
 	}
 }

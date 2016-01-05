@@ -210,27 +210,25 @@ namespace Graphics
 			}
 		}
 
-		vector2d<uint16_t> createlayout(const wstring& text, Textlabel::Font font, uint16_t wmax, map<size_t, float>& advances)
+		vector2d<float> createlayout(const wstring& text, Textlabel::Font font, float wmax, map<size_t, float>& advances)
 		{
 			if (!p_dwfactory)
-				return vector2d<uint16_t>();
+				return vector2d<float>();
 
 			IDWriteFactory* dwfactory = (*p_dwfactory);
 			IDWriteTextFormat* fnt = fonts[font];
 
 			if (!dwfactory || !fnt || text.size() == 0)
-				return vector2d<uint16_t>();
+				return vector2d<float>();
 
-			if (wmax < 1)
-			{
-				wmax = 800;
-			}
+			if (wmax < 1.0f)
+				wmax = 800.0f;
 
 			IDWriteTextLayout* layout = nullptr;
 			dwfactory->CreateTextLayout(text.c_str(), (UINT32)text.length(), fnt, wmax, 624, &layout);
 
 			if (!layout)
-				return vector2d<uint16_t>();
+				return vector2d<float>();
 
 			DWRITE_CLUSTER_METRICS* metrics = new DWRITE_CLUSTER_METRICS[text.length()];
 			UINT32 result = 0;
@@ -251,16 +249,20 @@ namespace Graphics
 			advances[result] = tadv;
 
 			delete[] metrics;
+
+			DWRITE_TEXT_METRICS tmetrics;
+			layout->GetMetrics(&tmetrics);
+
+			float width = (tadv > wmax) ? wmax : tadv;
+			float height = tmetrics.height;
+
 			layout->Release();
 
-			return vector2d<uint16_t>(
-				static_cast<uint16_t>(tadv), 
-				static_cast<uint16_t>(fnt->GetFontSize())
-				);
+			return vector2d<float>(width, height);
 		}
 
 		void drawtext(const wstring& text, Textlabel::Font font, Textlabel::Textcolor color,
-			Textlabel::Background back, float alpha, vector2d<float> pos, vector2d<uint16_t> dimensions) {
+			Textlabel::Background back, float alpha, vector2d<float> pos, vector2d<float> dimensions) {
 
 			if (!p_target)
 				return;
@@ -274,10 +276,15 @@ namespace Graphics
 
 			FLOAT x = pos.x();
 			FLOAT y = pos.y() + 5;
-			FLOAT width = static_cast<FLOAT>(dimensions.x() + 5);
-			FLOAT height = static_cast<FLOAT>(dimensions.y());
+			FLOAT width = dimensions.x();
+			FLOAT height = dimensions.y();
 
-			if (x + width < 0 || x - width > 800 || y + height < 0 || y - height > 624 || text.size() == 0)
+			if (width == 0.0f)
+				width = 800.0f;
+			if (height == 0.0f)
+				height = fnt->GetFontSize();
+
+			if (x + width < 0.0f || x - width > 800.0f || y + height < 0.0f || y - height > 624.0f || text.size() == 0)
 				return;
 
 			D2D1_RECT_F layrect;
@@ -301,7 +308,7 @@ namespace Graphics
 				ID2D1SolidColorBrush* backbrush = brushes[Textlabel::TXC_BLACK];
 				if (backbrush)
 				{
-					FLOAT hwidth = width / 2;
+					FLOAT hwidth = (width / 2) + 2.5f;
 					FLOAT space = fnt->GetFontSize() + 2.0f;
 
 					D2D1_RECT_F bglayout = D2D1::RectF(x - hwidth, y + 2, x + hwidth, y + space);

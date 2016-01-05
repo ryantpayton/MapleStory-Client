@@ -17,41 +17,49 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Graphics\Textlabel.h"
-#include "Util\rectangle2d.h"
 #include "IO\Keyboard.h"
+#include "Util\FunctionPointers.h"
+#include "Util\rectangle2d.h"
 
 namespace IO
 {
 	using std::string;
 	using Util::vector2d;
 	using Util::rectangle2d;
+	using Util::Consumer;
 	using Graphics::Textlabel;
 
 	class Textfield
 	{
 	public:
-		enum TfState
+		enum State
 		{
 			NORMAL,
 			DISABLED,
 			FOCUSED
 		};
 
-		Textfield(Textlabel::Font, Textlabel::Textcolor, vector2d<int16_t>, size_t);
+		Textfield(Textlabel::Font font, Textlabel::Textcolor color, 
+			rectangle2d<int16_t> bounds, size_t limit);
 		Textfield();
+		~Textfield();
 
-		void draw(vector2d<int16_t>) const;
+		void draw(vector2d<int16_t> position) const;
 		void update();
-		void sendkey(Keyboard::Keytype, int32_t, bool);
-		void setstate(TfState);
-		void settext(string);
-		void setcrypt(int8_t);
+		void sendkey(Keyboard::Keytype type, int32_t code, bool down);
+
+		void setstate(State state);
+		void settext(string text);
+		void setcrypt(int8_t character);
+		void setonreturn(Consumer<string> onreturn);
+
 		string gettext() const;
-		TfState getstate() const;
-		rectangle2d<int16_t> bounds(vector2d<int16_t>) const;
+		State getstate() const;
+		rectangle2d<int16_t> getbounds(vector2d<int16_t> parentpos) const;
 
 	private:
 		void modifytext(string);
+		bool belowlimit() const;
 
 		Textlabel textlabel;
 		string text;
@@ -59,10 +67,11 @@ namespace IO
 		bool showmarker;
 		uint16_t elapsed;
 		size_t markerpos;
-		vector2d<int16_t> position;
+		rectangle2d<int16_t> bounds;
 		size_t limit;
 		int8_t crypt;
-		TfState state;
+		State state;
+		Consumer<string> onreturn;
 	};
 }
 

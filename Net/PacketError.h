@@ -21,6 +21,7 @@
 namespace Net
 {
 	using::std::runtime_error;
+
 	// Error that occurs if the number of bytes a packet has available is insufficient.
 	class PacketError : public runtime_error
 	{

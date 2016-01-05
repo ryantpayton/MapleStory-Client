@@ -16,8 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "MapMobs.h"
-#include "Net\Session.h"
-#include "Net\Packets\GameplayPackets83.h"
 
 namespace Gameplay
 {

@@ -17,8 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "IO\Element.h"
+#include "IO\Components\Chatbar.h"
 #include "IO\Components\Charset.h"
 #include "IO\Components\Bar.h"
+#include "IO\Components\Textfield.h"
 #include "Character\CharStats.h"
 #include "Character\Inventory\Inventory.h"
 #include "Graphics\Animation.h"
@@ -34,8 +36,9 @@ namespace IO
 	class UIStatusbar : public UIElement
 	{
 	public:
-		enum Buttons
+		enum Buttons : uint16_t
 		{
+			// Main
 			BT_WHISPER,
 			BT_CALLGM,
 			BT_CASHSHOP,
@@ -53,15 +56,24 @@ namespace IO
 		UIStatusbar(const CharStats&, const Inventory&);
 
 		void draw(float inter) const override;
+		void update() override;
 		void buttonpressed(uint16_t buttonid) override;
 		rectangle2d<int16_t> bounds() const override;
+		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> position) override;
+
+		void sendchatline(string line, int8_t type);
 
 	private:
 		UIStatusbar& operator = (const UIStatusbar&) = delete;
 
+		float getexppercent() const;
+		float gethppercent() const;
+		float getmppercent() const;
+
 		const CharStats& stats;
 		const Inventory& inventory;
 
+		unique_ptr<Chatbar> chatbar;
 		Bar expbar;
 		Bar hpbar;
 		Bar mpbar;

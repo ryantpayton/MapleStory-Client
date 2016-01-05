@@ -73,19 +73,25 @@ namespace Character
 		bool isattacking() const;
 		// Return wether the player can attack or not.
 		bool canattack() const;
-		// Start attacking.
-		void useattack(string action);
+		// Return wether the player can use a skill or not.
+		bool canuseskill(int32_t skillid) const;
+		// Use a skill.
+		const Skill& useskill(int32_t skillid);
+		// Use an attack.
+		void useattack();
 		// Create an attack struct using the player's stats.
-		Attack prepareattack();
-		// Create an attack struct for a regular attack.
+		Attack prepareattack() const;
+		// Create an attack struct for and use a regular attack.
 		Attack regularattack();
+		// Create an attack struct for a skill attack.
+		Attack prepareskillattack(int32_t skillid) const;
 
 		// Apply a buff to the player.
 		void givebuff(Buff buff);
 		// Cancel a buff.
 		void cancelbuff(Buffstat buffstat);
 		// Return wether the buff is active.
-		bool hasbuff(Buffstat buffstat);
+		bool hasbuff(Buffstat buffstat) const;
 
 		// Returns the current walking force, calculated from the total ES_SPEED stat.
 		float getwforce() const;

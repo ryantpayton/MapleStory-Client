@@ -15,8 +15,24 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
+#pragma once
+#include "Net\OutPacket.h"
+#include "Net\SendOpcodes.h"
+#include "Character\CharConstants.h"
 
-namespace Character
+namespace Net
 {
-	void init();
+	using Character::Maplestat;
+
+	// Requests a stat increase by spending ap.
+	// Opcode: SPEND_AP(87)
+	class SpendApPacket : public OutPacket
+	{
+	public:
+		SpendApPacket(Maplestat stat) : OutPacket(SPEND_AP)
+		{
+			skip(4);
+			writeint(stat);
+		}
+	};
 }

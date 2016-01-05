@@ -19,7 +19,7 @@
 #include "IO\UI.h"
 #include "Net\Session.h"
 #include "IO\Components\MapleButton.h"
-#include "Net\Packets\PlayerPackets83.h"
+#include "Net\Packets\PlayerPackets.h"
 #include "Program\Configuration.h"
 #include "nlnx\nx.hpp"
 
@@ -209,8 +209,8 @@ namespace IO
 
 	void UIStatsinfo::sendappacket(Maplestat stat)
 	{
-		using Net::SpendApPacket83;
-		Net::Session::dispatch(SpendApPacket83(stat));
+		using Net::SpendApPacket;
+		Net::Session::dispatch(SpendApPacket(stat));
 
 		UI::disable();
 	}

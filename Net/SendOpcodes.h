@@ -18,50 +18,12 @@
 #pragma once
 #include <cstdint>
 
-#include "Journey.h"
-#ifdef JOURNEY_CUSTOM_VERSION
-
-namespace Net
-{
-	// Opcodes for outgoing packets.
-	enum SendOpcode : uint16_t
-	{
-		// Login opcodes
-		ACCEPT_TOS = 0,
-		LOGIN = 1,
-		WORLD_REQUEST = 2,
-		CHARLIST_REQUEST = 3,
-		NAME_CHAR = 4,
-		CREATE_CHAR = 5,
-		DELETE_CHAR = 6,
-		SELECT_CHAR = 7,
-		REGISTER_PIC = 8,
-		SELECT_CHAR_PIC = 9,
-		PLAYER_LOGIN = 10,
-
-		PONG = 24,
-		CHANGEMAP = 38,
-		MOVE_PLAYER = 41,
-		CLOSE_ATTACK = 44,
-		GENERAL_CHAT = 49,
-		TALK_TO_NPC = 58,
-		MOVE_ITEM = 71,
-		USE_ITEM = 72,
-		SCROLL_EQUIP = 86,
-		SPEND_AP = 87,
-		MOVE_MONSTER = 188,
-		PICKUP_ITEM = 202,
-		HASH_CHECK = 30000
-	};
-}
-
-#else
-
 namespace Net
 {
 	// Opcodes for OutPackets associated with version 83 of the game.
 	enum SendOpcode : int16_t
 	{
+		// Login
 		LOGIN = 1,
 		SERVERLIST_REREQUEST = 4,
 		CHARLIST_REQUEST = 5,
@@ -79,9 +41,13 @@ namespace Net
 		PONG = 24,
 		REGISTER_PIC = 29,
 		SELECT_CHAR_PIC = 30,
+
+		// Gameplay 1
 		CHANGEMAP = 38,
 		MOVE_PLAYER = 41,
 		CLOSE_ATTACK = 44,
+
+		// Messaging
 		GENERAL_CHAT = 49,
 		TALK_TO_NPC = 58,
 
@@ -95,11 +61,14 @@ namespace Net
 		// Skill
 		USE_SKILL = 91,
 
+		// Player
 		SPEND_AP = 87,
+
+		// Gameplay 2
 		MOVE_MONSTER = 188,
 		PICKUP_ITEM = 202,
+
+		// Custom
 		HASH_CHECK = 30000
 	};
 }
-
-#endif

@@ -16,21 +16,33 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Audioplayer.h"
+#include "Program\Configuration.h"
 #include "bass.h"
 #include "nlnx\nx.hpp"
 #include "nlnx\audio.hpp"
 #include "nlnx\node.hpp"
-#include <map>
+#include <unordered_map>
 
 namespace Audioplayer
 {
+	using std::unordered_map;
+
 	HSTREAM bgm;
-	std::map<size_t, HSAMPLE> soundcache;
+	unordered_map<size_t, HSAMPLE> soundcache;
 	string bgmpath = "";
 
 	bool init()
 	{
-		return BASS_Init(1, 44100, 0, nullptr, 0) == TRUE;
+		if (BASS_Init(1, 44100, 0, nullptr, 0) == TRUE)
+		{
+			setbgmvolume(Program::Configuration::getbyte("BGMVolume"));
+			setsfxvolume(Program::Configuration::getbyte("SFXVolume"));
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	void close()
@@ -101,7 +113,9 @@ namespace Audioplayer
 
 	size_t addsound(string path)
 	{
-		nl::audio toplay = nl::nx::sound.resolve(path);
+		using nl::audio;
+		audio toplay = nl::nx::sound.resolve(path);
+
 		if (toplay.data())
 		{
 			cachesound(reinterpret_cast<const void*>(toplay.data()), toplay.length(), toplay.id());

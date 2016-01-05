@@ -190,6 +190,7 @@ namespace Gameplay
 
 		const Foothold& nextfh = getfh(phobj.fhid);
 		phobj.fhslope = nextfh.getslope();
+		phobj.fh = &nextfh;
 
 		double ground = nextfh.resolvex(phobj.fx);
 		if (phobj.vspeed == 0.0 && checkslope)
@@ -210,6 +211,17 @@ namespace Gameplay
 		}
 
 		phobj.onground = phobj.fy == ground;
+
+		uint16_t belowid = getbelow(phobj.fx, nextfh.resolvex(phobj.fx) + 1.0);
+		if (belowid > 0)
+		{
+			double jddelta = getfh(belowid).resolvex(phobj.fx) - ground;
+			phobj.enablejd = jddelta < 250.0;
+		}
+		else
+		{
+			phobj.enablejd = false;
+		}
 
 		if (phobj.fhlayer == 0 || phobj.onground)
 			phobj.fhlayer = nextfh.getlayer();

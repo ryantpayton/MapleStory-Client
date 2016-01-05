@@ -16,49 +16,61 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "PacketHandler.h"
-#include "IO\UI.h"
+#include "Graphics\Animation.h"
+#include "Util\rectangle2d.h"
+#include <cstdint>
+#include <string>
+#include <map>
 
-namespace Net
+namespace Character
 {
-	class KeymapHandler83 : public PacketHandler
+	using std::int32_t;
+	using std::string;
+	using std::map;
+	using std::vector;
+	using Util::vector2d;
+	using Util::rectangle2d;
+	using Graphics::Texture;
+	using Graphics::Animation;
+
+	struct SkillLevel
 	{
-		void handle(InPacket& recv) const override
-		{
-			recv.readbyte();
-
-			for (uint8_t i = 0; i < 90; i++)
-			{
-				uint8_t type = recv.readbyte();
-				int32_t action = recv.readint();
-				IO::UI::addkeymapping(i, type, action);
-			}
-
-			/*quickslot* qslot = uinterface.getelement<quickslot>(UI_QUICKSLOTS);
-			if (qslot)
-			{
-			qslot->loadicons();
-			}*/
-		}
+		float chance = 0.0f;
+		float damage = 0.0f;
+		float critical = 0.0f;
+		float ignoredef = 0.0f;
+		uint8_t attackcount = 1;
+		uint8_t mobcount = 1;
+		int32_t hpcost = 0;
+		int32_t mpcost = 0;
+		rectangle2d<int16_t> range;
 	};
 
-	class SkillmacrosHandler83 : public PacketHandler
+	class Skill
 	{
-		void handle(InPacket& recv) const override
-		{
-			map<string, pair<int8_t, vector<int32_t>>> macros;
-			uint8_t size = recv.readbyte();
-			for (uint8_t i = 0; i < size; i++)
-			{
-				string name = recv.readascii();
-				int8_t shout = recv.readbyte();
-				vector<int32_t> skills;
-				skills.push_back(recv.readint());
-				skills.push_back(recv.readint());
-				skills.push_back(recv.readint());
-				macros.insert(make_pair(name, make_pair(shout, skills)));
-			}
-			//uinterface.getkeyboard()->addmacros(macros);
-		}
+	public:
+		Skill(int32_t);
+		Skill();
+		~Skill();
+
+		bool isoffensive() const;
+		int32_t getid() const;
+		string getaction(bool twohanded) const;
+		Animation gethitanimation(bool twohanded) const;
+		Animation geteffect(bool twohanded) const;
+		const Texture* geticon(uint8_t type) const;
+		const SkillLevel* getlevel(int32_t level) const;
+
+	private:
+		int32_t id;
+		map<uint8_t, Texture> icons;
+		vector<Animation> effects;
+		vector<Animation> hit;
+		Animation affected;
+		string preparestance;
+		int32_t preparetime;
+		bool offensive;
+		vector<string> actions;
+		map<int32_t, SkillLevel> levels;
 	};
 }

@@ -29,7 +29,6 @@ namespace IO
 		: stats(st), inventory(inv) {
 
 		node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
-		node chat = nl::nx::ui["StatusBar2.img"]["chat"];
 
 		sprites.push_back(Sprite(mainbar["backgrnd"], vector2d<int16_t>(0, 0)));
 		sprites.push_back(Sprite(mainbar["gaugeBackgrd"], vector2d<int16_t>(0, 0)));
@@ -41,19 +40,19 @@ namespace IO
 			Texture(mainbar.resolve("gauge/exp/0")), 
 			Texture(mainbar.resolve("gauge/exp/1")), 
 			Texture(mainbar.resolve("gauge/exp/2")), 
-			308
+			308, getexppercent()
 			);
 		hpbar = Bar(
 			Texture(mainbar.resolve("gauge/hp/0")), 
 			Texture(mainbar.resolve("gauge/hp/1")), 
 			Texture(mainbar.resolve("gauge/hp/2")), 
-			137
+			137, gethppercent()
 			);
 		mpbar = Bar(
 			Texture(mainbar.resolve("gauge/mp/0")), 
 			Texture(mainbar.resolve("gauge/mp/1")), 
 			Texture(mainbar.resolve("gauge/mp/2")), 
-			137
+			137, getmppercent()
 			);
 
 		statset = Charset(mainbar.resolve("gauge/number"), Charset::RIGHT);
@@ -79,6 +78,8 @@ namespace IO
 
 		position = vector2d<int16_t>(512, 590);
 		dimension = vector2d<int16_t>(1366, 80);
+
+		chatbar = unique_ptr<Chatbar>(new Chatbar(position));
 	}
 
 	void UIStatusbar::draw(float inter) const
@@ -86,21 +87,16 @@ namespace IO
 		UIElement::draw(inter);
 
 		int64_t currentexp = stats.getexp();
-		int64_t expneeded = stats.getexpneeded();
 		uint16_t currenthp = stats.getstat(Character::MS_HP);
 		uint16_t currentmp = stats.getstat(Character::MS_MP);
 		uint32_t maxhp = stats.gettotal(Character::ES_HP);
 		uint32_t maxmp = stats.gettotal(Character::ES_MP);
 
-		float exppercent = static_cast<float>(
-			static_cast<double>(currentexp) / expneeded
-			);
+		expbar.draw(position + vector2d<int16_t>(-261, -15));
+		hpbar.draw(position + vector2d<int16_t>(-261, -31));
+		mpbar.draw(position + vector2d<int16_t>(-90, -31));
 
-		expbar.draw(position + vector2d<int16_t>(-261, -15), exppercent);
-		hpbar.draw(position + vector2d<int16_t>(-261, -31), static_cast<float>(currenthp) / maxhp);
-		mpbar.draw(position + vector2d<int16_t>(-90, -31), static_cast<float>(currentmp) / maxmp);
-
-		string expstring = std::to_string(100 * exppercent);
+		string expstring = std::to_string(100 * getexppercent());
 		statset.draw(
 			std::to_string(currentexp) + "[" + expstring.substr(0, expstring.find('.') + 3) + "%]",
 			DrawArgument(position + vector2d<int16_t>(47, -13))
@@ -120,6 +116,19 @@ namespace IO
 
 		joblabel.draw(position + vector2d<int16_t>(-435, -22));
 		namelabel.draw(position + vector2d<int16_t>(-435, -37));
+
+		chatbar->draw(inter);
+	}
+
+	void UIStatusbar::update()
+	{
+		UIElement::update();
+
+		chatbar->update();
+
+		expbar.update(getexppercent());
+		hpbar.update(gethppercent());
+		mpbar.update(getmppercent());
 	}
 
 	void UIStatusbar::buttonpressed(uint16_t id)
@@ -139,6 +148,7 @@ namespace IO
 			UI::add(ElementEquipInventory(inventory));
 			break;
 		}
+
 		buttons[id].get()->setstate(Button::MOUSEOVER);
 	}
 
@@ -148,5 +158,48 @@ namespace IO
 			position - vector2d<int16_t>(512, 84), 
 			position - vector2d<int16_t>(512, 84) + dimension
 			);
+	}
+
+	Cursor::Mousestate UIStatusbar::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
+	{
+		if (chatbar->bounds().contains(cursorpos))
+		{
+			UIElement::sendmouse(pressed, cursorpos);
+			return chatbar->sendmouse(pressed, cursorpos);
+		}
+		else
+		{
+			chatbar->sendmouse(pressed, cursorpos);
+			return UIElement::sendmouse(pressed, cursorpos);
+		}
+	}
+
+	void UIStatusbar::sendchatline(string line, int8_t type)
+	{
+		chatbar->sendline(line, type);
+	}
+
+	float UIStatusbar::getexppercent() const
+	{
+		int64_t currentexp = stats.getexp();
+		int64_t expneeded = stats.getexpneeded();
+
+		return static_cast<float>(static_cast<double>(currentexp) / expneeded);
+	}
+
+	float UIStatusbar::gethppercent() const
+	{
+		uint16_t currenthp = stats.getstat(Character::MS_HP);
+		uint32_t maxhp = stats.gettotal(Character::ES_HP);
+
+		return static_cast<float>(currenthp) / maxhp;
+	}
+
+	float UIStatusbar::getmppercent() const
+	{
+		uint16_t currentmp = stats.getstat(Character::MS_MP);
+		uint32_t maxmp = stats.gettotal(Character::ES_MP);
+
+		return static_cast<float>(currentmp) / maxmp;
 	}
 }

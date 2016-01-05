@@ -33,7 +33,7 @@ namespace Graphics
 			defaults();
 		}
 
-		explicit DrawArgument(vector2d<int16_t> p)
+		DrawArgument(vector2d<int16_t> p)
 		{
 			pos = p;
 			defaults();

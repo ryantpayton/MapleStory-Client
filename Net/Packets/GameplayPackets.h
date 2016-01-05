@@ -17,15 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Net\Packets\MovementPacket.h"
-#include "Gameplay\Attack.h"
 
 namespace Net
 {
-	// A packet that requests the server to warp the player to a different map.
-	class ChangeMapPacket83 : public OutPacket
+	// Requests the server to warp the player to a different map.
+	// Opcode: CHANGE_MAP(38)
+	class ChangeMapPacket : public OutPacket
 	{
 	public:
-		ChangeMapPacket83(bool died, int32_t targetid, string targetp, bool usewheel) : OutPacket(CHANGEMAP)
+		ChangeMapPacket(bool died, int32_t targetid, string targetp, bool usewheel) : OutPacket(CHANGEMAP)
 		{
 			writech(died);
 			writeint(targetid);
@@ -35,11 +35,13 @@ namespace Net
 		}
 	};
 
-	// A packet which updates the player's position with the server.
-	class MovePlayerPacket83 : public MovementPacket
+
+	// Updates the player's position with the server.
+	// Opcode: MOVE_PLAYER(41)
+	class MovePlayerPacket : public MovementPacket
 	{
 	public:
-		MovePlayerPacket83(const vector<MovementFragment>& movements) : MovementPacket(MOVE_PLAYER)
+		MovePlayerPacket(const vector<MovementFragment>& movements) : MovementPacket(MOVE_PLAYER)
 		{
 			skip(9);
 			writech(static_cast<int8_t>(movements.size()));
@@ -50,11 +52,13 @@ namespace Net
 		}
 	};
 
-	// A packet which updates the a mob's position with the server.
-	class MoveMobPacket83 : public MovementPacket
+
+	// Updates the a mob's position with the server.
+	// Opcode: MOVE_MONSTER(188)
+	class MoveMobPacket : public MovementPacket
 	{
 	public:
-		MoveMobPacket83(int32_t oid, int16_t type, int8_t skillb, int8_t skill0, int8_t skill1,
+		MoveMobPacket(int32_t oid, int16_t type, int8_t skillb, int8_t skill0, int8_t skill1,
 			int8_t skill2, int8_t skill3, int8_t skill4, vector2d<int16_t> startpos,
 			const vector<MovementFragment>& movements) : MovementPacket(MOVE_MONSTER) {
 
@@ -80,6 +84,9 @@ namespace Net
 		}
 	};
 
+
+	// Requests picking up an item.
+	// Opcode: PICKUP_ITEM(202)
 	class PickupItemPacket : public OutPacket
 	{
 	public:

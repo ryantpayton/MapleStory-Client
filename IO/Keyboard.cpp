@@ -16,14 +16,32 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "IO\Keyboard.h"
-#include "IO\UI.h"
-#include "Gameplay\Stage.h"
 
 #include "Journey.h"
 #ifdef JOURNEY_USE_OPENGL
 #include "glfw3.h"
+
+#define LEFTKEY GLFW_KEY_LEFT
+#define RIGHTKEY GLFW_KEY_RIGHT
+#define UPKEY GLFW_KEY_UP
+#define DOWNKEY GLFW_KEY_DOWN
+#define SHIFTKEY GLFW_KEY_LEFT_SHIFT
+#define BACKKEY GLFW_KEY_BACKSPACE
+#define RETURNKEY GLFW_KEY_ENTER
+#define SPACEKEY GLFW_KEY_SPACE
+
 #else
 #include <Windows.h>
+
+#define LEFTKEY VK_LEFT
+#define RIGHTKEY VK_RIGHT
+#define UPKEY VK_UP
+#define DOWNKEY VK_DOWN
+#define SHIFTKEY VK_SHIFT
+#define BACKKEY VK_BACK
+#define RETURNKEY VK_RETURN
+#define SPACEKEY VK_SPACE
+
 #endif
 
 namespace IO
@@ -38,67 +56,6 @@ namespace IO
 		GLFW_KEY_F1, GLFW_KEY_F2, GLFW_KEY_F3, GLFW_KEY_F4, GLFW_KEY_F5, GLFW_KEY_F6, GLFW_KEY_F7, GLFW_KEY_F8, GLFW_KEY_F9, GLFW_KEY_F10, GLFW_KEY_F11, GLFW_KEY_F12, //up to 70
 		GLFW_KEY_HOME, 0, GLFW_KEY_PAGE_UP, 0, 0, 0, 0, 0, GLFW_KEY_END, 0, GLFW_KEY_PAGE_DOWN, GLFW_KEY_INSERT, GLFW_KEY_DELETE, 0, 0, 0, 0, 0, 0
 	};
-
-	Keyboard::Keyboard()
-	{
-		Keymapping left;
-		left.type = KT_ACTION;
-		left.action = KA_LEFT;
-		Keymapping right;
-		right.type = KT_ACTION;
-		right.action = KA_RIGHT;
-		Keymapping up;
-		up.type = KT_ACTION;
-		up.action = KA_UP;
-		Keymapping down;
-		down.type = KT_ACTION;
-		down.action = KA_DOWN;
-		Keymapping back;
-		back.type = KT_ACTION;
-		back.action = KA_BACK;
-
-		keymap[GLFW_KEY_LEFT] = left;
-		keymap[GLFW_KEY_RIGHT] = right;
-		keymap[GLFW_KEY_UP] = up;
-		keymap[GLFW_KEY_DOWN] = down;
-		keymap[GLFW_KEY_BACKSPACE] = back;
-	}
-
-	int32_t Keyboard::getshiftkeycode() const
-	{
-		return GLFW_KEY_LEFT_SHIFT;
-	}
-
-	Keyboard::Keymapping Keyboard::gettextmapping(int32_t keycode) const
-	{
-		switch (keycode)
-		{
-		case GLFW_KEY_LEFT:
-		case GLFW_KEY_RIGHT:
-		case GLFW_KEY_UP:
-		case GLFW_KEY_DOWN:
-		case GLFW_KEY_BACKSPACE:
-			return keymap.at(keycode);
-		default:
-			if (keycode > 47 && keycode < 58)
-			{
-				Keymapping mapping;
-				mapping.type = KT_NUMBER;
-				mapping.action = keycode;
-				return mapping;
-			}
-			else if (keycode > 64 && keycode < 91)
-			{
-				Keymapping mapping;
-				mapping.type = KT_LETTER;
-				mapping.action = keycode;
-				return mapping;
-			}
-			break;
-		}
-
-		return Keymapping();
-	}
 #else
 	const int32_t Keytable[90] =
 	{
@@ -109,84 +66,62 @@ namespace IO
 		VK_F1, VK_F2, VK_F3, VK_F4, VK_F5, VK_F6, VK_F7, VK_F8, VK_F9, VK_F10, VK_F11, VK_F12, //up to 70
 		VK_HOME, 0, VK_PRIOR, 0, 0, 0, 0, 0, VK_END, 0, VK_NEXT, VK_INSERT, VK_DELETE, 0, 0, 0, 0, 0, 0
 	};
-
+#endif
 	Keyboard::Keyboard()
 	{
-		Keymapping left;
-		left.type = KT_ACTION;
-		left.action = KA_LEFT;
-		Keymapping right;
-		right.type = KT_ACTION;
-		right.action = KA_RIGHT;
-		Keymapping up;
-		up.type = KT_ACTION;
-		up.action = KA_UP;
-		Keymapping down;
-		down.type = KT_ACTION;
-		down.action = KA_DOWN;
-		Keymapping back;
-		back.type = KT_ACTION;
-		back.action = KA_BACK;
+		keymap[LEFTKEY] = Keymapping(KT_ACTION, KA_LEFT);
+		keymap[RIGHTKEY] = Keymapping(KT_ACTION, KA_RIGHT);
+		keymap[UPKEY] = Keymapping(KT_ACTION, KA_UP);
+		keymap[DOWNKEY] = Keymapping(KT_ACTION, KA_DOWN);
 
-		keymap[VK_LEFT] = left;
-		keymap[VK_RIGHT] = right;
-		keymap[VK_UP] = up;
-		keymap[VK_DOWN] = down;
-		keymap[VK_BACK] = back;
+		textactions[BACKKEY] = KA_BACK;
+		textactions[RETURNKEY] = KA_RETURN;
+		textactions[SPACEKEY] = KA_SPACE;
 	}
 
-	int32_t Keyboard::getshiftkeycode() const
+	int32_t Keyboard::shiftcode() const
 	{
-		return VK_SHIFT;
+		return SHIFTKEY;
 	}
 
 	Keyboard::Keymapping Keyboard::gettextmapping(int32_t keycode) const
 	{
-		switch (keycode)
+		if (textactions.count(keycode))
 		{
-		case VK_LEFT:
-		case VK_RIGHT:
-		case VK_UP:
-		case VK_DOWN:
-		case VK_BACK:
-			return keymap.at(keycode);
-		default:
-			if (keycode > 47 && keycode < 58)
-			{
-				Keymapping mapping;
-				mapping.type = KT_NUMBER;
-				mapping.action = keycode;
-				return mapping;
-			}
-			else if (keycode > 64 && keycode < 91)
-			{
-				Keymapping mapping;
-				mapping.type = KT_LETTER;
-				mapping.action = keycode;
-				return mapping;
-			}
-			break;
+			return Keymapping(KT_ACTION, textactions.at(keycode));
 		}
-
-		return Keymapping();
+		else if (keycode > 47 && keycode < 58)
+		{
+			return Keymapping(KT_NUMBER, keycode);
+		}
+		else if (keycode > 64 && keycode < 91)
+		{
+			return Keymapping(KT_LETTER, keycode);
+		}
+		else
+		{
+			switch (keycode)
+			{
+			case LEFTKEY:
+			case RIGHTKEY:
+			case UPKEY:
+			case DOWNKEY:
+				return keymap.at(keycode);
+			default:
+				return Keymapping(KT_NONE, 0);
+			}
+		}
 	}
-#endif
 
-	void Keyboard::addmapping(uint8_t key, Keytype type, int32_t action)
+	void Keyboard::assign(uint8_t key, Keytype type, int32_t action)
 	{
-		Keymapping mapping;
-		mapping.type = type;
-		mapping.action = action;
-
+		Keymapping mapping = Keymapping(type, action);
 		keymap[Keytable[key]] = mapping;
 		maplekeys[key] = mapping;
 	}
 
 	const Keyboard::Keymapping* Keyboard::getmapping(int32_t keycode) const
 	{
-		if (keymap.count(keycode))
-			return &keymap.at(keycode);
-		else
-			return nullptr;
+		return keymap.count(keycode) ? &keymap.at(keycode) : nullptr;
 	}
 }

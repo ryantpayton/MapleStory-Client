@@ -28,7 +28,7 @@ namespace IO
 	{
 	public:
 		//Maple-specific keycodes, sent via the Keymap Packet.
-		enum Keyaction
+		enum Keyaction : int32_t
 		{
 			KA_EQUIPS = 0,
 			KA_INVENTORY = 1,
@@ -75,18 +75,20 @@ namespace IO
 			KA_PICKUP = 50,
 			KA_SIT = 51,
 			KA_ATTACK = 52,
-			KA_JUMP = 53, //switched
-			KA_NPCCHAT = 54, //switched
+			KA_JUMP = 53,
+			KA_NPCCHAT = 54,
 			KA_LEFT = 60,
 			KA_RIGHT = 61,
 			KA_UP = 62,
 			KA_DOWN = 63,
 			KA_BACK = 64,
+			KA_RETURN = 65,
+			KA_SPACE = 66,
 			KA_FACE1 = 100,
 			KA_FACE7 = 106
 		};
 
-		// Keytypes to decide how a keycode is interpreted.
+		// Keytypes decide how a keycode is interpreted.
 		enum Keytype
 		{
 			KT_NONE = 0,
@@ -103,20 +105,33 @@ namespace IO
 
 		struct Keymapping
 		{
-			Keyboard::Keytype type = Keyboard::KT_NONE;
-			int32_t action = 0;
+			Keyboard::Keytype type;
+			int32_t action;
+
+			Keymapping()
+			{
+				type = Keyboard::KT_NONE;
+				action = 0;
+			}
+
+			Keymapping(Keyboard::Keytype t, int32_t a)
+			{
+				type = t;
+				action = a;
+			}
 		};
 
 		Keyboard();
 
-		void addmapping(uint8_t, Keytype, int32_t);
-		int32_t getshiftkeycode() const;
+		void assign(uint8_t, Keytype, int32_t);
+		int32_t shiftcode() const;
 		Keymapping gettextmapping(int32_t keycode) const;
 		const Keymapping* getmapping(int32_t keycode) const;
 
 	private:
 		map<int32_t, Keymapping> keymap;
 		map<int32_t, Keymapping> maplekeys;
+		map<int32_t, Keyaction> textactions;
 		map<int32_t, bool> keystate;
 	};
 }

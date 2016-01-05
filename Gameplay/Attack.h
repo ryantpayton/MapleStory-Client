@@ -16,17 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include <cstdint>
-#include "Skill.h"
 #include "Util\rectangle2d.h"
 #include "Graphics\Animation.h"
+#include <cstdint>
 
 namespace Gameplay
 {
-	using std::uint8_t;
-	using std::int16_t;
-	using std::uint16_t;
-	using std::int32_t;
 	using std::vector;
 	using std::map;
 	using Util::vector2d;
@@ -61,19 +56,6 @@ namespace Gameplay
 		rectangle2d<int16_t> range;
 
 		Animation hiteffect;
-
-		void applyskill(int32_t skillid, Animation effect, const SkillLevel& level)
-		{
-			skill = skillid;
-			hiteffect = effect;
-			hitcount = level.attackcount;
-			mobcount = level.mobcount;
-			range = level.range;
-			critical += level.critical;
-			ignoredef += level.ignoredef;
-			mindamage = static_cast<int32_t>(mindamage * level.damage);
-			maxdamage = static_cast<int32_t>(maxdamage * level.damage);
-		}
 	};
 
 	struct AttackResult

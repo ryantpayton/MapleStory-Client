@@ -210,8 +210,16 @@ namespace Character
 				switch (ka)
 				{
 				case Keyboard::KA_JUMP:
-					player.setstance(Char::STAND);
-					player.sendaction(ka, down);
+					if (player.getphobj().enablejd && player.keydown(Keyboard::KA_DOWN))
+					{
+						player.getphobj().gobelowground();
+						player.setstance(Char::FALL);
+					}
+					else
+					{
+						player.setstance(Char::STAND);
+						player.sendaction(ka, down);
+					}
 					break;
 				}
 			}

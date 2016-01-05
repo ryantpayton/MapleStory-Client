@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Skillbook.h"
+#include "Data\DataFactory.h"
 
 namespace Character
 {
@@ -25,21 +26,45 @@ namespace Character
 
 	void Skillbook::setskill(int32_t id, int32_t level, int32_t mlevel, int64_t expire)
 	{
-		levels[id] = level;
-		masterlevels[id] = mlevel;
-		expirations[id] = expire;
+		SkillEntry entry;
+		entry.level = level;
+		entry.masterlevel = mlevel;
+		entry.expiration = expire;
+		entry.cooldown = 0;
+		skillentries[id] = entry;
+	}
+
+	bool Skillbook::hasskill(int32_t id) const
+	{
+		return skillentries.count(id) > 0;
 	}
 
 	void Skillbook::setcd(int32_t id, int32_t cd)
 	{
-		cooldowns[id] = cd;
+		if (hasskill(id))
+		{
+			skillentries[id].cooldown = cd;
+		}
 	}
 
-	int32_t Skillbook::getlevelof(int32_t id) const
+	bool Skillbook::iscooling(int32_t id) const
 	{
-		if (levels.count(id))
-			return levels.at(id);
-		else
-			return 0;
+		return hasskill(id) ? (skillentries.at(id).cooldown > 0) : true;
+	}
+
+	int32_t Skillbook::getlevel(int32_t id) const
+	{
+		return hasskill(id) ? skillentries.at(id).level : 0;
+	}
+
+	int32_t Skillbook::getmasterlevel(int32_t id) const
+	{
+		return hasskill(id) ? skillentries.at(id).masterlevel : 0;
+	}
+
+	const SkillLevel* Skillbook::getlevelof(int32_t id) const
+	{
+		int32_t skilllevel = getlevel(id);
+		return Data::getskill(id).getlevel(skilllevel);
 	}
 }

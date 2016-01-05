@@ -23,6 +23,18 @@ namespace Net
 {
 	using Character::Buffstat;
 
+	// Parses keymappings and sends them to the Keyboard.
+	class KeymapHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+	// Handler for a packet which contains skill macros.
+	class SkillMacrosHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
 	// Handles a packet which notifies the client of changes in character stats.
 	class ChangeStatsHandler : public PacketHandler
 	{
@@ -41,7 +53,7 @@ namespace Net
 		void handle(InPacket& recv) const override;
 	};
 
-	// Base class for packets which need to parse buffs.
+	// Base class for packets which need to parse buffstats.
 	class BuffHandler : public PacketHandler
 	{
 	public:

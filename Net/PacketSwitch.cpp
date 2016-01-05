@@ -17,123 +17,82 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "PacketSwitch.h"
 #include "RecvOpcodes.h"
-
 #include "Handlers\CommonHandlers.h"
-#include "Handlers\PlayerHandlers.h"
-#include "Handlers\InventoryHandlers.h"
-#include "Handlers\MessagingHandlers.h"
-
-#include "Journey.h"
-#ifdef JOURNEY_CUSTOM_VERSION
 #include "Handlers\LoginHandlers.h"
 #include "Handlers\SetfieldHandlers.h"
-#include "Handlers\KeyboardHandlers83.h"
+#include "Handlers\PlayerHandlers.h"
 #include "Handlers\MapobjectHandlers.h"
-#else
-#include "Handlers83\LoginHandlers83.h"
-#include "Handlers83\SetfieldHandler83.h"
-#include "Handlers\KeyboardHandlers83.h"
-#include "Handlers83\MapobjectHandlers83.h"
-#endif
+#include "Handlers\InventoryHandlers.h"
+#include "Handlers\MessagingHandlers.h"
 #include <iostream>
 
 namespace Net
 {
 	PacketSwitch::PacketSwitch()
 	{
+		// Common handlers
+		handlers[PING] = unique_ptr<PacketHandler>(new PingHandler());
 
-#ifdef JOURNEY_CUSTOM_VERSION
 		// Login handlers
-		handlers[LOGIN_STATUS] = unique_ptr<PacketHandler>(new LoginStatusHandler());
-		handlers[WORLD_STATUS] = unique_ptr<PacketHandler>(new WorldStatusHandler());
+		handlers[LOGIN_RESULT] = unique_ptr<PacketHandler>(new LoginResultHandler());
+		handlers[SERVERLIST] = unique_ptr<PacketHandler>(new ServerlistHandler());
 		handlers[CHARLIST] = unique_ptr<PacketHandler>(new CharlistHandler());
-		handlers[NAME_RESPONSE] = unique_ptr<PacketHandler>(new NameResultHandler());
-		handlers[NEW_CHAR_RESPONSE] = unique_ptr<PacketHandler>(new NewCharResponseHandler());
-		handlers[DELETE_RESPONSE] = unique_ptr<PacketHandler>(new DeleteResponseHandler());
+		handlers[CHARNAME_RESPONSE] = unique_ptr<PacketHandler>(new CharnameResponseHandler());
+		handlers[ADD_NEWCHAR_ENTRY] = unique_ptr<PacketHandler>(new AddNewCharEntryHandler());
+		handlers[DELCHAR_RESPONSE] = unique_ptr<PacketHandler>(new DeleteCharResponseHandler());
 		handlers[SERVER_IP] = unique_ptr<PacketHandler>(new ServerIPHandler());
 
 		// 'Setfield' handlers
-		handlers[CHARACTER_INFO] = unique_ptr<PacketHandler>(new CharacterInfoHandler());
-		handlers[WARP_TO_MAP] = unique_ptr<PacketHandler>(new WarpToMapHandler());
-		handlers[CHANGE_CHANNEL] = unique_ptr<PacketHandler>(new ChangeChannelHandler());
+		handlers[SET_FIELD] = unique_ptr<PacketHandler>(new SetfieldHandler());
 
-		// Mapobject handlers
-		handlers[SPAWN_MOB] = unique_ptr<PacketHandler>(new SpawnMobHandler());
+		// MapObject handlers
 		handlers[SPAWN_NPC] = unique_ptr<PacketHandler>(new SpawnNpcHandler());
+		handlers[SPAWN_NPC_C] = unique_ptr<PacketHandler>(new SpawnNpcControllerHandler());
+		handlers[SPAWN_MOB] = unique_ptr<PacketHandler>(new SpawnMobHandler());
+		handlers[SPAWN_MOB_C] = unique_ptr<PacketHandler>(new SpawnMobControllerHandler());
+		handlers[MOVE_MOB_RESPONSE] = unique_ptr<PacketHandler>(new NullHandler());
+		handlers[SHOW_MOB_HP] = unique_ptr<PacketHandler>(new ShowMobHpHandler());
+		handlers[KILL_MOB] = unique_ptr<PacketHandler>(new KillMobHandler());
+		handlers[SPAWN_PLAYER] = unique_ptr<PacketHandler>(new SpawnCharHandler());
+		handlers[PLAYER_MOVED] = unique_ptr<PacketHandler>(new MoveCharHandler());
+		handlers[REMOVE_PLAYER] = unique_ptr<PacketHandler>(new RemoveCharHandler());
+		handlers[SPAWN_PET] = unique_ptr<PacketHandler>(new SpawnPetHandler());
 		handlers[DROP_ITEM_FROMOBJECT] = unique_ptr<PacketHandler>(new DropItemHandler());
 		handlers[REMOVE_MAPITEM] = unique_ptr<PacketHandler>(new RemoveDropHandler());
-#else
-		// Login handlers
-		handlers[LOGIN_RESULT] = unique_ptr<PacketHandler>(new LoginResultHandler83());
-		handlers[SERVERLIST] = unique_ptr<PacketHandler>(new ServerlistHandler83());
-		handlers[CHARLIST] = unique_ptr<PacketHandler>(new CharlistHandler83());
-		handlers[CHARNAME_RESPONSE] = unique_ptr<PacketHandler>(new CharnameResponseHandler83());
-		handlers[ADD_NEWCHAR_ENTRY] = unique_ptr<PacketHandler>(new AddNewCharEntryHandler83());
-		handlers[DELCHAR_RESPONSE] = unique_ptr<PacketHandler>(new DeleteCharResponseHandler83());
-		handlers[SERVER_IP] = unique_ptr<PacketHandler>(new ServerIPHandler83());
 
-		// 'Setfield' handlers
-		handlers[SET_FIELD] = unique_ptr<PacketHandler>(new SetfieldHandler83());
-
-		// Mapobject handlers
-		handlers[SPAWN_MOB] = unique_ptr<PacketHandler>(new SpawnMobHandler83());
-		handlers[SPAWN_MOB_C] = unique_ptr<PacketHandler>(new SpawnMobControllerHandler83());
-		handlers[SPAWN_NPC] = unique_ptr<PacketHandler>(new SpawnNpcHandler83());
-		handlers[SPAWN_NPC_C] = unique_ptr<PacketHandler>(new SpawnNpcControllerHandler83());
-		handlers[DROP_ITEM_FROMOBJECT] = unique_ptr<PacketHandler>(new DropItemHandler83());
-		handlers[REMOVE_MAPITEM] = unique_ptr<PacketHandler>(new RemoveDropHandler83());
-#endif
-
-		handlers[PING] = unique_ptr<PacketHandler>(new PingHandler());
-
-		handlers[SELECT_WORLD] = unique_ptr<PacketHandler>(new NullHandler()); //commonly unused
-		handlers[RECOMMENDED_WORLDS] = unique_ptr<PacketHandler>(new NullHandler()); //commonly unused
-
-		handlers[MODIFY_INVENTORY] = unique_ptr<PacketHandler>(new ModifyInventoryHandler()); //TO DO
-
+		// Player handlers
+		handlers[KEYMAP] = unique_ptr<PacketHandler>(new KeymapHandler());
+		handlers[SKILL_MACROS] = unique_ptr<PacketHandler>(new SkillMacrosHandler());
 		handlers[CHANGE_STATS] = unique_ptr<PacketHandler>(new ChangeStatsHandler());
 		handlers[GIVE_BUFF] = unique_ptr<PacketHandler>(new ApplyBuffHandler());
 		handlers[RECALCULATE_STATS] = unique_ptr<PacketHandler>(new RecalculateStatsHandler());
 		handlers[UPDATE_SKILLS] = unique_ptr<PacketHandler>(new UpdateskillsHandler());
 
+		// Messaging handlers
 		handlers[SHOW_STATUS_INFO] = unique_ptr<PacketHandler>(new ShowStatusInfoHandler());
-		handlers[MEMO_RESULT] = unique_ptr<PacketHandler>(new NullHandler()); //TO DO
-		handlers[ENABLE_REPORT] = unique_ptr<PacketHandler>(new NullHandler()); //idk what it does
+		handlers[CHAT_RECEIVED] = unique_ptr<PacketHandler>(new ChatReceivedHandler());
 
+		// Inventory Handlers
+		handlers[MODIFY_INVENTORY] = unique_ptr<PacketHandler>(new ModifyInventoryHandler());
 		handlers[GATHER_RESULT] = unique_ptr<PacketHandler>(new GatherResultHandler());
 		handlers[SORT_RESULT] = unique_ptr<PacketHandler>(new SortResultHandler());
 
-		handlers[UPDATE_GENDER] = unique_ptr<PacketHandler>(new NullHandler()); // useless
-		handlers[BUDDY_LIST] = unique_ptr<PacketHandler>(new NullHandler()); //TO DO
-		handlers[GUILD_OPERATION] = unique_ptr<PacketHandler>(new NullHandler()); //TO DO
+		// Todo
+		handlers[MEMO_RESULT] = unique_ptr<PacketHandler>(new NullHandler());
+		handlers[ENABLE_REPORT] = unique_ptr<PacketHandler>(new NullHandler());
+		handlers[BUDDY_LIST] = unique_ptr<PacketHandler>(new NullHandler());
+		handlers[GUILD_OPERATION] = unique_ptr<PacketHandler>(new NullHandler());
 		handlers[SERVER_MESSAGE] = unique_ptr<PacketHandler>(new NullHandler());
-		handlers[WEEK_EVENT_MESSAGE] = unique_ptr<PacketHandler>(new NullHandler()); //TO DO
-		handlers[FAMILY_PRIV_LIST] = unique_ptr<PacketHandler>(new NullHandler()); //TO DO
-		handlers[SCRIPT_PROGRESS_MESSAGE] = unique_ptr<PacketHandler>(new NullHandler()); //TO DO
-		handlers[RECEIVE_POLICE] = unique_ptr<PacketHandler>(new NullHandler()); //TO DO
-		handlers[SKILL_MACROS] = unique_ptr<PacketHandler>(new SkillmacrosHandler83());
-		//handlers[FIELD_EFFECT] = unique_ptr<vhandler>(new field_effect_h());
-		//handlers[CLOCK] = unique_ptr<vhandler>(new clock_h());
-		handlers[SPAWN_PLAYER] = unique_ptr<PacketHandler>(new SpawnCharHandler83());
-		handlers[REMOVE_PLAYER] = unique_ptr<PacketHandler>(new RemoveCharHandler83());
-		//handlers[CHAT_RECEIVED] = unique_ptr<vhandler>(new chat_received_h());
-		//handlers[SCROLL_RESULT] = unique_ptr<vhandler>(new scroll_result_h());
-		handlers[SPAWN_PET] = unique_ptr<PacketHandler>(new SpawnPetHandler83());
-		handlers[PLAYER_MOVED] = unique_ptr<PacketHandler>(new MoveCharHandler83());
-		/*handlers[SHOW_ITEM_EFFECT] = unique_ptr<vhandler>(new unhandled()); //TO DO
-		handlers[SHOW_CHAIR] = unique_ptr<vhandler>(new unhandled()); //TO DO
-		handlers[SHOW_FOREIGN_EFFECT] = unique_ptr<vhandler>(new show_foreign_effect_h()); //TO DO
-		handlers[LOCK_UI] = unique_ptr<vhandler>(new unhandled()); //not sure what this does
-		handlers[TOGGLE_UI] = unique_ptr<vhandler>(new toggle_ui_h());*/
-		handlers[KILL_MOB] = unique_ptr<PacketHandler>(new KillMobHandler83());
-		//handlers[MOB_MOVED] = unique_ptr<vhandler>(new mob_moved_h());
-		handlers[MOVE_MOB_RESPONSE] = unique_ptr<PacketHandler>(new NullHandler());
-		handlers[SHOW_MOB_HP] = unique_ptr<PacketHandler>(new ShowMobHpHandler83());
+		handlers[WEEK_EVENT_MESSAGE] = unique_ptr<PacketHandler>(new NullHandler());
+		handlers[FAMILY_PRIV_LIST] = unique_ptr<PacketHandler>(new NullHandler());
+		handlers[SCRIPT_PROGRESS_MESSAGE] = unique_ptr<PacketHandler>(new NullHandler());
+		handlers[RECEIVE_POLICE] = unique_ptr<PacketHandler>(new NullHandler());
 		handlers[MAKE_NPC_SCRIPTED] = unique_ptr<PacketHandler>(new NullHandler());
-		//handlers[SPAWN_REACTOR] = unique_ptr<vhandler>(new spawn_reactor_h());
-		//handlers[REMOVE_REACTOR] = unique_ptr<vhandler>(new remove_reactor_h());
-		//handlers[NPC_DIALOGUE] = unique_ptr<vhandler>(new npc_dialogue_h());
-		handlers[KEYMAP] = unique_ptr<PacketHandler>(new KeymapHandler83());
+
+		// Ignored
+		handlers[SELECT_WORLD] = unique_ptr<PacketHandler>(new NullHandler());
+		handlers[RECOMMENDED_WORLDS] = unique_ptr<PacketHandler>(new NullHandler());
+		handlers[UPDATE_GENDER] = unique_ptr<PacketHandler>(new NullHandler());
 	}
 
 	PacketSwitch::~PacketSwitch() {}

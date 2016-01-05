@@ -80,10 +80,11 @@ namespace Graphics
 		void draw(vector2d<int16_t>) const;
 		void draw(vector2d<float>) const;
 		void drawline(string, vector2d<int16_t>) const;
+
 		uint16_t getadvance(size_t) const;
 		size_t getlength() const;
 		const string& gettext() const;
-		vector2d<uint16_t> getdimensions() const;
+		vector2d<float> getdimensions() const;
 
 	private:
 		Font font;
@@ -93,9 +94,8 @@ namespace Graphics
 		Background back;
 
 		float alpha;
-		uint16_t width;
-		uint16_t height;
-		vector2d<int16_t> endpos;
+		vector2d<float> dimensions;
+		vector2d<float> endpos;
 		map<size_t, float> advances;
 	};
 }

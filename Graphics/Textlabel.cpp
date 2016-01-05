@@ -47,27 +47,12 @@ namespace Graphics
 	{
 		str = string(t);
 		text = wstring(t.begin(), t.end());
-		wmax = wmax;
+
+		float fwmax = static_cast<float>(wmax);
 
 #ifdef JOURNEY_USE_OPENGL
 #else
-		vector2d<uint16_t> dimensions = GraphicsD2D::createlayout(text, font, wmax, advances);
-		if (dimensions.x() > 0 && dimensions.y() > 0)
-		{
-			uint16_t space = static_cast<uint16_t>(dimensions.y() * 1.25f);
-			if (dimensions.x() > wmax && wmax > 0)
-			{
-				width = wmax;
-				height = space * ((dimensions.x() / wmax) + 1);
-				endpos = vector2d<int16_t>(dimensions.x() % wmax, height - dimensions.y());
-			}
-			else
-			{
-				width = dimensions.x();
-				height = space;
-				endpos = vector2d<int16_t>(dimensions.x(), 0);
-			}
-		}
+		dimensions = GraphicsD2D::createlayout(text, font, fwmax, advances);
 #endif
 	}
 
@@ -104,7 +89,7 @@ namespace Graphics
 			wstring(todraw.begin(), todraw.end()), 
 			font, color, back, alpha,
 			vector2d<float>(static_cast<float>(pos.x()), static_cast<float>(pos.y())), 
-			vector2d<uint16_t>(800, height)
+			vector2d<float>()
 			);
 #endif
 	}
@@ -113,7 +98,7 @@ namespace Graphics
 	{
 #ifdef JOURNEY_USE_OPENGL
 #else
-		GraphicsD2D::drawtext(text, font, color, back, alpha, pos, getdimensions());
+		GraphicsD2D::drawtext(text, font, color, back, alpha, pos, dimensions);
 #endif
 	}
 
@@ -139,8 +124,8 @@ namespace Graphics
 		return str;
 	}
 
-	vector2d<uint16_t> Textlabel::getdimensions() const
+	vector2d<float> Textlabel::getdimensions() const
 	{
-		return vector2d<uint16_t>(width, height);
+		return dimensions;
 	}
 }

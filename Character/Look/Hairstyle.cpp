@@ -56,15 +56,9 @@ namespace Character
 							z = CL_BACKHAIRBCAP;
 
 						stances[stance][z][frame] = Texture(partnode);
-
-						vector2d<int16_t> shift = vector2d<int16_t>();
-						if (partnode["map"]["brow"].data_type() == node::type::vector)
-						{
-							shift -= vector2d<int16_t>(partnode["map"]["brow"]);
-						}
-						shift += drawinfo.gethairpos(stance, frame);
-
-						stances[stance][z][frame].shift(shift);
+						stances[stance][z][frame].shift(
+							drawinfo.gethairpos(stance, frame) - vector2d<int16_t>(partnode["map"]["brow"])
+							);
 					}
 
 					frame++;

@@ -19,7 +19,7 @@
 #include "nlnx\node.hpp"
 #include "nlnx\nx.hpp"
 
-namespace Gameplay
+namespace Character
 {
 	Skill::Skill(int32_t id)
 	{

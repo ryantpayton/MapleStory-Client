@@ -16,29 +16,40 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include <cstdint>
-#include <map>
+#include "Skill.h"
+#include <unordered_map>
 
 namespace Character
 {
 	using::std::int32_t;
 	using::std::int64_t;
-	using::std::map;
+	using::std::unordered_map;
+
+	struct SkillEntry
+	{
+		int32_t level = 0;
+		int32_t masterlevel = 0;
+		int32_t cooldown = 1;
+		int64_t expiration = -1;
+	};
+
 	// Class that stores all information about the skills of an individual character.
 	class Skillbook
 	{
 	public:
 		Skillbook();
 		~Skillbook();
+
 		void setskill(int32_t, int32_t, int32_t, int64_t);
 		void setcd(int32_t, int32_t);
-		int32_t getlevelof(int32_t skillid) const;
+		bool hasskill(int32_t skillid) const;
+		bool iscooling(int32_t skillid) const;
+		int32_t getlevel(int32_t skillid) const;
+		int32_t getmasterlevel(int32_t skillid) const;
+		const SkillLevel* getlevelof(int32_t skillid) const;
 
 	private:
-		map<int32_t, int32_t> levels;
-		map<int32_t, int32_t> masterlevels;
-		map<int32_t, int32_t> cooldowns;
-		map<int32_t, int64_t> expirations;
+		unordered_map<int32_t, SkillEntry> skillentries;
 	};
 }
 
