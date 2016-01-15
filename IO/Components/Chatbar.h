@@ -21,7 +21,7 @@
 #include "Button.h"
 #include "IO\Cursor.h"
 #include "Graphics\Texture.h"
-#include "Graphics\Textlabel.h"
+#include "Graphics\Text.h"
 #include <vector>
 #include <memory>
 
@@ -29,7 +29,7 @@ namespace IO
 {
 	using std::vector;
 	using std::unique_ptr;
-	using Graphics::Textlabel;
+	using Graphics::Text;
 	using Graphics::Texture;
 
 	class Chatbar : public UIElement
@@ -71,7 +71,7 @@ namespace IO
 		map<ChatTarget, Texture> chattargets;
 		Texture chatenter;
 		Texture chatcover;
-		Textlabel closedtext;
+		Text closedtext;
 
 		bool chatopen;
 		ChatTarget chattarget;

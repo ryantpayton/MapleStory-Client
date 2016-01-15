@@ -19,58 +19,6 @@
 #include "Net\OutPacket.h"
 #include "Net\SendOpcodes.h"
 
-#include "Journey.h"
-#ifdef JOURNEY_CUSTOM_VERSION
-
-namespace Net
-{
-	const string MACS = "68-5D-43-F8-B8-6C, 7A-79-19-8B-31-3F";
-	const string HWID = "685D43F8_B86C7A79";
-
-	// Packet which tells the server which character was picked.
-	// Also sends (fake) Mac-adress and Hardware Id.
-	class SelectCharPacket : public OutPacket
-	{
-	public:
-		SelectCharPacket(int32_t cid) : OutPacket(SELECT_CHAR)
-		{
-			writeint(cid);
-			writestr(MACS);
-			writestr(HWID);
-		}
-	};
-
-	// Packet which registers a pic and tells the server which character was picked.
-	// Also sends (fake) Mac-adress and Hardware Id.
-	class RegisterPicPacket : public OutPacket
-	{
-	public:
-		RegisterPicPacket(int32_t cid, string pic) : OutPacket(REGISTER_PIC)
-		{
-			writeint(cid);
-			writestr(MACS);
-			writestr(HWID);
-			writestr(pic);
-		}
-	};
-
-	// Packet which requests using the specified character with the specified pic.
-	// Also sends (fake) mac-adress and hardware id.
-	class SelectCharPicPacket : public OutPacket
-	{
-	public:
-		SelectCharPicPacket(string pic, int32_t cid) : OutPacket(SELECT_CHAR_PIC)
-		{
-			writestr(pic);
-			writeint(cid);
-			writestr(MACS);
-			writestr(HWID);
-		}
-	};
-}
-
-#else
-
 namespace Net
 {
 	const string MACS = "68-5D-43-F8-B8-6C, 7A-79-19-8B-31-3F";
@@ -97,6 +45,7 @@ namespace Net
 		RegisterPicPacket(int32_t cid, string pic) : OutPacket(REGISTER_PIC)
 		{
 			skip(1);
+
 			writeint(cid);
 			writestr(MACS);
 			writestr(HWID);
@@ -118,5 +67,3 @@ namespace Net
 		}
 	};
 }
-
-#endif

@@ -16,20 +16,46 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Graphics\GraphicsD2D.h"
+#ifndef JOURNEY_USE_OPENGL
 #include <unordered_map>
 
 namespace Graphics
 {
 	namespace GraphicsD2D
 	{
+		using std::unordered_map;
+
 		IWICImagingFactory** p_factory = nullptr;
 		ID2D1BitmapRenderTarget** p_target = nullptr;
 		IDWriteFactory** p_dwfactory = nullptr;
 
-		using std::unordered_map;
-		unordered_map<Textlabel::Font, IDWriteTextFormat*> fonts;
-		unordered_map<Textlabel::Textcolor, ID2D1SolidColorBrush*> brushes;
 		unordered_map<size_t, ID2D1Bitmap*> bitmaps;
+
+		ID2D1SolidColorBrush* brushes[Text::NUM_COLORS] = {};
+		IDWriteTextFormat* fonts[Text::NUM_FONTS] = {};
+
+		void addfont(Text::Font id, const WCHAR* name, float size, DWRITE_FONT_WEIGHT weight) 
+		{
+
+			if (!p_dwfactory)
+				return;
+
+			IDWriteFactory* dwfactory = (*p_dwfactory);
+
+			if (!dwfactory)
+				return;
+
+			dwfactory->CreateTextFormat(
+				name, 
+				NULL, 
+				weight, 
+				DWRITE_FONT_STYLE_NORMAL, 
+				DWRITE_FONT_STRETCH_NORMAL, 
+				size, 
+				L"en-us", 
+				&fonts[id]
+				);
+		}
 
 		void init(IWICImagingFactory** pwf, ID2D1BitmapRenderTarget** pt, IDWriteFactory** dwf)
 		{
@@ -46,84 +72,57 @@ namespace Graphics
 			if (!dwfactory || !target)
 				return;
 
-			dwfactory->CreateTextFormat(L"Times New Roman", NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL,
-				DWRITE_FONT_STRETCH_NORMAL, 14.0f, L"en-us", &fonts[Textlabel::DWF_TEXTFIELD]);
-			fonts[Textlabel::DWF_TEXTFIELD]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-			fonts[Textlabel::DWF_TEXTFIELD]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+			addfont(Text::A11L, L"Arial Light", 11.0f, DWRITE_FONT_WEIGHT_LIGHT);
+			addfont(Text::A11M, L"Arial", 11.0f, DWRITE_FONT_WEIGHT_NORMAL);
+			addfont(Text::A11B, L"Arial", 11.0f, DWRITE_FONT_WEIGHT_BOLD);
+			addfont(Text::A12M, L"Arial", 12.0f, DWRITE_FONT_WEIGHT_NORMAL);
+			addfont(Text::A12B, L"Arial", 12.0f, DWRITE_FONT_WEIGHT_BOLD);
+			addfont(Text::A13M, L"Arial", 13.0f, DWRITE_FONT_WEIGHT_NORMAL);
+			addfont(Text::A13B, L"Arial", 13.0f, DWRITE_FONT_WEIGHT_BOLD);
+			addfont(Text::A18M, L"Arial", 18.0f, DWRITE_FONT_WEIGHT_NORMAL);
 
-			dwfactory->CreateTextFormat(L"Calibri", NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL,
-				DWRITE_FONT_STRETCH_NORMAL, 12.0f, L"en-us", &fonts[Textlabel::DWF_12ML]);
-			fonts[Textlabel::DWF_12ML]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-			fonts[Textlabel::DWF_12ML]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-
-			dwfactory->CreateTextFormat(L"Calibri", NULL, DWRITE_FONT_WEIGHT_LIGHT, DWRITE_FONT_STYLE_NORMAL,
-				DWRITE_FONT_STRETCH_NORMAL, 12.0f, L"en-us", &fonts[Textlabel::DWF_12LL]);
-			fonts[Textlabel::DWF_12LL]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-			fonts[Textlabel::DWF_12LL]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-
-			dwfactory->CreateTextFormat(L"Calibri", NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL,
-				DWRITE_FONT_STRETCH_NORMAL, 12.0f, L"en-us", &fonts[Textlabel::DWF_12MC]);
-			fonts[Textlabel::DWF_12MC]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-			fonts[Textlabel::DWF_12MC]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-
-			dwfactory->CreateTextFormat(L"Calibri", NULL, DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL,
-				DWRITE_FONT_STRETCH_NORMAL, 12.0f, L"en-us", &fonts[Textlabel::DWF_12BC]);
-			fonts[Textlabel::DWF_12BC]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-			fonts[Textlabel::DWF_12BC]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-
-			dwfactory->CreateTextFormat(L"Calibri", NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL,
-				DWRITE_FONT_STRETCH_NORMAL, 12.0f, L"en-us", &fonts[Textlabel::DWF_12MR]);
-			fonts[Textlabel::DWF_12MR]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
-			fonts[Textlabel::DWF_12MR]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-
-			dwfactory->CreateTextFormat(L"Calibri", NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL,
-				DWRITE_FONT_STRETCH_NORMAL, 14.0f, L"en-us", &fonts[Textlabel::DWF_14ML]);
-			fonts[Textlabel::DWF_14ML]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-			fonts[Textlabel::DWF_14ML]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-
-			dwfactory->CreateTextFormat(L"Calibri", NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL,
-				DWRITE_FONT_STRETCH_NORMAL, 14.0f, L"en-us", &fonts[Textlabel::DWF_14MC]);
-			fonts[Textlabel::DWF_14MC]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-			fonts[Textlabel::DWF_14MC]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-
-			dwfactory->CreateTextFormat(L"Calibri", NULL, DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL,
-				DWRITE_FONT_STRETCH_NORMAL, 14.0f, L"en-us", &fonts[Textlabel::DWF_14BC]);
-			fonts[Textlabel::DWF_14BC]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-			fonts[Textlabel::DWF_14BC]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-
-			dwfactory->CreateTextFormat(L"Calibri", NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL,
-				DWRITE_FONT_STRETCH_NORMAL, 14.0f, L"en-us", &fonts[Textlabel::DWF_14MR]);
-			fonts[Textlabel::DWF_14MR]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
-			fonts[Textlabel::DWF_14MR]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-
-			dwfactory->CreateTextFormat(L"Calibri", NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL,
-				DWRITE_FONT_STRETCH_NORMAL, 20.0f, L"en-us", &fonts[Textlabel::DWF_20MC]);
-			fonts[Textlabel::DWF_20MC]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-			fonts[Textlabel::DWF_20MC]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-
-			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &brushes[Textlabel::TXC_WHITE]);
-			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &brushes[Textlabel::TXC_BLACK]);
-			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &brushes[Textlabel::TXC_YELLOW]);
-			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &brushes[Textlabel::TXC_BLUE]);
-			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &brushes[Textlabel::TXC_RED]);
-			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Brown), &brushes[Textlabel::TXC_BROWN]);
-			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &brushes[Textlabel::TXC_GREY]);
-			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Orange), &brushes[Textlabel::TXC_ORANGE]);
-			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::SkyBlue), &brushes[Textlabel::TXC_MBLUE]);
-			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Violet), &brushes[Textlabel::TXC_VIOLET]);
+			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &brushes[Text::WHITE]);
+			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &brushes[Text::BLACK]);
+			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &brushes[Text::YELLOW]);
+			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &brushes[Text::BLUE]);
+			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &brushes[Text::RED]);
+			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Brown), &brushes[Text::BROWN]);
+			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &brushes[Text::GREY]);
+			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DimGray), &brushes[Text::DARKGREY]);
+			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Orange), &brushes[Text::ORANGE]);
+			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::SkyBlue), &brushes[Text::MEDIUMBLUE]);
+			target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Violet), &brushes[Text::VIOLET]);
 		}
 
 		void clear()
 		{
 			for (auto& bmp : bitmaps)
 			{
-				if (bmp.second)
-				{
-					bmp.second->Release();
-				}
+				ID2D1Bitmap* bitmap = bmp.second;
+				if (bitmap)
+					bitmap->Release();
 			}
 
 			bitmaps.clear();
+		}
+
+		void free()
+		{
+			clear();
+
+			for (size_t i = 0; i < Text::NUM_FONTS; i++)
+			{
+				IDWriteTextFormat* format = fonts[i];
+				if (format)
+					format->Release();
+			}
+
+			for (size_t i = 0; i < Text::NUM_COLORS; i++)
+			{
+				ID2D1SolidColorBrush* brush = brushes[i];
+				if (brush)
+					brush->Release();
+			}
 		}
 
 		bool available(size_t id)
@@ -158,7 +157,7 @@ namespace Graphics
 			IWICFormatConverter* converter = nullptr;
 			IWICBitmap* temp = nullptr;
 
-			int result = factory->CreateFormatConverter(&converter);
+			HRESULT result = factory->CreateFormatConverter(&converter);
 			if (result == S_OK)
 			{
 				converter->Initialize(wic,
@@ -210,25 +209,29 @@ namespace Graphics
 			}
 		}
 
-		vector2d<float> createlayout(const wstring& text, Textlabel::Font font, float wmax, map<size_t, float>& advances)
+		Text::Layout createlayout(const wstring& text, Text::Font font, float wmax)
 		{
 			if (!p_dwfactory)
-				return vector2d<float>();
+				return Text::Layout();
 
 			IDWriteFactory* dwfactory = (*p_dwfactory);
 			IDWriteTextFormat* fnt = fonts[font];
 
 			if (!dwfactory || !fnt || text.size() == 0)
-				return vector2d<float>();
+				return Text::Layout();
 
 			if (wmax < 1.0f)
 				wmax = 800.0f;
 
 			IDWriteTextLayout* layout = nullptr;
-			dwfactory->CreateTextLayout(text.c_str(), (UINT32)text.length(), fnt, wmax, 624, &layout);
+			HRESULT err = dwfactory->CreateTextLayout(
+				text.c_str(), 
+				(UINT32)text.length(), 
+				fnt, wmax, 624, &layout
+				);
 
-			if (!layout)
-				return vector2d<float>();
+			if (err != S_OK)
+				return Text::Layout();
 
 			DWRITE_CLUSTER_METRICS* metrics = new DWRITE_CLUSTER_METRICS[text.length()];
 			UINT32 result = 0;
@@ -240,7 +243,7 @@ namespace Graphics
 			}
 
 			float tadv = 0.0f;
-			advances.clear();
+			map<size_t, float> advances;
 			for (UINT32 i = 0; i < result; i++)
 			{
 				advances[i] = tadv;
@@ -252,17 +255,29 @@ namespace Graphics
 
 			DWRITE_TEXT_METRICS tmetrics;
 			layout->GetMetrics(&tmetrics);
+			layout->Release();
 
 			float width = (tadv > wmax) ? wmax : tadv;
 			float height = tmetrics.height;
 
-			layout->Release();
+			float xend = tadv;
+			while (xend > wmax)
+			{
+				xend -= wmax;
+			}
 
-			return vector2d<float>(width, height);
+			Text::Layout textlayout;
+			textlayout.dimensions = vector2d<float>(width, height);
+			textlayout.endoffset = vector2d<int16_t>(
+				static_cast<int16_t>(xend), 
+				static_cast<int16_t>(height - fnt->GetFontSize())
+				);
+			textlayout.advances = advances;
+			return textlayout;
 		}
 
-		void drawtext(const wstring& text, Textlabel::Font font, Textlabel::Textcolor color,
-			Textlabel::Background back, float alpha, vector2d<float> pos, vector2d<float> dimensions) {
+		void drawtext(const wstring& text, Text::Font font, Text::Alignment alignment, Text::Color color,
+			Text::Background back, float alpha, vector2d<float> pos, vector2d<float> dimensions) {
 
 			if (!p_target)
 				return;
@@ -288,31 +303,32 @@ namespace Graphics
 				return;
 
 			D2D1_RECT_F layrect;
-			switch (fnt->GetTextAlignment())
+			switch (alignment)
 			{
-			case DWRITE_TEXT_ALIGNMENT_LEADING:
+			case Text::LEFT:
 				layrect = D2D1::RectF(x, y, x + width, y + height);
+				fnt->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
 				break;
-			case DWRITE_TEXT_ALIGNMENT_TRAILING:
+			case Text::RIGHT:
 				layrect = D2D1::RectF(x - width, y, x, y + height);
+				fnt->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 				break;
-			case DWRITE_TEXT_ALIGNMENT_CENTER:
+			case Text::CENTER:
 				layrect = D2D1::RectF(x - width / 2, y, x + width / 2, y + height);
+				fnt->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 				break;
-			default:
-				return;
 			}
 
-			if (back == Textlabel::TXB_NAMETAG)
+			if (back == Text::NAMETAG)
 			{
-				ID2D1SolidColorBrush* backbrush = brushes[Textlabel::TXC_BLACK];
+				ID2D1SolidColorBrush* backbrush = brushes[Text::BLACK];
 				if (backbrush)
 				{
 					FLOAT hwidth = (width / 2) + 2.5f;
 					FLOAT space = fnt->GetFontSize() + 2.0f;
 
-					D2D1_RECT_F bglayout = D2D1::RectF(x - hwidth, y + 2, x + hwidth, y + space);
-					D2D1_ROUNDED_RECT rect = { bglayout, 1.5f, 1.5f };
+					D2D1_RECT_F bglayout = D2D1::RectF(x - hwidth, y, x + hwidth, y + space);
+					D2D1_ROUNDED_RECT rect = { bglayout, 1.0f, 1.0f };
 					backbrush->SetOpacity(0.6f);
 					target->DrawRoundedRectangle(&rect, backbrush);
 					target->FillRoundedRectangle(&rect, backbrush);
@@ -326,3 +342,4 @@ namespace Graphics
 		}
 	}
 }
+#endif

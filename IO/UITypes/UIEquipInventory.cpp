@@ -178,7 +178,7 @@ namespace IO
 		if (item == nullptr)
 			return;
 
-		icons[slot] = Icon(item->getidata().geticon(false), Element::EQUIPINVENTORY, slot, 1);
+		icons[slot] = Icon(item->getidata().geticon(false), Element::EQUIPINVENTORY, slot, 0);
 	}
 
 	void UIEquipInventory::modify(int16_t pos, int8_t mode, int16_t arg)

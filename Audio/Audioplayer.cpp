@@ -103,27 +103,20 @@ namespace Audioplayer
 		}
 	}
 
-	void cachesound(const void* data, size_t length, size_t id)
-	{
-		if (!soundcache.count(id))
-		{
-			soundcache[id] = BASS_SampleLoad(true, data, 82, (DWORD)length, 4, BASS_SAMPLE_OVER_POS);
-		}
-	}
-
-	size_t addsound(string path)
+	size_t addsound(node src)
 	{
 		using nl::audio;
-		audio toplay = nl::nx::sound.resolve(path);
+		audio toplay = src;
 
-		if (toplay.data())
-		{
-			cachesound(reinterpret_cast<const void*>(toplay.data()), toplay.length(), toplay.id());
-			return toplay.id();
-		}
-		else
-		{
+		const void* data = reinterpret_cast<const void*>(toplay.data());
+		if (data == nullptr)
 			return 0;
-		}
+
+		size_t id = toplay.id();
+
+		if (!soundcache.count(id))
+			soundcache[id] = BASS_SampleLoad(true, data, 82, (DWORD)toplay.length(), 4, BASS_SAMPLE_OVER_POS);
+
+		return id;
 	}
 }

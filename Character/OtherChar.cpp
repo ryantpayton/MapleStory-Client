@@ -34,8 +34,9 @@ namespace Character
 		lastmove.ypos = pos.y();
 		lastmove.newstate = st;
 
-		namelabel = Textlabel(Textlabel::DWF_14MC, Textlabel::TXC_WHITE, name, 0);
-		namelabel.setback(Textlabel::TXB_NAMETAG);
+		namelabel = Text(Text::A13M, Text::CENTER, Text::WHITE);
+		namelabel.settext(name);
+		namelabel.setback(Text::NAMETAG);
 	}
 
 	int8_t OtherChar::update(const Physics& physics)

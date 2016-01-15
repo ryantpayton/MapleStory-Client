@@ -18,7 +18,7 @@
 #include "Gameplay\Physics\PhysicsObject.h"
 #include "Gameplay\Physics\Physics.h"
 #include "Gameplay\Camera.h"
-#include "Graphics\Textlabel.h"
+#include "Graphics\Text.h"
 #include "Graphics\Animation.h"
 #include "Util\vector2d.h"
 #include <cstdint>
@@ -33,7 +33,7 @@ namespace Character
 	using Gameplay::Physics;
 	using Gameplay::PhysicsObject;
 	using Gameplay::Camera;
-	using Graphics::Textlabel;
+	using Graphics::Text;
 	using Graphics::Animation;
 
 	class PetLook
@@ -69,6 +69,6 @@ namespace Character
 
 		map<string, Animation> animations;
 		PhysicsObject phobj;
-		Textlabel namelabel;
+		Text namelabel;
 	};
 }

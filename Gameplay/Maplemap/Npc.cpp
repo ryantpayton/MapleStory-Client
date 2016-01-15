@@ -63,10 +63,12 @@ namespace Gameplay
 		name = strsrc["name"];
 		func = strsrc["func"];
 
-		namelabel = Textlabel(Textlabel::DWF_14BC, Textlabel::TXC_YELLOW, name, 0);
-		funclabel = Textlabel(Textlabel::DWF_14BC, Textlabel::TXC_YELLOW, func, 0);
-		namelabel.setback(Textlabel::TXB_NAMETAG);
-		funclabel.setback(Textlabel::TXB_NAMETAG);
+		namelabel = Text(Text::A13B, Text::CENTER, Text::YELLOW);
+		namelabel.settext(name);
+		namelabel.setback(Text::NAMETAG);
+		funclabel = Text(Text::A13B, Text::CENTER, Text::YELLOW);
+		funclabel.settext(func);
+		funclabel.setback(Text::NAMETAG);
 
 		npcid = id;
 		oid = o;

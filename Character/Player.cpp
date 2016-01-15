@@ -66,8 +66,9 @@ namespace Character
 		look = CharLook(entry.getlook());
 		stats = CharStats(entry.stats);
 
-		namelabel = Textlabel(Textlabel::DWF_14MC, Textlabel::TXC_WHITE, stats.getname(), 0);
-		namelabel.setback(Textlabel::TXB_NAMETAG);
+		namelabel = Text(Text::A13M, Text::CENTER, Text::WHITE);
+		namelabel.settext(stats.getname());
+		namelabel.setback(Text::NAMETAG);
 
 		sendcd = Constants::TIMESTEP;
 		active = true;
@@ -268,6 +269,7 @@ namespace Character
 	void Player::useattack()
 	{
 		look.setstance("attack");
+		look.getequips().getweapon()->playsfx();
 		attacking = true;
 	}
 

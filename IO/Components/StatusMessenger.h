@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Graphics\Textlabel.h"
+#include "Graphics\Text.h"
 #include <vector>
 
 namespace IO
@@ -23,11 +23,11 @@ namespace IO
 	using std::string;
 	using std::vector;
 	using Util::vector2d;
-	using Graphics::Textlabel;
+	using Graphics::Text;
 
 	struct StatusInfo
 	{
-		Textlabel::Textcolor color = Textlabel::TXC_WHITE;
+		Text::Color color = Text::WHITE;
 		string text = "";
 		float alpha = 1.0f;
 		float lastalpha = 1.0f;
@@ -46,7 +46,7 @@ namespace IO
 
 		void draw(vector2d<int16_t> position, float inter) const;
 		void update();
-		void showstatus(Textlabel::Textcolor color, string message);
+		void showstatus(Text::Color color, string message);
 
 	private:
 		vector<StatusInfo> statusinfos;

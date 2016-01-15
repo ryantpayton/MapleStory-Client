@@ -19,6 +19,7 @@
 #include "Journey.h"
 #ifdef JOURNEY_USE_OPENGL
 #include "WindowGLFW.h"
+#include "Graphics\GraphicsGL.h"
 #include "glm.hpp"
 #include "UI.h"
 #include "Gameplay\Stage.h"
@@ -35,7 +36,9 @@ namespace IO
 
 	WindowGLFW::~WindowGLFW()
 	{
-		if (glwnd) glfwDestroyWindow(glwnd);
+		if (glwnd) 
+			glfwDestroyWindow(glwnd);
+
 		glfwTerminate();
 	}
 
@@ -44,53 +47,50 @@ namespace IO
 		std::cout << "Error no.:" << error << " : " << description << std::endl;
 	}
 
-	static void key_callback(GLFWwindow*, int key, int, int action, int)
+	void key_callback(GLFWwindow*, int key, int, int action, int)
 	{
 		IO::UI::sendkey(key, action != GLFW_RELEASE);
 	}
 
 	bool WindowGLFW::init()
 	{
+		if (!glfwInit())
+			return false;
+
+		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+		context = glfwCreateWindow(1, 1, "", nullptr, nullptr);
+		glfwMakeContextCurrent(context);
+		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
+		glfwSetErrorCallback(error_callback);
+
 		fullscreen = false;
 
-		if (glfwInit())
-		{
-			glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-			context = glfwCreateWindow(1, 1, "", nullptr, nullptr);
-			glfwMakeContextCurrent(context);
-			glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
-			glfwSetErrorCallback(error_callback);
-			return initwindow();
-		}
-		else
-		{
-			return false;
-		}
+		return initwindow();
 	}
 
 	bool WindowGLFW::initwindow()
 	{
-		if (glwnd) glfwDestroyWindow(glwnd);
-		glwnd = glfwCreateWindow(800, 600, "Journey", fullscreen ? glfwGetPrimaryMonitor() : nullptr, context);
-		if (glwnd)
-		{
-			glfwMakeContextCurrent(glwnd);
-			glfwSwapInterval(0);
-			glfwSetInputMode(glwnd, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-			glfwSetInputMode(glwnd, GLFW_STICKY_KEYS, 1);
-			glfwSetKeyCallback(glwnd, key_callback);
+		if (glwnd) 
+			glfwDestroyWindow(glwnd);
 
-			glLoadIdentity();
-			glOrtho(0.0, 800, 590, -10, -1.0, 1.0);
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glEnable(GL_TEXTURE_2D);
-			return true;
-		}
-		else
-		{
+		glwnd = glfwCreateWindow(800, 600, "Journey", fullscreen ? glfwGetPrimaryMonitor() : nullptr, context);
+
+		if (!glwnd)
 			return false;
-		}
+
+		glfwMakeContextCurrent(glwnd);
+		glfwSwapInterval(0);
+		glfwSetInputMode(glwnd, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		glfwSetInputMode(glwnd, GLFW_STICKY_KEYS, 1);
+		glfwSetKeyCallback(glwnd, key_callback);
+
+		glLoadIdentity();
+		glOrtho(0.0, 800, 590, -10, -1.0, 1.0);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_TEXTURE_2D);
+		glClearColor(0, 0, 0, 0);
+		return Graphics::GraphicsGL::init();
 	}
 
 	void WindowGLFW::update()
@@ -105,13 +105,18 @@ namespace IO
 			static_cast<int16_t>(cursory))
 			);
 
-		int32_t tabstate = glfwGetKey(glwnd, GLFW_KEY_TAB);
+		int32_t tabstate = glfwGetKey(glwnd, GLFW_KEY_F11);
 		if (tabstate == GLFW_PRESS)
 		{
 			fullscreen = !fullscreen;
 			initwindow();
 		}
 
+		updateopc();
+	}
+
+	void WindowGLFW::updateopc()
+	{
 		if (opcstep != 0.0f)
 		{
 			opacity += opcstep;
@@ -127,14 +132,12 @@ namespace IO
 
 				Gameplay::Stage::reload();
 				UI::enable();
-				UI::enablegamekeys(true);
 			}
 		}
 	}
 
 	void WindowGLFW::begin() const
 	{
-		glClearColor(0, 0, 0, 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 

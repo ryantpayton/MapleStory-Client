@@ -18,7 +18,7 @@
 #pragma once
 #include "MapObject.h"
 #include "Graphics\Animation.h"
-#include "Graphics\Textlabel.h"
+#include "Graphics\Text.h"
 #include "Gameplay\Physics\PhysicsObject.h"
 #include "Util\Randomizer.h"
 #include <map>
@@ -30,7 +30,7 @@ namespace Gameplay
 	using std::vector;
 	using Util::Randomizer;
 	using Graphics::Animation;
-	using Graphics::Textlabel;
+	using Graphics::Text;
 
 	// Represents a npc on the current map.
 	// Implements the 'Mapobject' interface to be used in a 'Mapobjects' template.
@@ -68,8 +68,8 @@ namespace Gameplay
 		bool control;
 
 		Randomizer random;
-		Textlabel namelabel;
-		Textlabel funclabel;
+		Text namelabel;
+		Text funclabel;
 	};
 }
 

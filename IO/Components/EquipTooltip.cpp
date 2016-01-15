@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                               //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -155,44 +155,49 @@ namespace IO
 		switch (prank)
 		{
 		case Equip::POT_HIDDEN:
-			potflag = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_RED, "(Hidden Potential)", 0);
+			potflag = Text(Text::A11M, Text::CENTER, Text::RED);
+			potflag.settext("(Hidden Potential)");
 			break;
 		case Equip::POT_RARE:
-			potflag = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_WHITE, "(Rare Item)", 0);
+			potflag = Text(Text::A11M, Text::CENTER, Text::WHITE);
+			potflag.settext("(Rare Item)");
 			break;
 		case Equip::POT_EPIC:
-			potflag = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_WHITE, "(Epic Item)", 0);
+			potflag = Text(Text::A11M, Text::CENTER, Text::WHITE);
+			potflag.settext("(Epic Item)");
 			break;
 		case Equip::POT_UNIQUE:
-			potflag = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_WHITE, "(Unique Item)", 0);
+			potflag = Text(Text::A11M, Text::CENTER, Text::WHITE);
+			potflag.settext("(Unique Item)");
 			break;
 		case Equip::POT_LEGENDARY:
-			potflag = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_WHITE, "(Legendary Item)", 0);
+			potflag = Text(Text::A11M, Text::CENTER, Text::WHITE);
+			potflag.settext("(Legendary Item)");
 			break;
 		default:
 			filllength -= 16;
 		}
 
-		Textlabel::Textcolor namecolor;
+		Text::Color namecolor;
 		switch (equip->getquality())
 		{
 		case Equip::EQQ_GREY:
-			namecolor = Textlabel::TXC_GREY;
+			namecolor = Text::GREY;
 			break;
 		case Equip::EQQ_ORANGE:
-			namecolor = Textlabel::TXC_ORANGE;
+			namecolor = Text::ORANGE;
 			break;
 		case Equip::EQQ_BLUE:
-			namecolor = Textlabel::TXC_MBLUE;
+			namecolor = Text::MEDIUMBLUE;
 			break;
 		case Equip::EQQ_VIOLET:
-			namecolor = Textlabel::TXC_VIOLET;
+			namecolor = Text::VIOLET;
 			break;
 		case Equip::EQQ_GOLD:
-			namecolor = Textlabel::TXC_YELLOW;
+			namecolor = Text::YELLOW;
 			break;
 		default:
-			namecolor = Textlabel::TXC_WHITE;
+			namecolor = Text::WHITE;
 		}
 
 		string namestr = cloth.getname();
@@ -202,20 +207,23 @@ namespace IO
 			namestr.append(std::to_string(equip->getlevel()));
 			namestr.append(")");
 		}
-		name = Textlabel(Textlabel::DWF_14MC, namecolor, namestr, 0);
+		name = Text(Text::A12B, Text::CENTER, namecolor);
+		name.settext(namestr, 400);
 
-		/*itemtext* desc = cloth.getdtext();
-		if (desc)
-		{
-			filllength += 9 + desc->getheight();
-		}*/
+		desc = Itemtext(cloth.getdesc(), 150);
+		int16_t descdelta = desc.getheight() - 80;
+		if (descdelta > 0)
+			filllength += descdelta;
+
+		category = Text(Text::A11L, Text::LEFT, Text::WHITE);
+		category.settext("CATEGORY: " + cloth.gettype());
 
 		isweapon = cloth.isweapon();
-		category = Textlabel(Textlabel::DWF_12LL, Textlabel::TXC_WHITE, "CATEGORY: " + cloth.gettype(), 0);
 		if (isweapon)
 		{
 			const Weapon& weapon = reinterpret_cast<const Weapon&>(cloth);
-			wepspeed = Textlabel(Textlabel::DWF_12LL, Textlabel::TXC_WHITE, "ATTACK SPEED: " + weapon.getspeedstring(), 0);
+			wepspeed = Text(Text::A11L, Text::LEFT, Text::WHITE);
+			wepspeed.settext("ATTACK SPEED: " + weapon.getspeedstring());
 		}
 		else
 		{
@@ -225,12 +233,14 @@ namespace IO
 		hasslots = (equip->getslots() > 0) || (equip->getlevel() > 0);
 		if (hasslots)
 		{
-			slots = Textlabel(Textlabel::DWF_12LL, Textlabel::TXC_WHITE, "UPGRADES AVAILABLE: " + std::to_string(equip->getslots()), 0);
+			slots = Text(Text::A11L, Text::LEFT, Text::WHITE);
+			slots.settext("UPGRADES AVAILABLE: " + std::to_string(equip->getslots()));
 
 			string vicious = std::to_string(equip->getvicious());
 			if (equip->getvicious() > 1)
 				vicious.append(" (MAX) ");
-			hammers = Textlabel(Textlabel::DWF_12LL, Textlabel::TXC_WHITE, "VICIOUS HAMMERS USED: " + vicious, 0);
+			hammers = Text(Text::A11L, Text::LEFT, Text::WHITE);
+			hammers.settext("VICIOUS HAMMERS USED: " + vicious);
 		}
 		else
 		{
@@ -250,7 +260,8 @@ namespace IO
 					statstr.append((delta < 0) ? "-" : "+");
 					statstr.append(std::to_string(abs(delta)) + ")");
 				}
-				statlabels[es] = Textlabel(Textlabel::DWF_12LL, Textlabel::TXC_WHITE, cloth.getstatstr(es) + ": " + statstr, 0);
+				statlabels[es] = Text(Text::A11L, Text::LEFT, Text::WHITE);
+				statlabels[es].settext(cloth.getstatstr(es) + ": " + statstr);
 			}
 			else
 			{
@@ -273,22 +284,21 @@ namespace IO
 		if (prank != Equip::POT_NONE)
 		{
 			potflag.draw(pos + vector2d<int16_t>(130, 20));
-			pos = pos + vector2d<int16_t>(0, 16);
+			pos.shifty(16);
 		}
-		pos = pos + vector2d<int16_t>(0, 28);
+		pos.shifty(26);
 
 		line.draw(DrawArgument(pos));
 
-		DrawArgument iconargs = DrawArgument(pos + vector2d<int16_t>(10, 10));
-		base.draw(iconargs);
-		shade.draw(iconargs);
+		base.draw(pos + vector2d<int16_t>(10, 10));
+		shade.draw(pos + vector2d<int16_t>(10, 10));
 		itemicon.draw(
 			DrawArgument(pos + vector2d<int16_t>(20, 82), 2.0f, 2.0f)
 			);
-		potential.at(prank).draw(iconargs);
-		cover.draw(iconargs);
+		potential.at(prank).draw(pos + vector2d<int16_t>(10, 10));
+		cover.draw(pos + vector2d<int16_t>(10, 10));
 
-		pos = pos + vector2d<int16_t>(0, 12);
+		pos.shifty(12);
 
 		for (auto& ms : requirements)
 		{
@@ -298,7 +308,7 @@ namespace IO
 			reqset.at(reqok).draw(reqstatstrings.at(ms), 6, DrawArgument(pos + reqpos + vector2d<int16_t>(54, 0)));
 		}
 
-		pos = pos + vector2d<int16_t>(0, 88);
+		pos.shifty(88);
 
 		DrawArgument jobargs = DrawArgument(pos + vector2d<int16_t>(8, 0));
 		jobsback.draw(jobargs);
@@ -309,37 +319,36 @@ namespace IO
 
 		line.draw(DrawArgument(pos + vector2d<int16_t>(0, 30)));
 
-		pos = pos + vector2d<int16_t>(0, 32);
+		pos.shifty(32);
 
 		category.draw(pos + vector2d<int16_t>(10, 0));
 
-		pos = pos + vector2d<int16_t>(0, 18);
+		pos.shifty(18);
 
 		if (isweapon)
 		{
 			wepspeed.draw(pos + vector2d<int16_t>(10, 0));
-			pos = pos + vector2d<int16_t>(0, 18);
+			pos.shifty(18);
 		}
 
 		for (auto& stit : statlabels)
 		{
 			stit.second.draw(pos + vector2d<int16_t>(10, 0));
-			pos = pos + vector2d<int16_t>(0, 18);
+			pos.shifty(18);
 		}
 
 		if (hasslots)
 		{
 			slots.draw(pos + vector2d<int16_t>(10, 0));
-			pos = pos + vector2d<int16_t>(0, 18);
+			pos.shifty(18);
 			hammers.draw(pos + vector2d<int16_t>(10, 0));
-			pos = pos + vector2d<int16_t>(0, 18);
+			pos.shifty(18);
 		}
 
-		/*itemtext* desc = cloth.getdtext();
-		if (desc)
+		if (hasdesc)
 		{
 			line.draw(pos + vector2d<int16_t>(0, 5));
-			desc->draw(pos + vector2d<int16_t>(10, 6));
-		}*/
+			desc.draw(pos + vector2d<int16_t>(10, 6));
+		}
 	}
 }

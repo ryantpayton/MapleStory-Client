@@ -17,11 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Net\PacketHandler.h"
-#include "Graphics\Textlabel.h"
+#include "Graphics\Text.h"
 
 namespace Net
 {
-	using Graphics::Textlabel;
+	using Graphics::Text;
 
 	// Handler for a packet which contains status messages.
 	class ShowStatusInfoHandler : public PacketHandler
@@ -29,9 +29,10 @@ namespace Net
 	public:
 		void handle(InPacket& recv) const override;
 	private:
-		void showstatus(Textlabel::Textcolor color, string message) const;
+		void showstatus(Text::Color color, string message) const;
 	};
 
+	// Handler for a packet which contains chat messages.
 	class ChatReceivedHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;

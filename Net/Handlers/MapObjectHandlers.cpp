@@ -18,8 +18,6 @@
 #include "MapObjectHandlers.h"
 #include "Gameplay\Stage.h"
 
-#include "Journey.h"
-
 namespace Net
 {
 	using Gameplay::MapNpcs;

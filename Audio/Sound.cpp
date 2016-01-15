@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -15,26 +15,26 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Journey.h"
-#ifdef JOURNEY_USE_OPENGLs
-#include "Textlabel.h"
-#include "ft2build.h"
-#include FT_FREETYPE_H
+#include "Sound.h"
+#include "Audioplayer.h"
 
-namespace IO
+namespace Audio
 {
-	class FontsFT
+	Sound::Sound(node src)
 	{
-	public:
-		FontsFT();
-		~FontsFT();
-		bool init();
-		const FT_Face* getfont(Font) const;
-	private:
-		FT_Library ftlibrary;
-		FT_Face calibri;
-	};
-}
-#endif
+		id = Audioplayer::addsound(src);
+	}
 
+	Sound::Sound() 
+	{
+		id = 0;
+	}
+
+	Sound::~Sound() {}
+
+	void Sound::play() const
+	{
+		if (id > 0)
+			Audioplayer::playsound(id);
+	}
+}

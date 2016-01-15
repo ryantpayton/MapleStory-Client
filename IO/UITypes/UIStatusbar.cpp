@@ -30,11 +30,11 @@ namespace IO
 
 		node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
 
-		sprites.push_back(Sprite(mainbar["backgrnd"], vector2d<int16_t>(0, 0)));
-		sprites.push_back(Sprite(mainbar["gaugeBackgrd"], vector2d<int16_t>(0, 0)));
-		sprites.push_back(Sprite(mainbar["notice"], vector2d<int16_t>(0, 0)));
-		sprites.push_back(Sprite(mainbar["lvBacktrnd"], vector2d<int16_t>(0, 0)));
-		sprites.push_back(Sprite(mainbar["lvCover"], vector2d<int16_t>(0, 0)));
+		sprites.push_back(Sprite(mainbar["backgrnd"]));
+		sprites.push_back(Sprite(mainbar["gaugeBackgrd"]));
+		sprites.push_back(Sprite(mainbar["notice"]));
+		sprites.push_back(Sprite(mainbar["lvBacktrnd"]));
+		sprites.push_back(Sprite(mainbar["lvCover"]));
 
 		expbar = Bar(
 			Texture(mainbar.resolve("gauge/exp/0")), 
@@ -58,8 +58,10 @@ namespace IO
 		statset = Charset(mainbar.resolve("gauge/number"), Charset::RIGHT);
 		levelset = Charset(mainbar.resolve("lvNumber"), Charset::LEFT);
 
-		joblabel = Textlabel(Textlabel::DWF_12ML, Textlabel::TXC_YELLOW, stats.getjobname(), 0);
-		namelabel = Textlabel(Textlabel::DWF_14ML, Textlabel::TXC_WHITE, stats.getname(), 0);
+		joblabel = Text(Text::A11M, Text::LEFT, Text::YELLOW);
+		joblabel.settext(stats.getjobname());
+		namelabel = Text(Text::A13M, Text::LEFT, Text::WHITE);
+		namelabel.settext(stats.getname());
 
 		buttons[BT_WHISPER] = unique_ptr<Button>(new MapleButton(mainbar["BtChat"]));
 		buttons[BT_CALLGM] = unique_ptr<Button>(new MapleButton(mainbar["BtClaim"]));
@@ -114,8 +116,8 @@ namespace IO
 			DrawArgument(position + vector2d<int16_t>(-480, -24))
 			);
 
-		joblabel.draw(position + vector2d<int16_t>(-435, -22));
-		namelabel.draw(position + vector2d<int16_t>(-435, -37));
+		joblabel.draw(position + vector2d<int16_t>(-435, -21));
+		namelabel.draw(position + vector2d<int16_t>(-435, -36));
 
 		chatbar->draw(inter);
 	}

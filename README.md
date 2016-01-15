@@ -2,14 +2,13 @@
 JourneyClient is a custom, made-from-scratch game client for the 2D MMORPG MapleStory.
 
 # Supported versions
-The client is compatible with version 83 servers and [JourneyMS](https://github.com/SYJourney/JourneyDEV).
+The client is currently compatible with version 83 servers.
 
 # Configuration
 The build can be configured by editing the Journey.h file. The following options are available:
 - JOURNEY_USE_OPENGL: Use OpenGL for graphics (additional dependency), if not defined use D2D.
 - JOURNEY_USE_ASIO: Use Asio for networking (additional dependency), if not defined use Winsock.
 - JOURNEY_USE_CRYPTO: Use cryptography when communicating for the server.
-- JOURNEY_CUSTOM_VERSION: Use customized packets, handlers and game mechanics.
 
 # Dependencies
 - Nx library:
@@ -18,7 +17,7 @@ The build can be configured by editing the Journey.h file. The following options
 - Graphics:
 Direct2D, DirectWrite
 or
-OpenGL, [GLFW3](http://www.glfw.org/download.html), [GLEW](http://glew.sourceforge.net/), [GLM](http://sourceforge.net/projects/ogl-math/)
+OpenGL (WIP), [GLFW3](http://www.glfw.org/download.html), [GLEW](http://glew.sourceforge.net/), [GLM](http://sourceforge.net/projects/ogl-math/), [FreeType](http://www.freetype.org/)
 
 - Audio:
 [Bass](http://www.un4seen.com/)

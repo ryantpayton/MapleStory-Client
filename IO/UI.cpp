@@ -88,7 +88,7 @@ namespace IO
 			cursor.update();
 		}
 
-		void showstatus(Textlabel::Textcolor color, string message)
+		void showstatus(Text::Color color, string message)
 		{
 			messenger.showstatus(color, message);
 		}

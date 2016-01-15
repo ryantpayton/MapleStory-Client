@@ -27,61 +27,69 @@ namespace Character
 		weptype = static_cast<WpType>(prefix);
 		twohanded = (prefix == 138) || (prefix >= 140 && prefix <= 144);
 
-		nl::node infonode = nl::nx::character["Weapon"]["0" + std::to_string(equipid) + ".img"]["info"];
+		using nl::node;
+		node infonode = nl::nx::character["Weapon"]["0" + std::to_string(equipid) + ".img"]["info"];
+
 		afterimage = infonode["afterImage"];
 		attackspeed = static_cast<uint8_t>(infonode["attackSpeed"]);
 		attack = static_cast<uint8_t>(infonode["attack"]);
 
-		/*string sfxstr = infonode["sfx"];
+		string sfxstr = infonode["sfx"];
 		if (sfxstr == "bow")
 		{
-			sfx = MSN_WEP_BOW;
+			sfx = SoundFactory::WEP_BOW;
 		}
 		else if (sfxstr == "cBow")
 		{
-			sfx = MSN_WEP_XBOW;
+			sfx = SoundFactory::WEP_XBOW;
 		}
 		else if (sfxstr == "gun")
 		{
-			sfx = MSN_WEP_GUN;
+			sfx = SoundFactory::WEP_GUN;
 		}
 		else if (sfxstr == "knuckle")
 		{
-			sfx = MSN_WEP_KNUCKLE;
+			sfx = SoundFactory::WEP_KNUCKLE;
 		}
 		else if (sfxstr == "mace")
 		{
-			sfx = MSN_WEP_MACE;
+			sfx = SoundFactory::WEP_MACE;
 		}
 		else if (sfxstr == "poleArm")
 		{
-			sfx = MSN_WEP_POLEARM;
+			sfx = SoundFactory::WEP_POLEARM;
 		}
 		else if (sfxstr == "spear")
 		{
-			sfx = MSN_WEP_SPEAR;
+			sfx = SoundFactory::WEP_SPEAR;
 		}
 		else if (sfxstr == "swordL")
 		{
-			sfx = MSN_WEP_SWORDL;
+			sfx = SoundFactory::WEP_LONGSWORD;
 		}
 		else if (sfxstr == "swordS")
 		{
-			sfx = MSN_WEP_SWORDS;
+			sfx = SoundFactory::WEP_SHORTSWORD;
 		}
 		else if (sfxstr == "tGlove")
 		{
-			sfx = MSN_WEP_TGLOVE;
+			sfx = SoundFactory::WEP_TGLOVE;
 		}
 		else
 		{
-			sfx = MSN_WEP_HANDS;
-		}*/
+			sfx = SoundFactory::WEP_HANDS;
+		}
 	}
 
 	Weapon::Weapon()
 	{
 		weptype = WEP_NONE;
+		sfx = SoundFactory::WEP_HANDS;
+	}
+
+	void Weapon::playsfx() const
+	{
+		SoundFactory::play(sfx);
 	}
 
 	Weapon::WpType Weapon::getweptype() const

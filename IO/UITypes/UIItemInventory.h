@@ -20,6 +20,7 @@
 #include "IO\UIDragElement.h"
 #include "IO\Components\Icon.h"
 #include "IO\Components\EquipTooltip.h"
+#include "IO\Components\ItemTooltip.h"
 #include "IO\Components\Slider.h"
 #include "Character\Inventory\Inventory.h"
 
@@ -27,7 +28,7 @@ namespace IO
 {
 	using std::pair;
 	using Graphics::Animation;
-	using Graphics::Textlabel;
+	using Graphics::Text;
 	using Character::Inventory;
 
 	// The Item inventory.
@@ -82,10 +83,11 @@ namespace IO
 
 		Animation newitemslot;
 		Animation newitemtab;
-		Textlabel mesolabel;
+		Text mesolabel;
 		Slider slider;
 
 		EquipTooltip eqtooltip;
+		ItemTooltip ittooltip;
 		vector2d<int16_t> cursorposition;
 		map<int16_t, Icon> icons;
 

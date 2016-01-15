@@ -56,14 +56,14 @@ namespace IO
 			vector2d<int16_t>(-435, -59),
 			vector2d<int16_t>(-40, -35)
 			);
-		chatfield = Textfield(Textlabel::DWF_12ML, Textlabel::TXC_BLACK, enterarea, 0);
+		chatfield = Textfield(Text::A11M, Text::LEFT, Text::BLACK, enterarea, 0);
 		chatfield.setstate(chatopen ? Textfield::NORMAL : Textfield::DISABLED);
 		chatfield.setonreturn(Consumer<string>([](string msg) {
 			using Net::GeneralChatPacket;
 			Net::Session::dispatch(GeneralChatPacket(msg, true));
 		}));
 
-		closedtext = Textlabel(Textlabel::DWF_12ML, Textlabel::TXC_WHITE, "", 0);
+		closedtext = Text(Text::A11M, Text::LEFT, Text::WHITE);
 	}
 
 	Chatbar::~Chatbar() {}

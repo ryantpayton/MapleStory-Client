@@ -20,12 +20,13 @@
 
 namespace IO
 {
-	Textlabel& getlabel(Textlabel::Textcolor color)
+	Text& getlabel(Text::Color color)
 	{
 		using std::map;
-		static map<Textlabel::Textcolor, Textlabel> labels;
+		static map<Text::Color, Text> labels;
 		if (!labels.count(color))
-			labels[color] = Textlabel(Textlabel::DWF_12MR, color, "", 0);
+			labels[color] = Text(Text::A11M, Text::RIGHT, color);
+
 		return labels[color];
 	}
 
@@ -40,7 +41,7 @@ namespace IO
 
 		for (auto& inf : statusinfos)
 		{
-			Textlabel& label = getlabel(inf.color);
+			Text& label = getlabel(inf.color);
 			label.setalpha(inf.getalpha(inter));
 			label.drawline(inf.text, position);
 			position.shifty(16);
@@ -61,7 +62,7 @@ namespace IO
 		statusinfos.erase(statusinfos.begin(), statusinfos.begin() + remove);
 	}
 
-	void StatusMessenger::showstatus(Textlabel::Textcolor color, string message)
+	void StatusMessenger::showstatus(Text::Color color, string message)
 	{
 		StatusInfo sinf;
 		sinf.color = color;

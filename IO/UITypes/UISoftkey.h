@@ -17,13 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "IO\Element.h"
-#include "Graphics\Textlabel.h"
+#include "Graphics\Text.h"
 #include "Util\Randomizer.h"
 
 namespace IO
 {
 	using Util::Randomizer;
-	using Graphics::Textlabel;
+	using Graphics::Text;
 
 	// Keyboard which is used via the mouse. The game uses this for pic/pin input.
 	class UISoftkey : public UIElement
@@ -66,7 +66,7 @@ namespace IO
 
 		SkType type;
 
-		Textlabel entry;
+		Text entry;
 		Randomizer random;
 	};
 

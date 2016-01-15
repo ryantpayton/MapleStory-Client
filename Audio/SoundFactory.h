@@ -16,51 +16,50 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Element.h"
-#include "Components\Textfield.h"
-#include "Components\Icon.h"
 
-namespace IO
+namespace SoundFactory
 {
-	namespace UI
+	// Enumeration of all preloaded sounds.
+	const size_t NUM_SOUNDS = 29;
+	enum Sound
 	{
-		enum Mode
-		{
-			MD_LOGIN,
-			MD_GAME
-		};
+		// UI
+		MOUSESCLICK,
+		MOUSESHOVER,
+		MOUSEGRAB,
+		MOUSEDROP,
+		CHARSELECT,
 
-		void draw(float inter);
-		void update();
+		// Game
+		GAMESTART,
+		JUMP,
+		DROP,
+		PICKUP,
+		PORTAL,
+		LEVELUP,
+		DEAD,
+		TRANSFORM,
+		QUESTCLEAR,
+		QUESTALERT,
+		MONSTERCARD,
+		SCROLLSUCCESS,
+		SCROLLFAIL,
 
-		void sendmouse(vector2d<int16_t> pos);
-		void sendmouse(bool pressed, vector2d<int16_t> pos);
-		void doubleclick(vector2d<int16_t> pos);
-		void sendkey(int32_t keycode, bool pressed);
+		// Weapons
+		WEP_HANDS,
+		WEP_BOW,
+		WEP_XBOW,
+		WEP_GUN,
+		WEP_KNUCKLE,
+		WEP_MACE,
+		WEP_POLEARM,
+		WEP_SPEAR,
+		WEP_LONGSWORD,
+		WEP_SHORTSWORD,
+		WEP_TGLOVE
+	};
 
-		void showstatus(Text::Color color, string message);
-		void focustextfield(Textfield*);
-		void dragicon(Icon*);
+	void init();
 
-		void addkeymapping(uint8_t no, uint8_t type, int32_t action);
-		void enable();
-		void disable();
-		void changemode(Mode mode);
-
-		void add(const Element& type);
-		void remove(Element::UIType type);
-
-		bool haselement(Element::UIType type);
-		UIElement* getelement(Element::UIType type);
-
-		template <class T>
-		T* getelement(Element::UIType type)
-		{
-			UIElement* element = getelement(type);
-			if (element)
-				return reinterpret_cast<T*>(element);
-			else
-				return nullptr;
-		}
-	}
+	void play(Sound sound);
 }

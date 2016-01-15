@@ -26,6 +26,7 @@ namespace IO
 		texture = t;
 		parent = p;
 		identifier = i;
+		showcount = c > 0;
 		count = c;
 
 		texture.shift(vector2d<int16_t>(0, 32));
@@ -37,6 +38,8 @@ namespace IO
 		parent = Element::NONE;
 		identifier = 0;
 		dragged = false;
+		showcount = false;
+		count = 0;
 	}
 
 	Icon::~Icon() {}
@@ -47,7 +50,7 @@ namespace IO
 		texture.draw(DrawArgument(position, dragged ? 0.5f : 1.0f));
 
 		int16_t tempc = dragged ? (count - 1) : count;
-		if (tempc > 1)
+		if (tempc >= 0 && showcount)
 		{
 			static const Charset countset = Charset(nl::nx::ui["Basic.img"]["ItemNo"], Charset::LEFT);
 			countset.draw(std::to_string(tempc), DrawArgument(position + vector2d<int16_t>(0, 20)));

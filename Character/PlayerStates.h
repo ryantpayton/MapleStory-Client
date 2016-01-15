@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Player.h"
+#include "Audio\SoundFactory.h"
+#include "nlnx\nx.hpp"
 
 namespace Character
 {
@@ -29,6 +31,12 @@ namespace Character
 		virtual void sendaction(Player& player, Keyboard::Keyaction keycode, bool pressed) const = 0;
 		virtual void update(Player& player) const = 0;
 		virtual void nextstate(Player& player) const = 0;
+
+	protected:
+		void playjumpsound() const
+		{
+			SoundFactory::play(SoundFactory::JUMP);
+		}
 	};
 
 	class PlayerNullState : public PlayerState
@@ -108,6 +116,7 @@ namespace Character
 					player.setstance(Char::WALK);
 					break;
 				case Keyboard::KA_JUMP:
+					playjumpsound();
 					player.getphobj().vforce = -player.getjforce();
 					break;
 				case Keyboard::KA_DOWN:
@@ -143,6 +152,7 @@ namespace Character
 					player.setflip(true);
 					break;
 				case Keyboard::KA_JUMP:
+					playjumpsound();
 					player.getphobj().vforce = -player.getjforce();
 					break;
 				case Keyboard::KA_DOWN:
@@ -212,6 +222,7 @@ namespace Character
 				case Keyboard::KA_JUMP:
 					if (player.getphobj().enablejd && player.keydown(Keyboard::KA_DOWN))
 					{
+						playjumpsound();
 						player.getphobj().gobelowground();
 						player.setstance(Char::FALL);
 					}
@@ -256,6 +267,7 @@ namespace Character
 					player.setstance(Char::WALK);
 					break;
 				case Keyboard::KA_JUMP:
+					playjumpsound();
 					player.setstance(Char::STAND);
 					break;
 				case Keyboard::KA_UP:
@@ -287,8 +299,9 @@ namespace Character
 				case Keyboard::KA_JUMP:
 					if (abs(player.getphobj().hspeed) < 2.5f && abs(player.getphobj().vspeed) < 2.5f)
 					{
-						float FLYJUMPFORCE = player.getflyforce() * 20;
+						playjumpsound();
 
+						float FLYJUMPFORCE = player.getflyforce() * 20;
 						player.getphobj().vforce = -FLYJUMPFORCE;
 						player.getphobj().hforce = player.getflip() ? FLYJUMPFORCE : -FLYJUMPFORCE;
 					}
@@ -327,6 +340,7 @@ namespace Character
 				case Keyboard::KA_JUMP:
 					if (player.keydown(Keyboard::KA_LEFT))
 					{
+						playjumpsound();
 						player.setflip(false);
 						player.getphobj().hspeed = -player.getwforce() * 3.0f;
 						player.getphobj().vforce = -player.getjforce() / 1.5f;
@@ -334,6 +348,7 @@ namespace Character
 					}
 					else if (player.keydown(Keyboard::KA_RIGHT))
 					{
+						playjumpsound();
 						player.setflip(true);
 						player.getphobj().hspeed = player.getwforce() * 3.0f;
 						player.getphobj().vforce = -player.getjforce() / 1.5f;

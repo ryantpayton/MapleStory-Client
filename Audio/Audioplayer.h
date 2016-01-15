@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "nlnx\node.hpp"
 #include <cstdint>
 #include <string>
 
@@ -23,6 +24,7 @@ namespace Audioplayer
 {
 	using std::uint8_t;
 	using std::string;
+	using nl::node;
 
 	bool init();
 	void close();
@@ -31,6 +33,6 @@ namespace Audioplayer
 
 	void playsound(size_t);
 	void playbgm(string);
-	size_t addsound(string);
+	size_t addsound(node src);
 }
 

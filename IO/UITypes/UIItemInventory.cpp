@@ -77,7 +77,7 @@ namespace IO
 		buttons[BT_SORT]->setactive(false);
 		buttons[buttonbytab(tab)]->setstate(Button::PRESSED);
 
-		mesolabel = Textlabel(Textlabel::DWF_12MR, Textlabel::TXC_BLACK, "", 0);
+		mesolabel = Text(Text::A11M, Text::RIGHT, Text::DARKGREY);
 		slider = Slider(nl::nx::ui["Basic.img"]["VScr11"], vector2d<int16_t>(50, 248), 152);
 
 		dimension = vector2d<int16_t>(172, 335);
@@ -116,8 +116,10 @@ namespace IO
 				);
 		}
 
-		mesolabel.drawline(getmesostr(), position + vector2d<int16_t>(124, 262));
+		mesolabel.drawline(getmesostr(), position + vector2d<int16_t>(124, 264));
+
 		eqtooltip.draw(cursorposition);
+		ittooltip.draw(cursorposition);
 	}
 
 	void UIItemInventory::update()
@@ -137,7 +139,8 @@ namespace IO
 		if (item)
 		{
 			const ItemData& idata = item->getidata();
-			icons[slot] = Icon(idata.geticon(false), Element::ITEMINVENTORY, slot, item->getcount());
+			int16_t displaycount = (tab == Inventory::EQUIP) ? 0 : item->getcount();
+			icons[slot] = Icon(idata.geticon(false), Element::ITEMINVENTORY, slot, displaycount);
 		}
 		else if (icons.count(slot))
 		{
@@ -243,14 +246,27 @@ namespace IO
 			{
 				icons[slot].startdrag(cursorpos - position - slotpos);
 				eqtooltip.setequip(nullptr, 0);
+				ittooltip.setitem(0);
 				UI::dragicon(&icons[slot]);
 				return Cursor::MST_GRABBING;
 			}
-			else
+			else if (tab == Inventory::EQUIP)
 			{
+				using Character::Equip;
 				const Equip* equip = inventory.getequip(tab, slot);
+
 				if (equip)
 					eqtooltip.setequip(equip, slot);
+
+				return Cursor::MST_CANGRAB;
+			}
+			else
+			{
+				using Character::Item;
+				const Item* item = inventory.getitem(tab, slot);
+
+				if (item)
+					ittooltip.setitem(item->getid());
 
 				return Cursor::MST_CANGRAB;
 			}
@@ -258,6 +274,7 @@ namespace IO
 		else
 		{
 			eqtooltip.setequip(nullptr, 0);
+			ittooltip.setitem(0);
 			return UIDragElement::sendmouse(pressed, cursorpos);
 		}
 	}

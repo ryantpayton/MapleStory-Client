@@ -29,73 +29,91 @@ namespace Graphics
 	using std::string;
 	using Util::vector2d;
 
-	class Textlabel
+	class Text
 	{
 	public:
+		static const size_t NUM_FONTS = 8;
 		enum Font
 		{
-			DWF_TEXTFIELD,
-			DWF_12ML,
-			DWF_12LL,
-			DWF_12MC,
-			DWF_12BC,
-			DWF_12MR,
-			DWF_14ML,
-			DWF_14MC,
-			DWF_14BC,
-			DWF_14MR,
-			DWF_20MC
+			A11L,
+			A11M,
+			A11B,
+			A12M,
+			A12B,
+			A13M,
+			A13B,
+			A18M
 		};
 
-		enum Textcolor
+		enum Alignment
 		{
-			TXC_BLACK,
-			TXC_WHITE,
-			TXC_YELLOW,
-			TXC_BLUE,
-			TXC_RED,
-			TXC_BROWN,
-			TXC_GREY,
-			TXC_ORANGE,
-			TXC_MBLUE,
-			TXC_VIOLET
+			LEFT,
+			CENTER,
+			RIGHT
+		};
+
+		static const size_t NUM_COLORS = 11;
+		enum Color
+		{
+			BLACK,
+			WHITE,
+			YELLOW,
+			BLUE,
+			RED,
+			BROWN,
+			GREY,
+			DARKGREY,
+			ORANGE,
+			MEDIUMBLUE,
+			VIOLET
 		};
 
 		enum Background
 		{
-			TXB_NONE,
-			TXB_NAMETAG,
-			TXB_GMCHAT
+			NONE,
+			NAMETAG
 		};
 
-		Textlabel(Font, Textcolor, string, uint16_t);
-		Textlabel();
+		struct Layout
+		{
+			vector2d<float> dimensions;
+			vector2d<int16_t> endoffset;
+			map<size_t, float> advances;
+		};
 
-		void settext(const string&);
-		void settext(const string&, uint16_t);
-		void setfont(Font);
-		void setcolor(Textcolor);
-		void setback(Background);
-		void setalpha(float);
-		void draw(vector2d<int16_t>) const;
-		void draw(vector2d<float>) const;
-		void drawline(string, vector2d<int16_t>) const;
+		Text(Font font, Alignment alignment, Color color);
+		Text();
 
-		uint16_t getadvance(size_t) const;
+		void draw(vector2d<int16_t> position) const;
+		void draw(vector2d<float> position) const;
+		void drawline(string line, vector2d<int16_t> position) const;
+
+		void settext(const string& text);
+		void settext(const string& text, uint16_t maxwidth);
+		void setfont(Font font);
+		void setalignment(Alignment alignment);
+		void setcolor(Color color);
+		void setback(Background background);
+		void setalpha(float alpha);
+
 		size_t getlength() const;
-		const string& gettext() const;
+		int16_t getwidth() const;
+		int16_t getheight() const;
+		uint16_t getadvance(size_t pos) const;
 		vector2d<float> getdimensions() const;
+		vector2d<int16_t> getendoffset() const;
+		const string& gettext() const;
 
 	private:
 		Font font;
-		Textcolor color;
+		Alignment alignment;
+		Color color;
 		wstring text;
 		string str;
 		Background back;
 
+		uint16_t textid;
 		float alpha;
-		vector2d<float> dimensions;
-		vector2d<float> endpos;
-		map<size_t, float> advances;
+		Layout layout;
 	};
 }

@@ -15,38 +15,34 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "FontsFT.h"
-#ifdef JOURNEY_USE_OPENGLs
+#pragma once
+#include "Charset.h"
+#include "Itemtext.h"
 
 namespace IO
 {
-	FontsFT::FontsFT()
+	class ItemTooltip
 	{
+	public:
+		ItemTooltip();
+		~ItemTooltip();
 
-	}
+		void setitem(int32_t itemid);
+		void draw(vector2d<int16_t> position) const;
 
+	private:
+		int32_t itemid;
+		int16_t filllength;
+		Texture itemicon;
 
-	FontsFT::~FontsFT()
-	{
-	}
-
-	bool FontsFT::init()
-	{
-		if (FT_Init_FreeType(&ftlibrary) == FT_Err_Ok)
-		{
-			FT_Error err = FT_New_Face(ftlibrary, "calibri.ttf", 0, &calibri);
-			FT_Set_Pixel_Sizes(calibri, 0, 14);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	const FT_Face* FontsFT::getfont(Font f) const
-	{
-		return &calibri;
-	}
+		Text name;
+		Itemtext desc;
+		Texture top;
+		Texture mid;
+		Texture line;
+		Texture bot;
+		Texture base;
+		Texture cover;
+		Texture shade;
+	};
 }
-#endif

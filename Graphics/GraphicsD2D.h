@@ -18,7 +18,7 @@
 #pragma once
 #include "Journey.h"
 #ifndef JOURNEY_USE_OPENGL
-#include "Graphics\Textlabel.h"
+#include "Graphics\Text.h"
 #include "Util\rectangle2d.h"
 #include "nlnx\bitmap.hpp"
 #include <d2d1.h>
@@ -34,14 +34,16 @@ namespace Graphics
 	{
 		void init(IWICImagingFactory**, ID2D1BitmapRenderTarget**, IDWriteFactory**);
 		void clear();
+		void free();
 
 		void addbitmap(const bitmap& toadd);
 		bool available(size_t id);
-		void draw(size_t, int16_t, int16_t, int16_t, int16_t, float, float, float, int16_t, int16_t);
+		void draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, float alpha, 
+			float xscale, float yscale, int16_t originx, int16_t originy);
 
-		vector2d<float> createlayout(const wstring&, Textlabel::Font, float, map<size_t, float>&);
-		void drawtext(const wstring&, Textlabel::Font, Textlabel::Textcolor, 
-			Textlabel::Background, float, vector2d<float>, vector2d<float>);
+		Text::Layout createlayout(const wstring& text, Text::Font font, float maxwidth);
+		void drawtext(const wstring& text, Text::Font font, Text::Alignment alignment, Text::Color color, 
+			Text::Background back, float alpha, vector2d<float> origin, vector2d<float> dimensions);
 	};
 }
 #endif

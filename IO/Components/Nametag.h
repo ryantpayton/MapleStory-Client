@@ -1,5 +1,5 @@
 #pragma once
-#include "Graphics\Textlabel.h"
+#include "Graphics\Text.h"
 #include "Graphics\Texture.h"
 #include "nlnx\node.hpp"
 #include <map>
@@ -14,17 +14,17 @@ namespace IO
 	using nl::node;
 	using Util::vector2d;
 	using Graphics::Texture;
-	using Graphics::Textlabel;
+	using Graphics::Text;
 
 	class Nametag
 	{
 	public:
-		Nametag(node, Textlabel::Font, Textlabel::Textcolor, string);
+		Nametag(node, Text::Font, Text::Alignment, Text::Color, string);
 		~Nametag();
 		void draw(vector2d<int16_t>) const;
 		void setselected(bool);
 	private:
-		Textlabel name;
+		Text name;
 		map<bool, vector<Texture>> tag;
 		bool selected;
 	};

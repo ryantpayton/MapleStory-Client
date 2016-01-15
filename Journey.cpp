@@ -19,6 +19,7 @@
 #include "Program\Configuration.h"
 #include "Program\Constants.h"
 #include "Audio\Audioplayer.h"
+#include "Audio\SoundFactory.h"
 #include "Net\Session.h"
 #include "IO\UI.h"
 #include "IO\Window.h"
@@ -93,6 +94,7 @@ int main()
 	if (error == NONE)
 	{
 		Data::init();
+		SoundFactory::init();
 		Character::initbuffeffects();
 
 		UI::add(ElementLogin());

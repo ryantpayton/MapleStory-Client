@@ -20,10 +20,12 @@
 
 namespace IO
 {
-	Textfield::Textfield(Textlabel::Font fnt, Textlabel::Textcolor col, rectangle2d<int16_t> bnd, size_t lim)
-	{
-		textlabel = Textlabel(fnt, col, "", 0);
-		marker = Textlabel(fnt, col, "|", 0);
+	Textfield::Textfield(Text::Font font, Text::Alignment alignment, 
+		Text::Color color, rectangle2d<int16_t> bnd, size_t lim) {
+
+		textlabel = Text(font, alignment, color);
+		marker = Text(font, alignment, color);
+		marker.settext("|");
 		bounds = bnd;
 		limit = lim;
 		text = "";

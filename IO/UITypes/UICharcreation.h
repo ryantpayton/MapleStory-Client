@@ -19,7 +19,7 @@
 #include "IO\Element.h"
 #include "IO\Components\Textfield.h"
 #include "Graphics\Texture.h"
-#include "Graphics\Textlabel.h"
+#include "Graphics\Text.h"
 #include "Character\Look\CharLook.h"
 #include "Util\Randomizer.h"
 #include <map>
@@ -30,7 +30,7 @@ namespace IO
 	using std::string;
 	using Util::Randomizer;
 	using Graphics::Texture;
-	using Graphics::Textlabel;
+	using Graphics::Text;
 	using Character::CharLook;
 
 	// Character creation screen.
@@ -101,15 +101,15 @@ namespace IO
 		size_t bot;
 		size_t shoe;
 		size_t weapon;
-		Textlabel facename;
-		Textlabel hairname;
-		Textlabel haircname;
-		Textlabel bodyname;
-		Textlabel topname;
-		Textlabel botname;
-		Textlabel shoename;
-		Textlabel wepname;
-		Textlabel gendername;
+		Text facename;
+		Text hairname;
+		Text haircname;
+		Text bodyname;
+		Text topname;
+		Text botname;
+		Text shoename;
+		Text wepname;
+		Text gendername;
 	};
 
 	// Factory for the character creation screen.

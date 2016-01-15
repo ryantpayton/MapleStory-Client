@@ -20,8 +20,9 @@
 #include "Gameplay\Attack.h"
 #include "Gameplay\Physics\PhysicsObject.h"
 #include "Gameplay\MovementInfo.h"
-#include "Graphics\Textlabel.h"
+#include "Graphics\Text.h"
 #include "Graphics\EffectLayer.h"
+#include "Audio\Sound.h"
 #include "IO\Components\DamageNumber.h"
 #include "Util\rectangle2d.h"
 #include "Util\Randomizer.h"
@@ -35,8 +36,9 @@ namespace Gameplay
 	using Util::rectangle2d;
 	using Util::Randomizer;
 	using Graphics::Animation;
-	using Graphics::Textlabel;
+	using Graphics::Text;
 	using Graphics::EffectLayer;
+	using Audio::Sound;
 	using IO::DamageNumber;
 
 	class Mob : public MapObject
@@ -83,7 +85,6 @@ namespace Gameplay
 	private:
 		void writemovement();
 		void parsestance(Stance toparse, node source);
-		//void parsesound(Stance toparse, node source);
 		void setstance(Stance newstance);
 		void nextmove();
 
@@ -93,6 +94,8 @@ namespace Gameplay
 		map<Stance, Animation> animations;
 		map<Stance, rectangle2d<int16_t>> bounds;
 		string name;
+		Sound hitsound;
+		Sound diesound;
 		uint16_t level;
 		uint16_t speed;
 		uint16_t watk;
@@ -106,7 +109,7 @@ namespace Gameplay
 		bool touchdamage;
 
 		EffectLayer effects;
-		Textlabel namelabel;
+		Text namelabel;
 		Randomizer randomizer;
 		vector<DamageNumber> damagenumbers;
 

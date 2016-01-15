@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Textlabel.h"
+#include "Graphics\Text.h"
 #include "IO\Keyboard.h"
 #include "Util\FunctionPointers.h"
 #include "Util\rectangle2d.h"
@@ -27,7 +27,7 @@ namespace IO
 	using Util::vector2d;
 	using Util::rectangle2d;
 	using Util::Consumer;
-	using Graphics::Textlabel;
+	using Graphics::Text;
 
 	class Textfield
 	{
@@ -39,7 +39,7 @@ namespace IO
 			FOCUSED
 		};
 
-		Textfield(Textlabel::Font font, Textlabel::Textcolor color, 
+		Textfield(Text::Font font, Text::Alignment alignment, Text::Color color,
 			rectangle2d<int16_t> bounds, size_t limit);
 		Textfield();
 		~Textfield();
@@ -61,9 +61,9 @@ namespace IO
 		void modifytext(string);
 		bool belowlimit() const;
 
-		Textlabel textlabel;
+		Text textlabel;
 		string text;
-		Textlabel marker;
+		Text marker;
 		bool showmarker;
 		uint16_t elapsed;
 		size_t markerpos;

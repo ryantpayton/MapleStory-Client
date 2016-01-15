@@ -24,13 +24,13 @@
 #include "Character\CharStats.h"
 #include "Character\Inventory\Inventory.h"
 #include "Graphics\Animation.h"
-#include "Graphics\Textlabel.h"
+#include "Graphics\Text.h"
 
 namespace IO
 {
 	using Character::CharStats;
 	using Character::Inventory;
-	using Graphics::Textlabel;
+	using Graphics::Text;
 	using Graphics::Animation;
 
 	class UIStatusbar : public UIElement
@@ -79,8 +79,8 @@ namespace IO
 		Bar mpbar;
 		Charset statset;
 		Charset levelset;
-		Textlabel namelabel;
-		Textlabel joblabel;
+		Text namelabel;
+		Text joblabel;
 		Animation hpanimation;
 		Animation mpanimation;
 	};

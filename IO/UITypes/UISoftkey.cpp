@@ -55,7 +55,7 @@ namespace IO
 
 		buttons[BT_OK]->setstate(Button::DISABLED);
 
-		entry = Textlabel(Textlabel::DWF_12ML, Textlabel::TXC_BLACK, "", 0);
+		entry = Text(Text::A11M, Text::LEFT, Text::BLACK);
 
 		shufflekeys();
 
@@ -68,7 +68,7 @@ namespace IO
 	{
 		UIElement::draw(inter);
 
-		entry.draw(position + vector2d<int16_t>(15, 41));
+		entry.draw(position + vector2d<int16_t>(15, 43));
 	}
 
 	void UISoftkey::buttonpressed(uint16_t id)

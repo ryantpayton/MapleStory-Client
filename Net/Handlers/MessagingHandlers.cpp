@@ -51,7 +51,7 @@ namespace Net
 				string name = idata.getname();
 				string sign = (qty < 0) ? "-" : "+";
 
-				showstatus(Textlabel::TXC_WHITE, "Gained an item: " + name + " (" + sign + std::to_string(qty) + ")");
+				showstatus(Text::WHITE, "Gained an item: " + name + " (" + sign + std::to_string(qty) + ")");
 			}
 			else if (mode2 == 1)
 			{
@@ -60,7 +60,7 @@ namespace Net
 				int32_t gain = recv.readint();
 				string sign = (gain < 0) ? "-" : "+";
 
-				showstatus(Textlabel::TXC_WHITE, "Received mesos (" + sign + std::to_string(gain) + ")");
+				showstatus(Text::WHITE, "Received mesos (" + sign + std::to_string(gain) + ")");
 			}
 		}
 		else if (mode == 3)
@@ -84,9 +84,9 @@ namespace Net
 			}
 			else
 			{
-				showstatus(white ? Textlabel::TXC_WHITE : Textlabel::TXC_YELLOW, message);
+				showstatus(white ? Text::WHITE : Text::YELLOW, message);
 				if (bonus1 > 0)
-					showstatus(Textlabel::TXC_YELLOW, "+ Bonus EXP (+" + std::to_string(bonus1) + ")");
+					showstatus(Text::YELLOW, "+ Bonus EXP (+" + std::to_string(bonus1) + ")");
 			}
 		}
 		else if (mode == 4)
@@ -94,14 +94,14 @@ namespace Net
 			int32_t gain = recv.readint();
 			string sign = (gain < 0) ? "-" : "+";
 
-			showstatus(Textlabel::TXC_WHITE, "Received fame (" + sign + std::to_string(gain) + ")");
+			showstatus(Text::WHITE, "Received fame (" + sign + std::to_string(gain) + ")");
 		}
 		else if (mode == 5)
 		{
 		}
 	}
 
-	void ShowStatusInfoHandler::showstatus(Textlabel::Textcolor color, string message) const
+	void ShowStatusInfoHandler::showstatus(Text::Color color, string message) const
 	{
 		IO::UI::showstatus(color, message);
 	}

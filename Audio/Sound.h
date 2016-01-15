@@ -16,51 +16,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Element.h"
-#include "Components\Textfield.h"
-#include "Components\Icon.h"
+#include "nlnx\node.hpp"
 
-namespace IO
+namespace Audio
 {
-	namespace UI
+	using nl::node;
+
+	class Sound
 	{
-		enum Mode
-		{
-			MD_LOGIN,
-			MD_GAME
-		};
+	public:
+		Sound(node src);
+		Sound();
+		~Sound();
 
-		void draw(float inter);
-		void update();
+		void play() const;
 
-		void sendmouse(vector2d<int16_t> pos);
-		void sendmouse(bool pressed, vector2d<int16_t> pos);
-		void doubleclick(vector2d<int16_t> pos);
-		void sendkey(int32_t keycode, bool pressed);
-
-		void showstatus(Text::Color color, string message);
-		void focustextfield(Textfield*);
-		void dragicon(Icon*);
-
-		void addkeymapping(uint8_t no, uint8_t type, int32_t action);
-		void enable();
-		void disable();
-		void changemode(Mode mode);
-
-		void add(const Element& type);
-		void remove(Element::UIType type);
-
-		bool haselement(Element::UIType type);
-		UIElement* getelement(Element::UIType type);
-
-		template <class T>
-		T* getelement(Element::UIType type)
-		{
-			UIElement* element = getelement(type);
-			if (element)
-				return reinterpret_cast<T*>(element);
-			else
-				return nullptr;
-		}
-	}
+	private:
+		size_t id;
+	};
 }

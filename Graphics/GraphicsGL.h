@@ -19,6 +19,7 @@
 #include "Journey.h"
 #ifdef JOURNEY_USE_OPENGL
 #include "Util\rectangle2d.h"
+#include "Text.h"
 #include "nlnx\bitmap.hpp"
 
 namespace Graphics
@@ -27,14 +28,29 @@ namespace Graphics
 	using Util::vector2d;
 	using Util::rectangle2d;
 
+	// Graphic functions for usage with OpenGL.
 	namespace GraphicsGL
 	{
-		void init();
+		// Initialise all resources.
+		bool init();
+		// Clear all bitmaps.
 		void clear();
+		// Clear all resources.
+		void free();
+
+		// Add a bitmap to the available resources.
 		void addbitmap(const bitmap& toadd);
+		// Return wether the bitmap with the given id is in the resource pool.
 		bool available(size_t id);
+		// Draw the bitmap with the given id and paramters.
 		void draw(size_t id, int16_t x, int16_t y, int16_t w, 
 			int16_t h, float, float, float, int16_t centerx, int16_t centery);
+
+		// Create a layout for the text with the parameters specified.
+		Text::Layout createlayout(const char* text, Text::Font font, float maxwidth);
+		// Draw a text with the given parameters.
+		void drawtext(const char* text, Text::Font font, Text::Alignment alignment, Text::Color color,
+			Text::Background back, float opacity, vector2d<float> origin, vector2d<float> layout);
 	};
 }
 #endif

@@ -140,23 +140,23 @@ namespace IO
 		buttons[BT_CHARC_GEMDERR]->setactive(false);
 
 		rectangle2d<int16_t> txfae = rectangle2d<int16_t>(
-			vector2d<int16_t>(490, 217),
-			vector2d<int16_t>(630, 241)
+			vector2d<int16_t>(490, 219),
+			vector2d<int16_t>(630, 243)
 			);
-		namechar = Textfield(Textlabel::DWF_TEXTFIELD, Textlabel::TXC_WHITE, txfae, 12);
+		namechar = Textfield(Text::A13M, Text::LEFT, Text::WHITE, txfae, 12);
 		namechar.setstate(Textfield::FOCUSED);
 
 		UI::focustextfield(&namechar);
 
-		facename = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_BLACK, "", 0);
-		hairname = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_BLACK, "", 0);
-		haircname = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_BLACK, "", 0);
-		bodyname = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_BLACK, "", 0);
-		topname = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_BLACK, "", 0);
-		botname = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_BLACK, "", 0);
-		shoename = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_BLACK, "", 0);
-		wepname = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_BLACK, "", 0);
-		gendername = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_BLACK, "", 0);
+		facename = Text(Text::A11M, Text::CENTER, Text::BLACK);
+		hairname = Text(Text::A11M, Text::CENTER, Text::BLACK);
+		haircname = Text(Text::A11M, Text::CENTER, Text::BLACK);
+		bodyname = Text(Text::A11M, Text::CENTER, Text::BLACK);
+		topname = Text(Text::A11M, Text::CENTER, Text::BLACK);
+		botname = Text(Text::A11M, Text::CENTER, Text::BLACK);
+		shoename = Text(Text::A11M, Text::CENTER, Text::BLACK);
+		wepname = Text(Text::A11M, Text::CENTER, Text::BLACK);
+		gendername = Text(Text::A11M, Text::CENTER, Text::BLACK);
 
 		node mkinfo = nl::nx::etc["MakeCharInfo.img"]["Info"];
 		for (int32_t i = 0; i < 2; i++)

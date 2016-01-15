@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,17 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Charset.h"
-#include "Graphics\Textlabel.h"
+#include "Itemtext.h"
 #include "Character\Look\Clothing.h"
 #include "Character\Look\Weapon.h"
 #include "Character\Inventory\Equip.h"
 
 namespace IO
 {
-	using std::vector;
-	using Util::vector2d;
 	using Character::Equip;
-	using Graphics::Textlabel;
+	using Character::Maplestat;
 
 	class EquipTooltip
 	{
@@ -37,24 +35,25 @@ namespace IO
 
 		void setequip(const Equip* equip, int16_t invpos);
 		void draw(vector2d<int16_t> position) const;
-		void clear();
 
 	private:
 		int16_t invpos;
 		int16_t filllength;
+		bool hasdesc;
 		bool hasslots;
 		bool isweapon;
-		map<Character::Maplestat, string> reqstatstrings;
+		map<Maplestat, string> reqstatstrings;
 		Texture itemicon;
 
-		Textlabel name;
-		Textlabel potflag;
-		Textlabel flag;
-		Textlabel category;
-		Textlabel wepspeed;
-		Textlabel slots;
-		Textlabel hammers;
-		map<Character::Equipstat, Textlabel> statlabels;
+		Text name;
+		Itemtext desc;
+		Text potflag;
+		Text flag;
+		Text category;
+		Text wepspeed;
+		Text slots;
+		Text hammers;
+		map<Character::Equipstat, Text> statlabels;
 
 		Texture top;
 		Texture mid;

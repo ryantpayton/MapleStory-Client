@@ -59,7 +59,7 @@ namespace IO
 		checkbox[true] = Texture(title["check"]["1"]);
 
 		account = Textfield(
-			Textlabel::DWF_TEXTFIELD, Textlabel::TXC_WHITE, 
+			Text::A13M, Text::LEFT, Text::WHITE, 
 			rectangle2d<int16_t>(
 			vector2d<int16_t>(315, 249), 
 			vector2d<int16_t>(465, 273)), 12
@@ -67,7 +67,7 @@ namespace IO
 		accountbg = Texture(title["ID"]);
 
 		password = Textfield(
-			Textlabel::DWF_TEXTFIELD, Textlabel::TXC_WHITE, 
+			Text::A13M, Text::LEFT, Text::WHITE,
 			rectangle2d<int16_t>(
 			vector2d<int16_t>(315, 275),
 			vector2d<int16_t>(465, 299)), 12

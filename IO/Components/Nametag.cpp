@@ -3,9 +3,10 @@
 
 namespace IO
 {
-	Nametag::Nametag(node src, Textlabel::Font f, Textlabel::Textcolor c, string s)
+	Nametag::Nametag(node src, Text::Font f, Text::Alignment a, Text::Color c, string s)
 	{
-		name = Textlabel(f, c, s, 0);
+		name = Text(f, a, c);
+		name.settext(s);
 		tag[false].push_back(Texture(src["0"]["0"]));
 		tag[false].push_back(Texture(src["0"]["1"]));
 		tag[false].push_back(Texture(src["0"]["2"]));
@@ -25,7 +26,7 @@ namespace IO
 		if (tag.count(selected))
 		{
 			int16_t width = static_cast<int16_t>(name.getdimensions().x());
-			vector2d<int16_t> startpos = position - vector2d<int16_t>(8 + width / 2, -3);
+			vector2d<int16_t> startpos = position - vector2d<int16_t>(8 + width / 2, -2);
 
 			using::Graphics::DrawArgument;
 			tag.at(selected).at(0).draw(DrawArgument(startpos));

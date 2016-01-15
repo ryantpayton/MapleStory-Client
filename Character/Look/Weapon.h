@@ -19,6 +19,7 @@
 #include "Clothing.h"
 #include "Util\rectangle2d.h"
 #include "Graphics\Animation.h"
+#include "Audio\SoundFactory.h"
 
 namespace Character
 {
@@ -53,14 +54,13 @@ namespace Character
 		Weapon(int32_t, const BodyDrawinfo&);
 		Weapon();
 
+		void playsfx() const;
 		WpType getweptype() const;
 		bool istwohanded() const;
 		string getafterimage() const;
 		uint8_t getspeed() const;
 		uint8_t getattack() const;
-
 		string getspeedstring() const;
-
 		uint8_t getattackdelay() const;
 		rectangle2d<int16_t> getrange() const;
 		Animation gethiteffect() const;
@@ -69,9 +69,9 @@ namespace Character
 		WpType weptype;
 		bool twohanded;
 		string afterimage;
-		//maplesound sfx;
 		uint8_t attackspeed;
 		uint8_t attack;
+		SoundFactory::Sound sfx;
 	};
 }
 

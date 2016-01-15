@@ -19,62 +19,6 @@
 #include "Net\OutPacket.h"
 #include "Net\SendOpcodes.h"
 
-#include "Journey.h"
-#ifdef JOURNEY_CUSTOM_VERSION
-
-namespace Net
-{
-	// Packet which accepts the Terms of Service.
-	class TOSPacket : public OutPacket
-	{
-	public:
-		TOSPacket() : OutPacket(ACCEPT_TOS)
-		{
-			writech(1);
-		}
-	};
-
-	// Packet which requests login to an account.
-	class LoginPacket : public OutPacket
-	{
-	public:
-		LoginPacket(string acc, string pass) : OutPacket(LOGIN)
-		{
-			writestr(acc);
-			writestr(pass);
-		}
-	};
-
-	// Packet which requests the list of worlds and channels.
-	class ServerRequestPacket : public OutPacket
-	{
-	public:
-		ServerRequestPacket() : OutPacket(WORLD_REQUEST) {}
-	};
-
-	// Packet which requests the list of characters on a world.
-	class CharlistRequestPacket : public OutPacket
-	{
-	public:
-		CharlistRequestPacket(uint8_t world, uint8_t channel) : OutPacket(CHARLIST_REQUEST)
-		{
-			writech(world);
-			writech(channel);
-		}
-	};
-
-	// Packet which requests login to a channel server for the specified character.
-	class PlayerLoginPacket : public OutPacket
-	{
-	public:
-		PlayerLoginPacket(int32_t cid) : OutPacket(PLAYER_LOGIN)
-		{
-			writeint(cid);
-		}
-	};
-}
-#else
-
 namespace Net
 {
 	// Packet which accepts the Terms of Service.
@@ -127,4 +71,3 @@ namespace Net
 		}
 	};
 }
-#endif

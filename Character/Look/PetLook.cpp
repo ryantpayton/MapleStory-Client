@@ -42,8 +42,9 @@ namespace Character
 		setposition(pos.x(), pos.y());
 		phobj.fhid = static_cast<uint16_t>(fhid);
 
-		namelabel = Textlabel(Textlabel::DWF_14MC, Textlabel::TXC_WHITE, name, 0);
-		namelabel.setback(Textlabel::TXB_NAMETAG);
+		namelabel = Text(Text::A13M, Text::CENTER, Text::WHITE);
+		namelabel.settext(name);
+		namelabel.setback(Text::NAMETAG);
 
 		using nl::node;
 		node src = nl::nx::item["Pet"][std::to_string(iid) + ".img"];

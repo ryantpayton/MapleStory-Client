@@ -19,13 +19,13 @@
 #include "IO\Element.h"
 #include "IO\UIDragElement.h"
 #include "Character\CharStats.h"
-#include "Graphics\Textlabel.h"
+#include "Graphics\Text.h"
 
 namespace IO
 {
 	using Character::CharStats;
 	using Character::Maplestat;
-	using Graphics::Textlabel;
+	using Graphics::Text;
 	using Graphics::Texture;
 
 	class UIStatsinfo : public UIDragElement
@@ -59,7 +59,7 @@ namespace IO
 
 		vector<Texture> detailtextures;
 		map<string, Texture> abilities;
-		Textlabel statlabel;
+		Text statlabel;
 		bool showdetail;
 	};
 

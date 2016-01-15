@@ -16,34 +16,38 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Textlabel.h"
+#include "Graphics\Text.h"
 
 #include "Journey.h"
 #ifdef JOURNEY_USE_OPENGL
+#include "Graphics\GraphicsGL.h"
 #else
 #include "Graphics\GraphicsD2D.h"
 #endif
 
 namespace Graphics
 {
-	Textlabel::Textlabel(Font f, Textcolor c, string s, uint16_t m)
+	Text::Text(Font f, Alignment a, Color c)
 	{
 		font = f;
+		alignment = a;
 		color = c;
-		settext(s, m);
 
+		str = "";
+		text = L"";
 		alpha = 1.0f;
-		back = TXB_NONE;
+		back = NONE;
+		textid = 0;
 	}
 
-	Textlabel::Textlabel() {}
+	Text::Text() {}
 
-	void Textlabel::settext(const string& t)
+	void Text::settext(const string& t)
 	{
 		settext(t, 0);
 	}
 
-	void Textlabel::settext(const string& t, uint16_t wmax)
+	void Text::settext(const string& t, uint16_t wmax)
 	{
 		str = string(t);
 		text = wstring(t.begin(), t.end());
@@ -51,62 +55,68 @@ namespace Graphics
 		float fwmax = static_cast<float>(wmax);
 
 #ifdef JOURNEY_USE_OPENGL
+		layout = GraphicsGL::createlayout(str.c_str(), font, fwmax);
 #else
-		dimensions = GraphicsD2D::createlayout(text, font, fwmax, advances);
+		layout = GraphicsD2D::createlayout(text, font, fwmax);
 #endif
 	}
 
-	void Textlabel::setfont(Font f)
+	void Text::setfont(Font f)
 	{
 		font = f;
 	}
 
-	void Textlabel::setcolor(Textcolor c)
+	void Text::setcolor(Color c)
 	{
 		color = c;
 	}
 
-	void Textlabel::setback(Background b)
+	void Text::setback(Background b)
 	{
 		back = b;
 	}
 
-	void Textlabel::setalpha(float a)
+	void Text::setalpha(float a)
 	{
 		alpha = a;
 	}
 
-	void Textlabel::draw(vector2d<int16_t> pos) const
+	void Text::draw(vector2d<int16_t> pos) const
 	{
 		draw(vector2d<float>(static_cast<float>(pos.x()), static_cast<float>(pos.y())));
 	}
 
-	void Textlabel::drawline(string todraw, vector2d<int16_t> pos) const
+	void Text::drawline(string todraw, vector2d<int16_t> pos) const
 	{
 #ifdef JOURNEY_USE_OPENGL
+		GraphicsGL::drawtext(todraw.c_str(), font, alignment, color, back, alpha,
+			vector2d<float>(static_cast<float>(pos.x()), static_cast<float>(pos.y())), 
+			vector2d<float>()
+			);
 #else
 		GraphicsD2D::drawtext(
 			wstring(todraw.begin(), todraw.end()), 
-			font, color, back, alpha,
+			font, alignment, color, back, alpha,
 			vector2d<float>(static_cast<float>(pos.x()), static_cast<float>(pos.y())), 
 			vector2d<float>()
 			);
 #endif
 	}
 	
-	void Textlabel::draw(vector2d<float> pos) const
+	void Text::draw(vector2d<float> pos) const
 	{
 #ifdef JOURNEY_USE_OPENGL
+		GraphicsGL::drawtext(str.c_str(), font, alignment, color, back, alpha, pos, layout.dimensions);
 #else
-		GraphicsD2D::drawtext(text, font, color, back, alpha, pos, dimensions);
+		GraphicsD2D::drawtext(text, font, alignment, color, back, alpha, pos, layout.dimensions);
 #endif
 	}
 
-	uint16_t Textlabel::getadvance(size_t pos) const
+	uint16_t Text::getadvance(size_t pos) const
 	{
-		if (advances.count(pos))
+		if (layout.advances.count(pos))
 		{
-			return static_cast<uint16_t>(advances.at(pos));
+			return static_cast<uint16_t>(layout.advances.at(pos));
 		}
 		else
 		{
@@ -114,18 +124,33 @@ namespace Graphics
 		}
 	}
 
-	size_t Textlabel::getlength() const
+	size_t Text::getlength() const
 	{
 		return str.size();
 	}
 
-	const string& Textlabel::gettext() const
+	int16_t Text::getwidth() const
 	{
-		return str;
+		return static_cast<int16_t>(layout.dimensions.x());
 	}
 
-	vector2d<float> Textlabel::getdimensions() const
+	int16_t Text::getheight() const
 	{
-		return dimensions;
+		return static_cast<int16_t>(layout.dimensions.y());
+	}
+
+	vector2d<float> Text::getdimensions() const
+	{
+		return layout.dimensions;
+	}
+
+	vector2d<int16_t> Text::getendoffset() const
+	{
+		return layout.endoffset;
+	}
+
+	const string& Text::gettext() const
+	{
+		return str;
 	}
 }

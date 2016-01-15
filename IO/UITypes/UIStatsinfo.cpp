@@ -60,7 +60,7 @@ namespace IO
 
 		updateap();
 
-		statlabel = Textlabel(Textlabel::DWF_12ML, Textlabel::TXC_BLACK, "", 0);
+		statlabel = Text(Text::A11M, Text::LEFT, Text::DARKGREY);
 
 		dimension = vector2d<int16_t>(212, 318);
 		showdetail = false;
@@ -70,56 +70,56 @@ namespace IO
 	{
 		UIElement::draw(inter);
 
-		statlabel.drawline(stats.getname(), position + vector2d<int16_t>(73, 25));
-		statlabel.drawline(stats.getjobname(), position + vector2d<int16_t>(73, 43));
-		statlabel.drawline("", position + vector2d<int16_t>(73, 61)); //guild
+		statlabel.drawline(stats.getname(), position + vector2d<int16_t>(73, 27));
+		statlabel.drawline(stats.getjobname(), position + vector2d<int16_t>(73, 45));
+		statlabel.drawline("", position + vector2d<int16_t>(73, 63)); //guild
 
 		statlabel.drawline(
 			std::to_string(stats.getstat(Character::MS_FAME)),
-			position + vector2d<int16_t>(73, 79)
+			position + vector2d<int16_t>(73, 81)
 			);
 		statlabel.drawline(
 			std::to_string(stats.getmindamage()) + " ~ " +
 			std::to_string(stats.getmaxdamage()),
-			position + vector2d<int16_t>(73, 97)
+			position + vector2d<int16_t>(73, 99)
 			);
 		statlabel.drawline(
 			std::to_string(stats.getstat(Character::MS_HP)) + " / " +
 			std::to_string(stats.gettotal(Character::ES_HP)),
-			position + vector2d<int16_t>(73, 115)
+			position + vector2d<int16_t>(73, 117)
 			);
 		statlabel.drawline(
 			std::to_string(stats.getstat(Character::MS_MP)) + " / " +
 			std::to_string(stats.gettotal(Character::ES_MP)),
-			position + vector2d<int16_t>(73, 133)
+			position + vector2d<int16_t>(73, 135)
 			);
 		statlabel.drawline(
 			std::to_string(stats.getstat(Character::MS_AP)),
-			position + vector2d<int16_t>(70, 175)
+			position + vector2d<int16_t>(70, 177)
 			);
 		statlabel.drawline(
 			std::to_string(stats.gettotal(Character::ES_STR)) + " (" +
 			std::to_string(stats.getstat(Character::MS_STR)) + " + " +
 			std::to_string(stats.gettotal(Character::ES_STR) - stats.getstat(Character::MS_STR)) + ")",
-			position + vector2d<int16_t>(73, 202)
+			position + vector2d<int16_t>(73, 204)
 			);
 		statlabel.drawline(
 			std::to_string(stats.gettotal(Character::ES_DEX)) + " (" +
 			std::to_string(stats.getstat(Character::MS_DEX)) + " + " +
 			std::to_string(stats.gettotal(Character::ES_DEX) - stats.getstat(Character::MS_DEX)) + ")",
-			position + vector2d<int16_t>(73, 220)
+			position + vector2d<int16_t>(73, 222)
 			);
 		statlabel.drawline(
 			std::to_string(stats.gettotal(Character::ES_INT)) + " (" +
 			std::to_string(stats.getstat(Character::MS_INT)) + " + " +
 			std::to_string(stats.gettotal(Character::ES_INT) - stats.getstat(Character::MS_INT)) + ")",
-			position + vector2d<int16_t>(73, 238)
+			position + vector2d<int16_t>(73, 240)
 			);
 		statlabel.drawline(
 			std::to_string(stats.gettotal(Character::ES_LUK)) + " (" +
 			std::to_string(stats.getstat(Character::MS_LUK)) + " + " +
 			std::to_string(stats.gettotal(Character::ES_LUK) - stats.getstat(Character::MS_LUK)) + ")",
-			position + vector2d<int16_t>(73, 256)
+			position + vector2d<int16_t>(73, 258)
 			);
 
 		if (showdetail)
@@ -150,23 +150,23 @@ namespace IO
 			string jumpstr = std::to_string(stats.gettotal(Character::ES_JUMP)) + "%";
 			string honorstr = std::to_string(stats.gethonor());
 
-			statlabel.drawline(attstr, detailpos + vector2d<int16_t>(73, 35));
-			statlabel.drawline(critstr + "%", detailpos + vector2d<int16_t>(73, 53));
-			statlabel.drawline(mincritstr + "%", detailpos + vector2d<int16_t>(73, 71));
-			statlabel.drawline(maxcritstr + "%", detailpos + vector2d<int16_t>(168, 71));
-			statlabel.drawline(bdmstr + "%", detailpos + vector2d<int16_t>(73, 89));
-			statlabel.drawline(idefstr + "%", detailpos + vector2d<int16_t>(168, 89));
-			statlabel.drawline(resistr + "%", detailpos + vector2d<int16_t>(73, 107));
-			statlabel.drawline(stancestr + "%", detailpos + vector2d<int16_t>(168, 107));
-			statlabel.drawline(wdefstr, detailpos + vector2d<int16_t>(73, 125));
-			statlabel.drawline(mdefstr, detailpos + vector2d<int16_t>(73, 143));
-			statlabel.drawline(accstr, detailpos + vector2d<int16_t>(73, 161));
-			statlabel.drawline("0", detailpos + vector2d<int16_t>(73, 179));
-			statlabel.drawline(evastr, detailpos + vector2d<int16_t>(73, 197));
-			statlabel.drawline("0", detailpos + vector2d<int16_t>(73, 215));
-			statlabel.drawline(speedstr, detailpos + vector2d<int16_t>(73, 233));
-			statlabel.drawline(jumpstr, detailpos + vector2d<int16_t>(168, 233));
-			statlabel.drawline(honorstr, detailpos + vector2d<int16_t>(73, 351));
+			statlabel.drawline(attstr, detailpos + vector2d<int16_t>(73, 37));
+			statlabel.drawline(critstr + "%", detailpos + vector2d<int16_t>(73, 55));
+			statlabel.drawline(mincritstr + "%", detailpos + vector2d<int16_t>(73, 73));
+			statlabel.drawline(maxcritstr + "%", detailpos + vector2d<int16_t>(168, 73));
+			statlabel.drawline(bdmstr + "%", detailpos + vector2d<int16_t>(73, 91));
+			statlabel.drawline(idefstr + "%", detailpos + vector2d<int16_t>(168, 91));
+			statlabel.drawline(resistr + "%", detailpos + vector2d<int16_t>(73, 109));
+			statlabel.drawline(stancestr + "%", detailpos + vector2d<int16_t>(168, 109));
+			statlabel.drawline(wdefstr, detailpos + vector2d<int16_t>(73, 127));
+			statlabel.drawline(mdefstr, detailpos + vector2d<int16_t>(73, 145));
+			statlabel.drawline(accstr, detailpos + vector2d<int16_t>(73, 163));
+			statlabel.drawline("0", detailpos + vector2d<int16_t>(73, 181));
+			statlabel.drawline(evastr, detailpos + vector2d<int16_t>(73, 199));
+			statlabel.drawline("0", detailpos + vector2d<int16_t>(73, 217));
+			statlabel.drawline(speedstr, detailpos + vector2d<int16_t>(73, 235));
+			statlabel.drawline(jumpstr, detailpos + vector2d<int16_t>(168, 235));
+			statlabel.drawline(honorstr, detailpos + vector2d<int16_t>(73, 353));
 		}
 	}
 

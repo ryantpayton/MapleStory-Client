@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                               //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -56,7 +56,7 @@ namespace IO
 		south = Texture(src["s"]);
 		southeast = Texture(src["se"]);
 
-		textlabel = Textlabel(Textlabel::DWF_12MC, Textlabel::TXC_BLACK, "", 0);
+		textlabel = Text(Text::A11M, Text::CENTER, Text::BLACK);
 
 		xtile = north.getdimensions().x();
 		ytile = west.getdimensions().y();
@@ -71,7 +71,7 @@ namespace IO
 		textlabel.settext(text, 80);
 
 		int16_t numhor = static_cast<int16_t>(textlabel.getdimensions().x() / xtile) + 2;
-		int16_t numver = static_cast<int16_t>(textlabel.getdimensions().y() / ytile);
+		int16_t numver = static_cast<int16_t>(textlabel.getdimensions().y() / ytile) + 1;
 
 		width = numhor * xtile;
 		height = numver * ytile;
@@ -120,7 +120,7 @@ namespace IO
 
 		arrow.draw(position);
 
-		textlabel.draw(vector2d<int16_t>(position.x(), top - 6));
+		textlabel.draw(vector2d<int16_t>(position.x(), top - 4));
 	}
 
 	void ChatBalloon::update()

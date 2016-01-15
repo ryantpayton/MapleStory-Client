@@ -46,6 +46,7 @@ namespace IO
 		Texture texture;
 		Element::UIType parent; 
 		int16_t identifier;
+		bool showcount;
 		int16_t count;
 
 		bool dragged;

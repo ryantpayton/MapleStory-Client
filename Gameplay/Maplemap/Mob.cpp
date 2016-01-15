@@ -19,6 +19,7 @@
 #include "Program\Constants.h"
 #include "Net\Session.h"
 #include "Net\Packets\GameplayPackets.h"
+#include "Audio\Audioplayer.h"
 #include "nlnx\nx.hpp"
 
 namespace Gameplay
@@ -43,8 +44,6 @@ namespace Gameplay
 		accuracy = info["acc"];
 		avoid = info["eva"];
 		knockback = info["pushed"];
-		if (knockback < 1)
-			knockback = 1;
 		speed = info["speed"];
 		speed += 100;
 		touchdamage = info["bodyAttack"].get_bool();
@@ -57,9 +56,9 @@ namespace Gameplay
 
 		name = nl::nx::string["Mob.img"][std::to_string(mid)]["name"];
 
-		/*node sndsrc = nx::nodes["Sound"]["Mob.img"][path];
-		parsesound(MBS_HIT, sndsrc["Damage"]);
-		parsesound(MBS_DIE, sndsrc["Die"]);*/
+		node sndsrc = nl::nx::sound["Mob.img"][path];
+		hitsound = sndsrc["Damage"];
+		diesound = sndsrc["Die"];
 
 		oid = oi;
 		id = mid;
@@ -77,8 +76,9 @@ namespace Gameplay
 		fading = false;
 		counter = 0;
 
-		namelabel = Textlabel(Textlabel::DWF_14MC, Textlabel::TXC_WHITE, name, 0);
-		namelabel.setback(Textlabel::TXB_NAMETAG);
+		namelabel = Text(Text::A13M, Text::CENTER, Text::WHITE);
+		namelabel.settext(name);
+		namelabel.setback(Text::NAMETAG);
 
 		if (newspawn)
 		{
@@ -95,16 +95,6 @@ namespace Gameplay
 			bounds[stance] = rectangle2d<int16_t>(src["0"]["lt"], src["0"]["rb"]);
 		}
 	}
-
-	/*void Mob::parsesound(mobstate state, node src)
-	{
-		if (src.data_type() == node::type::audio)
-		{
-			audio snd = src.get_audio();
-			Game::getaudio()->cachesound((void*)snd.data(), snd.length(), snd.id());
-			sounds[state] = snd.id();
-		}
-	}*/
 
 	void Mob::setstance(Stance st)
 	{
@@ -274,7 +264,7 @@ namespace Gameplay
 			active = false;
 			break;
 		case 1:
-			//mdata->playsound(MBS_DIE);
+			diesound.play();
 			setstance(DIE);
 			break;
 		case 2:
@@ -289,9 +279,9 @@ namespace Gameplay
 		{
 			int16_t delta = playerlevel - level;
 			if (delta > 9)
-				namelabel.setcolor(Textlabel::TXC_YELLOW);
+				namelabel.setcolor(Text::YELLOW);
 			else if (delta < -9)
-				namelabel.setcolor(Textlabel::TXC_RED);
+				namelabel.setcolor(Text::RED);
 		}
 		hppercent = percent;
 	}
@@ -349,6 +339,8 @@ namespace Gameplay
 
 			yshift += 24;
 			alphashift += 0.1f;
+
+			hitsound.play();
 		}
 
 		effects.add(attack.hiteffect);

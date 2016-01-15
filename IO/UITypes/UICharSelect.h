@@ -59,8 +59,8 @@ namespace IO
 		uint8_t charslots;
 		uint8_t selected;
 		uint8_t page;
-		Textlabel namelabel;
-		Textlabel joblabel;
+		Text namelabel;
+		Text joblabel;
 		vector<Nametag> nametags;
 		Charset levelset;
 		Charset statsset;

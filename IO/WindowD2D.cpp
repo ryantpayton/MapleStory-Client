@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "WindowD2D.h"
+#ifndef JOURNEY_USE_OPENGL
 #include "UI.h"
 #include "Program\Configuration.h"
 #include "Program\Constants.h"
@@ -35,7 +36,7 @@ namespace IO
 
 	WindowD2D::~WindowD2D()
 	{
-		Graphics::GraphicsD2D::clear();
+		Graphics::GraphicsD2D::free();
 		CoUninitialize();
 
 		if (d2dfactory) 
@@ -245,6 +246,8 @@ namespace IO
 
 		d2dtarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
 		bmptarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
+		d2dtarget->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
+		bmptarget->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
 
 		return result;
 	}
@@ -353,3 +356,4 @@ namespace IO
 		d2dtarget->EndDraw();
 	}
 }
+#endif

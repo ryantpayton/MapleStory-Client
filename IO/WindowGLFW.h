@@ -37,6 +37,8 @@ namespace IO
 		void fadeout();
 
 	private:
+		void updateopc();
+
 		GLFWwindow* glwnd;
 		GLFWwindow* context;
 		bool fullscreen;

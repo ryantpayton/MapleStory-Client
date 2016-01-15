@@ -95,7 +95,7 @@ namespace Character
 		CharLook look;
 		ChatBalloon chatballoon;
 		EffectLayer effects;
-		Textlabel namelabel;
+		Text namelabel;
 		PetLook pets[3];
 
 		Stance stance;

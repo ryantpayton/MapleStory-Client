@@ -97,7 +97,7 @@ namespace IO
 			addchar(i);
 			nametags.push_back(
 				Nametag(charsel["nameTag"], 
-				Textlabel::DWF_14MC, Textlabel::TXC_WHITE, 
+				Text::A13M, Text::CENTER, Text::WHITE, 
 				login.getchar(i).getstats().name
 				));
 		}
@@ -107,8 +107,10 @@ namespace IO
 			nametags[selected].setselected(true);
 
 			const Net::StatsEntry& stats = login.getchar(selected).getstats();
-			namelabel = Textlabel(Textlabel::DWF_20MC, Textlabel::TXC_WHITE, stats.name, 0);
-			joblabel = Textlabel(Textlabel::DWF_12MR, Textlabel::TXC_WHITE, stats.job.getname(), 0);
+			namelabel = Text(Text::A18M, Text::CENTER, Text::WHITE);
+			namelabel.settext(stats.name);
+			joblabel = Text(Text::A11M, Text::RIGHT, Text::WHITE);
+			joblabel.settext(stats.job.getname());
 		}
 
 		position = vector2d<int16_t>(0, 0);
@@ -130,7 +132,7 @@ namespace IO
 			nametags[i].draw(charpos);
 		}
 
-		namelabel.draw(vector2d<int16_t>(662, 268));
+		namelabel.draw(vector2d<int16_t>(662, 270));
 		joblabel.draw(vector2d<int16_t>(732, 305));
 
 		if (selected < charcount)

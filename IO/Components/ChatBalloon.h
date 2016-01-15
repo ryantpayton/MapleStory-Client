@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 SYJourney                                               //
+// Copyright © 2015 Daniel Allendorf                                               //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Textlabel.h"
+#include "Graphics\Text.h"
 #include "Graphics\Texture.h"
 
 namespace IO
@@ -24,7 +24,7 @@ namespace IO
 	using std::string;
 	using Util::vector2d;
 	using Graphics::Texture;
-	using Graphics::Textlabel;
+	using Graphics::Text;
 
 	class ChatBalloon
 	{
@@ -39,7 +39,7 @@ namespace IO
 		void expire();
 
 	private:
-		Textlabel textlabel;
+		Text textlabel;
 		Texture arrow;
 		Texture center;
 		Texture east;
