@@ -17,20 +17,34 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Element.h"
+#include "Cursor.h"
+#include "Keyboard.h"
+#include "Components\StatusMessenger.h"
 #include "Components\Textfield.h"
 #include "Components\Icon.h"
+#include "Util\Singleton.h"
+#include <unordered_map>
+#include <list>
+#include <memory>
 
 namespace IO
 {
-	namespace UI
+	using std::unique_ptr;
+	using std::unordered_map;
+	using std::list;
+
+	class UI : public Singleton<UI>
 	{
+	public:
 		enum Mode
 		{
 			MD_LOGIN,
 			MD_GAME
 		};
 
-		void draw(float inter);
+		UI();
+
+		void draw(float inter) const;
 		void update();
 
 		void sendmouse(vector2d<int16_t> pos);
@@ -38,6 +52,7 @@ namespace IO
 		void doubleclick(vector2d<int16_t> pos);
 		void sendkey(int32_t keycode, bool pressed);
 
+		void shownpctalk(int32_t npcid, int8_t type, int16_t style, int8_t speaker, string text);
 		void showstatus(Text::Color color, string message);
 		void focustextfield(Textfield*);
 		void dragicon(Icon*);
@@ -50,11 +65,11 @@ namespace IO
 		void add(const Element& type);
 		void remove(Element::UIType type);
 
-		bool haselement(Element::UIType type);
-		UIElement* getelement(Element::UIType type);
+		bool haselement(Element::UIType type) const;
+		UIElement* getelement(Element::UIType type) const;
 
 		template <class T>
-		T* getelement(Element::UIType type)
+		T* getelement(Element::UIType type) const
 		{
 			UIElement* element = getelement(type);
 			if (element)
@@ -62,5 +77,26 @@ namespace IO
 			else
 				return nullptr;
 		}
-	}
+
+	private:
+		void addelementbykey(int32_t key);
+		void dropicon(vector2d<int16_t> pos);
+		void sendmouse(Cursor::Mousestate mst, vector2d<int16_t> pos);
+		UIElement* getfront(vector2d<int16_t> pos);
+
+		Keyboard keyboard;
+		Cursor cursor;
+		StatusMessenger messenger;
+
+		unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
+		list<Element::UIType> elementorder;
+		unordered_map<int32_t, bool> keydown;
+
+		Textfield* focusedtextfield;
+		Icon* draggedicon;
+
+		Element::UIType focused;
+		Mode mode;
+		bool enabled;
+	};
 }

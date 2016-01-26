@@ -154,27 +154,27 @@ namespace Net
 			statsentry.petids.push_back(recv.readlong());
 		}
 
-		statsentry.stats[Character::MS_LEVEL] = recv.readbyte();
-		statsentry.stats[Character::MS_JOB] = recv.readshort();
-		statsentry.stats[Character::MS_STR] = recv.readshort();
-		statsentry.stats[Character::MS_DEX] = recv.readshort();
-		statsentry.stats[Character::MS_INT] = recv.readshort();
-		statsentry.stats[Character::MS_LUK] = recv.readshort();
-		statsentry.stats[Character::MS_HP] = recv.readshort();
-		statsentry.stats[Character::MS_MAXHP] = recv.readshort();
-		statsentry.stats[Character::MS_MP] = recv.readshort();
-		statsentry.stats[Character::MS_MAXMP] = recv.readshort();
-		statsentry.stats[Character::MS_AP] = recv.readshort();
-		statsentry.stats[Character::MS_SP] = recv.readshort();
+		statsentry.stats[Maplestat::LEVEL] = recv.readbyte();
+		statsentry.stats[Maplestat::JOB] = recv.readshort();
+		statsentry.stats[Maplestat::STR] = recv.readshort();
+		statsentry.stats[Maplestat::DEX] = recv.readshort();
+		statsentry.stats[Maplestat::INT] = recv.readshort();
+		statsentry.stats[Maplestat::LUK] = recv.readshort();
+		statsentry.stats[Maplestat::HP] = recv.readshort();
+		statsentry.stats[Maplestat::MAXHP] = recv.readshort();
+		statsentry.stats[Maplestat::MP] = recv.readshort();
+		statsentry.stats[Maplestat::MAXMP] = recv.readshort();
+		statsentry.stats[Maplestat::AP] = recv.readshort();
+		statsentry.stats[Maplestat::SP] = recv.readshort();
 		statsentry.exp = recv.readint();
-		statsentry.stats[Character::MS_FAME] = recv.readshort();
+		statsentry.stats[Maplestat::FAME] = recv.readshort();
 
 		recv.skip(4); //gachaexp
 		statsentry.mapid = recv.readint();
 		statsentry.portal = recv.readbyte();
 		recv.skip(4); //timestamp
 
-		statsentry.job = CharJob(statsentry.stats[Character::MS_JOB]);
+		statsentry.job = CharJob(statsentry.stats[Maplestat::JOB]);
 
 		return statsentry;
 	}

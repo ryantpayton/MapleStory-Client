@@ -35,19 +35,17 @@ namespace Graphics
 				{
 					srcfile = srcfile.root();
 				}
-				src = srcfile.resolve(
-					link.substr(link.find('/') + 1)
-					);
+				src = srcfile.resolve(link.substr(link.find('/') + 1));
 			}
 
 			source = src.get_bitmap();
-			origin = vector2d<int16_t>(src["origin"]);
+			origin = src["origin"];
 			dimensions = vector2d<int16_t>(
 				source.width(), 
 				source.height()
 				);
 
-			GraphicsEngine::addbitmap(source);
+			GraphicsEngine::get().addbitmap(source);
 		}
 	}
 
@@ -72,11 +70,12 @@ namespace Graphics
 		vector2d<int16_t> absp = args.getpos() - origin;
 		if (absp.x() <= 816 && absp.y() <= 624 && absp.x() > -w && absp.y() > -h)
 		{
-			if (!GraphicsEngine::available(id))
+			GraphicsEngine& engine = GraphicsEngine::get();
+			if (!engine.available(id))
 			{
-				GraphicsEngine::addbitmap(source);
+				engine.addbitmap(source);
 			}
-			GraphicsEngine::draw(id, absp.x(), absp.y(), w, h, args.getalpha(), args.getxscale(),
+			engine.draw(id, absp.x(), absp.y(), w, h, args.getalpha(), args.getxscale(),
 				args.getyscale(), args.getcenter().x(), args.getcenter().y());
 		}
 	}
@@ -89,6 +88,16 @@ namespace Graphics
 	bool Texture::isloaded() const
 	{
 		return source.id() > 0;
+	}
+
+	int16_t Texture::width() const
+	{
+		return dimensions.x();
+	}
+
+	int16_t Texture::height() const
+	{
+		return dimensions.y();
 	}
 
 	vector2d<int16_t> Texture::getorigin() const

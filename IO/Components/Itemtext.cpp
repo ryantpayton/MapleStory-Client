@@ -62,7 +62,7 @@ namespace IO
 							Text linetext = Text(font, Text::LEFT, lastc);
 							linetext.settext(str.substr(pos2, special), maxwidth);
 							lines.push_back(Line(linetext, offset));
-							offset += linetext.getendoffset();
+							offset += linetext.endoffset();
 						}
 
 						pos2 = special + 2;
@@ -78,7 +78,7 @@ namespace IO
 					linetext.settext(str.substr(pos2), maxwidth);
 					lines.push_back(Line(linetext, offset));
 					pos2 = length;
-					offset = vector2d<int16_t>(0, offset.y() + linetext.getheight() + 2);
+					offset = vector2d<int16_t>(0, offset.y() + linetext.height() + 2);
 				}
 			}
 		}

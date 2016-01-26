@@ -80,10 +80,11 @@ namespace Net
 			// Read equip stats.
 			using std::map;
 			using Character::Equipstat;
-			map<Equipstat, uint16_t> stats;
-			for (Equipstat e = Character::ES_STR; e <= Character::ES_JUMP; e = (Equipstat)(e + 1))
+			map<Equipstat::Value, uint16_t> stats;
+			for (auto it = Equipstat::it(); it.hasnext(); it.increment())
 			{
-				stats[e] = recv.readshort();
+				Equipstat::Value es = it.get();
+				stats[es] = recv.readshort();
 			}
 
 			// Some more information.

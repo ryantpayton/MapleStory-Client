@@ -16,26 +16,48 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include <cstdint>
-#include <string>
+#include "Graphics\Text.h"
+#include "Graphics\Texture.h"
+#include <vector>
 
-namespace Util
+namespace IO
 {
-	namespace NxFileMethods
+	using std::vector;
+	using std::string;
+	using Graphics::Text;
+	using Graphics::Texture;
+
+	class Npctext
 	{
-		using std::int64_t;
-		using std::string;
+	public:
+		Npctext(string text, int16_t maxwidth);
+		Npctext();
+		~Npctext();
 
-		const size_t NUM_FILES = 14;
+		void draw(vector2d<int16_t> position) const;
 
-		// Makes sure that all game files exist. 
-		// When successfull also tests if the UI file contains valid images.
-		bool init();
+		int16_t getheight() const;
 
-		// Obtains a hash value for a file of game assets. Fast version.
-		string gethash(size_t fileindex, uint64_t seed);
-		// Obtains a hash value for a file of game assets. Slow version.
-		string gethash(size_t fileindex);
-	}
+	private:
+		struct Line
+		{
+			Text text;
+			vector2d<int16_t> offset;
+		};
+
+		struct Image
+		{
+			Texture texture;
+			vector2d<int16_t> offset;
+		};
+
+		size_t parseL(string& str, size_t pos);
+		size_t parseh(string& str, size_t pos);
+		size_t parsez(string& str, size_t pos);
+		size_t parsev(string& str, size_t pos);
+
+		vector2d<int16_t> offset;
+		vector<Line> lines;
+		vector<Image> images;
+	};
 }
-

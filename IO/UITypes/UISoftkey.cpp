@@ -108,17 +108,19 @@ namespace IO
 		case BT_OK:
 			if (entered.size() > 5)
 			{
-				UI::disable();
+				UI::get().disable();
 
-				using namespace Net;
-				int32_t cid = Session::getlogin().getcharid();
+				using Net::Session;
+				int32_t cid = Session::get().getlogin().getcharid();
 				switch (type)
 				{
 				case CHARSELECT:
-					Session::dispatch(SelectCharPicPacket(entered, cid));
+					using Net::SelectCharPicPacket;
+					Session::get().dispatch(SelectCharPicPacket(entered, cid));
 					break;
 				case REGISTER:
-					Session::dispatch(RegisterPicPacket(cid, entered));
+					using Net::RegisterPicPacket;
+					Session::get().dispatch(RegisterPicPacket(cid, entered));
 					break;
 				}
 				active = false;
@@ -135,7 +137,7 @@ namespace IO
 			buttons[BT_OK]->setstate(Button::NORMAL);
 			break;
 		case 7:
-			if (entry.getlength() == 8)
+			if (entry.length() == 8)
 			{
 				for (uint8_t i = 0; i < NUM_KEYS; i++)
 				{

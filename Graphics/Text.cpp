@@ -15,15 +15,8 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Graphics\Text.h"
-
-#include "Journey.h"
-#ifdef JOURNEY_USE_OPENGL
-#include "Graphics\GraphicsGL.h"
-#else
-#include "Graphics\GraphicsD2D.h"
-#endif
+#include "Text.h"
+#include "GraphicsEngine.h"
 
 namespace Graphics
 {
@@ -33,11 +26,9 @@ namespace Graphics
 		alignment = a;
 		color = c;
 
-		str = "";
-		text = L"";
-		alpha = 1.0f;
-		back = NONE;
-		textid = 0;
+		text = "";
+		opacity = 1.0f;
+		background = NONE;
 	}
 
 	Text::Text() {}
@@ -49,16 +40,10 @@ namespace Graphics
 
 	void Text::settext(const string& t, uint16_t wmax)
 	{
-		str = string(t);
-		text = wstring(t.begin(), t.end());
+		text = string(t);
 
 		float fwmax = static_cast<float>(wmax);
-
-#ifdef JOURNEY_USE_OPENGL
-		layout = GraphicsGL::createlayout(str.c_str(), font, fwmax);
-#else
-		layout = GraphicsD2D::createlayout(text, font, fwmax);
-#endif
+		layout = GraphicsEngine::get().createlayout(text, font, fwmax);
 	}
 
 	void Text::setfont(Font f)
@@ -73,46 +58,25 @@ namespace Graphics
 
 	void Text::setback(Background b)
 	{
-		back = b;
+		background = b;
 	}
 
-	void Text::setalpha(float a)
+	void Text::setalpha(float opc)
 	{
-		alpha = a;
+		opacity = opc;
 	}
 
 	void Text::draw(vector2d<int16_t> pos) const
 	{
 		draw(vector2d<float>(static_cast<float>(pos.x()), static_cast<float>(pos.y())));
 	}
-
-	void Text::drawline(string todraw, vector2d<int16_t> pos) const
-	{
-#ifdef JOURNEY_USE_OPENGL
-		GraphicsGL::drawtext(todraw.c_str(), font, alignment, color, back, alpha,
-			vector2d<float>(static_cast<float>(pos.x()), static_cast<float>(pos.y())), 
-			vector2d<float>()
-			);
-#else
-		GraphicsD2D::drawtext(
-			wstring(todraw.begin(), todraw.end()), 
-			font, alignment, color, back, alpha,
-			vector2d<float>(static_cast<float>(pos.x()), static_cast<float>(pos.y())), 
-			vector2d<float>()
-			);
-#endif
-	}
 	
 	void Text::draw(vector2d<float> pos) const
 	{
-#ifdef JOURNEY_USE_OPENGL
-		GraphicsGL::drawtext(str.c_str(), font, alignment, color, back, alpha, pos, layout.dimensions);
-#else
-		GraphicsD2D::drawtext(text, font, alignment, color, back, alpha, pos, layout.dimensions);
-#endif
+		GraphicsEngine::get().drawtext(text, font, alignment, color, background, opacity, pos, layout.dimensions);
 	}
 
-	uint16_t Text::getadvance(size_t pos) const
+	uint16_t Text::advance(size_t pos) const
 	{
 		if (layout.advances.count(pos))
 		{
@@ -124,33 +88,38 @@ namespace Graphics
 		}
 	}
 
-	size_t Text::getlength() const
+	size_t Text::length() const
 	{
-		return str.size();
+		return text.size();
 	}
 
-	int16_t Text::getwidth() const
+	int16_t Text::width() const
 	{
 		return static_cast<int16_t>(layout.dimensions.x());
 	}
 
-	int16_t Text::getheight() const
+	int16_t Text::height() const
 	{
 		return static_cast<int16_t>(layout.dimensions.y());
 	}
 
-	vector2d<float> Text::getdimensions() const
+	int16_t Text::linecount() const
+	{
+		return layout.linecount;
+	}
+
+	vector2d<float> Text::dimensions() const
 	{
 		return layout.dimensions;
 	}
 
-	vector2d<int16_t> Text::getendoffset() const
+	vector2d<int16_t> Text::endoffset() const
 	{
 		return layout.endoffset;
 	}
 
 	const string& Text::gettext() const
 	{
-		return str;
+		return text;
 	}
 }

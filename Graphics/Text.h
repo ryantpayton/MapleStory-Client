@@ -22,12 +22,8 @@
 
 namespace Graphics
 {
-	using std::uint16_t;
-	using std::int16_t;
 	using std::map;
-	using std::wstring;
 	using std::string;
-	using Util::vector2d;
 
 	class Text
 	{
@@ -79,6 +75,7 @@ namespace Graphics
 			vector2d<float> dimensions;
 			vector2d<int16_t> endoffset;
 			map<size_t, float> advances;
+			int16_t linecount;
 		};
 
 		Text(Font font, Alignment alignment, Color color);
@@ -86,7 +83,6 @@ namespace Graphics
 
 		void draw(vector2d<int16_t> position) const;
 		void draw(vector2d<float> position) const;
-		void drawline(string line, vector2d<int16_t> position) const;
 
 		void settext(const string& text);
 		void settext(const string& text, uint16_t maxwidth);
@@ -96,24 +92,23 @@ namespace Graphics
 		void setback(Background background);
 		void setalpha(float alpha);
 
-		size_t getlength() const;
-		int16_t getwidth() const;
-		int16_t getheight() const;
-		uint16_t getadvance(size_t pos) const;
-		vector2d<float> getdimensions() const;
-		vector2d<int16_t> getendoffset() const;
+		size_t length() const;
+		int16_t width() const;
+		int16_t height() const;
+		int16_t linecount() const;
+		uint16_t advance(size_t pos) const;
+		vector2d<float> dimensions() const;
+		vector2d<int16_t> endoffset() const;
 		const string& gettext() const;
 
 	private:
 		Font font;
 		Alignment alignment;
 		Color color;
-		wstring text;
-		string str;
-		Background back;
+		string text;
+		Background background;
 
-		uint16_t textid;
-		float alpha;
+		float opacity;
 		Layout layout;
 	};
 }

@@ -50,6 +50,7 @@ namespace Net
 		// Messaging
 		GENERAL_CHAT = 49,
 		TALK_TO_NPC = 58,
+		NPC_TALK_MORE = 60,
 
 		// Inventory
 		GATHER_ITEMS = 69,

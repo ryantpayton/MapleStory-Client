@@ -32,21 +32,21 @@ namespace Character
 		CharEquips();
 		~CharEquips();
 
-		void draw(Equipslot slot, string stance, CharacterLayer layer, 
+		void draw(Clothing::Slot slot, string stance, CharacterLayer layer, 
 			uint8_t frame, const DrawArgument& args) const;
 		void addequip(const Clothing& cloth);
-		void removeequip(Equipslot slot);
+		void removeequip(Clothing::Slot slot);
 
-		bool isvisible(Equipslot slot) const;
+		bool isvisible(Clothing::Slot slot) const;
 		bool hasoverall() const;
 		bool hasweapon() const;
 		bool istwohanded() const;
 		Weapon::WpType getweapontype() const;
-		const Clothing& getequip(Equipslot slot) const;
+		const Clothing& getequip(Clothing::Slot slot) const;
 		const Weapon* getweapon() const;
 
 	private:
-		map<Equipslot, const Clothing*> equips;
+		map<Clothing::Slot, const Clothing*> equips;
 		Clothing nullequip;
 	};
 }

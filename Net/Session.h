@@ -16,14 +16,27 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Util\Singleton.h"
 #include "OutPacket.h"
 #include "Login.h"
+#include "Cryptography.h"
+#include "PacketSwitch.h"
+
+#include "Journey.h"
+#ifdef JOURNEY_USE_ASIO
+#include "SocketAsio.h"
+#else
+#include "SocketWinsock.h"
+#endif
 
 namespace Net
 {
-	//Contains methods for communicating with the server.
-	namespace Session
+	class Session : public Singleton<Session>
 	{
+	public:
+		Session();
+		~Session();
+
 		// Connect to the server using the default values for adress and login port, return if successfull.
 		bool init();
 		// Closes the current connection and opens a new one.
@@ -34,8 +47,37 @@ namespace Net
 		bool receive();
 		// Sends a packet to the server, using the cryptography to encrypt data and add the header.
 		void dispatch(const OutPacket& tosend);
+
 		// Obtain a reference to the login information.
 		Login& getlogin();
-	}
+
+	private:
+		bool init(const char* host, const char* port);
+		void process(const int8_t* bytes, size_t available);
+
+		static const size_t MIN_PACKET_LEN = HEADERLEN + 2;
+
+		const Cryptography crypto;
+		const PacketSwitch packetswitch;
+
+		Login login;
+
+		bool connected;
+
+		int8_t buffer[MAX_PACKET_LEN];
+		size_t length;
+		size_t pos;
+
+#ifdef JOURNEY_USE_ASIO
+		SocketAsio socket;
+#else
+		SocketWinsock socket;
+#endif
+
+#ifdef JOURNEY_USE_CRYPTO
+		uint8_t sendiv[HEADERLEN];
+		uint8_t recviv[HEADERLEN];
+#endif
+	};
 }
 

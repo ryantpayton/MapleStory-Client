@@ -23,7 +23,6 @@
 namespace Gameplay
 {
 	using nl::node;
-	using Util::vector2d;
 	using Net::InPacket;
 
 	// Represents a platform part on a maple-map. Contains methods for usage with physics.

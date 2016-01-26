@@ -21,10 +21,6 @@
 
 namespace IO
 {
-	using std::int16_t;
-	using Util::vector2d;
-	using Util::rectangle2d;
-
 	// A button which can be used in an UIElement. Base class for different button types.
 	class Button
 	{

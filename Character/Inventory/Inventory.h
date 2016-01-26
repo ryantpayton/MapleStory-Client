@@ -72,7 +72,7 @@ namespace Character
 		// Add an equip item.
 		void addequip(
 			InvType type, int16_t slot, int32_t itemid, bool cash, int64_t uniqueid, 
-			int64_t expire, uint8_t slots, uint8_t level, map<Equipstat, uint16_t> stats, 
+			int64_t expire, uint8_t slots, uint8_t level, map<Equipstat::Value, uint16_t> stats, 
 			string owner, int16_t flag, uint8_t itemlevel, uint16_t itemexp, int32_t vicious
 			);
 		// Remove an item.
@@ -85,15 +85,15 @@ namespace Character
 		void changecount(InvType type, int16_t slot, int16_t count);
 
 		// Return if an equip is equipped in the specfied slot.
-		bool hasequipped(Equipslot slot) const;
+		bool hasequipped(Clothing::Slot slot) const;
 		// Return the number of slots for the specified inventory.
 		uint8_t getslots(InvType type) const;
 		// Return a total stat.
-		uint16_t getstat(Equipstat type) const;
+		uint16_t getstat(Equipstat::Value type) const;
 		// Return the amount of meso.
 		int64_t getmeso() const;
 		// Find a free slot for the specified equip.
-		Equipslot findequipslot(int32_t itemid) const;
+		Clothing::Slot findequipslot(int32_t itemid) const;
 		// Find a free slot in the specfified inventory.
 		int16_t findslot(InvType type) const;
 		// Return the first slot which contains the specified item.
@@ -114,7 +114,7 @@ namespace Character
 		int64_t meso;
 		map<InvType, uint8_t> slots;
 		map<InvType, map<int16_t, Item*>> inventoryitems;
-		map<Equipstat, uint16_t> totalstats;
+		map<Equipstat::Value, uint16_t> totalstats;
 	};
 }
 

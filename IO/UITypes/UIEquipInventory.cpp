@@ -127,7 +127,7 @@ namespace IO
 			{
 				icons[slot].startdrag(cursorpos - position - iconpositions[slot]);
 				tooltip.setequip(nullptr, 0);
-				UI::dragicon(&icons[slot]);
+				UI::get().dragicon(&icons[slot]);
 				return Cursor::MST_GRABBING;
 			}
 			else
@@ -154,7 +154,7 @@ namespace IO
 			if (freeslot > 0)
 			{
 				using Net::UnequipItemPacket;
-				Net::Session::dispatch(UnequipItemPacket(slot, freeslot));
+				Net::Session::get().dispatch(UnequipItemPacket(slot, freeslot));
 			}
 		}
 	}
@@ -162,7 +162,7 @@ namespace IO
 	void UIEquipInventory::icondropped(int16_t identifier)
 	{
 		using Net::UnequipItemPacket;
-		Net::Session::dispatch(UnequipItemPacket(identifier, 0));
+		Net::Session::get().dispatch(UnequipItemPacket(identifier, 0));
 	}
 
 	void UIEquipInventory::togglehide()

@@ -29,7 +29,6 @@ namespace Character
 {
 	using std::string;
 	using std::map;
-	using Util::vector2d;
 	using Gameplay::Physics;
 	using Gameplay::PhysicsObject;
 	using Gameplay::Camera;

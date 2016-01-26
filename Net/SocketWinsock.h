@@ -18,31 +18,22 @@
 #pragma once
 #include "Journey.h"
 #ifndef JOURNEY_USE_ASIO
-#include <ws2tcpip.h>
-#include <WinSock2.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <cstdint>
-
-#pragma comment (lib, "Ws2_32.lib")
-#pragma comment (lib, "Mswsock.lib")
-#pragma comment (lib, "AdvApi32.lib")
 
 namespace Net
 {
 	const size_t MAX_PACKET_LEN = 40960;
 
-#ifndef JOURNEY_USE_CRYPTO
-	const size_t HANDSHAKE_LEN = 2;
-#else
+#ifdef JOURNEY_USE_CRYPTO
 	const size_t HANDSHAKE_LEN = 16;
+#else
+	const size_t HANDSHAKE_LEN = 2;
 #endif
 
 	class SocketWinsock
 	{
 	public:
-		SocketWinsock();
-		~SocketWinsock();
-
 		bool open(const char* adress, const char* port);
 		bool close();
 		size_t receive(bool* connected);
@@ -50,7 +41,7 @@ namespace Net
 		bool dispatch(const int8_t* bytes, size_t length);
 
 	private:
-		SOCKET sock;
+		uint64_t sock;
 		int8_t buffer[MAX_PACKET_LEN];
 	};
 }

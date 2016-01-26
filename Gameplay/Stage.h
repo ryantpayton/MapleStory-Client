@@ -16,6 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Util\Singleton.h"
+#include "Camera.h"
+#include "Physics\Physics.h"
+#include "Maplemap\MapInfo.h"
+#include "Maplemap\MapLayer.h"
+#include "Maplemap\MapPortals.h"
 #include "Maplemap\MapChars.h"
 #include "Maplemap\MapMobs.h"
 #include "Maplemap\MapNpcs.h"
@@ -24,16 +30,18 @@
 
 namespace Gameplay
 {
-	namespace Stage
+	using Character::Player;
+	using Character::Char;
+
+	class Stage : public Singleton<Stage>
 	{
-		using Character::Player;
-		using Character::Char;
+	public:
+		Stage();
 
 		// Call 'draw()' of  all objects on stage.
-		void draw(float inter);
+		void draw(float inter) const;
 		// Calls 'update()' of all objects on stage.
 		void update();
-
 
 		void clear();
 		// Adds a player object with the given properties.
@@ -59,6 +67,41 @@ namespace Gameplay
 
 		// Return a pointer to a character, possibly the player.
 		Char* getcharacter(int32_t cid);
-	}
+
+	private:
+		void loadmap();
+		void respawn();
+		void checkportals();
+		void checkseats();
+		void checkladders(bool up);
+		void checkdrops();
+		void useattack();
+		void useskill(int32_t skillid);
+		void sendattack(const Attack& attack);
+
+		enum State
+		{
+			STG_INACTIVE,
+			STG_TRANSITION,
+			STG_ACTIVE
+		};
+
+		Camera camera;
+		Physics physics;
+		Player player;
+
+		map<uint8_t, MapLayer> layers;
+		MapInfo mapinfo;
+		MapPortals portals;
+		MapNpcs npcs;
+		MapChars chars;
+		MapMobs mobs;
+		MapDrops drops;
+
+		State state;
+		Playable* playable;
+		int32_t mapid;
+		uint8_t portalid;
+	};
 }
 

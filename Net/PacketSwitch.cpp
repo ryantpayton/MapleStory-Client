@@ -71,6 +71,7 @@ namespace Net
 		// Messaging handlers
 		handlers[SHOW_STATUS_INFO] = unique_ptr<PacketHandler>(new ShowStatusInfoHandler());
 		handlers[CHAT_RECEIVED] = unique_ptr<PacketHandler>(new ChatReceivedHandler());
+		handlers[NPC_DIALOGUE] = unique_ptr<PacketHandler>(new NpcDialogueHandler());
 
 		// Inventory Handlers
 		handlers[MODIFY_INVENTORY] = unique_ptr<PacketHandler>(new ModifyInventoryHandler());

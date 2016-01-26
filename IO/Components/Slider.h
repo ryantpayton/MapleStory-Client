@@ -22,7 +22,6 @@
 namespace IO
 {
 	using nl::node;
-	using Util::vector2d;
 	using Graphics::Texture;
 
 	class Slider

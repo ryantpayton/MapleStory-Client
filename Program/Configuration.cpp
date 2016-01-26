@@ -15,152 +15,147 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "Configuration.h"
 #include <fstream>
 #include <stdexcept>
 
-namespace Program
+const string FILENAME = "Settings";
+const size_t NUM_SETTINGS = 12;
+const string setnames[NUM_SETTINGS] =
 {
-	namespace Configuration
+	"ServerIP", "Fullscreen", "BGMVolume", "SFXVolume", "SaveLogin", "Account",
+	"World", "Channel", "Character", "PosSTATS", "PosEQINV", "PosINV"
+};
+const string defaultvalues[NUM_SETTINGS] =
+{
+	"127.0.0.1", "false", "50", "50", "false", "",
+	"0", "0", "0", "(100,150)", "(250,150)", "(300, 150)"
+};
+
+Configuration::~Configuration()
+{
+	save();
+}
+
+void Configuration::load()
+{
+	// Open the settings file.
+	using::std::ifstream;
+	ifstream config;
+	string line;
+	config.open(FILENAME);
+	if (config.is_open())
 	{
-		const string FILENAME = "Settings";
-
-		const size_t NUM_SETTINGS = 12;
-
-		const string setnames[NUM_SETTINGS] =
+		// Go through the file line for line. The same order is always assumed.
+		size_t i = 0;
+		while (getline(config, line))
 		{
-			"ServerIP", "Fullscreen", "BGMVolume", "SFXVolume", "SaveLogin", "Account", 
-			"World", "Channel", "Character", "PosSTATS", "PosEQINV", "PosINV"
-		};
-
-		const string defaultvalues[NUM_SETTINGS] =
-		{
-			"127.0.0.1", "false", "50", "50", "false", "", 
-			"0", "0", "0", "(100,150)", "(250,150)", "(300, 150)"
-		};
-
-		std::map<string, string> settings;
-
-		void load()
-		{
-			// Open the settings file.
-			using::std::ifstream;
-			ifstream config;
-			string line;
-			config.open(FILENAME);
-			if (config.is_open())
+			string setname = setnames[i];
+			size_t split = line.find('=');
+			if (split != string::npos && split + 2 < line.size())
 			{
-				// Go through the file line for line. The same order is always assumed.
-				size_t i = 0;
-				while (getline(config, line))
+				if (line.substr(0, split - 1) == setname)
 				{
-					string setname = setnames[i];
-					size_t split = line.find('=');
-					if (split != string::npos && split + 2 < line.size())
-					{
-						if (line.substr(0, split - 1) == setname)
-						{
-							// If everything seems correct, load the setting.
-							string value = line.substr(split + 2);
-							settings[setname] = value;
-						}
-					}
-					i++;
-				}
-				config.close();
-			}
-			// Replace missing values with default ones.
-			for (size_t i = 0; i < NUM_SETTINGS; i++)
-			{
-				if (!settings.count(setnames[i]))
-				{
-					settings[setnames[i]] = defaultvalues[i];
+					// If everything seems correct, load the setting.
+					string value = line.substr(split + 2);
+					settings[setname] = value;
 				}
 			}
+			i++;
 		}
-
-		void save()
+		config.close();
+	}
+	// Replace missing values with default ones.
+	for (size_t i = 0; i < NUM_SETTINGS; i++)
+	{
+		if (!settings.count(setnames[i]))
 		{
-			// Open the settings file.
-			using::std::ofstream;
-			ofstream config;
-			config.open(FILENAME);
-			if (config.is_open())
-			{
-				// Save settings line by line.
-				for (size_t i = 0; i < NUM_SETTINGS; i++)
-				{
-					config << setnames[i] << " = " << settings.at(setnames[i]) << std::endl;
-				}
-				config.close();
-			}
+			settings[setnames[i]] = defaultvalues[i];
 		}
+	}
+}
 
-		void setbool(string name, bool b)
+void Configuration::save()
+{
+	// Open the settings file.
+	using::std::ofstream;
+	ofstream config;
+	config.open(FILENAME);
+	if (config.is_open())
+	{
+		// Save settings line by line.
+		for (size_t i = 0; i < NUM_SETTINGS; i++)
 		{
-			settings[name] = b ? "true" : "false";
+			config << setnames[i] << " = " << settings.at(setnames[i]) << std::endl;
 		}
+		config.close();
+	}
+}
 
-		void setint(string name, uint32_t i)
-		{
-			settings[name] = std::to_string(i);
-		}
+void Configuration::setbool(string name, bool b)
+{
+	settings[name] = b ? "true" : "false";
+}
 
-		void setstring(string name, string str)
-		{
-			settings[name] = str;
-		}
+void Configuration::setint(string name, uint32_t i)
+{
+	settings[name] = std::to_string(i);
+}
 
-		bool getbool(string name)
-		{
-			return settings.count(name) ? settings.at(name) == "true" : false;
-		}
+void Configuration::setstring(string name, string str)
+{
+	settings[name] = str;
+}
 
-		uint8_t getbyte(string name)
-		{
-			return static_cast<uint8_t>(getinteger(name));
-		}
+bool Configuration::getbool(string name)
+{
+	return settings.count(name) ? settings.at(name) == "true" : false;
+}
 
-		uint16_t getshort(string name)
-		{
-			return static_cast<uint16_t>(getinteger(name));
-		}
+uint8_t Configuration::getbyte(string name)
+{
+	return static_cast<uint8_t>(getinteger(name));
+}
 
-		uint32_t getinteger(string name)
-		{
-			try
-			{
-				return std::stoi(settings.at(name));
-			}
-			catch (std::exception&)
-			{
-				return 0;
-			}
-		}
+uint16_t Configuration::getshort(string name)
+{
+	return static_cast<uint16_t>(getinteger(name));
+}
 
-		string getsetting(string name)
-		{
-			return settings.count(name) ? settings.at(name) : "";
-		}
+uint32_t Configuration::getinteger(string name)
+{
+	try
+	{
+		return std::stoi(settings.at(name));
+	}
+	catch (std::exception&)
+	{
+		return 0;
+	}
+}
 
-		vector2d<int16_t> getvector2d(string name)
-		{
-			try
-			{
-				string xstr = settings.at(name)
-					.substr(1, settings.at(name).find(",") - 1);
-				string ystr = settings.at(name)
-					.substr(settings.at(name).find(",") + 1, settings.at(name).find(")") - settings.at(name).find(",") - 1);
+string Configuration::getsetting(string name)
+{
+	return settings.count(name) ? settings.at(name) : "";
+}
 
-				return vector2d<int16_t>
-					(static_cast<int16_t>(std::stoi(xstr)), static_cast<int16_t>(std::stoi(ystr))
-					);
-			}
-			catch (std::exception&)
-			{
-				return vector2d<int16_t>();
-			}
-		}
+vector2d<int16_t> Configuration::getvector2d(string name)
+{
+	try
+	{
+		string xstr = settings.at(name)
+			.substr(1, settings.at(name)
+			.find(",") - 1);
+		string ystr = settings.at(name)
+			.substr(settings.at(name)
+			.find(",") + 1, settings.at(name).find(")") - settings.at(name).find(",") - 1);
+
+		return vector2d<int16_t>
+			(static_cast<int16_t>(std::stoi(xstr)), static_cast<int16_t>(std::stoi(ystr))
+			);
+	}
+	catch (std::exception&)
+	{
+		return vector2d<int16_t>();
 	}
 }

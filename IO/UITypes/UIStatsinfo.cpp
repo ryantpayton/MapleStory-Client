@@ -60,7 +60,37 @@ namespace IO
 
 		updateap();
 
-		statlabel = Text(Text::A11M, Text::LEFT, Text::DARKGREY);
+		for (size_t i = 0; i < NUMLABELS; i++)
+		{
+			statlabels[i] = Text(Text::A11M, Text::LEFT, Text::DARKGREY);
+		}
+		statoffsets[NAME] = vector2d<int16_t>(73, 27);
+		statoffsets[JOB] = vector2d<int16_t>(73, 45);
+		statoffsets[GUILD] = vector2d<int16_t>(73, 63);
+		statoffsets[FAME] = vector2d<int16_t>(73, 81);
+		statoffsets[DAMAGE] = vector2d<int16_t>(73, 99);
+		statoffsets[HP] = vector2d<int16_t>(73, 117);
+		statoffsets[MP] = vector2d<int16_t>(73, 135);
+		statoffsets[AP] = vector2d<int16_t>(70, 177);
+		statoffsets[STR] = vector2d<int16_t>(73, 204);
+		statoffsets[DEX] = vector2d<int16_t>(73, 222);
+		statoffsets[INT] = vector2d<int16_t>(73, 240);
+		statoffsets[LUK] = vector2d<int16_t>(73, 258);
+		statoffsets[ATTACK] = vector2d<int16_t>(73, 37);
+		statoffsets[CRIT] = vector2d<int16_t>(73, 55);
+		statoffsets[MINCRIT] = vector2d<int16_t>(73, 73);
+		statoffsets[MAXCRIT] = vector2d<int16_t>(168, 73);
+		statoffsets[BDM] = vector2d<int16_t>(73, 91);
+		statoffsets[IGNOREDEF] = vector2d<int16_t>(168, 91);
+		statoffsets[RESIST] = vector2d<int16_t>(73, 109);
+		statoffsets[STANCE] = vector2d<int16_t>(168, 109);
+		statoffsets[WDEF] = vector2d<int16_t>(73, 127);
+		statoffsets[MDEF] = vector2d<int16_t>(73, 145);
+		statoffsets[ACCURACY] = vector2d<int16_t>(73, 163);
+		statoffsets[AVOID] = vector2d<int16_t>(73, 199);
+		statoffsets[SPEED] = vector2d<int16_t>(73, 235);
+		statoffsets[JUMP] = vector2d<int16_t>(168, 235);
+		statoffsets[HONOR] = vector2d<int16_t>(73, 353);
 
 		dimension = vector2d<int16_t>(212, 318);
 		showdetail = false;
@@ -70,103 +100,62 @@ namespace IO
 	{
 		UIElement::draw(inter);
 
-		statlabel.drawline(stats.getname(), position + vector2d<int16_t>(73, 27));
-		statlabel.drawline(stats.getjobname(), position + vector2d<int16_t>(73, 45));
-		statlabel.drawline("", position + vector2d<int16_t>(73, 63)); //guild
+		if (showdetail)
+		{
+			for (auto& dtit : detailtextures)
+			{
+				dtit.draw(position + vector2d<int16_t>(213, 0));
+			}
+			abilities.at("none").draw(position + vector2d<int16_t>(213, 0));
+		}
 
-		statlabel.drawline(
-			std::to_string(stats.getstat(Character::MS_FAME)),
-			position + vector2d<int16_t>(73, 81)
-			);
-		statlabel.drawline(
-			std::to_string(stats.getmindamage()) + " ~ " +
-			std::to_string(stats.getmaxdamage()),
-			position + vector2d<int16_t>(73, 99)
-			);
-		statlabel.drawline(
-			std::to_string(stats.getstat(Character::MS_HP)) + " / " +
-			std::to_string(stats.gettotal(Character::ES_HP)),
-			position + vector2d<int16_t>(73, 117)
-			);
-		statlabel.drawline(
-			std::to_string(stats.getstat(Character::MS_MP)) + " / " +
-			std::to_string(stats.gettotal(Character::ES_MP)),
-			position + vector2d<int16_t>(73, 135)
-			);
-		statlabel.drawline(
-			std::to_string(stats.getstat(Character::MS_AP)),
-			position + vector2d<int16_t>(70, 177)
-			);
-		statlabel.drawline(
-			std::to_string(stats.gettotal(Character::ES_STR)) + " (" +
-			std::to_string(stats.getstat(Character::MS_STR)) + " + " +
-			std::to_string(stats.gettotal(Character::ES_STR) - stats.getstat(Character::MS_STR)) + ")",
-			position + vector2d<int16_t>(73, 204)
-			);
-		statlabel.drawline(
-			std::to_string(stats.gettotal(Character::ES_DEX)) + " (" +
-			std::to_string(stats.getstat(Character::MS_DEX)) + " + " +
-			std::to_string(stats.gettotal(Character::ES_DEX) - stats.getstat(Character::MS_DEX)) + ")",
-			position + vector2d<int16_t>(73, 222)
-			);
-		statlabel.drawline(
-			std::to_string(stats.gettotal(Character::ES_INT)) + " (" +
-			std::to_string(stats.getstat(Character::MS_INT)) + " + " +
-			std::to_string(stats.gettotal(Character::ES_INT) - stats.getstat(Character::MS_INT)) + ")",
-			position + vector2d<int16_t>(73, 240)
-			);
-		statlabel.drawline(
-			std::to_string(stats.gettotal(Character::ES_LUK)) + " (" +
-			std::to_string(stats.getstat(Character::MS_LUK)) + " + " +
-			std::to_string(stats.gettotal(Character::ES_LUK) - stats.getstat(Character::MS_LUK)) + ")",
-			position + vector2d<int16_t>(73, 258)
-			);
+		size_t last = showdetail ? NUMLABELS : NUMNORMAL;
+		for (size_t i = 0; i < last; i++)
+		{
+			vector2d<int16_t> labelpos = position + statoffsets[i];
+			if (i >= NUMNORMAL)
+				labelpos.shiftx(213);
+
+			statlabels[i].draw(labelpos);
+		}
+	}
+
+	void UIStatsinfo::update()
+	{
+		statlabels[NAME].settext(stats.getname());
+		statlabels[JOB].settext(stats.getjobname());
+		statlabels[GUILD].settext("");
+		statlabels[FAME].settext(std::to_string(stats.getstat(Maplestat::FAME)));
+		statlabels[DAMAGE].settext(std::to_string(stats.getmindamage()) + " ~ " + std::to_string(stats.getmaxdamage()));
+		statlabels[HP].settext(std::to_string(stats.getstat(Maplestat::HP)) + " / " + std::to_string(stats.gettotal(Equipstat::HP)));
+		statlabels[MP].settext(std::to_string(stats.getstat(Maplestat::MP)) + " / " + std::to_string(stats.gettotal(Equipstat::MP)));
+		statlabels[AP].settext(std::to_string(stats.getstat(Maplestat::AP)));
+		statlabels[STR].settext(std::to_string(stats.gettotal(Equipstat::STR)) + " (" + std::to_string(stats.getstat(Maplestat::STR)) + " + " +
+			std::to_string(stats.gettotal(Equipstat::STR) - stats.getstat(Maplestat::STR)) + ")");
+		statlabels[DEX].settext(std::to_string(stats.gettotal(Equipstat::DEX)) + " (" + std::to_string(stats.getstat(Maplestat::DEX)) + " + " +
+			std::to_string(stats.gettotal(Equipstat::DEX) - stats.getstat(Maplestat::DEX)) + ")");
+		statlabels[INT].settext(std::to_string(stats.gettotal(Equipstat::INT)) + " (" + std::to_string(stats.getstat(Maplestat::INT)) + " + " +
+			std::to_string(stats.gettotal(Equipstat::INT) - stats.getstat(Maplestat::INT)) + ")");
+		statlabels[LUK].settext(std::to_string(stats.gettotal(Equipstat::LUK)) + " (" + std::to_string(stats.getstat(Maplestat::LUK)) + " + " +
+			std::to_string(stats.gettotal(Equipstat::LUK) - stats.getstat(Maplestat::LUK)) + ")");
 
 		if (showdetail)
 		{
-			vector2d<int16_t> detailpos = position + vector2d<int16_t>(213, 0);
-
-			using Graphics::DrawArgument;
-			DrawArgument detailargs = DrawArgument(detailpos);
-			for (auto& dtit : detailtextures)
-			{
-				dtit.draw(detailargs);
-			}
-			abilities.at("none").draw(detailargs);
-
-			string attstr = std::to_string(stats.gettotal(Character::ES_WATK));
-			string critstr = std::to_string(static_cast<int32_t>(stats.getcritical() * 100));
-			string mincritstr = std::to_string(static_cast<int32_t>(stats.getmincrit() * 100));
-			string maxcritstr = std::to_string(static_cast<int32_t>(stats.getmaxcrit() * 100));
-			string bdmstr = std::to_string(static_cast<int32_t>(stats.getbossdmg() * 100));
-			string idefstr = std::to_string(static_cast<int32_t>(stats.getignoredef() * 100));
-			string resistr = std::to_string(static_cast<int32_t>(stats.getresist() * 100));
-			string stancestr = std::to_string(static_cast<int32_t>(stats.getstance() * 100));
-			string wdefstr = std::to_string(stats.gettotal(Character::ES_WDEF));
-			string mdefstr = std::to_string(stats.gettotal(Character::ES_MDEF));
-			string accstr = std::to_string(stats.gettotal(Character::ES_ACC));
-			string evastr = std::to_string(stats.gettotal(Character::ES_AVOID));
-			string speedstr = std::to_string(stats.gettotal(Character::ES_SPEED)) + "%";
-			string jumpstr = std::to_string(stats.gettotal(Character::ES_JUMP)) + "%";
-			string honorstr = std::to_string(stats.gethonor());
-
-			statlabel.drawline(attstr, detailpos + vector2d<int16_t>(73, 37));
-			statlabel.drawline(critstr + "%", detailpos + vector2d<int16_t>(73, 55));
-			statlabel.drawline(mincritstr + "%", detailpos + vector2d<int16_t>(73, 73));
-			statlabel.drawline(maxcritstr + "%", detailpos + vector2d<int16_t>(168, 73));
-			statlabel.drawline(bdmstr + "%", detailpos + vector2d<int16_t>(73, 91));
-			statlabel.drawline(idefstr + "%", detailpos + vector2d<int16_t>(168, 91));
-			statlabel.drawline(resistr + "%", detailpos + vector2d<int16_t>(73, 109));
-			statlabel.drawline(stancestr + "%", detailpos + vector2d<int16_t>(168, 109));
-			statlabel.drawline(wdefstr, detailpos + vector2d<int16_t>(73, 127));
-			statlabel.drawline(mdefstr, detailpos + vector2d<int16_t>(73, 145));
-			statlabel.drawline(accstr, detailpos + vector2d<int16_t>(73, 163));
-			statlabel.drawline("0", detailpos + vector2d<int16_t>(73, 181));
-			statlabel.drawline(evastr, detailpos + vector2d<int16_t>(73, 199));
-			statlabel.drawline("0", detailpos + vector2d<int16_t>(73, 217));
-			statlabel.drawline(speedstr, detailpos + vector2d<int16_t>(73, 235));
-			statlabel.drawline(jumpstr, detailpos + vector2d<int16_t>(168, 235));
-			statlabel.drawline(honorstr, detailpos + vector2d<int16_t>(73, 353));
+			statlabels[ATTACK].settext(std::to_string(stats.gettotal(Equipstat::WATK)));
+			statlabels[CRIT].settext(std::to_string(static_cast<int32_t>(stats.getcritical() * 100)) + "%");
+			statlabels[MINCRIT].settext(std::to_string(static_cast<int32_t>(stats.getmincrit() * 100)) + "%");
+			statlabels[MAXCRIT].settext(std::to_string(static_cast<int32_t>(stats.getmaxcrit() * 100)) + "%");
+			statlabels[BDM].settext(std::to_string(static_cast<int32_t>(stats.getbossdmg() * 100)) + "%");
+			statlabels[IGNOREDEF].settext(std::to_string(static_cast<int32_t>(stats.getignoredef() * 100)) + "%");
+			statlabels[RESIST].settext(std::to_string(static_cast<int32_t>(stats.getresist() * 100)) + "%");
+			statlabels[STANCE].settext(std::to_string(static_cast<int32_t>(stats.getstance() * 100)) + "%");
+			statlabels[WDEF].settext(std::to_string(stats.gettotal(Equipstat::WDEF)));
+			statlabels[MDEF].settext(std::to_string(stats.gettotal(Equipstat::MDEF)));
+			statlabels[ACCURACY].settext(std::to_string(stats.gettotal(Equipstat::ACC)));
+			statlabels[AVOID].settext(std::to_string(stats.gettotal(Equipstat::AVOID)));
+			statlabels[SPEED].settext(std::to_string(stats.gettotal(Equipstat::SPEED)) + "%");
+			statlabels[JUMP].settext(std::to_string(stats.gettotal(Equipstat::JUMP)) + "%");
+			statlabels[HONOR].settext(std::to_string(stats.gethonor()));
 		}
 	}
 
@@ -185,40 +174,41 @@ namespace IO
 			buttons[BT_DETAILOPEN]->setactive(true);
 			break;
 		case BT_HP:
-			sendappacket(Character::MS_HP);
+			sendappacket(Maplestat::HP);
 			break;
 		case BT_MP:
-			sendappacket(Character::MS_MP);
+			sendappacket(Maplestat::MP);
 			break;
 		case BT_STR:
-			sendappacket(Character::MS_STR);
+			sendappacket(Maplestat::STR);
 			break;
 		case BT_DEX:
-			sendappacket(Character::MS_DEX);
+			sendappacket(Maplestat::DEX);
 			break;
 		case BT_INT:
-			sendappacket(Character::MS_INT);
+			sendappacket(Maplestat::INT);
 			break;
 		case BT_LUK:
-			sendappacket(Character::MS_LUK);
+			sendappacket(Maplestat::LUK);
 			break;
 		}
 
 		buttons[id]->setstate(Button::NORMAL);
 	}
 
-	void UIStatsinfo::sendappacket(Maplestat stat)
+	void UIStatsinfo::sendappacket(Maplestat::Value stat)
 	{
+		using Net::Session;
 		using Net::SpendApPacket;
-		Net::Session::dispatch(SpendApPacket(stat));
+		Session::get().dispatch(SpendApPacket(stat));
 
-		UI::disable();
+		UI::get().disable();
 	}
 
 	void UIStatsinfo::updateap()
 	{
 		Button::State newstate;
-		if (stats.getstat(Character::MS_AP) > 0)
+		if (stats.getstat(Maplestat::AP) > 0)
 		{
 			newstate = Button::NORMAL;
 

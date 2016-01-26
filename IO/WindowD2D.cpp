@@ -23,6 +23,9 @@
 #include "Gameplay\Stage.h"
 #include "Graphics\GraphicsD2D.h"
 
+#pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "Dwrite.lib")
+
 namespace IO
 {
 	WindowD2D::WindowD2D()
@@ -36,7 +39,6 @@ namespace IO
 
 	WindowD2D::~WindowD2D()
 	{
-		Graphics::GraphicsD2D::free();
 		CoUninitialize();
 
 		if (d2dfactory) 
@@ -78,22 +80,22 @@ namespace IO
 			SetCursor(NULL);
 			return 1;
 		case WM_MOUSEMOVE:
-			UI::sendmouse(paramtov2d(lParam));
+			UI::get().sendmouse(paramtov2d(lParam));
 			return 0;
 		case WM_LBUTTONDBLCLK:
-			UI::doubleclick(paramtov2d(lParam));
+			UI::get().doubleclick(paramtov2d(lParam));
 			return 0;
 		case WM_LBUTTONDOWN:
 			switch (wParam)
 			{
 			case MK_LBUTTON:
-				UI::sendmouse(true, paramtov2d(lParam));
+				UI::get().sendmouse(true, paramtov2d(lParam));
 				break;
 			}
 			return 0;
 		case WM_LBUTTONUP:
 			if (wParam != MK_LBUTTON)
-				UI::sendmouse(false, paramtov2d(lParam));
+				UI::get().sendmouse(false, paramtov2d(lParam));
 			return 0;
 		case WM_SYSCOMMAND:
 			if (wParam == SC_KEYMENU)
@@ -116,7 +118,7 @@ namespace IO
 		if (keycode == VK_F11 && down)
 			togglemode();
 		else
-			UI::sendkey(static_cast<int32_t>(keycode), down);
+			UI::get().sendkey(static_cast<int32_t>(keycode), down);
 	}
 
 	bool WindowD2D::init()
@@ -168,7 +170,8 @@ namespace IO
 		if (inittargets() != S_OK)
 			return false;
 
-		Graphics::GraphicsD2D::init(
+		using Graphics::GraphicsD2D;
+		GraphicsD2D::get().init(
 			&imgfactory, 
 			&bmptarget, 
 			&dwfactory
@@ -179,7 +182,7 @@ namespace IO
 		transition = false;
 		fullscreen = false;
 
-		if (Program::Configuration::getbool("Fullscreen"))
+		if (Configuration::get().getbool("Fullscreen"))
 			togglemode();
 
 		SetPriorityClass(wnd, REALTIME_PRIORITY_CLASS);
@@ -325,8 +328,9 @@ namespace IO
 			opcstep = 0.025f;
 			transition = false;
 
-			Gameplay::Stage::reload();
-			UI::enable();
+			using Gameplay::Stage;
+			Stage::get().reload();
+			UI::get().enable();
 		}
 	}
 

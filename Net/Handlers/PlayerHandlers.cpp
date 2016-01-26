@@ -26,13 +26,16 @@ namespace Net
 {
 	using Character::Player;
 	using Character::Buff;
+	using Character::Maplestat;
+	using Gameplay::Stage;
+	using IO::UI;
 	using IO::Element;
 	using IO::UIBuffList;
 	using IO::UIStatsinfo;
 
 	Player& getplayer()
 	{
-		return Gameplay::Stage::getplayer();
+		return Stage::get().getplayer();
 	}
 
 	void KeymapHandler::handle(InPacket& recv) const
@@ -44,7 +47,7 @@ namespace Net
 			uint8_t type = recv.readbyte();
 			int32_t action = recv.readint();
 
-			IO::UI::addkeymapping(i, type, action);
+			UI::get().addkeymapping(i, type, action);
 		}
 	}
 
@@ -66,45 +69,40 @@ namespace Net
 		recv.readbool(); // 'itemreaction'
 
 		int32_t updatemask = recv.readint();
-		if (updatemask == 0)
-		{
-			IO::UI::enable();
-			return;
-		}
 
 		Player& player = getplayer();
 
-		for (size_t i = 0; i < 20; i++)
+		for (auto it = Maplestat::it(); it.hasnext(); it.increment())
 		{
-			Maplestat stat = Character::statvalues[i];
+			Maplestat::Value stat = it.get();
 
-			if (updatemask & stat)
+			if (Maplestat::compare(stat, updatemask))
 			{
 				switch (stat)
 				{
-				case Character::MS_SKIN:
+				case Maplestat::SKIN:
 					player.getlook().setbody(static_cast<int8_t>(recv.readshort()));
 					break;
-				case Character::MS_FACE:
+				case Maplestat::FACE:
 					player.getlook().setface(recv.readint());
 					break;
-				case Character::MS_HAIR:
+				case Maplestat::HAIR:
 					player.getlook().sethair(recv.readint());
 					break;
-				case Character::MS_LEVEL:
+				case Maplestat::LEVEL:
 					player.getstats().setstat(stat, static_cast<uint8_t>(recv.readbyte()));
 					//parent.getstage().showchareffect(0);
 					break;
-				case Character::MS_EXP:
+				case Maplestat::EXP:
 					player.getstats().setexp(recv.readint());
 					break;
-				case Character::MS_MESO:
+				case Maplestat::MESO:
 					player.getinvent().setmeso(recv.readint());
 					break;
-				case Character::MS_AP:
+				case Maplestat::AP:
 					player.getstats().setstat(stat, recv.readshort());
-					if (IO::UI::haselement(Element::STATSINFO))
-						IO::UI::getelement<UIStatsinfo>(Element::STATSINFO)->updateap();
+					if (UI::get().haselement(Element::STATSINFO))
+						UI::get().getelement<UIStatsinfo>(Element::STATSINFO)->updateap();
 					break;
 				default:
 					player.getstats().setstat(stat, recv.readshort());
@@ -112,6 +110,8 @@ namespace Net
 					break;
 				}
 			}
+
+			UI::get().enable();
 		}
 	}
 
@@ -162,7 +162,7 @@ namespace Net
 		Buff buff = Buff(bs, value, skillid, duration);
 		getplayer().givebuff(buff);
 
-		UIBuffList* bufflist = IO::UI::getelement<UIBuffList>(IO::Element::BUFFLIST);
+		UIBuffList* bufflist = UI::get().getelement<UIBuffList>(IO::Element::BUFFLIST);
 		if (bufflist)
 			bufflist->addbuff(skillid, duration);
 	}

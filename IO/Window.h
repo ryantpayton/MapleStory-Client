@@ -15,15 +15,32 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
+#pragma once
+#include "Util\Singleton.h"
+
+#include "Journey.h"
+#ifdef JOURNEY_USE_OPENGL
+#include "WindowGLFW.h"
+#else
+#include "WindowD2D.h"
+#endif
 
 namespace IO
 {
-	namespace Window
+	class Window : public Singleton<Window>
 	{
+	public:
 		bool init();
 		void update();
 		void begin();
 		void end();
 		void fadeout();
-	}
+
+	private:
+#ifdef JOURNEY_USE_OPENGL
+		WindowGLFW window;
+#else
+		WindowD2D window;
+#endif
+	};
 }

@@ -20,10 +20,7 @@
 
 namespace IO
 {
-	using std::uint16_t;
-	using std::int16_t;
 	using std::map;
-	using Util::vector2d;
 	using Graphics::Animation;
 
 	// Class that represents the mouse cursor.

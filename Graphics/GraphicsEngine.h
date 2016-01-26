@@ -16,18 +16,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Util\Singleton.h"
+#include "Text.h"
 #include "nlnx\bitmap.hpp"
 
 namespace Graphics
 {
-	namespace GraphicsEngine
-	{
-		using nl::bitmap;
+	using nl::bitmap;
 
+	class GraphicsEngine : public Singleton<GraphicsEngine>
+	{
+	public:
 		void addbitmap(const bitmap& bmp);
 		void draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, 
 			float alpha, float xscale, float yscale, int16_t centerx, int16_t centery);
 		bool available(size_t id);
 		void clear();
-	}
+		Text::Layout createlayout(const string& text, Text::Font font, float maxwidth);
+		void drawtext(const string& text, Text::Font font, Text::Alignment alignment, Text::Color color,
+			Text::Background back, float alpha, vector2d<float> origin, vector2d<float> dimensions);
+	};
 }

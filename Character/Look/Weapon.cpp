@@ -34,62 +34,19 @@ namespace Character
 		attackspeed = static_cast<uint8_t>(infonode["attackSpeed"]);
 		attack = static_cast<uint8_t>(infonode["attack"]);
 
-		string sfxstr = infonode["sfx"];
-		if (sfxstr == "bow")
-		{
-			sfx = SoundFactory::WEP_BOW;
-		}
-		else if (sfxstr == "cBow")
-		{
-			sfx = SoundFactory::WEP_XBOW;
-		}
-		else if (sfxstr == "gun")
-		{
-			sfx = SoundFactory::WEP_GUN;
-		}
-		else if (sfxstr == "knuckle")
-		{
-			sfx = SoundFactory::WEP_KNUCKLE;
-		}
-		else if (sfxstr == "mace")
-		{
-			sfx = SoundFactory::WEP_MACE;
-		}
-		else if (sfxstr == "poleArm")
-		{
-			sfx = SoundFactory::WEP_POLEARM;
-		}
-		else if (sfxstr == "spear")
-		{
-			sfx = SoundFactory::WEP_SPEAR;
-		}
-		else if (sfxstr == "swordL")
-		{
-			sfx = SoundFactory::WEP_LONGSWORD;
-		}
-		else if (sfxstr == "swordS")
-		{
-			sfx = SoundFactory::WEP_SHORTSWORD;
-		}
-		else if (sfxstr == "tGlove")
-		{
-			sfx = SoundFactory::WEP_TGLOVE;
-		}
-		else
-		{
-			sfx = SoundFactory::WEP_HANDS;
-		}
+		node soundnode = nl::nx::sound["Weapon.img"][infonode["sfx"]];
+		firstattack = Sound(soundnode["Attack"]);
+		secondattack = Sound(soundnode["Attack2"]);
 	}
 
 	Weapon::Weapon()
 	{
 		weptype = WEP_NONE;
-		sfx = SoundFactory::WEP_HANDS;
 	}
 
-	void Weapon::playsfx() const
+	void Weapon::playsound() const
 	{
-		SoundFactory::play(sfx);
+		firstattack.play();
 	}
 
 	Weapon::WpType Weapon::getweptype() const

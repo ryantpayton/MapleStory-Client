@@ -18,36 +18,43 @@
 #pragma once
 #include "OutPacket.h"
 #include "SendOpcodes.h"
-#include "Util\NxFileMethods.h"
+#include "Util\NxFiles.h"
 
 namespace Net
 {
+	using Util::NxFiles;
+
 	// Packet which notifies the server that the connection is still alive.
+	// Opcode: PONG(24)
 	class PongPacket : public OutPacket
 	{
 	public:
 		PongPacket() : OutPacket(PONG) {}
 	};
 
+
 	// Packet which sends the hash values of all game files to the server.
+	// Opcode: HASH_CHECK(30000)
 	class NxCheckPacket : public OutPacket
 	{
 	public:
 		NxCheckPacket(uint64_t seed) : OutPacket(HASH_CHECK)
 		{
-			writech(static_cast<uint8_t>(Util::NxFileMethods::NUM_FILES));
-			for (size_t i = 0; i < Util::NxFileMethods::NUM_FILES; i++)
+			NxFiles& files = NxFiles::get();
+			writech(static_cast<uint8_t>(NxFiles::NUM_FILES));
+			for (size_t i = 0; i < NxFiles::NUM_FILES; i++)
 			{
-				writestr(Util::NxFileMethods::gethash(i, seed));
+				writestr(files.gethash(i, seed));
 			}
 		}
 
 		NxCheckPacket() : OutPacket(HASH_CHECK)
 		{
-			writech(static_cast<uint8_t>(Util::NxFileMethods::NUM_FILES));
-			for (size_t i = 0; i < Util::NxFileMethods::NUM_FILES; i++)
+			NxFiles& files = NxFiles::get();
+			writech(static_cast<uint8_t>(NxFiles::NUM_FILES));
+			for (size_t i = 0; i < NxFiles::NUM_FILES; i++)
 			{
-				writestr(Util::NxFileMethods::gethash(i));
+				writestr(files.gethash(i));
 			}
 		}
 	};

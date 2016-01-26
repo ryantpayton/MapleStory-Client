@@ -26,13 +26,19 @@
 
 namespace Net
 {
+	using IO::UI;
+	using IO::Element;
+	using IO::Window;
+	using Gameplay::Stage;
+	using Graphics::GraphicsEngine;
+
 	void stagetransition(uint8_t portalid, int32_t mapid)
 	{
-		IO::Window::fadeout();
-		Gameplay::Stage::clear();
-		Graphics::GraphicsEngine::clear();
+		Window::get().fadeout();
+		Stage::get().clear();
+		GraphicsEngine::get().clear();
 
-		Gameplay::Stage::setmap(portalid, mapid);
+		Stage::get().setmap(portalid, mapid);
 	}
 
 	void SetfieldHandler::handle(InPacket& recv) const
@@ -66,13 +72,13 @@ namespace Net
 		recv.skip(23);
 
 		int32_t cid = recv.readint();
-		if (!Gameplay::Stage::loadplayer(cid))
+		if (!Stage::get().loadplayer(cid))
 			return;
 
 		using Character::Player;
-		Player& player = Gameplay::Stage::getplayer();
+		Player& player = Stage::get().getplayer();
 
-		Net::Session::getlogin().parsestats(recv);
+		Session::get().getlogin().parsestats(recv);
 
 		recv.readbyte(); // 'buddycap'
 		if (recv.readbool())
@@ -96,12 +102,12 @@ namespace Net
 
 		player.recalcstats(true);
 
-		IO::UI::remove(IO::Element::CHARSELECT);
-		IO::UI::remove(IO::Element::SOFTKEYBOARD);
+		UI::get().remove(Element::CHARSELECT);
+		UI::get().remove(Element::SOFTKEYBOARD);
 
 		stagetransition(player.getstats().getportal(), player.getstats().getmapid());
 
-		IO::UI::changemode(IO::UI::MD_GAME);
+		UI::get().changemode(UI::MD_GAME);
 	}
 
 	void SetfieldHandler::parseinventory(InPacket& recv, Inventory& invent) const
@@ -309,6 +315,6 @@ namespace Net
 	{
 		stagetransition(0, 0);
 
-		Gameplay::Stage::parsemap(recv);
+		Stage::get().parsemap(recv);
 	}
 }

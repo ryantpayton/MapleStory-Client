@@ -60,7 +60,6 @@ namespace IO
 		int16_t shift = 0;
 		int16_t total = 0;
 
-		using Util::vector2d;
 		using Graphics::DrawArgument;
 		switch (alignment)
 		{
@@ -93,7 +92,6 @@ namespace IO
 		size_t length = str.size();
 		int16_t shift = 0;
 
-		using Util::vector2d;
 		using Graphics::DrawArgument;
 		switch (alignment)
 		{

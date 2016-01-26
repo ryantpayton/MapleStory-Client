@@ -16,20 +16,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\UIElement.h"
-#include "Textfield.h"
 #include "Button.h"
+#include "Textfield.h"
+#include "IO\UIElement.h"
 #include "IO\Cursor.h"
 #include "Graphics\Texture.h"
-#include "Graphics\Text.h"
+#include "Graphics\DynamicText.h"
 #include <vector>
-#include <memory>
 
 namespace IO
 {
 	using std::vector;
-	using std::unique_ptr;
 	using Graphics::Text;
+	using Graphics::DynamicText;
 	using Graphics::Texture;
 
 	class Chatbar : public UIElement
@@ -44,6 +43,7 @@ namespace IO
 			BT_CHATTARGETS
 		};
 
+		static const size_t NUM_TARGETS = 6;
 		enum ChatTarget
 		{
 			CHT_ALL,
@@ -67,8 +67,8 @@ namespace IO
 
 	private:
 		Textfield chatfield;
-		map<bool, Texture> chatspace;
-		map<ChatTarget, Texture> chattargets;
+		Texture chatspace[2];
+		Texture chattargets[NUM_TARGETS];
 		Texture chatenter;
 		Texture chatcover;
 		Text closedtext;

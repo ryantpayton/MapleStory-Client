@@ -23,7 +23,7 @@ namespace Character
 
 	CharEquips::~CharEquips() {}
 
-	void CharEquips::draw(Equipslot slot, string stance, CharacterLayer layer, 
+	void CharEquips::draw(Clothing::Slot slot, string stance, CharacterLayer layer,
 		uint8_t frame, const DrawArgument& args) const {
 
 		if (equips.count(slot))
@@ -34,23 +34,23 @@ namespace Character
 
 	void CharEquips::addequip(const Clothing& eq)
 	{
-		Equipslot slot = eq.geteqslot();
+		Clothing::Slot slot = eq.geteqslot();
 		equips[slot] = &eq;
 	}
 
-	void CharEquips::removeequip(Equipslot slot)
+	void CharEquips::removeequip(Clothing::Slot slot)
 	{
 		equips.erase(slot);
 	}
 
-	bool CharEquips::isvisible(Equipslot slot) const
+	bool CharEquips::isvisible(Clothing::Slot slot) const
 	{
 		return !getequip(slot).istransparent();
 	}
 
 	bool CharEquips::hasoverall() const
 	{
-		return (getequip(EQL_TOP).getid() / 10000) == 105;
+		return (getequip(Clothing::TOP).getid() / 10000) == 105;
 	}
 
 	bool CharEquips::hasweapon() const
@@ -76,7 +76,7 @@ namespace Character
 			return Weapon::WEP_NONE;
 	}
 
-	const Clothing& CharEquips::getequip(Equipslot slot) const
+	const Clothing& CharEquips::getequip(Clothing::Slot slot) const
 	{
 		if (equips.count(slot))
 			return *equips.at(slot);
@@ -86,8 +86,8 @@ namespace Character
 
 	const Weapon* CharEquips::getweapon() const
 	{
-		const Clothing& weapon = getequip(EQL_WEAPON);
-		if (weapon.geteqslot() == EQL_WEAPON)
+		const Clothing& weapon = getequip(Clothing::WEAPON);
+		if (weapon.geteqslot() == Clothing::WEAPON)
 			return static_cast<const Weapon*>(&weapon);
 		else
 			return nullptr;

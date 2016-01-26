@@ -25,7 +25,6 @@
 
 namespace Character
 {
-	using Util::rectangle2d;
 	using Gameplay::MapObject;
 	using Gameplay::Camera;
 	using IO::ChatBalloon;

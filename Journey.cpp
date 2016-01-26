@@ -18,24 +18,24 @@
 #pragma once
 #include "Program\Configuration.h"
 #include "Program\Constants.h"
-#include "Audio\Audioplayer.h"
-#include "Audio\SoundFactory.h"
+#include "Audio\AudioPlayer.h"
 #include "Net\Session.h"
 #include "IO\UI.h"
 #include "IO\Window.h"
 #include "IO\UITypes\UILogin.h"
 #include "Gameplay\Stage.h"
-#include "Util\NxFileMethods.h"
+#include "Util\NxFiles.h"
 #include "Util\StopWatch.h"
 #include "Data\DataFactory.h"
 #include "Character\BuffEffects.h"
 #include <iostream>
 
-using namespace Program;
-using namespace Net;
-using namespace IO;
-using namespace Gameplay;
-using namespace Util;
+using Audio::AudioPlayer;
+using Gameplay::Stage;
+using IO::UI;
+using IO::Window;
+using Net::Session;
+using Util::NxFiles;
 
 // Print errors to the console while testing.
 void showerror(const char* error)
@@ -55,16 +55,16 @@ enum Error
 
 Error init()
 {
-	if (!NxFileMethods::init())
+	if (!NxFiles::get().init())
 		return NXFILES;
 
-	if (!Session::init())
+	if (!Session::get().init())
 		return CONNECTION;
 
-	if (!Window::init())
+	if (!Window::get().init())
 		return WINDOW;
 
-	if (!Audioplayer::init())
+	if (!AudioPlayer::get().init())
 		return AUDIO;
 
 	return NONE;
@@ -72,38 +72,39 @@ Error init()
 
 void update()
 {
-	Window::update();
-	Stage::update();
-	UI::update();
+	Window::get().update();
+	Stage::get().update();
+	UI::get().update();
 }
 
 void draw(float inter)
 {
-	Window::begin();
-	Stage::draw(inter);
-	UI::draw(inter);
-	Window::end();
+	Window::get().begin();
+	Stage::get().draw(inter);
+	UI::get().draw(inter);
+	Window::get().end();
 }
 
 int main()
 {
-	Configuration::load();
+	Configuration::get().load();
 
 	// Initialise and check for errors.
 	Error error = init();
 	if (error == NONE)
 	{
 		Data::init();
-		SoundFactory::init();
 		Character::initbuffeffects();
 
-		UI::add(ElementLogin());
+		using IO::ElementLogin;
+		UI::get().add(ElementLogin());
 
+		using Util::StopWatch;
 		StopWatch stopwatch;
 		int64_t remain = 0;
 
 		// Run the game as long as the connection is alive.
-		while (Session::receive())
+		while (Session::get().receive())
 		{
 			remain += stopwatch.stop();
 			while (remain >= Constants::TIMESTEP)
@@ -117,9 +118,6 @@ int main()
 			float inter = static_cast<float>(remain) / Constants::TIMESTEP;
 			draw(inter);
 		}
-
-		Audioplayer::close();
-		Configuration::save();
 	}
 	else
 	{

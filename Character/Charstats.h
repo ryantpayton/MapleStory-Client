@@ -34,15 +34,15 @@ namespace Character
 		~CharStats();
 
 		void inittotalstats();
-		void setstat(Maplestat type, uint16_t value);
-		void settotal(Equipstat type, int32_t value);
-		void addtotal(Equipstat type, int32_t value);
+		void setstat(Maplestat::Value stat, uint16_t value);
+		void settotal(Equipstat::Value stat, int32_t value);
+		void addtotal(Equipstat::Value stat, int32_t value);
 		void calculatedamage(Weapon::WpType weapontype);
 
 		uint16_t calculateaccuracy() const;
 		int64_t getexpneeded() const;
-		uint16_t getstat(Maplestat) const;
-		int32_t gettotal(Equipstat) const;
+		uint16_t getstat(Maplestat::Value stat) const;
+		int32_t gettotal(Equipstat::Value stat) const;
 
 		void setexp(int64_t ex) { stats.exp = ex; }
 		void setportal(uint8_t pt) { stats.portal = pt; }
@@ -73,7 +73,7 @@ namespace Character
 
 		StatsEntry stats;
 
-		map<Equipstat, int32_t> totalstats;
+		map<Equipstat::Value, int32_t> totalstats;
 		int32_t maxdamage;
 		int32_t mindamage;
 		uint16_t honor;

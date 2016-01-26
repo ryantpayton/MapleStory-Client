@@ -31,18 +31,20 @@
 
 namespace IO
 {
+	using Net::Session;
+
 	UICharSelect::UICharSelect()
 	{
 		node charsel = nl::nx::ui["Login.img"]["CharSelect"];
 
 		using Graphics::Sprite;
-		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Title"]["worldsel"]));
+		sprites.push_back(nl::nx::ui["Login.img"]["Title"]["worldsel"]);
 		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Common"]["frame"], vector2d<int16_t>(400, 290)));
 		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Common"]["selectWorld"], vector2d<int16_t>(580, 42)));
 		sprites.push_back(Sprite(charsel["selectedWorld"]["icon"]["15"], vector2d<int16_t>(580, 42)));
 		sprites.push_back(Sprite(charsel["selectedWorld"]["name"]["15"], vector2d<int16_t>(580, 42)));
 
-		string channelid = std::to_string(Net::Session::getlogin().getchannelid());
+		string channelid = std::to_string(Session::get().getlogin().getchannelid());
 		sprites.push_back(Sprite(charsel["selectedWorld"]["ch"][channelid], vector2d<int16_t>(580, 42)));
 		sprites.push_back(Sprite(charsel["charInfo"], vector2d<int16_t>(662, 355)));
 
@@ -57,7 +59,7 @@ namespace IO
 		levelset = Charset(charsel["lv"], Charset::CENTER);
 		statsset = Charset(nl::nx::ui["StatusBar2.img"]["mainBar"]["gauge"]["number"], Charset::RIGHT);
 
-		const Net::Login& login = Net::Session::getlogin();
+		const Net::Login& login = Session::get().getlogin();
 		charcount = static_cast<uint8_t>(login.getaccount().chars.size());
 		charslots = static_cast<uint8_t>(login.getaccount().slots);
 		haschars = charcount > 0;
@@ -81,7 +83,7 @@ namespace IO
 				);
 		}
 
-		selected = Program::Configuration::getbyte("Character");
+		selected = Configuration::get().getbyte("Character");
 		if (selected >= charcount)
 			selected = 0;
 		page = selected % 8;
@@ -137,19 +139,20 @@ namespace IO
 
 		if (selected < charcount)
 		{
-			const Net::StatsEntry& stats = Net::Session::getlogin().getchar(selected).getstats();
+			const Net::StatsEntry& stats = Session::get().getlogin().getchar(selected).getstats();
 
 			using::Graphics::DrawArgument;
 			statsset.draw(std::to_string(stats.rank.first), DrawArgument(732, 335));
 			statsset.draw(std::to_string(stats.jobrank.first), DrawArgument(732, 355));
 
-			int16_t lvx = levelset.draw(std::to_string(stats.getstat(Character::MS_LEVEL)), DrawArgument(685, 262));
+			using Character::Maplestat;
+			int16_t lvx = levelset.draw(std::to_string(stats.getstat(Maplestat::LEVEL)), DrawArgument(685, 262));
 			levelset.draw('l', DrawArgument(655 - lvx / 2, 262));
 
-			statsset.draw(std::to_string(stats.getstat(Character::MS_STR)), DrawArgument(655, 385));
-			statsset.draw(std::to_string(stats.getstat(Character::MS_DEX)), DrawArgument(655, 407));
-			statsset.draw(std::to_string(stats.getstat(Character::MS_INT)), DrawArgument(732, 385));
-			statsset.draw(std::to_string(stats.getstat(Character::MS_LUK)), DrawArgument(732, 407));
+			statsset.draw(std::to_string(stats.getstat(Maplestat::STR)), DrawArgument(655, 385));
+			statsset.draw(std::to_string(stats.getstat(Maplestat::DEX)), DrawArgument(655, 407));
+			statsset.draw(std::to_string(stats.getstat(Maplestat::INT)), DrawArgument(732, 385));
+			statsset.draw(std::to_string(stats.getstat(Maplestat::LUK)), DrawArgument(732, 407));
 		}
 	}
 
@@ -175,7 +178,7 @@ namespace IO
 			nametags[selected].setselected(true);
 			charlooks[selected].setstance("walk");
 
-			const Net::StatsEntry& stats = Net::Session::getlogin().getchar(selected).getstats();
+			const Net::StatsEntry& stats = Session::get().getlogin().getchar(selected).getstats();
 			namelabel.settext(stats.name, 0);
 			joblabel.settext(stats.job.getname(), 0);
 		}
@@ -190,8 +193,8 @@ namespace IO
 				if (charcount < charslots)
 				{
 					active = false;
-					UI::remove(Element::CHARCREATION);
-					UI::add(ElementCharcreation());
+					UI::get().remove(Element::CHARCREATION);
+					UI::get().add(ElementCharcreation());
 				}
 				break;
 			case BT_DELETECHAR:
@@ -210,20 +213,20 @@ namespace IO
 	{
 		if (selected < charcount)
 		{
-			Program::Configuration::setint("Character", selected);
-			int32_t cid = Net::Session::getlogin().getchar(selected).cid;
-			Net::Session::getlogin().setcharid(cid);
-			switch (Net::Session::getlogin().getaccount().pic)
+			Configuration::get().setint("Character", selected);
+			int32_t cid = Session::get().getlogin().getchar(selected).cid;
+			Session::get().getlogin().setcharid(cid);
+			switch (Session::get().getlogin().getaccount().pic)
 			{
 			case 0:
-				UI::add(ElementSoftkey(UISoftkey::REGISTER));
+				UI::get().add(ElementSoftkey(UISoftkey::REGISTER));
 				break;
 			case 1:
-				UI::add(ElementSoftkey(UISoftkey::CHARSELECT));
+				UI::get().add(ElementSoftkey(UISoftkey::CHARSELECT));
 				break;
 			case 2:
-				UI::disable();
-				Net::Session::dispatch(Net::SelectCharPacket(cid));
+				UI::get().disable();
+				Session::get().dispatch(Net::SelectCharPacket(cid));
 				break;
 			}
 		}
@@ -231,7 +234,7 @@ namespace IO
 
 	void UICharSelect::addchar(uint8_t index)
 	{
-		CharLook look = CharLook(Net::Session::getlogin().getchar(index).getlook());
+		CharLook look = CharLook(Session::get().getlogin().getchar(index).getlook());
 		short buttonindex = BT_CHAR0 + index;
 		buttons[buttonindex] = unique_ptr<Button>(new AreaButton(
 			vector2d<int16_t>(105 + (120 * (index % 4)), 170 + (200 * (index > 3))),

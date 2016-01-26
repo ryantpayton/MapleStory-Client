@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Player.h"
-#include "Audio\SoundFactory.h"
+#include "Audio\Sound.h"
 #include "nlnx\nx.hpp"
 
 namespace Character
@@ -35,7 +35,8 @@ namespace Character
 	protected:
 		void playjumpsound() const
 		{
-			SoundFactory::play(SoundFactory::JUMP);
+			static const Sound jumpsound = Sound(nl::nx::sound["Game.img"]["Jump"]);
+			jumpsound.play();
 		}
 	};
 

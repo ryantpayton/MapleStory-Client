@@ -21,7 +21,7 @@
 #include "IO\UI.h"
 #include "Net\Session.h"
 #include "Program\Configuration.h"
-#include "Audio\Audioplayer.h"
+#include "Audio\AudioPlayer.h"
 #include "Net\Packets\LoginPackets.h"
 #include "IO\Components\MapleButton.h"
 #include "Graphics\Sprite.h"
@@ -30,12 +30,12 @@
 
 namespace IO
 {
-	using namespace Program;
-	using namespace Net;
+	using Audio::AudioPlayer;
+	using Net::Session;
 
 	UILogin::UILogin()
 	{
-		Audioplayer::playbgm("BgmUI.img/Title");
+		AudioPlayer::get().playbgm("BgmUI.img/Title");
 
 		node title = nl::nx::ui["Login.img"]["Title"];
 		node common = nl::nx::ui["Login.img"]["Common"];
@@ -75,16 +75,16 @@ namespace IO
 		passwordbg = Texture(title["PW"]);
 		password.setcrypt('*');
 
-		saveid = Configuration::getbool("SaveLogin");
+		saveid = Configuration::get().getbool("SaveLogin");
 		if (saveid)
 		{
-			account.settext(Configuration::getsetting("Account"));
-			UI::focustextfield(&password);
+			account.settext(Configuration::get().getsetting("Account"));
+			UI::get().focustextfield(&password);
 			password.setstate(Textfield::FOCUSED);
 		}
 		else
 		{
-			UI::focustextfield(&account);
+			UI::get().focustextfield(&account);
 			account.setstate(Textfield::FOCUSED);
 		}
 
@@ -122,21 +122,21 @@ namespace IO
 		switch (id)
 		{
 		case BT_LOGIN:
-			UI::disable();
-			UI::focustextfield(nullptr);
+			UI::get().disable();
+			UI::get().focustextfield(nullptr);
 			account.setstate(Textfield::NORMAL);
 			password.setstate(Textfield::NORMAL);
 			buttons[BT_LOGIN]->setstate(Button::MOUSEOVER);
-			UI::add(ElementLoginwait());
-
-			Session::dispatch(LoginPacket(account.gettext(), password.gettext()));
+			UI::get().add(ElementLoginwait());
+			using Net::LoginPacket;
+			Session::get().dispatch(LoginPacket(account.gettext(), password.gettext()));
 			return;
 		case BT_QUIT:
-			Session::disconnect();
+			Session::get().disconnect();
 			return;
 		case BT_SAVEID:
 			saveid = !saveid;
-			Configuration::setbool("SaveLogin", saveid);
+			Configuration::get().setbool("SaveLogin", saveid);
 			buttons[BT_SAVEID]->setstate(Button::MOUSEOVER);
 			return;
 		}
@@ -150,7 +150,7 @@ namespace IO
 		{
 			if (down)
 			{
-				UI::focustextfield(&account);
+				UI::get().focustextfield(&account);
 				account.setstate(Textfield::FOCUSED);
 				password.setstate(Textfield::NORMAL);
 			}
@@ -163,7 +163,7 @@ namespace IO
 		{
 			if (down)
 			{
-				UI::focustextfield(&password);
+				UI::get().focustextfield(&password);
 				password.setstate(Textfield::FOCUSED);
 				account.setstate(Textfield::NORMAL);
 			}
@@ -174,7 +174,7 @@ namespace IO
 		}
 		else if (down)
 		{
-			UI::focustextfield(nullptr);
+			UI::get().focustextfield(nullptr);
 			account.setstate(Textfield::NORMAL);
 			password.setstate(Textfield::NORMAL);
 		}

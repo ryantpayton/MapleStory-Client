@@ -27,7 +27,7 @@ namespace Net
 		void handle(InPacket& recv) const override
 		{
 			uint64_t seed = recv.readlong();
-			Session::dispatch(NxCheckPacket(seed));
+			Session::get().dispatch(NxCheckPacket(seed));
 		}
 	};
 
@@ -35,7 +35,7 @@ namespace Net
 	{
 		void handle(InPacket&) const override
 		{
-			Session::dispatch(PongPacket());
+			Session::get().dispatch(PongPacket());
 		}
 	};
 

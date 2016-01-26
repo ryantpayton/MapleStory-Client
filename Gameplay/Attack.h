@@ -24,8 +24,6 @@ namespace Gameplay
 {
 	using std::vector;
 	using std::map;
-	using Util::vector2d;
-	using Util::rectangle2d;
 	using Graphics::Animation;
 
 	struct Attack 

@@ -19,11 +19,11 @@
 #include "Clothing.h"
 #include "Util\rectangle2d.h"
 #include "Graphics\Animation.h"
-#include "Audio\SoundFactory.h"
+#include "Audio\Sound.h"
 
 namespace Character
 {
-	using Util::rectangle2d;
+	using Audio::Sound;
 	using Graphics::Animation;
 
 	class Weapon : public Clothing
@@ -54,7 +54,7 @@ namespace Character
 		Weapon(int32_t, const BodyDrawinfo&);
 		Weapon();
 
-		void playsfx() const;
+		void playsound() const;
 		WpType getweptype() const;
 		bool istwohanded() const;
 		string getafterimage() const;
@@ -71,7 +71,8 @@ namespace Character
 		string afterimage;
 		uint8_t attackspeed;
 		uint8_t attack;
-		SoundFactory::Sound sfx;
+		Sound firstattack;
+		Sound secondattack;
 	};
 }
 

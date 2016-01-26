@@ -26,43 +26,59 @@
 
 namespace Graphics
 {
-	namespace GraphicsEngine
+	void GraphicsEngine::addbitmap(const bitmap& bmp)
 	{
-		void addbitmap(const bitmap& bmp)
-		{
 #ifdef JOURNEY_USE_OPENGL
-			GraphicsGL::addbitmap(bmp);
+		GraphicsGL::get().addbitmap(bmp);
 #else
-			GraphicsD2D::addbitmap(bmp);
+		GraphicsD2D::get().addbitmap(bmp);
 #endif
-		}
+	}
 
-		bool available(size_t id)
-		{
+	bool GraphicsEngine::available(size_t id)
+	{
 #ifdef JOURNEY_USE_OPENGL
-			return GraphicsGL::available(id);
+		return GraphicsGL::get().available(id);
 #else
-			return GraphicsD2D::available(id);
+		return GraphicsD2D::get().available(id);
 #endif
-		}
+	}
 
-		void draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h,
-			float alpha, float xscale, float yscale, int16_t centerx, int16_t centery) {
-
+	void GraphicsEngine::draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h,
+		float a, float xs, float ys, int16_t cx, int16_t cy) {
 #ifdef JOURNEY_USE_OPENGL
-			GraphicsGL::draw(id, x, y, w, h, alpha, xscale, yscale, centerx, centery);
+		GraphicsGL::get().draw(id, x, y, w, h, a, xs, ys, cx, cy);
 #else
-			GraphicsD2D::draw(id, x, y, w, h, alpha, xscale, yscale, centerx, centery);
+		GraphicsD2D::get().draw(id, x, y, w, h, a, xs, ys, cx, cy);
 #endif
-		}
+	}
 
-		void clear()
-		{
+	void GraphicsEngine::clear()
+	{
 #ifdef JOURNEY_USE_OPENGL
-			GraphicsGL::clear();
+		GraphicsGL::get().clear();
 #else
-			GraphicsD2D::clear();
+		GraphicsD2D::get().clear();
 #endif
-		}
+	}
+
+	Text::Layout GraphicsEngine::createlayout(const string& text, Text::Font font, float maxwidth)
+	{
+#ifdef JOURNEY_USE_OPENGL
+		return GraphicsGL::get().createlayout(text.c_str(), font, maxwidth);
+#else
+		wstring wtext = wstring(text.begin(), text.end());
+		return GraphicsD2D::get().createlayout(wtext, font, maxwidth);
+#endif
+	}
+
+	void GraphicsEngine::drawtext(const string& text, Text::Font font, Text::Alignment alignment, Text::Color color,
+		Text::Background back, float alpha, vector2d<float> origin, vector2d<float> dimensions) {
+#ifdef JOURNEY_USE_OPENGL
+		GraphicsGL::get().drawtext(text.c_str(), font, alignment, color, back, alpha, origin, dimensions);
+#else
+		wstring wtext = wstring(text.begin(), text.end());
+		GraphicsD2D::get().drawtext(wtext, font, alignment, color, back, alpha, origin, dimensions);
+#endif
 	}
 }

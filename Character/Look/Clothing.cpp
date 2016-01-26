@@ -29,11 +29,11 @@ namespace Character
 			CL_PENDANT, CL_BELT, CL_MEDAL
 		};
 
-		static const Equipslot equipslots[15] =
+		static const Slot equipslots[15] =
 		{
-			EQL_CAP, EQL_FACEACC, EQL_EYEACC, EQL_EARRINGS, EQL_TOP, EQL_TOP,
-			EQL_PANTS, EQL_SHOES, EQL_GLOVES, EQL_SHIELD, EQL_CAPE, EQL_RING,
-			EQL_PENDANT, EQL_BELT, EQL_MEDAL
+			CAP, FACEACC, EYEACC, EARRINGS, TOP, TOP,
+			PANTS, SHOES, GLOVES, SHIELD, CAPE, RING,
+			PENDANT, BELT, MEDAL
 		};
 
 		static const string equiptypes[15] = 
@@ -54,7 +54,7 @@ namespace Character
 		else if (index >= 30 && index <= 49)
 		{
 			chlayer = CL_WEAPON;
-			eqslot = EQL_WEAPON;
+			eqslot = WEAPON;
 
 			static const string weapontypes[20] =
 			{
@@ -73,7 +73,7 @@ namespace Character
 		else
 		{
 			chlayer = CL_BASE;
-			eqslot = EQL_NONE;
+			eqslot = NONE;
 			type = "";
 		}
 
@@ -89,28 +89,28 @@ namespace Character
 				price = stancenode["price"];
 				slots = stancenode["tuc"];
 
-				reqstats[MS_LEVEL] = stancenode["reqLevel"];
-				reqstats[MS_JOB] = stancenode["reqJob"];
-				reqstats[MS_STR] = stancenode["reqSTR"];
-				reqstats[MS_DEX] = stancenode["reqDEX"];
-				reqstats[MS_INT] = stancenode["reqINT"];
-				reqstats[MS_LUK] = stancenode["reqLUK"];
+				reqstats[Maplestat::LEVEL] = stancenode["reqLevel"];
+				reqstats[Maplestat::JOB] = stancenode["reqJob"];
+				reqstats[Maplestat::STR] = stancenode["reqSTR"];
+				reqstats[Maplestat::DEX] = stancenode["reqDEX"];
+				reqstats[Maplestat::INT] = stancenode["reqINT"];
+				reqstats[Maplestat::LUK] = stancenode["reqLUK"];
 
-				defstats[ES_STR] = stancenode["incSTR"];
-				defstats[ES_DEX] = stancenode["incDEX"];
-				defstats[ES_INT] = stancenode["incINT"];
-				defstats[ES_LUK] = stancenode["incLUK"];
-				defstats[ES_WATK] = stancenode["incPAD"];
-				defstats[ES_WDEF] = stancenode["incPDD"];
-				defstats[ES_MAGIC] = stancenode["incMAD"];
-				defstats[ES_MDEF] = stancenode["incMDD"];
-				defstats[ES_HP] = stancenode["incMHP"];
-				defstats[ES_MP] = stancenode["incMMP"];
-				defstats[ES_ACC] = stancenode["incACC"];
-				defstats[ES_AVOID] = stancenode["incEVA"];
-				defstats[ES_HANDS] = stancenode["incHANDS"];
-				defstats[ES_SPEED] = stancenode["incSPEED"];
-				defstats[ES_JUMP] = stancenode["incJUMP"];
+				defstats[Equipstat::STR] = stancenode["incSTR"];
+				defstats[Equipstat::DEX] = stancenode["incDEX"];
+				defstats[Equipstat::INT] = stancenode["incINT"];
+				defstats[Equipstat::LUK] = stancenode["incLUK"];
+				defstats[Equipstat::WATK] = stancenode["incPAD"];
+				defstats[Equipstat::WDEF] = stancenode["incPDD"];
+				defstats[Equipstat::MAGIC] = stancenode["incMAD"];
+				defstats[Equipstat::MDEF] = stancenode["incMDD"];
+				defstats[Equipstat::HP] = stancenode["incMHP"];
+				defstats[Equipstat::MP] = stancenode["incMMP"];
+				defstats[Equipstat::ACC] = stancenode["incACC"];
+				defstats[Equipstat::AVOID] = stancenode["incEVA"];
+				defstats[Equipstat::HANDS] = stancenode["incHANDS"];
+				defstats[Equipstat::SPEED] = stancenode["incSPEED"];
+				defstats[Equipstat::JUMP] = stancenode["incJUMP"];
 			}
 			else if (stance != "default" && stance != "backDefault")
 			{
@@ -235,7 +235,7 @@ namespace Character
 	{
 		transparent = true;
 		type = "";
-		eqslot = EQL_NONE;
+		eqslot = NONE;
 	}
 
 	void Clothing::draw(string stance, CharacterLayer layer, 
@@ -268,10 +268,10 @@ namespace Character
 
 	bool Clothing::isweapon() const
 	{
-		return eqslot == EQL_WEAPON;
+		return eqslot == WEAPON;
 	}
 
-	int16_t Clothing::getreqstat(Maplestat stat) const
+	int16_t Clothing::getreqstat(Maplestat::Value stat) const
 	{
 		if (reqstats.count(stat))
 			return reqstats.at(stat);
@@ -279,7 +279,7 @@ namespace Character
 			return 0;
 	}
 
-	int16_t Clothing::getdefstat(Equipstat stat) const
+	int16_t Clothing::getdefstat(Equipstat::Value stat) const
 	{
 		if (defstats.count(stat))
 			return defstats.at(stat);
@@ -287,39 +287,39 @@ namespace Character
 			return 0;
 	}
 
-	string Clothing::getstatstr(Equipstat stat) const
+	string Clothing::getstatstr(Equipstat::Value stat) const
 	{
 		switch (stat)
 		{
-		case ES_STR:
+		case Equipstat::STR:
 			return "STR";
-		case ES_DEX:
+		case Equipstat::DEX:
 			return "DEX";
-		case ES_INT:
+		case Equipstat::INT:
 			return "INT";
-		case ES_LUK:
+		case Equipstat::LUK:
 			return "LUK";
-		case ES_WATK:
+		case Equipstat::WATK:
 			return "WEAPON ATT";
-		case ES_WDEF:
+		case Equipstat::WDEF:
 			return "WEAPON DEFENSE";
-		case ES_MAGIC:
+		case Equipstat::MAGIC:
 			return "MAGIC ATT";
-		case ES_MDEF:
+		case Equipstat::MDEF:
 			return "MAGIC DEFENSE";
-		case ES_ACC:
+		case Equipstat::ACC:
 			return "ACCURACY";
-		case ES_AVOID:
+		case Equipstat::AVOID:
 			return "AVOID";
-		case ES_HP:
+		case Equipstat::HP:
 			return "MAX HP";
-		case ES_MP:
+		case Equipstat::MP:
 			return "MAX MP";
-		case ES_HANDS:
+		case Equipstat::HANDS:
 			return "HANDS";
-		case ES_SPEED:
+		case Equipstat::SPEED:
 			return "SPEED";
-		case ES_JUMP:
+		case Equipstat::JUMP:
 			return "JUMP";
 		default:
 			return "";
@@ -331,7 +331,7 @@ namespace Character
 		return type;
 	}
 
-	Equipslot Clothing::geteqslot() const
+	Clothing::Slot Clothing::geteqslot() const
 	{
 		return eqslot;
 	}

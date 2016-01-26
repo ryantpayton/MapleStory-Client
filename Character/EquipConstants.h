@@ -20,50 +20,6 @@
 
 namespace Character
 {
-	enum Equipslot : int16_t
-	{
-		EQL_NONE = 0,
-		EQL_CAP = 1,
-		EQL_FACEACC = 2,
-		EQL_EYEACC = 3,
-		EQL_EARRINGS = 4,
-		EQL_TOP = 5,
-		EQL_PANTS = 6,
-		EQL_SHOES = 7,
-		EQL_GLOVES = 8,
-		EQL_CAPE = 9,
-		EQL_SHIELD = 10,
-		EQL_WEAPON = 11,
-		EQL_RING = 12,
-		EQL_RING2 = 13,
-		EQL_RING3 = 15,
-		EQL_RING4 = 16,
-		EQL_PENDANT = 17,
-		EQL_TAMEDMOB = 18,
-		EQL_SADDLE = 19,
-		EQL_MEDAL = 49,
-		EQL_BELT = 50
-	};
-
-	enum Equipstat
-	{
-		ES_STR,
-		ES_DEX,
-		ES_INT,
-		ES_LUK,
-		ES_HP,
-		ES_MP,
-		ES_WATK,
-		ES_MAGIC,
-		ES_WDEF,
-		ES_MDEF,
-		ES_ACC,
-		ES_AVOID,
-		ES_HANDS,
-		ES_SPEED,
-		ES_JUMP
-	};
-
 	enum CharacterLayer
 	{
 		CL_BASE,

@@ -116,7 +116,7 @@ namespace IO
 				);
 		}
 
-		mesolabel.drawline(getmesostr(), position + vector2d<int16_t>(124, 264));
+		mesolabel.draw(position + vector2d<int16_t>(124, 264));
 
 		eqtooltip.draw(cursorposition);
 		ittooltip.draw(cursorposition);
@@ -128,6 +128,8 @@ namespace IO
 
 		newitemtab.update(3);
 		newitemslot.update(4);
+
+		mesolabel.settext(getmesostr());
 	}
 
 	void UIItemInventory::updateslot(int16_t slot)
@@ -181,11 +183,11 @@ namespace IO
 			break;
 		case BT_GATHER:
 			using Net::GatherItemsPacket;
-			Net::Session::dispatch(GatherItemsPacket(tab));
+			Net::Session::get().dispatch(GatherItemsPacket(tab));
 			break;
 		case BT_SORT:
 			using Net::SortItemsPacket;
-			Net::Session::dispatch(SortItemsPacket(tab));
+			Net::Session::get().dispatch(SortItemsPacket(tab));
 			break;
 		}
 
@@ -215,11 +217,11 @@ namespace IO
 			{
 			case Inventory::EQUIP:
 				using Net::EquipItemPacket;
-				Net::Session::dispatch(EquipItemPacket(slot, inventory.findequipslot(item->getid())));
+				Net::Session::get().dispatch(EquipItemPacket(slot, inventory.findequipslot(item->getid())));
 				break;
 			case Inventory::USE:
 				using Net::UseItemPacket;
-				Net::Session::dispatch(UseItemPacket(slot, item->getid()));
+				Net::Session::get().dispatch(UseItemPacket(slot, item->getid()));
 				break;
 			}
 		}
@@ -231,7 +233,7 @@ namespace IO
 			return;
 
 		using Net::MoveItemPacket;
-		Net::Session::dispatch(MoveItemPacket(tab, identifier, 0, 1));
+		Net::Session::get().dispatch(MoveItemPacket(tab, identifier, 0, 1));
 	}
 
 	Cursor::Mousestate UIItemInventory::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
@@ -247,7 +249,7 @@ namespace IO
 				icons[slot].startdrag(cursorpos - position - slotpos);
 				eqtooltip.setequip(nullptr, 0);
 				ittooltip.setitem(0);
-				UI::dragicon(&icons[slot]);
+				UI::get().dragicon(&icons[slot]);
 				return Cursor::MST_GRABBING;
 			}
 			else if (tab == Inventory::EQUIP)

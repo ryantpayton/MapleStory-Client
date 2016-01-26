@@ -27,7 +27,6 @@ namespace Net
 	using std::string;
 	using std::vector;
 	using std::map;
-	using Util::vector2d;
 
 	// A packet to be sent to the server. Used as a base class to create specific packets.
 	class OutPacket

@@ -19,13 +19,15 @@
 #include "Journey.h"
 #ifndef JOURNEY_USE_ASIO
 #include "SocketWinsock.h"
+#include <WinSock2.h>
+#include <ws2tcpip.h>
+
+#pragma comment (lib, "Ws2_32.lib")
+#pragma comment (lib, "Mswsock.lib")
+#pragma comment (lib, "AdvApi32.lib")
 
 namespace Net
 {
-	SocketWinsock::SocketWinsock() {}
-
-	SocketWinsock::~SocketWinsock() {}
-
 	bool SocketWinsock::open(const char* iaddr, const char* port)
 	{
 		WSADATA wsa_info;

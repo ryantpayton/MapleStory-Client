@@ -26,6 +26,7 @@ namespace IO
 {
 	using Character::Equip;
 	using Character::Maplestat;
+	using Character::Equipstat;
 
 	class EquipTooltip
 	{
@@ -42,7 +43,7 @@ namespace IO
 		bool hasdesc;
 		bool hasslots;
 		bool isweapon;
-		map<Maplestat, string> reqstatstrings;
+		map<Maplestat::Value, string> reqstatstrings;
 		Texture itemicon;
 
 		Text name;
@@ -53,7 +54,7 @@ namespace IO
 		Text wepspeed;
 		Text slots;
 		Text hammers;
-		map<Character::Equipstat, Text> statlabels;
+		map<Equipstat::Value, Text> statlabels;
 
 		Texture top;
 		Texture mid;
@@ -67,10 +68,10 @@ namespace IO
 		Texture cover;
 		Texture shade;
 
-		vector<Character::Maplestat> requirements;
-		map<Character::Maplestat, map<bool, Texture>> reqstattextures;
-		map<Character::Maplestat, bool> canequip;
-		map<Character::Maplestat, vector2d<int16_t>> reqstatpositions;
+		vector<Maplestat::Value> requirements;
+		map<Maplestat::Value, map<bool, Texture>> reqstattextures;
+		map<Maplestat::Value, bool> canequip;
+		map<Maplestat::Value, vector2d<int16_t>> reqstatpositions;
 		map<bool, Charset> reqset;
 
 		Texture jobsback;

@@ -65,7 +65,6 @@ namespace Character
 
 	using std::int16_t;
 	using std::map;
-	using Util::vector2d;
 
 	class BodyDrawinfo
 	{

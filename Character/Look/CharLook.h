@@ -43,7 +43,7 @@ namespace Character
 		void setbody(uint8_t skinid);
 		void setface(int32_t faceid);
 		void addequip(int32_t equipid);
-		void removeequip(Equipslot slot);
+		void removeequip(Clothing::Slot slot);
 
 		void setstance(string stance);
 		void setexpression(string expression);

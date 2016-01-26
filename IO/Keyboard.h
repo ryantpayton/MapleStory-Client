@@ -125,7 +125,7 @@ namespace IO
 
 		void assign(uint8_t, Keytype, int32_t);
 		int32_t shiftcode() const;
-		Keymapping gettextmapping(int32_t keycode) const;
+		Keymapping gettextmapping(int32_t keycode, bool shift) const;
 		const Keymapping* getmapping(int32_t keycode) const;
 
 	private:

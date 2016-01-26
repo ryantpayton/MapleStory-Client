@@ -23,11 +23,9 @@
 
 namespace Gameplay
 {
-	using std::int16_t;
 	using std::vector;
 	using std::string;
 	using nl::node;
-	using Util::vector2d;
 	using Net::InPacket;
 
 	struct Seat

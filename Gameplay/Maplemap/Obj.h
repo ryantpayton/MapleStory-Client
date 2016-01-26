@@ -22,9 +22,7 @@
 
 namespace Gameplay
 {
-	using std::int16_t;
 	using nl::node;
-	using Util::vector2d;
 	using Graphics::Animation;
 	using Net::InPacket;
 

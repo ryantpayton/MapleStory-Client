@@ -24,6 +24,7 @@
 
 namespace Net
 {
+	using IO::UI;
 	using IO::Element;
 	using IO::UIStatusbar;
 	using Character::ItemData;
@@ -103,27 +104,44 @@ namespace Net
 
 	void ShowStatusInfoHandler::showstatus(Text::Color color, string message) const
 	{
-		IO::UI::showstatus(color, message);
+		UI::get().showstatus(color, message);
 	}
 
 	void ChatReceivedHandler::handle(InPacket& recv) const
 	{
 		int32_t charid = recv.readint();
-		recv.readbool(); // gm
+		recv.readbool(); // 'gm'
 		string message = recv.readascii();
 		int8_t type = recv.readbyte();
 
 		using Character::Char;
-		Char* speaker = Gameplay::Stage::getcharacter(charid);
+		using Gameplay::Stage;
+		Char* speaker = Stage::get().getcharacter(charid);
 		
 		if (speaker)
 		{
 			string fulltext = speaker->getname() + ": " + message;
 			speaker->speak(fulltext);
 
-			UIStatusbar* statusbar = IO::UI::getelement<UIStatusbar>(Element::STATUSBAR);
+			UIStatusbar* statusbar = UI::get().getelement<UIStatusbar>(Element::STATUSBAR);
 			if (statusbar)
 				statusbar->sendchatline(fulltext, type);
 		}
+	}
+
+	void NpcDialogueHandler::handle(InPacket& recv) const
+	{
+		recv.skip(1);
+
+		int32_t npcid = recv.readint();
+		int8_t msgtype = recv.readbyte(); //0 - textonly, 1 - yes/no, 4 - selection, 12 - accept/decline
+		int8_t speaker = recv.readbyte();
+		string text = recv.readascii();
+		int16_t style = 0;
+		if (msgtype == 0 && recv.length() > 0)
+			style = recv.readshort();
+
+		UI::get().shownpctalk(npcid, msgtype, style, speaker, text);
+		UI::get().enable();
 	}
 }

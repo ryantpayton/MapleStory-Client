@@ -16,16 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Sound.h"
-#include "Audioplayer.h"
+#include "AudioPlayer.h"
 
 namespace Audio
 {
 	Sound::Sound(node src)
 	{
-		id = Audioplayer::addsound(src);
+		id = AudioPlayer::get().addsound(src);
 	}
 
-	Sound::Sound() 
+	Sound::Sound()
 	{
 		id = 0;
 	}
@@ -35,6 +35,6 @@ namespace Audio
 	void Sound::play() const
 	{
 		if (id > 0)
-			Audioplayer::playsound(id);
+			AudioPlayer::get().playsound(id);
 	}
 }

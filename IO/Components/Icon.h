@@ -21,7 +21,6 @@
 
 namespace IO
 {
-	using Util::vector2d;
 	using Graphics::Texture;
 
 	class Icon

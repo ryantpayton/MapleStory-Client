@@ -22,7 +22,6 @@
 namespace IO
 {
 	using std::string;
-	using Util::vector2d;
 	using Graphics::Texture;
 	using Graphics::Text;
 

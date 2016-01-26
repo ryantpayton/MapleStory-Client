@@ -25,10 +25,7 @@
 
 namespace Gameplay
 {
-	using std::int32_t;
-	using std::string;
 	using nl::node;
-	using Util::vector2d;
 	using Graphics::Texture;
 	using Net::InPacket;
 

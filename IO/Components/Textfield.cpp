@@ -54,7 +54,7 @@ namespace IO
 
 		if (state == FOCUSED && showmarker)
 		{
-			vector2d<int16_t> mpos = absp + vector2d<int16_t>(textlabel.getadvance(markerpos), -1);
+			vector2d<int16_t> mpos = absp + vector2d<int16_t>(textlabel.advance(markerpos), -1);
 			marker.draw(mpos);
 		}
 	}
@@ -119,7 +119,7 @@ namespace IO
 				case Keyboard::KA_RETURN:
 					if (onreturn.available())
 					{
-						onreturn.consume(text);
+						onreturn.accept(text);
 						text = "";
 						markerpos = 0;
 						modifytext(text);
@@ -187,7 +187,7 @@ namespace IO
 		}
 		else
 		{
-			uint16_t advance = textlabel.getadvance(text.size());
+			uint16_t advance = textlabel.advance(text.size());
 			return (advance + 50) < bounds.gethor().length();
 		}
 	}

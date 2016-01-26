@@ -127,7 +127,7 @@ namespace Character
 		if (equip)
 			look.addequip(equip->getid());
 		else
-			look.removeequip(static_cast<Equipslot>(slot));
+			look.removeequip(Clothing::slotbyid(slot));
 
 		recalcstats(true);
 	}
@@ -142,8 +142,9 @@ namespace Character
 			switch (type)
 			{
 			case Inventory::USE:
+				using Net::Session;
 				using Net::UseItemPacket;
-				Net::Session::dispatch(UseItemPacket(slot, itemid));
+				Session::get().dispatch(UseItemPacket(slot, itemid));
 				break;
 			}
 		}
@@ -189,8 +190,9 @@ namespace Character
 
 				if (movements.size() > 4)
 				{
+					using Net::Session;
 					using Net::MovePlayerPacket;
-					Net::Session::dispatch(MovePlayerPacket(movements));
+					Session::get().dispatch(MovePlayerPacket(movements));
 					movements.clear();
 				}
 			}
@@ -239,10 +241,10 @@ namespace Character
 		if (level == nullptr)
 			return false;
 
-		if (level->hpcost >= stats.getstat(MS_HP))
+		if (level->hpcost >= stats.getstat(Maplestat::HP))
 			return false;
 
-		if (level->mpcost > stats.getstat(MS_MP))
+		if (level->mpcost > stats.getstat(Maplestat::MP))
 			return false;
 
 		return canattack();
@@ -269,7 +271,7 @@ namespace Character
 	void Player::useattack()
 	{
 		look.setstance("attack");
-		look.getequips().getweapon()->playsfx();
+		look.getequips().getweapon()->playsound();
 		attacking = true;
 	}
 
@@ -280,8 +282,8 @@ namespace Character
 		attack.maxdamage = stats.getmaxdamage();
 		attack.critical = stats.getcritical();
 		attack.ignoredef = stats.getignoredef();
-		attack.accuracy = stats.gettotal(Character::ES_ACC);
-		attack.playerlevel = stats.getstat(Character::MS_LEVEL);
+		attack.accuracy = stats.gettotal(Equipstat::ACC);
+		attack.playerlevel = stats.getstat(Maplestat::LEVEL);
 		attack.speed = look.getequips().getweapon()->getspeed();
 		attack.origin = getposition();
 		attack.direction = flip ? Attack::TORIGHT : Attack::TOLEFT;
@@ -387,17 +389,17 @@ namespace Character
 	
 	float Player::getwforce() const
 	{
-		return 0.5f * static_cast<float>(stats.gettotal(ES_SPEED)) / 100;
+		return 0.5f * static_cast<float>(stats.gettotal(Equipstat::SPEED)) / 100;
 	}
 
 	float Player::getjforce() const
 	{
-		return 5.0f * static_cast<float>(stats.gettotal(ES_JUMP)) / 100;
+		return 5.0f * static_cast<float>(stats.gettotal(Equipstat::JUMP)) / 100;
 	}
 
 	float Player::getclimbforce() const
 	{
-		return 1.0f * static_cast<float>(stats.gettotal(ES_SPEED)) / 100;
+		return 1.0f * static_cast<float>(stats.gettotal(Equipstat::SPEED)) / 100;
 	}
 
 	float Player::getflyforce() const

@@ -17,47 +17,30 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Window.h"
 
-#include "Journey.h"
-#ifdef JOURNEY_USE_OPENGL
-#include "WindowGLFW.h"
-#else
-#include "WindowD2D.h"
-#endif
-
 namespace IO
 {
-	namespace Window
+	bool Window::init()
 	{
+		return window.init();
+	}
 
-#ifdef JOURNEY_USE_OPENGL
-		WindowGLFW window;
-#else
-		WindowD2D window;
-#endif
+	void Window::update()
+	{
+		window.update();
+	}
 
-		bool init()
-		{
-			return window.init();
-		}
+	void Window::begin()
+	{
+		window.begin();
+	}
 
-		void update()
-		{
-			window.update();
-		}
+	void Window::end()
+	{
+		window.end();
+	}
 
-		void begin()
-		{
-			window.begin();
-		}
-
-		void end()
-		{
-			window.end();
-		}
-
-		void fadeout()
-		{
-			window.fadeout();
-		}
+	void Window::fadeout()
+	{
+		window.fadeout();
 	}
 }

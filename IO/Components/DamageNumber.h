@@ -21,8 +21,6 @@
 
 namespace IO
 {
-	using Util::vector2d;
-
 	class DamageNumber
 	{
 	public:

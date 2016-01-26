@@ -33,12 +33,11 @@ namespace Gameplay
 	using std::pair;
 	using std::vector;
 	using std::map;
-	using Util::rectangle2d;
 	using Util::Randomizer;
+	using Audio::Sound;
 	using Graphics::Animation;
 	using Graphics::Text;
 	using Graphics::EffectLayer;
-	using Audio::Sound;
 	using IO::DamageNumber;
 
 	class Mob : public MapObject

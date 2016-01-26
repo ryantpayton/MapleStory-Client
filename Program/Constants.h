@@ -21,7 +21,7 @@
 namespace Constants
 {
 	// Timestep, e.g. the granularity in which the game advances.
-	const std::uint16_t TIMESTEP = 8;
+	const uint16_t TIMESTEP = 8;
 
 	const double VIEWWIDTH = 800.0;
 	const double VIEWHEIGHT = 600.0;

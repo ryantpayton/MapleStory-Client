@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Character\CharConstants.h"
+#include "Character\Maplestat.h"
 #include "Character\CharJob.h"
 #include "Net\InPacket.h"
 #include <cstdint>
@@ -37,7 +37,7 @@ namespace Net
 	{
 		string name;
 		vector<int64_t> petids;
-		map<Maplestat, uint16_t> stats;
+		map<Maplestat::Value, uint16_t> stats;
 		CharJob job;
 		int64_t exp;
 		int32_t mapid;
@@ -45,7 +45,7 @@ namespace Net
 		pair<int32_t, int8_t> rank;
 		pair<int32_t, int8_t> jobrank;
 
-		uint16_t getstat(Maplestat st) const
+		uint16_t getstat(Maplestat::Value st) const
 		{
 			if (stats.count(st))
 				return stats.at(st);

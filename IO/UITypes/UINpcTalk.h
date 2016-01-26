@@ -16,50 +16,66 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "IO\Element.h"
+#include "IO\Components\Npctext.h"
+#include "Graphics\Text.h"
+#include "Graphics\Texture.h"
 
-namespace SoundFactory
+namespace IO
 {
-	// Enumeration of all preloaded sounds.
-	const size_t NUM_SOUNDS = 29;
-	enum Sound
+	using Graphics::Text;
+	using Graphics::Texture;
+
+	class UINpcTalk : public UIElement
 	{
-		// UI
-		MOUSESCLICK,
-		MOUSESHOVER,
-		MOUSEGRAB,
-		MOUSEDROP,
-		CHARSELECT,
+	public:
+		enum Buttons
+		{
+			OK,
+			NEXT,
+			PREV,
+			END,
+			YES,
+			NO
+		};
 
-		// Game
-		GAMESTART,
-		JUMP,
-		DROP,
-		PICKUP,
-		PORTAL,
-		LEVELUP,
-		DEAD,
-		TRANSFORM,
-		QUESTCLEAR,
-		QUESTALERT,
-		MONSTERCARD,
-		SCROLLSUCCESS,
-		SCROLLFAIL,
+		UINpcTalk();
 
-		// Weapons
-		WEP_HANDS,
-		WEP_BOW,
-		WEP_XBOW,
-		WEP_GUN,
-		WEP_KNUCKLE,
-		WEP_MACE,
-		WEP_POLEARM,
-		WEP_SPEAR,
-		WEP_LONGSWORD,
-		WEP_SHORTSWORD,
-		WEP_TGLOVE
+		void draw(float inter) const override;
+		void buttonpressed(uint16_t buttonid) override;
+		void settext(int32_t npcid, int8_t msgtype, int16_t style, int8_t speaker, string text);
+
+	private:
+		Texture top;
+		Texture fill;
+		Texture bottom;
+		Texture nametag;
+
+		Npctext npctext;
+		Texture speaker;
+		Text name;
+		int16_t height;
+		int16_t vtile;
+		bool slider;
+
+		int8_t type;
 	};
 
-	void init();
+	class ElementNpcTalk : public Element
+	{
+		bool isunique() const override
+		{
+			return true;
+		}
 
-	void play(Sound sound);
+		UIType type() const override
+		{
+			return NPCTALK;
+		}
+
+		UIElement* instantiate() const override
+		{
+			return new UINpcTalk();
+		}
+	};
 }

@@ -15,26 +15,26 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Graphics\Sprite.h"
+#include "Sprite.h"
 
 namespace Graphics
 {
 	Sprite::Sprite(node src, vector2d<int16_t> pos)
 	{
-		animation = Animation(src);
+		animation = src;
 		position = pos;
 	}
 
 	Sprite::Sprite(node src)
 	{
-		animation = Animation(src);
+		animation = src;
 	}
 
 	Sprite::~Sprite() {}
 
 	void Sprite::draw(const DrawArgument& args, float inter) const
 	{
-		animation.draw(DrawArgument(args.getpos() + position), inter);
+		animation.draw(args.getpos() + position, inter);
 	}
 
 	void Sprite::update()

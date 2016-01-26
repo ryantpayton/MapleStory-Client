@@ -43,30 +43,30 @@ namespace IO
 		potential[Equip::POT_UNIQUE] = Texture(itemtt["ItemIcon"]["3"]);
 		potential[Equip::POT_LEGENDARY] = Texture(itemtt["ItemIcon"]["4"]);
 
-		requirements.push_back(MS_LEVEL);
-		requirements.push_back(MS_STR);
-		requirements.push_back(MS_DEX);
-		requirements.push_back(MS_INT);
-		requirements.push_back(MS_LUK);
+		requirements.push_back(Maplestat::LEVEL);
+		requirements.push_back(Maplestat::STR);
+		requirements.push_back(Maplestat::DEX);
+		requirements.push_back(Maplestat::INT);
+		requirements.push_back(Maplestat::LUK);
 
-		reqstattextures[MS_LEVEL][false] = Texture(itemtt["Equip"]["Cannot"]["reqLEV"]);
-		reqstattextures[MS_LEVEL][true] = Texture(itemtt["Equip"]["Can"]["reqLEV"]);
-		reqstattextures[MS_FAME][false] = Texture(itemtt["Equip"]["Cannot"]["reqPOP"]);
-		reqstattextures[MS_FAME][true] = Texture(itemtt["Equip"]["Can"]["reqPOP"]);
-		reqstattextures[MS_STR][false] = Texture(itemtt["Equip"]["Cannot"]["reqSTR"]);
-		reqstattextures[MS_STR][true] = Texture(itemtt["Equip"]["Can"]["reqSTR"]);
-		reqstattextures[MS_DEX][false] = Texture(itemtt["Equip"]["Cannot"]["reqDEX"]);
-		reqstattextures[MS_DEX][true] = Texture(itemtt["Equip"]["Can"]["reqDEX"]);
-		reqstattextures[MS_INT][false] = Texture(itemtt["Equip"]["Cannot"]["reqINT"]);
-		reqstattextures[MS_INT][true] = Texture(itemtt["Equip"]["Can"]["reqINT"]);
-		reqstattextures[MS_LUK][false] = Texture(itemtt["Equip"]["Cannot"]["reqLUK"]);
-		reqstattextures[MS_LUK][true] = Texture(itemtt["Equip"]["Can"]["reqLUK"]);
+		reqstattextures[Maplestat::LEVEL][false] = Texture(itemtt["Equip"]["Cannot"]["reqLEV"]);
+		reqstattextures[Maplestat::LEVEL][true] = Texture(itemtt["Equip"]["Can"]["reqLEV"]);
+		reqstattextures[Maplestat::FAME][false] = Texture(itemtt["Equip"]["Cannot"]["reqPOP"]);
+		reqstattextures[Maplestat::FAME][true] = Texture(itemtt["Equip"]["Can"]["reqPOP"]);
+		reqstattextures[Maplestat::STR][false] = Texture(itemtt["Equip"]["Cannot"]["reqSTR"]);
+		reqstattextures[Maplestat::STR][true] = Texture(itemtt["Equip"]["Can"]["reqSTR"]);
+		reqstattextures[Maplestat::DEX][false] = Texture(itemtt["Equip"]["Cannot"]["reqDEX"]);
+		reqstattextures[Maplestat::DEX][true] = Texture(itemtt["Equip"]["Can"]["reqDEX"]);
+		reqstattextures[Maplestat::INT][false] = Texture(itemtt["Equip"]["Cannot"]["reqINT"]);
+		reqstattextures[Maplestat::INT][true] = Texture(itemtt["Equip"]["Can"]["reqINT"]);
+		reqstattextures[Maplestat::LUK][false] = Texture(itemtt["Equip"]["Cannot"]["reqLUK"]);
+		reqstattextures[Maplestat::LUK][true] = Texture(itemtt["Equip"]["Can"]["reqLUK"]);
 
-		reqstatpositions[MS_LEVEL] = vector2d<int16_t>(98, 48);
-		reqstatpositions[MS_STR] = vector2d<int16_t>(98, 64);
-		reqstatpositions[MS_DEX] = vector2d<int16_t>(98, 72);
-		reqstatpositions[MS_INT] = vector2d<int16_t>(173, 64);
-		reqstatpositions[MS_LUK] = vector2d<int16_t>(173, 72);
+		reqstatpositions[Maplestat::LEVEL] = vector2d<int16_t>(98, 48);
+		reqstatpositions[Maplestat::STR] = vector2d<int16_t>(98, 64);
+		reqstatpositions[Maplestat::DEX] = vector2d<int16_t>(98, 72);
+		reqstatpositions[Maplestat::INT] = vector2d<int16_t>(173, 64);
+		reqstatpositions[Maplestat::LUK] = vector2d<int16_t>(173, 72);
 
 		reqset[false] = Charset(itemtt["Equip"]["Cannot"], Charset::LEFT);
 		reqset[true] = Charset(itemtt["Equip"]["Can"], Charset::LEFT);
@@ -101,7 +101,9 @@ namespace IO
 			return;
 
 		const Clothing& cloth = equip->getcloth();
-		const CharStats& stats = Gameplay::Stage::getplayer().getstats();
+
+		using Gameplay::Stage;
+		const CharStats& stats = Stage::get().getplayer().getstats();
 		
 		filllength = 500;
 
@@ -116,7 +118,7 @@ namespace IO
 		}
 
 		okjobs.clear();
-		switch (cloth.getreqstat(MS_JOB))
+		switch (cloth.getreqstat(Maplestat::JOB))
 		{
 		case 0:
 			okjobs.push_back(0);
@@ -125,30 +127,30 @@ namespace IO
 			okjobs.push_back(3);
 			okjobs.push_back(4);
 			okjobs.push_back(5);
-			canequip[MS_JOB] = true;
+			canequip[Maplestat::JOB] = true;
 			break;
 		case 1:
 			okjobs.push_back(1);
-			canequip[MS_JOB] = (stats.getstat(MS_JOB) / 100 == 1) || (stats.getstat(MS_JOB) / 100 >= 20);
+			canequip[Maplestat::JOB] = (stats.getstat(Maplestat::JOB) / 100 == 1) || (stats.getstat(Maplestat::JOB) / 100 >= 20);
 			break;
 		case 2:
 			okjobs.push_back(2);
-			canequip[MS_JOB] = stats.getstat(MS_JOB) / 100 == 2;
+			canequip[Maplestat::JOB] = stats.getstat(Maplestat::JOB) / 100 == 2;
 			break;
 		case 4:
 			okjobs.push_back(3);
-			canequip[MS_JOB] = stats.getstat(MS_JOB) / 100 == 3;
+			canequip[Maplestat::JOB] = stats.getstat(Maplestat::JOB) / 100 == 3;
 			break;
 		case 8:
 			okjobs.push_back(4);
-			canequip[MS_JOB] = stats.getstat(MS_JOB) / 100 == 4;
+			canequip[Maplestat::JOB] = stats.getstat(Maplestat::JOB) / 100 == 4;
 			break;
 		case 16:
 			okjobs.push_back(5);
-			canequip[MS_JOB] = stats.getstat(MS_JOB) / 100 == 5;
+			canequip[Maplestat::JOB] = stats.getstat(Maplestat::JOB) / 100 == 5;
 			break;
 		default:
-			canequip[MS_JOB] = false;
+			canequip[Maplestat::JOB] = false;
 		}
 
 		prank = equip->getpotrank();
@@ -248,7 +250,7 @@ namespace IO
 		}
 
 		statlabels.clear();
-		for (Equipstat es = ES_STR; es <= ES_JUMP; es = static_cast<Equipstat>(es + 1))
+		for (Equipstat::Value es = Equipstat::STR; es <= Equipstat::JUMP; es = static_cast<Equipstat::Value>(es + 1))
 		{
 			if (equip->getstat(es) > 0)
 			{
@@ -314,7 +316,7 @@ namespace IO
 		jobsback.draw(jobargs);
 		for (auto& jbit : okjobs)
 		{
-			jobs.at(canequip.at(MS_JOB)).at(jbit).draw(jobargs);
+			jobs.at(canequip.at(Maplestat::JOB)).at(jbit).draw(jobargs);
 		}
 
 		line.draw(DrawArgument(pos + vector2d<int16_t>(0, 30)));

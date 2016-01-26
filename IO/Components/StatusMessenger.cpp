@@ -16,23 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "StatusMessenger.h"
-#include <map>
+#include <numeric>
 
 namespace IO
 {
-	Text& getlabel(Text::Color color)
+	StatusMessenger::StatusMessenger()
 	{
-		using std::map;
-		static map<Text::Color, Text> labels;
-		if (!labels.count(color))
-			labels[color] = Text(Text::A11M, Text::RIGHT, color);
-
-		return labels[color];
+		statustext = DynamicText(Text::A12M, Text::RIGHT);
 	}
-
-	StatusMessenger::StatusMessenger() {}
-
-	StatusMessenger::~StatusMessenger() {}
 
 	void StatusMessenger::draw(vector2d<int16_t> position, float inter) const
 	{
@@ -41,23 +32,16 @@ namespace IO
 
 		for (auto& inf : statusinfos)
 		{
-			Text& label = getlabel(inf.color);
-			label.setalpha(inf.getalpha(inter));
-			label.drawline(inf.text, position);
+			statustext.draw(inf.text, inf.color, inf.getalpha(inter), position);
 			position.shifty(16);
 		}
 	}
 
 	void StatusMessenger::update()
 	{
-		int32_t remove = 0;
-		for (auto& inf : statusinfos)
-		{
-			inf.lastalpha = inf.alpha;
-			inf.alpha -= 0.00125f;
-			if (inf.alpha < 0.00125f)
-				remove++;
-		}
+		int32_t remove = std::accumulate(statusinfos.begin(), statusinfos.end(), 0, [](const int32_t& x, StatusInfo& info){
+			return info.update() ? (x + 1) : x;
+		});
 
 		statusinfos.erase(statusinfos.begin(), statusinfos.begin() + remove);
 	}

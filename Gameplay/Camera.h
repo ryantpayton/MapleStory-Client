@@ -21,9 +21,6 @@
 
 namespace Gameplay
 {
-	using std::int16_t;
-	using Util::vector2d;
-
 	// View on stage which follows the player object.
 	class Camera
 	{

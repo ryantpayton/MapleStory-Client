@@ -26,7 +26,7 @@ namespace IO
 		dragarea = dga;
 
 		dragged = false;
-		position = Program::Configuration::getvector2d(configname);
+		position = Configuration::get().getvector2d(configname);
 	}
 
 	Cursor::Mousestate UIDragElement::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
@@ -50,7 +50,7 @@ namespace IO
 			if (dragged)
 			{
 				dragged = false;
-				Program::Configuration::setstring(configname, position.tostring());
+				Configuration::get().setstring(configname, position.tostring());
 			}
 		}
 		return UIElement::sendmouse(pressed, cursorpos);

@@ -39,9 +39,37 @@ namespace Net
 	class TalkToNPCPacket : public OutPacket
 	{
 	public:
-		TalkToNPCPacket(int32_t npcid) : OutPacket(TALK_TO_NPC)
+		TalkToNPCPacket(int32_t oid) : OutPacket(TALK_TO_NPC)
 		{
-			writeint(npcid);
+			writeint(oid);
+		}
+	};
+
+	// Packet which sends a response to an npc dialogue to the server.
+	// Opcode: NPC_TALK_MORE(60)
+	class NpcTalkMorePacket : public OutPacket
+	{
+	public:
+		NpcTalkMorePacket(int8_t lastmsg, int8_t response) : OutPacket(NPC_TALK_MORE)
+		{
+			writech(lastmsg);
+			writech(response);
+		}
+	};
+
+	class NpcTalkStringPacket : public NpcTalkMorePacket
+	{
+		NpcTalkStringPacket(string response) : NpcTalkMorePacket(2, 1)
+		{
+			writestr(response);
+		}
+	};
+
+	class NpcTalkSelectionPacket : public NpcTalkMorePacket
+	{
+		NpcTalkSelectionPacket(int32_t selection) : NpcTalkMorePacket(4, 1)
+		{
+			writeint(selection);
 		}
 	};
 }

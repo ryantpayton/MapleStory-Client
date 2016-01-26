@@ -15,64 +15,50 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
+#pragma once
+#include "Util\Enum.h"
+#include <cstdint>
 
-#include "NxFileMethods.h"
-#include "HashUtility.h"
-#include "nlnx\nx.hpp"
-#include "nlnx\node.hpp"
-#include "nlnx\bitmap.hpp"
-#include <string>
-#include <fstream>
-#include <stdio.h>
-
-namespace Util
+namespace Character
 {
-	namespace NxFileMethods
+	class Maplestat
 	{
-		// Names of game files in alphabetical order.
-		const string nxfiles[NUM_FILES] =
+	public:
+		static const size_t LENGTH = 20;
+		enum Value
 		{
-			"Character.nx", "Effect.nx", "Etc.nx", "Item.nx", "Map.nx", "Mob.nx", "Npc.nx",
-			"Quest.nx", "Reactor.nx", "Skill.nx", "Sound.nx", "String.nx", "TamingMob.nx", "UI.nx"
+			SKIN, FACE, HAIR, LEVEL, JOB,
+			STR, DEX, INT, LUK,
+			HP, MAXHP, MP, MAXMP,
+			AP, SP, EXP, FAME, MESO,
+			PET, GACHAEXP
 		};
 
-		bool exists(size_t index)
+		static EnumIterator<Value> it(Value s = SKIN, Value l = GACHAEXP)
 		{
-			// Open file, store if loading successfull and close it.
-			using::std::ifstream;
-			ifstream f;
-			f.open(nxfiles[index].c_str());
-			bool success = f.good();
-			f.close();
-			return success;
+			return EnumIterator<Value>(s, l);
 		}
 
-		bool init()
+		static Value byid(size_t id)
 		{
-			// Check if all files exists.
-			for (size_t i = 0; i < NUM_FILES; i++)
+			return static_cast<Value>(id);
+		}
+
+		static int32_t valueof(Value v)
+		{
+			static const int32_t values[LENGTH] =
 			{
-				if (!exists(i))
-				{
-					return false;
-				}
-			}
-
-			// Initialise nolifenx. Load a test bitmap incase someone forgot 
-			// to set the flag for including bitmaps in their .nx files.
-			nl::nx::load_all();
-			nl::bitmap bmptest = nl::nx::ui["Login.img"]["Common"]["frame"].get_bitmap();
-			return bmptest.data() != nullptr;
+				0x1, 0x2, 0x4, 0x10, 0x20,
+				0x40, 0x80, 0x100, 0x200, 0x400, 0x800,
+				0x1000, 0x2000, 0x4000, 0x8000, 0x10000, 
+				0x20000, 0x400000, 0x180008, 0x200000
+			};
+			return values[v];
 		}
 
-		string gethash(size_t index, uint64_t seed)
+		static bool compare(Value first, int32_t second)
 		{
-			return (index < NUM_FILES) ? HashUtility::getfilehash(nxfiles[index].c_str(), seed) : 0;
+			return (valueof(first) & second) != 0;
 		}
-
-		string gethash(size_t index)
-		{
-			return (index < NUM_FILES) ? HashUtility::getfilehash(nxfiles[index].c_str()) : 0;
-		}
-	}
+	};
 }

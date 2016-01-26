@@ -25,6 +25,7 @@ namespace IO
 {
 	using Character::CharStats;
 	using Character::Maplestat;
+	using Character::Equipstat;
 	using Graphics::Text;
 	using Graphics::Texture;
 
@@ -46,6 +47,7 @@ namespace IO
 		UIStatsinfo(const CharStats& stats);
 
 		void draw(float inter) const override;
+		void update() override;
 		void buttonpressed(uint16_t buttonid) override;
 
 		void updateap();
@@ -53,14 +55,31 @@ namespace IO
 	private:
 		UIStatsinfo& operator = (const UIStatsinfo&) = delete;
 
-		void sendappacket(Maplestat stat);
+		void sendappacket(Maplestat::Value stat);
+
+		static const size_t NUMLABELS = 27;
+		static const size_t NUMNORMAL = 12;
+		static const size_t NUMDETAIL = 15;
+		enum StatLabel
+		{
+			// Normal
+			NAME, JOB, GUILD, FAME, DAMAGE,
+			HP, MP, AP, STR, DEX, INT, LUK,
+			// Detailed
+			ATTACK, CRIT, MINCRIT, MAXCRIT,
+			BDM, IGNOREDEF, RESIST, STANCE,
+			WDEF, MDEF, ACCURACY, AVOID,
+			SPEED, JUMP, HONOR
+		};
 
 		const CharStats& stats;
 
 		vector<Texture> detailtextures;
 		map<string, Texture> abilities;
-		Text statlabel;
 		bool showdetail;
+
+		Text statlabels[NUMLABELS];
+		vector2d<int16_t> statoffsets[NUMLABELS];
 	};
 
 	class ElementStatsinfo : public Element

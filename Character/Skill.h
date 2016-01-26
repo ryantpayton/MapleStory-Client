@@ -28,8 +28,6 @@ namespace Character
 	using std::string;
 	using std::map;
 	using std::vector;
-	using Util::vector2d;
-	using Util::rectangle2d;
 	using Graphics::Texture;
 	using Graphics::Animation;
 

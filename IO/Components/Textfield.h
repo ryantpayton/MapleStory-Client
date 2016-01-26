@@ -24,9 +24,6 @@
 namespace IO
 {
 	using std::string;
-	using Util::vector2d;
-	using Util::rectangle2d;
-	using Util::Consumer;
 	using Graphics::Text;
 
 	class Textfield

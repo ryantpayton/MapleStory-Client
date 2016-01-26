@@ -25,14 +25,13 @@ namespace IO
 	ItemTooltip::ItemTooltip()
 	{
 		node itemtt = nl::nx::ui["UIToolTip.img"]["Item"];
-
-		top = Texture(itemtt["Frame"]["top"]);
-		mid = Texture(itemtt["Frame"]["line"]);
-		line = Texture(itemtt["Frame"]["dotline"]);
-		bot = Texture(itemtt["Frame"]["bottom"]);
-		base = Texture(itemtt["ItemIcon"]["base"]);
-		cover = Texture(itemtt["ItemIcon"]["cover"]);
-		shade = Texture(itemtt["ItemIcon"]["shade"]);
+		top = itemtt["Frame"]["top"];
+		mid = itemtt["Frame"]["line"];
+		line = itemtt["Frame"]["dotline"];
+		bot = itemtt["Frame"]["bottom"];
+		base = itemtt["ItemIcon"]["base"];
+		cover = itemtt["ItemIcon"]["cover"];
+		shade = itemtt["ItemIcon"]["shade"];
 
 		itemid = 0;
 	}
@@ -57,7 +56,7 @@ namespace IO
 		name.settext(idata.getname(), 240);
 		desc = Itemtext(idata.getdesc(), 150);
 
-		filllength = 81 + name.getheight();
+		filllength = 81 + name.height();
 		int16_t descdelta = desc.getheight() - 80;
 		if (descdelta > 0)
 			filllength += descdelta;
@@ -76,7 +75,7 @@ namespace IO
 
 		name.draw(pos + vector2d<int16_t>(130, 3));
 
-		pos.shifty(4 + name.getheight());
+		pos.shifty(4 + name.height());
 
 		base.draw(pos + vector2d<int16_t>(10, 10));
 		shade.draw(pos + vector2d<int16_t>(10, 10));

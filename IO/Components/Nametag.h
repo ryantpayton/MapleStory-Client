@@ -7,12 +7,10 @@
 
 namespace IO
 {
-	using std::int16_t;
 	using std::string;
 	using std::vector;
 	using std::map;
 	using nl::node;
-	using Util::vector2d;
 	using Graphics::Texture;
 	using Graphics::Text;
 

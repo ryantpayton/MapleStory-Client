@@ -18,20 +18,28 @@
 #pragma once
 #include "Journey.h"
 #ifndef JOURNEY_USE_OPENGL
-#include "Graphics\Text.h"
+#include "Util\Singleton.h"
 #include "Util\rectangle2d.h"
+#include "Graphics\Text.h"
 #include "nlnx\bitmap.hpp"
 #include <d2d1.h>
 #include <d2d1helper.h>
 #include <wincodecsdk.h>
 #include <dwrite.h>
+#include <unordered_map>
 
 namespace Graphics
 {
-	using::nl::bitmap;
+	using std::unordered_map;
+	using std::wstring;
+	using nl::bitmap;
 
-	namespace GraphicsD2D
+	class GraphicsD2D : public Singleton<GraphicsD2D>
 	{
+	public:
+		GraphicsD2D();
+		~GraphicsD2D();
+
 		void init(IWICImagingFactory**, ID2D1BitmapRenderTarget**, IDWriteFactory**);
 		void clear();
 		void free();
@@ -44,6 +52,18 @@ namespace Graphics
 		Text::Layout createlayout(const wstring& text, Text::Font font, float maxwidth);
 		void drawtext(const wstring& text, Text::Font font, Text::Alignment alignment, Text::Color color, 
 			Text::Background back, float alpha, vector2d<float> origin, vector2d<float> dimensions);
+
+	private:
+		void addfont(Text::Font id, const WCHAR* name, float size, DWRITE_FONT_WEIGHT weight);
+
+		IWICImagingFactory** p_factory;
+		ID2D1BitmapRenderTarget** p_target;
+		IDWriteFactory** p_dwfactory;
+
+		unordered_map<size_t, ID2D1Bitmap*> bitmaps;
+
+		ID2D1SolidColorBrush* brushes[Text::NUM_COLORS];
+		IDWriteTextFormat* fonts[Text::NUM_FONTS];
 	};
 }
 #endif

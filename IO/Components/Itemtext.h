@@ -23,7 +23,6 @@ namespace IO
 {
 	using std::vector;
 	using std::string;
-	using Util::vector2d;
 	using Graphics::Text;
 
 	class Itemtext

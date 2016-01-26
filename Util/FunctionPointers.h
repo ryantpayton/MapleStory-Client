@@ -15,107 +15,105 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
+#pragma once
 
-namespace Util
+template <typename T>
+class Consumer
 {
-	template <typename T>
-	class Consumer
+public:
+	Consumer(void(*f)(T))
 	{
-	public:
-		Consumer(void(*f)(T))
-		{
-			fun = f;
-		}
+		fun = f;
+	}
 
-		Consumer()
-		{
-			fun = nullptr;
-		}
-
-		~Consumer() {}
-
-		bool available()
-		{
-			return fun != nullptr;
-		}
-
-		void consume(T arg)
-		{
-			if (available())
-				fun(arg);
-		}
-
-	private:
-		void(*fun)(T);
-	};
-
-	template <typename R, typename A>
-	class Function
+	Consumer()
 	{
-	public:
-		Function(R(*f)(A))
-		{
-			fun = f;
-		}
+		fun = nullptr;
+	}
 
-		Function(R nv)
-		{
-			fun = nullptr;
-			nullvalue = nv;
-		}
+	~Consumer() {}
 
-		~Function() {}
-
-		bool available()
-		{
-			return fun != nullptr;
-		}
-
-		R map(A arg)
-		{
-			if (available())
-				return fun(arg);
-			else
-				return nullvalue;
-		}
-
-	private:
-		R(*fun)(A);
-		R nullvalue;
-	};
-
-	template <typename R>
-	class Producer
+	bool available()
 	{
-	public:
-		Producer(R(*f)())
-		{
-			fun = f;
-		}
+		return fun != nullptr;
+	}
 
-		Producer(R nv)
-		{
-			fun = nullptr;
-			nullvalue = nv;
-		}
+	void accept(T arg)
+	{
+		if (available())
+			fun(arg);
+	}
 
-		~Producer() {}
+private:
+	void(*fun)(T);
+};
 
-		bool available()
-		{
-			return fun != nullptr;
-		}
+template <typename R, typename A>
+class Function
+{
+public:
+	Function(R(*f)(A))
+	{
+		fun = f;
+	}
 
-		R produce()
-		{
-			if (available())
-				return fun();
-			else
-				return nullvalue;
-		}
+	Function(R nv)
+	{
+		fun = nullptr;
+		nullvalue = nv;
+	}
 
-	private:
-		R(*fun)();
-		R nullvalue;
-	};
-}
+	~Function() {}
+
+	bool available()
+	{
+		return fun != nullptr;
+	}
+
+	R apply(A arg)
+	{
+		if (available())
+			return fun(arg);
+		else
+			return nullvalue;
+	}
+
+private:
+	R(*fun)(A);
+	R nullvalue;
+};
+
+template <typename R>
+class Supplier
+{
+public:
+	Supplier(R(*f)())
+	{
+		fun = f;
+	}
+
+	Supplier(R nv)
+	{
+		fun = nullptr;
+		nullvalue = nv;
+	}
+
+	~Supplier() {}
+
+	bool available()
+	{
+		return fun != nullptr;
+	}
+
+	R get()
+	{
+		if (available())
+			return fun();
+		else
+			return nullvalue;
+	}
+
+private:
+	R(*fun)();
+	R nullvalue;
+};

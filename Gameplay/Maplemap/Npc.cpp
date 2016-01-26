@@ -50,7 +50,7 @@ namespace Gameplay
 			}
 			else
 			{
-				animations[state] = Animation(npcnode);
+				animations[state] = npcnode;
 				states.push_back(state);
 			}
 

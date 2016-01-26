@@ -57,14 +57,14 @@ namespace Character
 	{
 		totalstats.clear();
 
-		totalstats[ES_HP] = getstat(MS_MAXHP);
-		totalstats[ES_MP] = getstat(MS_MAXMP);
-		totalstats[ES_STR] = getstat(MS_STR);
-		totalstats[ES_DEX] = getstat(MS_DEX);
-		totalstats[ES_INT] = getstat(MS_INT);
-		totalstats[ES_LUK] = getstat(MS_LUK);
-		totalstats[ES_SPEED] = 100;
-		totalstats[ES_JUMP] = 100;
+		totalstats[Equipstat::HP] = getstat(Maplestat::MAXHP);
+		totalstats[Equipstat::MP] = getstat(Maplestat::MAXMP);
+		totalstats[Equipstat::STR] = getstat(Maplestat::STR);
+		totalstats[Equipstat::DEX] = getstat(Maplestat::DEX);
+		totalstats[Equipstat::INT] = getstat(Maplestat::INT);
+		totalstats[Equipstat::LUK] = getstat(Maplestat::LUK);
+		totalstats[Equipstat::SPEED] = 100;
+		totalstats[Equipstat::JUMP] = 100;
 
 		maxdamage = 0;
 		mindamage = 0;
@@ -82,7 +82,7 @@ namespace Character
 
 	void CharStats::calculatedamage(Weapon::WpType wtype)
 	{
-		int32_t attack = gettotal(ES_WATK);
+		int32_t attack = gettotal(Equipstat::WATK);
 		int32_t primary = getprimary(wtype);
 		int32_t secondary = getsecondary(wtype);
 		maxdamage = static_cast<int32_t>(
@@ -98,21 +98,21 @@ namespace Character
 		if (wtype == Weapon::WEP_NONE)
 			return 0;
 
-		switch (getstat(MS_JOB) / 100)
+		switch (getstat(Maplestat::JOB) / 100)
 		{
 		case 0:
 		case 1:
 		case 20:
 		case 21:
-			return gettotal(ES_STR);
+			return gettotal(Equipstat::STR);
 		case 2:
-			return gettotal(ES_INT);
+			return gettotal(Equipstat::INT);
 		case 3:
-			return gettotal(ES_DEX);
+			return gettotal(Equipstat::DEX);
 		case 4:
-			return gettotal(ES_LUK);
+			return gettotal(Equipstat::LUK);
 		case 5:
-			return (wtype == Weapon::WEP_GUN) ? gettotal(ES_DEX) : gettotal(ES_STR);
+			return (wtype == Weapon::WEP_GUN) ? gettotal(Equipstat::DEX) : gettotal(Equipstat::STR);
 		default:
 			return 0;
 		}
@@ -123,45 +123,45 @@ namespace Character
 		if (wtype == Weapon::WEP_NONE)
 			return 0;
 
-		switch (getstat(MS_JOB) / 100)
+		switch (getstat(Maplestat::JOB) / 100)
 		{
 		case 0:
 		case 1:
 		case 20:
 		case 21:
-			return gettotal(ES_DEX);
+			return gettotal(Equipstat::DEX);
 		case 2:
-			return gettotal(ES_LUK);
+			return gettotal(Equipstat::LUK);
 		case 3:
-			return gettotal(ES_STR);
+			return gettotal(Equipstat::STR);
 		case 4:
-			return gettotal(ES_DEX);
+			return gettotal(Equipstat::DEX);
 		case 5:
-			return (wtype == Weapon::WEP_GUN) ? gettotal(ES_STR) : gettotal(ES_DEX);
+			return (wtype == Weapon::WEP_GUN) ? gettotal(Equipstat::STR) : gettotal(Equipstat::DEX);
 		default:
 			return 0;
 		}
 	}
 
-	void CharStats::setstat(Maplestat stat, uint16_t value)
+	void CharStats::setstat(Maplestat::Value stat, uint16_t value)
 	{
 		stats.stats[stat] = value;
 	}
 
-	void CharStats::settotal(Equipstat stat, int32_t value)
+	void CharStats::settotal(Equipstat::Value stat, int32_t value)
 	{
 		switch (stat)
 		{
-		case ES_HP:
-		case ES_MP:
+		case Equipstat::HP:
+		case Equipstat::MP:
 			if (value > 30000)
 				value = 30000;
 			break;
-		case ES_SPEED:
+		case Equipstat::SPEED:
 			if (value > 140)
 				value = 140;
 			break;
-		case ES_JUMP:
+		case Equipstat::JUMP:
 			if (value > 123)
 				value = 123;
 			break;
@@ -170,7 +170,7 @@ namespace Character
 		totalstats[stat] = value;
 	}
 
-	void CharStats::addtotal(Equipstat stat, int32_t value)
+	void CharStats::addtotal(Equipstat::Value stat, int32_t value)
 	{
 		int32_t current = gettotal(stat);
 		settotal(stat, current + value);
@@ -178,22 +178,22 @@ namespace Character
 
 	uint16_t CharStats::calculateaccuracy() const
 	{
-		float dexacc = static_cast<float>(getstat(MS_DEX)) * 0.8f;
-		float lukacc = static_cast<float>(getstat(MS_LUK)) * 0.5f;
+		float dexacc = static_cast<float>(getstat(Maplestat::DEX)) * 0.8f;
+		float lukacc = static_cast<float>(getstat(Maplestat::LUK)) * 0.5f;
 		return static_cast<uint16_t>(dexacc + lukacc);
 	}
 
 	int64_t CharStats::getexpneeded() const
 	{
-		return exptable[getstat(MS_LEVEL)];
+		return exptable[getstat(Maplestat::LEVEL)];
 	}
 
-	uint16_t CharStats::getstat(Maplestat stat) const
+	uint16_t CharStats::getstat(Maplestat::Value stat) const
 	{
 		return stats.stats.count(stat) ? stats.stats.at(stat) : 0;
 	}
 
-	int32_t CharStats::gettotal(Equipstat stat) const
+	int32_t CharStats::gettotal(Equipstat::Value stat) const
 	{
 		return totalstats.count(stat) ? totalstats.at(stat) : 0;
 	}

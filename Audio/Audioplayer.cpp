@@ -15,37 +15,37 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Audioplayer.h"
+#include "AudioPlayer.h"
 #include "Program\Configuration.h"
-#include "bass.h"
 #include "nlnx\nx.hpp"
 #include "nlnx\audio.hpp"
-#include "nlnx\node.hpp"
-#include <unordered_map>
 
-namespace Audioplayer
+namespace Audio
 {
-	using std::unordered_map;
+	using nl::audio;
 
-	HSTREAM bgm;
-	unordered_map<size_t, HSAMPLE> soundcache;
-	string bgmpath = "";
-
-	bool init()
+	AudioPlayer::AudioPlayer()
 	{
-		if (BASS_Init(1, 44100, 0, nullptr, 0) == TRUE)
-		{
-			setbgmvolume(Program::Configuration::getbyte("BGMVolume"));
-			setsfxvolume(Program::Configuration::getbyte("SFXVolume"));
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		bgmpath = "";
 	}
 
-	void close()
+	AudioPlayer::~AudioPlayer()
+	{
+		close();
+	}
+
+	bool AudioPlayer::init()
+	{
+		BOOL result = BASS_Init(1, 44100, 0, nullptr, 0);
+		if (result == TRUE)
+		{
+			setbgmvolume(Configuration::get().getbyte("BGMVolume"));
+			setsfxvolume(Configuration::get().getbyte("SFXVolume"));
+		}
+		return result == TRUE;
+	}
+
+	void AudioPlayer::close()
 	{
 		if (bgm)
 		{
@@ -60,17 +60,17 @@ namespace Audioplayer
 		BASS_Free();
 	}
 
-	void setsfxvolume(uint8_t vol)
+	void AudioPlayer::setsfxvolume(uint8_t vol)
 	{
 		BASS_SetConfig(BASS_CONFIG_GVOL_STREAM, vol * 100);
 	}
 
-	void setbgmvolume(uint8_t vol)
+	void AudioPlayer::setbgmvolume(uint8_t vol)
 	{
 		BASS_SetConfig(BASS_CONFIG_GVOL_SAMPLE, vol * 100);
 	}
 
-	void playbgm(const void* data, size_t length)
+	void AudioPlayer::playbgm(const void* data, size_t length)
 	{
 		if (bgm)
 		{
@@ -81,12 +81,12 @@ namespace Audioplayer
 		BASS_ChannelPlay(bgm, true);
 	}
 
-	void playbgm(string path)
+	void AudioPlayer::playbgm(string path)
 	{
 		if (path == bgmpath)
 			return;
 
-		nl::audio toplay = nl::nx::sound.resolve(path);
+		audio toplay = nl::nx::sound.resolve(path);
 		if (toplay.data())
 		{
 			playbgm(reinterpret_cast<const void*>(toplay.data()), toplay.length());
@@ -94,7 +94,7 @@ namespace Audioplayer
 		}
 	}
 
-	void playsound(size_t id)
+	void AudioPlayer::playsound(size_t id)
 	{
 		if (soundcache.count(id))
 		{
@@ -103,9 +103,8 @@ namespace Audioplayer
 		}
 	}
 
-	size_t addsound(node src)
+	size_t AudioPlayer::addsound(node src)
 	{
-		using nl::audio;
 		audio toplay = src;
 
 		const void* data = reinterpret_cast<const void*>(toplay.data());

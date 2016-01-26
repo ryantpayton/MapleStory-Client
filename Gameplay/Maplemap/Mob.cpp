@@ -19,13 +19,12 @@
 #include "Program\Constants.h"
 #include "Net\Session.h"
 #include "Net\Packets\GameplayPackets.h"
-#include "Audio\Audioplayer.h"
 #include "nlnx\nx.hpp"
 
 namespace Gameplay
 {
 	const int32_t DAMAGECAP = 999999;
-	const float MONSTERSPEED = 0.4f;
+	const float MONSTERSPEED = 0.3f;
 
 	Mob::Mob(int32_t oi, int32_t mid, bool cnt, int8_t st, uint16_t fh, 
 		bool newspawn, int8_t tm, vector2d<int16_t> position) {
@@ -225,8 +224,9 @@ namespace Gameplay
 
 		if (movements.size() > 0)
 		{
+			using Net::Session;
 			using Net::MoveMobPacket;
-			Net::Session::dispatch(MoveMobPacket(oid, 1, 0, 0, 0, 0, 0, 0, getposition(), movements));
+			Session::get().dispatch(MoveMobPacket(oid, 1, 0, 0, 0, 0, 0, 0, getposition(), movements));
 			movements.clear();
 		}
 	}

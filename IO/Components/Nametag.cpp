@@ -25,7 +25,7 @@ namespace IO
 	{
 		if (tag.count(selected))
 		{
-			int16_t width = static_cast<int16_t>(name.getdimensions().x());
+			int16_t width = static_cast<int16_t>(name.width());
 			vector2d<int16_t> startpos = position - vector2d<int16_t>(8 + width / 2, -2);
 
 			using::Graphics::DrawArgument;

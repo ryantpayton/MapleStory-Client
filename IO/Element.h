@@ -35,6 +35,7 @@ namespace IO
 			SOFTKEYBOARD,
 			STATUSBAR,
 			BUFFLIST,
+			NPCTALK,
 			STATSINFO,
 			ITEMINVENTORY,
 			EQUIPINVENTORY,
@@ -45,11 +46,14 @@ namespace IO
 		// Return wether the element can only be created once.
 		// Such elements will be activated/deactived when adding them again.
 		virtual bool isunique() const { return false; }
+
 		// Return wether the element is focused.
 		// These elements always stay on top of the screen.
 		virtual bool isfocused() const { return false; }
+
 		// Return the type of this element.
 		virtual UIType type() const = 0;
+
 		// Create the Element instance.
 		virtual UIElement* instantiate() const = 0;
 	};

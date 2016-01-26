@@ -18,7 +18,7 @@
 #pragma once
 #include "Net\OutPacket.h"
 #include "Net\SendOpcodes.h"
-#include "Character\CharConstants.h"
+#include "Character\Maplestat.h"
 
 namespace Net
 {
@@ -29,10 +29,10 @@ namespace Net
 	class SpendApPacket : public OutPacket
 	{
 	public:
-		SpendApPacket(Maplestat stat) : OutPacket(SPEND_AP)
+		SpendApPacket(Maplestat::Value stat) : OutPacket(SPEND_AP)
 		{
 			skip(4);
-			writeint(stat);
+			writeint(Maplestat::valueof(stat));
 		}
 	};
 }

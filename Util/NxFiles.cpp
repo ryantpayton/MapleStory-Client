@@ -15,39 +15,57 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
+#include "NxFiles.h"
+#include "HashUtility.h"
+#include "nlnx\nx.hpp"
+#include "nlnx\node.hpp"
+#include "nlnx\bitmap.hpp"
+#include <string>
+#include <fstream>
 
-namespace Character
+namespace Util
 {
-	enum Maplestat
+	// Names of game files in alphabetical order.
+	const string filenames[NxFiles::NUM_FILES] =
 	{
-		MS_SKIN = 0x1,
-		MS_FACE = 0x2,
-		MS_HAIR = 0x4,
-		MS_LEVEL = 0x10,
-		MS_JOB = 0x20,
-		MS_STR = 0x40,
-		MS_DEX = 0x80,
-		MS_INT = 0x100,
-		MS_LUK = 0x200,
-		MS_HP = 0x400,
-		MS_MAXHP = 0x800,
-		MS_MP = 0x1000,
-		MS_MAXMP = 0x2000,
-		MS_AP = 0x4000,
-		MS_SP = 0x8000,
-		MS_EXP = 0x10000,
-		MS_FAME = 0x20000,
-		MS_MESO = 0x40000,
-		MS_PET = 0x180008,
-		MS_GACHAEXP = 0x200000
+		"Character.nx", "Effect.nx", "Etc.nx", "Item.nx", "Map.nx", "Mob.nx", "Npc.nx",
+		"Quest.nx", "Reactor.nx", "Skill.nx", "Sound.nx", "String.nx", "TamingMob.nx", "UI.nx"
 	};
 
-	const Maplestat statvalues[20] = 
-	{ 
-		MS_SKIN, MS_FACE, MS_HAIR, MS_LEVEL, MS_JOB, 
-		MS_STR, MS_DEX, MS_INT, MS_LUK, MS_HP, MS_MAXHP,
-		MS_MP, MS_MAXMP, MS_AP, MS_SP, MS_EXP, MS_FAME, 
-		MS_MESO, MS_PET, MS_GACHAEXP 
-	};
+	bool NxFiles::exists(size_t index)
+	{
+		using std::ifstream;
+		ifstream f;
+		f.open(filenames[index].c_str());
+		bool success = f.good();
+		f.close();
+		return success;
+	}
+
+	bool NxFiles::init()
+	{
+		for (size_t i = 0; i < NUM_FILES; i++)
+		{
+			if (!exists(i))
+			{
+				return false;
+			}
+		}
+
+		nl::nx::load_all();
+
+		using nl::bitmap;
+		bitmap bmptest = nl::nx::ui["Login.img"]["WorldSelect"]["BtChannel"]["layer:bg"].get_bitmap();
+		return bmptest.data() != nullptr;
+	}
+
+	string NxFiles::gethash(size_t index, uint64_t seed)
+	{
+		return (index < NUM_FILES) ? HashUtility::getfilehash(filenames[index].c_str(), seed) : 0;
+	}
+
+	string NxFiles::gethash(size_t index)
+	{
+		return (index < NUM_FILES) ? HashUtility::getfilehash(filenames[index].c_str()) : 0;
+	}
 }

@@ -15,15 +15,15 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Graphics\Text.h"
+#include "Graphics\DynamicText.h"
 #include <vector>
 
 namespace IO
 {
 	using std::string;
 	using std::vector;
-	using Util::vector2d;
 	using Graphics::Text;
+	using Graphics::DynamicText;
 
 	struct StatusInfo
 	{
@@ -31,6 +31,13 @@ namespace IO
 		string text = "";
 		float alpha = 1.0f;
 		float lastalpha = 1.0f;
+
+		bool update()
+		{
+			lastalpha = alpha;
+			alpha -= 0.00125f;
+			return alpha < 0.00125f;
+		}
 
 		float getalpha(float inter) const
 		{
@@ -42,7 +49,6 @@ namespace IO
 	{
 	public:
 		StatusMessenger();
-		~StatusMessenger();
 
 		void draw(vector2d<int16_t> position, float inter) const;
 		void update();
@@ -50,5 +56,6 @@ namespace IO
 
 	private:
 		vector<StatusInfo> statusinfos;
+		DynamicText statustext;
 	};
 }

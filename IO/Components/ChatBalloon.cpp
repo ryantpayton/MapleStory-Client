@@ -70,8 +70,8 @@ namespace IO
 	{
 		textlabel.settext(text, 80);
 
-		int16_t numhor = static_cast<int16_t>(textlabel.getdimensions().x() / xtile) + 2;
-		int16_t numver = static_cast<int16_t>(textlabel.getdimensions().y() / ytile) + 1;
+		int16_t numhor = static_cast<int16_t>(textlabel.width() / xtile) + 2;
+		int16_t numver = static_cast<int16_t>(textlabel.height() / ytile) + 1;
 
 		width = numhor * xtile;
 		height = numver * ytile;

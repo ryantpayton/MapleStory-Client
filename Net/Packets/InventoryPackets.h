@@ -24,7 +24,7 @@
 namespace Net
 {
 	using Character::Inventory;
-	using Character::Equipslot;
+	using Character::Clothing;
 
 	// Packet which requests that the inventory is sorted.
 	// Opcode: GATHER_ITEMS(69)
@@ -73,7 +73,7 @@ namespace Net
 	class EquipItemPacket : public MoveItemPacket
 	{
 	public:
-		EquipItemPacket(int16_t src, Equipslot dest) : MoveItemPacket(Inventory::EQUIP, src, -dest, 1) {}
+		EquipItemPacket(int16_t src, Clothing::Slot dest) : MoveItemPacket(Inventory::EQUIP, src, -dest, 1) {}
 	};
 
 

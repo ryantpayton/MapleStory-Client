@@ -23,12 +23,7 @@
 
 namespace Net
 {
-	using std::int8_t;
-	using std::int16_t;
-	using std::int32_t;
-	using std::int64_t;
 	using std::string;
-	using Util::vector2d;
 
 	// A packet received from the server. 
 	// Contains reading functions. 

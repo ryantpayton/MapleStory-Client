@@ -33,7 +33,7 @@ namespace Character
 	class PercentageEffect : public BuffEffect
 	{
 	protected:
-		void addpercentage(int16_t value, Equipstat es, CharStats& stats) const
+		void addpercentage(int16_t value, Equipstat::Value es, CharStats& stats) const
 		{
 			float floatvalue = static_cast<float>(value) / 100;
 			int32_t total = static_cast<int32_t>(stats.gettotal(es) * floatvalue);
@@ -51,13 +51,13 @@ namespace Character
 		}
 
 	protected:
-		SimpleStatEffect(Equipstat s)
+		SimpleStatEffect(Equipstat::Value s)
 		{
 			stat = s;
 		}
 
 	private:
-		Equipstat stat;
+		Equipstat::Value stat;
 	};
 
 	// Effect for MAPLE_WARRIOR
@@ -66,10 +66,10 @@ namespace Character
 	public:
 		void applyto(int16_t value, CharStats& stats) const override
 		{
-			addpercentage(value, ES_STR, stats);
-			addpercentage(value, ES_DEX, stats);
-			addpercentage(value, ES_INT, stats);
-			addpercentage(value, ES_LUK, stats);
+			addpercentage(value, Equipstat::STR, stats);
+			addpercentage(value, Equipstat::DEX, stats);
+			addpercentage(value, Equipstat::INT, stats);
+			addpercentage(value, Equipstat::LUK, stats);
 		}
 	};
 
@@ -95,42 +95,42 @@ namespace Character
 	class WATKEffect : public SimpleStatEffect
 	{
 	public:
-		WATKEffect() : SimpleStatEffect(ES_WATK) {}
+		WATKEffect() : SimpleStatEffect(Equipstat::WATK) {}
 	};
 
 	// Effect for WDEF
 	class WDEFEffect : public SimpleStatEffect
 	{
 	public:
-		WDEFEffect() : SimpleStatEffect(ES_WDEF) {}
+		WDEFEffect() : SimpleStatEffect(Equipstat::WDEF) {}
 	};
 
 	// Effect for MATK
 	class MATKEffect : public SimpleStatEffect
 	{
 	public:
-		MATKEffect() : SimpleStatEffect(ES_MAGIC) {}
+		MATKEffect() : SimpleStatEffect(Equipstat::MAGIC) {}
 	};
 
 	// Effect for MDEF
 	class MDEFEffect : public SimpleStatEffect
 	{
 	public:
-		MDEFEffect() : SimpleStatEffect(ES_MDEF) {}
+		MDEFEffect() : SimpleStatEffect(Equipstat::MDEF) {}
 	};
 
 	// Effect for SPEED
 	class SPEEDEffect : public SimpleStatEffect
 	{
 	public:
-		SPEEDEffect() : SimpleStatEffect(ES_SPEED) {}
+		SPEEDEffect() : SimpleStatEffect(Equipstat::SPEED) {}
 	};
 
 	// Effect for JUMP
 	class JUMPEffect : public SimpleStatEffect
 	{
 	public:
-		JUMPEffect() : SimpleStatEffect(ES_JUMP) {}
+		JUMPEffect() : SimpleStatEffect(Equipstat::JUMP) {}
 	};
 
 	// Effect for HYPERBODYHP
@@ -139,7 +139,7 @@ namespace Character
 	public:
 		void applyto(int16_t value, CharStats& stats) const override
 		{
-			addpercentage(value, ES_HP, stats);
+			addpercentage(value, Equipstat::HP, stats);
 		}
 	};
 
@@ -149,7 +149,7 @@ namespace Character
 	public:
 		void applyto(int16_t value, CharStats& stats) const override
 		{
-			addpercentage(value, ES_MP, stats);
+			addpercentage(value, Equipstat::MP, stats);
 		}
 	};
 

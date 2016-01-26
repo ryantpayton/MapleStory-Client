@@ -20,8 +20,6 @@
 
 namespace Gameplay
 {
-	using Util::vector2d;
-
 	// Struct that contains all properties neccessary for physics calculations.
 	struct PhysicsObject
 	{

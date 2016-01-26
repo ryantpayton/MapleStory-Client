@@ -21,9 +21,6 @@
 
 namespace Graphics
 {
-	using std::int16_t;
-	using Util::vector2d;
-
 	class DrawArgument
 	{
 	public:

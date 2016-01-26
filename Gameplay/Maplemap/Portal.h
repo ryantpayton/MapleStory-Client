@@ -23,12 +23,8 @@
 
 namespace Gameplay
 {
-	using std::int16_t;
-	using std::int32_t;
 	using std::string;
 	using std::pair;
-	using Util::vector2d;
-	using Util::rectangle2d;
 	using Graphics::Animation;
 
 	struct WarpInfo

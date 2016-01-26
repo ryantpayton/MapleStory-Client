@@ -32,8 +32,9 @@ namespace Character
 
 	void Inventory::recalcstats()
 	{
-		for (Equipstat es = ES_STR; es <= ES_JUMP; es = static_cast<Equipstat>(es + 1))
+		for (auto it = Equipstat::it(); it.hasnext(); it.increment())
 		{
+			Equipstat::Value es = it.get();
 			totalstats[es] = static_cast<uint16_t>(std::accumulate(
 				inventoryitems[EQUIPPED].begin(), 
 				inventoryitems[EQUIPPED].end(), 0,
@@ -47,7 +48,7 @@ namespace Character
 	{
 		for (auto& tsit : totalstats)
 		{
-			Equipstat es = tsit.first;
+			Equipstat::Value es = tsit.first;
 			stats.addtotal(es, tsit.second);
 		}
 	}
@@ -93,7 +94,7 @@ namespace Character
 	}
 
 	void Inventory::addequip(InvType invtype, int16_t slot, int32_t iid, bool cash, int64_t uniqueid, 
-		int64_t expire, uint8_t equipslots, uint8_t level, map<Equipstat, uint16_t> stats, string owner, 
+		int64_t expire, uint8_t equipslots, uint8_t level, map<Equipstat::Value, uint16_t> stats, string owner, 
 		int16_t flag, uint8_t ilevel, uint16_t iexp, int32_t vicious) {
 
 		if (slot >= slots[invtype])
@@ -185,7 +186,7 @@ namespace Character
 			return 0;
 	}
 
-	uint16_t Inventory::getstat(Equipstat type) const
+	uint16_t Inventory::getstat(Equipstat::Value type) const
 	{
 		return totalstats.count(type) ? totalstats.at(type) : 0;
 	}
@@ -195,31 +196,31 @@ namespace Character
 		return meso;
 	}
 
-	bool Inventory::hasequipped(Equipslot slot) const
+	bool Inventory::hasequipped(Clothing::Slot slot) const
 	{
 		int16_t intslot = static_cast<int16_t>(slot);
 		return inventoryitems.at(Inventory::EQUIPPED).count(intslot) > 0;
 	}
 
-	Equipslot Inventory::findequipslot(int32_t itemid) const
+	Clothing::Slot Inventory::findequipslot(int32_t itemid) const
 	{
 		const Clothing& cloth = Data::getclothing(itemid);
 		if (!cloth.isloaded())
-			return EQL_NONE;
+			return Clothing::NONE;
 
-		Equipslot eqslot = cloth.geteqslot();
-		if (eqslot == EQL_RING)
+		Clothing::Slot eqslot = cloth.geteqslot();
+		if (eqslot == Clothing::RING)
 		{
-			if (!hasequipped(EQL_RING2))
-				return EQL_RING2;
+			if (!hasequipped(Clothing::RING2))
+				return Clothing::RING2;
 
-			if (!hasequipped(EQL_RING3))
-				return EQL_RING3;
+			if (!hasequipped(Clothing::RING3))
+				return Clothing::RING3;
 
-			if (!hasequipped(EQL_RING4))
-				return EQL_RING4;
+			if (!hasequipped(Clothing::RING4))
+				return Clothing::RING4;
 
-			return EQL_RING;
+			return Clothing::RING;
 		}
 		else
 		{

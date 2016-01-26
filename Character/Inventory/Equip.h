@@ -48,13 +48,13 @@ namespace Character
 		};
 
 		Equip(const ItemData&, int32_t, bool, int64_t, int64_t, uint8_t, uint8_t, 
-			map<Equipstat, uint16_t>, string, int16_t, uint8_t, int16_t, int32_t);
+			map<Equipstat::Value, uint16_t>, string, int16_t, uint8_t, int16_t, int32_t);
 		~Equip();
 
 		uint8_t getslots() const;
 		uint8_t getlevel() const;
 		uint8_t getitemlevel() const;
-		uint16_t getstat(Equipstat type) const;
+		uint16_t getstat(Equipstat::Value type) const;
 		int32_t getvicious() const;
 		Potential getpotrank() const;
 		Quality getquality() const;
@@ -66,7 +66,7 @@ namespace Character
 
 		uint8_t slots;
 		uint8_t level;
-		map<Equipstat, uint16_t> stats;
+		map<Equipstat::Value, uint16_t> stats;
 		uint8_t itemlevel;
 		int16_t itemexp;
 		int32_t vicious;

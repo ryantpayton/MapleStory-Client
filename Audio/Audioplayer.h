@@ -16,23 +16,42 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Util\Singleton.h"
 #include "nlnx\node.hpp"
+
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 
-namespace Audioplayer
+#define WIN32_LEAN_AND_MEAN
+#include "bass.h"
+
+namespace Audio
 {
-	using std::uint8_t;
 	using std::string;
+	using std::unordered_map;
 	using nl::node;
 
-	bool init();
-	void close();
-	void setsfxvolume(uint8_t);
-	void setbgmvolume(uint8_t);
+	class AudioPlayer : public Singleton<AudioPlayer>
+	{
+	public:
+		AudioPlayer();
+		~AudioPlayer();
 
-	void playsound(size_t);
-	void playbgm(string);
-	size_t addsound(node src);
+		bool init();
+		void close();
+		void setsfxvolume(uint8_t volume);
+		void setbgmvolume(uint8_t volume);
+
+		void playsound(size_t soundid);
+		void playbgm(string path);
+		size_t addsound(node src);
+
+	private:
+		void playbgm(const void* data, size_t length);
+
+		HSTREAM bgm;
+		unordered_map<size_t, HSAMPLE> soundcache;
+		string bgmpath;
+	};
 }
-

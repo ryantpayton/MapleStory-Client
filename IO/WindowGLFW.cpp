@@ -49,7 +49,7 @@ namespace IO
 
 	void key_callback(GLFWwindow*, int key, int, int action, int)
 	{
-		IO::UI::sendkey(key, action != GLFW_RELEASE);
+		UI::get().sendkey(key, action != GLFW_RELEASE);
 	}
 
 	bool WindowGLFW::init()
@@ -90,7 +90,9 @@ namespace IO
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_TEXTURE_2D);
 		glClearColor(0, 0, 0, 0);
-		return Graphics::GraphicsGL::init();
+
+		using Graphics::GraphicsGL;
+		return GraphicsGL::get().init();
 	}
 
 	void WindowGLFW::update()
@@ -100,7 +102,7 @@ namespace IO
 		glfwGetCursorPos(glwnd, &cursorx, &cursory);
 		int32_t state = glfwGetMouseButton(glwnd, GLFW_MOUSE_BUTTON_LEFT);
 
-		UI::sendmouse(state == GLFW_PRESS, vector2d<int16_t>(
+		UI::get().sendmouse(state == GLFW_PRESS, vector2d<int16_t>(
 			static_cast<int16_t>(cursorx), 
 			static_cast<int16_t>(cursory))
 			);
@@ -130,8 +132,9 @@ namespace IO
 				opacity = 0.0f;
 				opcstep = 0.025f;
 
-				Gameplay::Stage::reload();
-				UI::enable();
+				using Gameplay::Stage;
+				Stage::get().reload();
+				UI::get().enable();
 			}
 		}
 	}

@@ -89,10 +89,10 @@ namespace IO
 		UIElement::draw(inter);
 
 		int64_t currentexp = stats.getexp();
-		uint16_t currenthp = stats.getstat(Character::MS_HP);
-		uint16_t currentmp = stats.getstat(Character::MS_MP);
-		uint32_t maxhp = stats.gettotal(Character::ES_HP);
-		uint32_t maxmp = stats.gettotal(Character::ES_MP);
+		uint16_t currenthp = stats.getstat(Maplestat::HP);
+		uint16_t currentmp = stats.getstat(Maplestat::MP);
+		uint32_t maxhp = stats.gettotal(Equipstat::HP);
+		uint32_t maxmp = stats.gettotal(Equipstat::MP);
 
 		expbar.draw(position + vector2d<int16_t>(-261, -15));
 		hpbar.draw(position + vector2d<int16_t>(-261, -31));
@@ -112,7 +112,7 @@ namespace IO
 			DrawArgument(position + vector2d<int16_t>(47, -29))
 			);
 		levelset.draw(
-			std::to_string(stats.getstat(Character::MS_LEVEL)),
+			std::to_string(stats.getstat(Maplestat::LEVEL)),
 			DrawArgument(position + vector2d<int16_t>(-480, -24))
 			);
 
@@ -141,13 +141,13 @@ namespace IO
 			uinterface.add(UI_SYSTEM);
 			break;*/
 		case BT_STATS:
-			UI::add(ElementStatsinfo(stats));
+			UI::get().add(ElementStatsinfo(stats));
 			break;
 		case BT_INVENTORY:
-			UI::add(ElementItemInventory(inventory));
+			UI::get().add(ElementItemInventory(inventory));
 			break;
 		case BT_EQUIPS:
-			UI::add(ElementEquipInventory(inventory));
+			UI::get().add(ElementEquipInventory(inventory));
 			break;
 		}
 
@@ -191,16 +191,16 @@ namespace IO
 
 	float UIStatusbar::gethppercent() const
 	{
-		uint16_t currenthp = stats.getstat(Character::MS_HP);
-		uint32_t maxhp = stats.gettotal(Character::ES_HP);
+		uint16_t currenthp = stats.getstat(Maplestat::HP);
+		uint32_t maxhp = stats.gettotal(Equipstat::HP);
 
 		return static_cast<float>(currenthp) / maxhp;
 	}
 
 	float UIStatusbar::getmppercent() const
 	{
-		uint16_t currentmp = stats.getstat(Character::MS_MP);
-		uint32_t maxmp = stats.gettotal(Character::ES_MP);
+		uint16_t currentmp = stats.getstat(Maplestat::MP);
+		uint32_t maxmp = stats.gettotal(Equipstat::MP);
 
 		return static_cast<float>(currentmp) / maxmp;
 	}

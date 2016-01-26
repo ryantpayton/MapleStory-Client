@@ -24,7 +24,6 @@
 namespace IO
 {
 	using std::unordered_map;
-	using Util::vector2d;
 	using Graphics::Texture;
 
 	class BuffIcon

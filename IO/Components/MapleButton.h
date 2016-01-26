@@ -32,8 +32,10 @@ namespace IO
 	public:
 		MapleButton(node, vector2d<int16_t>);
 		MapleButton(node);
+
 		void draw(vector2d<int16_t>) const;
 		rectangle2d<int16_t> bounds(vector2d<int16_t>) const;
+
 	private:
 		map<State, Texture> textures;
 	};

@@ -27,9 +27,12 @@
 
 namespace IO
 {
+	using Character::Clothing;
+	using Net::Session;
+
 	UICharcreation::UICharcreation()
 	{
-		female = Net::Session::getlogin().getaccount().female;
+		female = Session::get().getlogin().getaccount().female;
 
 		using nl::node;
 		node src = nl::nx::ui["Login.img"];
@@ -146,7 +149,7 @@ namespace IO
 		namechar = Textfield(Text::A13M, Text::LEFT, Text::WHITE, txfae, 12);
 		namechar.setstate(Textfield::FOCUSED);
 
-		UI::focustextfield(&namechar);
+		UI::get().focustextfield(&namechar);
 
 		facename = Text(Text::A11M, Text::CENTER, Text::BLACK);
 		hairname = Text(Text::A11M, Text::CENTER, Text::BLACK);
@@ -245,10 +248,10 @@ namespace IO
 		hairname.settext(newchar.gethairstyle()->getname());
 		haircname.settext(newchar.gethairstyle()->getcolor());
 
-		topname.settext(newchar.getequips().getequip(Character::EQL_TOP).getname());
-		botname.settext(newchar.getequips().getequip(Character::EQL_PANTS).getname());
-		shoename.settext(newchar.getequips().getequip(Character::EQL_SHOES).getname());
-		wepname.settext(newchar.getequips().getequip(Character::EQL_WEAPON).getname());
+		topname.settext(newchar.getequips().getequip(Clothing::TOP).getname());
+		botname.settext(newchar.getequips().getequip(Clothing::PANTS).getname());
+		shoename.settext(newchar.getequips().getequip(Clothing::SHOES).getname());
+		wepname.settext(newchar.getequips().getequip(Clothing::WEAPON).getname());
 		gendername.settext(female ? "Female" : "Male");
 	}
 
@@ -257,10 +260,10 @@ namespace IO
 		switch (id)
 		{
 		case BT_CHARC_OK:
-			using namespace Net;
 			if (named)
 			{
-				Session::dispatch(CreateCharPacket(
+				using Net::CreateCharPacket;
+				Session::get().dispatch(CreateCharPacket(
 					namechar.gettext(), 1, faces[female][face], hairs[female][hair], 
 					haircolors[female][haircolor], skins[female][skin], tops[female][top], 
 					bots[female][bot], shoes[female][shoe], weapons[female][weapon], female)
@@ -271,14 +274,16 @@ namespace IO
 				string name = namechar.gettext();
 				if (name.size() >= 4)
 				{
-					UI::disable();
-					UI::focustextfield(nullptr);
+					UI::get().disable();
+					UI::get().focustextfield(nullptr);
 					namechar.setstate(Textfield::NORMAL);
-					Session::dispatch(NameCharPacket(name));
+
+					using Net::NameCharPacket;
+					Session::get().dispatch(NameCharPacket(name));
 				}
 				else
 				{
-					UI::add(ElementLoginNotice(10));
+					UI::get().add(ElementLoginNotice(10));
 					buttons[id]->setstate(Button::NORMAL);
 				}
 			}
@@ -313,9 +318,9 @@ namespace IO
 			else
 			{
 				active = false;
-				UI::focustextfield(nullptr);
-				UI::remove(Element::CHARSELECT);
-				UI::add(ElementCharSelect());
+				UI::get().focustextfield(nullptr);
+				UI::get().remove(Element::CHARSELECT);
+				UI::get().add(ElementCharSelect());
 			}
 			break;
 		}
@@ -367,42 +372,42 @@ namespace IO
 			case BT_CHARC_TOPL:
 				top = (top > 0) ? top - 1 : tops[female].size() - 1;
 				newchar.addequip(tops[female][top]);
-				topname.settext(newchar.getequips().getequip(Character::EQL_TOP).getname());
+				topname.settext(newchar.getequips().getequip(Clothing::TOP).getname());
 				break;
 			case BT_CHARC_TOPR:
 				top = (top < tops[female].size() - 1) ? top + 1 : 0;
 				newchar.addequip(tops[female][top]);
-				topname.settext(newchar.getequips().getequip(Character::EQL_TOP).getname());
+				topname.settext(newchar.getequips().getequip(Clothing::TOP).getname());
 				break;
 			case BT_CHARC_BOTL:
 				bot = (bot > 0) ? bot - 1 : bots[female].size() - 1;
 				newchar.addequip(bots[female][bot]);
-				botname.settext(newchar.getequips().getequip(Character::EQL_PANTS).getname());
+				botname.settext(newchar.getequips().getequip(Clothing::PANTS).getname());
 				break;
 			case BT_CHARC_BOTR:
 				bot = (bot < bots[female].size() - 1) ? bot + 1 : 0;
 				newchar.addequip(bots[female][bot]);
-				botname.settext(newchar.getequips().getequip(Character::EQL_PANTS).getname());
+				botname.settext(newchar.getequips().getequip(Clothing::PANTS).getname());
 				break;
 			case BT_CHARC_SHOESL:
 				shoe = (shoe > 0) ? shoe - 1 : shoes[female].size() - 1;
 				newchar.addequip(shoes[female][shoe]);
-				shoename.settext(newchar.getequips().getequip(Character::EQL_SHOES).getname());
+				shoename.settext(newchar.getequips().getequip(Clothing::SHOES).getname());
 				break;
 			case BT_CHARC_SHOESR:
 				shoe = (shoe < shoes[female].size() - 1) ? shoe + 1 : 0;
 				newchar.addequip(shoes[female][shoe]);
-				shoename.settext(newchar.getequips().getequip(Character::EQL_SHOES).getname());
+				shoename.settext(newchar.getequips().getequip(Clothing::SHOES).getname());
 				break;
 			case BT_CHARC_WEPL:
 				weapon = (weapon > 0) ? weapon - 1 : weapons[female].size() - 1;
 				newchar.addequip(weapons[female][weapon]);
-				wepname.settext(newchar.getequips().getequip(Character::EQL_WEAPON).getname());
+				wepname.settext(newchar.getequips().getequip(Clothing::WEAPON).getname());
 				break;
 			case BT_CHARC_WEPR:
 				weapon = (weapon < weapons[female].size() - 1) ? weapon + 1 : 0;
 				newchar.addequip(weapons[female][weapon]);
-				wepname.settext(newchar.getequips().getequip(Character::EQL_WEAPON).getname());
+				wepname.settext(newchar.getequips().getequip(Clothing::WEAPON).getname());
 				break;
 			case BT_CHARC_GENDERL:
 			case BT_CHARC_GEMDERR:
@@ -422,7 +427,7 @@ namespace IO
 		{
 			if (down)
 			{
-				UI::focustextfield(&namechar);
+				UI::get().focustextfield(&namechar);
 				namechar.setstate(Textfield::FOCUSED);
 			}
 			else if (namechar.getstate() == Textfield::NORMAL)
@@ -432,7 +437,7 @@ namespace IO
 		}
 		else if (down)
 		{
-			UI::focustextfield(nullptr);
+			UI::get().focustextfield(nullptr);
 			namechar.setstate(Textfield::NORMAL);
 		}
 

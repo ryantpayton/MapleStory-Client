@@ -20,28 +20,30 @@
 
 namespace Net
 {
+	using Gameplay::Stage;
+
 	using Gameplay::MapNpcs;
 	MapNpcs& getnpcs()
 	{
-		return Gameplay::Stage::getnpcs();
+		return Stage::get().getnpcs();
 	}
 
 	using Gameplay::MapMobs;
 	MapMobs& getmobs()
 	{
-		return Gameplay::Stage::getmobs();
+		return Stage::get().getmobs();
 	}
 
 	using Gameplay::MapChars;
 	MapChars& getchars()
 	{
-		return Gameplay::Stage::getchars();
+		return Stage::get().getchars();
 	}
 
 	using Gameplay::MapDrops;
 	MapDrops& getdrops()
 	{
-		return Gameplay::Stage::getdrops();
+		return Stage::get().getdrops();
 	}
 
 	void SpawnNpcHandler::handle(InPacket& recv) const
@@ -158,7 +160,7 @@ namespace Net
 	{
 		int32_t oid = recv.readint();
 		int8_t hppercent = recv.readbyte();
-		uint16_t playerlevel = Gameplay::Stage::getplayer().getstats().getstat(Character::MS_LEVEL);
+		uint16_t playerlevel = Stage::get().getplayer().getstats().getstat(Maplestat::LEVEL);
 
 		getmobs().sendmobhp(oid, hppercent, playerlevel);
 	}
@@ -201,7 +203,7 @@ namespace Net
 		recv.skip(61);
 
 		int16_t job = recv.readshort();
-		LookEntry look = Session::getlogin().parselook(recv);
+		LookEntry look = Session::get().getlogin().parselook(recv);
 
 		recv.readint(); //count of 5110000 
 		recv.readint(); // 'itemeffect'
@@ -342,7 +344,7 @@ namespace Net
 	void SpawnPetHandler::handle(InPacket& recv) const
 	{
 		using Character::Char;
-		Char* character = Gameplay::Stage::getcharacter(recv.readint());
+		Char* character = Stage::get().getcharacter(recv.readint());
 
 		if (character == nullptr)
 			return;
@@ -426,7 +428,7 @@ namespace Net
 			else
 			{
 				using Character::Char;
-				Char* charlooter = Gameplay::Stage::getcharacter(cid);
+				Char* charlooter = Stage::get().getcharacter(cid);
 
 				if (charlooter)
 					looter = &charlooter->getphobj();

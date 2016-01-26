@@ -20,7 +20,7 @@
 namespace Character
 {
 	Equip::Equip(const ItemData& eqd, int32_t id, bool cs, int64_t uqi, int64_t exp, 
-		uint8_t sl, uint8_t lv, map<Equipstat, uint16_t> st, string ow, int16_t fl, 
+		uint8_t sl, uint8_t lv, map<Equipstat::Value, uint16_t> st, string ow, int16_t fl, 
 		uint8_t ilv, int16_t iexp, int32_t vic) : Item(eqd, id, cs, uqi, exp, 1, ow, fl) {
 
 		slots = sl;
@@ -38,8 +38,9 @@ namespace Character
 	{
 		int16_t totaldelta = 0;
 		const Clothing& cloth = getcloth();
-		for (Equipstat es = ES_STR; es <= ES_JUMP; es = static_cast<Equipstat>(es + 1))
+		for (auto it = Equipstat::it(); it.hasnext(); it.increment())
 		{
+			Equipstat::Value es = it.get();
 			if (stats.count(es))
 			{
 				totaldelta += stats[es] - cloth.getdefstat(es);
@@ -80,7 +81,7 @@ namespace Character
 		return itemlevel;
 	}
 
-	uint16_t Equip::getstat(Equipstat type) const
+	uint16_t Equip::getstat(Equipstat::Value type) const
 	{
 		return stats.count(type) ? stats.at(type) : 0;
 	}

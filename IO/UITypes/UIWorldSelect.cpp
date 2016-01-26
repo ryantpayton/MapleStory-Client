@@ -27,10 +27,12 @@
 
 namespace IO
 {
+	using Net::Session;
+
 	UIWorldSelect::UIWorldSelect()
 	{
-		worldid = Program::Configuration::getbyte("World");
-		channelid = Program::Configuration::getbyte("Channel");
+		worldid = Configuration::get().getbyte("World");
+		channelid = Configuration::get().getbyte("Channel");
 
 		node back = nl::nx::map["Back"]["login.img"]["back"];
 		node worlds = nl::nx::ui["Login.img"]["WorldSelect"]["BtWorld"]["release"];
@@ -45,7 +47,7 @@ namespace IO
 			new MapleButton(channels["button:GoWorld"], vector2d<int16_t>(200, 170))
 			);
 
-		worldcount = Net::Session::getlogin().getnumworlds();
+		worldcount = Session::get().getlogin().getnumworlds();
 		if (worldcount > 0)
 		{
 			buttons[BT_WORLD0] = unique_ptr<Button>(
@@ -56,7 +58,7 @@ namespace IO
 			sprites.push_back(Sprite(channels["layer:bg"], vector2d<int16_t>(200, 170)));
 			sprites.push_back(Sprite(channels["release"]["layer:15"], vector2d<int16_t>(200, 170)));
 
-			uint8_t chcount = Net::Session::getlogin().getworld(worldid).channelcount;
+			uint8_t chcount = Session::get().getlogin().getworld(worldid).channelcount;
 			if (channelid >= chcount)
 				channelid = 0;
 
@@ -80,12 +82,13 @@ namespace IO
 	{
 		if (id == BT_ENTERWORLD)
 		{
-			UI::disable();
+			UI::get().disable();
 
-			using namespace Net;
-			Session::getlogin().setworldid(worldid);
-			Session::getlogin().setchannelid(channelid);
-			Session::dispatch(CharlistRequestPacket(worldid, channelid));
+			Session::get().getlogin().setworldid(worldid);
+			Session::get().getlogin().setchannelid(channelid);
+
+			using Net::CharlistRequestPacket;
+			Session::get().dispatch(CharlistRequestPacket(worldid, channelid));
 		}
 		else if (id >= BT_WORLD0 && id < BT_CHANNEL0)
 		{

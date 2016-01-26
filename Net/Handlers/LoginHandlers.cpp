@@ -28,6 +28,7 @@
 
 namespace Net
 {
+	using IO::UI;
 	using IO::Element;
 	using IO::ElementLoginNotice;
 	using IO::ElementWorldSelect;
@@ -38,8 +39,8 @@ namespace Net
 	void LoginResultHandler::handle(InPacket& recv) const
 	{
 		// Remove login information.
-		IO::UI::remove(Element::LOGINNOTICE);
-		IO::UI::remove(Element::LOGINWAIT);
+		UI::get().remove(Element::LOGINNOTICE);
+		UI::get().remove(Element::LOGINWAIT);
 
 		// The packet should contain a 'reason' integer which can signify various things.
 		int32_t reason = recv.readint();
@@ -49,57 +50,57 @@ namespace Net
 			switch (reason)
 			{
 			case 2:
-				IO::UI::add(ElementLoginNotice(16));
+				UI::get().add(ElementLoginNotice(16));
 				return;
 			case 7:
-				IO::UI::add(ElementLoginNotice(17));
+				UI::get().add(ElementLoginNotice(17));
 				return;
 			case 23:
 				// The server sends a request to accept the terms of service. For convenience, just auto-accept.
-				Session::dispatch(TOSPacket());
+				Session::get().dispatch(TOSPacket());
 				return;
 			default:
 				// Other reasons.
 				if (reason > 0)
 				{
-					IO::UI::add(ElementLoginNotice(
+					UI::get().add(ElementLoginNotice(
 						static_cast<int8_t>(reason - 1))
 						);
 				}
 			}
 
-			IO::UI::enable();
+			UI::get().enable();
 		}
 		else
 		{
 			// Login successfull. The packet contains information on the account, so we initialise the account with it.
-			Session::getlogin().parseaccount(recv);
+			Session::get().getlogin().parseaccount(recv);
 
 			// Save the Login ID if the box for it on the login panel is checked.
-			if (Program::Configuration::getbool("SaveLogin"))
+			if (Configuration::get().getbool("SaveLogin"))
 			{
-				Program::Configuration::setstring(
-					"Account", Session::getlogin().getaccount().name
+				Configuration::get().setstring(
+					"Account", Session::get().getlogin().getaccount().name
 					);
 			}
 
 			// Request the list of worlds and channels online.
-			Session::dispatch(ServerRequestPacket());
+			Session::get().dispatch(ServerRequestPacket());
 		}
 	}
 
 	void ServerlistHandler::handle(InPacket& recv) const
 	{
 		// Remove the Login UI.
-		IO::UI::remove(Element::LOGIN);
+		UI::get().remove(Element::LOGIN);
 
 		// Parse all worlds.
-		Session::getlogin().parseworlds(recv);
+		Session::get().getlogin().parseworlds(recv);
 
 		// Add the world selection screen to the ui.
-		IO::UI::add(ElementWorldSelect());
+		UI::get().add(ElementWorldSelect());
 
-		IO::UI::enable();
+		UI::get().enable();
 	}
 
 	void CharlistHandler::handle(InPacket& recv) const
@@ -107,15 +108,15 @@ namespace Net
 		recv.skip(1);
 
 		// Parse all characters.
-		Session::getlogin().parsecharlist(recv);
+		Session::get().getlogin().parsecharlist(recv);
 
 		// Remove the world selection screen.
-		IO::UI::remove(Element::WORLDSELECT);
+		UI::get().remove(Element::WORLDSELECT);
 
 		// Add the character selection screen.
-		IO::UI::add(ElementCharSelect());
+		UI::get().add(ElementCharSelect());
 
-		IO::UI::enable();
+		UI::get().enable();
 	}
 
 	void CharnameResponseHandler::handle(InPacket& recv) const
@@ -125,15 +126,15 @@ namespace Net
 		bool used = recv.readbool();
 
 		if (used)
-			IO::UI::add(ElementLoginNotice(5));
+			UI::get().add(ElementLoginNotice(5));
 
 		// Notify character creation screen.
-		UICharcreation* uicc = IO::UI::getelement<UICharcreation>(Element::CHARCREATION);
+		UICharcreation* uicc = UI::get().getelement<UICharcreation>(Element::CHARCREATION);
 
 		if (uicc)
 			uicc->nameresult(used);
 
-		IO::UI::enable();
+		UI::get().enable();
 	}
 
 	void AddNewCharEntryHandler::handle(InPacket& recv) const
@@ -141,15 +142,15 @@ namespace Net
 		recv.skip(1);
 
 		// Parse info on the new character.
-		Session::getlogin().addcharentry(recv);
+		Session::get().getlogin().addcharentry(recv);
 
 		// Remove the character creation ui.
-		IO::UI::remove(Element::CHARCREATION);
+		UI::get().remove(Element::CHARCREATION);
 
 		// Readd the updated character selection.
-		IO::UI::add(ElementCharSelect());
+		UI::get().add(ElementCharSelect());
 
-		IO::UI::enable();
+		UI::get().enable();
 	}
 
 	void DeleteCharResponseHandler::handle(InPacket& recv) const
@@ -162,11 +163,11 @@ namespace Net
 		// Show the result to the user.
 		if (success)
 		{
-			IO::UI::add(ElementLoginNotice(55));
+			UI::get().add(ElementLoginNotice(55));
 		}
 		else
 		{
-			IO::UI::add(ElementLoginNotice(93));
+			UI::get().add(ElementLoginNotice(93));
 		}
 	}
 
@@ -191,10 +192,10 @@ namespace Net
 
 		// Attempt to reconnect to the server and if successfull, login to the game.
 		int32_t cid = recv.readint();
-		bool connected = Session::reconnect(addrstr.c_str(), portstr.c_str());
+		bool connected = Session::get().reconnect(addrstr.c_str(), portstr.c_str());
 		if (connected)
-			Session::dispatch(PlayerLoginPacket(cid));
+			Session::get().dispatch(PlayerLoginPacket(cid));
 		else
-			Session::disconnect();
+			Session::get().disconnect();
 	}
 }

@@ -21,8 +21,6 @@
 
 namespace Gameplay
 {
-	using Util::rectangle2d;
-
 	class Drop : public MapObject
 	{
 	public:

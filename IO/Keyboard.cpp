@@ -32,6 +32,7 @@
 
 #else
 #include <Windows.h>
+#define WIN32_LEAN_AND_MEAN
 
 #define LEFTKEY VK_LEFT
 #define RIGHTKEY VK_RIGHT
@@ -84,19 +85,19 @@ namespace IO
 		return SHIFTKEY;
 	}
 
-	Keyboard::Keymapping Keyboard::gettextmapping(int32_t keycode) const
+	Keyboard::Keymapping Keyboard::gettextmapping(int32_t keycode, bool shift) const
 	{
 		if (textactions.count(keycode))
 		{
 			return Keymapping(KT_ACTION, textactions.at(keycode));
 		}
-		else if (keycode > 47 && keycode < 58)
+		else if (keycode > 47 && keycode < 65)
 		{
-			return Keymapping(KT_NUMBER, keycode);
+			return Keymapping(KT_NUMBER, keycode - (shift ? 15 : 0));
 		}
 		else if (keycode > 64 && keycode < 91)
 		{
-			return Keymapping(KT_LETTER, keycode);
+			return Keymapping(KT_LETTER, keycode + (shift ? 0 : 32));
 		}
 		else
 		{

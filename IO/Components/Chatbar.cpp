@@ -60,7 +60,7 @@ namespace IO
 		chatfield.setstate(chatopen ? Textfield::NORMAL : Textfield::DISABLED);
 		chatfield.setonreturn(Consumer<string>([](string msg) {
 			using Net::GeneralChatPacket;
-			Net::Session::dispatch(GeneralChatPacket(msg, true));
+			Net::Session::get().dispatch(GeneralChatPacket(msg, true));
 		}));
 
 		closedtext = Text(Text::A11M, Text::LEFT, Text::WHITE);
@@ -71,20 +71,20 @@ namespace IO
 	void Chatbar::draw(float inter) const
 	{
 		using Graphics::DrawArgument;
-		chatspace.at(chatopen).draw(DrawArgument(position));
+		chatspace[chatopen].draw(DrawArgument(position));
 		chatenter.draw(DrawArgument(position));
 
 		UIElement::draw(inter);
 
 		if (chatopen)
 		{
-			chattargets.at(chattarget).draw(DrawArgument(position + vector2d<int16_t>(0, 2)));
+			chattargets[chattarget].draw(DrawArgument(position + vector2d<int16_t>(0, 2)));
 			chatcover.draw(DrawArgument(position));
 			chatfield.draw(position);
 		}
 		else if (lines.size() > 0)
 		{
-			closedtext.drawline(lines.back(), position + vector2d<int16_t>(-500, -60));
+			closedtext.draw(position + vector2d<int16_t>(-500, -60));
 		}
 	}
 
@@ -93,6 +93,9 @@ namespace IO
 		UIElement::update();
 
 		chatfield.update();
+
+		if (lines.size() > 0)
+			closedtext.settext(lines.back());
 	}
 
 	void Chatbar::buttonpressed(uint16_t id)
@@ -136,7 +139,7 @@ namespace IO
 		{
 			if (down)
 			{
-				UI::focustextfield(&chatfield);
+				UI::get().focustextfield(&chatfield);
 				chatfield.setstate(Textfield::FOCUSED);
 			}
 			else if (chatfield.getstate() == Textfield::NORMAL)
@@ -146,7 +149,7 @@ namespace IO
 		}
 		else if (down)
 		{
-			UI::focustextfield(nullptr);
+			UI::get().focustextfield(nullptr);
 			chatfield.setstate(Textfield::NORMAL);
 		}
 

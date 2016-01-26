@@ -27,13 +27,15 @@
 namespace Net
 {
 	using Character::Inventory; 
+	using Gameplay::Stage;
+	using IO::UI;
 	using IO::Element;
 	using IO::UIEquipInventory;
 	using IO::UIItemInventory;
 
 	void GatherResultHandler::handle(InPacket&) const
 	{
-		UIItemInventory* itinvent = IO::UI::getelement<UIItemInventory>(Element::ITEMINVENTORY);
+		UIItemInventory* itinvent = UI::get().getelement<UIItemInventory>(Element::ITEMINVENTORY);
 
 		if (itinvent)
 			itinvent->enablesort();
@@ -41,7 +43,7 @@ namespace Net
 
 	void SortResultHandler::handle(InPacket&) const
 	{
-		UIItemInventory* itinvent = IO::UI::getelement<UIItemInventory>(Element::ITEMINVENTORY);
+		UIItemInventory* itinvent = UI::get().getelement<UIItemInventory>(Element::ITEMINVENTORY);
 
 		if (itinvent)
 			itinvent->enablegather();
@@ -51,7 +53,7 @@ namespace Net
 	{
 		recv.readbool(); // 'updatetick'
 
-		Inventory& inventory = Gameplay::Stage::getplayer().getinvent();
+		Inventory& inventory = Stage::get().getplayer().getinvent();
 
 		int8_t size = recv.readbyte();
 		for (int8_t i = 0; i < size; i++)
@@ -72,8 +74,8 @@ namespace Net
 			else
 				inventory.modify(invtype, pos, mode, arg, move);
 
-			UIEquipInventory* eqinvent = IO::UI::getelement<UIEquipInventory>(Element::EQUIPINVENTORY);
-			UIItemInventory* itinvent = IO::UI::getelement<UIItemInventory>(Element::ITEMINVENTORY);
+			UIEquipInventory* eqinvent = UI::get().getelement<UIEquipInventory>(Element::EQUIPINVENTORY);
+			UIItemInventory* itinvent = UI::get().getelement<UIItemInventory>(Element::ITEMINVENTORY);
 
 			switch (move)
 			{
@@ -84,8 +86,8 @@ namespace Net
 					if (eqinvent)
 						eqinvent->modify(pos, mode, arg);
 
-					Gameplay::Stage::getplayer().changecloth(-pos);
-					Gameplay::Stage::getplayer().changecloth(-arg);
+					Stage::get().getplayer().changecloth(-pos);
+					Stage::get().getplayer().changecloth(-arg);
 					break;
 				case Inventory::EQUIP:
 				case Inventory::USE:
@@ -107,7 +109,7 @@ namespace Net
 					if (itinvent)
 						itinvent->modify(Inventory::EQUIP, arg, 0, 0);
 
-					Gameplay::Stage::getplayer().changecloth(-pos);
+					Stage::get().getplayer().changecloth(-pos);
 				}
 				else if (arg < 0)
 				{
@@ -117,12 +119,13 @@ namespace Net
 					if (itinvent)
 						itinvent->modify(Inventory::EQUIP, pos, 3, 0);
 
-					Gameplay::Stage::getplayer().changecloth(-arg);
+					Stage::get().getplayer().changecloth(-arg);
 				}
 				break;
 			}
 		}
 
-		IO::UI::enable();
+
+		UI::get().enable();
 	}
 }

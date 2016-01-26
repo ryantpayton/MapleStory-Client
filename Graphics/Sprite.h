@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Animation.h"
+#include "Animation.h"
 #include "nlnx\node.hpp"
 
 namespace Graphics
