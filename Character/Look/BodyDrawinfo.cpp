@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "BodyDrawinfo.h"
+#include "Body.h"
 #include "nlnx\nx.hpp"
 #include "nlnx\node.hpp"
 
@@ -34,7 +34,7 @@ namespace Character
 
 		for (node stancenode : bodynode)
 		{
-			string stance = stancenode.name();
+			string ststr = stancenode.name();
 
 			uint8_t frame = 0;
 			node framenode = stancenode[std::to_string(frame)];
@@ -52,34 +52,24 @@ namespace Character
 				node actionnode = framenode.resolve("action");
 				if (actionnode.data_type() == node::type::string)
 				{
-					string acstance = actionnode.get_string();
+					string acstr = actionnode.get_string();
 					uint8_t acframe = framenode["frame"];
-					bodyactions[stance][frame] = BodyAction(acstance, acframe, delay);
+					Stance::Value acstance = Stance::bystring(acstr);
+					bodyactions[ststr][frame] = BodyAction(acstance, acframe, delay);
 				}
 				else
 				{
+					Stance::Value stance = Stance::bystring(ststr);
 					stancedelays[stance][frame] = delay;
-					map<CharacterLayer, map<string, vector2d<int16_t>>> bodyshiftmap;
 
+					map<Body::Layer, map<string, vector2d<int16_t>>> bodyshiftmap;
 					for (node partnode : framenode)
 					{
 						string part = partnode.name();
 						if (part != "delay" && part != "face")
 						{
-							CharacterLayer z;
 							string zstr = partnode["z"];
-							if (zstr == "armOverHair")
-								z = CL_ARMOHAIR;
-							else if (zstr == "handOverHair")
-								z = CL_RHAND;
-							else if (zstr == "body" || zstr == "backBody")
-								z = CL_BODY;
-							else if (zstr == "handBelowWeapon")
-								z = CL_LHAND;
-							else if (zstr == "arm")
-								z = CL_ARM;
-							else
-								continue;
+							Body::Layer z = Body::layerbystring(zstr);
 
 							for (node mapnode : partnode["map"])
 							{
@@ -88,18 +78,20 @@ namespace Character
 						}
 					}
 
-					node headmap = headnode[stance][std::to_string(frame)]["head"]["map"];
+					node headmap = headnode[ststr][std::to_string(frame)]["head"]["map"];
 					for (node mapnode : headmap)
 					{
-						bodyshiftmap[CL_HEAD][mapnode.name()] = vector2d<int16_t>(mapnode);
+						bodyshiftmap[Body::HEAD][mapnode.name()] = vector2d<int16_t>(mapnode);
 					}
 
-					bodyposmap[stance][frame] = bodyshiftmap[CL_BODY]["navel"];
-					armposmap[stance][frame] = bodyshiftmap.count(CL_ARM) ? (bodyshiftmap[CL_ARM]["hand"] - bodyshiftmap[CL_ARM]["navel"]) : (bodyshiftmap[CL_ARMOHAIR]["hand"] - bodyshiftmap[CL_ARMOHAIR]["navel"]);
-					handposmap[stance][frame] = bodyshiftmap[CL_LHAND]["handMove"];
-					headposmap[stance][frame] = bodyshiftmap[CL_BODY]["neck"] - bodyshiftmap[CL_HEAD]["neck"];
-					faceposmap[stance][frame] = bodyshiftmap[CL_BODY]["neck"] - bodyshiftmap[CL_HEAD]["neck"] + bodyshiftmap[CL_HEAD]["brow"];
-					hairposmap[stance][frame] = bodyshiftmap[CL_HEAD]["brow"] - bodyshiftmap[CL_HEAD]["neck"] + bodyshiftmap[CL_BODY]["neck"];
+					bodyposmap[stance][frame] = bodyshiftmap[Body::BODY]["navel"];
+					armposmap[stance][frame] = bodyshiftmap.count(Body::ARM) ?
+						(bodyshiftmap[Body::ARM]["hand"] - bodyshiftmap[Body::ARM]["navel"]) :
+						(bodyshiftmap[Body::ARMOVERHAIR]["hand"] - bodyshiftmap[Body::ARMOVERHAIR]["navel"]);
+					handposmap[stance][frame] = bodyshiftmap[Body::LEFTHAND]["handMove"];
+					headposmap[stance][frame] = bodyshiftmap[Body::BODY]["neck"] - bodyshiftmap[Body::HEAD]["neck"];
+					faceposmap[stance][frame] = bodyshiftmap[Body::BODY]["neck"] - bodyshiftmap[Body::HEAD]["neck"] + bodyshiftmap[Body::HEAD]["brow"];
+					hairposmap[stance][frame] = bodyshiftmap[Body::HEAD]["brow"] - bodyshiftmap[Body::HEAD]["neck"] + bodyshiftmap[Body::BODY]["neck"];
 				}
 
 				frame++;
@@ -108,7 +100,7 @@ namespace Character
 		}
 	}
 
-	vector2d<int16_t> BodyDrawinfo::getbodypos(string stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::getbodypos(Stance::Value stance, uint8_t pos) const
 	{
 		if (bodyposmap.count(stance))
 		{
@@ -120,7 +112,7 @@ namespace Character
 		return vector2d<int16_t>();
 	}
 
-	vector2d<int16_t> BodyDrawinfo::getarmpos(string stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::getarmpos(Stance::Value stance, uint8_t pos) const
 	{
 		if (armposmap.count(stance))
 		{
@@ -132,7 +124,7 @@ namespace Character
 		return vector2d<int16_t>();
 	}
 
-	vector2d<int16_t> BodyDrawinfo::gethandpos(string stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::gethandpos(Stance::Value stance, uint8_t pos) const
 	{
 		if (handposmap.count(stance))
 		{
@@ -144,7 +136,7 @@ namespace Character
 		return vector2d<int16_t>();
 	}
 
-	vector2d<int16_t> BodyDrawinfo::getheadpos(string stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::getheadpos(Stance::Value stance, uint8_t pos) const
 	{
 		if (headposmap.count(stance))
 		{
@@ -156,7 +148,7 @@ namespace Character
 		return vector2d<int16_t>();
 	}
 
-	vector2d<int16_t> BodyDrawinfo::gethairpos(string stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::gethairpos(Stance::Value stance, uint8_t pos) const
 	{
 		if (hairposmap.count(stance))
 		{
@@ -168,7 +160,7 @@ namespace Character
 		return vector2d<int16_t>();
 	}
 
-	vector2d<int16_t> BodyDrawinfo::getfacepos(string stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::getfacepos(Stance::Value stance, uint8_t pos) const
 	{
 		if (faceposmap.count(stance))
 		{
@@ -180,7 +172,7 @@ namespace Character
 		return vector2d<int16_t>();
 	}
 
-	uint8_t BodyDrawinfo::nextframe(string stance, uint8_t pos) const
+	uint8_t BodyDrawinfo::nextframe(Stance::Value stance, uint8_t pos) const
 	{
 		if (stancedelays.count(stance))
 		{
@@ -192,7 +184,7 @@ namespace Character
 		return 0;
 	}
 
-	uint16_t BodyDrawinfo::getdelay(string stance, uint8_t pos) const
+	uint16_t BodyDrawinfo::getdelay(Stance::Value stance, uint8_t pos) const
 	{
 		if (stancedelays.count(stance))
 		{

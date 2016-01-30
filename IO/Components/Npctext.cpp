@@ -21,6 +21,8 @@
 
 namespace IO
 {
+	using Data::DataFactory;
+
 	Npctext::Npctext(string text, int16_t maxwidth)
 	{
 		vector<string> strings;
@@ -153,7 +155,7 @@ namespace IO
 			try
 			{
 				using Character::ItemData;
-				const ItemData& idata = Data::getitemdata(std::stoi(str.substr(pos + 2, next)));
+				const ItemData& idata = DataFactory::get().getitemdata(std::stoi(str.substr(pos + 2, next)));
 				if (idata.isloaded())
 				{
 					str.replace(str.begin() + pos, str.begin() + next + 1, idata.getname());
@@ -220,7 +222,7 @@ namespace IO
 			try
 			{
 				using Character::ItemData;
-				const ItemData& idata = Data::getitemdata(std::stoi(str.substr(pos + 2, next)));
+				const ItemData& idata = DataFactory::get().getitemdata(std::stoi(str.substr(pos + 2, next)));
 				if (idata.isloaded())
 				{
 					Image image = { idata.geticon(false), offset };

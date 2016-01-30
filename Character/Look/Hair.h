@@ -16,30 +16,65 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Character\Look\BodyDrawinfo.h"
+#include "BodyDrawinfo.h"
 #include "Graphics\Texture.h"
+#include "Util\Enum.h"
+#include "Util\Console.h"
 
 namespace Character
 {
 	using Graphics::Texture;
 	using Graphics::DrawArgument;
 
-	class Facetype
+	class Hair
 	{
 	public:
-		Facetype(int32_t);
-		Facetype();
-		~Facetype();
+		static const size_t NUM_LAYERS = 7;
+		enum Layer
+		{
+			NONE, DEFAULT, BELOWBODY, OVERHEAD,
+			SHADE, BACK, BELOWCAP
+		};
 
-		void draw(string, CharacterLayer, uint8_t, const DrawArgument&) const;
-		uint8_t nextframe(string, uint8_t) const;
-		int16_t getdelay(string, uint8_t) const;
+		static EnumIterator<Layer> layerit()
+		{
+			return EnumIterator<Layer>(DEFAULT, BELOWCAP);
+		}
+
+		static Layer layerbystring(string name)
+		{
+			if (name == "backHairBelowCapWide" || name == "backHairBelowCapNarrow")
+				return BELOWCAP;
+
+			static string layernames[NUM_LAYERS] =
+			{
+				"", "hair", "hairBelowBody", "hairOverHead",
+				"hairShade", "backHair", "backHairBelowCap"
+			};
+
+			for (auto it = layerit(); it.hasnext(); it.increment())
+			{
+				Layer layer = it.get();
+				if (layernames[layer] == name)
+					return layer;
+			}
+
+			Console::get().print("Unhandled hair layer: " + name);
+
+			return NONE;
+		}
+
+		Hair(int32_t hairid, const BodyDrawinfo& drawinfo);
+		Hair();
+
+		void draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
 		string getname() const;
+		string getcolor() const;
 
 	private:
-		map<string, map<CharacterLayer, map<uint8_t, Texture>>> stances;
-		map<string, map<uint8_t, int16_t>> delays;
+		unordered_map<Layer, unordered_map<uint8_t, Texture>> stances[Stance::LENGTH];
 		string name;
+		string color;
 	};
 }
 

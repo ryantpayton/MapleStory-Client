@@ -55,8 +55,8 @@ namespace Character
 		int8_t update(const Physics& physics) override;
 		// Set flipped ignore if attacking.
 		void setflip(bool flipped) override;
-		// Set stance ignore if attacking.
-		void setstance(Stance stance) override;
+		// Set state ignore if attacking.
+		void setstate(State stance) override;
 
 		// Respawn the player at the given position.
 		void respawn(vector2d<int16_t> position);
@@ -89,9 +89,9 @@ namespace Character
 		// Apply a buff to the player.
 		void givebuff(Buff buff);
 		// Cancel a buff.
-		void cancelbuff(Buffstat buffstat);
+		void cancelbuff(Buffstat::Value buffstat);
 		// Return wether the buff is active.
-		bool hasbuff(Buffstat buffstat) const;
+		bool hasbuff(Buffstat::Value buffstat) const;
 
 		// Returns the current walking force, calculated from the total ES_SPEED stat.
 		float getwforce() const;
@@ -139,7 +139,7 @@ namespace Character
 		Telerock telerock;
 		Monsterbook monsterbook;
 
-		map<Buffstat, Buff> buffs;
+		map<Buffstat::Value, Buff> buffs;
 
 		map<Keyboard::Keyaction, bool> keysdown;
 

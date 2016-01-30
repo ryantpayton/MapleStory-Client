@@ -59,7 +59,8 @@ namespace IO
 
 	void UIBuffList::addbuff(int32_t buffid, int32_t duration)
 	{
-		const Texture* texture = Data::getskill(buffid).geticon(0);
+		using Data::DataFactory;
+		const Texture* texture = DataFactory::get().getskill(buffid).geticon(0);
 		if (texture)
 			icons[buffid] = BuffIcon(texture, duration);
 	}

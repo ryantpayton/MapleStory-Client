@@ -20,7 +20,7 @@
 
 namespace Character
 {
-	Buff::Buff(Buffstat s, int16_t v, int32_t i, int32_t d)
+	Buff::Buff(Buffstat::Value s, int16_t v, int32_t i, int32_t d)
 	{
 		stat = s;
 		value = v;
@@ -39,7 +39,7 @@ namespace Character
 			effect->applyto(value, stats);
 	}
 
-	Buffstat Buff::getstat() const
+	Buffstat::Value Buff::getstat() const
 	{
 		return stat;
 	}

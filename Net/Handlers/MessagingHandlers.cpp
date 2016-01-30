@@ -45,7 +45,8 @@ namespace Net
 			{
 				int32_t itemid = recv.readint();
 				int32_t qty = recv.readint();
-				const ItemData& idata = Data::getitemdata(itemid);
+				using Data::DataFactory;
+				const ItemData& idata = DataFactory::get().getitemdata(itemid);
 				if (!idata.isloaded())
 					return;
 

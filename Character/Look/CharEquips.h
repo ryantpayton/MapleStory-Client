@@ -21,33 +21,28 @@
 
 namespace Character
 {
-	using std::uint8_t;
-	using std::map;
-	using std::string;
-	using Graphics::DrawArgument;
-
 	class CharEquips
 	{
 	public:
 		CharEquips();
-		~CharEquips();
 
-		void draw(Clothing::Slot slot, string stance, CharacterLayer layer, 
-			uint8_t frame, const DrawArgument& args) const;
+		void draw(Slot::Value slot, Stance::Value stance, Clothing::Layer layer, uint8_t frame, const DrawArgument& args) const;
 		void addequip(const Clothing& cloth);
-		void removeequip(Clothing::Slot slot);
+		void removeequip(Slot::Value slot);
 
-		bool isvisible(Clothing::Slot slot) const;
+		bool isvisible(Slot::Value slot) const;
 		bool hasoverall() const;
 		bool hasweapon() const;
 		bool istwohanded() const;
-		Weapon::WpType getweapontype() const;
-		const Clothing& getequip(Clothing::Slot slot) const;
+		Weapon::Type getweapontype() const;
+		string getequipname(Slot::Value slot) const;
+		const Clothing* getequip(Slot::Value slot) const;
 		const Weapon* getweapon() const;
 
 	private:
-		map<Clothing::Slot, const Clothing*> equips;
-		Clothing nullequip;
+		bool checkorfalse(Slot::Value slot, bool(*check)(const Clothing*)) const;
+
+		const Clothing* equips[Slot::LENGTH];
 	};
 }
 

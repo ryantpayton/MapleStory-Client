@@ -24,24 +24,24 @@ namespace Character
 	using std::unordered_map;
 	using std::unique_ptr;
 
-	unordered_map<Buffstat, unique_ptr<BuffEffect>> buffeffects;
+	unordered_map<Buffstat::Value, unique_ptr<BuffEffect>> buffeffects;
 
 	void initbuffeffects()
 	{
-		buffeffects[MAPLE_WARRIOR] = unique_ptr<BuffEffect>(new MapleWarriorEffect());
-		buffeffects[STANCE] = unique_ptr<BuffEffect>(new StanceEffect());
-		buffeffects[BOOSTER] = unique_ptr<BuffEffect>(new BoosterEffect());
-		buffeffects[WATK] = unique_ptr<BuffEffect>(new WATKEffect());
-		buffeffects[WDEF] = unique_ptr<BuffEffect>(new WDEFEffect());
-		buffeffects[MATK] = unique_ptr<BuffEffect>(new MATKEffect());
-		buffeffects[MDEF] = unique_ptr<BuffEffect>(new MDEFEffect());
-		buffeffects[SPEED] = unique_ptr<BuffEffect>(new SPEEDEffect());
-		buffeffects[JUMP] = unique_ptr<BuffEffect>(new JUMPEffect());
-		buffeffects[HYPERBODYHP] = unique_ptr<BuffEffect>(new HyperbodyHPEffect());
-		buffeffects[HYPERBODYMP] = unique_ptr<BuffEffect>(new HyperbodyMPEffect());
+		buffeffects[Buffstat::MAPLE_WARRIOR] = unique_ptr<BuffEffect>(new MapleWarriorEffect());
+		buffeffects[Buffstat::STANCE] = unique_ptr<BuffEffect>(new StanceEffect());
+		buffeffects[Buffstat::BOOSTER] = unique_ptr<BuffEffect>(new BoosterEffect());
+		buffeffects[Buffstat::WATK] = unique_ptr<BuffEffect>(new WATKEffect());
+		buffeffects[Buffstat::WDEF] = unique_ptr<BuffEffect>(new WDEFEffect());
+		buffeffects[Buffstat::MATK] = unique_ptr<BuffEffect>(new MATKEffect());
+		buffeffects[Buffstat::MDEF] = unique_ptr<BuffEffect>(new MDEFEffect());
+		buffeffects[Buffstat::SPEED] = unique_ptr<BuffEffect>(new SPEEDEffect());
+		buffeffects[Buffstat::JUMP] = unique_ptr<BuffEffect>(new JUMPEffect());
+		buffeffects[Buffstat::HYPERBODYHP] = unique_ptr<BuffEffect>(new HyperbodyHPEffect());
+		buffeffects[Buffstat::HYPERBODYMP] = unique_ptr<BuffEffect>(new HyperbodyMPEffect());
 	}
 
-	const BuffEffect* geteffectbystat(Buffstat stat)
+	const BuffEffect* geteffectbystat(Buffstat::Value stat)
 	{
 		if (buffeffects.count(stat))
 			return buffeffects[stat].get();

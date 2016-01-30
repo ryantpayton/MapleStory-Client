@@ -26,3 +26,6 @@
 
 // JOURNEY_USE_CRYPTO : Use cryptography for communication with the server.
 #define JOURNEY_USE_CRYPTO
+
+// JOURNEY_PRINT_WARNINGS : Print warnings and minor errors to the console.
+#define JOURNEY_PRINT_WARNINGS

@@ -75,13 +75,12 @@ namespace Net
 		for (auto it = Maplestat::it(); it.hasnext(); it.increment())
 		{
 			Maplestat::Value stat = it.get();
-
 			if (Maplestat::compare(stat, updatemask))
 			{
 				switch (stat)
 				{
 				case Maplestat::SKIN:
-					player.getlook().setbody(static_cast<int8_t>(recv.readshort()));
+					player.getlook().setbody(recv.readshort());
 					break;
 				case Maplestat::FACE:
 					player.getlook().setface(recv.readint());
@@ -90,7 +89,7 @@ namespace Net
 					player.getlook().sethair(recv.readint());
 					break;
 				case Maplestat::LEVEL:
-					player.getstats().setstat(stat, static_cast<uint8_t>(recv.readbyte()));
+					player.getstats().setstat(stat, recv.readbyte());
 					//parent.getstage().showchareffect(0);
 					break;
 				case Maplestat::EXP:
@@ -137,15 +136,15 @@ namespace Net
 		int64_t firstmask = recv.readlong();
 		int64_t secondmask = recv.readlong();
 
-		for (size_t i = 0; i < Character::FIRST_BUFFS; i++)
+		for (size_t i = 0; i < Buffstat::FIRST_BUFFS; i++)
 		{
-			Buffstat buffvalue = Character::firstbuffs[i];
+			Buffstat::Value buffvalue = Buffstat::firstbyid(i);
 			if (firstmask & buffvalue)
 				handlebuff(recv, buffvalue);
 		}
-		for (size_t i = 0; i < Character::SECOND_BUFFS; i++)
+		for (size_t i = 0; i < Buffstat::SECOND_BUFFS; i++)
 		{
-			Buffstat buffvalue = Character::secondbuffs[i];
+			Buffstat::Value buffvalue = Buffstat::secondbyid(i);
 			if (secondmask & buffvalue)
 				handlebuff(recv, buffvalue);
 		}
@@ -153,7 +152,7 @@ namespace Net
 		getplayer().recalcstats(false);
 	}
 
-	void ApplyBuffHandler::handlebuff(InPacket& recv, Buffstat bs) const
+	void ApplyBuffHandler::handlebuff(InPacket& recv, Buffstat::Value bs) const
 	{
 		int16_t value = recv.readshort();
 		int32_t skillid = recv.readint();
@@ -167,7 +166,7 @@ namespace Net
 			bufflist->addbuff(skillid, duration);
 	}
 
-	void CancelBuffHandler::handlebuff(InPacket&, Buffstat bs) const
+	void CancelBuffHandler::handlebuff(InPacket&, Buffstat::Value bs) const
 	{
 		getplayer().cancelbuff(bs);
 	}

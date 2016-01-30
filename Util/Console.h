@@ -16,27 +16,31 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Character\Look\BodyDrawinfo.h"
-#include "Graphics\Texture.h"
+#include "Singleton.h"
+#include "Journey.h"
+#include <hash_set>
+#include <string>
+#include <iostream>
 
-namespace Character
+using std::hash_set;
+using std::string;
+
+class Console : public Singleton<Console>
 {
-	using::Graphics::Texture;
-	using::Graphics::DrawArgument;
-
-	class Hairstyle
+public:
+	void print(string str)
 	{
-	public:
-		Hairstyle(int, const BodyDrawinfo&);
-		Hairstyle();
-		~Hairstyle();
-		void draw(string, CharacterLayer, uint8_t, const DrawArgument&) const;
-		const string& getname() const;
-		const string& getcolor() const;
-	private:
-		map<string, map<CharacterLayer, map<uint8_t, Texture>>> stances;
-		string name;
-		string color;
-	};
-}
+#ifdef JOURNEY_PRINT_WARNINGS
 
+		if (!printed.count(str))
+		{
+			std::cout << str << std::endl;
+			printed.insert(str);
+		}
+
+#endif
+	}
+
+private:
+	hash_set<string> printed;
+};

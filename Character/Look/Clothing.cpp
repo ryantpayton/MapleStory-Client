@@ -22,18 +22,18 @@ namespace Character
 {
 	Clothing::Clothing(int32_t equipid, const BodyDrawinfo& drawinfo) : ItemData(equipid)
 	{
-		static const CharacterLayer layers[15] = 
+		static const Layer layers[15] = 
 		{
-			CL_HAT, CL_FACEACC, CL_EYEACC, CL_EARRINGS, CL_TOP, CL_MAIL,
-			CL_PANTS, CL_SHOES, CL_GLOVE, CL_SHIELD, CL_CAPE, CL_RING,
-			CL_PENDANT, CL_BELT, CL_MEDAL
+			Layer::HAT, Layer::FACEACC, Layer::EYEACC, Layer::EARRINGS, Layer::TOP, Layer::MAIL,
+			Layer::PANTS, Layer::SHOES, Layer::GLOVE, Layer::SHIELD, Layer::CAPE, Layer::RING,
+			Layer::PENDANT, Layer::BELT, Layer::MEDAL
 		};
 
-		static const Slot equipslots[15] =
+		static const Slot::Value equipslots[15] =
 		{
-			CAP, FACEACC, EYEACC, EARRINGS, TOP, TOP,
-			PANTS, SHOES, GLOVES, SHIELD, CAPE, RING,
-			PENDANT, BELT, MEDAL
+			Slot::CAP, Slot::FACEACC, Slot::EYEACC, Slot::EARRINGS, Slot::TOP, Slot::TOP,
+			Slot::PANTS, Slot::SHOES, Slot::GLOVES, Slot::SHIELD, Slot::CAPE, Slot::RING,
+			Slot::PENDANT, Slot::BELT, Slot::MEDAL
 		};
 
 		static const string equiptypes[15] = 
@@ -43,7 +43,7 @@ namespace Character
 			"PENDANT", "BELT", "MEDAL"
 		};
 
-		CharacterLayer chlayer;
+		Layer chlayer;
 		int32_t index = (equipid / 10000) - 100;
 		if (index >= 0 && index < 15)
 		{
@@ -53,8 +53,8 @@ namespace Character
 		}
 		else if (index >= 30 && index <= 49)
 		{
-			chlayer = CL_WEAPON;
-			eqslot = WEAPON;
+			chlayer = Layer::WEAPON;
+			eqslot = Slot::WEAPON;
 
 			static const string weapontypes[20] =
 			{
@@ -72,149 +72,124 @@ namespace Character
 		}
 		else
 		{
-			chlayer = CL_BASE;
-			eqslot = NONE;
+			chlayer = Layer::CAPE;
+			eqslot = Slot::NONE;
 			type = "";
 		}
 
 		using nl::node;
 		node equipnode = nl::nx::character[getcategory()]["0" + std::to_string(equipid) + ".img"];
-		for (node stancenode : equipnode)
+
+		node infonode = equipnode["info"];
+		cash = infonode["cash"].get_bool();
+		tradeblock = infonode["tradeBlock"].get_bool();
+		price = infonode["price"];
+		slots = infonode["tuc"];
+		reqstats[Maplestat::LEVEL] = infonode["reqLevel"];
+		reqstats[Maplestat::JOB] = infonode["reqJob"];
+		reqstats[Maplestat::STR] = infonode["reqSTR"];
+		reqstats[Maplestat::DEX] = infonode["reqDEX"];
+		reqstats[Maplestat::INT] = infonode["reqINT"];
+		reqstats[Maplestat::LUK] = infonode["reqLUK"];
+		defstats[Equipstat::STR] = infonode["incSTR"];
+		defstats[Equipstat::DEX] = infonode["incDEX"];
+		defstats[Equipstat::INT] = infonode["incINT"];
+		defstats[Equipstat::LUK] = infonode["incLUK"];
+		defstats[Equipstat::WATK] = infonode["incPAD"];
+		defstats[Equipstat::WDEF] = infonode["incPDD"];
+		defstats[Equipstat::MAGIC] = infonode["incMAD"];
+		defstats[Equipstat::MDEF] = infonode["incMDD"];
+		defstats[Equipstat::HP] = infonode["incMHP"];
+		defstats[Equipstat::MP] = infonode["incMMP"];
+		defstats[Equipstat::ACC] = infonode["incACC"];
+		defstats[Equipstat::AVOID] = infonode["incEVA"];
+		defstats[Equipstat::HANDS] = infonode["incHANDS"];
+		defstats[Equipstat::SPEED] = infonode["incSPEED"];
+		defstats[Equipstat::JUMP] = infonode["incJUMP"];
+
+		for (auto it = Stance::getit(); it.hasnext(); it.increment())
 		{
-			string stance = stancenode.name();
-			if (stance == "info")
-			{
-				cash = stancenode["cash"].get_bool();
-				tradeblock = stancenode["tradeBlock"].get_bool();
-				price = stancenode["price"];
-				slots = stancenode["tuc"];
+			Stance::Value stance = it.get();
+			string stancename = Stance::nameof(stance);
+			node stancenode = equipnode[stancename];
+			if (stancenode.size() == 0)
+				continue;
 
-				reqstats[Maplestat::LEVEL] = stancenode["reqLevel"];
-				reqstats[Maplestat::JOB] = stancenode["reqJob"];
-				reqstats[Maplestat::STR] = stancenode["reqSTR"];
-				reqstats[Maplestat::DEX] = stancenode["reqDEX"];
-				reqstats[Maplestat::INT] = stancenode["reqINT"];
-				reqstats[Maplestat::LUK] = stancenode["reqLUK"];
-
-				defstats[Equipstat::STR] = stancenode["incSTR"];
-				defstats[Equipstat::DEX] = stancenode["incDEX"];
-				defstats[Equipstat::INT] = stancenode["incINT"];
-				defstats[Equipstat::LUK] = stancenode["incLUK"];
-				defstats[Equipstat::WATK] = stancenode["incPAD"];
-				defstats[Equipstat::WDEF] = stancenode["incPDD"];
-				defstats[Equipstat::MAGIC] = stancenode["incMAD"];
-				defstats[Equipstat::MDEF] = stancenode["incMDD"];
-				defstats[Equipstat::HP] = stancenode["incMHP"];
-				defstats[Equipstat::MP] = stancenode["incMMP"];
-				defstats[Equipstat::ACC] = stancenode["incACC"];
-				defstats[Equipstat::AVOID] = stancenode["incEVA"];
-				defstats[Equipstat::HANDS] = stancenode["incHANDS"];
-				defstats[Equipstat::SPEED] = stancenode["incSPEED"];
-				defstats[Equipstat::JUMP] = stancenode["incJUMP"];
-			}
-			else if (stance != "default" && stance != "backDefault")
+			uint8_t frame = 0;
+			node framenode = stancenode[std::to_string(frame)];
+			while (framenode.size() > 0)
 			{
-				uint8_t frame = 0;
-				node framenode = stancenode[std::to_string(frame)];
-				while (framenode.size() > 0)
+				for (node partnode : framenode)
 				{
-					for (node partnode : framenode)
+					string part = partnode.name();
+					if (partnode.data_type() == node::type::bitmap)
 					{
-						string part = partnode.name();
-						if (partnode.data_type() == node::type::bitmap)
+						Layer z = chlayer;
+						string zs = partnode["z"];
+						if (part == "mailArm")
+							z = Layer::MAILARM;
+						else
+							z = sublayer(chlayer, zs);
+
+						string parent;
+						vector2d<int16_t> parentpos;
+						for (node mapnode : partnode["map"])
 						{
-							CharacterLayer z = chlayer;
-							string zs = partnode["z"];
-							if (z == CL_WEAPON)
+							if (mapnode.data_type() == node::type::vector)
 							{
-								if (zs == "weaponOverHand")
-									z = CL_WEAPONOHAND;
-								else if (zs == "weaponOverGlove")
-									z = CL_WEAPONOGLOVE;
-								else if (zs == "backWeaponOverShield")
-									z = CL_BACKWEAPON;
+								parent = mapnode.name();
+								parentpos = vector2d<int16_t>(mapnode);
 							}
-							else if (z == CL_SHIELD)
-							{
-								if (zs == "shieldOverHair")
-									z = CL_SHIELDOHAIR;
-								else if (zs == "shieldBelowBody")
-									z = CL_SHIELDBBODY;
-								else if (zs == "backShield")
-									z = CL_BACKSHIELD;
-							}
-							else if (z == CL_HAT)
-							{
-								if (zs == "capOverHair")
-									z = CL_HATOVERHAIR;
-							}
-							else if (part == "mailArm")
-							{
-								z = CL_MAILARM;
-							}
-
-							stances[stance][z][frame] = Texture(partnode);
-
-							string parent;
-							vector2d<int16_t> parentpos;
-							for (node mapnode : partnode["map"])
-							{
-								if (mapnode.data_type() == node::type::vector)
-								{
-									parent = mapnode.name();
-									parentpos = vector2d<int16_t>(mapnode);
-								}
-							}
-
-							vector2d<int16_t> shift;
-							switch (z)
-							{
-							case CL_FACEACC:
-								shift -= parentpos;
-								break;
-							case CL_TOP:
-							case CL_PANTS:
-							case CL_CAPE:
-							case CL_SHOES:
-							case CL_MAIL:
-							case CL_MAILARM:
-							case CL_GLOVE:
-							case CL_BACKWEAPON:
-							case CL_BACKSHIELD:
-								shift = drawinfo.getbodypos(stance, frame) - parentpos;
-								break;
-							case CL_HAT:
-							case CL_HATOVERHAIR:
-							case CL_EARRINGS:
-							case CL_EYEACC:
-								shift = drawinfo.getfacepos(stance, frame) - parentpos;
-								break;
-							case CL_SHIELD:
-							case CL_SHIELDOHAIR:
-							case CL_WEAPON:
-							case CL_WEAPONOHAND:
-							case CL_WEAPONOGLOVE:
-								if (parent == "hand")
-								{
-									shift += drawinfo.getarmpos(stance, frame);
-								}
-								else if (parent == "handMove")
-								{
-									shift += drawinfo.gethandpos(stance, frame);
-								}
-								shift += drawinfo.getbodypos(stance, frame) - parentpos;
-								break;
-							default:
-								shift = vector2d<int16_t>();
-							}
-
-							stances[stance][z][frame].shift(shift);
 						}
-					}
 
-					frame++;
-					framenode = stancenode[std::to_string(frame)];
+						vector2d<int16_t> shift;
+						switch (z)
+						{
+						case Layer::FACEACC:
+							shift -= parentpos;
+							break;
+						case Layer::TOP:
+						case Layer::PANTS:
+						case Layer::CAPE:
+						case Layer::SHOES:
+						case Layer::MAIL:
+						case Layer::MAILARM:
+						case Layer::GLOVE:
+						case Layer::BACKWEAPON:
+						case Layer::BACKSHIELD:
+							shift = drawinfo.getbodypos(stance, frame) - parentpos;
+							break;
+						case Layer::HAT:
+						case Layer::HATOVERHAIR:
+						case Layer::EARRINGS:
+						case Layer::EYEACC:
+							shift = drawinfo.getfacepos(stance, frame) - parentpos;
+							break;
+						case Layer::SHIELD:
+						case Layer::SHIELDOHAIR:
+						case Layer::WEAPON:
+						case Layer::WEAPONOHAND:
+						case Layer::WEAPONOGLOVE:
+							if (parent == "hand")
+							{
+								shift += drawinfo.getarmpos(stance, frame);
+							}
+							else if (parent == "handMove")
+							{
+								shift += drawinfo.gethandpos(stance, frame);
+							}
+							shift += drawinfo.getbodypos(stance, frame) - parentpos;
+							break;
+						default:
+							shift = vector2d<int16_t>();
+						}
+						stances[stance][z][frame] = partnode;
+						stances[stance][z][frame].shift(shift);
+					}
 				}
+
+				frame++;
+				framenode = stancenode[std::to_string(frame)];
 			}
 		}
 
@@ -235,30 +210,23 @@ namespace Character
 	{
 		transparent = true;
 		type = "";
-		eqslot = NONE;
+		eqslot = Slot::NONE;
 	}
 
-	void Clothing::draw(string stance, CharacterLayer layer, 
-		uint8_t frame, const DrawArgument& args) const {
-
-		if (!stances.count(stance))
-			return;
-
-		if (!stances.at(stance).count(layer))
-			return;
-
-		if (!stances.at(stance).at(layer).count(frame))
-			return;
-
-		stances.at(stance).at(layer).at(frame).draw(args);
-	}
-
-	bool Clothing::islayer(string stance, CharacterLayer layer) const
+	void Clothing::draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const
 	{
-		if (!stances.count(stance))
-			return false;
-		else
-			return stances.at(stance).count(layer) > 0;
+		if (!stances[stance].count(layer))
+			return;
+
+		if (!stances[stance].at(layer).count(frame))
+			return;
+
+		stances[stance].at(layer).at(frame).draw(args);
+	}
+
+	bool Clothing::islayer(Stance::Value stance, Layer layer) const
+	{
+		return stances[stance].count(layer) > 0;
 	}
 
 	bool Clothing::istransparent() const
@@ -287,51 +255,12 @@ namespace Character
 			return 0;
 	}
 
-	string Clothing::getstatstr(Equipstat::Value stat) const
-	{
-		switch (stat)
-		{
-		case Equipstat::STR:
-			return "STR";
-		case Equipstat::DEX:
-			return "DEX";
-		case Equipstat::INT:
-			return "INT";
-		case Equipstat::LUK:
-			return "LUK";
-		case Equipstat::WATK:
-			return "WEAPON ATT";
-		case Equipstat::WDEF:
-			return "WEAPON DEFENSE";
-		case Equipstat::MAGIC:
-			return "MAGIC ATT";
-		case Equipstat::MDEF:
-			return "MAGIC DEFENSE";
-		case Equipstat::ACC:
-			return "ACCURACY";
-		case Equipstat::AVOID:
-			return "AVOID";
-		case Equipstat::HP:
-			return "MAX HP";
-		case Equipstat::MP:
-			return "MAX MP";
-		case Equipstat::HANDS:
-			return "HANDS";
-		case Equipstat::SPEED:
-			return "SPEED";
-		case Equipstat::JUMP:
-			return "JUMP";
-		default:
-			return "";
-		}
-	}
-
 	string Clothing::gettype() const
 	{
 		return type;
 	}
 
-	Clothing::Slot Clothing::geteqslot() const
+	Slot::Value Clothing::geteqslot() const
 	{
 		return eqslot;
 	}

@@ -19,38 +19,50 @@
 
 namespace Character
 {
-	CharEquips::CharEquips() {}
-
-	CharEquips::~CharEquips() {}
-
-	void CharEquips::draw(Clothing::Slot slot, string stance, CharacterLayer layer,
-		uint8_t frame, const DrawArgument& args) const {
-
-		if (equips.count(slot))
+	CharEquips::CharEquips()
+	{
+		for (int16_t i = 0; i < Slot::LENGTH; i++)
 		{
-			equips.at(slot)->draw(stance, layer, frame, args);
+			equips[i] = nullptr;
 		}
+	}
+
+	void CharEquips::draw(Slot::Value slot, Stance::Value stance, Clothing::Layer layer, uint8_t frame, const DrawArgument& args) const 
+	{
+		const Clothing* cloth = equips[slot];
+		if (cloth)
+			cloth->draw(stance, layer, frame, args);
 	}
 
 	void CharEquips::addequip(const Clothing& eq)
 	{
-		Clothing::Slot slot = eq.geteqslot();
+		Slot::Value slot = eq.geteqslot();
 		equips[slot] = &eq;
 	}
 
-	void CharEquips::removeequip(Clothing::Slot slot)
+	void CharEquips::removeequip(Slot::Value slot)
 	{
-		equips.erase(slot);
+		equips[slot] = nullptr;
 	}
 
-	bool CharEquips::isvisible(Clothing::Slot slot) const
+	bool CharEquips::checkorfalse(Slot::Value slot, bool(*check)(const Clothing*)) const
 	{
-		return !getequip(slot).istransparent();
+		const Clothing* cloth = equips[slot];
+		return (cloth) ? (*check)(cloth) : false;
+	}
+
+	bool CharEquips::isvisible(Slot::Value slot) const
+	{
+		return checkorfalse(slot, [](const Clothing* cloth) { 
+			return cloth->istransparent(); 
+		});
 	}
 
 	bool CharEquips::hasoverall() const
 	{
-		return (getequip(Clothing::TOP).getid() / 10000) == 105;
+		return checkorfalse(Slot::TOP, [](const Clothing* cloth){ 
+			return cloth->getid() / 10000 == 105;
+		});
 	}
 
 	bool CharEquips::hasweapon() const
@@ -67,29 +79,35 @@ namespace Character
 			return false;
 	}
 
-	Weapon::WpType CharEquips::getweapontype() const
+	Weapon::Type CharEquips::getweapontype() const
 	{
 		const Weapon* weapon = getweapon();
 		if (weapon)
-			return weapon->getweptype();
+			return weapon->gettype();
 		else
-			return Weapon::WEP_NONE;
+			return Weapon::NONE;
 	}
 
-	const Clothing& CharEquips::getequip(Clothing::Slot slot) const
+	string CharEquips::getequipname(Slot::Value slot) const
 	{
-		if (equips.count(slot))
-			return *equips.at(slot);
-		else
-			return nullequip;
+		const Clothing* cloth = equips[slot];
+		if (cloth == nullptr)
+			return "";
+
+		return cloth->getname();
+	}
+
+	const Clothing* CharEquips::getequip(Slot::Value slot) const
+	{
+		return equips[slot];
 	}
 
 	const Weapon* CharEquips::getweapon() const
 	{
-		const Clothing& weapon = getequip(Clothing::WEAPON);
-		if (weapon.geteqslot() == Clothing::WEAPON)
-			return static_cast<const Weapon*>(&weapon);
-		else
+		const Clothing* weapon = equips[Slot::WEAPON];
+		if (weapon == nullptr)
 			return nullptr;
+
+		return reinterpret_cast<const Weapon*>(weapon);
 	}
 }

@@ -65,6 +65,8 @@ namespace Character
 	const SkillLevel* Skillbook::getlevelof(int32_t id) const
 	{
 		int32_t skilllevel = getlevel(id);
-		return Data::getskill(id).getlevel(skilllevel);
+
+		using Data::DataFactory;
+		return DataFactory::get().getskill(id).getlevel(skilllevel);
 	}
 }

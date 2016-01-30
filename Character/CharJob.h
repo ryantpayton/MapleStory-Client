@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Look\Weapon.h"
 #include <cstdint>
 #include <string>
 
@@ -45,6 +46,8 @@ namespace Character
 		uint16_t getsubjob(Joblevel level) const;
 		string getname() const;
 		Joblevel getlevel() const;
+		Equipstat::Value primarystat(Weapon::Type weapontype) const;
+		Equipstat::Value secondarystat(Weapon::Type weapontype) const;
 
 	private:
 		string getname(uint16_t id) const;

@@ -24,15 +24,15 @@ namespace Character
 	class Buff
 	{
 	public:
-		Buff(Buffstat stat, int16_t value, int32_t id, int32_t duration);
+		Buff(Buffstat::Value stat, int16_t value, int32_t id, int32_t duration);
 		Buff();
 		~Buff();
 
 		void applyto(CharStats& stats) const;
-		Buffstat getstat() const;
+		Buffstat::Value getstat() const;
 
 	private:
-		Buffstat stat;
+		Buffstat::Value stat;
 		int16_t value;
 		int32_t skillid;
 		int32_t duration;

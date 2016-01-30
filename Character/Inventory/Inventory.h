@@ -85,7 +85,7 @@ namespace Character
 		void changecount(InvType type, int16_t slot, int16_t count);
 
 		// Return if an equip is equipped in the specfied slot.
-		bool hasequipped(Clothing::Slot slot) const;
+		bool hasequipped(Slot::Value slot) const;
 		// Return the number of slots for the specified inventory.
 		uint8_t getslots(InvType type) const;
 		// Return a total stat.
@@ -93,7 +93,7 @@ namespace Character
 		// Return the amount of meso.
 		int64_t getmeso() const;
 		// Find a free slot for the specified equip.
-		Clothing::Slot findequipslot(int32_t itemid) const;
+		Slot::Value findequipslot(int32_t itemid) const;
 		// Find a free slot in the specfified inventory.
 		int16_t findslot(InvType type) const;
 		// Return the first slot which contains the specified item.

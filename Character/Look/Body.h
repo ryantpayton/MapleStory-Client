@@ -16,24 +16,62 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Character\Look\BodyDrawinfo.h"
+#include "BodyDrawinfo.h"
 #include "Graphics\Texture.h"
+#include "Util\Enum.h"
+#include "Util\Console.h"
 
 namespace Character
 {
 	using Graphics::Texture;
 	using Graphics::DrawArgument;
 
-	class Bodytype
+	class Body
 	{
 	public:
-		Bodytype(int8_t, const BodyDrawinfo&);
-		Bodytype();
-		~Bodytype();
-		void draw(string, CharacterLayer, uint8_t, const DrawArgument&) const;
+		static const size_t NUM_LAYERS = 8;
+		enum Layer
+		{
+			NONE, BODY, ARM, ARMOVERHAIR,
+			LEFTHAND, RIGHTHAND, HANDOVER, HEAD
+		};
+
+		static EnumIterator<Layer> layerit(Layer s = BODY, Layer l = HEAD)
+		{
+			return EnumIterator<Layer>(s, l);
+		}
+
+		static Layer layerbystring(string name)
+		{
+			if (name == "backBody")
+				return BODY;
+
+			static string layernames[NUM_LAYERS] =
+			{
+				"", "body", "arm", "armOverHair",
+				"handBelowWeapon", "handOverHair", "handOverWeapon", "head"
+			};
+
+			for (auto it = layerit(); it.hasnext(); it.increment())
+			{
+				Layer layer = it.get();
+				if (layernames[layer] == name)
+					return layer;
+			}
+
+			Console::get().print("Unhandled body layer: " + name);
+
+			return NONE;
+		}
+
+		Body(uint16_t skin, const BodyDrawinfo& drawinfo);
+		Body();
+
+		void draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
 		string getname() const;
+
 	private:
-		map<string, map<CharacterLayer, map<uint8_t, Texture>>> stances;
+		unordered_map<Layer, unordered_map<uint8_t, Texture>> stances[Stance::LENGTH];
 		string name;
 	};
 }

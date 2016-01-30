@@ -192,4 +192,38 @@ namespace Character
 
 		return "";
 	}
+
+	Equipstat::Value CharJob::primarystat(Weapon::Type weapontype) const
+	{
+		switch (id / 100)
+		{
+		case 2:
+			return Equipstat::INT;
+		case 3:
+			return Equipstat::DEX;
+		case 4:
+			return Equipstat::LUK;
+		case 5:
+			return (weapontype == Weapon::GUN) ? Equipstat::DEX : Equipstat::STR;
+		default:
+			return Equipstat::STR;
+		}
+	}
+
+	Equipstat::Value CharJob::secondarystat(Weapon::Type weapontype) const
+	{
+		switch (id / 100)
+		{
+		case 2:
+			return Equipstat::LUK;
+		case 3:
+			return Equipstat::STR;
+		case 4:
+			return Equipstat::DEX;
+		case 5:
+			return (weapontype == Weapon::GUN) ? Equipstat::STR : Equipstat::DEX;
+		default:
+			return Equipstat::DEX;
+		}
+	}
 }

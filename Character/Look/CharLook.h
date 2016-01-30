@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Bodytype.h"
-#include "Hairstyle.h"
-#include "Facetype.h"
+#include "Body.h"
+#include "Hair.h"
+#include "Face.h"
 #include "CharEquips.h"
 #include "Net\Login.h"
 #include "Util\Randomizer.h"
@@ -40,30 +40,31 @@ namespace Character
 		bool update(uint16_t timestep);
 
 		void sethair(int32_t hairid);
-		void setbody(uint8_t skinid);
+		void setbody(uint16_t skinid);
 		void setface(int32_t faceid);
 		void addequip(int32_t equipid);
-		void removeequip(Clothing::Slot slot);
+		void removeequip(Slot::Value slot);
 
-		void setstance(string stance);
-		void setexpression(string expression);
+		void attack();
+		void setstance(Stance::Value stance);
+		void setexpression(Expression::Value expression);
 		void setaction(string action);
 		void setflip(bool mirrored);
 
-		const Bodytype* getbodytype() const;
-		const Hairstyle* gethairstyle() const;
-		const Facetype* getfacetype() const;
+		const Body* getbodytype() const;
+		const Hair* gethairstyle() const;
+		const Face* getfacetype() const;
 		const CharEquips& getequips() const;
 
 	private:
 		void updatetwohanded();
-		string getattackstance() const;
+		Stance::Value getattackstance() const;
 
-		string stance;
+		Stance::Value stance;
 		uint8_t frame;
 		uint16_t elapsed;
 
-		string expression;
+		Expression::Value expression;
 		uint8_t fcframe;
 		uint16_t fcelapsed;
 
@@ -73,17 +74,17 @@ namespace Character
 
 		bool flip;
 
-		const Bodytype* body;
-		const Hairstyle* hair;
-		const Facetype* face;
+		const Body* body;
+		const Hair* hair;
+		const Face* face;
 		CharEquips equips;
 
 		Randomizer randomizer;
 
-		string laststance;
+		Stance::Value laststance;
 		uint8_t lastframe;
 		uint16_t lastelapsed;
-		string lastexpression;
+		Expression::Value lastexpression;
 		uint8_t lastfcframe;
 		uint16_t lastfcelapsed;
 	};

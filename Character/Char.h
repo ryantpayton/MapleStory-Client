@@ -34,9 +34,9 @@ namespace Character
 	class Char : public MapObject
 	{
 	public:
-		// Player stances which determine animation and state. 
+		// Player states which determine animation and state. 
 		// Values are used in movement packets (add 1 if facing left).
-		enum Stance : int8_t
+		enum State : int8_t
 		{
 			WALK = 2,
 			STAND = 4,
@@ -72,8 +72,8 @@ namespace Character
 		void sendface(int32_t expression);
 		// Set if the character sprite is mirrored (true = facing left)
 		virtual void setflip(bool flipped);
-		// Change the character's stance.
-		virtual void setstance(Stance newstance);
+		// Change the character's state.
+		virtual void setstate(State newstate);
 
 		// Return if the character is facing left.
 		bool getflip() const;
@@ -97,7 +97,7 @@ namespace Character
 		Text namelabel;
 		PetLook pets[3];
 
-		Stance stance;
+		State state;
 		bool flip;
 	};
 }

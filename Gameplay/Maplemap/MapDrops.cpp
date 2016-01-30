@@ -53,7 +53,8 @@ namespace Gameplay
 		}
 		else
 		{
-			const Character::ItemData& itemdata = Data::getitemdata(itemid);
+			using Data::DataFactory;
+			const Character::ItemData& itemdata = DataFactory::get().getitemdata(itemid);
 			if (!itemdata.isloaded())
 				return;
 

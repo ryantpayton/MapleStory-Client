@@ -20,15 +20,17 @@
 #include "Character\Equipstat.h"
 #include "Character\Maplestat.h"
 #include "Character\Inventory\ItemData.h"
+#include "Graphics\Texture.h"
+#include "Util\Enum.h"
+#include "Util\Console.h"
 
 namespace Character
 {
-	using Graphics::DrawArgument;
-
-	class Clothing : public ItemData
+	class Slot
 	{
 	public:
-		enum Slot : int16_t
+		static const int16_t LENGTH = 51;
+		enum Value : int16_t
 		{
 			NONE = 0,
 			CAP = 1,
@@ -53,33 +55,80 @@ namespace Character
 			BELT = 50
 		};
 
-		static Slot slotbyid(int16_t id)
+		static Value byid(int16_t id)
 		{
 			if (id < NONE || id > BELT || (id > SADDLE && id < MEDAL) || id == 14)
 				return NONE;
 
-			return static_cast<Slot>(id);
+			return static_cast<Value>(id);
+		}
+	};
+
+	using Graphics::Texture;
+	using Graphics::DrawArgument;
+
+	class Clothing : public ItemData
+	{
+	public:
+		static const size_t NUM_LAYERS = 25;
+		enum Layer
+		{
+			CAPE, SHIELDBBODY, SHOES, PANTS, TOP, MAIL, 
+			GLOVE, SHIELDOHAIR, EARRINGS, FACEACC, EYEACC, 
+			PENDANT, BELT, MEDAL, RING, SHIELD, BACKSHIELD, 
+			WEAPON, BACKWEAPON, MAILARM, HATOVERHAIR, HAT, 
+			WEAPONOHAND, RGLOVE, WEAPONOGLOVE
+		};
+
+		static EnumIterator<Layer> layerit()
+		{
+			return EnumIterator<Layer>(CAPE, WEAPONOGLOVE);
 		}
 
-		Clothing(int32_t, const BodyDrawinfo&);
+		static Layer sublayer(Layer base, string name)
+		{
+			switch (base)
+			{
+			case WEAPON:
+				if (name == "weaponOverHand")
+					return Layer::WEAPONOHAND;
+				else if (name == "weaponOverGlove")
+					return Layer::WEAPONOGLOVE;
+				else if (name == "backWeaponOverShield")
+					return Layer::BACKWEAPON;
+				break;
+			case SHIELD:
+				if (name == "shieldOverHair")
+					return Layer::SHIELDOHAIR;
+				else if (name == "shieldBelowBody")
+					return Layer::SHIELDBBODY;
+				else if (name == "backShield")
+					return Layer::BACKSHIELD;
+				break;
+			case HAT:
+				if (name == "capOverHair")
+					return Layer::HATOVERHAIR;
+				break;
+			}
+			return base;
+		}
+
+		Clothing(int32_t equipid, const BodyDrawinfo& drawinfo);
 		Clothing();
 
-		void draw(string stance, CharacterLayer layer, 
-			uint8_t frame, const DrawArgument& args) const;
-
-		bool islayer(string stance, CharacterLayer layer) const;
+		void draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
+		bool islayer(Stance::Value stance, Layer layer) const;
 		bool istransparent() const;
 		bool isweapon() const;
 		int16_t getreqstat(Maplestat::Value stat) const;
 		int16_t getdefstat(Equipstat::Value stat) const;
-		string getstatstr(Equipstat::Value stat) const;
 		string gettype() const;
-		Slot geteqslot() const;
+		Slot::Value geteqslot() const;
 
 	private:
-		map<string, map<CharacterLayer, map<uint8_t, Texture>>> stances;
+		unordered_map<Layer, unordered_map<uint8_t, Texture>> stances[Stance::LENGTH];
 		string type;
-		Slot eqslot;
+		Slot::Value eqslot;
 		bool cash;
 		bool tradeblock;
 		bool transparent;

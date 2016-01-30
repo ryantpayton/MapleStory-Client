@@ -157,5 +157,5 @@ namespace Character
 	void initbuffeffects();
 
 	// Return the buff effect associated with the buff stat.
-	const BuffEffect* geteffectbystat(Buffstat stat);
+	const BuffEffect* geteffectbystat(Buffstat::Value stat);
 }

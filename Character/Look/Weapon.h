@@ -29,33 +29,41 @@ namespace Character
 	class Weapon : public Clothing
 	{
 	public:
-		enum WpType
+		enum Type
 		{
-			WEP_NONE = 0,
-			WEP_1H_SWORD = 130,
-			WEP_1H_AXE = 131,
-			WEP_1H_MACE = 132,
-			WEP_DAGGER = 133,
-			WEP_WAND = 137,
-			WEP_STAFF = 138,
-			WEP_2H_SWORD = 140,
-			WEP_2H_AXE = 141,
-			WEP_2H_MACE = 142,
-			WEP_SPEAR = 143,
-			WEP_POLEARM = 144,
-			WEP_BOW = 145,
-			WEP_CROSSBOW = 146,
-			WEP_CLAW = 147,
-			WEP_KNUCKLE = 148,
-			WEP_GUN = 149,
-			WEP_CASH = 170
+			NONE = 0,
+			SWORD_1H = 130,
+			AXE_1H = 131,
+			MACE_1H = 132,
+			DAGGER = 133,
+			WAND = 137,
+			STAFF = 138,
+			SWORD_2H = 140,
+			AXE_2H = 141,
+			MACE_2H = 142,
+			SPEAR = 143,
+			POLEARM = 144,
+			BOW = 145,
+			CROSSBOW = 146,
+			CLAW = 147,
+			KNUCKLE = 148,
+			GUN = 149,
+			CASH = 170
 		};
+
+		static Type typebyvalue(int32_t value)
+		{
+			if (value < 130 || (value > 133 && value < 137) || value == 139 || (value > 149 && value < 170) || value > 170)
+				return NONE;
+
+			return static_cast<Type>(value);
+		}
 
 		Weapon(int32_t, const BodyDrawinfo&);
 		Weapon();
 
 		void playsound() const;
-		WpType getweptype() const;
+		Type gettype() const;
 		bool istwohanded() const;
 		string getafterimage() const;
 		uint8_t getspeed() const;
@@ -66,7 +74,7 @@ namespace Character
 		Animation gethiteffect() const;
 
 	private:
-		WpType weptype;
+		Type type;
 		bool twohanded;
 		string afterimage;
 		uint8_t attackspeed;

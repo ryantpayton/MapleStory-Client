@@ -59,20 +59,20 @@ namespace Net
 	public:
 		void handle(InPacket& recv) const override;
 	protected:
-		virtual void handlebuff(InPacket& recv, Buffstat buff) const = 0;
+		virtual void handlebuff(InPacket& recv, Buffstat::Value buff) const = 0;
 	};
 
 	// Handles a packet which notifies the client that a buff was applied to the player.
 	class ApplyBuffHandler : public BuffHandler
 	{
 	protected:
-		void handlebuff(InPacket& recv, Buffstat buff) const override;
+		void handlebuff(InPacket& recv, Buffstat::Value buff) const override;
 	};
 
 	// Handles a packet which contains buffs to cancel.
 	class CancelBuffHandler : public BuffHandler
 	{
 	protected:
-		void handlebuff(InPacket& recv, Buffstat buff) const override;
+		void handlebuff(InPacket& recv, Buffstat::Value buff) const override;
 	};
 }

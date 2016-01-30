@@ -26,21 +26,9 @@ namespace Character
 		static const size_t LENGTH = 15;
 		enum Value
 		{
-			STR,
-			DEX,
-			INT,
-			LUK,
-			HP,
-			MP,
-			WATK,
-			MAGIC,
-			WDEF,
-			MDEF,
-			ACC,
-			AVOID,
-			HANDS,
-			SPEED,
-			JUMP
+			STR, DEX, INT, LUK, HP, MP,
+			WATK, MAGIC, WDEF, MDEF,
+			ACC, AVOID, HANDS, SPEED, JUMP
 		};
 
 		static EnumIterator<Value> it(Value s = STR, Value l = JUMP)
@@ -56,6 +44,17 @@ namespace Character
 		static int32_t valueof(Value value)
 		{
 			return value;
+		}
+
+		static string nameof(Value value)
+		{
+			static const string names[LENGTH] =
+			{
+				"STR", "DEX", "INT", "LUK", "MAX HP", "MAX MP",
+				"WEAPON ATT", "MAGIC ATT", "WEAPON DEFENSE", "MAGIC DEFENSE",
+				"ACCURACY", "AVOID", "HANDS", "SPEED", "JUMP"
+			};
+			return names[value];
 		}
 	};
 }

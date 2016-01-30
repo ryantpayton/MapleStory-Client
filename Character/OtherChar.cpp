@@ -57,7 +57,7 @@ namespace Character
 		{
 			setflip(true);
 		}
-		setstance(static_cast<Stance>(laststate));
+		setstate(static_cast<State>(laststate));
 
 		phobj.lastx = phobj.fx;
 		phobj.lasty = phobj.fy;

@@ -24,7 +24,7 @@ namespace Character
 	Weapon::Weapon(int32_t equipid, const BodyDrawinfo& drawinfo) : Clothing(equipid, drawinfo)
 	{
 		int32_t prefix = equipid / 10000;
-		weptype = static_cast<WpType>(prefix);
+		type = typebyvalue(prefix);
 		twohanded = (prefix == 138) || (prefix >= 140 && prefix <= 144);
 
 		using nl::node;
@@ -41,7 +41,7 @@ namespace Character
 
 	Weapon::Weapon()
 	{
-		weptype = WEP_NONE;
+		type = NONE;
 	}
 
 	void Weapon::playsound() const
@@ -49,9 +49,9 @@ namespace Character
 		firstattack.play();
 	}
 
-	Weapon::WpType Weapon::getweptype() const
+	Weapon::Type Weapon::gettype() const
 	{
-		return weptype;
+		return type;
 	}
 
 	bool Weapon::istwohanded() const
@@ -103,7 +103,7 @@ namespace Character
 
 	uint8_t Weapon::getattackdelay() const
 	{
-		if (weptype == WEP_NONE)
+		if (type == NONE)
 			return 0;
 		else
 			return 50 - 25 / attackspeed;
@@ -111,20 +111,20 @@ namespace Character
 
 	rectangle2d<int16_t> Weapon::getrange() const
 	{
-		switch (weptype)
+		switch (type)
 		{
-		case WEP_1H_SWORD:
-		case WEP_1H_AXE:
-		case WEP_1H_MACE:
-		case WEP_KNUCKLE:
-		case WEP_DAGGER:
+		case SWORD_1H:
+		case AXE_1H:
+		case MACE_1H:
+		case KNUCKLE:
+		case DAGGER:
 			return rectangle2d<int16_t>(-75, -5, -50, 0);
-		case WEP_2H_SWORD:
-		case WEP_2H_AXE:
-		case WEP_2H_MACE:
+		case SWORD_2H:
+		case AXE_2H:
+		case MACE_2H:
 			return rectangle2d<int16_t>(-100, -5, -50, 0);
-		case WEP_SPEAR:
-		case WEP_POLEARM:
+		case SPEAR:
+		case POLEARM:
 			return rectangle2d<int16_t>(-125, -5, -50, 0);
 		default:
 			return rectangle2d<int16_t>();

@@ -15,87 +15,75 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Hairstyle.h"
+#include "Hair.h"
 #include "nlnx\nx.hpp"
 
 namespace Character
 {
-	const string haircolors[8] = 
-	{ 
-		"Black", "Red", "Orange", "Blonde", "Green", "Blue", "Violet", "Brown" 
-	};
-
-	Hairstyle::Hairstyle(int32_t hairid, const BodyDrawinfo& drawinfo)
+	Hair::Hair(int32_t hairid, const BodyDrawinfo& drawinfo)
 	{
 		using nl::node;
 		node hairnode = nl::nx::character["Hair"]["000" + std::to_string(hairid) + ".img"];
-		for (node stancenode : hairnode)
+
+		for (auto it = Stance::getit(); it.hasnext(); it.increment())
 		{
-			string stance = stancenode.name();
-			if (stance != "default" || stance != "backDefault" || stance != "info")
+			Stance::Value stance = it.get();
+			string stancename = Stance::nameof(stance);
+			node stancenode = hairnode[stancename];
+			if (stancenode.size() == 0)
+				continue;
+
+			uint8_t frame = 0;
+			node framenode = stancenode[std::to_string(frame)];
+			while (framenode.size() > 0)
 			{
-				uint8_t frame = 0;
-				node framenode = stancenode[std::to_string(frame)];
-				while (framenode.size() > 0)
+				for (node partnode : framenode)
 				{
-					for (node partnode : framenode)
-					{
-						string part = partnode.name();
-						CharacterLayer z;
-						if (part == "hair")
-							z = CL_HAIR;
-						else if (part == "hairBelowBody")
-							z = CL_HAIRBBODY;
-						else if (part == "hairOverHead")
-							z = CL_HAIROHEAD;
-						else if (part == "hairShade")
-							z = CL_HAIRSHADE;
-						else if (part == "backHair")
-							z = CL_BACKHAIR;
-						else if (part == "backHairBelowCap" || "backHairBelowCapWide")
-							z = CL_BACKHAIRBCAP;
+					string part = partnode.name();
+					Layer layer = layerbystring(part);
 
-						stances[stance][z][frame] = Texture(partnode);
-						stances[stance][z][frame].shift(
-							drawinfo.gethairpos(stance, frame) - vector2d<int16_t>(partnode["map"]["brow"])
-							);
-					}
-
-					frame++;
-					framenode = stancenode[std::to_string(frame)];
+					stances[stance][layer][frame] = partnode;
+					stances[stance][layer][frame].shift(drawinfo.gethairpos(stance, frame));
+					stances[stance][layer][frame].shift(-vector2d<int16_t>(partnode["map"]["brow"]));
 				}
+
+				frame++;
+				framenode = stancenode[std::to_string(frame)];
 			}
 		}
 
 		name = nl::nx::string["Eqp.img"]["Eqp"]["Hair"][std::to_string(hairid)]["name"];
+
+		static const string haircolors[8] =
+		{
+			"Black", "Red", "Orange", "Blonde", "Green", "Blue", "Violet", "Brown"
+		};
 		color = (hairid % 10 < 8) ? haircolors[hairid % 10] : "";
 	}
 
-	Hairstyle::Hairstyle() {}
-
-	Hairstyle::~Hairstyle() {}
-
-	void Hairstyle::draw(string stance, CharacterLayer layer, 
-		uint8_t frame, const DrawArgument& args) const {
-
-		if (!stances.count(stance))
-			return;
-
-		if (!stances.at(stance).count(layer))
-			return;
-
-		if (!stances.at(stance).at(layer).count(frame))
-			return;
-
-		stances.at(stance).at(layer).at(frame).draw(args);
+	Hair::Hair() 
+	{
+		name = "";
+		color = "";
 	}
 
-	const string& Hairstyle::getname() const
+	void Hair::draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const
+	{
+		if (!stances[stance].count(layer))
+			return;
+
+		if (!stances[stance].at(layer).count(frame))
+			return;
+
+		stances[stance].at(layer).at(frame).draw(args);
+	}
+
+	string Hair::getname() const
 	{ 
 		return name; 
 	}
 
-	const string& Hairstyle::getcolor() const
+	string Hair::getcolor() const
 	{ 
 		return color; 
 	}

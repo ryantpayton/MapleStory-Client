@@ -20,48 +20,41 @@
 
 namespace Data
 {
-	using std::map;
-
-	BodyDrawinfo drawinfo;
-
-	void init()
+	void DataFactory::init()
 	{
 		drawinfo.init();
 	}
 
-	const BodyDrawinfo& getdrawinfo()
+	const BodyDrawinfo& DataFactory::getdrawinfo() const
 	{
 		return drawinfo;
 	}
 
-	const Bodytype& getbodytype(uint8_t skin)
+	const Body& DataFactory::getbodytype(uint16_t skin)
 	{
-		static map<uint8_t, Bodytype> bodytypes;
 		if (!bodytypes.count(skin))
-			bodytypes[skin] = Bodytype(skin, drawinfo);
+			bodytypes[skin] = Body(skin, drawinfo);
 
 		return bodytypes[skin];
 	}
 
-	const Hairstyle& gethairstyle(int32_t hairid)
+	const Hair& DataFactory::gethairstyle(int32_t hairid)
 	{
-		static map<int32_t, Hairstyle> hairstyles;
 		if (!hairstyles.count(hairid))
-			hairstyles[hairid] = Hairstyle(hairid, drawinfo);
+			hairstyles[hairid] = Hair(hairid, drawinfo);
 
 		return hairstyles[hairid];
 	}
 
-	const Facetype& getfacetype(int32_t faceid)
+	const Face& DataFactory::getfacetype(int32_t faceid)
 	{
-		static map<int32_t, Facetype> faces;
-		if (!faces.count(faceid))
-			faces[faceid] = Facetype(faceid);
+		if (!facetypes.count(faceid))
+			facetypes[faceid] = Face(faceid);
 
-		return faces[faceid];
+		return facetypes[faceid];
 	}
 
-	const ItemData& getitemdata(int32_t itemid)
+	const ItemData& DataFactory::getitemdata(int32_t itemid)
 	{
 		int32_t prefix = itemid / 1000000;
 		if (prefix == 1)
@@ -70,15 +63,14 @@ namespace Data
 		}
 		else
 		{
-			static map<int32_t, ItemData> items;
-			if (!items.count(itemid))
-				items[itemid] = ItemData(itemid);
+			if (!itemdata.count(itemid))
+				itemdata[itemid] = ItemData(itemid);
 
-			return items[itemid];
+			return itemdata[itemid];
 		}
 	}
 
-	const Clothing& getclothing(int32_t itemid)
+	const Clothing& DataFactory::getclothing(int32_t itemid)
 	{
 		int32_t prefix = itemid / 10000;
 		if (prefix > 129 && prefix < 200)
@@ -87,26 +79,23 @@ namespace Data
 		}
 		else
 		{
-			static map<int32_t, Clothing> equips;
-			if (!equips.count(itemid))
-				equips[itemid] = Clothing(itemid, drawinfo);
+			if (!clothing.count(itemid))
+				clothing[itemid] = Clothing(itemid, drawinfo);
 
-			return equips[itemid];
+			return clothing[itemid];
 		}
 	}
 
-	const Weapon& getweapon(int32_t itemid)
+	const Weapon& DataFactory::getweapon(int32_t itemid)
 	{
-		static map<int32_t, Weapon> weapons;
 		if (!weapons.count(itemid))
 			weapons[itemid] = Weapon(itemid, drawinfo);
 
 		return weapons[itemid];
 	}
 
-	const Skill& getskill(int32_t skillid)
+	const Skill& DataFactory::getskill(int32_t skillid)
 	{
-		static map<int32_t, Skill> skills;
 		if (!skills.count(skillid))
 			skills[skillid] = Skill(skillid);
 

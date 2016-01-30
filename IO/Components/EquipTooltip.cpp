@@ -263,7 +263,7 @@ namespace IO
 					statstr.append(std::to_string(abs(delta)) + ")");
 				}
 				statlabels[es] = Text(Text::A11L, Text::LEFT, Text::WHITE);
-				statlabels[es].settext(cloth.getstatstr(es) + ": " + statstr);
+				statlabels[es].settext(Equipstat::nameof(es) + ": " + statstr);
 			}
 			else
 			{

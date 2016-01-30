@@ -28,7 +28,7 @@ namespace Character
 {
 	static PlayerNullState nullstate;
 
-	const PlayerState* getstate(Char::Stance stance)
+	const PlayerState* getstate(Char::State state)
 	{
 		static PlayerStandState standing;
 		static PlayerWalkState walking;
@@ -38,7 +38,7 @@ namespace Character
 		static PlayerSitState sitting;
 		static PlayerFlyState flying;
 
-		switch (stance)
+		switch (state)
 		{
 		case Char::STAND:
 			return &standing;
@@ -75,7 +75,7 @@ namespace Character
 		attacking = false;
 		ladder = nullptr;
 
-		setstance(STAND);
+		setstate(STAND);
 		setflip(false);
 	}
 
@@ -95,7 +95,7 @@ namespace Character
 
 	void Player::sendaction(Keyboard::Keyaction ka, bool down)
 	{
-		const PlayerState* pst = getstate(stance);
+		const PlayerState* pst = getstate(state);
 		if (pst)
 		{
 			pst->sendaction(*this, ka, down);
@@ -127,7 +127,7 @@ namespace Character
 		if (equip)
 			look.addequip(equip->getid());
 		else
-			look.removeequip(Clothing::slotbyid(slot));
+			look.removeequip(Slot::byid(slot));
 
 		recalcstats(true);
 	}
@@ -152,7 +152,7 @@ namespace Character
 
 	int8_t Player::update(const Physics& physics)
 	{
-		const PlayerState* pst = getstate(stance);
+		const PlayerState* pst = getstate(state);
 		if (pst)
 		{
 			pst->update(*this);
@@ -167,12 +167,7 @@ namespace Character
 		}
 		else
 		{
-			uint8_t dirstance;
-			if (flip)
-				dirstance = static_cast<uint8_t>(stance);
-			else
-				dirstance = static_cast<uint8_t>(stance + 1);
-
+			uint8_t dirstance = flip ? state : state + 1;
 			int16_t shortx = static_cast<int16_t>(phobj.fx);
 			int16_t shorty = static_cast<int16_t>(phobj.fy);
 			if (dirstance != lastmove.newstate || shortx != lastmove.xpos || shorty != lastmove.ypos || movements.size() > 0)
@@ -213,7 +208,7 @@ namespace Character
 		if (attacking)
 			return static_cast<uint16_t>(Constants::TIMESTEP * getattackspeed());
 
-		switch (stance)
+		switch (state)
 		{
 		case WALK:
 			return static_cast<uint16_t>(Constants::TIMESTEP * (1.0f + abs(phobj.hspeed) / 25));
@@ -252,7 +247,8 @@ namespace Character
 
 	const Skill& Player::useskill(int32_t skillid)
 	{
-		const Skill& skill = Data::getskill(skillid);
+		using Data::DataFactory;
+		const Skill& skill = DataFactory::get().getskill(skillid);
 		bool twohanded = look.getequips().istwohanded();
 		string action = skill.getaction(twohanded);
 		if (action == "")
@@ -270,7 +266,7 @@ namespace Character
 
 	void Player::useattack()
 	{
-		look.setstance("attack");
+		look.attack();
 		look.getequips().getweapon()->playsound();
 		attacking = true;
 	}
@@ -327,12 +323,12 @@ namespace Character
 		buffs[buff.getstat()] = buff;
 	}
 
-	void Player::cancelbuff(Buffstat buffstat)
+	void Player::cancelbuff(Buffstat::Value buffstat)
 	{
 		buffs.erase(buffstat);
 	}
 
-	bool Player::hasbuff(Buffstat buff) const
+	bool Player::hasbuff(Buffstat::Value buff) const
 	{
 		return buffs.count(buff) > 0;
 	}
@@ -357,7 +353,7 @@ namespace Character
 			return;
 
 		setposition(seat->pos.x(), seat->pos.y());
-		setstance(Char::SIT);
+		setstate(Char::SIT);
 	}
 
 	void Player::setladder(const Ladder* ldr)
@@ -370,7 +366,7 @@ namespace Character
 			phobj.hspeed = 0.0;
 			phobj.vspeed = 0.0;
 			phobj.type = PhysicsObject::CLIMBING;
-			setstance(ldr->ladder ? Char::LADDER : Char::ROPE);
+			setstate(ldr->ladder ? Char::LADDER : Char::ROPE);
 			setflip(false);
 		}
 	}
@@ -381,10 +377,10 @@ namespace Character
 			Char::setflip(flipped);
 	}
 
-	void Player::setstance(Stance st)
+	void Player::setstate(State st)
 	{
 		if (!attacking)
-			Char::setstance(st);
+			Char::setstate(st);
 	}
 	
 	float Player::getwforce() const

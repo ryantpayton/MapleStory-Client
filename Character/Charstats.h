@@ -17,7 +17,6 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Net\Login.h"
-#include "Character\EquipConstants.h"
 #include "Character\Look\Weapon.h"
 
 namespace Character
@@ -37,7 +36,7 @@ namespace Character
 		void setstat(Maplestat::Value stat, uint16_t value);
 		void settotal(Equipstat::Value stat, int32_t value);
 		void addtotal(Equipstat::Value stat, int32_t value);
-		void calculatedamage(Weapon::WpType weapontype);
+		void calculatedamage(Weapon::Type weapontype);
 
 		uint16_t calculateaccuracy() const;
 		int64_t getexpneeded() const;
@@ -68,8 +67,9 @@ namespace Character
 		int8_t getattackspeed() const { return attackspeed; }
 
 	private:
-		int32_t getprimary(Weapon::WpType weapontype);
-		int32_t getsecondary(Weapon::WpType weapontype);
+		int32_t getprimary(Weapon::Type weapontype) const;
+		int32_t getsecondary(Weapon::Type weapontype) const;
+		float getmultiplier(Weapon::Type weapontype) const;
 
 		StatsEntry stats;
 

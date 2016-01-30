@@ -32,6 +32,7 @@
 namespace IO
 {
 	using Net::Session;
+	using Character::Stance;
 
 	UICharSelect::UICharSelect()
 	{
@@ -172,11 +173,11 @@ namespace IO
 		{
 			buttons[BT_CHAR0 + selected]->setstate(Button::NORMAL);
 			nametags[selected].setselected(false);
-			charlooks[selected].setstance("stand");
+			charlooks[selected].setstance(Stance::STAND1);
 
 			selected = static_cast<uint8_t>(bid - BT_CHAR0);
 			nametags[selected].setselected(true);
-			charlooks[selected].setstance("walk");
+			charlooks[selected].setstance(Stance::WALK1);
 
 			const Net::StatsEntry& stats = Session::get().getlogin().getchar(selected).getstats();
 			namelabel.settext(stats.name, 0);
@@ -242,7 +243,7 @@ namespace IO
 			));
 		if (index == selected)
 		{
-			look.setstance("walk");
+			look.setstance(Stance::WALK1);
 			buttons[buttonindex]->setstate(Button::PRESSED);
 		}
 		charlooks.push_back(look);

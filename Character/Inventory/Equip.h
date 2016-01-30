@@ -18,7 +18,6 @@
 #pragma once
 #include "Item.h"
 #include "Character\Look\Clothing.h"
-#include "Character\EquipConstants.h"
 
 namespace Character
 {

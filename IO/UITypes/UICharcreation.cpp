@@ -28,6 +28,7 @@
 namespace IO
 {
 	using Character::Clothing;
+	using Character::Slot;
 	using Net::Session;
 
 	UICharcreation::UICharcreation()
@@ -248,10 +249,10 @@ namespace IO
 		hairname.settext(newchar.gethairstyle()->getname());
 		haircname.settext(newchar.gethairstyle()->getcolor());
 
-		topname.settext(newchar.getequips().getequip(Clothing::TOP).getname());
-		botname.settext(newchar.getequips().getequip(Clothing::PANTS).getname());
-		shoename.settext(newchar.getequips().getequip(Clothing::SHOES).getname());
-		wepname.settext(newchar.getequips().getequip(Clothing::WEAPON).getname());
+		topname.settext(newchar.getequips().getequipname(Slot::TOP));
+		botname.settext(newchar.getequips().getequipname(Slot::PANTS));
+		shoename.settext(newchar.getequips().getequipname(Slot::SHOES));
+		wepname.settext(newchar.getequips().getequipname(Slot::WEAPON));
 		gendername.settext(female ? "Female" : "Male");
 	}
 
@@ -372,42 +373,42 @@ namespace IO
 			case BT_CHARC_TOPL:
 				top = (top > 0) ? top - 1 : tops[female].size() - 1;
 				newchar.addequip(tops[female][top]);
-				topname.settext(newchar.getequips().getequip(Clothing::TOP).getname());
+				topname.settext(newchar.getequips().getequipname(Slot::TOP));
 				break;
 			case BT_CHARC_TOPR:
 				top = (top < tops[female].size() - 1) ? top + 1 : 0;
 				newchar.addequip(tops[female][top]);
-				topname.settext(newchar.getequips().getequip(Clothing::TOP).getname());
+				topname.settext(newchar.getequips().getequipname(Slot::TOP));
 				break;
 			case BT_CHARC_BOTL:
 				bot = (bot > 0) ? bot - 1 : bots[female].size() - 1;
 				newchar.addequip(bots[female][bot]);
-				botname.settext(newchar.getequips().getequip(Clothing::PANTS).getname());
+				botname.settext(newchar.getequips().getequipname(Slot::PANTS));
 				break;
 			case BT_CHARC_BOTR:
 				bot = (bot < bots[female].size() - 1) ? bot + 1 : 0;
 				newchar.addequip(bots[female][bot]);
-				botname.settext(newchar.getequips().getequip(Clothing::PANTS).getname());
+				botname.settext(newchar.getequips().getequipname(Slot::PANTS));
 				break;
 			case BT_CHARC_SHOESL:
 				shoe = (shoe > 0) ? shoe - 1 : shoes[female].size() - 1;
 				newchar.addequip(shoes[female][shoe]);
-				shoename.settext(newchar.getequips().getequip(Clothing::SHOES).getname());
+				shoename.settext(newchar.getequips().getequipname(Slot::SHOES));
 				break;
 			case BT_CHARC_SHOESR:
 				shoe = (shoe < shoes[female].size() - 1) ? shoe + 1 : 0;
 				newchar.addequip(shoes[female][shoe]);
-				shoename.settext(newchar.getequips().getequip(Clothing::SHOES).getname());
+				shoename.settext(newchar.getequips().getequipname(Slot::SHOES));
 				break;
 			case BT_CHARC_WEPL:
 				weapon = (weapon > 0) ? weapon - 1 : weapons[female].size() - 1;
 				newchar.addequip(weapons[female][weapon]);
-				wepname.settext(newchar.getequips().getequip(Clothing::WEAPON).getname());
+				wepname.settext(newchar.getequips().getequipname(Slot::WEAPON));
 				break;
 			case BT_CHARC_WEPR:
 				weapon = (weapon < weapons[female].size() - 1) ? weapon + 1 : 0;
 				newchar.addequip(weapons[female][weapon]);
-				wepname.settext(newchar.getequips().getequip(Clothing::WEAPON).getname());
+				wepname.settext(newchar.getequips().getequipname(Slot::WEAPON));
 				break;
 			case BT_CHARC_GENDERL:
 			case BT_CHARC_GEMDERR:

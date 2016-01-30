@@ -48,7 +48,7 @@ namespace Character
 		{
 			if (pets[i].getiid() > 0)
 			{
-				switch (stance)
+				switch (state)
 				{
 				case LADDER:
 				case ROPE:
@@ -83,17 +83,10 @@ namespace Character
 		chatballoon.settext(line);
 	}
 
-	void Char::sendface(int32_t expression)
+	void Char::sendface(int32_t expid)
 	{
-		// Names of face expressions used in the game's files.
-		static const string expnames[7] =
-		{
-			"hit", "smile", "troubled", "cry", "angry", "bewildered", "stunned"
-		};
-
-		int32_t expid = expression - 100;
-		if (expid >= 0 && expid < 7)
-			look.setexpression(expnames[expid]);
+		Expression::Value expression = Expression::byid(expid);
+		look.setexpression(expression);
 	}
 
 	void Char::setflip(bool f)
@@ -102,20 +95,21 @@ namespace Character
 		look.setflip(f);
 	}
 
-	void Char::setstance(Stance st)
+	void Char::setstate(State st)
 	{
-		stance = st;
+		state = st;
 
 		// Names of the character stances used in the game's files.
-		static const string stancenames[13] =
+		static const Stance::Value stancevalues[10] =
 		{
-			"", "walk", "stand", "jump", "alert", "prone", "fly", "ladder", "rope",
-			"dead", "sit", "", "proneStab"
+			Stance::WALK1, Stance::STAND1, Stance::JUMP, Stance::ALERT, 
+			Stance::PRONE, Stance::FLY, Stance::LADDER, Stance::ROPE,
+			Stance::DEAD, Stance::SIT
 		};
 
-		int8_t index = st / 2;
-		if (index >= 0 && index < 11)
-			look.setstance(stancenames[index]);
+		int8_t index = (st / 2) - 1;
+		if (index >= 0 && index < 10)
+			look.setstance(stancevalues[index]);
 	}
 
 	void Char::addpet(uint8_t index, int32_t iid, string name,
@@ -141,12 +135,12 @@ namespace Character
 
 	bool Char::issitting() const
 	{
-		return stance == SIT;
+		return state == SIT;
 	}
 
 	bool Char::isclimbing() const
 	{
-		return stance == LADDER || stance == ROPE;
+		return state == LADDER || state == ROPE;
 	}
 
 	bool Char::getflip() const

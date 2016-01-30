@@ -48,8 +48,9 @@ namespace IO
 		if (itemid == 0)
 			return;
 
+		using Data::DataFactory;
 		using Character::ItemData;
-		const ItemData& idata = Data::getitemdata(itemid);
+		const ItemData& idata = DataFactory::get().getitemdata(itemid);
 
 		itemicon = idata.geticon(false);
 		name = Text(Text::A12B, Text::CENTER, Text::WHITE);

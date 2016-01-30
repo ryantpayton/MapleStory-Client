@@ -31,6 +31,7 @@
 #include <iostream>
 
 using Audio::AudioPlayer;
+using Data::DataFactory;
 using Gameplay::Stage;
 using IO::UI;
 using IO::Window;
@@ -67,6 +68,8 @@ Error init()
 	if (!AudioPlayer::get().init())
 		return AUDIO;
 
+	DataFactory::get().init();
+
 	return NONE;
 }
 
@@ -93,7 +96,6 @@ int main()
 	Error error = init();
 	if (error == NONE)
 	{
-		Data::init();
 		Character::initbuffeffects();
 
 		using IO::ElementLogin;

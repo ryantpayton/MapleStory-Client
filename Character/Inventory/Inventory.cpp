@@ -22,6 +22,8 @@
 
 namespace Character
 {
+	using Data::DataFactory;
+
 	Inventory::Inventory()
 	{
 		meso = 0;
@@ -69,7 +71,7 @@ namespace Character
 		if (slot >= slots[invtype])
 			return;
 
-		const ItemData& idata = Data::getitemdata(iid);
+		const ItemData& idata = DataFactory::get().getitemdata(iid);
 		if (idata.isloaded())
 		{
 			add(invtype, slot, new Item(
@@ -84,7 +86,7 @@ namespace Character
 		if (slot >= slots[invtype])
 			return;
 
-		const ItemData& idata = Data::getitemdata(iid);
+		const ItemData& idata = DataFactory::get().getitemdata(iid);
 		if (idata.isloaded())
 		{
 			add(invtype, slot, new Pet(
@@ -100,7 +102,7 @@ namespace Character
 		if (slot >= slots[invtype])
 			return;
 
-		const ItemData& idata = Data::getitemdata(iid);
+		const ItemData& idata = DataFactory::get().getitemdata(iid);
 		if (idata.isloaded())
 		{
 			add(invtype, slot, new Equip(
@@ -196,31 +198,31 @@ namespace Character
 		return meso;
 	}
 
-	bool Inventory::hasequipped(Clothing::Slot slot) const
+	bool Inventory::hasequipped(Slot::Value slot) const
 	{
 		int16_t intslot = static_cast<int16_t>(slot);
 		return inventoryitems.at(Inventory::EQUIPPED).count(intslot) > 0;
 	}
 
-	Clothing::Slot Inventory::findequipslot(int32_t itemid) const
+	Slot::Value Inventory::findequipslot(int32_t itemid) const
 	{
-		const Clothing& cloth = Data::getclothing(itemid);
+		const Clothing& cloth = DataFactory::get().getclothing(itemid);
 		if (!cloth.isloaded())
-			return Clothing::NONE;
+			return Slot::NONE;
 
-		Clothing::Slot eqslot = cloth.geteqslot();
-		if (eqslot == Clothing::RING)
+		Slot::Value eqslot = cloth.geteqslot();
+		if (eqslot == Slot::RING)
 		{
-			if (!hasequipped(Clothing::RING2))
-				return Clothing::RING2;
+			if (!hasequipped(Slot::RING2))
+				return Slot::RING2;
 
-			if (!hasequipped(Clothing::RING3))
-				return Clothing::RING3;
+			if (!hasequipped(Slot::RING3))
+				return Slot::RING3;
 
-			if (!hasequipped(Clothing::RING4))
-				return Clothing::RING4;
+			if (!hasequipped(Slot::RING4))
+				return Slot::RING4;
 
-			return Clothing::RING;
+			return Slot::RING;
 		}
 		else
 		{

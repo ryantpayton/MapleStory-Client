@@ -16,94 +16,81 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Facetype.h"
+#include "Face.h"
 #include "nlnx\nx.hpp"
 
 namespace Character
 {
-	Facetype::Facetype(int32_t faceid)
+	Face::Face(int32_t faceid)
 	{
 		using nl::node;
 		node facenode = nl::nx::character["Face"]["000" + std::to_string(faceid) + ".img"];
-		for (node expnode : facenode)
+
+		node defnode = facenode["default"];
+		expressions[Expression::DEFAULT][0] = defnode["face"];
+		expressions[Expression::DEFAULT][0].shift(-vector2d<int16_t>(defnode["face"]["map"]["brow"]));
+		delays[Expression::DEFAULT][0] = 2500;
+
+		for (auto it = Expression::getit(Expression::BLINK); it.hasnext(); it.increment())
 		{
-			string state = expnode.name();
-			if (state == "default")
+			Expression::Value exp = it.get();
+			string expname = Expression::nameof(exp);
+			node expnode = facenode[expname];
+			if (expnode.size() == 0)
+				continue;
+
+			uint8_t frame = 0;
+			node framenode = expnode[std::to_string(frame)];
+			while (framenode.size() > 0)
 			{
-				stances[state][CL_FACE][0] = Texture(expnode["face"]);
-				stances[state][CL_FACE][0].shift(-vector2d<int16_t>(expnode["face"]["map"]["brow"]));
-				delays[state][0] = 2500;
-			}
-			else if (state != "info")
-			{
-				uint8_t frame = 0;
-				node framenode = expnode[std::to_string(frame)];
-				while (framenode.size() > 0)
+				if (framenode["face"].data_type() == node::type::bitmap)
 				{
-					if (framenode["face"].data_type() == node::type::bitmap)
-					{
-						stances[state][CL_FACE][frame] = Texture(framenode["face"]);
-						stances[state][CL_FACE][frame].shift(-vector2d<int16_t>(framenode["face"]["map"]["brow"]));
+					expressions[exp][frame] = framenode["face"];
+					expressions[exp][frame].shift(-vector2d<int16_t>(framenode["face"]["map"]["brow"]));
 
-						if (framenode["delay"].data_type() == node::type::integer)
-							delays[state][frame] = framenode["delay"];
-						else
-							delays[state][frame] = 2500;
-					}
-
-					frame++;
-					framenode = expnode[std::to_string(frame)];
+					if (framenode["delay"].data_type() == node::type::integer)
+						delays[exp][frame] = framenode["delay"];
+					else
+						delays[exp][frame] = 2500;
 				}
+
+				frame++;
+				framenode = expnode[std::to_string(frame)];
 			}
 		}
 
 		name = nl::nx::string["Eqp.img"]["Eqp"]["Face"][std::to_string(faceid)]["name"];
 	}
 
-	Facetype::Facetype() {}
+	Face::Face() {}
 
-	Facetype::~Facetype() {}
-
-	void Facetype::draw(string stance, CharacterLayer layer, 
-		uint8_t frame, const DrawArgument& args) const {
-
-		if (!stances.count(stance))
+	void Face::draw(Expression::Value expression, uint8_t frame, const DrawArgument& args) const
+	{
+		if (!expressions[expression].count(frame))
 			return;
 
-		if (!stances.at(stance).count(layer))
-			return;
-
-		if (!stances.at(stance).at(layer).count(frame))
-			return;
-
-		stances.at(stance).at(layer).at(frame).draw(args);
+		expressions[expression].at(frame).draw(args);
 	}
 
-	uint8_t Facetype::nextframe(string exp, uint8_t frame) const
+	uint8_t Face::nextframe(Expression::Value exp, uint8_t frame) const
 	{
-		if (delays.count(exp))
+		if (frame < delays[exp].size() - 1)
 		{
-			if (frame < delays.at(exp).size() - 1)
-			{
-				return frame + 1;
-			}
+			return frame + 1;
 		}
 		return 0;
 	}
 
-	int16_t Facetype::getdelay(string exp, uint8_t frame) const
+	int16_t Face::getdelay(Expression::Value exp, uint8_t frame) const
 	{
-		if (delays.count(exp))
+		if (delays[exp].count(frame))
 		{
-			if (delays.at(exp).count(frame))
-			{
-				return delays.at(exp).at(frame);
-			}
+			return delays[exp].at(frame);
 		}
 		return 50;
 	}
 
-	string Facetype::getname() const
+	string Face::getname() const
 	{
 		return name;
 	}

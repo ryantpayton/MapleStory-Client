@@ -49,26 +49,26 @@ namespace Character
 
 		void nextstate(Player& player) const override
 		{
-			Char::Stance stance;
+			Char::State state;
 			if (player.getphobj().onground)
 			{
 				if (player.keydown(Keyboard::KA_LEFT))
 				{
-					stance = Char::WALK;
+					state = Char::WALK;
 					player.setflip(false);
 				}
 				else if (player.keydown(Keyboard::KA_RIGHT))
 				{
-					stance = Char::WALK;
+					state = Char::WALK;
 					player.setflip(true);
 				}
 				else if (player.keydown(Keyboard::KA_DOWN))
 				{
-					stance = Char::PRONE;
+					state = Char::PRONE;
 				}
 				else
 				{
-					stance = Char::STAND;
+					state = Char::STAND;
 				}
 			}
 			else
@@ -79,24 +79,24 @@ namespace Character
 					const Ladder* ladder = player.getladder();
 					if (ladder)
 					{
-						stance = ladder->ladder ? Char::LADDER : Char::ROPE;
+						state = ladder->ladder ? Char::LADDER : Char::ROPE;
 					}
 					else
 					{
-						stance = Char::FALL;
+						state = Char::FALL;
 						player.getphobj().type = PhysicsObject::NORMAL;
 					}
 				}
 				else if (phtype == PhysicsObject::FLYING || phtype == PhysicsObject::SWIMMING)
 				{
-					stance = Char::SWIM;
+					state = Char::SWIM;
 				}
 				else
 				{
-					stance = Char::FALL;
+					state = Char::FALL;
 				}
 			}
-			player.setstance(stance);
+			player.setstate(state);
 		}
 	};
 
@@ -110,18 +110,18 @@ namespace Character
 				{
 				case Keyboard::KA_LEFT:
 					player.setflip(false);
-					player.setstance(Char::WALK);
+					player.setstate(Char::WALK);
 					break;
 				case Keyboard::KA_RIGHT:
 					player.setflip(true);
-					player.setstance(Char::WALK);
+					player.setstate(Char::WALK);
 					break;
 				case Keyboard::KA_JUMP:
 					playjumpsound();
 					player.getphobj().vforce = -player.getjforce();
 					break;
 				case Keyboard::KA_DOWN:
-					player.setstance(Char::PRONE);
+					player.setstate(Char::PRONE);
 					break;
 				}
 			}
@@ -133,7 +133,7 @@ namespace Character
 		{
 			if (!player.getphobj().onground)
 			{
-				player.setstance(Char::FALL);
+				player.setstate(Char::FALL);
 			}
 		}
 	};
@@ -158,7 +158,7 @@ namespace Character
 					break;
 				case Keyboard::KA_DOWN:
 					player.getphobj().hspeed = 0.0f;
-					player.setstance(Char::PRONE);
+					player.setstate(Char::PRONE);
 					break;
 				}
 			}
@@ -180,11 +180,11 @@ namespace Character
 			if (player.getphobj().onground)
 			{
 				if (player.getphobj().hspeed == 0.0f)
-					player.setstance(Char::STAND);
+					player.setstate(Char::STAND);
 			}
 			else
 			{
-				player.setstance(Char::FALL);
+				player.setstate(Char::FALL);
 			}
 		}
 	};
@@ -206,9 +206,9 @@ namespace Character
 				player.setflip(true);
 
 			if (player.getphobj().hspeed != 0.0f)
-				player.setstance(Char::WALK);
+				player.setstate(Char::WALK);
 			else
-				player.setstance(Char::STAND);
+				player.setstate(Char::STAND);
 		}
 	};
 
@@ -225,11 +225,11 @@ namespace Character
 					{
 						playjumpsound();
 						player.getphobj().gobelowground();
-						player.setstance(Char::FALL);
+						player.setstate(Char::FALL);
 					}
 					else
 					{
-						player.setstance(Char::STAND);
+						player.setstate(Char::STAND);
 						player.sendaction(ka, down);
 					}
 					break;
@@ -240,7 +240,7 @@ namespace Character
 				switch (ka)
 				{
 				case Keyboard::KA_DOWN:
-					player.setstance(Char::STAND);
+					player.setstate(Char::STAND);
 					break;
 				}
 			}
@@ -261,18 +261,18 @@ namespace Character
 				{
 				case Keyboard::KA_LEFT:
 					player.setflip(false);
-					player.setstance(Char::WALK);
+					player.setstate(Char::WALK);
 					break;
 				case Keyboard::KA_RIGHT:
 					player.setflip(true);
-					player.setstance(Char::WALK);
+					player.setstate(Char::WALK);
 					break;
 				case Keyboard::KA_JUMP:
 					playjumpsound();
-					player.setstance(Char::STAND);
+					player.setstate(Char::STAND);
 					break;
 				case Keyboard::KA_UP:
-					player.setstance(Char::SWIM);
+					player.setstate(Char::SWIM);
 					break;
 				}
 			}
@@ -389,7 +389,7 @@ namespace Character
 	private:
 		void cancelladder(Player& player) const
 		{
-			player.setstance(Char::FALL);
+			player.setstate(Char::FALL);
 			player.getphobj().type = PhysicsObject::NORMAL;
 			player.setladder(nullptr);
 		}
