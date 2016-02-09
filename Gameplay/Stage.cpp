@@ -31,7 +31,7 @@ namespace Gameplay
 
 	Stage::Stage()
 	{
-		state = STG_INACTIVE;
+		state = INACTIVE;
 		playable = nullptr;
 		mapid = 0;
 		portalid = 0;
@@ -62,7 +62,7 @@ namespace Gameplay
 
 	void Stage::clear()
 	{
-		state = STG_INACTIVE;
+		state = INACTIVE;
 
 		layers.clear();
 		portals.clear();
@@ -91,7 +91,7 @@ namespace Gameplay
 
 	void Stage::parsemap(InPacket& recv)
 	{
-		if (state != STG_INACTIVE)
+		if (state != INACTIVE)
 			return;
 
 		mapid = recv.readint();
@@ -105,15 +105,14 @@ namespace Gameplay
 			layers[i] = MapLayer(recv);
 		}
 
-		state = STG_TRANSITION;
+		state = TRANSITION;
 	}
 
 	void Stage::respawn()
 	{
 		AudioPlayer::get().playbgm(mapinfo.getbgm());
 
-		vector2d<int16_t> startpos =
-			physics.getgroundbelow(portals.getspawnpoint(portalid));
+		vector2d<int16_t> startpos = physics.getgroundbelow(portals.getspawnpoint(portalid));
 		player.respawn(startpos);
 		camera.setposition(startpos);
 		camera.updateview(mapinfo.getwalls(), mapinfo.getborders());
@@ -123,21 +122,21 @@ namespace Gameplay
 	{
 		switch (state)
 		{
-		case STG_INACTIVE:
+		case INACTIVE:
 			loadmap();
 			respawn();
 			break;
-		case STG_TRANSITION:
+		case TRANSITION:
 			respawn();
 			break;
 		}
 
-		state = STG_ACTIVE;
+		state = ACTIVE;
 	}
 
 	void Stage::draw(float inter) const
 	{
-		if (state != STG_ACTIVE)
+		if (state != ACTIVE)
 			return;
 
 		vector2d<int16_t> viewpos = camera.getposition(inter);
@@ -158,7 +157,7 @@ namespace Gameplay
 
 	void Stage::update()
 	{
-		if (state != STG_ACTIVE)
+		if (state != ACTIVE)
 			return;
 
 		for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
@@ -177,10 +176,10 @@ namespace Gameplay
 
 	void Stage::sendattack(const Attack& attack)
 	{
-		AttackResult result = mobs.sendattack(attack);
+		mobs.sendattack(attack);
 
-		using Net::CloseRangeAttackPacket;
-		Session::get().dispatch(CloseRangeAttackPacket(result));
+		//using Net::CloseRangeAttackPacket;
+		//Session::get().dispatch(CloseRangeAttackPacket(result));
 	}
 
 	void Stage::useskill(int32_t skillid)
@@ -191,17 +190,11 @@ namespace Gameplay
 		if (skill.isoffensive())
 		{
 			Attack attack = player.prepareskillattack(skillid);
-			attack.hiteffect = skill.gethitanimation(
-				player.getlook().getequips().istwohanded()
-				);
-
-			sendattack(attack);
+			mobs.sendattack(attack);
 		}
 		else
 		{
-			uint8_t levelbyte = static_cast<uint8_t>(
-				player.getskills().getlevel(skillid)
-				);
+			uint8_t levelbyte = static_cast<uint8_t>(player.getskills().getlevel(skillid));
 
 			using Net::UseSkillPacket;
 			Session::get().dispatch(UseSkillPacket(skillid, levelbyte));
@@ -210,8 +203,8 @@ namespace Gameplay
 
 	void Stage::useattack()
 	{
-		Attack attack = player.regularattack();
-		sendattack(attack);
+		Attack attack = player.prepareregularattack();
+		mobs.sendattack(attack);
 	}
 
 	void Stage::checkportals()
@@ -263,52 +256,50 @@ namespace Gameplay
 		}
 	}
 
-	void Stage::sendkey(IO::Keyboard::Keytype type, int32_t action, bool down)
+	void Stage::sendkey(Keyboard::Keytype type, int32_t action, bool down)
 	{
-		if (state != STG_ACTIVE || !playable)
+		if (state != ACTIVE || !playable)
 			return;
-
-		using IO::Keyboard;
 
 		switch (type)
 		{
-		case Keyboard::KT_ACTION:
+		case Keyboard::ACTION:
 			if (down)
 			{
 				// Handle key actions which require parts of map data.
 				switch (action)
 				{
-				case Keyboard::KA_UP:
+				case Keyboard::UP:
 					checkladders(true);
 					checkportals();
 					break;
-				case Keyboard::KA_DOWN:
+				case Keyboard::DOWN:
 					checkladders(false);
 					break;
-				case Keyboard::KA_SIT:
+				case Keyboard::SIT:
 					checkseats();
 					break;
-				case Keyboard::KA_ATTACK:
+				case Keyboard::ATTACK:
 					if (player.canattack())
 						useattack();
 					break;
-				case Keyboard::KA_PICKUP:
+				case Keyboard::PICKUP:
 					checkdrops();
 					break;
 				}
 			}
 
 			// Pass the action to the playable mapobject.
-			playable->sendaction(static_cast<Keyboard::Keyaction>(action), down);
+			playable->sendaction(static_cast<Keyboard::Action>(action), down);
 			break;
-		case Keyboard::KT_SKILL:
+		case Keyboard::SKILL:
 			if (player.canuseskill(action))
 				useskill(action);
 			break;
-		case Keyboard::KT_ITEM:
+		case Keyboard::ITEM:
 			player.useitem(action);
 			break;
-		case Keyboard::KT_FACE:
+		case Keyboard::FACE:
 			player.sendface(action);
 			break;
 		}

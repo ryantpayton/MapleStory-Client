@@ -28,7 +28,6 @@ namespace Gameplay
 	using std::string;
 	using std::map;
 	using std::vector;
-	using Util::Randomizer;
 	using Graphics::Animation;
 	using Graphics::Text;
 

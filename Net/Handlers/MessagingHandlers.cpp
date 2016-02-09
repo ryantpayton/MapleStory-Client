@@ -19,14 +19,18 @@
 #include "Character\Char.h"
 #include "Gameplay\Stage.h"
 #include "IO\UI.h"
+#include "IO\UITypes\UIStatusMessenger.h"
 #include "IO\UITypes\UIStatusbar.h"
+#include "IO\UITypes\UINpcTalk.h"
 #include "Data\DataFactory.h"
 
 namespace Net
 {
 	using IO::UI;
 	using IO::Element;
+	using IO::UIStatusMessenger;
 	using IO::UIStatusbar;
+	using IO::UINpcTalk;
 	using Character::ItemData;
 
 	// Modes:
@@ -105,7 +109,9 @@ namespace Net
 
 	void ShowStatusInfoHandler::showstatus(Text::Color color, string message) const
 	{
-		UI::get().showstatus(color, message);
+		UIStatusMessenger* messenger = UI::get().getelement<UIStatusMessenger>(Element::STATUSMESSENGER);
+		if (messenger)
+			messenger->showstatus(color, message);
 	}
 
 	void ChatReceivedHandler::handle(InPacket& recv) const
@@ -142,7 +148,10 @@ namespace Net
 		if (msgtype == 0 && recv.length() > 0)
 			style = recv.readshort();
 
-		UI::get().shownpctalk(npcid, msgtype, style, speaker, text);
+		UINpcTalk* npctalk = UI::get().getelement<UINpcTalk>(Element::NPCTALK);
+		if (npctalk)
+			npctalk->settext(npcid, msgtype, style, speaker, text);
+
 		UI::get().enable();
 	}
 }

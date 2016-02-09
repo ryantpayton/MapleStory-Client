@@ -44,7 +44,7 @@ namespace IO
 			BT_DETAILCLOSE
 		};
 
-		UIStatsinfo(const CharStats& stats);
+		UIStatsinfo();
 
 		void draw(float inter) const override;
 		void update() override;
@@ -84,9 +84,6 @@ namespace IO
 
 	class ElementStatsinfo : public Element
 	{
-	public:
-		ElementStatsinfo(const CharStats& st) : stats(st) {}
-
 		bool isunique() const override
 		{
 			return true;
@@ -99,12 +96,7 @@ namespace IO
 
 		UIElement* instantiate() const override
 		{
-			return new UIStatsinfo(stats);
+			return new UIStatsinfo();
 		}
-
-	private:
-		ElementStatsinfo& operator = (const ElementStatsinfo&) = delete;
-
-		const CharStats& stats;
 	};
 }

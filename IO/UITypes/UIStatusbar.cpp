@@ -19,15 +19,20 @@
 #include "UIStatsinfo.h"
 #include "UIItemInventory.h"
 #include "UIEquipInventory.h"
+
 #include "IO\UI.h"
 #include "IO\Components\MapleButton.h"
+
+#include "Gameplay\Stage.h"
+
 #include "nlnx\nx.hpp"
 
 namespace IO
 {
-	UIStatusbar::UIStatusbar(const CharStats& st, const Inventory& inv) 
-		: stats(st), inventory(inv) {
+	using Gameplay::Stage;
 
+	UIStatusbar::UIStatusbar() : stats(Stage::get().getplayer().getstats()) 
+	{
 		node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
 
 		sprites.push_back(Sprite(mainbar["backgrnd"]));
@@ -141,13 +146,13 @@ namespace IO
 			uinterface.add(UI_SYSTEM);
 			break;*/
 		case BT_STATS:
-			UI::get().add(ElementStatsinfo(stats));
+			UI::get().add(ElementStatsinfo());
 			break;
 		case BT_INVENTORY:
-			UI::get().add(ElementItemInventory(inventory));
+			UI::get().add(ElementItemInventory());
 			break;
 		case BT_EQUIPS:
-			UI::get().add(ElementEquipInventory(inventory));
+			UI::get().add(ElementEquipInventory());
 			break;
 		}
 

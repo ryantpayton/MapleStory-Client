@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "PetLook.h"
-#include "Program\Constants.h"
+#include "Constants.h"
 #include "nlnx\nx.hpp"
 #include "nlnx\node.hpp"
 

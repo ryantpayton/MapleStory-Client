@@ -16,10 +16,88 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "MapMobs.h"
+#include "Constants.h"
+
+#include "Net\Session.h"
+#include "Net\Packets\AttackAndSkillPackets.h"
 
 namespace Gameplay
 {
-	MapMobs::MapMobs() {}
+	MapMobs::MapMobs() 
+	{
+		raid = 0;
+	}
+
+	void MapMobs::update(const Physics& physics)
+	{
+		vector<uint8_t> toremove;
+		for (auto& attid : attackschedule)
+		{
+			Attack& attack = attid.second;
+			if (attack.delay < Constants::TIMESTEP)
+			{
+				applyattack(attack);
+
+				toremove.push_back(attid.first);
+			}
+			else
+			{
+				attack.delay -= Constants::TIMESTEP;
+			}
+		}
+
+		for (uint8_t rmid : toremove)
+		{
+			attackschedule.erase(rmid);
+		}
+
+		MapObjects::update(physics);
+	}
+
+	void MapMobs::applyattack(const Attack& attack)
+	{
+		rectangle2d<int16_t> range;
+		if (attack.direction == Attack::TOLEFT)
+		{
+			range = rectangle2d<int16_t>(
+				attack.range.getlt() + attack.origin,
+				attack.range.getrb() + attack.origin);
+		}
+		else if (attack.direction == Attack::TORIGHT)
+		{
+			range = rectangle2d<int16_t>(
+				attack.origin.x() - attack.range.r(),
+				attack.origin.x() - attack.range.l(),
+				attack.origin.y() + attack.range.t(),
+				attack.origin.y() + attack.range.b());
+		}
+
+		attack.usesound.play();
+
+		AttackResult result;
+		for (auto& mmo : objects)
+		{
+			if (result.damagelines.size() == attack.mobcount)
+				break;
+
+			if (mmo.second == nullptr)
+				continue;
+
+			Mob* mob = reinterpret_cast<Mob*>(mmo.second.get());
+			if (mob->isactive() && mob->isinrange(range))
+				result.damagelines[mob->getoid()] = mob->damage(attack);
+		}
+		result.direction = attack.direction;
+		result.mobcount = static_cast<uint8_t>(result.damagelines.size());
+		result.hitcount = attack.hitcount;
+		result.skill = attack.skill;
+		result.speed = attack.speed;
+		result.display = 0;
+
+		using Net::Session;
+		using Net::CloseRangeAttackPacket;
+		Session::get().dispatch(CloseRangeAttackPacket(result));
+	}
 
 	void MapMobs::addmob(int32_t oid, int32_t id, bool control, int8_t stance, 
 		uint16_t fhid, bool fadein, int8_t team, vector2d<int16_t> position) {
@@ -49,52 +127,15 @@ namespace Gameplay
 		}
 	}
 
-	AttackResult MapMobs::sendattack(const Attack& attack)
+	void MapMobs::sendattack(Attack attack)
 	{
-		rectangle2d<int16_t> range;
-		if (attack.direction == Attack::TOLEFT)
-		{
-			range = rectangle2d<int16_t>(
-				attack.range.getlt() + attack.origin,
-				attack.range.getrb() + attack.origin);
-		}
-		else if (attack.direction == Attack::TORIGHT)
-		{
-			range = rectangle2d<int16_t>(
-				attack.origin.x() - attack.range.r(),
-				attack.origin.x() - attack.range.l(),
-				attack.origin.y() + attack.range.t(),
-				attack.origin.y() + attack.range.b());
-		}
-
-		AttackResult result;
-		for (auto& mmo : objects)
-		{
-			if (result.damagelines.size() == attack.mobcount)
-				break;
-
-			if (mmo.second == nullptr)
-				continue;
-
-			Mob* mob = reinterpret_cast<Mob*>(mmo.second.get());
-			if (mob->isactive() && mob->isinrange(range))
-				result.damagelines[mob->getoid()] = mob->damage(attack);
-		}
-		result.direction = static_cast<uint8_t>(attack.direction);
-		result.mobcount = static_cast<uint8_t>(result.damagelines.size());
-		result.hitcount = attack.hitcount;
-		result.skill = attack.skill;
-		result.speed = attack.speed;
-		result.display = attack.delay;
-		return result;
+		attackschedule[raid] = attack;
+		raid++;
 	}
 
 	Mob* MapMobs::getmob(int32_t oid)
 	{
 		MapObject* mmo = get(oid);
-		if (mmo)
-			return reinterpret_cast<Mob*>(mmo);
-		else
-			return nullptr;
+		return mmo ? reinterpret_cast<Mob*>(mmo) : nullptr;
 	}
 }

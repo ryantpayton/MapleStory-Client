@@ -25,14 +25,14 @@ namespace Net
 {
 	using Character::Inventory;
 	using Character::Clothing;
-	using Character::Slot;
+	using Character::Equipslot;
 
 	// Packet which requests that the inventory is sorted.
 	// Opcode: GATHER_ITEMS(69)
 	class GatherItemsPacket : public OutPacket
 	{
 	public:
-		GatherItemsPacket(Inventory::InvType type) : OutPacket(GATHER_ITEMS)
+		GatherItemsPacket(Inventory::Type type) : OutPacket(GATHER_ITEMS)
 		{
 			writetime();
 			writech(type);
@@ -45,7 +45,7 @@ namespace Net
 	class SortItemsPacket : public OutPacket
 	{
 	public:
-		SortItemsPacket(Inventory::InvType type) : OutPacket(SORT_ITEMS)
+		SortItemsPacket(Inventory::Type type) : OutPacket(SORT_ITEMS)
 		{
 			writetime();
 			writech(type);
@@ -58,7 +58,7 @@ namespace Net
 	class MoveItemPacket : public OutPacket
 	{
 	public:
-		MoveItemPacket(Inventory::InvType type, int16_t slot, int16_t action, int16_t qty) : OutPacket(MOVE_ITEM)
+		MoveItemPacket(Inventory::Type type, int16_t slot, int16_t action, int16_t qty) : OutPacket(MOVE_ITEM)
 		{
 			writetime();
 			writech(type);
@@ -74,7 +74,7 @@ namespace Net
 	class EquipItemPacket : public MoveItemPacket
 	{
 	public:
-		EquipItemPacket(int16_t src, Slot::Value dest) : MoveItemPacket(Inventory::EQUIP, src, -dest, 1) {}
+		EquipItemPacket(int16_t src, Equipslot::Value dest) : MoveItemPacket(Inventory::EQUIP, src, -Equipslot::valueof(dest), 1) {}
 	};
 
 

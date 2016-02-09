@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "InventoryHandlers.h"
-#include "HandlerFunctions.h"
+#include "ItemParser.h"
 
 #include "IO\UI.h"
 #include "IO\UITypes\UIEquipInventory.h"
@@ -59,18 +59,18 @@ namespace Net
 		for (int8_t i = 0; i < size; i++)
 		{
 			int8_t mode = recv.readbyte();
-			Inventory::InvType invtype = inventory.typebyvalue(recv.readbyte());
+			Inventory::Type invtype = Inventory::typebyvalue(recv.readbyte());
 			int16_t pos = recv.readshort();
 			int16_t arg = (mode == 1 || mode == 2) ? recv.readshort() : 0;
 
-			Inventory::Movetype move;
+			Inventory::Movement move;
 			if ((mode == 2 && (pos < 0 || arg < 0)) || (mode == 3 && pos < 0))
-				move = inventory.movetypebyvalue(recv.readbyte());
+				move = Inventory::movementbyvalue(recv.readbyte());
 			else
 				move = Inventory::MOVE_INTERNAL;
 
 			if (mode == 0)
-				HandlerFunctions::parseitem(recv, invtype, pos, inventory);
+				ItemParser::parseitem(recv, invtype, pos, inventory);
 			else
 				inventory.modify(invtype, pos, mode, arg, move);
 

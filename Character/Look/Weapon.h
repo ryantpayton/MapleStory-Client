@@ -62,8 +62,6 @@ namespace Character
 		Weapon(int32_t, const BodyDrawinfo&);
 		Weapon();
 
-		void playsound() const;
-		Type gettype() const;
 		bool istwohanded() const;
 		string getafterimage() const;
 		uint8_t getspeed() const;
@@ -71,7 +69,9 @@ namespace Character
 		string getspeedstring() const;
 		uint8_t getattackdelay() const;
 		rectangle2d<int16_t> getrange() const;
+		Type gettype() const;
 		Animation gethiteffect() const;
+		Sound getsound() const;
 
 	private:
 		Type type;

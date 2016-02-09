@@ -25,19 +25,17 @@ namespace Gameplay
 	using nl::node;
 	using Net::InPacket;
 
-	// Represents a platform part on a maple-map. Contains methods for usage with physics.
+	// Represents a platform part on a maple-map.
 	class Foothold
 	{
 	public:
-		Foothold(node src, int8_t layer);
-		Foothold(InPacket& recv, int8_t layer);
+		Foothold(node src);
+		Foothold(InPacket& recv);
 		Foothold();
 		~Foothold();
 
 		// Returns the foothold id aka the identifier in game data of this platform.
 		uint16_t getid() const { return id; }
-		// Returns the map layer. Used for drawing objects in the right order.
-		int8_t getlayer() const { return layer; }
 		// Returns the platform left to this.
 		uint16_t getprev() const { return prev; }
 		// Returns the platform right to this.
@@ -68,7 +66,7 @@ namespace Gameplay
 		int16_t getvdelta() const { return vertical.y() - vertical.x(); }
 		// Returns the slope as a ratio of vertical/horizontal.
 		double getslope() const;
-		// Returns a y-coordinate right above the given x-coordinate. Used for slopes.
+		// Returns a y-coordinate right above the given x-coordinate.
 		double resolvex(double x) const;
 
 	private:

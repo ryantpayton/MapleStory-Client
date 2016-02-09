@@ -80,13 +80,11 @@ namespace Net
 				switch (stat)
 				{
 				case Maplestat::SKIN:
-					player.getlook().setbody(recv.readshort());
+					player.changelook(stat, recv.readshort());
 					break;
 				case Maplestat::FACE:
-					player.getlook().setface(recv.readint());
-					break;
 				case Maplestat::HAIR:
-					player.getlook().sethair(recv.readint());
+					player.changelook(stat, recv.readint());
 					break;
 				case Maplestat::LEVEL:
 					player.getstats().setstat(stat, recv.readbyte());
@@ -161,7 +159,7 @@ namespace Net
 		Buff buff = Buff(bs, value, skillid, duration);
 		getplayer().givebuff(buff);
 
-		UIBuffList* bufflist = UI::get().getelement<UIBuffList>(IO::Element::BUFFLIST);
+		UIBuffList* bufflist = UI::get().getelement<UIBuffList>(Element::BUFFLIST);
 		if (bufflist)
 			bufflist->addbuff(skillid, duration);
 	}

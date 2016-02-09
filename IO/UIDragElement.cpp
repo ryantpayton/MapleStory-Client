@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UIDragElement.h"
-#include "Program\Configuration.h"
+#include "Configuration.h"
 
 namespace IO
 {

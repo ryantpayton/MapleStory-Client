@@ -17,53 +17,16 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "BodyDrawinfo.h"
+#include "Equipslot.h"
 #include "Character\Equipstat.h"
 #include "Character\Maplestat.h"
 #include "Character\Inventory\ItemData.h"
 #include "Graphics\Texture.h"
 #include "Util\Enum.h"
-#include "Util\Console.h"
+#include "Console.h"
 
 namespace Character
 {
-	class Slot
-	{
-	public:
-		static const int16_t LENGTH = 51;
-		enum Value : int16_t
-		{
-			NONE = 0,
-			CAP = 1,
-			FACEACC = 2,
-			EYEACC = 3,
-			EARRINGS = 4,
-			TOP = 5,
-			PANTS = 6,
-			SHOES = 7,
-			GLOVES = 8,
-			CAPE = 9,
-			SHIELD = 10,
-			WEAPON = 11,
-			RING = 12,
-			RING2 = 13,
-			RING3 = 15,
-			RING4 = 16,
-			PENDANT = 17,
-			TAMEDMOB = 18,
-			SADDLE = 19,
-			MEDAL = 49,
-			BELT = 50
-		};
-
-		static Value byid(int16_t id)
-		{
-			if (id < NONE || id > BELT || (id > SADDLE && id < MEDAL) || id == 14)
-				return NONE;
-
-			return static_cast<Value>(id);
-		}
-	};
-
 	using Graphics::Texture;
 	using Graphics::DrawArgument;
 
@@ -123,12 +86,12 @@ namespace Character
 		int16_t getreqstat(Maplestat::Value stat) const;
 		int16_t getdefstat(Equipstat::Value stat) const;
 		string gettype() const;
-		Slot::Value geteqslot() const;
+		Equipslot::Value geteqslot() const;
 
 	private:
 		unordered_map<Layer, unordered_map<uint8_t, Texture>> stances[Stance::LENGTH];
 		string type;
-		Slot::Value eqslot;
+		Equipslot::Value eqslot;
 		bool cash;
 		bool tradeblock;
 		bool transparent;

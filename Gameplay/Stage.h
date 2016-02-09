@@ -81,9 +81,9 @@ namespace Gameplay
 
 		enum State
 		{
-			STG_INACTIVE,
-			STG_TRANSITION,
-			STG_ACTIVE
+			INACTIVE,
+			TRANSITION,
+			ACTIVE
 		};
 
 		Camera camera;

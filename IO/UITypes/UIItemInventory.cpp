@@ -16,19 +16,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UIItemInventory.h"
+#include "Configuration.h"
+
 #include "IO\UI.h"
 #include "IO\Components\MapleButton.h"
 #include "IO\Components\TwoSpriteButton.h"
-#include "Program\Configuration.h"
+
 #include "Net\Session.h"
 #include "Net\Packets\InventoryPackets.h"
+
+#include "Gameplay\Stage.h"
+
 #include "nlnx\nx.hpp"
 
 namespace IO
 {
-	UIItemInventory::UIItemInventory(const Inventory& inv) : 
+	using Gameplay::Stage;
+
+	UIItemInventory::UIItemInventory() : 
 		UIDragElement("PosINV", vector2d<int16_t>(172, 20)), 
-		inventory(inv) {
+		inventory(Stage::get().getplayer().getinvent()) {
 
 		node src = nl::nx::ui["UIWindow2.img"]["Item"];
 
@@ -163,7 +170,7 @@ namespace IO
 
 	void UIItemInventory::buttonpressed(uint16_t buttonid)
 	{
-		Inventory::InvType oldtab = tab;
+		Inventory::Type oldtab = tab;
 		switch (buttonid)
 		{
 		case BT_TAB_EQUIP:
@@ -281,7 +288,7 @@ namespace IO
 		}
 	}
 
-	void UIItemInventory::modify(Inventory::InvType type, int16_t slot, int8_t mode, int16_t arg)
+	void UIItemInventory::modify(Inventory::Type type, int16_t slot, int8_t mode, int16_t arg)
 	{
 		if (slot == 0)
 			return;
@@ -344,6 +351,7 @@ namespace IO
 
 	void UIItemInventory::togglehide()
 	{
+		ittooltip.setitem(0);
 		eqtooltip.setequip(nullptr, 0);
 		UIElement::togglehide();
 	}
@@ -378,7 +386,7 @@ namespace IO
 			);
 	}
 
-	vector2d<int16_t> UIItemInventory::gettabpos(Inventory::InvType tb) const
+	vector2d<int16_t> UIItemInventory::gettabpos(Inventory::Type tb) const
 	{
 		switch (tb)
 		{
@@ -397,7 +405,7 @@ namespace IO
 		}
 	}
 
-	uint16_t UIItemInventory::buttonbytab(Inventory::InvType tb) const
+	uint16_t UIItemInventory::buttonbytab(Inventory::Type tb) const
 	{
 		switch (tb)
 		{

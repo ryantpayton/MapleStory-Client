@@ -17,13 +17,18 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UI.h"
 #include "Window.h"
+#include "LoginElements.h"
+#include "GameElements.h"
+
 #include "UITypes\UIBuffList.h"
 #include "UITypes\UIStatusbar.h"
 #include "UITypes\UIStatsinfo.h"
 #include "UITypes\UIItemInventory.h"
 #include "UITypes\UIEquipInventory.h"
 #include "UITypes\UINpcTalk.h"
+
 #include "Gameplay\Stage.h"
+
 #include "Net\Session.h"
 #include "Net\Packets\InventoryPackets.h"
 
@@ -34,53 +39,25 @@ namespace IO
 	UI::UI()
 	{
 		focusedtextfield = nullptr;
-		draggedicon = nullptr;
-		focused = Element::NONE;
-		mode = MD_LOGIN;
+		mode = LOGIN;
 		enabled = true;
+	}
+
+	void UI::init()
+	{
+		elements = unique_ptr<UIElements>(new LoginElements());
 	}
 
 	void UI::draw(float inter) const
 	{
-		messenger.draw(vector2d<int16_t>(790, 510), inter);
-
-		for (auto& elit : elementorder)
-		{
-			UIElement* element = getelement(elit);
-
-			if (element && element->isactive())
-				element->draw(inter);
-		}
-
-		if (draggedicon)
-			draggedicon->dragdraw(cursor.getposition());
-
+		elements->draw(inter, cursor.getposition());
 		cursor.draw(inter);
 	}
 
 	void UI::update()
 	{
-		messenger.update();
-
-		for (auto& elit : elements)
-		{
-			if (elit.second->isactive())
-				elit.second->update();
-		}
-
+		elements->update();
 		cursor.update();
-	}
-
-	void UI::shownpctalk(int32_t npcid, int8_t type, int16_t style, int8_t speaker, string text)
-	{
-		UINpcTalk* npctalk = getelement<UINpcTalk>(Element::NPCTALK);
-		if (npctalk)
-			npctalk->settext(npcid, type, style, speaker, text);
-	}
-
-	void UI::showstatus(Text::Color color, string message)
-	{
-		messenger.showstatus(color, message);
 	}
 
 	void UI::enable()
@@ -95,151 +72,56 @@ namespace IO
 
 	void UI::changemode(Mode md)
 	{
-		if (md == MD_GAME)
+		if (mode == md)
+			return;
+
+		switch (md)
 		{
-			add(ElementStatusbar(
-				Stage::get().getplayer().getstats(),
-				Stage::get().getplayer().getinvent()
-				));
-			add(ElementBuffList());
-			add(ElementNpcTalk());
+		case LOGIN:
+			elements = unique_ptr<UIElements>(new LoginElements());
+			break;
+		case GAME:
+			elements = unique_ptr<UIElements>(new GameElements());
+			break;
 		}
 
 		mode = md;
 	}
 
-	UIElement* UI::getfront(vector2d<int16_t> pos)
-	{
-		UIElement* front = nullptr;
-		for (auto& elit : elementorder)
-		{
-			UIElement* element = elements[elit].get();
-
-			if (element == nullptr)
-				continue;
-
-			if (element->isactive() && element->bounds().contains(pos))
-				front = element;
-		}
-		return front;
-	}
-
-	void UI::dropicon(vector2d<int16_t> pos)
-	{
-		UIElement* front = getfront(pos);
-
-		if (front)
-		{
-
-		}
-		else
-		{
-			UIElement* parent = getelement(draggedicon->getparent());
-			if (parent)
-				parent->icondropped(draggedicon->getidentifier());
-		}
-	}
-
-	void UI::sendmouse(Cursor::Mousestate mst, vector2d<int16_t> pos)
-	{
-		if (draggedicon)
-		{
-			switch (mst)
-			{
-			case Cursor::MST_IDLE:
-				dropicon(pos);
-				draggedicon->resetdrag();
-				draggedicon = nullptr;
-				break;
-			default:
-				mst = Cursor::MST_GRABBING;
-			}
-		}
-		else
-		{
-			if (focused != Element::NONE)
-			{
-				if (elements[focused]->isactive())
-					elements[focused]->sendmouse(mst == Cursor::MST_CLICKING, pos);
-				else
-					focused = Element::NONE;
-			}
-
-			if (focused == Element::NONE)
-			{
-				UIElement* front = nullptr;
-				Element::UIType fronttype = Element::NONE;
-
-				if (enabled)
-				{
-					for (auto& elit : elementorder)
-					{
-						UIElement* element = elements[elit].get();
-
-						if (element == nullptr)
-							continue;
-
-						if (element->isactive() && element->bounds().contains(pos))
-						{
-							if (front)
-								front->sendmouse(false, element->bounds().getlt() - vector2d<int16_t>(1, 1));
-
-							front = element;
-							fronttype = elit;
-						}
-					}
-				}
-
-				if (front)
-				{
-					bool clicked = mst == Cursor::MST_CLICKING;
-					if (clicked)
-					{
-						elementorder.remove(fronttype);
-						elementorder.push_back(fronttype);
-					}
-					mst = front->sendmouse(clicked, pos);
-				}
-				else
-				{
-					mst = Cursor::MST_IDLE;
-				}
-			}
-		}
-
-		cursor.setposition(pos);
-		cursor.setstate(mst);
-	}
-
 	void UI::sendmouse(bool pressed, vector2d<int16_t> pos)
 	{
-		sendmouse(pressed ? Cursor::MST_CLICKING : Cursor::MST_IDLE, pos);
+		Cursor::Mousestate state = pressed ? Cursor::MST_CLICKING : Cursor::MST_IDLE;
+		state = elements->sendmouse(state, pos);
+
+		cursor.setposition(pos);
+		cursor.setstate(state);
 	}
 
 	void UI::sendmouse(vector2d<int16_t> pos)
 	{
-		sendmouse(cursor.getstate(), pos);
+		Cursor::Mousestate state = elements->sendmouse(cursor.getstate(), pos);
+
+		cursor.setposition(pos);
+		cursor.setstate(state);
 	}
 
 	void UI::doubleclick(vector2d<int16_t> pos)
 	{
-		UIElement* front = getfront(pos);
-		if (front)
-			front->doubleclick(pos);
+		elements->doubleclick(pos);
 	}
 
 	void UI::addelementbykey(int32_t key)
 	{
 		switch (key)
 		{
-		case Keyboard::KA_CHARSTATS:
-			add(ElementStatsinfo(Stage::get().getplayer().getstats()));
+		case Keyboard::CHARSTATS:
+			add(ElementStatsinfo());
 			break;
-		case Keyboard::KA_INVENTORY:
-			add(ElementItemInventory(Stage::get().getplayer().getinvent()));
+		case Keyboard::INVENTORY:
+			add(ElementItemInventory());
 			break;
-		case Keyboard::KA_EQUIPS:
-			add(ElementEquipInventory(Stage::get().getplayer().getinvent()));
+		case Keyboard::EQUIPS:
+			add(ElementEquipInventory());
 			break;
 		}
 	}
@@ -252,18 +134,18 @@ namespace IO
 
 			switch (mapping.type)
 			{
-			case Keyboard::KT_ACTION:
-				focusedtextfield->sendkey(Keyboard::KT_ACTION, mapping.action, pressed);
+			case Keyboard::ACTION:
+				focusedtextfield->sendkey(Keyboard::ACTION, mapping.action, pressed);
 				break;
-			case Keyboard::KT_LETTER:
-				focusedtextfield->sendkey(Keyboard::KT_LETTER, static_cast<int8_t>(mapping.action), pressed);
+			case Keyboard::LETTER:
+				focusedtextfield->sendkey(Keyboard::LETTER, static_cast<int8_t>(mapping.action), pressed);
 				break;
-			case Keyboard::KT_NUMBER:
-				focusedtextfield->sendkey(Keyboard::KT_NUMBER, static_cast<int8_t>(mapping.action), pressed);
+			case Keyboard::NUMBER:
+				focusedtextfield->sendkey(Keyboard::NUMBER, static_cast<int8_t>(mapping.action), pressed);
 				break;
 			}
 		}
-		else if (mode == MD_GAME)
+		else if (mode == GAME)
 		{
 			const Keyboard::Keymapping* mapping = keyboard.getmapping(keycode);
 
@@ -274,14 +156,14 @@ namespace IO
 
 				switch (type)
 				{
-				case Keyboard::KT_MENU:
+				case Keyboard::MENU:
 					if (pressed)
 						addelementbykey(action);
 					break;
-				case Keyboard::KT_ACTION:
-				case Keyboard::KT_FACE:
-				case Keyboard::KT_ITEM:
-				case Keyboard::KT_SKILL:
+				case Keyboard::ACTION:
+				case Keyboard::FACE:
+				case Keyboard::ITEM:
+				case Keyboard::SKILL:
 					Stage::get().sendkey(type, action, pressed);
 					break;
 				}
@@ -296,9 +178,14 @@ namespace IO
 		focusedtextfield = tofocus;
 	}
 
-	void UI::dragicon(Icon* todrag)
+	void UI::dragicon(Icon* icon)
 	{
-		draggedicon = todrag;
+		if (mode != GAME)
+			return;
+
+		GameElements* gameelements = reinterpret_cast<GameElements*>(elements.get());
+		if (gameelements)
+			gameelements->dragicon(icon);
 	}
 
 	void UI::addkeymapping(uint8_t no, uint8_t t, int32_t action)
@@ -309,49 +196,13 @@ namespace IO
 
 	void UI::add(const Element& element)
 	{
-		Element::UIType type = element.type();
-		if (elements.count(type))
-		{
-			if (element.isunique())
-			{
-				elementorder.remove(type);
-				elementorder.push_back(type);
-				elements[type]->togglehide();
-				return;
-			}
-			else
-			{
-				remove(type);
-			}
-		}
-
-		UIElement* toadd = element.instantiate();
-		elements[type] = unique_ptr<UIElement>(toadd);
-		elementorder.push_back(type);
-
-		if (element.isfocused())
-		{
-			focused = type;
-		}
+		elements->add(element);
 	}
 
 	void UI::remove(Element::UIType type)
 	{
 		focusedtextfield = nullptr;
-
-		if (type == focused)
-		{
-			focused = Element::NONE;
-		}
-
-		elementorder.remove(type);
-
-		if (elements.count(type))
-		{
-			elements[type]->deactivate();
-			elements[type].release();
-			elements.erase(type);
-		}
+		elements->remove(type);
 	}
 
 	bool UI::haselement(Element::UIType type) const
@@ -361,6 +212,6 @@ namespace IO
 
 	UIElement* UI::getelement(Element::UIType type) const
 	{
-		return elements.count(type) ? elements.at(type).get() : nullptr;
+		return elements->get(type);
 	}
 }

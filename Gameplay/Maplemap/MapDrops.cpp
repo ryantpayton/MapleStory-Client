@@ -19,7 +19,7 @@
 #include "ItemDrop.h"
 #include "MesoDrop.h"
 #include "Data\DataFactory.h"
-#include "Program\Constants.h"
+#include "Constants.h"
 #include "nlnx\nx.hpp"
 #include <string>
 

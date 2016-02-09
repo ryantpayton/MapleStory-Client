@@ -18,23 +18,34 @@
 #pragma once
 #include "MapObjects.h"
 #include "Mob.h"
+
 #include "Gameplay\Attack.h"
+
+#include <map>
 
 namespace Gameplay
 {
+	using std::map;
+
 	class MapMobs : public MapObjects
 	{
 	public:
 		MapMobs();
 
+		void update(const Physics& physics) override;
+
 		void addmob(int32_t oid, int32_t mobid, bool control, int8_t stance, 
 			uint16_t fhid, bool fadein, int8_t team, vector2d<int16_t> position);
 		void killmob(int32_t oid, int8_t effect);
 		void sendmobhp(int32_t oid, int8_t percent, uint16_t playerlevel);
-		AttackResult sendattack(const Attack& attack);
+		void sendattack(Attack attack);
 
 	private:
-		Mob* getmob(int32_t);
+		void applyattack(const Attack& attack);
+		Mob* getmob(int32_t oid);
+
+		map<uint8_t, Attack> attackschedule;
+		uint8_t raid;
 	};
 }
 

@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "CharLook.h"
 #include "Data\DataFactory.h"
-#include "Program\Constants.h"
+#include "Constants.h"
 
 namespace Character
 {
@@ -104,68 +104,68 @@ namespace Character
 		if (Stance::isclimbing(laststance))
 		{
 			body->draw(laststance, Body::BODY, lastframe, args);
-			equips.draw(Slot::GLOVES, laststance, Clothing::GLOVE, interframe, args);
-			equips.draw(Slot::SHOES, laststance, Clothing::SHOES, interframe, args);
-			equips.draw(Slot::PANTS, laststance, Clothing::PANTS, interframe, args);
-			equips.draw(Slot::TOP, laststance, Clothing::TOP, interframe, args);
-			equips.draw(Slot::TOP, laststance, Clothing::MAIL, interframe, args);
-			equips.draw(Slot::CAPE, laststance, Clothing::CAPE, interframe, args);
+			equips.draw(Equipslot::GLOVES, laststance, Clothing::GLOVE, interframe, args);
+			equips.draw(Equipslot::SHOES, laststance, Clothing::SHOES, interframe, args);
+			equips.draw(Equipslot::PANTS, laststance, Clothing::PANTS, interframe, args);
+			equips.draw(Equipslot::TOP, laststance, Clothing::TOP, interframe, args);
+			equips.draw(Equipslot::TOP, laststance, Clothing::MAIL, interframe, args);
+			equips.draw(Equipslot::CAPE, laststance, Clothing::CAPE, interframe, args);
 			body->draw(laststance, Body::HEAD, interframe, args);
-			equips.draw(Slot::EARRINGS, laststance, Clothing::EARRINGS, interframe, args);
+			equips.draw(Equipslot::EARRINGS, laststance, Clothing::EARRINGS, interframe, args);
 
-			if (equips.isvisible(Slot::CAP))
+			if (equips.isvisible(Equipslot::CAP))
 			{
 				hair->draw(laststance, Hair::BELOWCAP, interframe, args);
-				equips.draw(Slot::CAP, laststance, Clothing::HAT, interframe, args);
+				equips.draw(Equipslot::CAP, laststance, Clothing::HAT, interframe, args);
 			}
 			else
 			{
 				hair->draw(laststance, Hair::BACK, interframe, args);
 			}
 
-			equips.draw(Slot::SHIELD, laststance, Clothing::BACKSHIELD, interframe, args);
-			equips.draw(Slot::WEAPON, laststance, Clothing::BACKWEAPON, interframe, args);
+			equips.draw(Equipslot::SHIELD, laststance, Clothing::BACKSHIELD, interframe, args);
+			equips.draw(Equipslot::WEAPON, laststance, Clothing::BACKWEAPON, interframe, args);
 		}
 		else
 		{
 			hair->draw(laststance, Hair::BELOWBODY, interframe, args);
-			equips.draw(Slot::CAPE, laststance, Clothing::CAPE, interframe, args);
-			equips.draw(Slot::SHIELD, laststance, Clothing::SHIELDBBODY, interframe, args);
+			equips.draw(Equipslot::CAPE, laststance, Clothing::CAPE, interframe, args);
+			equips.draw(Equipslot::SHIELD, laststance, Clothing::SHIELDBBODY, interframe, args);
 			body->draw(laststance, Body::BODY, interframe, args);
-			equips.draw(Slot::SHOES, laststance, Clothing::SHOES, interframe, args);
+			equips.draw(Equipslot::SHOES, laststance, Clothing::SHOES, interframe, args);
 
 			if (equips.hasoverall())
 			{
-				equips.draw(Slot::TOP, laststance, Clothing::MAIL, interframe, args);
+				equips.draw(Equipslot::TOP, laststance, Clothing::MAIL, interframe, args);
 			}
 			else
 			{
-				equips.draw(Slot::PANTS, laststance, Clothing::PANTS, interframe, args);
-				equips.draw(Slot::TOP, laststance, Clothing::TOP, interframe, args);
+				equips.draw(Equipslot::PANTS, laststance, Clothing::PANTS, interframe, args);
+				equips.draw(Equipslot::TOP, laststance, Clothing::TOP, interframe, args);
 			}
 
 			body->draw(laststance, Body::LEFTHAND, interframe, args);
-			equips.draw(Slot::GLOVES, laststance, Clothing::GLOVE, interframe, args);
+			equips.draw(Equipslot::GLOVES, laststance, Clothing::GLOVE, interframe, args);
 			hair->draw(laststance, Hair::DEFAULT, interframe, args);
-			equips.draw(Slot::SHIELD, laststance, Clothing::SHIELDOHAIR, interframe, args);
-			equips.draw(Slot::EARRINGS, laststance, Clothing::EARRINGS, interframe, args);
+			equips.draw(Equipslot::SHIELD, laststance, Clothing::SHIELDOHAIR, interframe, args);
+			equips.draw(Equipslot::EARRINGS, laststance, Clothing::EARRINGS, interframe, args);
 			body->draw(laststance, Body::HEAD, interframe, args);
 			hair->draw(laststance, Hair::SHADE, interframe, args);
 			face->draw(lastexpression, fcinterframe, faceargs);
-			equips.draw(Slot::FACEACC, laststance, Clothing::FACEACC, 0, faceargs);
-			equips.draw(Slot::EYEACC, laststance, Clothing::EYEACC, interframe, args);
-			equips.draw(Slot::SHIELD, laststance, Clothing::SHIELD, interframe, args);
+			equips.draw(Equipslot::FACEACC, laststance, Clothing::FACEACC, 0, faceargs);
+			equips.draw(Equipslot::EYEACC, laststance, Clothing::EYEACC, interframe, args);
+			equips.draw(Equipslot::SHIELD, laststance, Clothing::SHIELD, interframe, args);
 
-			if (equips.isvisible(Slot::CAP))
+			if (equips.isvisible(Equipslot::CAP))
 			{
-				if (equips.getequip(Slot::CAP)->islayer(laststance, Clothing::HATOVERHAIR))
+				if (equips.getequip(Equipslot::CAP)->islayer(laststance, Clothing::HATOVERHAIR))
 				{
 					hair->draw(laststance, Hair::OVERHEAD, interframe, args);
-					equips.draw(Slot::CAP, laststance, Clothing::HATOVERHAIR, interframe, args);
+					equips.draw(Equipslot::CAP, laststance, Clothing::HATOVERHAIR, interframe, args);
 				}
 				else
 				{
-					equips.draw(Slot::CAP, laststance, Clothing::HAT, interframe, args);
+					equips.draw(Equipslot::CAP, laststance, Clothing::HAT, interframe, args);
 				}
 			}
 			else
@@ -175,23 +175,23 @@ namespace Character
 
 			if (equips.istwohanded())
 			{
-				equips.draw(Slot::TOP, laststance, Clothing::MAILARM, interframe, args);
+				equips.draw(Equipslot::TOP, laststance, Clothing::MAILARM, interframe, args);
 				body->draw(laststance, Body::ARM, interframe, args);
-				equips.draw(Slot::WEAPON, laststance, Clothing::WEAPON, interframe, args);
+				equips.draw(Equipslot::WEAPON, laststance, Clothing::WEAPON, interframe, args);
 			}
 			else
 			{
-				equips.draw(Slot::WEAPON, laststance, Clothing::WEAPON, interframe, args);
+				equips.draw(Equipslot::WEAPON, laststance, Clothing::WEAPON, interframe, args);
 				body->draw(laststance, Body::ARM, interframe, args);
-				equips.draw(Slot::TOP, laststance, Clothing::MAILARM, interframe, args);
+				equips.draw(Equipslot::TOP, laststance, Clothing::MAILARM, interframe, args);
 			}
 
 			body->draw(laststance, Body::RIGHTHAND, interframe, args);
 			body->draw(laststance, Body::ARMOVERHAIR, interframe, args);
-			equips.draw(Slot::WEAPON, laststance, Clothing::WEAPONOHAND, interframe, args);
+			equips.draw(Equipslot::WEAPON, laststance, Clothing::WEAPONOHAND, interframe, args);
 			body->draw(laststance, Body::HANDOVER, interframe, args);
-			equips.draw(Slot::GLOVES, laststance, Clothing::RGLOVE, interframe, args);
-			equips.draw(Slot::WEAPON, laststance, Clothing::WEAPONOGLOVE, interframe, args);
+			equips.draw(Equipslot::GLOVES, laststance, Clothing::RGLOVE, interframe, args);
+			equips.draw(Equipslot::WEAPON, laststance, Clothing::WEAPONOGLOVE, interframe, args);
 		}
 	}
 
@@ -272,7 +272,7 @@ namespace Character
 		return aniend;
 	}
 
-	void CharLook::setbody(uint16_t bd)
+	void CharLook::setbody(int32_t bd)
 	{
 		body = &DataFactory::get().getbodytype(bd);
 	}
@@ -297,7 +297,7 @@ namespace Character
 	{
 		const Clothing& equip = DataFactory::get().getclothing(eq);
 		bool changestance = false;
-		if (equip.geteqslot() == Slot::WEAPON)
+		if (equip.geteqslot() == Equipslot::WEAPON)
 		{
 			const Weapon& weapon = reinterpret_cast<const Weapon&>(equip);
 			changestance = weapon.istwohanded() != equips.istwohanded();
@@ -307,14 +307,14 @@ namespace Character
 			updatetwohanded();
 	}
 
-	void CharLook::removeequip(Slot::Value slot)
+	void CharLook::removeequip(Equipslot::Value slot)
 	{
 		equips.removeequip(slot);
-		if (slot == Slot::WEAPON)
+		if (slot == Equipslot::WEAPON)
 			updatetwohanded();
 	}
 
-	void CharLook::attack()
+	uint16_t CharLook::attack()
 	{
 		Stance::Value newstance = getattackstance();
 		if (stance != newstance)
@@ -323,6 +323,7 @@ namespace Character
 			elapsed = 0;
 			stance = newstance;
 		}
+		return DataFactory::get().getdrawinfo().getdelay(newstance, 0);
 	}
 
 	void CharLook::setstance(Stance::Value newstance)

@@ -53,7 +53,7 @@ namespace IO
 			BT_SKILL
 		};
 
-		UIStatusbar(const CharStats&, const Inventory&);
+		UIStatusbar();
 
 		void draw(float inter) const override;
 		void update() override;
@@ -71,7 +71,6 @@ namespace IO
 		float getmppercent() const;
 
 		const CharStats& stats;
-		const Inventory& inventory;
 
 		unique_ptr<Chatbar> chatbar;
 		Bar expbar;
@@ -87,10 +86,6 @@ namespace IO
 
 	class ElementStatusbar : public Element
 	{
-	public:
-		ElementStatusbar(const CharStats& st, const Inventory& inv) 
-			: stats(st), inventory(inv) {}
-
 		bool isunique() const override
 		{
 			return true;
@@ -103,13 +98,7 @@ namespace IO
 
 		UIElement* instantiate() const override
 		{
-			return new UIStatusbar(stats, inventory);
+			return new UIStatusbar();
 		}
-
-	private:
-		ElementStatusbar& operator = (const ElementStatusbar&) = delete;
-
-		const CharStats& stats;
-		const Inventory& inventory;
 	};
 }

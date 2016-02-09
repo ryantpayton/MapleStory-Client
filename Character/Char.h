@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Gameplay\Maplemap\Mapobject.h"
 #include "Look\CharLook.h"
 #include "Look\PetLook.h"
+#include "Gameplay\Maplemap\Mapobject.h"
 #include "IO\Components\ChatBalloon.h"
 #include "Graphics\EffectLayer.h"
 #include "Util\rectangle2d.h"
@@ -50,6 +50,11 @@ namespace Character
 			SIT = 20
 		};
 
+		static State byvalue(int8_t value)
+		{
+			return static_cast<State>(value);
+		}
+
 		// Draw look, nametag, effects and chat bubble.
 		void draw(const Camera& camera, float inter) const override;
 		// Update look and movements.
@@ -61,6 +66,8 @@ namespace Character
 		void showeffect(Animation toshow);
 		// Display a chat bubble with the specified line in it.
 		void speak(string line);
+		// Change a part of the character's look.
+		void changelook(Maplestat::Value stat, int32_t id);
 
 		// Add a pet with the specified stats.
 		void addpet(uint8_t index, int32_t iid, string name, 
@@ -86,9 +93,11 @@ namespace Character
 		bool issitting() const;
 		// Return if the char is in the Char::LADDER or Char::ROPE state.
 		bool isclimbing() const;
+		// Return wether the character sprite uses stances for two-handed weapons.
+		bool istwohanded() const;
 
 		// Obtain a reference to the character's sprite.
-		CharLook& getlook();
+		//CharLook& getlook();
 
 	protected:
 		CharLook look;

@@ -24,7 +24,8 @@
 #include "Handlers\MapobjectHandlers.h"
 #include "Handlers\InventoryHandlers.h"
 #include "Handlers\MessagingHandlers.h"
-#include <iostream>
+
+#include "Console.h"
 
 namespace Net
 {
@@ -114,7 +115,7 @@ namespace Net
 			else
 			{
 				// Notice about unhandled packet.
-				std::cout << "Received Unhandled Packet. Opcode: " << opcode << std::endl;
+				Console::get().print("Received unhandled packet. Opcode: " + opcode);
 			}
 		}
 	}

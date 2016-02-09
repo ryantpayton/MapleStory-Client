@@ -22,7 +22,6 @@
 
 namespace IO
 {
-	using Util::Randomizer;
 	using Graphics::Text;
 
 	// Keyboard which is used via the mouse. The game uses this for pic/pin input.

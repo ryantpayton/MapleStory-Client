@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -16,33 +16,51 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Footholdtree.h"
+#include "Util\Enum.h"
+#include "Console.h"
+#include <cstdint>
 
-namespace Gameplay
+namespace Character
 {
-	// Class that uses physics engines and the collection of platforms to determine object movement.
-	class Physics
+	class Equipslot
 	{
 	public:
-		Physics();
-		~Physics();
+		static const size_t LENGTH = 21;
+		enum Value
+		{
+			NONE, CAP, FACEACC, EYEACC, EARRINGS, TOP, PANTS,
+			SHOES, GLOVES, CAPE, SHIELD, WEAPON, RING, RING2,
+			RING3, RING4, PENDANT, TAMEDMOB, SADDLE, MEDAL, BELT
+		};
 
-		// Load a footholdtree (collection of platforms) from a node of game data.
-		void loadfht(node source);
-		// Parse a footholdtree (collection of platforms) from a packet.
-		void parsefht(InPacket& recv);
-		// Move the specified object over the specified game-time.
-		void moveobject(PhysicsObject& tomove) const;
-		// Determine the point on the ground below the specified position.
-		vector2d<int16_t> getgroundbelow(vector2d<int16_t> position);
-		// Return a reference to the collection of platforms.
-		const Footholdtree& getfht() const;
+		static EnumIterator<Value> getit(Value s = CAP, Value l = BELT)
+		{
+			return EnumIterator<Value>(s, l);
+		}
 
-	private:
-		void movenormal(PhysicsObject&) const;
-		void moveflying(PhysicsObject&) const;
+		static Value byvalue(int16_t id)
+		{
+			for (auto it = getit(); it.hasnext(); it.increment())
+			{
+				Value value = it.get();
+				if (valueof(value) == id)
+					return value;
+			}
 
-		Footholdtree fht;
+			Console::get().print("Unhandled equip stat value: " + std::to_string(id));
+
+			return NONE;
+		}
+
+		static int16_t valueof(Value value)
+		{
+			static int16_t values[LENGTH] =
+			{
+				0, 1, 2, 3, 4, 5, 6, 
+				7, 8, 9, 10, 11, 12, 13, 
+				15, 16, 17, 18, 19, 49, 50
+			};
+			return values[value];
+		}
 	};
 }
-

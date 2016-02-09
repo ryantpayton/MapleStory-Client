@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -16,33 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Footholdtree.h"
+#include "Net\InPacket.h"
+#include "Character\Inventory\Inventory.h"
 
-namespace Gameplay
+namespace Net
 {
-	// Class that uses physics engines and the collection of platforms to determine object movement.
-	class Physics
+	namespace ItemParser
 	{
-	public:
-		Physics();
-		~Physics();
+		using::Character::Inventory;
 
-		// Load a footholdtree (collection of platforms) from a node of game data.
-		void loadfht(node source);
-		// Parse a footholdtree (collection of platforms) from a packet.
-		void parsefht(InPacket& recv);
-		// Move the specified object over the specified game-time.
-		void moveobject(PhysicsObject& tomove) const;
-		// Determine the point on the ground below the specified position.
-		vector2d<int16_t> getgroundbelow(vector2d<int16_t> position);
-		// Return a reference to the collection of platforms.
-		const Footholdtree& getfht() const;
-
-	private:
-		void movenormal(PhysicsObject&) const;
-		void moveflying(PhysicsObject&) const;
-
-		Footholdtree fht;
-	};
+		void parseitem(InPacket& recv, Inventory::Type invtype, int16_t slot, Inventory& inventory);
+	}
 }
-

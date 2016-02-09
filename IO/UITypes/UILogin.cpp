@@ -15,12 +15,11 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "UILogin.h"
 #include "UILoginwait.h"
 #include "IO\UI.h"
 #include "Net\Session.h"
-#include "Program\Configuration.h"
+#include "Configuration.h"
 #include "Audio\AudioPlayer.h"
 #include "Net\Packets\LoginPackets.h"
 #include "IO\Components\MapleButton.h"

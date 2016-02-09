@@ -16,18 +16,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UIStatsinfo.h"
+
 #include "IO\UI.h"
-#include "Net\Session.h"
 #include "IO\Components\MapleButton.h"
+
+#include "Net\Session.h"
 #include "Net\Packets\PlayerPackets.h"
-#include "Program\Configuration.h"
+
+#include "Gameplay\Stage.h"
+
 #include "nlnx\nx.hpp"
 
 namespace IO
 {
-	UIStatsinfo::UIStatsinfo(const CharStats& st) :
+	using Gameplay::Stage;
+
+	UIStatsinfo::UIStatsinfo() :
 		UIDragElement("PosSTATS", vector2d<int16_t>(212, 20)),
-		stats(st) {
+		stats(Stage::get().getplayer().getstats()) {
 
 		using nl::node;
 		node src = nl::nx::ui["UIWindow4.img"]["Stat"]["main"];

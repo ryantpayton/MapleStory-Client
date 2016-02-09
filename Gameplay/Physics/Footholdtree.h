@@ -39,7 +39,7 @@ namespace Gameplay
 		void limitmoves(PhysicsObject& touse) const;
 		// Updates a PhysicsObject's fhid based on it's position.
 		void updatefh(PhysicsObject& touse) const;
-
+		// Determine the point on the ground below the specified position.
 		int16_t getgroundbelow(vector2d<int16_t> position) const;
 		// Returns the leftmost and rightmost platform positions of the map.
 		vector2d<int16_t> getwalls() const;
@@ -51,6 +51,7 @@ namespace Gameplay
 		double getwall(uint16_t fhid, bool left, vector2d<int16_t> vertical) const;
 		const Foothold& getfh(uint16_t fhid) const;
 
+		unordered_map<uint16_t, int8_t> layersbyfh;
 		unordered_map<uint16_t, Foothold> footholds;
 		unordered_multimap<int16_t, uint16_t> footholdsbyx;
 

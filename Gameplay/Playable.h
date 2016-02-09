@@ -20,13 +20,16 @@
 
 namespace Gameplay
 {
+	using IO::Keyboard;
+
 	// Interface for classes which can be controlled through key inputs.
 	class Playable
 	{
 	public:
 		virtual ~Playable(){}
+
 		// Sends a keystate to the object.
-		virtual void sendaction(IO::Keyboard::Keyaction keycode, bool pressed) = 0;
+		virtual void sendaction(Keyboard::Action action, bool pressed) = 0;
 	};
 }
 

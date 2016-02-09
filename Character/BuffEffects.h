@@ -18,6 +18,9 @@
 #pragma once
 #include "Buffstat.h"
 #include "CharStats.h"
+#include "Util\Singleton.h"
+#include <unordered_map>
+#include <memory>
 
 namespace Character
 {
@@ -153,9 +156,20 @@ namespace Character
 		}
 	};
 
-	// Register all buffs effects.
-	void initbuffeffects();
 
-	// Return the buff effect associated with the buff stat.
-	const BuffEffect* geteffectbystat(Buffstat::Value stat);
+	using std::unordered_map;
+	using std::unique_ptr;
+
+	class BuffEffects : public Singleton<BuffEffects>
+	{
+	public:
+		// Register all buffs effects.
+		BuffEffects();
+
+		// Return the buff effect associated with the buff stat.
+		const BuffEffect* bystat(Buffstat::Value stat) const;
+
+	private:
+		unordered_map<Buffstat::Value, unique_ptr<BuffEffect>> buffeffects;
+	};
 }

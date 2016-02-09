@@ -16,15 +16,31 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\InPacket.h"
-#include "Character\Inventory\Inventory.h"
+#include "Util\Singleton.h"
+#include "Journey.h"
+#include <hash_set>
+#include <string>
+#include <iostream>
 
-namespace Net
+using std::hash_set;
+using std::string;
+
+class Console : public Singleton<Console>
 {
-	namespace HandlerFunctions
+public:
+	void print(string str)
 	{
-		using::Character::Inventory;
+#ifdef JOURNEY_PRINT_WARNINGS
 
-		void parseitem(InPacket& recv, Inventory::InvType invtype, int16_t slot, Inventory& inventory);
+		if (!printed.count(str))
+		{
+			std::cout << str << std::endl;
+			printed.insert(str);
+		}
+
+#endif
 	}
-}
+
+private:
+	hash_set<string> printed;
+};

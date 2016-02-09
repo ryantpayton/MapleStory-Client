@@ -15,18 +15,18 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "HandlerFunctions.h"
+#include "ItemParser.h"
 
 namespace Net
 {
-	namespace HandlerFunctions
+	namespace ItemParser
 	{
 		using::Character::Item;
 		using::Character::Pet;
 		using::Character::Equip;
 
 		// Parse a normal item from a packet.
-		void additem(InPacket& recv, Inventory::InvType invtype, int16_t slot, int32_t id, Inventory& inventory)
+		void additem(InPacket& recv, Inventory::Type invtype, int16_t slot, int32_t id, Inventory& inventory)
 		{
 			// Read all item stats.
 			bool cash = recv.readbool();
@@ -46,7 +46,7 @@ namespace Net
 		}
 
 		// Parse a pet from a packet.
-		void addpet(InPacket& recv, Inventory::InvType invtype, int16_t slot, int32_t id, Inventory& inventory)
+		void addpet(InPacket& recv, Inventory::Type invtype, int16_t slot, int32_t id, Inventory& inventory)
 		{
 			// Read all pet stats.
 			bool cash = recv.readbool();
@@ -64,7 +64,7 @@ namespace Net
 		}
 
 		// Parse an equip from a packet.
-		void addequip(InPacket& recv, Inventory::InvType invtype, int16_t slot, int32_t id, Inventory& inventory)
+		void addequip(InPacket& recv, Inventory::Type invtype, int16_t slot, int32_t id, Inventory& inventory)
 		{
 			// Read equip information.
 			bool cash = recv.readbool();
@@ -114,7 +114,7 @@ namespace Net
 				level, stats, owner, flag, itemlevel, itemexp, vicious);
 		}
 
-		void parseitem(InPacket& recv, Inventory::InvType invtype, int16_t slot, Inventory& inventory)
+		void parseitem(InPacket& recv, Inventory::Type invtype, int16_t slot, Inventory& inventory)
 		{
 			// Read type and item id.
 			recv.readbyte(); // 'type' byte

@@ -20,13 +20,15 @@
 #include "Hair.h"
 #include "Face.h"
 #include "CharEquips.h"
+
+#include "Gameplay\Attack.h"
 #include "Net\Login.h"
 #include "Util\Randomizer.h"
 
 namespace Character
 {
+	using Gameplay::Attack;
 	using Net::LookEntry;
-	using Util::Randomizer;
 
 	class CharLook
 	{
@@ -40,12 +42,12 @@ namespace Character
 		bool update(uint16_t timestep);
 
 		void sethair(int32_t hairid);
-		void setbody(uint16_t skinid);
+		void setbody(int32_t skinid);
 		void setface(int32_t faceid);
 		void addequip(int32_t equipid);
-		void removeequip(Slot::Value slot);
+		void removeequip(Equipslot::Value slot);
 
-		void attack();
+		uint16_t attack();
 		void setstance(Stance::Value stance);
 		void setexpression(Expression::Value expression);
 		void setaction(string action);

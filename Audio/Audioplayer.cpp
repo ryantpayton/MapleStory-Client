@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "AudioPlayer.h"
-#include "Program\Configuration.h"
+#include "Configuration.h"
 #include "nlnx\nx.hpp"
 #include "nlnx\audio.hpp"
 

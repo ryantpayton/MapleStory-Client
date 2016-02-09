@@ -17,7 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Util\Enum.h"
-#include "Util\Console.h"
+#include "Console.h"
+#include <cstdint>
 #include <string>
 
 namespace Character
@@ -40,6 +41,21 @@ namespace Character
 		static EnumIterator<Value> getit()
 		{
 			return EnumIterator<Value>(ALERT, WALK2);
+		}
+
+		static Value bystate(int8_t state)
+		{
+			int8_t index = (state / 2) - 1;
+			if (index < 0 || index > 10)
+				return WALK1;
+
+			static const Value statevalues[10] =
+			{
+				WALK1, STAND1, JUMP, ALERT,
+				PRONE, FLY, LADDER, ROPE,
+				DEAD, SIT
+			};
+			return statevalues[index];
 		}
 
 		static Value bystring(string name)

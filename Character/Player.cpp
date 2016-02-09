@@ -15,18 +15,22 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "Player.h"
 #include "PlayerStates.h"
-#include "Program\Constants.h"
+#include "Constants.h"
+
 #include "Data\DataFactory.h"
+
 #include "Net\Session.h"
 #include "Net\Packets\GameplayPackets.h"
 #include "Net\Packets\InventoryPackets.h"
 
 namespace Character
 {
-	static PlayerNullState nullstate;
+	using Data::DataFactory;
+	using Net::Session;
+
+	const PlayerNullState nullstate;
 
 	const PlayerState* getstate(Char::State state)
 	{
@@ -93,14 +97,14 @@ namespace Character
 		nullstate.nextstate(*this);
 	}
 
-	void Player::sendaction(Keyboard::Keyaction ka, bool down)
+	void Player::sendaction(Keyboard::Action action, bool down)
 	{
 		const PlayerState* pst = getstate(state);
 		if (pst)
 		{
-			pst->sendaction(*this, ka, down);
+			pst->sendaction(*this, action, down);
 		}
-		keysdown[ka] = down;
+		keysdown[action] = down;
 	}
 
 	void Player::recalcstats(bool equipchanged)
@@ -108,7 +112,9 @@ namespace Character
 		stats.inittotalstats();
 
 		if (equipchanged)
+		{
 			inventory.recalcstats();
+		}
 
 		inventory.addtotalsto(stats);
 
@@ -117,24 +123,29 @@ namespace Character
 			buff.second.applyto(stats);
 		}
 
-		stats.calculatedamage(look.getequips().getweapontype());
+		Weapon::Type weapontype = look.getequips().getweapontype();
+		stats.closetotalstats(weapontype);
 	}
 
 	void Player::changecloth(int16_t slot)
 	{
 		const Equip* equip = inventory.getequip(Inventory::EQUIPPED, slot);
-
 		if (equip)
+		{
 			look.addequip(equip->getid());
+		}
 		else
-			look.removeequip(Slot::byid(slot));
+		{
+			Equipslot::Value value = Equipslot::byvalue(slot);
+			look.removeequip(value);
+		}
 
 		recalcstats(true);
 	}
 
 	void Player::useitem(int32_t itemid)
 	{
-		Inventory::InvType type = inventory.gettypebyid(itemid);
+		Inventory::Type type = Inventory::typebyid(itemid);
 		int16_t slot = inventory.finditem(type, itemid);
 
 		if (slot >= 0)
@@ -185,7 +196,6 @@ namespace Character
 
 				if (movements.size() > 4)
 				{
-					using Net::Session;
 					using Net::MovePlayerPacket;
 					Session::get().dispatch(MovePlayerPacket(movements));
 					movements.clear();
@@ -247,13 +257,14 @@ namespace Character
 
 	const Skill& Player::useskill(int32_t skillid)
 	{
-		using Data::DataFactory;
 		const Skill& skill = DataFactory::get().getskill(skillid);
+
 		bool twohanded = look.getequips().istwohanded();
 		string action = skill.getaction(twohanded);
 		if (action == "")
 		{
-			useattack();
+			look.attack();
+			attacking = true;
 		}
 		else
 		{
@@ -262,13 +273,6 @@ namespace Character
 		}
 		showeffect(skill.geteffect(twohanded));
 		return skill;
-	}
-
-	void Player::useattack()
-	{
-		look.attack();
-		look.getequips().getweapon()->playsound();
-		attacking = true;
 	}
 
 	Attack Player::prepareattack() const
@@ -286,23 +290,26 @@ namespace Character
 		return attack;
 	}
 
-	Attack Player::regularattack()
+	Attack Player::prepareregularattack()
 	{
-		useattack();
+		uint16_t delay = look.attack();
+		attacking = true;
 
 		Attack attack = prepareattack();
 		attack.skill = 0;
 		attack.mobcount = 1;
 		attack.hitcount = 1;
-		attack.delay = look.getequips().getweapon()->getattackdelay();
+		attack.delay = delay;
 		attack.range = look.getequips().getweapon()->getrange();
 		attack.hiteffect = look.getequips().getweapon()->gethiteffect();
+		attack.usesound = look.getequips().getweapon()->getsound();
 		return attack;
 	}
 
 	Attack Player::prepareskillattack(int32_t skillid) const
 	{
-		const SkillLevel* level = skillbook.getlevelof(skillid);
+		const Skill& skill = DataFactory::get().getskill(skillid);
+		const SkillLevel* level = skill.getlevel(skillbook.getlevel(skillid));
 
 		Attack attack = prepareattack();
 		attack.skill = skillid;
@@ -315,6 +322,7 @@ namespace Character
 			attack.range = look.getequips().getweapon()->getrange();
 		attack.mindamage = static_cast<int32_t>(attack.mindamage * level->damage);
 		attack.maxdamage = static_cast<int32_t>(attack.maxdamage * level->damage);
+		attack.hiteffect = skill.gethitanimation(look.getequips().istwohanded());
 		return attack;
 	}
 
@@ -395,7 +403,7 @@ namespace Character
 
 	float Player::getclimbforce() const
 	{
-		return 1.0f * static_cast<float>(stats.gettotal(Equipstat::SPEED)) / 100;
+		return static_cast<float>(stats.gettotal(Equipstat::SPEED)) / 100;
 	}
 
 	float Player::getflyforce() const
@@ -403,9 +411,9 @@ namespace Character
 		return 0.25f;
 	}
 
-	bool Player::keydown(Keyboard::Keyaction ka) const
+	bool Player::keydown(Keyboard::Action action) const
 	{
-		return keysdown.count(ka) ? keysdown.at(ka) : false;
+		return keysdown.count(action) ? keysdown.at(action) : false;
 	}
 
 	CharStats& Player::getstats()

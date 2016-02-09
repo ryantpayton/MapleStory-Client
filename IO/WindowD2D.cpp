@@ -18,8 +18,8 @@
 #include "WindowD2D.h"
 #ifndef JOURNEY_USE_OPENGL
 #include "UI.h"
-#include "Program\Configuration.h"
-#include "Program\Constants.h"
+#include "Configuration.h"
+#include "Constants.h"
 #include "Gameplay\Stage.h"
 #include "Graphics\GraphicsD2D.h"
 

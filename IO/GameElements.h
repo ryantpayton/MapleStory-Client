@@ -15,47 +15,43 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Graphics\DynamicText.h"
-#include <vector>
+#pragma once
+#include "UIElements.h"
+#include "Components\Icon.h"
+#include <unordered_map>
+#include <list>
+#include <memory>
 
 namespace IO
 {
-	using std::string;
-	using std::vector;
-	using Graphics::Text;
-	using Graphics::DynamicText;
+	using std::unordered_map;
+	using std::list;
+	using std::unique_ptr;
 
-	struct StatusInfo
-	{
-		Text::Color color = Text::WHITE;
-		string text = "";
-		float alpha = 1.0f;
-		float lastalpha = 1.0f;
-
-		bool update()
-		{
-			lastalpha = alpha;
-			alpha -= 0.00125f;
-			return alpha < 0.00125f;
-		}
-
-		float getalpha(float inter) const
-		{
-			return (1.0f - inter) * lastalpha + inter * alpha;
-		}
-	};
-
-	class StatusMessenger
+	class GameElements : public UIElements
 	{
 	public:
-		StatusMessenger();
+		GameElements();
 
-		void draw(vector2d<int16_t> position, float inter) const;
-		void update();
-		void showstatus(Text::Color color, string message);
+		void draw(float inter, vector2d<int16_t> cursor) const override;
+		void update() override;
+		void doubleclick(vector2d<int16_t> pos) override;
+		Cursor::Mousestate sendmouse(Cursor::Mousestate mst, vector2d<int16_t> pos) override;
+
+		void add(const Element& element) override;
+		void remove(Element::UIType type) override;
+		UIElement* get(Element::UIType type) const override;
+		UIElement* getfront(vector2d<int16_t> pos) const override;
+
+		void dragicon(Icon* icon);
 
 	private:
-		vector<StatusInfo> statusinfos;
-		DynamicText statustext;
+		void dropicon(vector2d<int16_t> pos, Element::UIType parent, int16_t identifier);
+
+		unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
+		list<Element::UIType> elementorder;
+		Element::UIType focused;
+
+		Icon* draggedicon;
 	};
 }

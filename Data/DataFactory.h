@@ -44,7 +44,7 @@ namespace Data
 
 		const BodyDrawinfo& getdrawinfo() const;
 
-		const Body& getbodytype(uint16_t skin);
+		const Body& getbodytype(int32_t skin);
 		const Hair& gethairstyle(int32_t hairid);
 		const Face& getfacetype(int32_t faceid);
 		const ItemData& getitemdata(int32_t itemid);
@@ -54,7 +54,7 @@ namespace Data
 
 	private:
 		BodyDrawinfo drawinfo;
-		map<uint16_t, Body> bodytypes;
+		map<int32_t, Body> bodytypes;
 		map<int32_t, Hair> hairstyles;
 		map<int32_t, Face> facetypes;
 		map<int32_t, ItemData> itemdata; 

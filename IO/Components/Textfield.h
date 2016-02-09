@@ -18,7 +18,6 @@
 #pragma once
 #include "Graphics\Text.h"
 #include "IO\Keyboard.h"
-#include "Util\FunctionPointers.h"
 #include "Util\rectangle2d.h"
 
 namespace IO
@@ -48,7 +47,7 @@ namespace IO
 		void setstate(State state);
 		void settext(string text);
 		void setcrypt(int8_t character);
-		void setonreturn(Consumer<string> onreturn);
+		void setonreturn(void(*onreturn)(string));
 
 		string gettext() const;
 		State getstate() const;
@@ -68,7 +67,7 @@ namespace IO
 		size_t limit;
 		int8_t crypt;
 		State state;
-		Consumer<string> onreturn;
+		void(*onreturn)(string);
 	};
 }
 

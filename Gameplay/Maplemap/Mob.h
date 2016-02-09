@@ -33,7 +33,6 @@ namespace Gameplay
 	using std::pair;
 	using std::vector;
 	using std::map;
-	using Util::Randomizer;
 	using Audio::Sound;
 	using Graphics::Animation;
 	using Graphics::Text;
@@ -50,13 +49,6 @@ namespace Gameplay
 			JUMP = 6,
 			HIT = 8,
 			DIE = 10
-		};
-
-		enum Behaviour
-		{
-			MOVELEFT,
-			MOVERIGHT,
-			STOP
 		};
 
 		// Construct a mob by combining data from game files with
@@ -106,13 +98,14 @@ namespace Gameplay
 		uint16_t knockback;
 		bool undead;
 		bool touchdamage;
+		bool noflip;
+		bool notattack;
 
 		EffectLayer effects;
 		Text namelabel;
 		Randomizer randomizer;
 		vector<DamageNumber> damagenumbers;
 
-		Behaviour behaviour;
 		uint16_t counter;
 		vector<MovementFragment> movements;
 

@@ -18,6 +18,7 @@
 #pragma once
 #include "Util\rectangle2d.h"
 #include "Graphics\Animation.h"
+#include "Audio\Sound.h"
 #include <cstdint>
 
 namespace Gameplay
@@ -25,14 +26,15 @@ namespace Gameplay
 	using std::vector;
 	using std::map;
 	using Graphics::Animation;
+	using Audio::Sound;
 
 	struct Attack 
 	{
-		enum Direction
+		enum Direction : uint8_t
 		{
-			CENTERED,
-			TOLEFT,
-			TORIGHT
+			CENTERED = 0,
+			TOLEFT = 1,
+			TORIGHT = 2
 		};
 
 		int32_t mindamage = 0;
@@ -42,18 +44,20 @@ namespace Gameplay
 		int32_t accuracy = 0;
 		int16_t playerlevel = 1;
 
-		uint8_t delay = 0;
 		uint8_t hitcount = 0;
 		uint8_t mobcount = 0;
 
 		int32_t skill = 0;
 		uint8_t speed = 0;
 
+		uint16_t delay = 0;
 		Direction direction = CENTERED;
 		vector2d<int16_t> origin;
 		rectangle2d<int16_t> range;
 
 		Animation hiteffect;
+		Sound usesound;
+		Sound hitsound;
 	};
 
 	struct AttackResult

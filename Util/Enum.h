@@ -29,7 +29,7 @@ public:
 
 	void increment()
 	{
-		value = static_cast<e>(value + 1);
+		value = value + 1;
 	}
 
 	bool hasnext()
@@ -39,10 +39,10 @@ public:
 
 	e get()
 	{
-		return value;
+		return static_cast<e>(value);
 	}
 
 private:
-	e value;
-	e last;
+	size_t value;
+	size_t last;
 };

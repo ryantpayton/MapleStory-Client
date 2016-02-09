@@ -15,19 +15,16 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "Animation.h"
-#include "Program\Constants.h"
+#include "Constants.h"
 
 namespace Graphics
 {
-	const uint16_t DEF_DELAY = 50;
-
 	Animation::Animation(node src)
 	{
 		if (src.data_type() == node::type::bitmap)
 		{
-			textures.push_back(Texture(src));
+			textures.push_back(src);
 		}
 		else if (src["0"].data_type() == node::type::bitmap)
 		{
@@ -36,29 +33,35 @@ namespace Graphics
 			while (nodeit.data_type() == node::type::bitmap)
 			{
 				node delay = nodeit["delay"];
-				if (delay.data_type() == node::type::integer)
+				switch (delay.data_type())
 				{
-					delays.push_back(static_cast<uint16_t>(delay.get_integer()));
-				}
-				else if (delay.data_type() == node::type::string)
-				{
-					delays.push_back(static_cast<uint16_t>(stoi(delay.get_string())));
-				}
-				else
-				{
-					delays.push_back(DEF_DELAY);
+				case node::type::integer:
+					delays.push_back(delay);
+					break;
+				case node::type::string:
+					try
+					{
+						delays.push_back(static_cast<uint16_t>(stoi(delay.get_string())));
+					}
+					catch (const std::exception&)
+					{
+						delays.push_back(DEFAULTDELAY);
+					}
+					break;
+				default:
+					delays.push_back(DEFAULTDELAY);
 				}
 
-				textures.push_back(Texture(nodeit));
+				textures.push_back(nodeit);
 
 				node a0_node = nodeit["a0"];
 				if (a0_node.data_type() == node::type::integer)
 				{
-					uint8_t a0 = static_cast<uint8_t>(a0_node.get_integer());
+					uint8_t a0 = a0_node;
 					node a1_node = nodeit["a1"];
 					if (a1_node.data_type() == node::type::integer)
 					{
-						alphablends.push_back(pair<uint8_t, uint8_t>(a0, static_cast<uint8_t>(a1_node.get_integer())));
+						alphablends.push_back(pair<uint8_t, uint8_t>(a0, a1_node));
 					}
 					else
 					{
@@ -74,13 +77,16 @@ namespace Graphics
 				nodeit = src[std::to_string(framec)];
 			}
 
-			alpha = static_cast<float>(alphablends[0].first);
+			zigzag = src["zigzag"].get_bool();
+
+			alpha = alphablends[0].first;
 			alphastep = nextalphastep(0, Constants::TIMESTEP);
 			lastalpha = alpha;
 		}
 
 		elapsed = 0;
 		frame = 0;
+		framestep = 1;
 		lastframe = frame;
 		animated = textures.size() > 1;
 	}
@@ -88,6 +94,7 @@ namespace Graphics
 	Animation::Animation() 
 	{
 		animated = false;
+		zigzag = false;
 	}
 
 	void Animation::draw(const DrawArgument& args, float inter) const
@@ -100,10 +107,13 @@ namespace Graphics
 		if (animated)
 		{
 			if (lastelapsed + Constants::TIMESTEP * inter > delays[lastframe])
+			{
 				interframe = frame;
+			}
 			else
+			{
 				interframe = lastframe;
-
+			}
 			interalpha = (1.0f - inter) * lastalpha + inter * alpha;
 		}
 		else
@@ -113,9 +123,13 @@ namespace Graphics
 		}
 
 		if (args.getalpha() == 1.0f && interalpha != 255.0f)
+		{
 			textures[interframe].draw(args.overwritealpha(interalpha / 255));
+		}
 		else
+		{
 			textures[interframe].draw(args);
+		}
 	}
 
 	void Animation::reset()
@@ -127,7 +141,7 @@ namespace Graphics
 
 			elapsed = 0;
 			frame = 0;
-			alpha = static_cast<float>(alphablends[0].first);
+			alpha = alphablends[0].first;
 			alphastep = nextalphastep(0, Constants::TIMESTEP);
 		}
 	}
@@ -145,19 +159,51 @@ namespace Graphics
 			lastelapsed = elapsed;
 			lastalpha = alpha;
 
-			elapsed += timestep;
-
 			alpha += alphastep;
 			if (alpha < 0.0f)
+			{
 				alpha = 0.0f;
+			}
 			else if (alpha > 255.0f)
+			{
 				alpha = 255.0f;
+			}
+
+			elapsed += timestep;
 
 			uint16_t delay = delays[frame];
 			if (elapsed > delay)
 			{
 				elapsed -= delay;
-				frame = (frame == textures.size() - 1) ? 0 : frame + 1;
+
+				if (zigzag)
+				{
+					if (framestep == 1 && frame == textures.size() - 1)
+					{
+						framestep = -1;
+						frame--;
+					}
+					else if (framestep == -1 && frame == 0)
+					{
+						framestep = 1;
+						frame++;
+					}
+					else
+					{
+						frame += framestep;
+					}
+				}
+				else
+				{
+					if (frame == textures.size() - 1)
+					{
+						frame = 0;
+					}
+					else
+					{
+						frame++;
+					}
+				}
 
 				alphastep = nextalphastep(frame, timestep);
 				return frame == 0;
@@ -178,6 +224,6 @@ namespace Graphics
 
 	float Animation::nextalphastep(uint8_t frm, uint16_t timestep) const
 	{
-		return (static_cast<float>(alphablends[frm].second) - alpha) * timestep / delays[frm];
+		return static_cast<float>(alphablends[frm].second - alpha) * timestep / delays[frm];
 	}
 }

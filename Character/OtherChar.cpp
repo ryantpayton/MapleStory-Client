@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "OtherChar.h"
-#include "Program\Constants.h"
+#include "Constants.h"
 
 namespace Character
 {
@@ -57,17 +57,15 @@ namespace Character
 		{
 			setflip(true);
 		}
-		setstate(static_cast<State>(laststate));
+		setstate(byvalue(laststate));
 
 		phobj.lastx = phobj.fx;
 		phobj.lasty = phobj.fy;
-		phobj.fx = static_cast<float>(lastmove.xpos);
-		phobj.fy = static_cast<float>(lastmove.ypos);
-
-		phobj.hspeed = phobj.fx - phobj.lastx;
-		phobj.vspeed = phobj.fy - phobj.lasty;
+		phobj.fx = lastmove.xpos;
+		phobj.fy = lastmove.ypos;
 
 		physics.getfht().updatefh(phobj);
+
 		look.update(Constants::TIMESTEP);
 
 		return phobj.fhlayer;

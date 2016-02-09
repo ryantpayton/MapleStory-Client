@@ -62,7 +62,7 @@ namespace Character
 					Stance::Value stance = Stance::bystring(ststr);
 					stancedelays[stance][frame] = delay;
 
-					map<Body::Layer, map<string, vector2d<int16_t>>> bodyshiftmap;
+					unordered_map<Body::Layer, unordered_map<string, vector2d<int16_t>>> bodyshiftmap;
 					for (node partnode : framenode)
 					{
 						string part = partnode.name();
@@ -100,121 +100,65 @@ namespace Character
 		}
 	}
 
-	vector2d<int16_t> BodyDrawinfo::getbodypos(Stance::Value stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::getbodypos(Stance::Value stance, uint8_t frame) const
 	{
-		if (bodyposmap.count(stance))
-		{
-			if (pos < bodyposmap.at(stance).size())
-			{
-				return bodyposmap.at(stance).at(pos);
-			}
-		}
-		return vector2d<int16_t>();
+		return bodyposmap[stance].count(frame) ? bodyposmap[stance].at(frame) : vector2d<int16_t>();
 	}
 
-	vector2d<int16_t> BodyDrawinfo::getarmpos(Stance::Value stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::getarmpos(Stance::Value stance, uint8_t frame) const
 	{
-		if (armposmap.count(stance))
-		{
-			if (pos < armposmap.at(stance).size())
-			{
-				return armposmap.at(stance).at(pos);
-			}
-		}
-		return vector2d<int16_t>();
+		return armposmap[stance].count(frame) ? armposmap[stance].at(frame) : vector2d<int16_t>();
 	}
 
-	vector2d<int16_t> BodyDrawinfo::gethandpos(Stance::Value stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::gethandpos(Stance::Value stance, uint8_t frame) const
 	{
-		if (handposmap.count(stance))
-		{
-			if (pos < handposmap.at(stance).size())
-			{
-				return handposmap.at(stance).at(pos);
-			}
-		}
-		return vector2d<int16_t>();
+		return handposmap[stance].count(frame) ? handposmap[stance].at(frame) : vector2d<int16_t>();
 	}
 
-	vector2d<int16_t> BodyDrawinfo::getheadpos(Stance::Value stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::getheadpos(Stance::Value stance, uint8_t frame) const
 	{
-		if (headposmap.count(stance))
-		{
-			if (pos < headposmap.at(stance).size())
-			{
-				return headposmap.at(stance).at(pos);
-			}
-		}
-		return vector2d<int16_t>();
+		return headposmap[stance].count(frame) ? headposmap[stance].at(frame) : vector2d<int16_t>();
 	}
 
-	vector2d<int16_t> BodyDrawinfo::gethairpos(Stance::Value stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::gethairpos(Stance::Value stance, uint8_t frame) const
 	{
-		if (hairposmap.count(stance))
-		{
-			if (pos < hairposmap.at(stance).size())
-			{
-				return hairposmap.at(stance).at(pos);
-			}
-		}
-		return vector2d<int16_t>();
+		return hairposmap[stance].count(frame) ? hairposmap[stance].at(frame) : vector2d<int16_t>();
 	}
 
-	vector2d<int16_t> BodyDrawinfo::getfacepos(Stance::Value stance, uint8_t pos) const
+	vector2d<int16_t> BodyDrawinfo::getfacepos(Stance::Value stance, uint8_t frame) const
 	{
-		if (faceposmap.count(stance))
-		{
-			if (pos < faceposmap.at(stance).size())
-			{
-				return faceposmap.at(stance).at(pos);
-			}
-		}
-		return vector2d<int16_t>();
+		return faceposmap[stance].count(frame) ? faceposmap[stance].at(frame) : vector2d<int16_t>();
 	}
 
-	uint8_t BodyDrawinfo::nextframe(Stance::Value stance, uint8_t pos) const
+	uint8_t BodyDrawinfo::nextframe(Stance::Value stance, uint8_t frame) const
 	{
-		if (stancedelays.count(stance))
-		{
-			if (pos < stancedelays.at(stance).size() - 1)
-			{
-				return pos + 1;
-			}
-		}
-		return 0;
+		return stancedelays[stance].count(frame + 1) ? frame + 1 : 0;
 	}
 
-	uint16_t BodyDrawinfo::getdelay(Stance::Value stance, uint8_t pos) const
+	uint16_t BodyDrawinfo::getdelay(Stance::Value stance, uint8_t frame) const
 	{
-		if (stancedelays.count(stance))
-		{
-			if (pos < stancedelays.at(stance).size())
-			{
-				return stancedelays.at(stance).at(pos);
-			}
-		}
-		return 50;
+		return stancedelays[stance].count(frame) ? stancedelays[stance].at(frame) : 50;
 	}
 
-	uint8_t BodyDrawinfo::nextacframe(string action, uint8_t pos) const
+	uint8_t BodyDrawinfo::nextacframe(string action, uint8_t frame) const
 	{
 		if (bodyactions.count(action))
 		{
-			if (pos < bodyactions.at(action).size() - 1)
+			if (frame < bodyactions.at(action).size() - 1)
 			{
-				return pos + 1;
+				return frame + 1;
 			}
 		}
 		return 0;
 	}
 
-	const BodyAction* BodyDrawinfo::getaction(string stance, uint8_t pos) const
+	const BodyAction* BodyDrawinfo::getaction(string stance, uint8_t frame) const
 	{
 		if (bodyactions.count(stance))
 		{
-			if (pos < bodyactions.at(stance).size())
+			if (frame < bodyactions.at(stance).size())
 			{
-				return &bodyactions.at(stance).at(pos);
+				return &bodyactions.at(stance).at(frame);
 			}
 		}
 		return nullptr;

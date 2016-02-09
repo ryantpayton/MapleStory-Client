@@ -16,17 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "BuffEffects.h"
-#include <unordered_map>
-#include <memory>
 
 namespace Character
 {
-	using std::unordered_map;
-	using std::unique_ptr;
-
-	unordered_map<Buffstat::Value, unique_ptr<BuffEffect>> buffeffects;
-
-	void initbuffeffects()
+	BuffEffects::BuffEffects()
 	{
 		buffeffects[Buffstat::MAPLE_WARRIOR] = unique_ptr<BuffEffect>(new MapleWarriorEffect());
 		buffeffects[Buffstat::STANCE] = unique_ptr<BuffEffect>(new StanceEffect());
@@ -41,11 +34,8 @@ namespace Character
 		buffeffects[Buffstat::HYPERBODYMP] = unique_ptr<BuffEffect>(new HyperbodyMPEffect());
 	}
 
-	const BuffEffect* geteffectbystat(Buffstat::Value stat)
+	const BuffEffect* BuffEffects::bystat(Buffstat::Value stat) const
 	{
-		if (buffeffects.count(stat))
-			return buffeffects[stat].get();
-		else
-			return nullptr;
+		return buffeffects.count(stat) ? buffeffects.at(stat).get() : nullptr;
 	}
 }

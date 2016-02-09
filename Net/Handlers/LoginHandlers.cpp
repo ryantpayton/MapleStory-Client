@@ -24,7 +24,7 @@
 #include "IO\UITypes\UIWorldSelect.h"
 #include "IO\UITypes\UICharSelect.h"
 #include "IO\UITypes\UICharcreation.h"
-#include "Program\Configuration.h"
+#include "Configuration.h"
 
 namespace Net
 {

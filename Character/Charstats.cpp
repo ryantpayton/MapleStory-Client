@@ -57,13 +57,23 @@ namespace Character
 		resiststatus = 0.0f;
 	}
 
-	void CharStats::calculatedamage(Weapon::Type weapontype)
+	void CharStats::closetotalstats(Weapon::Type weapontype)
 	{
+		settotal(Equipstat::ACC, calculateaccuracy());
+
 		int32_t primary = getprimary(weapontype);
 		int32_t secondary = getsecondary(weapontype);
-		float attack = static_cast<float>(gettotal(Equipstat::WATK)) / 100;
-		maxdamage = static_cast<int32_t>((primary + secondary) * attack);
-		mindamage = static_cast<int32_t>(((primary * 0.9 * mastery) + secondary) * attack);
+		int32_t attack = gettotal(Equipstat::WATK);
+		float multiplier = static_cast<float>(attack) / 100;
+		maxdamage = static_cast<int32_t>((primary + secondary) * multiplier);
+		mindamage = static_cast<int32_t>(((primary * 0.9 * mastery) + secondary) * multiplier);
+	}
+
+	int32_t CharStats::calculateaccuracy() const
+	{
+		int32_t totaldex = gettotal(Equipstat::DEX);
+		int32_t totalluk = gettotal(Equipstat::LUK);
+		return static_cast<int32_t>(totaldex * 0.8f + totalluk * 0.5f);
 	}
 
 	int32_t CharStats::getprimary(Weapon::Type weapontype) const
@@ -141,13 +151,6 @@ namespace Character
 	{
 		int32_t current = gettotal(stat);
 		settotal(stat, current + value);
-	}
-
-	uint16_t CharStats::calculateaccuracy() const
-	{
-		float dexacc = static_cast<float>(getstat(Maplestat::DEX)) * 0.8f;
-		float lukacc = static_cast<float>(getstat(Maplestat::LUK)) * 0.5f;
-		return static_cast<uint16_t>(dexacc + lukacc);
 	}
 
 	uint16_t CharStats::getstat(Maplestat::Value stat) const

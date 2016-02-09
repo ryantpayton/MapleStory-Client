@@ -19,7 +19,7 @@
 #include "BodyDrawinfo.h"
 #include "Graphics\Texture.h"
 #include "Util\Enum.h"
-#include "Util\Console.h"
+#include "Console.h"
 
 namespace Character
 {
@@ -64,7 +64,7 @@ namespace Character
 			return NONE;
 		}
 
-		Body(uint16_t skin, const BodyDrawinfo& drawinfo);
+		Body(int32_t skin, const BodyDrawinfo& drawinfo);
 		Body();
 
 		void draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const;

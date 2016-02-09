@@ -20,7 +20,6 @@
 #include "Util\vector2d.h"
 #include <cstdint>
 #include <string>
-#include <map>
 #include <unordered_map>
 
 namespace Character
@@ -65,7 +64,6 @@ namespace Character
 	};
 
 	using std::int16_t;
-	using std::map;
 	using std::unordered_map;
 
 	class BodyDrawinfo
@@ -88,13 +86,13 @@ namespace Character
 		const BodyAction* getaction(string action, uint8_t frame) const;
 
 	private:
-		map<Stance::Value, map<uint8_t, vector2d<int16_t>>> bodyposmap;
-		map<Stance::Value, map<uint8_t, vector2d<int16_t>>> armposmap;
-		map<Stance::Value, map<uint8_t, vector2d<int16_t>>> handposmap;
-		map<Stance::Value, map<uint8_t, vector2d<int16_t>>> headposmap;
-		map<Stance::Value, map<uint8_t, vector2d<int16_t>>> hairposmap;
-		map<Stance::Value, map<uint8_t, vector2d<int16_t>>> faceposmap;
-		map<Stance::Value, map<uint8_t, uint16_t>> stancedelays;
-		map<string, map<uint8_t, BodyAction>> bodyactions;
+		unordered_map<uint8_t, vector2d<int16_t>> bodyposmap[Stance::LENGTH];
+		unordered_map<uint8_t, vector2d<int16_t>> armposmap[Stance::LENGTH];
+		unordered_map<uint8_t, vector2d<int16_t>> handposmap[Stance::LENGTH];
+		unordered_map<uint8_t, vector2d<int16_t>> headposmap[Stance::LENGTH];
+		unordered_map<uint8_t, vector2d<int16_t>> hairposmap[Stance::LENGTH];
+		unordered_map<uint8_t, vector2d<int16_t>> faceposmap[Stance::LENGTH];
+		unordered_map<uint8_t, uint16_t> stancedelays[Stance::LENGTH];
+		unordered_map<string, unordered_map<uint8_t, BodyAction>> bodyactions;
 	};
 }

@@ -15,42 +15,25 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "StatusMessenger.h"
-#include <numeric>
+#pragma once
+#include "Element.h"
+#include "UIElement.h"
 
 namespace IO
 {
-	StatusMessenger::StatusMessenger()
+	class UIElements
 	{
-		statustext = DynamicText(Text::A12M, Text::RIGHT);
-	}
+	public:
+		virtual ~UIElements() {}
 
-	void StatusMessenger::draw(vector2d<int16_t> position, float inter) const
-	{
-		int16_t offset = static_cast<int16_t>(statusinfos.size()) * 16;
-		position.shifty(-offset);
+		virtual void draw(float inter, vector2d<int16_t> cursor) const = 0;
+		virtual void update() = 0;
+		virtual void doubleclick(vector2d<int16_t> pos) = 0;
+		virtual Cursor::Mousestate sendmouse(Cursor::Mousestate mst, vector2d<int16_t> pos) = 0;
 
-		for (auto& inf : statusinfos)
-		{
-			statustext.draw(inf.text, inf.color, inf.getalpha(inter), position);
-			position.shifty(16);
-		}
-	}
-
-	void StatusMessenger::update()
-	{
-		int32_t remove = std::accumulate(statusinfos.begin(), statusinfos.end(), 0, [](const int32_t& x, StatusInfo& info){
-			return info.update() ? (x + 1) : x;
-		});
-
-		statusinfos.erase(statusinfos.begin(), statusinfos.begin() + remove);
-	}
-
-	void StatusMessenger::showstatus(Text::Color color, string message)
-	{
-		StatusInfo sinf;
-		sinf.color = color;
-		sinf.text = message;
-		statusinfos.push_back(sinf);
-	}
+		virtual void add(const Element& element) = 0;
+		virtual void remove(Element::UIType type) = 0;
+		virtual UIElement* get(Element::UIType type) const = 0;
+		virtual UIElement* getfront(vector2d<int16_t> pos) const = 0;
+	};
 }

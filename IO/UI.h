@@ -16,34 +16,35 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Element.h"
 #include "Cursor.h"
 #include "Keyboard.h"
-#include "Components\StatusMessenger.h"
-#include "Components\Textfield.h"
+#include "Element.h"
+#include "UIElements.h"
+#include "LoginElements.h"
+#include "GameElements.h"
 #include "Components\Icon.h"
+#include "Components\Textfield.h"
 #include "Util\Singleton.h"
 #include <unordered_map>
-#include <list>
-#include <memory>
 
 namespace IO
 {
 	using std::unique_ptr;
 	using std::unordered_map;
-	using std::list;
 
 	class UI : public Singleton<UI>
 	{
 	public:
+		static const size_t NUM_MODES = 2;
 		enum Mode
 		{
-			MD_LOGIN,
-			MD_GAME
+			LOGIN,
+			GAME
 		};
 
 		UI();
 
+		void init();
 		void draw(float inter) const;
 		void update();
 
@@ -51,11 +52,8 @@ namespace IO
 		void sendmouse(bool pressed, vector2d<int16_t> pos);
 		void doubleclick(vector2d<int16_t> pos);
 		void sendkey(int32_t keycode, bool pressed);
-
-		void shownpctalk(int32_t npcid, int8_t type, int16_t style, int8_t speaker, string text);
-		void showstatus(Text::Color color, string message);
-		void focustextfield(Textfield*);
-		void dragicon(Icon*);
+		void focustextfield(Textfield* textfield);
+		void dragicon(Icon* icon);
 
 		void addkeymapping(uint8_t no, uint8_t type, int32_t action);
 		void enable();
@@ -69,34 +67,28 @@ namespace IO
 		UIElement* getelement(Element::UIType type) const;
 
 		template <class T>
-		T* getelement(Element::UIType type) const
-		{
-			UIElement* element = getelement(type);
-			if (element)
-				return reinterpret_cast<T*>(element);
-			else
-				return nullptr;
-		}
+		T* getelement(Element::UIType type) const;
 
 	private:
 		void addelementbykey(int32_t key);
-		void dropicon(vector2d<int16_t> pos);
-		void sendmouse(Cursor::Mousestate mst, vector2d<int16_t> pos);
-		UIElement* getfront(vector2d<int16_t> pos);
 
 		Keyboard keyboard;
 		Cursor cursor;
-		StatusMessenger messenger;
 
-		unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
-		list<Element::UIType> elementorder;
+		unique_ptr<UIElements> elements;
+
 		unordered_map<int32_t, bool> keydown;
 
 		Textfield* focusedtextfield;
-		Icon* draggedicon;
 
-		Element::UIType focused;
 		Mode mode;
 		bool enabled;
 	};
+
+	template <class T>
+	T* UI::getelement(Element::UIType type) const
+	{
+		UIElement* element = getelement(type);
+		return element ? reinterpret_cast<T*>(element) : nullptr;
+	}
 }

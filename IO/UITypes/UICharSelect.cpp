@@ -21,12 +21,12 @@
 #include "UICharcreation.h"
 #include "IO\UI.h"
 #include "Net\Session.h"
-#include "Program\Constants.h"
+#include "Constants.h"
 #include "IO\Components\MapleButton.h"
 #include "IO\Components\AreaButton.h"
 #include "Graphics\Sprite.h"
 #include "Net\Packets\SelectCharPackets.h"
-#include "Program\Configuration.h"
+#include "Configuration.h"
 #include "nlnx\nx.hpp"
 
 namespace IO

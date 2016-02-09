@@ -34,7 +34,7 @@ namespace Character
 
 	void Buff::applyto(CharStats& stats) const
 	{
-		const BuffEffect* effect = geteffectbystat(stat);
+		const BuffEffect* effect = BuffEffects::get().bystat(stat);
 		if (effect)
 			effect->applyto(value, stats);
 	}

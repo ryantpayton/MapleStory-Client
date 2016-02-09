@@ -16,25 +16,23 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Mapobjects.h"
+#include <vector>
 
 namespace Gameplay
 {
 	void MapObjects::draw(int8_t layer, const Camera& camera, float inter) const
 	{
-		if (layers.count(layer))
+		for (auto& lyit : layers[layer])
 		{
-			for (auto& lyit : layers.at(layer))
+			int32_t oid = lyit.first;
+			if (objects.count(oid))
 			{
-				int32_t oid = lyit.second;
-				if (objects.count(oid))
-				{
-					objects.at(oid)->draw(camera, inter);
-				}
+				objects.at(oid)->draw(camera, inter);
 			}
 		}
 	}
 
-	void MapObjects::update(const Physics& fht)
+	void MapObjects::update(const Physics& physics)
 	{
 		using std::vector;
 		vector<int32_t> toremove;
@@ -42,7 +40,7 @@ namespace Gameplay
 		for (auto& obit : objects)
 		{
 			int8_t oldlayer = obit.second->getlayer();
-			int8_t newlayer = obit.second->update(fht);
+			int8_t newlayer = obit.second->update(physics);
 			if (newlayer != oldlayer)
 			{
 				int32_t oid = obit.second->getoid();
@@ -57,6 +55,7 @@ namespace Gameplay
 				}
 			}
 		}
+
 		for (auto& rmit : toremove)
 		{
 			remove(rmit);
@@ -66,7 +65,11 @@ namespace Gameplay
 	void MapObjects::clear()
 	{
 		objects.clear();
-		layers.clear();
+
+		for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
+		{
+			layers[i].clear();
+		}
 	}
 
 	void MapObjects::add(MapObject* toadd)
@@ -93,10 +96,6 @@ namespace Gameplay
 
 	MapObject* MapObjects::get(int32_t oid)
 	{
-		if (objects.count(oid))
-			return objects[oid].get();
-		else
-			return nullptr;
-
+		return objects.count(oid) ? objects[oid].get() : nullptr;
 	}
 }

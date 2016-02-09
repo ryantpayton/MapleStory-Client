@@ -19,7 +19,7 @@
 #include "BodyDrawinfo.h"
 #include "Graphics\Texture.h"
 #include "Util\Enum.h"
-#include "Util\Console.h"
+#include "Console.h"
 
 namespace Character
 {
@@ -44,7 +44,6 @@ namespace Character
 				"despair", "glitter", "hot", "hum", "love", "oops", "pain", "shine",
 				"vomit", "wink"
 			};
-
 			return expnames[value];
 		}
 
@@ -53,12 +52,23 @@ namespace Character
 			return EnumIterator<Value>(s, l);
 		}
 
+		static Value byaction(size_t action)
+		{
+			action -= 98;
+			if (action < LENGTH)
+				return static_cast<Value>(action);
+
+			Console::get().print("Unhandled expression id: " + action);
+			return DEFAULT;
+		}
+
 		static Value byid(size_t id)
 		{
-			if (id >= LENGTH)
-				throw std::runtime_error("unhandled expression.");
+			if (id < LENGTH)
+				return static_cast<Value>(id);
 
-			return static_cast<Value>(id);
+			Console::get().print("Unhandled expression id: " + id);
+			return DEFAULT;
 		}
 
 		static Value bystring(string name)

@@ -16,31 +16,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "MapLayer.h"
 #include "MapObject.h"
 #include <memory>
-#include <vector>
+#include <unordered_map>
 #include <map>
 
 namespace Gameplay
 {
 	using std::unique_ptr;
+	using std::unordered_map;
 	using std::map;
 
 	// Collection of mapobjects of a type. 
 	class MapObjects
 	{
 	public:
-		// Types of mapobjects. Not used by Mapobjects themselves, but by the Stage.
-		enum MapobjectType
-		{
-			MOT_CHAR,
-			MOT_NPC,
-			MOT_REACTOR,
-			MOT_MOB,
-			MOT_DROP
-		};
-
 		virtual ~MapObjects() {}
+
 		// Draw all mapobjects that are on the specified layer.
 		void draw(int8_t layer, const Camera& camera, float inter) const;
 		// Update all mapobjects of this type. Also updates layers eg. drawing order.
@@ -56,8 +49,8 @@ namespace Gameplay
 		// Obtains a pointer to the mapobject with the given oid.
 		MapObject* get(int32_t oid);
 
-		map<int32_t, unique_ptr<MapObject>> objects;
-		map<int8_t, map<int32_t, int32_t>> layers;
+		unordered_map<int32_t, unique_ptr<MapObject>> objects;
+		map<int32_t, int32_t> layers[MapLayer::NUM_LAYERS];
 	};
 }
 

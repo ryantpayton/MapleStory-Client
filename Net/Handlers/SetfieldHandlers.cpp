@@ -17,12 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SetfieldHandlers.h"
 #include "Net\Session.h"
-#include "Net\Handlers\HandlerFunctions.h"
+#include "Net\Handlers\ItemParser.h"
 #include "IO\UI.h"
 #include "IO\Window.h"
 #include "Gameplay\Stage.h"
 #include "Graphics\GraphicsEngine.h"
-#include "Program\Configuration.h"
+#include "Configuration.h"
 
 namespace Net
 {
@@ -102,12 +102,9 @@ namespace Net
 
 		player.recalcstats(true);
 
-		UI::get().remove(Element::CHARSELECT);
-		UI::get().remove(Element::SOFTKEYBOARD);
-
 		stagetransition(player.getstats().getportal(), player.getstats().getmapid());
 
-		UI::get().changemode(UI::MD_GAME);
+		UI::get().changemode(UI::GAME);
 	}
 
 	void SetfieldHandler::parseinventory(InPacket& recv, Inventory& invent) const
@@ -123,30 +120,30 @@ namespace Net
 
 		for (size_t i = 0; i < 3; i++)
 		{
-			Inventory::InvType inv = (i == 0) ? Inventory::EQUIPPED : Inventory::EQUIP;
+			Inventory::Type inv = (i == 0) ? Inventory::EQUIPPED : Inventory::EQUIP;
 			int16_t pos = recv.readshort();
 			while (pos != 0)
 			{
 				int16_t slot = (i == 1) ? -pos : pos;
-				HandlerFunctions::parseitem(recv, inv, slot, invent);
+				ItemParser::parseitem(recv, inv, slot, invent);
 				pos = recv.readshort();
 			}
 		}
 
 		recv.skip(2);
 
-		Inventory::InvType toparse[4] =
+		Inventory::Type toparse[4] =
 		{
 			Inventory::USE, Inventory::SETUP, Inventory::ETC, Inventory::CASH
 		};
 
 		for (size_t i = 0; i < 4; i++)
 		{
-			Inventory::InvType inv = toparse[i];
+			Inventory::Type inv = toparse[i];
 			int8_t pos = recv.readbyte();
 			while (pos != 0)
 			{
-				HandlerFunctions::parseitem(recv, inv, pos, invent);
+				ItemParser::parseitem(recv, inv, pos, invent);
 				pos = recv.readbyte();
 			}
 		}

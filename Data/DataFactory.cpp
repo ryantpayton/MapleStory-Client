@@ -30,7 +30,7 @@ namespace Data
 		return drawinfo;
 	}
 
-	const Body& DataFactory::getbodytype(uint16_t skin)
+	const Body& DataFactory::getbodytype(int32_t skin)
 	{
 		if (!bodytypes.count(skin))
 			bodytypes[skin] = Body(skin, drawinfo);

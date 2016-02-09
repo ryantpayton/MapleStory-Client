@@ -34,23 +34,24 @@ namespace IO
 
 		buttons[BT_OPENCHAT] = unique_ptr<Button>(new MapleButton(mainbar["chatOpen"]));
 		buttons[BT_CLOSECHAT] = unique_ptr<Button>(new MapleButton(mainbar["chatClose"]));
-		buttons[chatopen ? BT_OPENCHAT : BT_CLOSECHAT]->setactive(false);
 		buttons[BT_SCROLLUP] = unique_ptr<Button>(new MapleButton(mainbar["scrollUp"]));
 		buttons[BT_SCROLLDOWN] = unique_ptr<Button>(new MapleButton(mainbar["scrollDown"]));
 		buttons[BT_CHATTARGETS] = unique_ptr<Button>(new MapleButton(mainbar["chatTarget"]["base"]));
+
+		buttons[chatopen ? BT_OPENCHAT : BT_CLOSECHAT]->setactive(false);
 		buttons[BT_CHATTARGETS]->setactive(chatopen);
 
-		chatspace[false] = Texture(mainbar["chatSpace"]);
-		chatspace[true] = Texture(mainbar["chatEnter"]);
-		chatenter = Texture(mainbar["chatSpace2"]);
-		chatcover = Texture(mainbar["chatCover"]);
+		chatspace[false] = mainbar["chatSpace"];
+		chatspace[true] = mainbar["chatEnter"];
+		chatenter = mainbar["chatSpace2"];
+		chatcover = mainbar["chatCover"];
 
-		chattargets[CHT_ALL] = Texture(mainbar["chatTarget"]["all"]);
-		chattargets[CHT_BUDDY] = Texture(mainbar["chatTarget"]["friend"]);
-		chattargets[CHT_GUILD] = Texture(mainbar["chatTarget"]["guild"]);
-		chattargets[CHT_ALLIANCE] = Texture(mainbar["chatTarget"]["association"]);
-		chattargets[CHT_PARTY] = Texture(mainbar["chatTarget"]["party"]);
-		chattargets[CHT_SQUAD] = Texture(mainbar["chatTarget"]["expedition"]);
+		chattargets[CHT_ALL] = mainbar["chatTarget"]["all"];
+		chattargets[CHT_BUDDY] = mainbar["chatTarget"]["friend"];
+		chattargets[CHT_GUILD] = mainbar["chatTarget"]["guild"];
+		chattargets[CHT_ALLIANCE] = mainbar["chatTarget"]["association"];
+		chattargets[CHT_PARTY] = mainbar["chatTarget"]["party"];
+		chattargets[CHT_SQUAD] = mainbar["chatTarget"]["expedition"];
 
 		rectangle2d<int16_t> enterarea = rectangle2d<int16_t>(
 			vector2d<int16_t>(-435, -59),
@@ -58,10 +59,10 @@ namespace IO
 			);
 		chatfield = Textfield(Text::A11M, Text::LEFT, Text::BLACK, enterarea, 0);
 		chatfield.setstate(chatopen ? Textfield::NORMAL : Textfield::DISABLED);
-		chatfield.setonreturn(Consumer<string>([](string msg) {
+		chatfield.setonreturn([](string msg) {
 			using Net::GeneralChatPacket;
 			Net::Session::get().dispatch(GeneralChatPacket(msg, true));
-		}));
+		});
 
 		closedtext = Text(Text::A11M, Text::LEFT, Text::WHITE);
 	}
@@ -70,16 +71,15 @@ namespace IO
 
 	void Chatbar::draw(float inter) const
 	{
-		using Graphics::DrawArgument;
-		chatspace[chatopen].draw(DrawArgument(position));
-		chatenter.draw(DrawArgument(position));
+		chatspace[chatopen].draw(position);
+		chatenter.draw(position);
 
 		UIElement::draw(inter);
 
 		if (chatopen)
 		{
-			chattargets[chattarget].draw(DrawArgument(position + vector2d<int16_t>(0, 2)));
-			chatcover.draw(DrawArgument(position));
+			chattargets[chattarget].draw(position + vector2d<int16_t>(0, 2));
+			chatcover.draw(position);
 			chatfield.draw(position);
 		}
 		else if (lines.size() > 0)

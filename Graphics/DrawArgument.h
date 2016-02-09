@@ -65,6 +65,14 @@ namespace Graphics
 			xscale = flip ? -1.0f : 1.0f;
 		}
 
+		DrawArgument(vector2d<int16_t> p, bool flip, float a)
+		{
+			pos = p;
+			defaults();
+			xscale = flip ? -1.0f : 1.0f;
+			alpha = a;
+		}
+
 		DrawArgument(vector2d<int16_t> p, bool flip, vector2d<int16_t> c)
 		{
 			pos = p;

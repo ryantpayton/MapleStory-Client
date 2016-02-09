@@ -37,7 +37,7 @@ namespace IO
 			BT_TOGGLEPETS
 		};
 
-		UIEquipInventory(const Inventory& inventory);
+		UIEquipInventory();
 
 		void draw(float inter) const override;
 		void buttonpressed(uint16_t buttonid) override;
@@ -68,9 +68,6 @@ namespace IO
 
 	class ElementEquipInventory : public Element
 	{
-	public:
-		ElementEquipInventory(const Inventory& inv) : inventory(inv) {}
-
 		bool isunique() const override
 		{
 			return true;
@@ -83,12 +80,7 @@ namespace IO
 
 		UIElement* instantiate() const override
 		{
-			return new UIEquipInventory(inventory);
+			return new UIEquipInventory();
 		}
-
-	private:
-		ElementEquipInventory& operator = (const ElementEquipInventory&) = delete;
-
-		const Inventory& inventory;
 	};
 }

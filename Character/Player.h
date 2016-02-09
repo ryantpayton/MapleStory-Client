@@ -23,6 +23,7 @@
 #include "Telerock.h"
 #include "Monsterbook.h"
 #include "Buff.h"
+
 #include "Look\CharLook.h"
 #include "Inventory\Inventory.h"
 
@@ -61,7 +62,7 @@ namespace Character
 		// Respawn the player at the given position.
 		void respawn(vector2d<int16_t> position);
 		// Sends a Keyaction to the player's state, to apply forces, change the state and other behaviour.
-		void sendaction(Keyboard::Keyaction keycode, bool pressed);
+		void sendaction(Keyboard::Action action, bool pressed);
 		// Recalculates the total stats from base stats, inventories and skills.
 		void recalcstats(bool equipchanged);
 		// Change the equipment at the specified slot and recalculate stats.
@@ -77,12 +78,10 @@ namespace Character
 		bool canuseskill(int32_t skillid) const;
 		// Use a skill.
 		const Skill& useskill(int32_t skillid);
-		// Use an attack.
-		void useattack();
 		// Create an attack struct using the player's stats.
 		Attack prepareattack() const;
 		// Create an attack struct for and use a regular attack.
-		Attack regularattack();
+		Attack prepareregularattack();
 		// Create an attack struct for a skill attack.
 		Attack prepareskillattack(int32_t skillid) const;
 
@@ -103,7 +102,7 @@ namespace Character
 		float getflyforce() const;
 
 		// Returns if a Keyaction is currently active. 
-		bool keydown(Keyboard::Keyaction key) const;
+		bool keydown(Keyboard::Action action) const;
 		// Return a pointer to the ladder the player is on.
 		const Ladder* getladder() const;
 
@@ -141,7 +140,7 @@ namespace Character
 
 		map<Buffstat::Value, Buff> buffs;
 
-		map<Keyboard::Keyaction, bool> keysdown;
+		map<Keyboard::Action, bool> keysdown;
 
 		vector<MovementFragment> movements;
 		MovementFragment lastmove;

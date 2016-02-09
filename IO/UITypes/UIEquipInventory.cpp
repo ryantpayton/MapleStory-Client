@@ -16,18 +16,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UIEquipInventory.h"
+
 #include "IO\UI.h"
 #include "IO\Components\MapleButton.h"
-#include "Program\Configuration.h"
+
 #include "Net\Session.h"
 #include "Net\Packets\InventoryPackets.h"
+
+#include "Gameplay\Stage.h"
+
 #include "nlnx\nx.hpp"
 
 namespace IO
 {
-	UIEquipInventory::UIEquipInventory(const Inventory& inv) :
+	using Gameplay::Stage;
+
+	UIEquipInventory::UIEquipInventory() :
 		UIDragElement("PosEQINV", vector2d<int16_t>(184, 20)),
-		inventory(inv) {
+		inventory(Stage::get().getplayer().getinvent()) {
 
 		iconpositions[1] = vector2d<int16_t>(43, 25);
 		iconpositions[2] = vector2d<int16_t>(43, 91);

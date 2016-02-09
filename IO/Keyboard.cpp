@@ -70,14 +70,14 @@ namespace IO
 #endif
 	Keyboard::Keyboard()
 	{
-		keymap[LEFTKEY] = Keymapping(KT_ACTION, KA_LEFT);
-		keymap[RIGHTKEY] = Keymapping(KT_ACTION, KA_RIGHT);
-		keymap[UPKEY] = Keymapping(KT_ACTION, KA_UP);
-		keymap[DOWNKEY] = Keymapping(KT_ACTION, KA_DOWN);
+		keymap[LEFTKEY] = Keymapping(ACTION, LEFT);
+		keymap[RIGHTKEY] = Keymapping(ACTION, RIGHT);
+		keymap[UPKEY] = Keymapping(ACTION, UP);
+		keymap[DOWNKEY] = Keymapping(ACTION, DOWN);
 
-		textactions[BACKKEY] = KA_BACK;
-		textactions[RETURNKEY] = KA_RETURN;
-		textactions[SPACEKEY] = KA_SPACE;
+		textactions[BACKKEY] = BACK;
+		textactions[RETURNKEY] = RETURN;
+		textactions[SPACEKEY] = SPACE;
 	}
 
 	int32_t Keyboard::shiftcode() const
@@ -89,15 +89,15 @@ namespace IO
 	{
 		if (textactions.count(keycode))
 		{
-			return Keymapping(KT_ACTION, textactions.at(keycode));
+			return Keymapping(ACTION, textactions.at(keycode));
 		}
 		else if (keycode > 47 && keycode < 65)
 		{
-			return Keymapping(KT_NUMBER, keycode - (shift ? 15 : 0));
+			return Keymapping(NUMBER, keycode - (shift ? 15 : 0));
 		}
 		else if (keycode > 64 && keycode < 91)
 		{
-			return Keymapping(KT_LETTER, keycode + (shift ? 0 : 32));
+			return Keymapping(LETTER, keycode + (shift ? 0 : 32));
 		}
 		else
 		{
@@ -109,7 +109,7 @@ namespace IO
 			case DOWNKEY:
 				return keymap.at(keycode);
 			default:
-				return Keymapping(KT_NONE, 0);
+				return Keymapping(NONE, 0);
 			}
 		}
 	}

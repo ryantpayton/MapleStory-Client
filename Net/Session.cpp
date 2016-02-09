@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Session.h"
-#include "Program\Configuration.h"
+#include "Configuration.h"
 
 namespace Net
 {
@@ -41,7 +41,7 @@ namespace Net
 		{
 			InPacket handshake = InPacket(socket.getbuffer(), HANDSHAKE_LEN);
 			handshake.skip(7);
-			// Read in iv's neccessary for communicating with the server.
+			// Read keys neccessary for communicating with the server.
 			handshake.readarray<uint8_t>(sendiv, 4);
 			handshake.readarray<uint8_t>(recviv, 4);
 		}
@@ -51,12 +51,8 @@ namespace Net
 
 	bool Session::init()
 	{
-		// solstice: 142.68.131.65
-		// oasis: 104.27.167.91
-		//string HOST = Program::Configuration::getsetting("ServerIP");
-		static const string HOST = "127.0.0.1";
-		static const string PORT = "8484";
-
+		string HOST = Configuration::get().getsetting("ServerIP");
+		string PORT = "8484";
 		return init(HOST.c_str(), PORT.c_str());
 	}
 

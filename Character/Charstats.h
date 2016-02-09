@@ -36,9 +36,8 @@ namespace Character
 		void setstat(Maplestat::Value stat, uint16_t value);
 		void settotal(Equipstat::Value stat, int32_t value);
 		void addtotal(Equipstat::Value stat, int32_t value);
-		void calculatedamage(Weapon::Type weapontype);
+		void closetotalstats(Weapon::Type weapontype);
 
-		uint16_t calculateaccuracy() const;
 		int64_t getexpneeded() const;
 		uint16_t getstat(Maplestat::Value stat) const;
 		int32_t gettotal(Equipstat::Value stat) const;
@@ -70,6 +69,8 @@ namespace Character
 		int32_t getprimary(Weapon::Type weapontype) const;
 		int32_t getsecondary(Weapon::Type weapontype) const;
 		float getmultiplier(Weapon::Type weapontype) const;
+
+		int32_t calculateaccuracy() const;
 
 		StatsEntry stats;
 

@@ -16,31 +16,61 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Singleton.h"
-#include "Journey.h"
-#include <hash_set>
-#include <string>
-#include <iostream>
+#include "IO\Element.h"
+#include "Graphics\DynamicText.h"
+#include <vector>
 
-using std::hash_set;
-using std::string;
-
-class Console : public Singleton<Console>
+namespace IO
 {
-public:
-	void print(string str)
-	{
-#ifdef JOURNEY_PRINT_WARNINGS
+	using std::string;
+	using std::vector;
+	using Graphics::Text;
+	using Graphics::DynamicText;
 
-		if (!printed.count(str))
+	struct StatusInfo
+	{
+		Text::Color color = Text::WHITE;
+		string text = "";
+		float alpha = 1.0f;
+		float lastalpha = 1.0f;
+
+		bool update()
 		{
-			std::cout << str << std::endl;
-			printed.insert(str);
+			lastalpha = alpha;
+			alpha -= 0.00125f;
+			return alpha < 0.00125f;
 		}
 
-#endif
-	}
+		float getalpha(float inter) const
+		{
+			return (1.0f - inter) * lastalpha + inter * alpha;
+		}
+	};
 
-private:
-	hash_set<string> printed;
-};
+	class UIStatusMessenger : public UIElement
+	{
+	public:
+		UIStatusMessenger();
+
+		void draw(float inter) const override;
+		void update() override;
+		void showstatus(Text::Color color, string message);
+
+	private:
+		vector<StatusInfo> statusinfos;
+		DynamicText statustext;
+	};
+
+	class ElementStatusMessenger : public Element
+	{
+		UIType type() const override
+		{
+			return STATUSMESSENGER;
+		}
+
+		UIElement* instantiate() const override
+		{
+			return new UIStatusMessenger();
+		}
+	};
+}

@@ -26,23 +26,23 @@ namespace Character
 	public:
 		CharEquips();
 
-		void draw(Slot::Value slot, Stance::Value stance, Clothing::Layer layer, uint8_t frame, const DrawArgument& args) const;
+		void draw(Equipslot::Value slot, Stance::Value stance, Clothing::Layer layer, uint8_t frame, const DrawArgument& args) const;
 		void addequip(const Clothing& cloth);
-		void removeequip(Slot::Value slot);
+		void removeequip(Equipslot::Value slot);
 
-		bool isvisible(Slot::Value slot) const;
+		bool isvisible(Equipslot::Value slot) const;
 		bool hasoverall() const;
 		bool hasweapon() const;
 		bool istwohanded() const;
 		Weapon::Type getweapontype() const;
-		string getequipname(Slot::Value slot) const;
-		const Clothing* getequip(Slot::Value slot) const;
+		string getequipname(Equipslot::Value slot) const;
+		const Clothing* getequip(Equipslot::Value slot) const;
 		const Weapon* getweapon() const;
 
 	private:
-		bool checkorfalse(Slot::Value slot, bool(*check)(const Clothing*)) const;
+		bool checkorfalse(Equipslot::Value slot, bool(*check)(const Clothing*)) const;
 
-		const Clothing* equips[Slot::LENGTH];
+		const Clothing* equips[Equipslot::LENGTH];
 	};
 }
 

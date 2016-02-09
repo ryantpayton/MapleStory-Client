@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Mob.h"
-#include "Program\Constants.h"
+#include "Constants.h"
 #include "Net\Session.h"
 #include "Net\Packets\GameplayPackets.h"
 #include "nlnx\nx.hpp"
@@ -47,6 +47,8 @@ namespace Gameplay
 		speed += 100;
 		touchdamage = info["bodyAttack"].get_bool();
 		undead = info["undead"].get_bool();
+		noflip = info["noFlip"].get_bool();
+		notattack = info["notAttack"].get_bool();
 
 		parsestance(STAND, src["stand"]);
 		parsestance(MOVE, src["move"]);
@@ -84,13 +86,18 @@ namespace Gameplay
 			fadein = true;
 			alpha = 0.0f;
 		}
+		else
+		{
+			fadein = false;
+			alpha = 1.0f;
+		}
 	}
 
 	void Mob::parsestance(Stance stance, node src)
 	{
 		if (src.size() > 0)
 		{
-			animations[stance] = Animation(src);
+			animations[stance] = src;
 			bounds[stance] = rectangle2d<int16_t>(src["0"]["lt"], src["0"]["rb"]);
 		}
 	}
@@ -113,8 +120,8 @@ namespace Gameplay
 
 		if (fading)
 		{
-			alpha -= 0.05f;
-			if (alpha < 0.05f)
+			alpha -= 0.025f;
+			if (alpha < 0.025f)
 			{
 				alpha = 0.0f;
 				fading = false;
@@ -122,8 +129,8 @@ namespace Gameplay
 		}
 		else if (fadein)
 		{
-			alpha += 0.05f;
-			if (alpha > 0.95f)
+			alpha += 0.025f;
+			if (alpha > 0.975f)
 			{
 				alpha = 1.0f;
 				fadein = false;
@@ -156,26 +163,17 @@ namespace Gameplay
 
 		effects.update();
 
-		if (control)
+		if (control && stance != DIE)
 		{
-			if (stance != HIT && stance != DIE)
+			switch (stance)
 			{
-				switch (behaviour)
-				{
-				case MOVELEFT:
-					phobj.hforce = -static_cast<float>(speed)* MONSTERSPEED / 100;
-					flip = false;
-					setstance(MOVE);
-					break;
-				case MOVERIGHT:
-					phobj.hforce = static_cast<float>(speed)* MONSTERSPEED / 100;
-					flip = true;
-					setstance(MOVE);
-					break;
-				case STOP:
-					setstance(STAND);
-					break;
-				}
+			case MOVE:
+				phobj.hforce = flip ? static_cast<float>(speed) * MONSTERSPEED / 100
+					: -static_cast<float>(speed) * MONSTERSPEED / 100;
+				break;
+			case HIT:
+				phobj.hforce = flip ? -0.5f : 0.5f;
+				break;
 			}
 
 			counter++;
@@ -194,15 +192,28 @@ namespace Gameplay
 
 	void Mob::nextmove()
 	{
-		switch (behaviour)
+		switch (stance)
 		{
-		case STOP:
-			behaviour = randomizer.nextbool() ? MOVELEFT : MOVERIGHT;
+		case STAND:
+			setstance(MOVE);
+			flip = randomizer.nextbool();
 			break;
-		case MOVELEFT:
-		case MOVERIGHT:
-			behaviour = static_cast<Behaviour>(randomizer.nextint(2));
-			break;
+		case MOVE:
+		case HIT:
+			switch (randomizer.nextint(2))
+			{
+			case 0:
+				setstance(STAND);
+				break;
+			case 1:
+				setstance(MOVE);
+				flip = false;
+				break;
+			case 2:
+				setstance(MOVE);
+				flip = true;
+				break;
+			}
 		}
 	}
 
@@ -240,7 +251,14 @@ namespace Gameplay
 		if (animations.count(stance))
 		{
 			using Graphics::DrawArgument;
-			animations.at(stance).draw(DrawArgument(absp, flip), inter);
+			if (noflip)
+			{
+				animations.at(stance).draw(DrawArgument(absp, alpha), inter);
+			}
+			else
+			{
+				animations.at(stance).draw(DrawArgument(absp, flip, alpha), inter);
+			}
 		}
 
 		effects.draw(absp, inter);
@@ -305,28 +323,21 @@ namespace Gameplay
 
 	vector<int32_t> Mob::damage(const Attack& attack)
 	{
-		int16_t leveldelta = level - attack.playerlevel;
-		if (leveldelta < 0)
-			leveldelta = 0;
-		float hitchance = static_cast<float>(attack.accuracy) / 
-			((1.84f + 0.07f * leveldelta) * avoid) - 1;
-
-		int32_t mindamage = static_cast<int32_t>(
-			attack.mindamage * (1 - 0.01f * leveldelta) - wdef * 0.5f);
-		int32_t maxdamage = static_cast<int32_t>(
-			attack.maxdamage * (1 - 0.01f * leveldelta) - wdef * 0.6f);
+		int16_t leveldelta = (level > attack.playerlevel) ? level - attack.playerlevel : 0;
+		float hitchance = static_cast<float>(attack.accuracy) / (((1.84f + 0.07f * leveldelta) * avoid) - 1);
+		int32_t mindamage = static_cast<int32_t>(attack.mindamage * (1 - 0.01f * leveldelta) - wdef * 0.5f);
+		int32_t maxdamage = static_cast<int32_t>(attack.maxdamage * (1 - 0.01f * leveldelta) - wdef * 0.6f);
 
 		int64_t totaldamage = 0;
 		vector<int32_t> damagelines;
-		int16_t yshift = 0;
 		float alphashift = 0.0f;
-		vector2d<int16_t> startpos = getposition() - 
-			vector2d<int16_t>(0, animations.at(stance).getdimensions().y());
+
+		vector2d<int16_t> head = getposition();
+		head.shifty(-animations.at(stance).getdimensions().y());
 
 		for (int32_t i = 0; i < attack.hitcount; i++)
 		{
-			auto singledamage = randomdamage(
-				mindamage, maxdamage, hitchance, attack.critical);
+			auto singledamage = randomdamage(mindamage, maxdamage, hitchance, attack.critical);
 
 			damagelines.push_back(singledamage.first);
 			totaldamage += singledamage.first;
@@ -335,12 +346,19 @@ namespace Gameplay
 				singledamage.second ? DamageNumber::CRITICAL : DamageNumber::NORMAL,
 				singledamage.first,
 				1.0f + alphashift,
-				vector2d<int16_t>(startpos.x(), startpos.y() - yshift)));
+				head));
 
-			yshift += 24;
+			head.shifty(-24);
 			alphashift += 0.1f;
 
 			hitsound.play();
+		}
+
+		if (totaldamage >= knockback)
+		{
+			counter = 175;
+			flip = attack.origin.x() > phobj.fx;
+			setstance(HIT);
 		}
 
 		effects.add(attack.hiteffect);

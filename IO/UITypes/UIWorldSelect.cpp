@@ -22,7 +22,7 @@
 #include "IO\Components\TwoSpriteButton.h"
 #include "Graphics\Sprite.h"
 #include "Net\Packets\LoginPackets.h"
-#include "Program\Configuration.h"
+#include "Configuration.h"
 #include "nlnx\nx.hpp"
 
 namespace IO

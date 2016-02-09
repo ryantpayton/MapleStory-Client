@@ -29,11 +29,11 @@ namespace Character
 			Layer::PENDANT, Layer::BELT, Layer::MEDAL
 		};
 
-		static const Slot::Value equipslots[15] =
+		static const Equipslot::Value equipslots[15] =
 		{
-			Slot::CAP, Slot::FACEACC, Slot::EYEACC, Slot::EARRINGS, Slot::TOP, Slot::TOP,
-			Slot::PANTS, Slot::SHOES, Slot::GLOVES, Slot::SHIELD, Slot::CAPE, Slot::RING,
-			Slot::PENDANT, Slot::BELT, Slot::MEDAL
+			Equipslot::CAP, Equipslot::FACEACC, Equipslot::EYEACC, Equipslot::EARRINGS, Equipslot::TOP, Equipslot::TOP,
+			Equipslot::PANTS, Equipslot::SHOES, Equipslot::GLOVES, Equipslot::SHIELD, Equipslot::CAPE, Equipslot::RING,
+			Equipslot::PENDANT, Equipslot::BELT, Equipslot::MEDAL
 		};
 
 		static const string equiptypes[15] = 
@@ -54,7 +54,7 @@ namespace Character
 		else if (index >= 30 && index <= 49)
 		{
 			chlayer = Layer::WEAPON;
-			eqslot = Slot::WEAPON;
+			eqslot = Equipslot::WEAPON;
 
 			static const string weapontypes[20] =
 			{
@@ -73,7 +73,7 @@ namespace Character
 		else
 		{
 			chlayer = Layer::CAPE;
-			eqslot = Slot::NONE;
+			eqslot = Equipslot::NONE;
 			type = "";
 		}
 
@@ -210,7 +210,7 @@ namespace Character
 	{
 		transparent = true;
 		type = "";
-		eqslot = Slot::NONE;
+		eqslot = Equipslot::NONE;
 	}
 
 	void Clothing::draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const
@@ -260,7 +260,7 @@ namespace Character
 		return type;
 	}
 
-	Slot::Value Clothing::geteqslot() const
+	Equipslot::Value Clothing::geteqslot() const
 	{
 		return eqslot;
 	}

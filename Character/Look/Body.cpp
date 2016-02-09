@@ -20,7 +20,7 @@
 
 namespace Character
 {
-	Body::Body(uint16_t skin, const BodyDrawinfo& drawinfo)
+	Body::Body(int32_t skin, const BodyDrawinfo& drawinfo)
 	{
 		string sk;
 		if (skin < 10)

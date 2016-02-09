@@ -83,9 +83,25 @@ namespace Character
 		chatballoon.settext(line);
 	}
 
+	void Char::changelook(Maplestat::Value stat, int32_t id)
+	{
+		switch (stat)
+		{
+		case Maplestat::SKIN:
+			look.setbody(id);
+			break;
+		case Maplestat::FACE:
+			look.setface(id);
+			break;
+		case Maplestat::HAIR:
+			look.sethair(id);
+			break;
+		}
+	}
+
 	void Char::sendface(int32_t expid)
 	{
-		Expression::Value expression = Expression::byid(expid);
+		Expression::Value expression = Expression::byaction(expid);
 		look.setexpression(expression);
 	}
 
@@ -99,17 +115,8 @@ namespace Character
 	{
 		state = st;
 
-		// Names of the character stances used in the game's files.
-		static const Stance::Value stancevalues[10] =
-		{
-			Stance::WALK1, Stance::STAND1, Stance::JUMP, Stance::ALERT, 
-			Stance::PRONE, Stance::FLY, Stance::LADDER, Stance::ROPE,
-			Stance::DEAD, Stance::SIT
-		};
-
-		int8_t index = (st / 2) - 1;
-		if (index >= 0 && index < 10)
-			look.setstance(stancevalues[index]);
+		Stance::Value stance = Stance::bystate(state);
+		look.setstance(stance);
 	}
 
 	void Char::addpet(uint8_t index, int32_t iid, string name,
@@ -143,6 +150,11 @@ namespace Character
 		return state == LADDER || state == ROPE;
 	}
 
+	bool Char::istwohanded() const
+	{
+		return look.getequips().istwohanded();
+	}
+
 	bool Char::getflip() const
 	{
 		return flip;
@@ -161,8 +173,8 @@ namespace Character
 			);
 	}
 
-	CharLook& Char::getlook()
+	/*CharLook& Char::getlook()
 	{
 		return look;
-	}
+	}*/
 }

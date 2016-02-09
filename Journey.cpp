@@ -16,18 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Program\Configuration.h"
-#include "Program\Constants.h"
+#include "Configuration.h"
+#include "Constants.h"
 #include "Audio\AudioPlayer.h"
 #include "Net\Session.h"
 #include "IO\UI.h"
 #include "IO\Window.h"
-#include "IO\UITypes\UILogin.h"
 #include "Gameplay\Stage.h"
 #include "Util\NxFiles.h"
 #include "Util\StopWatch.h"
 #include "Data\DataFactory.h"
-#include "Character\BuffEffects.h"
 #include <iostream>
 
 using Audio::AudioPlayer;
@@ -69,6 +67,7 @@ Error init()
 		return AUDIO;
 
 	DataFactory::get().init();
+	UI::get().init();
 
 	return NONE;
 }
@@ -96,11 +95,6 @@ int main()
 	Error error = init();
 	if (error == NONE)
 	{
-		Character::initbuffeffects();
-
-		using IO::ElementLogin;
-		UI::get().add(ElementLogin());
-
 		using Util::StopWatch;
 		StopWatch stopwatch;
 		int64_t remain = 0;

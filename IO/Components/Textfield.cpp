@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Textfield.h"
-#include "Program\Constants.h"
+#include "Constants.h"
 
 namespace IO
 {
@@ -32,11 +32,13 @@ namespace IO
 		markerpos = 0;
 		crypt = 0;
 		state = NORMAL;
+		onreturn = nullptr;
 	}
 
 	Textfield::Textfield()
 	{
 		text = "";
+		onreturn = nullptr;
 	}
 
 	Textfield::~Textfield() {}
@@ -82,33 +84,33 @@ namespace IO
 		}
 	}
 
-	void Textfield::setonreturn(Consumer<string> onret)
+	void Textfield::setonreturn(void(*or)(string))
 	{
-		onreturn = onret;
+		onreturn = or;
 	}
 
 	void Textfield::sendkey(Keyboard::Keytype type, int32_t key, bool pressed)
 	{
 		switch (type)
 		{
-		case Keyboard::KT_ACTION:
+		case Keyboard::ACTION:
 			if (pressed)
 			{
 				switch (key)
 				{
-				case Keyboard::KA_LEFT:
+				case Keyboard::LEFT:
 					if (markerpos > 0)
 					{
 						markerpos--;
 					}
 					break;
-				case Keyboard::KA_RIGHT:
+				case Keyboard::RIGHT:
 					if (markerpos < text.size())
 					{
 						markerpos++;
 					}
 					break;
-				case Keyboard::KA_BACK:
+				case Keyboard::BACK:
 					if (text.size() > 0 && markerpos > 0)
 					{
 						text.erase(markerpos - 1, 1);
@@ -116,16 +118,16 @@ namespace IO
 						modifytext(text);
 					}
 					break;
-				case Keyboard::KA_RETURN:
-					if (onreturn.available())
+				case Keyboard::RETURN:
+					if (onreturn)
 					{
-						onreturn.accept(text);
+						(*onreturn)(text);
 						text = "";
 						markerpos = 0;
 						modifytext(text);
 					}
 					break;
-				case Keyboard::KA_SPACE:
+				case Keyboard::SPACE:
 					if (belowlimit())
 					{
 						text.insert(markerpos, 1, ' ');
@@ -136,8 +138,8 @@ namespace IO
 				}
 			}
 			break;
-		case Keyboard::KT_LETTER:
-		case Keyboard::KT_NUMBER:
+		case Keyboard::LETTER:
+		case Keyboard::NUMBER:
 			if (!pressed)
 			{
 				int8_t c = static_cast<int8_t>(key);

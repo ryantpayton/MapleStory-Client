@@ -21,13 +21,14 @@ namespace Character
 {
 	CharEquips::CharEquips()
 	{
-		for (int16_t i = 0; i < Slot::LENGTH; i++)
+		for (auto it = Equipslot::getit(); it.hasnext(); it.increment())
 		{
-			equips[i] = nullptr;
+			Equipslot::Value value = it.get();
+			equips[value] = nullptr;
 		}
 	}
 
-	void CharEquips::draw(Slot::Value slot, Stance::Value stance, Clothing::Layer layer, uint8_t frame, const DrawArgument& args) const 
+	void CharEquips::draw(Equipslot::Value slot, Stance::Value stance, Clothing::Layer layer, uint8_t frame, const DrawArgument& args) const 
 	{
 		const Clothing* cloth = equips[slot];
 		if (cloth)
@@ -36,22 +37,22 @@ namespace Character
 
 	void CharEquips::addequip(const Clothing& eq)
 	{
-		Slot::Value slot = eq.geteqslot();
+		Equipslot::Value slot = eq.geteqslot();
 		equips[slot] = &eq;
 	}
 
-	void CharEquips::removeequip(Slot::Value slot)
+	void CharEquips::removeequip(Equipslot::Value slot)
 	{
 		equips[slot] = nullptr;
 	}
 
-	bool CharEquips::checkorfalse(Slot::Value slot, bool(*check)(const Clothing*)) const
+	bool CharEquips::checkorfalse(Equipslot::Value slot, bool(*check)(const Clothing*)) const
 	{
 		const Clothing* cloth = equips[slot];
 		return (cloth) ? (*check)(cloth) : false;
 	}
 
-	bool CharEquips::isvisible(Slot::Value slot) const
+	bool CharEquips::isvisible(Equipslot::Value slot) const
 	{
 		return checkorfalse(slot, [](const Clothing* cloth) { 
 			return cloth->istransparent(); 
@@ -60,7 +61,7 @@ namespace Character
 
 	bool CharEquips::hasoverall() const
 	{
-		return checkorfalse(Slot::TOP, [](const Clothing* cloth){ 
+		return checkorfalse(Equipslot::TOP, [](const Clothing* cloth){ 
 			return cloth->getid() / 10000 == 105;
 		});
 	}
@@ -88,7 +89,7 @@ namespace Character
 			return Weapon::NONE;
 	}
 
-	string CharEquips::getequipname(Slot::Value slot) const
+	string CharEquips::getequipname(Equipslot::Value slot) const
 	{
 		const Clothing* cloth = equips[slot];
 		if (cloth == nullptr)
@@ -97,14 +98,14 @@ namespace Character
 		return cloth->getname();
 	}
 
-	const Clothing* CharEquips::getequip(Slot::Value slot) const
+	const Clothing* CharEquips::getequip(Equipslot::Value slot) const
 	{
 		return equips[slot];
 	}
 
 	const Weapon* CharEquips::getweapon() const
 	{
-		const Clothing* weapon = equips[Slot::WEAPON];
+		const Clothing* weapon = equips[Equipslot::WEAPON];
 		if (weapon == nullptr)
 			return nullptr;
 

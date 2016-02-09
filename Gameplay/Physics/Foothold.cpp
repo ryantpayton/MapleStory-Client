@@ -19,20 +19,18 @@
 
 namespace Gameplay
 {
-	Foothold::Foothold(node src, int8_t l)
+	Foothold::Foothold(node src)
 	{
 		id = static_cast<uint16_t>(stoi(src.name()));
-		layer = l;
 		prev = src["prev"];
 		next = src["next"];
 		horizontal = vector2d<int16_t>(src["x1"], src["x2"]);
 		vertical = vector2d<int16_t>(src["y1"], src["y2"]);
 	}
 
-	Foothold::Foothold(InPacket& recv, int8_t l)
+	Foothold::Foothold(InPacket& recv)
 	{
 		id = recv.readshort();
-		layer = l;
 		prev = recv.readshort();
 		next = recv.readshort();
 		horizontal = recv.readpoint();
@@ -42,7 +40,6 @@ namespace Gameplay
 	Foothold::Foothold()
 	{
 		id = 0;
-		layer = 0;
 		prev = 0;
 		next = 0;
 	}

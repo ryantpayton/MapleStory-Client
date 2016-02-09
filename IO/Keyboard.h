@@ -28,79 +28,79 @@ namespace IO
 	{
 	public:
 		//Maple-specific keycodes, sent via the Keymap Packet.
-		enum Keyaction : int32_t
+		enum Action : int32_t
 		{
-			KA_EQUIPS = 0,
-			KA_INVENTORY = 1,
-			KA_CHARSTATS = 2,
-			KA_SKILL = 3,
-			KA_BUDDY = 4,
-			KA_WORLDMAP = 5,
-			KA_MESSAGE = 6,
-			KA_MINIMAP = 7,
-			KA_QUEST = 8,
-			KA_KEYCONFIG = 9,
-			KA_CHATALL = 10,
-			KA_WHISPER = 11,
-			KA_CHATPT = 12,
-			KA_CHATBUDDY = 13,
-			KA_MAINMENU = 14,
-			KA_TOGGLEQS = 15,
-			KA_CHATWND = 16,
-			KA_GUILD = 17,
-			KA_CHATGUILD = 18,
-			KA_PARTY = 19,
-			KA_HELPER = 20,
-			KA_CHATSPOUSE = 21,
-			KA_MONSTERBOOK = 22,
-			KA_CASHSHOP = 23,
-			KA_CHATALLIANCE = 24,
-			KA_PARTYSEARCH = 25,
-			KA_FAMILY = 26,
-			KA_GMSMEDALS = 27,
-			KA_BOSS = 28,
-			KA_CHATSQUAD = 29,
-			KA_PROFESSION = 30,
-			KA_ITEMPOT = 31,
-			KA_EVENT = 32,
-			KA_WHEEL = 33,
-			KA_LEVELGUIDE = 34,
-			KA_CRUSADE = 35,
-			KA_BITS = 36,
-			KA_KNOWHOW = 37,
-			KA_EPISODE = 38,
-			KA_GUIDE = 39,
-			KA_EQUIPENHANCE = 40,
-			KA_EQUIPENHANCE2 = 41,
-			KA_PICKUP = 50,
-			KA_SIT = 51,
-			KA_ATTACK = 52,
-			KA_JUMP = 53,
-			KA_NPCCHAT = 54,
-			KA_LEFT = 60,
-			KA_RIGHT = 61,
-			KA_UP = 62,
-			KA_DOWN = 63,
-			KA_BACK = 64,
-			KA_RETURN = 65,
-			KA_SPACE = 66,
-			KA_FACE1 = 100,
-			KA_FACE7 = 106
+			EQUIPS = 0,
+			INVENTORY = 1,
+			CHARSTATS = 2,
+			SKILLBOOK = 3,
+			BUDDYLIST = 4,
+			WORLDMAP = 5,
+			MESSAGE = 6,
+			MINIMAP = 7,
+			QUESTLOG = 8,
+			KEYCONFIG = 9,
+			CHATALL = 10,
+			WHISPER = 11,
+			CHATPT = 12,
+			CHATBUDDY = 13,
+			MAINMENU = 14,
+			TOGGLEQS = 15,
+			CHATWINDOW = 16,
+			GUILD = 17,
+			CHATGUILD = 18,
+			PARTY = 19,
+			HELPER = 20,
+			CHATSPOUSE = 21,
+			MONSTERBOOK = 22,
+			CASHSHOP = 23,
+			CHATALLIANCE = 24,
+			PARTYSEARCH = 25,
+			FAMILY = 26,
+			GMSMEDALS = 27,
+			BOSS = 28,
+			CHATSQUAD = 29,
+			PROFESSION = 30,
+			ITEMPOT = 31,
+			EVENT = 32,
+			WHEEL = 33,
+			LEVELGUIDE = 34,
+			CRUSADE = 35,
+			BITS = 36,
+			KNOWHOW = 37,
+			EPISODE = 38,
+			GUIDE = 39,
+			EQUIPENHANCE = 40,
+			EQUIPENHANCE2 = 41,
+			PICKUP = 50,
+			SIT = 51,
+			ATTACK = 52,
+			JUMP = 53,
+			NPCCHAT = 54,
+			LEFT = 60,
+			RIGHT = 61,
+			UP = 62,
+			DOWN = 63,
+			BACK = 64,
+			RETURN = 65,
+			SPACE = 66,
+			FACE1 = 100,
+			FACE7 = 106
 		};
 
 		// Keytypes decide how a keycode is interpreted.
 		enum Keytype
 		{
-			KT_NONE = 0,
-			KT_SKILL = 1,
-			KT_ITEM = 2,
-			KT_CASH = 3,
-			KT_MENU = 4,
-			KT_ACTION = 5,
-			KT_FACE = 6,
-			KT_MACRO = 8,
-			KT_LETTER = 9,
-			KT_NUMBER = 10
+			NONE = 0,
+			SKILL = 1,
+			ITEM = 2,
+			CASH = 3,
+			MENU = 4,
+			ACTION = 5,
+			FACE = 6,
+			MACRO = 8,
+			LETTER = 9,
+			NUMBER = 10
 		};
 
 		struct Keymapping
@@ -110,7 +110,7 @@ namespace IO
 
 			Keymapping()
 			{
-				type = Keyboard::KT_NONE;
+				type = Keyboard::NONE;
 				action = 0;
 			}
 
@@ -131,7 +131,7 @@ namespace IO
 	private:
 		map<int32_t, Keymapping> keymap;
 		map<int32_t, Keymapping> maplekeys;
-		map<int32_t, Keyaction> textactions;
+		map<int32_t, Action> textactions;
 		map<int32_t, bool> keystate;
 	};
 }

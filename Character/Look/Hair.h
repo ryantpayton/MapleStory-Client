@@ -19,7 +19,7 @@
 #include "BodyDrawinfo.h"
 #include "Graphics\Texture.h"
 #include "Util\Enum.h"
-#include "Util\Console.h"
+#include "Console.h"
 
 namespace Character
 {

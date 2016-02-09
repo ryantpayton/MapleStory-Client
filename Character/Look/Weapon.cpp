@@ -44,11 +44,6 @@ namespace Character
 		type = NONE;
 	}
 
-	void Weapon::playsound() const
-	{
-		firstattack.play();
-	}
-
 	Weapon::Type Weapon::gettype() const
 	{
 		return type;
@@ -134,5 +129,10 @@ namespace Character
 	Animation Weapon::gethiteffect() const
 	{
 		return Animation();
+	}
+
+	Sound Weapon::getsound() const
+	{
+		return firstattack;
 	}
 }

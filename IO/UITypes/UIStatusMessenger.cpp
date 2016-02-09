@@ -15,105 +15,43 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
+#include "UIStatusMessenger.h"
+#include <numeric>
 
-template <typename T>
-class Consumer
+namespace IO
 {
-public:
-	Consumer(void(*f)(T))
+	UIStatusMessenger::UIStatusMessenger()
 	{
-		fun = f;
+		statustext = DynamicText(Text::A12M, Text::RIGHT);
+		position = vector2d<int16_t>(790, 510);
 	}
 
-	Consumer()
+	void UIStatusMessenger::draw(float inter) const
 	{
-		fun = nullptr;
+		int16_t offset = static_cast<int16_t>(statusinfos.size()) * 16;
+		vector2d<int16_t> drawpos = vector2d<int16_t>(position.x(), position.y() - offset);
+
+		for (auto& inf : statusinfos)
+		{
+			statustext.draw(inf.text, inf.color, inf.getalpha(inter), drawpos);
+			drawpos.shifty(16);
+		}
 	}
 
-	~Consumer() {}
-
-	bool available()
+	void UIStatusMessenger::update()
 	{
-		return fun != nullptr;
+		int32_t remove = std::accumulate(statusinfos.begin(), statusinfos.end(), 0, [](const int32_t& x, StatusInfo& info){
+			return info.update() ? (x + 1) : x;
+		});
+
+		statusinfos.erase(statusinfos.begin(), statusinfos.begin() + remove);
 	}
 
-	void accept(T arg)
+	void UIStatusMessenger::showstatus(Text::Color color, string message)
 	{
-		if (available())
-			fun(arg);
+		StatusInfo sinf;
+		sinf.color = color;
+		sinf.text = message;
+		statusinfos.push_back(sinf);
 	}
-
-private:
-	void(*fun)(T);
-};
-
-template <typename R, typename A>
-class Function
-{
-public:
-	Function(R(*f)(A))
-	{
-		fun = f;
-	}
-
-	Function(R nv)
-	{
-		fun = nullptr;
-		nullvalue = nv;
-	}
-
-	~Function() {}
-
-	bool available()
-	{
-		return fun != nullptr;
-	}
-
-	R apply(A arg)
-	{
-		if (available())
-			return fun(arg);
-		else
-			return nullvalue;
-	}
-
-private:
-	R(*fun)(A);
-	R nullvalue;
-};
-
-template <typename R>
-class Supplier
-{
-public:
-	Supplier(R(*f)())
-	{
-		fun = f;
-	}
-
-	Supplier(R nv)
-	{
-		fun = nullptr;
-		nullvalue = nv;
-	}
-
-	~Supplier() {}
-
-	bool available()
-	{
-		return fun != nullptr;
-	}
-
-	R get()
-	{
-		if (available())
-			return fun();
-		else
-			return nullvalue;
-	}
-
-private:
-	R(*fun)();
-	R nullvalue;
-};
+}

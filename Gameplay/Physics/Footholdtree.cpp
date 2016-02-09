@@ -33,7 +33,7 @@ namespace Gameplay
 			{
 				for (node lastf : midf)
 				{
-					Foothold foothold = Foothold(lastf, layer);
+					Foothold foothold = Foothold(lastf);
 
 					if (foothold.getl() < leftw)
 					{
@@ -55,6 +55,7 @@ namespace Gameplay
 
 					uint16_t id = foothold.getid();
 					footholds[id] = foothold;
+					layersbyfh[id] = layer;
 
 					int16_t start = foothold.getl();
 					int16_t end = foothold.getr();
@@ -87,7 +88,7 @@ namespace Gameplay
 				uint16_t numlast = recv.readshort();
 				for (uint16_t k = 0; k < numlast; k++)
 				{
-					Foothold foothold = Foothold(recv, layer);
+					Foothold foothold = Foothold(recv);
 
 					if (foothold.getl() < leftw)
 					{
@@ -109,6 +110,7 @@ namespace Gameplay
 
 					uint16_t id = foothold.getid();
 					footholds[id] = foothold;
+					layersbyfh[id] = layer;
 
 					int16_t start = foothold.getl();
 					int16_t end = foothold.getr();
@@ -136,7 +138,7 @@ namespace Gameplay
 		if (nextx != phobj.fx)
 		{
 			vector2d<int16_t> vertical = vector2d<int16_t>(
-				static_cast<int16_t>(phobj.fy - 40),
+				static_cast<int16_t>(phobj.fy - 50),
 				static_cast<int16_t>(phobj.fy - 10)
 				);
 			double wall = getwall(phobj.fhid, phobj.hspeed < 0.0f, vertical);
@@ -224,15 +226,15 @@ namespace Gameplay
 		}
 
 		if (phobj.fhlayer == 0 || phobj.onground)
-			phobj.fhlayer = nextfh.getlayer();
+		{
+			if (layersbyfh.count(phobj.fhid))
+				phobj.fhlayer = layersbyfh.at(phobj.fhid);
+		}
 	}
 
 	const Foothold& Footholdtree::getfh(uint16_t fhid) const
 	{
-		if (footholds.count(fhid))
-			return footholds.at(fhid);
-		else
-			return nullfh;
+		return footholds.count(fhid) ? footholds.at(fhid) : nullfh;
 	}
 
 	double Footholdtree::getwall(uint16_t curid, bool left, vector2d<int16_t> ver) const
@@ -240,26 +242,20 @@ namespace Gameplay
 		if (left)
 		{
 			uint16_t previd = getfh(curid).getprev();
-			if (footholds.count(previd))
+			if (getfh(previd).iswall() && getfh(previd).getver().overlaps(ver))
 			{
-				if (getfh(previd).iswall() && getfh(previd).getver().overlaps(ver))
-				{
-					return static_cast<double>(getfh(curid).getl());
-				}
+				return getfh(curid).getl();
 			}
-			return static_cast<double>(walls.x());
+			return walls.x();
 		}
 		else
 		{
 			uint16_t nextid = getfh(curid).getnext();
-			if (footholds.count(nextid))
+			if (getfh(nextid).iswall() && getfh(nextid).getver().overlaps(ver))
 			{
-				if (getfh(nextid).iswall() && getfh(nextid).getver().overlaps(ver))
-				{
-					return static_cast<double>(getfh(curid).getr());
-				}
+				return getfh(curid).getr();
 			}
-			return static_cast<double>(walls.y());
+			return walls.y();
 		}
 	}
 
@@ -269,7 +265,7 @@ namespace Gameplay
 		int16_t x = static_cast<int16_t>(fx);
 		if (footholdsbyx.count(x))
 		{
-			double comp = static_cast<double>(borders.y());
+			double comp = borders.y();
 			for (auto fhit = footholdsbyx.lower_bound(x); fhit != footholdsbyx.upper_bound(x); ++fhit)
 			{
 				const Foothold& fh = footholds.at(fhit->second);
@@ -286,16 +282,16 @@ namespace Gameplay
 
 	int16_t Footholdtree::getgroundbelow(vector2d<int16_t> position) const
 	{
-		uint16_t fhid = getbelow(
-			static_cast<double>(position.x()), 
-			static_cast<double>(position.y())
-			);
-
-		const Foothold& fh = getfh(fhid);
-		if (fh.getid() > 0)
-			return static_cast<int16_t>(fh.resolvex(static_cast<double>(position.x())));
+		uint16_t fhid = getbelow(position.x(), position.y());
+		if (fhid > 0)
+		{
+			const Foothold& fh = getfh(fhid);
+			return static_cast<int16_t>(fh.resolvex(position.x()));
+		}
 		else
+		{
 			return borders.y();
+		}
 	}
 
 	vector2d<int16_t> Footholdtree::getwalls() const

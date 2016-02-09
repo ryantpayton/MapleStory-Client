@@ -42,11 +42,15 @@ namespace Graphics
 	private:
 		float nextalphastep(uint8_t frame, uint16_t timestep) const;
 
+		static const uint16_t DEFAULTDELAY = 50;
+
 		// Data
 		vector<Texture> textures;
 		vector<uint16_t> delays;
 		vector<pair<uint8_t, uint8_t>> alphablends;
 		bool animated;
+		bool zigzag;
+		int8_t framestep;
 
 		// Values for the current state.
 		uint8_t frame;

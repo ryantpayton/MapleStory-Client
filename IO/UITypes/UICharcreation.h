@@ -28,7 +28,6 @@ namespace IO
 {
 	using std::map;
 	using std::string;
-	using Util::Randomizer;
 	using Graphics::Texture;
 	using Graphics::Text;
 	using Character::CharLook;

@@ -20,6 +20,7 @@
 #include "Pet.h"
 #include "Equip.h"
 #include "Character\CharStats.h"
+#include "Console.h"
 
 namespace Character
 {
@@ -28,7 +29,7 @@ namespace Character
 	{
 	public:
 		// Inventorytypes used by the server.
-		enum InvType : int8_t
+		enum Type : int8_t
 		{
 			EQUIPPED = -1,
 			NONE = 0,
@@ -39,13 +40,45 @@ namespace Character
 			CASH = 5
 		};
 
-		enum Movetype : int8_t
+		// Return the inventory type by itemid.
+		static Type typebyid(int32_t itemid)
+		{
+			static const Type typesbyid[6] =
+			{
+				NONE, EQUIP, USE, SETUP, ETC, CASH
+			};
+
+			int32_t prefix = itemid / 1000000;
+			return (prefix > 0 && prefix < 6) ? typesbyid[prefix] : NONE;
+		}
+
+		// Return the inventory type by value.
+		static Type typebyvalue(int8_t value)
+		{
+			if (value >= EQUIPPED && value <= CASH)
+				return static_cast<Type>(value);
+
+			Console::get().print("Unknown inventory type: " + std::to_string(value));
+			return NONE;
+		}
+
+		enum Movement : int8_t
 		{
 			MOVE_NONE = -1,
 			MOVE_INTERNAL = 0,
 			MOVE_UNEQUIP = 1,
 			MOVE_EQUIP = 2
 		};
+
+		// Return the move type by value.
+		static Movement movementbyvalue(int8_t value)
+		{
+			if (value >= MOVE_INTERNAL && value <= MOVE_EQUIP)
+				return static_cast<Movement>(value);
+
+			Console::get().print("Unknown move type: " + std::to_string(value));
+			return MOVE_NONE;
+		}
 
 		Inventory();
 		~Inventory();
@@ -57,63 +90,59 @@ namespace Character
 		// Set the meso amount.
 		void setmeso(int64_t meso);
 		// Set the number of slots for a given inventory.
-		void setslots(InvType type, uint8_t value);
+		void setslots(Type type, uint8_t value);
 
 		// Add a general item.
 		void additem(
-			InvType type, int16_t slot, int32_t itemid, bool cash,
+			Type type, int16_t slot, int32_t itemid, bool cash,
 			int64_t uniqueid, int64_t expire, uint16_t coundt, string owner, int16_t flag
 			);
 		// Add a pet item.
 		void addpet(
-			InvType type, int16_t slot, int32_t itemid, bool cash, int64_t uniqueid,
+			Type type, int16_t slot, int32_t itemid, bool cash, int64_t uniqueid,
 			int64_t expire, string name, int8_t level, int16_t closeness, int8_t fullness
 			);
 		// Add an equip item.
 		void addequip(
-			InvType type, int16_t slot, int32_t itemid, bool cash, int64_t uniqueid, 
+			Type type, int16_t slot, int32_t itemid, bool cash, int64_t uniqueid, 
 			int64_t expire, uint8_t slots, uint8_t level, map<Equipstat::Value, uint16_t> stats, 
 			string owner, int16_t flag, uint8_t itemlevel, uint16_t itemexp, int32_t vicious
 			);
 		// Remove an item.
-		void remove(InvType type, int16_t slot);
+		void remove(Type type, int16_t slot);
 		// Swap two items.
-		void swap(InvType firsttype, int16_t firstslot, InvType secondtype, int16_t secondslot);
+		void swap(Type firsttype, int16_t firstslot, Type secondtype, int16_t secondslot);
 		// Modify the inventory with info from a packet.
-		void modify(InvType type, int16_t pos, int8_t mode, int16_t arg, Movetype move);
+		void modify(Type type, int16_t pos, int8_t mode, int16_t arg, Movement movement);
 		// Change the quantity of an item.
-		void changecount(InvType type, int16_t slot, int16_t count);
+		void changecount(Type type, int16_t slot, int16_t count);
 
 		// Return if an equip is equipped in the specfied slot.
-		bool hasequipped(Slot::Value slot) const;
+		bool hasequipped(Equipslot::Value slot) const;
 		// Return the number of slots for the specified inventory.
-		uint8_t getslots(InvType type) const;
+		uint8_t getslots(Type type) const;
 		// Return a total stat.
 		uint16_t getstat(Equipstat::Value type) const;
 		// Return the amount of meso.
 		int64_t getmeso() const;
 		// Find a free slot for the specified equip.
-		Slot::Value findequipslot(int32_t itemid) const;
+		Equipslot::Value findequipslot(int32_t itemid) const;
 		// Find a free slot in the specfified inventory.
-		int16_t findslot(InvType type) const;
+		int16_t findslot(Type type) const;
 		// Return the first slot which contains the specified item.
-		int16_t finditem(InvType type, int32_t itemid) const;
-		// Return the inventory type by itemid.
-		InvType gettypebyid(int32_t itemid) const;
-		// Return the inventory type by value.
-		InvType typebyvalue(int8_t value) const;
-		// Return the inventory type by value.
-		Movetype movetypebyvalue(int8_t value) const;
+		int16_t finditem(Type type, int32_t itemid) const;
 
-		const Item* getitem(InvType type, int16_t slot) const;
-		const Equip* getequip(InvType type, int16_t slot) const;
+		// Obtain a pointer to the item at the specified type and slot.
+		const Item* getitem(Type type, int16_t slot) const;
+		// Obtain a pointer to the equip at the specified type and slot.
+		const Equip* getequip(Type type, int16_t slot) const;
 
 	private:
-		void add(InvType type, int16_t slot, Item* toadd);
+		void add(Type type, int16_t slot, Item* toadd);
 
 		int64_t meso;
-		map<InvType, uint8_t> slots;
-		map<InvType, map<int16_t, Item*>> inventoryitems;
+		map<Type, uint8_t> slots;
+		map<Type, map<int16_t, Item*>> inventoryitems;
 		map<Equipstat::Value, uint16_t> totalstats;
 	};
 }
