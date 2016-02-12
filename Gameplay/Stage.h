@@ -21,6 +21,7 @@
 #include "Physics\Physics.h"
 #include "Maplemap\MapInfo.h"
 #include "Maplemap\MapLayer.h"
+#include "Maplemap\MapBackgrounds.h"
 #include "Maplemap\MapPortals.h"
 #include "Maplemap\MapChars.h"
 #include "Maplemap\MapMobs.h"
@@ -92,6 +93,7 @@ namespace Gameplay
 
 		map<uint8_t, MapLayer> layers;
 		MapInfo mapinfo;
+		MapBackgrounds backgrounds;
 		MapPortals portals;
 		MapNpcs npcs;
 		MapChars chars;

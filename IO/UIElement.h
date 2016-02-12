@@ -44,7 +44,7 @@ namespace IO
 		virtual void buttonpressed(uint16_t buttonid);
 		virtual void doubleclick(vector2d<int16_t> cursorpos);
 		virtual void icondropped(int16_t identifier);
-		virtual Cursor::Mousestate sendmouse(bool clicked, vector2d<int16_t> cursorpos);
+		virtual Cursor::State sendmouse(bool clicked, vector2d<int16_t> cursorpos);
 		virtual rectangle2d<int16_t> bounds() const;
 
 	protected:

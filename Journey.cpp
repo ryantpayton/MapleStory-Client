@@ -124,7 +124,7 @@ int main()
 			showerror("Error: Could not find valid game files.");
 			break;
 		case CONNECTION :
-			showerror("Error: Could not connect to server.");
+			showerror("Error: The server seems to be offline.");
 			break;
 		case WINDOW:
 			showerror("Error: Could not initialize graphics.");

@@ -26,7 +26,7 @@ namespace IO
 	class UIDragElement : public UIElement
 	{
 	public:
-		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> cursorpos) override;
+		Cursor::State sendmouse(bool pressed, vector2d<int16_t> cursorpos) override;
 
 	protected:
 		UIDragElement(string cfn, vector2d<int16_t> dga);

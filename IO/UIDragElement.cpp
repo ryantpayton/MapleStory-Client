@@ -29,20 +29,20 @@ namespace IO
 		position = Configuration::get().getvector2d(configname);
 	}
 
-	Cursor::Mousestate UIDragElement::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
+	Cursor::State UIDragElement::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
 	{
 		if (pressed)
 		{
 			if (dragged)
 			{
 				position = cursorpos - cursoroffset;
-				return Cursor::MST_CLICKING;
+				return Cursor::CLICKING;
 			}
 			else if (rectangle2d<int16_t>(position, position + dragarea).contains(cursorpos))
 			{
 				cursoroffset = cursorpos - position;
 				dragged = true;
-				return Cursor::MST_CLICKING;
+				return Cursor::CLICKING;
 			}
 		}
 		else

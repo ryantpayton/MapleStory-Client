@@ -15,20 +15,20 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "LoginElements.h"
+#include "UIStateLogin.h"
 
 #include "IO\UITypes\UILogin.h"
 
 namespace IO
 {
-	LoginElements::LoginElements()
+	UIStateLogin::UIStateLogin()
 	{
 		focused = Element::NONE;
 
 		add(ElementLogin());
 	}
 
-	void LoginElements::draw(float inter, vector2d<int16_t>) const
+	void UIStateLogin::draw(float inter, vector2d<int16_t>) const
 	{
 		for (auto& entry : elements)
 		{
@@ -38,7 +38,7 @@ namespace IO
 		}
 	}
 
-	void LoginElements::update()
+	void UIStateLogin::update()
 	{
 		for (auto& entry : elements)
 		{
@@ -48,16 +48,20 @@ namespace IO
 		}
 	}
 
-	void LoginElements::doubleclick(vector2d<int16_t>) {}
+	void UIStateLogin::doubleclick(vector2d<int16_t>) {}
 
-	Cursor::Mousestate LoginElements::sendmouse(Cursor::Mousestate mst, vector2d<int16_t> pos)
+	void UIStateLogin::dragicon(Icon*) {}
+
+	void UIStateLogin::sendkey(Keyboard::Keytype, int32_t, bool) {}
+
+	Cursor::State UIStateLogin::sendmouse(Cursor::State mst, vector2d<int16_t> pos)
 	{
 		UIElement* focusedelement = get(focused);
 		if (focusedelement)
 		{
 			if (focusedelement->isactive())
 			{
-				return focusedelement->sendmouse(mst == Cursor::MST_CLICKING, pos);
+				return focusedelement->sendmouse(mst == Cursor::CLICKING, pos);
 			}
 			else
 			{
@@ -83,11 +87,11 @@ namespace IO
 				}
 			}
 
-			return front ? front->sendmouse(mst == Cursor::MST_CLICKING, pos) : Cursor::MST_IDLE;
+			return front ? front->sendmouse(mst == Cursor::CLICKING, pos) : Cursor::IDLE;
 		}
 	}
 
-	void LoginElements::add(const Element& element)
+	void UIStateLogin::add(const Element& element)
 	{
 		Element::UIType type = element.type();
 		bool isfocused = element.isfocused();
@@ -101,7 +105,7 @@ namespace IO
 			focused = type;
 	}
 
-	void LoginElements::remove(Element::UIType type)
+	void UIStateLogin::remove(Element::UIType type)
 	{
 		if (focused == type)
 			focused = Element::NONE;
@@ -114,12 +118,12 @@ namespace IO
 		}
 	}
 
-	UIElement* LoginElements::get(Element::UIType type) const
+	UIElement* UIStateLogin::get(Element::UIType type) const
 	{
 		return elements.count(type) ? elements.at(type).get() : nullptr;
 	}
 
-	UIElement* LoginElements::getfront(vector2d<int16_t> pos) const
+	UIElement* UIStateLogin::getfront(vector2d<int16_t> pos) const
 	{
 		UIElement* front = nullptr;
 		for (auto& entry : elements)

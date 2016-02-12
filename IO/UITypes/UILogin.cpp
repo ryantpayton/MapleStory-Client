@@ -141,9 +141,9 @@ namespace IO
 		}
 	}
 
-	Cursor::Mousestate UILogin::sendmouse(bool down, vector2d<int16_t> pos)
+	Cursor::State UILogin::sendmouse(bool down, vector2d<int16_t> pos)
 	{
-		Cursor::Mousestate ret = UIElement::sendmouse(down, pos);
+		Cursor::State ret = UIElement::sendmouse(down, pos);
 
 		if (account.getbounds(position).contains(pos))
 		{
@@ -155,7 +155,7 @@ namespace IO
 			}
 			else if (account.getstate() == Textfield::NORMAL)
 			{
-				ret = Cursor::MST_CANCLICK;
+				ret = Cursor::CANCLICK;
 			}
 		}
 		else if (password.getbounds(position).contains(pos))
@@ -168,7 +168,7 @@ namespace IO
 			}
 			else if (password.getstate() == Textfield::NORMAL)
 			{
-				ret = Cursor::MST_CANCLICK;
+				ret = Cursor::CANCLICK;
 			}
 		}
 		else if (down)

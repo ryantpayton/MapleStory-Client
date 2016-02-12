@@ -30,8 +30,7 @@ namespace IO
 {
 	WindowD2D::WindowD2D()
 	{
-		HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
-		CoInitialize(NULL); 
+		HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0); 
 
 		moninfo = { sizeof(MONITORINFO) };
 		placement = { sizeof(WINDOWPLACEMENT) };
@@ -41,10 +40,16 @@ namespace IO
 	{
 		CoUninitialize();
 
+		if (imgfactory)
+			imgfactory->Release();
 		if (d2dfactory) 
 			d2dfactory->Release();
 		if (dwfactory) 
 			dwfactory->Release();
+		if (d2dtarget)
+			d2dtarget->Release();
+		if (bmptarget)
+			bmptarget->Release();
 	}
 
 	vector2d<int16_t> paramtov2d(LPARAM lParam)
@@ -123,6 +128,9 @@ namespace IO
 
 	bool WindowD2D::init()
 	{
+		if (CoInitialize(NULL) != S_OK)
+			return false;
+
 		if (initfactories() != S_OK)
 			return false;
 
@@ -348,16 +356,16 @@ namespace IO
 		if (!transition)
 			bmptarget->EndDraw();
 
-		static const D2D1_RECT_F drc = 
-			D2D1::RectF(0.0f, 0.0f, 800.0f, 589.0f);
-
 		ID2D1Bitmap* scene;
 		bmptarget->GetBitmap(&scene);
-
-		d2dtarget->BeginDraw();
-		d2dtarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-		d2dtarget->DrawBitmap(scene, drc, opacity);
-		d2dtarget->EndDraw();
+		if (scene)
+		{
+			static const D2D1_RECT_F drc = D2D1::RectF(0.0f, 0.0f, 800.0f, 589.0f);
+			d2dtarget->BeginDraw();
+			d2dtarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+			d2dtarget->DrawBitmap(scene, drc, opacity);
+			d2dtarget->EndDraw();
+		}
 	}
 }
 #endif

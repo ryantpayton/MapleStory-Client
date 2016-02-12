@@ -122,7 +122,7 @@ namespace IO
 		}
 	}
 
-	Cursor::Mousestate UIEquipInventory::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
+	Cursor::State UIEquipInventory::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
 	{
 		cursorposition = cursorpos;
 
@@ -134,7 +134,7 @@ namespace IO
 				icons[slot].startdrag(cursorpos - position - iconpositions[slot]);
 				tooltip.setequip(nullptr, 0);
 				UI::get().dragicon(&icons[slot]);
-				return Cursor::MST_GRABBING;
+				return Cursor::GRABBING;
 			}
 			else
 			{
@@ -142,7 +142,7 @@ namespace IO
 				if (equip)
 				{
 					tooltip.setequip(equip, slot);
-					return Cursor::MST_CANGRAB;
+					return Cursor::CANGRAB;
 				}
 			}
 		}

@@ -59,7 +59,7 @@ namespace IO
 		void update() override;
 		void buttonpressed(uint16_t buttonid) override;
 		rectangle2d<int16_t> bounds() const override;
-		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> position) override;
+		Cursor::State sendmouse(bool pressed, vector2d<int16_t> position) override;
 
 		void sendchatline(string line, int8_t type);
 

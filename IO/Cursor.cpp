@@ -15,41 +15,40 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "Cursor.h"
 #include "nlnx\nx.hpp"
 
 namespace IO
 {
-	Animation& getanimation(Cursor::Mousestate state)
-	{
-		static std::map<Cursor::Mousestate, Animation> animations;
-		if (!animations.count(state))
-		{
-			animations[state] = Animation(nl::nx::ui["Basic.img"]["Cursor"][std::to_string(state)]);
-		}
-		return animations[state];
-	}
-
 	Cursor::Cursor()
 	{
-		state = MST_IDLE;
+		state = IDLE;
 	}
 
-	Cursor::~Cursor() {}
+	void Cursor::init()
+	{
+		for (auto it = getstateit(); it.hasnext(); it.increment())
+		{
+			State st = it.get();
+			animations[st] = Animation(nl::nx::ui["Basic.img"]["Cursor"][std::to_string(st)]);
+		}
+	}
 
 	void Cursor::draw(float inter) const
 	{
+		if (!animations.count(state))
+			return;
+
 		using Graphics::DrawArgument;
-		getanimation(state).draw(DrawArgument(position), inter);
+		animations.at(state).draw(DrawArgument(position), inter);
 	}
 
 	void Cursor::update()
 	{
-		getanimation(state).update();
+		animations[state].update();
 	}
 
-	void Cursor::setstate(Mousestate s)
+	void Cursor::setstate(State s)
 	{
 		state = s;
 	}
@@ -59,7 +58,7 @@ namespace IO
 		position = pos;
 	}
 
-	Cursor::Mousestate Cursor::getstate() const
+	Cursor::State Cursor::getstate() const
 	{
 		return state;
 	}

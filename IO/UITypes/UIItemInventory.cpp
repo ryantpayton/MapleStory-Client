@@ -243,7 +243,7 @@ namespace IO
 		Net::Session::get().dispatch(MoveItemPacket(tab, identifier, 0, 1));
 	}
 
-	Cursor::Mousestate UIItemInventory::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
+	Cursor::State UIItemInventory::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
 	{
 		cursorposition = cursorpos;
 
@@ -257,7 +257,7 @@ namespace IO
 				eqtooltip.setequip(nullptr, 0);
 				ittooltip.setitem(0);
 				UI::get().dragicon(&icons[slot]);
-				return Cursor::MST_GRABBING;
+				return Cursor::GRABBING;
 			}
 			else if (tab == Inventory::EQUIP)
 			{
@@ -267,7 +267,7 @@ namespace IO
 				if (equip)
 					eqtooltip.setequip(equip, slot);
 
-				return Cursor::MST_CANGRAB;
+				return Cursor::CANGRAB;
 			}
 			else
 			{
@@ -277,7 +277,7 @@ namespace IO
 				if (item)
 					ittooltip.setitem(item->getid());
 
-				return Cursor::MST_CANGRAB;
+				return Cursor::CANGRAB;
 			}
 		}
 		else

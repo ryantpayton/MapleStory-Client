@@ -78,11 +78,13 @@ namespace Gameplay
 		strid.insert(0, 9 - strid.length(), '0');
 		node src = nl::nx::map["Map"]["Map" + std::to_string(mapid / 100000000)][strid + ".img"];
 
-		physics.loadfht(src["foothold"]);
-		mapinfo = MapInfo(src, physics.getfht().getwalls(), physics.getfht().getborders());
 		portals.load(src["portal"], mapid);
-		//backgrounds = mapbackgrounds(src["back"]);
+		physics.loadfht(src["foothold"]);
+		vector2d<int16_t> walls = physics.getfht().getwalls();
+		vector2d<int16_t> borders = physics.getfht().getborders();
 
+		mapinfo = MapInfo(src, walls, borders);
+		backgrounds = MapBackgrounds(src["back"], walls, borders);
 		for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
 		{
 			layers[i] = MapLayer(src[std::to_string(i)]);
@@ -140,6 +142,7 @@ namespace Gameplay
 			return;
 
 		vector2d<int16_t> viewpos = camera.getposition(inter);
+		backgrounds.drawbackgrounds(viewpos, inter);
 		for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
 		{
 			layers.at(i).draw(viewpos, inter);
@@ -153,6 +156,7 @@ namespace Gameplay
 			drops.draw(i, camera, inter);
 		}
 		portals.draw(viewpos, inter);
+		backgrounds.drawforegrounds(viewpos, inter);
 	}
 
 	void Stage::update()
@@ -160,6 +164,7 @@ namespace Gameplay
 		if (state != ACTIVE)
 			return;
 
+		backgrounds.update();
 		for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
 		{
 			layers[i].update();

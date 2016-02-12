@@ -65,6 +65,9 @@ namespace IO
 
 		fullscreen = false;
 
+		using Graphics::GraphicsGL;
+		GraphicsGL::get().init();
+
 		return initwindow();
 	}
 
@@ -85,14 +88,13 @@ namespace IO
 		glfwSetKeyCallback(glwnd, key_callback);
 
 		glLoadIdentity();
-		glOrtho(0.0, 800, 590, -10, -1.0, 1.0);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_TEXTURE_2D);
-		glClearColor(0, 0, 0, 0);
 
 		using Graphics::GraphicsGL;
-		return GraphicsGL::get().init();
+		GraphicsGL::get().reinit();
+
+		return true;
 	}
 
 	void WindowGLFW::update()
@@ -141,13 +143,15 @@ namespace IO
 
 	void WindowGLFW::begin() const
 	{
-		glClear(GL_COLOR_BUFFER_BIT);
+		
 	}
 
 	void WindowGLFW::end() const
 	{
-		glfwPollEvents();
+		Graphics::GraphicsGL::get().flush();
 		glfwSwapBuffers(glwnd);
+
+		glfwPollEvents();
 	}
 
 	void WindowGLFW::fadeout()

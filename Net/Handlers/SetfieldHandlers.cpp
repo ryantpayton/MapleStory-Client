@@ -104,7 +104,7 @@ namespace Net
 
 		stagetransition(player.getstats().getportal(), player.getstats().getmapid());
 
-		UI::get().changemode(UI::GAME);
+		UI::get().changestate(UI::GAME);
 	}
 
 	void SetfieldHandler::parseinventory(InPacket& recv, Inventory& invent) const

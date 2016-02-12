@@ -15,16 +15,21 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "GameElements.h"
+#include "UIStateGame.h"
 
 #include "UITypes\UIStatusMessenger.h"
 #include "UITypes\UIStatusbar.h"
 #include "UITypes\UIBuffList.h"
 #include "UITypes\UINpcTalk.h"
+#include "UITypes\UIStatsinfo.h"
+#include "UITypes\UIItemInventory.h"
+#include "UITypes\UIEquipInventory.h"
+
+#include "Gameplay\Stage.h"
 
 namespace IO
 {
-	GameElements::GameElements()
+	UIStateGame::UIStateGame()
 	{
 		focused = Element::NONE;
 		draggedicon = nullptr;
@@ -35,7 +40,7 @@ namespace IO
 		add(ElementNpcTalk());
 	}
 
-	void GameElements::draw(float inter, vector2d<int16_t> cursor) const
+	void UIStateGame::draw(float inter, vector2d<int16_t> cursor) const
 	{
 		for (auto& entry : elementorder)
 		{
@@ -48,7 +53,7 @@ namespace IO
 			draggedicon->dragdraw(cursor);
 	}
 
-	void GameElements::update()
+	void UIStateGame::update()
 	{
 		for (auto& entry : elementorder)
 		{
@@ -58,12 +63,7 @@ namespace IO
 		}
 	}
 
-	void GameElements::dragicon(Icon* drgic)
-	{
-		draggedicon = drgic;
-	}
-
-	void GameElements::dropicon(vector2d<int16_t> pos, Element::UIType type, int16_t identifier)
+	void UIStateGame::dropicon(vector2d<int16_t> pos, Element::UIType type, int16_t identifier)
 	{
 		UIElement* front = getfront(pos);
 
@@ -79,26 +79,60 @@ namespace IO
 		}
 	}
 
-	void GameElements::doubleclick(vector2d<int16_t> pos)
+	void UIStateGame::doubleclick(vector2d<int16_t> pos)
 	{
 		UIElement* front = getfront(pos);
 		if (front)
 			front->doubleclick(pos);
 	}
 
-	Cursor::Mousestate GameElements::sendmouse(Cursor::Mousestate mst, vector2d<int16_t> pos)
+	void UIStateGame::dragicon(Icon* drgic)
+	{
+		draggedicon = drgic;
+	}
+
+	void UIStateGame::sendkey(Keyboard::Keytype type, int32_t action, bool pressed)
+	{
+		switch (type)
+		{
+		case Keyboard::MENU:
+			if (pressed)
+				switch (action)
+				{
+				case Keyboard::CHARSTATS:
+					add(ElementStatsinfo());
+					break;
+				case Keyboard::INVENTORY:
+					add(ElementItemInventory());
+					break;
+				case Keyboard::EQUIPS:
+					add(ElementEquipInventory());
+					break;
+				}
+			break;
+		case Keyboard::ACTION:
+		case Keyboard::FACE:
+		case Keyboard::ITEM:
+		case Keyboard::SKILL:
+			using Gameplay::Stage;
+			Stage::get().sendkey(type, action, pressed);
+			break;
+		}
+	}
+
+	Cursor::State UIStateGame::sendmouse(Cursor::State mst, vector2d<int16_t> pos)
 	{
 		if (draggedicon)
 		{
 			switch (mst)
 			{
-			case Cursor::MST_IDLE:
+			case Cursor::IDLE:
 				dropicon(pos, draggedicon->getparent(), draggedicon->getidentifier());
 				draggedicon->resetdrag();
 				draggedicon = nullptr;
 				return mst;
 			default:
-				return Cursor::MST_GRABBING;
+				return Cursor::GRABBING;
 			}
 		}
 		else
@@ -108,7 +142,7 @@ namespace IO
 			{
 				if (focusedelement->isactive())
 				{
-					return focusedelement->sendmouse(mst == Cursor::MST_CLICKING, pos);
+					return focusedelement->sendmouse(mst == Cursor::CLICKING, pos);
 				}
 				else
 				{
@@ -136,7 +170,7 @@ namespace IO
 
 				if (front)
 				{
-					bool clicked = mst == Cursor::MST_CLICKING;
+					bool clicked = mst == Cursor::CLICKING;
 					if (clicked)
 					{
 						elementorder.remove(fronttype);
@@ -146,13 +180,13 @@ namespace IO
 				}
 				else
 				{
-					return Cursor::MST_IDLE;
+					return Cursor::IDLE;
 				}
 			}
 		}
 	}
 
-	void GameElements::add(const Element& element)
+	void UIStateGame::add(const Element& element)
 	{
 		Element::UIType type = element.type();
 		bool isfocused = element.isfocused();
@@ -180,7 +214,7 @@ namespace IO
 			focused = type;
 	}
 
-	void GameElements::remove(Element::UIType type)
+	void UIStateGame::remove(Element::UIType type)
 	{
 		if (focused == type)
 			focused = Element::NONE;
@@ -195,12 +229,12 @@ namespace IO
 		}
 	}
 
-	UIElement* GameElements::get(Element::UIType type) const
+	UIElement* UIStateGame::get(Element::UIType type) const
 	{
 		return elements.count(type) ? elements.at(type).get() : nullptr;
 	}
 
-	UIElement* GameElements::getfront(vector2d<int16_t> pos) const
+	UIElement* UIStateGame::getfront(vector2d<int16_t> pos) const
 	{
 		UIElement* front = nullptr;
 		for (auto& entry : elementorder)

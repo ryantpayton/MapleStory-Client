@@ -167,7 +167,7 @@ namespace IO
 			);
 	}
 
-	Cursor::Mousestate UIStatusbar::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
+	Cursor::State UIStatusbar::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
 	{
 		if (chatbar->bounds().contains(cursorpos))
 		{

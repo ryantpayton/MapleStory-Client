@@ -103,6 +103,14 @@ namespace IO
 			NUMBER = 10
 		};
 
+		static Keytype typebyid(uint8_t id)
+		{
+			if (id < SKILL || id > MACRO)
+				return NONE;
+
+			return static_cast<Keytype>(id);
+		}
+
 		struct Keymapping
 		{
 			Keyboard::Keytype type;
@@ -123,7 +131,7 @@ namespace IO
 
 		Keyboard();
 
-		void assign(uint8_t, Keytype, int32_t);
+		void assign(uint8_t key, uint8_t type, int32_t action);
 		int32_t shiftcode() const;
 		Keymapping gettextmapping(int32_t keycode, bool shift) const;
 		const Keymapping* getmapping(int32_t keycode) const;

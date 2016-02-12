@@ -16,8 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "UIElements.h"
-#include "Components\Icon.h"
+#include "UIState.h"
 #include <unordered_map>
 #include <list>
 #include <memory>
@@ -28,22 +27,22 @@ namespace IO
 	using std::list;
 	using std::unique_ptr;
 
-	class GameElements : public UIElements
+	class UIStateGame : public UIState
 	{
 	public:
-		GameElements();
-
+		UIStateGame();
+		
 		void draw(float inter, vector2d<int16_t> cursor) const override;
 		void update() override;
 		void doubleclick(vector2d<int16_t> pos) override;
-		Cursor::Mousestate sendmouse(Cursor::Mousestate mst, vector2d<int16_t> pos) override;
+		void dragicon(Icon* icon) override;
+		void sendkey(Keyboard::Keytype type, int32_t action, bool pressed) override;
+		Cursor::State sendmouse(Cursor::State mst, vector2d<int16_t> pos) override;
 
 		void add(const Element& element) override;
 		void remove(Element::UIType type) override;
 		UIElement* get(Element::UIType type) const override;
 		UIElement* getfront(vector2d<int16_t> pos) const override;
-
-		void dragicon(Icon* icon);
 
 	private:
 		void dropicon(vector2d<int16_t> pos, Element::UIType parent, int16_t identifier);

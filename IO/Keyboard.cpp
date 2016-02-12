@@ -114,11 +114,15 @@ namespace IO
 		}
 	}
 
-	void Keyboard::assign(uint8_t key, Keytype type, int32_t action)
+	void Keyboard::assign(uint8_t key, uint8_t tid, int32_t action)
 	{
-		Keymapping mapping = Keymapping(type, action);
-		keymap[Keytable[key]] = mapping;
-		maplekeys[key] = mapping;
+		Keytype type = typebyid(tid);
+		if (type != NONE)
+		{
+			Keymapping mapping = Keymapping(type, action);
+			keymap[Keytable[key]] = mapping;
+			maplekeys[key] = mapping;
+		}
 	}
 
 	const Keyboard::Keymapping* Keyboard::getmapping(int32_t keycode) const

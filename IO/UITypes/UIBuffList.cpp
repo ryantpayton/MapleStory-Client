@@ -52,7 +52,7 @@ namespace IO
 		}
 	}
 
-	Cursor::Mousestate UIBuffList::sendmouse(bool pressed, vector2d<int16_t> position)
+	Cursor::State UIBuffList::sendmouse(bool pressed, vector2d<int16_t> position)
 	{
 		return UIElement::sendmouse(pressed, position);
 	}

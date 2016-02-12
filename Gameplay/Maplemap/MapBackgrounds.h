@@ -16,24 +16,74 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Element.h"
-#include "UIElement.h"
+#include "Console.h"
+#include "Graphics\Texture.h"
+#include "Graphics\Animation.h"
+#include <vector>
 
-namespace IO
+namespace Gameplay
 {
-	class UIElements
+	using Graphics::Animation;
+
+	class Background
 	{
 	public:
-		virtual ~UIElements() {}
+		Background(node src, vector2d<int16_t> walls, vector2d<int16_t> borders);
 
-		virtual void draw(float inter, vector2d<int16_t> cursor) const = 0;
-		virtual void update() = 0;
-		virtual void doubleclick(vector2d<int16_t> pos) = 0;
-		virtual Cursor::Mousestate sendmouse(Cursor::Mousestate mst, vector2d<int16_t> pos) = 0;
+		void draw(vector2d<int16_t> viewpos, float inter) const;
+		void update();
 
-		virtual void add(const Element& element) = 0;
-		virtual void remove(Element::UIType type) = 0;
-		virtual UIElement* get(Element::UIType type) const = 0;
-		virtual UIElement* getfront(vector2d<int16_t> pos) const = 0;
+	private:
+		enum Type
+		{
+			NORMAL,
+			HTILED,
+			VTILED,
+			TILED,
+			HMOVEA,
+			VMOVEA,
+			HMOVEB,
+			VMOVEB
+		};
+
+		static Type typebyid(int32_t id)
+		{
+			if (id >= NORMAL && id <= VMOVEB)
+				return static_cast<Type>(id);
+
+			Console::get().print("Unhandled background type: " + std::to_string(id));
+
+			return NORMAL;
+		}
+
+		Animation animation;
+		bool animated;
+		vector2d<int16_t> rpos;
+		vector2d<int16_t> cpos;
+		Type type;
+		float fx;
+		float fy;
+		float opacity;
+		bool flipped;
+
+		vector2d<int16_t> walls;
+		vector2d<int16_t> borders;
+	};
+
+	using std::vector;
+
+	class MapBackgrounds
+	{
+	public:
+		MapBackgrounds(node src, vector2d<int16_t> walls, vector2d<int16_t> borders);
+		MapBackgrounds();
+
+		void drawbackgrounds(vector2d<int16_t> viewpos, float inter) const;
+		void drawforegrounds(vector2d<int16_t> viewpos, float inter) const;
+		void update();
+
+	private:
+		vector<Background> backgrounds;
+		vector<Background> foregrounds;
 	};
 }

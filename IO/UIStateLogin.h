@@ -16,8 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "UIElements.h"
-
+#include "UIState.h"
 #include <unordered_map>
 #include <memory>
 
@@ -26,15 +25,17 @@ namespace IO
 	using std::unordered_map;
 	using std::unique_ptr;
 
-	class LoginElements : public UIElements
+	class UIStateLogin : public UIState
 	{
 	public:
-		LoginElements();
+		UIStateLogin();
 
 		void draw(float inter, vector2d<int16_t> cursor) const override;
 		void update() override;
-		void doubleclick(vector2d<int16_t> pos);
-		Cursor::Mousestate sendmouse(Cursor::Mousestate mst, vector2d<int16_t> pos) override;
+		void doubleclick(vector2d<int16_t> pos) override;
+		void dragicon(Icon* icon) override;
+		void sendkey(Keyboard::Keytype type, int32_t action, bool pressed) override;
+		Cursor::State sendmouse(Cursor::State mst, vector2d<int16_t> pos) override;
 
 		void add(const Element& element) override;
 		void remove(Element::UIType type) override;

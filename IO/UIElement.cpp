@@ -74,9 +74,9 @@ namespace IO
 
 	void UIElement::icondropped(int16_t) {}
 
-	Cursor::Mousestate UIElement::sendmouse(bool down, vector2d<int16_t> pos)
+	Cursor::State UIElement::sendmouse(bool down, vector2d<int16_t> pos)
 	{
-		Cursor::Mousestate ret = down ? Cursor::MST_CLICKING : Cursor::MST_IDLE;
+		Cursor::State ret = down ? Cursor::CLICKING : Cursor::IDLE;
 
 		for (auto& btit : buttons)
 		{
@@ -85,7 +85,7 @@ namespace IO
 				if (btit.second->getstate() == Button::NORMAL)
 				{
 					btit.second->setstate(Button::MOUSEOVER);
-					ret = Cursor::MST_CANCLICK;
+					ret = Cursor::CANCLICK;
 				}
 				else if (btit.second->getstate() == Button::MOUSEOVER)
 				{
@@ -96,7 +96,7 @@ namespace IO
 					}
 					else
 					{
-						ret = Cursor::MST_CANCLICK;
+						ret = Cursor::CANCLICK;
 					}
 				}
 			}

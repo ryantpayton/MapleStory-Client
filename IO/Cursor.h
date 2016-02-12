@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Util\Enum.h"
 #include "Graphics\Animation.h"
 
 namespace IO
@@ -28,36 +29,44 @@ namespace IO
 	{
 	public:
 		// Maple-cursorstates, linked to the cursor's animation.
-		enum Mousestate
+		enum State
 		{
-			MST_IDLE = 0,
-			MST_CANCLICK = 1,
-			MST_GAME = 2,
-			MST_HOUSE = 3,
-			MST_CANCLICK2 = 4,
-			MST_CANGRAB = 5,
-			MST_GIFT = 6,
-			MST_VSCROLL = 7,
-			MST_HSCROLL = 8,
-			MST_VSCROLLIDLE = 9,
-			MST_HSCROLLIDLE = 10,
-			MST_GRABBING = 11,
-			MST_CLICKING = 12,
-			MST_RCLICK = 13
+			IDLE = 0,
+			CANCLICK = 1,
+			GAME = 2,
+			HOUSE = 3,
+			CANCLICK2 = 4,
+			CANGRAB = 5,
+			GIFT = 6,
+			VSCROLL = 7,
+			HSCROLL = 8,
+			VSCROLLIDLE = 9,
+			HSCROLLIDLE = 10,
+			GRABBING = 11,
+			CLICKING = 12,
+			RCLICK = 13
 		};
 
-		Cursor();
-		~Cursor();
+		static EnumIterator<State> getstateit()
+		{
+			return EnumIterator<State>(IDLE, RCLICK);
+		}
 
-		void draw(float) const;
+		Cursor();
+
+		void init();
+
+		void draw(float inter) const;
 		void update();
-		void setstate(Mousestate);
-		void setposition(vector2d<int16_t>);
-		Mousestate getstate() const;
+		void setstate(State state);
+		void setposition(vector2d<int16_t> position);
+		State getstate() const;
 		vector2d<int16_t> getposition() const;
 
 	private:
-		Mousestate state;
+		map<State, Animation> animations;
+
+		State state;
 		vector2d<int16_t> position;
 	};
 }

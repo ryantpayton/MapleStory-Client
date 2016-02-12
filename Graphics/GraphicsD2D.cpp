@@ -15,8 +15,10 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Graphics\GraphicsD2D.h"
+#include "GraphicsD2D.h"
 #ifndef JOURNEY_USE_OPENGL
+#include <d2d1effects.h>
+#include <d2d1effecthelpers.h>
 #include <unordered_map>
 
 namespace Graphics
@@ -150,7 +152,7 @@ namespace Graphics
 			(BYTE*)bmp.data(),
 			&wic);
 
-		if (!wic)
+		if (wic == nullptr)
 			return;
 
 		IWICFormatConverter* converter = nullptr;
@@ -168,9 +170,12 @@ namespace Graphics
 		}
 		wic->Release();
 
-		target->CreateBitmapFromWicBitmap(temp, &bitmaps[bmp.id()]);
-		temp->Release();
-		temp = nullptr;
+		if (temp)
+		{
+			target->CreateBitmapFromWicBitmap(temp, &bitmaps[bmp.id()]);
+			temp->Release();
+			temp = nullptr;
+		}
 	}
 
 	void GraphicsD2D::draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, float alpha,

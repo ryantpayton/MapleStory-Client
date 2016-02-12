@@ -420,9 +420,9 @@ namespace IO
 		}
 	}
 
-	Cursor::Mousestate UICharcreation::sendmouse(bool down, vector2d<int16_t> pos)
+	Cursor::State UICharcreation::sendmouse(bool down, vector2d<int16_t> pos)
 	{
-		Cursor::Mousestate ret = UIElement::sendmouse(down, pos);
+		Cursor::State ret = UIElement::sendmouse(down, pos);
 
 		if (namechar.getbounds(position).contains(pos))
 		{
@@ -433,7 +433,7 @@ namespace IO
 			}
 			else if (namechar.getstate() == Textfield::NORMAL)
 			{
-				ret = Cursor::MST_CANCLICK;
+				ret = Cursor::CANCLICK;
 			}
 		}
 		else if (down)

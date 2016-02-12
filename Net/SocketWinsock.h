@@ -23,7 +23,7 @@
 
 namespace Net
 {
-	const size_t MAX_PACKET_LEN = 40960;
+	const size_t MAX_PACKET_LEN = 131072;
 
 #ifdef JOURNEY_USE_CRYPTO
 	const size_t HANDSHAKE_LEN = 16;

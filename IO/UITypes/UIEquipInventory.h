@@ -44,7 +44,7 @@ namespace IO
 		void togglehide() override;
 		void doubleclick(vector2d<int16_t> position) override;
 		void icondropped(int16_t identifier) override;
-		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> position) override;
+		Cursor::State sendmouse(bool pressed, vector2d<int16_t> position) override;
 
 		void modify(int16_t pos, int8_t mode, int16_t arg);
 

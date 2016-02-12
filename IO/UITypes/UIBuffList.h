@@ -74,7 +74,7 @@ namespace IO
 
 		void draw(float inter) const override;
 		void update() override;
-		Cursor::Mousestate sendmouse(bool pressed, vector2d<int16_t> position) override;
+		Cursor::State sendmouse(bool pressed, vector2d<int16_t> position) override;
 
 		void addbuff(int32_t buffid, int32_t duration);
 

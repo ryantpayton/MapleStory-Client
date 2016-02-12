@@ -16,74 +16,44 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Cursor.h"
-#include "Keyboard.h"
 #include "Element.h"
-#include "UIState.h"
+#include "UIElement.h"
+#include "Keyboard.h"
+#include "Console.h"
 
 #include "Components\Icon.h"
-#include "Components\Textfield.h"
-
-#include "Util\Singleton.h"
-
-#include <unordered_map>
 
 namespace IO
 {
-	using std::unique_ptr;
-	using std::unordered_map;
-
-	class UI : public Singleton<UI>
+	class UIState
 	{
 	public:
-		enum State
-		{
-			LOGIN,
-			GAME
-		};
+		virtual ~UIState() {}
 
-		UI();
+		virtual void draw(float inter, vector2d<int16_t> cursor) const = 0;
+		virtual void update() = 0;
+		virtual void doubleclick(vector2d<int16_t> pos) = 0;
+		virtual void dragicon(Icon* icon) = 0;
+		virtual void sendkey(Keyboard::Keytype type, int32_t action, bool pressed) = 0;
+		virtual Cursor::State sendmouse(Cursor::State mst, vector2d<int16_t> pos) = 0;
 
-		void init();
-		void draw(float inter) const;
-		void update();
-
-		void sendmouse(vector2d<int16_t> pos);
-		void sendmouse(bool pressed, vector2d<int16_t> pos);
-		void doubleclick(vector2d<int16_t> pos);
-		void sendkey(int32_t keycode, bool pressed);
-		void focustextfield(Textfield* textfield);
-		void dragicon(Icon* icon);
-
-		void addkeymapping(uint8_t no, uint8_t type, int32_t action);
-		void enable();
-		void disable();
-		void changestate(State mode);
-
-		void add(const Element& type);
-		void remove(Element::UIType type);
-
-		bool haselement(Element::UIType type) const;
-		UIElement* getelement(Element::UIType type) const;
-
-		template <class T>
-		T* getelement(Element::UIType type) const;
-
-	private:
-		unique_ptr<UIState> state;
-		Keyboard keyboard;
-		Cursor cursor;
-
-		unordered_map<int32_t, bool> keydown;
-
-		Textfield* focusedtextfield;
-		bool enabled;
+		virtual void add(const Element& element) = 0;
+		virtual void remove(Element::UIType type) = 0;
+		virtual UIElement* get(Element::UIType type) const = 0;
+		virtual UIElement* getfront(vector2d<int16_t> pos) const = 0;
 	};
 
-	template <class T>
-	T* UI::getelement(Element::UIType type) const
+	class UIStateNull : public UIState
 	{
-		UIElement* element = getelement(type);
-		return element ? reinterpret_cast<T*>(element) : nullptr;
-	}
+		void draw(float, vector2d<int16_t>) const override { Console::get().print("Warning: UI was not initialized."); }
+		void update() override {}
+		void doubleclick(vector2d<int16_t>) override {}
+		void dragicon(Icon*) override {}
+		void sendkey(Keyboard::Keytype, int32_t, bool) override {}
+		Cursor::State sendmouse(Cursor::State, vector2d<int16_t>) override { return Cursor::IDLE; }
+		void add(const Element&) override {}
+		void remove(Element::UIType) override {}
+		UIElement* get(Element::UIType) const override { return nullptr; }
+		UIElement* getfront(vector2d<int16_t>) const override { return nullptr; }
+	};
 }

@@ -96,9 +96,6 @@ namespace Character
 		// Return wether the character sprite uses stances for two-handed weapons.
 		bool istwohanded() const;
 
-		// Obtain a reference to the character's sprite.
-		//CharLook& getlook();
-
 	protected:
 		CharLook look;
 		ChatBalloon chatballoon;

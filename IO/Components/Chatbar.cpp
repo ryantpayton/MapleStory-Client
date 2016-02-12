@@ -131,9 +131,9 @@ namespace IO
 			);
 	}
 
-	Cursor::Mousestate Chatbar::sendmouse(bool down, vector2d<int16_t> pos)
+	Cursor::State Chatbar::sendmouse(bool down, vector2d<int16_t> pos)
 	{
-		Cursor::Mousestate ret = UIElement::sendmouse(down, pos);
+		Cursor::State ret = UIElement::sendmouse(down, pos);
 
 		if (chatfield.getbounds(position).contains(pos))
 		{
@@ -144,7 +144,7 @@ namespace IO
 			}
 			else if (chatfield.getstate() == Textfield::NORMAL)
 			{
-				ret = Cursor::MST_CANCLICK;
+				ret = Cursor::CANCLICK;
 			}
 		}
 		else if (down)
