@@ -60,6 +60,8 @@ namespace IO
 
 		xtile = north.getdimensions().x();
 		ytile = west.getdimensions().y();
+
+		duration = 0;
 	}
 
 	ChatBalloon::ChatBalloon() : ChatBalloon(0) {}

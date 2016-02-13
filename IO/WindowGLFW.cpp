@@ -15,14 +15,14 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "Journey.h"
 #ifdef JOURNEY_USE_OPENGL
 #include "WindowGLFW.h"
-#include "Graphics\GraphicsGL.h"
-#include "glm.hpp"
 #include "UI.h"
+
+#include "Graphics\GraphicsGL.h"
 #include "Gameplay\Stage.h"
+
 #include <iostream>
 
 namespace IO
@@ -66,7 +66,8 @@ namespace IO
 		fullscreen = false;
 
 		using Graphics::GraphicsGL;
-		GraphicsGL::get().init();
+		if (!GraphicsGL::get().init())
+			return false;
 
 		return initwindow();
 	}

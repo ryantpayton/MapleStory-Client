@@ -21,11 +21,6 @@
 
 namespace Graphics
 {
-	GraphicsGL::~GraphicsGL()
-	{
-		free();
-	}
-
 	bool GraphicsGL::addfont(const char* name, Text::Font id, FT_UInt width, FT_UInt height)
 	{
 		if (FT_New_Face(ftlibrary, name, 0, &fonts[id]))
@@ -114,10 +109,17 @@ namespace Graphics
 		const char *vs_source =
 			"#version 120\n"
 			"attribute vec4 coord;"
+			"attribute vec4 color;"
 			"varying vec2 texpos;"
+			"varying vec4 colormod;"
+			"uniform vec2 screensize;"
+
 			"void main(void) {"
-			"   gl_Position = vec4(coord.x, coord.y - 0.04, 0.0, 1.0);"
+			"	float x = -1.0 + coord.x * 2.0 / screensize.x;"
+			"	float y = 1.0 - (coord.y + 10) * 2.0 / screensize.y;"
+			"   gl_Position = vec4(x, y, 0.0, 1.0);"
 			"	texpos = coord.zw;"
+			"	colormod = color;"
 			"}";
 		glShaderSource(vs, 1, &vs_source, NULL);
 		glCompileShader(vs);
@@ -129,9 +131,13 @@ namespace Graphics
 		const char *fs_source =
 			"#version 120\n"
 			"varying vec2 texpos;"
-			"uniform sampler2D tex;"
+			"varying vec4 colormod;"
+			"uniform sampler2D texture;"
+			"uniform vec2 atlassize;"
+
 			"void main(void) {"
-			"	gl_FragColor = texture2D(tex, texpos);"
+			"	gl_FragColor = texture2D(texture, texpos / atlassize);"
+			"	gl_FragColor[3] *= colormod[3];"
 			"}";
 		glShaderSource(fs, 1, &fs_source, NULL);
 		glCompileShader(fs);
@@ -147,10 +153,12 @@ namespace Graphics
 		if (!result)
 			return false;
 
-
 		attribute_coord = glGetAttribLocation(program, "coord");
-		uniform_tex = glGetUniformLocation(program, "tex");
-		if (attribute_coord == -1 || uniform_tex == -1)
+		attribute_color = glGetAttribLocation(program, "color");
+		uniform_texture = glGetUniformLocation(program, "texture");
+		uniform_atlassize = glGetUniformLocation(program, "atlassize");
+		uniform_screensize = glGetUniformLocation(program, "screensize");
+		if (attribute_coord == -1 || attribute_color == -1 || uniform_texture == -1 || uniform_atlassize == -1 || uniform_screensize == -1)
 			return false;
 
 		glGenBuffers(1, &vbo);
@@ -161,6 +169,15 @@ namespace Graphics
 
 	void GraphicsGL::reinit()
 	{
+		glUseProgram(program);
+
+		glUniform2f(uniform_atlassize, ATLASW, ATLASH);
+		glUniform2f(uniform_screensize, Constants::VIEWWIDTH, Constants::VIEWHEIGHT);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glVertexAttribPointer(attribute_coord, 4, GL_SHORT, GL_FALSE, 24, 0);
+		glVertexAttribPointer(attribute_color, 4, GL_FLOAT, GL_FALSE, 24, 0);
+
 		glBindTexture(GL_TEXTURE_2D, atlas);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -171,20 +188,11 @@ namespace Graphics
 
 	void GraphicsGL::clear()
 	{
-		ymax = 0.0;
-		coord = vector2d<GLint>();
+		ymax = 0;
+		coord = vector2d<GLshort>();
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_BGRA, ATLASW, ATLASH, 0,
 			GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
 		offsets.clear();
-	}
-
-	void GraphicsGL::free()
-	{
-		clear();
-
-		glDeleteProgram(program);
-		glDeleteBuffers(1, &vbo);
-		glDeleteTextures(1, &atlas);
 	}
 
 	bool GraphicsGL::available(size_t id)
@@ -225,12 +233,12 @@ namespace Graphics
 		if (!available(id))
 			return;
 
-		GLfloat left = centerx + xscale * (x - centerx);
-		GLfloat right = centerx + xscale * (x + w - centerx);
-		GLfloat top = centery + yscale * (y - centery);
-		GLfloat bottom = centery + yscale * (y + h - centery);
+		GLshort left = centerx + static_cast<GLshort>(xscale * (x - centerx));
+		GLshort right = centerx + static_cast<GLshort>(xscale * (x + w - centerx));
+		GLshort top = centery + static_cast<GLshort>(yscale * (y - centery));
+		GLshort bottom = centery + static_cast<GLshort>(yscale * (y + h - centery));
 		Offset offset = offsets[id];
-		coordinates.push_back(TexCoords(left, right, top, bottom, offset));
+		coordinates.push_back(TexCoords(left, right, top, bottom, offset, 1.0, 1.0, 1.0, alpha));
 	}
 
 	void GraphicsGL::flush()
@@ -239,15 +247,15 @@ namespace Graphics
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		GLsizei csize = static_cast<GLsizei>(coordinates.size() * sizeof(TexCoords)); 
-		GLsizei fsize = static_cast<GLsizei>(coordinates.size()) * sizeof(GLfloat);
-		glUseProgram(program);
+		GLsizei fsize = static_cast<GLsizei>(coordinates.size() * TexCoords::LENGTH);
 		glEnableVertexAttribArray(attribute_coord);
+		glEnableVertexAttribArray(attribute_color);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, csize, coordinates.data(), GL_STREAM_DRAW);
-		glVertexAttribPointer(attribute_coord, 4, GL_FLOAT, GL_FALSE, 0, 0);
 		glDrawArrays(GL_QUADS, 0, fsize);
 
 		glDisableVertexAttribArray(attribute_coord);
+		glDisableVertexAttribArray(attribute_color);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		coordinates.clear();
 	}

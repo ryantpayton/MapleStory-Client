@@ -40,24 +40,15 @@ namespace Graphics
 	using std::unordered_map;
 	using nl::bitmap;
 
-	const GLfloat ATLASW = 16000;
-	const GLfloat ATLASH = 16000; 
-	const GLfloat sx = 2.0f / static_cast<GLfloat>(Constants::VIEWWIDTH);
-	const GLfloat sy = 2.0f / static_cast<GLfloat>(Constants::VIEWHEIGHT);
-
 	class GraphicsGL : public Singleton<GraphicsGL>
 	{
 	public:
-		// Free all resources.
-		~GraphicsGL();
-
 		// Initialise all resources.
 		bool init();
+		// Re-initialise, for example after changing screen modes.
 		void reinit();
 		// Clear all bitmaps.
 		void clear();
-		// Free all resources.
-		void free();
 
 		// Add a bitmap to the available resources.
 		void addbitmap(const bitmap& toadd);
@@ -102,25 +93,25 @@ namespace Graphics
 
 		struct Offset
 		{
-			GLfloat l;
-			GLfloat r;
-			GLfloat t;
-			GLfloat b;
+			GLshort l;
+			GLshort r;
+			GLshort t;
+			GLshort b;
 
-			Offset(GLint x, GLint y, GLint w, GLint h)
+			Offset(GLshort x, GLshort y, GLshort w, GLshort h)
 			{
-				l = x / ATLASW;
-				r = (x + w) / ATLASW;
-				t = y / ATLASH;
-				b = (y + h) / ATLASH;
+				l = x;
+				r = x + w;
+				t = y ;
+				b = y + h;
 			}
 
 			Offset() 
 			{
-				l = 0.0;
-				r = 0.0;
-				t = 0.0;
-				b = 0.0;
+				l = 0;
+				r = 0;
+				t = 0;
+				b = 0;
 			}
 		};
 
@@ -128,36 +119,43 @@ namespace Graphics
 		{
 			struct Coordinates 
 			{
-				GLfloat x;
-				GLfloat y;
-				GLfloat s;
-				GLfloat t;
+				GLshort x;
+				GLshort y;
+				GLshort s;
+				GLshort t;
+
+				GLfloat r;
+				GLfloat a;
+				GLfloat b;
+				GLfloat g;
 			};
 
-			Coordinates coordinates[4];
+			static const size_t LENGTH = 4;
+			Coordinates coordinates[LENGTH];
 
-			TexCoords(GLfloat l, GLfloat r, GLfloat t, GLfloat b, Offset o)
+			TexCoords(GLshort l, GLshort r, GLshort t, GLshort b, Offset o, GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca)
 			{
-				l = -1.0 + l * sx;
-				r = -1.0 + r * sx;
-				t = 1.0 - t * sy;
-				b = 1.0 - b * sy;
-
-				coordinates[0] = { l, t, o.l, o.t };
-				coordinates[1] = { l, b, o.l, o.b };
-				coordinates[2] = { r, b, o.r, o.b };
-				coordinates[3] = { r, t, o.r, o.t };
+				coordinates[0] = { l, t, o.l, o.t, cr, ca, cb, cg };
+				coordinates[1] = { l, b, o.l, o.b, cr, ca, cb, cg };
+				coordinates[2] = { r, b, o.r, o.b, cr, ca, cb, cg };
+				coordinates[3] = { r, t, o.r, o.t, cr, ca, cb, cg };
 			}
 		};
 
+		static const GLshort ATLASW = 10000;
+		static const GLshort ATLASH = 10000;
+
 		vector<TexCoords> coordinates;
 		unordered_map<size_t, Offset> offsets;
-		vector2d<GLint> coord;
-		GLint ymax;
+		vector2d<GLshort> coord;
+		GLshort ymax;
 
 		GLint program;
 		GLint attribute_coord;
-		GLint uniform_tex;
+		GLint attribute_color;
+		GLint uniform_texture;
+		GLint uniform_atlassize;
+		GLint uniform_screensize;
 
 		GLuint vbo;
 		GLuint atlas;

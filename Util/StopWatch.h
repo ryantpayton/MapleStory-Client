@@ -21,10 +21,8 @@
 
 namespace Util
 {
-	using std::uint16_t;
-	using std::int64_t;
 	using std::chrono::high_resolution_clock;
-	using std::chrono::milliseconds;
+	using std::chrono::microseconds;
 
 	// Small class for measuring elapsed time between game loops.
 	class StopWatch
@@ -39,10 +37,10 @@ namespace Util
 		~StopWatch() {}
 
 		// Return time elapsed since the last measurement.
-		int64_t stop()
+		double stop()
 		{
-			int64_t elapsed = (std::chrono::duration_cast
-				<milliseconds>(high_resolution_clock::now() - last)).count();
+			double elapsed = static_cast<double>((std::chrono::duration_cast
+				<microseconds>(high_resolution_clock::now() - last)).count());
 			last = high_resolution_clock::now();
 			return elapsed;
 		}

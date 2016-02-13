@@ -97,21 +97,40 @@ int main()
 	{
 		using Util::StopWatch;
 		StopWatch stopwatch;
-		int64_t remain = 0;
+		double remain = 0;
+
+		double fpscounter = 0;
+		uint16_t samples = 0;
 
 		// Run the game as long as the connection is alive.
 		while (Session::get().receive())
 		{
-			remain += stopwatch.stop();
-			while (remain >= Constants::TIMESTEP)
+			double elapsed = stopwatch.stop() / 1000;
+
+			if (samples > 100)
 			{
-				// Update game with constant timestep as many times as possible.
+				double fps = 1000.0 / (fpscounter / samples);
+				showerror(("fps: " + std::to_string(fps)).c_str());
+				fpscounter = elapsed;
+				samples = 1;
+			}
+			else
+			{
+				fpscounter += elapsed;
+				samples++;
+			}
+
+			remain += elapsed;
+
+			// Update game with constant timestep as many times as possible.
+			while (std::floor(remain) >= Constants::TIMESTEP)
+			{
 				update();
 				remain -= Constants::TIMESTEP;
 			}
 
 			// Draw the game. Interpolate to account for remaining time.
-			float inter = static_cast<float>(remain) / Constants::TIMESTEP;
+			float inter = static_cast<float>(std::floor(remain) / Constants::TIMESTEP);
 			draw(inter);
 		}
 	}
