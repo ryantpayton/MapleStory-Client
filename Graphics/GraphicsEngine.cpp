@@ -62,10 +62,10 @@ namespace Graphics
 #endif
 	}
 
-	Text::Layout GraphicsEngine::createlayout(const string& text, Text::Font font, float maxwidth)
+	Text::Layout GraphicsEngine::createlayout(const string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth)
 	{
 #ifdef JOURNEY_USE_OPENGL
-		return GraphicsGL::get().createlayout(text.c_str(), font, maxwidth);
+		return GraphicsGL::get().createlayout(text.c_str(), font, alignment, maxwidth);
 #else
 		wstring wtext = wstring(text.begin(), text.end());
 		return GraphicsD2D::get().createlayout(wtext, font, maxwidth);
@@ -73,9 +73,9 @@ namespace Graphics
 	}
 
 	void GraphicsEngine::drawtext(const string& text, Text::Font font, Text::Alignment alignment, Text::Color color,
-		Text::Background back, float alpha, vector2d<float> origin, vector2d<float> dimensions) {
+		Text::Background back, const Text::Layout& layout, float alpha, vector2d<int16_t> origin) {
 #ifdef JOURNEY_USE_OPENGL
-		GraphicsGL::get().drawtext(text.c_str(), font, alignment, color, back, alpha, origin, dimensions);
+		GraphicsGL::get().drawtext(text.c_str(), font, alignment, color, back, layout, alpha, origin);
 #else
 		wstring wtext = wstring(text.begin(), text.end());
 		GraphicsD2D::get().drawtext(wtext, font, alignment, color, back, alpha, origin, dimensions);

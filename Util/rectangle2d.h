@@ -27,7 +27,8 @@ public:
 	rectangle2d(vector2d<T> v1, vector2d<T> v2) { lt = v1; rb = v2; }
 	rectangle2d() { lt = vector2d<T>(); rb = vector2d<T>(); }
 	~rectangle2d() {}
-	T getwidth() const { return abs(lt.x() - rb.x()); }
+	T width() const { return abs(lt.x() - rb.x()); }
+	T height() const { return abs(lt.y() - rb.y()); }
 	T l() const { return lt.x(); }
 	T t() const { return lt.y(); }
 	T r() const { return rb.x(); }

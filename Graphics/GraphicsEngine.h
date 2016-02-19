@@ -32,8 +32,8 @@ namespace Graphics
 			float alpha, float xscale, float yscale, int16_t centerx, int16_t centery);
 		bool available(size_t id);
 		void clear();
-		Text::Layout createlayout(const string& text, Text::Font font, float maxwidth);
+		Text::Layout createlayout(const string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth);
 		void drawtext(const string& text, Text::Font font, Text::Alignment alignment, Text::Color color,
-			Text::Background back, float alpha, vector2d<float> origin, vector2d<float> dimensions);
+			Text::Background back, const Text::Layout& layout, float alpha, vector2d<int16_t> origin);
 	};
 }

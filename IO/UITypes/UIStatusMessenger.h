@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "IO\Element.h"
-#include "Graphics\DynamicText.h"
+#include "Graphics\Text.h"
 #include <vector>
 
 namespace IO
@@ -25,25 +25,34 @@ namespace IO
 	using std::string;
 	using std::vector;
 	using Graphics::Text;
-	using Graphics::DynamicText;
 
 	struct StatusInfo
 	{
-		Text::Color color = Text::WHITE;
-		string text = "";
+		Text text;
+		Text shadow;
 		float alpha = 1.0f;
 		float lastalpha = 1.0f;
+
+		StatusInfo(string str, Text::Color color)
+		{
+			text = Text(Text::A12M, Text::RIGHT, color);
+			text.settext(str);
+			shadow = Text(Text::A12M, Text::RIGHT, Text::BLACK);
+			shadow.settext(str);
+		}
+
+		void draw(vector2d<int16_t> position, float inter) const
+		{
+			float interalpha = (1.0f - inter) * lastalpha + inter * alpha;
+			shadow.draw(position + vector2d<int16_t>(1, 1), interalpha);
+			text.draw(position, interalpha);
+		}
 
 		bool update()
 		{
 			lastalpha = alpha;
 			alpha -= 0.00125f;
 			return alpha < 0.00125f;
-		}
-
-		float getalpha(float inter) const
-		{
-			return (1.0f - inter) * lastalpha + inter * alpha;
 		}
 	};
 
@@ -58,7 +67,6 @@ namespace IO
 
 	private:
 		vector<StatusInfo> statusinfos;
-		DynamicText statustext;
 	};
 
 	class ElementStatusMessenger : public Element

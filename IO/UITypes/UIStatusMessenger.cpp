@@ -22,19 +22,17 @@ namespace IO
 {
 	UIStatusMessenger::UIStatusMessenger()
 	{
-		statustext = DynamicText(Text::A12M, Text::RIGHT);
 		position = vector2d<int16_t>(790, 510);
 	}
 
 	void UIStatusMessenger::draw(float inter) const
 	{
 		int16_t offset = static_cast<int16_t>(statusinfos.size()) * 16;
-		vector2d<int16_t> drawpos = vector2d<int16_t>(position.x(), position.y() - offset);
-
-		for (auto& inf : statusinfos)
+		vector2d<int16_t> infopos = vector2d<int16_t>(position.x(), position.y() - offset);
+		for (auto& info : statusinfos)
 		{
-			statustext.draw(inf.text, inf.color, inf.getalpha(inter), drawpos);
-			drawpos.shifty(16);
+			info.draw(infopos, inter);
+			infopos.shifty(16);
 		}
 	}
 
@@ -49,9 +47,7 @@ namespace IO
 
 	void UIStatusMessenger::showstatus(Text::Color color, string message)
 	{
-		StatusInfo sinf;
-		sinf.color = color;
-		sinf.text = message;
-		statusinfos.push_back(sinf);
+		StatusInfo statusinfo = StatusInfo(message, color);
+		statusinfos.push_back(statusinfo);
 	}
 }

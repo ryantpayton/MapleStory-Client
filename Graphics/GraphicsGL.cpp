@@ -17,91 +17,19 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "GraphicsGL.h"
 #ifdef JOURNEY_USE_OPENGL
+#include "Console.h"
 #include "glm.hpp"
+#include <algorithm>
 
 namespace Graphics
 {
-	bool GraphicsGL::addfont(const char* name, Text::Font id, FT_UInt width, FT_UInt height)
-	{
-		if (FT_New_Face(ftlibrary, name, 0, &fonts[id]))
-			return false;
-
-		if (FT_Set_Pixel_Sizes(fonts[id], width, height))
-			return false;
-
-		/*FT_Face face = fonts[id];
-		FT_GlyphSlot g = face->glyph;
-		int w = 0;
-		int h = 0;
-
-		for (int i = 32; i < 128; i++)
-		{
-		if (FT_Load_Char(face, i, FT_LOAD_RENDER))
-		continue;
-
-		w += g->bitmap.width;
-		if (g->bitmap.rows > h)
-		h = g->bitmap.rows;
-		}
-
-		glActiveTexture(GL_TEXTURE0);
-		glGenTextures(1, &fatlass[id].tex);
-		glBindTexture(GL_TEXTURE_2D, fatlass[id].tex);
-		glUniform1i(uniform_tex, 0);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
-
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		fatlass[id].width = w;
-		fatlass[id].height = h;
-
-		int x = 0;
-		for (uint8_t i = 32; i < 128; i++)
-		{
-		if (FT_Load_Char(face, i, FT_LOAD_RENDER))
-		continue;
-
-		glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, g->bitmap.width,
-		g->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
-
-		FontAtlas::CharInfo* c = &fatlass[id].chars[i];
-		c->ax = g->advance.x >> 6;
-		c->ay = g->advance.y >> 6;
-		c->bw = g->bitmap.width;
-		c->bh = g->bitmap.rows;
-		c->bl = g->bitmap_left;
-		c->bt = g->bitmap_top;
-		c->tx = (float)x / w;
-
-		x += g->bitmap.width;
-		}*/
-
-		return true;
-	}
-
 	bool GraphicsGL::init()
 	{
 		if (glewInit())
 			return false;
 
-		/*if (FT_Init_FreeType(&ftlibrary))
+		if (FT_Init_FreeType(&ftlibrary))
 			return false;
-
-		addfont("arial.ttf", Text::A11L, 0, 11);
-		addfont("arial.ttf", Text::A11M, 0, 11);
-		addfont("arialbd.ttf", Text::A11B, 0, 11);
-		addfont("arial.ttf", Text::A12M, 0, 12);
-		addfont("arialbd.ttf", Text::A12B, 0, 12);
-		addfont("arial.ttf", Text::A13M, 0, 13);
-		addfont("arialbd.ttf", Text::A13B, 0, 13);
-		addfont("arial.ttf", Text::A18M, 0, 18);*/
 
 		GLint result = GL_FALSE;
 
@@ -134,10 +62,16 @@ namespace Graphics
 			"varying vec4 colormod;"
 			"uniform sampler2D texture;"
 			"uniform vec2 atlassize;"
+			"uniform int fontregion;"
 
 			"void main(void) {"
-			"	gl_FragColor = texture2D(texture, texpos / atlassize);"
-			"	gl_FragColor[3] *= colormod[3];"
+			"	if (texpos.y == 0) {"
+			"		gl_FragColor = colormod;"
+			"	} else if (texpos.y <= fontregion) {"
+			"		gl_FragColor = vec4(1, 1, 1, texture2D(texture, texpos / atlassize).r) * colormod;"
+			"	} else {"
+			"		gl_FragColor = texture2D(texture, texpos / atlassize) * colormod;"
+			"	}"
 			"}";
 		glShaderSource(fs, 1, &fs_source, NULL);
 		glCompileShader(fs);
@@ -158,11 +92,100 @@ namespace Graphics
 		uniform_texture = glGetUniformLocation(program, "texture");
 		uniform_atlassize = glGetUniformLocation(program, "atlassize");
 		uniform_screensize = glGetUniformLocation(program, "screensize");
+		uniform_fontregion = glGetUniformLocation(program, "fontregion");
 		if (attribute_coord == -1 || attribute_color == -1 || uniform_texture == -1 || uniform_atlassize == -1 || uniform_screensize == -1)
 			return false;
 
 		glGenBuffers(1, &vbo);
-		glGenTextures(1, &atlas);
+
+		glGenTextures(1, &atlas); 
+		glBindTexture(GL_TEXTURE_2D, atlas);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_BGRA, ATLASW, ATLASH, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
+
+		fontborder.sety(1);
+
+		addfont("arial.ttf", Text::A11L, 0, 11);
+		addfont("arial.ttf", Text::A11M, 0, 11);
+		addfont("arialbd.ttf", Text::A11B, 0, 11);
+		addfont("arial.ttf", Text::A12M, 0, 12);
+		addfont("arialbd.ttf", Text::A12B, 0, 12);
+		addfont("arial.ttf", Text::A13M, 0, 13);
+		addfont("arialbd.ttf", Text::A13B, 0, 13);
+		addfont("arial.ttf", Text::A18M, 0, 18);
+
+		fontymax += fontborder.y();
+
+		return true;
+	}
+
+	bool GraphicsGL::addfont(const char* name, Text::Font id, FT_UInt pixelw, FT_UInt pixelh)
+	{
+		FT_Face face;
+		if (FT_New_Face(ftlibrary, name, 0, &face))
+			return false;
+
+		if (FT_Set_Pixel_Sizes(face, pixelw, pixelh))
+			return false;
+
+		FT_GlyphSlot g = face->glyph;
+
+		GLshort width = 0;
+		GLshort height = 0;
+		for (uint8_t c = 32; c < 128; c++)
+		{
+			if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+				continue;
+
+			GLshort w = static_cast<GLshort>(g->bitmap.width);
+			GLshort h = static_cast<GLshort>(g->bitmap.rows);
+
+			width += w;
+			if (h > height)
+				height = h;
+		}
+
+		if (fontborder.x() + width > ATLASW)
+		{
+			fontborder.setx(0);
+			fontborder.sety(fontymax);
+			fontymax = 0;
+		}
+
+		GLshort x = fontborder.x();
+		GLshort y = fontborder.y();
+
+		fontborder.shiftx(width);
+		if (height > fontymax)
+			fontymax = height;
+
+		fonts[id] = Font(width, height);
+
+		GLshort ox = x;
+		GLshort oy = y;
+		for (uint8_t c = 32; c < 128; c++)
+		{
+			if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+				continue;
+
+			GLshort ax = static_cast<GLshort>(g->advance.x >> 6);
+			GLshort ay = static_cast<GLshort>(g->advance.y >> 6);
+			GLshort l = static_cast<GLshort>(g->bitmap_left);
+			GLshort t = static_cast<GLshort>(g->bitmap_top);
+			GLshort w = static_cast<GLshort>(g->bitmap.width);
+			GLshort h = static_cast<GLshort>(g->bitmap.rows);
+
+			glTexSubImage2D(GL_TEXTURE_2D, 0, ox, oy, w, h, 
+				GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
+
+			Offset offset = Offset(ox, oy, w, h);
+			fonts[id].chars[c] = { ax, ay, w, h, l, t, offset };
+
+			ox += w;
+		}
 
 		return true;
 	}
@@ -171,12 +194,13 @@ namespace Graphics
 	{
 		glUseProgram(program);
 
+		glUniform1i(uniform_fontregion, fontymax);
 		glUniform2f(uniform_atlassize, ATLASW, ATLASH);
 		glUniform2f(uniform_screensize, Constants::VIEWWIDTH, Constants::VIEWHEIGHT);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glVertexAttribPointer(attribute_coord, 4, GL_SHORT, GL_FALSE, 24, 0);
-		glVertexAttribPointer(attribute_color, 4, GL_FLOAT, GL_FALSE, 24, 0);
+		glVertexAttribPointer(attribute_color, 4, GL_FLOAT, GL_FALSE, 24, (const void*)8);
 
 		glBindTexture(GL_TEXTURE_2D, atlas);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -188,11 +212,16 @@ namespace Graphics
 
 	void GraphicsGL::clear()
 	{
-		ymax = 0;
-		coord = vector2d<GLshort>();
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_BGRA, ATLASW, ATLASH, 0,
-			GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
+		border = vector2d<GLshort>(0, fontymax);
+		yrange = vector2d<GLshort>();
+
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, fontborder.y(), 
+			ATLASW, ATLASH - fontymax, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
+
 		offsets.clear();
+		leftovers.clear();
+		rlid = 1;
+		wasted = 0;
 	}
 
 	bool GraphicsGL::available(size_t id)
@@ -206,25 +235,119 @@ namespace Graphics
 		if (available(id))
 			return;
 
-		// TODO
-		if (coord.x() + bmp.width() > ATLASW)
+		GLshort x = 0;
+		GLshort y = 0;
+		GLshort w = bmp.width();
+		GLshort h = bmp.height();
+
+		if (w <= 0 || h <= 0)
+			return;
+
+		vector<size_t> expired;
+		size_t lid = 0;
+		for (auto& leftover : leftovers)
 		{
-			coord.setx(0);
-			coord.shifty(ymax);
-			ymax = 0;
-			if (coord.y() + bmp.height() > ATLASH)
+			Leftover& lo = leftover.second;
+			if (w <= lo.width() && h <= lo.height())
 			{
-				clear();
+				lid = leftover.first;
+				break;
+			}
+			else
+			{
+				lo.trials -= 1;
+				if (lo.trials == 0)
+					expired.push_back(leftover.first);
 			}
 		}
 
-		glTexSubImage2D(GL_TEXTURE_2D, 0, coord.x(), coord.y(), 
-			bmp.width(), bmp.height(), GL_BGRA, GL_UNSIGNED_BYTE, bmp.data());
+		for (auto& exid : expired)
+		{
+			leftovers.erase(exid);
+		}
 
-		offsets[id] = Offset(coord.x(), coord.y(), bmp.width(), bmp.height());
-		coord.shiftx(bmp.width());
-		if (bmp.height() > ymax)
-			ymax = bmp.height();
+		if (lid > 0)
+		{
+			Leftover leftover = leftovers[lid];
+			leftovers.erase(lid);
+
+			x = leftover.l;
+			y = leftover.t;
+
+			wasted -= w * h;
+
+			GLshort wdelta = leftover.width() - w;
+			if (wdelta >= MINLOSIZE)
+			{
+				leftovers[rlid] = Leftover(x + w, y, wdelta, h);
+				rlid++;
+			}
+
+			GLshort hdelta = leftover.height() - h;
+			if (hdelta >= MINLOSIZE)
+			{
+				leftovers[rlid] = Leftover(x, y + h, w, hdelta);
+				rlid++;
+			}
+
+			if (wdelta >= MINLOSIZE && hdelta >= MINLOSIZE)
+			{
+				leftovers[rlid] = Leftover(x + w, y + h, wdelta, hdelta);
+				rlid++;
+			}
+		}
+		else
+		{
+			if (border.x() + w > ATLASW)
+			{
+				border.setx(0);
+				border.shifty(yrange.y());
+				if (border.y() + h > ATLASH)
+				{
+					clear();
+				}
+				else
+				{
+					yrange = vector2d<GLshort>();
+				}
+			}
+			x = border.x();
+			y = border.y();
+
+			border.shiftx(w);
+
+			if (h > yrange.y())
+			{
+				if (x >= MINLOSIZE && h - yrange.y() >= MINLOSIZE)
+				{
+					leftovers[rlid] = Leftover(0, yrange.x(), x, h - yrange.y());
+					rlid++;
+				}
+
+				wasted += yrange.x() * (h - yrange.y());
+
+				yrange.setx(y + h);
+				yrange.sety(h);
+			}
+			else if (h < yrange.x() - y)
+			{
+				if (w >= MINLOSIZE && yrange.x() - y - h >= MINLOSIZE)
+				{
+					leftovers[rlid] = Leftover(x, y + h, w, yrange.x() - y - h);
+					rlid++;
+				}
+
+				wasted += w * (yrange.x() - y - h);
+			}
+		}
+
+		glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_BGRA, GL_UNSIGNED_BYTE, bmp.data());
+		offsets[id] = Offset(x, y, w, h);
+
+		/*size_t used = ATLASW * border.y() + border.x() * yrange.y();
+		double usedpercent = static_cast<double>(used) / (ATLASW * ATLASH);
+		double wastedpercent = static_cast<double>(wasted) / used;
+		Console::get().print("Used: " + std::to_string(usedpercent) + ", wasted: " + std::to_string(wastedpercent));*/
 	}
 
 	void GraphicsGL::draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, float alpha,
@@ -238,7 +361,9 @@ namespace Graphics
 		GLshort top = centery + static_cast<GLshort>(yscale * (y - centery));
 		GLshort bottom = centery + static_cast<GLshort>(yscale * (y + h - centery));
 		Offset offset = offsets[id];
-		coordinates.push_back(TexCoords(left, right, top, bottom, offset, 1.0, 1.0, 1.0, alpha));
+
+		Quad quad = Quad(left, right, top, bottom, offset, 1.0f, 1.0f, 1.0f, alpha);
+		quads.push_back(quad);
 	}
 
 	void GraphicsGL::flush()
@@ -246,213 +371,143 @@ namespace Graphics
 		glClearColor(0.0, 0.0, 0.0, 0.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		GLsizei csize = static_cast<GLsizei>(coordinates.size() * sizeof(TexCoords)); 
-		GLsizei fsize = static_cast<GLsizei>(coordinates.size() * TexCoords::LENGTH);
+		GLsizei csize = static_cast<GLsizei>(quads.size() * sizeof(Quad));
+		GLsizei fsize = static_cast<GLsizei>(quads.size() * Quad::LENGTH);
 		glEnableVertexAttribArray(attribute_coord);
 		glEnableVertexAttribArray(attribute_color);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, csize, coordinates.data(), GL_STREAM_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, csize, quads.data(), GL_STREAM_DRAW);
 		glDrawArrays(GL_QUADS, 0, fsize);
 
 		glDisableVertexAttribArray(attribute_coord);
 		glDisableVertexAttribArray(attribute_color);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		coordinates.clear();
+		quads.clear();
 	}
 
-	Text::Layout GraphicsGL::createlayout(const char* text, Text::Font id, float wmax)
+	Text::Layout GraphicsGL::createlayout(const string& text, Text::Font id, Text::Alignment alignment, int16_t maxwidth)
 	{
-		return Text::Layout();
+		Text::Layout layout = Text::Layout(alignment);
 
-		/*FT_Face face = fonts[id];
-		if (face == nullptr)
-			return Text::Layout();
+		size_t first = 0;
+		size_t offset = 0;
+		size_t last = text.length();
 
-		if (wmax < 1.0f)
-			wmax = 800.0f;
+		const Font& font = fonts[id];
 
-		FT_GlyphSlot g = face->glyph;
-		size_t i = 0;
-		float advance = 0.0f;
-		float x = 0.0f;
-		float height = face->size->metrics.y_ppem;
-		Text::Layout layout;
-
-		for (const char* p = text; *p; p++)
+		int16_t totaladvance = 0;
+		int16_t ax = 0;
+		int16_t ay = font.linespace();
+		while (offset < last)
 		{
-			if (FT_Load_Char(face, *p, FT_LOAD_COMPUTE_METRICS))
-				continue;
+			size_t space = text.find(' ', offset + 1);
+			if (space == string::npos)
+				space = last;
 
-			i++;
-			float adv = (g->advance.x >> 6);
-			advance += adv;
-			x += adv;
-			if (x > wmax)
+			int16_t width = font.wordwidth(text.c_str(), offset, space);
+			if (ax + width > maxwidth)
 			{
-				height += face->size->metrics.y_ppem;
-				x = 0.0f;
+				layout.addline(ax, ay, first, offset);
+				first = offset;
+
+				ax = 0;
+				ay += font.linespace();
 			}
-			layout.advances[i] = advance;
+
+			for (size_t pos = offset; pos < space; pos++)
+			{
+				char c = text[pos];
+				const Font::Char& ch = font.chars[c];
+
+				layout.advances[pos] = ax;
+
+				if (ax == 0 && c == ' ')
+					continue;
+
+				ax += ch.ax;
+				totaladvance += ch.ax;
+			}
+
+			offset = space;
 		}
+		layout.addline(ax, ay, first, offset);
 
-		if (advance > wmax)
-			x = wmax;
+		layout.advances[text.length()] = totaladvance;
+		layout.dimensions = vector2d<int16_t>(std::min(totaladvance, maxwidth), layout.linecount * font.linespace());
+		layout.endoffset = vector2d<int16_t>(ax % maxwidth, (layout.linecount - 1) * font.linespace());
 
-		float xend = advance;
-		while (xend > wmax)
-		{
-			xend -= wmax;
-		}
-
-		layout.dimensions = vector2d<float>(x, height);
-		layout.endoffset = vector2d<int16_t>(
-			static_cast<int16_t>(xend),
-			static_cast<int16_t>(height - face->size->metrics.y_ppem)
-			);
-
-		return layout;*/
+		return layout;
 	}
 
-	void GraphicsGL::drawtext(const char* text, Text::Font id, Text::Alignment alignment, Text::Color colorid,
-		Text::Background, float opacity, vector2d<float> origin, vector2d<float> layout) {
+	void GraphicsGL::drawtext(const string& text, Text::Font id, Text::Alignment alignment, Text::Color colorid,
+		Text::Background background, const Text::Layout& layout, float opacity, vector2d<int16_t> origin) {
 
-		return;
+		const Font& font = fonts[id];
 
-		/*FT_Face face = fonts[id];
-		if (face == nullptr)
-			return;
+		GLshort x = origin.x();
+		GLshort y = origin.y();
 
-		float x = origin.x();
-		float y = origin.y();
-		switch (alignment)
+		switch (background)
 		{
-		case Text::CENTER:
-			x -= std::ceilf(layout.x() / 2);
-			break;
-		case Text::RIGHT:
-			x -= layout.x();
+		case Text::NAMETAG:
+			for (auto& line : layout.lines)
+			{
+				GLshort left = x + line.position.x() - 2;
+				GLshort right = left + layout.dimensions.x() + 4;
+				GLshort top = y + line.position.y() - font.linespace() + 5;
+				GLshort bottom = top + layout.dimensions.y() - 1;
+
+				Quad quad = Quad(left, right, top, bottom, nulloffset, 0.0, 0.0, 0.0, 0.6);
+				quads.push_back(quad);
+			}
 			break;
 		}
-		x = -1.0f + x * sx;
-		y = 1.0f - (y + 14.0f + face->size->metrics.y_ppem) * sy;
 
-		if (opacity < 0.0f)
-			opacity = 0.0f;
-		static const float colors[Text::NUM_COLORS][3] =
+		static const GLfloat colors[Text::NUM_COLORS][3] =
 		{
 			{ 0.0f, 0.0f, 0.0f }, // Black
-			{ 1.0f, 1.0f, 1.0f } // White
+			{ 1.0f, 1.0f, 1.0f }, // White
+			{ 1.0f, 1.0f, 0.0f }, // Yellow
+			{ 0.0f, 0.0f, 1.0f }, // Blue
+			{ 1.0f, 0.0f, 0.0f }, // Red
+			{ 0.5f, 0.25f, 0.0f }, // Brown
+			{ 0.8f, 0.8f, 0.8f }, // Lightgrey
+			{ 0.5f, 0.5f, 0.5f }, // Darkgrey
+			{ 1.0f, 0.5f, 0.0f }, // Orange
+			{ 0.0f, 0.75f, 1.0f }, // Mediumblue
+			{ 0.5f, 0.0f, 0.5f } // Violet
 		};
-		const float* ccol = colors[colorid];
-		GLfloat color[4] = { ccol[0], ccol[1], ccol[2], 1.0f };
-		//glUniform4fv(uniform_color, 1, color);
+		if (opacity < 0.0f)
+			opacity = 0.0f;
+		const GLfloat* color = colors[colorid];
 
-		struct point
+		for (auto& line : layout.lines)
 		{
-			GLfloat x;
-			GLfloat y;
-			GLfloat s;
-			GLfloat t;
-		};*/
+			GLshort ax = line.position.x();
+			GLshort ay = line.position.y();
 
-		// 1. Method
-		/*GLuint tex;
-		glActiveTexture(GL_TEXTURE0);
-		glGenTextures(1, &tex);
-		glBindTexture(GL_TEXTURE_2D, tex);
-		glUniform1i(uniform_tex, 0);
-
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		glEnableVertexAttribArray(attribute_coord);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glVertexAttribPointer(attribute_coord, 4, GL_FLOAT, GL_FALSE, 0, 0);
-		glUseProgram(program);
-
-		float startx = x;
-		float maxw = layout.x();
-		if (maxw == 0.0f)
-			maxw = 800.0f;
-
-		FT_GlyphSlot g = face->glyph;
-		for (const char* p = text; *p; p++) {
-			if (FT_Load_Char(face, *p, FT_LOAD_RENDER))
-				continue;
-
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, g->bitmap.width, g->bitmap.rows, 0, GL_ALPHA, GL_UNSIGNED_BYTE, g->bitmap.buffer);
-
-			float x2 = x + g->bitmap_left * sx;
-			float y2 = -y - g->bitmap_top * sy;
-			float w = g->bitmap.width * sx;
-			float h = g->bitmap.rows * sy;
-
-			point box[4] = {
-				{ x2, -y2, 0, 0 },
-				{ x2 + w, -y2, 1, 0 },
-				{ x2, -y2 - h, 0, 1 },
-				{ x2 + w, -y2 - h, 1, 1 },
-			};
-
-			glBufferData(GL_ARRAY_BUFFER, sizeof box, box, GL_DYNAMIC_DRAW);
-			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-			x += (g->advance.x >> 6) * sx;
-			y += (g->advance.y >> 6) * sy;
-			if (x > startx + maxw * sx)
+			for (size_t pos = line.first; pos < line.last; pos++)
 			{
-				x = startx;
-				y -= face->size->metrics.y_ppem * sy;
+				const char c = text[pos];
+				const Font::Char& ch = font.chars[c];
+
+				GLshort chx = x + ax + ch.bl;
+				GLshort chy = y + ay - ch.bt;
+				GLshort chw = ch.bw;
+				GLshort chh = ch.bh;
+
+				if (ax == 0 && c == ' ')
+					continue;
+
+				ax += ch.ax;
+
+				if (chw <= 0 || chh <= 0)
+					continue;
+
+				Quad quad = Quad(chx, chx + chw, chy, chy + chh, ch.offset, color[0], color[1], color[2], opacity);
+				quads.push_back(quad);
 			}
 		}
-
-		glDisableVertexAttribArray(attribute_coord);
-		glDeleteTextures(1, &tex);*/
-
-		// 2. Method
-		
-		/*FontAtlas& font = fatlass[id];
-
-		glBindTexture(GL_TEXTURE_2D, font.tex);
-		glUniform1i(uniform_tex, 0);
-
-		glEnableVertexAttribArray(attribute_coord);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glVertexAttribPointer(attribute_coord, 4, GL_FLOAT, GL_FALSE, 0, 0);
-		glUseProgram(program);
-
-		point* coords = new point[6 * strlen(text)];
-		int n = 0;
-		for (const uint8_t* p = (const uint8_t*)text; *p; p++)
-		{
-			FontAtlas::CharInfo& c = font.chars[*p];
-			float x2 = x + c.bl * sx;
-			float y2 = -y - c.bt * sy;
-			float w = c.bw * sx;
-			float h = c.bh * sy;
-			if (!w || !h)
-				continue;
-
-			x += c.ax * sx;
-			y += c.ay * sy;
-
-			coords[n++] = point{ x2, -y2, c.tx, 0 };
-			coords[n++] = point{ x2, -y2 - h, c.tx, c.bt };
-			coords[n++] = point{ x2 + w, -y2 - h, c.tx + c.bw / font.width, c.bt };
-			coords[n++] = point{ x2 + w, -y2, c.tx + c.bw / font.width, 0 };
-		}
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof (coords), coords, GL_STREAM_DRAW);
-		glDrawArrays(GL_TRIANGLES, 0, n);
-
-		glDisableVertexAttribArray(attribute_coord);
-
-		delete[] coords;*/
 	}
 }
 #endif

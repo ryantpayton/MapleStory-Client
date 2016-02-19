@@ -21,14 +21,12 @@
 #include "IO\UIElement.h"
 #include "IO\Cursor.h"
 #include "Graphics\Texture.h"
-#include "Graphics\DynamicText.h"
 #include <vector>
 
 namespace IO
 {
 	using std::vector;
 	using Graphics::Text;
-	using Graphics::DynamicText;
 	using Graphics::Texture;
 
 	class Chatbar : public UIElement

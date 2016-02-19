@@ -27,7 +27,6 @@ namespace Graphics
 		color = c;
 
 		text = "";
-		opacity = 1.0f;
 		background = NONE;
 	}
 
@@ -38,17 +37,16 @@ namespace Graphics
 		settext(t, 0);
 	}
 
-	void Text::settext(const string& t, uint16_t wmax)
+	void Text::settext(const string& t, uint16_t maxwidth)
 	{
 		text = string(t);
+		if (text.size() > 0)
+		{
+			if (maxwidth < 1)
+				maxwidth = 800;
 
-		float fwmax = static_cast<float>(wmax);
-		layout = GraphicsEngine::get().createlayout(text, font, fwmax);
-	}
-
-	void Text::setfont(Font f)
-	{
-		font = f;
+			layout = GraphicsEngine::get().createlayout(text, font, alignment, maxwidth);
+		}
 	}
 
 	void Text::setcolor(Color c)
@@ -61,19 +59,14 @@ namespace Graphics
 		background = b;
 	}
 
-	void Text::setalpha(float opc)
-	{
-		opacity = opc;
-	}
-
 	void Text::draw(vector2d<int16_t> pos) const
 	{
-		draw(vector2d<float>(static_cast<float>(pos.x()), static_cast<float>(pos.y())));
+		draw(pos, 1.0f);
 	}
-	
-	void Text::draw(vector2d<float> pos) const
+
+	void Text::draw(vector2d<int16_t> position, float alpha) const
 	{
-		GraphicsEngine::get().drawtext(text, font, alignment, color, background, opacity, pos, layout.dimensions);
+		GraphicsEngine::get().drawtext(text, font, alignment, color, background, layout, alpha, position);
 	}
 
 	uint16_t Text::advance(size_t pos) const
@@ -95,12 +88,12 @@ namespace Graphics
 
 	int16_t Text::width() const
 	{
-		return static_cast<int16_t>(layout.dimensions.x());
+		return layout.dimensions.x();
 	}
 
 	int16_t Text::height() const
 	{
-		return static_cast<int16_t>(layout.dimensions.y());
+		return layout.dimensions.y();
 	}
 
 	int16_t Text::linecount() const
@@ -108,7 +101,7 @@ namespace Graphics
 		return layout.linecount;
 	}
 
-	vector2d<float> Text::dimensions() const
+	vector2d<int16_t> Text::dimensions() const
 	{
 		return layout.dimensions;
 	}
@@ -118,7 +111,7 @@ namespace Graphics
 		return layout.endoffset;
 	}
 
-	const string& Text::gettext() const
+	string Text::gettext() const
 	{
 		return text;
 	}

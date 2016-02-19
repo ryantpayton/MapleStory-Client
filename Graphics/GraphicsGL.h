@@ -32,6 +32,7 @@
 #include FT_FREETYPE_H
 
 #include <unordered_map>
+#include <hash_set>
 #include <vector>
 
 namespace Graphics 
@@ -40,6 +41,7 @@ namespace Graphics
 	using std::unordered_map;
 	using nl::bitmap;
 
+	// Graphics engine which uses OpenGL.
 	class GraphicsGL : public Singleton<GraphicsGL>
 	{
 	public:
@@ -55,42 +57,20 @@ namespace Graphics
 		// Return wether the bitmap with the given id is in the resource pool.
 		bool available(size_t id);
 		// Draw the bitmap with the given id and paramters.
-		void draw(size_t id, int16_t x, int16_t y, int16_t w, 
-			int16_t h, float a, float xs, float ys, int16_t cx, int16_t cy);
+		void draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, 
+			float a, float xs, float ys, int16_t cx, int16_t cy);
+		// Draw the buffer contents.
 		void flush();
 
 		// Create a layout for the text with the parameters specified.
-		Text::Layout createlayout(const char* text, Text::Font font, float maxwidth);
+		Text::Layout createlayout(const string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth);
 		// Draw a text with the given parameters.
-		void drawtext(const char* text, Text::Font font, Text::Alignment alignment, Text::Color color,
-			Text::Background back, float opacity, vector2d<float> origin, vector2d<float> layout);
+		void drawtext(const string& text, Text::Font font, Text::Alignment alignment, Text::Color color,
+			Text::Background back, const Text::Layout& layout, float opacity, vector2d<int16_t> origin);
 
 	private:
 		bool addfont(const char* name, Text::Font id, FT_UInt width, FT_UInt height);
-
-		struct FontAtlas
-		{
-			struct CharInfo
-			{
-				float ax;
-				float ay;
-				float bw;
-				float bh;
-				float bl;
-				float bt;
-				float tx;
-			};
-
-			GLuint tex;
-			GLfloat width;
-			GLfloat height;
-			CharInfo chars[128];
-		};
-
-		FT_Library ftlibrary;
-		FT_Face fonts[Text::NUM_FONTS];
-		FontAtlas fatlass[Text::NUM_FONTS];
-
+		
 		struct Offset
 		{
 			GLshort l;
@@ -115,9 +95,41 @@ namespace Graphics
 			}
 		};
 
-		struct TexCoords 
+		struct Leftover
 		{
-			struct Coordinates 
+			GLshort l;
+			GLshort r;
+			GLshort t;
+			GLshort b;
+
+			size_t trials;
+
+			Leftover(GLshort x, GLshort y, GLshort w, GLshort h)
+			{
+				l = x;
+				r = x + w;
+				t = y;
+				b = y + h;
+
+				trials = 5;
+			}
+
+			Leftover()
+			{
+				l = 0;
+				r = 0;
+				t = 0;
+				b = 0;
+				trials = 0;
+			}
+
+			GLshort width() const { return r - l; }
+			GLshort height() const { return b - t; }
+		};
+
+		struct Quad
+		{
+			struct Vertex
 			{
 				GLshort x;
 				GLshort y;
@@ -125,30 +137,76 @@ namespace Graphics
 				GLshort t;
 
 				GLfloat r;
-				GLfloat a;
-				GLfloat b;
 				GLfloat g;
+				GLfloat b;
+				GLfloat a;
 			};
 
 			static const size_t LENGTH = 4;
-			Coordinates coordinates[LENGTH];
+			Vertex vertices[LENGTH];
 
-			TexCoords(GLshort l, GLshort r, GLshort t, GLshort b, Offset o, GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca)
+			Quad(GLshort l, GLshort r, GLshort t, GLshort b, Offset o, GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca)
 			{
-				coordinates[0] = { l, t, o.l, o.t, cr, ca, cb, cg };
-				coordinates[1] = { l, b, o.l, o.b, cr, ca, cb, cg };
-				coordinates[2] = { r, b, o.r, o.b, cr, ca, cb, cg };
-				coordinates[3] = { r, t, o.r, o.t, cr, ca, cb, cg };
+				vertices[0] = { l, t, o.l, o.t, cr, cg, cb, ca };
+				vertices[1] = { l, b, o.l, o.b, cr, cg, cb, ca };
+				vertices[2] = { r, b, o.r, o.b, cr, cg, cb, ca };
+				vertices[3] = { r, t, o.r, o.t, cr, cg, cb, ca };
+			}
+		};
+
+		struct Font
+		{
+			struct Char
+			{
+				GLshort ax;
+				GLshort ay;
+				GLshort bw;
+				GLshort bh;
+				GLshort bl;
+				GLshort bt;
+				Offset offset;
+			};
+
+			GLshort width;
+			GLshort height;
+			Char chars[128];
+
+			Font(GLshort w, GLshort h)
+			{
+				width = w;
+				height = h;
+			}
+
+			Font() 
+			{
+				width = 0;
+				height = 0;
+			}
+
+			int16_t wordwidth(const char* text, size_t first, size_t last) const
+			{
+				int16_t width = 0;
+				for (size_t i = first; i < last; i++)
+				{
+					char c = text[i];
+					width += chars[c].ax;
+				}
+				return width;
+			}
+
+			int16_t linespace() const
+			{
+				return static_cast<int16_t>(height * 1.35 + 1);
 			}
 		};
 
 		static const GLshort ATLASW = 10000;
 		static const GLshort ATLASH = 10000;
+		static const GLshort MINLOSIZE = 32;
 
-		vector<TexCoords> coordinates;
-		unordered_map<size_t, Offset> offsets;
-		vector2d<GLshort> coord;
-		GLshort ymax;
+		vector<Quad> quads;
+		GLuint vbo;
+		GLuint atlas;
 
 		GLint program;
 		GLint attribute_coord;
@@ -156,9 +214,21 @@ namespace Graphics
 		GLint uniform_texture;
 		GLint uniform_atlassize;
 		GLint uniform_screensize;
+		GLint uniform_fontregion;
 
-		GLuint vbo;
-		GLuint atlas;
+		unordered_map<size_t, Offset> offsets;
+		Offset nulloffset;
+
+		unordered_map<size_t, Leftover> leftovers;
+		size_t rlid;
+		size_t wasted;
+		vector2d<GLshort> border;
+		vector2d<GLshort> yrange;
+
+		FT_Library ftlibrary;
+		Font fonts[Text::NUM_FONTS];
+		vector2d<GLshort> fontborder;
+		GLshort fontymax;
 	};
 }
 #endif

@@ -19,10 +19,12 @@
 #include "Util\vector2d.h"
 #include <cstdint>
 #include <map>
+#include <vector>
 
 namespace Graphics
 {
 	using std::map;
+	using std::vector;
 	using std::string;
 
 	class Text
@@ -57,7 +59,7 @@ namespace Graphics
 			BLUE,
 			RED,
 			BROWN,
-			GREY,
+			LIGHTGREY,
 			DARKGREY,
 			ORANGE,
 			MEDIUMBLUE,
@@ -72,43 +74,79 @@ namespace Graphics
 
 		struct Layout
 		{
-			vector2d<float> dimensions;
+			struct Line
+			{
+				vector2d<int16_t> position;
+				size_t first;
+				size_t last;
+			};
+
+			Alignment alignment;
+
+			vector2d<int16_t> dimensions;
 			vector2d<int16_t> endoffset;
 			map<size_t, float> advances;
+
+			vector<Line> lines;
 			int16_t linecount;
+
+			Layout(Alignment a)
+			{
+				alignment = a;
+				linecount = 0;
+			}
+
+			Layout()
+			{
+				alignment = Text::LEFT;
+				linecount = 0;
+			}
+
+			void addline(int16_t ax, int16_t y, size_t first, size_t last)
+			{
+				int16_t x = 0;
+				switch (alignment)
+				{
+				case Text::CENTER:
+					x -= ax / 2;
+					break;
+				case Text::RIGHT:
+					x -= ax;
+					break;
+				}
+				vector2d<int16_t> position = vector2d<int16_t>(x, y);
+				Line line = {position, first, last};
+				lines.push_back(line);
+				linecount++;
+			}
 		};
 
 		Text(Font font, Alignment alignment, Color color);
 		Text();
 
+		void draw(vector2d<int16_t> position, float alpha) const;
 		void draw(vector2d<int16_t> position) const;
-		void draw(vector2d<float> position) const;
 
 		void settext(const string& text);
 		void settext(const string& text, uint16_t maxwidth);
-		void setfont(Font font);
-		void setalignment(Alignment alignment);
 		void setcolor(Color color);
 		void setback(Background background);
-		void setalpha(float alpha);
 
 		size_t length() const;
 		int16_t width() const;
 		int16_t height() const;
 		int16_t linecount() const;
 		uint16_t advance(size_t pos) const;
-		vector2d<float> dimensions() const;
+		vector2d<int16_t> dimensions() const;
 		vector2d<int16_t> endoffset() const;
-		const string& gettext() const;
+		string gettext() const;
 
 	private:
 		Font font;
 		Alignment alignment;
 		Color color;
-		string text;
 		Background background;
-
-		float opacity;
 		Layout layout;
+		string text;
 	};
 }

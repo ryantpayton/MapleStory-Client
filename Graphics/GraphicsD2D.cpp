@@ -88,7 +88,7 @@ namespace Graphics
 		target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &brushes[Text::BLUE]);
 		target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &brushes[Text::RED]);
 		target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Brown), &brushes[Text::BROWN]);
-		target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &brushes[Text::GREY]);
+		target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &brushes[Text::LIGHTGREY]);
 		target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DimGray), &brushes[Text::DARKGREY]);
 		target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Orange), &brushes[Text::ORANGE]);
 		target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::SkyBlue), &brushes[Text::MEDIUMBLUE]);

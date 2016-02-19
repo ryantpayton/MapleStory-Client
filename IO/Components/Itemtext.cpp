@@ -78,7 +78,7 @@ namespace IO
 					linetext.settext(str.substr(pos2), maxwidth);
 					lines.push_back(Line(linetext, offset));
 					pos2 = length;
-					offset = vector2d<int16_t>(0, offset.y() + linetext.height() + 2);
+					offset = vector2d<int16_t>(0, offset.y() + linetext.height());
 				}
 			}
 		}

@@ -184,7 +184,7 @@ namespace IO
 		switch (equip->getquality())
 		{
 		case Equip::EQQ_GREY:
-			namecolor = Text::GREY;
+			namecolor = Text::LIGHTGREY;
 			break;
 		case Equip::EQQ_ORANGE:
 			namecolor = Text::ORANGE;
