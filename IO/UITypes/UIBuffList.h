@@ -29,40 +29,16 @@ namespace IO
 	class BuffIcon
 	{
 	public:
-		BuffIcon(const Texture* t, int32_t d)
-		{
-			texture = t;
-			duration = d;
-			opacity = 1.0f;
-		}
+		BuffIcon(int32_t buff, int32_t dur);
+		BuffIcon();
+		~BuffIcon();
 
-		BuffIcon() {}
+		void draw(vector2d<int16_t> position) const;
 
-		~BuffIcon() {}
-
-		void draw(vector2d<int16_t> position) const
-		{
-			if (texture == nullptr)
-				return;
-
-			using Graphics::DrawArgument;
-			texture->draw(DrawArgument(position, opacity));
-		}
-
-		bool update()
-		{
-			duration -= Constants::TIMESTEP;
-			if (duration < 160)
-			{
-				opacity -= 0.05f;
-				if (opacity < 0.05f)
-					return true;
-			}
-			return false;
-		}
+		bool update();
 
 	private:
-		const Texture* texture;
+		int32_t buffid;
 		int32_t duration;
 		float opacity;
 	};
@@ -84,9 +60,9 @@ namespace IO
 
 	class ElementBuffList : public Element
 	{
-		UIType type() const override
+		UIElement::Type type() const override
 		{
-			return BUFFLIST;
+			return UIElement::BUFFLIST;
 		}
 
 		UIElement* instantiate() const override

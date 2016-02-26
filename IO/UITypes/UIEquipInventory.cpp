@@ -29,10 +29,14 @@
 
 namespace IO
 {
+	using Net::Session;
 	using Gameplay::Stage;
+	using Character::Item;
+	using Character::ItemData;
+	using Character::Equipslot;
 
 	UIEquipInventory::UIEquipInventory() :
-		UIDragElement("PosEQINV", vector2d<int16_t>(184, 20)),
+		UIDragElement(Settings::POS_EQINV, vector2d<int16_t>(184, 20)),
 		inventory(Stage::get().getplayer().getinvent()) {
 
 		iconpositions[1] = vector2d<int16_t>(43, 25);
@@ -60,18 +64,18 @@ namespace IO
 		node source = nl::nx::ui["UIWindow2.img"]["Equip"]["character"];
 		node petsource = nl::nx::ui["UIWindow2.img"]["Equip"]["pet"];
 
-		sprites.push_back(Sprite(source["backgrnd"]));
-		sprites.push_back(Sprite(source["backgrnd2"]));
-		sprites.push_back(Sprite(source["backgrnd3_Kanna"]));
-		sprites.push_back(Sprite(source["cashPendant"]));
-		sprites.push_back(Sprite(source["charmPocket"]));
-		sprites.push_back(Sprite(source["emblem"]));
+		sprites.push_back(source["backgrnd"]);
+		sprites.push_back(source["backgrnd2"]);
+		sprites.push_back(source["backgrnd3_Kanna"]);
+		sprites.push_back(source["cashPendant"]);
+		sprites.push_back(source["charmPocket"]);
+		sprites.push_back(source["emblem"]);
 
 		buttons[BT_TOGGLEPETS] = unique_ptr<Button>(new MapleButton(source["BtPet"]));
 
-		pettextures.push_back(Texture(petsource["backgrnd"]));
-		pettextures.push_back(Texture(petsource["backgrnd2"]));
-		pettextures.push_back(Texture(petsource["backgrnd3"]));
+		pettextures.push_back(petsource["backgrnd"]);
+		pettextures.push_back(petsource["backgrnd2"]);
+		pettextures.push_back(petsource["backgrnd3"]);
 
 		loadicons();
 
@@ -96,7 +100,8 @@ namespace IO
 			using Graphics::DrawArgument;
 			for (auto& ptit : pettextures)
 			{
-				ptit.draw(DrawArgument(position + vector2d<int16_t>(184, 0)));
+				vector2d<int16_t> petposition = position + vector2d<int16_t>(184, 0);
+				ptit.draw(petposition);
 			}
 		}
 
@@ -116,9 +121,10 @@ namespace IO
 	{
 		icons.clear();
 
-		for (auto& icp : iconpositions)
+		for (auto& icon : iconpositions)
 		{
-			addicon(icp.first);
+			int16_t slot = icon.first;
+			addicon(slot);
 		}
 	}
 
@@ -138,12 +144,11 @@ namespace IO
 			}
 			else
 			{
-				const Equip* equip = inventory.getequip(Inventory::EQUIPPED, slot);
+				Optional<Equip> equip = inventory.getequip(Inventory::EQUIPPED, slot);
 				if (equip)
-				{
-					tooltip.setequip(equip, slot);
-					return Cursor::CANGRAB;
-				}
+					tooltip.setequip(equip.get(), slot);
+
+				return Cursor::CANGRAB;
 			}
 		}
 
@@ -160,7 +165,7 @@ namespace IO
 			if (freeslot > 0)
 			{
 				using Net::UnequipItemPacket;
-				Net::Session::get().dispatch(UnequipItemPacket(slot, freeslot));
+				Session::get().dispatch(UnequipItemPacket(slot, freeslot));
 			}
 		}
 	}
@@ -168,7 +173,33 @@ namespace IO
 	void UIEquipInventory::icondropped(int16_t identifier)
 	{
 		using Net::UnequipItemPacket;
-		Net::Session::get().dispatch(UnequipItemPacket(identifier, 0));
+		Session::get().dispatch(UnequipItemPacket(identifier, 0));
+	}
+
+	void UIEquipInventory::dropicon(vector2d<int16_t> cursorpos, Type type, int16_t identifier)
+	{
+		int16_t slot = slotbypos(cursorpos);
+		if (slot > 0)
+		{
+			Equipslot::Value eqslot;
+			switch (type)
+			{
+			case ITEMINVENTORY:
+				eqslot = inventory.findequipslot(
+					inventory.getitem(Inventory::EQUIP, identifier)
+					.mapordefault(&Item::getid, 0)
+					);
+				break;
+			default:
+				eqslot = Equipslot::NONE;
+			}
+
+			if (slot == eqslot)
+			{
+				using Net::EquipItemPacket;
+				Session::get().dispatch(EquipItemPacket(identifier, eqslot));
+			}
+		}
 	}
 
 	void UIEquipInventory::togglehide()
@@ -179,12 +210,12 @@ namespace IO
 
 	void UIEquipInventory::addicon(int16_t slot)
 	{
-		using Character::Item;
-		const Item* item = inventory.getitem(Inventory::EQUIPPED, slot);
-		if (item == nullptr)
-			return;
+		Optional<Texture> texture = inventory.getitem(Inventory::EQUIPPED, slot)
+			.transform(&Item::getidata)
+			.transform(&ItemData::geticon, false);
 
-		icons[slot] = Icon(item->getidata().geticon(false), Element::EQUIPINVENTORY, slot, 0);
+		if (texture)
+			icons[slot] = Icon(*texture, EQUIPINVENTORY, slot, 0);
 	}
 
 	void UIEquipInventory::modify(int16_t pos, int8_t mode, int16_t arg)

@@ -23,6 +23,11 @@
 
 namespace Graphics
 {
+	GraphicsGL::GraphicsGL()
+	{
+		locked = false;
+	}
+
 	bool GraphicsGL::init()
 	{
 		if (glewInit())
@@ -41,10 +46,11 @@ namespace Graphics
 			"varying vec2 texpos;"
 			"varying vec4 colormod;"
 			"uniform vec2 screensize;"
+			"uniform int yoffset;"
 
 			"void main(void) {"
 			"	float x = -1.0 + coord.x * 2.0 / screensize.x;"
-			"	float y = 1.0 - (coord.y + 10) * 2.0 / screensize.y;"
+			"	float y = 1.0 - (coord.y + yoffset) * 2.0 / screensize.y;"
 			"   gl_Position = vec4(x, y, 0.0, 1.0);"
 			"	texpos = coord.zw;"
 			"	colormod = color;"
@@ -92,8 +98,10 @@ namespace Graphics
 		uniform_texture = glGetUniformLocation(program, "texture");
 		uniform_atlassize = glGetUniformLocation(program, "atlassize");
 		uniform_screensize = glGetUniformLocation(program, "screensize");
+		uniform_yoffset = glGetUniformLocation(program, "yoffset");
 		uniform_fontregion = glGetUniformLocation(program, "fontregion");
-		if (attribute_coord == -1 || attribute_color == -1 || uniform_texture == -1 || uniform_atlassize == -1 || uniform_screensize == -1)
+		if (attribute_coord == -1 || attribute_color == -1 || uniform_texture == -1 
+			|| uniform_atlassize == -1 || uniform_yoffset == -1 || uniform_screensize == -1)
 			return false;
 
 		glGenBuffers(1, &vbo);
@@ -194,6 +202,7 @@ namespace Graphics
 	{
 		glUseProgram(program);
 
+		glUniform1i(uniform_yoffset, Constants::VIEWYOFFSET);
 		glUniform1i(uniform_fontregion, fontymax);
 		glUniform2f(uniform_atlassize, ATLASW, ATLASH);
 		glUniform2f(uniform_screensize, Constants::VIEWWIDTH, Constants::VIEWHEIGHT);
@@ -232,7 +241,7 @@ namespace Graphics
 	void GraphicsGL::addbitmap(const bitmap& bmp)
 	{
 		size_t id = bmp.id();
-		if (available(id))
+		if (locked || available(id))
 			return;
 
 		GLshort x = 0;
@@ -353,36 +362,36 @@ namespace Graphics
 	void GraphicsGL::draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, float alpha,
 		float xscale, float yscale, int16_t centerx, int16_t centery) {
 
-		if (!available(id))
+		if (locked || !available(id))
 			return;
 
-		GLshort left = centerx + static_cast<GLshort>(xscale * (x - centerx));
-		GLshort right = centerx + static_cast<GLshort>(xscale * (x + w - centerx));
-		GLshort top = centery + static_cast<GLshort>(yscale * (y - centery));
-		GLshort bottom = centery + static_cast<GLshort>(yscale * (y + h - centery));
 		Offset offset = offsets[id];
+		int16_t tw = offset.r - offset.l;
+		int16_t th = offset.b - offset.t;
+		int16_t tx = w / tw;
+		int16_t ty = h / th;
+		if (tx <= 0 || xscale != 1.0f)
+			tx = 1;
+		if (ty <= 0 || yscale != 1.0f)
+			ty = 1;
+		for (int16_t i = 0; i < tx; i++)
+		{
+			for (int16_t j = 0; j < ty; j++)
+			{
+				GLshort xi = x + tw * i;
+				GLshort yj = y + th * j;
+				GLshort cxi = centerx + tw * i;
+				GLshort cyj = centery + th * j;
 
-		Quad quad = Quad(left, right, top, bottom, offset, 1.0f, 1.0f, 1.0f, alpha);
-		quads.push_back(quad);
-	}
+				GLshort left = cxi + static_cast<GLshort>(xscale * (xi - cxi));
+				GLshort right = cxi + static_cast<GLshort>(xscale * (xi + tw - cxi));
+				GLshort top = cyj + static_cast<GLshort>(yscale * (yj - cyj));
+				GLshort bottom = cyj + static_cast<GLshort>(yscale * (yj + th - cyj));
 
-	void GraphicsGL::flush()
-	{
-		glClearColor(0.0, 0.0, 0.0, 0.0);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		GLsizei csize = static_cast<GLsizei>(quads.size() * sizeof(Quad));
-		GLsizei fsize = static_cast<GLsizei>(quads.size() * Quad::LENGTH);
-		glEnableVertexAttribArray(attribute_coord);
-		glEnableVertexAttribArray(attribute_color);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, csize, quads.data(), GL_STREAM_DRAW);
-		glDrawArrays(GL_QUADS, 0, fsize);
-
-		glDisableVertexAttribArray(attribute_coord);
-		glDisableVertexAttribArray(attribute_color);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		quads.clear();
+				Quad quad = Quad(left, right, top, bottom, offset, 1.0f, 1.0f, 1.0f, alpha);
+				quads.push_back(quad);
+			}
+		}
 	}
 
 	Text::Layout GraphicsGL::createlayout(const string& text, Text::Font id, Text::Alignment alignment, int16_t maxwidth)
@@ -439,8 +448,11 @@ namespace Graphics
 		return layout;
 	}
 
-	void GraphicsGL::drawtext(const string& text, Text::Font id, Text::Alignment alignment, Text::Color colorid,
-		Text::Background background, const Text::Layout& layout, float opacity, vector2d<int16_t> origin) {
+	void GraphicsGL::drawtext(const string& text, const Text::Layout& layout, Text::Font id, Text::Color colorid,
+		Text::Background background, vector2d<int16_t> origin, float opacity) {
+
+		if (locked)
+			return;
 
 		const Font& font = fonts[id];
 
@@ -452,13 +464,14 @@ namespace Graphics
 		case Text::NAMETAG:
 			for (auto& line : layout.lines)
 			{
-				GLshort left = x + line.position.x() - 2;
-				GLshort right = left + layout.dimensions.x() + 4;
-				GLshort top = y + line.position.y() - font.linespace() + 5;
-				GLshort bottom = top + layout.dimensions.y() - 1;
+				GLshort left = x + line.position.x() - 1;
+				GLshort right = left + layout.dimensions.x() + 2;
+				GLshort top = y + line.position.y() - font.linespace() + 6;
+				GLshort bottom = top + layout.dimensions.y() - 3;
 
-				Quad quad = Quad(left, right, top, bottom, nulloffset, 0.0, 0.0, 0.0, 0.6);
-				quads.push_back(quad);
+				quads.push_back(Quad(left, right, top, bottom, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f));
+				quads.push_back(Quad(left - 1, left, top + 1, bottom - 1, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f));
+				quads.push_back(Quad(right, right + 1, top + 1, bottom - 1, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f));
 			}
 			break;
 		}
@@ -471,7 +484,7 @@ namespace Graphics
 			{ 0.0f, 0.0f, 1.0f }, // Blue
 			{ 1.0f, 0.0f, 0.0f }, // Red
 			{ 0.5f, 0.25f, 0.0f }, // Brown
-			{ 0.8f, 0.8f, 0.8f }, // Lightgrey
+			{ 0.7f, 0.7f, 0.7f }, // Lightgrey
 			{ 0.5f, 0.5f, 0.5f }, // Darkgrey
 			{ 1.0f, 0.5f, 0.0f }, // Orange
 			{ 0.0f, 0.75f, 1.0f }, // Mediumblue
@@ -508,6 +521,57 @@ namespace Graphics
 				quads.push_back(quad);
 			}
 		}
+	}
+
+	void GraphicsGL::lock()
+	{
+		locked = true;
+	}
+
+	void GraphicsGL::unlock()
+	{
+		locked = false;
+	}
+
+	void GraphicsGL::flush(float opacity)
+	{
+		bool coverscene = opacity != 1.0f;
+		if (coverscene)
+		{
+			int16_t left = 0;
+			int16_t right = left + Constants::VIEWWIDTH;
+			int16_t top = -Constants::VIEWYOFFSET;
+			int16_t bottom = top + Constants::VIEWHEIGHT;
+			float complement = 1.0f - opacity;
+
+			Quad quad = Quad(left, right, top, bottom, nulloffset, 0.0f, 0.0f, 0.0f, complement);
+			quads.push_back(quad);
+		}
+
+		glClearColor(1.0, 1.0, 1.0, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		GLsizei csize = static_cast<GLsizei>(quads.size() * sizeof(Quad));
+		GLsizei fsize = static_cast<GLsizei>(quads.size() * Quad::LENGTH);
+		glEnableVertexAttribArray(attribute_coord);
+		glEnableVertexAttribArray(attribute_color);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, csize, quads.data(), GL_STREAM_DRAW);
+		glDrawArrays(GL_QUADS, 0, fsize);
+
+		glDisableVertexAttribArray(attribute_coord);
+		glDisableVertexAttribArray(attribute_color);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		if (coverscene)
+		{
+			quads.pop_back();
+		}
+	}
+
+	void GraphicsGL::clearscene()
+	{
+		quads.clear();
 	}
 }
 #endif

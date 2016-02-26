@@ -20,6 +20,42 @@
 
 namespace IO
 {
+	BuffIcon::BuffIcon(int32_t buff, int32_t dur)
+	{
+		buffid = buff;
+		duration = dur;
+		opacity = 1.0f;
+	}
+
+	BuffIcon::BuffIcon() {}
+
+	BuffIcon::~BuffIcon() {}
+
+	void BuffIcon::draw(vector2d<int16_t> position) const
+	{
+		using Character::Skill;
+		using Data::DataFactory;
+
+		bool skill = buffid >= 0;
+		const Texture& texture = skill ? DataFactory::get().getskill(buffid).geticon(Skill::NORMAL)
+			: DataFactory::get().getitemdata(-buffid).geticon(true);
+
+		using Graphics::DrawArgument;
+		texture.draw(DrawArgument(position, opacity));
+	}
+
+	bool BuffIcon::update()
+	{
+		duration -= Constants::TIMESTEP;
+		if (duration < 160)
+		{
+			opacity -= 0.05f;
+			if (opacity < 0.05f)
+				return true;
+		}
+		return false;
+	}
+
 	UIBuffList::UIBuffList() 
 	{
 		position = vector2d<int16_t>(750, 40);
@@ -59,9 +95,6 @@ namespace IO
 
 	void UIBuffList::addbuff(int32_t buffid, int32_t duration)
 	{
-		using Data::DataFactory;
-		const Texture* texture = DataFactory::get().getskill(buffid).geticon(0);
-		if (texture)
-			icons[buffid] = BuffIcon(texture, duration);
+		icons[buffid] = BuffIcon(buffid, duration);
 	}
 }

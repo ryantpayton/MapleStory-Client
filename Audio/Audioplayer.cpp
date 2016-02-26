@@ -16,7 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "AudioPlayer.h"
-#include "Configuration.h"
 #include "nlnx\nx.hpp"
 #include "nlnx\audio.hpp"
 
@@ -34,13 +33,26 @@ namespace Audio
 		close();
 	}
 
-	bool AudioPlayer::init()
+	bool AudioPlayer::init(uint8_t sfxvolume, uint8_t bgmvolume)
 	{
 		BOOL result = BASS_Init(1, 44100, 0, nullptr, 0);
 		if (result == TRUE)
 		{
-			setbgmvolume(Configuration::get().getbyte("BGMVolume"));
-			setsfxvolume(Configuration::get().getbyte("SFXVolume"));
+			setsfxvolume(sfxvolume);
+			setbgmvolume(bgmvolume);
+
+			node uisrc = nl::nx::sound["UI.img"];
+			addsound(BUTTONCLICK, uisrc["BtMouseClick"]);
+			addsound(BUTTONOVER, uisrc["BtMouseOver"]);
+			addsound(SELECTCHAR, uisrc["CharSelect"]);
+
+			node gamesrc = nl::nx::sound["Game.img"];
+			addsound(GAMESTART, gamesrc["GameIn"]);
+			addsound(JUMP, gamesrc["Jump"]);
+			addsound(DROP, gamesrc["DropItem"]);
+			addsound(PICKUP, gamesrc["PickUpItem"]);
+			addsound(PORTAL, gamesrc["Portal"]);
+			addsound(LEVELUP, gamesrc["LevelUp"]);
 		}
 		return result == TRUE;
 	}
@@ -94,6 +106,12 @@ namespace Audio
 		}
 	}
 
+	void AudioPlayer::playsound(Sound sound)
+	{
+		HCHANNEL channel = BASS_SampleGetChannel(staticsounds[sound], false);
+		BASS_ChannelPlay(channel, true);
+	}
+
 	void AudioPlayer::playsound(size_t id)
 	{
 		if (soundcache.count(id))
@@ -105,17 +123,26 @@ namespace Audio
 
 	size_t AudioPlayer::addsound(node src)
 	{
-		audio toplay = src;
+		audio ad = src;
 
-		const void* data = reinterpret_cast<const void*>(toplay.data());
+		const void* data = reinterpret_cast<const void*>(ad.data());
 		if (data == nullptr)
 			return 0;
 
-		size_t id = toplay.id();
-
+		size_t id = ad.id();
 		if (!soundcache.count(id))
-			soundcache[id] = BASS_SampleLoad(true, data, 82, (DWORD)toplay.length(), 4, BASS_SAMPLE_OVER_POS);
+			soundcache[id] = BASS_SampleLoad(true, data, 82, (DWORD)ad.length(), 4, BASS_SAMPLE_OVER_POS);
 
 		return id;
+	}
+
+	void AudioPlayer::addsound(Sound sound, node src)
+	{
+		audio ad = src;
+		const void* data = reinterpret_cast<const void*>(ad.data());
+		if (data)
+		{
+			staticsounds[sound] = BASS_SampleLoad(true, data, 82, (DWORD)ad.length(), 4, BASS_SAMPLE_OVER_POS);
+		}
 	}
 }

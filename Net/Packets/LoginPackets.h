@@ -21,7 +21,8 @@
 
 namespace Net
 {
-	// Packet which accepts the Terms of Service.
+	// Accept the Terms of Service.
+	// Opcode: ACCEPT_TOS(7)
 	class TOSPacket : public OutPacket
 	{
 	public:
@@ -31,7 +32,8 @@ namespace Net
 		}
 	};
 
-	// Packet which requests login to an account.
+	// Request to be logged-in to an account.
+	// Opcode: LOGIN(1)
 	class LoginPacket : public OutPacket
 	{
 	public:
@@ -42,14 +44,16 @@ namespace Net
 		}
 	};
 
-	// Packet which requests the list of worlds and channels.
+	// Requests the list of worlds and channels.
+	// Opcode: SERVERLIST_REQUEST(11)
 	class ServerRequestPacket : public OutPacket
 	{
 	public:
 		ServerRequestPacket() : OutPacket(SERVERLIST_REQUEST) {}
 	};
 
-	// Packet which requests the list of characters on a world.
+	// Requests the list of characters on a world.
+	// Opcode: CHARLIST_REQUEST(5)
 	class CharlistRequestPacket : public OutPacket
 	{
 	public:
@@ -61,7 +65,8 @@ namespace Net
 		}
 	};
 
-	// Packet which requests login to a channel server for the specified character.
+	// Requests being logged-in to a channel server with the specified character.
+	// Opcode: PLAYER_LOGIN(20)
 	class PlayerLoginPacket : public OutPacket
 	{
 	public:

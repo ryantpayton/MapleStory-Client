@@ -31,8 +31,8 @@ namespace IO
 
 	UIWorldSelect::UIWorldSelect()
 	{
-		worldid = Configuration::get().getbyte("World");
-		channelid = Configuration::get().getbyte("Channel");
+		worldid = Configuration::get().getbyte(Settings::WORLD);
+		channelid = Configuration::get().getbyte(Settings::CHANNEL);
 
 		node back = nl::nx::map["Back"]["login.img"]["back"];
 		node worlds = nl::nx::ui["Login.img"]["WorldSelect"]["BtWorld"]["release"];

@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
+#include "Timer.h"
 #include "Configuration.h"
 #include "Constants.h"
 #include "Audio\AudioPlayer.h"
@@ -24,7 +24,6 @@
 #include "IO\Window.h"
 #include "Gameplay\Stage.h"
 #include "Util\NxFiles.h"
-#include "Util\StopWatch.h"
 #include "Data\DataFactory.h"
 #include <iostream>
 
@@ -54,16 +53,22 @@ enum Error
 
 Error init()
 {
+	auto& config = Configuration::get();
+	config.load();
+
 	if (!NxFiles::get().init())
 		return NXFILES;
 
 	if (!Session::get().init())
 		return CONNECTION;
 
-	if (!Window::get().init())
+	bool fullscreen = config.getbool(Settings::FULLSCREEN);
+	if (!Window::get().init(fullscreen))
 		return WINDOW;
 
-	if (!AudioPlayer::get().init())
+	uint8_t sfxvolume = config.getbyte(Settings::SFX_VOLUME);
+	uint8_t bgmvolume = config.getbyte(Settings::BGM_VOLUME);
+	if (!AudioPlayer::get().init(sfxvolume, bgmvolume))
 		return AUDIO;
 
 	DataFactory::get().init();
@@ -89,21 +94,19 @@ void draw(float inter)
 
 int main()
 {
-	Configuration::get().load();
-
 	// Initialise and check for errors.
 	Error error = init();
 	if (error == NONE)
 	{
-		using Util::StopWatch;
-		StopWatch stopwatch;
+		Timer::get().start();
 		double elapsed = 0;
 
 		// Run the game as long as the connection is alive.
 		while (Session::get().receive())
 		{
 			// Update game with constant timestep as many times as possible.
-			elapsed += stopwatch.stop() / 1000;
+			double elapsedmicro = Timer::get().stop();
+			elapsed += elapsedmicro / 1000;
 			while (std::floor(elapsed) >= Constants::TIMESTEP)
 			{
 				update();
@@ -114,6 +117,8 @@ int main()
 			float inter = static_cast<float>(std::floor(elapsed) / Constants::TIMESTEP);
 			draw(inter);
 		}
+
+		Configuration::get().save();
 	}
 	else
 	{

@@ -26,7 +26,7 @@ namespace IO
 	class Icon
 	{
 	public:
-		Icon(Texture texture, Element::UIType parent, int16_t identifier, int16_t count);
+		Icon(Texture texture, UIElement::Type parent, int16_t identifier, int16_t count);
 		Icon();
 		~Icon();
 
@@ -35,15 +35,16 @@ namespace IO
 
 		void startdrag(vector2d<int16_t> offset);
 		void resetdrag();
+		void setidentifier(int16_t identifier);
 		void setcount(int16_t count);
 
 		int16_t getcount() const;
 		int16_t getidentifier() const;
-		Element::UIType getparent() const;
+		UIElement::Type getparent() const;
 
 	private:
 		Texture texture;
-		Element::UIType parent; 
+		UIElement::Type parent; 
 		int16_t identifier;
 		bool showcount;
 		int16_t count;

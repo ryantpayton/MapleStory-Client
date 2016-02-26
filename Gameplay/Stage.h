@@ -78,7 +78,6 @@ namespace Gameplay
 		void checkdrops();
 		void useattack();
 		void useskill(int32_t skillid);
-		void sendattack(const Attack& attack);
 
 		enum State
 		{

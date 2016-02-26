@@ -19,6 +19,7 @@
 #include "UICharSelect.h"
 #include "UISoftkey.h"
 #include "UICharcreation.h"
+#include "Audio\AudioPlayer.h"
 #include "IO\UI.h"
 #include "Net\Session.h"
 #include "Constants.h"
@@ -84,7 +85,7 @@ namespace IO
 				);
 		}
 
-		selected = Configuration::get().getbyte("Character");
+		selected = Configuration::get().getbyte(Settings::CHARACTER);
 		if (selected >= charcount)
 			selected = 0;
 		page = selected % 8;
@@ -194,7 +195,7 @@ namespace IO
 				if (charcount < charslots)
 				{
 					active = false;
-					UI::get().remove(Element::CHARCREATION);
+					UI::get().remove(CHARCREATION);
 					UI::get().add(ElementCharcreation());
 				}
 				break;
@@ -214,7 +215,7 @@ namespace IO
 	{
 		if (selected < charcount)
 		{
-			Configuration::get().setint("Character", selected);
+			Configuration::get().setint(Settings::CHARACTER, selected);
 			int32_t cid = Session::get().getlogin().getchar(selected).cid;
 			Session::get().getlogin().setcharid(cid);
 			switch (Session::get().getlogin().getaccount().pic)
@@ -227,7 +228,12 @@ namespace IO
 				break;
 			case 2:
 				UI::get().disable();
-				Session::get().dispatch(Net::SelectCharPacket(cid));
+
+				using Audio::AudioPlayer;
+				AudioPlayer::get().playsound(AudioPlayer::SELECTCHAR);
+
+				using Net::SelectCharPacket;
+				Session::get().dispatch(SelectCharPacket(cid));
 				break;
 			}
 		}

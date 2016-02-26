@@ -26,6 +26,7 @@ namespace IO
 		state = unique_ptr<UIState>(new UIStateNull());
 		focusedtextfield = nullptr;
 		enabled = true;
+		clickrepeat = 0;
 	}
 
 	void UI::init()
@@ -78,6 +79,14 @@ namespace IO
 		cursor.setstate(cursorstate);
 	}
 
+	void UI::sendmouse(bool pressed)
+	{
+		Cursor::State cursorstate = (pressed && enabled) ? Cursor::CLICKING : Cursor::IDLE;
+		cursorstate = state->sendmouse(cursorstate, cursor.getposition());
+
+		cursor.setstate(cursorstate);
+	}
+
 	void UI::sendmouse(vector2d<int16_t> pos)
 	{
 		Cursor::State cursorstate = state->sendmouse(cursor.getstate(), pos);
@@ -89,6 +98,12 @@ namespace IO
 	void UI::doubleclick(vector2d<int16_t> pos)
 	{
 		state->doubleclick(pos);
+	}
+
+	void UI::doubleclick()
+	{
+		vector2d<int16_t> pos = cursor.getposition();
+		doubleclick(pos);
 	}
 
 	void UI::sendkey(int32_t keycode, bool pressed)
@@ -131,18 +146,18 @@ namespace IO
 		state->add(element);
 	}
 
-	void UI::remove(Element::UIType type)
+	void UI::remove(UIElement::Type type)
 	{
 		focusedtextfield = nullptr;
 		state->remove(type);
 	}
 
-	bool UI::haselement(Element::UIType type) const
+	bool UI::haselement(UIElement::Type type) const
 	{
 		return getelement(type) != nullptr;
 	}
 
-	UIElement* UI::getelement(Element::UIType type) const
+	UIElement* UI::getelement(UIElement::Type type) const
 	{
 		return state->get(type);
 	}

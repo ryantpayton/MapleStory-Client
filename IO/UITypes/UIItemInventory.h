@@ -60,6 +60,7 @@ namespace IO
 		void buttonpressed(uint16_t buttonid) override;
 		void doubleclick(vector2d<int16_t> position) override;
 		void icondropped(int16_t identifier) override;
+		void dropicon(vector2d<int16_t> position, Type type, int16_t identifier) override;
 		void togglehide() override;
 		Cursor::State sendmouse(bool pressed, vector2d<int16_t> position) override;
 
@@ -83,6 +84,7 @@ namespace IO
 
 		Animation newitemslot;
 		Animation newitemtab;
+		Texture projectile;
 		Text mesolabel;
 		Slider slider;
 
@@ -104,9 +106,9 @@ namespace IO
 			return true;
 		}
 
-		UIType type() const override
+		UIElement::Type type() const override
 		{
-			return ITEMINVENTORY;
+			return UIElement::ITEMINVENTORY;
 		}
 
 		UIElement* instantiate() const override

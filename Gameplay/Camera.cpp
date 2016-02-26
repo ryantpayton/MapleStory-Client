@@ -30,13 +30,13 @@ namespace Gameplay
 
 	Camera::~Camera() {}
 
-	void Camera::update(vector2d<double> playerpos)
+	void Camera::update(vector2d<int16_t> position)
 	{
 		static const double hspeed = 12.0 / Constants::VIEWWIDTH;
 		static const double vspeed = 12.0 / Constants::VIEWHEIGHT;
 
-		double destx = (Constants::VIEWWIDTH / 2.0) - playerpos.x();
-		double desty = (Constants::VIEWHEIGHT / 2.0) - playerpos.y();
+		double destx = Constants::VIEWWIDTH / 2 - position.x();
+		double desty = Constants::VIEWHEIGHT / 2 - position.y();
 
 		lastx = fx;
 		lasty = fy;
@@ -52,32 +52,28 @@ namespace Gameplay
 		else if (fx < hbounds.y() + Constants::VIEWWIDTH)
 			fx = hbounds.y() + Constants::VIEWWIDTH;
 
-		if (fy < vbounds.y() + Constants::VIEWHEIGHT || vbounds.length() < Constants::VIEWHEIGHT)
+		if (fy > vbounds.x() || vbounds.length() < Constants::VIEWHEIGHT)
+			fy = vbounds.x();
+		else if (fy < vbounds.y() + Constants::VIEWHEIGHT)
 			fy = vbounds.y() + Constants::VIEWHEIGHT;
 	}
 
-	void Camera::setposition(vector2d<int16_t> pos)
+	void Camera::setposition(vector2d<int16_t> position)
 	{
-		fx = (Constants::VIEWWIDTH / 2) - static_cast<double>(pos.x());
-		fy = (Constants::VIEWHEIGHT / 2) - static_cast<double>(pos.y());
+		fx = Constants::VIEWWIDTH / 2 - position.x();
+		fy = Constants::VIEWHEIGHT / 2 - position.y();
 	}
 
 	void Camera::updateview(vector2d<int16_t> mapwalls, vector2d<int16_t> mapborders)
 	{
-		hbounds = vector2d<double>(
-			static_cast<double>(-mapwalls.x()),
-			static_cast<double>(-mapwalls.y())
-			);
-		vbounds = vector2d<double>(
-			static_cast<double>(-mapborders.x()),
-			static_cast<double>(-mapborders.y())
-			);
+		hbounds = vector2d<int16_t>(-mapwalls.x() - 10, -mapwalls.y() + 10);
+		vbounds = -mapborders;
 	}
 
 	vector2d<int16_t> Camera::getposition(float inter) const
 	{
-		int16_t retx = static_cast<int16_t>((1.0f - inter) * lastx + inter * fx);
-		int16_t rety = static_cast<int16_t>((1.0f - inter) * lasty + inter * fy);
-		return vector2d<int16_t>(retx, rety);
+		int16_t interx = static_cast<int16_t>((1.0f - inter) * lastx + inter * fx);
+		int16_t intery = static_cast<int16_t>((1.0f - inter) * lasty + inter * fy);
+		return vector2d<int16_t>(interx, intery);
 	}
 }

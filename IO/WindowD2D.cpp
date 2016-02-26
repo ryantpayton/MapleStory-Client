@@ -18,7 +18,6 @@
 #include "WindowD2D.h"
 #ifndef JOURNEY_USE_OPENGL
 #include "UI.h"
-#include "Configuration.h"
 #include "Constants.h"
 #include "Gameplay\Stage.h"
 #include "Graphics\GraphicsD2D.h"
@@ -126,7 +125,7 @@ namespace IO
 			UI::get().sendkey(static_cast<int32_t>(keycode), down);
 	}
 
-	bool WindowD2D::init()
+	bool WindowD2D::init(bool fs)
 	{
 		if (CoInitialize(NULL) != S_OK)
 			return false;
@@ -188,9 +187,9 @@ namespace IO
 		screencd = 0;
 		opacity = 1.0f;
 		transition = false;
-		fullscreen = false;
+		fullscreen = fs;
 
-		if (Configuration::get().getbool("Fullscreen"))
+		if (fullscreen)
 			togglemode();
 
 		SetPriorityClass(wnd, REALTIME_PRIORITY_CLASS);
@@ -299,9 +298,10 @@ namespace IO
 		screencd = 50;
 	}
 
-	void WindowD2D::fadeout()
+	void WindowD2D::fadeout(float step, void(*fadeproc)())
 	{
-		opcstep = -0.025f;
+		opcstep = -step;
+		fadeprocedure = fadeproc;
 		transition = true;
 	}
 
@@ -329,16 +329,16 @@ namespace IO
 		if (opacity >= 1.0f)
 		{
 			opacity = 1.0f;
+			opcstep = 0.0f;
 		}
 		else if (opacity <= 0.0f)
 		{
 			opacity = 0.0f;
-			opcstep = 0.025f;
+			opcstep = -opcstep;
 			transition = false;
 
-			using Gameplay::Stage;
-			Stage::get().reload();
-			UI::get().enable();
+			if (fadeprocedure)
+				(*fadeprocedure)();
 		}
 	}
 

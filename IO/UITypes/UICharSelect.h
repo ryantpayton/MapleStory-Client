@@ -69,9 +69,9 @@ namespace IO
 	// Factory for the character selection screen.
 	class ElementCharSelect : public Element
 	{
-		UIType type() const override
+		UIElement::Type type() const override
 		{
-			return CHARSELECT;
+			return UIElement::CHARSELECT;
 		}
 
 		UIElement* instantiate() const override

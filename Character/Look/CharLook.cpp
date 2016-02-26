@@ -158,7 +158,7 @@ namespace Character
 
 			if (equips.isvisible(Equipslot::CAP))
 			{
-				if (equips.getequip(Equipslot::CAP)->islayer(laststance, Clothing::HATOVERHAIR))
+				if (equips.comparelayer(Equipslot::CAP, laststance, Clothing::HATOVERHAIR))
 				{
 					hair->draw(laststance, Hair::OVERHEAD, interframe, args);
 					equips.draw(Equipslot::CAP, laststance, Clothing::HATOVERHAIR, interframe, args);
@@ -314,14 +314,18 @@ namespace Character
 			updatetwohanded();
 	}
 
-	uint16_t CharLook::attack()
+	uint16_t CharLook::attack(Attack::Type attacktype)
 	{
-		Stance::Value newstance = getattackstance();
+		Stance::Value newstance = getattackstance(attacktype);
 		if (stance != newstance)
 		{
 			frame = 0;
 			elapsed = 0;
 			stance = newstance;
+
+			equips.getweapon()
+				.map(&Weapon::getsound)
+				.play();
 		}
 		return DataFactory::get().getdrawinfo().getdelay(newstance, 0);
 	}
@@ -342,22 +346,21 @@ namespace Character
 		}
 	}
 
-	Stance::Value CharLook::getattackstance() const
+	Stance::Value CharLook::getattackstance(Attack::Type attacktype) const
 	{
-		const Weapon* weapon = equips.getweapon();
-		if (weapon == nullptr)
-			return Stance::STAND1;
-
 		if (stance == Stance::PRONE)
 			return Stance::PRONESTAB;
 
-		uint8_t attack = weapon->getattack();
+		uint8_t attack = equips.getweapon()
+			.mapordefault(&Weapon::getattack, uint8_t(0));
 		switch (attack)
 		{
 		case 1:
 			return randomizer.nextbool() ? Stance::STABO1 : Stance::SWINGO1;
 		case 2:
 			return randomizer.nextbool() ? Stance::STABT1 : Stance::SWINGP1;
+		case 3:
+			return attacktype == Attack::CLOSE ? Stance::SWINGT1 : Stance::SHOOT1;
 		case 5:
 			return randomizer.nextbool() ? Stance::STABT1 : Stance::SWINGT1;
 		default:

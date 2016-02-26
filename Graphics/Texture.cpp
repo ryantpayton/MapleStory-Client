@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Graphics\Texture.h"
+#include "Texture.h"
 #include "GraphicsEngine.h"
+#include "Constants.h"
 #include "nlnx\nx.hpp"
 
 namespace Graphics
@@ -68,7 +68,11 @@ namespace Graphics
 			h = dimensions.y();
 
 		vector2d<int16_t> absp = args.getpos() - origin;
-		if (absp.x() <= 816 && absp.y() <= 624 && absp.x() > -w && absp.y() > -h)
+		int16_t x = absp.x();
+		int16_t y = absp.y();
+
+		int16_t sy = y + Constants::VIEWYOFFSET;
+		if (x < Constants::VIEWWIDTH && sy < Constants::VIEWHEIGHT && x > -w && sy > -h)
 		{
 			GraphicsEngine& engine = GraphicsEngine::get();
 			if (!engine.available(id))

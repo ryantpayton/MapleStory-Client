@@ -20,6 +20,7 @@
 #include "Net\Session.h"
 #include "Net\Packets\GameplayPackets.h"
 #include "nlnx\nx.hpp"
+#include <algorithm>
 
 namespace Gameplay
 {
@@ -137,6 +138,17 @@ namespace Gameplay
 			}
 		}
 
+		auto indices = bulletlist.collect(&Bullet::update, getposition());
+		for (auto& index : indices)
+		{
+			Optional<Bullet> bullet = bulletlist.get(index);
+			if (bullet)
+			{
+				applydamage(bullet->damageeffect);
+				bulletlist.remove(index);
+			}
+		}
+
 		bool aniend;
 		if (animations.count(stance))
 			aniend = animations.at(stance).update();
@@ -247,7 +259,9 @@ namespace Gameplay
 		if (!active)
 			return;
 
-		vector2d<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
+		vector2d<int16_t> viewpos = camera.getposition(inter);
+
+		vector2d<int16_t> absp = phobj.getposition(inter) + viewpos;
 		if (animations.count(stance))
 		{
 			using Graphics::DrawArgument;
@@ -268,9 +282,11 @@ namespace Gameplay
 			namelabel.draw(absp);
 		}
 
+		bulletlist.foreach(&Bullet::draw, viewpos, inter);
+
 		for (auto& dmg : damagenumbers)
 		{
-			dmg.draw(camera.getposition(inter));
+			dmg.draw(viewpos);
 		}
 	}
 
@@ -328,40 +344,32 @@ namespace Gameplay
 		int32_t mindamage = static_cast<int32_t>(attack.mindamage * (1 - 0.01f * leveldelta) - wdef * 0.5f);
 		int32_t maxdamage = static_cast<int32_t>(attack.maxdamage * (1 - 0.01f * leveldelta) - wdef * 0.6f);
 
-		int64_t totaldamage = 0;
 		vector<int32_t> damagelines;
-		float alphashift = 0.0f;
 
-		vector2d<int16_t> head = getposition();
-		head.shifty(-animations.at(stance).getdimensions().y());
+		DamageEffect damageeffect;
+		damageeffect.hiteffect = attack.hiteffect;
+		damageeffect.hitsound = attack.hitsound;
+		damageeffect.fromright = attack.origin.x() > phobj.fx;
 
 		for (int32_t i = 0; i < attack.hitcount; i++)
 		{
 			auto singledamage = randomdamage(mindamage, maxdamage, hitchance, attack.critical);
-
 			damagelines.push_back(singledamage.first);
-			totaldamage += singledamage.first;
 
-			damagenumbers.push_back(DamageNumber(
-				singledamage.second ? DamageNumber::CRITICAL : DamageNumber::NORMAL,
-				singledamage.first,
-				1.0f + alphashift,
-				head));
-
-			head.shifty(-24);
-			alphashift += 0.1f;
-
-			hitsound.play();
+			damageeffect.numbers.push_back(singledamage);
 		}
 
-		if (totaldamage >= knockback)
+		bool ranged = attack.type == Attack::RANGED;
+		if (ranged)
 		{
-			counter = 175;
-			flip = attack.origin.x() > phobj.fx;
-			setstance(HIT);
+			Bullet bullet = { attack.bullet, damageeffect, attack.origin };
+			bulletlist.add(bullet);
+		}
+		else
+		{
+			applydamage(damageeffect);
 		}
 
-		effects.add(attack.hiteffect);
 		writemovement();
 
 		return damagelines;
@@ -385,5 +393,48 @@ namespace Gameplay
 			damage = DAMAGECAP;
 
 		return std::make_pair(damage, iscritical);
+	}
+
+	void Mob::applydamage(const DamageEffect& damageeffect)
+	{
+		vector2d<int16_t> head = getposition();
+		head.shifty(-animations.at(stance).getdimensions().y());
+
+		float alphashift = 0.0f;
+
+		int32_t total = 0;
+		for (auto& number : damageeffect.numbers)
+		{
+			int32_t amount = number.first;
+			total += amount;
+
+			DamageNumber damagenumber = DamageNumber(
+				number.second ? DamageNumber::CRITICAL : DamageNumber::NORMAL,
+				number.first,
+				1.0f + alphashift,
+				head);
+			damagenumbers.push_back(damagenumber);
+
+			head.shifty(-24);
+			alphashift += 0.1f;
+
+			damageeffect.hitsound.play();
+			hitsound.play();
+		}
+
+		if (total >= knockback)
+			applyknockback(damageeffect.fromright);
+
+		effects.add(damageeffect.hiteffect);
+	}
+
+	void Mob::applyknockback(bool fromright)
+	{
+		if (active && stance != DIE)
+		{
+			flip = fromright;
+			counter = 175;
+			setstance(HIT);
+		}
 	}
 }

@@ -38,8 +38,8 @@ namespace IO
 		virtual Cursor::State sendmouse(Cursor::State mst, vector2d<int16_t> pos) = 0;
 
 		virtual void add(const Element& element) = 0;
-		virtual void remove(Element::UIType type) = 0;
-		virtual UIElement* get(Element::UIType type) const = 0;
+		virtual void remove(UIElement::Type type) = 0;
+		virtual UIElement* get(UIElement::Type type) const = 0;
 		virtual UIElement* getfront(vector2d<int16_t> pos) const = 0;
 	};
 
@@ -52,8 +52,8 @@ namespace IO
 		void sendkey(Keyboard::Keytype, int32_t, bool) override {}
 		Cursor::State sendmouse(Cursor::State, vector2d<int16_t>) override { return Cursor::IDLE; }
 		void add(const Element&) override {}
-		void remove(Element::UIType) override {}
-		UIElement* get(Element::UIType) const override { return nullptr; }
+		void remove(UIElement::Type) override {}
+		UIElement* get(UIElement::Type) const override { return nullptr; }
 		UIElement* getfront(vector2d<int16_t>) const override { return nullptr; }
 	};
 }

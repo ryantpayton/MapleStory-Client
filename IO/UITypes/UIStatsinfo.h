@@ -89,9 +89,9 @@ namespace IO
 			return true;
 		}
 
-		UIType type() const override
+		UIElement::Type type() const override
 		{
-			return STATSINFO;
+			return UIElement::STATSINFO;
 		}
 
 		UIElement* instantiate() const override

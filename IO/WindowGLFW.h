@@ -29,15 +29,17 @@ namespace IO
 		WindowGLFW();
 		~WindowGLFW();
 
-		bool init();
+		bool init(bool fullscreen);
 		bool initwindow();
 		void update();
 		void begin() const;
 		void end() const;
-		void fadeout();
+		void fadeout(float step, void(*fadeproc)());
 
 	private:
 		void updateopc();
+
+		void(*fadeprocedure)();
 
 		GLFWwindow* glwnd;
 		GLFWwindow* context;

@@ -34,7 +34,7 @@ namespace Gameplay
 		// Move the specified object over the specified game-time.
 		void moveobject(PhysicsObject& tomove) const;
 		// Determine the point on the ground below the specified position.
-		vector2d<int16_t> getgroundbelow(vector2d<int16_t> position);
+		vector2d<int16_t> getgroundbelow(vector2d<int16_t> position) const;
 		// Return a reference to the collection of platforms.
 		const Footholdtree& getfht() const;
 

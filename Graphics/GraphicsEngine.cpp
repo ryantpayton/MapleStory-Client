@@ -72,13 +72,13 @@ namespace Graphics
 #endif
 	}
 
-	void GraphicsEngine::drawtext(const string& text, Text::Font font, Text::Alignment alignment, Text::Color color,
-		Text::Background back, const Text::Layout& layout, float alpha, vector2d<int16_t> origin) {
+	void GraphicsEngine::drawtext(const string& text, const Text::Layout& layout, Text::Font font, 
+		Text::Color color, Text::Background back, vector2d<int16_t> origin, float alpha) {
 #ifdef JOURNEY_USE_OPENGL
-		GraphicsGL::get().drawtext(text.c_str(), font, alignment, color, back, layout, alpha, origin);
+		GraphicsGL::get().drawtext(text.c_str(), layout, font, color, back, origin, alpha);
 #else
 		wstring wtext = wstring(text.begin(), text.end());
-		GraphicsD2D::get().drawtext(wtext, font, alignment, color, back, alpha, origin, dimensions);
+		GraphicsD2D::get().drawtext(wtext, layout, font, color, back, origin, alpha);
 #endif
 	}
 }

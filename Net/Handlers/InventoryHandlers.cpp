@@ -29,22 +29,20 @@ namespace Net
 	using Character::Inventory; 
 	using Gameplay::Stage;
 	using IO::UI;
-	using IO::Element;
+	using IO::UIElement;
 	using IO::UIEquipInventory;
 	using IO::UIItemInventory;
 
 	void GatherResultHandler::handle(InPacket&) const
 	{
-		UIItemInventory* itinvent = UI::get().getelement<UIItemInventory>(Element::ITEMINVENTORY);
-
+		auto itinvent = UI::get().getelement<UIItemInventory>(UIElement::ITEMINVENTORY);
 		if (itinvent)
 			itinvent->enablesort();
 	}
 
 	void SortResultHandler::handle(InPacket&) const
 	{
-		UIItemInventory* itinvent = UI::get().getelement<UIItemInventory>(Element::ITEMINVENTORY);
-
+		auto itinvent = UI::get().getelement<UIItemInventory>(UIElement::ITEMINVENTORY);
 		if (itinvent)
 			itinvent->enablegather();
 	}
@@ -74,9 +72,8 @@ namespace Net
 			else
 				inventory.modify(invtype, pos, mode, arg, move);
 
-			UIEquipInventory* eqinvent = UI::get().getelement<UIEquipInventory>(Element::EQUIPINVENTORY);
-			UIItemInventory* itinvent = UI::get().getelement<UIItemInventory>(Element::ITEMINVENTORY);
-
+			auto eqinvent = UI::get().getelement<UIEquipInventory>(UIElement::EQUIPINVENTORY);
+			auto itinvent = UI::get().getelement<UIItemInventory>(UIElement::ITEMINVENTORY);
 			switch (move)
 			{
 			case Inventory::MOVE_INTERNAL:
@@ -125,7 +122,7 @@ namespace Net
 			}
 		}
 
-
+		Stage::get().getplayer().recalcstats(true);
 		UI::get().enable();
 	}
 }

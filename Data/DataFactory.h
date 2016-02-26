@@ -18,6 +18,7 @@
 #pragma once
 #include "Util\Singleton.h"
 #include "Character\Inventory\ItemData.h"
+#include "Character\Inventory\BulletData.h"
 #include "Character\Look\Body.h"
 #include "Character\Look\Hair.h"
 #include "Character\Look\Face.h"
@@ -33,6 +34,7 @@ namespace Data
 	using Character::Hair;
 	using Character::Face;
 	using Character::ItemData;
+	using Character::BulletData;
 	using Character::Clothing;
 	using Character::Weapon;
 	using Character::Skill;
@@ -48,6 +50,7 @@ namespace Data
 		const Hair& gethairstyle(int32_t hairid);
 		const Face& getfacetype(int32_t faceid);
 		const ItemData& getitemdata(int32_t itemid);
+		const BulletData& getbulletdata(int32_t itemid);
 		const Clothing& getclothing(int32_t itemid);
 		const Weapon& getweapon(int32_t itemid);
 		const Skill& getskill(int32_t skillid);
@@ -57,7 +60,8 @@ namespace Data
 		map<int32_t, Body> bodytypes;
 		map<int32_t, Hair> hairstyles;
 		map<int32_t, Face> facetypes;
-		map<int32_t, ItemData> itemdata; 
+		map<int32_t, ItemData> itemdata;
+		map<int32_t, BulletData> bullets;
 		map<int32_t, Clothing> clothing;
 		map<int32_t, Weapon> weapons;
 		map<int32_t, Skill> skills;

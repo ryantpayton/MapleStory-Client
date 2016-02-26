@@ -31,20 +31,25 @@
 
 namespace IO
 {
+	using Net::Session;
 	using Gameplay::Stage;
+	using Character::Item;
+	using Character::ItemData;
+	using Character::Equipslot;
 
 	UIItemInventory::UIItemInventory() : 
-		UIDragElement("PosINV", vector2d<int16_t>(172, 20)), 
+		UIDragElement(Settings::POS_INV, vector2d<int16_t>(172, 20)), 
 		inventory(Stage::get().getplayer().getinvent()) {
 
 		node src = nl::nx::ui["UIWindow2.img"]["Item"];
 
-		sprites.push_back(Sprite(src["backgrnd"], vector2d<int16_t>()));
-		sprites.push_back(Sprite(src["backgrnd2"], vector2d<int16_t>()));
-		sprites.push_back(Sprite(src["backgrnd3"], vector2d<int16_t>()));
+		sprites.push_back(src["backgrnd"]);
+		sprites.push_back(src["backgrnd2"]);
+		sprites.push_back(src["backgrnd3"]);
 
-		newitemslot = Animation(src["New"]["inventory"]);
-		newitemtab = Animation(src["New"]["Tab0"]);
+		newitemslot = src["New"]["inventory"];
+		newitemtab = src["New"]["Tab0"];
+		projectile = src["activeIcon"];
 
 		node taben = src["Tab"]["enabled"];
 		node tabdis = src["Tab"]["disabled"];
@@ -109,21 +114,27 @@ namespace IO
 			}
 		}
 
-		using Graphics::DrawArgument;
-		if (newtab == tab && newslot > 0)
+		int16_t pslot = inventory.getprojectile();
+		if (tab == Inventory::USE && pslot > 0)
 		{
-			newitemslot.draw(
-				DrawArgument(position + getslotpos(newslot) + vector2d<int16_t>(0, 1)), inter
-				);
+			vector2d<int16_t> pslotpos = position + getslotpos(pslot);
+			projectile.draw(pslotpos);
 		}
-		else if (newtab != Inventory::NONE)
+		else if (newtab == tab && newslot > 0)
 		{
-			newitemtab.draw(
-				DrawArgument(position + gettabpos(newtab)), inter
-				);
+			vector2d<int16_t> newslotpos = position + getslotpos(newslot);
+			newslotpos.shifty(1);
+			newitemslot.draw(newslotpos, inter);
+		}
+		
+		if (newtab != tab && newtab != Inventory::NONE)
+		{
+			vector2d<int16_t> newtabpos = position + gettabpos(newtab);
+			newitemtab.draw(newtabpos, inter);
 		}
 
-		mesolabel.draw(position + vector2d<int16_t>(124, 264));
+		vector2d<int16_t> mesopos = position + vector2d<int16_t>(124, 264);
+		mesolabel.draw(mesopos);
 
 		eqtooltip.draw(cursorposition);
 		ittooltip.draw(cursorposition);
@@ -141,15 +152,18 @@ namespace IO
 
 	void UIItemInventory::updateslot(int16_t slot)
 	{
-		using Character::Item;
-		using Character::ItemData;
-
-		const Item* item = inventory.getitem(tab, slot);
+		Optional<Item> item = inventory.getitem(tab, slot);
 		if (item)
 		{
-			const ItemData& idata = item->getidata();
-			int16_t displaycount = (tab == Inventory::EQUIP) ? 0 : item->getcount();
-			icons[slot] = Icon(idata.geticon(false), Element::ITEMINVENTORY, slot, displaycount);
+			Optional<Texture> texture = item
+				.transform(&Item::getidata)
+				.transform(&ItemData::geticon, false);
+
+			if (texture)
+			{
+				int16_t displaycount = (tab == Inventory::EQUIP) ? 0 : item.map(&Item::getcount);
+				icons[slot] = Icon(*texture, ITEMINVENTORY, slot, displaycount);
+			}
 		}
 		else if (icons.count(slot))
 		{
@@ -215,21 +229,21 @@ namespace IO
 		int16_t slot = slotbypos(cursorpos - position);
 		if (icons.count(slot) && slot >= slotrange.first && slot <= slotrange.second)
 		{
-			using Character::Item;
-			const Item* item = inventory.getitem(tab, slot);
-			if (item == nullptr)
-				return;
-
-			switch (tab)
+			Optional<Item> item = inventory.getitem(tab, slot);
+			if (item)
 			{
-			case Inventory::EQUIP:
-				using Net::EquipItemPacket;
-				Net::Session::get().dispatch(EquipItemPacket(slot, inventory.findequipslot(item->getid())));
-				break;
-			case Inventory::USE:
-				using Net::UseItemPacket;
-				Net::Session::get().dispatch(UseItemPacket(slot, item->getid()));
-				break;
+				int32_t itemid = item.map(&Item::getid);
+				switch (tab)
+				{
+				case Inventory::EQUIP:
+					using Net::EquipItemPacket;
+					Session::get().dispatch(EquipItemPacket(slot, inventory.findequipslot(itemid)));
+					break;
+				case Inventory::USE:
+					using Net::UseItemPacket;
+					Session::get().dispatch(UseItemPacket(slot, itemid));
+					break;
+				}
 			}
 		}
 	}
@@ -240,7 +254,43 @@ namespace IO
 			return;
 
 		using Net::MoveItemPacket;
-		Net::Session::get().dispatch(MoveItemPacket(tab, identifier, 0, 1));
+		Session::get().dispatch(MoveItemPacket(tab, identifier, 0, 1));
+	}
+
+	void UIItemInventory::dropicon(vector2d<int16_t> cursorpos, Type type, int16_t identifier)
+	{
+		int16_t slot = slotbypos(cursorpos - position);
+		if (slot > 0)
+		{
+			switch (type)
+			{
+			case ITEMINVENTORY:
+				using Net::MoveItemPacket;
+				Session::get().dispatch(MoveItemPacket(tab, identifier, slot, 1));
+				break;
+			case EQUIPINVENTORY:
+				if (tab == Inventory::EQUIP)
+				{
+					Optional<Item> item = inventory.getitem(Inventory::EQUIP, slot);
+					if (item)
+					{
+						int32_t itemid = item.map(&Item::getid);
+						Equipslot::Value eqslot = inventory.findequipslot(itemid);
+						if (identifier == eqslot)
+						{
+							using Net::EquipItemPacket;
+							Session::get().dispatch(EquipItemPacket(identifier, eqslot));
+						}
+					}
+					else
+					{
+						using Net::UnequipItemPacket;
+						Session::get().dispatch(UnequipItemPacket(identifier, slot));
+					}
+				}
+				break;
+			}
+		}
 	}
 
 	Cursor::State UIItemInventory::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
@@ -261,22 +311,22 @@ namespace IO
 			}
 			else if (tab == Inventory::EQUIP)
 			{
-				using Character::Equip;
-				const Equip* equip = inventory.getequip(tab, slot);
-
+				Optional<Equip> equip = inventory.getequip(tab, slot);
 				if (equip)
-					eqtooltip.setequip(equip, slot);
-
-				return Cursor::CANGRAB;
+				{
+					eqtooltip.setequip(equip.get(), slot);
+					return Cursor::CANGRAB;
+				}
+				else
+				{
+					return Cursor::IDLE;
+				}
 			}
 			else
 			{
-				using Character::Item;
-				const Item* item = inventory.getitem(tab, slot);
-
-				if (item)
-					ittooltip.setitem(item->getid());
-
+				int32_t itemid = inventory.getitem(tab, slot)
+					.mapordefault(&Item::getid, 0);
+				ittooltip.setitem(itemid);
 				return Cursor::CANGRAB;
 			}
 		}
@@ -290,7 +340,7 @@ namespace IO
 
 	void UIItemInventory::modify(Inventory::Type type, int16_t slot, int8_t mode, int16_t arg)
 	{
-		if (slot == 0)
+		if (slot <= 0)
 			return;
 
 		if (type == tab)
@@ -303,15 +353,13 @@ namespace IO
 				break;
 			case 1:
 				if (icons.count(slot))
-				{
 					icons[slot].setcount(arg);
-				}
 				break;
 			case 2:
-				if (icons.count(slot))
+				if (arg != slot)
 				{
-					icons[arg] = icons[slot];
-					icons.erase(slot);
+					updateslot(slot);
+					updateslot(arg);
 				}
 				break;
 			}
@@ -375,7 +423,11 @@ namespace IO
 		if (xoff < 0 || yoff < 0)
 			return 0;
 
-		return (xoff / 36) + 1 + 4 * (yoff / 35);
+		int16_t slot = (xoff / 36) + 1 + 4 * (yoff / 35);
+		if (slot < slotrange.first || slot > slotrange.second)
+			return 0;
+
+		return slot;
 	}
 
 	vector2d<int16_t> UIItemInventory::getslotpos(int16_t slot) const

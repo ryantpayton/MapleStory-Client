@@ -15,37 +15,32 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include <cstdint>
-#include <chrono>
+#include "Button.h"
 
-namespace Util
+namespace IO
 {
-	using std::chrono::high_resolution_clock;
-	using std::chrono::microseconds;
+	void Button::setposition(vector2d<int16_t> pos) 
+	{ 
+		position = pos; 
+	}
 
-	// Small class for measuring elapsed time between game loops.
-	class StopWatch
+	void Button::setstate(State s)
 	{
-	public:
-		// Start watch at construction.
-		StopWatch()
-		{
-			last = high_resolution_clock::now();
-		}
+		state = s;
+	}
 
-		~StopWatch() {}
+	void Button::setactive(bool a) 
+	{ 
+		active = a; 
+	}
 
-		// Return time elapsed since the last measurement.
-		double stop()
-		{
-			double elapsed = static_cast<double>((std::chrono::duration_cast
-				<microseconds>(high_resolution_clock::now() - last)).count());
-			last = high_resolution_clock::now();
-			return elapsed;
-		}
+	bool Button::isactive() const 
+	{ 
+		return active && state != DISABLED; 
+	}
 
-	private:
-		high_resolution_clock::time_point last;
-	};
+	Button::State Button::getstate() const 
+	{ 
+		return state; 
+	}
 }

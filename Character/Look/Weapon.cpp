@@ -113,6 +113,10 @@ namespace Character
 		case MACE_1H:
 		case KNUCKLE:
 		case DAGGER:
+		case BOW:
+		case CROSSBOW:
+		case GUN:
+		case CLAW:
 			return rectangle2d<int16_t>(-75, -5, -50, 0);
 		case SWORD_2H:
 		case AXE_2H:

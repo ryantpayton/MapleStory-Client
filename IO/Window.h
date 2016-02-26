@@ -30,11 +30,11 @@ namespace IO
 	class Window : public Singleton<Window>
 	{
 	public:
-		bool init();
+		bool init(bool fullscreen);
 		void update();
 		void begin();
 		void end();
-		void fadeout();
+		void fadeout(float step, void(*fadeproc)());
 
 	private:
 #ifdef JOURNEY_USE_OPENGL

@@ -66,7 +66,7 @@ namespace Graphics
 
 	void Text::draw(vector2d<int16_t> position, float alpha) const
 	{
-		GraphicsEngine::get().drawtext(text, font, alignment, color, background, layout, alpha, position);
+		GraphicsEngine::get().drawtext(text, layout, font, color, background, position, alpha);
 	}
 
 	uint16_t Text::advance(size_t pos) const

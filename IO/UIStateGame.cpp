@@ -31,7 +31,7 @@ namespace IO
 {
 	UIStateGame::UIStateGame()
 	{
-		focused = Element::NONE;
+		focused = UIElement::NONE;
 		draggedicon = nullptr;
 
 		add(ElementStatusMessenger());
@@ -63,13 +63,15 @@ namespace IO
 		}
 	}
 
-	void UIStateGame::dropicon(vector2d<int16_t> pos, Element::UIType type, int16_t identifier)
+	void UIStateGame::dropicon(vector2d<int16_t> pos, UIElement::Type type, int16_t identifier)
 	{
 		UIElement* front = getfront(pos);
 
 		if (front)
 		{
-
+			UIElement* parent = get(type);
+			if (parent)
+				front->dropicon(pos, type, identifier);
 		}
 		else
 		{
@@ -146,14 +148,14 @@ namespace IO
 				}
 				else
 				{
-					focused = Element::NONE;
+					focused = UIElement::NONE;
 					return mst;
 				}
 			}
 			else
 			{
 				UIElement* front = nullptr;
-				Element::UIType fronttype = Element::NONE;
+				UIElement::Type fronttype = UIElement::NONE;
 
 				for (auto& elit : elementorder)
 				{
@@ -188,7 +190,7 @@ namespace IO
 
 	void UIStateGame::add(const Element& element)
 	{
-		Element::UIType type = element.type();
+		UIElement::Type type = element.type();
 		bool isfocused = element.isfocused();
 		bool isunique = element.isunique();
 
@@ -214,10 +216,10 @@ namespace IO
 			focused = type;
 	}
 
-	void UIStateGame::remove(Element::UIType type)
+	void UIStateGame::remove(UIElement::Type type)
 	{
 		if (focused == type)
-			focused = Element::NONE;
+			focused = UIElement::NONE;
 
 		elementorder.remove(type);
 
@@ -229,7 +231,7 @@ namespace IO
 		}
 	}
 
-	UIElement* UIStateGame::get(Element::UIType type) const
+	UIElement* UIStateGame::get(UIElement::Type type) const
 	{
 		return elements.count(type) ? elements.at(type).get() : nullptr;
 	}

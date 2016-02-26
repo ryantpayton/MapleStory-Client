@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "UIElement.h"
+#include "Configuration.h"
 
 namespace IO
 {
@@ -29,10 +30,10 @@ namespace IO
 		Cursor::State sendmouse(bool pressed, vector2d<int16_t> cursorpos) override;
 
 	protected:
-		UIDragElement(string cfn, vector2d<int16_t> dga);
+		UIDragElement(Settings::Type setting, vector2d<int16_t> dragarea);
 
 		bool dragged;
-		string configname;
+		Settings::Type setting;
 		vector2d<int16_t> dragarea;
 		vector2d<int16_t> cursoroffset;
 	};

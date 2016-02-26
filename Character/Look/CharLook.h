@@ -47,7 +47,7 @@ namespace Character
 		void addequip(int32_t equipid);
 		void removeequip(Equipslot::Value slot);
 
-		uint16_t attack();
+		uint16_t attack(Attack::Type attacktype);
 		void setstance(Stance::Value stance);
 		void setexpression(Expression::Value expression);
 		void setaction(string action);
@@ -60,7 +60,7 @@ namespace Character
 
 	private:
 		void updatetwohanded();
-		Stance::Value getattackstance() const;
+		Stance::Value getattackstance(Attack::Type attacktype) const;
 
 		Stance::Value stance;
 		uint8_t frame;

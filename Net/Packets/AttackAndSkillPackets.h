@@ -25,12 +25,11 @@ namespace Net
 {
 	using Gameplay::AttackResult;
 
-	// Packet which notifies the server of a close-range attack.
-	// Opcode: CLOSE_ATTACK(44)
-	class CloseRangeAttackPacket : public OutPacket
+	// Base class for attack packets.
+	class AttackPacket : public OutPacket
 	{
-	public:
-		CloseRangeAttackPacket(const AttackResult& attack) : OutPacket(CLOSE_ATTACK)
+	protected:
+		AttackPacket(SendOpcode opc, const AttackResult& attack) : OutPacket(opc)
 		{
 			skip(1);
 			writech((attack.mobcount << 4) | attack.hitcount);
@@ -43,7 +42,18 @@ namespace Net
 			writech(attack.stance);
 			skip(1);
 			writech(attack.speed);
-			skip(4);
+
+			if (attack.ranged)
+			{
+				skip(1);
+				writech(attack.direction);
+				skip(7);
+				// skip(4); if hurricane, piercing arrow or rapidfire
+			}
+			else
+			{
+				skip(4);
+			}
 
 			for (auto& damagetomob : attack.damagelines)
 			{
@@ -59,6 +69,33 @@ namespace Net
 					skip(4);
 			}
 		}
+	};
+
+
+	// Packet which notifies the server of a close-range attack.
+	// Opcode: CLOSE_ATTACK(44)
+	class CloseRangeAttackPacket : public AttackPacket
+	{
+	public:
+		CloseRangeAttackPacket(const AttackResult& attack) : AttackPacket(CLOSE_ATTACK, attack) {}
+	};
+
+
+	// Packet which notifies the server of a ranged attack.
+	// Opcode: RANGED_ATTACK(45)
+	class RangedAttackPacket : public AttackPacket
+	{
+	public:
+		RangedAttackPacket(const AttackResult& attack) : AttackPacket(RANGED_ATTACK, attack) {}
+	};
+
+
+	// Packet which notifies the server of a magic attack.
+	// Opcode: MAGIC_ATTACK(46)
+	class MagicAttackPacket : public AttackPacket
+	{
+	public:
+		MagicAttackPacket(const AttackResult& attack) : AttackPacket(MAGIC_ATTACK, attack) {}
 	};
 
 

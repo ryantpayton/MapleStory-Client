@@ -38,12 +38,12 @@ namespace IO
 		Cursor::State sendmouse(Cursor::State mst, vector2d<int16_t> pos) override;
 
 		void add(const Element& element) override;
-		void remove(Element::UIType type) override;
-		UIElement* get(Element::UIType type) const override;
+		void remove(UIElement::Type type) override;
+		UIElement* get(UIElement::Type type) const override;
 		UIElement* getfront(vector2d<int16_t> pos) const override;
 
 	private:
-		unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
-		Element::UIType focused;
+		unordered_map<UIElement::Type, unique_ptr<UIElement>> elements;
+		UIElement::Type focused;
 	};
 }

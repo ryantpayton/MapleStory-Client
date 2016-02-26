@@ -26,15 +26,15 @@
 #include "IO\Components\DamageNumber.h"
 #include "Util\rectangle2d.h"
 #include "Util\Randomizer.h"
+#include "Util\HashList.h"
 
 namespace Gameplay
 {
 	using std::string;
 	using std::pair;
 	using std::vector;
+	using std::list;
 	using std::map;
-	using Audio::Sound;
-	using Graphics::Animation;
 	using Graphics::Text;
 	using Graphics::EffectLayer;
 	using IO::DamageNumber;
@@ -74,11 +74,43 @@ namespace Gameplay
 		void sendhp(int8_t percentage, uint16_t playerlevel);
 
 	private:
+		struct DamageEffect
+		{
+			Animation hiteffect;
+			Sound hitsound;
+			vector<pair<int32_t, bool>> numbers;
+			bool fromright;
+		};
+
+		struct Bullet
+		{
+			Animation animation;
+			DamageEffect damageeffect;
+			vector2d<int16_t> position;
+
+			void draw(vector2d<int16_t> viewpos, float inter) const
+			{
+				vector2d<int16_t> bulletpos = position + viewpos;
+				bulletpos.shifty(-26);
+				animation.draw(bulletpos, inter);
+			}
+
+			bool update(vector2d<int16_t> target)
+			{
+				animation.update();
+
+				vector2d<int16_t> distance = target - position;
+				position += distance / 10;
+				return distance.length() < 10;
+			}
+		};
+
+		void applydamage(const DamageEffect& damageeffect);
+		void applyknockback(bool fromright);
 		void writemovement();
 		void parsestance(Stance toparse, node source);
 		void setstance(Stance newstance);
 		void nextmove();
-
 		pair<int32_t, bool> randomdamage(int32_t mindamage, 
 			int32_t maxdamage, float hitchance, float critical) const;
 
@@ -100,6 +132,8 @@ namespace Gameplay
 		bool touchdamage;
 		bool noflip;
 		bool notattack;
+
+		HashList<Bullet> bulletlist;
 
 		EffectLayer effects;
 		Text namelabel;

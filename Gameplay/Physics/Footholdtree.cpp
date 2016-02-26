@@ -68,7 +68,7 @@ namespace Gameplay
 		}
 
 		walls = vector2d<int16_t>(leftw + 25, rightw - 25);
-		borders = vector2d<int16_t>(topb - 400, botb + 400);
+		borders = vector2d<int16_t>(topb - 300, botb + 80);
 	}
 
 	Footholdtree::Footholdtree(InPacket& recv)

@@ -27,13 +27,15 @@ namespace Graphics
 	class GraphicsEngine : public Singleton<GraphicsEngine>
 	{
 	public:
+		void clear();
+
+		bool available(size_t id);
 		void addbitmap(const bitmap& bmp);
 		void draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, 
 			float alpha, float xscale, float yscale, int16_t centerx, int16_t centery);
-		bool available(size_t id);
-		void clear();
+
 		Text::Layout createlayout(const string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth);
-		void drawtext(const string& text, Text::Font font, Text::Alignment alignment, Text::Color color,
-			Text::Background back, const Text::Layout& layout, float alpha, vector2d<int16_t> origin);
+		void drawtext(const string& text, const Text::Layout& layout, Text::Font font, 
+			Text::Color color, Text::Background back, vector2d<int16_t> origin, float alpha);
 	};
 }

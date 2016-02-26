@@ -80,11 +80,8 @@ namespace Gameplay
 
 		portals.load(src["portal"], mapid);
 		physics.loadfht(src["foothold"]);
-		vector2d<int16_t> walls = physics.getfht().getwalls();
-		vector2d<int16_t> borders = physics.getfht().getborders();
-
-		mapinfo = MapInfo(src, walls, borders);
-		backgrounds = MapBackgrounds(src["back"], walls, borders);
+		backgrounds = src["back"];
+		mapinfo = MapInfo(src, physics.getfht().getwalls(), physics.getfht().getborders());
 		for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
 		{
 			layers[i] = MapLayer(src[std::to_string(i)]);
@@ -176,15 +173,7 @@ namespace Gameplay
 		drops.update(physics);
 		player.update(physics);
 		portals.update(player.getbounds());
-		camera.update(player.getrealposition());
-	}
-
-	void Stage::sendattack(const Attack& attack)
-	{
-		mobs.sendattack(attack);
-
-		//using Net::CloseRangeAttackPacket;
-		//Session::get().dispatch(CloseRangeAttackPacket(result));
+		camera.update(player.getposition());
 	}
 
 	void Stage::useskill(int32_t skillid)
@@ -208,6 +197,9 @@ namespace Gameplay
 
 	void Stage::useattack()
 	{
+		if (!player.canattack())
+			return;
+
 		Attack attack = player.prepareregularattack();
 		mobs.sendattack(attack);
 	}
@@ -271,7 +263,6 @@ namespace Gameplay
 		case Keyboard::ACTION:
 			if (down)
 			{
-				// Handle key actions which require parts of map data.
 				switch (action)
 				{
 				case Keyboard::UP:
@@ -285,8 +276,7 @@ namespace Gameplay
 					checkseats();
 					break;
 				case Keyboard::ATTACK:
-					if (player.canattack())
-						useattack();
+					useattack();
 					break;
 				case Keyboard::PICKUP:
 					checkdrops();
@@ -294,7 +284,6 @@ namespace Gameplay
 				}
 			}
 
-			// Pass the action to the playable mapobject.
 			playable->sendaction(static_cast<Keyboard::Action>(action), down);
 			break;
 		case Keyboard::SKILL:

@@ -46,6 +46,8 @@ namespace Net
 		CHANGEMAP = 38,
 		MOVE_PLAYER = 41,
 		CLOSE_ATTACK = 44,
+		RANGED_ATTACK = 45,
+		MAGIC_ATTACK = 46,
 
 		// Messaging
 		GENERAL_CHAT = 49,

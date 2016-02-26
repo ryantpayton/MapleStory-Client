@@ -19,8 +19,11 @@
 #include "Item.h"
 #include "Pet.h"
 #include "Equip.h"
-#include "Character\CharStats.h"
 #include "Console.h"
+
+#include "Character\CharStats.h"
+
+#include "Util\Optional.h"
 
 namespace Character
 {
@@ -84,7 +87,7 @@ namespace Character
 		~Inventory();
 
 		// Recalculate sums of equip stats.
-		void recalcstats();
+		void recalcstats(Weapon::Type weapontype);
 		// Add total stats to the character stats.
 		void addtotalsto(CharStats& stats) const;
 		// Set the meso amount.
@@ -117,8 +120,12 @@ namespace Character
 		// Change the quantity of an item.
 		void changecount(Type type, int16_t slot, int16_t count);
 
+		// Check if the use inventory contains at least one projectile.
+		bool hasprojectile();
 		// Return if an equip is equipped in the specfied slot.
 		bool hasequipped(Equipslot::Value slot) const;
+		// Return the currently active projectile.
+		int16_t getprojectile() const;
 		// Return the number of slots for the specified inventory.
 		uint8_t getslots(Type type) const;
 		// Return a total stat.
@@ -133,17 +140,19 @@ namespace Character
 		int16_t finditem(Type type, int32_t itemid) const;
 
 		// Obtain a pointer to the item at the specified type and slot.
-		const Item* getitem(Type type, int16_t slot) const;
+		Optional<Item> getitem(Type type, int16_t slot) const;
 		// Obtain a pointer to the equip at the specified type and slot.
-		const Equip* getequip(Type type, int16_t slot) const;
+		Optional<Equip> getequip(Type type, int16_t slot) const;
 
 	private:
 		void add(Type type, int16_t slot, Item* toadd);
 
 		int64_t meso;
 		map<Type, uint8_t> slots;
-		map<Type, map<int16_t, Item*>> inventoryitems;
+		map<Type, map<int16_t, Item*>> inventories;
 		map<Equipstat::Value, uint16_t> totalstats;
+
+		int16_t projectile;
 	};
 }
 

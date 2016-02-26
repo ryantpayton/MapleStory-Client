@@ -91,9 +91,9 @@ namespace IO
 			return true;
 		}
 
-		UIType type() const override
+		UIElement::Type type() const override
 		{
-			return STATUSBAR;
+			return UIElement::STATUSBAR;
 		}
 
 		UIElement* instantiate() const override

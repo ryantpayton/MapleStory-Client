@@ -23,7 +23,7 @@ namespace IO
 {
 	UIStateLogin::UIStateLogin()
 	{
-		focused = Element::NONE;
+		focused = UIElement::NONE;
 
 		add(ElementLogin());
 	}
@@ -65,14 +65,14 @@ namespace IO
 			}
 			else
 			{
-				focused = Element::NONE;
+				focused = UIElement::NONE;
 				return mst;
 			}
 		}
 		else
 		{
 			UIElement* front = nullptr;
-			Element::UIType fronttype = Element::NONE;
+			UIElement::Type fronttype = UIElement::NONE;
 
 			for (auto& elit : elements)
 			{
@@ -93,7 +93,7 @@ namespace IO
 
 	void UIStateLogin::add(const Element& element)
 	{
-		Element::UIType type = element.type();
+		UIElement::Type type = element.type();
 		bool isfocused = element.isfocused();
 
 		if (get(type))
@@ -105,10 +105,10 @@ namespace IO
 			focused = type;
 	}
 
-	void UIStateLogin::remove(Element::UIType type)
+	void UIStateLogin::remove(UIElement::Type type)
 	{
 		if (focused == type)
-			focused = Element::NONE;
+			focused = UIElement::NONE;
 
 		if (get(type))
 		{
@@ -118,7 +118,7 @@ namespace IO
 		}
 	}
 
-	UIElement* UIStateLogin::get(Element::UIType type) const
+	UIElement* UIStateLogin::get(UIElement::Type type) const
 	{
 		return elements.count(type) ? elements.at(type).get() : nullptr;
 	}

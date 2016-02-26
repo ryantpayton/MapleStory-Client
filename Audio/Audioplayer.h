@@ -35,23 +35,47 @@ namespace Audio
 	class AudioPlayer : public Singleton<AudioPlayer>
 	{
 	public:
+		// Preloaded sounds.
+		static const size_t NUM_SOUNDS = 9;
+		enum Sound
+		{
+			// UI
+			BUTTONCLICK,
+			BUTTONOVER,
+
+			// Login
+			SELECTCHAR,
+			GAMESTART,
+
+			// Game
+			JUMP,
+			DROP,
+			PICKUP,
+			PORTAL,
+			LEVELUP
+		};
+
 		AudioPlayer();
 		~AudioPlayer();
 
-		bool init();
+		bool init(uint8_t sfxvolume, uint8_t bgmvolume);
 		void close();
 		void setsfxvolume(uint8_t volume);
 		void setbgmvolume(uint8_t volume);
 
+		void playsound(Sound sound);
 		void playsound(size_t soundid);
 		void playbgm(string path);
 		size_t addsound(node src);
 
 	private:
 		void playbgm(const void* data, size_t length);
+		void addsound(Sound sound, node src);
+
+		HSAMPLE staticsounds[NUM_SOUNDS];
+		unordered_map<size_t, HSAMPLE> soundcache;
 
 		HSTREAM bgm;
-		unordered_map<size_t, HSAMPLE> soundcache;
 		string bgmpath;
 	};
 }

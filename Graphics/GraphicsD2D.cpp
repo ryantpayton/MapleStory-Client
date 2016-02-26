@@ -273,7 +273,7 @@ namespace Graphics
 		}
 
 		Text::Layout textlayout;
-		textlayout.dimensions = vector2d<float>(width, height);
+		textlayout.dimensions = vector2d<int16_t>(width, height);
 		textlayout.endoffset = vector2d<int16_t>(
 			static_cast<int16_t>(xend),
 			static_cast<int16_t>(height)
@@ -283,8 +283,8 @@ namespace Graphics
 		return textlayout;
 	}
 
-	void GraphicsD2D::drawtext(const wstring& text, Text::Font font, Text::Alignment alignment, Text::Color color,
-		Text::Background back, float alpha, vector2d<float> pos, vector2d<float> dimensions) {
+	void GraphicsD2D::drawtext(const wstring& text, const Text::Layout& layout, Text::Font font, 
+		Text::Color color, Text::Background back, vector2d<int16_t> pos, float alpha) {
 
 		if (!p_target)
 			return;
@@ -298,8 +298,8 @@ namespace Graphics
 
 		FLOAT x = pos.x();
 		FLOAT y = pos.y() + 5;
-		FLOAT width = dimensions.x();
-		FLOAT height = dimensions.y();
+		FLOAT width = layout.dimensions.x();
+		FLOAT height = layout.dimensions.y();
 
 		if (width == 0.0f)
 			width = 800.0f;
@@ -310,7 +310,7 @@ namespace Graphics
 			return;
 
 		D2D1_RECT_F layrect;
-		switch (alignment)
+		switch (layout.alignment)
 		{
 		case Text::LEFT:
 			layrect = D2D1::RectF(x, y, x + width, y + height);

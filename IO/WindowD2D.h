@@ -32,12 +32,12 @@ namespace IO
 		WindowD2D();
 		~WindowD2D();
 
-		bool init();
+		bool init(bool fullscreen);
 		void update();
 		void begin() const;
 		void end() const;
 		void togglemode();
-		void fadeout();
+		void fadeout(float step, void(*fadeproc)());
 		void handlekey(WPARAM, bool);
 
 	private:
@@ -46,6 +46,8 @@ namespace IO
 		void updateopc();
 		void gofullscreen();
 		void gowindowed();
+
+		void(*fadeprocedure)();
 
 		HWND wnd;
 		MONITORINFO moninfo;

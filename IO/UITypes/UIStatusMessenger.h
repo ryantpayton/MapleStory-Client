@@ -71,9 +71,9 @@ namespace IO
 
 	class ElementStatusMessenger : public Element
 	{
-		UIType type() const override
+		UIElement::Type type() const override
 		{
-			return STATUSMESSENGER;
+			return UIElement::STATUSMESSENGER;
 		}
 
 		UIElement* instantiate() const override

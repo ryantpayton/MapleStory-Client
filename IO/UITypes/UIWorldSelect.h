@@ -44,9 +44,9 @@ namespace IO
 	public:
 		ElementWorldSelect() {}
 
-		UIType type() const override
+		UIElement::Type type() const override
 		{
-			return WORLDSELECT;
+			return UIElement::WORLDSELECT;
 		}
 
 		UIElement* instantiate() const override

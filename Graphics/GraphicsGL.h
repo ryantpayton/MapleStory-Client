@@ -45,6 +45,8 @@ namespace Graphics
 	class GraphicsGL : public Singleton<GraphicsGL>
 	{
 	public:
+		GraphicsGL();
+
 		// Initialise all resources.
 		bool init();
 		// Re-initialise, for example after changing screen modes.
@@ -59,14 +61,22 @@ namespace Graphics
 		// Draw the bitmap with the given id and paramters.
 		void draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, 
 			float a, float xs, float ys, int16_t cx, int16_t cy);
-		// Draw the buffer contents.
-		void flush();
 
 		// Create a layout for the text with the parameters specified.
 		Text::Layout createlayout(const string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth);
 		// Draw a text with the given parameters.
-		void drawtext(const string& text, Text::Font font, Text::Alignment alignment, Text::Color color,
-			Text::Background back, const Text::Layout& layout, float opacity, vector2d<int16_t> origin);
+		void drawtext(const string& text, const Text::Layout& layout, Text::Font font, 
+			Text::Color color, Text::Background back, vector2d<int16_t> origin, float opacity);
+
+		// Lock the current scene.
+		void lock();
+		// Unlock the scene.
+		void unlock();
+
+		// Draw the buffer contents with the specified scene opacity.
+		void flush(float opacity);
+		// Clear the buffer contents.
+		void clearscene();
 
 	private:
 		bool addfont(const char* name, Text::Font id, FT_UInt width, FT_UInt height);
@@ -204,6 +214,8 @@ namespace Graphics
 		static const GLshort ATLASH = 10000;
 		static const GLshort MINLOSIZE = 32;
 
+		bool locked;
+
 		vector<Quad> quads;
 		GLuint vbo;
 		GLuint atlas;
@@ -214,6 +226,7 @@ namespace Graphics
 		GLint uniform_texture;
 		GLint uniform_atlassize;
 		GLint uniform_screensize;
+		GLint uniform_yoffset;
 		GLint uniform_fontregion;
 
 		unordered_map<size_t, Offset> offsets;

@@ -56,9 +56,9 @@ namespace IO
 
 	class ElementLogin : public Element
 	{
-		UIType type() const override
+		UIElement::Type type() const override
 		{
-			return LOGIN;
+			return UIElement::LOGIN;
 		}
 
 		UIElement* instantiate() const override

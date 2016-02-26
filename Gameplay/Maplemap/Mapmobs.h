@@ -21,17 +21,16 @@
 
 #include "Gameplay\Attack.h"
 
-#include <map>
+#include "Util\HashList.h"
 
 namespace Gameplay
 {
+	using std::list;
 	using std::map;
 
 	class MapMobs : public MapObjects
 	{
 	public:
-		MapMobs();
-
 		void update(const Physics& physics) override;
 
 		void addmob(int32_t oid, int32_t mobid, bool control, int8_t stance, 
@@ -42,10 +41,11 @@ namespace Gameplay
 
 	private:
 		void applyattack(const Attack& attack);
+		vector<int32_t> findclose(rectangle2d<int16_t> range, uint8_t mobcount) const;
+		vector<int32_t> findranged(rectangle2d<int16_t> range, vector2d<int16_t> origin, uint8_t mobcount) const;
 		Mob* getmob(int32_t oid);
 
-		map<uint8_t, Attack> attackschedule;
-		uint8_t raid;
+		HashList<Attack> attackschedule;
 	};
 }
 

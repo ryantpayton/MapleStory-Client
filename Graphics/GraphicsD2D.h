@@ -50,8 +50,8 @@ namespace Graphics
 			float xscale, float yscale, int16_t originx, int16_t originy);
 
 		Text::Layout createlayout(const wstring& text, Text::Font font, float maxwidth);
-		void drawtext(const wstring& text, Text::Font font, Text::Alignment alignment, Text::Color color, 
-			Text::Background back, float alpha, vector2d<float> origin, vector2d<float> dimensions);
+		void drawtext(const wstring& text, const Text::Layout& layout, Text::Font font, 
+			Text::Color color, Text::Background back, vector2d<int16_t> origin, float alpha);
 
 	private:
 		void addfont(Text::Font id, const WCHAR* name, float size, DWRITE_FONT_WEIGHT weight);

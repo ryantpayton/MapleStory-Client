@@ -21,34 +21,21 @@
 #include "Net\Session.h"
 #include "Net\Packets\AttackAndSkillPackets.h"
 
+#include "Util\BinaryTree.h"
+
 namespace Gameplay
 {
-	MapMobs::MapMobs() 
-	{
-		raid = 0;
-	}
-
 	void MapMobs::update(const Physics& physics)
 	{
-		vector<uint8_t> toremove;
-		for (auto& attid : attackschedule)
+		vector<size_t> indices = attackschedule.collect(&Attack::update, Constants::TIMESTEP);
+		for (auto& index : indices)
 		{
-			Attack& attack = attid.second;
-			if (attack.delay < Constants::TIMESTEP)
+			Optional<Attack> attack = attackschedule.get(index);
+			if (attack)
 			{
-				applyattack(attack);
-
-				toremove.push_back(attid.first);
+				applyattack(*attack);
+				attackschedule.remove(index);
 			}
-			else
-			{
-				attack.delay -= Constants::TIMESTEP;
-			}
-		}
-
-		for (uint8_t rmid : toremove)
-		{
-			attackschedule.erase(rmid);
 		}
 
 		MapObjects::update(physics);
@@ -56,47 +43,116 @@ namespace Gameplay
 
 	void MapMobs::applyattack(const Attack& attack)
 	{
-		rectangle2d<int16_t> range;
-		if (attack.direction == Attack::TOLEFT)
+		Attack::Direction direction = attack.direction;
+		vector2d<int16_t> origin = attack.origin;
+		rectangle2d<int16_t> range = attack.range;
+		switch (direction)
 		{
+		case Attack::TOLEFT:
 			range = rectangle2d<int16_t>(
-				attack.range.getlt() + attack.origin,
-				attack.range.getrb() + attack.origin);
+				range.getlt() + origin,
+				range.getrb() + origin
+				);
+			break;
+		case Attack::TORIGHT:
+			range = rectangle2d<int16_t>(
+				origin.x() - range.r(),
+				origin.x() - range.l(),
+				origin.y() + range.t(),
+				origin.y() + range.b()
+				);
+			break;
 		}
-		else if (attack.direction == Attack::TORIGHT)
+
+		uint8_t mobcount = attack.mobcount;
+		if (mobcount == 0)
+			return;
+
+		vector<int32_t> targets;
+		switch (attack.type)
 		{
-			range = rectangle2d<int16_t>(
-				attack.origin.x() - attack.range.r(),
-				attack.origin.x() - attack.range.l(),
-				attack.origin.y() + attack.range.t(),
-				attack.origin.y() + attack.range.b());
+		case Attack::CLOSE:
+			targets = findclose(range, mobcount);
+			break;
+		case Attack::RANGED:
+			targets = findranged(range, origin, mobcount);
+			break;
+		}
+
+		AttackResult result = AttackResult(attack);
+		for (auto& target : targets)
+		{
+			Mob* mob = reinterpret_cast<Mob*>(get(target));
+			if (mob)
+			{
+				result.damagelines[target] = mob->damage(attack);
+				result.mobcount++;
+			}
 		}
 
 		attack.usesound.play();
 
-		AttackResult result;
-		for (auto& mmo : objects)
+		using Net::Session;
+		switch (attack.type)
 		{
-			if (result.damagelines.size() == attack.mobcount)
-				break;
+		case Attack::CLOSE:
+			using Net::CloseRangeAttackPacket;
+			Session::get().dispatch(CloseRangeAttackPacket(result));
+			break;
+		case Attack::RANGED:
+			using Net::RangedAttackPacket;
+			Session::get().dispatch(RangedAttackPacket(result));
+			break;
+		}
+	}
 
-			if (mmo.second == nullptr)
+	vector<int32_t> MapMobs::findclose(rectangle2d<int16_t> range, uint8_t mobcount) const
+	{
+		vector<int32_t> targets;
+		for (auto& object : objects)
+		{
+			MapObject* mmo = object.second.get();
+			if (mmo == nullptr)
 				continue;
 
-			Mob* mob = reinterpret_cast<Mob*>(mmo.second.get());
+			Mob* mob = reinterpret_cast<Mob*>(mmo);
 			if (mob->isactive() && mob->isinrange(range))
-				result.damagelines[mob->getoid()] = mob->damage(attack);
-		}
-		result.direction = attack.direction;
-		result.mobcount = static_cast<uint8_t>(result.damagelines.size());
-		result.hitcount = attack.hitcount;
-		result.skill = attack.skill;
-		result.speed = attack.speed;
-		result.display = 0;
+			{
+				int32_t oid = mob->getoid();
+				targets.push_back(oid);
 
-		using Net::Session;
-		using Net::CloseRangeAttackPacket;
-		Session::get().dispatch(CloseRangeAttackPacket(result));
+				if (targets.size() == mobcount)
+					break;
+			}
+		}
+		return targets;
+	}
+
+	vector<int32_t> MapMobs::findranged(rectangle2d<int16_t> range, vector2d<int16_t> origin, uint8_t mobcount) const
+	{
+		BinaryTree<int32_t, int16_t> distancetree;
+		for (auto& object : objects)
+		{
+			MapObject* mmo = object.second.get();
+			if (mmo == nullptr)
+				continue;
+
+			Mob* mob = reinterpret_cast<Mob*>(mmo);
+			if (mob->isactive() && mob->isinrange(range))
+			{
+				int32_t oid = mob->getoid();
+				int16_t distance = (origin - mob->getposition()).length();
+				distancetree.add(oid, distance);
+			}
+		}
+
+		vector<int32_t> targets;
+		auto collector = [&](int32_t oid){
+			if (targets.size() < mobcount)
+				targets.push_back(oid);
+		};
+		distancetree.minwalk(collector);
+		return targets;
 	}
 
 	void MapMobs::addmob(int32_t oid, int32_t id, bool control, int8_t stance, 
@@ -129,8 +185,7 @@ namespace Gameplay
 
 	void MapMobs::sendattack(Attack attack)
 	{
-		attackschedule[raid] = attack;
-		raid++;
+		attackschedule.add(attack);
 	}
 
 	Mob* MapMobs::getmob(int32_t oid)

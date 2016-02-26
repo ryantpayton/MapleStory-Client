@@ -15,84 +15,31 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "IO\Element.h"
-#include "Graphics\Text.h"
-#include "Util\Randomizer.h"
+#include "BulletData.h"
+#include "nlnx\nx.hpp"
 
-namespace IO
+namespace Character
 {
-	using Graphics::Text;
-
-	// Keyboard which is used via the mouse. The game uses this for pic/pin input.
-	class UISoftkey : public UIElement
+	BulletData::BulletData(int32_t id) : ItemData(id)
 	{
-	public:
-		enum Buttons
-		{
-			BT_0,
-			BT_1,
-			BT_2,
-			BT_3,
-			BT_4,
-			BT_5,
-			BT_6,
-			BT_7,
-			BT_8,
-			BT_9,
-			BT_NEXT,
-			BT_BACK,
-			BT_CANCEL,
-			BT_OK
-		};
+		node src = src = nl::nx::item["Consume"]["0" + std::to_string(id / 10000) + ".img"]["0" + std::to_string(id)];
 
-		enum SkType
-		{
-			REGISTER,
-			CHARSELECT,
-			CHARDEL,
-			MERCHANT
-		};
+		bullet = src["bullet"];
+		watk = src["info"]["incPAD"];
+	}
 
-		UISoftkey(SkType);
-
-		void draw(float) const override;
-		void buttonpressed(uint16_t) override;
-
-	private:
-		void shufflekeys();
-		vector2d<int16_t> keypos(uint8_t) const;
-
-		SkType type;
-
-		Text entry;
-		Randomizer random;
-	};
-
-	class ElementSoftkey : public Element
+	BulletData::BulletData()
 	{
-	public:
-		ElementSoftkey(UISoftkey::SkType t) 
-		{
-			sktype = t;
-		}
+		watk = 0;
+	}
 
-		bool isfocused() const override
-		{
-			return true;
-		}
+	int16_t BulletData::getwatk() const
+	{
+		return watk;
+	}
 
-		UIElement::Type type() const override
-		{
-			return UIElement::SOFTKEYBOARD;
-		}
-
-		UISoftkey* instantiate() const override
-		{
-			return new UISoftkey(sktype);
-		}
-	private:
-		UISoftkey::SkType sktype;
-	};
+	Animation BulletData::getbullet() const
+	{
+		return bullet;
+	}
 }
-

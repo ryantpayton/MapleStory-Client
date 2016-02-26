@@ -18,7 +18,6 @@
 #include "Inventory.h"
 #include "Data\DataFactory.h"
 #include <numeric>
-#include <algorithm>
 
 namespace Character
 {
@@ -26,23 +25,65 @@ namespace Character
 
 	Inventory::Inventory()
 	{
+		projectile = 0;
 		meso = 0;
 		slots[EQUIPPED] = 255;
 	}
 
-	Inventory::~Inventory() {}
+	Inventory::~Inventory() 
+	{
+		for (auto& sub : inventories)
+		{
+			Type type = sub.first;
+			for (auto& item : sub.second)
+			{
+				int16_t slot = item.first;
+				remove(type, slot);
+			}
+		}
+	}
 
-	void Inventory::recalcstats()
+	void Inventory::recalcstats(Weapon::Type type)
 	{
 		for (auto it = Equipstat::it(); it.hasnext(); it.increment())
 		{
 			Equipstat::Value es = it.get();
 			totalstats[es] = static_cast<uint16_t>(std::accumulate(
-				inventoryitems[EQUIPPED].begin(), 
-				inventoryitems[EQUIPPED].end(), 0,
+				inventories[EQUIPPED].begin(), 
+				inventories[EQUIPPED].end(), 0,
 				[es](const uint16_t& val, const std::pair<int16_t, Item*>& itit) {
 				return val + reinterpret_cast<Equip*>(itit.second)->getstat(es);
 			}));
+		}
+
+		int32_t prefix = -1;
+		switch (type)
+		{
+		case Weapon::BOW:
+			prefix = 2060;
+			break;
+		case Weapon::CROSSBOW:
+			prefix = 2061;
+			break;
+		}
+
+		projectile = 0;
+		for (auto& use : inventories[USE])
+		{
+			if (use.second && use.second->getid() / 1000 == prefix)
+			{
+				projectile = use.first;
+				break;
+			}
+		}
+
+		if (projectile > 0)
+		{
+			int16_t watkbonus = getitem(USE, projectile)
+				.transform(DataFactory::get(), &DataFactory::getbulletdata, &Item::getid)
+				.mapordefault(&BulletData::getwatk, int16_t(0));
+
+			totalstats[Equipstat::WATK] += watkbonus;
 		}
 	}
 
@@ -113,10 +154,10 @@ namespace Character
 
 	void Inventory::add(Type type, int16_t slot, Item* toadd)
 	{
-		if (inventoryitems[type].count(slot))
+		if (inventories[type].count(slot))
 			remove(type, slot);
 
-		inventoryitems[type][slot] = toadd;
+		inventories[type][slot] = toadd;
 	}
 
 	void Inventory::remove(Type type, int16_t slot)
@@ -124,26 +165,33 @@ namespace Character
 		if (slot >= slots[type])
 			return;
 
-		delete inventoryitems[type][slot];
-		inventoryitems[type][slot] = nullptr;
-		inventoryitems[type].erase(slot);
+		delete inventories[type][slot];
+		inventories[type][slot] = nullptr;
+		inventories[type].erase(slot);
+
+		if (type == USE && slot == projectile)
+		{
+			projectile = 0;
+		}
 	}
 
 	void Inventory::swap(Type firsttype, int16_t firstslot, Type secondtype, int16_t secondslot)
 	{
-		Item* temp = inventoryitems[firsttype][firstslot];
-		inventoryitems[firsttype][firstslot] = inventoryitems[secondtype][secondslot];
-		inventoryitems[secondtype][secondslot] = temp;
+		Item* temp = inventories[firsttype][firstslot];
+		inventories[firsttype][firstslot] = inventories[secondtype][secondslot];
+		inventories[secondtype][secondslot] = temp;
 
-		if (inventoryitems[firsttype][firstslot] == nullptr)
-			inventoryitems[firsttype].erase(firstslot);
+		if (inventories[firsttype][firstslot] == nullptr)
+			inventories[firsttype].erase(firstslot);
 	}
 
 	void Inventory::changecount(Type type, int16_t slot, int16_t count)
 	{
-		Item* item = inventoryitems[type][slot];
+		Item* item = inventories[type][slot];
 		if (item)
+		{
 			item->setcount(count);
+		}
 	}
 
 	void Inventory::modify(Type type, int16_t slot, int8_t mode, int16_t arg, Movement move)
@@ -198,10 +246,20 @@ namespace Character
 		return meso;
 	}
 
+	bool Inventory::hasprojectile()
+	{
+		return projectile > 0;
+	}
+
 	bool Inventory::hasequipped(Equipslot::Value slot) const
 	{
 		int16_t value = Equipslot::valueof(slot);
-		return inventoryitems.at(Inventory::EQUIPPED).count(value) > 0;
+		return inventories.at(Inventory::EQUIPPED).count(value) > 0;
+	}
+
+	int16_t Inventory::getprojectile() const
+	{
+		return projectile;
 	}
 
 	Equipslot::Value Inventory::findequipslot(int32_t itemid) const
@@ -235,10 +293,10 @@ namespace Character
 		uint8_t numslots = slots.at(type);
 		for (uint8_t i = 1; i < numslots; i++)
 		{
-			if (inventoryitems.count(type) == 0)
+			if (inventories.count(type) == 0)
 				return 1;
 
-			if (inventoryitems.at(type).count(i) == 0)
+			if (inventories.at(type).count(i) == 0)
 				return i;
 		}
 		return 0;
@@ -246,42 +304,35 @@ namespace Character
 
 	int16_t Inventory::finditem(Type type, int32_t itemid) const
 	{
-		if (inventoryitems.count(type) == 0)
+		if (inventories.count(type) == 0)
 			return -1;
 
-		auto result = std::find_if(
-			inventoryitems.at(type).begin(), 
-			inventoryitems.at(type).end(),
-			[itemid](const std::pair<int16_t, Item*>& itit) {
-			return itit.second->getid() == itemid;
-		});
-
-		if (result == inventoryitems.at(type).end())
-			return -1;
-		else
-			return result->first;
+		for (auto& item : inventories.at(type))
+		{
+			int32_t id = item.second->getid();
+			if (id == itemid)
+				return item.first;
+		}
+		return -1;
 	}
 
-	const Item* Inventory::getitem(Type type, int16_t slot) const
+	Optional<Item> Inventory::getitem(Type type, int16_t slot) const
 	{
-		if (inventoryitems.count(type) == 0)
+		if (!inventories.count(type))
 			return nullptr;
 
-		if (inventoryitems.at(type).count(slot) == 0)
+		if (!inventories.at(type).count(slot))
 			return nullptr;
 
-		return inventoryitems.at(type).at(slot);
+		return inventories.at(type).at(slot);
 	}
 
-	const Equip* Inventory::getequip(Type type, int16_t slot) const
+	Optional<Equip> Inventory::getequip(Type type, int16_t slot) const
 	{
 		if (type != EQUIP && type != EQUIPPED)
 			return nullptr;
 
-		const Item* item = getitem(type, slot);
-		if (item)
-			return reinterpret_cast<const Equip*>(item);
-		else
-			return nullptr;
+		return getitem(type, slot)
+			.reinterpret<Equip>();
 	}
 }

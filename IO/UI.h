@@ -50,7 +50,9 @@ namespace IO
 
 		void sendmouse(vector2d<int16_t> pos);
 		void sendmouse(bool pressed, vector2d<int16_t> pos);
+		void sendmouse(bool pressed);
 		void doubleclick(vector2d<int16_t> pos);
+		void doubleclick();
 		void sendkey(int32_t keycode, bool pressed);
 		void focustextfield(Textfield* textfield);
 		void dragicon(Icon* icon);
@@ -61,13 +63,13 @@ namespace IO
 		void changestate(State mode);
 
 		void add(const Element& type);
-		void remove(Element::UIType type);
+		void remove(UIElement::Type type);
 
-		bool haselement(Element::UIType type) const;
-		UIElement* getelement(Element::UIType type) const;
+		bool haselement(UIElement::Type type) const;
+		UIElement* getelement(UIElement::Type type) const;
 
 		template <class T>
-		T* getelement(Element::UIType type) const;
+		T* getelement(UIElement::Type type) const;
 
 	private:
 		unique_ptr<UIState> state;
@@ -78,10 +80,12 @@ namespace IO
 
 		Textfield* focusedtextfield;
 		bool enabled;
+
+		int16_t clickrepeat;
 	};
 
 	template <class T>
-	T* UI::getelement(Element::UIType type) const
+	T* UI::getelement(UIElement::Type type) const
 	{
 		UIElement* element = getelement(type);
 		return element ? reinterpret_cast<T*>(element) : nullptr;

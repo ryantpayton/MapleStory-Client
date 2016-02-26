@@ -21,7 +21,7 @@
 
 namespace IO
 {
-	Icon::Icon(Texture t, Element::UIType p, int16_t i, int16_t c)
+	Icon::Icon(Texture t, UIElement::Type p, int16_t i, int16_t c)
 	{
 		texture = t;
 		parent = p;
@@ -35,7 +35,7 @@ namespace IO
 
 	Icon::Icon() 
 	{
-		parent = Element::NONE;
+		parent = UIElement::NONE;
 		identifier = 0;
 		dragged = false;
 		showcount = false;
@@ -77,6 +77,11 @@ namespace IO
 		dragged = false;
 	}
 
+	void Icon::setidentifier(int16_t id)
+	{
+		identifier = id;
+	}
+
 	void Icon::setcount(int16_t c)
 	{
 		count = c;
@@ -92,7 +97,7 @@ namespace IO
 		return identifier;
 	}
 
-	Element::UIType Icon::getparent() const
+	UIElement::Type Icon::getparent() const
 	{
 		return parent;
 	}

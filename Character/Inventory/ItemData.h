@@ -31,8 +31,7 @@ namespace Character
 	{
 	public:
 		// Creates an item from the game's Item.nx with the specified id.
-		// Parameters: int32_t(item id)
-		ItemData(int32_t);
+		ItemData(int32_t itemid);
 		// A default item, which is used when an item is requested by the server, but does not exist in the game files.
 		ItemData();
 		// Empty destructor.
@@ -42,16 +41,18 @@ namespace Character
 		// Returns the item id.
 		int32_t getid() const;
 		// Returns the item's name loaded from the String.nx file.
-		const string& getname() const;
+		string getname() const;
 		// Returns the item's description loaded from the String.nx file.
-		const string& getdesc() const;
+		string getdesc() const;
 		// Returns one of the item's icons. For each item there is a 'raw' icon and an icon with a drop shadow.
-		// Parameters: bool(raw)
-		const Texture& geticon(bool) const;
+		const Texture& geticon(bool raw) const;
+
 	protected:
-		const string& getcategory() const;
+		string getcategory() const;
+
 	private:
 		string geteqcategory(int32_t) const;
+
 		map<bool, Texture> icons;
 		int32_t itemid;
 		string name;

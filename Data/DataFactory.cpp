@@ -63,11 +63,27 @@ namespace Data
 		}
 		else
 		{
-			if (!itemdata.count(itemid))
-				itemdata[itemid] = ItemData(itemid);
+			int32_t prefix2 = itemid / 10000;
+			if (prefix2 == 206)
+			{
+				return getbulletdata(itemid);
+			}
+			else
+			{
+				if (!itemdata.count(itemid))
+					itemdata[itemid] = ItemData(itemid);
 
-			return itemdata[itemid];
+				return itemdata[itemid];
+			}
 		}
+	}
+
+	const BulletData& DataFactory::getbulletdata(int32_t itemid)
+	{
+		if (!bullets.count(itemid))
+			bullets[itemid] = BulletData(itemid);
+
+		return bullets[itemid];
 	}
 
 	const Clothing& DataFactory::getclothing(int32_t itemid)

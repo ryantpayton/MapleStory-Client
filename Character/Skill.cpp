@@ -27,9 +27,9 @@ namespace Character
 		strid.insert(0, 7 - strid.length(), '0');
 		nl::node src = nl::nx::skill[strid.substr(0, 3) + ".img"]["skill"][strid];
 
-		icons[0] = Texture(src["icon"]);
-		icons[1] = Texture(src["iconDisabled"]);
-		icons[2] = Texture(src["iconMouseOver"]);
+		icons[NORMAL] = Texture(src["icon"]);
+		icons[DISABLED] = Texture(src["iconDisabled"]);
+		icons[MOUSEOVER] = Texture(src["iconMouseOver"]);
 
 		if (src["effect"]["0"].data_type() == nl::node::type::bitmap)
 		{
@@ -119,10 +119,10 @@ namespace Character
 			return actions[0];
 	}
 
-	const Texture* Skill::geticon(uint8_t type) const
+	Optional<SkillLevel> Skill::getlevel(int32_t level) const
 	{
-		if (icons.count(type))
-			return &icons.at(type);
+		if (levels.count(level))
+			return levels.at(level);
 		else
 			return nullptr;
 	}
@@ -149,11 +149,8 @@ namespace Character
 			return effects[0];
 	}
 
-	const SkillLevel* Skill::getlevel(int32_t level) const
+	const Texture& Skill::geticon(IconType type) const
 	{
-		if (levels.count(level))
-			return &levels.at(level);
-		else
-			return nullptr;
+		return icons.at(type);
 	}
 }

@@ -47,6 +47,7 @@ namespace Character
 		mindamage = 0;
 		honor = 0;
 		attackspeed = 0;
+		projectilerange = 400;
 		mastery = 0.5f;
 		critical = 0.05f;
 		mincrit = 0.5f;
@@ -191,5 +192,10 @@ namespace Character
 
 		uint16_t level = getstat(Maplestat::LEVEL);
 		return (level < LEVELCAP) ? exptable[level] : 0;
+	}
+
+	rectangle2d<int16_t> CharStats::getrange() const
+	{
+		return rectangle2d<int16_t>(-projectilerange, -5, -50, 50);
 	}
 }

@@ -320,7 +320,7 @@ namespace IO
 			{
 				active = false;
 				UI::get().focustextfield(nullptr);
-				UI::get().remove(Element::CHARSELECT);
+				UI::get().remove(CHARSELECT);
 				UI::get().add(ElementCharSelect());
 			}
 			break;

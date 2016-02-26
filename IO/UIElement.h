@@ -31,6 +31,25 @@ namespace IO
 	class UIElement
 	{
 	public:
+		enum Type
+		{
+			NONE,
+			LOGIN,
+			LOGINWAIT,
+			LOGINNOTICE,
+			WORLDSELECT,
+			CHARSELECT,
+			CHARCREATION,
+			SOFTKEYBOARD,
+			STATUSMESSENGER,
+			STATUSBAR,
+			BUFFLIST,
+			NPCTALK,
+			STATSINFO,
+			ITEMINVENTORY,
+			EQUIPINVENTORY,
+		};
+
 		virtual ~UIElement();
 
 		virtual void draw(float inter) const;
@@ -44,16 +63,18 @@ namespace IO
 		virtual void buttonpressed(uint16_t buttonid);
 		virtual void doubleclick(vector2d<int16_t> cursorpos);
 		virtual void icondropped(int16_t identifier);
+		virtual void dropicon(vector2d<int16_t> cursorpos, Type type, int16_t identifier);
 		virtual Cursor::State sendmouse(bool clicked, vector2d<int16_t> cursorpos);
 		virtual rectangle2d<int16_t> bounds() const;
 
 	protected:
 		UIElement();
 
-		bool active;
-		vector2d<int16_t> position;
 		vector2d<int16_t> dimension;
 		map<uint16_t, unique_ptr<Button>> buttons;
 		vector<Sprite> sprites;
+
+		vector2d<int16_t> position;
+		bool active;
 	};
 }

@@ -24,8 +24,8 @@ namespace Net
 	const string MACS = "68-5D-43-F8-B8-6C, 7A-79-19-8B-31-3F";
 	const string HWID = "685D43F8_B86C7A79";
 
-	// Packet which tells the server which character was picked.
-	// Also sends (fake) Mac-adress and Hardware Id.
+	// Tell the server which character was picked.
+	// Opcode: SELECT_CHAR(19)
 	class SelectCharPacket : public OutPacket
 	{
 	public:
@@ -37,8 +37,8 @@ namespace Net
 		}
 	};
 
-	// Packet which registers a pic and tells the server which character was picked.
-	// Also sends (fake) Mac-adress and Hardware Id.
+	// Registers a pic and tells the server which character was picked.
+	// Opcode: REGISTER_PIC(29)
 	class RegisterPicPacket : public OutPacket
 	{
 	public:
@@ -53,8 +53,8 @@ namespace Net
 		}
 	};
 
-	// Packet which requests using the specified character with the specified pic.
-	// Also sends (fake) mac-adress and hardware id.
+	// Requests using the specified character with the specified pic.
+	// Opcode: SELECT_CHAR_PIC(30)
 	class SelectCharPicPacket : public OutPacket
 	{
 	public:

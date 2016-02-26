@@ -44,6 +44,7 @@ namespace IO
 		void togglehide() override;
 		void doubleclick(vector2d<int16_t> position) override;
 		void icondropped(int16_t identifier) override;
+		void dropicon(vector2d<int16_t> position, Type type, int16_t identifier) override;
 		Cursor::State sendmouse(bool pressed, vector2d<int16_t> position) override;
 
 		void modify(int16_t pos, int8_t mode, int16_t arg);
@@ -73,9 +74,9 @@ namespace IO
 			return true;
 		}
 
-		UIType type() const override
+		UIElement::Type type() const override
 		{
-			return EQUIPINVENTORY;
+			return UIElement::EQUIPINVENTORY;
 		}
 
 		UIElement* instantiate() const override

@@ -29,7 +29,7 @@
 namespace Net
 {
 	using IO::UI;
-	using IO::Element;
+	using IO::UIElement;
 	using IO::ElementLoginNotice;
 	using IO::ElementWorldSelect;
 	using IO::ElementCharSelect;
@@ -39,8 +39,8 @@ namespace Net
 	void LoginResultHandler::handle(InPacket& recv) const
 	{
 		// Remove login information.
-		UI::get().remove(Element::LOGINNOTICE);
-		UI::get().remove(Element::LOGINWAIT);
+		UI::get().remove(UIElement::LOGINNOTICE);
+		UI::get().remove(UIElement::LOGINWAIT);
 
 		// The packet should contain a 'reason' integer which can signify various things.
 		int32_t reason = recv.readint();
@@ -77,11 +77,10 @@ namespace Net
 			Session::get().getlogin().parseaccount(recv);
 
 			// Save the Login ID if the box for it on the login panel is checked.
-			if (Configuration::get().getbool("SaveLogin"))
+			if (Configuration::get().getbool(Settings::SAVE_LOGIN))
 			{
-				Configuration::get().setstring(
-					"Account", Session::get().getlogin().getaccount().name
-					);
+				string name = Session::get().getlogin().getaccount().name;
+				Configuration::get().setstring(Settings::ACCOUNT, name);
 			}
 
 			// Request the list of worlds and channels online.
@@ -92,7 +91,7 @@ namespace Net
 	void ServerlistHandler::handle(InPacket& recv) const
 	{
 		// Remove the Login UI.
-		UI::get().remove(Element::LOGIN);
+		UI::get().remove(UIElement::LOGIN);
 
 		// Parse all worlds.
 		Session::get().getlogin().parseworlds(recv);
@@ -111,7 +110,7 @@ namespace Net
 		Session::get().getlogin().parsecharlist(recv);
 
 		// Remove the world selection screen.
-		UI::get().remove(Element::WORLDSELECT);
+		UI::get().remove(UIElement::WORLDSELECT);
 
 		// Add the character selection screen.
 		UI::get().add(ElementCharSelect());
@@ -129,7 +128,7 @@ namespace Net
 			UI::get().add(ElementLoginNotice(5));
 
 		// Notify character creation screen.
-		UICharcreation* uicc = UI::get().getelement<UICharcreation>(Element::CHARCREATION);
+		UICharcreation* uicc = UI::get().getelement<UICharcreation>(UIElement::CHARCREATION);
 
 		if (uicc)
 			uicc->nameresult(used);
@@ -145,7 +144,7 @@ namespace Net
 		Session::get().getlogin().addcharentry(recv);
 
 		// Remove the character creation ui.
-		UI::get().remove(Element::CHARCREATION);
+		UI::get().remove(UIElement::CHARCREATION);
 
 		// Readd the updated character selection.
 		UI::get().add(ElementCharSelect());

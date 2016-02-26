@@ -16,83 +16,39 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
-#include "Graphics\Text.h"
-#include "Util\Randomizer.h"
+#include "Util\Singleton.h"
+#include <cstdint>
+#include <chrono>
 
-namespace IO
+using std::chrono::high_resolution_clock;
+using std::chrono::microseconds;
+
+// Small class for measuring elapsed time between game loops.
+class Timer : public Singleton<Timer>
 {
-	using Graphics::Text;
-
-	// Keyboard which is used via the mouse. The game uses this for pic/pin input.
-	class UISoftkey : public UIElement
+public:
+	Timer() 
 	{
-	public:
-		enum Buttons
-		{
-			BT_0,
-			BT_1,
-			BT_2,
-			BT_3,
-			BT_4,
-			BT_5,
-			BT_6,
-			BT_7,
-			BT_8,
-			BT_9,
-			BT_NEXT,
-			BT_BACK,
-			BT_CANCEL,
-			BT_OK
-		};
+		start();
+	}
 
-		enum SkType
-		{
-			REGISTER,
-			CHARSELECT,
-			CHARDEL,
-			MERCHANT
-		};
+	~Timer() {}
 
-		UISoftkey(SkType);
-
-		void draw(float) const override;
-		void buttonpressed(uint16_t) override;
-
-	private:
-		void shufflekeys();
-		vector2d<int16_t> keypos(uint8_t) const;
-
-		SkType type;
-
-		Text entry;
-		Randomizer random;
-	};
-
-	class ElementSoftkey : public Element
+	// Start the timer by setting the last measurement to now.
+	void start()
 	{
-	public:
-		ElementSoftkey(UISoftkey::SkType t) 
-		{
-			sktype = t;
-		}
+		last = high_resolution_clock::now();
+	}
 
-		bool isfocused() const override
-		{
-			return true;
-		}
+	// Return time elapsed since the last measurement.
+	double stop()
+	{
+		double elapsed = static_cast<double>((std::chrono::duration_cast
+			<microseconds>(high_resolution_clock::now() - last)).count());
+		last = high_resolution_clock::now();
+		return elapsed;
+	}
 
-		UIElement::Type type() const override
-		{
-			return UIElement::SOFTKEYBOARD;
-		}
-
-		UISoftkey* instantiate() const override
-		{
-			return new UISoftkey(sktype);
-		}
-	private:
-		UISoftkey::SkType sktype;
-	};
-}
-
+private:
+	high_resolution_clock::time_point last;
+};

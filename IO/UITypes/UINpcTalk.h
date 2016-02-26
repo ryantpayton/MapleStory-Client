@@ -68,9 +68,9 @@ namespace IO
 			return true;
 		}
 
-		UIType type() const override
+		UIElement::Type type() const override
 		{
-			return NPCTALK;
+			return UIElement::NPCTALK;
 		}
 
 		UIElement* instantiate() const override

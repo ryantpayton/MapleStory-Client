@@ -40,16 +40,16 @@ namespace IO
 		Cursor::State sendmouse(Cursor::State mst, vector2d<int16_t> pos) override;
 
 		void add(const Element& element) override;
-		void remove(Element::UIType type) override;
-		UIElement* get(Element::UIType type) const override;
+		void remove(UIElement::Type type) override;
+		UIElement* get(UIElement::Type type) const override;
 		UIElement* getfront(vector2d<int16_t> pos) const override;
 
 	private:
-		void dropicon(vector2d<int16_t> pos, Element::UIType parent, int16_t identifier);
+		void dropicon(vector2d<int16_t> pos, UIElement::Type parent, int16_t identifier);
 
-		unordered_map<Element::UIType, unique_ptr<UIElement>> elements;
-		list<Element::UIType> elementorder;
-		Element::UIType focused;
+		unordered_map<UIElement::Type, unique_ptr<UIElement>> elements;
+		list<UIElement::Type> elementorder;
+		UIElement::Type focused;
 
 		Icon* draggedicon;
 	};

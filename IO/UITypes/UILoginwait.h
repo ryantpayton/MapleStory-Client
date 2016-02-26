@@ -34,9 +34,9 @@ namespace IO
 			return true;
 		}
 
-		UIType type() const override
+		UIElement::Type type() const override
 		{
-			return LOGINWAIT;
+			return UIElement::LOGINWAIT;
 		}
 
 		UIElement* instantiate() const override

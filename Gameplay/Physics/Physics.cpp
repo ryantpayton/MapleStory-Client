@@ -119,7 +119,7 @@ namespace Gameplay
 		}
 	}
 
-	vector2d<int16_t> Physics::getgroundbelow(vector2d<int16_t> position)
+	vector2d<int16_t> Physics::getgroundbelow(vector2d<int16_t> position) const
 	{
 		int16_t ground = fht.getgroundbelow(position);
 		return vector2d<int16_t>(position.x(), ground - 1);

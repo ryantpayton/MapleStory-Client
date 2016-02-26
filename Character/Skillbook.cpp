@@ -16,14 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Skillbook.h"
-#include "Data\DataFactory.h"
 
 namespace Character
 {
-	Skillbook::Skillbook() {}
-
-	Skillbook::~Skillbook() {}
-
 	void Skillbook::setskill(int32_t id, int32_t level, int32_t mlevel, int64_t expire)
 	{
 		SkillEntry entry;
@@ -60,13 +55,5 @@ namespace Character
 	int32_t Skillbook::getmasterlevel(int32_t id) const
 	{
 		return hasskill(id) ? skillentries.at(id).masterlevel : 0;
-	}
-
-	const SkillLevel* Skillbook::getlevelof(int32_t id) const
-	{
-		int32_t skilllevel = getlevel(id);
-
-		using Data::DataFactory;
-		return DataFactory::get().getskill(id).getlevel(skilllevel);
 	}
 }

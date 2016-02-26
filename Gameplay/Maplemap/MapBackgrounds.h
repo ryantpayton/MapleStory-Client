@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Console.h"
+#include "Constants.h"
 #include "Graphics\Texture.h"
 #include "Graphics\Animation.h"
 #include <vector>
@@ -28,7 +29,7 @@ namespace Gameplay
 	class Background
 	{
 	public:
-		Background(node src, vector2d<int16_t> walls, vector2d<int16_t> borders);
+		Background(node src);
 
 		void draw(vector2d<int16_t> viewpos, float inter) const;
 		void update();
@@ -56,18 +57,26 @@ namespace Gameplay
 			return NORMAL;
 		}
 
+		static const int16_t WOFFSET = Constants::VIEWWIDTH / 2;
+		static const int16_t HOFFSET = Constants::VIEWHEIGHT / 2 - Constants::VIEWYOFFSET;
+
 		Animation animation;
 		bool animated;
-		vector2d<int16_t> rpos;
-		vector2d<int16_t> cpos;
-		Type type;
-		float fx;
-		float fy;
+		int16_t cx;
+		int16_t cy;
+		float rx;
+		float ry;
+		int16_t htile;
+		int16_t vtile;
 		float opacity;
 		bool flipped;
 
-		vector2d<int16_t> walls;
-		vector2d<int16_t> borders;
+		float fx;
+		float fy;
+		float lastx;
+		float lasty;
+		float hspeed;
+		float vspeed;
 	};
 
 	using std::vector;
@@ -75,7 +84,7 @@ namespace Gameplay
 	class MapBackgrounds
 	{
 	public:
-		MapBackgrounds(node src, vector2d<int16_t> walls, vector2d<int16_t> borders);
+		MapBackgrounds(node src);
 		MapBackgrounds();
 
 		void drawbackgrounds(vector2d<int16_t> viewpos, float inter) const;

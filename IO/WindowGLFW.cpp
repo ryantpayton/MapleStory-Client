@@ -19,6 +19,8 @@
 #ifdef JOURNEY_USE_OPENGL
 #include "WindowGLFW.h"
 #include "UI.h"
+#include "Constants.h"
+#include "Timer.h"
 
 #include "Graphics\GraphicsGL.h"
 #include "Gameplay\Stage.h"
@@ -27,6 +29,8 @@
 
 namespace IO
 {
+	using Graphics::GraphicsGL;
+
 	WindowGLFW::WindowGLFW()
 	{
 		glwnd = nullptr;
@@ -52,7 +56,41 @@ namespace IO
 		UI::get().sendkey(key, action != GLFW_RELEASE);
 	}
 
-	bool WindowGLFW::init()
+	void mousekey_callback(GLFWwindow*, int button, int action, int)
+	{
+		switch (button)
+		{
+		case GLFW_MOUSE_BUTTON_LEFT:
+			switch (action)
+			{
+			case GLFW_PRESS:
+				UI::get().sendmouse(true);
+				break;
+			case GLFW_RELEASE:
+				UI::get().sendmouse(false);
+				break;
+			}
+			break;
+		case GLFW_MOUSE_BUTTON_RIGHT:
+			switch (action)
+			{
+			case GLFW_PRESS:
+				UI::get().doubleclick();
+				break;
+			}
+			break;
+		}
+	}
+
+	void cursor_callback(GLFWwindow*, double xpos, double ypos)
+	{
+		int16_t x = static_cast<int16_t>(xpos);
+		int16_t y = static_cast<int16_t>(ypos);
+		vector2d<int16_t> pos = vector2d<int16_t>(x, y);
+		UI::get().sendmouse(pos);
+	}
+
+	bool WindowGLFW::init(bool fs)
 	{
 		if (!glfwInit())
 			return false;
@@ -60,12 +98,13 @@ namespace IO
 		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 		context = glfwCreateWindow(1, 1, "", nullptr, nullptr);
 		glfwMakeContextCurrent(context);
-		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
 		glfwSetErrorCallback(error_callback);
 
-		fullscreen = false;
+		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
+		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-		using Graphics::GraphicsGL;
+		fullscreen = fs;
+
 		if (!GraphicsGL::get().init())
 			return false;
 
@@ -77,7 +116,13 @@ namespace IO
 		if (glwnd) 
 			glfwDestroyWindow(glwnd);
 
-		glwnd = glfwCreateWindow(800, 600, "Journey", fullscreen ? glfwGetPrimaryMonitor() : nullptr, context);
+		glwnd = glfwCreateWindow(
+			Constants::VIEWWIDTH, 
+			Constants::VIEWHEIGHT, 
+			"Journey", 
+			fullscreen ? glfwGetPrimaryMonitor() : nullptr, 
+			context
+			);
 
 		if (!glwnd)
 			return false;
@@ -87,12 +132,12 @@ namespace IO
 		glfwSetInputMode(glwnd, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		glfwSetInputMode(glwnd, GLFW_STICKY_KEYS, 1);
 		glfwSetKeyCallback(glwnd, key_callback);
+		glfwSetMouseButtonCallback(glwnd, mousekey_callback);
+		glfwSetCursorPosCallback(glwnd, cursor_callback);
 
-		glLoadIdentity();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		using Graphics::GraphicsGL;
 		GraphicsGL::get().reinit();
 
 		return true;
@@ -100,16 +145,6 @@ namespace IO
 
 	void WindowGLFW::update()
 	{
-		double cursorx;
-		double cursory;
-		glfwGetCursorPos(glwnd, &cursorx, &cursory);
-		int32_t state = glfwGetMouseButton(glwnd, GLFW_MOUSE_BUTTON_LEFT);
-
-		UI::get().sendmouse(state == GLFW_PRESS, vector2d<int16_t>(
-			static_cast<int16_t>(cursorx), 
-			static_cast<int16_t>(cursory))
-			);
-
 		int32_t tabstate = glfwGetKey(glwnd, GLFW_KEY_F11);
 		if (tabstate == GLFW_PRESS)
 		{
@@ -129,35 +164,43 @@ namespace IO
 			if (opacity >= 1.0f)
 			{
 				opacity = 1.0f;
+				opcstep = 0.0f;
 			}
 			else if (opacity <= 0.0f)
 			{
 				opacity = 0.0f;
-				opcstep = 0.025f;
+				opcstep = -opcstep;
 
-				using Gameplay::Stage;
-				Stage::get().reload();
-				UI::get().enable();
+				if (fadeprocedure)
+					(*fadeprocedure)();
+
+				GraphicsGL::get().unlock();
 			}
 		}
 	}
 
 	void WindowGLFW::begin() const
 	{
-		
+		if (opcstep >= 0.0f)
+		{
+			GraphicsGL::get().clearscene();
+		}
 	}
 
 	void WindowGLFW::end() const
 	{
-		Graphics::GraphicsGL::get().flush();
-		glfwSwapBuffers(glwnd);
+		GraphicsGL::get().flush(opacity);
 
+		glfwSwapBuffers(glwnd);
 		glfwPollEvents();
 	}
 
-	void WindowGLFW::fadeout()
+	void WindowGLFW::fadeout(float step, void(*fadeproc)())
 	{
-		opcstep = -0.025f;
+		opcstep = -step;
+		fadeprocedure = fadeproc;
+
+		GraphicsGL::get().lock();
 	}
 }
 #endif

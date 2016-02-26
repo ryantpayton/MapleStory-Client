@@ -31,8 +31,7 @@ namespace Gameplay
 		~Camera();
 
 		// Update the view with the current player position. (Or any other target)
-		void update(vector2d<double> destination);
-		void limitview();
+		void update(vector2d<int16_t> position);
 		// Set the position, changing the view immediatly.
 		void setposition(vector2d<int16_t> position);
 		// Updates the view's boundaries. Determined by mapinfo or footholds.
@@ -46,8 +45,8 @@ namespace Gameplay
 		double fy;
 
 		// View limits.
-		vector2d<double> hbounds;
-		vector2d<double> vbounds;
+		vector2d<int16_t> hbounds;
+		vector2d<int16_t> vbounds;
 
 		// Variables for interpolation.
 		double lastx;

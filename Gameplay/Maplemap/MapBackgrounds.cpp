@@ -16,98 +16,151 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "MapBackgrounds.h"
-
+#include "Constants.h"
 #include "nlnx\nx.hpp"
 
 namespace Gameplay
 {
-	Background::Background(node src, vector2d<int16_t> wl, vector2d<int16_t> br)
+	Background::Background(node src)
 	{
 		node backsrc = nl::nx::map["Back"];
 		animated = src["ani"].get_bool();
 		animation = Animation(backsrc[src["bS"] + ".img"][animated ? "ani" : "back"][src["no"]]);
-		rpos = vector2d<int16_t>(src["rx"], src["ry"]);
-		cpos = vector2d<int16_t>(src["cx"], src["cy"]);
-		type = typebyid(src["type"]);
 		opacity = src["a"];
+		flipped = src["f"].get_bool();
 		fx = src["x"];
 		fy = src["y"];
-		flipped = src["f"].get_bool();
+		cx = src["cx"];
+		cy = src["cy"];
+		rx = src["rx"];
+		ry = src["ry"];
 
-		if (cpos.x() == 0)
-			cpos.setx(animation.getdimensions().x());
-		if (cpos.y() == 0)
-			cpos.sety(animation.getdimensions().y());
+		if (cx == 0)
+			cx = animation.getdimensions().x() - 1;
+		if (cy == 0)
+			cy = animation.getdimensions().y() - 1;
 
-		walls = wl;
-		borders = br;
+		Type type = typebyid(src["type"]);
+
+		htile = 1;
+		vtile = 1;
+		switch (type)
+		{
+		case HTILED:
+		case HMOVEA:
+			htile = Constants::VIEWWIDTH / cx + 3;
+			break;
+		case VTILED:
+		case VMOVEA:
+			vtile = Constants::VIEWHEIGHT / cy + 3;
+			break;
+		case TILED:
+		case HMOVEB:
+		case VMOVEB:
+			htile = Constants::VIEWWIDTH / cx + 3;
+			vtile = Constants::VIEWHEIGHT / cy + 3;
+			break;
+		}
+
+		hspeed = 0.0f;
+		vspeed = 0.0f;
+		switch (type)
+		{
+		case HMOVEA:
+		case HMOVEB:
+			hspeed = rx / 16;
+			break;
+		case VMOVEA:
+		case VMOVEB:
+			vspeed = ry / 16;
+			break;
+		}
 	}
 
 	void Background::draw(vector2d<int16_t> position, float inter) const
 	{
-		int16_t htile = 1;
-		int16_t vtile = 1;
-
-		int16_t xcom = -position.x() - walls.x() + 400;
-		int16_t ycom = -position.y() + borders.y() - 300;
-		position.setx(rpos.x() * xcom / 100 + 400);
-		position.sety(rpos.y() * ycom / 100 + 300);
-
-		switch (type)
+		int16_t x = static_cast<int16_t>((1.0f - inter) * lastx + inter * fx);
+		int16_t y = static_cast<int16_t>((1.0f - inter) * lasty + inter * fy);
+		int16_t shiftx = static_cast<int16_t>(rx * (-position.x() + WOFFSET) / 100 + WOFFSET);
+		int16_t shifty = static_cast<int16_t>(ry * (-position.y() + HOFFSET) / 100 + HOFFSET);
+		
+		if (hspeed != 0.0f)
 		{
-		case HMOVEA:
-		case HTILED:
-			htile += walls.length() / cpos.x();
-			break;
-		case VMOVEA:
-		case VTILED:
-			vtile += borders.length() / cpos.y();
-			break;
-		case TILED:
-			htile += walls.length() / cpos.x();
-			vtile += borders.length() / cpos.y();
-			break;
+			x += position.x();
+			y += shifty;
+		}
+		else if (vspeed != 0.0f)
+		{
+			x += shiftx;
+			y += position.y();
+		}
+		else
+		{
+			x += shiftx;
+			y += shifty;
 		}
 
-		int16_t starty = position.y();
-		for (int16_t i = 0; i < htile; i++)
+		if (htile > 1)
 		{
-			for (int16_t j = 0; j < vtile; j++)
+			while (x > 0)
+			{
+				x -= cx;
+			}
+			while (x < -cx)
+			{
+				x += cx;
+			}
+		}
+
+		if (vtile > 1)
+		{
+			while (y > 0)
+			{
+				y -= cx;
+			}
+			while (y < -cy)
+			{
+				y += cy;
+			}
+		}
+
+		int16_t endx = x + cx * htile;
+		int16_t endy = y + cy * htile;
+		for (int16_t tx = x; tx < endx; tx += cx)
+		{
+			for (int16_t ty = y; ty < endy; ty += cy)
 			{
 				using Graphics::DrawArgument;
-				animation.draw(DrawArgument(position, opacity / 255), inter);
-
-				position.shifty(cpos.y());
+				animation.draw(DrawArgument(vector2d<int16_t>(tx, ty), opacity / 255), inter);
 			}
-
-			position.sety(starty);
-			position.shiftx(cpos.x());
 		}
 	}
 
 	void Background::update()
 	{
+		lastx = fx;
+		lasty = fy;
+		fx += hspeed;
+		fy += vspeed;
+
 		animation.update();
 	}
 
 
-	MapBackgrounds::MapBackgrounds(node src, vector2d<int16_t> walls, vector2d<int16_t> borders)
+	MapBackgrounds::MapBackgrounds(node src)
 	{
-		for (auto backnode : src)
+		int16_t no = 0;
+		node back = src[std::to_string(no)];
+		while (back.size() > 0)
 		{
-			if (backnode["bS"].get_string() == "")
-				continue;
-
-			Background background = Background(backnode, walls, borders);
-			bool front = backnode["front"].get_bool();
+			bool front = back["front"].get_bool();
 			if (front)
-			{
-				foregrounds.push_back(background);
-			}
+				foregrounds.push_back(back);
 			else
-			{
-				backgrounds.push_back(background);
-			}
+				backgrounds.push_back(back);
+
+			no++;
+			back = src[std::to_string(no)];
 		}
 	}
 

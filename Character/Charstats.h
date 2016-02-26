@@ -41,6 +41,7 @@ namespace Character
 		int64_t getexpneeded() const;
 		uint16_t getstat(Maplestat::Value stat) const;
 		int32_t gettotal(Equipstat::Value stat) const;
+		rectangle2d<int16_t> getrange() const;
 
 		void setexp(int64_t ex) { stats.exp = ex; }
 		void setportal(uint8_t pt) { stats.portal = pt; }
@@ -79,6 +80,7 @@ namespace Character
 		int32_t mindamage;
 		uint16_t honor;
 		int8_t attackspeed;
+		int16_t projectilerange;
 		float mastery;
 		float critical;
 		float mincrit;

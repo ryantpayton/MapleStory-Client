@@ -16,6 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UIElement.h"
+#include "Constants.h"
+
+#include "Audio\AudioPlayer.h"
 
 namespace IO
 {
@@ -74,6 +77,8 @@ namespace IO
 
 	void UIElement::icondropped(int16_t) {}
 
+	void UIElement::dropicon(vector2d<int16_t>, Type, int16_t) {}
+
 	Cursor::State UIElement::sendmouse(bool down, vector2d<int16_t> pos)
 	{
 		Cursor::State ret = down ? Cursor::CLICKING : Cursor::IDLE;
@@ -84,6 +89,9 @@ namespace IO
 			{
 				if (btit.second->getstate() == Button::NORMAL)
 				{
+					using Audio::AudioPlayer;
+					AudioPlayer::get().playsound(AudioPlayer::BUTTONOVER);
+
 					btit.second->setstate(Button::MOUSEOVER);
 					ret = Cursor::CANCLICK;
 				}
@@ -91,8 +99,12 @@ namespace IO
 				{
 					if (down)
 					{
+						using Audio::AudioPlayer;
+						AudioPlayer::get().playsound(AudioPlayer::BUTTONCLICK);
+
 						btit.second->setstate(Button::PRESSED);
 						buttonpressed(btit.first);
+						ret = Cursor::IDLE;
 					}
 					else
 					{

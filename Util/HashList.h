@@ -16,83 +16,71 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
-#include "Graphics\Text.h"
-#include "Util\Randomizer.h"
+#include "Optional.h"
+#include <map>
+#include <vector>
 
-namespace IO
+using std::map;
+using std::vector;
+
+template <typename T>
+class HashList
 {
-	using Graphics::Text;
-
-	// Keyboard which is used via the mouse. The game uses this for pic/pin input.
-	class UISoftkey : public UIElement
+public:
+	HashList()
 	{
-	public:
-		enum Buttons
-		{
-			BT_0,
-			BT_1,
-			BT_2,
-			BT_3,
-			BT_4,
-			BT_5,
-			BT_6,
-			BT_7,
-			BT_8,
-			BT_9,
-			BT_NEXT,
-			BT_BACK,
-			BT_CANCEL,
-			BT_OK
-		};
+		index = 0;
+	}
 
-		enum SkType
-		{
-			REGISTER,
-			CHARSELECT,
-			CHARDEL,
-			MERCHANT
-		};
-
-		UISoftkey(SkType);
-
-		void draw(float) const override;
-		void buttonpressed(uint16_t) override;
-
-	private:
-		void shufflekeys();
-		vector2d<int16_t> keypos(uint8_t) const;
-
-		SkType type;
-
-		Text entry;
-		Randomizer random;
-	};
-
-	class ElementSoftkey : public Element
+	Optional<T> get(size_t index) const
 	{
-	public:
-		ElementSoftkey(UISoftkey::SkType t) 
-		{
-			sktype = t;
-		}
+		if (values.count(index))
+			return values.at(index);
+		else
+			return nullptr;
+	}
 
-		bool isfocused() const override
-		{
-			return true;
-		}
+	void add(T value)
+	{
+		values[index] = value;
+		index++;
+	}
 
-		UIElement::Type type() const override
-		{
-			return UIElement::SOFTKEYBOARD;
-		}
+	void remove(size_t index)
+	{
+		values.erase(index);
+	}
 
-		UISoftkey* instantiate() const override
+	void remove(vector<size_t> indices)
+	{
+		for (auto& index : indices)
 		{
-			return new UISoftkey(sktype);
+			values.erase(index);
 		}
-	private:
-		UISoftkey::SkType sktype;
-	};
-}
+	}
 
+	template<typename T, typename ...Args>
+	void foreach(void(T::*action)(Args...)const, Args... args) const
+	{
+		for (auto& value : values)
+		{
+			(value.second.*action)(std::forward<Args>(args)...);
+		}
+	}
+
+	template<typename T, typename ...Args>
+	vector<size_t> collect(bool(T::*predicate)(Args...), Args... args)
+	{
+		vector<size_t> result;
+		for (auto& value : values)
+		{
+			if ((value.second.*predicate)(std::forward<Args>(args)...))
+				result.push_back(value.first);
+		}
+		return result;
+	}
+
+private:
+	map<size_t, T> values;
+	size_t index;
+};

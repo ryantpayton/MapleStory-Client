@@ -16,83 +16,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
-#include "Graphics\Text.h"
-#include "Util\Randomizer.h"
+#include "ItemData.h"
 
-namespace IO
+#include "Graphics\Animation.h"
+
+namespace Character
 {
-	using Graphics::Text;
+	using Graphics::Animation;
 
-	// Keyboard which is used via the mouse. The game uses this for pic/pin input.
-	class UISoftkey : public UIElement
+	class BulletData : public ItemData
 	{
 	public:
-		enum Buttons
-		{
-			BT_0,
-			BT_1,
-			BT_2,
-			BT_3,
-			BT_4,
-			BT_5,
-			BT_6,
-			BT_7,
-			BT_8,
-			BT_9,
-			BT_NEXT,
-			BT_BACK,
-			BT_CANCEL,
-			BT_OK
-		};
+		BulletData(int32_t itemid);
+		BulletData();
 
-		enum SkType
-		{
-			REGISTER,
-			CHARSELECT,
-			CHARDEL,
-			MERCHANT
-		};
-
-		UISoftkey(SkType);
-
-		void draw(float) const override;
-		void buttonpressed(uint16_t) override;
+		int16_t getwatk() const;
+		Animation getbullet() const;
 
 	private:
-		void shufflekeys();
-		vector2d<int16_t> keypos(uint8_t) const;
-
-		SkType type;
-
-		Text entry;
-		Randomizer random;
-	};
-
-	class ElementSoftkey : public Element
-	{
-	public:
-		ElementSoftkey(UISoftkey::SkType t) 
-		{
-			sktype = t;
-		}
-
-		bool isfocused() const override
-		{
-			return true;
-		}
-
-		UIElement::Type type() const override
-		{
-			return UIElement::SOFTKEYBOARD;
-		}
-
-		UISoftkey* instantiate() const override
-		{
-			return new UISoftkey(sktype);
-		}
-	private:
-		UISoftkey::SkType sktype;
+		Animation bullet;
+		int16_t watk;
 	};
 }
-

@@ -67,8 +67,8 @@ namespace Character
 	Player::Player(const CharEntry& entry)
 	{
 		oid = entry.cid;
-		look = CharLook(entry.getlook());
-		stats = CharStats(entry.stats);
+		look = entry.getlook();
+		stats = entry.stats;
 
 		namelabel = Text(Text::A13M, Text::CENTER, Text::WHITE);
 		namelabel.settext(stats.getname());
@@ -90,6 +90,7 @@ namespace Character
 
 	void Player::respawn(vector2d<int16_t> pos)
 	{
+		keysdown.clear();
 		setposition(pos.x(), pos.y());
 		sendcd = Constants::TIMESTEP;
 		attacking = false;
@@ -111,9 +112,10 @@ namespace Character
 	{
 		stats.inittotalstats();
 
+		Weapon::Type weapontype = look.getequips().getweapontype();
 		if (equipchanged)
 		{
-			inventory.recalcstats();
+			inventory.recalcstats(weapontype);
 		}
 
 		inventory.addtotalsto(stats);
@@ -123,24 +125,22 @@ namespace Character
 			buff.second.applyto(stats);
 		}
 
-		Weapon::Type weapontype = look.getequips().getweapontype();
 		stats.closetotalstats(weapontype);
 	}
 
 	void Player::changecloth(int16_t slot)
 	{
-		const Equip* equip = inventory.getequip(Inventory::EQUIPPED, slot);
+		Optional<Equip> equip = inventory.getequip(Inventory::EQUIPPED, slot);
 		if (equip)
 		{
-			look.addequip(equip->getid());
+			int32_t itemid = equip.map(&Item::getid);
+			look.addequip(itemid);
 		}
 		else
 		{
 			Equipslot::Value value = Equipslot::byvalue(slot);
 			look.removeequip(value);
 		}
-
-		recalcstats(true);
 	}
 
 	void Player::useitem(int32_t itemid)
@@ -203,7 +203,8 @@ namespace Character
 			}
 		}
 		
-		bool aniend = look.update(getstancespeed());
+		uint16_t stancespeed = static_cast<uint16_t>(Constants::TIMESTEP * getstancespeed());
+		bool aniend = look.update(stancespeed);
 		if (aniend && attacking)
 		{
 			attacking = false;
@@ -213,21 +214,31 @@ namespace Character
 		return getlayer();
 	}
 
-	uint16_t Player::getstancespeed() const
+	float Player::getstancespeed() const
 	{
 		if (attacking)
-			return static_cast<uint16_t>(Constants::TIMESTEP * getattackspeed());
+			return getattackspeed();
 
 		switch (state)
 		{
 		case WALK:
-			return static_cast<uint16_t>(Constants::TIMESTEP * (1.0f + abs(phobj.hspeed) / 25));
+			return static_cast<float>(1.0 + std::abs(phobj.hspeed) / 25);
 		case LADDER:
 		case ROPE:
-			return static_cast<uint16_t>(Constants::TIMESTEP * abs(phobj.vspeed));
+			return static_cast<float>(std::abs(phobj.vspeed));
 		default:
-			return Constants::TIMESTEP;
+			return 1.0f;
 		}
+	}
+
+	float Player::getattackspeed() const
+	{
+		uint8_t statsspeed = stats.getattackspeed();
+		uint8_t weaponspeed = look.getequips().getweapon()
+			.mapordefault(&Weapon::getspeed, uint8_t(0));
+
+		float delay = static_cast<float>(weaponspeed + statsspeed);
+		return 1.7f - (delay / 10);
 	}
 
 	bool Player::isattacking() const
@@ -242,17 +253,24 @@ namespace Character
 
 	bool Player::canuseskill(int32_t skillid) const
 	{
-		const SkillLevel* level = skillbook.getlevelof(skillid);
-		if (level == nullptr)
-			return false;
+		const Skill& skill = DataFactory::get().getskill(skillid);
+		
+		int32_t skilllevel = skillbook.getlevel(skillid);
+		Optional<SkillLevel> level = skill.getlevel(skilllevel);
+		if (level)
+		{
+			if (level->hpcost >= stats.getstat(Maplestat::HP))
+				return false;
 
-		if (level->hpcost >= stats.getstat(Maplestat::HP))
-			return false;
+			if (level->mpcost > stats.getstat(Maplestat::MP))
+				return false;
 
-		if (level->mpcost > stats.getstat(Maplestat::MP))
+			return canattack();
+		}
+		else
+		{
 			return false;
-
-		return canattack();
+		}
 	}
 
 	const Skill& Player::useskill(int32_t skillid)
@@ -263,7 +281,7 @@ namespace Character
 		string action = skill.getaction(twohanded);
 		if (action == "")
 		{
-			look.attack();
+			look.attack(Attack::CLOSE);
 			attacking = true;
 		}
 		else
@@ -284,7 +302,8 @@ namespace Character
 		attack.ignoredef = stats.getignoredef();
 		attack.accuracy = stats.gettotal(Equipstat::ACC);
 		attack.playerlevel = stats.getstat(Maplestat::LEVEL);
-		attack.speed = look.getequips().getweapon()->getspeed();
+		attack.speed = look.getequips().getweapon()
+			.mapordefault(&Weapon::getspeed, uint8_t(0));
 		attack.origin = getposition();
 		attack.direction = flip ? Attack::TORIGHT : Attack::TOLEFT;
 		return attack;
@@ -292,36 +311,73 @@ namespace Character
 
 	Attack Player::prepareregularattack()
 	{
-		uint16_t delay = look.attack();
+		Weapon::Type weapontype = look.getequips().getweapontype();
+		Attack::Type attacktype;
+		switch (weapontype)
+		{
+		case Weapon::BOW:
+		case Weapon::CROSSBOW:
+		case Weapon::CLAW:
+		case Weapon::GUN:
+			attacktype = inventory.hasprojectile() ? Attack::RANGED : Attack::CLOSE;
+			break;
+		default:
+			attacktype = Attack::CLOSE;
+		}
+
+		uint16_t delay = look.attack(attacktype);
 		attacking = true;
 
 		Attack attack = prepareattack();
 		attack.skill = 0;
 		attack.mobcount = 1;
 		attack.hitcount = 1;
+
 		attack.delay = delay;
-		attack.range = look.getequips().getweapon()->getrange();
-		attack.hiteffect = look.getequips().getweapon()->gethiteffect();
-		attack.usesound = look.getequips().getweapon()->getsound();
+		attack.type = attacktype;
+
+		if (attacktype == Attack::RANGED)
+		{
+			int16_t projectile = inventory.getprojectile();
+			attack.bullet = inventory.getitem(Inventory::USE, projectile)
+				.transform(DataFactory::get(), &DataFactory::getbulletdata, &Item::getid)
+				.map(&BulletData::getbullet);
+			attack.range = stats.getrange();
+		}
+		else
+		{
+			Optional<Weapon> weapon = look.getequips().getweapon();
+			attack.range = weapon.map(&Weapon::getrange);
+			attack.hiteffect = weapon.map(&Weapon::gethiteffect);
+		}
+
 		return attack;
 	}
 
 	Attack Player::prepareskillattack(int32_t skillid) const
 	{
-		const Skill& skill = DataFactory::get().getskill(skillid);
-		const SkillLevel* level = skill.getlevel(skillbook.getlevel(skillid));
-
 		Attack attack = prepareattack();
 		attack.skill = skillid;
-		attack.hitcount = level->attackcount;
-		attack.mobcount = level->mobcount;
-		attack.critical += level->critical;
-		attack.ignoredef += level->ignoredef;
-		attack.range = level->range;
+
+		const Skill& skill = DataFactory::get().getskill(skillid);
+
+		int32_t skilllevel = skillbook.getlevel(skillid);
+		Optional<SkillLevel> level = skill.getlevel(skilllevel);
+		if (level)
+		{
+			attack.mindamage *= level->damage;
+			attack.maxdamage *= level->damage;
+			attack.hitcount = level->attackcount;
+			attack.mobcount = level->mobcount;
+			attack.critical += level->critical;
+			attack.ignoredef += level->ignoredef;
+			attack.range = level->range;
+		}
+
 		if (attack.range.empty())
-			attack.range = look.getequips().getweapon()->getrange();
-		attack.mindamage = static_cast<int32_t>(attack.mindamage * level->damage);
-		attack.maxdamage = static_cast<int32_t>(attack.maxdamage * level->damage);
+			attack.range = look.getequips().getweapon()
+			.map(&Weapon::getrange);
+
 		attack.hiteffect = skill.gethitanimation(look.getequips().istwohanded());
 		return attack;
 	}
@@ -341,27 +397,13 @@ namespace Character
 		return buffs.count(buff) > 0;
 	}
 
-	float Player::getattackspeed() const
-	{
-		const Weapon* weapon = look.getequips().getweapon();
-		if (weapon)
-		{
-			float delay = static_cast<float>(weapon->getspeed() + stats.getattackspeed());
-			return 1.7f - (delay / 10);
-		}
-		else
-		{
-			return 0.0f;
-		}
-	}
-
 	void Player::setseat(const Seat* seat)
 	{
-		if (!seat)
-			return;
-
-		setposition(seat->pos.x(), seat->pos.y());
-		setstate(Char::SIT);
+		if (seat)
+		{
+			setposition(seat->pos.x(), seat->pos.y());
+			setstate(Char::SIT);
+		}
 	}
 
 	void Player::setladder(const Ladder* ldr)
@@ -370,7 +412,7 @@ namespace Character
 
 		if (ladder)
 		{
-			phobj.fx = static_cast<double>(ldr->x);
+			phobj.fx = ldr->x;
 			phobj.hspeed = 0.0;
 			phobj.vspeed = 0.0;
 			phobj.type = PhysicsObject::CLIMBING;
@@ -446,7 +488,7 @@ namespace Character
 		return monsterbook;
 	}
 
-	const Ladder* Player::getladder() const
+	Optional<Ladder> Player::getladder() const
 	{
 		return ladder;
 	}

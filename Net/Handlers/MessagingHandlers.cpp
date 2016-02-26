@@ -27,7 +27,7 @@
 namespace Net
 {
 	using IO::UI;
-	using IO::Element;
+	using IO::UIElement;
 	using IO::UIStatusMessenger;
 	using IO::UIStatusbar;
 	using IO::UINpcTalk;
@@ -109,7 +109,7 @@ namespace Net
 
 	void ShowStatusInfoHandler::showstatus(Text::Color color, string message) const
 	{
-		UIStatusMessenger* messenger = UI::get().getelement<UIStatusMessenger>(Element::STATUSMESSENGER);
+		UIStatusMessenger* messenger = UI::get().getelement<UIStatusMessenger>(UIElement::STATUSMESSENGER);
 		if (messenger)
 			messenger->showstatus(color, message);
 	}
@@ -130,7 +130,7 @@ namespace Net
 			string fulltext = speaker->getname() + ": " + message;
 			speaker->speak(fulltext);
 
-			UIStatusbar* statusbar = UI::get().getelement<UIStatusbar>(Element::STATUSBAR);
+			UIStatusbar* statusbar = UI::get().getelement<UIStatusbar>(UIElement::STATUSBAR);
 			if (statusbar)
 				statusbar->sendchatline(fulltext, type);
 		}
@@ -148,7 +148,7 @@ namespace Net
 		if (msgtype == 0 && recv.length() > 0)
 			style = recv.readshort();
 
-		UINpcTalk* npctalk = UI::get().getelement<UINpcTalk>(Element::NPCTALK);
+		UINpcTalk* npctalk = UI::get().getelement<UINpcTalk>(UIElement::NPCTALK);
 		if (npctalk)
 			npctalk->settext(npcid, msgtype, style, speaker, text);
 

@@ -21,7 +21,8 @@
 
 namespace Net
 {
-	// Packet which requests reserving a name for the character to be created.
+	// Reserve a name for the character to be created.
+	// Opcode: NAME_CHAR(21)
 	class NameCharPacket : public OutPacket
 	{
 	public:
@@ -31,7 +32,8 @@ namespace Net
 		}
 	};
 
-	// Packets which requests creation of a character with the specified stats.
+	// Requests creation of a character with the specified stats.
+	// Opcode: CREATE_CHAR(22)
 	class CreateCharPacket : public OutPacket
 	{
 	public:

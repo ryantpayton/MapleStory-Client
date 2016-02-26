@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Player.h"
-#include "Audio\Sound.h"
+#include "Audio\AudioPlayer.h"
 #include "nlnx\nx.hpp"
 
 namespace Character
@@ -35,8 +35,8 @@ namespace Character
 	protected:
 		void playjumpsound() const
 		{
-			static const Sound jumpsound = Sound(nl::nx::sound["Game.img"]["Jump"]);
-			jumpsound.play();
+			using Audio::AudioPlayer;
+			AudioPlayer::get().playsound(AudioPlayer::JUMP);
 		}
 	};
 
@@ -76,7 +76,7 @@ namespace Character
 				PhysicsObject::PhType phtype = player.getphobj().type;
 				if (phtype == PhysicsObject::CLIMBING)
 				{
-					const Ladder* ladder = player.getladder();
+					Optional<Ladder> ladder = player.getladder();
 					if (ladder)
 					{
 						state = ladder->ladder ? Char::LADDER : Char::ROPE;
@@ -380,7 +380,7 @@ namespace Character
 
 		void nextstate(Player& player) const override
 		{
-			const Ladder* ladder = player.getladder();
+			Optional<Ladder> ladder = player.getladder();
 			if (ladder)
 			{
 				double cfy;

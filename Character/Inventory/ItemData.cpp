@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "ItemData.h"
 #include "nlnx\nx.hpp"
 
@@ -103,7 +102,7 @@ namespace Character
 			return "";
 	}
 
-	const string& ItemData::getcategory() const
+	string ItemData::getcategory() const
 	{
 		return category;
 	}
@@ -118,12 +117,12 @@ namespace Character
 		return itemid;
 	}
 
-	const string& ItemData::getname() const
+	string ItemData::getname() const
 	{
 		return name;
 	}
 
-	const string& ItemData::getdesc() const
+	string ItemData::getdesc() const
 	{
 		return desc;
 	}

@@ -16,16 +16,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "SetfieldHandlers.h"
+#include "Configuration.h"
+#include "Constants.h"
+#include "Timer.h"
+
+#include "Audio\AudioPlayer.h"
+
 #include "Net\Session.h"
 #include "Net\Handlers\ItemParser.h"
+
 #include "IO\UI.h"
 #include "IO\Window.h"
+
 #include "Gameplay\Stage.h"
+
 #include "Graphics\GraphicsEngine.h"
-#include "Configuration.h"
 
 namespace Net
 {
+	using Audio::AudioPlayer;
 	using IO::UI;
 	using IO::Element;
 	using IO::Window;
@@ -34,9 +43,16 @@ namespace Net
 
 	void stagetransition(uint8_t portalid, int32_t mapid)
 	{
-		Window::get().fadeout();
+		float fadestep = 0.2f / Constants::TIMESTEP;
+		Window::get().fadeout(fadestep, [](){
+			GraphicsEngine::get().clear();
+			Stage::get().reload();
+			UI::get().enable();
+			Timer::get().start();
+		});
+
 		Stage::get().clear();
-		GraphicsEngine::get().clear();
+		Timer::get().start();
 
 		Stage::get().setmap(portalid, mapid);
 	}
@@ -104,6 +120,7 @@ namespace Net
 
 		stagetransition(player.getstats().getportal(), player.getstats().getmapid());
 
+		AudioPlayer::get().playsound(AudioPlayer::GAMESTART);
 		UI::get().changestate(UI::GAME);
 	}
 

@@ -23,6 +23,7 @@
 #include "Telerock.h"
 #include "Monsterbook.h"
 #include "Buff.h"
+#include "Skill.h"
 
 #include "Look\CharLook.h"
 #include "Inventory\Inventory.h"
@@ -44,7 +45,6 @@ namespace Character
 	using Gameplay::Attack;
 	using IO::Keyboard;
 
-	// A class that represents the player.
 	class Player : public Playable, public Char
 	{
 	public:
@@ -104,7 +104,7 @@ namespace Character
 		// Returns if a Keyaction is currently active. 
 		bool keydown(Keyboard::Action action) const;
 		// Return a pointer to the ladder the player is on.
-		const Ladder* getladder() const;
+		Optional<Ladder> getladder() const;
 
 		// Change players position to the seat's position and stance to Char::SIT.
 		void setseat(const Seat* seat);
@@ -125,11 +125,8 @@ namespace Character
 		Monsterbook& getmonsterbook();
 
 	private:
-		void updatestate(const Physics& physics);
-		void writemovement();
-		void updatelook();
 		float getattackspeed() const;
-		uint16_t getstancespeed() const;
+		float getstancespeed() const;
 
 		CharStats stats;
 		Inventory inventory;

@@ -20,9 +20,15 @@
 
 namespace Constants
 {
+	using std::int16_t;
+	using std::uint16_t;
+
 	// Timestep, e.g. the granularity in which the game advances.
 	const uint16_t TIMESTEP = 8;
-
-	const float VIEWWIDTH = 800.0f;
-	const float VIEWHEIGHT = 600.0f;
+	// Window and screen width.
+	const int16_t VIEWWIDTH = 800;
+	// Window and screen height.
+	const int16_t VIEWHEIGHT = 600;
+	// View y offset.
+	const int16_t VIEWYOFFSET = 10;
 }

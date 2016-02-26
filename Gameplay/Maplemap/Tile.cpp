@@ -46,8 +46,7 @@ namespace Gameplay
 
 	void Tile::draw(vector2d<int16_t> viewpos) const
 	{
-		using::Graphics::DrawArgument;
-		texture.draw(DrawArgument(pos + viewpos));
+		texture.draw(pos + viewpos);
 	}
 
 	uint8_t Tile::getz() const

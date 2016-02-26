@@ -19,9 +19,9 @@
 
 namespace IO
 {
-	bool Window::init()
+	bool Window::init(bool fullscreen)
 	{
-		return window.init();
+		return window.init(fullscreen);
 	}
 
 	void Window::update()
@@ -39,8 +39,8 @@ namespace IO
 		window.end();
 	}
 
-	void Window::fadeout()
+	void Window::fadeout(float step, void(*fadeproc)())
 	{
-		window.fadeout();
+		window.fadeout(step, fadeproc);
 	}
 }

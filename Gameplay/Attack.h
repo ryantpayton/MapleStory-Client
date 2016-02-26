@@ -30,12 +30,21 @@ namespace Gameplay
 
 	struct Attack 
 	{
+		enum Type
+		{
+			CLOSE,
+			RANGED,
+			MAGIC
+		};
+
 		enum Direction : uint8_t
 		{
 			CENTERED = 0,
 			TOLEFT = 1,
 			TORIGHT = 2
 		};
+
+		Type type = CLOSE;
 
 		int32_t mindamage = 0;
 		int32_t maxdamage = 0;
@@ -55,13 +64,33 @@ namespace Gameplay
 		vector2d<int16_t> origin;
 		rectangle2d<int16_t> range;
 
+		Animation bullet;
 		Animation hiteffect;
 		Sound usesound;
 		Sound hitsound;
+
+		bool update(uint16_t timestep)
+		{
+			if (delay < timestep)
+				return true;
+
+			delay -= timestep;
+			return false;
+		}
 	};
 
 	struct AttackResult
 	{
+		AttackResult(const Attack& attack)
+		{
+			hitcount = attack.hitcount;
+			skill = attack.skill;
+			direction = attack.direction;
+			speed = attack.speed;
+			ranged = attack.type == Attack::RANGED;
+		}
+
+		bool ranged = false;
 		map<int32_t, vector<int32_t>> damagelines;
 		uint8_t mobcount = 0;
 		uint8_t hitcount = 1;

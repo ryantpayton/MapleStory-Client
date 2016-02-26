@@ -23,16 +23,18 @@ namespace Character
 	{
 		for (auto it = Equipslot::getit(); it.hasnext(); it.increment())
 		{
-			Equipslot::Value value = it.get();
-			equips[value] = nullptr;
+			Equipslot::Value slot = it.get();
+			equips[slot] = nullptr;
 		}
 	}
 
 	void CharEquips::draw(Equipslot::Value slot, Stance::Value stance, Clothing::Layer layer, uint8_t frame, const DrawArgument& args) const 
 	{
-		const Clothing* cloth = equips[slot];
-		if (cloth)
-			cloth->draw(stance, layer, frame, args);
+		Optional<Clothing> equip = getequip(slot);
+		if (equip)
+		{
+			equip->draw(stance, layer, frame, args);
+		}
 	}
 
 	void CharEquips::addequip(const Clothing& eq)
@@ -46,69 +48,56 @@ namespace Character
 		equips[slot] = nullptr;
 	}
 
-	bool CharEquips::checkorfalse(Equipslot::Value slot, bool(*check)(const Clothing*)) const
-	{
-		const Clothing* cloth = equips[slot];
-		return (cloth) ? (*check)(cloth) : false;
-	}
-
 	bool CharEquips::isvisible(Equipslot::Value slot) const
 	{
-		return checkorfalse(slot, [](const Clothing* cloth) { 
-			return cloth->istransparent(); 
-		});
+		return getequip(slot)
+			.maporfalse(&Clothing::istransparent);
+	}
+
+	bool CharEquips::comparelayer(Equipslot::Value slot, Stance::Value stance, Clothing::Layer layer) const
+	{
+		return getequip(slot)
+			.maporfalse(&Clothing::islayer, stance, layer);
 	}
 
 	bool CharEquips::hasoverall() const
 	{
-		return checkorfalse(Equipslot::TOP, [](const Clothing* cloth){ 
-			return cloth->getid() / 10000 == 105;
-		});
+		return getequip(Equipslot::TOP)
+			.mapordefault(&Clothing::getid, 0) / 10000 == 105;
 	}
 
 	bool CharEquips::hasweapon() const
 	{
-		return getweapon() != nullptr;
+		return getweapon()
+			.ispresent();
 	}
 
 	bool CharEquips::istwohanded() const
 	{
-		const Weapon* weapon = getweapon();
-		if (weapon)
-			return weapon->istwohanded();
-		else
-			return false;
+		return getweapon()
+			.maporfalse(&Weapon::istwohanded);
 	}
 
 	Weapon::Type CharEquips::getweapontype() const
 	{
-		const Weapon* weapon = getweapon();
-		if (weapon)
-			return weapon->gettype();
-		else
-			return Weapon::NONE;
+		return getweapon()
+			.mapordefault(&Weapon::gettype, Weapon::NONE);
 	}
 
 	string CharEquips::getequipname(Equipslot::Value slot) const
 	{
-		const Clothing* cloth = equips[slot];
-		if (cloth == nullptr)
-			return "";
-
-		return cloth->getname();
+		return getequip(slot)
+			.mapordefault(&Clothing::getname, string(""));
 	}
 
-	const Clothing* CharEquips::getequip(Equipslot::Value slot) const
+	Optional<Clothing> CharEquips::getequip(Equipslot::Value slot) const
 	{
 		return equips[slot];
 	}
 
-	const Weapon* CharEquips::getweapon() const
+	Optional<Weapon> CharEquips::getweapon() const
 	{
-		const Clothing* weapon = equips[Equipslot::WEAPON];
-		if (weapon == nullptr)
-			return nullptr;
-
-		return reinterpret_cast<const Weapon*>(weapon);
+		return getequip(Equipslot::WEAPON)
+			.reinterpret<Weapon>();
 	}
 }

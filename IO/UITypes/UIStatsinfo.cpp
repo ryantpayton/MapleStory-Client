@@ -32,7 +32,7 @@ namespace IO
 	using Gameplay::Stage;
 
 	UIStatsinfo::UIStatsinfo() :
-		UIDragElement("PosSTATS", vector2d<int16_t>(212, 20)),
+		UIDragElement(Settings::POS_STATS, vector2d<int16_t>(212, 20)),
 		stats(Stage::get().getplayer().getstats()) {
 
 		using nl::node;

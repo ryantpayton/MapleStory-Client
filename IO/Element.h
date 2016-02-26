@@ -23,25 +23,6 @@ namespace IO
 	class Element
 	{
 	public:
-		enum UIType
-		{
-			NONE,
-			LOGIN,
-			LOGINWAIT,
-			LOGINNOTICE,
-			WORLDSELECT,
-			CHARSELECT,
-			CHARCREATION,
-			SOFTKEYBOARD,
-			STATUSMESSENGER,
-			STATUSBAR,
-			BUFFLIST,
-			NPCTALK,
-			STATSINFO,
-			ITEMINVENTORY,
-			EQUIPINVENTORY,
-		};
-
 		virtual ~Element() {}
 
 		// Return wether the element can only be created once.
@@ -53,7 +34,7 @@ namespace IO
 		virtual bool isfocused() const { return false; }
 
 		// Return the type of this element.
-		virtual UIType type() const = 0;
+		virtual UIElement::Type type() const = 0;
 
 		// Create the Element instance.
 		virtual UIElement* instantiate() const = 0;

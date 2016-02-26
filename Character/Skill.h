@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Graphics\Animation.h"
+#include "Util\Optional.h"
 #include "Util\rectangle2d.h"
 #include <cstdint>
 #include <string>
@@ -47,6 +48,13 @@ namespace Character
 	class Skill
 	{
 	public:
+		enum IconType
+		{
+			NORMAL,
+			MOUSEOVER,
+			DISABLED
+		};
+
 		Skill(int32_t);
 		Skill();
 		~Skill();
@@ -54,14 +62,16 @@ namespace Character
 		bool isoffensive() const;
 		int32_t getid() const;
 		string getaction(bool twohanded) const;
+
 		Animation gethitanimation(bool twohanded) const;
 		Animation geteffect(bool twohanded) const;
-		const Texture* geticon(uint8_t type) const;
-		const SkillLevel* getlevel(int32_t level) const;
+		const Texture& geticon(IconType type) const;
+
+		Optional<SkillLevel> getlevel(int32_t level) const;
 
 	private:
 		int32_t id;
-		map<uint8_t, Texture> icons;
+		map<IconType, Texture> icons;
 		vector<Animation> effects;
 		vector<Animation> hit;
 		Animation affected;

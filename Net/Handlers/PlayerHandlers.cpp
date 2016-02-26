@@ -29,7 +29,7 @@ namespace Net
 	using Character::Maplestat;
 	using Gameplay::Stage;
 	using IO::UI;
-	using IO::Element;
+	using IO::UIElement;
 	using IO::UIBuffList;
 	using IO::UIStatsinfo;
 
@@ -98,8 +98,8 @@ namespace Net
 					break;
 				case Maplestat::AP:
 					player.getstats().setstat(stat, recv.readshort());
-					if (UI::get().haselement(Element::STATSINFO))
-						UI::get().getelement<UIStatsinfo>(Element::STATSINFO)->updateap();
+					if (UI::get().haselement(UIElement::STATSINFO))
+						UI::get().getelement<UIStatsinfo>(UIElement::STATSINFO)->updateap();
 					break;
 				default:
 					player.getstats().setstat(stat, recv.readshort());
@@ -159,7 +159,7 @@ namespace Net
 		Buff buff = Buff(bs, value, skillid, duration);
 		getplayer().givebuff(buff);
 
-		UIBuffList* bufflist = UI::get().getelement<UIBuffList>(Element::BUFFLIST);
+		UIBuffList* bufflist = UI::get().getelement<UIBuffList>(UIElement::BUFFLIST);
 		if (bufflist)
 			bufflist->addbuff(skillid, duration);
 	}

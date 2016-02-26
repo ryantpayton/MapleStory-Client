@@ -114,9 +114,9 @@ namespace IO
 	// Factory for the character creation screen.
 	class ElementCharcreation : public Element
 	{
-		UIType type() const override
+		UIElement::Type type() const override
 		{
-			return CHARCREATION;
+			return UIElement::CHARCREATION;
 		}
 
 		UIElement* instantiate() const override

@@ -21,7 +21,7 @@
 
 namespace IO
 {
-	// A button which can be used in an UIElement. Base class for different button types.
+	// Base class for different button types.
 	class Button
 	{
 	public:
@@ -34,13 +34,17 @@ namespace IO
 		};
 
 		virtual ~Button() {}
-		virtual void draw(vector2d<int16_t>) const = 0;
-		virtual rectangle2d<int16_t> bounds(vector2d<int16_t>) const = 0;
-		void setposition(vector2d<int16_t> p) { position = p; }
-		void setstate(State s) { state = s; }
-		void setactive(bool a) { active = a; }
-		bool isactive() const { return active && state != DISABLED; }
-		State getstate() const { return state; }
+
+		virtual void draw(vector2d<int16_t> parentpos) const = 0;
+		virtual rectangle2d<int16_t> bounds(vector2d<int16_t> parentpos) const = 0;
+
+		void setposition(vector2d<int16_t> position);
+		void setstate(State state);
+		void setactive(bool active);
+
+		bool isactive() const;
+		State getstate() const;
+
 	protected:
 		State state;
 		vector2d<int16_t> position;

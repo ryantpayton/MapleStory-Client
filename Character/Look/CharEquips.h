@@ -19,6 +19,8 @@
 #include "Clothing.h"
 #include "Weapon.h"
 
+#include "Util\Optional.h"
+
 namespace Character
 {
 	class CharEquips
@@ -31,17 +33,17 @@ namespace Character
 		void removeequip(Equipslot::Value slot);
 
 		bool isvisible(Equipslot::Value slot) const;
+		bool comparelayer(Equipslot::Value slot, Stance::Value stance, Clothing::Layer layer) const;
 		bool hasoverall() const;
 		bool hasweapon() const;
 		bool istwohanded() const;
 		Weapon::Type getweapontype() const;
 		string getequipname(Equipslot::Value slot) const;
-		const Clothing* getequip(Equipslot::Value slot) const;
-		const Weapon* getweapon() const;
+
+		Optional<Clothing> getequip(Equipslot::Value slot) const;
+		Optional<Weapon> getweapon() const;
 
 	private:
-		bool checkorfalse(Equipslot::Value slot, bool(*check)(const Clothing*)) const;
-
 		const Clothing* equips[Equipslot::LENGTH];
 	};
 }
