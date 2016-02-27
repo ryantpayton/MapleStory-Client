@@ -16,89 +16,31 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\rectangle2d.h"
 #include "Graphics\Animation.h"
-#include "Audio\Sound.h"
-#include <cstdint>
+#include "Util\vector2d.h"
 
 namespace Gameplay
 {
-	using std::vector;
-	using std::map;
 	using Graphics::Animation;
-	using Audio::Sound;
 
-	struct Attack 
+	class Bullet
 	{
-		enum Type
-		{
-			CLOSE,
-			RANGED,
-			MAGIC
-		};
+	public:
+		Bullet(Animation animation, vector2d<int16_t> origin, bool toleft);
 
-		enum Direction : uint8_t
-		{
-			CENTERED = 0,
-			TOLEFT = 1,
-			TORIGHT = 2
-		};
+		void draw(vector2d<int16_t> viewpos, float alpha) const;
+		bool update(vector2d<int16_t> target);
 
-		Type type = CLOSE;
+	private:
+		vector2d<int16_t> getposition(float alpha) const;
 
-		double mindamage = 1.0;
-		double maxdamage = 1.0;
-		float critical = 0.0f;
-		float ignoredef = 0.0f;
-		int32_t accuracy = 0;
-		int16_t playerlevel = 1;
-
-		uint8_t hitcount = 0;
-		uint8_t mobcount = 0;
-
-		int32_t skill = 0;
-		uint8_t speed = 0;
-
-		uint16_t delay = 0;
-		Direction direction = CENTERED;
-		vector2d<int16_t> origin;
-		rectangle2d<int16_t> range;
-
-		Animation bullet;
-		Animation hiteffect;
-		Sound usesound;
-		Sound hitsound;
-
-		bool update(uint16_t timestep)
-		{
-			if (delay < timestep)
-				return true;
-
-			delay -= timestep;
-			return false;
-		}
-	};
-
-	struct AttackResult
-	{
-		AttackResult(const Attack& attack)
-		{
-			hitcount = attack.hitcount;
-			skill = attack.skill;
-			direction = attack.direction;
-			speed = attack.speed;
-			ranged = attack.type == Attack::RANGED;
-		}
-
-		bool ranged = false;
-		map<int32_t, vector<int32_t>> damagelines;
-		uint8_t mobcount = 0;
-		uint8_t hitcount = 1;
-		int32_t skill = 0;
-		int32_t charge = 0;
-		uint8_t display = 0;
-		uint8_t direction = 0;
-		uint8_t stance = 0;
-		uint8_t speed = 0;
+		Animation animation;
+		bool flip;
+		float fx;
+		float fy;
+		float lastx;
+		float lasty;
+		float hspeed;
+		float vspeed;
 	};
 }

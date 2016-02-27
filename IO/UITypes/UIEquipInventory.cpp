@@ -210,7 +210,7 @@ namespace IO
 
 	void UIEquipInventory::addicon(int16_t slot)
 	{
-		Optional<Texture> texture = inventory.getitem(Inventory::EQUIPPED, slot)
+		Optional<const Texture> texture = inventory.getitem(Inventory::EQUIPPED, slot)
 			.transform(&Item::getidata)
 			.transform(&ItemData::geticon, false);
 

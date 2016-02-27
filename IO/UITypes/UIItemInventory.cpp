@@ -155,7 +155,7 @@ namespace IO
 		Optional<Item> item = inventory.getitem(tab, slot);
 		if (item)
 		{
-			Optional<Texture> texture = item
+			Optional<const Texture> texture = item
 				.transform(&Item::getidata)
 				.transform(&ItemData::geticon, false);
 
@@ -265,8 +265,11 @@ namespace IO
 			switch (type)
 			{
 			case ITEMINVENTORY:
-				using Net::MoveItemPacket;
-				Session::get().dispatch(MoveItemPacket(tab, identifier, slot, 1));
+				if (slot != identifier)
+				{
+					using Net::MoveItemPacket;
+					Session::get().dispatch(MoveItemPacket(tab, identifier, slot, 1));
+				}
 				break;
 			case EQUIPINVENTORY:
 				if (tab == Inventory::EQUIP)

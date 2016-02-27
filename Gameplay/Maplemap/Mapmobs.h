@@ -18,10 +18,8 @@
 #pragma once
 #include "MapObjects.h"
 #include "Mob.h"
-
 #include "Gameplay\Attack.h"
-
-#include "Util\HashList.h"
+#include <list>
 
 namespace Gameplay
 {
@@ -45,7 +43,7 @@ namespace Gameplay
 		vector<int32_t> findranged(rectangle2d<int16_t> range, vector2d<int16_t> origin, uint8_t mobcount) const;
 		Mob* getmob(int32_t oid);
 
-		HashList<Attack> attackschedule;
+		list<Attack> attacklist;
 	};
 }
 

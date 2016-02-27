@@ -27,16 +27,18 @@ namespace Gameplay
 {
 	void MapMobs::update(const Physics& physics)
 	{
-		vector<size_t> indices = attackschedule.collect(&Attack::update, Constants::TIMESTEP);
-		for (auto& index : indices)
-		{
-			Optional<Attack> attack = attackschedule.get(index);
-			if (attack)
+		attacklist.remove_if([&](Attack& attack){
+			bool apply = attack.update(Constants::TIMESTEP);
+			if (apply)
 			{
-				applyattack(*attack);
-				attackschedule.remove(index);
+				applyattack(attack);
+				return true;
 			}
-		}
+			else
+			{
+				return false;
+			}
+		});
 
 		MapObjects::update(physics);
 	}
@@ -185,7 +187,7 @@ namespace Gameplay
 
 	void MapMobs::sendattack(Attack attack)
 	{
-		attackschedule.add(attack);
+		attacklist.push_back(attack);
 	}
 
 	Mob* MapMobs::getmob(int32_t oid)

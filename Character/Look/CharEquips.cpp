@@ -30,7 +30,7 @@ namespace Character
 
 	void CharEquips::draw(Equipslot::Value slot, Stance::Value stance, Clothing::Layer layer, uint8_t frame, const DrawArgument& args) const 
 	{
-		Optional<Clothing> equip = getequip(slot);
+		Optional<const Clothing> equip = getequip(slot);
 		if (equip)
 		{
 			equip->draw(stance, layer, frame, args);
@@ -90,14 +90,14 @@ namespace Character
 			.mapordefault(&Clothing::getname, string(""));
 	}
 
-	Optional<Clothing> CharEquips::getequip(Equipslot::Value slot) const
+	Optional<const Clothing> CharEquips::getequip(Equipslot::Value slot) const
 	{
 		return equips[slot];
 	}
 
-	Optional<Weapon> CharEquips::getweapon() const
+	Optional<const Weapon> CharEquips::getweapon() const
 	{
 		return getequip(Equipslot::WEAPON)
-			.reinterpret<Weapon>();
+			.reinterpret<const Weapon>();
 	}
 }

@@ -153,7 +153,6 @@ namespace Character
 			switch (type)
 			{
 			case Inventory::USE:
-				using Net::Session;
 				using Net::UseItemPacket;
 				Session::get().dispatch(UseItemPacket(slot, itemid));
 				break;
@@ -256,7 +255,7 @@ namespace Character
 		const Skill& skill = DataFactory::get().getskill(skillid);
 		
 		int32_t skilllevel = skillbook.getlevel(skillid);
-		Optional<SkillLevel> level = skill.getlevel(skilllevel);
+		Optional<const SkillLevel> level = skill.getlevel(skilllevel);
 		if (level)
 		{
 			if (level->hpcost >= stats.getstat(Maplestat::HP))
@@ -293,11 +292,16 @@ namespace Character
 		return skill;
 	}
 
-	Attack Player::prepareattack() const
+	Attack Player::prepareattack(bool degenerate) const
 	{
 		Attack attack;
 		attack.mindamage = stats.getmindamage();
 		attack.maxdamage = stats.getmaxdamage();
+		if (degenerate)
+		{
+			attack.mindamage /= 10;
+			attack.maxdamage /= 10;
+		}
 		attack.critical = stats.getcritical();
 		attack.ignoredef = stats.getignoredef();
 		attack.accuracy = stats.gettotal(Equipstat::ACC);
@@ -313,22 +317,25 @@ namespace Character
 	{
 		Weapon::Type weapontype = look.getequips().getweapontype();
 		Attack::Type attacktype;
+		bool degenerate;
 		switch (weapontype)
 		{
 		case Weapon::BOW:
 		case Weapon::CROSSBOW:
 		case Weapon::CLAW:
 		case Weapon::GUN:
-			attacktype = inventory.hasprojectile() ? Attack::RANGED : Attack::CLOSE;
+			degenerate = !inventory.hasprojectile();
+			attacktype = degenerate ? Attack::CLOSE : Attack::RANGED;
 			break;
 		default:
 			attacktype = Attack::CLOSE;
+			degenerate = false;
 		}
 
-		uint16_t delay = look.attack(attacktype);
+		uint16_t delay = look.attack(degenerate);
 		attacking = true;
 
-		Attack attack = prepareattack();
+		Attack attack = prepareattack(degenerate);
 		attack.skill = 0;
 		attack.mobcount = 1;
 		attack.hitcount = 1;
@@ -346,7 +353,7 @@ namespace Character
 		}
 		else
 		{
-			Optional<Weapon> weapon = look.getequips().getweapon();
+			Optional<const Weapon> weapon = look.getequips().getweapon();
 			attack.range = weapon.map(&Weapon::getrange);
 			attack.hiteffect = weapon.map(&Weapon::gethiteffect);
 		}
@@ -356,13 +363,13 @@ namespace Character
 
 	Attack Player::prepareskillattack(int32_t skillid) const
 	{
-		Attack attack = prepareattack();
+		Attack attack = prepareattack(false);
 		attack.skill = skillid;
 
 		const Skill& skill = DataFactory::get().getskill(skillid);
 
 		int32_t skilllevel = skillbook.getlevel(skillid);
-		Optional<SkillLevel> level = skill.getlevel(skilllevel);
+		Optional<const SkillLevel> level = skill.getlevel(skilllevel);
 		if (level)
 		{
 			attack.mindamage *= level->damage;
@@ -488,7 +495,7 @@ namespace Character
 		return monsterbook;
 	}
 
-	Optional<Ladder> Player::getladder() const
+	Optional<const Ladder> Player::getladder() const
 	{
 		return ladder;
 	}

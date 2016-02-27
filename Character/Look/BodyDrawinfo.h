@@ -33,11 +33,12 @@ namespace Character
 	class BodyAction
 	{
 	public:
-		BodyAction(Stance::Value s, uint8_t f, uint16_t d)
+		BodyAction(Stance::Value s, uint8_t f, uint16_t d, vector2d<int16_t> m)
 		{
 			stance = s;
 			frame = f;
 			delay = d;
+			move = m;
 		}
 
 		BodyAction() {}
@@ -57,10 +58,16 @@ namespace Character
 			return delay;
 		}
 
+		vector2d<int16_t> getmove() const
+		{
+			return move;
+		}
+
 	private:
 		Stance::Value stance;
 		uint8_t frame;
 		uint16_t delay;
+		vector2d<int16_t> move;
 	};
 
 	using std::int16_t;

@@ -71,7 +71,7 @@ namespace Character
 		rectangle2d<int16_t> getrange() const;
 		Type gettype() const;
 		Animation gethiteffect() const;
-		Sound getsound() const;
+		const Sound& getsound(bool degenerate) const;
 
 	private:
 		Type type;

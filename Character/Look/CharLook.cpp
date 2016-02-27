@@ -96,10 +96,14 @@ namespace Character
 		else
 			fcinterframe = lastfcframe;
 
+		vector2d<int16_t> absp = pos;
+		if (action)
+			absp.shift(action->getmove());
+
 		using Graphics::DrawArgument;
-		DrawArgument args = DrawArgument(pos, flip);
+		DrawArgument args = DrawArgument(absp, flip);
 		vector2d<int16_t> faceshift = DataFactory::get().getdrawinfo().getfacepos(laststance, interframe);
-		DrawArgument faceargs = DrawArgument(pos + faceshift, flip, pos);
+		DrawArgument faceargs = DrawArgument(absp + faceshift, flip, absp);
 
 		if (Stance::isclimbing(laststance))
 		{
@@ -314,20 +318,34 @@ namespace Character
 			updatetwohanded();
 	}
 
-	uint16_t CharLook::attack(Attack::Type attacktype)
+	uint16_t CharLook::attack(bool degenerate)
 	{
-		Stance::Value newstance = getattackstance(attacktype);
-		if (stance != newstance)
+		Optional<const Weapon> weapon = equips.getweapon();
+		uint8_t attack = weapon.mapordefault(&Weapon::getattack, uint8_t(0));
+		bool isaction = attack == 9 && !degenerate;
+		weapon.transform(&Weapon::getsound, degenerate)
+			.ifpresent(&Sound::play);
+		if (isaction)
 		{
-			frame = 0;
-			elapsed = 0;
-			stance = newstance;
-
-			equips.getweapon()
-				.map(&Weapon::getsound)
-				.play();
+			switch (attack)
+			{
+			case 9:
+				setaction("handgun");
+				break;
+			}
+			return action->getdelay();
 		}
-		return DataFactory::get().getdrawinfo().getdelay(newstance, 0);
+		else
+		{
+			Stance::Value newstance = getattackstance(attack, degenerate);
+			if (stance != newstance)
+			{
+				frame = 0;
+				elapsed = 0;
+				stance = newstance;
+			}
+			return DataFactory::get().getdrawinfo().getdelay(newstance, 0);
+		}
 	}
 
 	void CharLook::setstance(Stance::Value newstance)
@@ -346,23 +364,40 @@ namespace Character
 		}
 	}
 
-	Stance::Value CharLook::getattackstance(Attack::Type attacktype) const
+	Stance::Value CharLook::getattackstance(uint8_t attack, bool degenerate) const
 	{
 		if (stance == Stance::PRONE)
 			return Stance::PRONESTAB;
 
-		uint8_t attack = equips.getweapon()
-			.mapordefault(&Weapon::getattack, uint8_t(0));
+		bool random = randomizer.nextbool();
 		switch (attack)
 		{
 		case 1:
-			return randomizer.nextbool() ? Stance::STABO1 : Stance::SWINGO1;
+			return random ? Stance::STABO1 : Stance::SWINGO1;
 		case 2:
-			return randomizer.nextbool() ? Stance::STABT1 : Stance::SWINGP1;
+			return random ? Stance::STABT1 : Stance::SWINGP1;
 		case 3:
-			return attacktype == Attack::CLOSE ? Stance::SWINGT1 : Stance::SHOOT1;
+			if (degenerate)
+				return random ? Stance::SWINGT1 : Stance::SWINGT3;
+			else
+				return Stance::SHOOT1;
+		case 4:
+			if (degenerate)
+				return random ? Stance::SWINGT1 : Stance::STABT1;
+			else
+				return Stance::SHOOT2;
 		case 5:
 			return randomizer.nextbool() ? Stance::STABT1 : Stance::SWINGT1;
+		case 7:
+			if (degenerate)
+				return random ? Stance::SWINGT1 : Stance::STABT1;
+			else
+				return random ? Stance::SWINGO1 : Stance::SWINGO2;
+		case 9:
+			if (degenerate)
+				return random ? Stance::SWINGP1 : Stance::STABT2;
+			else
+				return Stance::STAND1;
 		default:
 			return Stance::STAND1;
 		}

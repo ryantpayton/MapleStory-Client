@@ -53,9 +53,10 @@ namespace Character
 				if (actionnode.data_type() == node::type::string)
 				{
 					string acstr = actionnode.get_string();
-					uint8_t acframe = framenode["frame"];
 					Stance::Value acstance = Stance::bystring(acstr);
-					bodyactions[ststr][frame] = BodyAction(acstance, acframe, delay);
+					uint8_t acframe = framenode["frame"];
+					vector2d<int16_t> move = framenode["move"];
+					bodyactions[ststr][frame] = BodyAction(acstance, acframe, delay, move);
 				}
 				else
 				{

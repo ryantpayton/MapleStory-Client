@@ -66,8 +66,7 @@ namespace Character
 		Animation gethitanimation(bool twohanded) const;
 		Animation geteffect(bool twohanded) const;
 		const Texture& geticon(IconType type) const;
-
-		Optional<SkillLevel> getlevel(int32_t level) const;
+		const SkillLevel* getlevel(int32_t level) const;
 
 	private:
 		int32_t id;

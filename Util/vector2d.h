@@ -35,7 +35,7 @@ public:
 	T y() const { return b; }
 	T smaller() const { return (a < b) ? a : b; }
 	T greater() const { return (a < b) ? b : a; }
-	T length() const { return static_cast<T>(std::sqrt(std::pow(a, 2) + std::pow(b, 2))); }
+	T length() const { return static_cast<T>(std::sqrt(a * a + b * b)); }
 	T center() const { return ((a > b) ? a - b : b - a) / 2; }
 
 	bool contains(T p) const { return (p >= a && p <= b); }

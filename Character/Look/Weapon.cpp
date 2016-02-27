@@ -25,7 +25,7 @@ namespace Character
 	{
 		int32_t prefix = equipid / 10000;
 		type = typebyvalue(prefix);
-		twohanded = (prefix == 138) || (prefix >= 140 && prefix <= 144);
+		twohanded = (prefix == STAFF) || (prefix >= SWORD_2H && prefix <= POLEARM) || (prefix == CROSSBOW);
 
 		using nl::node;
 		node infonode = nl::nx::character["Weapon"]["0" + std::to_string(equipid) + ".img"]["info"];
@@ -135,8 +135,8 @@ namespace Character
 		return Animation();
 	}
 
-	Sound Weapon::getsound() const
+	const Sound& Weapon::getsound(bool degenerate) const
 	{
-		return firstattack;
+		return degenerate ? secondattack : firstattack;
 	}
 }

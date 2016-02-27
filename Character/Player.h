@@ -79,7 +79,7 @@ namespace Character
 		// Use a skill.
 		const Skill& useskill(int32_t skillid);
 		// Create an attack struct using the player's stats.
-		Attack prepareattack() const;
+		Attack prepareattack(bool degenerate) const;
 		// Create an attack struct for and use a regular attack.
 		Attack prepareregularattack();
 		// Create an attack struct for a skill attack.
@@ -104,7 +104,7 @@ namespace Character
 		// Returns if a Keyaction is currently active. 
 		bool keydown(Keyboard::Action action) const;
 		// Return a pointer to the ladder the player is on.
-		Optional<Ladder> getladder() const;
+		Optional<const Ladder> getladder() const;
 
 		// Change players position to the seat's position and stance to Char::SIT.
 		void setseat(const Seat* seat);

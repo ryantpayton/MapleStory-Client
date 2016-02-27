@@ -116,7 +116,7 @@ namespace Gameplay
 		{
 			while (y > 0)
 			{
-				y -= cx;
+				y -= cy;
 			}
 			while (y < -cy)
 			{
@@ -125,13 +125,13 @@ namespace Gameplay
 		}
 
 		int16_t endx = x + cx * htile;
-		int16_t endy = y + cy * htile;
+		int16_t endy = y + cy * vtile;
 		for (int16_t tx = x; tx < endx; tx += cx)
 		{
 			for (int16_t ty = y; ty < endy; ty += cy)
 			{
 				using Graphics::DrawArgument;
-				animation.draw(DrawArgument(vector2d<int16_t>(tx, ty), opacity / 255), inter);
+				animation.draw(DrawArgument(vector2d<int16_t>(tx, ty), flipped, opacity / 255), inter);
 			}
 		}
 	}

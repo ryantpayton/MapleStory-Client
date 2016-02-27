@@ -18,6 +18,7 @@
 #pragma once
 #include "Mapobject.h"
 #include "Gameplay\Attack.h"
+#include "Gameplay\Bullet.h"
 #include "Gameplay\Physics\PhysicsObject.h"
 #include "Gameplay\MovementInfo.h"
 #include "Graphics\Text.h"
@@ -26,7 +27,7 @@
 #include "IO\Components\DamageNumber.h"
 #include "Util\rectangle2d.h"
 #include "Util\Randomizer.h"
-#include "Util\HashList.h"
+#include <list>
 
 namespace Gameplay
 {
@@ -82,29 +83,6 @@ namespace Gameplay
 			bool fromright;
 		};
 
-		struct Bullet
-		{
-			Animation animation;
-			DamageEffect damageeffect;
-			vector2d<int16_t> position;
-
-			void draw(vector2d<int16_t> viewpos, float inter) const
-			{
-				vector2d<int16_t> bulletpos = position + viewpos;
-				bulletpos.shifty(-26);
-				animation.draw(bulletpos, inter);
-			}
-
-			bool update(vector2d<int16_t> target)
-			{
-				animation.update();
-
-				vector2d<int16_t> distance = target - position;
-				position += distance / 10;
-				return distance.length() < 10;
-			}
-		};
-
 		void applydamage(const DamageEffect& damageeffect);
 		void applyknockback(bool fromright);
 		void writemovement();
@@ -133,7 +111,7 @@ namespace Gameplay
 		bool noflip;
 		bool notattack;
 
-		HashList<Bullet> bulletlist;
+		list<pair<Bullet, DamageEffect>> bulletlist;
 
 		EffectLayer effects;
 		Text namelabel;

@@ -15,72 +15,46 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Optional.h"
-#include <map>
-#include <vector>
+#include "Bullet.h"
 
-using std::map;
-using std::vector;
-
-template <typename T>
-class HashList
+namespace Gameplay
 {
-public:
-	HashList()
+	Bullet::Bullet(Animation a, vector2d<int16_t> origin, bool toleft)
 	{
-		index = 0;
+		animation = a;
+		fx = origin.x() + (toleft ? -30.0f : 30.0f);
+		fy = origin.y() - 26.0f;
+		flip = toleft;
+		hspeed = 0.0f;
+		vspeed = 0.0f;
 	}
 
-	Optional<T> get(size_t index) const
+	void Bullet::draw(vector2d<int16_t> viewpos, float alpha) const
 	{
-		if (values.count(index))
-			return values.at(index);
-		else
-			return nullptr;
+		vector2d<int16_t> bulletpos = getposition(alpha) + viewpos;
+		animation.draw(bulletpos, alpha);
 	}
 
-	void add(T value)
+	vector2d<int16_t> Bullet::getposition(float alpha) const
 	{
-		values[index] = value;
-		index++;
+		int16_t interx = static_cast<int16_t>((1.0f - alpha) * lastx + alpha * fx);
+		int16_t intery = static_cast<int16_t>((1.0f - alpha) * lasty + alpha * fy);
+		return vector2d<int16_t>(interx, intery);
 	}
 
-	void remove(size_t index)
+	bool Bullet::update(vector2d<int16_t> target)
 	{
-		values.erase(index);
-	}
+		animation.update();
 
-	void remove(vector<size_t> indices)
-	{
-		for (auto& index : indices)
-		{
-			values.erase(index);
-		}
+		float xdelta = target.x() - fx;
+		float ydelta = target.y() - fy;
+		hspeed = (hspeed + xdelta / 10) / 2;
+		vspeed = (vspeed + ydelta / 10) / 2;
+		flip = xdelta > 0.0f;
+		lastx = fx;
+		lasty = fy;
+		fx += hspeed;
+		fy += vspeed;
+		return vector2d<float>(xdelta, ydelta).length() < 10.0f;
 	}
-
-	template<typename T, typename ...Args>
-	void foreach(void(T::*action)(Args...)const, Args... args) const
-	{
-		for (auto& value : values)
-		{
-			(value.second.*action)(std::forward<Args>(args)...);
-		}
-	}
-
-	template<typename T, typename ...Args>
-	vector<size_t> collect(bool(T::*predicate)(Args...), Args... args)
-	{
-		vector<size_t> result;
-		for (auto& value : values)
-		{
-			if ((value.second.*predicate)(std::forward<Args>(args)...))
-				result.push_back(value.first);
-		}
-		return result;
-	}
-
-private:
-	map<size_t, T> values;
-	size_t index;
-};
+}

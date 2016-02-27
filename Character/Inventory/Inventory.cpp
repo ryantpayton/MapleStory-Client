@@ -56,7 +56,7 @@ namespace Character
 			}));
 		}
 
-		int32_t prefix = -1;
+		int32_t prefix = 0;
 		switch (type)
 		{
 		case Weapon::BOW:
@@ -65,15 +65,24 @@ namespace Character
 		case Weapon::CROSSBOW:
 			prefix = 2061;
 			break;
+		case Weapon::CLAW:
+			prefix = 2070;
+			break;
+		case Weapon::GUN:
+			prefix = 2330;
+			break;
 		}
 
 		projectile = 0;
-		for (auto& use : inventories[USE])
+		if (prefix > 0)
 		{
-			if (use.second && use.second->getid() / 1000 == prefix)
+			for (auto& use : inventories[USE])
 			{
-				projectile = use.first;
-				break;
+				if (use.second && use.second->getid() / 1000 == prefix)
+				{
+					projectile = use.first;
+					break;
+				}
 			}
 		}
 
@@ -168,11 +177,6 @@ namespace Character
 		delete inventories[type][slot];
 		inventories[type][slot] = nullptr;
 		inventories[type].erase(slot);
-
-		if (type == USE && slot == projectile)
-		{
-			projectile = 0;
-		}
 	}
 
 	void Inventory::swap(Type firsttype, int16_t firstslot, Type secondtype, int16_t secondslot)
@@ -183,15 +187,14 @@ namespace Character
 
 		if (inventories[firsttype][firstslot] == nullptr)
 			inventories[firsttype].erase(firstslot);
+		else if (inventories[secondtype][secondslot] == nullptr)
+			inventories[secondtype].erase(secondslot);
 	}
 
 	void Inventory::changecount(Type type, int16_t slot, int16_t count)
 	{
-		Item* item = inventories[type][slot];
-		if (item)
-		{
-			item->setcount(count);
-		}
+		getitem(type, slot)
+			.ifpresent(&Item::setcount, count);
 	}
 
 	void Inventory::modify(Type type, int16_t slot, int8_t mode, int16_t arg, Movement move)
@@ -319,10 +322,10 @@ namespace Character
 	Optional<Item> Inventory::getitem(Type type, int16_t slot) const
 	{
 		if (!inventories.count(type))
-			return nullptr;
+			return Optional<Item>();
 
 		if (!inventories.at(type).count(slot))
-			return nullptr;
+			return Optional<Item>();
 
 		return inventories.at(type).at(slot);
 	}
@@ -330,7 +333,7 @@ namespace Character
 	Optional<Equip> Inventory::getequip(Type type, int16_t slot) const
 	{
 		if (type != EQUIP && type != EQUIPPED)
-			return nullptr;
+			return Optional<Equip>();
 
 		return getitem(type, slot)
 			.reinterpret<Equip>();

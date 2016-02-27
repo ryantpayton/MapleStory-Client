@@ -76,7 +76,7 @@ namespace Character
 				PhysicsObject::PhType phtype = player.getphobj().type;
 				if (phtype == PhysicsObject::CLIMBING)
 				{
-					Optional<Ladder> ladder = player.getladder();
+					Optional<const Ladder> ladder = player.getladder();
 					if (ladder)
 					{
 						state = ladder->ladder ? Char::LADDER : Char::ROPE;
@@ -380,7 +380,7 @@ namespace Character
 
 		void nextstate(Player& player) const override
 		{
-			Optional<Ladder> ladder = player.getladder();
+			Optional<const Ladder> ladder = player.getladder();
 			if (ladder)
 			{
 				double cfy;

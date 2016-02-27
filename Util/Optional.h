@@ -17,23 +17,20 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include <functional>
-#include <vector>
 #include <map>
 
-using std::vector;
-using std::map;
 using std::function;
 
 template <typename T>
 class Optional
 {
 public:
-	Optional(const T* p)
+	Optional(T* p)
 	{
 		ptr = p;
 	}
 
-	Optional(const T& p)
+	Optional(T& p)
 	{
 		ptr = &p;
 	}
@@ -60,6 +57,13 @@ public:
 
 	template<typename T, typename ...Args>
 	void ifpresent(void (T::*action)(Args...) const, Args... args) const
+	{
+		if (ptr)
+			(ptr->*action)(std::forward<Args>(args)...);
+	}
+
+	template<typename T, typename ...Args>
+	void ifpresent(void (T::*action)(Args...), Args... args)
 	{
 		if (ptr)
 			(ptr->*action)(std::forward<Args>(args)...);
@@ -102,16 +106,16 @@ public:
 	}
 
 	template<typename T, typename R, typename ...Args>
-	Optional<R> transform(const R& (T::*mapper)(Args...) const, Args &&... args) const
+	Optional<R> transform(R& (T::*mapper)(Args...) const, Args... args) const
 	{
 		if (ptr)
-			return &(ptr->*mapper)(std::forward<Args>(args)...);
+			return (ptr->*mapper)(std::forward<Args>(args)...);
 		else
 			return nullptr;
 	}
 
 	template<typename T, typename E, typename V, typename R>
-	Optional<R> transform(E& ext, const R& (E::*mapper)(V), V (T::*mapper2)() const) const
+	Optional<R> transform(E& ext, R& (E::*mapper)(V), V (T::*mapper2)() const) const
 	{
 		if (ptr)
 			return (ext.*mapper)((ptr->*mapper2)());
@@ -133,7 +137,7 @@ public:
 	{
 		if (ptr)
 		{
-			const T& key = *ptr;
+			T& key = *ptr;
 			if (container.count(key))
 			{
 				return container.at(key);
@@ -146,12 +150,12 @@ public:
 	Optional<R> reinterpret() const
 	{
 		if (ptr)
-			return reinterpret_cast<const R*>(ptr);
+			return reinterpret_cast<R*>(ptr);
 		else
 			return nullptr;
 	}
 
-	T getordefault(T def) const
+	T& getordefault(T& def) const
 	{
 		if (ptr)
 			return *ptr;
@@ -164,12 +168,27 @@ public:
 		return *ptr;
 	}
 
+	T& operator *()
+	{
+		return *ptr;
+	}
+
 	const T* get() const
 	{
 		return ptr;
 	}
 
+	T* get()
+	{
+		return ptr;
+	}
+
 	const T* operator ->() const
+	{
+		return ptr;
+	}
+
+	T* operator ->()
 	{
 		return ptr;
 	}
@@ -207,5 +226,5 @@ public:
 	}
 
 private:
-	const T* ptr;
+	T* ptr;
 };

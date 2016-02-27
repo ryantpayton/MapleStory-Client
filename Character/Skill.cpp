@@ -119,10 +119,10 @@ namespace Character
 			return actions[0];
 	}
 
-	Optional<SkillLevel> Skill::getlevel(int32_t level) const
+	const SkillLevel* Skill::getlevel(int32_t level) const
 	{
 		if (levels.count(level))
-			return levels.at(level);
+			return &levels.at(level);
 		else
 			return nullptr;
 	}

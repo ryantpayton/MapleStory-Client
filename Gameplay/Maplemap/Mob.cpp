@@ -138,16 +138,20 @@ namespace Gameplay
 			}
 		}
 
-		auto indices = bulletlist.collect(&Bullet::update, getposition());
-		for (auto& index : indices)
-		{
-			Optional<Bullet> bullet = bulletlist.get(index);
-			if (bullet)
+		vector2d<int16_t> bodypos = getposition();
+		bodypos.shifty(-animations.at(stance).getdimensions().y() / 2);
+		bulletlist.remove_if([&](pair<Bullet, DamageEffect>& bullet) {
+			bool apply = bullet.first.update(bodypos);
+			if (apply)
 			{
-				applydamage(bullet->damageeffect);
-				bulletlist.remove(index);
+				applydamage(bullet.second);
+				return true;
 			}
-		}
+			else
+			{
+				return false;
+			}
+		});
 
 		bool aniend;
 		if (animations.count(stance))
@@ -282,7 +286,10 @@ namespace Gameplay
 			namelabel.draw(absp);
 		}
 
-		bulletlist.foreach(&Bullet::draw, viewpos, inter);
+		for (auto& bullet : bulletlist)
+		{
+			bullet.first.draw(viewpos, inter);
+		}
 
 		for (auto& dmg : damagenumbers)
 		{
@@ -340,7 +347,7 @@ namespace Gameplay
 	vector<int32_t> Mob::damage(const Attack& attack)
 	{
 		int16_t leveldelta = (level > attack.playerlevel) ? level - attack.playerlevel : 0;
-		float hitchance = static_cast<float>(attack.accuracy) / (((1.84f + 0.07f * leveldelta) * avoid) - 1);
+		float hitchance = static_cast<float>(attack.accuracy) / (((1.84f + 0.07f * leveldelta) * avoid) + 1.0f);
 		int32_t mindamage = static_cast<int32_t>(attack.mindamage * (1 - 0.01f * leveldelta) - wdef * 0.5f);
 		int32_t maxdamage = static_cast<int32_t>(attack.maxdamage * (1 - 0.01f * leveldelta) - wdef * 0.6f);
 
@@ -362,8 +369,8 @@ namespace Gameplay
 		bool ranged = attack.type == Attack::RANGED;
 		if (ranged)
 		{
-			Bullet bullet = { attack.bullet, damageeffect, attack.origin };
-			bulletlist.add(bullet);
+			Bullet bullet = Bullet(attack.bullet, attack.origin, damageeffect.fromright);
+			bulletlist.push_back({ bullet, damageeffect });
 		}
 		else
 		{
@@ -378,7 +385,7 @@ namespace Gameplay
 	pair<int32_t, bool> Mob::randomdamage(int32_t mindamage, 
 		int32_t maxdamage, float hitchance, float critical) const {
 
-		if (randomizer.below(hitchance))
+		if (!randomizer.below(hitchance))
 			return std::make_pair(0, false);
 
 		int32_t damage = randomizer.nextint<int32_t>(mindamage, maxdamage);

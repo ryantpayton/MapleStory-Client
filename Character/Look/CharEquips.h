@@ -40,8 +40,8 @@ namespace Character
 		Weapon::Type getweapontype() const;
 		string getequipname(Equipslot::Value slot) const;
 
-		Optional<Clothing> getequip(Equipslot::Value slot) const;
-		Optional<Weapon> getweapon() const;
+		Optional<const Clothing> getequip(Equipslot::Value slot) const;
+		Optional<const Weapon> getweapon() const;
 
 	private:
 		const Clothing* equips[Equipslot::LENGTH];
