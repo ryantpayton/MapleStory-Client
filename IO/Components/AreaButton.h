@@ -24,11 +24,13 @@ namespace IO
 	class AreaButton : public Button
 	{
 	public:
-		AreaButton(vector2d<int16_t>, vector2d<int16_t>);
-		void draw(vector2d<int16_t>) const {}
-		rectangle2d<int16_t> bounds(vector2d<int16_t>) const;
+		AreaButton(Point<int16_t>, Point<int16_t>);
+
+		void draw(Point<int16_t>) const {}
+		rectangle2d<int16_t> bounds(Point<int16_t>) const;
+
 	private:
-		vector2d<int16_t> dimension;
+		Point<int16_t> dimension;
 	};
 }
 

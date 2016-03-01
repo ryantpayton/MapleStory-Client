@@ -38,15 +38,15 @@ namespace Gameplay
 		// Changes the objects position.
 		void setposition(int16_t x, int16_t y);
 		// Changes the objects position.
-		void setposition(vector2d<int16_t> position);
+		void setposition(Point<int16_t> position);
 
 		// Obtains the layer used to determine the drawing order on the map.
 		virtual int8_t getlayer() const;
 		// Returns the object id unique to every object on one map.
 		int32_t getoid() const;
 		// Returns the current position.
-		vector2d<int16_t> getposition() const;
-		vector2d<double> getrealposition() const;
+		Point<int16_t> getposition() const;
+		Point<double> getrealposition() const;
 		PhysicsObject& getphobj();
 
 	protected:

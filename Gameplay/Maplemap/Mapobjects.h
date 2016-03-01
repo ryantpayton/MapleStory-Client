@@ -18,6 +18,7 @@
 #pragma once
 #include "MapLayer.h"
 #include "MapObject.h"
+#include "Util\Optional.h"
 #include <memory>
 #include <unordered_map>
 #include <map>
@@ -47,7 +48,7 @@ namespace Gameplay
 
 	protected:
 		// Obtains a pointer to the mapobject with the given oid.
-		MapObject* get(int32_t oid);
+		Optional<MapObject> get(int32_t oid);
 
 		unordered_map<int32_t, unique_ptr<MapObject>> objects;
 		map<int32_t, int32_t> layers[MapLayer::NUM_LAYERS];

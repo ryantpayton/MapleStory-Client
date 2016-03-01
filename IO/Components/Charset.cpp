@@ -72,7 +72,7 @@ namespace IO
 		case LEFT:
 			for (size_t i = 0; i < length; i++)
 			{
-				draw(str[i], DrawArgument(args.getpos() + vector2d<int16_t>(shift, 0), args.getalpha()));
+				draw(str[i], DrawArgument(args.getpos() + Point<int16_t>(shift, 0), args.getalpha()));
 				shift += getw(str[i]);
 			}
 			break;
@@ -80,7 +80,7 @@ namespace IO
 			for (size_t i = length - 1; i >= 0 && i < length; i--)
 			{
 				shift += getw(str[i]);
-				draw(str[i], DrawArgument(args.getpos() - vector2d<int16_t>(shift, 0), args.getalpha()));
+				draw(str[i], DrawArgument(args.getpos() - Point<int16_t>(shift, 0), args.getalpha()));
 			}
 			break;
 		}
@@ -100,7 +100,7 @@ namespace IO
 		case LEFT:
 			for (size_t i = 0; i < length; i++)
 			{
-				draw(str[i], DrawArgument(args.getpos() + vector2d<int16_t>(shift, 0), args.getalpha()));
+				draw(str[i], DrawArgument(args.getpos() + Point<int16_t>(shift, 0), args.getalpha()));
 				shift += space;
 			}
 			break;
@@ -108,7 +108,7 @@ namespace IO
 			for (size_t i = length - 1; i >= 0 && i < length; i--)
 			{
 				shift += space;
-				draw(str[i], DrawArgument(args.getpos() - vector2d<int16_t>(shift, 0), args.getalpha()));
+				draw(str[i], DrawArgument(args.getpos() - Point<int16_t>(shift, 0), args.getalpha()));
 			}
 			break;
 		}

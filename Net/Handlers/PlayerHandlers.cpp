@@ -33,11 +33,6 @@ namespace Net
 	using IO::UIBuffList;
 	using IO::UIStatsinfo;
 
-	Player& getplayer()
-	{
-		return Stage::get().getplayer();
-	}
-
 	void KeymapHandler::handle(InPacket& recv) const
 	{
 		recv.skip(1);
@@ -70,7 +65,7 @@ namespace Net
 
 		int32_t updatemask = recv.readint();
 
-		Player& player = getplayer();
+		Player& player = Stage::get().getplayer();
 
 		for (auto it = Maplestat::it(); it.hasnext(); it.increment())
 		{
@@ -98,8 +93,7 @@ namespace Net
 					break;
 				case Maplestat::AP:
 					player.getstats().setstat(stat, recv.readshort());
-					if (UI::get().haselement(UIElement::STATSINFO))
-						UI::get().getelement<UIStatsinfo>(UIElement::STATSINFO)->updateap();
+					UI::get().withelement(UIElement::STATSINFO, &UIStatsinfo::updateap);
 					break;
 				default:
 					player.getstats().setstat(stat, recv.readshort());
@@ -114,7 +108,7 @@ namespace Net
 
 	void RecalculateStatsHandler::handle(InPacket&) const
 	{
-		getplayer().recalcstats(false);
+		Stage::get().getplayer().recalcstats(false);
 	}
 
 	void UpdateskillsHandler::handle(InPacket& recv) const
@@ -126,7 +120,7 @@ namespace Net
 		int32_t masterlevel = recv.readint();
 		int64_t expire = recv.readlong();
 
-		getplayer().getskills().setskill(skillid, level, masterlevel, expire);
+		Stage::get().getplayer().getskills().setskill(skillid, level, masterlevel, expire);
 	}
 
 	void BuffHandler::handle(InPacket& recv) const
@@ -147,7 +141,7 @@ namespace Net
 				handlebuff(recv, buffvalue);
 		}
 
-		getplayer().recalcstats(false);
+		Stage::get().getplayer().recalcstats(false);
 	}
 
 	void ApplyBuffHandler::handlebuff(InPacket& recv, Buffstat::Value bs) const
@@ -157,15 +151,13 @@ namespace Net
 		int32_t duration = recv.readint();
 
 		Buff buff = Buff(bs, value, skillid, duration);
-		getplayer().givebuff(buff);
+		Stage::get().getplayer().givebuff(buff);
 
-		UIBuffList* bufflist = UI::get().getelement<UIBuffList>(UIElement::BUFFLIST);
-		if (bufflist)
-			bufflist->addbuff(skillid, duration);
+		UI::get().withelement(UIElement::BUFFLIST, &UIBuffList::addbuff, skillid, duration);
 	}
 
 	void CancelBuffHandler::handlebuff(InPacket&, Buffstat::Value bs) const
 	{
-		getplayer().cancelbuff(bs);
+		Stage::get().getplayer().cancelbuff(bs);
 	}
 }

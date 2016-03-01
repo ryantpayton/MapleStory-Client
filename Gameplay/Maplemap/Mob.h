@@ -20,13 +20,14 @@
 #include "Gameplay\Attack.h"
 #include "Gameplay\Bullet.h"
 #include "Gameplay\Physics\PhysicsObject.h"
-#include "Gameplay\MovementInfo.h"
 #include "Graphics\Text.h"
 #include "Graphics\EffectLayer.h"
+#include "Graphics\Geometry\MobHpBar.h"
 #include "Audio\Sound.h"
 #include "IO\Components\DamageNumber.h"
 #include "Util\rectangle2d.h"
 #include "Util\Randomizer.h"
+#include "Util\Enum.h"
 #include <list>
 
 namespace Gameplay
@@ -38,12 +39,14 @@ namespace Gameplay
 	using std::map;
 	using Graphics::Text;
 	using Graphics::EffectLayer;
+	using Graphics::MobHpBar;
 	using IO::DamageNumber;
 
 	class Mob : public MapObject
 	{
 	public:
-		enum Stance
+		static const size_t NUM_STANCES = 5;
+		enum Stance : uint8_t
 		{
 			MOVE = 2,
 			STAND = 4,
@@ -52,10 +55,25 @@ namespace Gameplay
 			DIE = 10
 		};
 
+		static string nameof(Stance stance)
+		{
+			static const string stancenames[NUM_STANCES] =
+			{
+				"move", "stand", "jump", "hit1", "die1"
+			};
+			size_t index = (stance - 1) / 2;
+			return stancenames[index];
+		}
+
+		static uint8_t valueof(Stance stance, bool flip)
+		{
+			return flip ? stance : stance + 1;
+		}
+
 		// Construct a mob by combining data from game files with
 		// data sent by the server.
 		Mob(int32_t oid, int32_t mobid, bool control, int8_t stance, uint16_t fhid, 
-			bool newspawn, int8_t team, vector2d<int16_t> position);
+			bool newspawn, int8_t team, Point<int16_t> position);
 
 		// Update movement and animations.
 		int8_t update(const Physics& physics) override;
@@ -85,20 +103,19 @@ namespace Gameplay
 
 		void applydamage(const DamageEffect& damageeffect);
 		void applyknockback(bool fromright);
-		void writemovement();
-		void parsestance(Stance toparse, node source);
+		void sendmovement();
 		void setstance(Stance newstance);
 		void nextmove();
-		pair<int32_t, bool> randomdamage(int32_t mindamage, 
-			int32_t maxdamage, float hitchance, float critical) const;
+		Point<int16_t> getheadpos(Point<int16_t> position) const;
+		pair<int32_t, bool> randomdamage(double mindamage, 
+			double maxdamage, float hitchance, float critical) const;
 
 		map<Stance, Animation> animations;
-		map<Stance, rectangle2d<int16_t>> bounds;
 		string name;
 		Sound hitsound;
 		Sound diesound;
 		uint16_t level;
-		uint16_t speed;
+		float speed;
 		uint16_t watk;
 		uint16_t matk;
 		uint16_t wdef;
@@ -110,16 +127,17 @@ namespace Gameplay
 		bool touchdamage;
 		bool noflip;
 		bool notattack;
+		bool canjump;
 
 		list<pair<Bullet, DamageEffect>> bulletlist;
 
 		EffectLayer effects;
 		Text namelabel;
+		MobHpBar hpbar;
 		Randomizer randomizer;
 		vector<DamageNumber> damagenumbers;
 
 		uint16_t counter;
-		vector<MovementFragment> movements;
 
 		int32_t id;
 		int8_t effect;

@@ -31,7 +31,7 @@ namespace IO
 
 	BuffIcon::~BuffIcon() {}
 
-	void BuffIcon::draw(vector2d<int16_t> position) const
+	void BuffIcon::draw(Point<int16_t> position) const
 	{
 		using Character::Skill;
 		using Data::DataFactory;
@@ -58,13 +58,13 @@ namespace IO
 
 	UIBuffList::UIBuffList() 
 	{
-		position = vector2d<int16_t>(750, 40);
+		position = Point<int16_t>(750, 40);
 		active = true;
 	}
 
 	void UIBuffList::draw(float) const
 	{
-		vector2d<int16_t> icpos = position;
+		Point<int16_t> icpos = position;
 		for (auto& icon : icons)
 		{
 			icon.second.draw(icpos);
@@ -88,7 +88,7 @@ namespace IO
 		}
 	}
 
-	Cursor::State UIBuffList::sendmouse(bool pressed, vector2d<int16_t> position)
+	Cursor::State UIBuffList::sendmouse(bool pressed, Point<int16_t> position)
 	{
 		return UIElement::sendmouse(pressed, position);
 	}

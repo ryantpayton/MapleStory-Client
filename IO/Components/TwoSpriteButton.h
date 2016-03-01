@@ -29,10 +29,11 @@ namespace IO
 	class TwoSpriteButton : public Button
 	{
 	public:
-		TwoSpriteButton(node, node, vector2d<int16_t>);
+		TwoSpriteButton(node nsrc, node ssrc, Point<int16_t> position);
+		TwoSpriteButton(node nsrc, node ssrc);
 
-		void draw(vector2d<int16_t>) const;
-		rectangle2d<int16_t> bounds(vector2d<int16_t>) const;
+		void draw(Point<int16_t> position) const;
+		rectangle2d<int16_t> bounds(Point<int16_t> position) const;
 
 	private:
 		map<bool, Texture> textures;

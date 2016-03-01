@@ -16,7 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Singleton.h"
 #include "Text.h"
 #include "nlnx\bitmap.hpp"
 
@@ -24,18 +23,24 @@ namespace Graphics
 {
 	using nl::bitmap;
 
-	class GraphicsEngine : public Singleton<GraphicsEngine>
+	class GraphicsEngine
 	{
 	public:
-		void clear();
+		static GraphicsEngine& getengine();
 
-		bool available(size_t id);
-		void addbitmap(const bitmap& bmp);
-		void draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, 
-			float alpha, float xscale, float yscale, int16_t centerx, int16_t centery);
+		virtual ~GraphicsEngine() {}
 
-		Text::Layout createlayout(const string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth);
-		void drawtext(const string& text, const Text::Layout& layout, Text::Font font, 
-			Text::Color color, Text::Background back, vector2d<int16_t> origin, float alpha);
+		virtual void clear() = 0;
+
+		virtual bool available(size_t id) = 0;
+		virtual void addbitmap(const bitmap& bmp) = 0;
+		virtual void draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, 
+			float alpha, float xscale, float yscale, int16_t centerx, int16_t centery) = 0;
+
+		virtual Text::Layout createlayout(const string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth) = 0;
+		virtual void drawtext(const string& text, const Text::Layout& layout, Text::Font font, 
+			Text::Color color, Text::Background back, Point<int16_t> origin, float alpha) = 0;
+
+		virtual void drawrectangle(int16_t x, int16_t y, int16_t w, int16_t h, float r, float g, float b, float a) = 0;
 	};
 }

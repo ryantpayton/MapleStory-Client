@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Net\InPacket.h"
-#include "Util\vector2d.h"
+#include "Util\Range.h"
 #include "nlnx\node.hpp"
 
 namespace Gameplay
@@ -41,9 +41,9 @@ namespace Gameplay
 		// Returns the platform right to this.
 		uint16_t getnext() const { return next; }
 		// Returns the horizontal component.
-		const vector2d<int16_t>& gethor() const { return horizontal; }
+		const Range<int16_t>& gethor() const { return horizontal; }
 		// Returns the vertical component.
-		const vector2d<int16_t>& getver() const { return vertical; }
+		const Range<int16_t>& getver() const { return vertical; }
 		// Return the left edge.
 		int16_t getl() const { return horizontal.smaller(); }
 		// Return the right edge.
@@ -53,17 +53,21 @@ namespace Gameplay
 		// Return the bottom edge.
 		int16_t getb() const { return vertical.greater(); }
 		// Return if the platform is a wall (x1 == x2).
-		bool iswall() const { return horizontal.straight(); }
+		bool iswall() const { return horizontal.empty(); }
 		// Return if the platform is a floor (y1 == y2).
-		bool isfloor() const { return vertical.straight(); }
+		bool isfloor() const { return vertical.empty(); }
+		// Return if this platform is a left edge.
+		bool isleftedge() const { return prev == 0; }
+		// Return if this platform is a right edge.
+		bool isrightedge() const { return next == 0; }
 		// Returns if a x-coordinate is above or below this platform.
 		bool hcontains(int16_t x) const { return horizontal.contains(x); }
 		// Returns if a y-coordinate is right or left of this platform.
 		bool vcontains(int16_t y) const { return vertical.contains(y); }
 		// Returns the width.
-		int16_t gethdelta() const { return horizontal.y() - horizontal.x(); }
+		int16_t gethdelta() const { return horizontal.delta(); }
 		// Returns the height.
-		int16_t getvdelta() const { return vertical.y() - vertical.x(); }
+		int16_t getvdelta() const { return vertical.delta(); }
 		// Returns the slope as a ratio of vertical/horizontal.
 		double getslope() const;
 		// Returns a y-coordinate right above the given x-coordinate.
@@ -71,11 +75,10 @@ namespace Gameplay
 
 	private:
 		uint16_t id;
-		int8_t layer;
 		uint16_t prev;
 		uint16_t next;
-		vector2d<int16_t> horizontal;
-		vector2d<int16_t> vertical;
+		Range<int16_t> horizontal;
+		Range<int16_t> vertical;
 	};
 }
 

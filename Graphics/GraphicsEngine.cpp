@@ -26,59 +26,11 @@
 
 namespace Graphics
 {
-	void GraphicsEngine::addbitmap(const bitmap& bmp)
+	GraphicsEngine& GraphicsEngine::getengine()
 	{
 #ifdef JOURNEY_USE_OPENGL
-		GraphicsGL::get().addbitmap(bmp);
+		return GraphicsGL::get();
 #else
-		GraphicsD2D::get().addbitmap(bmp);
-#endif
-	}
-
-	bool GraphicsEngine::available(size_t id)
-	{
-#ifdef JOURNEY_USE_OPENGL
-		return GraphicsGL::get().available(id);
-#else
-		return GraphicsD2D::get().available(id);
-#endif
-	}
-
-	void GraphicsEngine::draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h,
-		float a, float xs, float ys, int16_t cx, int16_t cy) {
-#ifdef JOURNEY_USE_OPENGL
-		GraphicsGL::get().draw(id, x, y, w, h, a, xs, ys, cx, cy);
-#else
-		GraphicsD2D::get().draw(id, x, y, w, h, a, xs, ys, cx, cy);
-#endif
-	}
-
-	void GraphicsEngine::clear()
-	{
-#ifdef JOURNEY_USE_OPENGL
-		GraphicsGL::get().clear();
-#else
-		GraphicsD2D::get().clear();
-#endif
-	}
-
-	Text::Layout GraphicsEngine::createlayout(const string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth)
-	{
-#ifdef JOURNEY_USE_OPENGL
-		return GraphicsGL::get().createlayout(text.c_str(), font, alignment, maxwidth);
-#else
-		wstring wtext = wstring(text.begin(), text.end());
-		return GraphicsD2D::get().createlayout(wtext, font, maxwidth);
-#endif
-	}
-
-	void GraphicsEngine::drawtext(const string& text, const Text::Layout& layout, Text::Font font, 
-		Text::Color color, Text::Background back, vector2d<int16_t> origin, float alpha) {
-#ifdef JOURNEY_USE_OPENGL
-		GraphicsGL::get().drawtext(text.c_str(), layout, font, color, back, origin, alpha);
-#else
-		wstring wtext = wstring(text.begin(), text.end());
-		GraphicsD2D::get().drawtext(wtext, layout, font, color, back, origin, alpha);
 #endif
 	}
 }

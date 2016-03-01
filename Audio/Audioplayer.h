@@ -63,8 +63,8 @@ namespace Audio
 		void setsfxvolume(uint8_t volume);
 		void setbgmvolume(uint8_t volume);
 
-		void playsound(Sound sound);
-		void playsound(size_t soundid);
+		void playsound(Sound sound) const;
+		void playsound(size_t soundid) const;
 		void playbgm(string path);
 		size_t addsound(node src);
 
@@ -72,7 +72,7 @@ namespace Audio
 		void playbgm(const void* data, size_t length);
 		void addsound(Sound sound, node src);
 
-		HSAMPLE staticsounds[NUM_SOUNDS];
+		unordered_map<size_t, HSAMPLE> staticsounds;
 		unordered_map<size_t, HSAMPLE> soundcache;
 
 		HSTREAM bgm;

@@ -17,24 +17,21 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Animation.h"
-#include <map>
+#include <list>
 
 namespace Graphics
 {
-	using std::map;
+	using std::list;
 
+	// A list of animations. Animations will be removed after all frames were displayed.
 	class EffectLayer
 	{
 	public:
-		EffectLayer();
-		~EffectLayer();
-
-		void draw(vector2d<int16_t> position, float inter) const;
+		void draw(Point<int16_t> position, float inter) const;
 		void update();
 		void add(Animation effect);
 
 	private:
-		map<uint8_t, Animation> effects;
-		uint8_t reid;
+		list<Animation> effects;
 	};
 }

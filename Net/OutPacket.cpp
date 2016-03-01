@@ -85,7 +85,7 @@ namespace Net
 		}
 	}
 
-	void OutPacket::writepoint(vector2d<int16_t> position)
+	void OutPacket::writepoint(Point<int16_t> position)
 	{
 		writesh(position.x());
 		writesh(position.y());

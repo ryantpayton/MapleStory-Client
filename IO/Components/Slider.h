@@ -16,41 +16,53 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Button.h"
+#include "IO\Cursor.h"
 #include "Graphics\Texture.h"
-#include "nlnx\node.hpp"
+#include <functional>
+#include <memory>
 
 namespace IO
 {
-	using nl::node;
+	using std::function;
+	using std::unique_ptr;
+	using std::pair;
 	using Graphics::Texture;
 
 	class Slider
 	{
 	public:
-		Slider(node src, vector2d<int16_t> vertical, int16_t x);
-		Slider();
-		~Slider();
+		Slider(int32_t type, Range<int16_t> vertical, int16_t x, int16_t rows, function<void(bool upwards)> onmoved);
 
 		bool isenabled() const;
 		void setenabled(bool enabled);
-		void draw(vector2d<int16_t> position) const;
+
+		void draw(Point<int16_t> position) const;
+		Cursor::State sendcursor(Point<int16_t> cursor, bool pressed);
 
 	private:
-		vector2d<int16_t> vertical;
+		function<void(bool upwards)> onmoved;
+
+		Range<int16_t> vertical;
+		int16_t buttonheight;
+		int16_t rowheight;
 		int16_t x;
-		int16_t slidery;
+		int16_t row;
+		int16_t rowmax;
+		bool scrolling;
 		bool enabled;
+
+		Point<int16_t> start;
+		Point<int16_t> end;
 
 		Texture dbase;
 		Texture dnext;
 		Texture dprev;
 
 		Texture base;
-		Texture next0;
-		Texture next1;
-		Texture prev0;
-		Texture prev1;
-		Texture thump0;
-		Texture thump1;
+
+		unique_ptr<Button> next;
+		unique_ptr<Button> prev;
+		unique_ptr<Button> thumb;
 	};
 }

@@ -32,7 +32,7 @@ namespace Gameplay
 		void update(const Physics& physics) override;
 
 		void addmob(int32_t oid, int32_t mobid, bool control, int8_t stance, 
-			uint16_t fhid, bool fadein, int8_t team, vector2d<int16_t> position);
+			uint16_t fhid, bool fadein, int8_t team, Point<int16_t> position);
 		void killmob(int32_t oid, int8_t effect);
 		void sendmobhp(int32_t oid, int8_t percent, uint16_t playerlevel);
 		void sendattack(Attack attack);
@@ -40,8 +40,8 @@ namespace Gameplay
 	private:
 		void applyattack(const Attack& attack);
 		vector<int32_t> findclose(rectangle2d<int16_t> range, uint8_t mobcount) const;
-		vector<int32_t> findranged(rectangle2d<int16_t> range, vector2d<int16_t> origin, uint8_t mobcount) const;
-		Mob* getmob(int32_t oid);
+		vector<int32_t> findranged(rectangle2d<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const;
+		Optional<Mob> getmob(int32_t oid);
 
 		list<Attack> attacklist;
 	};

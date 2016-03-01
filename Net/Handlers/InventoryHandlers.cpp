@@ -35,16 +35,12 @@ namespace Net
 
 	void GatherResultHandler::handle(InPacket&) const
 	{
-		auto itinvent = UI::get().getelement<UIItemInventory>(UIElement::ITEMINVENTORY);
-		if (itinvent)
-			itinvent->enablesort();
+		UI::get().withelement(UIElement::ITEMINVENTORY, &UIItemInventory::enablesort);
 	}
 
 	void SortResultHandler::handle(InPacket&) const
 	{
-		auto itinvent = UI::get().getelement<UIItemInventory>(UIElement::ITEMINVENTORY);
-		if (itinvent)
-			itinvent->enablegather();
+		UI::get().withelement(UIElement::ITEMINVENTORY, &UIItemInventory::enablegather);
 	}
 
 	void ModifyInventoryHandler::handle(InPacket& recv) const

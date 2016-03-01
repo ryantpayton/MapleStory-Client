@@ -67,7 +67,7 @@ namespace Gameplay
 		Player& getplayer();
 
 		// Return a pointer to a character, possibly the player.
-		Char* getcharacter(int32_t cid);
+		Optional<Char> getcharacter(int32_t cid);
 
 	private:
 		void loadmap();
@@ -100,7 +100,7 @@ namespace Gameplay
 		MapDrops drops;
 
 		State state;
-		Playable* playable;
+		Optional<Playable> playable;
 		int32_t mapid;
 		uint8_t portalid;
 	};

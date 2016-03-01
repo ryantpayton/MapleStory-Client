@@ -21,7 +21,7 @@
 #include "Gameplay\Camera.h"
 #include "Graphics\Text.h"
 #include "Graphics\Animation.h"
-#include "Util\vector2d.h"
+#include "Util\Point.h"
 #include <cstdint>
 #include <string>
 #include <map>
@@ -48,11 +48,11 @@ namespace Character
 		};
 
 		PetLook(int32_t iid, string name, int32_t uniqueid, 
-			vector2d<int16_t> pos, uint8_t stance, int32_t fhid);
+			Point<int16_t> pos, uint8_t stance, int32_t fhid);
 		PetLook();
 
 		void draw(const Camera& camera, float inter) const;
-		void update(const Physics& physics, vector2d<int16_t> charpos);
+		void update(const Physics& physics, Point<int16_t> charpos);
 
 		void setposition(int16_t xpos, int16_t ypos);
 		void setstance(Stance);

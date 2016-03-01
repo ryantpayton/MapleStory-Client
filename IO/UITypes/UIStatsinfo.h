@@ -79,7 +79,7 @@ namespace IO
 		bool showdetail;
 
 		Text statlabels[NUMLABELS];
-		vector2d<int16_t> statoffsets[NUMLABELS];
+		Point<int16_t> statoffsets[NUMLABELS];
 	};
 
 	class ElementStatsinfo : public Element

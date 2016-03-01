@@ -20,17 +20,20 @@
 namespace Gameplay
 {
 	const double GRAVFORCE = 0.2f;
+	const double SWIMGRAVFORCE = 0.05f;
 	const double FRICTION = 0.3f;
 	const double SLOPEFACTOR = 0.1f;
 	const double FLYFRICTION = 0.05f;
+	const double SWIMFRICTION = 0.07f;
 
 	Physics::Physics() {}
 
 	Physics::~Physics() {}
 
-	void Physics::loadfht(node src)
+	void Physics::load(node src)
 	{
-		fht = Footholdtree(src);
+		fht = Footholdtree(src["foothold"]);
+		swimmap = src["info"]["swim"].get_bool();
 	}
 
 	void Physics::parsefht(InPacket& recv)
@@ -43,6 +46,19 @@ namespace Gameplay
 		// Determine which platform the object is currently on.
 		fht.updatefh(phobj);
 
+		// Change the physics type to the terrain type of the map.
+		if (phobj.flagnotset(PhysicsObject::IGNORETERRAIN))
+		{
+			if (!phobj.onground && swimmap)
+				phobj.type = PhysicsObject::SWIMMING;
+			else
+				phobj.type = PhysicsObject::NORMAL;
+		}
+		else
+		{
+			phobj.clearflag(PhysicsObject::IGNORETERRAIN);
+		}
+
 		// Use the appropriate physics for the terrain the object is on.
 		switch (phobj.type)
 		{
@@ -52,6 +68,10 @@ namespace Gameplay
 			break;
 		case PhysicsObject::FLYING:
 			moveflying(phobj);
+			fht.limitmoves(phobj);
+			break;
+		case PhysicsObject::SWIMMING:
+			moveswimming(phobj);
 			fht.limitmoves(phobj);
 			break;
 		case PhysicsObject::CLIMBING:
@@ -87,7 +107,7 @@ namespace Gameplay
 				slopef = -0.5f;
 			phobj.hacc -= (SLOPEFACTOR * (1.0f + (slopef * -phobj.hspeed)) + FRICTION) * phobj.hspeed;
 		}
-		else
+		else if (phobj.flagnotset(PhysicsObject::NOGRAVITY))
 		{
 			phobj.vacc += GRAVFORCE / phobj.mass;
 		}
@@ -119,10 +139,52 @@ namespace Gameplay
 		}
 	}
 
-	vector2d<int16_t> Physics::getgroundbelow(vector2d<int16_t> position) const
+	void Physics::moveswimming(PhysicsObject& phobj) const
+	{
+		phobj.hacc = phobj.hforce / phobj.mass;
+		phobj.vacc = phobj.vforce / phobj.mass;
+		phobj.hforce = 0.0f;
+		phobj.vforce = 0.0f;
+
+		if (phobj.onground)
+		{
+			phobj.hacc += phobj.hforce / phobj.mass;
+			phobj.hforce = 0.0f;
+
+			if (phobj.hacc == 0.0f && phobj.hspeed < 0.1f && phobj.hspeed > -0.1f)
+			{
+				phobj.hspeed = 0.0f;
+			}
+			else
+			{
+				phobj.hacc -= FRICTION * phobj.hspeed;
+			}
+		}
+		else if (phobj.flagnotset(PhysicsObject::NOGRAVITY))
+		{
+			phobj.hacc -= SWIMFRICTION * phobj.hspeed;
+			phobj.vacc -= SWIMFRICTION * phobj.vspeed;
+
+			phobj.vacc += SWIMGRAVFORCE / phobj.mass;
+		}
+
+		phobj.hspeed += phobj.hacc;
+		phobj.vspeed += phobj.vacc;
+
+		if (phobj.hacc == 0.0f && phobj.hspeed < 0.1f && phobj.hspeed > -0.1f)
+		{
+			phobj.hspeed = 0.0f;
+		}
+		if (phobj.vacc == 0.0f && phobj.vspeed < 0.1f && phobj.vspeed > -0.1f)
+		{
+			phobj.vspeed = 0.0f;
+		}
+	}
+
+	Point<int16_t> Physics::getgroundbelow(Point<int16_t> position) const
 	{
 		int16_t ground = fht.getgroundbelow(position);
-		return vector2d<int16_t>(position.x(), ground - 1);
+		return Point<int16_t>(position.x(), ground - 1);
 	}
 
 	const Footholdtree& Physics::getfht() const

@@ -41,7 +41,7 @@ namespace Net
 	class MovePlayerPacket : public MovementPacket
 	{
 	public:
-		MovePlayerPacket(const vector<MovementFragment>& movements) : MovementPacket(MOVE_PLAYER)
+		MovePlayerPacket(const vector<Movement>& movements) : MovementPacket(MOVE_PLAYER)
 		{
 			skip(9);
 			writech(static_cast<int8_t>(movements.size()));
@@ -53,14 +53,14 @@ namespace Net
 	};
 
 
-	// Updates the a mob's position with the server.
+	// Updates a mob's position with the server.
 	// Opcode: MOVE_MONSTER(188)
 	class MoveMobPacket : public MovementPacket
 	{
 	public:
 		MoveMobPacket(int32_t oid, int16_t type, int8_t skillb, int8_t skill0, int8_t skill1,
-			int8_t skill2, int8_t skill3, int8_t skill4, vector2d<int16_t> startpos,
-			const vector<MovementFragment>& movements) : MovementPacket(MOVE_MONSTER) {
+			int8_t skill2, int8_t skill3, int8_t skill4, Point<int16_t> startpos,
+			const Movement& movement) : MovementPacket(MOVE_MONSTER) {
 
 			writeint(oid);
 			writesh(type);
@@ -70,17 +70,13 @@ namespace Net
 			writech(skill2);
 			writech(skill3);
 			writech(skill4);
-			writelg(0);
-			writech(0);
-			writeint(0);
-			writesh(startpos.x());
-			writesh(startpos.y());
 
-			writech(static_cast<int8_t>(movements.size()));
-			for (auto& mv : movements)
-			{
-				writemovement(mv);
-			}
+			skip(13);
+
+			writepoint(startpos);
+
+			writech(1);
+			writemovement(movement);
 		}
 	};
 
@@ -90,7 +86,7 @@ namespace Net
 	class PickupItemPacket : public OutPacket
 	{
 	public:
-		PickupItemPacket(int32_t oid, vector2d<int16_t> position) : OutPacket(PICKUP_ITEM)
+		PickupItemPacket(int32_t oid, Point<int16_t> position) : OutPacket(PICKUP_ITEM)
 		{
 			writeint(0);
 			writech(0);

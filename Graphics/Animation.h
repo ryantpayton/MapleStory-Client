@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Graphics\Texture.h"
+#include "Util\rectangle2d.h"
 #include <vector>
 #include <map>
 
@@ -36,24 +37,75 @@ namespace Graphics
 		bool update(uint16_t timestep);
 		void reset();
 		void draw(const DrawArgument& arguments, float inter) const;
-		vector2d<int16_t> getorigin() const;
-		vector2d<int16_t> getdimensions() const;
+
+		Point<int16_t> getorigin() const;
+		Point<int16_t> getdimensions() const;
+		Point<int16_t> gethead() const;
+		rectangle2d<int16_t> getbounds() const;
 
 	private:
-		float nextalphastep(uint8_t frame, uint16_t timestep) const;
+		struct Frame
+		{
+			Texture texture;
+			uint16_t delay;
+			pair<uint8_t, uint8_t> opacities;
+			rectangle2d<int16_t> bounds;
+			Point<int16_t> head;
 
-		static const uint16_t DEFAULTDELAY = 50;
+			Frame(node src)
+			{
+				texture = src;
+				bounds = src;
+				head = src["head"];
+				delay = src["delay"];
+				if (delay == 0)
+					delay = 50;
+
+				uint8_t a0;
+				uint8_t a1;
+				node::type a0type = src["a0"].data_type();
+				if (a0type == node::type::integer)
+				{
+					node::type a1type = src["a1"].data_type();
+					if (a1type == node::type::integer)
+					{
+						a0 = src["a0"];
+						a1 = src["a1"];
+					}
+					else
+					{
+						a0 = src["a0"];
+						a1 = 255 - a0;
+					}
+				}
+				else
+				{
+					a0 = 255;
+					a1 = 255;
+				}
+				opacities = { a0, a1 };
+			}
+
+			Frame()
+			{
+				delay = 0;
+				opacities = { 0, 0 };
+			}
+
+			float alphastep(float alpha, uint16_t timestep) const
+			{
+				return timestep * (opacities.second - alpha) / delay;
+			}
+		};
 
 		// Data
-		vector<Texture> textures;
-		vector<uint16_t> delays;
-		vector<pair<uint8_t, uint8_t>> alphablends;
+		vector<Frame> frames;
 		bool animated;
 		bool zigzag;
-		int8_t framestep;
 
 		// Values for the current state.
 		uint8_t frame;
+		int8_t framestep;
 		uint16_t elapsed;
 		float alphastep;
 		float alpha;

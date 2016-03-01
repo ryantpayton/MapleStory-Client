@@ -34,17 +34,17 @@ namespace Graphics
 		~Texture();
 
 		void draw(const DrawArgument& args) const;
-		void shift(vector2d<int16_t> amount);
+		void shift(Point<int16_t> amount);
 
 		bool isloaded() const;
 		int16_t width() const;
 		int16_t height() const;
-		vector2d<int16_t> getorigin() const;
-		vector2d<int16_t> getdimensions() const;
+		Point<int16_t> getorigin() const;
+		Point<int16_t> getdimensions() const;
 
 	private:
 		bitmap source;
-		vector2d<int16_t> origin;
-		vector2d<int16_t> dimensions;
+		Point<int16_t> origin;
+		Point<int16_t> dimensions;
 	};
 }

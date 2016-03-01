@@ -24,6 +24,7 @@
 
 #include "Graphics\GraphicsGL.h"
 #include "Gameplay\Stage.h"
+#include "Util\Optional.h"
 
 #include <iostream>
 
@@ -48,7 +49,7 @@ namespace IO
 
 	void error_callback(int error, const char* description)
 	{
-		std::cout << "Error no.:" << error << " : " << description << std::endl;
+		std::cout << "Error no.:" << std::to_string(error) << " : " << description << std::endl;
 	}
 
 	void key_callback(GLFWwindow*, int key, int, int action, int)
@@ -86,7 +87,7 @@ namespace IO
 	{
 		int16_t x = static_cast<int16_t>(xpos);
 		int16_t y = static_cast<int16_t>(ypos);
-		vector2d<int16_t> pos = vector2d<int16_t>(x, y);
+		Point<int16_t> pos = Point<int16_t>(x, y);
 		UI::get().sendmouse(pos);
 	}
 
@@ -134,6 +135,7 @@ namespace IO
 		glfwSetKeyCallback(glwnd, key_callback);
 		glfwSetMouseButtonCallback(glwnd, mousekey_callback);
 		glfwSetCursorPosCallback(glwnd, cursor_callback);
+		glfwSetWindowUserPointer(glwnd, &messages);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -153,6 +155,13 @@ namespace IO
 		}
 
 		updateopc();
+
+		while (messages.available())
+		{
+			const KeyMessage& km = messages.keymessages.back();
+			UI::get().sendkey(km.key, km.pressed);
+			messages.keymessages.pop_back();
+		}
 	}
 
 	void WindowGLFW::updateopc()

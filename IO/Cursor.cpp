@@ -53,7 +53,7 @@ namespace IO
 		state = s;
 	}
 
-	void Cursor::setposition(vector2d<int16_t> pos)
+	void Cursor::setposition(Point<int16_t> pos)
 	{
 		position = pos;
 	}
@@ -63,7 +63,7 @@ namespace IO
 		return state;
 	}
 
-	vector2d<int16_t> Cursor::getposition() const
+	Point<int16_t> Cursor::getposition() const
 	{
 		return position;
 	}

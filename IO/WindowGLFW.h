@@ -20,12 +20,37 @@
 #ifdef JOURNEY_USE_OPENGL
 #include "GL\glew.h"
 #include "glfw3.h"
+#include <cstdint>
+#include <vector>
 
 namespace IO
 {
+	using std::vector;
+
 	class WindowGLFW
 	{
 	public:
+		struct KeyMessage
+		{
+			int32_t key;
+			bool pressed;
+		};
+
+		struct MessageQueue
+		{
+			vector<KeyMessage> keymessages;
+
+			bool available() const
+			{
+				return keymessages.size() > 0;
+			}
+
+			void push(KeyMessage message)
+			{
+				keymessages.push_back(message);
+			}
+		};
+
 		WindowGLFW();
 		~WindowGLFW();
 
@@ -43,6 +68,7 @@ namespace IO
 
 		GLFWwindow* glwnd;
 		GLFWwindow* context;
+		MessageQueue messages;
 		bool fullscreen;
 		float opacity;
 		float opcstep;

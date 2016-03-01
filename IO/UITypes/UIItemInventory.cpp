@@ -38,7 +38,7 @@ namespace IO
 	using Character::Equipslot;
 
 	UIItemInventory::UIItemInventory() : 
-		UIDragElement(Settings::POS_INV, vector2d<int16_t>(172, 20)), 
+		UIDragElement(Settings::POS_INV, Point<int16_t>(172, 20)), 
 		inventory(Stage::get().getplayer().getinvent()) {
 
 		node src = nl::nx::ui["UIWindow2.img"]["Item"];
@@ -55,19 +55,19 @@ namespace IO
 		node tabdis = src["Tab"]["disabled"];
 
 		buttons[BT_TAB_EQUIP]= unique_ptr<Button>(
-			new TwoSpriteButton(tabdis["0"], taben["0"], vector2d<int16_t>(-1, -4))
+			new TwoSpriteButton(tabdis["0"], taben["0"], Point<int16_t>(-1, -4))
 			);
 		buttons[BT_TAB_USE]= unique_ptr<Button>(
-			new TwoSpriteButton(tabdis["1"], taben["1"], vector2d<int16_t>(-1, -4))
+			new TwoSpriteButton(tabdis["1"], taben["1"], Point<int16_t>(-1, -4))
 			);
 		buttons[BT_TAB_ETC]= unique_ptr<Button>(
-			new TwoSpriteButton(tabdis["2"], taben["2"], vector2d<int16_t>(0, -4))
+			new TwoSpriteButton(tabdis["2"], taben["2"], Point<int16_t>(0, -4))
 			);
 		buttons[BT_TAB_SETUP]= unique_ptr<Button>(
-			new TwoSpriteButton(tabdis["3"], taben["3"], vector2d<int16_t>(-1, -4))
+			new TwoSpriteButton(tabdis["3"], taben["3"], Point<int16_t>(-1, -4))
 			);
 		buttons[BT_TAB_CASH]= unique_ptr<Button>(
-			new TwoSpriteButton(tabdis["4"], taben["4"], vector2d<int16_t>(-1, -4))
+			new TwoSpriteButton(tabdis["4"], taben["4"], Point<int16_t>(-1, -4))
 			);
 
 		buttons[BT_DROPMESO]= unique_ptr<Button>(new MapleButton(src["BtCoin"]));
@@ -90,9 +90,20 @@ namespace IO
 		buttons[buttonbytab(tab)]->setstate(Button::PRESSED);
 
 		mesolabel = Text(Text::A11M, Text::RIGHT, Text::DARKGREY);
-		slider = Slider(nl::nx::ui["Basic.img"]["VScr11"], vector2d<int16_t>(50, 248), 152);
+		slider = unique_ptr<Slider>(
+			new Slider(11, Range<int16_t>(50, 248), 152, inventory.getslots(tab) / 4 - 5, 
+			[&](bool upwards){
+			int16_t shift = upwards ? -4 : 4;
+			bool above = slotrange.first + shift > 0;
+			bool below = slotrange.second + shift < inventory.getslots(tab) + 1 + 4;
+			if (above && below)
+			{
+				slotrange.first += shift;
+				slotrange.second += shift;
+			}
+		}));
 
-		dimension = vector2d<int16_t>(172, 335);
+		dimension = Point<int16_t>(172, 335);
 		active = true;
 
 		loadicons();
@@ -102,38 +113,39 @@ namespace IO
 	{
 		UIElement::draw(inter);
 
-		slider.draw(position);
+		if (slider)
+			slider->draw(position);
 
 		for (auto& icon : icons)
 		{
 			int16_t slot = icon.first;
 			if (slot >= slotrange.first && slot <= slotrange.second)
 			{
-				vector2d<int16_t> slotpos = getslotpos(slot);
+				Point<int16_t> slotpos = getslotpos(slot);
 				icon.second.draw(position + slotpos);
 			}
 		}
 
 		int16_t pslot = inventory.getprojectile();
-		if (tab == Inventory::USE && pslot > 0)
+		if (tab == Inventory::USE && isvisible(pslot))
 		{
-			vector2d<int16_t> pslotpos = position + getslotpos(pslot);
+			Point<int16_t> pslotpos = position + getslotpos(pslot);
 			projectile.draw(pslotpos);
 		}
-		else if (newtab == tab && newslot > 0)
+		else if (newtab == tab && isvisible(newslot))
 		{
-			vector2d<int16_t> newslotpos = position + getslotpos(newslot);
+			Point<int16_t> newslotpos = position + getslotpos(newslot);
 			newslotpos.shifty(1);
 			newitemslot.draw(newslotpos, inter);
 		}
 		
 		if (newtab != tab && newtab != Inventory::NONE)
 		{
-			vector2d<int16_t> newtabpos = position + gettabpos(newtab);
+			Point<int16_t> newtabpos = position + gettabpos(newtab);
 			newitemtab.draw(newtabpos, inter);
 		}
 
-		vector2d<int16_t> mesopos = position + vector2d<int16_t>(124, 264);
+		Point<int16_t> mesopos = position + Point<int16_t>(124, 264);
 		mesolabel.draw(mesopos);
 
 		eqtooltip.draw(cursorposition);
@@ -204,11 +216,11 @@ namespace IO
 			break;
 		case BT_GATHER:
 			using Net::GatherItemsPacket;
-			Net::Session::get().dispatch(GatherItemsPacket(tab));
+			Session::get().dispatch(GatherItemsPacket(tab));
 			break;
 		case BT_SORT:
 			using Net::SortItemsPacket;
-			Net::Session::get().dispatch(SortItemsPacket(tab));
+			Session::get().dispatch(SortItemsPacket(tab));
 			break;
 		}
 
@@ -224,10 +236,10 @@ namespace IO
 		}
 	}
 
-	void UIItemInventory::doubleclick(vector2d<int16_t> cursorpos)
+	void UIItemInventory::doubleclick(Point<int16_t> cursorpos)
 	{
 		int16_t slot = slotbypos(cursorpos - position);
-		if (icons.count(slot) && slot >= slotrange.first && slot <= slotrange.second)
+		if (icons.count(slot) && isvisible(slot))
 		{
 			Optional<Item> item = inventory.getitem(tab, slot);
 			if (item)
@@ -257,7 +269,7 @@ namespace IO
 		Session::get().dispatch(MoveItemPacket(tab, identifier, 0, 1));
 	}
 
-	void UIItemInventory::dropicon(vector2d<int16_t> cursorpos, Type type, int16_t identifier)
+	void UIItemInventory::dropicon(Point<int16_t> cursorpos, Type type, int16_t identifier)
 	{
 		int16_t slot = slotbypos(cursorpos - position);
 		if (slot > 0)
@@ -296,19 +308,31 @@ namespace IO
 		}
 	}
 
-	Cursor::State UIItemInventory::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
+	Cursor::State UIItemInventory::sendmouse(bool pressed, Point<int16_t> cursorpos)
 	{
 		cursorposition = cursorpos;
 
-		int16_t slot = slotbypos(cursorpos - position);
-		if (icons.count(slot) && slot >= slotrange.first && slot <= slotrange.second)
+		Point<int16_t> cursoroffset = cursorpos - position;
+		if (slider && slider->isenabled())
 		{
-			vector2d<int16_t> slotpos = getslotpos(slot);
+			Cursor::State sstate = slider->sendcursor(cursoroffset, pressed);
+			if (sstate != Cursor::IDLE)
+			{
+				eqtooltip.clear();
+				ittooltip.clear();
+				return sstate;
+			}
+		}
+
+		int16_t slot = slotbypos(cursoroffset);
+		if (icons.count(slot) && isvisible(slot))
+		{
+			Point<int16_t> slotpos = getslotpos(slot);
 			if (pressed)
 			{
-				icons[slot].startdrag(cursorpos - position - slotpos);
-				eqtooltip.setequip(nullptr, 0);
-				ittooltip.setitem(0);
+				eqtooltip.clear();
+				ittooltip.clear();
+				icons[slot].startdrag(cursoroffset - slotpos);
 				UI::get().dragicon(&icons[slot]);
 				return Cursor::GRABBING;
 			}
@@ -335,8 +359,8 @@ namespace IO
 		}
 		else
 		{
-			eqtooltip.setequip(nullptr, 0);
-			ittooltip.setitem(0);
+			eqtooltip.clear();
+			ittooltip.clear();
 			return UIDragElement::sendmouse(pressed, cursorpos);
 		}
 	}
@@ -402,8 +426,8 @@ namespace IO
 
 	void UIItemInventory::togglehide()
 	{
-		ittooltip.setitem(0);
-		eqtooltip.setequip(nullptr, 0);
+		eqtooltip.clear();
+		ittooltip.clear();
 		UIElement::togglehide();
 	}
 
@@ -419,44 +443,52 @@ namespace IO
 		return meso;
 	}
 
-	int16_t UIItemInventory::slotbypos(vector2d<int16_t> cursorpos) const
+	bool UIItemInventory::isvisible(int16_t slot) const
+	{
+		return !isnotvisible(slot);
+	}
+
+	bool UIItemInventory::isnotvisible(int16_t slot) const
+	{
+		return slot < slotrange.first || slot > slotrange.second;
+	}
+
+	int16_t UIItemInventory::slotbypos(Point<int16_t> cursorpos) const
 	{
 		int16_t xoff = cursorpos.x() - 11;
 		int16_t yoff = cursorpos.y() - 51;
-		if (xoff < 0 || yoff < 0)
+		if (xoff < 1 || xoff > 143 || yoff < 1)
 			return 0;
 
-		int16_t slot = (xoff / 36) + 1 + 4 * (yoff / 35);
-		if (slot < slotrange.first || slot > slotrange.second)
-			return 0;
-
-		return slot;
+		int16_t slot = slotrange.first + (xoff / 36) + 4 * (yoff / 35);
+		return isvisible(slot) ? slot : 0;
 	}
 
-	vector2d<int16_t> UIItemInventory::getslotpos(int16_t slot) const
+	Point<int16_t> UIItemInventory::getslotpos(int16_t slot) const
 	{
-		return vector2d<int16_t>(
-			11 + ((slot - 1) % 4) * 36, 
-			51 + ((slot - 1) / 4) * 35
+		int16_t absslot = slot - slotrange.first;
+		return Point<int16_t>(
+			11 + (absslot % 4) * 36,
+			51 + (absslot / 4) * 35
 			);
 	}
 
-	vector2d<int16_t> UIItemInventory::gettabpos(Inventory::Type tb) const
+	Point<int16_t> UIItemInventory::gettabpos(Inventory::Type tb) const
 	{
 		switch (tb)
 		{
 		case Inventory::EQUIP:
-			return vector2d<int16_t>(10, 28);
+			return Point<int16_t>(10, 28);
 		case Inventory::USE:
-			return vector2d<int16_t>(42, 28);
+			return Point<int16_t>(42, 28);
 		case Inventory::SETUP:
-			return vector2d<int16_t>(74, 28);
+			return Point<int16_t>(74, 28);
 		case Inventory::ETC:
-			return vector2d<int16_t>(105, 28);
+			return Point<int16_t>(105, 28);
 		case Inventory::CASH:
-			return vector2d<int16_t>(138, 28);
+			return Point<int16_t>(138, 28);
 		default:
-			return vector2d<int16_t>();
+			return Point<int16_t>();
 		}
 	}
 

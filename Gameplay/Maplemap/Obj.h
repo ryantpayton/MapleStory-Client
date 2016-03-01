@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Graphics\Animation.h"
-#include "Util\vector2d.h"
+#include "Util\Point.h"
 #include "Net\InPacket.h"
 
 namespace Gameplay
@@ -38,13 +38,13 @@ namespace Gameplay
 		// Update animation.
 		void update();
 		// Draw the obj at the specified position.
-		void draw(vector2d<int16_t> viewpos, float inter) const;
+		void draw(Point<int16_t> viewpos, float inter) const;
 		// Return depth of the obj.
 		uint8_t getz() const;
 
 	private:
 		Animation animation;
-		vector2d<int16_t> pos;
+		Point<int16_t> pos;
 		uint8_t z;
 		bool flip;
 	};

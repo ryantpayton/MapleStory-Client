@@ -55,7 +55,7 @@ namespace Character
 
 						stances[stance][layer][frame] = partnode;
 						stances[stance][layer][frame].shift(drawinfo.getbodypos(stance, frame));
-						stances[stance][layer][frame].shift(-vector2d<int16_t>(partnode["map"]["navel"]));
+						stances[stance][layer][frame].shift(-Point<int16_t>(partnode["map"]["navel"]));
 					}
 
 					node headsfnode = headnode[stancename][std::to_string(frame)]["head"];

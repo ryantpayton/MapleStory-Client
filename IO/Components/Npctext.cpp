@@ -226,7 +226,7 @@ namespace IO
 				if (idata.isloaded())
 				{
 					Image image = { idata.geticon(false), offset };
-					image.texture.shift(vector2d<int16_t>(0, 32));
+					image.texture.shift(Point<int16_t>(0, 32));
 					images.push_back(image);
 					offset.shiftx(32);
 					str.replace(str.begin() + pos, str.begin() + next + 1, "");
@@ -251,7 +251,7 @@ namespace IO
 		}
 	}
 
-	void Npctext::draw(vector2d<int16_t> position) const
+	void Npctext::draw(Point<int16_t> position) const
 	{
 		for (auto& line : lines)
 		{

@@ -45,7 +45,7 @@ namespace Net
 	{
 		float fadestep = 0.2f / Constants::TIMESTEP;
 		Window::get().fadeout(fadestep, [](){
-			GraphicsEngine::get().clear();
+			GraphicsEngine::getengine().clear();
 			Stage::get().reload();
 			UI::get().enable();
 			Timer::get().start();

@@ -35,6 +35,7 @@ namespace Net
 		void decrypt(int8_t* bytes, size_t length, uint8_t* sendiv) const;
 		// Use the 4-byte header of a received packet to determine its length.
 		size_t getlength(const int8_t* header) const;
+		// Generate a header for the specified length and key.
 		void getheader(int8_t* buffer, size_t length) const;
 
 	private:

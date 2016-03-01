@@ -16,48 +16,33 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "MapObjectHandlers.h"
+
+#include "Audio\AudioPlayer.h"
+
 #include "Gameplay\Stage.h"
 
 namespace Net
 {
+	using Audio::AudioPlayer;
+	using Character::Char;
 	using Gameplay::Stage;
-
 	using Gameplay::MapNpcs;
-	MapNpcs& getnpcs()
-	{
-		return Stage::get().getnpcs();
-	}
-
 	using Gameplay::MapMobs;
-	MapMobs& getmobs()
-	{
-		return Stage::get().getmobs();
-	}
-
 	using Gameplay::MapChars;
-	MapChars& getchars()
-	{
-		return Stage::get().getchars();
-	}
-
 	using Gameplay::MapDrops;
-	MapDrops& getdrops()
-	{
-		return Stage::get().getdrops();
-	}
 
 	void SpawnNpcHandler::handle(InPacket& recv) const
 	{
 		int32_t oid = recv.readint();
 		int32_t id = recv.readint();
-		vector2d<int16_t> position = recv.readpoint();
+		Point<int16_t> position = recv.readpoint();
 		bool flip = recv.readbool();
 		uint16_t fh = recv.readshort();
 
 		recv.readshort(); // 'rx'
 		recv.readshort(); // 'ry'
 
-		getnpcs().addnpc(id, oid, flip, fh, true, position);
+		Stage::get().getnpcs().addnpc(id, oid, flip, fh, true, position);
 	}
 
 	void SpawnNpcControllerHandler::handle(InPacket& recv) const
@@ -72,7 +57,7 @@ namespace Net
 		else
 		{
 			int32_t id = recv.readint();
-			vector2d<int16_t> position = recv.readpoint();
+			Point<int16_t> position = recv.readpoint();
 			bool f = recv.readbool();
 			uint16_t fh = recv.readshort();
 
@@ -80,7 +65,7 @@ namespace Net
 			recv.readshort(); // 'ry'
 			recv.readbool(); // 'minimap'
 
-			getnpcs().addnpc(id, oid, f, fh, true, position);
+			Stage::get().getnpcs().addnpc(id, oid, f, fh, true, position);
 		}
 	}
 
@@ -92,7 +77,7 @@ namespace Net
 
 		recv.skip(22);
 
-		vector2d<int16_t> position = recv.readpoint();
+		Point<int16_t> position = recv.readpoint();
 		int8_t stance = recv.readbyte();
 
 		recv.skip(2);
@@ -114,7 +99,7 @@ namespace Net
 
 		recv.skip(4);
 
-		getmobs().addmob(oid, id, hascontrol, stance, fh, effect == -2, team, position);
+		Stage::get().getmobs().addmob(oid, id, hascontrol, stance, fh, effect == -2, team, position);
 	}
 
 	void SpawnMobControllerHandler::handle(InPacket& recv) const
@@ -131,7 +116,7 @@ namespace Net
 
 		recv.skip(22);
 
-		vector2d<int16_t> position = recv.readpoint();
+		Point<int16_t> position = recv.readpoint();
 		int8_t stance = recv.readbyte();
 
 		recv.skip(2);
@@ -153,7 +138,7 @@ namespace Net
 
 		recv.skip(4);
 
-		getmobs().addmob(oid, id, true, stance, fh, effect == -2, team, position);
+		Stage::get().getmobs().addmob(oid, id, true, stance, fh, effect == -2, team, position);
 	}
 
 	void ShowMobHpHandler::handle(InPacket& recv) const
@@ -162,7 +147,7 @@ namespace Net
 		int8_t hppercent = recv.readbyte();
 		uint16_t playerlevel = Stage::get().getplayer().getstats().getstat(Maplestat::LEVEL);
 
-		getmobs().sendmobhp(oid, hppercent, playerlevel);
+		Stage::get().getmobs().sendmobhp(oid, hppercent, playerlevel);
 	}
 
 	void KillMobHandler::handle(InPacket& recv) const
@@ -170,7 +155,7 @@ namespace Net
 		int32_t oid = recv.readint();
 		int8_t animation = recv.readbyte();
 
-		getmobs().killmob(oid, animation);
+		Stage::get().getmobs().killmob(oid, animation);
 	}
 
 	void SpawnCharHandler::handle(InPacket& recv) const
@@ -209,7 +194,7 @@ namespace Net
 		recv.readint(); // 'itemeffect'
 		recv.readint(); // 'chair'
 
-		vector2d<int16_t> position = recv.readpoint();
+		Point<int16_t> position = recv.readpoint();
 		int8_t stance = recv.readbyte();
 
 		recv.skip(3);
@@ -248,19 +233,19 @@ namespace Net
 		recv.skip(3);
 		recv.readbyte(); // team
 
-		getchars().addchar(cid, look, level, job, name, stance, position);
+		Stage::get().getchars().addchar(cid, look, level, job, name, stance, position);
 	}
 
 	void RemoveCharHandler::handle(InPacket& recv) const
 	{
 		int32_t cid = recv.readint();
 
-		getchars().removechar(cid);
+		Stage::get().getchars().removechar(cid);
 	}
 
-	MovementFragment MovementHandler::parsemovement(InPacket& recv) const
+	Movement MovementHandler::parsemovement(InPacket& recv) const
 	{
-		MovementFragment fragment;
+		Movement fragment;
 
 		fragment.command = recv.readbyte();
 		switch (fragment.command)
@@ -268,7 +253,7 @@ namespace Net
 		case 0:
 		case 5:
 		case 17:
-			fragment.type = MovementFragment::MVT_ABSOLUTE;
+			fragment.type = Movement::_ABSOLUTE;
 			fragment.xpos = recv.readshort();
 			fragment.ypos = recv.readshort();
 			fragment.lastx = recv.readshort();
@@ -283,14 +268,14 @@ namespace Net
 		case 12:
 		case 13:
 		case 16:
-			fragment.type = MovementFragment::MVT_RELATIVE;
+			fragment.type = Movement::_RELATIVE;
 			fragment.xpos = recv.readshort();
 			fragment.ypos = recv.readshort();
 			fragment.newstate = recv.readbyte();
 			fragment.duration = recv.readshort();
 			break;
 		case 11:
-			fragment.type = MovementFragment::MVT_CHAIR;
+			fragment.type = Movement::CHAIR;
 			fragment.xpos = recv.readshort();
 			fragment.ypos = recv.readshort();
 			recv.skip(2);
@@ -298,7 +283,7 @@ namespace Net
 			fragment.duration = recv.readshort();
 			break;
 		case 15:
-			fragment.type = MovementFragment::MVT_JUMPDOWN;
+			fragment.type = Movement::JUMPDOWN;
 			fragment.xpos = recv.readshort();
 			fragment.ypos = recv.readshort();
 			fragment.lastx = recv.readshort();
@@ -314,10 +299,10 @@ namespace Net
 		case 8:
 		case 9:
 		case 14:
-			fragment.type = MovementFragment::MVT_NONE;
+			fragment.type = Movement::NONE;
 			break;
 		case 10:
-			fragment.type = MovementFragment::MVT_NONE;
+			fragment.type = Movement::NONE;
 			//change equip
 			break;
 		}
@@ -331,22 +316,21 @@ namespace Net
 
 		recv.skip(4);
 
-		vector<MovementFragment> movements;
+		vector<Movement> movements;
 		uint8_t nummoves = recv.readbyte();
 		for (uint8_t i = 0; i < nummoves; i++)
 		{
 			movements.push_back(parsemovement(recv));
 		}
 
-		getchars().movechar(cid, movements);
+		Stage::get().getchars().movechar(cid, movements);
 	}
 
 	void SpawnPetHandler::handle(InPacket& recv) const
 	{
 		using Character::Char;
-		Char* character = Stage::get().getcharacter(recv.readint());
-
-		if (character == nullptr)
+		Optional<Char> character = Stage::get().getcharacter(recv.readint());
+		if (!character)
 			return;
 
 		uint8_t petindex = recv.readbyte();
@@ -362,7 +346,7 @@ namespace Net
 
 			recv.skip(4);
 
-			vector2d<int16_t> pos = recv.readpoint();
+			Point<int16_t> pos = recv.readpoint();
 			uint8_t stance = recv.readbyte();
 			int32_t fhid = recv.readint();
 
@@ -384,11 +368,11 @@ namespace Net
 		int32_t itemid = recv.readint();
 		int32_t owner = recv.readint();
 		int8_t pickuptype = recv.readbyte();
-		vector2d<int16_t> dropto = recv.readpoint();
+		Point<int16_t> dropto = recv.readpoint();
 
 		recv.skip(4);
 
-		vector2d<int16_t> dropfrom;
+		Point<int16_t> dropfrom;
 		if (mode != 2)
 		{
 			dropfrom = recv.readpoint();
@@ -404,21 +388,19 @@ namespace Net
 		{
 			recv.skip(8);
 		}
-
 		bool playerdrop = !recv.readbool();
 
-		getdrops().adddrop(oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mode, playerdrop);
+		Stage::get().getdrops().adddrop(oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mode, playerdrop);
 	}
 
 	void RemoveDropHandler::handle(InPacket& recv) const
 	{
-		int8_t anim = recv.readbyte();
+		int8_t mode = recv.readbyte();
 		int32_t oid = recv.readint();
 
 		using Gameplay::PhysicsObject;
-		const PhysicsObject* looter = nullptr;
-
-		if (anim > 1)
+		Optional<PhysicsObject> looter;
+		if (mode > 1)
 		{
 			int32_t cid = recv.readint();
 			if (recv.length() > 0)
@@ -427,19 +409,12 @@ namespace Net
 			}
 			else
 			{
-				using Character::Char;
-				Char* charlooter = Stage::get().getcharacter(cid);
+				looter = Stage::get().getcharacter(cid)
+					.transform(&Char::getphobj);
+			}
 
-				if (charlooter)
-					looter = &charlooter->getphobj();
-			}
-			/*if (cid == Game::getfield()->getplayer()->getoid())
-			{
-			Game::getcache()->getsounds()->play(MSN_PICKUP);
-			}
-			looter = Game::getfield()->getchar(cid);*/
+			AudioPlayer::get().playsound(AudioPlayer::PICKUP);
 		}
-
-		getdrops().removedrop(oid, anim, looter);
+		Stage::get().getdrops().removedrop(oid, mode, looter.get());
 	}
 }

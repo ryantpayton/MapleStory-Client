@@ -56,15 +56,15 @@ namespace Gameplay
 			TYPE14
 		};
 
-		Portal(const Animation*, PtType, string, bool, vector2d<int16_t>, int32_t, string);
+		Portal(const Animation*, PtType, string, bool, Point<int16_t>, int32_t, string);
 		Portal();
 		~Portal();
 
-		void draw(vector2d<int16_t>, float) const;
+		void draw(Point<int16_t>, float) const;
 		void settouch(bool);
 		string getname() const;
 		PtType gettype() const;
-		vector2d<int16_t> getposition() const;
+		Point<int16_t> getposition() const;
 		rectangle2d<int16_t> bounds() const;
 		const WarpInfo& getwarpinfo() const;
 
@@ -72,7 +72,7 @@ namespace Gameplay
 		const Animation* animation;
 		PtType type;
 		string name;
-		vector2d<int16_t> position;
+		Point<int16_t> position;
 		WarpInfo warpinfo;
 		bool touched;
 	};

@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\vector2d.h"
+#include "Util\Point.h"
 #include <cstdint>
 
 namespace Graphics
@@ -26,24 +26,24 @@ namespace Graphics
 	public:
 		DrawArgument(int16_t x, int16_t y)
 		{
-			pos = vector2d<int16_t>(x, y);
+			pos = Point<int16_t>(x, y);
 			defaults();
 		}
 
-		DrawArgument(vector2d<int16_t> p)
+		DrawArgument(Point<int16_t> p)
 		{
 			pos = p;
 			defaults();
 		}
 
-		DrawArgument(vector2d<int16_t> p, float a)
+		DrawArgument(Point<int16_t> p, float a)
 		{
 			pos = p;
 			defaults();
 			alpha = a;
 		}
 
-		DrawArgument(vector2d<int16_t> p, float xs, float ys)
+		DrawArgument(Point<int16_t> p, float xs, float ys)
 		{
 			pos = p;
 			defaults();
@@ -51,21 +51,21 @@ namespace Graphics
 			yscale = ys;
 		}
 
-		DrawArgument(vector2d<int16_t> p, vector2d<int16_t> str)
+		DrawArgument(Point<int16_t> p, Point<int16_t> str)
 		{
 			pos = p;
 			defaults();
 			stretch = str;
 		}
 
-		DrawArgument(vector2d<int16_t> p, bool flip)
+		DrawArgument(Point<int16_t> p, bool flip)
 		{
 			pos = p;
 			defaults();
 			xscale = flip ? -1.0f : 1.0f;
 		}
 
-		DrawArgument(vector2d<int16_t> p, bool flip, float a)
+		DrawArgument(Point<int16_t> p, bool flip, float a)
 		{
 			pos = p;
 			defaults();
@@ -73,7 +73,7 @@ namespace Graphics
 			alpha = a;
 		}
 
-		DrawArgument(vector2d<int16_t> p, bool flip, vector2d<int16_t> c)
+		DrawArgument(Point<int16_t> p, bool flip, Point<int16_t> c)
 		{
 			pos = p;
 			defaults();
@@ -81,8 +81,8 @@ namespace Graphics
 			center = c;
 		}
 
-		DrawArgument(vector2d<int16_t> p, vector2d<int16_t> c, 
-			vector2d<int16_t> s, float xs, float ys, float a) {
+		DrawArgument(Point<int16_t> p, Point<int16_t> c,
+			Point<int16_t> s, float xs, float ys, float a) {
 
 			pos = p;
 			center = c;
@@ -94,17 +94,17 @@ namespace Graphics
 
 		~DrawArgument() {}
 
-		vector2d<int16_t> getpos() const 
+		Point<int16_t> getpos() const
 		{ 
 			return pos; 
 		}
 
-		vector2d<int16_t> getcenter() const
+		Point<int16_t> getcenter() const
 		{
 			return center;
 		}
 
-		vector2d<int16_t> getstretch() const 
+		Point<int16_t> getstretch() const
 		{ 
 			return stretch; 
 		}
@@ -138,9 +138,9 @@ namespace Graphics
 			alpha = 1.0f;
 		}
 
-		vector2d<int16_t> pos;
-		vector2d<int16_t> center;
-		vector2d<int16_t> stretch;
+		Point<int16_t> pos;
+		Point<int16_t> center;
+		Point<int16_t> stretch;
 		float xscale;
 		float yscale;
 		float alpha;

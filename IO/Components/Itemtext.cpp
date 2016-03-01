@@ -32,7 +32,7 @@ namespace IO
 		}
 		strings.push_back(text.substr(pos));
 
-		vector2d<int16_t> offset;
+		Point<int16_t> offset;
 		for (auto& str : strings)
 		{
 			size_t length = str.size();
@@ -78,29 +78,29 @@ namespace IO
 					linetext.settext(str.substr(pos2), maxwidth);
 					lines.push_back(Line(linetext, offset));
 					pos2 = length;
-					offset = vector2d<int16_t>(0, offset.y() + linetext.height());
+					offset = Point<int16_t>(0, offset.y() + linetext.height());
 				}
 			}
 		}
 
-		layout = vector2d<int16_t>(maxwidth, offset.y());
+		dimensions = Point<int16_t>(maxwidth, offset.y());
 	}
 
 	Itemtext::Itemtext() {}
 
 	Itemtext::~Itemtext() {}
 
-	void Itemtext::draw(vector2d<int16_t> position) const
+	void Itemtext::draw(Point<int16_t> position) const
 	{
 		for (auto& line : lines)
 		{
-			vector2d<int16_t> absp = position + line.offset;
+			Point<int16_t> absp = position + line.offset;
 			line.text.draw(absp);
 		}
 	}
 
 	int16_t Itemtext::getheight() const
 	{
-		return layout.y();
+		return dimensions.y();
 	}
 }

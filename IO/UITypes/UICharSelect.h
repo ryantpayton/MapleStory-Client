@@ -51,7 +51,7 @@ namespace IO
 	private:
 		void addchar(uint8_t);
 		void selectchar();
-		vector2d<int16_t> getcharpos(size_t) const;
+		Point<int16_t> getcharpos(size_t) const;
 
 		bool haschars;
 		vector<CharLook> charlooks;

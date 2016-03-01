@@ -30,16 +30,24 @@ namespace Gameplay
 			ICE,
 			SWIMMING,
 			FLYING,
-			CLIMBING,
+			CLIMBING
+		};
+
+		enum Flag
+		{
+			NOGRAVITY = 0x0001,
+			IGNORETERRAIN = 0x0010
 		};
 
 		PhType type = NORMAL;
+		int32_t flags = 0;
 		const Foothold* fh = nullptr;
 		uint16_t fhid = 0;
 		double fhslope = 0.0;
 		int8_t fhlayer = 0;
 		bool onground = true;
 		bool enablejd = false;
+		bool turnatedges = false;
 		double mass = 1.0;
 		double fx = 0.0;
 		double fy = 0.0;
@@ -53,17 +61,38 @@ namespace Gameplay
 		double lastx = 0.0;
 		double lasty = 0.0;
 
+		bool flagset(Flag f)
+		{
+			return (flags & f) != 0;
+		}
+
+		bool flagnotset(Flag f)
+		{
+			return !flagset(f);
+		}
+
+		void setflag(Flag f)
+		{
+			flags |= f;
+		}
+
+		void clearflag(Flag f)
+		{
+			if (flagset(f))
+				flags ^= f;
+		}
+
 		void gobelowground()
 		{
 			if (fh && enablejd)
 				fy = fh->resolvex(fx) + 1.0;
 		}
 
-		vector2d<int16_t> getposition(float inter) const
+		Point<int16_t> getposition(float inter) const
 		{
 			int16_t interx = static_cast<int16_t>((1.0f - inter) * lastx + inter * fx);
 			int16_t intery = static_cast<int16_t>((1.0f - inter) * lasty + inter * fy);
-			return vector2d<int16_t>(interx, intery);
+			return Point<int16_t>(interx, intery);
 		}
 	};
 }

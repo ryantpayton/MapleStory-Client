@@ -74,7 +74,11 @@ namespace Character
 			else
 			{
 				PhysicsObject::PhType phtype = player.getphobj().type;
-				if (phtype == PhysicsObject::CLIMBING)
+				if (phtype == PhysicsObject::FLYING || phtype == PhysicsObject::SWIMMING)
+				{
+					state = Char::SWIM;
+				}
+				else
 				{
 					Optional<const Ladder> ladder = player.getladder();
 					if (ladder)
@@ -84,16 +88,7 @@ namespace Character
 					else
 					{
 						state = Char::FALL;
-						player.getphobj().type = PhysicsObject::NORMAL;
 					}
-				}
-				else if (phtype == PhysicsObject::FLYING || phtype == PhysicsObject::SWIMMING)
-				{
-					state = Char::SWIM;
-				}
-				else
-				{
-					state = Char::FALL;
 				}
 			}
 			player.setstate(state);
@@ -157,7 +152,6 @@ namespace Character
 					player.getphobj().vforce = -player.getjforce();
 					break;
 				case Keyboard::DOWN:
-					player.getphobj().hspeed = 0.0f;
 					player.setstate(Char::PRONE);
 					break;
 				}
@@ -196,12 +190,21 @@ namespace Character
 	{
 		void sendaction(Player&, Keyboard::Action, bool) const override {}
 
-		void update(Player&) const override {}
+		void update(Player& player) const override 
+		{
+			player.getphobj().clearflag(PhysicsObject::NOGRAVITY);
+		}
 
 		void nextstate(Player& player) const override
 		{
 			if (!player.getphobj().onground)
+			{
+				if (player.getphobj().type == PhysicsObject::SWIMMING)
+				{
+					player.setstate(Char::SWIM);
+				}
 				return;
+			}
 
 			if (player.keydown(Keyboard::LEFT))
 			{
@@ -321,8 +324,6 @@ namespace Character
 
 		void update(Player& player) const override
 		{
-			player.getphobj().type = PhysicsObject::FLYING;
-
 			if (player.keydown(Keyboard::LEFT))
 				player.getphobj().hforce = -player.getflyforce();
 			else if (player.keydown(Keyboard::RIGHT))
@@ -334,7 +335,37 @@ namespace Character
 				player.getphobj().vforce = player.getflyforce();
 		}
 
-		void nextstate(Player&) const override {}
+		void nextstate(Player& player) const override 
+		{
+			switch (player.getphobj().type)
+			{
+			case PhysicsObject::NORMAL:
+				if (player.getphobj().onground)
+				{
+					Char::State state;
+					if (player.keydown(Keyboard::LEFT))
+					{
+						state = Char::WALK;
+						player.setflip(false);
+					}
+					else if (player.keydown(Keyboard::RIGHT))
+					{
+						state = Char::WALK;
+						player.setflip(true);
+					}
+					else if (player.keydown(Keyboard::DOWN))
+					{
+						state = Char::PRONE;
+					}
+					else
+					{
+						state = Char::STAND;
+					}
+					player.setstate(state);
+				}
+				break;
+			}
+		}
 	};
 
 	class PlayerClimbState : public PlayerState
@@ -370,6 +401,9 @@ namespace Character
 
 		void update(Player& player) const override
 		{
+			player.getphobj().type = PhysicsObject::CLIMBING;
+			player.getphobj().setflag(PhysicsObject::IGNORETERRAIN);
+
 			if (player.keydown(Keyboard::UP))
 				player.getphobj().vspeed = -player.getclimbforce();
 			else if (player.keydown(Keyboard::DOWN))

@@ -41,11 +41,11 @@ namespace Gameplay
 
 		void clear();
 		void update(rectangle2d<int16_t> playerbounds);
-		void draw(vector2d<int16_t> viewpos, float inter) const;
+		void draw(Point<int16_t> viewpos, float inter) const;
 
 		uint8_t getportalbyname(string name) const;
-		vector2d<int16_t> getspawnpoint(uint8_t id) const;
-		vector2d<int16_t> getspawnpoint(string name) const;
+		Point<int16_t> getspawnpoint(uint8_t id) const;
+		Point<int16_t> getspawnpoint(string name) const;
 		const WarpInfo* findportal(rectangle2d<int16_t> playerbounds);
 
 	private:

@@ -45,8 +45,12 @@ namespace Gameplay
 
 	void MapMobs::applyattack(const Attack& attack)
 	{
+		uint8_t mobcount = attack.mobcount;
+		if (mobcount == 0)
+			return;
+
 		Attack::Direction direction = attack.direction;
-		vector2d<int16_t> origin = attack.origin;
+		Point<int16_t> origin = attack.origin;
 		rectangle2d<int16_t> range = attack.range;
 		switch (direction)
 		{
@@ -66,10 +70,6 @@ namespace Gameplay
 			break;
 		}
 
-		uint8_t mobcount = attack.mobcount;
-		if (mobcount == 0)
-			return;
-
 		vector<int32_t> targets;
 		switch (attack.type)
 		{
@@ -84,7 +84,7 @@ namespace Gameplay
 		AttackResult result = AttackResult(attack);
 		for (auto& target : targets)
 		{
-			Mob* mob = reinterpret_cast<Mob*>(get(target));
+			Optional<Mob> mob = getmob(target);
 			if (mob)
 			{
 				result.damagelines[target] = mob->damage(attack);
@@ -113,11 +113,11 @@ namespace Gameplay
 		vector<int32_t> targets;
 		for (auto& object : objects)
 		{
-			MapObject* mmo = object.second.get();
-			if (mmo == nullptr)
+			Optional<MapObject> mmo = object.second.get();
+			if (mmo.isempty())
 				continue;
 
-			Mob* mob = reinterpret_cast<Mob*>(mmo);
+			Optional<Mob> mob = mmo.reinterpret<Mob>();
 			if (mob->isactive() && mob->isinrange(range))
 			{
 				int32_t oid = mob->getoid();
@@ -130,20 +130,20 @@ namespace Gameplay
 		return targets;
 	}
 
-	vector<int32_t> MapMobs::findranged(rectangle2d<int16_t> range, vector2d<int16_t> origin, uint8_t mobcount) const
+	vector<int32_t> MapMobs::findranged(rectangle2d<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const
 	{
 		BinaryTree<int32_t, int16_t> distancetree;
 		for (auto& object : objects)
 		{
-			MapObject* mmo = object.second.get();
-			if (mmo == nullptr)
+			Optional<MapObject> mmo = object.second.get();
+			if (mmo.isempty())
 				continue;
 
-			Mob* mob = reinterpret_cast<Mob*>(mmo);
+			Optional<Mob> mob = mmo.reinterpret<Mob>();
 			if (mob->isactive() && mob->isinrange(range))
 			{
 				int32_t oid = mob->getoid();
-				int16_t distance = (origin - mob->getposition()).length();
+				int16_t distance = mob->getposition().distance(origin);
 				distancetree.add(oid, distance);
 			}
 		}
@@ -158,31 +158,29 @@ namespace Gameplay
 	}
 
 	void MapMobs::addmob(int32_t oid, int32_t id, bool control, int8_t stance, 
-		uint16_t fhid, bool fadein, int8_t team, vector2d<int16_t> position) {
+		uint16_t fhid, bool fadein, int8_t team, Point<int16_t> position) {
 
-		Mob* mob = getmob(oid);
+		Optional<Mob> mob = getmob(oid);
 		if (mob)
+		{
 			mob->setactive(true);
+		}
 		else
+		{
 			add(new Mob(oid, id, control, stance, fhid, fadein, team, position));
+		}
 	}
 
 	void MapMobs::killmob(int32_t oid, int8_t animation)
 	{
-		Mob* mob = getmob(oid);
-		if (mob)
-		{
-			mob->kill(animation);
-		}
+		getmob(oid)
+			.ifpresent(&Mob::kill, animation);
 	}
 
 	void MapMobs::sendmobhp(int32_t oid, int8_t percent, uint16_t playerlevel)
 	{
-		Mob* mob = getmob(oid);
-		if (mob)
-		{
-			mob->sendhp(percent, playerlevel);
-		}
+		getmob(oid)
+			.ifpresent(&Mob::sendhp, percent, playerlevel);
 	}
 
 	void MapMobs::sendattack(Attack attack)
@@ -190,9 +188,9 @@ namespace Gameplay
 		attacklist.push_back(attack);
 	}
 
-	Mob* MapMobs::getmob(int32_t oid)
+	Optional<Mob> MapMobs::getmob(int32_t oid)
 	{
-		MapObject* mmo = get(oid);
-		return mmo ? reinterpret_cast<Mob*>(mmo) : nullptr;
+		return get(oid)
+			.reinterpret<Mob>();
 	}
 }

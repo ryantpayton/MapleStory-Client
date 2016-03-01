@@ -34,15 +34,15 @@ namespace IO
 
 	Bar::~Bar() {}
 
-	void Bar::draw(vector2d<int16_t> position) const
+	void Bar::draw(Point<int16_t> position) const
 	{
 		int16_t length = static_cast<int16_t>(percentage * maximum);
 		if (length > 0)
 		{
 			using::Graphics::DrawArgument;
 			barfront.draw(DrawArgument(position));
-			barmid.draw(DrawArgument(position + vector2d<int16_t>(1, 0), vector2d<int16_t>(length, 0)));
-			barend.draw(DrawArgument(position + vector2d<int16_t>(length + 1, 0)));
+			barmid.draw(DrawArgument(position + Point<int16_t>(1, 0), Point<int16_t>(length, 0)));
+			barend.draw(DrawArgument(position + Point<int16_t>(length + 1, 0)));
 		}
 	}
 

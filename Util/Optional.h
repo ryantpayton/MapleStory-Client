@@ -59,14 +59,14 @@ public:
 	void ifpresent(void (T::*action)(Args...) const, Args... args) const
 	{
 		if (ptr)
-			(ptr->*action)(std::forward<Args>(args)...);
+			(ptr->*action)(args...);
 	}
 
 	template<typename T, typename ...Args>
-	void ifpresent(void (T::*action)(Args...), Args... args)
+	void ifpresent(void (T::*action)(Args...), Args... args) const
 	{
 		if (ptr)
-			(ptr->*action)(std::forward<Args>(args)...);
+			(ptr->*action)(args...);
 	}
 
 	template<typename T, typename R>
@@ -82,7 +82,7 @@ public:
 	R map(R (T::*mapper)(Args...) const, Args... args) const
 	{
 		if (ptr)
-			return (ptr->*mapper)(std::forward<Args>(args)...);
+			return (ptr->*mapper)(args...);
 		else
 			return R();
 	}
@@ -91,9 +91,27 @@ public:
 	bool maporfalse(bool (T::*mapper)(Args...) const, Args... args) const
 	{
 		if (ptr)
-			return (ptr->*mapper)(std::forward<Args>(args)...);
+			return (ptr->*mapper)(args...);
 		else
 			return false;
+	}
+
+	template<typename T, typename R, typename ...Args>
+	Optional<R> transform(R& (T::*mapper)(Args...) const, Args... args) const
+	{
+		if (ptr)
+			return (ptr->*mapper)(args...);
+		else
+			return Optional<R>();
+	}
+
+	template<typename T, typename R, typename ...Args>
+	Optional<R> transform(R& (T::*mapper)(Args...), Args... args) const
+	{
+		if (ptr)
+			return (ptr->*mapper)(args...);
+		else
+			return Optional<R>();
 	}
 
 	template<typename E, typename R>
@@ -102,16 +120,7 @@ public:
 		if (ptr)
 			return (ext.*mapper)(*ptr);
 		else
-			return nullptr;
-	}
-
-	template<typename T, typename R, typename ...Args>
-	Optional<R> transform(R& (T::*mapper)(Args...) const, Args... args) const
-	{
-		if (ptr)
-			return (ptr->*mapper)(std::forward<Args>(args)...);
-		else
-			return nullptr;
+			return Optional<R>();
 	}
 
 	template<typename T, typename E, typename V, typename R>
@@ -120,7 +129,7 @@ public:
 		if (ptr)
 			return (ext.*mapper)((ptr->*mapper2)());
 		else
-			return nullptr;
+			return Optional<R>();
 	}
 
 	template<typename T, typename E, typename V, typename R>
@@ -129,7 +138,7 @@ public:
 		if (ptr)
 			return (ext.*mapper)((ptr->*mapper2)());
 		else
-			return nullptr;
+			return Optional<R>();
 	}
 
 	template<typename R>
@@ -143,7 +152,7 @@ public:
 				return container.at(key);
 			}
 		}
-		return nullptr;
+		return Optional<R>();
 	}
 
 	template<typename R>
@@ -152,7 +161,16 @@ public:
 		if (ptr)
 			return reinterpret_cast<R*>(ptr);
 		else
-			return nullptr;
+			return Optional<R>();
+	}
+
+	template<typename R>
+	Optional<R> cast() const
+	{
+		if (ptr)
+			return static_cast<R*>(ptr);
+		else
+			return Optional<R>();
 	}
 
 	T& getordefault(T& def) const
@@ -163,32 +181,17 @@ public:
 			return def;
 	}
 
-	const T& operator *() const
+	T& operator *() const
 	{
 		return *ptr;
 	}
 
-	T& operator *()
-	{
-		return *ptr;
-	}
-
-	const T* get() const
+	T* get() const
 	{
 		return ptr;
 	}
 
-	T* get()
-	{
-		return ptr;
-	}
-
-	const T* operator ->() const
-	{
-		return ptr;
-	}
-
-	T* operator ->()
+	T* operator ->() const
 	{
 		return ptr;
 	}

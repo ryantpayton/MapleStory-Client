@@ -23,7 +23,7 @@ namespace Gameplay
 	Obj::Obj(node src)
 	{
 		animation = Animation(nl::nx::map["Obj"][src["oS"] + ".img"][src["l0"]][src["l1"]][src["l2"]]);
-		pos = vector2d<int16_t>(src["x"], src["y"]);
+		pos = Point<int16_t>(src["x"], src["y"]);
 		flip = src["f"].get_bool();
 		z = src["z"];
 	}
@@ -48,7 +48,7 @@ namespace Gameplay
 		animation.update();
 	}
 
-	void Obj::draw(vector2d<int16_t> viewpos, float inter) const
+	void Obj::draw(Point<int16_t> viewpos, float inter) const
 	{
 		using::Graphics::DrawArgument;
 		animation.draw(DrawArgument(pos + viewpos, flip), inter);

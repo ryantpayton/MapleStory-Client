@@ -16,7 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\vector2d.h"
+#include "Util\Point.h"
+#include "Util\Range.h"
 #include <cstdint>
 
 namespace Gameplay
@@ -31,13 +32,13 @@ namespace Gameplay
 		~Camera();
 
 		// Update the view with the current player position. (Or any other target)
-		void update(vector2d<int16_t> position);
+		void update(Point<int16_t> position);
 		// Set the position, changing the view immediatly.
-		void setposition(vector2d<int16_t> position);
+		void setposition(Point<int16_t> position);
 		// Updates the view's boundaries. Determined by mapinfo or footholds.
-		void updateview(vector2d<int16_t> hborders, vector2d<int16_t> vborders);
+		void updateview(Range<int16_t> hborders, Range<int16_t> vborders);
 		// Return the current position for drawing.
-		vector2d<int16_t> getposition(float inter) const;
+		Point<int16_t> getposition(float inter) const;
 
 	private:
 		// Movement variables.
@@ -45,8 +46,8 @@ namespace Gameplay
 		double fy;
 
 		// View limits.
-		vector2d<int16_t> hbounds;
-		vector2d<int16_t> vbounds;
+		Range<int16_t> hbounds;
+		Range<int16_t> vbounds;
 
 		// Variables for interpolation.
 		double lastx;

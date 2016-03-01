@@ -62,10 +62,10 @@ namespace Net
 		return ret;
 	}
 
-	vector2d<int16_t> InPacket::readpoint()
+	Point<int16_t> InPacket::readpoint()
 	{
 		int16_t x = read<int16_t>();
 		int16_t y = read<int16_t>();
-		return vector2d<int16_t>(x, y);
+		return Point<int16_t>(x, y);
 	}
 }

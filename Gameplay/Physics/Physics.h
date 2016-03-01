@@ -27,22 +27,24 @@ namespace Gameplay
 		Physics();
 		~Physics();
 
-		// Load a footholdtree (collection of platforms) from a node of game data.
-		void loadfht(node source);
+		// Load the physics for a map.
+		void load(node source);
 		// Parse a footholdtree (collection of platforms) from a packet.
 		void parsefht(InPacket& recv);
 		// Move the specified object over the specified game-time.
 		void moveobject(PhysicsObject& tomove) const;
 		// Determine the point on the ground below the specified position.
-		vector2d<int16_t> getgroundbelow(vector2d<int16_t> position) const;
+		Point<int16_t> getgroundbelow(Point<int16_t> position) const;
 		// Return a reference to the collection of platforms.
 		const Footholdtree& getfht() const;
 
 	private:
 		void movenormal(PhysicsObject&) const;
 		void moveflying(PhysicsObject&) const;
+		void moveswimming(PhysicsObject&) const;
 
 		Footholdtree fht;
+		bool swimmap;
 	};
 }
 

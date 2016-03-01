@@ -83,8 +83,8 @@ namespace IO
 		buttons[BT_EQUIPS] = unique_ptr<Button>(new MapleButton(mainbar["BtEquip"]));
 		buttons[BT_SKILL] = unique_ptr<Button>(new MapleButton(mainbar["BtSkill"]));
 
-		position = vector2d<int16_t>(512, 590);
-		dimension = vector2d<int16_t>(1366, 80);
+		position = Point<int16_t>(512, 590);
+		dimension = Point<int16_t>(1366, 80);
 
 		chatbar = unique_ptr<Chatbar>(new Chatbar(position));
 	}
@@ -99,30 +99,30 @@ namespace IO
 		uint32_t maxhp = stats.gettotal(Equipstat::HP);
 		uint32_t maxmp = stats.gettotal(Equipstat::MP);
 
-		expbar.draw(position + vector2d<int16_t>(-261, -15));
-		hpbar.draw(position + vector2d<int16_t>(-261, -31));
-		mpbar.draw(position + vector2d<int16_t>(-90, -31));
+		expbar.draw(position + Point<int16_t>(-261, -15));
+		hpbar.draw(position + Point<int16_t>(-261, -31));
+		mpbar.draw(position + Point<int16_t>(-90, -31));
 
 		string expstring = std::to_string(100 * getexppercent());
 		statset.draw(
 			std::to_string(currentexp) + "[" + expstring.substr(0, expstring.find('.') + 3) + "%]",
-			DrawArgument(position + vector2d<int16_t>(47, -13))
+			DrawArgument(position + Point<int16_t>(47, -13))
 			);
 		statset.draw(
 			"[" + std::to_string(currenthp) + "/" + std::to_string(maxhp) + "]",
-			DrawArgument(position + vector2d<int16_t>(-124, -29))
+			DrawArgument(position + Point<int16_t>(-124, -29))
 			);
 		statset.draw(
 			"[" + std::to_string(currentmp) + "/" + std::to_string(maxmp) + "]",
-			DrawArgument(position + vector2d<int16_t>(47, -29))
+			DrawArgument(position + Point<int16_t>(47, -29))
 			);
 		levelset.draw(
 			std::to_string(stats.getstat(Maplestat::LEVEL)),
-			DrawArgument(position + vector2d<int16_t>(-480, -24))
+			DrawArgument(position + Point<int16_t>(-480, -24))
 			);
 
-		joblabel.draw(position + vector2d<int16_t>(-435, -21));
-		namelabel.draw(position + vector2d<int16_t>(-435, -36));
+		joblabel.draw(position + Point<int16_t>(-435, -21));
+		namelabel.draw(position + Point<int16_t>(-435, -36));
 
 		chatbar->draw(inter);
 	}
@@ -162,12 +162,12 @@ namespace IO
 	rectangle2d<int16_t> UIStatusbar::bounds() const
 	{
 		return rectangle2d<int16_t>(
-			position - vector2d<int16_t>(512, 84), 
-			position - vector2d<int16_t>(512, 84) + dimension
+			position - Point<int16_t>(512, 84), 
+			position - Point<int16_t>(512, 84) + dimension
 			);
 	}
 
-	Cursor::State UIStatusbar::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
+	Cursor::State UIStatusbar::sendmouse(bool pressed, Point<int16_t> cursorpos)
 	{
 		if (chatbar->bounds().contains(cursorpos))
 		{

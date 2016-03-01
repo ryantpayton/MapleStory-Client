@@ -45,7 +45,7 @@ namespace Graphics
 			if (maxwidth < 1)
 				maxwidth = 800;
 
-			layout = GraphicsEngine::get().createlayout(text, font, alignment, maxwidth);
+			layout = GraphicsEngine::getengine().createlayout(text, font, alignment, maxwidth);
 		}
 	}
 
@@ -59,14 +59,14 @@ namespace Graphics
 		background = b;
 	}
 
-	void Text::draw(vector2d<int16_t> pos) const
+	void Text::draw(Point<int16_t> pos) const
 	{
 		draw(pos, 1.0f);
 	}
 
-	void Text::draw(vector2d<int16_t> position, float alpha) const
+	void Text::draw(Point<int16_t> position, float alpha) const
 	{
-		GraphicsEngine::get().drawtext(text, layout, font, color, background, position, alpha);
+		GraphicsEngine::getengine().drawtext(text, layout, font, color, background, position, alpha);
 	}
 
 	uint16_t Text::advance(size_t pos) const
@@ -101,12 +101,12 @@ namespace Graphics
 		return layout.linecount;
 	}
 
-	vector2d<int16_t> Text::dimensions() const
+	Point<int16_t> Text::dimensions() const
 	{
 		return layout.dimensions;
 	}
 
-	vector2d<int16_t> Text::endoffset() const
+	Point<int16_t> Text::endoffset() const
 	{
 		return layout.endoffset;
 	}

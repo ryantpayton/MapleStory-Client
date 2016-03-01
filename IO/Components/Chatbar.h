@@ -52,14 +52,14 @@ namespace IO
 			CHT_SQUAD
 		};
 
-		Chatbar(vector2d<int16_t> position);
+		Chatbar(Point<int16_t> position);
 		~Chatbar();
 
 		void draw(float inter) const override;
 		void update() override;
 		void buttonpressed(uint16_t buttonid) override;
 		rectangle2d<int16_t> bounds() const override;
-		Cursor::State sendmouse(bool pressed, vector2d<int16_t> position) override;
+		Cursor::State sendmouse(bool pressed, Point<int16_t> position) override;
 
 		void sendline(string line, int8_t type);
 

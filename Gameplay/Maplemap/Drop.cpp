@@ -19,8 +19,8 @@
 
 namespace Gameplay
 {
-	Drop::Drop(int32_t id, int32_t own, vector2d<int16_t> start,
-		vector2d<int16_t> dst, int8_t type, int8_t mode, bool pldrp) {
+	Drop::Drop(int32_t id, int32_t own, Point<int16_t> start,
+		Point<int16_t> dst, int8_t type, int8_t mode, bool pldrp) {
 
 		oid = id;
 		owner = own;
@@ -41,12 +41,12 @@ namespace Gameplay
 			state = DROPPED;
 			basey = static_cast<double>(dest.y() - 4);
 			phobj.vforce = -5.0f;
-			phobj.hspeed = static_cast<double>(dest.x() - start.x()) / 40.0;
+			phobj.hspeed = static_cast<double>(dest.x() - start.x()) / 48;
 			break;
 		case 2:
 			state = FLOATING;
 			basey = phobj.fy;
-			phobj.type = PhysicsObject::FLYING;
+			phobj.setflag(PhysicsObject::NOGRAVITY);
 			break;
 		case 3:
 			state = PICKEDUP;
@@ -57,12 +57,14 @@ namespace Gameplay
 
 	int8_t Drop::update(const Physics& physics)
 	{
+		phobj.setflag(PhysicsObject::IGNORETERRAIN);
 		physics.moveobject(phobj);
 
 		if (state == DROPPED && phobj.onground)
 		{
+			phobj.hspeed = 0.0;
+			phobj.setflag(PhysicsObject::NOGRAVITY);
 			setposition(dest.x(), dest.y() - 4);
-			phobj.type = PhysicsObject::FLYING;
 			state = FLOATING;
 		}
 		
@@ -98,7 +100,6 @@ namespace Gameplay
 		{
 		case 0:
 			state = PICKEDUP;
-			phobj.type = PhysicsObject::NORMAL;
 			break;
 		case 1:
 			active = false;
@@ -107,7 +108,7 @@ namespace Gameplay
 			state = PICKEDUP;
 			looter = lt;
 			phobj.vforce = -4.5f;
-			phobj.type = PhysicsObject::NORMAL;
+			phobj.clearflag(PhysicsObject::NOGRAVITY);
 			break;
 		}
 	}
@@ -116,7 +117,7 @@ namespace Gameplay
 	{ 
 		return rectangle2d<int16_t>(
 			getposition(), 
-			getposition() + vector2d<int16_t>(32, 32)
+			getposition() + Point<int16_t>(32, 32)
 			); 
 	}
 }

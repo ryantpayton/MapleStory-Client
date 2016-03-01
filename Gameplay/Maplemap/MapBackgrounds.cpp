@@ -25,7 +25,7 @@ namespace Gameplay
 	{
 		node backsrc = nl::nx::map["Back"];
 		animated = src["ani"].get_bool();
-		animation = Animation(backsrc[src["bS"] + ".img"][animated ? "ani" : "back"][src["no"]]);
+		animation = backsrc[src["bS"] + ".img"][animated ? "ani" : "back"][src["no"]];
 		opacity = src["a"];
 		flipped = src["f"].get_bool();
 		fx = src["x"];
@@ -36,9 +36,9 @@ namespace Gameplay
 		ry = src["ry"];
 
 		if (cx == 0)
-			cx = animation.getdimensions().x() - 1;
+			cx = animation.getdimensions().x();
 		if (cy == 0)
-			cy = animation.getdimensions().y() - 1;
+			cy = animation.getdimensions().y();
 
 		Type type = typebyid(src["type"]);
 
@@ -77,7 +77,7 @@ namespace Gameplay
 		}
 	}
 
-	void Background::draw(vector2d<int16_t> position, float inter) const
+	void Background::draw(Point<int16_t> position, float inter) const
 	{
 		int16_t x = static_cast<int16_t>((1.0f - inter) * lastx + inter * fx);
 		int16_t y = static_cast<int16_t>((1.0f - inter) * lasty + inter * fy);
@@ -131,7 +131,7 @@ namespace Gameplay
 			for (int16_t ty = y; ty < endy; ty += cy)
 			{
 				using Graphics::DrawArgument;
-				animation.draw(DrawArgument(vector2d<int16_t>(tx, ty), flipped, opacity / 255), inter);
+				animation.draw(DrawArgument(Point<int16_t>(tx, ty), flipped, opacity / 255), inter);
 			}
 		}
 	}
@@ -155,9 +155,13 @@ namespace Gameplay
 		{
 			bool front = back["front"].get_bool();
 			if (front)
+			{
 				foregrounds.push_back(back);
+			}
 			else
+			{
 				backgrounds.push_back(back);
+			}
 
 			no++;
 			back = src[std::to_string(no)];
@@ -166,7 +170,7 @@ namespace Gameplay
 
 	MapBackgrounds::MapBackgrounds() {}
 
-	void MapBackgrounds::drawbackgrounds(vector2d<int16_t> position, float inter) const
+	void MapBackgrounds::drawbackgrounds(Point<int16_t> position, float inter) const
 	{
 		for (auto& background : backgrounds)
 		{
@@ -174,7 +178,7 @@ namespace Gameplay
 		}
 	}
 
-	void MapBackgrounds::drawforegrounds(vector2d<int16_t> position, float inter) const
+	void MapBackgrounds::drawforegrounds(Point<int16_t> position, float inter) const
 	{
 		for (auto& foreground : foregrounds)
 		{

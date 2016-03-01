@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Graphics\Texture.h"
-#include "Util\vector2d.h"
+#include "Util\Point.h"
 #include "Net\InPacket.h"
 #include "nlnx\node.hpp"
 #include <cstdint>
@@ -39,13 +39,13 @@ namespace Gameplay
 		~Tile();
 
 		// Draw the tile.
-		void draw(vector2d<int16_t> viewpos) const;
+		void draw(Point<int16_t> viewpos) const;
 		// Returns depth of the tile.
 		uint8_t getz() const;
 
 	private:
 		Texture texture;
-		vector2d<int16_t> pos;
+		Point<int16_t> pos;
 		uint8_t z;
 	};
 }

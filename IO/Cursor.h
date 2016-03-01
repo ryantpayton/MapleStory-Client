@@ -59,15 +59,15 @@ namespace IO
 		void draw(float inter) const;
 		void update();
 		void setstate(State state);
-		void setposition(vector2d<int16_t> position);
+		void setposition(Point<int16_t> position);
 		State getstate() const;
-		vector2d<int16_t> getposition() const;
+		Point<int16_t> getposition() const;
 
 	private:
 		map<State, Animation> animations;
 
 		State state;
-		vector2d<int16_t> position;
+		Point<int16_t> position;
 	};
 }
 

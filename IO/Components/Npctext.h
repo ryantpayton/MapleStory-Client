@@ -34,7 +34,7 @@ namespace IO
 		Npctext();
 		~Npctext();
 
-		void draw(vector2d<int16_t> position) const;
+		void draw(Point<int16_t> position) const;
 
 		int16_t getheight() const;
 
@@ -42,13 +42,13 @@ namespace IO
 		struct Line
 		{
 			Text text;
-			vector2d<int16_t> offset;
+			Point<int16_t> offset;
 		};
 
 		struct Image
 		{
 			Texture texture;
-			vector2d<int16_t> offset;
+			Point<int16_t> offset;
 		};
 
 		size_t parseL(string& str, size_t pos);
@@ -56,7 +56,7 @@ namespace IO
 		size_t parsez(string& str, size_t pos);
 		size_t parsev(string& str, size_t pos);
 
-		vector2d<int16_t> offset;
+		Point<int16_t> offset;
 		vector<Line> lines;
 		vector<Image> images;
 	};

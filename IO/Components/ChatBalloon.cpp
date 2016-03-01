@@ -81,7 +81,7 @@ namespace IO
 		duration = DURATION;
 	}
 
-	void ChatBalloon::draw(vector2d<int16_t> position) const
+	void ChatBalloon::draw(Point<int16_t> position) const
 	{
 		if (duration == 0)
 			return;
@@ -93,36 +93,36 @@ namespace IO
 		int16_t left = position.x() - width / 2;
 		int16_t top = position.y() - height;
 
-		northwest.draw(vector2d<int16_t>(left, top));
-		southwest.draw(vector2d<int16_t>(left, top + height));
+		northwest.draw(Point<int16_t>(left, top));
+		southwest.draw(Point<int16_t>(left, top + height));
 
 		for (int8_t i = 0; i < numver; i++)
 		{
 			int16_t yshift = (ytile * i);
-			west.draw(vector2d<int16_t>(left, top + yshift));
+			west.draw(Point<int16_t>(left, top + yshift));
 
 			for (int8_t j = 0; j < numhor; j++)
 			{
 				int16_t xshift = (xtile * j);
-				center.draw(vector2d<int16_t>(left + xshift, top + yshift));
+				center.draw(Point<int16_t>(left + xshift, top + yshift));
 			}
 
-			east.draw(vector2d<int16_t>(left + width, top + yshift));
+			east.draw(Point<int16_t>(left + width, top + yshift));
 		}
 
 		for (int8_t i = 0; i < numhor; i++)
 		{
 			int16_t xshift = (xtile * i);
-			north.draw(vector2d<int16_t>(left + xshift, top));
-			south.draw(vector2d<int16_t>(left + xshift, top + height));
+			north.draw(Point<int16_t>(left + xshift, top));
+			south.draw(Point<int16_t>(left + xshift, top + height));
 		}
 
-		northeast.draw(vector2d<int16_t>(left + width, top));
-		southeast.draw(vector2d<int16_t>(left + width, top + height));
+		northeast.draw(Point<int16_t>(left + width, top));
+		southeast.draw(Point<int16_t>(left + width, top + height));
 
 		arrow.draw(position);
 
-		textlabel.draw(vector2d<int16_t>(position.x(), top - 4));
+		textlabel.draw(Point<int16_t>(position.x(), top - 4));
 	}
 
 	void ChatBalloon::update()

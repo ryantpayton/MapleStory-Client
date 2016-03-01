@@ -39,7 +39,7 @@ namespace Gameplay
 		// Constructs an npc by combining data from game files with
 		// data sent by the server.
 		Npc(int32_t npcid, int32_t oid, bool mirrored, uint16_t fhid, 
-			bool control, vector2d<int16_t> position);
+			bool control, Point<int16_t> position);
 
 		// Draws the current animation and name/function tags.
 		void draw(const Camera& camera, float inter) const override;
@@ -49,7 +49,7 @@ namespace Gameplay
 		// Changes stance and resets animation.
 		void setstance(string stance);
 		// Returns width and height of the current animation.
-		vector2d<int16_t> getdimensions() const;
+		Point<int16_t> getdimensions() const;
 
 	private:
 		map<string, Animation> animations;

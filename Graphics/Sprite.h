@@ -26,18 +26,18 @@ namespace Graphics
 	class Sprite
 	{
 	public:
-		Sprite(node, vector2d<int16_t>);
+		Sprite(node, Point<int16_t>);
 		Sprite(node);
 		~Sprite();
 
 		void update();
 		void draw(const DrawArgument&, float) const;
-		vector2d<int16_t> getorigin() const;
-		vector2d<int16_t> getdimensions() const;
+		Point<int16_t> getorigin() const;
+		Point<int16_t> getdimensions() const;
 
 	private:
 		Animation animation;
-		vector2d<int16_t> position;
+		Point<int16_t> position;
 	};
 }
 

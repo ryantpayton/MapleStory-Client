@@ -43,12 +43,12 @@ namespace IO
 
 	Textfield::~Textfield() {}
 
-	void Textfield::draw(vector2d<int16_t> parentpos) const
+	void Textfield::draw(Point<int16_t> parentpos) const
 	{
 		if (state == DISABLED)
 			return;
 		
-		vector2d<int16_t> absp = bounds.getlt() + parentpos;
+		Point<int16_t> absp = bounds.getlt() + parentpos;
 		if (text.size() > 0)
 		{
 			textlabel.draw(absp);
@@ -56,7 +56,7 @@ namespace IO
 
 		if (state == FOCUSED && showmarker)
 		{
-			vector2d<int16_t> mpos = absp + vector2d<int16_t>(textlabel.advance(markerpos), -1);
+			Point<int16_t> mpos = absp + Point<int16_t>(textlabel.advance(markerpos), -1);
 			marker.draw(mpos);
 		}
 	}
@@ -204,7 +204,7 @@ namespace IO
 		return state;
 	}
 
-	rectangle2d<int16_t> Textfield::getbounds(vector2d<int16_t> parentpos) const
+	rectangle2d<int16_t> Textfield::getbounds(Point<int16_t> parentpos) const
 	{
 		return rectangle2d<int16_t>(
 			bounds.getlt() + parentpos,

@@ -26,7 +26,7 @@ namespace Gameplay
 	class MesoDrop : public Drop
 	{
 	public:
-		MesoDrop(int32_t oid, int32_t owner, vector2d<int16_t> start, vector2d<int16_t> dest, 
+		MesoDrop(int32_t oid, int32_t owner, Point<int16_t> start, Point<int16_t> dest, 
 			int8_t type, int8_t mode, const Animation* icon, bool playerdrop);
 
 		void draw(const Camera& camera, float inter) const override;

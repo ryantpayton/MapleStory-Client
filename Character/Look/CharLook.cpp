@@ -73,7 +73,7 @@ namespace Character
 		flip = true;
 	}
 
-	void CharLook::draw(vector2d<int16_t> pos, float inter) const
+	void CharLook::draw(Point<int16_t> pos, float inter) const
 	{
 		if (!body || !hair || !face)
 			return;
@@ -96,13 +96,13 @@ namespace Character
 		else
 			fcinterframe = lastfcframe;
 
-		vector2d<int16_t> absp = pos;
+		Point<int16_t> absp = pos;
 		if (action)
 			absp.shift(action->getmove());
 
 		using Graphics::DrawArgument;
 		DrawArgument args = DrawArgument(absp, flip);
-		vector2d<int16_t> faceshift = DataFactory::get().getdrawinfo().getfacepos(laststance, interframe);
+		Point<int16_t> faceshift = DataFactory::get().getdrawinfo().getfacepos(laststance, interframe);
 		DrawArgument faceargs = DrawArgument(absp + faceshift, flip, absp);
 
 		if (Stance::isclimbing(laststance))

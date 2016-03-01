@@ -28,7 +28,7 @@ namespace Character
 	};
 
 	PetLook::PetLook(int32_t iid, string nm, int32_t uqid,
-		vector2d<int16_t> pos, uint8_t st, int32_t fhid) {
+		Point<int16_t> pos, uint8_t st, int32_t fhid) {
 
 		itemid = iid;
 		name = nm;
@@ -67,7 +67,7 @@ namespace Character
 	void PetLook::draw(const Camera& camera, float inter) const
 	{
 		using Graphics::DrawArgument;
-		vector2d<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
+		Point<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
 
 		string stname = stancenames[stance / 2];
 		if (animations.count(stname))
@@ -76,17 +76,17 @@ namespace Character
 		namelabel.draw(absp);
 	}
 
-	void PetLook::update(const Physics& physics, vector2d<int16_t> charpos)
+	void PetLook::update(const Physics& physics, Point<int16_t> charpos)
 	{
 		static const double PETWALKFORCE = 0.35;
 		static const double PETFLYFORCE = 0.2;
 
-		vector2d<int16_t> curpos = phobj.getposition(1.0f);
+		Point<int16_t> curpos = phobj.getposition(1.0f);
 		switch (stance)
 		{
 		case STAND:
 		case MOVE:
-			if ((charpos - curpos).length() > 150)
+			if (curpos.distance(charpos) > 150)
 			{
 				setposition(charpos.x(), charpos.y());
 			}
@@ -111,10 +111,11 @@ namespace Character
 				}
 			}
 			phobj.type = PhysicsObject::NORMAL;
+			phobj.clearflag(PhysicsObject::NOGRAVITY);
 			break;
 		case HANG:
 			setposition(charpos.x(), charpos.y());
-			phobj.type = PhysicsObject::CLIMBING;
+			phobj.setflag(PhysicsObject::NOGRAVITY);
 			break;
 		case FLY:
 			if ((charpos - curpos).length() > 250)
@@ -146,6 +147,7 @@ namespace Character
 					phobj.vforce = 0.0f;
 			}
 			phobj.type = PhysicsObject::FLYING;
+			phobj.clearflag(PhysicsObject::NOGRAVITY);
 			break;
 		}
 

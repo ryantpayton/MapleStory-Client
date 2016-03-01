@@ -38,6 +38,11 @@ namespace IO
 
 	ItemTooltip::~ItemTooltip() {}
 
+	void ItemTooltip::clear()
+	{
+		itemid = 0;
+	}
+
 	void ItemTooltip::setitem(int32_t iid)
 	{
 		if (itemid == iid)
@@ -63,7 +68,7 @@ namespace IO
 			filllength += descdelta;
 	}
 
-	void ItemTooltip::draw(vector2d<int16_t> pos) const
+	void ItemTooltip::draw(Point<int16_t> pos) const
 	{
 		if (itemid == 0)
 			return;
@@ -71,20 +76,20 @@ namespace IO
 		using Graphics::DrawArgument;
 
 		top.draw(pos);
-		mid.draw(DrawArgument(pos + vector2d<int16_t>(0, 13), vector2d<int16_t>(0, filllength)));
-		bot.draw(pos + vector2d<int16_t>(0, filllength + 13));
+		mid.draw(DrawArgument(pos + Point<int16_t>(0, 13), Point<int16_t>(0, filllength)));
+		bot.draw(pos + Point<int16_t>(0, filllength + 13));
 
-		name.draw(pos + vector2d<int16_t>(130, 3));
+		name.draw(pos + Point<int16_t>(130, 3));
 
 		pos.shifty(4 + name.height());
 
-		base.draw(pos + vector2d<int16_t>(10, 10));
-		shade.draw(pos + vector2d<int16_t>(10, 10));
+		base.draw(pos + Point<int16_t>(10, 10));
+		shade.draw(pos + Point<int16_t>(10, 10));
 		itemicon.draw(
-			DrawArgument(pos + vector2d<int16_t>(20, 82), 2.0f, 2.0f)
+			DrawArgument(pos + Point<int16_t>(20, 82), 2.0f, 2.0f)
 			);
-		cover.draw(pos + vector2d<int16_t>(10, 10));
+		cover.draw(pos + Point<int16_t>(10, 10));
 
-		desc.draw(pos + vector2d<int16_t>(100, 6));
+		desc.draw(pos + Point<int16_t>(100, 6));
 	}
 }

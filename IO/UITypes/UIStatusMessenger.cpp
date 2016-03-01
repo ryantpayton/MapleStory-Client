@@ -22,13 +22,13 @@ namespace IO
 {
 	UIStatusMessenger::UIStatusMessenger()
 	{
-		position = vector2d<int16_t>(790, 510);
+		position = Point<int16_t>(790, 510);
 	}
 
 	void UIStatusMessenger::draw(float inter) const
 	{
 		int16_t offset = static_cast<int16_t>(statusinfos.size()) * 16;
-		vector2d<int16_t> infopos = vector2d<int16_t>(position.x(), position.y() - offset);
+		Point<int16_t> infopos = Point<int16_t>(position.x(), position.y() - offset);
 		for (auto& info : statusinfos)
 		{
 			info.draw(infopos, inter);

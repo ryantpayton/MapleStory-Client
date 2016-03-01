@@ -18,18 +18,18 @@
 #pragma once
 #include "Net\PacketHandler.h"
 #include "Net\Session.h"
-#include "Gameplay\MovementInfo.h"
+#include "Gameplay\Movement.h"
 #include "Gameplay\Stage.h"
 
 namespace Net
 {
-	using::Gameplay::MovementFragment;
+	using::Gameplay::Movement;
 
 	// Base handler for packets which update map object positions.
 	class MovementHandler : public PacketHandler
 	{
 	protected:
-		MovementFragment parsemovement(InPacket& recv) const;
+		Movement parsemovement(InPacket& recv) const;
 	};
 
 	// Handles a packet which tells the client to spawn an npc on the current map.

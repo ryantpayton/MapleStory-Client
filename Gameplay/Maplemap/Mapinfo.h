@@ -16,7 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\vector2d.h"
+#include "Util\Point.h"
+#include "Util\Range.h"
 #include "Net\InPacket.h"
 #include "nlnx\node.hpp"
 #include <vector>
@@ -30,7 +31,7 @@ namespace Gameplay
 
 	struct Seat
 	{
-		vector2d<int16_t> pos;
+		Point<int16_t> pos;
 	};
 
 	struct Ladder
@@ -44,17 +45,18 @@ namespace Gameplay
 	class MapInfo
 	{
 	public:
-		MapInfo(node src, vector2d<int16_t> walls, vector2d<int16_t> borders);
+		MapInfo(node src, Range<int16_t> walls, Range<int16_t> borders);
 		MapInfo(InPacket& recv);
 		MapInfo();
 		~MapInfo();
 
+		bool isswimmap() const;
 		string getbgm() const;
-		vector2d<int16_t> getwalls() const;
-		vector2d<int16_t> getborders() const;
+		Range<int16_t> getwalls() const;
+		Range<int16_t> getborders() const;
 
-		const Seat* findseat(vector2d<int16_t>) const;
-		const Ladder* findladder(vector2d<int16_t>, bool) const;
+		const Seat* findseat(Point<int16_t> position) const;
+		const Ladder* findladder(Point<int16_t> position, bool upwards) const;
 
 	private:
 		int32_t fieldlimit;
@@ -67,8 +69,8 @@ namespace Gameplay
 		bool swim;
 		bool town;
 		bool hideminimap;
-		vector2d<int16_t> mapwalls;
-		vector2d<int16_t> mapborders;
+		Range<int16_t> mapwalls;
+		Range<int16_t> mapborders;
 		vector<Seat> seats;
 		vector<Ladder> ladders;
 	};

@@ -29,7 +29,7 @@ namespace IO
 		Bar();
 		~Bar();
 
-		void draw(vector2d<int16_t>) const;
+		void draw(Point<int16_t>) const;
 		void update(float target);
 
 	private:

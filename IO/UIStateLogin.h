@@ -30,17 +30,17 @@ namespace IO
 	public:
 		UIStateLogin();
 
-		void draw(float inter, vector2d<int16_t> cursor) const override;
+		void draw(float inter, Point<int16_t> cursor) const override;
 		void update() override;
-		void doubleclick(vector2d<int16_t> pos) override;
+		void doubleclick(Point<int16_t> pos) override;
 		void dragicon(Icon* icon) override;
 		void sendkey(Keyboard::Keytype type, int32_t action, bool pressed) override;
-		Cursor::State sendmouse(Cursor::State mst, vector2d<int16_t> pos) override;
+		Cursor::State sendmouse(Cursor::State mst, Point<int16_t> pos) override;
 
 		void add(const Element& element) override;
 		void remove(UIElement::Type type) override;
 		UIElement* get(UIElement::Type type) const override;
-		UIElement* getfront(vector2d<int16_t> pos) const override;
+		UIElement* getfront(Point<int16_t> pos) const override;
 
 	private:
 		unordered_map<UIElement::Type, unique_ptr<UIElement>> elements;

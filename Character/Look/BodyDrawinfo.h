@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Stance.h"
-#include "Util\vector2d.h"
+#include "Util\Point.h"
 #include <cstdint>
 #include <string>
 #include <unordered_map>
@@ -33,7 +33,7 @@ namespace Character
 	class BodyAction
 	{
 	public:
-		BodyAction(Stance::Value s, uint8_t f, uint16_t d, vector2d<int16_t> m)
+		BodyAction(Stance::Value s, uint8_t f, uint16_t d, Point<int16_t> m)
 		{
 			stance = s;
 			frame = f;
@@ -58,7 +58,7 @@ namespace Character
 			return delay;
 		}
 
-		vector2d<int16_t> getmove() const
+		Point<int16_t> getmove() const
 		{
 			return move;
 		}
@@ -67,7 +67,7 @@ namespace Character
 		Stance::Value stance;
 		uint8_t frame;
 		uint16_t delay;
-		vector2d<int16_t> move;
+		Point<int16_t> move;
 	};
 
 	using std::int16_t;
@@ -81,24 +81,24 @@ namespace Character
 
 		void init();
 
-		vector2d<int16_t> getbodypos(Stance::Value stance, uint8_t frame) const;
-		vector2d<int16_t> getarmpos(Stance::Value stance, uint8_t frame) const;
-		vector2d<int16_t> gethandpos(Stance::Value stance, uint8_t frame) const;
-		vector2d<int16_t> getheadpos(Stance::Value stance, uint8_t frame) const;
-		vector2d<int16_t> gethairpos(Stance::Value stance, uint8_t frame) const;
-		vector2d<int16_t> getfacepos(Stance::Value stance, uint8_t frame) const;
+		Point<int16_t> getbodypos(Stance::Value stance, uint8_t frame) const;
+		Point<int16_t> getarmpos(Stance::Value stance, uint8_t frame) const;
+		Point<int16_t> gethandpos(Stance::Value stance, uint8_t frame) const;
+		Point<int16_t> getheadpos(Stance::Value stance, uint8_t frame) const;
+		Point<int16_t> gethairpos(Stance::Value stance, uint8_t frame) const;
+		Point<int16_t> getfacepos(Stance::Value stance, uint8_t frame) const;
 		uint8_t nextframe(Stance::Value stance, uint8_t frame) const;
 		uint16_t getdelay(Stance::Value stance, uint8_t frame) const;
 		uint8_t nextacframe(string action, uint8_t frame) const;
 		const BodyAction* getaction(string action, uint8_t frame) const;
 
 	private:
-		unordered_map<uint8_t, vector2d<int16_t>> bodyposmap[Stance::LENGTH];
-		unordered_map<uint8_t, vector2d<int16_t>> armposmap[Stance::LENGTH];
-		unordered_map<uint8_t, vector2d<int16_t>> handposmap[Stance::LENGTH];
-		unordered_map<uint8_t, vector2d<int16_t>> headposmap[Stance::LENGTH];
-		unordered_map<uint8_t, vector2d<int16_t>> hairposmap[Stance::LENGTH];
-		unordered_map<uint8_t, vector2d<int16_t>> faceposmap[Stance::LENGTH];
+		unordered_map<uint8_t, Point<int16_t>> bodyposmap[Stance::LENGTH];
+		unordered_map<uint8_t, Point<int16_t>> armposmap[Stance::LENGTH];
+		unordered_map<uint8_t, Point<int16_t>> handposmap[Stance::LENGTH];
+		unordered_map<uint8_t, Point<int16_t>> headposmap[Stance::LENGTH];
+		unordered_map<uint8_t, Point<int16_t>> hairposmap[Stance::LENGTH];
+		unordered_map<uint8_t, Point<int16_t>> faceposmap[Stance::LENGTH];
 		unordered_map<uint8_t, uint16_t> stancedelays[Stance::LENGTH];
 		unordered_map<string, unordered_map<uint8_t, BodyAction>> bodyactions;
 	};

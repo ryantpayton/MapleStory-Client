@@ -94,7 +94,7 @@ void Configuration::setint(Settings::Type setting, uint32_t i)
 	settings[setting] = std::to_string(i);
 }
 
-void Configuration::setv2d(Settings::Type setting, vector2d<int16_t> vec)
+void Configuration::setpoint(Settings::Type setting, Point<int16_t> vec)
 {
 	settings[setting] = vec.tostring();
 }
@@ -136,7 +136,7 @@ string Configuration::getsetting(Settings::Type setting)
 	return settings.count(setting) ? settings.at(setting) : "";
 }
 
-vector2d<int16_t> Configuration::getvector2d(Settings::Type setting)
+Point<int16_t> Configuration::getpoint(Settings::Type setting)
 {
 	try
 	{
@@ -147,12 +147,12 @@ vector2d<int16_t> Configuration::getvector2d(Settings::Type setting)
 			.substr(settings.at(setting)
 			.find(",") + 1, settings.at(setting).find(")") - settings.at(setting).find(",") - 1);
 
-		return vector2d<int16_t>
+		return Point<int16_t>
 			(static_cast<int16_t>(std::stoi(xstr)), static_cast<int16_t>(std::stoi(ystr))
 			);
 	}
 	catch (std::exception&)
 	{
-		return vector2d<int16_t>();
+		return Point<int16_t>();
 	}
 }

@@ -88,7 +88,7 @@ namespace Character
 		oid = 0;
 	}
 
-	void Player::respawn(vector2d<int16_t> pos)
+	void Player::respawn(Point<int16_t> pos)
 	{
 		keysdown.clear();
 		setposition(pos.x(), pos.y());
@@ -177,21 +177,13 @@ namespace Character
 		}
 		else
 		{
-			uint8_t dirstance = flip ? state : state + 1;
-			int16_t shortx = static_cast<int16_t>(phobj.fx);
-			int16_t shorty = static_cast<int16_t>(phobj.fy);
-			if (dirstance != lastmove.newstate || shortx != lastmove.xpos || shorty != lastmove.ypos || movements.size() > 0)
+			uint8_t stancebyte = flip ? state : state + 1;
+			Movement newmove = Movement(phobj, stancebyte);
+			bool needupdate = lastmove.hasmoved(newmove) || movements.size() > 0;
+			if (needupdate)
 			{
-				lastmove.type = MovementFragment::MVT_ABSOLUTE;
-				lastmove.command = 0;
-				lastmove.xpos = static_cast<int16_t>(phobj.fx);
-				lastmove.ypos = static_cast<int16_t>(phobj.fy);
-				lastmove.lastx = static_cast<int16_t>(phobj.lastx);
-				lastmove.lasty = static_cast<int16_t>(phobj.lasty);
-				lastmove.fh = phobj.fhid;
-				lastmove.newstate = dirstance;
-				lastmove.duration = Constants::TIMESTEP;
-				movements.push_back(lastmove);
+				movements.push_back(newmove);
+				lastmove = newmove;
 
 				if (movements.size() > 4)
 				{
@@ -221,7 +213,7 @@ namespace Character
 		switch (state)
 		{
 		case WALK:
-			return static_cast<float>(1.0 + std::abs(phobj.hspeed) / 25);
+			return static_cast<float>(1.0 + std::abs(phobj.hspeed) / 10);
 		case LADDER:
 		case ROPE:
 			return static_cast<float>(std::abs(phobj.vspeed));
@@ -422,7 +414,7 @@ namespace Character
 			phobj.fx = ldr->x;
 			phobj.hspeed = 0.0;
 			phobj.vspeed = 0.0;
-			phobj.type = PhysicsObject::CLIMBING;
+			phobj.setflag(PhysicsObject::NOGRAVITY);
 			setstate(ldr->ladder ? Char::LADDER : Char::ROPE);
 			setflip(false);
 		}
@@ -442,12 +434,12 @@ namespace Character
 	
 	float Player::getwforce() const
 	{
-		return 0.5f * static_cast<float>(stats.gettotal(Equipstat::SPEED)) / 100;
+		return 0.05f + 0.5f * static_cast<float>(stats.gettotal(Equipstat::SPEED)) / 100;
 	}
 
 	float Player::getjforce() const
 	{
-		return 5.0f * static_cast<float>(stats.gettotal(Equipstat::JUMP)) / 100;
+		return 0.5f + 5.0f * static_cast<float>(stats.gettotal(Equipstat::JUMP)) / 100;
 	}
 
 	float Player::getclimbforce() const

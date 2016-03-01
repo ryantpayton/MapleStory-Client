@@ -35,20 +35,23 @@ namespace Gameplay
 		Footholdtree();
 		~Footholdtree();
 
+		void draw(Point<int16_t> pos) const;
+
 		// Takes an accelerated PhysicsObject and limits its movement based on the platforms in this tree.
 		void limitmoves(PhysicsObject& touse) const;
 		// Updates a PhysicsObject's fhid based on it's position.
 		void updatefh(PhysicsObject& touse) const;
 		// Determine the point on the ground below the specified position.
-		int16_t getgroundbelow(vector2d<int16_t> position) const;
+		int16_t getgroundbelow(Point<int16_t> position) const;
 		// Returns the leftmost and rightmost platform positions of the map.
-		vector2d<int16_t> getwalls() const;
+		Range<int16_t> getwalls() const;
 		// Returns the topmost and bottommost platform positions of the map.
-		vector2d<int16_t> getborders() const;
+		Range<int16_t> getborders() const;
 
 	private:
 		uint16_t getbelow(double fx, double fy) const;
-		double getwall(uint16_t fhid, bool left, vector2d<int16_t> vertical) const;
+		double getwall(uint16_t fhid, bool left, double fy) const;
+		double getedge(uint16_t fhid, bool left) const;
 		const Foothold& getfh(uint16_t fhid) const;
 
 		unordered_map<uint16_t, int8_t> layersbyfh;
@@ -56,8 +59,8 @@ namespace Gameplay
 		unordered_multimap<int16_t, uint16_t> footholdsbyx;
 
 		Foothold nullfh;
-		vector2d<int16_t> walls;
-		vector2d<int16_t> borders;
+		Range<int16_t> walls;
+		Range<int16_t> borders;
 	};
 }
 

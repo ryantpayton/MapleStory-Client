@@ -32,7 +32,7 @@ namespace IO
 	using Gameplay::Stage;
 
 	UIStatsinfo::UIStatsinfo() :
-		UIDragElement(Settings::POS_STATS, vector2d<int16_t>(212, 20)),
+		UIDragElement(Settings::POS_STATS, Point<int16_t>(212, 20)),
 		stats(Stage::get().getplayer().getstats()) {
 
 		using nl::node;
@@ -70,35 +70,35 @@ namespace IO
 		{
 			statlabels[i] = Text(Text::A11M, Text::LEFT, Text::DARKGREY);
 		}
-		statoffsets[NAME] = vector2d<int16_t>(73, 27);
-		statoffsets[JOB] = vector2d<int16_t>(73, 45);
-		statoffsets[GUILD] = vector2d<int16_t>(73, 63);
-		statoffsets[FAME] = vector2d<int16_t>(73, 81);
-		statoffsets[DAMAGE] = vector2d<int16_t>(73, 99);
-		statoffsets[HP] = vector2d<int16_t>(73, 117);
-		statoffsets[MP] = vector2d<int16_t>(73, 135);
-		statoffsets[AP] = vector2d<int16_t>(70, 177);
-		statoffsets[STR] = vector2d<int16_t>(73, 204);
-		statoffsets[DEX] = vector2d<int16_t>(73, 222);
-		statoffsets[INT] = vector2d<int16_t>(73, 240);
-		statoffsets[LUK] = vector2d<int16_t>(73, 258);
-		statoffsets[ATTACK] = vector2d<int16_t>(73, 37);
-		statoffsets[CRIT] = vector2d<int16_t>(73, 55);
-		statoffsets[MINCRIT] = vector2d<int16_t>(73, 73);
-		statoffsets[MAXCRIT] = vector2d<int16_t>(168, 73);
-		statoffsets[BDM] = vector2d<int16_t>(73, 91);
-		statoffsets[IGNOREDEF] = vector2d<int16_t>(168, 91);
-		statoffsets[RESIST] = vector2d<int16_t>(73, 109);
-		statoffsets[STANCE] = vector2d<int16_t>(168, 109);
-		statoffsets[WDEF] = vector2d<int16_t>(73, 127);
-		statoffsets[MDEF] = vector2d<int16_t>(73, 145);
-		statoffsets[ACCURACY] = vector2d<int16_t>(73, 163);
-		statoffsets[AVOID] = vector2d<int16_t>(73, 199);
-		statoffsets[SPEED] = vector2d<int16_t>(73, 235);
-		statoffsets[JUMP] = vector2d<int16_t>(168, 235);
-		statoffsets[HONOR] = vector2d<int16_t>(73, 353);
+		statoffsets[NAME] = Point<int16_t>(73, 27);
+		statoffsets[JOB] = Point<int16_t>(73, 45);
+		statoffsets[GUILD] = Point<int16_t>(73, 63);
+		statoffsets[FAME] = Point<int16_t>(73, 81);
+		statoffsets[DAMAGE] = Point<int16_t>(73, 99);
+		statoffsets[HP] = Point<int16_t>(73, 117);
+		statoffsets[MP] = Point<int16_t>(73, 135);
+		statoffsets[AP] = Point<int16_t>(70, 177);
+		statoffsets[STR] = Point<int16_t>(73, 204);
+		statoffsets[DEX] = Point<int16_t>(73, 222);
+		statoffsets[INT] = Point<int16_t>(73, 240);
+		statoffsets[LUK] = Point<int16_t>(73, 258);
+		statoffsets[ATTACK] = Point<int16_t>(73, 37);
+		statoffsets[CRIT] = Point<int16_t>(73, 55);
+		statoffsets[MINCRIT] = Point<int16_t>(73, 73);
+		statoffsets[MAXCRIT] = Point<int16_t>(168, 73);
+		statoffsets[BDM] = Point<int16_t>(73, 91);
+		statoffsets[IGNOREDEF] = Point<int16_t>(168, 91);
+		statoffsets[RESIST] = Point<int16_t>(73, 109);
+		statoffsets[STANCE] = Point<int16_t>(168, 109);
+		statoffsets[WDEF] = Point<int16_t>(73, 127);
+		statoffsets[MDEF] = Point<int16_t>(73, 145);
+		statoffsets[ACCURACY] = Point<int16_t>(73, 163);
+		statoffsets[AVOID] = Point<int16_t>(73, 199);
+		statoffsets[SPEED] = Point<int16_t>(73, 235);
+		statoffsets[JUMP] = Point<int16_t>(168, 235);
+		statoffsets[HONOR] = Point<int16_t>(73, 353);
 
-		dimension = vector2d<int16_t>(212, 318);
+		dimension = Point<int16_t>(212, 318);
 		showdetail = false;
 	}
 
@@ -110,15 +110,15 @@ namespace IO
 		{
 			for (auto& dtit : detailtextures)
 			{
-				dtit.draw(position + vector2d<int16_t>(213, 0));
+				dtit.draw(position + Point<int16_t>(213, 0));
 			}
-			abilities.at("none").draw(position + vector2d<int16_t>(213, 0));
+			abilities.at("none").draw(position + Point<int16_t>(213, 0));
 		}
 
 		size_t last = showdetail ? NUMLABELS : NUMNORMAL;
 		for (size_t i = 0; i < last; i++)
 		{
-			vector2d<int16_t> labelpos = position + statoffsets[i];
+			Point<int16_t> labelpos = position + statoffsets[i];
 			if (i >= NUMNORMAL)
 				labelpos.shiftx(213);
 
@@ -218,23 +218,23 @@ namespace IO
 		{
 			newstate = Button::NORMAL;
 
-			buttons[BT_HP]->setposition(vector2d<int16_t>(20, -36));
-			buttons[BT_MP]->setposition(vector2d<int16_t>(20, -18));
-			buttons[BT_STR]->setposition(vector2d<int16_t>(20, 51));
-			buttons[BT_DEX]->setposition(vector2d<int16_t>(20, 69));
-			buttons[BT_INT]->setposition(vector2d<int16_t>(20, 87));
-			buttons[BT_LUK]->setposition(vector2d<int16_t>(20, 105));
+			buttons[BT_HP]->setposition(Point<int16_t>(20, -36));
+			buttons[BT_MP]->setposition(Point<int16_t>(20, -18));
+			buttons[BT_STR]->setposition(Point<int16_t>(20, 51));
+			buttons[BT_DEX]->setposition(Point<int16_t>(20, 69));
+			buttons[BT_INT]->setposition(Point<int16_t>(20, 87));
+			buttons[BT_LUK]->setposition(Point<int16_t>(20, 105));
 		}
 		else
 		{
 			newstate = Button::DISABLED;
 
-			buttons[BT_HP]->setposition(vector2d<int16_t>(-48, 14));
-			buttons[BT_MP]->setposition(vector2d<int16_t>(-48, 32));
-			buttons[BT_STR]->setposition(vector2d<int16_t>(-48, 101));
-			buttons[BT_DEX]->setposition(vector2d<int16_t>(-48, 119));
-			buttons[BT_INT]->setposition(vector2d<int16_t>(-48, 137));
-			buttons[BT_LUK]->setposition(vector2d<int16_t>(-48, 155));
+			buttons[BT_HP]->setposition(Point<int16_t>(-48, 14));
+			buttons[BT_MP]->setposition(Point<int16_t>(-48, 32));
+			buttons[BT_STR]->setposition(Point<int16_t>(-48, 101));
+			buttons[BT_DEX]->setposition(Point<int16_t>(-48, 119));
+			buttons[BT_INT]->setposition(Point<int16_t>(-48, 137));
+			buttons[BT_LUK]->setposition(Point<int16_t>(-48, 155));
 		}
 
 		buttons[BT_HP]->setstate(newstate);

@@ -73,13 +73,13 @@ namespace IO
 
 	void UIElement::buttonpressed(uint16_t) {}
 
-	void UIElement::doubleclick(vector2d<int16_t>) {}
+	void UIElement::doubleclick(Point<int16_t>) {}
 
 	void UIElement::icondropped(int16_t) {}
 
-	void UIElement::dropicon(vector2d<int16_t>, Type, int16_t) {}
+	void UIElement::dropicon(Point<int16_t>, Type, int16_t) {}
 
-	Cursor::State UIElement::sendmouse(bool down, vector2d<int16_t> pos)
+	Cursor::State UIElement::sendmouse(bool down, Point<int16_t> pos)
 	{
 		Cursor::State ret = down ? Cursor::CLICKING : Cursor::IDLE;
 

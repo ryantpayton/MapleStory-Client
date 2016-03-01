@@ -19,7 +19,7 @@
 
 namespace Gameplay
 {
-	Bullet::Bullet(Animation a, vector2d<int16_t> origin, bool toleft)
+	Bullet::Bullet(Animation a, Point<int16_t> origin, bool toleft)
 	{
 		animation = a;
 		fx = origin.x() + (toleft ? -30.0f : 30.0f);
@@ -29,20 +29,20 @@ namespace Gameplay
 		vspeed = 0.0f;
 	}
 
-	void Bullet::draw(vector2d<int16_t> viewpos, float alpha) const
+	void Bullet::draw(Point<int16_t> viewpos, float alpha) const
 	{
-		vector2d<int16_t> bulletpos = getposition(alpha) + viewpos;
+		Point<int16_t> bulletpos = getposition(alpha) + viewpos;
 		animation.draw(bulletpos, alpha);
 	}
 
-	vector2d<int16_t> Bullet::getposition(float alpha) const
+	Point<int16_t> Bullet::getposition(float alpha) const
 	{
 		int16_t interx = static_cast<int16_t>((1.0f - alpha) * lastx + alpha * fx);
 		int16_t intery = static_cast<int16_t>((1.0f - alpha) * lasty + alpha * fy);
-		return vector2d<int16_t>(interx, intery);
+		return Point<int16_t>(interx, intery);
 	}
 
-	bool Bullet::update(vector2d<int16_t> target)
+	bool Bullet::update(Point<int16_t> target)
 	{
 		animation.update();
 
@@ -55,6 +55,6 @@ namespace Gameplay
 		lasty = fy;
 		fx += hspeed;
 		fy += vspeed;
-		return vector2d<float>(xdelta, ydelta).length() < 10.0f;
+		return Point<float>(xdelta, ydelta).length() < 10.0f;
 	}
 }

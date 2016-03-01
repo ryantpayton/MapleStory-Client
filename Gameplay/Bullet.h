@@ -17,22 +17,23 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Graphics\Animation.h"
-#include "Util\vector2d.h"
+#include "Util\Point.h"
 
 namespace Gameplay
 {
 	using Graphics::Animation;
 
+	// Represents a projectile on a map.
 	class Bullet
 	{
 	public:
-		Bullet(Animation animation, vector2d<int16_t> origin, bool toleft);
+		Bullet(Animation animation, Point<int16_t> origin, bool toleft);
 
-		void draw(vector2d<int16_t> viewpos, float alpha) const;
-		bool update(vector2d<int16_t> target);
+		void draw(Point<int16_t> viewpos, float alpha) const;
+		bool update(Point<int16_t> target);
 
 	private:
-		vector2d<int16_t> getposition(float alpha) const;
+		Point<int16_t> getposition(float alpha) const;
 
 		Animation animation;
 		bool flip;

@@ -28,7 +28,7 @@ namespace Character
 
 		node defnode = facenode["default"];
 		expressions[Expression::DEFAULT][0] = defnode["face"];
-		expressions[Expression::DEFAULT][0].shift(-vector2d<int16_t>(defnode["face"]["map"]["brow"]));
+		expressions[Expression::DEFAULT][0].shift(-Point<int16_t>(defnode["face"]["map"]["brow"]));
 		delays[Expression::DEFAULT][0] = 2500;
 
 		for (auto it = Expression::getit(Expression::BLINK); it.hasnext(); it.increment())
@@ -46,7 +46,7 @@ namespace Character
 				if (framenode["face"].data_type() == node::type::bitmap)
 				{
 					expressions[exp][frame] = framenode["face"];
-					expressions[exp][frame].shift(-vector2d<int16_t>(framenode["face"]["map"]["brow"]));
+					expressions[exp][frame].shift(-Point<int16_t>(framenode["face"]["map"]["brow"]));
 
 					if (framenode["delay"].data_type() == node::type::integer)
 						delays[exp][frame] = framenode["delay"];

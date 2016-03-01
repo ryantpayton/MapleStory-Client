@@ -45,7 +45,7 @@ namespace IO
 
 	void UINpcTalk::draw(float inter) const
 	{
-		vector2d<int16_t> drawpos = position;
+		Point<int16_t> drawpos = position;
 		top.draw(drawpos);
 		drawpos.shifty(top.height());
 		for (int16_t i = 0; i < vtile; i++)
@@ -58,10 +58,10 @@ namespace IO
 		UIElement::draw(inter);
 
 		using Graphics::DrawArgument;
-		speaker.draw(DrawArgument(position + vector2d<int16_t>(80, 100), true));
-		nametag.draw(position + vector2d<int16_t>(25, 100));
-		name.draw(position + vector2d<int16_t>(80, 98));
-		npctext.draw(position + vector2d<int16_t>(156, 16));
+		speaker.draw(DrawArgument(position + Point<int16_t>(80, 100), true));
+		nametag.draw(position + Point<int16_t>(25, 100));
+		name.draw(position + Point<int16_t>(80, 98));
+		npctext.draw(position + Point<int16_t>(156, 16));
 	}
 
 	void UINpcTalk::buttonpressed(uint16_t buttonid)
@@ -104,19 +104,19 @@ namespace IO
 			button.second->setactive(false);
 			button.second->setstate(Button::NORMAL);
 		}
-		buttons[END]->setposition(vector2d<int16_t>(20, height + 48));
+		buttons[END]->setposition(Point<int16_t>(20, height + 48));
 		buttons[END]->setactive(true);
 		switch (msgtype)
 		{
 		case 0:
-			buttons[OK]->setposition(vector2d<int16_t>(220, height + 48));
+			buttons[OK]->setposition(Point<int16_t>(220, height + 48));
 			buttons[OK]->setactive(true);
 			break;
 		}
 		type = msgtype;
 
-		position = vector2d<int16_t>(400 - top.width() / 2, 240 - height / 2);
-		dimension = vector2d<int16_t>(top.width(), height + 120);
+		position = Point<int16_t>(400 - top.width() / 2, 240 - height / 2);
+		dimension = Point<int16_t>(top.width(), height + 120);
 		active = true;
 	}
 }

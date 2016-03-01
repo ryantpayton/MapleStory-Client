@@ -27,11 +27,11 @@ namespace IO
 		using nl::node;
 
 		node src = nl::nx::ui["Login.img"]["Notice"]["Loading"];
-		sprites.push_back(Sprite(src["backgrnd"], vector2d<int16_t>()));
-		sprites.push_back(Sprite(src["circle"], vector2d<int16_t>(125, 72)));
+		sprites.push_back(Sprite(src["backgrnd"], Point<int16_t>()));
+		sprites.push_back(Sprite(src["circle"], Point<int16_t>(125, 72)));
 
-		position = vector2d<int16_t>(292, 200);
-		dimension = vector2d<int16_t>(282, 144);
+		position = Point<int16_t>(292, 200);
+		dimension = Point<int16_t>(282, 144);
 		active = true;
 	}
 }

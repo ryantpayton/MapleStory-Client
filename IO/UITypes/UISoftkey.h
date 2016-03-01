@@ -61,7 +61,7 @@ namespace IO
 
 	private:
 		void shufflekeys();
-		vector2d<int16_t> keypos(uint8_t) const;
+		Point<int16_t> keypos(uint8_t) const;
 
 		SkType type;
 

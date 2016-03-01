@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\vector2d.h"
+#include "Util\Point.h"
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -37,7 +37,7 @@ namespace Net
 
 		// Return the length in bytes.
 		size_t length() const;
-		// Return a const pointer to this packet's bytes.
+		// Return a pointer to this packet's bytes.
 		const int8_t* getbytes() const;
 
 	protected:
@@ -55,7 +55,7 @@ namespace Net
 		// and then each individual character as a byte.
 		void writestr(string str);
 		// Write a point, one short for x and one for y.
-		void writepoint(vector2d<int16_t> point);
+		void writepoint(Point<int16_t> point);
 		// Write the second count since epoch as an integer.
 		void writetime();
 

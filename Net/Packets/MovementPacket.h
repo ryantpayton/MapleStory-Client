@@ -18,26 +18,27 @@
 #pragma once
 #include "Net\OutPacket.h"
 #include "Net\SendOpcodes.h"
-#include "Gameplay\MovementInfo.h"
+#include "Gameplay\Movement.h"
 
 namespace Net
 {
-	using Gameplay::MovementFragment;
+	using Gameplay::Movement;
 
 	// Base class for packets which update object movements with the server.
 	class MovementPacket : public OutPacket
 	{
 	public:
 		MovementPacket(SendOpcode opc) : OutPacket(opc) {}
+
 	protected:
-		void writemovement(const MovementFragment& movement)
+		void writemovement(const Movement& movement)
 		{
 			writech(movement.command);
 			writesh(movement.xpos);
 			writesh(movement.ypos);
 			writesh(movement.lastx);
 			writesh(movement.lasty);
-			writesh(0);
+			writesh(movement.fh);
 			writech(movement.newstate);
 			writesh(movement.duration);
 		}

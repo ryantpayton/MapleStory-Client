@@ -20,16 +20,16 @@
 
 namespace IO
 {
-	UIDragElement::UIDragElement(Settings::Type set, vector2d<int16_t> dga)
+	UIDragElement::UIDragElement(Settings::Type set, Point<int16_t> dga)
 	{
 		setting = set;
 		dragarea = dga;
 
 		dragged = false;
-		position = Configuration::get().getvector2d(setting);
+		position = Configuration::get().getpoint(setting);
 	}
 
-	Cursor::State UIDragElement::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
+	Cursor::State UIDragElement::sendmouse(bool pressed, Point<int16_t> cursorpos)
 	{
 		if (pressed)
 		{
@@ -50,7 +50,7 @@ namespace IO
 			if (dragged)
 			{
 				dragged = false;
-				Configuration::get().setv2d(setting, position);
+				Configuration::get().setpoint(setting, position);
 			}
 		}
 		return UIElement::sendmouse(pressed, cursorpos);

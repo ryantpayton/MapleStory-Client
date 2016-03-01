@@ -94,8 +94,8 @@ namespace Gameplay
 		}
 	}
 
-	MapObject* MapObjects::get(int32_t oid)
+	Optional<MapObject> MapObjects::get(int32_t oid)
 	{
-		return objects.count(oid) ? objects[oid].get() : nullptr;
+		return objects.count(oid) ? objects[oid].get() : Optional<MapObject>();
 	}
 }

@@ -36,29 +36,29 @@ namespace IO
 	using Character::Equipslot;
 
 	UIEquipInventory::UIEquipInventory() :
-		UIDragElement(Settings::POS_EQINV, vector2d<int16_t>(184, 20)),
+		UIDragElement(Settings::POS_EQINV, Point<int16_t>(184, 20)),
 		inventory(Stage::get().getplayer().getinvent()) {
 
-		iconpositions[1] = vector2d<int16_t>(43, 25);
-		iconpositions[2] = vector2d<int16_t>(43, 91);
-		iconpositions[3] = vector2d<int16_t>(43, 68);
-		iconpositions[4] = vector2d<int16_t>(109, 91);
-		iconpositions[5] = vector2d<int16_t>(43, 124);
-		iconpositions[6] = vector2d<int16_t>(43, 157);
-		iconpositions[7] = vector2d<int16_t>(76, 190);
-		iconpositions[8] = vector2d<int16_t>(10, 157);
-		iconpositions[9] = vector2d<int16_t>(142, 124);
-		iconpositions[10] = vector2d<int16_t>(142, 124);
-		iconpositions[11] = vector2d<int16_t>(109, 124);
-		iconpositions[12] = vector2d<int16_t>(109, 157);
-		iconpositions[13] = vector2d<int16_t>(142, 157);
-		iconpositions[15] = vector2d<int16_t>(109, 91);
-		iconpositions[16] = vector2d<int16_t>(142, 91);
-		iconpositions[17] = vector2d<int16_t>(76, 124);
-		iconpositions[18] = vector2d<int16_t>(142, 91);
-		iconpositions[19] = vector2d<int16_t>(76, 124);
-		iconpositions[49] = vector2d<int16_t>(10, 58);
-		iconpositions[50] = vector2d<int16_t>(76, 157);
+		iconpositions[1] = Point<int16_t>(43, 25);
+		iconpositions[2] = Point<int16_t>(43, 91);
+		iconpositions[3] = Point<int16_t>(43, 68);
+		iconpositions[4] = Point<int16_t>(109, 91);
+		iconpositions[5] = Point<int16_t>(43, 124);
+		iconpositions[6] = Point<int16_t>(43, 157);
+		iconpositions[7] = Point<int16_t>(76, 190);
+		iconpositions[8] = Point<int16_t>(10, 157);
+		iconpositions[9] = Point<int16_t>(142, 124);
+		iconpositions[10] = Point<int16_t>(142, 124);
+		iconpositions[11] = Point<int16_t>(109, 124);
+		iconpositions[12] = Point<int16_t>(109, 157);
+		iconpositions[13] = Point<int16_t>(142, 157);
+		iconpositions[15] = Point<int16_t>(109, 91);
+		iconpositions[16] = Point<int16_t>(142, 91);
+		iconpositions[17] = Point<int16_t>(76, 124);
+		iconpositions[18] = Point<int16_t>(142, 91);
+		iconpositions[19] = Point<int16_t>(76, 124);
+		iconpositions[49] = Point<int16_t>(10, 58);
+		iconpositions[50] = Point<int16_t>(76, 157);
 
 		using nl::node;
 		node source = nl::nx::ui["UIWindow2.img"]["Equip"]["character"];
@@ -79,7 +79,7 @@ namespace IO
 
 		loadicons();
 
-		dimension = vector2d<int16_t>(184, 290);
+		dimension = Point<int16_t>(184, 290);
 		active = true;
 		showpetequips = false;
 	}
@@ -100,7 +100,7 @@ namespace IO
 			using Graphics::DrawArgument;
 			for (auto& ptit : pettextures)
 			{
-				vector2d<int16_t> petposition = position + vector2d<int16_t>(184, 0);
+				Point<int16_t> petposition = position + Point<int16_t>(184, 0);
 				ptit.draw(petposition);
 			}
 		}
@@ -128,7 +128,7 @@ namespace IO
 		}
 	}
 
-	Cursor::State UIEquipInventory::sendmouse(bool pressed, vector2d<int16_t> cursorpos)
+	Cursor::State UIEquipInventory::sendmouse(bool pressed, Point<int16_t> cursorpos)
 	{
 		cursorposition = cursorpos;
 
@@ -137,8 +137,8 @@ namespace IO
 		{
 			if (pressed)
 			{
+				tooltip.clear();
 				icons[slot].startdrag(cursorpos - position - iconpositions[slot]);
-				tooltip.setequip(nullptr, 0);
 				UI::get().dragicon(&icons[slot]);
 				return Cursor::GRABBING;
 			}
@@ -152,11 +152,11 @@ namespace IO
 			}
 		}
 
-		tooltip.setequip(nullptr, 0);
+		tooltip.clear();
 		return UIDragElement::sendmouse(pressed, cursorpos);
 	}
 
-	void UIEquipInventory::doubleclick(vector2d<int16_t> cursorpos)
+	void UIEquipInventory::doubleclick(Point<int16_t> cursorpos)
 	{
 		int16_t slot = slotbypos(cursorpos);
 		if (icons.count(slot))
@@ -176,7 +176,7 @@ namespace IO
 		Session::get().dispatch(UnequipItemPacket(identifier, 0));
 	}
 
-	void UIEquipInventory::dropicon(vector2d<int16_t> cursorpos, Type type, int16_t identifier)
+	void UIEquipInventory::dropicon(Point<int16_t> cursorpos, Type type, int16_t identifier)
 	{
 		int16_t slot = slotbypos(cursorpos);
 		if (slot > 0)
@@ -204,7 +204,7 @@ namespace IO
 
 	void UIEquipInventory::togglehide()
 	{
-		tooltip.setequip(nullptr, 0);
+		tooltip.clear();
 		UIElement::togglehide();
 	}
 
@@ -238,14 +238,14 @@ namespace IO
 		}
 	}
 
-	int16_t UIEquipInventory::slotbypos(vector2d<int16_t> cursorpos) const
+	int16_t UIEquipInventory::slotbypos(Point<int16_t> cursorpos) const
 	{
 		for (auto& icit : iconpositions)
 		{
 			int16_t slot = icit.first;
 			rectangle2d<int16_t> iconrect = rectangle2d<int16_t>(
 				position + icit.second,
-				position + icit.second + vector2d<int16_t>(32, 32)
+				position + icit.second + Point<int16_t>(32, 32)
 				);
 			if (iconrect.contains(cursorpos))
 			{

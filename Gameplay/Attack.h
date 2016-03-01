@@ -61,7 +61,7 @@ namespace Gameplay
 
 		uint16_t delay = 0;
 		Direction direction = CENTERED;
-		vector2d<int16_t> origin;
+		Point<int16_t> origin;
 		rectangle2d<int16_t> range;
 
 		Animation bullet;

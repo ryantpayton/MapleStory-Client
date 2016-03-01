@@ -28,7 +28,7 @@ namespace IO
 		add(ElementLogin());
 	}
 
-	void UIStateLogin::draw(float inter, vector2d<int16_t>) const
+	void UIStateLogin::draw(float inter, Point<int16_t>) const
 	{
 		for (auto& entry : elements)
 		{
@@ -48,13 +48,13 @@ namespace IO
 		}
 	}
 
-	void UIStateLogin::doubleclick(vector2d<int16_t>) {}
+	void UIStateLogin::doubleclick(Point<int16_t>) {}
 
 	void UIStateLogin::dragicon(Icon*) {}
 
 	void UIStateLogin::sendkey(Keyboard::Keytype, int32_t, bool) {}
 
-	Cursor::State UIStateLogin::sendmouse(Cursor::State mst, vector2d<int16_t> pos)
+	Cursor::State UIStateLogin::sendmouse(Cursor::State mst, Point<int16_t> pos)
 	{
 		UIElement* focusedelement = get(focused);
 		if (focusedelement)
@@ -80,7 +80,7 @@ namespace IO
 				if (element && element->isactive() && element->bounds().contains(pos))
 				{
 					if (front)
-						front->sendmouse(false, element->bounds().getlt() - vector2d<int16_t>(1, 1));
+						front->sendmouse(false, element->bounds().getlt() - Point<int16_t>(1, 1));
 
 					front = element;
 					fronttype = elit.first;
@@ -123,7 +123,7 @@ namespace IO
 		return elements.count(type) ? elements.at(type).get() : nullptr;
 	}
 
-	UIElement* UIStateLogin::getfront(vector2d<int16_t> pos) const
+	UIElement* UIStateLogin::getfront(Point<int16_t> pos) const
 	{
 		UIElement* front = nullptr;
 		for (auto& entry : elements)

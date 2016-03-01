@@ -65,7 +65,7 @@ namespace IO
 		void draw(float) const override;
 		void update() override;
 		void buttonpressed(uint16_t) override;
-		Cursor::State sendmouse(bool, vector2d<int16_t>) override;
+		Cursor::State sendmouse(bool, Point<int16_t>) override;
 
 		void nameresult(bool);
 

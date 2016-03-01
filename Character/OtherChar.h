@@ -18,29 +18,29 @@
 #pragma once
 #include "Char.h"
 #include "Net\Login.h"
-#include "Gameplay\MovementInfo.h"
+#include "Gameplay\Movement.h"
 
 namespace Character
 {
 	using std::vector;
 	using Net::LookEntry;
 	using Gameplay::Physics;
-	using Gameplay::MovementFragment;
+	using Gameplay::Movement;
 
 	class OtherChar : public Char
 	{
 	public:
 		OtherChar(int32_t charid, const LookEntry& look, uint8_t level, 
-			int16_t job, string name, int8_t stance, vector2d<int16_t> position);
+			int16_t job, string name, int8_t stance, Point<int16_t> position);
 
 		int8_t update(const Physics& physics);
-		void sendmovement(const vector<MovementFragment>& movements);
+		void sendmovement(const vector<Movement>& movements);
 
 	private:
 		uint8_t level;
 		int16_t job;
 		string name;
-		vector<MovementFragment> movements;
-		MovementFragment lastmove;
+		vector<Movement> movements;
+		Movement lastmove;
 	};
 }

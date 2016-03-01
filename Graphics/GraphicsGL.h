@@ -18,6 +18,7 @@
 #pragma once
 #include "Journey.h"
 #ifdef JOURNEY_USE_OPENGL
+#include "GraphicsEngine.h"
 #include "Constants.h"
 #include "Text.h"
 
@@ -42,7 +43,7 @@ namespace Graphics
 	using nl::bitmap;
 
 	// Graphics engine which uses OpenGL.
-	class GraphicsGL : public Singleton<GraphicsGL>
+	class GraphicsGL : public GraphicsEngine, public Singleton<GraphicsGL>
 	{
 	public:
 		GraphicsGL();
@@ -51,22 +52,26 @@ namespace Graphics
 		bool init();
 		// Re-initialise, for example after changing screen modes.
 		void reinit();
+
 		// Clear all bitmaps.
-		void clear();
+		void clear() override;
 
 		// Add a bitmap to the available resources.
-		void addbitmap(const bitmap& toadd);
+		void addbitmap(const bitmap& toadd) override;
 		// Return wether the bitmap with the given id is in the resource pool.
-		bool available(size_t id);
+		bool available(size_t id) override;
 		// Draw the bitmap with the given id and paramters.
 		void draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, 
-			float a, float xs, float ys, int16_t cx, int16_t cy);
+			float a, float xs, float ys, int16_t cx, int16_t cy) override;
 
 		// Create a layout for the text with the parameters specified.
-		Text::Layout createlayout(const string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth);
+		Text::Layout createlayout(const string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth) override;
 		// Draw a text with the given parameters.
 		void drawtext(const string& text, const Text::Layout& layout, Text::Font font, 
-			Text::Color color, Text::Background back, vector2d<int16_t> origin, float opacity);
+			Text::Color color, Text::Background back, Point<int16_t> origin, float opacity) override;
+
+		// Draw a rectangle filled with the specified color.
+		void drawrectangle(int16_t x, int16_t y, int16_t w, int16_t h, float r, float g, float b, float a) override;
 
 		// Lock the current scene.
 		void lock();
@@ -235,12 +240,12 @@ namespace Graphics
 		unordered_map<size_t, Leftover> leftovers;
 		size_t rlid;
 		size_t wasted;
-		vector2d<GLshort> border;
-		vector2d<GLshort> yrange;
+		Point<GLshort> border;
+		Range<GLshort> yrange;
 
 		FT_Library ftlibrary;
 		Font fonts[Text::NUM_FONTS];
-		vector2d<GLshort> fontborder;
+		Point<GLshort> fontborder;
 		GLshort fontymax;
 	};
 }

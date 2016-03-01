@@ -62,11 +62,11 @@ namespace IO
 		reqstattextures[Maplestat::LUK][false] = Texture(itemtt["Equip"]["Cannot"]["reqLUK"]);
 		reqstattextures[Maplestat::LUK][true] = Texture(itemtt["Equip"]["Can"]["reqLUK"]);
 
-		reqstatpositions[Maplestat::LEVEL] = vector2d<int16_t>(98, 48);
-		reqstatpositions[Maplestat::STR] = vector2d<int16_t>(98, 64);
-		reqstatpositions[Maplestat::DEX] = vector2d<int16_t>(98, 72);
-		reqstatpositions[Maplestat::INT] = vector2d<int16_t>(173, 64);
-		reqstatpositions[Maplestat::LUK] = vector2d<int16_t>(173, 72);
+		reqstatpositions[Maplestat::LEVEL] = Point<int16_t>(98, 48);
+		reqstatpositions[Maplestat::STR] = Point<int16_t>(98, 64);
+		reqstatpositions[Maplestat::DEX] = Point<int16_t>(98, 72);
+		reqstatpositions[Maplestat::INT] = Point<int16_t>(173, 64);
+		reqstatpositions[Maplestat::LUK] = Point<int16_t>(173, 72);
 
 		reqset[false] = Charset(itemtt["Equip"]["Cannot"], Charset::LEFT);
 		reqset[true] = Charset(itemtt["Equip"]["Can"], Charset::LEFT);
@@ -89,6 +89,11 @@ namespace IO
 	}
 
 	EquipTooltip::~EquipTooltip() {}
+
+	void EquipTooltip::clear()
+	{
+		invpos = 0;
+	}
 
 	void EquipTooltip::setequip(const Equip* equip, int16_t ivp)
 	{
@@ -272,85 +277,85 @@ namespace IO
 		}
 	}
 
-	void EquipTooltip::draw(vector2d<int16_t> pos) const
+	void EquipTooltip::draw(Point<int16_t> pos) const
 	{
 		if (invpos == 0)
 			return;
 
 		using Graphics::DrawArgument;
 		top.draw(DrawArgument(pos));
-		mid.draw(DrawArgument(pos + vector2d<int16_t>(0, 13), vector2d<int16_t>(0, filllength)));
-		bot.draw(DrawArgument(pos + vector2d<int16_t>(0, filllength + 13)));
+		mid.draw(DrawArgument(pos + Point<int16_t>(0, 13), Point<int16_t>(0, filllength)));
+		bot.draw(DrawArgument(pos + Point<int16_t>(0, filllength + 13)));
 
-		name.draw(pos + vector2d<int16_t>(130, 3));
+		name.draw(pos + Point<int16_t>(130, 3));
 		if (prank != Equip::POT_NONE)
 		{
-			potflag.draw(pos + vector2d<int16_t>(130, 20));
+			potflag.draw(pos + Point<int16_t>(130, 20));
 			pos.shifty(16);
 		}
 		pos.shifty(26);
 
 		line.draw(DrawArgument(pos));
 
-		base.draw(pos + vector2d<int16_t>(10, 10));
-		shade.draw(pos + vector2d<int16_t>(10, 10));
+		base.draw(pos + Point<int16_t>(10, 10));
+		shade.draw(pos + Point<int16_t>(10, 10));
 		itemicon.draw(
-			DrawArgument(pos + vector2d<int16_t>(20, 82), 2.0f, 2.0f)
+			DrawArgument(pos + Point<int16_t>(20, 82), 2.0f, 2.0f)
 			);
-		potential.at(prank).draw(pos + vector2d<int16_t>(10, 10));
-		cover.draw(pos + vector2d<int16_t>(10, 10));
+		potential.at(prank).draw(pos + Point<int16_t>(10, 10));
+		cover.draw(pos + Point<int16_t>(10, 10));
 
 		pos.shifty(12);
 
 		for (auto& ms : requirements)
 		{
-			vector2d<int16_t> reqpos = reqstatpositions.at(ms);
+			Point<int16_t> reqpos = reqstatpositions.at(ms);
 			bool reqok = canequip.at(ms);
 			reqstattextures.at(ms).at(reqok).draw(DrawArgument(pos + reqpos));
-			reqset.at(reqok).draw(reqstatstrings.at(ms), 6, DrawArgument(pos + reqpos + vector2d<int16_t>(54, 0)));
+			reqset.at(reqok).draw(reqstatstrings.at(ms), 6, DrawArgument(pos + reqpos + Point<int16_t>(54, 0)));
 		}
 
 		pos.shifty(88);
 
-		DrawArgument jobargs = DrawArgument(pos + vector2d<int16_t>(8, 0));
+		DrawArgument jobargs = DrawArgument(pos + Point<int16_t>(8, 0));
 		jobsback.draw(jobargs);
 		for (auto& jbit : okjobs)
 		{
 			jobs.at(canequip.at(Maplestat::JOB)).at(jbit).draw(jobargs);
 		}
 
-		line.draw(DrawArgument(pos + vector2d<int16_t>(0, 30)));
+		line.draw(DrawArgument(pos + Point<int16_t>(0, 30)));
 
 		pos.shifty(32);
 
-		category.draw(pos + vector2d<int16_t>(10, 0));
+		category.draw(pos + Point<int16_t>(10, 0));
 
 		pos.shifty(18);
 
 		if (isweapon)
 		{
-			wepspeed.draw(pos + vector2d<int16_t>(10, 0));
+			wepspeed.draw(pos + Point<int16_t>(10, 0));
 			pos.shifty(18);
 		}
 
 		for (auto& stit : statlabels)
 		{
-			stit.second.draw(pos + vector2d<int16_t>(10, 0));
+			stit.second.draw(pos + Point<int16_t>(10, 0));
 			pos.shifty(18);
 		}
 
 		if (hasslots)
 		{
-			slots.draw(pos + vector2d<int16_t>(10, 0));
+			slots.draw(pos + Point<int16_t>(10, 0));
 			pos.shifty(18);
-			hammers.draw(pos + vector2d<int16_t>(10, 0));
+			hammers.draw(pos + Point<int16_t>(10, 0));
 			pos.shifty(18);
 		}
 
 		if (hasdesc)
 		{
-			line.draw(pos + vector2d<int16_t>(0, 5));
-			desc.draw(pos + vector2d<int16_t>(10, 6));
+			line.draw(pos + Point<int16_t>(0, 5));
+			desc.draw(pos + Point<int16_t>(10, 6));
 		}
 	}
 }

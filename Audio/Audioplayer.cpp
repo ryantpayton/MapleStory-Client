@@ -59,16 +59,6 @@ namespace Audio
 
 	void AudioPlayer::close()
 	{
-		if (bgm)
-		{
-			BASS_ChannelStop(bgm);
-			BASS_StreamFree(bgm);
-		}
-		for (auto& snit : soundcache)
-		{
-			BASS_SampleStop(snit.second);
-			BASS_SampleFree(snit.second);
-		}
 		BASS_Free();
 	}
 
@@ -106,17 +96,20 @@ namespace Audio
 		}
 	}
 
-	void AudioPlayer::playsound(Sound sound)
+	void AudioPlayer::playsound(Sound sound) const
 	{
-		HCHANNEL channel = BASS_SampleGetChannel(staticsounds[sound], false);
-		BASS_ChannelPlay(channel, true);
+		if (staticsounds.count(sound))
+		{
+			HCHANNEL channel = BASS_SampleGetChannel(staticsounds.at(sound), false);
+			BASS_ChannelPlay(channel, true);
+		}
 	}
 
-	void AudioPlayer::playsound(size_t id)
+	void AudioPlayer::playsound(size_t id) const
 	{
 		if (soundcache.count(id))
 		{
-			HCHANNEL channel = BASS_SampleGetChannel(soundcache[id], false);
+			HCHANNEL channel = BASS_SampleGetChannel(soundcache.at(id), false);
 			BASS_ChannelPlay(channel, true);
 		}
 	}

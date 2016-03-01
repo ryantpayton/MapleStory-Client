@@ -221,8 +221,8 @@ namespace Graphics
 
 	void GraphicsGL::clear()
 	{
-		border = vector2d<GLshort>(0, fontymax);
-		yrange = vector2d<GLshort>();
+		border = Point<GLshort>(0, fontymax);
+		yrange = Range<GLshort>();
 
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, fontborder.y(), 
 			ATLASW, ATLASH - fontymax, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
@@ -310,14 +310,14 @@ namespace Graphics
 			if (border.x() + w > ATLASW)
 			{
 				border.setx(0);
-				border.shifty(yrange.y());
+				border.shifty(yrange.second());
 				if (border.y() + h > ATLASH)
 				{
 					clear();
 				}
 				else
 				{
-					yrange = vector2d<GLshort>();
+					yrange = Range<GLshort>();
 				}
 			}
 			x = border.x();
@@ -325,28 +325,28 @@ namespace Graphics
 
 			border.shiftx(w);
 
-			if (h > yrange.y())
+			if (h > yrange.second())
 			{
-				if (x >= MINLOSIZE && h - yrange.y() >= MINLOSIZE)
+				if (x >= MINLOSIZE && h - yrange.second() >= MINLOSIZE)
 				{
-					leftovers[rlid] = Leftover(0, yrange.x(), x, h - yrange.y());
+					leftovers[rlid] = Leftover(0, yrange.first(), x, h - yrange.second());
 					rlid++;
 				}
 
-				wasted += yrange.x() * (h - yrange.y());
+				wasted += yrange.first() * (h - yrange.second());
 
-				yrange.setx(y + h);
-				yrange.sety(h);
+				yrange.setfirst(y + h);
+				yrange.setsecond(h);
 			}
-			else if (h < yrange.x() - y)
+			else if (h < yrange.first() - y)
 			{
-				if (w >= MINLOSIZE && yrange.x() - y - h >= MINLOSIZE)
+				if (w >= MINLOSIZE && yrange.first() - y - h >= MINLOSIZE)
 				{
-					leftovers[rlid] = Leftover(x, y + h, w, yrange.x() - y - h);
+					leftovers[rlid] = Leftover(x, y + h, w, yrange.first() - y - h);
 					rlid++;
 				}
 
-				wasted += w * (yrange.x() - y - h);
+				wasted += w * (yrange.first() - y - h);
 			}
 		}
 
@@ -442,14 +442,14 @@ namespace Graphics
 		layout.addline(ax, ay, first, offset);
 
 		layout.advances[text.length()] = totaladvance;
-		layout.dimensions = vector2d<int16_t>(std::min(totaladvance, maxwidth), layout.linecount * font.linespace());
-		layout.endoffset = vector2d<int16_t>(ax % maxwidth, (layout.linecount - 1) * font.linespace());
+		layout.dimensions = Point<int16_t>(std::min(totaladvance, maxwidth), layout.linecount * font.linespace());
+		layout.endoffset = Point<int16_t>(ax % maxwidth, (layout.linecount - 1) * font.linespace());
 
 		return layout;
 	}
 
 	void GraphicsGL::drawtext(const string& text, const Text::Layout& layout, Text::Font id, Text::Color colorid,
-		Text::Background background, vector2d<int16_t> origin, float opacity) {
+		Text::Background background, Point<int16_t> origin, float opacity) {
 
 		if (locked)
 			return;
@@ -521,6 +521,15 @@ namespace Graphics
 				quads.push_back(quad);
 			}
 		}
+	}
+
+	void GraphicsGL::drawrectangle(int16_t x, int16_t y, int16_t w, int16_t h, float r, float g, float b, float a)
+	{
+		if (locked)
+			return;
+
+		Quad quad = Quad(x, x + w, y, y + h, nulloffset, r, g, b, a);
+		quads.push_back(quad);
 	}
 
 	void GraphicsGL::lock()

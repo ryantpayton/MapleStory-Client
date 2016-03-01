@@ -18,7 +18,7 @@
 #pragma once
 #include "Util\Singleton.h"
 #include "Util\Enum.h"
-#include "Util\vector2d.h"
+#include "Util\Point.h"
 #include <cstdint>
 #include <string>
 #include <unordered_map>
@@ -83,7 +83,7 @@ public:
 	// Set the specified setting to the specified value.
 	void setint(Settings::Type setting, uint32_t value);
 	// Set the specified setting to the specified value.
-	void setv2d(Settings::Type setting, vector2d<int16_t> value);
+	void setpoint(Settings::Type setting, Point<int16_t> value);
 	// Set the specified setting to the specified value.
 	void setstring(Settings::Type setting, string value);
 
@@ -103,7 +103,7 @@ public:
 	string getsetting(Settings::Type setting);
 	// Returns a short vector2d based on the value of the setting specified.
 	// Returns (0, 0) if an exception occurs.
-	vector2d<int16_t> getvector2d(Settings::Type setting);
+	Point<int16_t> getpoint(Settings::Type setting);
 
 private:
 	unordered_map<Settings::Type, string> settings;

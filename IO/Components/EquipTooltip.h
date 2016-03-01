@@ -34,8 +34,9 @@ namespace IO
 		EquipTooltip();
 		~EquipTooltip();
 
+		void clear();
 		void setequip(const Equip* equip, int16_t invpos);
-		void draw(vector2d<int16_t> position) const;
+		void draw(Point<int16_t> position) const;
 
 	private:
 		int16_t invpos;
@@ -71,7 +72,7 @@ namespace IO
 		vector<Maplestat::Value> requirements;
 		map<Maplestat::Value, map<bool, Texture>> reqstattextures;
 		map<Maplestat::Value, bool> canequip;
-		map<Maplestat::Value, vector2d<int16_t>> reqstatpositions;
+		map<Maplestat::Value, Point<int16_t>> reqstatpositions;
 		map<bool, Charset> reqset;
 
 		Texture jobsback;

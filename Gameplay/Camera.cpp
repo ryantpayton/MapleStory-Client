@@ -30,7 +30,7 @@ namespace Gameplay
 
 	Camera::~Camera() {}
 
-	void Camera::update(vector2d<int16_t> position)
+	void Camera::update(Point<int16_t> position)
 	{
 		static const double hspeed = 12.0 / Constants::VIEWWIDTH;
 		static const double vspeed = 12.0 / Constants::VIEWHEIGHT;
@@ -47,33 +47,33 @@ namespace Gameplay
 		if (abs(desty - fy) > 1.0)
 			fy += vspeed * (desty - fy);
 
-		if (fx > hbounds.x() || hbounds.length() < Constants::VIEWWIDTH)
-			fx = hbounds.x();
-		else if (fx < hbounds.y() + Constants::VIEWWIDTH)
-			fx = hbounds.y() + Constants::VIEWWIDTH;
+		if (fx > hbounds.first() || hbounds.length() < Constants::VIEWWIDTH)
+			fx = hbounds.first();
+		else if (fx < hbounds.second() + Constants::VIEWWIDTH)
+			fx = hbounds.second() + Constants::VIEWWIDTH;
 
-		if (fy > vbounds.x() || vbounds.length() < Constants::VIEWHEIGHT)
-			fy = vbounds.x();
-		else if (fy < vbounds.y() + Constants::VIEWHEIGHT)
-			fy = vbounds.y() + Constants::VIEWHEIGHT;
+		if (fy > vbounds.first() || vbounds.length() < Constants::VIEWHEIGHT)
+			fy = vbounds.first();
+		else if (fy < vbounds.second() + Constants::VIEWHEIGHT)
+			fy = vbounds.second() + Constants::VIEWHEIGHT;
 	}
 
-	void Camera::setposition(vector2d<int16_t> position)
+	void Camera::setposition(Point<int16_t> position)
 	{
 		fx = Constants::VIEWWIDTH / 2 - position.x();
 		fy = Constants::VIEWHEIGHT / 2 - position.y();
 	}
 
-	void Camera::updateview(vector2d<int16_t> mapwalls, vector2d<int16_t> mapborders)
+	void Camera::updateview(Range<int16_t> mapwalls, Range<int16_t> mapborders)
 	{
-		hbounds = vector2d<int16_t>(-mapwalls.x() - 10, -mapwalls.y() + 10);
+		hbounds = Range<int16_t>(-mapwalls.first() - 10, -mapwalls.second() + 10);
 		vbounds = -mapborders;
 	}
 
-	vector2d<int16_t> Camera::getposition(float inter) const
+	Point<int16_t> Camera::getposition(float inter) const
 	{
 		int16_t interx = static_cast<int16_t>((1.0f - inter) * lastx + inter * fx);
 		int16_t intery = static_cast<int16_t>((1.0f - inter) * lasty + inter * fy);
-		return vector2d<int16_t>(interx, intery);
+		return Point<int16_t>(interx, intery);
 	}
 }

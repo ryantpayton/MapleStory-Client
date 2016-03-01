@@ -40,7 +40,7 @@ namespace IO
 		Textfield();
 		~Textfield();
 
-		void draw(vector2d<int16_t> position) const;
+		void draw(Point<int16_t> position) const;
 		void update();
 		void sendkey(Keyboard::Keytype type, int32_t code, bool down);
 
@@ -51,7 +51,7 @@ namespace IO
 
 		string gettext() const;
 		State getstate() const;
-		rectangle2d<int16_t> getbounds(vector2d<int16_t> parentpos) const;
+		rectangle2d<int16_t> getbounds(Point<int16_t> parentpos) const;
 
 	private:
 		void modifytext(string);

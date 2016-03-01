@@ -21,14 +21,14 @@
 namespace Character
 {
 	OtherChar::OtherChar(int32_t id, const LookEntry& lk, uint8_t lvl,
-		int16_t jb, string nm, int8_t st, vector2d<int16_t> pos) {
+		int16_t jb, string nm, int8_t st, Point<int16_t> pos) {
 
 		oid = id;
-		look = CharLook(lk);
+		look = lk;
 		level = lvl;
 		job = jb;
 		name = nm;
-		setposition(pos.x(), pos.y());
+		setposition(pos);
 
 		lastmove.xpos = pos.x();
 		lastmove.ypos = pos.y();
@@ -71,7 +71,7 @@ namespace Character
 		return phobj.fhlayer;
 	}
 
-	void OtherChar::sendmovement(const vector<MovementFragment>& mvts)
+	void OtherChar::sendmovement(const vector<Movement>& mvts)
 	{
 		for (auto& mv : mvts)
 		{

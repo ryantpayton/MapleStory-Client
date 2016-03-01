@@ -19,7 +19,7 @@
 
 namespace IO
 {
-	AreaButton::AreaButton(vector2d<int16_t> pos, vector2d<int16_t> dim)
+	AreaButton::AreaButton(Point<int16_t> pos, Point<int16_t> dim)
 	{
 		position = pos;
 		dimension = dim;
@@ -27,9 +27,9 @@ namespace IO
 		active = true;
 	}
 
-	rectangle2d<int16_t> AreaButton::bounds(vector2d<int16_t> parentpos) const
+	rectangle2d<int16_t> AreaButton::bounds(Point<int16_t> parentpos) const
 	{
-		vector2d<int16_t> absp = position + parentpos;
+		Point<int16_t> absp = position + parentpos;
 		return rectangle2d<int16_t>(absp, absp + dimension);
 	}
 }

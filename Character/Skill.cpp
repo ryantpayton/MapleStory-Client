@@ -86,10 +86,7 @@ namespace Character
 			}
 			level.hpcost = leveln["hpCon"];
 			level.mpcost = leveln["mpCon"];
-			level.range = rectangle2d<int16_t>(
-				vector2d<int16_t>(leveln["lt"]),
-				vector2d<int16_t>(leveln["rb"])
-				);
+			level.range = rectangle2d<int16_t>(leveln["lt"], leveln["rb"]);
 			levels[lvlid] = level;
 		}
 	}
@@ -119,14 +116,6 @@ namespace Character
 			return actions[0];
 	}
 
-	const SkillLevel* Skill::getlevel(int32_t level) const
-	{
-		if (levels.count(level))
-			return &levels.at(level);
-		else
-			return nullptr;
-	}
-
 	Animation Skill::gethitanimation(bool twohanded) const
 	{
 		if (effects.size() == 0)
@@ -152,5 +141,10 @@ namespace Character
 	const Texture& Skill::geticon(IconType type) const
 	{
 		return icons.at(type);
+	}
+
+	const SkillLevel* Skill::getlevel(int32_t level) const
+	{
+		return levels.count(level) ? &levels.at(level) : nullptr;
 	}
 }

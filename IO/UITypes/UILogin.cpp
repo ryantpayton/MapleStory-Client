@@ -40,19 +40,19 @@ namespace IO
 		node common = nl::nx::ui["Login.img"]["Common"];
 
 		using::Graphics::Sprite;
-		sprites.push_back(Sprite(title["11"], vector2d<int16_t>(410, 300)));
-		sprites.push_back(Sprite(title["35"], vector2d<int16_t>(410, 260)));
-		sprites.push_back(Sprite(title["Logo"], vector2d<int16_t>(410, 130)));
-		sprites.push_back(Sprite(title["signboard"], vector2d<int16_t>(410, 300)));
-		sprites.push_back(Sprite(common["frame"], vector2d<int16_t>(400, 290)));
+		sprites.push_back(Sprite(title["11"], Point<int16_t>(410, 300)));
+		sprites.push_back(Sprite(title["35"], Point<int16_t>(410, 260)));
+		sprites.push_back(Sprite(title["Logo"], Point<int16_t>(410, 130)));
+		sprites.push_back(Sprite(title["signboard"], Point<int16_t>(410, 300)));
+		sprites.push_back(Sprite(common["frame"], Point<int16_t>(400, 290)));
 
-		buttons[BT_LOGIN] = unique_ptr<Button>(new MapleButton(title["BtLogin"], vector2d<int16_t>(475, 248)));
-		buttons[BT_REGISTER] = unique_ptr<Button>(new MapleButton(title["BtNew"], vector2d<int16_t>(309, 320)));
-		buttons[BT_HOMEPAGE] = unique_ptr<Button>(new MapleButton(title["BtHomePage"], vector2d<int16_t>(382, 320)));
-		buttons[BT_PASSLOST] = unique_ptr<Button>(new MapleButton(title["BtPasswdLost"], vector2d<int16_t>(470, 300)));
-		buttons[BT_QUIT] = unique_ptr<Button>(new MapleButton(title["BtQuit"], vector2d<int16_t>(455, 320)));
-		buttons[BT_IDLOST] = unique_ptr<Button>(new MapleButton(title["BtLoginIDLost"], vector2d<int16_t>(395, 300)));
-		buttons[BT_SAVEID] = unique_ptr<Button>(new MapleButton(title["BtLoginIDSave"], vector2d<int16_t>(325, 300)));
+		buttons[BT_LOGIN] = unique_ptr<Button>(new MapleButton(title["BtLogin"], Point<int16_t>(475, 248)));
+		buttons[BT_REGISTER] = unique_ptr<Button>(new MapleButton(title["BtNew"], Point<int16_t>(309, 320)));
+		buttons[BT_HOMEPAGE] = unique_ptr<Button>(new MapleButton(title["BtHomePage"], Point<int16_t>(382, 320)));
+		buttons[BT_PASSLOST] = unique_ptr<Button>(new MapleButton(title["BtPasswdLost"], Point<int16_t>(470, 300)));
+		buttons[BT_QUIT] = unique_ptr<Button>(new MapleButton(title["BtQuit"], Point<int16_t>(455, 320)));
+		buttons[BT_IDLOST] = unique_ptr<Button>(new MapleButton(title["BtLoginIDLost"], Point<int16_t>(395, 300)));
+		buttons[BT_SAVEID] = unique_ptr<Button>(new MapleButton(title["BtLoginIDSave"], Point<int16_t>(325, 300)));
 
 		checkbox[false] = Texture(title["check"]["0"]);
 		checkbox[true] = Texture(title["check"]["1"]);
@@ -60,16 +60,16 @@ namespace IO
 		account = Textfield(
 			Text::A13M, Text::LEFT, Text::WHITE, 
 			rectangle2d<int16_t>(
-			vector2d<int16_t>(315, 249), 
-			vector2d<int16_t>(465, 273)), 12
+			Point<int16_t>(315, 249), 
+			Point<int16_t>(465, 273)), 12
 			);
 		accountbg = Texture(title["ID"]);
 
 		password = Textfield(
 			Text::A13M, Text::LEFT, Text::WHITE,
 			rectangle2d<int16_t>(
-			vector2d<int16_t>(315, 275),
-			vector2d<int16_t>(465, 299)), 12
+			Point<int16_t>(315, 275),
+			Point<int16_t>(465, 299)), 12
 			);
 		passwordbg = Texture(title["PW"]);
 		password.setcrypt('*');
@@ -87,8 +87,8 @@ namespace IO
 			account.setstate(Textfield::FOCUSED);
 		}
 
-		position = vector2d<int16_t>(0, 0);
-		dimension = vector2d<int16_t>(800, 600);
+		position = Point<int16_t>(0, 0);
+		dimension = Point<int16_t>(800, 600);
 		active = true;
 	}
 
@@ -105,7 +105,7 @@ namespace IO
 		if (password.getstate() == Textfield::NORMAL && password.gettext().size() == 0)
 			passwordbg.draw(DrawArgument(310, 275));
 
-		checkbox.at(saveid).draw(DrawArgument(position + vector2d<int16_t>(313, 304)));
+		checkbox.at(saveid).draw(DrawArgument(position + Point<int16_t>(313, 304)));
 	}
 
 	void UILogin::update()
@@ -141,7 +141,7 @@ namespace IO
 		}
 	}
 
-	Cursor::State UILogin::sendmouse(bool down, vector2d<int16_t> pos)
+	Cursor::State UILogin::sendmouse(bool down, Point<int16_t> pos)
 	{
 		Cursor::State ret = UIElement::sendmouse(down, pos);
 

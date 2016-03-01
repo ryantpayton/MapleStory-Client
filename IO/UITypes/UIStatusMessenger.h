@@ -41,10 +41,10 @@ namespace IO
 			shadow.settext(str);
 		}
 
-		void draw(vector2d<int16_t> position, float inter) const
+		void draw(Point<int16_t> position, float inter) const
 		{
 			float interalpha = (1.0f - inter) * lastalpha + inter * alpha;
-			shadow.draw(position + vector2d<int16_t>(1, 1), interalpha);
+			shadow.draw(position + Point<int16_t>(1, 1), interalpha);
 			text.draw(position, interalpha);
 		}
 

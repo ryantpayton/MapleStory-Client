@@ -71,7 +71,7 @@ namespace Character
 
 		// Add a pet with the specified stats.
 		void addpet(uint8_t index, int32_t iid, string name, 
-			int32_t uniqueid, vector2d<int16_t> pos, uint8_t stance, int32_t fhid);
+			int32_t uniqueid, Point<int16_t> pos, uint8_t stance, int32_t fhid);
 		// Remove a pet with the specified index and reason.
 		void removepet(uint8_t index, bool hunger);
 

@@ -19,16 +19,19 @@
 
 namespace IO
 {
-	TwoSpriteButton::TwoSpriteButton(node nrm, node sel, vector2d<int16_t> pos)
+	TwoSpriteButton::TwoSpriteButton(node nsrc, node ssrc, Point<int16_t> pos)
 	{
-		textures[false] = Texture(nrm);
-		textures[true] = Texture(sel);
+		textures[false] = Texture(nsrc);
+		textures[true] = Texture(ssrc);
 		position = pos;
 		state = NORMAL;
 		active = true;
 	}
 
-	void TwoSpriteButton::draw(vector2d<int16_t> parentpos) const
+	TwoSpriteButton::TwoSpriteButton(node nsrc, node ssrc)
+		: TwoSpriteButton(nsrc, ssrc, Point<int16_t>()) {}
+
+	void TwoSpriteButton::draw(Point<int16_t> parentpos) const
 	{
 		if (active)
 		{
@@ -39,10 +42,10 @@ namespace IO
 		}
 	}
 
-	rectangle2d<int16_t> TwoSpriteButton::bounds(vector2d<int16_t> parentpos) const
+	rectangle2d<int16_t> TwoSpriteButton::bounds(Point<int16_t> parentpos) const
 	{
 		bool selected = state == MOUSEOVER || state == PRESSED;
-		vector2d<int16_t> absp = parentpos + position - textures.at(selected).getorigin();
+		Point<int16_t> absp = parentpos + position - textures.at(selected).getorigin();
 		return rectangle2d<int16_t>(absp, absp + textures.at(selected).getdimensions());
 	}
 }

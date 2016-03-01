@@ -40,12 +40,12 @@ namespace Graphics
 
 			source = src.get_bitmap();
 			origin = src["origin"];
-			dimensions = vector2d<int16_t>(
+			dimensions = Point<int16_t>(
 				source.width(), 
 				source.height()
 				);
 
-			GraphicsEngine::get().addbitmap(source);
+			GraphicsEngine::getengine().addbitmap(source);
 		}
 	}
 
@@ -59,7 +59,7 @@ namespace Graphics
 		if (id == 0)
 			return;
 
-		vector2d<int16_t> stretch = args.getstretch();
+		Point<int16_t> stretch = args.getstretch();
 		int16_t w = stretch.x();
 		if (w == 0)
 			w = dimensions.x();
@@ -67,14 +67,14 @@ namespace Graphics
 		if (h == 0)
 			h = dimensions.y();
 
-		vector2d<int16_t> absp = args.getpos() - origin;
+		Point<int16_t> absp = args.getpos() - origin;
 		int16_t x = absp.x();
 		int16_t y = absp.y();
 
 		int16_t sy = y + Constants::VIEWYOFFSET;
 		if (x < Constants::VIEWWIDTH && sy < Constants::VIEWHEIGHT && x > -w && sy > -h)
 		{
-			GraphicsEngine& engine = GraphicsEngine::get();
+			auto& engine = GraphicsEngine::getengine();
 			if (!engine.available(id))
 			{
 				engine.addbitmap(source);
@@ -84,7 +84,7 @@ namespace Graphics
 		}
 	}
 
-	void Texture::shift(vector2d<int16_t> amount)
+	void Texture::shift(Point<int16_t> amount)
 	{
 		origin -= amount;
 	}
@@ -104,12 +104,12 @@ namespace Graphics
 		return dimensions.y();
 	}
 
-	vector2d<int16_t> Texture::getorigin() const
+	Point<int16_t> Texture::getorigin() const
 	{
 		return origin;
 	}
 
-	vector2d<int16_t> Texture::getdimensions() const
+	Point<int16_t> Texture::getdimensions() const
 	{
 		return dimensions;
 	}

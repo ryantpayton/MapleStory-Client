@@ -25,6 +25,7 @@
 #include "Components\Textfield.h"
 
 #include "Util\Singleton.h"
+#include "Util\Optional.h"
 
 #include <unordered_map>
 
@@ -48,10 +49,10 @@ namespace IO
 		void draw(float inter) const;
 		void update();
 
-		void sendmouse(vector2d<int16_t> pos);
-		void sendmouse(bool pressed, vector2d<int16_t> pos);
+		void sendmouse(Point<int16_t> pos);
+		void sendmouse(bool pressed, Point<int16_t> pos);
 		void sendmouse(bool pressed);
-		void doubleclick(vector2d<int16_t> pos);
+		void doubleclick(Point<int16_t> pos);
 		void doubleclick();
 		void sendkey(int32_t keycode, bool pressed);
 		void focustextfield(Textfield* textfield);
@@ -60,16 +61,19 @@ namespace IO
 		void addkeymapping(uint8_t no, uint8_t type, int32_t action);
 		void enable();
 		void disable();
-		void changestate(State mode);
+		void changestate(State state);
 
-		void add(const Element& type);
+		void add(const Element& element);
 		void remove(UIElement::Type type);
 
 		bool haselement(UIElement::Type type) const;
-		UIElement* getelement(UIElement::Type type) const;
+		Optional<UIElement> getelement(UIElement::Type type) const;
 
 		template <class T>
-		T* getelement(UIElement::Type type) const;
+		Optional<T> getelement(UIElement::Type type) const;
+
+		template <class T, typename ...Args>
+		void withelement(UIElement::Type type, void(T::*action)(Args...), Args... args) const;
 
 	private:
 		unique_ptr<UIState> state;
@@ -78,16 +82,23 @@ namespace IO
 
 		unordered_map<int32_t, bool> keydown;
 
-		Textfield* focusedtextfield;
+		Optional<Textfield> focusedtextfield;
 		bool enabled;
 
 		int16_t clickrepeat;
 	};
 
 	template <class T>
-	T* UI::getelement(UIElement::Type type) const
+	Optional<T> UI::getelement(UIElement::Type type) const
 	{
-		UIElement* element = getelement(type);
-		return element ? reinterpret_cast<T*>(element) : nullptr;
+		return getelement(type)
+			.reinterpret<T>();
+	}
+
+	template <class T, typename ...Args>
+	void UI::withelement(UIElement::Type type, void(T::*action)(Args...), Args... args) const
+	{
+		getelement<T>(type)
+			.ifpresent(action, args...);
 	}
 }

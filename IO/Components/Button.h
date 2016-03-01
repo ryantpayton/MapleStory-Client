@@ -35,10 +35,10 @@ namespace IO
 
 		virtual ~Button() {}
 
-		virtual void draw(vector2d<int16_t> parentpos) const = 0;
-		virtual rectangle2d<int16_t> bounds(vector2d<int16_t> parentpos) const = 0;
+		virtual void draw(Point<int16_t> parentpos) const = 0;
+		virtual rectangle2d<int16_t> bounds(Point<int16_t> parentpos) const = 0;
 
-		void setposition(vector2d<int16_t> position);
+		void setposition(Point<int16_t> position);
 		void setstate(State state);
 		void setactive(bool active);
 
@@ -47,7 +47,7 @@ namespace IO
 
 	protected:
 		State state;
-		vector2d<int16_t> position;
+		Point<int16_t> position;
 		bool active;
 	};
 }

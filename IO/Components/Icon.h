@@ -30,10 +30,10 @@ namespace IO
 		Icon();
 		~Icon();
 
-		void draw(vector2d<int16_t> position) const;
-		void dragdraw(vector2d<int16_t> cursorpos) const;
+		void draw(Point<int16_t> position) const;
+		void dragdraw(Point<int16_t> cursorpos) const;
 
-		void startdrag(vector2d<int16_t> offset);
+		void startdrag(Point<int16_t> offset);
 		void resetdrag();
 		void setidentifier(int16_t identifier);
 		void setcount(int16_t count);
@@ -50,6 +50,6 @@ namespace IO
 		int16_t count;
 
 		bool dragged;
-		vector2d<int16_t> cursoroffset;
+		Point<int16_t> cursoroffset;
 	};
 }

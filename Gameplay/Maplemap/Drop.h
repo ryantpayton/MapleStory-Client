@@ -38,11 +38,11 @@ namespace Gameplay
 		rectangle2d<int16_t> bounds();
 
 	protected:
-		Drop(int32_t oid, int32_t owner, vector2d<int16_t> start,
-			vector2d<int16_t> dest, int8_t type, int8_t mode, bool playerdrop);
+		Drop(int32_t oid, int32_t owner, Point<int16_t> start,
+			Point<int16_t> dest, int8_t type, int8_t mode, bool playerdrop);
 
 		int32_t owner;
-		vector2d<int16_t> dest;
+		Point<int16_t> dest;
 		int8_t pickuptype;
 		bool playerdrop;
 

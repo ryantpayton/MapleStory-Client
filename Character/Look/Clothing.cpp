@@ -132,17 +132,17 @@ namespace Character
 							z = sublayer(chlayer, zs);
 
 						string parent;
-						vector2d<int16_t> parentpos;
+						Point<int16_t> parentpos;
 						for (node mapnode : partnode["map"])
 						{
 							if (mapnode.data_type() == node::type::vector)
 							{
 								parent = mapnode.name();
-								parentpos = vector2d<int16_t>(mapnode);
+								parentpos = Point<int16_t>(mapnode);
 							}
 						}
 
-						vector2d<int16_t> shift;
+						Point<int16_t> shift;
 						switch (z)
 						{
 						case Layer::FACEACC:
@@ -180,8 +180,6 @@ namespace Character
 							}
 							shift += drawinfo.getbodypos(stance, frame) - parentpos;
 							break;
-						default:
-							shift = vector2d<int16_t>();
 						}
 						stances[stance][z][frame] = partnode;
 						stances[stance][z][frame].shift(shift);

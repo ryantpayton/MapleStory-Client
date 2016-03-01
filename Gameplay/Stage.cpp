@@ -32,26 +32,15 @@ namespace Gameplay
 	Stage::Stage()
 	{
 		state = INACTIVE;
-		playable = nullptr;
 		mapid = 0;
 		portalid = 0;
 	}
 
 	bool Stage::loadplayer(int32_t charid)
 	{
-		using Net::CharEntry;
-		const CharEntry& entry = Session::get().getlogin().getcharbyid(charid);
-
-		if (entry.cid == charid)
-		{
-			player = Player(entry);
-			playable = &player;
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		player = Session::get().getlogin().getcharbyid(charid);
+		playable = player;
+		return player.getoid() == charid;
 	}
 
 	void Stage::setmap(uint8_t pid, int32_t mid)
@@ -79,7 +68,7 @@ namespace Gameplay
 		node src = nl::nx::map["Map"]["Map" + std::to_string(mapid / 100000000)][strid + ".img"];
 
 		portals.load(src["portal"], mapid);
-		physics.loadfht(src["foothold"]);
+		physics.load(src);
 		backgrounds = src["back"];
 		mapinfo = MapInfo(src, physics.getfht().getwalls(), physics.getfht().getborders());
 		for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
@@ -111,7 +100,7 @@ namespace Gameplay
 	{
 		AudioPlayer::get().playbgm(mapinfo.getbgm());
 
-		vector2d<int16_t> startpos = physics.getgroundbelow(portals.getspawnpoint(portalid));
+		Point<int16_t> startpos = physics.getgroundbelow(portals.getspawnpoint(portalid));
 		player.respawn(startpos);
 		camera.setposition(startpos);
 		camera.updateview(mapinfo.getwalls(), mapinfo.getborders());
@@ -138,7 +127,7 @@ namespace Gameplay
 		if (state != ACTIVE)
 			return;
 
-		vector2d<int16_t> viewpos = camera.getposition(inter);
+		Point<int16_t> viewpos = camera.getposition(inter);
 		backgrounds.drawbackgrounds(viewpos, inter);
 		for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
 		{
@@ -154,6 +143,8 @@ namespace Gameplay
 		}
 		portals.draw(viewpos, inter);
 		backgrounds.drawforegrounds(viewpos, inter);
+
+		physics.getfht().draw(viewpos);
 	}
 
 	void Stage::update()
@@ -214,7 +205,7 @@ namespace Gameplay
 		{
 			if (warpinfo->mapid == mapid)
 			{
-				vector2d<int16_t> spawnpoint = portals.getspawnpoint(warpinfo->portal);
+				Point<int16_t> spawnpoint = portals.getspawnpoint(warpinfo->portal);
 				player.respawn(spawnpoint);
 			}
 			else if (warpinfo->valid)
@@ -284,7 +275,7 @@ namespace Gameplay
 				}
 			}
 
-			playable->sendaction(static_cast<Keyboard::Action>(action), down);
+			playable->sendaction(Keyboard::actionbyid(action), down);
 			break;
 		case Keyboard::SKILL:
 			if (player.canuseskill(action))
@@ -324,11 +315,9 @@ namespace Gameplay
 		return player;
 	}
 
-	Char* Stage::getcharacter(int32_t cid)
+	Optional<Char> Stage::getcharacter(int32_t cid)
 	{
-		if (cid == player.getoid())
-			return &player;
-		else
-			return chars.getchar(cid);
+		bool isplayer = cid == player.getoid();
+		return isplayer ? player : chars.getchar(cid).cast<Char>();
 	}
 }

@@ -24,8 +24,9 @@ namespace Gameplay
 		id = static_cast<uint16_t>(stoi(src.name()));
 		prev = src["prev"];
 		next = src["next"];
-		horizontal = vector2d<int16_t>(src["x1"], src["x2"]);
-		vertical = vector2d<int16_t>(src["y1"], src["y2"]);
+
+		horizontal = Range<int16_t>(src["x1"], src["x2"]);
+		vertical = Range<int16_t>(src["y1"], src["y2"]);
 	}
 
 	Foothold::Foothold(InPacket& recv)
@@ -33,8 +34,6 @@ namespace Gameplay
 		id = recv.readshort();
 		prev = recv.readshort();
 		next = recv.readshort();
-		horizontal = recv.readpoint();
-		vertical = recv.readpoint();
 	}
 
 	Foothold::Foothold()
@@ -53,6 +52,6 @@ namespace Gameplay
 
 	double Foothold::resolvex(double x) const
 	{ 
-		return isfloor() ? vertical.x() : getslope() * (x - horizontal.x()) + vertical.x(); 
+		return isfloor() ? vertical.first() : getslope() * (x - horizontal.first()) + vertical.first(); 
 	}
 }

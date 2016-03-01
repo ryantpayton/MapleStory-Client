@@ -19,40 +19,23 @@
 
 namespace Graphics
 {
-	EffectLayer::EffectLayer() 
+	void EffectLayer::draw(Point<int16_t> position, float inter) const
 	{
-		reid = 0;
-	}
-
-	EffectLayer::~EffectLayer() {}
-
-	void EffectLayer::draw(vector2d<int16_t> position, float inter) const
-	{
-		for (auto& eff : effects)
+		for (auto& effect : effects)
 		{
-			eff.second.draw(DrawArgument(position), inter);
+			effect.draw(position, inter);
 		}
 	}
 
 	void EffectLayer::update()
 	{
-		vector<uint8_t> toremove;
-		for (auto& eff : effects)
-		{
-			bool expired = eff.second.update();
-			if (expired)
-				toremove.push_back(eff.first);
-		}
-
-		for (auto& rm : toremove)
-		{
-			effects.erase(rm);
-		}
+		effects.remove_if([](Animation& animation){
+			return animation.update();
+		});
 	}
 
 	void EffectLayer::add(Animation animation)
 	{
-		effects[reid] = animation;
-		reid++;
+		effects.push_back(animation);
 	}
 }

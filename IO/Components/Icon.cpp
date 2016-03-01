@@ -29,7 +29,7 @@ namespace IO
 		showcount = c > 0;
 		count = c;
 
-		texture.shift(vector2d<int16_t>(0, 32));
+		texture.shift(Point<int16_t>(0, 32));
 		dragged = false;
 	}
 
@@ -44,7 +44,7 @@ namespace IO
 
 	Icon::~Icon() {}
 
-	void Icon::draw(vector2d<int16_t> position) const
+	void Icon::draw(Point<int16_t> position) const
 	{
 		using Graphics::DrawArgument;
 		texture.draw(DrawArgument(position, dragged ? 0.5f : 1.0f));
@@ -53,11 +53,11 @@ namespace IO
 		if (tempc >= 0 && showcount)
 		{
 			static const Charset countset = Charset(nl::nx::ui["Basic.img"]["ItemNo"], Charset::LEFT);
-			countset.draw(std::to_string(tempc), DrawArgument(position + vector2d<int16_t>(0, 20)));
+			countset.draw(std::to_string(tempc), position + Point<int16_t>(0, 20));
 		}
 	}
 
-	void Icon::dragdraw(vector2d<int16_t> cursorpos) const
+	void Icon::dragdraw(Point<int16_t> cursorpos) const
 	{
 		if (dragged)
 		{
@@ -66,7 +66,7 @@ namespace IO
 		}
 	}
 
-	void Icon::startdrag(vector2d<int16_t> offset)
+	void Icon::startdrag(Point<int16_t> offset)
 	{
 		cursoroffset = offset;
 		dragged = true;

@@ -31,7 +31,7 @@ namespace Gameplay
 		phobj.fy = static_cast<float>(y);
 	}
 
-	void MapObject::setposition(vector2d<int16_t> position)
+	void MapObject::setposition(Point<int16_t> position)
 	{
 		setposition(position.x(), position.y());
 	}
@@ -56,17 +56,17 @@ namespace Gameplay
 		return oid;
 	}
 
-	vector2d<int16_t> MapObject::getposition() const
+	Point<int16_t> MapObject::getposition() const
 	{
-		return vector2d<int16_t>(
+		return Point<int16_t>(
 			static_cast<int16_t>(phobj.fx),
 			static_cast<int16_t>(phobj.fy)
 			);
 	}
 
-	vector2d<double> MapObject::getrealposition() const
+	Point<double> MapObject::getrealposition() const
 	{
-		return vector2d<double>(phobj.fx, phobj.fy);
+		return Point<double>(phobj.fx, phobj.fy);
 	}
 
 	PhysicsObject& MapObject::getphobj()

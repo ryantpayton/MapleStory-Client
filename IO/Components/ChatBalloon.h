@@ -32,7 +32,7 @@ namespace IO
 		ChatBalloon();
 		~ChatBalloon();
 
-		void draw(vector2d<int16_t> position) const;
+		void draw(Point<int16_t> position) const;
 		void update();
 		void settext(string text);
 		void expire();

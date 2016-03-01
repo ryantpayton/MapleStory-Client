@@ -18,7 +18,7 @@
 #pragma once
 #include "MapObjects.h"
 #include "Character\OtherChar.h"
-#include "Gameplay\MovementInfo.h"
+#include "Gameplay\Movement.h"
 
 namespace Gameplay
 {
@@ -33,11 +33,11 @@ namespace Gameplay
 		MapChars();
 
 		void addchar(int32_t cid, const LookEntry& look, uint8_t level, 
-			int16_t job, string name, int8_t stance, vector2d<int16_t> pos);
+			int16_t job, string name, int8_t stance, Point<int16_t> pos);
 		void removechar(int32_t cid);
-		void movechar(int32_t cid, const vector<MovementFragment>& movements);
+		void movechar(int32_t cid, const vector<Movement>& movements);
 
-		OtherChar* getchar(int32_t cid);
+		Optional<OtherChar> getchar(int32_t cid);
 	};
 }
 

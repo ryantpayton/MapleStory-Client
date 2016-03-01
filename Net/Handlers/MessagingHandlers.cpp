@@ -32,6 +32,9 @@ namespace Net
 	using IO::UIStatusbar;
 	using IO::UINpcTalk;
 	using Character::ItemData;
+	using Character::Char;
+	using Data::DataFactory;
+	using Gameplay::Stage;
 
 	// Modes:
 	// 0 - Item(0) or Meso(1) 
@@ -49,7 +52,7 @@ namespace Net
 			{
 				int32_t itemid = recv.readint();
 				int32_t qty = recv.readint();
-				using Data::DataFactory;
+
 				const ItemData& idata = DataFactory::get().getitemdata(itemid);
 				if (!idata.isloaded())
 					return;
@@ -109,9 +112,7 @@ namespace Net
 
 	void ShowStatusInfoHandler::showstatus(Text::Color color, string message) const
 	{
-		UIStatusMessenger* messenger = UI::get().getelement<UIStatusMessenger>(UIElement::STATUSMESSENGER);
-		if (messenger)
-			messenger->showstatus(color, message);
+		UI::get().withelement(UIElement::STATUSMESSENGER, &UIStatusMessenger::showstatus, color, message);
 	}
 
 	void ChatReceivedHandler::handle(InPacket& recv) const
@@ -121,18 +122,13 @@ namespace Net
 		string message = recv.readascii();
 		int8_t type = recv.readbyte();
 
-		using Character::Char;
-		using Gameplay::Stage;
-		Char* speaker = Stage::get().getcharacter(charid);
-		
+		Optional<Char> speaker = Stage::get().getcharacter(charid);
 		if (speaker)
 		{
 			string fulltext = speaker->getname() + ": " + message;
 			speaker->speak(fulltext);
 
-			UIStatusbar* statusbar = UI::get().getelement<UIStatusbar>(UIElement::STATUSBAR);
-			if (statusbar)
-				statusbar->sendchatline(fulltext, type);
+			UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::sendchatline, fulltext, type);
 		}
 	}
 
@@ -144,14 +140,12 @@ namespace Net
 		int8_t msgtype = recv.readbyte(); //0 - textonly, 1 - yes/no, 4 - selection, 12 - accept/decline
 		int8_t speaker = recv.readbyte();
 		string text = recv.readascii();
+
 		int16_t style = 0;
 		if (msgtype == 0 && recv.length() > 0)
 			style = recv.readshort();
 
-		UINpcTalk* npctalk = UI::get().getelement<UINpcTalk>(UIElement::NPCTALK);
-		if (npctalk)
-			npctalk->settext(npcid, msgtype, style, speaker, text);
-
+		UI::get().withelement(UIElement::NPCTALK, &UINpcTalk::settext, npcid, msgtype, style, speaker, text);
 		UI::get().enable();
 	}
 }

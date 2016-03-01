@@ -70,7 +70,7 @@ namespace Gameplay
 		}
 	}
 
-	void MapLayer::draw(vector2d<int16_t> viewpos, float inter) const
+	void MapLayer::draw(Point<int16_t> viewpos, float inter) const
 	{
 		for (auto& lyit : objs)
 		{

@@ -30,30 +30,30 @@ namespace IO
 	public:
 		virtual ~UIState() {}
 
-		virtual void draw(float inter, vector2d<int16_t> cursor) const = 0;
+		virtual void draw(float inter, Point<int16_t> cursor) const = 0;
 		virtual void update() = 0;
-		virtual void doubleclick(vector2d<int16_t> pos) = 0;
+		virtual void doubleclick(Point<int16_t> pos) = 0;
 		virtual void dragicon(Icon* icon) = 0;
 		virtual void sendkey(Keyboard::Keytype type, int32_t action, bool pressed) = 0;
-		virtual Cursor::State sendmouse(Cursor::State mst, vector2d<int16_t> pos) = 0;
+		virtual Cursor::State sendmouse(Cursor::State mst, Point<int16_t> pos) = 0;
 
 		virtual void add(const Element& element) = 0;
 		virtual void remove(UIElement::Type type) = 0;
 		virtual UIElement* get(UIElement::Type type) const = 0;
-		virtual UIElement* getfront(vector2d<int16_t> pos) const = 0;
+		virtual UIElement* getfront(Point<int16_t> pos) const = 0;
 	};
 
 	class UIStateNull : public UIState
 	{
-		void draw(float, vector2d<int16_t>) const override { Console::get().print("Warning: UI was not initialized."); }
+		void draw(float, Point<int16_t>) const override { Console::get().print("Warning: UI was not initialized."); }
 		void update() override {}
-		void doubleclick(vector2d<int16_t>) override {}
+		void doubleclick(Point<int16_t>) override {}
 		void dragicon(Icon*) override {}
 		void sendkey(Keyboard::Keytype, int32_t, bool) override {}
-		Cursor::State sendmouse(Cursor::State, vector2d<int16_t>) override { return Cursor::IDLE; }
+		Cursor::State sendmouse(Cursor::State, Point<int16_t>) override { return Cursor::IDLE; }
 		void add(const Element&) override {}
 		void remove(UIElement::Type) override {}
 		UIElement* get(UIElement::Type) const override { return nullptr; }
-		UIElement* getfront(vector2d<int16_t>) const override { return nullptr; }
+		UIElement* getfront(Point<int16_t>) const override { return nullptr; }
 	};
 }

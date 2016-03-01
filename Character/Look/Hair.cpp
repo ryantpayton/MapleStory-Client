@@ -44,7 +44,7 @@ namespace Character
 
 					stances[stance][layer][frame] = partnode;
 					stances[stance][layer][frame].shift(drawinfo.gethairpos(stance, frame));
-					stances[stance][layer][frame].shift(-vector2d<int16_t>(partnode["map"]["brow"]));
+					stances[stance][layer][frame].shift(-Point<int16_t>(partnode["map"]["brow"]));
 				}
 
 				frame++;

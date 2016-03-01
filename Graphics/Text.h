@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\vector2d.h"
+#include "Util\Point.h"
 #include <cstdint>
 #include <map>
 #include <vector>
@@ -76,15 +76,15 @@ namespace Graphics
 		{
 			struct Line
 			{
-				vector2d<int16_t> position;
+				Point<int16_t> position;
 				size_t first;
 				size_t last;
 			};
 
 			Alignment alignment;
 
-			vector2d<int16_t> dimensions;
-			vector2d<int16_t> endoffset;
+			Point<int16_t> dimensions;
+			Point<int16_t> endoffset;
 			map<size_t, float> advances;
 
 			vector<Line> lines;
@@ -114,7 +114,7 @@ namespace Graphics
 					x -= ax;
 					break;
 				}
-				vector2d<int16_t> position = vector2d<int16_t>(x, y);
+				Point<int16_t> position = Point<int16_t>(x, y);
 				Line line = {position, first, last};
 				lines.push_back(line);
 				linecount++;
@@ -124,8 +124,8 @@ namespace Graphics
 		Text(Font font, Alignment alignment, Color color);
 		Text();
 
-		void draw(vector2d<int16_t> position, float alpha) const;
-		void draw(vector2d<int16_t> position) const;
+		void draw(Point<int16_t> position, float alpha) const;
+		void draw(Point<int16_t> position) const;
 
 		void settext(const string& text);
 		void settext(const string& text, uint16_t maxwidth);
@@ -137,8 +137,8 @@ namespace Graphics
 		int16_t height() const;
 		int16_t linecount() const;
 		uint16_t advance(size_t pos) const;
-		vector2d<int16_t> dimensions() const;
-		vector2d<int16_t> endoffset() const;
+		Point<int16_t> dimensions() const;
+		Point<int16_t> endoffset() const;
 		string gettext() const;
 
 	private:

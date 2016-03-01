@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Net\PacketError.h"
-#include "Util\vector2d.h"
+#include "Util\Point.h"
 #include <cstdint>
 #include <string>
 
@@ -41,7 +41,7 @@ namespace Net
 		// Read a fixed-length string.
 		string readpadascii(int16_t length);
 		// Read a point.
-		vector2d<int16_t> readpoint();
+		Point<int16_t> readpoint();
 		// Read a byte and check if it is 1.
 		bool readbool() { return read<int8_t>() == 1; }
 		// Read a byte.

@@ -21,17 +21,17 @@ namespace IO
 
 	Nametag::~Nametag() {}
 
-	void Nametag::draw(vector2d<int16_t> position) const
+	void Nametag::draw(Point<int16_t> position) const
 	{
 		if (tag.count(selected))
 		{
 			int16_t width = name.width();
-			vector2d<int16_t> startpos = position - vector2d<int16_t>(8 + width / 2, -2);
+			Point<int16_t> startpos = position - Point<int16_t>(8 + width / 2, -2);
 
 			using::Graphics::DrawArgument;
 			tag.at(selected).at(0).draw(DrawArgument(startpos));
-			tag.at(selected).at(1).draw(DrawArgument(startpos + vector2d<int16_t>(8, 0), vector2d<int16_t>(width, 0)));
-			tag.at(selected).at(2).draw(DrawArgument(startpos + vector2d<int16_t>(width + 8, 0)));
+			tag.at(selected).at(1).draw(DrawArgument(startpos + Point<int16_t>(8, 0), Point<int16_t>(width, 0)));
+			tag.at(selected).at(2).draw(DrawArgument(startpos + Point<int16_t>(width + 8, 0)));
 			name.draw(position);
 		}
 	}

@@ -16,12 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Char.h"
+#include "Graphics\GraphicsGL.h"
 
 namespace Character
 {
 	void Char::draw(const Camera& camera, float inter) const
 	{
-		vector2d<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
+		Point<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
 		look.draw(absp, inter);
 
 		for (int32_t i = 0; i < 3; i++)
@@ -32,6 +33,8 @@ namespace Character
 
 		namelabel.draw(absp);
 		chatballoon.draw(absp);
+
+		//Graphics::GraphicsGL::get().drawrectangle(absp.x(), absp.y(), 1, -50, 1.0, 0.0, 0.0, 1.0);
 
 		if (!flip)
 			absp.shiftx(-8);
@@ -120,7 +123,7 @@ namespace Character
 	}
 
 	void Char::addpet(uint8_t index, int32_t iid, string name,
-		int32_t uniqueid, vector2d<int16_t> pos, uint8_t stance, int32_t fhid) {
+		int32_t uniqueid, Point<int16_t> pos, uint8_t stance, int32_t fhid) {
 
 		if (index > 2)
 			return;
@@ -168,13 +171,8 @@ namespace Character
 	rectangle2d<int16_t> Char::getbounds() const
 	{
 		return rectangle2d<int16_t>(
-			getposition() - vector2d<int16_t>(30, 70),
-			getposition() + vector2d<int16_t>(30, 10)
+			getposition() - Point<int16_t>(30, 70),
+			getposition() + Point<int16_t>(30, 10)
 			);
 	}
-
-	/*CharLook& Char::getlook()
-	{
-		return look;
-	}*/
 }

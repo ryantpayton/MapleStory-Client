@@ -31,7 +31,7 @@ namespace Gameplay
 	public:
 		Background(node src);
 
-		void draw(vector2d<int16_t> viewpos, float inter) const;
+		void draw(Point<int16_t> viewpos, float inter) const;
 		void update();
 
 	private:
@@ -87,8 +87,8 @@ namespace Gameplay
 		MapBackgrounds(node src);
 		MapBackgrounds();
 
-		void drawbackgrounds(vector2d<int16_t> viewpos, float inter) const;
-		void drawforegrounds(vector2d<int16_t> viewpos, float inter) const;
+		void drawbackgrounds(Point<int16_t> viewpos, float inter) const;
+		void drawforegrounds(Point<int16_t> viewpos, float inter) const;
 		void update();
 
 	private:

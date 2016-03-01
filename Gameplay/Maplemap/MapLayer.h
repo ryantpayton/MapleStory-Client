@@ -37,7 +37,7 @@ namespace Gameplay
 		~MapLayer();
 
 		void update();
-		void draw(vector2d<int16_t> viewpos, float inter) const;
+		void draw(Point<int16_t> viewpos, float inter) const;
 
 	private:
 		map<uint8_t, vector<Tile>> tiles;

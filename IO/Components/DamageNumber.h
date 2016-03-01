@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Charset.h"
-#include "Util\vector2d.h"
+#include "Util\Point.h"
 
 namespace IO
 {
@@ -33,11 +33,11 @@ namespace IO
 
 		static void init();
 
-		DamageNumber(Type type, int damage, float alpha, vector2d<int16_t> position);
+		DamageNumber(Type type, int damage, float alpha, Point<int16_t> position);
 		DamageNumber();
 		~DamageNumber();
 
-		void draw(vector2d<int16_t> viewpos) const;
+		void draw(Point<int16_t> viewpos) const;
 		bool update();
 
 	private:

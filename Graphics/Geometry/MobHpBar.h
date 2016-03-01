@@ -16,36 +16,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include <cstdint>
-#include <vector>
+#include "Graphics\Geometry.h"
+#include "Util\Point.h"
 
-namespace Gameplay
+namespace Graphics
 {
-	using std::uint8_t;
-	using std::int16_t;
-	using std::uint16_t;
-
-	// Contains information on a single movement.
-	struct MovementFragment
+	class MobHpBar : public Geometry
 	{
-		// Movement types for servers and other clients to handle.
-		enum MovementType
-		{
-			MVT_NONE,
-			MVT_ABSOLUTE,
-			MVT_RELATIVE,
-			MVT_CHAIR,
-			MVT_JUMPDOWN
-		};
+	public:
+		void draw(Point<int16_t> position, int16_t hppercent) const;
 
-		MovementType type = MVT_NONE;
-		uint8_t command = 0;
-		int16_t xpos = 0;
-		int16_t ypos = 0;
-		int16_t lastx = 0;
-		int16_t lasty = 0;
-		uint16_t fh = 0;
-		uint8_t newstate = 0;
-		int16_t duration = 0;
+	private:
+		static const int16_t WIDTH = 44;
+		static const int16_t HEIGHT = 9;
 	};
 }

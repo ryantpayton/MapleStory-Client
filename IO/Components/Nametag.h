@@ -19,7 +19,7 @@ namespace IO
 	public:
 		Nametag(node, Text::Font, Text::Alignment, Text::Color, string);
 		~Nametag();
-		void draw(vector2d<int16_t>) const;
+		void draw(Point<int16_t>) const;
 		void setselected(bool);
 	private:
 		Text name;

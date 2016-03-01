@@ -27,8 +27,9 @@ namespace IO
 		ItemTooltip();
 		~ItemTooltip();
 
+		void clear();
 		void setitem(int32_t itemid);
-		void draw(vector2d<int16_t> position) const;
+		void draw(Point<int16_t> position) const;
 
 	private:
 		int32_t itemid;

@@ -88,6 +88,11 @@ namespace IO
 			FACE7 = 106
 		};
 
+		static Action actionbyid(int32_t id)
+		{
+			return static_cast<Action>(id);
+		}
+
 		// Keytypes decide how a keycode is interpreted.
 		enum Keytype
 		{

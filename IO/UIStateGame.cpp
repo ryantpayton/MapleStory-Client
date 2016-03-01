@@ -40,7 +40,7 @@ namespace IO
 		add(ElementNpcTalk());
 	}
 
-	void UIStateGame::draw(float inter, vector2d<int16_t> cursor) const
+	void UIStateGame::draw(float inter, Point<int16_t> cursor) const
 	{
 		for (auto& entry : elementorder)
 		{
@@ -63,7 +63,7 @@ namespace IO
 		}
 	}
 
-	void UIStateGame::dropicon(vector2d<int16_t> pos, UIElement::Type type, int16_t identifier)
+	void UIStateGame::dropicon(Point<int16_t> pos, UIElement::Type type, int16_t identifier)
 	{
 		UIElement* front = getfront(pos);
 
@@ -81,7 +81,7 @@ namespace IO
 		}
 	}
 
-	void UIStateGame::doubleclick(vector2d<int16_t> pos)
+	void UIStateGame::doubleclick(Point<int16_t> pos)
 	{
 		UIElement* front = getfront(pos);
 		if (front)
@@ -122,7 +122,7 @@ namespace IO
 		}
 	}
 
-	Cursor::State UIStateGame::sendmouse(Cursor::State mst, vector2d<int16_t> pos)
+	Cursor::State UIStateGame::sendmouse(Cursor::State mst, Point<int16_t> pos)
 	{
 		if (draggedicon)
 		{
@@ -163,7 +163,7 @@ namespace IO
 					if (element && element->isactive() && element->bounds().contains(pos))
 					{
 						if (front)
-							front->sendmouse(false, element->bounds().getlt() - vector2d<int16_t>(1, 1));
+							front->sendmouse(false, element->bounds().getlt() - Point<int16_t>(1, 1));
 
 						front = element;
 						fronttype = elit;
@@ -236,7 +236,7 @@ namespace IO
 		return elements.count(type) ? elements.at(type).get() : nullptr;
 	}
 
-	UIElement* UIStateGame::getfront(vector2d<int16_t> pos) const
+	UIElement* UIStateGame::getfront(Point<int16_t> pos) const
 	{
 		UIElement* front = nullptr;
 		for (auto& entry : elementorder)

@@ -28,10 +28,10 @@ namespace Gameplay
 
 		// Spawn an npc on the current map.
 		void addnpc(int32_t npcid, int32_t oid, bool mirrored, 
-			uint16_t fhid, bool control, vector2d<int16_t> position);
+			uint16_t fhid, bool control, Point<int16_t> position);
 
 	private:
-		Npc* getnpc(int32_t);
+		Optional<Npc> getnpc(int32_t);
 	};
 }
 

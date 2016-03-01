@@ -22,91 +22,50 @@ namespace Graphics
 {
 	Animation::Animation(node src)
 	{
-		if (src.data_type() == node::type::bitmap)
+		bool istexture = src.data_type() == node::type::bitmap;
+		if (istexture)
 		{
-			textures.push_back(src);
+			frames.push_back(src);
 		}
-		else if (src["0"].data_type() == node::type::bitmap)
+		else
 		{
 			uint8_t framec = 0;
 			node nodeit = src[std::to_string(framec)];
 			while (nodeit.data_type() == node::type::bitmap)
 			{
-				node delay = nodeit["delay"];
-				switch (delay.data_type())
-				{
-				case node::type::integer:
-					delays.push_back(delay);
-					break;
-				case node::type::string:
-					try
-					{
-						delays.push_back(static_cast<uint16_t>(stoi(delay.get_string())));
-					}
-					catch (const std::exception&)
-					{
-						delays.push_back(DEFAULTDELAY);
-					}
-					break;
-				default:
-					delays.push_back(DEFAULTDELAY);
-				}
-
-				textures.push_back(nodeit);
-
-				node a0_node = nodeit["a0"];
-				if (a0_node.data_type() == node::type::integer)
-				{
-					uint8_t a0 = a0_node;
-					node a1_node = nodeit["a1"];
-					if (a1_node.data_type() == node::type::integer)
-					{
-						alphablends.push_back(pair<uint8_t, uint8_t>(a0, a1_node));
-					}
-					else
-					{
-						alphablends.push_back(pair<uint8_t, uint8_t>(a0, 255 - a0));
-					}
-				}
-				else
-				{
-					alphablends.push_back(pair<uint8_t, uint8_t>(255, 255));
-				}
+				frames.push_back(nodeit);
 
 				framec++;
 				nodeit = src[std::to_string(framec)];
 			}
 
-			zigzag = src["zigzag"].get_bool();
-
-			alpha = alphablends[0].first;
-			alphastep = nextalphastep(0, Constants::TIMESTEP);
-			lastalpha = alpha;
+			if (frames.size() == 0)
+				frames.push_back(Frame());
 		}
 
-		elapsed = 0;
-		frame = 0;
-		framestep = 1;
-		lastframe = frame;
-		animated = textures.size() > 1;
+		animated = frames.size() > 1;
+		zigzag = src["zigzag"].get_bool();
+
+		reset();
 	}
 
 	Animation::Animation() 
 	{
 		animated = false;
 		zigzag = false;
+
+		frames.push_back(Frame());
+
+		reset();
 	}
 
 	void Animation::draw(const DrawArgument& args, float inter) const
 	{
-		if (textures.size() == 0)
-			return;
-
 		uint8_t interframe;
 		float interalpha;
 		if (animated)
 		{
-			if (lastelapsed + Constants::TIMESTEP * inter > delays[lastframe])
+			if (lastelapsed + Constants::TIMESTEP * inter > frames[lastframe].delay)
 			{
 				interframe = frame;
 			}
@@ -122,28 +81,27 @@ namespace Graphics
 			interalpha = 255.0f;
 		}
 
-		if (args.getalpha() == 1.0f && interalpha != 255.0f)
+		bool modifyalpha = args.getalpha() == 1.0f && interalpha != 255.0f;
+		if (modifyalpha)
 		{
-			textures[interframe].draw(args.overwritealpha(interalpha / 255));
+			frames[interframe].texture.draw(args.overwritealpha(interalpha / 255));
 		}
 		else
 		{
-			textures[interframe].draw(args);
+			frames[interframe].texture.draw(args);
 		}
 	}
 
 	void Animation::reset()
 	{
-		if (animated)
-		{
-			lastframe = frame;
-			lastalpha = alpha;
+		elapsed = 0;
+		frame = 0;
+		framestep = 1;
+		alpha = frames[0].opacities.first;
+		alphastep = frames[0].alphastep(alpha, Constants::TIMESTEP);
 
-			elapsed = 0;
-			frame = 0;
-			alpha = alphablends[0].first;
-			alphastep = nextalphastep(0, Constants::TIMESTEP);
-		}
+		lastframe = frame;
+		lastalpha = alpha;
 	}
 
 	bool Animation::update()
@@ -171,14 +129,15 @@ namespace Graphics
 
 			elapsed += timestep;
 
-			uint16_t delay = delays[frame];
+			uint16_t delay = frames[frame].delay;
 			if (elapsed > delay)
 			{
 				elapsed -= delay;
 
+				size_t framecount = frames.size();
 				if (zigzag)
 				{
-					if (framestep == 1 && frame == textures.size() - 1)
+					if (framestep == 1 && frame == framecount - 1)
 					{
 						framestep = -1;
 						frame--;
@@ -195,7 +154,7 @@ namespace Graphics
 				}
 				else
 				{
-					if (frame == textures.size() - 1)
+					if (frame == framecount - 1)
 					{
 						frame = 0;
 					}
@@ -205,25 +164,30 @@ namespace Graphics
 					}
 				}
 
-				alphastep = nextalphastep(frame, timestep);
+				alphastep = frames[frame].alphastep(alpha, timestep);
 				return frame == 0;
 			}
 		}
 		return false;
 	}
 
-	vector2d<int16_t> Animation::getorigin() const
+	Point<int16_t> Animation::getorigin() const
 	{
-		return textures[frame].getorigin();
+		return frames[frame].texture.getorigin();
 	}
 
-	vector2d<int16_t> Animation::getdimensions() const
+	Point<int16_t> Animation::getdimensions() const
 	{
-		return textures[frame].getdimensions();
+		return frames[frame].texture.getdimensions();
 	}
 
-	float Animation::nextalphastep(uint8_t frm, uint16_t timestep) const
+	Point<int16_t> Animation::gethead() const
+	{ 
+		return frames[frame].head;
+	}
+
+	rectangle2d<int16_t> Animation::getbounds() const
 	{
-		return static_cast<float>(alphablends[frm].second - alpha) * timestep / delays[frm];
+		return frames[frame].bounds;
 	}
 }

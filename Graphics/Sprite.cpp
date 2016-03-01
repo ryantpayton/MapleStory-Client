@@ -19,7 +19,7 @@
 
 namespace Graphics
 {
-	Sprite::Sprite(node src, vector2d<int16_t> pos)
+	Sprite::Sprite(node src, Point<int16_t> pos)
 	{
 		animation = src;
 		position = pos;
@@ -42,12 +42,12 @@ namespace Graphics
 		animation.update();
 	}
 
-	vector2d<int16_t> Sprite::getorigin() const
+	Point<int16_t> Sprite::getorigin() const
 	{
 		return animation.getorigin();
 	}
 
-	vector2d<int16_t> Sprite::getdimensions() const
+	Point<int16_t> Sprite::getdimensions() const
 	{
 		return animation.getorigin();
 	}

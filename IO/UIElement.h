@@ -61,20 +61,20 @@ namespace IO
 
 		virtual void togglehide();
 		virtual void buttonpressed(uint16_t buttonid);
-		virtual void doubleclick(vector2d<int16_t> cursorpos);
+		virtual void doubleclick(Point<int16_t> cursorpos);
 		virtual void icondropped(int16_t identifier);
-		virtual void dropicon(vector2d<int16_t> cursorpos, Type type, int16_t identifier);
-		virtual Cursor::State sendmouse(bool clicked, vector2d<int16_t> cursorpos);
+		virtual void dropicon(Point<int16_t> cursorpos, Type type, int16_t identifier);
+		virtual Cursor::State sendmouse(bool clicked, Point<int16_t> cursorpos);
 		virtual rectangle2d<int16_t> bounds() const;
 
 	protected:
 		UIElement();
 
-		vector2d<int16_t> dimension;
+		Point<int16_t> dimension;
 		map<uint16_t, unique_ptr<Button>> buttons;
 		vector<Sprite> sprites;
 
-		vector2d<int16_t> position;
+		Point<int16_t> position;
 		bool active;
 	};
 }

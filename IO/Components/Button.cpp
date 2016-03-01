@@ -19,7 +19,7 @@
 
 namespace IO
 {
-	void Button::setposition(vector2d<int16_t> pos) 
+	void Button::setposition(Point<int16_t> pos) 
 	{ 
 		position = pos; 
 	}

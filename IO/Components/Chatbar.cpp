@@ -24,10 +24,10 @@
 
 namespace IO
 {
-	Chatbar::Chatbar(vector2d<int16_t> pos)
+	Chatbar::Chatbar(Point<int16_t> pos)
 	{
 		position = pos;
-		dimension = vector2d<int16_t>(500, 60);
+		dimension = Point<int16_t>(500, 60);
 		chatopen = true;
 
 		node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
@@ -54,8 +54,8 @@ namespace IO
 		chattargets[CHT_SQUAD] = mainbar["chatTarget"]["expedition"];
 
 		rectangle2d<int16_t> enterarea = rectangle2d<int16_t>(
-			vector2d<int16_t>(-435, -59),
-			vector2d<int16_t>(-40, -35)
+			Point<int16_t>(-435, -59),
+			Point<int16_t>(-40, -35)
 			);
 		chatfield = Textfield(Text::A11M, Text::LEFT, Text::BLACK, enterarea, 0);
 		chatfield.setstate(chatopen ? Textfield::NORMAL : Textfield::DISABLED);
@@ -78,13 +78,13 @@ namespace IO
 
 		if (chatopen)
 		{
-			chattargets[chattarget].draw(position + vector2d<int16_t>(0, 2));
+			chattargets[chattarget].draw(position + Point<int16_t>(0, 2));
 			chatcover.draw(position);
 			chatfield.draw(position);
 		}
 		else if (lines.size() > 0)
 		{
-			closedtext.draw(position + vector2d<int16_t>(-500, -60));
+			closedtext.draw(position + Point<int16_t>(-500, -60));
 		}
 	}
 
@@ -126,12 +126,12 @@ namespace IO
 	rectangle2d<int16_t> Chatbar::bounds() const
 	{
 		return rectangle2d<int16_t>(
-			position - vector2d<int16_t>(512, 90),
-			position - vector2d<int16_t>(512, 90) + dimension
+			position - Point<int16_t>(512, 90),
+			position - Point<int16_t>(512, 90) + dimension
 			);
 	}
 
-	Cursor::State Chatbar::sendmouse(bool down, vector2d<int16_t> pos)
+	Cursor::State Chatbar::sendmouse(bool down, Point<int16_t> pos)
 	{
 		Cursor::State ret = UIElement::sendmouse(down, pos);
 

@@ -19,8 +19,8 @@
 
 namespace Gameplay
 {
-	ItemDrop::ItemDrop(int32_t oid, int32_t owner, vector2d<int16_t> start,
-		vector2d<int16_t> dest, int8_t type, int8_t mode, Texture icn, 
+	ItemDrop::ItemDrop(int32_t oid, int32_t owner, Point<int16_t> start,
+		Point<int16_t> dest, int8_t type, int8_t mode, Texture icn, 
 		int32_t iid, bool pldrp) : Drop(oid, owner, start, dest, type, mode, pldrp) {
 
 		icon = icn;
@@ -32,7 +32,7 @@ namespace Gameplay
 		if (!active)
 			return;
 
-		vector2d<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
+		Point<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
 
 		using Graphics::DrawArgument;
 		icon.draw(DrawArgument(absp, opacity));

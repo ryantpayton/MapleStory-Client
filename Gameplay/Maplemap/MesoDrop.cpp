@@ -19,8 +19,8 @@
 
 namespace Gameplay
 {
-	MesoDrop::MesoDrop(int32_t oid, int32_t owner, vector2d<int16_t> start,
-		vector2d<int16_t> dest, int8_t type, int8_t mode, const Animation* icn,
+	MesoDrop::MesoDrop(int32_t oid, int32_t owner, Point<int16_t> start,
+		Point<int16_t> dest, int8_t type, int8_t mode, const Animation* icn,
 		bool pldrp) : Drop(oid, owner, start, dest, type, mode, pldrp) {
 
 		icon = icn;
@@ -28,10 +28,10 @@ namespace Gameplay
 
 	void MesoDrop::draw(const Camera& camera, float inter) const
 	{
-		if (!active || !icon)
+		if (!active)
 			return;
 
-		vector2d<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
+		Point<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
 
 		using Graphics::DrawArgument;
 		icon->draw(DrawArgument(absp, opacity), inter);

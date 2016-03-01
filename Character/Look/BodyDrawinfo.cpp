@@ -55,7 +55,7 @@ namespace Character
 					string acstr = actionnode.get_string();
 					Stance::Value acstance = Stance::bystring(acstr);
 					uint8_t acframe = framenode["frame"];
-					vector2d<int16_t> move = framenode["move"];
+					Point<int16_t> move = framenode["move"];
 					bodyactions[ststr][frame] = BodyAction(acstance, acframe, delay, move);
 				}
 				else
@@ -63,7 +63,7 @@ namespace Character
 					Stance::Value stance = Stance::bystring(ststr);
 					stancedelays[stance][frame] = delay;
 
-					unordered_map<Body::Layer, unordered_map<string, vector2d<int16_t>>> bodyshiftmap;
+					unordered_map<Body::Layer, unordered_map<string, Point<int16_t>>> bodyshiftmap;
 					for (node partnode : framenode)
 					{
 						string part = partnode.name();
@@ -74,7 +74,7 @@ namespace Character
 
 							for (node mapnode : partnode["map"])
 							{
-								bodyshiftmap[z][mapnode.name()] = vector2d<int16_t>(mapnode);
+								bodyshiftmap[z][mapnode.name()] = Point<int16_t>(mapnode);
 							}
 						}
 					}
@@ -82,7 +82,7 @@ namespace Character
 					node headmap = headnode[ststr][std::to_string(frame)]["head"]["map"];
 					for (node mapnode : headmap)
 					{
-						bodyshiftmap[Body::HEAD][mapnode.name()] = vector2d<int16_t>(mapnode);
+						bodyshiftmap[Body::HEAD][mapnode.name()] = Point<int16_t>(mapnode);
 					}
 
 					bodyposmap[stance][frame] = bodyshiftmap[Body::BODY]["navel"];
@@ -101,34 +101,34 @@ namespace Character
 		}
 	}
 
-	vector2d<int16_t> BodyDrawinfo::getbodypos(Stance::Value stance, uint8_t frame) const
+	Point<int16_t> BodyDrawinfo::getbodypos(Stance::Value stance, uint8_t frame) const
 	{
-		return bodyposmap[stance].count(frame) ? bodyposmap[stance].at(frame) : vector2d<int16_t>();
+		return bodyposmap[stance].count(frame) ? bodyposmap[stance].at(frame) : Point<int16_t>();
 	}
 
-	vector2d<int16_t> BodyDrawinfo::getarmpos(Stance::Value stance, uint8_t frame) const
+	Point<int16_t> BodyDrawinfo::getarmpos(Stance::Value stance, uint8_t frame) const
 	{
-		return armposmap[stance].count(frame) ? armposmap[stance].at(frame) : vector2d<int16_t>();
+		return armposmap[stance].count(frame) ? armposmap[stance].at(frame) : Point<int16_t>();
 	}
 
-	vector2d<int16_t> BodyDrawinfo::gethandpos(Stance::Value stance, uint8_t frame) const
+	Point<int16_t> BodyDrawinfo::gethandpos(Stance::Value stance, uint8_t frame) const
 	{
-		return handposmap[stance].count(frame) ? handposmap[stance].at(frame) : vector2d<int16_t>();
+		return handposmap[stance].count(frame) ? handposmap[stance].at(frame) : Point<int16_t>();
 	}
 
-	vector2d<int16_t> BodyDrawinfo::getheadpos(Stance::Value stance, uint8_t frame) const
+	Point<int16_t> BodyDrawinfo::getheadpos(Stance::Value stance, uint8_t frame) const
 	{
-		return headposmap[stance].count(frame) ? headposmap[stance].at(frame) : vector2d<int16_t>();
+		return headposmap[stance].count(frame) ? headposmap[stance].at(frame) : Point<int16_t>();
 	}
 
-	vector2d<int16_t> BodyDrawinfo::gethairpos(Stance::Value stance, uint8_t frame) const
+	Point<int16_t> BodyDrawinfo::gethairpos(Stance::Value stance, uint8_t frame) const
 	{
-		return hairposmap[stance].count(frame) ? hairposmap[stance].at(frame) : vector2d<int16_t>();
+		return hairposmap[stance].count(frame) ? hairposmap[stance].at(frame) : Point<int16_t>();
 	}
 
-	vector2d<int16_t> BodyDrawinfo::getfacepos(Stance::Value stance, uint8_t frame) const
+	Point<int16_t> BodyDrawinfo::getfacepos(Stance::Value stance, uint8_t frame) const
 	{
-		return faceposmap[stance].count(frame) ? faceposmap[stance].at(frame) : vector2d<int16_t>();
+		return faceposmap[stance].count(frame) ? faceposmap[stance].at(frame) : Point<int16_t>();
 	}
 
 	uint8_t BodyDrawinfo::nextframe(Stance::Value stance, uint8_t frame) const

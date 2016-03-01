@@ -30,7 +30,7 @@
 
 #include "Gameplay\Playable.h"
 #include "Gameplay\Physics\Physics.h"
-#include "Gameplay\MovementInfo.h"
+#include "Gameplay\Movement.h"
 #include "Gameplay\Maplemap\MapInfo.h"
 #include "Gameplay\Attack.h"
 
@@ -39,7 +39,7 @@ namespace Character
 	using Net::CharEntry;
 	using Gameplay::Playable;
 	using Gameplay::Physics;
-	using Gameplay::MovementFragment;
+	using Gameplay::Movement;
 	using Gameplay::Ladder;
 	using Gameplay::Seat;
 	using Gameplay::Attack;
@@ -60,7 +60,7 @@ namespace Character
 		void setstate(State stance) override;
 
 		// Respawn the player at the given position.
-		void respawn(vector2d<int16_t> position);
+		void respawn(Point<int16_t> position);
 		// Sends a Keyaction to the player's state, to apply forces, change the state and other behaviour.
 		void sendaction(Keyboard::Action action, bool pressed);
 		// Recalculates the total stats from base stats, inventories and skills.
@@ -139,8 +139,8 @@ namespace Character
 
 		map<Keyboard::Action, bool> keysdown;
 
-		vector<MovementFragment> movements;
-		MovementFragment lastmove;
+		vector<Movement> movements;
+		Movement lastmove;
 		uint16_t sendcd;
 
 		const Ladder* ladder;

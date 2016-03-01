@@ -47,7 +47,7 @@ namespace IO
 		return &charsets[type];
 	}
 
-	DamageNumber::DamageNumber(Type t, int32_t damage, float a, vector2d<int16_t> pos)
+	DamageNumber::DamageNumber(Type t, int32_t damage, float a, Point<int16_t> pos)
 	{
 		type = t;
 		miss = damage == 0;
@@ -76,14 +76,16 @@ namespace IO
 
 	DamageNumber::~DamageNumber() {}
 
-	void DamageNumber::draw(vector2d<int16_t> viewpos) const
+	void DamageNumber::draw(Point<int16_t> viewpos) const
 	{
 		if (alpha > 1.0f)
 			return;
 
 		const std::pair<Charset, Charset>* charsets = getcharsets(type);
-		vector2d<int16_t> drawpos = 
-			vector2d<int16_t>(static_cast<int16_t>(fx), static_cast<int16_t>(fy)) + viewpos;
+		Point<int16_t> drawpos =  Point<int16_t>(
+			static_cast<int16_t>(fx), 
+			static_cast<int16_t>(fy)
+			) + viewpos;
 		if (miss)
 		{
 			charsets->second.draw('M', DrawArgument(drawpos, alpha));
@@ -98,7 +100,7 @@ namespace IO
 			{
 				charsets->second.draw(
 					restnum[i], 
-					DrawArgument(drawpos + vector2d<int16_t>(0, (i % 2 == 1) ? -6 : 0), 
+					DrawArgument(drawpos + Point<int16_t>(0, (i % 2 == 1) ? -6 : 0), 
 					alpha));
 				drawpos.shiftx(charsets->second.getw(restnum[i]) - 7);
 			}

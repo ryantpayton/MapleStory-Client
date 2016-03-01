@@ -33,7 +33,7 @@ namespace IO
 		BuffIcon();
 		~BuffIcon();
 
-		void draw(vector2d<int16_t> position) const;
+		void draw(Point<int16_t> position) const;
 
 		bool update();
 
@@ -50,7 +50,7 @@ namespace IO
 
 		void draw(float inter) const override;
 		void update() override;
-		Cursor::State sendmouse(bool pressed, vector2d<int16_t> position) override;
+		Cursor::State sendmouse(bool pressed, Point<int16_t> position) override;
 
 		void addbuff(int32_t buffid, int32_t duration);
 

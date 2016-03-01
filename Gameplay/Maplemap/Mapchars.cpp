@@ -22,10 +22,10 @@ namespace Gameplay
 	MapChars::MapChars() {}
 
 	void MapChars::addchar(int32_t cid, const LookEntry& look, uint8_t level,
-		int16_t job, string name, int8_t stance, vector2d<int16_t> pos) {
+		int16_t job, string name, int8_t stance, Point<int16_t> pos) {
 
-		OtherChar* otherchar = getchar(cid);
-		if (!otherchar)
+		bool newchar = getchar(cid).isempty();
+		if (newchar)
 		{
 			add(new OtherChar(cid, look, level, job, name, stance, pos));
 		}
@@ -36,21 +36,18 @@ namespace Gameplay
 		remove(cid);
 	}
 
-	void MapChars::movechar(int32_t cid, const vector<MovementFragment>& movements)
+	void MapChars::movechar(int32_t cid, const vector<Movement>& movements)
 	{
-		OtherChar* otherchar = getchar(cid);
+		Optional<OtherChar> otherchar = getchar(cid);
 		if (otherchar)
 		{
 			otherchar->sendmovement(movements);
 		}
 	}
 
-	OtherChar* MapChars::getchar(int32_t cid)
+	Optional<OtherChar> MapChars::getchar(int32_t cid)
 	{
-		MapObject* mmo = get(cid);
-		if (mmo)
-			return reinterpret_cast<OtherChar*>(mmo);
-		else
-			return nullptr;
+		return get(cid)
+			.reinterpret<OtherChar>();
 	}
 }

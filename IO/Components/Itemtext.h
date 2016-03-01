@@ -32,7 +32,7 @@ namespace IO
 		Itemtext();
 		~Itemtext();
 
-		void draw(vector2d<int16_t> position) const;
+		void draw(Point<int16_t> position) const;
 
 		int16_t getheight() const;
 
@@ -40,9 +40,9 @@ namespace IO
 		struct Line
 		{
 			Text text;
-			vector2d<int16_t> offset;
+			Point<int16_t> offset;
 
-			Line(Text t, vector2d<int16_t> o)
+			Line(Text t, Point<int16_t> o)
 			{
 				text = t;
 				offset = o;
@@ -50,6 +50,6 @@ namespace IO
 		};
 
 		vector<Line> lines;
-		vector2d<int16_t> layout;
+		Point<int16_t> dimensions;
 	};
 }

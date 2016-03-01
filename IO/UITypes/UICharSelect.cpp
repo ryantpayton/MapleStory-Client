@@ -41,22 +41,22 @@ namespace IO
 
 		using Graphics::Sprite;
 		sprites.push_back(nl::nx::ui["Login.img"]["Title"]["worldsel"]);
-		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Common"]["frame"], vector2d<int16_t>(400, 290)));
-		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Common"]["selectWorld"], vector2d<int16_t>(580, 42)));
-		sprites.push_back(Sprite(charsel["selectedWorld"]["icon"]["15"], vector2d<int16_t>(580, 42)));
-		sprites.push_back(Sprite(charsel["selectedWorld"]["name"]["15"], vector2d<int16_t>(580, 42)));
+		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Common"]["frame"], Point<int16_t>(400, 290)));
+		sprites.push_back(Sprite(nl::nx::ui["Login.img"]["Common"]["selectWorld"], Point<int16_t>(580, 42)));
+		sprites.push_back(Sprite(charsel["selectedWorld"]["icon"]["15"], Point<int16_t>(580, 42)));
+		sprites.push_back(Sprite(charsel["selectedWorld"]["name"]["15"], Point<int16_t>(580, 42)));
 
 		string channelid = std::to_string(Session::get().getlogin().getchannelid());
-		sprites.push_back(Sprite(charsel["selectedWorld"]["ch"][channelid], vector2d<int16_t>(580, 42)));
-		sprites.push_back(Sprite(charsel["charInfo"], vector2d<int16_t>(662, 355)));
+		sprites.push_back(Sprite(charsel["selectedWorld"]["ch"][channelid], Point<int16_t>(580, 42)));
+		sprites.push_back(Sprite(charsel["charInfo"], Point<int16_t>(662, 355)));
 
-		buttons[BT_ARBEIT] = unique_ptr<Button>(new MapleButton(charsel["arbeit"], vector2d<int16_t>(580, 115)));
-		buttons[BT_CARDS] = unique_ptr<Button>(new MapleButton(charsel["characterCard"], vector2d<int16_t>(665, 115)));
-		buttons[BT_CREATECHAR] = unique_ptr<Button>(new MapleButton(charsel["BtNew"], vector2d<int16_t>(200, 495)));
-		buttons[BT_DELETECHAR] = unique_ptr<Button>(new MapleButton(charsel["BtDelete"], vector2d<int16_t>(320, 495)));
-		buttons[BT_SELECTCHAR] = unique_ptr<Button>(new MapleButton(charsel["BtSelect"], vector2d<int16_t>(586, 427)));
-		buttons[BT_PAGELEFT] = unique_ptr<Button>(new MapleButton(charsel["pageL"], vector2d<int16_t>(100, 490)));
-		buttons[BT_PAGERIGHT] = unique_ptr<Button>(new MapleButton(charsel["pageR"], vector2d<int16_t>(490, 490)));
+		buttons[BT_ARBEIT] = unique_ptr<Button>(new MapleButton(charsel["arbeit"], Point<int16_t>(580, 115)));
+		buttons[BT_CARDS] = unique_ptr<Button>(new MapleButton(charsel["characterCard"], Point<int16_t>(665, 115)));
+		buttons[BT_CREATECHAR] = unique_ptr<Button>(new MapleButton(charsel["BtNew"], Point<int16_t>(200, 495)));
+		buttons[BT_DELETECHAR] = unique_ptr<Button>(new MapleButton(charsel["BtDelete"], Point<int16_t>(320, 495)));
+		buttons[BT_SELECTCHAR] = unique_ptr<Button>(new MapleButton(charsel["BtSelect"], Point<int16_t>(586, 427)));
+		buttons[BT_PAGELEFT] = unique_ptr<Button>(new MapleButton(charsel["pageL"], Point<int16_t>(100, 490)));
+		buttons[BT_PAGERIGHT] = unique_ptr<Button>(new MapleButton(charsel["pageR"], Point<int16_t>(490, 490)));
 
 		levelset = Charset(charsel["lv"], Charset::CENTER);
 		statsset = Charset(nl::nx::ui["StatusBar2.img"]["mainBar"]["gauge"]["number"], Charset::RIGHT);
@@ -81,7 +81,7 @@ namespace IO
 		{
 			sprites.push_back(Sprite(
 				charsel["buyCharacter"], 
-				vector2d<int16_t>(130 + (120 * (i % 4)), 250 + (200 * (i > 3))))
+				Point<int16_t>(130 + (120 * (i % 4)), 250 + (200 * (i > 3))))
 				);
 		}
 
@@ -117,8 +117,8 @@ namespace IO
 			joblabel.settext(stats.job.getname());
 		}
 
-		position = vector2d<int16_t>(0, 0);
-		dimension = vector2d<int16_t>(800, 600);
+		position = Point<int16_t>(0, 0);
+		dimension = Point<int16_t>(800, 600);
 		active = true;
 	}
 
@@ -131,13 +131,13 @@ namespace IO
 
 		for (uint8_t i = 0; i < charcount; i++)
 		{
-			vector2d<int16_t> charpos = getcharpos(i);
+			Point<int16_t> charpos = getcharpos(i);
 			charlooks[i].draw(charpos, inter);
 			nametags[i].draw(charpos);
 		}
 
-		namelabel.draw(vector2d<int16_t>(662, 270));
-		joblabel.draw(vector2d<int16_t>(732, 305));
+		namelabel.draw(Point<int16_t>(662, 270));
+		joblabel.draw(Point<int16_t>(732, 305));
 
 		if (selected < charcount)
 		{
@@ -244,8 +244,8 @@ namespace IO
 		CharLook look = CharLook(Session::get().getlogin().getchar(index).getlook());
 		short buttonindex = BT_CHAR0 + index;
 		buttons[buttonindex] = unique_ptr<Button>(new AreaButton(
-			vector2d<int16_t>(105 + (120 * (index % 4)), 170 + (200 * (index > 3))),
-			vector2d<int16_t>(50, 80)
+			Point<int16_t>(105 + (120 * (index % 4)), 170 + (200 * (index > 3))),
+			Point<int16_t>(50, 80)
 			));
 		if (index == selected)
 		{
@@ -263,8 +263,8 @@ namespace IO
 		buttons.erase(BT_CHAR0 + index);
 	}
 
-	vector2d<int16_t> UICharSelect::getcharpos(size_t i) const
+	Point<int16_t> UICharSelect::getcharpos(size_t i) const
 	{
-		return vector2d<int16_t>(130 + (120 * (i % 4)), 250 + (200 * (i > 3)));
+		return Point<int16_t>(130 + (120 * (i % 4)), 250 + (200 * (i > 3)));
 	}
 }

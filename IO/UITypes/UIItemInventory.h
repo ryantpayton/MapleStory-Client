@@ -58,11 +58,11 @@ namespace IO
 		void draw(float inter) const override;
 		void update() override;
 		void buttonpressed(uint16_t buttonid) override;
-		void doubleclick(vector2d<int16_t> position) override;
+		void doubleclick(Point<int16_t> position) override;
 		void icondropped(int16_t identifier) override;
-		void dropicon(vector2d<int16_t> position, Type type, int16_t identifier) override;
+		void dropicon(Point<int16_t> position, Type type, int16_t identifier) override;
 		void togglehide() override;
-		Cursor::State sendmouse(bool pressed, vector2d<int16_t> position) override;
+		Cursor::State sendmouse(bool pressed, Point<int16_t> position) override;
 
 		void modify(Inventory::Type type, int16_t pos, int8_t mode, int16_t arg);
 		void enablesort();
@@ -75,10 +75,14 @@ namespace IO
 		void updateslot(int16_t slot);
 
 		string getmesostr() const;
-		int16_t slotbypos(vector2d<int16_t> position) const;
-		vector2d<int16_t> getslotpos(int16_t slot) const;
-		vector2d<int16_t> gettabpos(Inventory::Type tab) const;
+
+		bool isvisible(int16_t slot) const;
+		bool isnotvisible(int16_t slot) const;
+
+		int16_t slotbypos(Point<int16_t> position) const;
 		uint16_t buttonbytab(Inventory::Type tab) const;
+		Point<int16_t> getslotpos(int16_t slot) const;
+		Point<int16_t> gettabpos(Inventory::Type tab) const;
 
 		const Inventory& inventory;
 
@@ -86,11 +90,11 @@ namespace IO
 		Animation newitemtab;
 		Texture projectile;
 		Text mesolabel;
-		Slider slider;
+		unique_ptr<Slider> slider;
 
 		EquipTooltip eqtooltip;
 		ItemTooltip ittooltip;
-		vector2d<int16_t> cursorposition;
+		Point<int16_t> cursorposition;
 		map<int16_t, Icon> icons;
 
 		Inventory::Type tab;

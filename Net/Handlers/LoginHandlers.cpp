@@ -34,6 +34,7 @@ namespace Net
 	using IO::ElementWorldSelect;
 	using IO::ElementCharSelect;
 	using IO::ElementCharcreation;
+	using IO::UILoginNotice;
 	using IO::UICharcreation;
 
 	void LoginResultHandler::handle(InPacket& recv) const
@@ -125,13 +126,12 @@ namespace Net
 		bool used = recv.readbool();
 
 		if (used)
-			UI::get().add(ElementLoginNotice(5));
+		{
+			UI::get().add(ElementLoginNotice(UILoginNotice::NAME_IN_USE));
+		}
 
 		// Notify character creation screen.
-		UICharcreation* uicc = UI::get().getelement<UICharcreation>(UIElement::CHARCREATION);
-
-		if (uicc)
-			uicc->nameresult(used);
+		UI::get().withelement(UIElement::CHARCREATION, &UICharcreation::nameresult, used);
 
 		UI::get().enable();
 	}
@@ -162,11 +162,11 @@ namespace Net
 		// Show the result to the user.
 		if (success)
 		{
-			UI::get().add(ElementLoginNotice(55));
+			UI::get().add(ElementLoginNotice(UILoginNotice::CASH_ITEMS_CONFIRM_DELETION));
 		}
 		else
 		{
-			UI::get().add(ElementLoginNotice(93));
+			UI::get().add(ElementLoginNotice(UILoginNotice::BIRTHDAY_INCORRECT));
 		}
 	}
 

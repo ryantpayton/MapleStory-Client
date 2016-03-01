@@ -22,7 +22,7 @@
 
 namespace Gameplay
 {
-	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, bool cnt, vector2d<int16_t> position)
+	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, bool cnt, Point<int16_t> position)
 	{
 		string strid = std::to_string(id);
 		strid.insert(0, 7 - strid.size(), '0');
@@ -86,7 +86,7 @@ namespace Gameplay
 		if (!active)
 			return;
 
-		vector2d<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
+		Point<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
 
 		if (animations.count(stance))
 		{
@@ -96,7 +96,7 @@ namespace Gameplay
 		if (!hidename)
 		{
 			namelabel.draw(absp);
-			funclabel.draw(absp + vector2d<int16_t>(0, 18));
+			funclabel.draw(absp + Point<int16_t>(0, 18));
 		}
 	}
 
@@ -132,11 +132,11 @@ namespace Gameplay
 		}
 	}
 
-	vector2d<int16_t> Npc::getdimensions() const
+	Point<int16_t> Npc::getdimensions() const
 	{
 		if (animations.count(stance))
 			return animations.at(stance).getdimensions();
 		else
-			return vector2d<int16_t>();
+			return Point<int16_t>();
 	}
 }

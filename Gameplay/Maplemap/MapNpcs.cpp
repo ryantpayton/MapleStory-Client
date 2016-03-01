@@ -22,21 +22,18 @@ namespace Gameplay
 	MapNpcs::MapNpcs() {}
 
 	void MapNpcs::addnpc(int32_t id, int32_t oid, bool flip, 
-		uint16_t fhid, bool control, vector2d<int16_t> position) {
+		uint16_t fhid, bool control, Point<int16_t> position) {
 
-		Npc* npc = getnpc(oid);
-		if (!npc)
+		bool newnpc = getnpc(oid).isempty();
+		if (newnpc)
 		{
 			add(new Npc(id, oid, flip, fhid, control, position));
 		}
 	}
 
-	Npc* MapNpcs::getnpc(int32_t oid)
+	Optional<Npc> MapNpcs::getnpc(int32_t oid)
 	{
-		MapObject* mmo = get(oid);
-		if (mmo)
-			return reinterpret_cast<Npc*>(mmo);
-		else
-			return nullptr;
+		return get(oid)
+			.reinterpret<Npc>();
 	}
 }
