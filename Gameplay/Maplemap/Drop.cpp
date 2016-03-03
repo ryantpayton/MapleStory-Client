@@ -57,7 +57,6 @@ namespace Gameplay
 
 	int8_t Drop::update(const Physics& physics)
 	{
-		phobj.setflag(PhysicsObject::IGNORETERRAIN);
 		physics.moveobject(phobj);
 
 		if (state == DROPPED && phobj.onground)

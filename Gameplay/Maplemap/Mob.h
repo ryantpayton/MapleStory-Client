@@ -45,7 +45,7 @@ namespace Gameplay
 	class Mob : public MapObject
 	{
 	public:
-		static const size_t NUM_STANCES = 5;
+		static const size_t NUM_STANCES = 6;
 		enum Stance : uint8_t
 		{
 			MOVE = 2,
@@ -59,7 +59,7 @@ namespace Gameplay
 		{
 			static const string stancenames[NUM_STANCES] =
 			{
-				"move", "stand", "jump", "hit1", "die1"
+				"move", "stand", "jump", "hit1", "die1", "fly"
 			};
 			size_t index = (stance - 1) / 2;
 			return stancenames[index];
@@ -101,6 +101,24 @@ namespace Gameplay
 			bool fromright;
 		};
 
+		static const size_t NUM_DIRECTIONS = 3;
+		enum FlyDirection
+		{
+			STRAIGHT,
+			UPWARDS,
+			DOWNWARDS
+		};
+
+		static FlyDirection nextdirection(const Randomizer& randomizer)
+		{
+			static const FlyDirection directions[NUM_DIRECTIONS] =
+			{
+				STRAIGHT, UPWARDS, DOWNWARDS
+			};
+			size_t index = randomizer.nextint(NUM_DIRECTIONS - 1);
+			return directions[index];
+		}
+
 		void applydamage(const DamageEffect& damageeffect);
 		void applyknockback(bool fromright);
 		void sendmovement();
@@ -116,6 +134,7 @@ namespace Gameplay
 		Sound diesound;
 		uint16_t level;
 		float speed;
+		float flyspeed;
 		uint16_t watk;
 		uint16_t matk;
 		uint16_t wdef;
@@ -127,7 +146,9 @@ namespace Gameplay
 		bool touchdamage;
 		bool noflip;
 		bool notattack;
+		bool canmove;
 		bool canjump;
+		bool canfly;
 
 		list<pair<Bullet, DamageEffect>> bulletlist;
 
@@ -145,6 +166,7 @@ namespace Gameplay
 		bool control;
 		Stance stance;
 		bool flip;
+		FlyDirection flydirection;
 		float walkforce;
 		int8_t hppercent;
 		bool fading;

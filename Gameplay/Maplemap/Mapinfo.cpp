@@ -44,18 +44,13 @@ namespace Gameplay
 		swim = info["swim"].get_bool();
 		town = info["town"].get_bool();
 
-		for (node sub : src["seat"])
+		for (node seat : src["seat"])
 		{
-			seats.push_back({ sub });
+			seats.push_back(seat);
 		}
 
-		for (node lrnode : src["ladderRope"])
+		for (node ladder : src["ladderRope"])
 		{
-			Ladder ladder;
-			ladder.x = lrnode["x"];
-			ladder.y1 = lrnode["y1"];
-			ladder.y2 = lrnode["y2"];
-			ladder.ladder = lrnode["l"].get_bool();
 			ladders.push_back(ladder);
 		}
 	}
@@ -77,20 +72,13 @@ namespace Gameplay
 		uint16_t numseats = recv.readshort();
 		for (uint16_t i = 0; i < numseats; i++)
 		{
-			Seat seat;
-			seat.pos = recv.readpoint();
-			seats.push_back(seat);
+			seats.push_back(recv);
 		}
 
 		uint16_t numladders = recv.readshort();
 		for (uint16_t i = 0; i < numladders; i++)
 		{
-			Ladder ladder;
-			ladder.x = recv.readshort();
-			ladder.y1 = recv.readshort();
-			ladder.y2 = recv.readshort();
-			ladder.ladder = recv.readbool();
-			ladders.push_back(ladder);
+			ladders.push_back(recv);
 		}
 	}
 
@@ -118,36 +106,13 @@ namespace Gameplay
 		return mapborders;
 	}
 
-	const Seat* MapInfo::findseat(Point<int16_t> pos) const
+	Optional<const Seat> MapInfo::findseat(Point<int16_t> position) const
 	{
-		Range<int16_t> hor = Range<int16_t>(pos.x() - 10, pos.x() + 10);
-		Range<int16_t> ver = Range<int16_t>(pos.y() - 10, pos.y() + 10);
-		for (auto& stit : seats)
-		{
-			if (hor.contains(stit.pos.x()) && ver.contains(stit.pos.y()))
-			{
-				return &stit;
-			}
-		}
-		return nullptr;
+		return Optional<Seat>::findfirst(seats, &Seat::inrange, position);
 	}
 
-	const Ladder* MapInfo::findladder(Point<int16_t> pos, bool up) const
+	Optional<const Ladder> MapInfo::findladder(Point<int16_t> position, bool upwards) const
 	{
-		Range<int16_t> hor = Range<int16_t>(pos.x() - 25, pos.x() + 25);
-		for (auto& lrit : ladders)
-		{
-			Range<int16_t> lrver;
-			if (up)
-				lrver = Range<int16_t>(lrit.y1, lrit.y2 + 15);
-			else
-				lrver = Range<int16_t>(lrit.y1 - 5, lrit.y2);
-
-			if (hor.contains(lrit.x) && lrver.contains(pos.y()))
-			{
-				return &lrit;
-			}
-		}
-		return nullptr;
+		return Optional<Ladder>::findfirst(ladders, &Ladder::inrange, position, upwards);
 	}
 }

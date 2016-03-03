@@ -16,8 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Singleton.h"
 #include "Camera.h"
+#include "Spawn.h"
 #include "Physics\Physics.h"
 #include "Maplemap\MapInfo.h"
 #include "Maplemap\MapLayer.h"
@@ -28,6 +28,7 @@
 #include "Maplemap\MapNpcs.h"
 #include "Maplemap\MapDrops.h"
 #include "Character\Player.h"
+#include "Util\Singleton.h"
 
 namespace Gameplay
 {
@@ -39,7 +40,7 @@ namespace Gameplay
 	public:
 		Stage();
 
-		// Call 'draw()' of  all objects on stage.
+		// Call 'draw()' of all objects on stage.
 		void draw(float inter) const;
 		// Calls 'update()' of all objects on stage.
 		void update();
@@ -55,6 +56,9 @@ namespace Gameplay
 		// Send a key input to the stage.
 		void sendkey(IO::Keyboard::Keytype keytype, int32_t keycode, bool pressed);
 
+		// Add a spawn to the spawn queue.
+		void queuespawn(const Spawn* spawn);
+
 		// Returns a reference to the npcs on the current map.
 		MapNpcs& getnpcs();
 		// Returns a reference to the other characters on the current map.
@@ -66,10 +70,14 @@ namespace Gameplay
 		// Returns a reference to the Player.
 		Player& getplayer();
 
+		// Returns a reference to the physics of the current map.
+		const Physics& getphysics() const;
+
 		// Return a pointer to a character, possibly the player.
 		Optional<Char> getcharacter(int32_t cid);
 
 	private:
+		void pollspawns();
 		void loadmap();
 		void respawn();
 		void checkportals();
@@ -98,6 +106,8 @@ namespace Gameplay
 		MapChars chars;
 		MapMobs mobs;
 		MapDrops drops;
+
+		vector<unique_ptr<const Spawn>> spawnqueue;
 
 		State state;
 		Optional<Playable> playable;

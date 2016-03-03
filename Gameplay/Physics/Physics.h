@@ -44,7 +44,6 @@ namespace Gameplay
 		void moveswimming(PhysicsObject&) const;
 
 		Footholdtree fht;
-		bool swimmap;
 	};
 }
 

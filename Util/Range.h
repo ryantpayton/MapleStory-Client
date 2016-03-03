@@ -163,6 +163,12 @@ public:
 		return Range<T>(-a, -b);
 	}
 
+	// Construct a symmetric range around mid.
+	static Range<T> symmetric(T mid, T tail)
+	{
+		return Range<T>(mid - tail, mid + tail);
+	}
+
 private:
 	T a;
 	T b;

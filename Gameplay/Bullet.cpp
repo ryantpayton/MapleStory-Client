@@ -24,7 +24,7 @@ namespace Gameplay
 		animation = a;
 		fx = origin.x() + (toleft ? -30.0f : 30.0f);
 		fy = origin.y() - 26.0f;
-		flip = toleft;
+		flip = !toleft;
 		hspeed = 0.0f;
 		vspeed = 0.0f;
 	}
@@ -50,7 +50,7 @@ namespace Gameplay
 		float ydelta = target.y() - fy;
 		hspeed = (hspeed + xdelta / 10) / 2;
 		vspeed = (vspeed + ydelta / 10) / 2;
-		flip = xdelta > 0.0f;
+		flip = xdelta < 0.0f;
 		lastx = fx;
 		lasty = fy;
 		fx += hspeed;

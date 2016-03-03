@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include <functional>
+#include <vector>
 #include <map>
 
 using std::function;
@@ -194,6 +195,19 @@ public:
 	T* operator ->() const
 	{
 		return ptr;
+	}
+
+	template<typename T, typename ...Args>
+	static Optional<const T> findfirst(const std::vector<T>& container, bool(T::*predicate)(Args...) const, Args... args)
+	{
+		for (auto& it : container)
+		{
+			if ((it.*predicate)(args...))
+			{
+				return it;
+			}
+		}
+		return Optional<const T>();
 	}
 
 	template <typename T, typename V>

@@ -101,7 +101,7 @@ namespace Gameplay
 		AudioPlayer::get().playbgm(mapinfo.getbgm());
 
 		Point<int16_t> startpos = physics.getgroundbelow(portals.getspawnpoint(portalid));
-		player.respawn(startpos);
+		player.respawn(startpos, mapinfo.isswimmap());
 		camera.setposition(startpos);
 		camera.updateview(mapinfo.getwalls(), mapinfo.getborders());
 	}
@@ -147,24 +147,47 @@ namespace Gameplay
 		physics.getfht().draw(viewpos);
 	}
 
+	void Stage::pollspawns()
+	{
+		while (spawnqueue.size() > 0)
+		{
+			const Spawn* spawn = spawnqueue.back().get();
+			switch (spawn->type())
+			{
+			case Spawn::NPC:
+				npcs.add(spawn->instantiate(physics));
+				break;
+			case Spawn::MOB:
+				mobs.add(spawn->instantiate(physics));
+				break;
+			case Spawn::CHARACTER:
+				chars.add(spawn->instantiate(physics));
+				break;
+			}
+			spawnqueue.pop_back();
+		}
+	}
+
 	void Stage::update()
 	{
-		if (state != ACTIVE)
-			return;
-
-		backgrounds.update();
-		for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
+		if (state == ACTIVE)
 		{
-			layers[i].update();
-		}
+			pollspawns();
 
-		npcs.update(physics);
-		mobs.update(physics);
-		chars.update(physics);
-		drops.update(physics);
-		player.update(physics);
-		portals.update(player.getbounds());
-		camera.update(player.getposition());
+			backgrounds.update();
+			for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
+			{
+				layers[i].update();
+			}
+
+			npcs.update(physics);
+			mobs.update(physics);
+			chars.update(physics);
+			drops.update(physics);
+			player.update(physics);
+			portals.update(player.getbounds());
+			camera.update(player.getposition());
+		}
 	}
 
 	void Stage::useskill(int32_t skillid)
@@ -206,7 +229,7 @@ namespace Gameplay
 			if (warpinfo->mapid == mapid)
 			{
 				Point<int16_t> spawnpoint = portals.getspawnpoint(warpinfo->portal);
-				player.respawn(spawnpoint);
+				player.respawn(spawnpoint, mapinfo.isswimmap());
 			}
 			else if (warpinfo->valid)
 			{
@@ -221,7 +244,7 @@ namespace Gameplay
 		if (player.issitting() || player.isattacking())
 			return;
 
-		const Seat* seat = mapinfo.findseat(player.getposition());
+		Optional<const Seat> seat = mapinfo.findseat(player.getposition());
 		player.setseat(seat);
 	}
 
@@ -230,7 +253,7 @@ namespace Gameplay
 		if (player.isclimbing() || player.isattacking())
 			return;
 
-		const Ladder* ladder = mapinfo.findladder(player.getposition(), up);
+		Optional<const Ladder> ladder = mapinfo.findladder(player.getposition(), up);
 		player.setladder(ladder);
 	}
 
@@ -290,6 +313,11 @@ namespace Gameplay
 		}
 	}
 
+	void Stage::queuespawn(const Spawn* spawn)
+	{
+		spawnqueue.push_back(unique_ptr<const Spawn>(spawn));
+	}
+
 	MapNpcs& Stage::getnpcs()
 	{
 		return npcs;
@@ -313,6 +341,11 @@ namespace Gameplay
 	Player& Stage::getplayer()
 	{
 		return player;
+	}
+
+	const Physics& Stage::getphysics() const
+	{
+		return physics;
 	}
 
 	Optional<Char> Stage::getcharacter(int32_t cid)

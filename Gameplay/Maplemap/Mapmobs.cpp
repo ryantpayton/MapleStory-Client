@@ -157,20 +157,6 @@ namespace Gameplay
 		return targets;
 	}
 
-	void MapMobs::addmob(int32_t oid, int32_t id, bool control, int8_t stance, 
-		uint16_t fhid, bool fadein, int8_t team, Point<int16_t> position) {
-
-		Optional<Mob> mob = getmob(oid);
-		if (mob)
-		{
-			mob->setactive(true);
-		}
-		else
-		{
-			add(new Mob(oid, id, control, stance, fhid, fadein, team, position));
-		}
-	}
-
 	void MapMobs::killmob(int32_t oid, int8_t animation)
 	{
 		getmob(oid)

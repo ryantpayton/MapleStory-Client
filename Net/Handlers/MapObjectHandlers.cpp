@@ -20,13 +20,16 @@
 #include "Audio\AudioPlayer.h"
 
 #include "Gameplay\Stage.h"
+#include "Gameplay\Spawn.h"
 
 namespace Net
 {
 	using Audio::AudioPlayer;
 	using Character::Char;
 	using Gameplay::Stage;
-	using Gameplay::MapNpcs;
+	using Gameplay::NpcSpawn;
+	using Gameplay::MobSpawn;
+
 	using Gameplay::MapMobs;
 	using Gameplay::MapChars;
 	using Gameplay::MapDrops;
@@ -42,7 +45,7 @@ namespace Net
 		recv.readshort(); // 'rx'
 		recv.readshort(); // 'ry'
 
-		Stage::get().getnpcs().addnpc(id, oid, flip, fh, true, position);
+		Stage::get().queuespawn(new NpcSpawn(oid, id, position, flip, fh));
 	}
 
 	void SpawnNpcControllerHandler::handle(InPacket& recv) const
@@ -58,21 +61,21 @@ namespace Net
 		{
 			int32_t id = recv.readint();
 			Point<int16_t> position = recv.readpoint();
-			bool f = recv.readbool();
+			bool flip = recv.readbool();
 			uint16_t fh = recv.readshort();
 
 			recv.readshort(); // 'rx'
 			recv.readshort(); // 'ry'
 			recv.readbool(); // 'minimap'
 
-			Stage::get().getnpcs().addnpc(id, oid, f, fh, true, position);
+			Stage::get().queuespawn(new NpcSpawn(oid, id, position, flip, fh));
 		}
 	}
 
 	void SpawnMobHandler::handle(InPacket& recv) const
 	{
 		int32_t oid = recv.readint();
-		bool hascontrol = recv.readbyte() == 5;
+		bool hascontrol = recv.readbyte() != 5;
 		int32_t id = recv.readint();
 
 		recv.skip(22);
@@ -99,7 +102,7 @@ namespace Net
 
 		recv.skip(4);
 
-		Stage::get().getmobs().addmob(oid, id, hascontrol, stance, fh, effect == -2, team, position);
+		Stage::get().queuespawn(new MobSpawn(oid, id, hascontrol, stance, fh, effect == -2, team, position));
 	}
 
 	void SpawnMobControllerHandler::handle(InPacket& recv) const
@@ -138,7 +141,7 @@ namespace Net
 
 		recv.skip(4);
 
-		Stage::get().getmobs().addmob(oid, id, true, stance, fh, effect == -2, team, position);
+		Stage::get().queuespawn(new MobSpawn(oid, id, true, stance, fh, effect == -2, team, position));
 	}
 
 	void ShowMobHpHandler::handle(InPacket& recv) const

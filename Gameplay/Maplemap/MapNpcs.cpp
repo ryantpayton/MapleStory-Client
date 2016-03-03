@@ -19,18 +19,6 @@
 
 namespace Gameplay
 {
-	MapNpcs::MapNpcs() {}
-
-	void MapNpcs::addnpc(int32_t id, int32_t oid, bool flip, 
-		uint16_t fhid, bool control, Point<int16_t> position) {
-
-		bool newnpc = getnpc(oid).isempty();
-		if (newnpc)
-		{
-			add(new Npc(id, oid, flip, fhid, control, position));
-		}
-	}
-
 	Optional<Npc> MapNpcs::getnpc(int32_t oid)
 	{
 		return get(oid)

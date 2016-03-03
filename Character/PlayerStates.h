@@ -17,423 +17,121 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Player.h"
-#include "Audio\AudioPlayer.h"
-#include "nlnx\nx.hpp"
 
 namespace Character
 {
 	using IO::Keyboard;
 
+	// Base class for player states
 	class PlayerState
 	{
 	public:
 		virtual ~PlayerState(){}
+
+		// Actions taken when transitioning into the state.
+		virtual void onentry(Player& player) const = 0;
+		// How to handle inputs while in the state.
 		virtual void sendaction(Player& player, Keyboard::Action action, bool pressed) const = 0;
+		// Actions taken in the player's update method, before physics are applied.
 		virtual void update(Player& player) const = 0;
+		// Transition into a new state after physics have been applied.
 		virtual void nextstate(Player& player) const = 0;
 
 	protected:
-		void playjumpsound() const
-		{
-			using Audio::AudioPlayer;
-			AudioPlayer::get().playsound(AudioPlayer::JUMP);
-		}
+		// Play the jumping sound.
+		void playjumpsound() const;
 	};
 
+	// The initial state, determines which state the player should be in.
 	class PlayerNullState : public PlayerState
 	{
 	public:
+		void onentry(Player&) const override {}
 		void sendaction(Player&, Keyboard::Action, bool) const override {}
-
 		void update(Player&) const override {}
 
-		void nextstate(Player& player) const override
-		{
-			Char::State state;
-			if (player.getphobj().onground)
-			{
-				if (player.keydown(Keyboard::LEFT))
-				{
-					state = Char::WALK;
-					player.setflip(false);
-				}
-				else if (player.keydown(Keyboard::RIGHT))
-				{
-					state = Char::WALK;
-					player.setflip(true);
-				}
-				else if (player.keydown(Keyboard::DOWN))
-				{
-					state = Char::PRONE;
-				}
-				else
-				{
-					state = Char::STAND;
-				}
-			}
-			else
-			{
-				PhysicsObject::PhType phtype = player.getphobj().type;
-				if (phtype == PhysicsObject::FLYING || phtype == PhysicsObject::SWIMMING)
-				{
-					state = Char::SWIM;
-				}
-				else
-				{
-					Optional<const Ladder> ladder = player.getladder();
-					if (ladder)
-					{
-						state = ladder->ladder ? Char::LADDER : Char::ROPE;
-					}
-					else
-					{
-						state = Char::FALL;
-					}
-				}
-			}
-			player.setstate(state);
-		}
+		void nextstate(Player& player) const override;
 	};
 
+	// The standing state.
 	class PlayerStandState : public PlayerState
 	{
-		void sendaction(Player& player, Keyboard::Action ka, bool down) const override
-		{
-			if (down)
-			{
-				switch (ka)
-				{
-				case Keyboard::LEFT:
-					player.setflip(false);
-					player.setstate(Char::WALK);
-					break;
-				case Keyboard::RIGHT:
-					player.setflip(true);
-					player.setstate(Char::WALK);
-					break;
-				case Keyboard::JUMP:
-					playjumpsound();
-					player.getphobj().vforce = -player.getjforce();
-					break;
-				case Keyboard::DOWN:
-					player.setstate(Char::PRONE);
-					break;
-				}
-			}
-		}
+	public:
+		void onentry(Player& player) const override;
+		void sendaction(Player& player, Keyboard::Action ka, bool down) const override;
 
 		void update(Player&) const override {}
 
-		void nextstate(Player& player) const override
-		{
-			if (!player.getphobj().onground)
-			{
-				player.setstate(Char::FALL);
-			}
-		}
+		void nextstate(Player& player) const override;
 	};
 
+	// The walking state.
 	class PlayerWalkState : public PlayerState
 	{
-		void sendaction(Player& player, Keyboard::Action ka, bool down) const override
-		{
-			if (down)
-			{
-				switch (ka)
-				{
-				case Keyboard::LEFT:
-					player.setflip(false);
-					break;
-				case Keyboard::RIGHT:
-					player.setflip(true);
-					break;
-				case Keyboard::JUMP:
-					playjumpsound();
-					player.getphobj().vforce = -player.getjforce();
-					break;
-				case Keyboard::DOWN:
-					player.setstate(Char::PRONE);
-					break;
-				}
-			}
-		}
+		void onentry(Player& player) const override;
+		void sendaction(Player& player, Keyboard::Action ka, bool down) const override;
+		void update(Player& player) const override;
+		void nextstate(Player& player) const override;
 
-		bool haswalkinput(const Player& player) const
-		{
-			return player.keydown(Keyboard::LEFT) || player.keydown(Keyboard::RIGHT);
-		}
-
-		void update(Player& player) const override
-		{
-			if (player.isattacking())
-				return;
-
-			if (haswalkinput(player))
-				player.getphobj().hforce += player.getflip() ? player.getwforce() : -player.getwforce();
-		}
-
-		void nextstate(Player& player) const override
-		{
-			if (player.getphobj().onground)
-			{
-				if (!haswalkinput(player) || player.getphobj().hspeed == 0.0f)
-					player.setstate(Char::STAND);
-			}
-			else
-			{
-				player.setstate(Char::FALL);
-			}
-		}
+	private:
+		bool haswalkinput(const Player& player) const;
 	};
 
+	// The falling state.
 	class PlayerFallState : public PlayerState
 	{
+	public:
+		void onentry(Player& player) const override;
+
 		void sendaction(Player&, Keyboard::Action, bool) const override {}
+		void update(Player&) const override {}
 
-		void update(Player& player) const override 
-		{
-			player.getphobj().clearflag(PhysicsObject::NOGRAVITY);
-		}
-
-		void nextstate(Player& player) const override
-		{
-			if (!player.getphobj().onground)
-			{
-				if (player.getphobj().type == PhysicsObject::SWIMMING)
-				{
-					player.setstate(Char::SWIM);
-				}
-				return;
-			}
-
-			if (player.keydown(Keyboard::LEFT))
-			{
-				player.setflip(false);
-				player.setstate(Char::WALK);
-			}
-			else if (player.keydown(Keyboard::RIGHT))
-			{
-				player.setflip(true);
-				player.setstate(Char::WALK);
-			}
-			else
-			{
-				player.setstate(Char::STAND);
-			}
-		}
+		void nextstate(Player& player) const override;
 	};
 
+	// The prone state (lying down).
 	class PlayerProneState : public PlayerState
 	{
-		void sendaction(Player& player, Keyboard::Action ka, bool down) const override
-		{
-			if (down)
-			{
-				switch (ka)
-				{
-				case Keyboard::JUMP:
-					if (player.getphobj().enablejd && player.keydown(Keyboard::DOWN))
-					{
-						playjumpsound();
-						player.getphobj().gobelowground();
-						player.setstate(Char::FALL);
-					}
-					else
-					{
-						player.setstate(Char::STAND);
-						player.sendaction(ka, down);
-					}
-					break;
-				}
-			}
-			else
-			{
-				switch (ka)
-				{
-				case Keyboard::DOWN:
-					player.setstate(Char::STAND);
-					break;
-				}
-			}
-		}
+	public:
+		void onentry(Player&) const override {}
+
+		void sendaction(Player& player, Keyboard::Action ka, bool down) const override;
 
 		void update(Player&) const override {}
-
 		void nextstate(Player&) const override {}
 	};
 
+	// The sitting state.
 	class PlayerSitState : public PlayerState
 	{
-		void sendaction(Player& player, Keyboard::Action ka, bool down) const override
-		{
-			if (down)
-			{
-				switch (ka)
-				{
-				case Keyboard::LEFT:
-					player.setflip(false);
-					player.setstate(Char::WALK);
-					break;
-				case Keyboard::RIGHT:
-					player.setflip(true);
-					player.setstate(Char::WALK);
-					break;
-				case Keyboard::JUMP:
-					playjumpsound();
-					player.setstate(Char::STAND);
-					break;
-				case Keyboard::UP:
-					player.setstate(Char::SWIM);
-					break;
-				}
-			}
-		}
+	public:
+		void onentry(Player&) const override {}
+
+		void sendaction(Player& player, Keyboard::Action ka, bool down) const override;
 
 		void update(Player&) const override {}
-
 		void nextstate(Player&) const override {}
 	};
 
+	// The flying or swimming state.
 	class PlayerFlyState : public PlayerState
 	{
-		void sendaction(Player& player, Keyboard::Action ka, bool down) const override
-		{
-			if (down)
-			{
-				switch (ka)
-				{
-				case Keyboard::LEFT:
-					player.setflip(false);
-					break;
-				case Keyboard::RIGHT:
-					player.setflip(true);
-					break;
-				case Keyboard::JUMP:
-					if (abs(player.getphobj().hspeed) < 2.5f && abs(player.getphobj().vspeed) < 2.5f)
-					{
-						playjumpsound();
-
-						float FLYJUMPFORCE = player.getflyforce() * 20;
-						player.getphobj().vforce = -FLYJUMPFORCE;
-						player.getphobj().hforce = player.getflip() ? FLYJUMPFORCE : -FLYJUMPFORCE;
-					}
-					break;
-				}
-			}
-		}
-
-		void update(Player& player) const override
-		{
-			if (player.keydown(Keyboard::LEFT))
-				player.getphobj().hforce = -player.getflyforce();
-			else if (player.keydown(Keyboard::RIGHT))
-				player.getphobj().hforce = player.getflyforce();
-
-			if (player.keydown(Keyboard::UP))
-				player.getphobj().vforce = -player.getflyforce();
-			else if (player.keydown(Keyboard::DOWN))
-				player.getphobj().vforce = player.getflyforce();
-		}
-
-		void nextstate(Player& player) const override 
-		{
-			switch (player.getphobj().type)
-			{
-			case PhysicsObject::NORMAL:
-				if (player.getphobj().onground)
-				{
-					Char::State state;
-					if (player.keydown(Keyboard::LEFT))
-					{
-						state = Char::WALK;
-						player.setflip(false);
-					}
-					else if (player.keydown(Keyboard::RIGHT))
-					{
-						state = Char::WALK;
-						player.setflip(true);
-					}
-					else if (player.keydown(Keyboard::DOWN))
-					{
-						state = Char::PRONE;
-					}
-					else
-					{
-						state = Char::STAND;
-					}
-					player.setstate(state);
-				}
-				break;
-			}
-		}
+		void onentry(Player& player) const override;
+		void sendaction(Player& player, Keyboard::Action ka, bool down) const override;
+		void update(Player& player) const override;
+		void nextstate(Player& player) const override;
 	};
 
+	// The climbing state.
 	class PlayerClimbState : public PlayerState
 	{
 	public:
-		void sendaction(Player& player, Keyboard::Action ka, bool down) const override
-		{
-			if (down)
-			{
-				switch (ka)
-				{
-				case Keyboard::JUMP:
-					if (player.keydown(Keyboard::LEFT))
-					{
-						playjumpsound();
-						player.setflip(false);
-						player.getphobj().hspeed = -player.getwforce() * 3.0f;
-						player.getphobj().vforce = -player.getjforce() / 1.5f;
-						cancelladder(player);
-					}
-					else if (player.keydown(Keyboard::RIGHT))
-					{
-						playjumpsound();
-						player.setflip(true);
-						player.getphobj().hspeed = player.getwforce() * 3.0f;
-						player.getphobj().vforce = -player.getjforce() / 1.5f;
-						cancelladder(player);
-					}
-					break;
-				}
-			}
-		}
-
-		void update(Player& player) const override
-		{
-			player.getphobj().type = PhysicsObject::CLIMBING;
-			player.getphobj().setflag(PhysicsObject::IGNORETERRAIN);
-
-			if (player.keydown(Keyboard::UP))
-				player.getphobj().vspeed = -player.getclimbforce();
-			else if (player.keydown(Keyboard::DOWN))
-				player.getphobj().vspeed = player.getclimbforce();
-			else
-				player.getphobj().vspeed = 0.0f;
-		}
-
-		void nextstate(Player& player) const override
-		{
-			Optional<const Ladder> ladder = player.getladder();
-			if (ladder)
-			{
-				double cfy;
-				if (player.keydown(Keyboard::DOWN))
-					cfy = player.getphobj().fy;
-				else
-					cfy = player.getphobj().fy - 15;
-
-				if (cfy > ladder->y2 || player.getphobj().fy + 5 < ladder->y1)
-					cancelladder(player);
-			}
-		}
+		void onentry(Player& player) const override;
+		void sendaction(Player& player, Keyboard::Action ka, bool down) const override;
+		void update(Player& player) const override;
+		void nextstate(Player& player) const override;
 
 	private:
-		void cancelladder(Player& player) const
-		{
-			player.setstate(Char::FALL);
-			player.getphobj().type = PhysicsObject::NORMAL;
-			player.setladder(nullptr);
-		}
+		void cancelladder(Player& player) const;
 	};
 }

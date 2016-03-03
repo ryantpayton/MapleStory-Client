@@ -18,6 +18,7 @@
 #pragma once
 #include "Util\Point.h"
 #include "Util\Range.h"
+#include "Util\Optional.h"
 #include "Net\InPacket.h"
 #include "nlnx\node.hpp"
 #include <vector>
@@ -29,13 +30,80 @@ namespace Gameplay
 	using nl::node;
 	using Net::InPacket;
 
-	struct Seat
+	class Seat
 	{
+	public:
+		Seat(node src)
+		{
+			pos = src;
+		}
+
+		Seat(InPacket& recv)
+		{
+			pos = recv.readpoint();
+		}
+
+		bool inrange(Point<int16_t> position) const
+		{
+			auto hor = Range<int16_t>::symmetric(position.x(), 10);
+			auto ver = Range<int16_t>::symmetric(position.y(), 10);
+			return hor.contains(pos.x()) && ver.contains(pos.y());
+		}
+
+		Point<int16_t> getpos() const
+		{
+			return pos;
+		}
+
+	private:
 		Point<int16_t> pos;
 	};
 
-	struct Ladder
+	class Ladder
 	{
+	public:
+		Ladder(node src)
+		{
+			x = src["x"];
+			y1 = src["y1"];
+			y2 = src["y2"];
+			ladder = src["l"].get_bool();
+		}
+
+		Ladder(InPacket& recv)
+		{
+			x = recv.readshort();
+			y1 = recv.readshort();
+			y2 = recv.readshort();
+			ladder = recv.readbool();
+		}
+
+		bool isladder() const
+		{
+			return ladder;
+		}
+
+		bool inrange(Point<int16_t> position, bool upwards) const
+		{
+			auto hor = Range<int16_t>::symmetric(position.x(), 25);
+			auto ver = upwards ?
+				Range<int16_t>(y1, y2 + 15) :
+				Range<int16_t>(y1 - 5, y2);
+			return hor.contains(x) && ver.contains(position.y());
+		}
+
+		bool felloff(int16_t y, bool downwards) const
+		{
+			int16_t dy = downwards ? y - 15 : y;
+			return dy > y2 || y + 5 < y1;
+		}
+
+		int16_t getx() const
+		{
+			return x;
+		}
+
+	private:
 		int16_t x;
 		int16_t y1;
 		int16_t y2;
@@ -55,8 +123,8 @@ namespace Gameplay
 		Range<int16_t> getwalls() const;
 		Range<int16_t> getborders() const;
 
-		const Seat* findseat(Point<int16_t> position) const;
-		const Ladder* findladder(Point<int16_t> position, bool upwards) const;
+		Optional<const Seat> findseat(Point<int16_t> position) const;
+		Optional<const Ladder> findladder(Point<int16_t> position, bool upwards) const;
 
 	private:
 		int32_t fieldlimit;

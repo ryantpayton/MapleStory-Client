@@ -24,11 +24,7 @@ namespace Gameplay
 	void MapChars::addchar(int32_t cid, const LookEntry& look, uint8_t level,
 		int16_t job, string name, int8_t stance, Point<int16_t> pos) {
 
-		bool newchar = getchar(cid).isempty();
-		if (newchar)
-		{
-			add(new OtherChar(cid, look, level, job, name, stance, pos));
-		}
+		add(new OtherChar(cid, look, level, job, name, stance, pos));
 	}
 
 	void MapChars::removechar(int32_t cid)

@@ -174,29 +174,28 @@ namespace Gameplay
 		{
 			bool left = phobj.hspeed < 0.0f;
 			double wall = getwall(phobj.fhid, left, nexty);
-			if (left)
-			{
-				if (phobj.fx >= wall && nextx <= wall)
-				{
-					phobj.hspeed = 0.0f;
-					phobj.fx = wall;
-				}
-			}
-			else
-			{
-				if (phobj.fx <= wall && nextx >= wall)
-				{
-					phobj.hspeed = 0.0f;
-					phobj.fx = wall;
-				}
-			}
+			bool collision = left ?
+				phobj.fx >= wall && nextx <= wall
+				: phobj.fx <= wall && nextx >= wall;
 
-			if (phobj.turnatedges)
+			if (collision)
+			{
+				phobj.hspeed = 0.0f;
+				phobj.fx = wall;
+			}
+			else if (phobj.flagset(PhysicsObject::TURNATEDGES))
 			{
 				double edge = getedge(phobj.fhid, left);
-				if (left ? nextx < edge : nextx > edge)
+				bool collision = left ? 
+					phobj.fx >= edge && nextx <= edge
+					: phobj.fx <= edge && nextx >= edge;
+
+				if (collision) 
 				{
 					phobj.hspeed = 0.0f;
+					phobj.fx = edge;
+
+					phobj.clearflag(PhysicsObject::TURNATEDGES);
 				}
 			}
 		}
@@ -235,7 +234,6 @@ namespace Gameplay
 
 		const Foothold& nextfh = getfh(phobj.fhid);
 		phobj.fhslope = nextfh.getslope();
-		phobj.fh = &nextfh;
 
 		double ground = nextfh.resolvex(phobj.fx);
 		if (phobj.vspeed == 0.0 && checkslope)
@@ -260,8 +258,9 @@ namespace Gameplay
 		uint16_t belowid = getbelow(phobj.fx, nextfh.resolvex(phobj.fx) + 1.0);
 		if (belowid > 0)
 		{
-			double jddelta = getfh(belowid).resolvex(phobj.fx) - ground;
-			phobj.enablejd = jddelta < 250.0;
+			double nextground = getfh(belowid).resolvex(phobj.fx);
+			phobj.enablejd = (nextground - ground) < 600.0;
+			phobj.groundbelow = ground + 1.0;
 		}
 		else
 		{
@@ -318,21 +317,32 @@ namespace Gameplay
 
 	double Footholdtree::getedge(uint16_t curid, bool left) const
 	{
+		const Foothold& fh = getfh(curid);
 		if (left)
 		{
-			uint16_t previd = getfh(curid).getprev();
-			if (previd)
-				return walls.first();
+			uint16_t previd = fh.getprev();
+			if (!previd)
+				return fh.getl();
 
-			return getfh(curid).getl();
+			const Foothold& prev = getfh(previd);
+			previd = prev.getprev();
+			if (!previd)
+				return prev.getl();
+
+			return walls.first();
 		}
 		else
 		{
-			uint16_t nextid = getfh(curid).getnext();
-			if (nextid)
-				return walls.second();
+			uint16_t nextid = fh.getnext();
+			if (!nextid)
+				return fh.getr();
 
-			return getfh(curid).getr();
+			const Foothold& next = getfh(nextid);
+			nextid = next.getnext();
+			if (!nextid)
+				return next.getr();
+
+			return walls.second();
 		}
 	}
 

@@ -77,7 +77,7 @@ namespace Character
 		sendcd = Constants::TIMESTEP;
 		active = true;
 		attacking = false;
-		ladder = nullptr;
+		underwater = false;
 
 		setstate(STAND);
 		setflip(false);
@@ -88,10 +88,11 @@ namespace Character
 		oid = 0;
 	}
 
-	void Player::respawn(Point<int16_t> pos)
+	void Player::respawn(Point<int16_t> pos, bool uw)
 	{
-		keysdown.clear();
 		setposition(pos.x(), pos.y());
+		underwater = uw;
+		keysdown.clear();
 		sendcd = Constants::TIMESTEP;
 		attacking = false;
 		ladder = nullptr;
@@ -396,26 +397,25 @@ namespace Character
 		return buffs.count(buff) > 0;
 	}
 
-	void Player::setseat(const Seat* seat)
+	void Player::setseat(Optional<const Seat> seat)
 	{
 		if (seat)
 		{
-			setposition(seat->pos.x(), seat->pos.y());
+			setposition(seat->getpos());
 			setstate(Char::SIT);
 		}
 	}
 
-	void Player::setladder(const Ladder* ldr)
+	void Player::setladder(Optional<const Ladder> ldr)
 	{
 		ladder = ldr;
 
 		if (ladder)
 		{
-			phobj.fx = ldr->x;
+			phobj.fx = ldr->getx();
 			phobj.hspeed = 0.0;
 			phobj.vspeed = 0.0;
-			phobj.setflag(PhysicsObject::NOGRAVITY);
-			setstate(ldr->ladder ? Char::LADDER : Char::ROPE);
+			setstate(ldr->isladder() ? Char::LADDER : Char::ROPE);
 			setflip(false);
 		}
 	}
@@ -429,7 +429,15 @@ namespace Character
 	void Player::setstate(State st)
 	{
 		if (!attacking)
+		{
 			Char::setstate(st);
+
+			const PlayerState* pst = getstate(st);
+			if (pst)
+			{
+				pst->onentry(*this);
+			}
+		}
 	}
 	
 	float Player::getwforce() const
@@ -450,6 +458,11 @@ namespace Character
 	float Player::getflyforce() const
 	{
 		return 0.25f;
+	}
+
+	bool Player::isunderwater() const
+	{
+		return underwater;
 	}
 
 	bool Player::keydown(Keyboard::Action action) const

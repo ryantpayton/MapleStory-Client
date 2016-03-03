@@ -60,7 +60,7 @@ namespace Character
 		void setstate(State stance) override;
 
 		// Respawn the player at the given position.
-		void respawn(Point<int16_t> position);
+		void respawn(Point<int16_t> position, bool underwater);
 		// Sends a Keyaction to the player's state, to apply forces, change the state and other behaviour.
 		void sendaction(Keyboard::Action action, bool pressed);
 		// Recalculates the total stats from base stats, inventories and skills.
@@ -101,15 +101,17 @@ namespace Character
 		// Returns the flying force.
 		float getflyforce() const;
 
+		// Return wether the player is underwater.
+		bool isunderwater() const;
 		// Returns if a Keyaction is currently active. 
 		bool keydown(Keyboard::Action action) const;
 		// Return a pointer to the ladder the player is on.
 		Optional<const Ladder> getladder() const;
 
 		// Change players position to the seat's position and stance to Char::SIT.
-		void setseat(const Seat* seat);
+		void setseat(Optional<const Seat> seat);
 		// Change players xpos to the ladder x and change stance to Char::LADDER or Char::ROPE.
-		void setladder(const Ladder* ladder);
+		void setladder(Optional<const Ladder> ladder);
 
 		// Obtain a reference to the player's stats.
 		CharStats& getstats();
@@ -143,7 +145,8 @@ namespace Character
 		Movement lastmove;
 		uint16_t sendcd;
 
-		const Ladder* ladder;
+		Optional<const Ladder> ladder;
+		bool underwater;
 
 		bool attacking;
 	};

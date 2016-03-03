@@ -31,8 +31,6 @@ namespace Gameplay
 	public:
 		void update(const Physics& physics) override;
 
-		void addmob(int32_t oid, int32_t mobid, bool control, int8_t stance, 
-			uint16_t fhid, bool fadein, int8_t team, Point<int16_t> position);
 		void killmob(int32_t oid, int8_t effect);
 		void sendmobhp(int32_t oid, int8_t percent, uint16_t playerlevel);
 		void sendattack(Attack attack);

@@ -16,77 +16,96 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Foothold.h"
+#include "Maplemap\MapObject.h"
+#include "Maplemap\Npc.h"
+#include "Maplemap\Mob.h"
+#include "Physics\Physics.h"
+#include <cstdint>
 
 namespace Gameplay
 {
-	// Struct that contains all properties neccessary for physics calculations.
-	struct PhysicsObject
+	class Spawn
 	{
-		// Determines which physics engine to use.
+	public:
 		enum Type
 		{
-			NORMAL,
-			ICE,
-			SWIMMING,
-			FLYING,
-			FIXATED
+			NPC,
+			MOB,
+			REACTOR,
+			CHARACTER
 		};
 
-		enum Flag
+		virtual ~Spawn() {}
+
+		virtual Type type() const = 0;
+		virtual MapObject* instantiate(const Physics& physics) const = 0;
+	};
+
+	class NpcSpawn : public Spawn
+	{
+	public:
+		NpcSpawn(int32_t o, int32_t i, Point<int16_t> p, bool fl, uint16_t f)
 		{
-			NOGRAVITY = 0x0001,
-			TURNATEDGES = 0x0002,
-		};
-
-		Type type = NORMAL;
-		int32_t flags = 0;
-		uint16_t fhid = 0;
-		double fhslope = 0.0;
-		int8_t fhlayer = 0;
-		double groundbelow = 0.0;
-		bool onground = true;
-		bool enablejd = false;
-		double mass = 1.0;
-		double fx = 0.0;
-		double fy = 0.0;
-		double hforce = 0.0;
-		double vforce = 0.0;
-		double hacc = 0.0;
-		double vacc = 0.0;
-		double hspeed = 0.0;
-		double vspeed = 0.0;
-
-		double lastx = 0.0;
-		double lasty = 0.0;
-
-		bool flagset(Flag f)
-		{
-			return (flags & f) != 0;
+			oid = o;
+			id = i;
+			position = p;
+			flip = fl;
+			fh = f;
 		}
 
-		bool flagnotset(Flag f)
+		Type type() const override
 		{
-			return !flagset(f);
+			return NPC;
 		}
 
-		void setflag(Flag f)
+		MapObject* instantiate(const Physics& physics) const override
 		{
-			flags |= f;
+			Point<int16_t> spawnposition = physics.getgroundbelow(position);
+			return new Npc(id, oid, flip, fh, false, spawnposition);
 		}
 
-		void clearflag(Flag f)
-		{
-			if (flagset(f))
-				flags ^= f;
+	private:
+		int32_t oid;
+		int32_t id;
+		Point<int16_t> position;
+		bool flip;
+		uint16_t fh;
+	};
+
+	class MobSpawn : public Spawn
+	{
+	public:
+		MobSpawn(int32_t o, int32_t i, bool c, int8_t st, uint16_t f,
+			bool ns, int8_t t, Point<int16_t> p) {
+
+			oid = o;
+			id = i;
+			control = c;
+			stance = st;
+			fh = f;
+			newspawn = ns;
+			team = t;
+			position = p;
 		}
 
-		Point<int16_t> getposition(float inter) const
+		Type type() const override
 		{
-			int16_t interx = static_cast<int16_t>((1.0f - inter) * lastx + inter * fx);
-			int16_t intery = static_cast<int16_t>((1.0f - inter) * lasty + inter * fy);
-			return Point<int16_t>(interx, intery);
+			return MOB;
 		}
+
+		MapObject* instantiate(const Physics&) const override
+		{
+			return new Mob(oid, id, control, stance, fh, newspawn, team, position);
+		}
+
+	private:
+		int32_t oid;
+		int32_t id;
+		bool control;
+		int8_t stance;
+		uint16_t fh;
+		bool newspawn;
+		int8_t team;
+		Point<int16_t> position;
 	};
 }
-

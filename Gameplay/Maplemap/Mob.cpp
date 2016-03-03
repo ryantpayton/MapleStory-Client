@@ -45,14 +45,25 @@ namespace Gameplay
 		avoid = info["eva"];
 		knockback = info["pushed"];
 		speed = info["speed"];
+		flyspeed = info["flySpeed"];
 		touchdamage = info["bodyAttack"].get_bool();
 		undead = info["undead"].get_bool();
 		noflip = info["noFlip"].get_bool();
 		notattack = info["notAttack"].get_bool();
 		canjump = src["jump"].size() > 0;
+		canfly = src["fly"].size() > 0;
+		canmove = src["move"].size() > 0 || canfly;
 
-		animations[STAND] = src["stand"];
-		animations[MOVE] = src["move"];
+		if (canfly)
+		{
+			animations[STAND] = src["fly"];
+			animations[MOVE] = src["fly"];
+		}
+		else
+		{
+			animations[STAND] = src["stand"];
+			animations[MOVE] = src["move"];
+		}
 		animations[JUMP] = src["jump"];
 		animations[HIT] = src["hit1"];
 		animations[DIE] = src["die1"];
@@ -66,12 +77,18 @@ namespace Gameplay
 		speed += 100;
 		speed *= 0.003f;
 
+		flyspeed += 100;
+		flyspeed *= 0.0005f;
+
+		if (canfly)
+			phobj.type = PhysicsObject::FLYING;
+
 		oid = oi;
 		id = mid;
 		team = tm;
 		control = cnt;
 		phobj.fhid = fh;
-		phobj.turnatedges = true;
+		phobj.setflag(PhysicsObject::TURNATEDGES);
 		setposition(position);
 
 		active = true;
@@ -81,6 +98,7 @@ namespace Gameplay
 			st -= 1;
 		stance = static_cast<Stance>(st);
 		fading = false;
+		flydirection = STRAIGHT;
 		counter = 0;
 
 		namelabel = Text(Text::A13M, Text::CENTER, Text::WHITE);
@@ -170,17 +188,52 @@ namespace Gameplay
 
 		if (control && stance != DIE)
 		{
+			if (!canfly)
+			{
+				if (phobj.flagnotset(PhysicsObject::TURNATEDGES))
+				{
+					flip = !flip;
+					phobj.setflag(PhysicsObject::TURNATEDGES);
+				}
+			}
+
 			switch (stance)
 			{
 			case MOVE:
-				phobj.hforce = flip ? speed : -speed;
-				if (canjump && phobj.onground && counter > 50 && counter < 150 && randomizer.below(0.005f))
+				if (canfly)
 				{
-					phobj.vforce = -5.0f;
+					phobj.hforce = flip ? flyspeed : -flyspeed;
+					switch (flydirection)
+					{
+					case UPWARDS:
+						phobj.vforce = -flyspeed;
+						break;
+					case DOWNWARDS:
+						phobj.vforce = flyspeed;
+						break;
+					}
+				}
+				else
+				{
+					phobj.hforce = flip ? speed : -speed;
+					if (canjump && phobj.onground && counter > 50 && counter < 150 && randomizer.below(0.005f))
+					{
+						phobj.vforce = -5.0f;
+					}
 				}
 				break;
 			case HIT:
-				phobj.hforce = flip ? -0.5f : 0.5f;
+				if (canmove)
+				{
+					if (phobj.onground)
+					{
+						phobj.hforce = flip ? -0.5f : 0.5f;
+					}
+					else
+					{
+						phobj.hforce = flip ? -0.2f : 0.2f;
+					}
+				}
 				break;
 			}
 
@@ -200,28 +253,40 @@ namespace Gameplay
 
 	void Mob::nextmove()
 	{
-		switch (stance)
+		if (canmove)
 		{
-		case STAND:
-			setstance(MOVE);
-			flip = randomizer.nextbool();
-			break;
-		case MOVE:
-		case HIT:
-			switch (randomizer.nextint(2))
+			switch (stance)
 			{
-			case 0:
-				setstance(STAND);
-				break;
-			case 1:
+			case STAND:
 				setstance(MOVE);
-				flip = false;
+				flip = randomizer.nextbool();
 				break;
-			case 2:
-				setstance(MOVE);
-				flip = true;
-				break;
+			case MOVE:
+			case HIT:
+				switch (randomizer.nextint(2))
+				{
+				case 0:
+					setstance(STAND);
+					break;
+				case 1:
+					setstance(MOVE);
+					flip = false;
+					break;
+				case 2:
+					setstance(MOVE);
+					flip = true;
+					break;
+				}
 			}
+
+			if (stance == MOVE && canfly)
+			{
+				flydirection = nextdirection(randomizer);
+			}
+		}
+		else
+		{
+			setstance(STAND);
 		}
 	}
 

@@ -16,15 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Physics.h"
+#include <functional>
 
 namespace Gameplay
 {
 	const double GRAVFORCE = 0.2f;
-	const double SWIMGRAVFORCE = 0.05f;
+	const double SWIMGRAVFORCE = 0.03f;
 	const double FRICTION = 0.3f;
 	const double SLOPEFACTOR = 0.1f;
 	const double FLYFRICTION = 0.05f;
-	const double SWIMFRICTION = 0.07f;
+	const double SWIMFRICTION = 0.08f;
 
 	Physics::Physics() {}
 
@@ -33,7 +34,6 @@ namespace Gameplay
 	void Physics::load(node src)
 	{
 		fht = Footholdtree(src["foothold"]);
-		swimmap = src["info"]["swim"].get_bool();
 	}
 
 	void Physics::parsefht(InPacket& recv)
@@ -45,19 +45,6 @@ namespace Gameplay
 	{
 		// Determine which platform the object is currently on.
 		fht.updatefh(phobj);
-
-		// Change the physics type to the terrain type of the map.
-		if (phobj.flagnotset(PhysicsObject::IGNORETERRAIN))
-		{
-			if (!phobj.onground && swimmap)
-				phobj.type = PhysicsObject::SWIMMING;
-			else
-				phobj.type = PhysicsObject::NORMAL;
-		}
-		else
-		{
-			phobj.clearflag(PhysicsObject::IGNORETERRAIN);
-		}
 
 		// Use the appropriate physics for the terrain the object is on.
 		switch (phobj.type)
@@ -74,7 +61,7 @@ namespace Gameplay
 			moveswimming(phobj);
 			fht.limitmoves(phobj);
 			break;
-		case PhysicsObject::CLIMBING:
+		case PhysicsObject::FIXATED:
 			break;
 		}
 
