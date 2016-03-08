@@ -16,36 +16,49 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Character\Inventory\Inventory.h"
 #include "Graphics\Texture.h"
-#include "IO\Element.h"
+#include <memory>
 
 namespace IO
 {
+	using std::unique_ptr;
 	using Graphics::Texture;
+	using Character::Inventory;
+	using Character::Equipslot;
 
 	class Icon
 	{
 	public:
-		Icon(Texture texture, UIElement::Type parent, int16_t identifier, int16_t count);
+		class Type
+		{
+		public:
+			virtual ~Type() {}
+
+			virtual void ondrop() const = 0;
+			virtual void ondropequips(Equipslot::Value eqslot) const = 0;
+			virtual void ondropitems(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const = 0;
+		};
+
+		Icon(Type* type, Texture texture, int16_t count);
 		Icon();
-		~Icon();
 
 		void draw(Point<int16_t> position) const;
 		void dragdraw(Point<int16_t> cursorpos) const;
 
+		void drop() const;
+		void droponequips(Equipslot::Value eqslot) const;
+		void droponitems(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const;
+
 		void startdrag(Point<int16_t> offset);
 		void resetdrag();
-		void setidentifier(int16_t identifier);
 		void setcount(int16_t count);
 
 		int16_t getcount() const;
-		int16_t getidentifier() const;
-		UIElement::Type getparent() const;
 
 	private:
+		unique_ptr<Type> type;
 		Texture texture;
-		UIElement::Type parent; 
-		int16_t identifier;
 		bool showcount;
 		int16_t count;
 

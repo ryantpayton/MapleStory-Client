@@ -22,6 +22,9 @@
 
 namespace IO
 {
+	using Data::DataFactory;
+	using Character::ItemData;
+
 	ItemTooltip::ItemTooltip()
 	{
 		node itemtt = nl::nx::ui["UIToolTip.img"]["Item"];
@@ -36,13 +39,6 @@ namespace IO
 		itemid = 0;
 	}
 
-	ItemTooltip::~ItemTooltip() {}
-
-	void ItemTooltip::clear()
-	{
-		itemid = 0;
-	}
-
 	void ItemTooltip::setitem(int32_t iid)
 	{
 		if (itemid == iid)
@@ -53,8 +49,6 @@ namespace IO
 		if (itemid == 0)
 			return;
 
-		using Data::DataFactory;
-		using Character::ItemData;
 		const ItemData& idata = DataFactory::get().getitemdata(itemid);
 
 		itemicon = idata.geticon(false);
@@ -85,9 +79,7 @@ namespace IO
 
 		base.draw(pos + Point<int16_t>(10, 10));
 		shade.draw(pos + Point<int16_t>(10, 10));
-		itemicon.draw(
-			DrawArgument(pos + Point<int16_t>(20, 82), 2.0f, 2.0f)
-			);
+		itemicon.draw(DrawArgument(pos + Point<int16_t>(20, 82), 2.0f, 2.0f));
 		cover.draw(pos + Point<int16_t>(10, 10));
 
 		desc.draw(pos + Point<int16_t>(100, 6));

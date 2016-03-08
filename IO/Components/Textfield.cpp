@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Textfield.h"
 #include "Constants.h"
+#include "IO\UI.h"
 
 namespace IO
 {
@@ -32,23 +33,21 @@ namespace IO
 		markerpos = 0;
 		crypt = 0;
 		state = NORMAL;
-		onreturn = nullptr;
 	}
 
 	Textfield::Textfield()
 	{
 		text = "";
-		onreturn = nullptr;
 	}
 
 	Textfield::~Textfield() {}
 
-	void Textfield::draw(Point<int16_t> parentpos) const
+	void Textfield::draw(Point<int16_t> parent) const
 	{
 		if (state == DISABLED)
 			return;
 		
-		Point<int16_t> absp = bounds.getlt() + parentpos;
+		Point<int16_t> absp = bounds.getlt() + parent;
 		if (text.size() > 0)
 		{
 			textlabel.draw(absp);
@@ -61,10 +60,12 @@ namespace IO
 		}
 	}
 
-	void Textfield::update()
+	void Textfield::update(Point<int16_t> parent)
 	{
 		if (state == DISABLED)
 			return;
+
+		parentpos = parent;
 
 		elapsed += Constants::TIMESTEP;
 		if (elapsed > 256)
@@ -81,12 +82,22 @@ namespace IO
 			state = st;
 			elapsed = 0;
 			showmarker = true;
+
+			if (state == FOCUSED)
+			{
+				UI::get().focustextfield(this);
+			}
 		}
 	}
 
-	void Textfield::setonreturn(void(*or)(string))
+	void Textfield::setonreturn(function<void(string)> or)
 	{
 		onreturn = or;
+	}
+
+	void Textfield::setkey(Keyboard::Action key, function<void(void)> action)
+	{
+		callbacks[key] = action;
 	}
 
 	void Textfield::sendkey(Keyboard::Keytype type, int32_t key, bool pressed)
@@ -119,9 +130,9 @@ namespace IO
 					}
 					break;
 				case Keyboard::RETURN:
-					if (onreturn)
+					if (onreturn && text.size() > 0)
 					{
-						(*onreturn)(text);
+						onreturn(text);
 						text = "";
 						markerpos = 0;
 						modifytext(text);
@@ -133,6 +144,12 @@ namespace IO
 						text.insert(markerpos, 1, ' ');
 						markerpos++;
 						modifytext(text);
+					}
+					break;
+				default:
+					if (callbacks.count(key))
+					{
+						callbacks.at(key)();
 					}
 					break;
 				}
@@ -170,6 +187,44 @@ namespace IO
 		text = t;
 	}
 
+	Cursor::State Textfield::sendcursor(Point<int16_t> cursorpos, bool clicked)
+	{
+		if (state == DISABLED)
+			return Cursor::IDLE;
+
+		auto bounds = getbounds();
+		if (bounds.contains(cursorpos))
+		{
+			if (clicked)
+			{
+				switch (state)
+				{
+				case NORMAL:
+					setstate(FOCUSED);
+					break;
+				}
+				return Cursor::CLICKING;
+			}
+			else
+			{
+				return Cursor::CANCLICK;
+			}
+		}
+		else
+		{
+			if (clicked)
+			{
+				switch (state)
+				{
+				case FOCUSED:
+					setstate(NORMAL);
+					break;
+				}
+			}
+			return Cursor::IDLE;
+		}
+	}
+
 	void Textfield::settext(string t)
 	{
 		modifytext(t);
@@ -204,11 +259,8 @@ namespace IO
 		return state;
 	}
 
-	rectangle2d<int16_t> Textfield::getbounds(Point<int16_t> parentpos) const
+	rectangle2d<int16_t> Textfield::getbounds() const
 	{
-		return rectangle2d<int16_t>(
-			bounds.getlt() + parentpos,
-			bounds.getrb() + parentpos
-			);
+		return rectangle2d<int16_t>(bounds.getlt() + parentpos, bounds.getrb() + parentpos);
 	}
 }

@@ -59,7 +59,7 @@ namespace Graphics
 				head = src["head"];
 				delay = src["delay"];
 				if (delay == 0)
-					delay = 50;
+					delay = 100;
 
 				uint8_t a0;
 				uint8_t a1;

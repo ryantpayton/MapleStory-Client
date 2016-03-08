@@ -74,7 +74,8 @@ namespace Net
 	class EquipItemPacket : public MoveItemPacket
 	{
 	public:
-		EquipItemPacket(int16_t src, Equipslot::Value dest) : MoveItemPacket(Inventory::EQUIP, src, -Equipslot::valueof(dest), 1) {}
+		EquipItemPacket(int16_t src, Equipslot::Value dest) 
+			: MoveItemPacket(Inventory::EQUIP, src, -Equipslot::valueof(dest), 1) {}
 	};
 
 
@@ -83,7 +84,8 @@ namespace Net
 	class UnequipItemPacket : public MoveItemPacket
 	{
 	public:
-		UnequipItemPacket(int16_t src, int16_t dest) : MoveItemPacket(Inventory::EQUIPPED, -src, dest, 1) {}
+		UnequipItemPacket(int16_t src, int16_t dest) 
+			: MoveItemPacket(Inventory::EQUIPPED, -src, dest, 1) {}
 	};
 
 
@@ -98,5 +100,30 @@ namespace Net
 			writesh(slot);
 			writeint(itemid);
 		}
+	};
+
+
+	// Requests using a scroll on an equip. 
+	// Opcode: SCROLL_EQUIP(86)
+	class ScrollEquipPacket : public OutPacket
+	{
+	public:
+		enum Flag : uint8_t
+		{
+			NONE = 0x00,
+			UNKNOWN = 0x01,
+			WHITESCROLL = 0x02
+		};
+
+		ScrollEquipPacket(int16_t source, Equipslot::Value target, uint8_t flags) : OutPacket(SCROLL_EQUIP)
+		{
+			writetime();
+			writesh(source);
+			writesh(-Equipslot::valueof(target));
+			writesh(flags);
+		}
+
+		ScrollEquipPacket(int16_t source, Equipslot::Value target)
+			: ScrollEquipPacket(source, target, 0) {}
 	};
 }

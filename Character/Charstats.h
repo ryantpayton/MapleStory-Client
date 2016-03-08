@@ -45,6 +45,7 @@ namespace Character
 
 		void setexp(int64_t ex) { stats.exp = ex; }
 		void setportal(uint8_t pt) { stats.portal = pt; }
+		void setjob(uint16_t id) { stats.job.changejob(id); }
 
 		int32_t getmapid() const { return stats.mapid; }
 		uint8_t getportal() const { return stats.portal; }

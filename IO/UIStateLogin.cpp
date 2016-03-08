@@ -50,8 +50,6 @@ namespace IO
 
 	void UIStateLogin::doubleclick(Point<int16_t>) {}
 
-	void UIStateLogin::dragicon(Icon*) {}
-
 	void UIStateLogin::sendkey(Keyboard::Keytype, int32_t, bool) {}
 
 	Cursor::State UIStateLogin::sendmouse(Cursor::State mst, Point<int16_t> pos)
@@ -90,6 +88,14 @@ namespace IO
 			return front ? front->sendmouse(mst == Cursor::CLICKING, pos) : Cursor::IDLE;
 		}
 	}
+
+	void UIStateLogin::dragicon(Icon*) {}
+
+	void UIStateLogin::showequip(UIElement::Type, Equip*, int16_t) {}
+
+	void UIStateLogin::showitem(UIElement::Type, int32_t) {}
+
+	void UIStateLogin::cleartooltip(UIElement::Type) {}
 
 	void UIStateLogin::add(const Element& element)
 	{

@@ -19,6 +19,7 @@
 #include "Character\Char.h"
 #include "Gameplay\Stage.h"
 #include "IO\UI.h"
+#include "IO\Messages.h"
 #include "IO\UITypes\UIStatusMessenger.h"
 #include "IO\UITypes\UIStatusbar.h"
 #include "IO\UITypes\UINpcTalk.h"
@@ -27,6 +28,8 @@
 namespace Net
 {
 	using IO::UI;
+	using IO::Messages;
+	using IO::Chatbar;
 	using IO::UIElement;
 	using IO::UIStatusMessenger;
 	using IO::UIStatusbar;
@@ -122,14 +125,15 @@ namespace Net
 		string message = recv.readascii();
 		int8_t type = recv.readbyte();
 
-		Optional<Char> speaker = Stage::get().getcharacter(charid);
+		auto speaker = Stage::get().getcharacter(charid);
 		if (speaker)
 		{
-			string fulltext = speaker->getname() + ": " + message;
-			speaker->speak(fulltext);
-
-			UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::sendchatline, fulltext, type);
+			message = speaker->getname() + ": " + message;
+			speaker->speak(message);
 		}
+
+		auto linetype = static_cast<Chatbar::LineType>(type);
+		UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::sendchatline, message, linetype);
 	}
 
 	void NpcDialogueHandler::handle(InPacket& recv) const
@@ -147,5 +151,42 @@ namespace Net
 
 		UI::get().withelement(UIElement::NPCTALK, &UINpcTalk::settext, npcid, msgtype, style, speaker, text);
 		UI::get().enable();
+	}
+
+	void ScrollResultHandler::handle(InPacket& recv) const
+	{
+		int32_t cid = recv.readint();
+		bool success = recv.readbool();
+		bool destroyed = recv.readbool();
+		recv.readshort() == 1; // legendary spirit
+
+		Char::Effect effect;
+		Messages::Type message;
+		if (success)
+		{
+			effect = Char::SCROLL_SUCCESS;
+			message = Messages::SCROLL_SUCCESS;
+		}
+		else
+		{
+			effect = Char::SCROLL_FAILURE;
+			if (destroyed)
+			{
+				message = Messages::SCROLL_DESTROYED;
+			}
+			else
+			{
+				message = Messages::SCROLL_FAILURE;
+			}
+		}
+
+		Stage::get().getcharacter(cid)
+			.ifpresent(&Char::showeffectbyid, effect);
+
+		if (Stage::get().isplayer(cid))
+		{
+			UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::displaymessage, message, Chatbar::RED);
+			UI::get().enable();
+		}
 	}
 }

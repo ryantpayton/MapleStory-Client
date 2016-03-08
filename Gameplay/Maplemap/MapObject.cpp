@@ -18,7 +18,7 @@
 #include "MapObject.h"
 
 namespace Gameplay
-{ 
+{
 	int8_t MapObject::update(const Physics& physics)
 	{
 		physics.moveobject(phobj);

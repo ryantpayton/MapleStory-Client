@@ -40,7 +40,8 @@ namespace Gameplay
 	{
 		player = Session::get().getlogin().getcharbyid(charid);
 		playable = player;
-		return player.getoid() == charid;
+
+		return isplayer(charid);
 	}
 
 	void Stage::setmap(uint8_t pid, int32_t mid)
@@ -190,6 +191,11 @@ namespace Gameplay
 		}
 	}
 
+	void Stage::queuespawn(const Spawn* spawn)
+	{
+		spawnqueue.push_back(unique_ptr<const Spawn>(spawn));
+	}
+
 	void Stage::useskill(int32_t skillid)
 	{
 		using Character::Skill;
@@ -313,9 +319,14 @@ namespace Gameplay
 		}
 	}
 
-	void Stage::queuespawn(const Spawn* spawn)
+	Cursor::State Stage::sendmouse(bool pressed, Point<int16_t> position)
 	{
-		spawnqueue.push_back(unique_ptr<const Spawn>(spawn));
+		return npcs.sendmouse(pressed, position, camera.getposition(1.0f));
+	}
+
+	bool Stage::isplayer(int32_t cid) const
+	{
+		return player.getoid() == cid;
 	}
 
 	MapNpcs& Stage::getnpcs()
@@ -343,14 +354,9 @@ namespace Gameplay
 		return player;
 	}
 
-	const Physics& Stage::getphysics() const
-	{
-		return physics;
-	}
-
 	Optional<Char> Stage::getcharacter(int32_t cid)
 	{
-		bool isplayer = cid == player.getoid();
-		return isplayer ? player : chars.getchar(cid).cast<Char>();
+		return isplayer(cid) ?
+		player : chars.getchar(cid).cast<Char>();
 	}
 }

@@ -92,6 +92,11 @@ namespace Character
 		// Return wether the buff is active.
 		bool hasbuff(Buffstat::Value buffstat) const;
 
+		// Change the player's level, display the levelup effect.
+		void changelevel(uint16_t level);
+		// Change the player's job, display the job change effect.
+		void changejob(uint16_t jobid);
+
 		// Returns the current walking force, calculated from the total ES_SPEED stat.
 		float getwforce() const;
 		// Returns the current jumping force, calculated from the total ES_JUMP stat.

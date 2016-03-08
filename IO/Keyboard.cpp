@@ -15,39 +15,11 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "IO\Keyboard.h"
-
-#include "Journey.h"
-#ifdef JOURNEY_USE_OPENGL
+#include "Keyboard.h"
 #include "glfw3.h"
-
-#define LEFTKEY GLFW_KEY_LEFT
-#define RIGHTKEY GLFW_KEY_RIGHT
-#define UPKEY GLFW_KEY_UP
-#define DOWNKEY GLFW_KEY_DOWN
-#define SHIFTKEY GLFW_KEY_LEFT_SHIFT
-#define BACKKEY GLFW_KEY_BACKSPACE
-#define RETURNKEY GLFW_KEY_ENTER
-#define SPACEKEY GLFW_KEY_SPACE
-
-#else
-#include <Windows.h>
-#define WIN32_LEAN_AND_MEAN
-
-#define LEFTKEY VK_LEFT
-#define RIGHTKEY VK_RIGHT
-#define UPKEY VK_UP
-#define DOWNKEY VK_DOWN
-#define SHIFTKEY VK_SHIFT
-#define BACKKEY VK_BACK
-#define RETURNKEY VK_RETURN
-#define SPACEKEY VK_SPACE
-
-#endif
 
 namespace IO
 {
-#ifdef JOURNEY_USE_OPENGL
 	const int32_t Keytable[90] =
 	{
 		0, 0, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, // number keys, up to key 0
@@ -57,32 +29,23 @@ namespace IO
 		GLFW_KEY_F1, GLFW_KEY_F2, GLFW_KEY_F3, GLFW_KEY_F4, GLFW_KEY_F5, GLFW_KEY_F6, GLFW_KEY_F7, GLFW_KEY_F8, GLFW_KEY_F9, GLFW_KEY_F10, GLFW_KEY_F11, GLFW_KEY_F12, //up to 70
 		GLFW_KEY_HOME, 0, GLFW_KEY_PAGE_UP, 0, 0, 0, 0, 0, GLFW_KEY_END, 0, GLFW_KEY_PAGE_DOWN, GLFW_KEY_INSERT, GLFW_KEY_DELETE, 0, 0, 0, 0, 0, 0
 	};
-#else
-	const int32_t Keytable[90] =
-	{
-		0, 0, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, // number keys, up to key 0
-		0, 0, 0, 0, 'Q', 'W', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P', 0, 0, 0, //first letter row, up to key 28
-		VK_CONTROL, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 0, 0, 0,  //second row, up to 41
-		VK_SHIFT, 0, 'Y', 'X', 'C', 'V', 'B', 'N', 'M', 0, 0, 0, 0, 0, VK_MENU, VK_SPACE, 0, //third row, up to 58
-		VK_F1, VK_F2, VK_F3, VK_F4, VK_F5, VK_F6, VK_F7, VK_F8, VK_F9, VK_F10, VK_F11, VK_F12, //up to 70
-		VK_HOME, 0, VK_PRIOR, 0, 0, 0, 0, 0, VK_END, 0, VK_NEXT, VK_INSERT, VK_DELETE, 0, 0, 0, 0, 0, 0
-	};
-#endif
+
 	Keyboard::Keyboard()
 	{
-		keymap[LEFTKEY] = Keymapping(ACTION, LEFT);
-		keymap[RIGHTKEY] = Keymapping(ACTION, RIGHT);
-		keymap[UPKEY] = Keymapping(ACTION, UP);
-		keymap[DOWNKEY] = Keymapping(ACTION, DOWN);
+		keymap[GLFW_KEY_LEFT] = Keymapping(ACTION, LEFT);
+		keymap[GLFW_KEY_RIGHT] = Keymapping(ACTION, RIGHT);
+		keymap[GLFW_KEY_UP] = Keymapping(ACTION, UP);
+		keymap[GLFW_KEY_DOWN] = Keymapping(ACTION, DOWN);
 
-		textactions[BACKKEY] = BACK;
-		textactions[RETURNKEY] = RETURN;
-		textactions[SPACEKEY] = SPACE;
+		textactions[GLFW_KEY_BACKSPACE] = BACK;
+		textactions[GLFW_KEY_ENTER] = RETURN;
+		textactions[GLFW_KEY_SPACE] = SPACE;
+		textactions[GLFW_KEY_TAB] = TAB;
 	}
 
 	int32_t Keyboard::shiftcode() const
 	{
-		return SHIFTKEY;
+		return GLFW_KEY_LEFT_SHIFT;
 	}
 
 	Keyboard::Keymapping Keyboard::gettextmapping(int32_t keycode, bool shift) const
@@ -103,10 +66,10 @@ namespace IO
 		{
 			switch (keycode)
 			{
-			case LEFTKEY:
-			case RIGHTKEY:
-			case UPKEY:
-			case DOWNKEY:
+			case GLFW_KEY_LEFT:
+			case GLFW_KEY_RIGHT:
+			case GLFW_KEY_UP:
+			case GLFW_KEY_DOWN:
 				return keymap.at(keycode);
 			default:
 				return Keymapping(NONE, 0);
@@ -125,8 +88,8 @@ namespace IO
 		}
 	}
 
-	const Keyboard::Keymapping* Keyboard::getmapping(int32_t keycode) const
+	Optional<const Keyboard::Keymapping> Keyboard::getmapping(int32_t keycode) const
 	{
-		return keymap.count(keycode) ? &keymap.at(keycode) : nullptr;
+		return Optional<Keyboard>::from(keymap, keycode);
 	}
 }

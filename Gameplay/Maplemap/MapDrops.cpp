@@ -77,7 +77,7 @@ namespace Gameplay
 
 		for (auto& msani : mesos)
 		{
-			msani.second.update(Constants::TIMESTEP / 2);
+			msani.second.update(Constants::TIMESTEP);
 		}
 	}
 

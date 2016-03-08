@@ -43,27 +43,41 @@ namespace IO
 		void buttonpressed(uint16_t buttonid) override;
 		void togglehide() override;
 		void doubleclick(Point<int16_t> position) override;
-		void icondropped(int16_t identifier) override;
-		void dropicon(Point<int16_t> position, Type type, int16_t identifier) override;
+		void sendicon(const Icon& icon, Point<int16_t> position) override;
 		Cursor::State sendmouse(bool pressed, Point<int16_t> position) override;
 
 		void modify(int16_t pos, int8_t mode, int16_t arg);
 
 	private:
+		void showequip(int16_t slot);
+		void cleartooltip();
+
+		class EquipIcon : public Icon::Type
+		{
+		public:
+			EquipIcon(int16_t source);
+
+			void ondrop() const override;
+			void ondropequips(Equipslot::Value) const override {}
+			void ondropitems(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const override;
+
+		private:
+			int16_t source;
+		};
+
 		UIEquipInventory& operator = (const UIEquipInventory&) = delete;
 
 		void loadicons();
-		void addicon(int16_t slot);
+		void updateslot(int16_t slot);
 		int16_t slotbypos(Point<int16_t> position) const;
+		Optional<Icon> geticon(int16_t slot) const;
 
 		const Inventory& inventory;
 
 		map<int16_t, Point<int16_t>> iconpositions;
-		EquipTooltip tooltip;
-		Point<int16_t> cursorposition;
-		map<int16_t, Icon> icons;
-
+		map<int16_t, unique_ptr<Icon>> icons;
 		vector<Texture> pettextures;
+
 		bool showpetequips;
 	};
 

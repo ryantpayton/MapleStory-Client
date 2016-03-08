@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Text.h"
-#include "GraphicsEngine.h"
+#include "GraphicsGL.h"
 
 namespace Graphics
 {
@@ -45,7 +45,7 @@ namespace Graphics
 			if (maxwidth < 1)
 				maxwidth = 800;
 
-			layout = GraphicsEngine::getengine().createlayout(text, font, alignment, maxwidth);
+			layout = GraphicsGL::get().createlayout(text, font, alignment, maxwidth);
 		}
 	}
 
@@ -66,7 +66,7 @@ namespace Graphics
 
 	void Text::draw(Point<int16_t> position, float alpha) const
 	{
-		GraphicsEngine::getengine().drawtext(text, layout, font, color, background, position, alpha);
+		GraphicsGL::get().drawtext(text, layout, font, color, background, position, alpha);
 	}
 
 	uint16_t Text::advance(size_t pos) const

@@ -16,9 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Journey.h"
-#ifdef JOURNEY_USE_OPENGL
-#include "GraphicsEngine.h"
 #include "Constants.h"
 #include "Text.h"
 
@@ -43,7 +40,7 @@ namespace Graphics
 	using nl::bitmap;
 
 	// Graphics engine which uses OpenGL.
-	class GraphicsGL : public GraphicsEngine, public Singleton<GraphicsGL>
+	class GraphicsGL : public Singleton<GraphicsGL>
 	{
 	public:
 		GraphicsGL();
@@ -54,24 +51,24 @@ namespace Graphics
 		void reinit();
 
 		// Clear all bitmaps.
-		void clear() override;
+		void clear();
 
 		// Add a bitmap to the available resources.
-		void addbitmap(const bitmap& toadd) override;
+		void addbitmap(const bitmap& toadd);
 		// Return wether the bitmap with the given id is in the resource pool.
-		bool available(size_t id) override;
+		bool available(size_t id);
 		// Draw the bitmap with the given id and paramters.
-		void draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, 
-			float a, float xs, float ys, int16_t cx, int16_t cy) override;
+		void draw(size_t id, int16_t x, int16_t y, int16_t tx, int16_t ty, 
+			float a, float xs, float ys, int16_t cx, int16_t cy);
 
 		// Create a layout for the text with the parameters specified.
-		Text::Layout createlayout(const string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth) override;
+		Text::Layout createlayout(const string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth);
 		// Draw a text with the given parameters.
 		void drawtext(const string& text, const Text::Layout& layout, Text::Font font, 
-			Text::Color color, Text::Background back, Point<int16_t> origin, float opacity) override;
+			Text::Color color, Text::Background back, Point<int16_t> origin, float opacity);
 
 		// Draw a rectangle filled with the specified color.
-		void drawrectangle(int16_t x, int16_t y, int16_t w, int16_t h, float r, float g, float b, float a) override;
+		void drawrectangle(int16_t x, int16_t y, int16_t w, int16_t h, float r, float g, float b, float a);
 
 		// Lock the current scene.
 		void lock();
@@ -249,5 +246,4 @@ namespace Graphics
 		GLshort fontymax;
 	};
 }
-#endif
 

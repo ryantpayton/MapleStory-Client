@@ -16,20 +16,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Tooltip.h"
 #include "Charset.h"
 #include "Itemtext.h"
 
 namespace IO
 {
-	class ItemTooltip
+	class ItemTooltip : public Tooltip
 	{
 	public:
 		ItemTooltip();
-		~ItemTooltip();
 
-		void clear();
 		void setitem(int32_t itemid);
-		void draw(Point<int16_t> position) const;
+		void draw(Point<int16_t> position) const override;
 
 	private:
 		int32_t itemid;

@@ -24,6 +24,7 @@
 
 namespace Net
 {
+	using Character::Char;
 	using Character::Player;
 	using Character::Buff;
 	using Character::Maplestat;
@@ -82,18 +83,16 @@ namespace Net
 					player.changelook(stat, recv.readint());
 					break;
 				case Maplestat::LEVEL:
-					player.getstats().setstat(stat, recv.readbyte());
-					//parent.getstage().showchareffect(0);
+					player.changelevel(recv.readbyte());
+					break;
+				case Maplestat::JOB:
+					player.changejob(recv.readshort());
 					break;
 				case Maplestat::EXP:
 					player.getstats().setexp(recv.readint());
 					break;
 				case Maplestat::MESO:
 					player.getinvent().setmeso(recv.readint());
-					break;
-				case Maplestat::AP:
-					player.getstats().setstat(stat, recv.readshort());
-					UI::get().withelement(UIElement::STATSINFO, &UIStatsinfo::updateap);
 					break;
 				default:
 					player.getstats().setstat(stat, recv.readshort());

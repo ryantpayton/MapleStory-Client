@@ -24,8 +24,8 @@ namespace IO
 	UI::UI()
 	{
 		state = unique_ptr<UIState>(new UIStateNull());
+		shift = false;
 		enabled = true;
-		clickrepeat = 0;
 	}
 
 	void UI::init()
@@ -69,64 +69,71 @@ namespace IO
 		}
 	}
 
-	void UI::sendmouse(bool pressed, Point<int16_t> pos)
+	void UI::sendmouse(Point<int16_t> cursorpos, Cursor::State cursorstate)
 	{
-		Cursor::State cursorstate = (pressed && enabled) ? Cursor::CLICKING : Cursor::IDLE;
-		cursorstate = state->sendmouse(cursorstate, pos);
-
-		cursor.setposition(pos);
-		cursor.setstate(cursorstate);
+		Cursor::State nextstate = state->sendmouse(cursorstate, cursorpos);
+		cursor.setstate(nextstate);
+		cursor.setposition(cursorpos);
 	}
 
 	void UI::sendmouse(bool pressed)
 	{
-		Cursor::State cursorstate = (pressed && enabled) ? Cursor::CLICKING : Cursor::IDLE;
-		cursorstate = state->sendmouse(cursorstate, cursor.getposition());
+		Cursor::State cursorstate = (pressed && enabled) ? 
+			Cursor::CLICKING : 
+			Cursor::IDLE;
+		Point<int16_t> cursorpos = cursor.getposition();
+		sendmouse(cursorpos, cursorstate);
 
-		cursor.setstate(cursorstate);
+		if (focusedtextfield && pressed)
+		{
+			Cursor::State tstate = focusedtextfield->sendcursor(cursorpos, pressed);
+			switch (tstate)
+			{
+			case Cursor::IDLE:
+				focusedtextfield = Optional<Textfield>();
+				break;
+			}
+		}
 	}
 
 	void UI::sendmouse(Point<int16_t> pos)
 	{
-		Cursor::State cursorstate = state->sendmouse(cursor.getstate(), pos);
-
-		cursor.setposition(pos);
-		cursor.setstate(cursorstate);
-	}
-
-	void UI::doubleclick(Point<int16_t> pos)
-	{
-		state->doubleclick(pos);
+		sendmouse(pos, cursor.getstate());
 	}
 
 	void UI::doubleclick()
 	{
 		Point<int16_t> pos = cursor.getposition();
-		doubleclick(pos);
+		state->doubleclick(pos);
 	}
 
 	void UI::sendkey(int32_t keycode, bool pressed)
 	{
 		if (focusedtextfield)
 		{
-			bool shift = keydown[keyboard.shiftcode()];
 			Keyboard::Keymapping mapping = keyboard.gettextmapping(keycode, shift);
 			focusedtextfield->sendkey(mapping.type, mapping.action, pressed);
 		}
 		else
 		{
-			const Keyboard::Keymapping* mapping = keyboard.getmapping(keycode);
+			Optional<const Keyboard::Keymapping> mapping = keyboard.getmapping(keycode);
 			if (mapping)
 			{
 				state->sendkey(mapping->type, mapping->action, pressed);
 			}
 		}
 
-		keydown[keycode] = pressed;
+		if (keycode == keyboard.shiftcode())
+			shift = pressed;
 	}
 
 	void UI::focustextfield(Textfield* tofocus)
 	{
+		if (focusedtextfield)
+		{
+			focusedtextfield->setstate(Textfield::NORMAL);
+		}
+
 		focusedtextfield = tofocus;
 	}
 

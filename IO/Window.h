@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -17,30 +17,38 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Util\Singleton.h"
-
-#include "Journey.h"
-#ifdef JOURNEY_USE_OPENGL
-#include "WindowGLFW.h"
-#else
-#include "WindowD2D.h"
-#endif
+#include "GL\glew.h"
+#include "glfw3.h"
+#include <cstdint>
+#include <vector>
 
 namespace IO
 {
+	using std::vector;
+
 	class Window : public Singleton<Window>
 	{
 	public:
+		Window();
+		~Window();
+
 		bool init(bool fullscreen);
+		bool initwindow();
 		void update();
-		void begin();
-		void end();
+		void begin() const;
+		void end() const;
 		void fadeout(float step, void(*fadeproc)());
 
 	private:
-#ifdef JOURNEY_USE_OPENGL
-		WindowGLFW window;
-#else
-		WindowD2D window;
-#endif
+		void updateopc();
+
+		void(*fadeprocedure)();
+
+		GLFWwindow* glwnd;
+		GLFWwindow* context;
+		bool fullscreen;
+		float opacity;
+		float opcstep;
 	};
 }
+

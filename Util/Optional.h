@@ -210,6 +210,19 @@ public:
 		return Optional<const T>();
 	}
 
+	template <typename K, typename T>
+	static Optional<const T> from(const std::map<K, T>& container, K key)
+	{
+		if (container.count(key))
+		{
+			return container.at(key);
+		}
+		else
+		{
+			return Optional<const T>();
+		}
+	}
+
 	template <typename T, typename V>
 	static Optional<T> comparevalues(const std::map<T, V>& container, function<bool(const V&, const V&)> predicate)
 	{

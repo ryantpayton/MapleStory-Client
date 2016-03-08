@@ -110,6 +110,12 @@ namespace Net
 
 			recv.skip(12);
 
+			if (slot < 0)
+			{
+				invtype = Inventory::EQUIPPED;
+				slot = -slot;
+			}
+
 			inventory.addequip(invtype, slot, id, cash, uniqueid, expire, slots,
 				level, stats, owner, flag, itemlevel, itemexp, vicious);
 		}

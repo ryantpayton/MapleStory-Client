@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Geometry.h"
-#include "GraphicsEngine.h"
+#include "GraphicsGL.h"
 
 namespace Graphics
 {
@@ -34,6 +34,6 @@ namespace Graphics
 			opacity = 0.0f;
 		const float* color = colors[cid];
 
-		GraphicsEngine::getengine().drawrectangle(x, y, w, h, color[0], color[1], color[2], opacity);
+		GraphicsGL::get().drawrectangle(x, y, w, h, color[0], color[1], color[2], opacity);
 	}
 }

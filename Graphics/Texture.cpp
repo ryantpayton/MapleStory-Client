@@ -16,8 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Texture.h"
-#include "GraphicsEngine.h"
-#include "Constants.h"
+#include "GraphicsGL.h"
 #include "nlnx\nx.hpp"
 
 namespace Graphics
@@ -38,14 +37,11 @@ namespace Graphics
 				src = srcfile.resolve(link.substr(link.find('/') + 1));
 			}
 
-			source = src.get_bitmap();
+			source = src;
 			origin = src["origin"];
-			dimensions = Point<int16_t>(
-				source.width(), 
-				source.height()
-				);
+			dimensions = Point<int16_t>(source.width(),  source.height());
 
-			GraphicsEngine::getengine().addbitmap(source);
+			GraphicsGL::get().addbitmap(source);
 		}
 	}
 
@@ -68,20 +64,14 @@ namespace Graphics
 			h = dimensions.y();
 
 		Point<int16_t> absp = args.getpos() - origin;
-		int16_t x = absp.x();
-		int16_t y = absp.y();
 
-		int16_t sy = y + Constants::VIEWYOFFSET;
-		if (x < Constants::VIEWWIDTH && sy < Constants::VIEWHEIGHT && x > -w && sy > -h)
+		GraphicsGL& graphics = GraphicsGL::get();
+		if (!graphics.available(id))
 		{
-			auto& engine = GraphicsEngine::getengine();
-			if (!engine.available(id))
-			{
-				engine.addbitmap(source);
-			}
-			engine.draw(id, absp.x(), absp.y(), w, h, args.getalpha(), args.getxscale(),
-				args.getyscale(), args.getcenter().x(), args.getcenter().y());
+			graphics.addbitmap(source);
 		}
+		graphics.draw(id, absp.x(), absp.y(), w, h, args.getalpha(), args.getxscale(),
+			args.getyscale(), args.getcenter().x(), args.getcenter().y());
 	}
 
 	void Texture::shift(Point<int16_t> amount)

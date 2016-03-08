@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UIStateGame.h"
+#include "UI.h"
 
 #include "UITypes\UIStatusMessenger.h"
 #include "UITypes\UIStatusbar.h"
@@ -29,10 +30,12 @@
 
 namespace IO
 {
+	using Gameplay::Stage;
+
 	UIStateGame::UIStateGame()
 	{
 		focused = UIElement::NONE;
-		draggedicon = nullptr;
+		tooltipparent = UIElement::NONE;
 
 		add(ElementStatusMessenger());
 		add(ElementStatusbar());
@@ -49,8 +52,8 @@ namespace IO
 				element->draw(inter);
 		}
 
-		if (draggedicon)
-			draggedicon->dragdraw(cursor);
+		draggedicon.ifpresent(&Icon::dragdraw, cursor);
+		tooltip.ifpresent(&Tooltip::draw, cursor);
 	}
 
 	void UIStateGame::update()
@@ -63,21 +66,16 @@ namespace IO
 		}
 	}
 
-	void UIStateGame::dropicon(Point<int16_t> pos, UIElement::Type type, int16_t identifier)
+	void UIStateGame::dropicon(const Icon& icon, Point<int16_t> pos)
 	{
 		UIElement* front = getfront(pos);
-
 		if (front)
 		{
-			UIElement* parent = get(type);
-			if (parent)
-				front->dropicon(pos, type, identifier);
+			front->sendicon(icon, pos);
 		}
 		else
 		{
-			UIElement* parent = get(type);
-			if (parent)
-				parent->icondropped(identifier);
+			icon.drop();
 		}
 	}
 
@@ -86,11 +84,6 @@ namespace IO
 		UIElement* front = getfront(pos);
 		if (front)
 			front->doubleclick(pos);
-	}
-
-	void UIStateGame::dragicon(Icon* drgic)
-	{
-		draggedicon = drgic;
 	}
 
 	void UIStateGame::sendkey(Keyboard::Keytype type, int32_t action, bool pressed)
@@ -116,7 +109,6 @@ namespace IO
 		case Keyboard::FACE:
 		case Keyboard::ITEM:
 		case Keyboard::SKILL:
-			using Gameplay::Stage;
 			Stage::get().sendkey(type, action, pressed);
 			break;
 		}
@@ -129,9 +121,9 @@ namespace IO
 			switch (mst)
 			{
 			case Cursor::IDLE:
-				dropicon(pos, draggedicon->getparent(), draggedicon->getidentifier());
+				dropicon(*draggedicon, pos);
 				draggedicon->resetdrag();
-				draggedicon = nullptr;
+				draggedicon = Optional<Icon>();
 				return mst;
 			default:
 				return Cursor::GRABBING;
@@ -170,9 +162,12 @@ namespace IO
 					}
 				}
 
+				if (fronttype != tooltipparent)
+					cleartooltip(tooltipparent);
+
+				bool clicked = mst == Cursor::CLICKING;
 				if (front)
 				{
-					bool clicked = mst == Cursor::CLICKING;
 					if (clicked)
 					{
 						elementorder.remove(fronttype);
@@ -182,9 +177,47 @@ namespace IO
 				}
 				else
 				{
-					return Cursor::IDLE;
+					return Stage::get().sendmouse(clicked, pos);
 				}
 			}
+		}
+	}
+
+	void UIStateGame::dragicon(Icon* drgic)
+	{
+		draggedicon = drgic;
+	}
+
+	void UIStateGame::showequip(UIElement::Type parent, Equip* equip, int16_t slot)
+	{
+		eqtooltip.setequip(equip, slot);
+
+		if (equip)
+		{
+			tooltip = eqtooltip;
+			tooltipparent = parent;
+		}
+	}
+
+	void UIStateGame::showitem(UIElement::Type parent, int32_t itemid)
+	{
+		ittooltip.setitem(itemid);
+
+		if (itemid)
+		{
+			tooltip = ittooltip;
+			tooltipparent = parent;
+		}
+	}
+
+	void UIStateGame::cleartooltip(UIElement::Type parent)
+	{
+		if (parent == tooltipparent)
+		{
+			eqtooltip.setequip(nullptr, 0);
+			ittooltip.setitem(0);
+			tooltip = Optional<Tooltip>();
+			tooltipparent = UIElement::NONE;
 		}
 	}
 
@@ -218,8 +251,10 @@ namespace IO
 
 	void UIStateGame::remove(UIElement::Type type)
 	{
-		if (focused == type)
-			focused = UIElement::NONE;
+		if (type == focused)
+			focused = UIElement::NONE; 
+		if (type == tooltipparent)
+			cleartooltip(tooltipparent);
 
 		elementorder.remove(type);
 

@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Tooltip.h"
 #include "Charset.h"
 #include "Itemtext.h"
 #include "Character\Look\Clothing.h"
@@ -28,15 +29,13 @@ namespace IO
 	using Character::Maplestat;
 	using Character::Equipstat;
 
-	class EquipTooltip
+	class EquipTooltip : public Tooltip
 	{
 	public:
 		EquipTooltip();
-		~EquipTooltip();
 
-		void clear();
 		void setequip(const Equip* equip, int16_t invpos);
-		void draw(Point<int16_t> position) const;
+		void draw(Point<int16_t> position) const override;
 
 	private:
 		int16_t invpos;

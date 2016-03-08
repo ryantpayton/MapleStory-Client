@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "IO\Element.h"
+#include "IO\Messages.h"
 #include "IO\Components\Chatbar.h"
 #include "IO\Components\Charset.h"
 #include "IO\Components\Bar.h"
@@ -61,7 +62,8 @@ namespace IO
 		rectangle2d<int16_t> bounds() const override;
 		Cursor::State sendmouse(bool pressed, Point<int16_t> position) override;
 
-		void sendchatline(string line, int8_t type);
+		void sendchatline(string line, Chatbar::LineType type);
+		void displaymessage(Messages::Type line, Chatbar::LineType type);
 
 	private:
 		UIStatusbar& operator = (const UIStatusbar&) = delete;
@@ -71,6 +73,8 @@ namespace IO
 		float getmppercent() const;
 
 		const CharStats& stats;
+
+		Messages messages;
 
 		unique_ptr<Chatbar> chatbar;
 		Bar expbar;

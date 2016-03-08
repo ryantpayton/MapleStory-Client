@@ -45,31 +45,30 @@ namespace IO
 
 	void UINpcTalk::draw(float inter) const
 	{
+		using Graphics::DrawArgument;
+
 		Point<int16_t> drawpos = position;
 		top.draw(drawpos);
 		drawpos.shifty(top.height());
-		for (int16_t i = 0; i < vtile; i++)
-		{
-			fill.draw(drawpos);
-			drawpos.shifty(fill.height());
-		}
+		fill.draw(DrawArgument(drawpos, Point<int16_t>(0, vtile) * fill.height()));
+		drawpos.shifty(vtile * fill.height());
 		bottom.draw(drawpos);
 
 		UIElement::draw(inter);
 
-		using Graphics::DrawArgument;
 		speaker.draw(DrawArgument(position + Point<int16_t>(80, 100), true));
 		nametag.draw(position + Point<int16_t>(25, 100));
-		name.draw(position + Point<int16_t>(80, 98));
-		npctext.draw(position + Point<int16_t>(156, 16));
+		name.draw(position + Point<int16_t>(80, 99));
+		npctext.draw(position + Point<int16_t>(156, 16 + ((vtile * fill.height() - npctext.getheight()) / 2)));
 	}
 
 	void UINpcTalk::buttonpressed(uint16_t buttonid)
 	{
+		using Net::Session;
+
 		switch (buttonid)
 		{
 		case END:
-			using Net::Session;
 			using Net::NpcTalkMorePacket;
 			Session::get().dispatch(NpcTalkMorePacket(type, 0));
 			active = false;

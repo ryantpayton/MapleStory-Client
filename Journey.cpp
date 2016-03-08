@@ -25,9 +25,11 @@
 #include "Gameplay\Stage.h"
 #include "Util\NxFiles.h"
 #include "Data\DataFactory.h"
+#include "Character\Char.h"
 #include <iostream>
 
 using Audio::AudioPlayer;
+using Character::Char;
 using Data::DataFactory;
 using Gameplay::Stage;
 using IO::UI;
@@ -53,8 +55,7 @@ enum Error
 
 Error init()
 {
-	auto& config = Configuration::get();
-	config.load();
+	Configuration::get().load();
 
 	if (!NxFiles::get().init())
 		return NXFILES;
@@ -62,14 +63,16 @@ Error init()
 	if (!Session::get().init())
 		return CONNECTION;
 
-	bool fullscreen = config.getbool(Settings::FULLSCREEN);
+	bool fullscreen = Configuration::get().getbool(Settings::FULLSCREEN);
 	if (!Window::get().init(fullscreen))
 		return WINDOW;
 
-	uint8_t sfxvolume = config.getbyte(Settings::SFX_VOLUME);
-	uint8_t bgmvolume = config.getbyte(Settings::BGM_VOLUME);
+	uint8_t sfxvolume = Configuration::get().getbyte(Settings::SFX_VOLUME);
+	uint8_t bgmvolume = Configuration::get().getbyte(Settings::BGM_VOLUME);
 	if (!AudioPlayer::get().init(sfxvolume, bgmvolume))
 		return AUDIO;
+
+	Char::init();
 
 	DataFactory::get().init();
 	UI::get().init();

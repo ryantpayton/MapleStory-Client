@@ -50,12 +50,11 @@ namespace IO
 		void update() override;
 		void buttonpressed(uint16_t buttonid) override;
 
-		void updateap();
-
 	private:
 		UIStatsinfo& operator = (const UIStatsinfo&) = delete;
 
-		void sendappacket(Maplestat::Value stat);
+		void updateap();
+		void sendappacket(Maplestat::Value stat) const;
 
 		static const size_t NUMLABELS = 27;
 		static const size_t NUMNORMAL = 12;
@@ -77,6 +76,8 @@ namespace IO
 		vector<Texture> detailtextures;
 		map<string, Texture> abilities;
 		bool showdetail;
+
+		bool hasap;
 
 		Text statlabels[NUMLABELS];
 		Point<int16_t> statoffsets[NUMLABELS];

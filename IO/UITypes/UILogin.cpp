@@ -63,6 +63,10 @@ namespace IO
 			Point<int16_t>(315, 249), 
 			Point<int16_t>(465, 273)), 12
 			);
+		account.setkey(Keyboard::TAB, [&](){
+			account.setstate(Textfield::NORMAL);
+			password.setstate(Textfield::FOCUSED);
+		});
 		accountbg = Texture(title["ID"]);
 
 		password = Textfield(
@@ -71,6 +75,13 @@ namespace IO
 			Point<int16_t>(315, 275),
 			Point<int16_t>(465, 299)), 12
 			);
+		password.setkey(Keyboard::TAB, [&](){
+			password.setstate(Textfield::NORMAL);
+			account.setstate(Textfield::FOCUSED);
+		});
+		password.setonreturn([&](string msg){
+			login();
+		});
 		passwordbg = Texture(title["PW"]);
 		password.setcrypt('*');
 
@@ -78,12 +89,10 @@ namespace IO
 		if (saveid)
 		{
 			account.settext(Configuration::get().getsetting(Settings::ACCOUNT));
-			UI::get().focustextfield(&password);
 			password.setstate(Textfield::FOCUSED);
 		}
 		else
 		{
-			UI::get().focustextfield(&account);
 			account.setstate(Textfield::FOCUSED);
 		}
 
@@ -112,8 +121,8 @@ namespace IO
 	{
 		UIElement::update();
 
-		account.update();
-		password.update();
+		account.update(position);
+		password.update(position);
 	}
 
 	void UILogin::buttonpressed(uint16_t id)
@@ -121,14 +130,7 @@ namespace IO
 		switch (id)
 		{
 		case BT_LOGIN:
-			UI::get().disable();
-			UI::get().focustextfield(nullptr);
-			account.setstate(Textfield::NORMAL);
-			password.setstate(Textfield::NORMAL);
-			buttons[BT_LOGIN]->setstate(Button::MOUSEOVER);
-			UI::get().add(ElementLoginwait());
-			using Net::LoginPacket;
-			Session::get().dispatch(LoginPacket(account.gettext(), password.gettext()));
+			login();
 			return;
 		case BT_QUIT:
 			Session::get().disconnect();
@@ -141,43 +143,40 @@ namespace IO
 		}
 	}
 
-	Cursor::State UILogin::sendmouse(bool down, Point<int16_t> pos)
+	void UILogin::login()
 	{
-		Cursor::State ret = UIElement::sendmouse(down, pos);
+		UI::get().disable();
+		UI::get().focustextfield(nullptr);
+		UI::get().add(ElementLoginwait());
 
-		if (account.getbounds(position).contains(pos))
+		account.setstate(Textfield::NORMAL);
+		password.setstate(Textfield::NORMAL);
+
+		buttons[BT_LOGIN]->setstate(Button::MOUSEOVER);
+
+		using Net::LoginPacket;
+		Session::get().dispatch(LoginPacket(account.gettext(), password.gettext()));
+	}
+
+	Cursor::State UILogin::sendmouse(bool clicked, Point<int16_t> cursorpos)
+	{
+		if (account.getstate() == Textfield::NORMAL)
 		{
-			if (down)
+			Cursor::State astate = account.sendcursor(cursorpos, clicked);
+			if (astate != Cursor::IDLE)
 			{
-				UI::get().focustextfield(&account);
-				account.setstate(Textfield::FOCUSED);
-				password.setstate(Textfield::NORMAL);
+				return astate;
 			}
-			else if (account.getstate() == Textfield::NORMAL)
-			{
-				ret = Cursor::CANCLICK;
-			}
-		}
-		else if (password.getbounds(position).contains(pos))
-		{
-			if (down)
-			{
-				UI::get().focustextfield(&password);
-				password.setstate(Textfield::FOCUSED);
-				account.setstate(Textfield::NORMAL);
-			}
-			else if (password.getstate() == Textfield::NORMAL)
-			{
-				ret = Cursor::CANCLICK;
-			}
-		}
-		else if (down)
-		{
-			UI::get().focustextfield(nullptr);
-			account.setstate(Textfield::NORMAL);
-			password.setstate(Textfield::NORMAL);
 		}
 
-		return ret;
+		if (password.getstate() == Textfield::NORMAL)
+		{
+			Cursor::State pstate = password.sendcursor(cursorpos, clicked);
+			if (pstate != Cursor::IDLE)
+			{
+				return pstate;
+			}
+		}
+		return UIElement::sendmouse(clicked, cursorpos);
 	}
 }

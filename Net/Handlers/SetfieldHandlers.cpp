@@ -30,8 +30,6 @@
 
 #include "Gameplay\Stage.h"
 
-#include "Graphics\GraphicsEngine.h"
-
 namespace Net
 {
 	using Audio::AudioPlayer;
@@ -39,13 +37,11 @@ namespace Net
 	using IO::Element;
 	using IO::Window;
 	using Gameplay::Stage;
-	using Graphics::GraphicsEngine;
 
 	void stagetransition(uint8_t portalid, int32_t mapid)
 	{
 		float fadestep = 0.2f / Constants::TIMESTEP;
 		Window::get().fadeout(fadestep, [](){
-			GraphicsEngine::getengine().clear();
 			Stage::get().reload();
 			UI::get().enable();
 			Timer::get().start();

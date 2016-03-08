@@ -128,6 +128,12 @@ namespace IO
 
 	void UIStatsinfo::update()
 	{
+		bool nowap = stats.getstat(Maplestat::AP) > 0;
+		if (hasap ^ nowap)
+		{
+			updateap();
+		}
+
 		statlabels[NAME].settext(stats.getname());
 		statlabels[JOB].settext(stats.getjobname());
 		statlabels[GUILD].settext("");
@@ -202,7 +208,7 @@ namespace IO
 		buttons[id]->setstate(Button::NORMAL);
 	}
 
-	void UIStatsinfo::sendappacket(Maplestat::Value stat)
+	void UIStatsinfo::sendappacket(Maplestat::Value stat) const
 	{
 		using Net::Session;
 		using Net::SpendApPacket;
@@ -214,7 +220,8 @@ namespace IO
 	void UIStatsinfo::updateap()
 	{
 		Button::State newstate;
-		if (stats.getstat(Maplestat::AP) > 0)
+		bool nowap = stats.getstat(Maplestat::AP) > 0;
+		if (nowap)
 		{
 			newstate = Button::NORMAL;
 
@@ -236,12 +243,13 @@ namespace IO
 			buttons[BT_INT]->setposition(Point<int16_t>(-48, 137));
 			buttons[BT_LUK]->setposition(Point<int16_t>(-48, 155));
 		}
-
 		buttons[BT_HP]->setstate(newstate);
 		buttons[BT_MP]->setstate(newstate);
 		buttons[BT_STR]->setstate(newstate);
 		buttons[BT_DEX]->setstate(newstate);
 		buttons[BT_LUK]->setstate(newstate);
 		buttons[BT_INT]->setstate(newstate);
+
+		hasap = nowap;
 	}
 }

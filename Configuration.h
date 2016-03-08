@@ -29,8 +29,8 @@ using std::unordered_map;
 class Settings
 {
 public:
-	static const size_t NUM_SETTINGS = 12;
-	enum Type
+	static const size_t LENGTH = 12;
+	enum Type : int32_t
 	{
 		SERVER_IP, FULLSCREEN, BGM_VOLUME, SFX_VOLUME,
 		SAVE_LOGIN, ACCOUNT, WORLD, CHANNEL, CHARACTER,
@@ -44,7 +44,7 @@ public:
 
 	static string nameof(Type type)
 	{
-		static const string names[NUM_SETTINGS] =
+		static const string names[LENGTH] =
 		{
 			"ServerIP", "Fullscreen", "BGMVolume", "SFXVolume",
 			"SaveLogin", "Account", "World", "Channel", "Character",
@@ -55,7 +55,7 @@ public:
 
 	static string defaultof(Type type)
 	{
-		const string defaults[NUM_SETTINGS] =
+		const string defaults[LENGTH] =
 		{
 			"127.0.0.1", "false", "50", "50",
 			"false", "", "0", "0", "0",

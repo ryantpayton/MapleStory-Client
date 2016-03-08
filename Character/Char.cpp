@@ -16,7 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Char.h"
-#include "Graphics\GraphicsGL.h"
+#include "nlnx\nx.hpp"
+#include "nlnx\node.hpp"
 
 namespace Character
 {
@@ -33,8 +34,6 @@ namespace Character
 
 		namelabel.draw(absp);
 		chatballoon.draw(absp);
-
-		//Graphics::GraphicsGL::get().drawrectangle(absp.x(), absp.y(), 1, -50, 1.0, 0.0, 0.0, 1.0);
 
 		if (!flip)
 			absp.shiftx(-8);
@@ -79,6 +78,15 @@ namespace Character
 	void Char::showeffect(Animation toshow)
 	{
 		effects.add(toshow);
+	}
+
+	void Char::showeffectbyid(Effect toshow)
+	{
+		if (effectdata.count(toshow))
+		{
+			Animation effect = effectdata.at(toshow);
+			effects.add(effect);
+		}
 	}
 
 	void Char::speak(string line)
@@ -175,4 +183,18 @@ namespace Character
 			getposition() + Point<int16_t>(30, 10)
 			);
 	}
+
+
+	void Char::init()
+	{
+		using nl::node;
+		node src = nl::nx::effect["BasicEff.img"];
+
+		effectdata[LEVELUP] = src["LevelUp"];
+		effectdata[JOBCHANGE] = src["JobChanged"];
+		effectdata[SCROLL_SUCCESS] = src["Enchant"]["Success"];
+		effectdata[SCROLL_FAILURE] = src["Enchant"]["Failure"];
+	}
+
+	map<Char::Effect, Animation> Char::effectdata;
 }

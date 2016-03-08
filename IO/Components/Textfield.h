@@ -16,12 +16,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Text.h"
+#include "IO\Cursor.h"
 #include "IO\Keyboard.h"
+#include "Graphics\Text.h"
 #include "Util\rectangle2d.h"
+#include <map>
+#include <functional>
 
 namespace IO
 {
+	using std::map;
+	using std::function;
 	using std::string;
 	using Graphics::Text;
 
@@ -41,17 +46,21 @@ namespace IO
 		~Textfield();
 
 		void draw(Point<int16_t> position) const;
-		void update();
+		void update(Point<int16_t> parentpos);
 		void sendkey(Keyboard::Keytype type, int32_t code, bool down);
 
 		void setstate(State state);
 		void settext(string text);
 		void setcrypt(int8_t character);
-		void setonreturn(void(*onreturn)(string));
+
+		void setonreturn(function<void(string)> onreturn);
+		void setkey(Keyboard::Action key, function<void(void)> action);
+
+		Cursor::State sendcursor(Point<int16_t> cursorpos, bool clicked);
 
 		string gettext() const;
 		State getstate() const;
-		rectangle2d<int16_t> getbounds(Point<int16_t> parentpos) const;
+		rectangle2d<int16_t> getbounds() const;
 
 	private:
 		void modifytext(string);
@@ -64,10 +73,13 @@ namespace IO
 		uint16_t elapsed;
 		size_t markerpos;
 		rectangle2d<int16_t> bounds;
+		Point<int16_t> parentpos;
 		size_t limit;
 		int8_t crypt;
 		State state;
-		void(*onreturn)(string);
+
+		map<int32_t, function<void(void)>> callbacks;
+		function<void(string)> onreturn;
 	};
 }
 

@@ -16,7 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "GraphicsGL.h"
-#ifdef JOURNEY_USE_OPENGL
 #include "Console.h"
 #include "glm.hpp"
 #include <algorithm>
@@ -388,8 +387,15 @@ namespace Graphics
 				GLshort top = cyj + static_cast<GLshort>(yscale * (yj - cyj));
 				GLshort bottom = cyj + static_cast<GLshort>(yscale * (yj + th - cyj));
 
-				Quad quad = Quad(left, right, top, bottom, offset, 1.0f, 1.0f, 1.0f, alpha);
-				quads.push_back(quad);
+				GLshort tl = std::min(left, right);
+				GLshort tr = std::max(left, right);
+				GLshort tt = std::min(top, bottom) + Constants::VIEWYOFFSET;
+				GLshort tb = std::max(top, bottom) + Constants::VIEWYOFFSET;
+				if (tr > 0 && tl < Constants::VIEWWIDTH && tb > 0 && tt < Constants::VIEWHEIGHT)
+				{
+					Quad quad = Quad(left, right, top, bottom, offset, 1.0f, 1.0f, 1.0f, alpha);
+					quads.push_back(quad);
+				}
 			}
 		}
 	}
@@ -482,7 +488,7 @@ namespace Graphics
 			{ 1.0f, 1.0f, 1.0f }, // White
 			{ 1.0f, 1.0f, 0.0f }, // Yellow
 			{ 0.0f, 0.0f, 1.0f }, // Blue
-			{ 1.0f, 0.0f, 0.0f }, // Red
+			{ 0.75f, 0.25f, 0.0f }, // Red
 			{ 0.5f, 0.25f, 0.0f }, // Brown
 			{ 0.7f, 0.7f, 0.7f }, // Lightgrey
 			{ 0.5f, 0.5f, 0.5f }, // Darkgrey
@@ -583,4 +589,3 @@ namespace Graphics
 		quads.clear();
 	}
 }
-#endif

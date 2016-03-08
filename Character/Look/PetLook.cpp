@@ -155,7 +155,7 @@ namespace Character
 
 		string stname = stancenames[stance / 2];
 		if (animations.count(stname))
-			animations.at(stname).update(Constants::TIMESTEP / 2);
+			animations.at(stname).update(Constants::TIMESTEP);
 	}
 
 	void PetLook::setposition(int16_t x, int16_t y)

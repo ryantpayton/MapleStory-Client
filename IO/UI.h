@@ -50,11 +50,10 @@ namespace IO
 		void update();
 
 		void sendmouse(Point<int16_t> pos);
-		void sendmouse(bool pressed, Point<int16_t> pos);
 		void sendmouse(bool pressed);
-		void doubleclick(Point<int16_t> pos);
 		void doubleclick();
 		void sendkey(int32_t keycode, bool pressed);
+
 		void focustextfield(Textfield* textfield);
 		void dragicon(Icon* icon);
 
@@ -75,17 +74,20 @@ namespace IO
 		template <class T, typename ...Args>
 		void withelement(UIElement::Type type, void(T::*action)(Args...), Args... args) const;
 
+		template <typename ...Args>
+		void withstate(void(UIState::*action)(Args...), Args... args);
+
 	private:
+		void sendmouse(Point<int16_t> cursorpos, Cursor::State cursorstate);
+
 		unique_ptr<UIState> state;
 		Keyboard keyboard;
 		Cursor cursor;
 
-		unordered_map<int32_t, bool> keydown;
-
 		Optional<Textfield> focusedtextfield;
-		bool enabled;
+		bool shift;
 
-		int16_t clickrepeat;
+		bool enabled;
 	};
 
 	template <class T>
@@ -100,5 +102,12 @@ namespace IO
 	{
 		getelement<T>(type)
 			.ifpresent(action, args...);
+	}
+
+	template <typename ...Args>
+	void UI::withstate(void(UIState::*action)(Args...), Args... args)
+	{
+		Optional<UIState> os = state.get();
+		os.ifpresent(action, args...);
 	}
 }

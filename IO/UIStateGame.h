@@ -17,6 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "UIState.h"
+#include "Components\EquipTooltip.h"
+#include "Components\ItemTooltip.h"
+#include "Util\Optional.h"
 #include <unordered_map>
 #include <list>
 #include <memory>
@@ -34,10 +37,15 @@ namespace IO
 		
 		void draw(float inter, Point<int16_t> cursor) const override;
 		void update() override;
+
 		void doubleclick(Point<int16_t> pos) override;
-		void dragicon(Icon* icon) override;
 		void sendkey(Keyboard::Keytype type, int32_t action, bool pressed) override;
 		Cursor::State sendmouse(Cursor::State mst, Point<int16_t> pos) override;
+
+		void dragicon(Icon* icon) override;
+		void showequip(UIElement::Type parent, Equip* equip, int16_t slot) override;
+		void showitem(UIElement::Type parent, int32_t itemid) override;
+		void cleartooltip(UIElement::Type parent) override;
 
 		void add(const Element& element) override;
 		void remove(UIElement::Type type) override;
@@ -45,12 +53,17 @@ namespace IO
 		UIElement* getfront(Point<int16_t> pos) const override;
 
 	private:
-		void dropicon(Point<int16_t> pos, UIElement::Type parent, int16_t identifier);
+		void dropicon(const Icon& icon, Point<int16_t> pos);
 
 		unordered_map<UIElement::Type, unique_ptr<UIElement>> elements;
 		list<UIElement::Type> elementorder;
 		UIElement::Type focused;
 
-		Icon* draggedicon;
+		EquipTooltip eqtooltip;
+		ItemTooltip ittooltip;
+		Optional<Tooltip> tooltip;
+		UIElement::Type tooltipparent;
+
+		Optional<Icon> draggedicon;
 	};
 }

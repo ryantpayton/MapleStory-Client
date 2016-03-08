@@ -75,9 +75,7 @@ namespace IO
 
 	void UIElement::doubleclick(Point<int16_t>) {}
 
-	void UIElement::icondropped(int16_t) {}
-
-	void UIElement::dropicon(Point<int16_t>, Type, int16_t) {}
+	void UIElement::sendicon(const Icon&, Point<int16_t>) {}
 
 	Cursor::State UIElement::sendmouse(bool down, Point<int16_t> pos)
 	{

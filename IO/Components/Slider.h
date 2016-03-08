@@ -36,11 +36,14 @@ namespace IO
 
 		bool isenabled() const;
 		void setenabled(bool enabled);
+		void setrows(int16_t rows);
 
 		void draw(Point<int16_t> position) const;
 		Cursor::State sendcursor(Point<int16_t> cursor, bool pressed);
 
 	private:
+		Point<int16_t> getmidpos() const;
+
 		function<void(bool upwards)> onmoved;
 
 		Range<int16_t> vertical;

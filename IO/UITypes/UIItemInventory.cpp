@@ -119,10 +119,10 @@ namespace IO
 		for (auto& icon : icons)
 		{
 			int16_t slot = icon.first;
-			if (slot >= slotrange.first && slot <= slotrange.second)
+			if (icon.second && slot >= slotrange.first && slot <= slotrange.second)
 			{
 				Point<int16_t> slotpos = getslotpos(slot);
-				icon.second.draw(position + slotpos);
+				icon.second->draw(position + slotpos);
 			}
 		}
 
@@ -147,17 +147,14 @@ namespace IO
 
 		Point<int16_t> mesopos = position + Point<int16_t>(124, 264);
 		mesolabel.draw(mesopos);
-
-		eqtooltip.draw(cursorposition);
-		ittooltip.draw(cursorposition);
 	}
 
 	void UIItemInventory::update()
 	{
 		UIElement::update();
 
-		newitemtab.update(3);
-		newitemslot.update(4);
+		newitemtab.update(4);
+		newitemslot.update(6);
 
 		mesolabel.settext(getmesostr());
 	}
@@ -173,8 +170,13 @@ namespace IO
 
 			if (texture)
 			{
-				int16_t displaycount = (tab == Inventory::EQUIP) ? 0 : item.map(&Item::getcount);
-				icons[slot] = Icon(*texture, ITEMINVENTORY, slot, displaycount);
+				int32_t itemid = item.map(&Item::getid);
+				int16_t count = item.map(&Item::getcount);
+				if (tab == Inventory::EQUIP)
+					count = 0;
+
+				Equipslot::Value eqslot = inventory.findequipslot(itemid);
+				icons[slot] = unique_ptr<Icon>(new Icon(new ItemIcon(tab, eqslot, slot), *texture, count));
 			}
 		}
 		else if (icons.count(slot))
@@ -229,6 +231,8 @@ namespace IO
 			slotrange.first = 1;
 			slotrange.second = 24;
 
+			slider->setrows(inventory.getslots(tab) / 4 - 5);
+
 			loadicons();
 
 			buttons[buttonbytab(oldtab)]->setstate(Button::NORMAL);
@@ -260,107 +264,63 @@ namespace IO
 		}
 	}
 
-	void UIItemInventory::icondropped(int16_t identifier)
-	{
-		if (!icons.count(identifier))
-			return;
-
-		using Net::MoveItemPacket;
-		Session::get().dispatch(MoveItemPacket(tab, identifier, 0, 1));
-	}
-
-	void UIItemInventory::dropicon(Point<int16_t> cursorpos, Type type, int16_t identifier)
+	void UIItemInventory::sendicon(const Icon& icon, Point<int16_t> cursorpos)
 	{
 		int16_t slot = slotbypos(cursorpos - position);
 		if (slot > 0)
 		{
-			switch (type)
+			Optional<Item> item = inventory.getitem(tab, slot);
+			Equipslot::Value eqslot;
+			bool equip;
+			if (item && tab == Inventory::EQUIP)
 			{
-			case ITEMINVENTORY:
-				if (slot != identifier)
-				{
-					using Net::MoveItemPacket;
-					Session::get().dispatch(MoveItemPacket(tab, identifier, slot, 1));
-				}
-				break;
-			case EQUIPINVENTORY:
-				if (tab == Inventory::EQUIP)
-				{
-					Optional<Item> item = inventory.getitem(Inventory::EQUIP, slot);
-					if (item)
-					{
-						int32_t itemid = item.map(&Item::getid);
-						Equipslot::Value eqslot = inventory.findequipslot(itemid);
-						if (identifier == eqslot)
-						{
-							using Net::EquipItemPacket;
-							Session::get().dispatch(EquipItemPacket(identifier, eqslot));
-						}
-					}
-					else
-					{
-						using Net::UnequipItemPacket;
-						Session::get().dispatch(UnequipItemPacket(identifier, slot));
-					}
-				}
-				break;
+				eqslot = inventory.findequipslot(item.map(&Item::getid));
+				equip = true;
 			}
+			else
+			{
+				eqslot = Equipslot::NONE;
+				equip = false;
+			}
+			icon.droponitems(tab, eqslot, slot, equip);
 		}
 	}
 
 	Cursor::State UIItemInventory::sendmouse(bool pressed, Point<int16_t> cursorpos)
 	{
-		cursorposition = cursorpos;
-
 		Point<int16_t> cursoroffset = cursorpos - position;
 		if (slider && slider->isenabled())
 		{
 			Cursor::State sstate = slider->sendcursor(cursoroffset, pressed);
 			if (sstate != Cursor::IDLE)
 			{
-				eqtooltip.clear();
-				ittooltip.clear();
+				cleartooltip();
 				return sstate;
 			}
 		}
 
 		int16_t slot = slotbypos(cursoroffset);
-		if (icons.count(slot) && isvisible(slot))
+		Optional<Icon> icon = geticon(slot);
+		if (icon && isvisible(slot))
 		{
 			Point<int16_t> slotpos = getslotpos(slot);
 			if (pressed)
 			{
-				eqtooltip.clear();
-				ittooltip.clear();
-				icons[slot].startdrag(cursoroffset - slotpos);
-				UI::get().dragicon(&icons[slot]);
+				icon->startdrag(cursoroffset - slotpos);
+				UI::get().dragicon(icon.get());
+
+				cleartooltip();
 				return Cursor::GRABBING;
-			}
-			else if (tab == Inventory::EQUIP)
-			{
-				Optional<Equip> equip = inventory.getequip(tab, slot);
-				if (equip)
-				{
-					eqtooltip.setequip(equip.get(), slot);
-					return Cursor::CANGRAB;
-				}
-				else
-				{
-					return Cursor::IDLE;
-				}
 			}
 			else
 			{
-				int32_t itemid = inventory.getitem(tab, slot)
-					.mapordefault(&Item::getid, 0);
-				ittooltip.setitem(itemid);
+				showitem(slot);
 				return Cursor::CANGRAB;
 			}
 		}
 		else
 		{
-			eqtooltip.clear();
-			ittooltip.clear();
+			cleartooltip();
 			return UIDragElement::sendmouse(pressed, cursorpos);
 		}
 	}
@@ -379,8 +339,8 @@ namespace IO
 				updateslot(slot);
 				break;
 			case 1:
-				if (icons.count(slot))
-					icons[slot].setcount(arg);
+				geticon(slot)
+					.ifpresent(&Icon::setcount, arg);
 				break;
 			case 2:
 				if (arg != slot)
@@ -426,9 +386,28 @@ namespace IO
 
 	void UIItemInventory::togglehide()
 	{
-		eqtooltip.clear();
-		ittooltip.clear();
+		cleartooltip();
 		UIElement::togglehide();
+	}
+
+	void UIItemInventory::showitem(int16_t slot)
+	{
+		if (tab == Inventory::EQUIP)
+		{
+			Optional<Equip> equip = inventory.getequip(tab, slot);
+			UI::get().withstate(&UIState::showequip, ITEMINVENTORY, equip.get(), slot);
+		}
+		else
+		{
+			Optional<Item> item = inventory.getitem(tab, slot);
+			int32_t itemid = item.mapordefault(&Item::getid, 0);
+			UI::get().withstate(&UIState::showitem, ITEMINVENTORY, itemid);
+		}
+	}
+
+	void UIItemInventory::cleartooltip()
+	{
+		UI::get().withstate(&UIState::cleartooltip, ITEMINVENTORY);
 	}
 
 	string UIItemInventory::getmesostr() const
@@ -507,5 +486,51 @@ namespace IO
 		default:
 			return BT_TAB_CASH;
 		}
+	}
+
+	Optional<Icon> UIItemInventory::geticon(int16_t slot) const
+	{
+		return icons.count(slot) ? icons.at(slot).get() : Optional<Icon>();
+	}
+
+
+	UIItemInventory::ItemIcon::ItemIcon(Inventory::Type st, Equipslot::Value eqs, int16_t s)
+	{
+		sourcetab = st;
+		eqsource = eqs;
+		source = s;
+	}
+
+	void UIItemInventory::ItemIcon::ondrop() const
+	{
+		using Net::MoveItemPacket;
+		Session::get().dispatch(MoveItemPacket(sourcetab, source, 0, 1));
+	}
+
+	void UIItemInventory::ItemIcon::ondropequips(Equipslot::Value eqslot) const
+	{
+		switch (sourcetab)
+		{
+		case Inventory::EQUIP:
+			if (eqsource == eqslot)
+			{
+				using Net::EquipItemPacket;
+				Session::get().dispatch(EquipItemPacket(source, eqslot));
+			}
+			break;
+		case Inventory::USE:
+			using Net::ScrollEquipPacket;
+			Session::get().dispatch(ScrollEquipPacket(source, eqslot));
+			break;
+		}
+	}
+
+	void UIItemInventory::ItemIcon::ondropitems(Inventory::Type tab, Equipslot::Value, int16_t slot, bool) const
+	{
+		if (tab != sourcetab || slot == source)
+			return;
+
+		using Net::MoveItemPacket;
+		Session::get().dispatch(MoveItemPacket(tab, source, slot, 1));
 	}
 }

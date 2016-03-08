@@ -17,8 +17,42 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MapNpcs.h"
 
+#include "Net\Session.h"
+#include "Net\Packets\MessagingPackets.h"
+
 namespace Gameplay
 {
+	using Net::Session;
+
+	Cursor::State MapNpcs::sendmouse(bool pressed, Point<int16_t> position, Point<int16_t> viewpos)
+	{
+		for (auto& mmo : objects)
+		{
+			Optional<Npc> npc = getnpc(mmo.first);
+			if (npc && npc->inrange(position, viewpos))
+			{
+				if (pressed)
+				{
+					if (npc->isscripted())
+					{
+						using Net::TalkToNPCPacket;
+						Session::get().dispatch(TalkToNPCPacket(npc->getoid()));
+					}
+					else
+					{
+
+					}
+					return Cursor::IDLE;
+				}
+				else
+				{
+					return Cursor::CANCLICK;
+				}
+			}
+		}
+		return Cursor::IDLE;
+	}
+
 	Optional<Npc> MapNpcs::getnpc(int32_t oid)
 	{
 		return get(oid)

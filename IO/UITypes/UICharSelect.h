@@ -25,6 +25,7 @@ namespace IO
 {
 	using std::vector;
 	using Character::CharLook;
+	using Character::Maplestat;
 
 	// The character selection screen.
 	class UICharSelect : public UIElement
@@ -46,12 +47,18 @@ namespace IO
 		void draw(float) const override;
 		void update() override;
 		void buttonpressed(uint16_t) override;
-		void removechar(uint8_t);
+		void removechar(uint8_t id);
 
 	private:
-		void addchar(uint8_t);
+		void addchar(uint8_t id);
 		void selectchar();
-		Point<int16_t> getcharpos(size_t) const;
+		void updateinfo();
+		string getstringfor(size_t label) const;
+		Point<int16_t> getlabelpos(size_t label) const;
+		Point<int16_t> getcharpos(size_t id) const;
+
+		Point<int16_t> selworldpos;
+		Point<int16_t> charinfopos;
 
 		bool haschars;
 		vector<CharLook> charlooks;
@@ -59,11 +66,17 @@ namespace IO
 		uint8_t charslots;
 		uint8_t selected;
 		uint8_t page;
-		Text namelabel;
-		Text joblabel;
 		vector<Nametag> nametags;
 		Charset levelset;
-		Charset statsset;
+		Text namelabel;
+
+		static const size_t NUM_LABELS = 7;
+		enum InfoLabel
+		{
+			JOB, WORLDRANK, JOBRANK,
+			STR, DEX, INT, LUK
+		};
+		Text infolabels[NUM_LABELS];
 	};
 
 	// Factory for the character selection screen.

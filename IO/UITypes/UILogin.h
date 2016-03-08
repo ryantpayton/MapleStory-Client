@@ -46,6 +46,8 @@ namespace IO
 		Cursor::State sendmouse(bool, Point<int16_t>) override;
 
 	private:
+		void login();
+
 		Textfield account;
 		Textfield password;
 		Texture accountbg;

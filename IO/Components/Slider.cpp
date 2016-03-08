@@ -45,12 +45,11 @@ namespace IO
 		thumb = unique_ptr<Button>(new TwoSpriteButton(esrc["thumb0"], esrc["thumb1"]));
 
 		buttonheight = dnext.getdimensions().y();
-		rowheight = (vertical.length() - buttonheight * 3) / rows;
-		rowmax = rows;
+
+		setrows(rows);
 
 		enabled = true;
 		scrolling = false;
-		row = 0;
 	}
 
 	bool Slider::isenabled() const
@@ -63,16 +62,22 @@ namespace IO
 		enabled = en;
 	}
 
+	void Slider::setrows(int16_t rows)
+	{
+		rowheight = (vertical.length() - buttonheight * 3) / rows;
+		rowmax = rows;
+		row = 0;
+	}
+
 	void Slider::draw(Point<int16_t> position) const
 	{
 		Point<int16_t> fill = Point<int16_t>(0, vertical.length() + buttonheight);
-		Point<int16_t> mid = Point<int16_t>(x, vertical.first() + row * rowheight + buttonheight);
 
 		using Graphics::DrawArgument;
 		if (enabled)
 		{
 			base.draw(DrawArgument(start + position, fill));
-			thumb->draw(mid + position);
+			thumb->draw(getmidpos() + position);
 			prev->draw(position);
 			next->draw(position);
 		}
@@ -82,6 +87,14 @@ namespace IO
 			dprev.draw(position);
 			dnext.draw(position);
 		}
+	}
+
+	Point<int16_t> Slider::getmidpos() const
+	{
+		int16_t thumbshift = row < rowmax ?
+			row * rowheight + buttonheight :
+			vertical.length() - buttonheight * 2 - 2;
+		return Point<int16_t>(x, vertical.first() + thumbshift);
 	}
 
 	Cursor::State Slider::sendcursor(Point<int16_t> cursor, bool pressed)

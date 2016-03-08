@@ -22,7 +22,12 @@
 
 namespace IO
 {
-	using namespace Character;
+	using Character::CharStats;
+	using Character::Maplestat;
+	using Character::Equipstat;
+	using Character::Clothing;
+	using Character::Weapon;
+	using Gameplay::Stage;
 
 	EquipTooltip::EquipTooltip() 
 	{
@@ -88,13 +93,6 @@ namespace IO
 		invpos = 0;
 	}
 
-	EquipTooltip::~EquipTooltip() {}
-
-	void EquipTooltip::clear()
-	{
-		invpos = 0;
-	}
-
 	void EquipTooltip::setequip(const Equip* equip, int16_t ivp)
 	{
 		if (ivp == invpos)
@@ -106,8 +104,6 @@ namespace IO
 			return;
 
 		const Clothing& cloth = equip->getcloth();
-
-		using Gameplay::Stage;
 		const CharStats& stats = Stage::get().getplayer().getstats();
 		
 		filllength = 500;

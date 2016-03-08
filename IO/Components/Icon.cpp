@@ -21,11 +21,10 @@
 
 namespace IO
 {
-	Icon::Icon(Texture t, UIElement::Type p, int16_t i, int16_t c)
+	Icon::Icon(Type* t, Texture tx, int16_t c) 
 	{
-		texture = t;
-		parent = p;
-		identifier = i;
+		type = unique_ptr<Type>(t);
+		texture = tx;
 		showcount = c > 0;
 		count = c;
 
@@ -35,14 +34,10 @@ namespace IO
 
 	Icon::Icon() 
 	{
-		parent = UIElement::NONE;
-		identifier = 0;
 		dragged = false;
 		showcount = false;
 		count = 0;
 	}
-
-	Icon::~Icon() {}
 
 	void Icon::draw(Point<int16_t> position) const
 	{
@@ -66,6 +61,21 @@ namespace IO
 		}
 	}
 
+	void Icon::drop() const
+	{
+		type->ondrop();
+	}
+
+	void Icon::droponequips(Equipslot::Value eqslot) const
+	{
+		type->ondropequips(eqslot);
+	}
+
+	void Icon::droponitems(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const
+	{
+		type->ondropitems(tab, eqslot, slot, equip);
+	}
+
 	void Icon::startdrag(Point<int16_t> offset)
 	{
 		cursoroffset = offset;
@@ -77,11 +87,6 @@ namespace IO
 		dragged = false;
 	}
 
-	void Icon::setidentifier(int16_t id)
-	{
-		identifier = id;
-	}
-
 	void Icon::setcount(int16_t c)
 	{
 		count = c;
@@ -90,15 +95,5 @@ namespace IO
 	int16_t Icon::getcount() const
 	{
 		return count;
-	}
-
-	int16_t Icon::getidentifier() const
-	{
-		return identifier;
-	}
-
-	UIElement::Type Icon::getparent() const
-	{
-		return parent;
 	}
 }

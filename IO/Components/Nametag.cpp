@@ -30,7 +30,7 @@ namespace IO
 
 			using::Graphics::DrawArgument;
 			tag.at(selected).at(0).draw(DrawArgument(startpos));
-			tag.at(selected).at(1).draw(DrawArgument(startpos + Point<int16_t>(8, 0), Point<int16_t>(width, 0)));
+			tag.at(selected).at(1).draw(DrawArgument(startpos + Point<int16_t>(8, 0), Point<int16_t>(width + 4, 0)));
 			tag.at(selected).at(2).draw(DrawArgument(startpos + Point<int16_t>(width + 8, 0)));
 			name.draw(position);
 		}

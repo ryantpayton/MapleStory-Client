@@ -48,8 +48,11 @@ namespace Gameplay
 
 		// Changes stance and resets animation.
 		void setstance(string stance);
-		// Returns width and height of the current animation.
-		Point<int16_t> getdimensions() const;
+
+		// Check wether this is a server-sided npc.
+		bool isscripted() const;
+		// Check if the npc is in range of the cursor.
+		bool inrange(Point<int16_t> cursorpos, Point<int16_t> viewpos) const;
 
 	private:
 		map<string, Animation> animations;

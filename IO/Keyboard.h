@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Util\Optional.h"
 #include <map>
 #include <cstdint>
 
@@ -84,6 +85,7 @@ namespace IO
 			BACK = 64,
 			RETURN = 65,
 			SPACE = 66,
+			TAB = 67,
 			FACE1 = 100,
 			FACE7 = 106
 		};
@@ -139,7 +141,7 @@ namespace IO
 		void assign(uint8_t key, uint8_t type, int32_t action);
 		int32_t shiftcode() const;
 		Keymapping gettextmapping(int32_t keycode, bool shift) const;
-		const Keymapping* getmapping(int32_t keycode) const;
+		Optional<const Keymapping> getmapping(int32_t keycode) const;
 
 	private:
 		map<int32_t, Keymapping> keymap;

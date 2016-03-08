@@ -59,8 +59,7 @@ namespace IO
 		void update() override;
 		void buttonpressed(uint16_t buttonid) override;
 		void doubleclick(Point<int16_t> position) override;
-		void icondropped(int16_t identifier) override;
-		void dropicon(Point<int16_t> position, Type type, int16_t identifier) override;
+		void sendicon(const Icon& icon, Point<int16_t> position) override;
 		void togglehide() override;
 		Cursor::State sendmouse(bool pressed, Point<int16_t> position) override;
 
@@ -69,6 +68,24 @@ namespace IO
 		void enablegather();
 
 	private:
+		void showitem(int16_t slot);
+		void cleartooltip();
+
+		class ItemIcon : public Icon::Type
+		{
+		public:
+			ItemIcon(Inventory::Type sourcetab, Equipslot::Value eqsource, int16_t source);
+
+			void ondrop() const override;
+			void ondropequips(Equipslot::Value eqslot) const override;
+			void ondropitems(Inventory::Type tab, Equipslot::Value, int16_t slot, bool) const override;
+
+		private:
+			Inventory::Type sourcetab;
+			Equipslot::Value eqsource;
+			int16_t source;
+		};
+
 		UIItemInventory& operator = (const UIItemInventory&) = delete;
 
 		void loadicons();
@@ -83,6 +100,7 @@ namespace IO
 		uint16_t buttonbytab(Inventory::Type tab) const;
 		Point<int16_t> getslotpos(int16_t slot) const;
 		Point<int16_t> gettabpos(Inventory::Type tab) const;
+		Optional<Icon> geticon(int16_t slot) const;
 
 		const Inventory& inventory;
 
@@ -92,10 +110,7 @@ namespace IO
 		Text mesolabel;
 		unique_ptr<Slider> slider;
 
-		EquipTooltip eqtooltip;
-		ItemTooltip ittooltip;
-		Point<int16_t> cursorposition;
-		map<int16_t, Icon> icons;
+		map<int16_t, unique_ptr<Icon>> icons;
 
 		Inventory::Type tab;
 		pair<int16_t, int16_t> slotrange;

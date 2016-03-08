@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,22 +15,37 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "GraphicsEngine.h"
+#pragma once
+#include <string>
 
-#include "Journey.h"
-#ifdef JOURNEY_USE_OPENGL
-#include "GraphicsGL.h"
-#else
-#include "GraphicsD2D.h"
-#endif
-
-namespace Graphics
+namespace IO
 {
-	GraphicsEngine& GraphicsEngine::getengine()
+	using std::string;
+
+	class Messages
 	{
-#ifdef JOURNEY_USE_OPENGL
-		return GraphicsGL::get();
-#else
-#endif
-	}
+	public:
+		static const size_t LENGTH = 3;
+		enum Type
+		{
+			SCROLL_SUCCESS,
+			SCROLL_FAILURE,
+			SCROLL_DESTROYED
+		};
+
+		Messages()
+		{
+			messages[SCROLL_SUCCESS] = "The scroll lights up and it's mysterious powers have been transferred to the item.";
+			messages[SCROLL_FAILURE] = "The scroll lights up but the item remains as if nothing happened.";
+			messages[SCROLL_DESTROYED] = "The item has been destroyed by the overwhelming power of the scroll.";
+		}
+
+		string stringfor(Type type)
+		{
+			return messages[type];
+		}
+
+	private:
+		string messages[LENGTH];
+	};
 }

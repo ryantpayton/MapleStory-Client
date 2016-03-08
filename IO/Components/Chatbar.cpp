@@ -24,11 +24,17 @@
 
 namespace IO
 {
+	using Net::Session;
+
 	Chatbar::Chatbar(Point<int16_t> pos)
 	{
 		position = pos;
 		dimension = Point<int16_t>(500, 60);
 		chatopen = true;
+		chatrows = 4;
+		rowpos = 0;
+		rowmax = -1;
+		lastpos = 0;
 
 		node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
 
@@ -53,18 +59,47 @@ namespace IO
 		chattargets[CHT_PARTY] = mainbar["chatTarget"]["party"];
 		chattargets[CHT_SQUAD] = mainbar["chatTarget"]["expedition"];
 
-		rectangle2d<int16_t> enterarea = rectangle2d<int16_t>(
-			Point<int16_t>(-435, -59),
+		node chat = nl::nx::ui["StatusBar2.img"]["chat"];
+
+		tapbar = chat["tapBar"];
+		tapbartop = chat["tapBarOver"];
+
+		chatfield = Textfield(Text::A11M, Text::LEFT, Text::BLACK, 
+			rectangle2d<int16_t>(
+			Point<int16_t>(-435, -58),
 			Point<int16_t>(-40, -35)
-			);
-		chatfield = Textfield(Text::A11M, Text::LEFT, Text::BLACK, enterarea, 0);
+			), 0);
 		chatfield.setstate(chatopen ? Textfield::NORMAL : Textfield::DISABLED);
-		chatfield.setonreturn([](string msg) {
+		chatfield.setonreturn([&](string msg) {
 			using Net::GeneralChatPacket;
-			Net::Session::get().dispatch(GeneralChatPacket(msg, true));
+			Session::get().dispatch(GeneralChatPacket(msg, true));
+
+			lastentered.push_back(msg);
+			lastpos = lastentered.size();
+		});
+		chatfield.setkey(Keyboard::UP, [&](){
+			if (lastpos > 0)
+			{
+				lastpos--;
+				chatfield.settext(lastentered[lastpos]);
+			}
+		});
+		chatfield.setkey(Keyboard::DOWN, [&](){
+			if (lastentered.size() > 0 && lastpos < lastentered.size() - 1)
+			{
+				lastpos++;
+				chatfield.settext(lastentered[lastpos]);
+			}
 		});
 
-		closedtext = Text(Text::A11M, Text::LEFT, Text::WHITE);
+		slider = unique_ptr<Slider>(
+			new Slider(11, Range<int16_t>(0, tapbarheight * chatrows - 14), -22, 1, [&](bool up){
+			int16_t next = up ? 
+				rowpos - 1 : 
+				rowpos + 1;
+			if (next >= 0 && next <= rowmax)
+				rowpos = next;
+		}));
 	}
 
 	Chatbar::~Chatbar() {}
@@ -78,13 +113,34 @@ namespace IO
 
 		if (chatopen)
 		{
+			using Graphics::DrawArgument;
+			int16_t chatheight = tapbarheight * chatrows;
+			Point<int16_t> tabpos = position - Point<int16_t>(576, chatheight + 65);
+			tapbartop.draw(tabpos);
+			tabpos.shifty(2);
+			for (int16_t i = 0; i < chatrows; i++)
+			{
+				Point<int16_t> startpos = tabpos + Point<int16_t>(70, -1);
+				for (int16_t j = 0; j < tapbarheight; j++)
+				{
+					tapbar.draw(DrawArgument(tabpos, 0.5f));
+					tabpos.shifty(1);
+				}
+				int16_t rowid = rowpos + i - chatrows + 1;
+				if (rowtexts.count(rowid))
+				{
+					rowtexts.at(rowid).draw(startpos);
+				}
+			}
+			slider->draw(position + Point<int16_t>(0, - chatheight - 60));
+
 			chattargets[chattarget].draw(position + Point<int16_t>(0, 2));
 			chatcover.draw(position);
 			chatfield.draw(position);
 		}
-		else if (lines.size() > 0)
+		else if (rowtexts.count(rowmax))
 		{
-			closedtext.draw(position + Point<int16_t>(-500, -60));
+			rowtexts.at(rowmax).draw(position + Point<int16_t>(-500, -58));
 		}
 	}
 
@@ -92,10 +148,7 @@ namespace IO
 	{
 		UIElement::update();
 
-		chatfield.update();
-
-		if (lines.size() > 0)
-			closedtext.settext(lines.back());
+		chatfield.update(position);
 	}
 
 	void Chatbar::buttonpressed(uint16_t id)
@@ -125,39 +178,52 @@ namespace IO
 
 	rectangle2d<int16_t> Chatbar::bounds() const
 	{
-		return rectangle2d<int16_t>(
-			position - Point<int16_t>(512, 90),
-			position - Point<int16_t>(512, 90) + dimension
-			);
+		Point<int16_t> absp = position - Point<int16_t>(512, 90);
+		return rectangle2d<int16_t>(absp, absp + dimension);
 	}
 
-	Cursor::State Chatbar::sendmouse(bool down, Point<int16_t> pos)
+	Cursor::State Chatbar::sendmouse(bool down, Point<int16_t> cursorpos)
 	{
-		Cursor::State ret = UIElement::sendmouse(down, pos);
-
-		if (chatfield.getbounds(position).contains(pos))
+		if (slider && slider->isenabled())
 		{
-			if (down)
+			Cursor::State sstate = slider->sendcursor(cursorpos - Point<int16_t>(512, 480), down);
+			if (sstate != Cursor::IDLE)
 			{
-				UI::get().focustextfield(&chatfield);
-				chatfield.setstate(Textfield::FOCUSED);
-			}
-			else if (chatfield.getstate() == Textfield::NORMAL)
-			{
-				ret = Cursor::CANCLICK;
+				return sstate;
 			}
 		}
-		else if (down)
+
+		if (chatfield.getstate() == Textfield::NORMAL)
 		{
-			UI::get().focustextfield(nullptr);
-			chatfield.setstate(Textfield::NORMAL);
+			Cursor::State tstate = chatfield.sendcursor(cursorpos, down);
+			if (tstate != Cursor::IDLE)
+			{
+				return tstate;
+			}
 		}
 
-		return ret;
+		return UIElement::sendmouse(down, cursorpos);
 	}
 
-	void Chatbar::sendline(string line, int8_t)
+	void Chatbar::sendline(string line, LineType type)
 	{
-		lines.push_back(line);
+		rowmax++;
+		rowpos = rowmax;
+
+		Text::Color color;
+		switch (type)
+		{
+		case RED:
+			color = Text::RED;
+			break;
+		case BLUE:
+			color = Text::MEDIUMBLUE;
+			break;
+		default:
+			color = Text::WHITE;
+			break;
+		}
+		rowtexts[rowmax] = Text(Text::A11M, Text::LEFT, color);
+		rowtexts[rowmax].settext(line);
 	}
 }

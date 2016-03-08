@@ -25,63 +25,34 @@ namespace Graphics
 	{
 	public:
 		DrawArgument(int16_t x, int16_t y)
-		{
-			pos = Point<int16_t>(x, y);
-			defaults();
-		}
+			: DrawArgument(Point<int16_t>(x, y)) {}
 
 		DrawArgument(Point<int16_t> p)
-		{
-			pos = p;
-			defaults();
-		}
-
-		DrawArgument(Point<int16_t> p, float a)
-		{
-			pos = p;
-			defaults();
-			alpha = a;
-		}
+			: DrawArgument(p, 1.0f) {}
 
 		DrawArgument(Point<int16_t> p, float xs, float ys)
-		{
-			pos = p;
-			defaults();
-			xscale = xs;
-			yscale = ys;
-		}
+			: DrawArgument(p, p, xs, ys, 1.0f) {}
 
-		DrawArgument(Point<int16_t> p, Point<int16_t> str)
-		{
-			pos = p;
-			defaults();
-			stretch = str;
-		}
+		DrawArgument(Point<int16_t> p, Point<int16_t> s)
+			: DrawArgument(p, p, s, 1.0f, 1.0f, 1.0f) {}
 
 		DrawArgument(Point<int16_t> p, bool flip)
-		{
-			pos = p;
-			defaults();
-			xscale = flip ? -1.0f : 1.0f;
-		}
+			: DrawArgument(p, flip, 1.0f) {}
+
+		DrawArgument(Point<int16_t> p, float a)
+			: DrawArgument(p, false, a) {}
 
 		DrawArgument(Point<int16_t> p, bool flip, float a)
-		{
-			pos = p;
-			defaults();
-			xscale = flip ? -1.0f : 1.0f;
-			alpha = a;
-		}
+			: DrawArgument(p, p, flip ? -1.0f : 1.0f, 1.0f, a) {}
 
 		DrawArgument(Point<int16_t> p, bool flip, Point<int16_t> c)
-		{
-			pos = p;
-			defaults();
-			xscale = flip ? -1.0f : 1.0f;
-			center = c;
-		}
+			: DrawArgument(p, c, flip ? -1.0f : 1.0f, 1.0f, 1.0f) {}
 
 		DrawArgument(Point<int16_t> p, Point<int16_t> c,
+			float xs, float ys, float a)
+			: DrawArgument(p, c, Point<int16_t>(), xs, ys, a) {}
+
+		DrawArgument(Point<int16_t> p, Point<int16_t> c, 
 			Point<int16_t> s, float xs, float ys, float a) {
 
 			pos = p;
@@ -105,8 +76,8 @@ namespace Graphics
 		}
 
 		Point<int16_t> getstretch() const
-		{ 
-			return stretch; 
+		{
+			return stretch;
 		}
 
 		float getxscale() const 
@@ -130,14 +101,6 @@ namespace Graphics
 		}
 
 	private:
-		void defaults()
-		{
-			center = pos;
-			xscale = 1.0f;
-			yscale = 1.0f;
-			alpha = 1.0f;
-		}
-
 		Point<int16_t> pos;
 		Point<int16_t> center;
 		Point<int16_t> stretch;

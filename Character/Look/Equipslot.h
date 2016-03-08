@@ -38,16 +38,21 @@ namespace Character
 			return EnumIterator<Value>(s, l);
 		}
 
-		static Value byvalue(int16_t id)
+		static Value byid(size_t id)
+		{
+			return static_cast<Value>(id);
+		}
+
+		static Value byvalue(int16_t v)
 		{
 			for (auto it = getit(); it.hasnext(); it.increment())
 			{
 				Value value = it.get();
-				if (valueof(value) == id)
+				if (valueof(value) == v)
 					return value;
 			}
 
-			Console::get().print("Unhandled equip stat value: " + std::to_string(id));
+			Console::get().print("Unhandled equip slot value: " + std::to_string(v));
 
 			return NONE;
 		}

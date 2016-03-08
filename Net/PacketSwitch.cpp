@@ -78,6 +78,7 @@ namespace Net
 		handlers[MODIFY_INVENTORY] = unique_ptr<PacketHandler>(new ModifyInventoryHandler());
 		handlers[GATHER_RESULT] = unique_ptr<PacketHandler>(new GatherResultHandler());
 		handlers[SORT_RESULT] = unique_ptr<PacketHandler>(new SortResultHandler());
+		handlers[SCROLL_RESULT] = unique_ptr<PacketHandler>(new ScrollResultHandler());
 
 		// Todo
 		handlers[MEMO_RESULT] = unique_ptr<PacketHandler>(new NullHandler());

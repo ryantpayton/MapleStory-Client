@@ -91,8 +91,8 @@ namespace IO
 		for (auto& icit : icons)
 		{
 			int16_t slot = icit.first;
-			if (iconpositions.count(slot))
-				icit.second.draw(position + iconpositions.at(slot));
+			if (icit.second && iconpositions.count(slot))
+				icit.second->draw(position + iconpositions.at(slot));
 		}
 
 		if (showpetequips)
@@ -104,8 +104,6 @@ namespace IO
 				ptit.draw(petposition);
 			}
 		}
-
-		tooltip.draw(cursorposition);
 	}
 
 	void UIEquipInventory::buttonpressed(uint16_t id)
@@ -124,35 +122,32 @@ namespace IO
 		for (auto& icon : iconpositions)
 		{
 			int16_t slot = icon.first;
-			addicon(slot);
+			updateslot(slot);
 		}
 	}
 
 	Cursor::State UIEquipInventory::sendmouse(bool pressed, Point<int16_t> cursorpos)
 	{
-		cursorposition = cursorpos;
-
 		int16_t slot = slotbypos(cursorpos);
-		if (icons.count(slot))
+		Optional<Icon> icon = geticon(slot);
+		if (icon)
 		{
 			if (pressed)
 			{
-				tooltip.clear();
-				icons[slot].startdrag(cursorpos - position - iconpositions[slot]);
-				UI::get().dragicon(&icons[slot]);
+				icon->startdrag(cursorpos - position - iconpositions[slot]);
+				UI::get().dragicon(icon.get());
+
+				cleartooltip();
 				return Cursor::GRABBING;
 			}
 			else
 			{
-				Optional<Equip> equip = inventory.getequip(Inventory::EQUIPPED, slot);
-				if (equip)
-					tooltip.setequip(equip.get(), slot);
-
+				showequip(slot);
 				return Cursor::CANGRAB;
 			}
 		}
 
-		tooltip.clear();
+		cleartooltip();
 		return UIDragElement::sendmouse(pressed, cursorpos);
 	}
 
@@ -170,72 +165,65 @@ namespace IO
 		}
 	}
 
-	void UIEquipInventory::icondropped(int16_t identifier)
-	{
-		using Net::UnequipItemPacket;
-		Session::get().dispatch(UnequipItemPacket(identifier, 0));
-	}
-
-	void UIEquipInventory::dropicon(Point<int16_t> cursorpos, Type type, int16_t identifier)
+	void UIEquipInventory::sendicon(const Icon& icon, Point<int16_t> cursorpos)
 	{
 		int16_t slot = slotbypos(cursorpos);
 		if (slot > 0)
 		{
-			Equipslot::Value eqslot;
-			switch (type)
-			{
-			case ITEMINVENTORY:
-				eqslot = inventory.findequipslot(
-					inventory.getitem(Inventory::EQUIP, identifier)
-					.mapordefault(&Item::getid, 0)
-					);
-				break;
-			default:
-				eqslot = Equipslot::NONE;
-			}
-
-			if (slot == eqslot)
-			{
-				using Net::EquipItemPacket;
-				Session::get().dispatch(EquipItemPacket(identifier, eqslot));
-			}
+			Equipslot::Value eqslot = Equipslot::byvalue(slot);
+			icon.droponequips(eqslot);
 		}
 	}
 
 	void UIEquipInventory::togglehide()
 	{
-		tooltip.clear();
+		cleartooltip();
 		UIElement::togglehide();
 	}
 
-	void UIEquipInventory::addicon(int16_t slot)
+	void UIEquipInventory::updateslot(int16_t slot)
 	{
 		Optional<const Texture> texture = inventory.getitem(Inventory::EQUIPPED, slot)
 			.transform(&Item::getidata)
 			.transform(&ItemData::geticon, false);
 
 		if (texture)
-			icons[slot] = Icon(*texture, EQUIPINVENTORY, slot, 0);
+		{
+			icons[slot] = unique_ptr<Icon>(new Icon(new EquipIcon(slot), *texture, 0));
+		}
+		else if (icons.count(slot))
+		{
+			icons.erase(slot);
+		}
+
+		cleartooltip();
 	}
 
 	void UIEquipInventory::modify(int16_t pos, int8_t mode, int16_t arg)
 	{
-		if (mode != 0 && icons.count(pos) == 0)
-			return;
-
 		switch (mode)
 		{
 		case 0:
-			addicon(pos);
+		case 3:
+			updateslot(pos);
 			break;
 		case 2:
-			icons[arg] = icons[pos];
-			icons.erase(pos);
-			break;
-		case 3:
-			icons.erase(pos);
+			updateslot(pos);
+			updateslot(arg);
 			break;
 		}
+	}
+
+	void UIEquipInventory::showequip(int16_t slot)
+	{
+		Optional<Equip> equip = inventory.getequip(Inventory::EQUIPPED, slot);
+		int16_t eqslot = -slot;
+		UI::get().withstate(&UIState::showequip, EQUIPINVENTORY, equip.get(), eqslot);
+	}
+
+	void UIEquipInventory::cleartooltip()
+	{
+		UI::get().withstate(&UIState::cleartooltip, EQUIPINVENTORY);
 	}
 
 	int16_t UIEquipInventory::slotbypos(Point<int16_t> cursorpos) const
@@ -253,5 +241,42 @@ namespace IO
 			}
 		}
 		return 0;
+	}
+
+	Optional<Icon> UIEquipInventory::geticon(int16_t slot) const
+	{
+		return icons.count(slot) ? icons.at(slot).get() : Optional<Icon>();
+	}
+
+
+	UIEquipInventory::EquipIcon::EquipIcon(int16_t s)
+	{
+		source = s;
+	}
+
+	void UIEquipInventory::EquipIcon::ondrop() const
+	{
+		using Net::UnequipItemPacket;
+		Session::get().dispatch(UnequipItemPacket(source, 0));
+	}
+
+	void UIEquipInventory::EquipIcon::ondropitems(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const
+	{
+		if (tab != Inventory::EQUIP)
+			return;
+
+		if (equip)
+		{
+			if (eqslot == source)
+			{
+				using Net::EquipItemPacket;
+				Session::get().dispatch(EquipItemPacket(slot, eqslot));
+			}
+		}
+		else
+		{
+			using Net::UnequipItemPacket;
+			Session::get().dispatch(UnequipItemPacket(source, slot));
+		}
 	}
 }

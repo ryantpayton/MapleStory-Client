@@ -120,9 +120,9 @@ namespace Net
 		void setworldid(uint8_t w) { worldid = w; }
 		void setchannelid(uint8_t c) { channelid = c; }
 		void setcharid(int c) { charid = c; }
-		uint8_t getworldid() { return worldid; }
-		uint8_t getchannelid() { return channelid; }
-		int32_t getcharid() { return charid; }
+		uint8_t getworldid() const { return worldid; }
+		uint8_t getchannelid() const { return channelid; }
+		int32_t getcharid() const { return charid; }
 		size_t getnumworlds() const { return worlds.size(); }
 		const Account& getaccount() const { return account; }
 		const World& getworld(size_t w) const { return worlds[w]; }

@@ -397,6 +397,22 @@ namespace Character
 		return buffs.count(buff) > 0;
 	}
 
+	void Player::changelevel(uint16_t level)
+	{
+		uint16_t oldlevel = stats.getstat(Maplestat::LEVEL);
+		if (level > oldlevel)
+		{
+			showeffectbyid(LEVELUP);
+		}
+		stats.setstat(Maplestat::LEVEL, level);
+	}
+
+	void Player::changejob(uint16_t jobid)
+	{
+		showeffectbyid(JOBCHANGE);
+		stats.setjob(jobid);
+	}
+
 	void Player::setseat(Optional<const Seat> seat)
 	{
 		if (seat)

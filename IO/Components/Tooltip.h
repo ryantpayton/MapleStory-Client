@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,63 +16,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Journey.h"
-#ifdef JOURNEY_USE_OPENGL
-#include "GL\glew.h"
-#include "glfw3.h"
+#include "Util\Point.h"
 #include <cstdint>
-#include <vector>
 
 namespace IO
 {
-	using std::vector;
-
-	class WindowGLFW
+	// Interface for tooltips, information windows about something
+	// the mouse cursor is pointed at.
+	class Tooltip
 	{
 	public:
-		struct KeyMessage
-		{
-			int32_t key;
-			bool pressed;
-		};
+		virtual ~Tooltip() {}
 
-		struct MessageQueue
-		{
-			vector<KeyMessage> keymessages;
-
-			bool available() const
-			{
-				return keymessages.size() > 0;
-			}
-
-			void push(KeyMessage message)
-			{
-				keymessages.push_back(message);
-			}
-		};
-
-		WindowGLFW();
-		~WindowGLFW();
-
-		bool init(bool fullscreen);
-		bool initwindow();
-		void update();
-		void begin() const;
-		void end() const;
-		void fadeout(float step, void(*fadeproc)());
-
-	private:
-		void updateopc();
-
-		void(*fadeprocedure)();
-
-		GLFWwindow* glwnd;
-		GLFWwindow* context;
-		MessageQueue messages;
-		bool fullscreen;
-		float opacity;
-		float opcstep;
+		virtual void draw(Point<int16_t> cursorpos) const = 0;
 	};
 }
-#endif
-

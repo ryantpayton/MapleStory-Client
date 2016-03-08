@@ -55,6 +55,15 @@ namespace Character
 			return static_cast<State>(value);
 		}
 
+		// Character effects from Effect.wz
+		enum Effect
+		{
+			LEVELUP,
+			JOBCHANGE,
+			SCROLL_SUCCESS,
+			SCROLL_FAILURE
+		};
+
 		// Draw look, nametag, effects and chat bubble.
 		void draw(const Camera& camera, float inter) const override;
 		// Update look and movements.
@@ -64,6 +73,8 @@ namespace Character
 
 		// Display an animation as an effect ontop of the character.
 		void showeffect(Animation toshow);
+		// Display an animation as an effect ontop of the character.
+		void showeffectbyid(Effect toshow);
 		// Display a chat bubble with the specified line in it.
 		void speak(string line);
 		// Change a part of the character's look.
@@ -96,6 +107,9 @@ namespace Character
 		// Return wether the character sprite uses stances for two-handed weapons.
 		bool istwohanded() const;
 
+		// Initialize character effects.
+		static void init();
+
 	protected:
 		CharLook look;
 		ChatBalloon chatballoon;
@@ -105,5 +119,8 @@ namespace Character
 
 		State state;
 		bool flip;
+
+	private:
+		static map<Effect, Animation> effectdata;
 	};
 }

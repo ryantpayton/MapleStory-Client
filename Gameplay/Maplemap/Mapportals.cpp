@@ -92,8 +92,8 @@ namespace Gameplay
 
 	void MapPortals::update(rectangle2d<int16_t> player)
 	{
-		getanimation(Portal::REGULAR)->update(Constants::TIMESTEP / 2);
-		getanimation(Portal::HIDDEN)->update(Constants::TIMESTEP / 2);
+		getanimation(Portal::REGULAR)->update(Constants::TIMESTEP);
+		getanimation(Portal::HIDDEN)->update(Constants::TIMESTEP);
 
 		for (auto& ptit : portals)
 		{

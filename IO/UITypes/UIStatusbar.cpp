@@ -136,6 +136,9 @@ namespace IO
 		expbar.update(getexppercent());
 		hpbar.update(gethppercent());
 		mpbar.update(getmppercent());
+
+		namelabel.settext(stats.getname());
+		joblabel.settext(stats.getjobname());
 	}
 
 	void UIStatusbar::buttonpressed(uint16_t id)
@@ -181,9 +184,15 @@ namespace IO
 		}
 	}
 
-	void UIStatusbar::sendchatline(string line, int8_t type)
+	void UIStatusbar::sendchatline(string line, Chatbar::LineType type)
 	{
 		chatbar->sendline(line, type);
+	}
+
+	void UIStatusbar::displaymessage(Messages::Type line, Chatbar::LineType type)
+	{
+		string message = messages.stringfor(line);
+	    chatbar->sendline(message, type);
 	}
 
 	float UIStatusbar::getexppercent() const

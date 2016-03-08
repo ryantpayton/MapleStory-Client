@@ -19,6 +19,8 @@
 #include "Cursor.h"
 #include "Graphics\Sprite.h"
 #include "Components\Button.h"
+#include "Components\Icon.h"
+#include "Util\Optional.h"
 #include <memory>
 
 namespace IO
@@ -62,8 +64,7 @@ namespace IO
 		virtual void togglehide();
 		virtual void buttonpressed(uint16_t buttonid);
 		virtual void doubleclick(Point<int16_t> cursorpos);
-		virtual void icondropped(int16_t identifier);
-		virtual void dropicon(Point<int16_t> cursorpos, Type type, int16_t identifier);
+		virtual void sendicon(const Icon& icon, Point<int16_t> cursorpos);
 		virtual Cursor::State sendmouse(bool clicked, Point<int16_t> cursorpos);
 		virtual rectangle2d<int16_t> bounds() const;
 

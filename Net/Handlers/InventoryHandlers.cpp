@@ -19,19 +19,23 @@
 #include "ItemParser.h"
 
 #include "IO\UI.h"
+#include "IO\Messages.h"
 #include "IO\UITypes\UIEquipInventory.h"
 #include "IO\UITypes\UIItemInventory.h"
-#include "Gameplay\Stage.h"
+#include "Character\Char.h"
 #include "Character\Inventory\Inventory.h"
+#include "Gameplay\Stage.h"
 
 namespace Net
 {
+	using Character::Char;
 	using Character::Inventory; 
 	using Gameplay::Stage;
 	using IO::UI;
 	using IO::UIElement;
 	using IO::UIEquipInventory;
 	using IO::UIItemInventory;
+	using IO::Messages;
 
 	void GatherResultHandler::handle(InPacket&) const
 	{
@@ -49,38 +53,65 @@ namespace Net
 
 		Inventory& inventory = Stage::get().getplayer().getinvent();
 
+		struct Mod
+		{
+			int8_t mode;
+			Inventory::Type type;
+			int16_t pos;
+			int16_t arg;
+		};
+		vector<Mod> mods;
+
 		int8_t size = recv.readbyte();
 		for (int8_t i = 0; i < size; i++)
 		{
-			int8_t mode = recv.readbyte();
-			Inventory::Type invtype = Inventory::typebyvalue(recv.readbyte());
-			int16_t pos = recv.readshort();
-			int16_t arg = (mode == 1 || mode == 2) ? recv.readshort() : 0;
+			Mod mod;
+			mod.mode = recv.readbyte();
+			mod.type = Inventory::typebyvalue(recv.readbyte());
+			mod.pos = recv.readshort();
 
-			Inventory::Movement move;
-			if ((mode == 2 && (pos < 0 || arg < 0)) || (mode == 3 && pos < 0))
-				move = Inventory::movementbyvalue(recv.readbyte());
-			else
-				move = Inventory::MOVE_INTERNAL;
+			mod.arg = 0;
+			switch (mod.mode)
+			{
+			case 0:
+				ItemParser::parseitem(recv, mod.type, mod.pos, inventory);
+				break;
+			case 1:
+			case 2:
+				mod.arg = recv.readshort();
+				break;
+			case 3:
+				inventory.modify(mod.type, mod.pos, mod.mode, mod.arg, Inventory::MOVE_INTERNAL);
+				break;
+			}
 
-			if (mode == 0)
-				ItemParser::parseitem(recv, invtype, pos, inventory);
-			else
-				inventory.modify(invtype, pos, mode, arg, move);
+			mods.push_back(mod);
+		}
+
+		Inventory::Movement move = (recv.length() > 0) ?
+			Inventory::movementbyvalue(recv.readbyte()) :
+			Inventory::MOVE_INTERNAL;
+
+		for (Mod& mod : mods)
+		{
+			if (mod.mode > 0 && mod.mode < 3)
+			{
+				inventory.modify(mod.type, mod.pos, mod.mode, mod.arg, move);
+			}
 
 			auto eqinvent = UI::get().getelement<UIEquipInventory>(UIElement::EQUIPINVENTORY);
 			auto itinvent = UI::get().getelement<UIItemInventory>(UIElement::ITEMINVENTORY);
 			switch (move)
 			{
 			case Inventory::MOVE_INTERNAL:
-				switch (invtype)
+				switch (mod.type)
 				{
 				case Inventory::EQUIPPED:
 					if (eqinvent)
-						eqinvent->modify(pos, mode, arg);
+						eqinvent->modify(mod.pos, mod.mode, mod.arg);
 
-					Stage::get().getplayer().changecloth(-pos);
-					Stage::get().getplayer().changecloth(-arg);
+					Stage::get().getplayer().changecloth(-mod.pos);
+					Stage::get().getplayer().changecloth(-mod.arg);
 					break;
 				case Inventory::EQUIP:
 				case Inventory::USE:
@@ -88,31 +119,31 @@ namespace Net
 				case Inventory::ETC:
 				case Inventory::CASH:
 					if (itinvent)
-						itinvent->modify(invtype, pos, mode, arg);
+						itinvent->modify(mod.type, mod.pos, mod.mode, mod.arg);
 					break;
 				}
 				break;
 			case Inventory::MOVE_EQUIP:
 			case Inventory::MOVE_UNEQUIP:
-				if (pos < 0)
+				if (mod.pos < 0)
 				{
 					if (eqinvent)
-						eqinvent->modify(-pos, 3, 0);
+						eqinvent->modify(-mod.pos, 3, 0);
 
 					if (itinvent)
-						itinvent->modify(Inventory::EQUIP, arg, 0, 0);
+						itinvent->modify(Inventory::EQUIP, mod.arg, 0, 0);
 
-					Stage::get().getplayer().changecloth(-pos);
+					Stage::get().getplayer().changecloth(-mod.pos);
 				}
-				else if (arg < 0)
+				else if (mod.arg < 0)
 				{
 					if (eqinvent)
-						eqinvent->modify(-arg, 0, 0);
+						eqinvent->modify(-mod.arg, 0, 0);
 
 					if (itinvent)
-						itinvent->modify(Inventory::EQUIP, pos, 3, 0);
+						itinvent->modify(Inventory::EQUIP, mod.pos, 3, 0);
 
-					Stage::get().getplayer().changecloth(-arg);
+					Stage::get().getplayer().changecloth(-mod.arg);
 				}
 				break;
 			}

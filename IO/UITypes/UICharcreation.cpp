@@ -319,7 +319,6 @@ namespace IO
 			else
 			{
 				active = false;
-				UI::get().focustextfield(nullptr);
 				UI::get().remove(CHARSELECT);
 				UI::get().add(ElementCharSelect());
 			}
@@ -420,29 +419,18 @@ namespace IO
 		}
 	}
 
-	Cursor::State UICharcreation::sendmouse(bool down, Point<int16_t> pos)
+	Cursor::State UICharcreation::sendmouse(bool clicked, Point<int16_t> cursorpos)
 	{
-		Cursor::State ret = UIElement::sendmouse(down, pos);
-
-		if (namechar.getbounds(position).contains(pos))
+		if (namechar.getstate() == Textfield::NORMAL)
 		{
-			if (down)
+			Cursor::State tstate = namechar.sendcursor(cursorpos, clicked);
+			if (tstate != Cursor::IDLE)
 			{
-				UI::get().focustextfield(&namechar);
-				namechar.setstate(Textfield::FOCUSED);
-			}
-			else if (namechar.getstate() == Textfield::NORMAL)
-			{
-				ret = Cursor::CANCLICK;
+				return tstate;
 			}
 		}
-		else if (down)
-		{
-			UI::get().focustextfield(nullptr);
-			namechar.setstate(Textfield::NORMAL);
-		}
 
-		return ret;
+		return UIElement::sendmouse(clicked, cursorpos);
 	}
 
 	void UICharcreation::nameresult(bool nameused)
@@ -535,7 +523,7 @@ namespace IO
 		UIElement::update();
 
 		newchar.update(Constants::TIMESTEP);
-		namechar.update();
+		namechar.update(position);
 
 		cloudfx += 0.25f;
 	}

@@ -132,11 +132,23 @@ namespace Gameplay
 		}
 	}
 
-	Point<int16_t> Npc::getdimensions() const
+	bool Npc::isscripted() const
 	{
-		if (animations.count(stance))
-			return animations.at(stance).getdimensions();
-		else
-			return Point<int16_t>();
+		return scripted;
+	}
+
+	bool Npc::inrange(Point<int16_t> cursorpos, Point<int16_t> viewpos) const
+	{
+		Point<int16_t> absp = getposition() + viewpos;
+		Point<int16_t> dim = animations.count(stance) ?
+			animations.at(stance).getdimensions() :
+			Point<int16_t>();
+
+		return rectangle2d<int16_t>(
+			absp.x() - dim.x() / 2, 
+			absp.x() + dim.x() / 2, 
+			absp.y() - dim.y(), 
+			absp.y()
+			).contains(cursorpos);
 	}
 }

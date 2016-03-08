@@ -18,6 +18,7 @@
 #pragma once
 #include "Button.h"
 #include "Textfield.h"
+#include "Slider.h"
 #include "IO\UIElement.h"
 #include "IO\Cursor.h"
 #include "Graphics\Texture.h"
@@ -25,6 +26,7 @@
 
 namespace IO
 {
+	using std::unordered_map;
 	using std::vector;
 	using Graphics::Text;
 	using Graphics::Texture;
@@ -52,6 +54,17 @@ namespace IO
 			CHT_SQUAD
 		};
 
+		enum LineType
+		{
+			NORMAL,
+			RED,
+			UNK1,
+			UNK2,
+			UNK3,
+			UNK4,
+			BLUE
+		};
+
 		Chatbar(Point<int16_t> position);
 		~Chatbar();
 
@@ -61,7 +74,7 @@ namespace IO
 		rectangle2d<int16_t> bounds() const override;
 		Cursor::State sendmouse(bool pressed, Point<int16_t> position) override;
 
-		void sendline(string line, int8_t type);
+		void sendline(string line, LineType type);
 
 	private:
 		Textfield chatfield;
@@ -69,12 +82,21 @@ namespace IO
 		Texture chattargets[NUM_TARGETS];
 		Texture chatenter;
 		Texture chatcover;
-		Text closedtext;
+		Texture tapbar;
+		Texture tapbartop;
 
 		bool chatopen;
 		ChatTarget chattarget;
-		vector<string> lines;
+
 		vector<string> lastentered;
 		size_t lastpos;
+
+		unordered_map<int16_t, Text> rowtexts;
+
+		static const int16_t tapbarheight = 16;
+		int16_t chatrows;
+		int16_t rowpos;
+		int16_t rowmax;
+		unique_ptr<Slider> slider;
 	};
 }

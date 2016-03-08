@@ -40,24 +40,32 @@ namespace Gameplay
 	public:
 		Stage();
 
-		// Call 'draw()' of all objects on stage.
-		void draw(float inter) const;
-		// Calls 'update()' of all objects on stage.
-		void update();
-
-		void clear();
 		// Adds a player object with the given properties.
 		bool loadplayer(int32_t charid);
+		// Set the map which will be loaded with the next call to reload().
 		void setmap(uint8_t portalid, int32_t mapid);
 		// Loads the map to display. 
 		void reload();
 		// Parses and displays a map from a packet.
 		void parsemap(InPacket& recv);
-		// Send a key input to the stage.
-		void sendkey(IO::Keyboard::Keytype keytype, int32_t keycode, bool pressed);
+		// Remove all map objects and graphics.
+		void clear();
+
+		// Call 'draw()' of all objects on stage.
+		void draw(float inter) const;
+		// Calls 'update()' of all objects on stage.
+		void update();
 
 		// Add a spawn to the spawn queue.
 		void queuespawn(const Spawn* spawn);
+
+		// Send key input to the stage.
+		void sendkey(Keyboard::Keytype keytype, int32_t keycode, bool pressed);
+		// Send mouse input to the stage.
+		Cursor::State sendmouse(bool pressed, Point<int16_t> position);
+
+		// Check if the specified id is the player's id.
+		bool isplayer(int32_t cid) const;
 
 		// Returns a reference to the npcs on the current map.
 		MapNpcs& getnpcs();
@@ -69,9 +77,6 @@ namespace Gameplay
 		MapDrops& getdrops();
 		// Returns a reference to the Player.
 		Player& getplayer();
-
-		// Returns a reference to the physics of the current map.
-		const Physics& getphysics() const;
 
 		// Return a pointer to a character, possibly the player.
 		Optional<Char> getcharacter(int32_t cid);

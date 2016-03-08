@@ -32,10 +32,15 @@ namespace IO
 
 		void draw(float inter, Point<int16_t> cursor) const override;
 		void update() override;
+
 		void doubleclick(Point<int16_t> pos) override;
-		void dragicon(Icon* icon) override;
 		void sendkey(Keyboard::Keytype type, int32_t action, bool pressed) override;
 		Cursor::State sendmouse(Cursor::State mst, Point<int16_t> pos) override;
+
+		void dragicon(Icon* icon) override;
+		void showequip(UIElement::Type parent, Equip* equip, int16_t slot) override;
+		void showitem(UIElement::Type parent, int32_t itemid) override;
+		void cleartooltip(UIElement::Type parent) override;
 
 		void add(const Element& element) override;
 		void remove(UIElement::Type type) override;

@@ -19,10 +19,18 @@
 #include "MapObjects.h"
 #include "Npc.h"
 
+#include "IO\Cursor.h"
+
 namespace Gameplay
 {
+	using IO::Cursor;
+
 	class MapNpcs : public MapObjects
 	{
+	public:
+		// Send mouse input to clickable npcs.
+		Cursor::State sendmouse(bool pressed, Point<int16_t> position, Point<int16_t> viewpos);
+
 	private:
 		Optional<Npc> getnpc(int32_t);
 	};
