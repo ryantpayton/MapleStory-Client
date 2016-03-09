@@ -17,7 +17,6 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Util\Singleton.h"
-#include "Character\Char.h"
 #include "Character\Inventory\ItemData.h"
 #include "Character\Inventory\BulletData.h"
 #include "Character\Look\Body.h"
@@ -39,8 +38,6 @@ namespace Data
 	using Character::Clothing;
 	using Character::Weapon;
 	using Character::Skill;
-	using Character::Char;
-	using Graphics::Animation;
 
 	class DataFactory : public Singleton<DataFactory>
 	{
@@ -58,8 +55,6 @@ namespace Data
 		const Weapon& getweapon(int32_t itemid);
 		const Skill& getskill(int32_t skillid);
 
-		Animation geteffect(Char::Effect effect);
-
 	private:
 		BodyDrawinfo drawinfo;
 		map<int32_t, Body> bodytypes;
@@ -70,6 +65,5 @@ namespace Data
 		map<int32_t, Clothing> clothing;
 		map<int32_t, Weapon> weapons;
 		map<int32_t, Skill> skills;
-		map<Char::Effect, Animation> chareffects;
 	};
 }

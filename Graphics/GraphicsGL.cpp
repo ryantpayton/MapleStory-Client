@@ -110,8 +110,8 @@ namespace Graphics
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_BGRA, ATLASW, ATLASH, 0,
-			GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ATLASW, ATLASH, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
 		fontborder.sety(1);
 
@@ -222,9 +222,6 @@ namespace Graphics
 	{
 		border = Point<GLshort>(0, fontymax);
 		yrange = Range<GLshort>();
-
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, fontborder.y(), 
-			ATLASW, ATLASH - fontymax, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
 
 		offsets.clear();
 		leftovers.clear();

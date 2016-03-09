@@ -160,7 +160,7 @@ namespace IO
 			buttons[BT_OPENCHAT]->setactive(false);
 			buttons[BT_CLOSECHAT]->setactive(true);
 			buttons[BT_CHATTARGETS]->setactive(true);
-			chatfield.setstate(Textfield::DISABLED);
+			chatfield.setstate(Textfield::NORMAL);
 			//config.getconfig()->chatopen = true;
 			break;
 		case BT_CLOSECHAT:
@@ -168,7 +168,7 @@ namespace IO
 			buttons[BT_OPENCHAT]->setactive(true);
 			buttons[BT_CLOSECHAT]->setactive(false);
 			buttons[BT_CHATTARGETS]->setactive(false);
-			chatfield.setstate(Textfield::NORMAL);
+			chatfield.setstate(Textfield::DISABLED);
 			//config.getconfig()->chatopen = false;
 			break;
 		}
