@@ -73,6 +73,15 @@ namespace Character
 			MOVE_EQUIP = 2
 		};
 
+		enum Modification : int8_t
+		{
+			ADD,
+			CHANGECOUNT,
+			SWAP,
+			REMOVE,
+			ADDCOUNT
+		};
+
 		// Return the move type by value.
 		static Movement movementbyvalue(int8_t value)
 		{
@@ -118,7 +127,7 @@ namespace Character
 		// Modify the inventory with info from a packet.
 		void modify(Type type, int16_t pos, int8_t mode, int16_t arg, Movement movement);
 		// Change the quantity of an item.
-		void changecount(Type type, int16_t slot, int16_t count);
+		bool changecount(Type type, int16_t slot, int16_t count);
 
 		// Check if the use inventory contains at least one projectile.
 		bool hasprojectile();

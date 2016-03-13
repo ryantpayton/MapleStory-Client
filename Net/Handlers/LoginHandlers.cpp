@@ -52,14 +52,14 @@ namespace Net
 			{
 			case 2:
 				UI::get().add(ElementLoginNotice(16));
-				return;
+				break;
 			case 7:
 				UI::get().add(ElementLoginNotice(17));
-				return;
+				break;
 			case 23:
 				// The server sends a request to accept the terms of service. For convenience, just auto-accept.
 				Session::get().dispatch(TOSPacket());
-				return;
+				break;
 			default:
 				// Other reasons.
 				if (reason > 0)

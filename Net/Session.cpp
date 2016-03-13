@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Session.h"
 #include "Configuration.h"
+#include "Console.h"
 
 namespace Net
 {
@@ -93,7 +94,14 @@ namespace Net
 #ifdef JOURNEY_USE_CRYPTO
 			crypto.decrypt(buffer, length, recviv);
 #endif
-			packetswitch.forward(buffer, length);
+			try 
+			{
+				packetswitch.forward(buffer, length);
+			}
+			catch (const PacketError& err)
+			{
+				Console::get().print("Packet Error: " + string(err.what()));
+			}
 
 			pos = 0;
 			length = 0;

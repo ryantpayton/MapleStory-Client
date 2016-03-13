@@ -22,8 +22,9 @@
 
 namespace Gameplay
 {
-	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, bool cnt, Point<int16_t> position)
-	{
+	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, bool cnt, Point<int16_t> position) 
+		: MapObject(o) {
+
 		string strid = std::to_string(id);
 		strid.insert(0, 7 - strid.size(), '0');
 		strid.append(".img");
@@ -39,16 +40,16 @@ namespace Gameplay
 			src = nl::nx::npc[link];
 		}
 
+		node info = src["info"];
+
+		hidename = info["hideName"].get_bool();
+		mouseonly = info["talkMouseOnly"].get_bool();
+		scripted = info["script"].size() > 0 || info["shop"].get_bool();
+
 		for (node npcnode : src)
 		{
 			string state = npcnode.name();
-			if (state == "info")
-			{
-				hidename = npcnode["hideName"].get_bool();
-				mouseonly = npcnode["talkMouseOnly"].get_bool();
-				scripted = npcnode["script"].size() > 0;
-			}
-			else
+			if (state != "info")
 			{
 				animations[state] = npcnode;
 				states.push_back(state);
@@ -71,23 +72,17 @@ namespace Gameplay
 		funclabel.setback(Text::NAMETAG);
 
 		npcid = id;
-		oid = o;
 		flip = !fl;
 		control = cnt;
 		stance = "stand";
-		active = true;
 
 		phobj.fhid = f;
 		setposition(position);
 	}
 
-	void Npc::draw(const Camera& camera, float inter) const
+	void Npc::draw(Point<int16_t> viewpos, float inter) const
 	{
-		if (!active)
-			return;
-
-		Point<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
-
+		Point<int16_t> absp = phobj.getposition(inter) + viewpos;
 		if (animations.count(stance))
 		{
 			using Graphics::DrawArgument;
@@ -102,18 +97,18 @@ namespace Gameplay
 
 	int8_t Npc::update(const Physics& physics)
 	{
-		if (active)
-		{
-			physics.moveobject(phobj);
+		if (!active)
+			return phobj.fhlayer;
 
-			if (animations.count(stance))
+		physics.moveobject(phobj);
+
+		if (animations.count(stance))
+		{
+			bool aniend = animations.at(stance).update();
+			if (aniend && states.size() > 0)
 			{
-				bool aniend = animations.at(stance).update();
-				if (aniend && states.size() > 0)
-				{
-					string newstate = states[random.nextint(states.size() - 1)];
-					setstance(newstate);
-				}
+				string newstate = states[random.nextint(states.size() - 1)];
+				setstance(newstate);
 			}
 		}
 
@@ -139,6 +134,9 @@ namespace Gameplay
 
 	bool Npc::inrange(Point<int16_t> cursorpos, Point<int16_t> viewpos) const
 	{
+		if (!active)
+			return false;
+
 		Point<int16_t> absp = getposition() + viewpos;
 		Point<int16_t> dim = animations.count(stance) ?
 			animations.at(stance).getdimensions() :

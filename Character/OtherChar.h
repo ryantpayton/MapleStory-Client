@@ -17,29 +17,30 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Char.h"
-#include "Net\Login.h"
+#include "Look\CharLook.h"
 #include "Gameplay\Movement.h"
 
 namespace Character
 {
 	using std::vector;
-	using Net::LookEntry;
 	using Gameplay::Physics;
 	using Gameplay::Movement;
 
+	// Other client's players.
 	class OtherChar : public Char
 	{
 	public:
-		OtherChar(int32_t charid, const LookEntry& look, uint8_t level, 
+		OtherChar(int32_t charid, CharLook look, uint8_t level,
 			int16_t job, string name, int8_t stance, Point<int16_t> position);
 
+		// Update the character.
 		int8_t update(const Physics& physics);
+		// Add the movements which this character will go through next.
 		void sendmovement(const vector<Movement>& movements);
 
 	private:
 		uint8_t level;
 		int16_t job;
-		string name;
 		vector<Movement> movements;
 		Movement lastmove;
 	};

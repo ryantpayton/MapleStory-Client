@@ -68,7 +68,7 @@ namespace IO
 
 		for (size_t i = 0; i < NUMLABELS; i++)
 		{
-			statlabels[i] = Text(Text::A11M, Text::LEFT, Text::DARKGREY);
+			statlabels[i] = Text(Text::A11M, Text::LEFT, Text::LIGHTGREY);
 		}
 		statoffsets[NAME] = Point<int16_t>(73, 27);
 		statoffsets[JOB] = Point<int16_t>(73, 45);

@@ -38,12 +38,6 @@ namespace Net
 		void handle(InPacket& recv) const override;
 	};
 
-	// Handler for a packet which contains npc dialgue.
-	class NpcDialogueHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
-
 	// Handler for a packet which shows the effect of a scroll.
 	class ScrollResultHandler : public PacketHandler
 	{

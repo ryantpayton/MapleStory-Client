@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -42,7 +42,7 @@ public:
 			K current = root;
 			while (current)
 			{
-				current = nodes[current].add(key, value);
+				current = nodes[current].addornext(key, value);
 			}
 		}
 		else
@@ -75,9 +75,14 @@ public:
 		return previous;
 	}
 
-	V operator [](K key)
+	V& operator [](K key)
 	{
 		return nodes[key].value;
+	}
+
+	const V& operator [](K key) const
+	{
+		return nodes.at(key).value;
 	}
 
 	void minwalk(function<void(const K&)> action)
@@ -132,7 +137,7 @@ private:
 		K left;
 		K right;
 
-		K add(K key, V val)
+		K addornext(K key, V val)
 		{
 			if (val >= value)
 			{

@@ -20,7 +20,7 @@
 #include "Spawn.h"
 #include "Physics\Physics.h"
 #include "Maplemap\MapInfo.h"
-#include "Maplemap\MapLayer.h"
+#include "Maplemap\MapLayers.h"
 #include "Maplemap\MapBackgrounds.h"
 #include "Maplemap\MapPortals.h"
 #include "Maplemap\MapChars.h"
@@ -29,9 +29,11 @@
 #include "Maplemap\MapDrops.h"
 #include "Character\Player.h"
 #include "Util\Singleton.h"
+#include <queue>
 
 namespace Gameplay
 {
+	using std::queue;
 	using Character::Player;
 	using Character::Char;
 
@@ -103,8 +105,8 @@ namespace Gameplay
 		Physics physics;
 		Player player;
 
-		map<uint8_t, MapLayer> layers;
 		MapInfo mapinfo;
+		MapLayers layers;
 		MapBackgrounds backgrounds;
 		MapPortals portals;
 		MapNpcs npcs;
@@ -112,7 +114,7 @@ namespace Gameplay
 		MapMobs mobs;
 		MapDrops drops;
 
-		vector<unique_ptr<const Spawn>> spawnqueue;
+		queue<unique_ptr<const Spawn>> spawnqueue;
 
 		State state;
 		Optional<Playable> playable;

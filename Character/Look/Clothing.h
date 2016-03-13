@@ -24,23 +24,26 @@
 #include "Graphics\Texture.h"
 #include "Util\Enum.h"
 #include "Console.h"
+#include <vector>
 
 namespace Character
 {
+	using std::vector;
 	using Graphics::Texture;
 	using Graphics::DrawArgument;
 
 	class Clothing : public ItemData
 	{
 	public:
-		static const size_t NUM_LAYERS = 25;
+		static const size_t NUM_LAYERS = 32;
 		enum Layer
 		{
-			CAPE, SHIELDBBODY, SHOES, PANTS, TOP, MAIL, 
-			GLOVE, SHIELDOHAIR, EARRINGS, FACEACC, EYEACC, 
-			PENDANT, BELT, MEDAL, RING, SHIELD, BACKSHIELD, 
-			WEAPON, BACKWEAPON, MAILARM, HATOVERHAIR, HAT, 
-			WEAPONOHAND, RGLOVE, WEAPONOGLOVE
+			CAPE, SHOES, PANTS, TOP, MAIL, MAILARM,
+			EARRINGS, FACEACC, EYEACC, PENDANT, BELT, MEDAL, RING, 
+			CAP, CAPBBODY, CAPOHAIR,
+			GLOVE, WRIST, GLOVEOHAIR, WRISTOHAIR, GLOVEOBODY, WRISTOBODY,
+			SHIELD, BACKSHIELD, SHIELDBBODY, SHIELDOHAIR,
+			WEAPON, BACKWEAPON, WEAPONBARM, WEAPONBBODY, WEAPONOHAND, WEAPONOBODY, WEAPONOGLOVE
 		};
 
 		static EnumIterator<Layer> layerit()
@@ -57,6 +60,12 @@ namespace Character
 					return Layer::WEAPONOHAND;
 				else if (name == "weaponOverGlove")
 					return Layer::WEAPONOGLOVE;
+				else if (name == "weaponOverBody")
+					return Layer::WEAPONOBODY;
+				else if (name == "weaponBelowArm")
+					return Layer::WEAPONBARM;
+				else if (name == "weaponBelowBody")
+					return Layer::WEAPONBBODY;
 				else if (name == "backWeaponOverShield")
 					return Layer::BACKWEAPON;
 				break;
@@ -68,9 +77,22 @@ namespace Character
 				else if (name == "backShield")
 					return Layer::BACKSHIELD;
 				break;
-			case HAT:
+			case GLOVE:
+				if (name == "gloveWrist")
+					return Layer::WRIST;
+				else if (name == "gloveOverHair")
+					return Layer::GLOVEOHAIR;
+				else if (name == "gloveOverBody")
+					return Layer::GLOVEOBODY;
+				else if (name == "gloveWristOverHair")
+					return Layer::WRISTOHAIR;
+				else if (name == "gloveWristOverBody")
+					return Layer::WRISTOBODY;
+			case CAP:
 				if (name == "capOverHair")
-					return Layer::HATOVERHAIR;
+					return Layer::CAPOHAIR;
+				else if (name == "capBelowBody")
+					return Layer::CAPBBODY;
 				break;
 			}
 			return base;
@@ -86,11 +108,30 @@ namespace Character
 		int16_t getreqstat(Maplestat::Value stat) const;
 		int16_t getdefstat(Equipstat::Value stat) const;
 		string gettype() const;
+		string getvslot() const;
 		Equipslot::Value geteqslot() const;
 
 	private:
-		unordered_map<Layer, unordered_map<uint8_t, Texture>> stances[Stance::LENGTH];
+		struct Whole
+		{
+			vector<Texture> parts;
+
+			void add(Texture part)
+			{
+				parts.push_back(part);
+			}
+
+			void draw(const DrawArgument& args) const
+			{
+				for (auto& part : parts)
+				{
+					part.draw(args);
+				}
+			}
+		};
+		unordered_map<Layer, unordered_map<uint8_t, Whole>> stances[Stance::LENGTH];
 		string type;
+		string vslot;
 		Equipslot::Value eqslot;
 		bool cash;
 		bool tradeblock;

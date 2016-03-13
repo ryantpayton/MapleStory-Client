@@ -27,19 +27,19 @@ namespace Gameplay
 	const double FLYFRICTION = 0.05f;
 	const double SWIMFRICTION = 0.08f;
 
+	Physics::Physics(node src) 
+	{
+		fht = src;
+	}
+
+	Physics::Physics(InPacket& recv) 
+	{
+		fht = recv;
+	}
+
 	Physics::Physics() {}
 
 	Physics::~Physics() {}
-
-	void Physics::load(node src)
-	{
-		fht = Footholdtree(src["foothold"]);
-	}
-
-	void Physics::parsefht(InPacket& recv)
-	{
-		fht = Footholdtree(recv);
-	}
 
 	void Physics::moveobject(PhysicsObject& phobj) const
 	{
@@ -66,10 +66,7 @@ namespace Gameplay
 		}
 
 		// Move the object forward.
-		phobj.lastx = phobj.fx;
-		phobj.lasty = phobj.fy;
-		phobj.fx += phobj.hspeed;
-		phobj.fy += phobj.vspeed;
+		phobj.move();
 	}
 
 	void Physics::movenormal(PhysicsObject& phobj) const

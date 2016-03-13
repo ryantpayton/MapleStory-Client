@@ -18,30 +18,45 @@
 #include "MapNpcs.h"
 
 #include "Net\Session.h"
-#include "Net\Packets\MessagingPackets.h"
+#include "Net\Packets\NpcInteractionPackets.h"
 
 namespace Gameplay
 {
 	using Net::Session;
+
+	void MapNpcs::sendspawn(const NpcSpawn& spawn, const Physics& physics)
+	{
+		int32_t oid = spawn.getoid();
+		Optional<Npc> npc = getnpc(oid);
+		if (npc)
+		{
+			npc->makeactive();
+		}
+		else
+		{
+			Npc* newnpc = spawn.instantiate(physics);
+			add(newnpc);
+		}
+	}
+
+	void MapNpcs::removenpc(int32_t oid)
+	{
+		getnpc(oid)
+			.ifpresent(&Npc::deactivate);
+	}
 
 	Cursor::State MapNpcs::sendmouse(bool pressed, Point<int16_t> position, Point<int16_t> viewpos)
 	{
 		for (auto& mmo : objects)
 		{
 			Optional<Npc> npc = getnpc(mmo.first);
-			if (npc && npc->inrange(position, viewpos))
+			if (npc && npc->isactive() && npc->inrange(position, viewpos))
 			{
 				if (pressed)
 				{
-					if (npc->isscripted())
-					{
-						using Net::TalkToNPCPacket;
-						Session::get().dispatch(TalkToNPCPacket(npc->getoid()));
-					}
-					else
-					{
-
-					}
+					// try finding dialogue first
+					using Net::TalkToNPCPacket;
+					Session::get().dispatch(TalkToNPCPacket(npc->getoid()));
 					return Cursor::IDLE;
 				}
 				else

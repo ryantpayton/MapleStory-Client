@@ -18,7 +18,7 @@
 #pragma once
 #include "MapObjects.h"
 #include "Npc.h"
-
+#include "Gameplay\Spawn.h"
 #include "IO\Cursor.h"
 
 namespace Gameplay
@@ -28,11 +28,15 @@ namespace Gameplay
 	class MapNpcs : public MapObjects
 	{
 	public:
+		// Spawn a npc on the ground.
+		void sendspawn(const NpcSpawn& spawn, const Physics& physics);
+		// Remove the npc with the specified oid;
+		void removenpc(int32_t oid);
 		// Send mouse input to clickable npcs.
 		Cursor::State sendmouse(bool pressed, Point<int16_t> position, Point<int16_t> viewpos);
 
 	private:
-		Optional<Npc> getnpc(int32_t);
+		Optional<Npc> getnpc(int32_t oid);
 	};
 }
 

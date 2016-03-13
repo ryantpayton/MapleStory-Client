@@ -37,27 +37,39 @@ namespace Gameplay
 		lootenabled = false;
 	}
 
-	void MapDrops::adddrop(int32_t oid, int32_t itemid, bool meso, int32_t owner, Point<int16_t> pos, 
-		Point<int16_t> dest, int8_t type, int8_t mode, bool playerdrop) {
-
-		if (meso)
+	void MapDrops::sendspawn(const DropSpawn& spawn)
+	{
+		int32_t oid = spawn.getoid();
+		Optional<Drop> drop = getdrop(oid);
+		if (drop)
 		{
-			MesoType mstype = (itemid > 999) ? MES_BAG : (itemid > 99)
-				? MES_BUNDLE : (itemid > 49) ? MES_GOLD : MES_BRONZE;
-			if (!mesos.count(mstype))
-			{
-				string msstr = std::to_string(mstype);
-				mesos[mstype] = Animation(nl::nx::item["Special"]["0900.img"]["0900000" + msstr]["iconRaw"]);
-			}
-			add(new MesoDrop(oid, owner, pos, dest, type, mode, &mesos[mstype], playerdrop));
+			drop->makeactive();
 		}
 		else
 		{
-			const Character::ItemData& itemdata = DataFactory::get().getitemdata(itemid);
-			if (!itemdata.isloaded())
-				return;
-
-			add(new ItemDrop(oid, owner, pos, dest, type, mode, itemdata.geticon(true), itemid, playerdrop));
+			int32_t itemid = spawn.getitemid();
+			bool meso = spawn.ismeso();
+			if (meso)
+			{
+				MesoType mesotype = (itemid > 999) ? BAG : (itemid > 99)
+					? BUNDLE : (itemid > 49) ? GOLD : BRONZE;
+				if (mesoicons.count(mesotype))
+				{
+					MesoDrop* newdrop = spawn.instantiate(&mesoicons[mesotype]);
+					add(newdrop);
+				}
+				
+			}
+			else
+			{
+				auto& itemdata = DataFactory::get().getitemdata(itemid);
+				if (itemdata.isloaded())
+				{
+					auto& icon = itemdata.geticon(true);
+					ItemDrop* newdrop = spawn.instantiate(&icon);
+					add(newdrop);
+				}
+			}
 		}
 	}
 
@@ -72,32 +84,47 @@ namespace Gameplay
 	{
 		MapObjects::update(physics);
 
-		if (!lootenabled)
-			lootenabled = true;
+		lootenabled = true;
 
-		for (auto& msani : mesos)
+		for (auto& msani : mesoicons)
 		{
 			msani.second.update(Constants::TIMESTEP);
 		}
 	}
 
-	const Drop* MapDrops::findinrange(rectangle2d<int16_t> range)
+	const Drop* MapDrops::findinrange(Point<int16_t> playerpos)
 	{
 		if (!lootenabled)
 			return nullptr;
 
 		for (auto& mmo : objects)
 		{
-			if (mmo.second == nullptr)
-				continue;
-
-			Drop* drop = reinterpret_cast<Drop*>(mmo.second.get());
-			if (range.overlaps(drop->bounds()))
+			Optional<const Drop> drop = Optional<MapObject>(mmo.second.get())
+				.reinterpret<const Drop>();
+			if (drop && drop->bounds().contains(playerpos))
 			{
 				lootenabled = false;
-				return drop;
+				return drop.get();
 			}
 		}
 		return nullptr;
 	}
+
+	Optional<Drop> MapDrops::getdrop(int32_t oid)
+	{
+		return get(oid)
+			.reinterpret<Drop>();
+	}
+
+
+	void MapDrops::init()
+	{
+		node src = nl::nx::item["Special"]["0900.img"];
+
+		mesoicons[BRONZE] = src["09000000"]["iconRaw"];
+		mesoicons[GOLD] = src["09000001"]["iconRaw"];
+		mesoicons[BUNDLE] = src["09000002"]["iconRaw"];
+		mesoicons[BAG] = src["09000003"]["iconRaw"];
+	}
+	unordered_map<MapDrops::MesoType, Animation> MapDrops::mesoicons;
 }

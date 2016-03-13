@@ -19,6 +19,7 @@
 #include "MapObjects.h"
 #include "Drop.h"
 #include "Graphics\Animation.h"
+#include "Gameplay\Spawn.h"
 
 namespace Gameplay
 {
@@ -31,21 +32,21 @@ namespace Gameplay
 
 		void update(const Physics& physics) override;
 
-		void adddrop(int32_t oid, int32_t itemid, bool meso, int32_t owner, Point<int16_t> pos, 
-			Point<int16_t> dest, int8_t type, int8_t mod, bool playerdrop);
+		void sendspawn(const DropSpawn& spawn);
 		void removedrop(int32_t oid, int8_t mode, const PhysicsObject* looter);
-		const Drop* findinrange(rectangle2d<int16_t> range);
+		const Drop* findinrange(Point<int16_t> playerpos);
+
+		static void init();
 
 	private:
+		Optional<Drop> getdrop(int32_t oid);
+
+		bool lootenabled;
+
 		enum MesoType
 		{
-			MES_BRONZE = 0,
-			MES_GOLD = 1,
-			MES_BUNDLE = 2,
-			MES_BAG = 3
+			BRONZE, GOLD, BUNDLE, BAG
 		};
-
-		map<MesoType, Animation> mesos;
-		bool lootenabled;
+		static unordered_map<MesoType, Animation> mesoicons;
 	};
 }

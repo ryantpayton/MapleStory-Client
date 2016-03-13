@@ -19,6 +19,7 @@
 #include "Constants.h"
 #include "Text.h"
 
+#include "Util\QuadTree.h"
 #include "Util\Singleton.h"
 #include "Util\rectangle2d.h"
 
@@ -50,7 +51,7 @@ namespace Graphics
 		// Re-initialise, for example after changing screen modes.
 		void reinit();
 
-		// Clear all bitmaps.
+		// Clear all bitmaps if most of the space is used up.
 		void clear();
 
 		// Add a bitmap to the available resources.
@@ -69,6 +70,8 @@ namespace Graphics
 
 		// Draw a rectangle filled with the specified color.
 		void drawrectangle(int16_t x, int16_t y, int16_t w, int16_t h, float r, float g, float b, float a);
+		// Fill the screen with the specified color.
+		void drawscreenfill(float r, float g, float b, float a);
 
 		// Lock the current scene.
 		void lock();
@@ -81,6 +84,7 @@ namespace Graphics
 		void clearscene();
 
 	private:
+		void clearinternal();
 		bool addfont(const char* name, Text::Font id, FT_UInt width, FT_UInt height);
 		
 		struct Offset
@@ -114,16 +118,12 @@ namespace Graphics
 			GLshort t;
 			GLshort b;
 
-			size_t trials;
-
 			Leftover(GLshort x, GLshort y, GLshort w, GLshort h)
 			{
 				l = x;
 				r = x + w;
 				t = y;
 				b = y + h;
-
-				trials = 5;
 			}
 
 			Leftover()
@@ -132,11 +132,17 @@ namespace Graphics
 				r = 0;
 				t = 0;
 				b = 0;
-				trials = 0;
 			}
 
-			GLshort width() const { return r - l; }
-			GLshort height() const { return b - t; }
+			GLshort width() const 
+			{ 
+				return r - l; 
+			}
+
+			GLshort height() const 
+			{ 
+				return b - t; 
+			}
 		};
 
 		struct Quad
@@ -157,7 +163,7 @@ namespace Graphics
 			static const size_t LENGTH = 4;
 			Vertex vertices[LENGTH];
 
-			Quad(GLshort l, GLshort r, GLshort t, GLshort b, Offset o, GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca)
+			Quad(GLshort l, GLshort r, GLshort t, GLshort b, const Offset& o, GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca)
 			{
 				vertices[0] = { l, t, o.l, o.t, cr, cg, cb, ca };
 				vertices[1] = { l, b, o.l, o.b, cr, cg, cb, ca };
@@ -214,7 +220,7 @@ namespace Graphics
 
 		static const GLshort ATLASW = 10000;
 		static const GLshort ATLASH = 10000;
-		static const GLshort MINLOSIZE = 32;
+		static const GLshort MINLOSIZE = 16;
 
 		bool locked;
 
@@ -234,7 +240,7 @@ namespace Graphics
 		unordered_map<size_t, Offset> offsets;
 		Offset nulloffset;
 
-		unordered_map<size_t, Leftover> leftovers;
+		QuadTree<size_t, Leftover> leftovers;
 		size_t rlid;
 		size_t wasted;
 		Point<GLshort> border;

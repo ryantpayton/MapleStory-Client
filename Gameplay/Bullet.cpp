@@ -22,11 +22,11 @@ namespace Gameplay
 	Bullet::Bullet(Animation a, Point<int16_t> origin, bool toleft)
 	{
 		animation = a;
-		fx = origin.x() + (toleft ? -30.0f : 30.0f);
-		fy = origin.y() - 26.0f;
 		flip = !toleft;
-		hspeed = 0.0f;
-		vspeed = 0.0f;
+		moveobj.fx = origin.x() + (toleft ? -30.0f : 30.0f);
+		moveobj.fy = origin.y() - 26.0f;
+		moveobj.hspeed = 0.0f;
+		moveobj.vspeed = 0.0f;
 	}
 
 	void Bullet::draw(Point<int16_t> viewpos, float alpha) const
@@ -37,24 +37,19 @@ namespace Gameplay
 
 	Point<int16_t> Bullet::getposition(float alpha) const
 	{
-		int16_t interx = static_cast<int16_t>((1.0f - alpha) * lastx + alpha * fx);
-		int16_t intery = static_cast<int16_t>((1.0f - alpha) * lasty + alpha * fy);
-		return Point<int16_t>(interx, intery);
+		return moveobj.getposition(alpha);
 	}
 
 	bool Bullet::update(Point<int16_t> target)
 	{
 		animation.update();
 
-		float xdelta = target.x() - fx;
-		float ydelta = target.y() - fy;
-		hspeed = (hspeed + xdelta / 10) / 2;
-		vspeed = (vspeed + ydelta / 10) / 2;
-		flip = xdelta < 0.0f;
-		lastx = fx;
-		lasty = fy;
-		fx += hspeed;
-		fy += vspeed;
-		return Point<float>(xdelta, ydelta).length() < 10.0f;
+		double xdelta = target.x() - moveobj.fx;
+		double ydelta = target.y() - moveobj.fy;
+		moveobj.hspeed = (moveobj.hspeed + xdelta / 10) / 2;
+		moveobj.vspeed = (moveobj.vspeed + ydelta / 10) / 2;
+		flip = xdelta < 0.0;
+		moveobj.move();
+		return Point<double>(xdelta, ydelta).length() < 10.0;
 	}
 }

@@ -27,12 +27,12 @@ namespace Gameplay
 	{
 	public:
 		ItemDrop(int32_t oid, int32_t owner, Point<int16_t> start, Point<int16_t> dest, 
-			int8_t type, int8_t mode, Texture icon, int32_t iid, bool playerdrop);
+			int8_t type, int8_t mode, int32_t iid, bool playerdrop, const Texture* icon);
 
-		void draw(const Camera& camera, float inter) const override;
+		void draw(Point<int16_t> viewpos, float inter) const override;
 
 	private:
-		Texture icon;
+		const Texture* icon;
 		int32_t itemid;
 	};
 }

@@ -18,13 +18,13 @@
 #include "UI.h"
 #include "UIStateLogin.h"
 #include "UIStateGame.h"
+#include "Window.h"
 
 namespace IO
 {
 	UI::UI()
 	{
 		state = unique_ptr<UIState>(new UIStateNull());
-		shift = false;
 		enabled = true;
 	}
 
@@ -111,20 +111,40 @@ namespace IO
 	{
 		if (focusedtextfield)
 		{
-			Keyboard::Keymapping mapping = keyboard.gettextmapping(keycode, shift);
-			focusedtextfield->sendkey(mapping.type, mapping.action, pressed);
+			bool ctrl = keydown[keyboard.ctrlcode()];
+			if (ctrl)
+			{
+				if (!pressed)
+				{
+					Keyboard::Action action = keyboard.getctrlaction(keycode);
+					switch (action)
+					{
+					case Keyboard::COPY:
+						Window::get().setclipboard(focusedtextfield->gettext());
+						break;
+					case Keyboard::PASTE:
+						focusedtextfield->sendstring(Window::get().getclipboard());
+						break;
+					}
+				}
+			}
+			else
+			{
+				bool shift = keydown[keyboard.shiftcode()];
+				Keyboard::Mapping mapping = keyboard.gettextmapping(keycode, shift);
+				focusedtextfield->sendkey(mapping.type, mapping.action, pressed);
+			}
 		}
 		else
 		{
-			Optional<const Keyboard::Keymapping> mapping = keyboard.getmapping(keycode);
+			Optional<const Keyboard::Mapping> mapping = keyboard.getmapping(keycode);
 			if (mapping)
 			{
 				state->sendkey(mapping->type, mapping->action, pressed);
 			}
 		}
 
-		if (keycode == keyboard.shiftcode())
-			shift = pressed;
+		keydown[keycode] = pressed;
 	}
 
 	void UI::focustextfield(Textfield* tofocus)

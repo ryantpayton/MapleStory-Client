@@ -3,19 +3,18 @@
 
 namespace IO
 {
-	Nametag::Nametag(node src, Text::Font f, Text::Alignment a, Text::Color c, string s)
+	Nametag::Nametag(node src, Text::Font f, Text::Color c, string n)
 	{
-		name = Text(f, a, c);
-		name.settext(s);
-		tag[false].push_back(Texture(src["0"]["0"]));
-		tag[false].push_back(Texture(src["0"]["1"]));
-		tag[false].push_back(Texture(src["0"]["2"]));
-		if (src["1"].size() > 0)
-		{
-			tag[true].push_back(Texture(src["1"]["0"]));
-			tag[true].push_back(Texture(src["1"]["1"]));
-			tag[true].push_back(Texture(src["1"]["2"]));
-		}
+		name = Text(f, Text::CENTER, c);
+		name.settext(n);
+
+		textures[false].push_back(src["0"]["0"]);
+		textures[false].push_back(src["0"]["1"]);
+		textures[false].push_back(src["0"]["2"]);
+		textures[true].push_back(src["1"]["0"]);
+		textures[true].push_back(src["1"]["1"]);
+		textures[true].push_back(src["1"]["2"]);
+
 		selected = false;
 	}
 
@@ -23,17 +22,19 @@ namespace IO
 
 	void Nametag::draw(Point<int16_t> position) const
 	{
-		if (tag.count(selected))
-		{
-			int16_t width = name.width();
-			Point<int16_t> startpos = position - Point<int16_t>(8 + width / 2, -2);
+		auto& tag = textures[selected];
 
-			using::Graphics::DrawArgument;
-			tag.at(selected).at(0).draw(DrawArgument(startpos));
-			tag.at(selected).at(1).draw(DrawArgument(startpos + Point<int16_t>(8, 0), Point<int16_t>(width + 4, 0)));
-			tag.at(selected).at(2).draw(DrawArgument(startpos + Point<int16_t>(width + 8, 0)));
-			name.draw(position);
-		}
+		int16_t tagwidth = tag[1].width();
+		int16_t width = name.width();
+		int16_t advance = (width / tagwidth) * tagwidth;
+		auto startpos = position - Point<int16_t>(8 + advance / 2, -2);
+
+		using::Graphics::DrawArgument;
+		tag[0].draw(startpos);
+		tag[1].draw(DrawArgument(startpos + Point<int16_t>(8, 0), Point<int16_t>(width, 0)));
+		tag[2].draw(DrawArgument(startpos + Point<int16_t>(advance + 8, 0)));
+
+		name.draw(position);
 	}
 
 	void Nametag::setselected(bool s)

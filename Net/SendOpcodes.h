@@ -51,8 +51,11 @@ namespace Net
 
 		// Messaging
 		GENERAL_CHAT = 49,
+
+		// Npc Interaction
 		TALK_TO_NPC = 58,
 		NPC_TALK_MORE = 60,
+		NPC_SHOP_ACTION = 61,
 
 		// Inventory
 		GATHER_ITEMS = 69,

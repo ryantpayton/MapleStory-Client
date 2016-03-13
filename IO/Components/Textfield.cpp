@@ -171,6 +171,19 @@ namespace IO
 		}
 	}
 
+	void Textfield::sendstring(string str)
+	{
+		for (char c : str)
+		{
+			if (belowlimit())
+			{
+				text.insert(markerpos, 1, c);
+				markerpos++;
+				modifytext(text);
+			}
+		}
+	}
+
 	void Textfield::modifytext(string t)
 	{
 		if (crypt > 0)

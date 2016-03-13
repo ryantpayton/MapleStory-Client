@@ -16,9 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UINpcTalk.h"
+
 #include "IO\Components\MapleButton.h"
 #include "Net\Session.h"
-#include "Net\Packets\MessagingPackets.h"
+#include "Net\Packets\NpcInteractionPackets.h"
+
 #include "nlnx\nx.hpp"
 #include "nlnx\node.hpp"
 

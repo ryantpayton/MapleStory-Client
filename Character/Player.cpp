@@ -65,17 +65,11 @@ namespace Character
 	}
 
 	Player::Player(const CharEntry& entry)
-	{
-		oid = entry.cid;
-		look = entry.getlook();
+		: Char(entry.cid, entry.getlook(), entry.stats.name) {
+
 		stats = entry.stats;
 
-		namelabel = Text(Text::A13M, Text::CENTER, Text::WHITE);
-		namelabel.settext(stats.getname());
-		namelabel.setback(Text::NAMETAG);
-
 		sendcd = Constants::TIMESTEP;
-		active = true;
 		attacking = false;
 		underwater = false;
 
@@ -84,9 +78,7 @@ namespace Character
 	}
 
 	Player::Player() 
-	{
-		oid = 0;
-	}
+		: Char(0, CharLook(), "") {}
 
 	void Player::respawn(Point<int16_t> pos, bool uw)
 	{
@@ -168,8 +160,17 @@ namespace Character
 		{
 			pst->update(*this);
 			physics.moveobject(phobj);
-			Char::update(physics);
-			pst->nextstate(*this);
+
+			bool aniend = Char::update(physics, getstancespeed());
+			if (aniend && attacking)
+			{
+				attacking = false;
+				nullstate.nextstate(*this);
+			}
+			else
+			{
+				pst->nextstate(*this);
+			}
 		}
 
 		if (sendcd > 0)
@@ -193,14 +194,6 @@ namespace Character
 					movements.clear();
 				}
 			}
-		}
-		
-		uint16_t stancespeed = static_cast<uint16_t>(Constants::TIMESTEP * getstancespeed());
-		bool aniend = look.update(stancespeed);
-		if (aniend && attacking)
-		{
-			attacking = false;
-			nullstate.nextstate(*this);
 		}
 
 		return getlayer();

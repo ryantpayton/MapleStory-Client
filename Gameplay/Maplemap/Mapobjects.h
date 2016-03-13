@@ -16,18 +16,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "MapLayer.h"
+#include "MapLayers.h"
 #include "MapObject.h"
 #include "Util\Optional.h"
 #include <memory>
 #include <unordered_map>
-#include <map>
+#include <unordered_set>
 
 namespace Gameplay
 {
 	using std::unique_ptr;
 	using std::unordered_map;
-	using std::map;
+	using std::unordered_set;
 
 	// Collection of mapobjects of a type. 
 	class MapObjects
@@ -36,22 +36,25 @@ namespace Gameplay
 		virtual ~MapObjects() {}
 
 		// Draw all mapobjects that are on the specified layer.
-		void draw(int8_t layer, const Camera& camera, float inter) const;
+		virtual void draw(int8_t layer, Point<int16_t> viewpos, float inter) const;
 		// Update all mapobjects of this type. Also updates layers eg. drawing order.
 		virtual void update(const Physics& physics);
+
 		// Removes all mapobjects of this type.
 		void clear();
 		// Adds a mapobject of this type.
 		void add(MapObject* mapobject);
-		// Removes the mapobject with the given oid.
-		void remove(int32_t oid);
 
 	protected:
+		// Removes the mapobject with the given oid.
+		void remove(int32_t oid);
 		// Obtains a pointer to the mapobject with the given oid.
 		Optional<MapObject> get(int32_t oid);
+		// Obtains a const pointer to the mapobject with the given oid.
+		Optional<const MapObject> get(int32_t oid) const;
 
 		unordered_map<int32_t, unique_ptr<MapObject>> objects;
-		map<int32_t, int32_t> layers[MapLayer::NUM_LAYERS];
+		unordered_set<int32_t> layers[MapLayers::NUM_LAYERS];
 	};
 }
 

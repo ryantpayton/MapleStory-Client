@@ -32,17 +32,18 @@ namespace IO
 	class Slider
 	{
 	public:
-		Slider(int32_t type, Range<int16_t> vertical, int16_t x, int16_t rows, function<void(bool upwards)> onmoved);
+		Slider(int32_t type, Range<int16_t> vertical, int16_t x, 
+			int16_t unitrows, int16_t rowmax, function<void(bool upwards)> onmoved);
 
 		bool isenabled() const;
 		void setenabled(bool enabled);
-		void setrows(int16_t rows);
+		void setrows(int16_t unitrows, int16_t rowmax);
 
 		void draw(Point<int16_t> position) const;
 		Cursor::State sendcursor(Point<int16_t> cursor, bool pressed);
 
 	private:
-		Point<int16_t> getmidpos() const;
+		Point<int16_t> getthumbpos() const;
 
 		function<void(bool upwards)> onmoved;
 

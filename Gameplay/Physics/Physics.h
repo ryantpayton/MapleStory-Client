@@ -24,13 +24,14 @@ namespace Gameplay
 	class Physics
 	{
 	public:
+		// Load the footholdtree from a node of game data.
+		Physics(node src);
+		// Load the footholdtree from a packet.
+		Physics(InPacket& recv);
+
 		Physics();
 		~Physics();
 
-		// Load the physics for a map.
-		void load(node source);
-		// Parse a footholdtree (collection of platforms) from a packet.
-		void parsefht(InPacket& recv);
 		// Move the specified object over the specified game-time.
 		void moveobject(PhysicsObject& tomove) const;
 		// Determine the point on the ground below the specified position.

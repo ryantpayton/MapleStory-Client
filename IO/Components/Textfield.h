@@ -48,6 +48,7 @@ namespace IO
 		void draw(Point<int16_t> position) const;
 		void update(Point<int16_t> parentpos);
 		void sendkey(Keyboard::Keytype type, int32_t code, bool down);
+		void sendstring(string str);
 
 		void setstate(State state);
 		void settext(string text);

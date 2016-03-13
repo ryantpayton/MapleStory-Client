@@ -18,18 +18,22 @@
 #pragma once
 #include "Console.h"
 #include "Constants.h"
+#include "Net\InPacket.h"
 #include "Graphics\Texture.h"
 #include "Graphics\Animation.h"
+#include "Gameplay\Physics\PhysicsObject.h"
 #include <vector>
 
 namespace Gameplay
 {
+	using Net::InPacket;
 	using Graphics::Animation;
 
 	class Background
 	{
 	public:
 		Background(node src);
+		Background(InPacket& recv);
 
 		void draw(Point<int16_t> viewpos, float inter) const;
 		void update();
@@ -57,6 +61,8 @@ namespace Gameplay
 			return NORMAL;
 		}
 
+		void settype(Type type);
+
 		static const int16_t WOFFSET = Constants::VIEWWIDTH / 2;
 		static const int16_t HOFFSET = Constants::VIEWHEIGHT / 2 - Constants::VIEWYOFFSET;
 
@@ -71,12 +77,7 @@ namespace Gameplay
 		float opacity;
 		bool flipped;
 
-		float fx;
-		float fy;
-		float lastx;
-		float lasty;
-		float hspeed;
-		float vspeed;
+		MovingObject moveobj;
 	};
 
 	using std::vector;
@@ -85,6 +86,7 @@ namespace Gameplay
 	{
 	public:
 		MapBackgrounds(node src);
+		MapBackgrounds(InPacket& recv);
 		MapBackgrounds();
 
 		void drawbackgrounds(Point<int16_t> viewpos, float inter) const;
@@ -94,5 +96,6 @@ namespace Gameplay
 	private:
 		vector<Background> backgrounds;
 		vector<Background> foregrounds;
+		bool black;
 	};
 }

@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Physics\PhysicsObject.h"
 #include "Graphics\Animation.h"
 #include "Util\Point.h"
 
@@ -37,11 +38,7 @@ namespace Gameplay
 
 		Animation animation;
 		bool flip;
-		float fx;
-		float fy;
-		float lastx;
-		float lasty;
-		float hspeed;
-		float vspeed;
+
+		MovingObject moveobj;
 	};
 }

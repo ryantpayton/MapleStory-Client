@@ -20,18 +20,18 @@
 namespace Gameplay
 {
 	MesoDrop::MesoDrop(int32_t oid, int32_t owner, Point<int16_t> start,
-		Point<int16_t> dest, int8_t type, int8_t mode, const Animation* icn,
-		bool pldrp) : Drop(oid, owner, start, dest, type, mode, pldrp) {
+		Point<int16_t> dest, int8_t type, int8_t mode, bool pd, const Animation* icn)
+		: Drop(oid, owner, start, dest, type, mode, pd) {
 
 		icon = icn;
 	}
 
-	void MesoDrop::draw(const Camera& camera, float inter) const
+	void MesoDrop::draw(Point<int16_t> viewpos, float inter) const
 	{
-		if (!active)
+		if (!active || !icon)
 			return;
 
-		Point<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
+		Point<int16_t> absp = phobj.getposition(inter) + viewpos;
 
 		using Graphics::DrawArgument;
 		icon->draw(DrawArgument(absp, opacity), inter);

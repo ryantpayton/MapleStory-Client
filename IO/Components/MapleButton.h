@@ -30,14 +30,15 @@ namespace IO
 	class MapleButton : public Button
 	{
 	public:
-		MapleButton(node, Point<int16_t>);
-		MapleButton(node);
+		MapleButton(node src, Point<int16_t> position);
+		MapleButton(node src, int16_t x, int16_t y);
+		MapleButton(node src);
 
-		void draw(Point<int16_t>) const;
-		rectangle2d<int16_t> bounds(Point<int16_t>) const;
+		void draw(Point<int16_t> position) const;
+		rectangle2d<int16_t> bounds(Point<int16_t> parentpos) const;
 
 	private:
-		map<State, Texture> textures;
+		Texture textures[NUM_STATES];
 	};
 }
 

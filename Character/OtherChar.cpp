@@ -20,23 +20,16 @@
 
 namespace Character
 {
-	OtherChar::OtherChar(int32_t id, const LookEntry& lk, uint8_t lvl,
-		int16_t jb, string nm, int8_t st, Point<int16_t> pos) {
+	OtherChar::OtherChar(int32_t id, CharLook lk, uint8_t lvl,
+		int16_t jb, string nm, int8_t st, Point<int16_t> pos) : Char(id, lk, nm) {
 
-		oid = id;
-		look = lk;
 		level = lvl;
 		job = jb;
-		name = nm;
 		setposition(pos);
 
 		lastmove.xpos = pos.x();
 		lastmove.ypos = pos.y();
 		lastmove.newstate = st;
-
-		namelabel = Text(Text::A13M, Text::CENTER, Text::WHITE);
-		namelabel.settext(name);
-		namelabel.setback(Text::NAMETAG);
 	}
 
 	int8_t OtherChar::update(const Physics& physics)
@@ -66,9 +59,7 @@ namespace Character
 
 		physics.getfht().updatefh(phobj);
 
-		look.update(Constants::TIMESTEP);
-
-		return phobj.fhlayer;
+		return Char::update(physics);
 	}
 
 	void OtherChar::sendmovement(const vector<Movement>& mvts)

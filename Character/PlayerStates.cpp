@@ -366,11 +366,17 @@ namespace Character
 	void PlayerClimbState::update(Player& player) const
 	{
 		if (player.keydown(Keyboard::UP))
+		{
 			player.getphobj().vspeed = -player.getclimbforce();
+		}
 		else if (player.keydown(Keyboard::DOWN))
+		{
 			player.getphobj().vspeed = player.getclimbforce();
+		}
 		else
+		{
 			player.getphobj().vspeed = 0.0f;
+		}
 	}
 
 	void PlayerClimbState::nextstate(Player& player) const
@@ -379,9 +385,10 @@ namespace Character
 		bool downwards = player.keydown(Keyboard::DOWN);
 		bool felloff = player.getladder()
 			.maporfalse(&Ladder::felloff, y, downwards);
-
 		if (felloff)
+		{
 			cancelladder(player);
+		}
 	}
 
 	void PlayerClimbState::cancelladder(Player& player) const

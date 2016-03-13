@@ -24,6 +24,7 @@
 #include "Handlers\MapobjectHandlers.h"
 #include "Handlers\InventoryHandlers.h"
 #include "Handlers\MessagingHandlers.h"
+#include "Handlers\NpcInteractionHandlers.h"
 
 #include "Console.h"
 
@@ -72,13 +73,16 @@ namespace Net
 		// Messaging handlers
 		handlers[SHOW_STATUS_INFO] = unique_ptr<PacketHandler>(new ShowStatusInfoHandler());
 		handlers[CHAT_RECEIVED] = unique_ptr<PacketHandler>(new ChatReceivedHandler());
-		handlers[NPC_DIALOGUE] = unique_ptr<PacketHandler>(new NpcDialogueHandler());
 
 		// Inventory Handlers
 		handlers[MODIFY_INVENTORY] = unique_ptr<PacketHandler>(new ModifyInventoryHandler());
 		handlers[GATHER_RESULT] = unique_ptr<PacketHandler>(new GatherResultHandler());
 		handlers[SORT_RESULT] = unique_ptr<PacketHandler>(new SortResultHandler());
 		handlers[SCROLL_RESULT] = unique_ptr<PacketHandler>(new ScrollResultHandler());
+
+		// Npc Interaction Handlers
+		handlers[NPC_DIALOGUE] = unique_ptr<PacketHandler>(new NpcDialogueHandler());
+		handlers[OPEN_NPC_SHOP] = unique_ptr<PacketHandler>(new OpenNpcShopHandler());
 
 		// Todo
 		handlers[MEMO_RESULT] = unique_ptr<PacketHandler>(new NullHandler());
@@ -111,7 +115,15 @@ namespace Net
 			if (handler)
 			{
 				// Handler ok. Packet is passed on.
-				handler->handle(recv);
+				try
+				{
+					handler->handle(recv);
+				}
+				catch (const PacketError& err)
+				{
+					// Notice about an error.
+					Console::get().print("Packet Error: Opcode " + std::to_string(opcode) + ", " + string(err.what()));
+				}
 			}
 			else
 			{

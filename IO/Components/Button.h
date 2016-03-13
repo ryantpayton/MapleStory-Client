@@ -25,6 +25,7 @@ namespace IO
 	class Button
 	{
 	public:
+		static const size_t NUM_STATES = 4;
 		enum State
 		{
 			NORMAL,

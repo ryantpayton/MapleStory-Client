@@ -19,6 +19,12 @@
 
 namespace Gameplay
 {
+	MapObject::MapObject(int32_t o)
+	{
+		oid = o;
+		active = true;
+	}
+
 	int8_t MapObject::update(const Physics& physics)
 	{
 		physics.moveobject(phobj);
@@ -27,18 +33,25 @@ namespace Gameplay
 
 	void MapObject::setposition(int16_t x, int16_t y)
 	{
-		phobj.fx = static_cast<float>(x);
-		phobj.fy = static_cast<float>(y);
+		phobj.fx = x;
+		phobj.fy = y;
 	}
 
 	void MapObject::setposition(Point<int16_t> position)
 	{
-		setposition(position.x(), position.y());
+		int16_t x = position.x();
+		int16_t y = position.y();
+		setposition(x, y);
 	}
 
-	void MapObject::setactive(bool a)
+	void MapObject::makeactive()
 	{
-		active = a;
+		active = true;
+	}
+
+	void MapObject::deactivate()
+	{
+		active = false;
 	}
 
 	bool MapObject::isactive() const
@@ -58,15 +71,9 @@ namespace Gameplay
 
 	Point<int16_t> MapObject::getposition() const
 	{
-		return Point<int16_t>(
-			static_cast<int16_t>(phobj.fx),
-			static_cast<int16_t>(phobj.fy)
-			);
-	}
-
-	Point<double> MapObject::getrealposition() const
-	{
-		return Point<double>(phobj.fx, phobj.fy);
+		int16_t x = static_cast<int16_t>(phobj.fx);
+		int16_t y = static_cast<int16_t>(phobj.fy);
+		return Point<int16_t>(x, y);
 	}
 
 	PhysicsObject& MapObject::getphobj()

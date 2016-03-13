@@ -51,7 +51,7 @@ namespace Character
 			Point<int16_t> pos, uint8_t stance, int32_t fhid);
 		PetLook();
 
-		void draw(const Camera& camera, float inter) const;
+		void draw(Point<int16_t> viewpos, float inter) const;
 		void update(const Physics& physics, Point<int16_t> charpos);
 
 		void setposition(int16_t xpos, int16_t ypos);

@@ -27,9 +27,9 @@ namespace Gameplay
 	{
 	public:
 		MesoDrop(int32_t oid, int32_t owner, Point<int16_t> start, Point<int16_t> dest, 
-			int8_t type, int8_t mode, const Animation* icon, bool playerdrop);
+			int8_t type, int8_t mode, bool playerdrop, const Animation* icon);
 
-		void draw(const Camera& camera, float inter) const override;
+		void draw(Point<int16_t> viewpos, float inter) const override;
 
 	private:
 		const Animation* icon;

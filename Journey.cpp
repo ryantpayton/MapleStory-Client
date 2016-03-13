@@ -32,6 +32,8 @@ using Audio::AudioPlayer;
 using Character::Char;
 using Data::DataFactory;
 using Gameplay::Stage;
+using Gameplay::MapPortals;
+using Gameplay::MapDrops;
 using IO::UI;
 using IO::Window;
 using Net::Session;
@@ -73,6 +75,8 @@ Error init()
 		return AUDIO;
 
 	Char::init();
+	MapPortals::init();
+	MapDrops::init();
 
 	DataFactory::get().init();
 	UI::get().init();
@@ -110,7 +114,7 @@ int main()
 			// Update game with constant timestep as many times as possible.
 			double elapsedmicro = Timer::get().stop();
 			elapsed += elapsedmicro / 1000;
-			while (std::floor(elapsed) >= Constants::TIMESTEP)
+			while (elapsed >= Constants::TIMESTEP)
 			{
 				update();
 				elapsed -= Constants::TIMESTEP;

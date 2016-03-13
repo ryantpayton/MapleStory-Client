@@ -32,6 +32,7 @@ namespace IO
 
 	Window::Window()
 	{
+		context = nullptr;
 		glwnd = nullptr;
 		opacity = 1.0f;
 		opcstep = 0.0f;
@@ -131,9 +132,6 @@ namespace IO
 		glfwSetMouseButtonCallback(glwnd, mousekey_callback);
 		glfwSetCursorPosCallback(glwnd, cursor_callback);
 
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 		GraphicsGL::get().reinit();
 
 		return true;
@@ -199,5 +197,16 @@ namespace IO
 		fadeprocedure = fadeproc;
 
 		GraphicsGL::get().lock();
+	}
+
+	void Window::setclipboard(string text) const
+	{
+		glfwSetClipboardString(glwnd, text.c_str());
+	}
+
+	string Window::getclipboard() const
+	{
+		const char* text = glfwGetClipboardString(glwnd);
+		return text ? text : "";
 	}
 }

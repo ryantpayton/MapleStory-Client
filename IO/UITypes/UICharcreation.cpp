@@ -472,31 +472,29 @@ namespace IO
 
 	void UICharcreation::draw(float inter) const
 	{
-		using::Graphics::DrawArgument;
-
 		for (int16_t i = 0; i < 2; i++)
 		{
-			for (int16_t k = 0; k < 800; k += sky.getdimensions().x())
+			for (int16_t k = 0; k < 800; k += sky.width())
 			{
-				sky.draw(DrawArgument(Point<int16_t>(k, (400 * i) - 100)));
+				sky.draw(Point<int16_t>(k, (400 * i) - 100));
 			}
 		}
 
 		int16_t cloudx = static_cast<int16_t>(cloudfx) % 800;
-		cloud.draw(DrawArgument(Point<int16_t>(cloudx - cloud.getdimensions().x(), 300)));
-		cloud.draw(DrawArgument(Point<int16_t>(cloudx, 300)));
-		cloud.draw(DrawArgument(Point<int16_t>(cloudx + cloud.getdimensions().x(), 300)));
+		cloud.draw(Point<int16_t>(cloudx - cloud.width(), 300));
+		cloud.draw(Point<int16_t>(cloudx, 300));
+		cloud.draw(Point<int16_t>(cloudx + cloud.width(), 300));
 
 		if (!named)
 		{
-			nameboard.draw(DrawArgument(Point<int16_t>(455, 115)));
+			nameboard.draw(Point<int16_t>(455, 115));
 			namechar.draw(position);
 		}
 		else
 		{
 			for (auto& lbit : lookboard)
 			{
-				lbit.draw(DrawArgument(position), inter);
+				lbit.draw(position, inter);
 			}
 		}
 

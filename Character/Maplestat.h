@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Util\Enum.h"
-#include <cstdint>
+#include "Util\Misc.h"
 
 namespace Character
 {
@@ -51,14 +51,14 @@ namespace Character
 				0x1, 0x2, 0x4, 0x10, 0x20,
 				0x40, 0x80, 0x100, 0x200, 0x400, 0x800,
 				0x1000, 0x2000, 0x4000, 0x8000, 0x10000, 
-				0x20000, 0x400000, 0x180008, 0x200000
+				0x20000, 0x40000, 0x180008, 0x200000
 			};
 			return values[v];
 		}
 
 		static bool compare(Value first, int32_t second)
 		{
-			return (valueof(first) & second) != 0;
+			return Bits::compare(valueof(first), second);
 		}
 	};
 }

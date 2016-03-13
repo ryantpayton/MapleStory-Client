@@ -70,12 +70,17 @@ namespace Character
 		uint8_t getattackdelay() const;
 		rectangle2d<int16_t> getrange() const;
 		Type gettype() const;
+		Stance::Value getstand() const;
+		Stance::Value getwalk() const;
 		Animation gethiteffect() const;
+
 		const Sound& getsound(bool degenerate) const;
 
 	private:
 		Type type;
 		bool twohanded;
+		Stance::Value walk;
+		Stance::Value stand;
 		string afterimage;
 		uint8_t attackspeed;
 		uint8_t attack;

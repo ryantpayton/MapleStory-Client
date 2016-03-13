@@ -27,17 +27,10 @@ namespace Gameplay
 	using std::pair;
 	using Graphics::Animation;
 
-	struct WarpInfo
-	{
-		int32_t mapid;
-		string portal;
-		bool valid;
-	};
-
 	class Portal
 	{
 	public:
-		enum PtType
+		enum Type
 		{
 			SPAWN,
 			INVISIBLE,
@@ -56,21 +49,46 @@ namespace Gameplay
 			TYPE14
 		};
 
-		Portal(const Animation*, PtType, string, bool, Point<int16_t>, int32_t, string);
+		static Type typebyid(int32_t id)
+		{
+			return static_cast<Type>(id);
+		}
+
+		struct WarpInfo
+		{
+			int32_t mapid;
+			string portal;
+			bool valid;
+
+			WarpInfo(int32_t mid, string pt)
+			{
+				mapid = mid;
+				portal = pt;
+				valid = mapid < 999999999;
+			}
+
+			WarpInfo()
+				: WarpInfo(999999999, "") {}
+		};
+
+		Portal(const Animation* animation, Type type, string name, bool intramap, 
+			Point<int16_t> position, int32_t tomap, string toname);
 		Portal();
 		~Portal();
 
-		void draw(Point<int16_t>, float) const;
-		void settouch(bool);
+		void draw(Point<int16_t> viewpos, float alpha) const;
+		void settouch(bool touched);
+
 		string getname() const;
-		PtType gettype() const;
+		Type gettype() const;
 		Point<int16_t> getposition() const;
 		rectangle2d<int16_t> bounds() const;
-		const WarpInfo& getwarpinfo() const;
+
+		WarpInfo getwarpinfo() const;
 
 	private:
 		const Animation* animation;
-		PtType type;
+		Type type;
 		string name;
 		Point<int16_t> position;
 		WarpInfo warpinfo;

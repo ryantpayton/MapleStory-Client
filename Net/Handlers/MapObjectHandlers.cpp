@@ -29,10 +29,11 @@ namespace Net
 	using Gameplay::Stage;
 	using Gameplay::NpcSpawn;
 	using Gameplay::MobSpawn;
-
+	using Gameplay::DropSpawn;
+	using Gameplay::CharSpawn;
 	using Gameplay::MapMobs;
-	using Gameplay::MapChars;
 	using Gameplay::MapDrops;
+	using Gameplay::MapChars;
 
 	void SpawnNpcHandler::handle(InPacket& recv) const
 	{
@@ -55,7 +56,7 @@ namespace Net
 
 		if (mode == 0)
 		{
-
+			Stage::get().getnpcs().removenpc(oid);
 		}
 		else
 		{
@@ -75,7 +76,7 @@ namespace Net
 	void SpawnMobHandler::handle(InPacket& recv) const
 	{
 		int32_t oid = recv.readint();
-		bool hascontrol = recv.readbyte() != 5;
+		recv.readbyte(); // 5 if controller == null
 		int32_t id = recv.readint();
 
 		recv.skip(22);
@@ -102,46 +103,56 @@ namespace Net
 
 		recv.skip(4);
 
-		Stage::get().queuespawn(new MobSpawn(oid, id, hascontrol, stance, fh, effect == -2, team, position));
+		Stage::get().queuespawn(new MobSpawn(oid, id, 0, stance, fh, effect == -2, team, position));
 	}
 
 	void SpawnMobControllerHandler::handle(InPacket& recv) const
 	{
-		int8_t aggro = recv.readbyte();
-		if (aggro == 0)
-			return;
-
+		int8_t mode = recv.readbyte();
 		int32_t oid = recv.readint();
-
-		recv.skip(1);
-
-		int32_t id = recv.readint();
-
-		recv.skip(22);
-
-		Point<int16_t> position = recv.readpoint();
-		int8_t stance = recv.readbyte();
-
-		recv.skip(2);
-
-		uint16_t fh = recv.readshort();
-		int8_t effect = recv.readbyte();
-
-		if (effect > 0)
+		if (mode == 0)
 		{
-			recv.readbyte();
-			recv.readshort();
-			if (effect == 15)
+			Stage::get().getmobs().setcontrol(oid, false);
+		}
+		else
+		{
+			if (recv.hasmore())
 			{
-				recv.readbyte();
+				recv.skip(1);
+
+				int32_t id = recv.readint();
+
+				recv.skip(22);
+
+				Point<int16_t> position = recv.readpoint();
+				int8_t stance = recv.readbyte();
+
+				recv.skip(2);
+
+				uint16_t fh = recv.readshort();
+				int8_t effect = recv.readbyte();
+
+				if (effect > 0)
+				{
+					recv.readbyte();
+					recv.readshort();
+					if (effect == 15)
+					{
+						recv.readbyte();
+					}
+				}
+
+				int8_t team = recv.readbyte();
+
+				recv.skip(4);
+
+				Stage::get().queuespawn(new MobSpawn(oid, id, mode, stance, fh, effect == -2, team, position));
+			}
+			else
+			{
+				// remove monster invisibility, not used in moopledev or solaxia
 			}
 		}
-
-		int8_t team = recv.readbyte();
-
-		recv.skip(4);
-
-		Stage::get().queuespawn(new MobSpawn(oid, id, true, stance, fh, effect == -2, team, position));
 	}
 
 	void ShowMobHpHandler::handle(InPacket& recv) const
@@ -236,7 +247,7 @@ namespace Net
 		recv.skip(3);
 		recv.readbyte(); // team
 
-		Stage::get().getchars().addchar(cid, look, level, job, name, stance, position);
+		Stage::get().queuespawn(new CharSpawn(cid, look, level, job, name, stance, position));
 	}
 
 	void RemoveCharHandler::handle(InPacket& recv) const
@@ -393,7 +404,7 @@ namespace Net
 		}
 		bool playerdrop = !recv.readbool();
 
-		Stage::get().getdrops().adddrop(oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mode, playerdrop);
+		Stage::get().queuespawn(new DropSpawn(oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mode, playerdrop));
 	}
 
 	void RemoveDropHandler::handle(InPacket& recv) const

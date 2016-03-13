@@ -22,7 +22,6 @@
 #include "IO\Messages.h"
 #include "IO\UITypes\UIStatusMessenger.h"
 #include "IO\UITypes\UIStatusbar.h"
-#include "IO\UITypes\UINpcTalk.h"
 #include "Data\DataFactory.h"
 
 namespace Net
@@ -33,7 +32,6 @@ namespace Net
 	using IO::UIElement;
 	using IO::UIStatusMessenger;
 	using IO::UIStatusbar;
-	using IO::UINpcTalk;
 	using Character::ItemData;
 	using Character::Char;
 	using Data::DataFactory;
@@ -136,29 +134,12 @@ namespace Net
 		UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::sendchatline, message, linetype);
 	}
 
-	void NpcDialogueHandler::handle(InPacket& recv) const
-	{
-		recv.skip(1);
-
-		int32_t npcid = recv.readint();
-		int8_t msgtype = recv.readbyte(); //0 - textonly, 1 - yes/no, 4 - selection, 12 - accept/decline
-		int8_t speaker = recv.readbyte();
-		string text = recv.readascii();
-
-		int16_t style = 0;
-		if (msgtype == 0 && recv.length() > 0)
-			style = recv.readshort();
-
-		UI::get().withelement(UIElement::NPCTALK, &UINpcTalk::settext, npcid, msgtype, style, speaker, text);
-		UI::get().enable();
-	}
-
 	void ScrollResultHandler::handle(InPacket& recv) const
 	{
 		int32_t cid = recv.readint();
 		bool success = recv.readbool();
 		bool destroyed = recv.readbool();
-		recv.readshort() == 1; // legendary spirit
+		recv.readshort(); // legendary spirit if 1
 
 		Char::Effect effect;
 		Messages::Type message;

@@ -68,9 +68,6 @@ namespace IO
 		void enablegather();
 
 	private:
-		void showitem(int16_t slot);
-		void cleartooltip();
-
 		class ItemIcon : public Icon::Type
 		{
 		public:
@@ -88,14 +85,12 @@ namespace IO
 
 		UIItemInventory& operator = (const UIItemInventory&) = delete;
 
+		void showitem(int16_t slot);
+		void cleartooltip();
 		void loadicons();
 		void updateslot(int16_t slot);
-
-		string getmesostr() const;
-
 		bool isvisible(int16_t slot) const;
 		bool isnotvisible(int16_t slot) const;
-
 		int16_t slotbypos(Point<int16_t> position) const;
 		uint16_t buttonbytab(Inventory::Type tab) const;
 		Point<int16_t> getslotpos(int16_t slot) const;

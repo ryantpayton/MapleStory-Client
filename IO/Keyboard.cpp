@@ -32,10 +32,10 @@ namespace IO
 
 	Keyboard::Keyboard()
 	{
-		keymap[GLFW_KEY_LEFT] = Keymapping(ACTION, LEFT);
-		keymap[GLFW_KEY_RIGHT] = Keymapping(ACTION, RIGHT);
-		keymap[GLFW_KEY_UP] = Keymapping(ACTION, UP);
-		keymap[GLFW_KEY_DOWN] = Keymapping(ACTION, DOWN);
+		keymap[GLFW_KEY_LEFT] = Mapping(ACTION, LEFT);
+		keymap[GLFW_KEY_RIGHT] = Mapping(ACTION, RIGHT);
+		keymap[GLFW_KEY_UP] = Mapping(ACTION, UP);
+		keymap[GLFW_KEY_DOWN] = Mapping(ACTION, DOWN);
 
 		textactions[GLFW_KEY_BACKSPACE] = BACK;
 		textactions[GLFW_KEY_ENTER] = RETURN;
@@ -48,19 +48,37 @@ namespace IO
 		return GLFW_KEY_LEFT_SHIFT;
 	}
 
-	Keyboard::Keymapping Keyboard::gettextmapping(int32_t keycode, bool shift) const
+	int32_t Keyboard::ctrlcode() const
+	{
+		return GLFW_KEY_LEFT_CONTROL;
+	}
+
+	Keyboard::Action Keyboard::getctrlaction(int32_t keycode) const
+	{
+		switch (keycode)
+		{
+		case GLFW_KEY_C:
+			return COPY;
+		case GLFW_KEY_V:
+			return PASTE;
+		default:
+			return NOACTION;
+		}
+	}
+
+	Keyboard::Mapping Keyboard::gettextmapping(int32_t keycode, bool shift) const
 	{
 		if (textactions.count(keycode))
 		{
-			return Keymapping(ACTION, textactions.at(keycode));
+			return Mapping(ACTION, textactions.at(keycode));
 		}
 		else if (keycode > 47 && keycode < 65)
 		{
-			return Keymapping(NUMBER, keycode - (shift ? 15 : 0));
+			return Mapping(NUMBER, keycode - (shift ? 15 : 0));
 		}
 		else if (keycode > 64 && keycode < 91)
 		{
-			return Keymapping(LETTER, keycode + (shift ? 0 : 32));
+			return Mapping(LETTER, keycode + (shift ? 0 : 32));
 		}
 		else
 		{
@@ -72,7 +90,7 @@ namespace IO
 			case GLFW_KEY_DOWN:
 				return keymap.at(keycode);
 			default:
-				return Keymapping(NONE, 0);
+				return Mapping(NONE, 0);
 			}
 		}
 	}
@@ -82,13 +100,13 @@ namespace IO
 		Keytype type = typebyid(tid);
 		if (type != NONE)
 		{
-			Keymapping mapping = Keymapping(type, action);
+			Mapping mapping = Mapping(type, action);
 			keymap[Keytable[key]] = mapping;
 			maplekeys[key] = mapping;
 		}
 	}
 
-	Optional<const Keyboard::Keymapping> Keyboard::getmapping(int32_t keycode) const
+	Optional<const Keyboard::Mapping> Keyboard::getmapping(int32_t keycode) const
 	{
 		return Optional<Keyboard>::from(keymap, keycode);
 	}

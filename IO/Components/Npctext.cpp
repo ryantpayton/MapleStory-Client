@@ -37,7 +37,7 @@ namespace IO
 		strings.push_back(text.substr(pos));
 
 		Text::Font font = Text::A12M;
-		Text::Color color = Text::DARKGREY;
+		Text::Color color = Text::LIGHTGREY;
 		for (auto& str : strings)
 		{
 			size_t length = str.size();
@@ -74,7 +74,7 @@ namespace IO
 							pos2 = special + 2;
 							break;
 						case 'k':
-							color = Text::DARKGREY;
+							color = Text::LIGHTGREY;
 							pos2 = special + 2;
 							break;
 						case 'b':

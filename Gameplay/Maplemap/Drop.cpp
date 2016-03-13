@@ -19,10 +19,9 @@
 
 namespace Gameplay
 {
-	Drop::Drop(int32_t id, int32_t own, Point<int16_t> start,
-		Point<int16_t> dst, int8_t type, int8_t mode, bool pldrp) {
+	Drop::Drop(int32_t id, int32_t own, Point<int16_t> start, Point<int16_t> dst, 
+		int8_t type, int8_t mode, bool pldrp) : MapObject(id) {
 
-		oid = id;
 		owner = own;
 		setposition(start.x(), start.y() - 4);
 		dest = dst;
@@ -32,7 +31,6 @@ namespace Gameplay
 		opacity = 1.0f;
 		moved = 0.0f;
 		looter = nullptr;
-		active = true;
 
 		switch (mode)
 		{
@@ -71,7 +69,6 @@ namespace Gameplay
 		{
 			phobj.fy = basey + 5.0f + (cos(moved) - 1.0f) * 2.5f;
 			moved = (moved < 360.0f) ? moved + 0.025f : 0.0f;
-			return 7;
 		}
 		
 		if (state == PICKEDUP)
@@ -85,7 +82,8 @@ namespace Gameplay
 			if (opacity <= 1.0f / PICKUPTIME)
 			{
 				opacity = 0.0f;
-				active = false;
+
+				MapObject::deactivate();
 				return -1;
 			}
 		}
@@ -101,7 +99,7 @@ namespace Gameplay
 			state = PICKEDUP;
 			break;
 		case 1:
-			active = false;
+			MapObject::deactivate();
 			break;
 		case 2:
 			state = PICKEDUP;
@@ -112,11 +110,10 @@ namespace Gameplay
 		}
 	}
 
-	rectangle2d<int16_t> Drop::bounds()
+	rectangle2d<int16_t> Drop::bounds() const
 	{ 
-		return rectangle2d<int16_t>(
-			getposition(), 
-			getposition() + Point<int16_t>(32, 32)
-			); 
+		auto lt = getposition();
+		auto rb = lt + Point<int16_t>(32, 32);
+		return rectangle2d<int16_t>(lt, rb); 
 	}
 }

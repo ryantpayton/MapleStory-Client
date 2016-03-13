@@ -27,8 +27,8 @@ namespace Gameplay
 {
 	using Net::Session;
 
-	Mob::Mob(int32_t oi, int32_t mid, bool cnt, int8_t st, uint16_t fh, 
-		bool newspawn, int8_t tm, Point<int16_t> position) {
+	Mob::Mob(int32_t oi, int32_t mid, int8_t mode, int8_t st, uint16_t fh, 
+		bool newspawn, int8_t tm, Point<int16_t> position) : MapObject(oi) {
 
 		string path = std::to_string(mid);
 		path.insert(0, 7 - path.size(), '0');
@@ -83,15 +83,13 @@ namespace Gameplay
 		if (canfly)
 			phobj.type = PhysicsObject::FLYING;
 
-		oid = oi;
 		id = mid;
 		team = tm;
-		control = cnt;
+		setposition(position);
+		setcontrol(mode);
 		phobj.fhid = fh;
 		phobj.setflag(PhysicsObject::TURNATEDGES);
-		setposition(position);
 
-		active = true;
 		hppercent = 0;
 		flip = (st % 2) == 1;
 		if (flip)
@@ -138,6 +136,8 @@ namespace Gameplay
 			{
 				alpha = 0.0f;
 				fading = false;
+				active = false;
+				return -1;
 			}
 		}
 		else if (fadein)
@@ -152,17 +152,13 @@ namespace Gameplay
 
 		Point<int16_t> bodypos = getposition();
 		bodypos.shifty(-animations.at(stance).getdimensions().y() / 2);
-		bulletlist.remove_if([&](pair<Bullet, DamageEffect>& bullet) {
-			bool apply = bullet.first.update(bodypos);
+		bulletlist.remove_if([&](pair<Bullet, AttackEffect>& bulletattack) {
+			bool apply = bulletattack.first.update(bodypos);
 			if (apply)
 			{
-				applydamage(bullet.second);
-				return true;
+				applyattack(bulletattack.second);
 			}
-			else
-			{
-				return false;
-			}
+			return apply;
 		});
 
 		bool aniend = animations.at(stance).update();
@@ -301,12 +297,8 @@ namespace Gameplay
 			)));
 	}
 
-	void Mob::draw(const Camera& camera, float inter) const
+	void Mob::draw(Point<int16_t> viewpos, float inter) const
 	{
-		if (!active)
-			return;
-
-		Point<int16_t> viewpos = camera.getposition(inter);
 		Point<int16_t> absp = phobj.getposition(inter) + viewpos;
 
 		using Graphics::DrawArgument;
@@ -334,6 +326,13 @@ namespace Gameplay
 			dmg.draw(viewpos);
 		}
 	}
+
+	void Mob::setcontrol(int8_t mode)
+	{
+		control = mode > 0;
+		aggro = mode == 2;
+	}
+
 	Point<int16_t> Mob::getheadpos(Point<int16_t> position) const
 	{
 		Point<int16_t> head = animations.at(stance).gethead();
@@ -376,13 +375,16 @@ namespace Gameplay
 		hppercent = percent;
 	}
 
-	bool Mob::isactive() const
+	bool Mob::isalive() const
 	{
 		return active && stance != DIE;
 	}
 
 	bool Mob::isinrange(const rectangle2d<int16_t>& range) const
 	{
+		if (!active)
+			return false;
+
 		rectangle2d<int16_t> bounds = animations.at(stance).getbounds();
 		bounds.shift(getposition());
 		return range.overlaps(bounds);
@@ -402,30 +404,25 @@ namespace Gameplay
 		double maxdamage = attack.maxdamage * (1 - 0.01f * leveldelta) - wdef * 0.6f;
 		if (maxdamage < 1.0)
 			maxdamage = 1.0;
-		bool fromright = attack.origin.x() > phobj.fx;
 
-		DamageEffect damageeffect;
-		damageeffect.hiteffect = attack.hiteffect;
-		damageeffect.hitsound = attack.hitsound;
-		damageeffect.fromright = fromright;
-
+		AttackEffect attackeffect = attack;
 		vector<int32_t> damagelines;
 		for (int32_t i = 0; i < attack.hitcount; i++)
 		{
 			auto singledamage = randomdamage(mindamage, maxdamage, hitchance, attack.critical);
-			damageeffect.numbers.push_back(singledamage);
+			attackeffect.numbers.push_back(singledamage);
 			damagelines.push_back(singledamage.first);
 		}
 
 		bool ranged = attack.type == Attack::RANGED;
 		if (ranged)
 		{
-			Bullet bullet = Bullet(attack.bullet, attack.origin, fromright);
-			bulletlist.push_back({ bullet, damageeffect });
+			Bullet bullet = Bullet(attack.bullet, attack.origin, attack.direction == Attack::TOLEFT);
+			bulletlist.push_back({ bullet, attackeffect });
 		}
 		else
 		{
-			applydamage(damageeffect);
+			applyattack(attackeffect);
 		}
 
 		sendmovement();
@@ -459,13 +456,13 @@ namespace Gameplay
 		}
 	}
 
-	void Mob::applydamage(const DamageEffect& damageeffect)
+	void Mob::applyattack(const AttackEffect& attackeffect)
 	{
 		Point<int16_t> head = getheadpos(getposition());
 		float alphashift = 0.0f;
 
 		int32_t total = 0;
-		for (auto& number : damageeffect.numbers)
+		for (auto& number : attackeffect.numbers)
 		{
 			int32_t amount = number.first;
 			total += amount;
@@ -480,14 +477,14 @@ namespace Gameplay
 			head.shifty(-24);
 			alphashift += 0.1f;
 
-			damageeffect.hitsound.play();
+			attackeffect.hitsound.play();
 			hitsound.play();
 		}
 
 		if (total >= knockback)
-			applyknockback(damageeffect.fromright);
+			applyknockback(attackeffect.direction == Attack::TOLEFT);
 
-		effects.add(damageeffect.hiteffect);
+		effects.add(attackeffect.hiteffect);
 	}
 
 	void Mob::applyknockback(bool fromright)

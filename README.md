@@ -21,7 +21,7 @@ The build can be configured by editing the Journey.h file. The following options
 [Bass](http://www.un4seen.com/)
 
 - Utility:
-[xxHash](https://code.google.com/p/xxhash/)
+[xxHash](https://github.com/Cyan4973/xxHash)
 
 - Networking (optional)
 [Asio](http://think-async.com/)

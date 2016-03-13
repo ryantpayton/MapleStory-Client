@@ -1,6 +1,7 @@
 #pragma once
 #include "Graphics\Text.h"
 #include "Graphics\Texture.h"
+#include "Util\BoolPair.h"
 #include "nlnx\node.hpp"
 #include <map>
 #include <vector>
@@ -17,13 +18,15 @@ namespace IO
 	class Nametag
 	{
 	public:
-		Nametag(node, Text::Font, Text::Alignment, Text::Color, string);
+		Nametag(node src, Text::Font font, Text::Color color, string name);
 		~Nametag();
-		void draw(Point<int16_t>) const;
-		void setselected(bool);
+
+		void draw(Point<int16_t> position) const;
+		void setselected(bool selected);
+
 	private:
 		Text name;
-		map<bool, vector<Texture>> tag;
+		BoolPair<vector<Texture>> textures;
 		bool selected;
 	};
 }

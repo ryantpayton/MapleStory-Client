@@ -58,8 +58,9 @@ namespace Character
 
 		if (src.size() > 0)
 		{
-			icons[false] = Texture(src["icon"]);
-			icons[true] = Texture(src["iconRaw"]);
+			icons[false] = src["icon"];
+			icons[true] = src["iconRaw"];
+			price = src["price"];
 
 			name = strsrc["name"];
 			desc = strsrc["desc"];
@@ -78,6 +79,7 @@ namespace Character
 	{
 		loaded = false;
 		itemid = 0;
+		price = 0;
 		name = "";
 		desc = "";
 	}
@@ -117,6 +119,11 @@ namespace Character
 		return itemid;
 	}
 
+	int32_t ItemData::getprice() const
+	{
+		return price;
+	}
+
 	string ItemData::getname() const
 	{
 		return name;
@@ -129,6 +136,6 @@ namespace Character
 
 	const Texture& ItemData::geticon(bool raw) const
 	{
-		return icons.at(raw);
+		return icons[raw];
 	}
 }

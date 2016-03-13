@@ -19,6 +19,7 @@
 #include "MapObjects.h"
 #include "Character\OtherChar.h"
 #include "Gameplay\Movement.h"
+#include "Gameplay\Spawn.h"
 
 namespace Gameplay
 {
@@ -30,10 +31,7 @@ namespace Gameplay
 	class MapChars : public MapObjects
 	{
 	public:
-		MapChars();
-
-		void addchar(int32_t cid, const LookEntry& look, uint8_t level, 
-			int16_t job, string name, int8_t stance, Point<int16_t> pos);
+		void sendspawn(const CharSpawn& spawn);
 		void removechar(int32_t cid);
 		void movechar(int32_t cid, const vector<Movement>& movements);
 

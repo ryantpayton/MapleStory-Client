@@ -19,12 +19,11 @@
 #include "Util\Singleton.h"
 #include "GL\glew.h"
 #include "glfw3.h"
-#include <cstdint>
-#include <vector>
+#include <string>
 
 namespace IO
 {
-	using std::vector;
+	using std::string;
 
 	class Window : public Singleton<Window>
 	{
@@ -38,6 +37,9 @@ namespace IO
 		void begin() const;
 		void end() const;
 		void fadeout(float step, void(*fadeproc)());
+
+		void setclipboard(string text) const;
+		string getclipboard() const;
 
 	private:
 		void updateopc();

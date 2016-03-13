@@ -25,7 +25,7 @@ namespace IO
 	{
 		type = unique_ptr<Type>(t);
 		texture = tx;
-		showcount = c > 0;
+		showcount = c > -1;
 		count = c;
 
 		texture.shift(Point<int16_t>(0, 32));
@@ -44,10 +44,10 @@ namespace IO
 		using Graphics::DrawArgument;
 		texture.draw(DrawArgument(position, dragged ? 0.5f : 1.0f));
 
-		int16_t tempc = dragged ? (count - 1) : count;
-		if (tempc >= 0 && showcount)
+		if (showcount)
 		{
 			static const Charset countset = Charset(nl::nx::ui["Basic.img"]["ItemNo"], Charset::LEFT);
+			int16_t tempc = dragged ? (count - 1) : count;
 			countset.draw(std::to_string(tempc), position + Point<int16_t>(0, 20));
 		}
 	}

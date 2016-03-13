@@ -50,8 +50,8 @@ namespace Character
 
 	bool CharEquips::isvisible(Equipslot::Value slot) const
 	{
-		return getequip(slot)
-			.maporfalse(&Clothing::istransparent);
+		return !getequip(slot)
+			.maportrue(&Clothing::istransparent);
 	}
 
 	bool CharEquips::comparelayer(Equipslot::Value slot, Stance::Value stance, Clothing::Layer layer) const
@@ -76,6 +76,27 @@ namespace Character
 	{
 		return getweapon()
 			.maporfalse(&Weapon::istwohanded);
+	}
+
+	CharEquips::CapType CharEquips::getcaptype() const
+	{
+		Optional<const Clothing> cap = getequip(Equipslot::CAP);
+		if (cap)
+		{
+			string vslot = cap->getvslot();
+			if (vslot == "CpH1H5")
+				return HALFCOVER;
+			else if (vslot == "CpH1H5AyAs")
+				return FULLCOVER;
+			else if (vslot == "CpH5")
+				return HEADBAND;
+			else
+				return NONE;
+		}
+		else
+		{
+			return NONE;
+		}
 	}
 
 	Weapon::Type CharEquips::getweapontype() const

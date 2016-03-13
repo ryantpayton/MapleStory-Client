@@ -93,7 +93,7 @@ namespace IO
 		});
 
 		slider = unique_ptr<Slider>(
-			new Slider(11, Range<int16_t>(0, tapbarheight * chatrows - 14), -22, 1, [&](bool up){
+			new Slider(11, Range<int16_t>(0, tapbarheight * chatrows - 14), -22, chatrows, 1, [&](bool up){
 			int16_t next = up ? 
 				rowpos - 1 : 
 				rowpos + 1;
@@ -209,6 +209,8 @@ namespace IO
 	{
 		rowmax++;
 		rowpos = rowmax;
+
+		slider->setrows(chatrows, rowmax);
 
 		Text::Color color;
 		switch (type)

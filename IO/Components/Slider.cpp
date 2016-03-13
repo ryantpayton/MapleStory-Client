@@ -21,7 +21,7 @@
 
 namespace IO
 {
-	Slider::Slider(int32_t type, Range<int16_t> ver, int16_t xp, int16_t rows, function<void(bool)> om)
+	Slider::Slider(int32_t type, Range<int16_t> ver, int16_t xp, int16_t ur, int16_t rm, function<void(bool)> om)
 	{
 		vertical = ver;
 		x = xp;
@@ -46,7 +46,7 @@ namespace IO
 
 		buttonheight = dnext.getdimensions().y();
 
-		setrows(rows);
+		setrows(ur, rm);
 
 		enabled = true;
 		scrolling = false;
@@ -62,10 +62,17 @@ namespace IO
 		enabled = en;
 	}
 
-	void Slider::setrows(int16_t rows)
+	void Slider::setrows(int16_t ur, int16_t rm)
 	{
-		rowheight = (vertical.length() - buttonheight * 3) / rows;
-		rowmax = rows;
+		rowmax = rm - ur;
+		if (rowmax > 0)
+		{
+			rowheight = (vertical.length() - buttonheight * 2) / rowmax;
+		}
+		else
+		{
+			rowheight = 0;
+		}
 		row = 0;
 	}
 
@@ -77,7 +84,10 @@ namespace IO
 		if (enabled)
 		{
 			base.draw(DrawArgument(start + position, fill));
-			thumb->draw(getmidpos() + position);
+			if (rowheight > 0)
+			{
+				thumb->draw(getthumbpos() + position);
+			}
 			prev->draw(position);
 			next->draw(position);
 		}
@@ -89,12 +99,12 @@ namespace IO
 		}
 	}
 
-	Point<int16_t> Slider::getmidpos() const
+	Point<int16_t> Slider::getthumbpos() const
 	{
-		int16_t thumbshift = row < rowmax ?
-			row * rowheight + buttonheight :
-			vertical.length() - buttonheight * 2 - 2;
-		return Point<int16_t>(x, vertical.first() + thumbshift);
+		int16_t y = row < rowmax ?
+			vertical.first() + row * rowheight + buttonheight
+			: vertical.second() - buttonheight * 2 - 2;
+		return Point<int16_t>(x, y);
 	}
 
 	Cursor::State Slider::sendcursor(Point<int16_t> cursor, bool pressed)
@@ -131,7 +141,7 @@ namespace IO
 			return Cursor::IDLE;
 		}
 
-		Point<int16_t> thumbpos = Point<int16_t>(x, vertical.first() + row * rowheight + buttonheight);
+		Point<int16_t> thumbpos = getthumbpos();
 		if (thumb->bounds(thumbpos).contains(cursor))
 		{
 			if (pressed)
@@ -201,7 +211,8 @@ namespace IO
 
 		if (pressed)
 		{
-			int16_t cursorrow = relative.y() / rowheight;
+			auto yoffset = static_cast<double>(relative.y() - buttonheight * 2);
+			auto cursorrow = static_cast<int16_t>(std::round(yoffset / rowheight));
 			if (cursorrow < 0)
 				cursorrow = 0;
 			else if (cursorrow > rowmax)

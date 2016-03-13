@@ -26,6 +26,15 @@ namespace Character
 	class CharEquips
 	{
 	public:
+		enum CapType
+		{
+			   NONE,
+			   HEADBAND,
+			   HAIRPIN,
+			   HALFCOVER,
+			   FULLCOVER
+		};
+
 		CharEquips();
 
 		void draw(Equipslot::Value slot, Stance::Value stance, Clothing::Layer layer, uint8_t frame, const DrawArgument& args) const;
@@ -37,6 +46,7 @@ namespace Character
 		bool hasoverall() const;
 		bool hasweapon() const;
 		bool istwohanded() const;
+		CapType getcaptype() const;
 		Weapon::Type getweapontype() const;
 		string getequipname(Equipslot::Value slot) const;
 

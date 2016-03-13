@@ -31,10 +31,9 @@ namespace IO
 
 	void UIElement::draw(float inter) const
 	{
-		using Graphics::DrawArgument;
 		for (auto& sprit : sprites)
 		{
-			sprit.draw(DrawArgument(position), inter);
+			sprit.draw(position, inter);
 		}
 
 		for (auto& btit : buttons)

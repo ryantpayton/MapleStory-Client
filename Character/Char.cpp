@@ -16,32 +16,44 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Char.h"
+#include "Constants.h"
+
 #include "nlnx\nx.hpp"
 #include "nlnx\node.hpp"
 
 namespace Character
 {
-	void Char::draw(const Camera& camera, float inter) const
+	Char::Char(int32_t o, CharLook lk, string name)
+		: MapObject(o) {
+
+		look = lk;
+
+		namelabel = Text(Text::A13M, Text::CENTER, Text::WHITE);
+		namelabel.setback(Text::NAMETAG);
+		namelabel.settext(name);
+	}
+
+	void Char::draw(Point<int16_t> viewpos, float inter) const
 	{
-		Point<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
+		Point<int16_t> absp = phobj.getposition(inter) + viewpos;
 		look.draw(absp, inter);
 
 		for (int32_t i = 0; i < 3; i++)
 		{
 			if (pets[i].getiid() > 0)
-				pets[i].draw(camera, inter);
+				pets[i].draw(viewpos, inter);
 		}
 
 		namelabel.draw(absp);
 		chatballoon.draw(absp);
 
-		if (!flip)
-			absp.shiftx(-8);
+		if (flip)
+			absp.shiftx(8);
 
 		effects.draw(absp, inter);
 	}
 
-	int8_t Char::update(const Physics& physics)
+	bool Char::update(const Physics& physics, float speed)
 	{
 		effects.update();
 		chatballoon.update();
@@ -63,10 +75,17 @@ namespace Character
 					if (pets[i].getstance() == PetLook::HANG || pets[i].getstance() == PetLook::FLY)
 						pets[i].setstance(PetLook::STAND);
 				}
-				pets[i].update(physics, phobj.getposition(1.0f));
+				pets[i].update(physics, getposition());
 			}
 		}
 
+		uint16_t stancespeed = static_cast<uint16_t>(Constants::TIMESTEP * speed);
+		return look.update(stancespeed);
+	}
+
+	int8_t Char::update(const Physics& physics)
+	{
+		update(physics, 1.0f);
 		return getlayer();
 	}
 
@@ -176,12 +195,9 @@ namespace Character
 		return namelabel.gettext();
 	}
 
-	rectangle2d<int16_t> Char::getbounds() const
+	const CharLook& Char::getlook() const
 	{
-		return rectangle2d<int16_t>(
-			getposition() - Point<int16_t>(30, 70),
-			getposition() + Point<int16_t>(30, 10)
-			);
+		return look;
 	}
 
 

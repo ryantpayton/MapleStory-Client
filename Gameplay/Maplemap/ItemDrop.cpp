@@ -20,21 +20,21 @@
 namespace Gameplay
 {
 	ItemDrop::ItemDrop(int32_t oid, int32_t owner, Point<int16_t> start,
-		Point<int16_t> dest, int8_t type, int8_t mode, Texture icn, 
-		int32_t iid, bool pldrp) : Drop(oid, owner, start, dest, type, mode, pldrp) {
+		Point<int16_t> dest, int8_t type, int8_t mode, int32_t iid, bool pd, const Texture* icn) 
+		: Drop(oid, owner, start, dest, type, mode, pd) {
 
 		icon = icn;
 		itemid = iid;
 	}
 
-	void ItemDrop::draw(const Camera& camera, float inter) const
+	void ItemDrop::draw(Point<int16_t> viewpos, float inter) const
 	{
-		if (!active)
+		if (!active || !icon)
 			return;
 
-		Point<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
+		Point<int16_t> absp = phobj.getposition(inter) + viewpos;
 
 		using Graphics::DrawArgument;
-		icon.draw(DrawArgument(absp, opacity));
+		icon->draw(DrawArgument(absp, opacity));
 	}
 }

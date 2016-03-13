@@ -78,7 +78,8 @@ namespace Character
 		{
 			for (auto& use : inventories[USE])
 			{
-				if (use.second && use.second->getid() / 1000 == prefix)
+				Item* item = use.second;
+				if (item && item->getid() / 1000 == prefix && item->getcount() > 0)
 				{
 					projectile = use.first;
 					break;
@@ -191,10 +192,19 @@ namespace Character
 			inventories[secondtype].erase(secondslot);
 	}
 
-	void Inventory::changecount(Type type, int16_t slot, int16_t count)
+	bool Inventory::changecount(Type type, int16_t slot, int16_t count)
 	{
-		getitem(type, slot)
-			.ifpresent(&Item::setcount, count);
+		Optional<Item> item = getitem(type, slot);
+		if (item)
+		{
+			int16_t cur = item->getcount();
+			item->setcount(count);
+			return count > cur;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	void Inventory::modify(Type type, int16_t slot, int8_t mode, int16_t arg, Movement move)
@@ -208,10 +218,10 @@ namespace Character
 
 		switch (mode)
 		{
-		case 1:
+		case CHANGECOUNT:
 			changecount(type, slot, arg);
 			break;
-		case 2:
+		case SWAP:
 			switch (move)
 			{
 			case MOVE_INTERNAL:
@@ -225,7 +235,7 @@ namespace Character
 				break;
 			}
 			break;
-		case 3:
+		case REMOVE:
 			remove(type, slot);
 			break;
 		}

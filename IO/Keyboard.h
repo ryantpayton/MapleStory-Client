@@ -86,6 +86,9 @@ namespace IO
 			RETURN = 65,
 			SPACE = 66,
 			TAB = 67,
+			COPY = 68,
+			PASTE = 69,
+			NOACTION = 70,
 			FACE1 = 100,
 			FACE7 = 106
 		};
@@ -118,18 +121,18 @@ namespace IO
 			return static_cast<Keytype>(id);
 		}
 
-		struct Keymapping
+		struct Mapping
 		{
 			Keyboard::Keytype type;
 			int32_t action;
 
-			Keymapping()
+			Mapping()
 			{
 				type = Keyboard::NONE;
 				action = 0;
 			}
 
-			Keymapping(Keyboard::Keytype t, int32_t a)
+			Mapping(Keyboard::Keytype t, int32_t a)
 			{
 				type = t;
 				action = a;
@@ -140,12 +143,14 @@ namespace IO
 
 		void assign(uint8_t key, uint8_t type, int32_t action);
 		int32_t shiftcode() const;
-		Keymapping gettextmapping(int32_t keycode, bool shift) const;
-		Optional<const Keymapping> getmapping(int32_t keycode) const;
+		int32_t ctrlcode() const;
+		Action getctrlaction(int32_t keycode) const;
+		Mapping gettextmapping(int32_t keycode, bool shift) const;
+		Optional<const Mapping> getmapping(int32_t keycode) const;
 
 	private:
-		map<int32_t, Keymapping> keymap;
-		map<int32_t, Keymapping> maplekeys;
+		map<int32_t, Mapping> keymap;
+		map<int32_t, Mapping> maplekeys;
 		map<int32_t, Action> textactions;
 		map<int32_t, bool> keystate;
 	};

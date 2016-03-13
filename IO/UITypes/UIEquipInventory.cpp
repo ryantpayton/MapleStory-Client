@@ -115,6 +115,24 @@ namespace IO
 		}
 	}
 
+	void UIEquipInventory::updateslot(int16_t slot)
+	{
+		Optional<const Texture> texture = inventory.getitem(Inventory::EQUIPPED, slot)
+			.transform(&Item::getidata)
+			.transform(&ItemData::geticon, false);
+
+		if (texture)
+		{
+			icons[slot] = unique_ptr<Icon>(new Icon(new EquipIcon(slot), *texture, -1));
+		}
+		else if (icons.count(slot))
+		{
+			icons.erase(slot);
+		}
+
+		cleartooltip();
+	}
+
 	void UIEquipInventory::loadicons()
 	{
 		icons.clear();
@@ -179,24 +197,6 @@ namespace IO
 	{
 		cleartooltip();
 		UIElement::togglehide();
-	}
-
-	void UIEquipInventory::updateslot(int16_t slot)
-	{
-		Optional<const Texture> texture = inventory.getitem(Inventory::EQUIPPED, slot)
-			.transform(&Item::getidata)
-			.transform(&ItemData::geticon, false);
-
-		if (texture)
-		{
-			icons[slot] = unique_ptr<Icon>(new Icon(new EquipIcon(slot), *texture, 0));
-		}
-		else if (icons.count(slot))
-		{
-			icons.erase(slot);
-		}
-
-		cleartooltip();
 	}
 
 	void UIEquipInventory::modify(int16_t pos, int8_t mode, int16_t arg)

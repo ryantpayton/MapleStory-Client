@@ -23,8 +23,23 @@
 
 #include "Util\BinaryTree.h"
 
+#include <algorithm>
+
 namespace Gameplay
 {
+	void MapMobs::draw(int8_t layer, Point<int16_t> viewpos, float alpha) const
+	{
+		if (layer == 7)
+		{
+			for (auto& mb : missbullets)
+			{
+				mb.draw(viewpos, alpha);
+			}
+		}
+
+		MapObjects::draw(layer, viewpos, alpha);
+	}
+
 	void MapMobs::update(const Physics& physics)
 	{
 		attacklist.remove_if([&](Attack& attack){
@@ -40,7 +55,30 @@ namespace Gameplay
 			}
 		});
 
+		missbullets.remove_if([](MissBullet& mb){ 
+			return mb.update(); 
+		});
+
 		MapObjects::update(physics);
+	}
+
+	void MapMobs::sendspawn(const MobSpawn& spawn)
+	{
+		int32_t oid = spawn.getoid();
+		Optional<Mob> mob = getmob(oid);
+		if (mob)
+		{
+			int8_t mode = spawn.getmode();
+			if (mode > 0)
+				mob->setcontrol(mode);
+
+			mob->makeactive();
+		}
+		else
+		{
+			Mob* newmob = spawn.instantiate();
+			add(newmob);
+		}
 	}
 
 	void MapMobs::applyattack(const Attack& attack)
@@ -106,6 +144,14 @@ namespace Gameplay
 			Session::get().dispatch(RangedAttackPacket(result));
 			break;
 		}
+
+		if (targets.size() == 0 && attack.type == Attack::RANGED)
+		{
+			bool toleft = attack.direction == Attack::TOLEFT;
+			auto bullet = Bullet(attack.bullet, attack.origin, toleft);
+			auto target = Point<int16_t>(toleft ? range.l() : range.r(), origin.y() - 26);
+			missbullets.push_back(MissBullet(bullet, target));
+		}
 	}
 
 	vector<int32_t> MapMobs::findclose(rectangle2d<int16_t> range, uint8_t mobcount) const
@@ -118,7 +164,7 @@ namespace Gameplay
 				continue;
 
 			Optional<Mob> mob = mmo.reinterpret<Mob>();
-			if (mob->isactive() && mob->isinrange(range))
+			if (mob->isalive() && mob->isinrange(range))
 			{
 				int32_t oid = mob->getoid();
 				targets.push_back(oid);
@@ -140,7 +186,7 @@ namespace Gameplay
 				continue;
 
 			Optional<Mob> mob = mmo.reinterpret<Mob>();
-			if (mob->isactive() && mob->isinrange(range))
+			if (mob->isalive() && mob->isinrange(range))
 			{
 				int32_t oid = mob->getoid();
 				int16_t distance = mob->getposition().distance(origin);
@@ -172,6 +218,13 @@ namespace Gameplay
 	void MapMobs::sendattack(Attack attack)
 	{
 		attacklist.push_back(attack);
+	}
+
+	void MapMobs::setcontrol(int32_t oid, bool control)
+	{
+		int8_t mode = control ? 1 : 0;
+		getmob(oid)
+			.ifpresent(&Mob::setcontrol, mode);
 	}
 
 	Optional<Mob> MapMobs::getmob(int32_t oid)

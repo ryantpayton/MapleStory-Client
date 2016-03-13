@@ -20,8 +20,56 @@
 
 namespace Gameplay
 {
+	// Struct that contains all properties for movement calculations.
+	struct MovingObject
+	{
+		double fx = 0.0;
+		double fy = 0.0;
+		double lastx = 0.0;
+		double lasty = 0.0;
+		double hspeed = 0.0;
+		double vspeed = 0.0;
+
+		void move()
+		{
+			lastx = fx;
+			lasty = fy;
+			fx += hspeed;
+			fy += vspeed;
+		}
+
+		int16_t getx() const
+		{
+			return static_cast<int16_t>(fx);
+		}
+
+		int16_t gety() const
+		{
+			return static_cast<int16_t>(fy);
+		}
+
+		int16_t getx(float inter) const
+		{
+			auto interx = static_cast<int16_t>((1.0f - inter) * lastx + inter * fx);
+			return interx;
+		}
+
+		int16_t gety(float inter) const
+		{
+			auto intery = static_cast<int16_t>((1.0f - inter) * lasty + inter * fy);
+			return intery;
+		}
+
+		Point<int16_t> getposition(float inter) const
+		{
+			auto interx = getx(inter);
+			auto intery = gety(inter);
+			return Point<int16_t>(interx, intery);
+		}
+	};
+
 	// Struct that contains all properties neccessary for physics calculations.
-	struct PhysicsObject
+	struct PhysicsObject : public MovingObject
 	{
 		// Determines which physics engine to use.
 		enum Type
@@ -48,17 +96,11 @@ namespace Gameplay
 		bool onground = true;
 		bool enablejd = false;
 		double mass = 1.0;
-		double fx = 0.0;
-		double fy = 0.0;
+
 		double hforce = 0.0;
 		double vforce = 0.0;
 		double hacc = 0.0;
 		double vacc = 0.0;
-		double hspeed = 0.0;
-		double vspeed = 0.0;
-
-		double lastx = 0.0;
-		double lasty = 0.0;
 
 		bool flagset(Flag f)
 		{
@@ -79,13 +121,6 @@ namespace Gameplay
 		{
 			if (flagset(f))
 				flags ^= f;
-		}
-
-		Point<int16_t> getposition(float inter) const
-		{
-			int16_t interx = static_cast<int16_t>((1.0f - inter) * lastx + inter * fx);
-			int16_t intery = static_cast<int16_t>((1.0f - inter) * lasty + inter * fy);
-			return Point<int16_t>(interx, intery);
 		}
 	};
 }

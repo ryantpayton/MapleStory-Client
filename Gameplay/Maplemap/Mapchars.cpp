@@ -19,12 +19,19 @@
 
 namespace Gameplay
 {
-	MapChars::MapChars() {}
+	void MapChars::sendspawn(const CharSpawn& spawn)
+	{
+		int32_t cid = spawn.getcid();
+		Optional<OtherChar> ochar = getchar(cid);
+		if (ochar)
+		{
 
-	void MapChars::addchar(int32_t cid, const LookEntry& look, uint8_t level,
-		int16_t job, string name, int8_t stance, Point<int16_t> pos) {
-
-		add(new OtherChar(cid, look, level, job, name, stance, pos));
+		}
+		else
+		{
+			OtherChar* newchar = spawn.instantiate();
+			add(newchar);
+		}
 	}
 
 	void MapChars::removechar(int32_t cid)

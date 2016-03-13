@@ -19,36 +19,22 @@
 
 namespace Graphics
 {
-	Sprite::Sprite(node src, Point<int16_t> pos)
-	{
-		animation = src;
-		position = pos;
-	}
+	Sprite::Sprite(node src, DrawArgument args)
+		: animation(src), stateargs(args) {}
 
 	Sprite::Sprite(node src)
-	{
-		animation = src;
-	}
+		: Sprite(src, DrawArgument()) {}
 
 	Sprite::~Sprite() {}
 
-	void Sprite::draw(const DrawArgument& args, float inter) const
+	void Sprite::draw(Point<int16_t> parentpos, float inter) const
 	{
-		animation.draw(args.getpos() + position, inter);
+		auto absargs = stateargs + parentpos;
+		animation.draw(absargs, inter);
 	}
 
 	void Sprite::update()
 	{
 		animation.update();
-	}
-
-	Point<int16_t> Sprite::getorigin() const
-	{
-		return animation.getorigin();
-	}
-
-	Point<int16_t> Sprite::getdimensions() const
-	{
-		return animation.getorigin();
 	}
 }

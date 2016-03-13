@@ -85,7 +85,7 @@ namespace IO
 		Cursor cursor;
 
 		Optional<Textfield> focusedtextfield;
-		bool shift;
+		unordered_map<int32_t, bool> keydown;
 
 		bool enabled;
 	};

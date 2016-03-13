@@ -16,76 +16,47 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "MapLayer.h"
-#include "nlnx\nx.hpp"
+#include "Tile.h"
+#include "Obj.h"
+#include <vector>
+#include <map>
 
 namespace Gameplay
 {
-	MapLayer::MapLayer(node src)
+	using std::vector;
+	using std::map;
+
+	class Layer
 	{
-		string tileset = src["info"]["tS"] + ".img";
-		for (node tilenode : src["tile"])
-		{
-			Tile tile = Tile(tilenode, tileset);
-			tiles[tile.getz()].push_back(tile);
-		}
+	public:
+		Layer(node src);
+		Layer(InPacket& recv);
+		Layer();
+		~Layer();
 
-		for (node objnode : src["obj"])
-		{
-			Obj obj = Obj(objnode);
-			objs[obj.getz()].push_back(obj);
-		}
-	}
+		void draw(Point<int16_t> viewpos, float inter) const;
+		void update();
 
-	MapLayer::MapLayer(InPacket& recv)
+	private:
+		map<uint8_t, vector<Tile>> tiles;
+		map<uint8_t, vector<Obj>> objs;
+	};
+
+	class MapLayers
 	{
-		string tileset = recv.readascii();
-		uint16_t numtiles = recv.readshort();
-		for (uint16_t i = 0; i < numtiles; i++)
-		{
-			Tile tile = Tile(recv, tileset);
-			tiles[tile.getz()].push_back(tile);
-		}
+	public:
+		static const uint8_t NUM_LAYERS = 8;
 
-		uint16_t numobjs = recv.readshort();
-		for (uint16_t i = 0; i < numobjs; i++)
-		{
-			Obj obj = Obj(recv);
-			objs[obj.getz()].push_back(obj);
-		}
-	}
+		MapLayers(node src);
+		MapLayers(InPacket& recv);
+		MapLayers();
+		~MapLayers();
 
-	MapLayer::MapLayer() {}
+		void draw(uint8_t layer, Point<int16_t> viewpos, float inter) const;
+		void update();
 
-	MapLayer::~MapLayer() {}
-
-	void MapLayer::update()
-	{
-		for (auto& lyit : objs)
-		{
-			for (auto& obit : lyit.second)
-			{
-				obit.update();
-			}
-		}
-	}
-
-	void MapLayer::draw(Point<int16_t> viewpos, float inter) const
-	{
-		for (auto& lyit : objs)
-		{
-			for (auto& obit : lyit.second)
-			{
-				obit.draw(viewpos, inter);
-			}
-		}
-
-		for (auto& lyit : tiles)
-		{
-			for (auto& tlit : lyit.second)
-			{
-				tlit.draw(viewpos);
-			}
-		}
-	}
+	private:
+		Layer layers[NUM_LAYERS];
+	};
 }
+

@@ -54,8 +54,6 @@ namespace Gameplay
 	{
 		state = INACTIVE;
 
-		layers.clear();
-		portals.clear();
 		chars.clear();
 		npcs.clear();
 		mobs.clear();
@@ -64,18 +62,16 @@ namespace Gameplay
 
 	void Stage::loadmap()
 	{
+		string prefix = std::to_string(mapid / 100000000);
 		string strid = std::to_string(mapid);
 		strid.insert(0, 9 - strid.length(), '0');
-		node src = nl::nx::map["Map"]["Map" + std::to_string(mapid / 100000000)][strid + ".img"];
+		node src = nl::nx::map["Map"]["Map" + prefix][strid + ".img"];
 
-		portals.load(src["portal"], mapid);
-		physics.load(src);
+		layers = src;
 		backgrounds = src["back"];
+		physics = src["foothold"];
 		mapinfo = MapInfo(src, physics.getfht().getwalls(), physics.getfht().getborders());
-		for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
-		{
-			layers[i] = MapLayer(src[std::to_string(i)]);
-		}
+		portals = MapPortals(src["portal"], mapid);
 	}
 
 	void Stage::parsemap(InPacket& recv)
@@ -85,14 +81,11 @@ namespace Gameplay
 
 		mapid = recv.readint();
 		portalid = recv.readbyte();
-		mapinfo = MapInfo(recv);
-		physics.parsefht(recv);
-		portals.parseportals(recv, mapid);
-
-		for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
-		{
-			layers[i] = MapLayer(recv);
-		}
+		layers = recv;
+		backgrounds = recv;
+		physics = recv;
+		mapinfo = recv;
+		portals = recv;
 
 		state = TRANSITION;
 	}
@@ -101,7 +94,8 @@ namespace Gameplay
 	{
 		AudioPlayer::get().playbgm(mapinfo.getbgm());
 
-		Point<int16_t> startpos = physics.getgroundbelow(portals.getspawnpoint(portalid));
+		Point<int16_t> spawnpoint = portals.getspawnpoint(portalid);
+		Point<int16_t> startpos = physics.getgroundbelow(spawnpoint);
 		player.respawn(startpos, mapinfo.isswimmap());
 		camera.setposition(startpos);
 		camera.updateview(mapinfo.getwalls(), mapinfo.getborders());
@@ -130,42 +124,45 @@ namespace Gameplay
 
 		Point<int16_t> viewpos = camera.getposition(inter);
 		backgrounds.drawbackgrounds(viewpos, inter);
-		for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
+		for (uint8_t i = 0; i < MapLayers::NUM_LAYERS; i++)
 		{
-			layers.at(i).draw(viewpos, inter);
-			npcs.draw(i, camera, inter);
-			mobs.draw(i, camera, inter);
-			chars.draw(i, camera, inter);
+			layers.draw(i, viewpos, inter);
+			npcs.draw(i, viewpos, inter);
+			mobs.draw(i, viewpos, inter);
+			chars.draw(i, viewpos, inter);
 			if (i == player.getlayer())
 			{
-				player.draw(camera, inter);
+				player.draw(viewpos, inter);
 			}
-			drops.draw(i, camera, inter);
+			drops.draw(i, viewpos, inter);
 		}
 		portals.draw(viewpos, inter);
 		backgrounds.drawforegrounds(viewpos, inter);
-
-		physics.getfht().draw(viewpos);
 	}
 
 	void Stage::pollspawns()
 	{
-		while (spawnqueue.size() > 0)
+		for (; spawnqueue.size() > 0; spawnqueue.pop())
 		{
-			const Spawn* spawn = spawnqueue.back().get();
-			switch (spawn->type())
+			Optional<const Spawn> spawn = spawnqueue.front().get();
+			if (spawn)
 			{
-			case Spawn::NPC:
-				npcs.add(spawn->instantiate(physics));
-				break;
-			case Spawn::MOB:
-				mobs.add(spawn->instantiate(physics));
-				break;
-			case Spawn::CHARACTER:
-				chars.add(spawn->instantiate(physics));
-				break;
+				switch (spawn->type())
+				{
+				case Spawn::NPC:
+					npcs.sendspawn(*spawn.reinterpret<const NpcSpawn>(), physics);
+					break;
+				case Spawn::MOB:
+					mobs.sendspawn(*spawn.reinterpret<const MobSpawn>());
+					break;
+				case Spawn::DROP:
+					drops.sendspawn(*spawn.reinterpret<const DropSpawn>());
+					break;
+				case Spawn::CHARACTER:
+					chars.sendspawn(*spawn.reinterpret<const CharSpawn>());
+					break;
+				}
 			}
-			spawnqueue.pop_back();
 		}
 	}
 
@@ -176,24 +173,20 @@ namespace Gameplay
 			pollspawns();
 
 			backgrounds.update();
-			for (uint8_t i = 0; i < MapLayer::NUM_LAYERS; i++)
-			{
-				layers[i].update();
-			}
-
+			layers.update();
 			npcs.update(physics);
 			mobs.update(physics);
 			chars.update(physics);
 			drops.update(physics);
 			player.update(physics);
-			portals.update(player.getbounds());
+			portals.update(player.getposition());
 			camera.update(player.getposition());
 		}
 	}
 
 	void Stage::queuespawn(const Spawn* spawn)
 	{
-		spawnqueue.push_back(unique_ptr<const Spawn>(spawn));
+		spawnqueue.push(unique_ptr<const Spawn>(spawn));
 	}
 
 	void Stage::useskill(int32_t skillid)
@@ -229,19 +222,17 @@ namespace Gameplay
 		if (player.isattacking())
 			return;
 
-		const WarpInfo* warpinfo = portals.findportal(player.getbounds());
-		if (warpinfo)
+		Point<int16_t> playerpos = player.getposition();
+		Portal::WarpInfo warpinfo = portals.findportal(playerpos);
+		if (warpinfo.mapid == mapid)
 		{
-			if (warpinfo->mapid == mapid)
-			{
-				Point<int16_t> spawnpoint = portals.getspawnpoint(warpinfo->portal);
-				player.respawn(spawnpoint, mapinfo.isswimmap());
-			}
-			else if (warpinfo->valid)
-			{
-				using Net::ChangeMapPacket;
-				Session::get().dispatch(ChangeMapPacket(false, warpinfo->mapid, warpinfo->portal, false));
-			}
+			Point<int16_t> spawnpoint = portals.getspawnpoint(warpinfo.portal);
+			player.respawn(spawnpoint, mapinfo.isswimmap());
+		}
+		else if (warpinfo.valid)
+		{
+			using Net::ChangeMapPacket;
+			Session::get().dispatch(ChangeMapPacket(false, warpinfo.mapid, warpinfo.portal, false));
 		}
 	}
 
@@ -265,7 +256,8 @@ namespace Gameplay
 
 	void Stage::checkdrops()
 	{
-		const Drop* drop = drops.findinrange(player.getbounds());
+		Point<int16_t> playerpos = player.getposition();
+		const Drop* drop = drops.findinrange(playerpos);
 		if (drop)
 		{
 			using Net::PickupItemPacket;

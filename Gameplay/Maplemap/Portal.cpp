@@ -19,7 +19,7 @@
 
 namespace Gameplay
 {
-	Portal::Portal(const Animation* a, PtType t, string nm, bool intermap, 
+	Portal::Portal(const Animation* a, Type t, string nm, bool intramap,
 		Point<int16_t> p, int32_t tid, string tnm) {
 
 		animation = a;
@@ -27,16 +27,13 @@ namespace Gameplay
 		name = nm;
 		position = p;
 
-		WarpInfo wi;
-		wi.mapid = tid;
-		wi.portal = intermap ? tnm : nm;
-		wi.valid = tid < 999999999;
-		warpinfo = wi;
+		warpinfo = WarpInfo(tid, intramap ? tnm : nm);
 
 		touched = false;
 	}
 
-	Portal::Portal() {}
+	Portal::Portal() 
+		: Portal(nullptr, SPAWN, "", false, Point<int16_t>(), 0, "") {}
 
 	Portal::~Portal() {}
 
@@ -58,7 +55,7 @@ namespace Gameplay
 		return name;
 	}
 
-	Portal::PtType Portal::gettype() const
+	Portal::Type Portal::gettype() const
 	{
 		return type;
 	}
@@ -70,13 +67,12 @@ namespace Gameplay
 
 	rectangle2d<int16_t> Portal::bounds() const
 	{
-		return rectangle2d<int16_t>(
-			position, 
-			position + Point<int16_t>(5, -50)
-			);
+		auto lt = position + Point<int16_t>(-25, -50);
+		auto rb = position + Point<int16_t>(25, 50);
+		return rectangle2d<int16_t>(lt, rb);
 	}
 
-	const WarpInfo& Portal::getwarpinfo() const
+	Portal::WarpInfo Portal::getwarpinfo() const
 	{
 		return warpinfo;
 	}

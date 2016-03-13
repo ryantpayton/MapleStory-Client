@@ -24,7 +24,7 @@ namespace Character
 	{
 		static const Layer layers[15] = 
 		{
-			Layer::HAT, Layer::FACEACC, Layer::EYEACC, Layer::EARRINGS, Layer::TOP, Layer::MAIL,
+			Layer::CAP, Layer::FACEACC, Layer::EYEACC, Layer::EARRINGS, Layer::TOP, Layer::MAIL,
 			Layer::PANTS, Layer::SHOES, Layer::GLOVE, Layer::SHIELD, Layer::CAPE, Layer::RING,
 			Layer::PENDANT, Layer::BELT, Layer::MEDAL
 		};
@@ -85,6 +85,7 @@ namespace Character
 		tradeblock = infonode["tradeBlock"].get_bool();
 		price = infonode["price"];
 		slots = infonode["tuc"];
+		vslot = infonode["vslot"];
 		reqstats[Maplestat::LEVEL] = infonode["reqLevel"];
 		reqstats[Maplestat::JOB] = infonode["reqJob"];
 		reqstats[Maplestat::STR] = infonode["reqSTR"];
@@ -143,33 +144,25 @@ namespace Character
 						}
 
 						Point<int16_t> shift;
-						switch (z)
+						switch (eqslot)
 						{
-						case Layer::FACEACC:
+						case Equipslot::FACEACC:
 							shift -= parentpos;
 							break;
-						case Layer::TOP:
-						case Layer::PANTS:
-						case Layer::CAPE:
-						case Layer::SHOES:
-						case Layer::MAIL:
-						case Layer::MAILARM:
-						case Layer::GLOVE:
-						case Layer::BACKWEAPON:
-						case Layer::BACKSHIELD:
+						case Equipslot::SHOES:
+						case Equipslot::GLOVES:
+						case Equipslot::TOP:
+						case Equipslot::PANTS:
+						case Equipslot::CAPE:
 							shift = drawinfo.getbodypos(stance, frame) - parentpos;
 							break;
-						case Layer::HAT:
-						case Layer::HATOVERHAIR:
-						case Layer::EARRINGS:
-						case Layer::EYEACC:
+						case Equipslot::CAP:
+						case Equipslot::EARRINGS:
+						case Equipslot::EYEACC:
 							shift = drawinfo.getfacepos(stance, frame) - parentpos;
 							break;
-						case Layer::SHIELD:
-						case Layer::SHIELDOHAIR:
-						case Layer::WEAPON:
-						case Layer::WEAPONOHAND:
-						case Layer::WEAPONOGLOVE:
+						case Equipslot::SHIELD:
+						case Equipslot::WEAPON:
 							if (parent == "hand")
 							{
 								shift += drawinfo.getarmpos(stance, frame);
@@ -181,8 +174,10 @@ namespace Character
 							shift += drawinfo.getbodypos(stance, frame) - parentpos;
 							break;
 						}
-						stances[stance][z][frame] = partnode;
-						stances[stance][z][frame].shift(shift);
+
+						Texture texture = partnode;
+						texture.shift(shift);
+						stances[stance][z][frame].add(texture);
 					}
 				}
 
@@ -256,6 +251,11 @@ namespace Character
 	string Clothing::gettype() const
 	{
 		return type;
+	}
+
+	string Clothing::getvslot() const
+	{
+		return vslot;
 	}
 
 	Equipslot::Value Clothing::geteqslot() const

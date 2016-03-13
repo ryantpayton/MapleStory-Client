@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,32 +16,23 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Tile.h"
-#include "Obj.h"
-#include <vector>
-#include <map>
+#include <cstdint>
+#include <string>
 
-namespace Gameplay
+namespace Format
 {
-	using std::vector;
-	using std::map;
+	using std::string;
 
-	class MapLayer
-	{
-	public:
-		static const uint8_t NUM_LAYERS = 8;
+	// Format a number string so that each 3 decimal points
+	// are seperated by a ',' character.
+	string splitnumber(string input);
 
-		MapLayer(node src);
-		MapLayer(InPacket& recv);
-		MapLayer();
-		~MapLayer();
+	// Prefix an id with zeroes so that it has the minimum specified length.
+	string extendid(int32_t id, size_t length);
+};
 
-		void update();
-		void draw(Point<int16_t> viewpos, float inter) const;
-
-	private:
-		map<uint8_t, vector<Tile>> tiles;
-		map<uint8_t, vector<Obj>> objs;
-	};
+namespace Bits
+{
+	// Check if a bit mask contains the specified value.
+	bool compare(int32_t mask, int32_t value);
 }
-

@@ -25,9 +25,8 @@
 
 namespace Character
 {
-	using Gameplay::MapObject;
-	using Gameplay::Camera;
 	using IO::ChatBalloon;
+	using Gameplay::MapObject;
 	using Graphics::EffectLayer;
 
 	// Base for characters, e.g. the player and other clients on the same map.
@@ -65,7 +64,7 @@ namespace Character
 		};
 
 		// Draw look, nametag, effects and chat bubble.
-		void draw(const Camera& camera, float inter) const override;
+		void draw(Point<int16_t> viewpos, float inter) const override;
 		// Update look and movements.
 		int8_t update(const Physics& physics) override;
 		// Return the current map layer, or 7 if on a ladder or rope.
@@ -95,10 +94,8 @@ namespace Character
 
 		// Return if the character is facing left.
 		bool getflip() const;
-		// Return the IGN of this character.
+		// Return the name of this character.
 		string getname() const;
-		// Return the character's collision mask.
-		rectangle2d<int16_t> getbounds() const;
 
 		// Return if the char is in the Char::SIT state.
 		bool issitting() const;
@@ -107,10 +104,17 @@ namespace Character
 		// Return wether the character sprite uses stances for two-handed weapons.
 		bool istwohanded() const;
 
+		// Obtain a reference to this character's look.
+		const CharLook& getlook() const;
+
 		// Initialize character effects.
 		static void init();
 
 	protected:
+		Char(int32_t oid, CharLook look, string name);
+
+		bool update(const Physics& physics, float speed);
+
 		CharLook look;
 		ChatBalloon chatballoon;
 		EffectLayer effects;

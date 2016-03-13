@@ -81,10 +81,10 @@ namespace Graphics
 			interalpha = 255.0f;
 		}
 
-		bool modifyalpha = args.getalpha() == 1.0f && interalpha != 255.0f;
+		bool modifyalpha = interalpha != 255.0f;
 		if (modifyalpha)
 		{
-			frames[interframe].texture.draw(args.overwritealpha(interalpha / 255));
+			frames[interframe].texture.draw(args + (interalpha / 255));
 		}
 		else
 		{

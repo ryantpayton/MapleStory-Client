@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MapBackgrounds.h"
 #include "Constants.h"
+#include "Graphics\GraphicsGL.h"
 #include "nlnx\nx.hpp"
 
 namespace Gameplay
@@ -28,19 +29,40 @@ namespace Gameplay
 		animation = backsrc[src["bS"] + ".img"][animated ? "ani" : "back"][src["no"]];
 		opacity = src["a"];
 		flipped = src["f"].get_bool();
-		fx = src["x"];
-		fy = src["y"];
+		moveobj.fx = src["x"];
+		moveobj.fy = src["y"];
 		cx = src["cx"];
 		cy = src["cy"];
 		rx = src["rx"];
 		ry = src["ry"];
 
+		Type type = typebyid(src["type"]);
+		settype(type);
+	}
+
+	Background::Background(InPacket& recv)
+	{
+		node backsrc = nl::nx::map["Back"];
+		animation = backsrc[recv.readascii()];
+		opacity = recv.readshort();
+		flipped = recv.readbool();
+		moveobj.fx = recv.readshort();
+		moveobj.fy = recv.readshort();
+		cx = recv.readshort();
+		cy = recv.readshort();
+		rx = recv.readshort();
+		ry = recv.readshort();
+
+		Type type = typebyid(recv.readbyte());
+		settype(type);
+	}
+
+	void Background::settype(Type type)
+	{
 		if (cx == 0)
 			cx = animation.getdimensions().x();
 		if (cy == 0)
 			cy = animation.getdimensions().y();
-
-		Type type = typebyid(src["type"]);
 
 		htile = 1;
 		vtile = 1;
@@ -62,34 +84,32 @@ namespace Gameplay
 			break;
 		}
 
-		hspeed = 0.0f;
-		vspeed = 0.0f;
 		switch (type)
 		{
 		case HMOVEA:
 		case HMOVEB:
-			hspeed = rx / 16;
+			moveobj.hspeed = rx / 16;
 			break;
 		case VMOVEA:
 		case VMOVEB:
-			vspeed = ry / 16;
+			moveobj.vspeed = ry / 16;
 			break;
 		}
 	}
 
 	void Background::draw(Point<int16_t> position, float inter) const
 	{
-		int16_t x = static_cast<int16_t>((1.0f - inter) * lastx + inter * fx);
-		int16_t y = static_cast<int16_t>((1.0f - inter) * lasty + inter * fy);
 		int16_t shiftx = static_cast<int16_t>(rx * (-position.x() + WOFFSET) / 100 + WOFFSET);
 		int16_t shifty = static_cast<int16_t>(ry * (-position.y() + HOFFSET) / 100 + HOFFSET);
+		int16_t x = moveobj.getx(inter);
+		int16_t y = moveobj.gety(inter);
 		
-		if (hspeed != 0.0f)
+		if (moveobj.hspeed != 0.0)
 		{
 			x += position.x();
 			y += shifty;
 		}
-		else if (vspeed != 0.0f)
+		else if (moveobj.vspeed != 0.0)
 		{
 			x += shiftx;
 			y += position.y();
@@ -138,11 +158,7 @@ namespace Gameplay
 
 	void Background::update()
 	{
-		lastx = fx;
-		lasty = fy;
-		fx += hspeed;
-		fy += vspeed;
-
+		moveobj.move();
 		animation.update();
 	}
 
@@ -166,12 +182,39 @@ namespace Gameplay
 			no++;
 			back = src[std::to_string(no)];
 		}
+
+		black = src["0"]["bS"].get_string() == "";
+	}
+
+	MapBackgrounds::MapBackgrounds(InPacket& recv)
+	{
+		int16_t size = recv.readshort();
+		for (int16_t i = 0; i < size; i++)
+		{
+			bool front = recv.readbool();
+			if (front)
+			{
+				foregrounds.push_back(recv);
+			}
+			else
+			{
+				backgrounds.push_back(recv);
+			}
+		}
+
+		black = recv.readbool();
 	}
 
 	MapBackgrounds::MapBackgrounds() {}
 
 	void MapBackgrounds::drawbackgrounds(Point<int16_t> position, float inter) const
 	{
+		if (black)
+		{
+			using Graphics::GraphicsGL;
+			GraphicsGL::get().drawscreenfill(0.0f, 0.0f, 0.0f, 1.0f);
+		}
+
 		for (auto& background : backgrounds)
 		{
 			background.draw(position, inter);

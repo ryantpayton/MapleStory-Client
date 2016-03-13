@@ -24,6 +24,9 @@ namespace Graphics
 	class DrawArgument
 	{
 	public:
+		DrawArgument()
+			: DrawArgument(0, 0) {}
+
 		DrawArgument(int16_t x, int16_t y)
 			: DrawArgument(Point<int16_t>(x, y)) {}
 
@@ -95,9 +98,38 @@ namespace Graphics
 			return alpha; 
 		}
 
-		DrawArgument overwritealpha(float newalpha) const
+		DrawArgument operator + (Point<int16_t> argpos) const
 		{
-			return DrawArgument(pos, center, stretch, xscale, yscale, newalpha);
+			auto psum = pos + argpos;
+			return DrawArgument(psum, center, stretch, xscale, yscale, alpha);
+		}
+
+		DrawArgument operator + (float argalpha) const
+		{
+			auto opcsum = alpha * argalpha;
+			return DrawArgument(pos, center, stretch, xscale, yscale, opcsum);
+		}
+
+		DrawArgument operator + (const DrawArgument& args) const
+		{
+			auto psum = pos + args.getpos();
+			auto csum = center + args.getcenter();
+			auto ssum = stretch + args.getstretch();
+			auto xssum = xscale * args.getxscale();
+			auto yssum = yscale * args.getyscale();
+			auto opcsum = alpha * args.getalpha();
+			return DrawArgument(psum, csum, ssum, xssum, yssum, opcsum);
+		}
+
+		DrawArgument operator - (const DrawArgument& args) const
+		{
+			auto pdiff = pos - args.getpos();
+			auto cdiff = center - args.getcenter();
+			auto sdiff = stretch - args.getstretch();
+			auto xsdiff = xscale / args.getxscale();
+			auto ysdiff = yscale / args.getyscale();
+			auto opcdiff = alpha / args.getalpha();
+			return DrawArgument(pdiff, cdiff, sdiff, xsdiff, ysdiff, opcdiff);
 		}
 
 	private:

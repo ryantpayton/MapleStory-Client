@@ -26,6 +26,11 @@ namespace Net
 		pos = 0;
 	}
 
+	bool InPacket::hasmore() const
+	{
+		return length() > 0;
+	}
+
 	size_t InPacket::length() const
 	{
 		return top - pos;
@@ -33,39 +38,36 @@ namespace Net
 
 	void InPacket::skip(size_t count)
 	{
-		if (count > top - pos)
-			throw PacketError("Stack underflow while using skip.");
+		if (count > length())
+			throw PacketError("Stack underflow at " + std::to_string(pos));
+
 		pos += count;
 	}
 
 	string InPacket::readascii()
 	{
-		int16_t length = read<int16_t>();
+		auto length = read<int16_t>();
 		return readpadascii(length);
 	}
 
 	string InPacket::readpadascii(int16_t count)
 	{
-		if (count > top - pos)
-			throw PacketError("Stack underflow while reading string.");
-
 		string ret;
 		for (int16_t i = 0; i < count; i++)
 		{
-			char letter = bytes[pos];
+			auto letter = read<char>();
 			if (letter != '\0')
 			{
 				ret.push_back(letter);
 			}
-			pos++;
 		}
 		return ret;
 	}
 
 	Point<int16_t> InPacket::readpoint()
 	{
-		int16_t x = read<int16_t>();
-		int16_t y = read<int16_t>();
+		auto x = read<int16_t>();
+		auto y = read<int16_t>();
 		return Point<int16_t>(x, y);
 	}
 }

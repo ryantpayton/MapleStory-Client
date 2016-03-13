@@ -86,15 +86,16 @@ namespace Gameplay
 		bool inrange(Point<int16_t> position, bool upwards) const
 		{
 			auto hor = Range<int16_t>::symmetric(position.x(), 25);
-			auto ver = upwards ?
-				Range<int16_t>(y1, y2 + 15) :
-				Range<int16_t>(y1 - 5, y2);
-			return hor.contains(x) && ver.contains(position.y());
+			auto ver = Range<int16_t>(y1, y2);
+			int16_t y = upwards ?
+				position.y() - 5 :
+				position.y() + 5;
+			return hor.contains(x) && ver.contains(y);
 		}
 
 		bool felloff(int16_t y, bool downwards) const
 		{
-			int16_t dy = downwards ? y - 15 : y;
+			int16_t dy = downwards ? y + 5 : y - 5;
 			return dy > y2 || y + 5 < y1;
 		}
 
@@ -123,7 +124,9 @@ namespace Gameplay
 		Range<int16_t> getwalls() const;
 		Range<int16_t> getborders() const;
 
+		// Find a setat the player's position.
 		Optional<const Seat> findseat(Point<int16_t> position) const;
+		// Find a ladder at the player's position. upwards = false implies downwards.
 		Optional<const Ladder> findladder(Point<int16_t> position, bool upwards) const;
 
 	private:

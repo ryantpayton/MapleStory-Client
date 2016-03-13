@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Graphics\Texture.h"
+#include "Util\BoolPair.h"
 #include <map>
 
 namespace Character
@@ -34,12 +35,16 @@ namespace Character
 		ItemData(int32_t itemid);
 		// A default item, which is used when an item is requested by the server, but does not exist in the game files.
 		ItemData();
+
 		// Empty destructor.
 		virtual ~ItemData();
+
 		// Returns wether the item was loaded correctly. For the default item, this is 'false'.
 		bool isloaded() const;
 		// Returns the item id.
 		int32_t getid() const;
+		// Returns the item price.
+		int32_t getprice() const;
 		// Returns the item's name loaded from the String.nx file.
 		string getname() const;
 		// Returns the item's description loaded from the String.nx file.
@@ -53,8 +58,9 @@ namespace Character
 	private:
 		string geteqcategory(int32_t) const;
 
-		map<bool, Texture> icons;
+		BoolPair<Texture> icons;
 		int32_t itemid;
+		int32_t price;
 		string name;
 		string desc;
 		string category;

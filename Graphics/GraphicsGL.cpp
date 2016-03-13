@@ -126,6 +126,27 @@ namespace Graphics
 
 		fontymax += fontborder.y();
 
+		leftovers = QuadTree<size_t, Leftover>([](const Leftover& first, const Leftover& second){
+			bool wcomp = first.width() >= second.width();
+			bool hcomp = first.height() >= second.height();
+			if (wcomp && hcomp)
+			{
+				return QuadTree<size_t, Leftover>::RIGHT;
+			}
+			else if (wcomp)
+			{
+				return QuadTree<size_t, Leftover>::DOWN;
+			}
+			else if (hcomp)
+			{
+				return QuadTree<size_t, Leftover>::UP;
+			}
+			else
+			{
+				return QuadTree<size_t, Leftover>::LEFT;
+			}
+		});
+
 		return true;
 	}
 
@@ -210,15 +231,18 @@ namespace Graphics
 		glVertexAttribPointer(attribute_coord, 4, GL_SHORT, GL_FALSE, 24, 0);
 		glVertexAttribPointer(attribute_color, 4, GL_FLOAT, GL_FALSE, 24, (const void*)8);
 
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		glBindTexture(GL_TEXTURE_2D, atlas);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		clear();
+		clearinternal();
 	}
 
-	void GraphicsGL::clear()
+	void GraphicsGL::clearinternal()
 	{
 		border = Point<GLshort>(0, fontymax);
 		yrange = Range<GLshort>();
@@ -227,6 +251,16 @@ namespace Graphics
 		leftovers.clear();
 		rlid = 1;
 		wasted = 0;
+	}
+
+	void GraphicsGL::clear()
+	{
+		size_t used = ATLASW * border.y() + border.x() * yrange.second();
+		double usedpercent = static_cast<double>(used) / (ATLASW * ATLASH);
+		if (usedpercent > 80.0)
+		{
+			clearinternal();
+		}
 	}
 
 	bool GraphicsGL::available(size_t id)
@@ -248,56 +282,40 @@ namespace Graphics
 		if (w <= 0 || h <= 0)
 			return;
 
-		vector<size_t> expired;
-		size_t lid = 0;
-		for (auto& leftover : leftovers)
-		{
-			Leftover& lo = leftover.second;
-			if (w <= lo.width() && h <= lo.height())
-			{
-				lid = leftover.first;
-				break;
-			}
-			else
-			{
-				lo.trials -= 1;
-				if (lo.trials == 0)
-					expired.push_back(leftover.first);
-			}
-		}
-
-		for (auto& exid : expired)
-		{
-			leftovers.erase(exid);
-		}
+		auto value = Leftover(x, y, w, h);
+		size_t lid = leftovers.findnode(value, [](const Leftover& val, const Leftover& leaf){
+			return val.width() <= leaf.width() && val.height() <= leaf.height();
+		});
 
 		if (lid > 0)
 		{
-			Leftover leftover = leftovers[lid];
-			leftovers.erase(lid);
+			const Leftover& leftover = leftovers[lid];
 
 			x = leftover.l;
 			y = leftover.t;
 
+			GLshort wdelta = leftover.width() - w;
+			GLshort hdelta = leftover.height() - h;
+
+			leftovers.erase(lid);
+
 			wasted -= w * h;
 
-			GLshort wdelta = leftover.width() - w;
-			if (wdelta >= MINLOSIZE)
+			if (wdelta >= MINLOSIZE && h >= MINLOSIZE)
 			{
-				leftovers[rlid] = Leftover(x + w, y, wdelta, h);
+				leftovers.add(rlid, Leftover(x + w, y, wdelta, h));
 				rlid++;
 			}
 
-			GLshort hdelta = leftover.height() - h;
-			if (hdelta >= MINLOSIZE)
+			if (hdelta >= MINLOSIZE && w >= MINLOSIZE)
 			{
-				leftovers[rlid] = Leftover(x, y + h, w, hdelta);
+				leftovers.add(rlid, Leftover(x, y + h, w, hdelta));
 				rlid++;
 			}
 
 			if (wdelta >= MINLOSIZE && hdelta >= MINLOSIZE)
 			{
-				leftovers[rlid] = Leftover(x + w, y + h, wdelta, hdelta);
+				leftovers.add(rlid, Leftover(x + w, y + h, wdelta, hdelta));
 				rlid++;
 			}
 		}
@@ -309,7 +327,7 @@ namespace Graphics
 				border.shifty(yrange.second());
 				if (border.y() + h > ATLASH)
 				{
-					clear();
+					clearinternal();
 				}
 				else
 				{
@@ -325,7 +343,7 @@ namespace Graphics
 			{
 				if (x >= MINLOSIZE && h - yrange.second() >= MINLOSIZE)
 				{
-					leftovers[rlid] = Leftover(0, yrange.first(), x, h - yrange.second());
+					leftovers.add(rlid, Leftover(0, yrange.first(), x, h - yrange.second()));
 					rlid++;
 				}
 
@@ -338,7 +356,7 @@ namespace Graphics
 			{
 				if (w >= MINLOSIZE && yrange.first() - y - h >= MINLOSIZE)
 				{
-					leftovers[rlid] = Leftover(x, y + h, w, yrange.first() - y - h);
+					leftovers.add(rlid, Leftover(x, y + h, w, yrange.first() - y - h));
 					rlid++;
 				}
 
@@ -349,7 +367,7 @@ namespace Graphics
 		glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_BGRA, GL_UNSIGNED_BYTE, bmp.data());
 		offsets[id] = Offset(x, y, w, h);
 
-		/*size_t used = ATLASW * border.y() + border.x() * yrange.y();
+		/*size_t used = ATLASW * border.y() + border.x() * yrange.second();
 		double usedpercent = static_cast<double>(used) / (ATLASW * ATLASH);
 		double wastedpercent = static_cast<double>(wasted) / used;
 		Console::get().print("Used: " + std::to_string(usedpercent) + ", wasted: " + std::to_string(wastedpercent));*/
@@ -467,10 +485,10 @@ namespace Graphics
 		case Text::NAMETAG:
 			for (auto& line : layout.lines)
 			{
-				GLshort left = x + line.position.x() - 1;
-				GLshort right = left + layout.dimensions.x() + 2;
-				GLshort top = y + line.position.y() - font.linespace() + 6;
-				GLshort bottom = top + layout.dimensions.y() - 3;
+				GLshort left = x + line.position.x() - 2;
+				GLshort right = left + layout.dimensions.x() + 3;
+				GLshort top = y + line.position.y() - font.linespace() + 5;
+				GLshort bottom = top + layout.dimensions.y() - 2;
 
 				quads.push_back(Quad(left, right, top, bottom, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f));
 				quads.push_back(Quad(left - 1, left, top + 1, bottom - 1, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f));
@@ -487,8 +505,8 @@ namespace Graphics
 			{ 0.0f, 0.0f, 1.0f }, // Blue
 			{ 0.75f, 0.25f, 0.0f }, // Red
 			{ 0.5f, 0.25f, 0.0f }, // Brown
-			{ 0.7f, 0.7f, 0.7f }, // Lightgrey
-			{ 0.5f, 0.5f, 0.5f }, // Darkgrey
+			{ 0.5f, 0.5f, 0.5f }, // Lightgrey
+			{ 0.25f, 0.25f, 0.25f }, // Darkgrey
 			{ 1.0f, 0.5f, 0.0f }, // Orange
 			{ 0.0f, 0.75f, 1.0f }, // Mediumblue
 			{ 0.5f, 0.0f, 0.5f } // Violet
@@ -533,6 +551,11 @@ namespace Graphics
 
 		Quad quad = Quad(x, x + w, y, y + h, nulloffset, r, g, b, a);
 		quads.push_back(quad);
+	}
+
+	void GraphicsGL::drawscreenfill(float r, float g, float b, float a)
+	{
+		drawrectangle(0, -Constants::VIEWYOFFSET, Constants::VIEWWIDTH, Constants::VIEWHEIGHT, r, g, b, a);
 	}
 
 	void GraphicsGL::lock()

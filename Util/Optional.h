@@ -18,6 +18,7 @@
 #pragma once
 #include <functional>
 #include <vector>
+#include <unordered_map>
 #include <map>
 
 using std::function;
@@ -70,31 +71,31 @@ public:
 			(ptr->*action)(args...);
 	}
 
-	template<typename T, typename R>
-	R mapordefault(R (T::*mapper)() const, R def) const
+	template<typename T, typename R, typename ...Args>
+	R mapordefault(R(T::*mapper)(Args...) const, R def, Args... args) const
 	{
 		if (ptr)
-			return (ptr->*mapper)();
+			return (ptr->*mapper)(args...);
 		else
 			return def;
 	}
 
 	template<typename T, typename R, typename ...Args>
-	R map(R (T::*mapper)(Args...) const, Args... args) const
+	R map(R(T::*mapper)(Args...) const, Args... args) const
 	{
-		if (ptr)
-			return (ptr->*mapper)(args...);
-		else
-			return R();
+		return mapordefault(mapper, R(), args...);
 	}
 
 	template<typename T, typename ...Args>
 	bool maporfalse(bool (T::*mapper)(Args...) const, Args... args) const
 	{
-		if (ptr)
-			return (ptr->*mapper)(args...);
-		else
-			return false;
+		return mapordefault<T, bool, Args...>(mapper, false, args...);
+	}
+
+	template<typename T, typename ...Args>
+	bool maportrue(bool (T::*mapper)(Args...) const, Args... args) const
+	{
+		return mapordefault<T, bool, Args...>(mapper, true, args...);
 	}
 
 	template<typename T, typename R, typename ...Args>
@@ -222,6 +223,20 @@ public:
 			return Optional<const T>();
 		}
 	}
+
+	template <typename K, typename T>
+	static Optional<const T> from(const std::unordered_map<K, T>& container, K key)
+	{
+		if (container.count(key))
+		{
+			return container.at(key);
+		}
+		else
+		{
+			return Optional<const T>();
+		}
+	}
+
 
 	template <typename T, typename V>
 	static Optional<T> comparevalues(const std::map<T, V>& container, function<bool(const V&, const V&)> predicate)

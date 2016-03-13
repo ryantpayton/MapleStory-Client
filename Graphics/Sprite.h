@@ -23,21 +23,20 @@ namespace Graphics
 {
 	using::nl::node;
 
+	// Combines an Animation with additional state.
 	class Sprite
 	{
 	public:
-		Sprite(node, Point<int16_t>);
-		Sprite(node);
+		Sprite(node src, DrawArgument stateargs);
+		Sprite(node src);
 		~Sprite();
 
 		void update();
-		void draw(const DrawArgument&, float) const;
-		Point<int16_t> getorigin() const;
-		Point<int16_t> getdimensions() const;
+		void draw(Point<int16_t> parentpos, float inter) const;
 
 	private:
 		Animation animation;
-		Point<int16_t> position;
+		DrawArgument stateargs;
 	};
 }
 

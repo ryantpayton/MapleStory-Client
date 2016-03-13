@@ -72,16 +72,18 @@ namespace Gameplay
 
 		// Construct a mob by combining data from game files with
 		// data sent by the server.
-		Mob(int32_t oid, int32_t mobid, bool control, int8_t stance, uint16_t fhid, 
+		Mob(int32_t oid, int32_t mobid, int8_t mode, int8_t stance, uint16_t fhid, 
 			bool newspawn, int8_t team, Point<int16_t> position);
 
+		// Draw the object.
+		void draw(Point<int16_t> viewpos, float inter) const override;
 		// Update movement and animations.
 		int8_t update(const Physics& physics) override;
-		// Draw the object.
-		void draw(const Camera& camera, float inter) const override;
+
+		void setcontrol(int8_t mode);
 
 		bool isinrange(const rectangle2d<int16_t>& range) const;
-		bool isactive() const override;
+		bool isalive() const;
 
 		vector<int32_t> damage(const Attack& attack);
 
@@ -93,12 +95,19 @@ namespace Gameplay
 		void sendhp(int8_t percentage, uint16_t playerlevel);
 
 	private:
-		struct DamageEffect
+		struct AttackEffect
 		{
 			Animation hiteffect;
 			Sound hitsound;
+			Attack::Direction direction;
 			vector<pair<int32_t, bool>> numbers;
-			bool fromright;
+
+			AttackEffect(const Attack& attack)
+			{
+				hiteffect = attack.hiteffect;
+				hitsound = attack.hitsound;
+				direction = attack.direction;
+			}
 		};
 
 		static const size_t NUM_DIRECTIONS = 3;
@@ -119,7 +128,7 @@ namespace Gameplay
 			return directions[index];
 		}
 
-		void applydamage(const DamageEffect& damageeffect);
+		void applyattack(const AttackEffect& damageeffect);
 		void applyknockback(bool fromright);
 		void sendmovement();
 		void setstance(Stance newstance);
@@ -150,7 +159,7 @@ namespace Gameplay
 		bool canjump;
 		bool canfly;
 
-		list<pair<Bullet, DamageEffect>> bulletlist;
+		list<pair<Bullet, AttackEffect>> bulletlist;
 
 		EffectLayer effects;
 		Text namelabel;
@@ -164,6 +173,7 @@ namespace Gameplay
 		int8_t effect;
 		int8_t team;
 		bool control;
+		bool aggro;
 		Stance stance;
 		bool flip;
 		FlyDirection flydirection;

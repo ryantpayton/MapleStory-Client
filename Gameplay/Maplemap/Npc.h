@@ -42,7 +42,7 @@ namespace Gameplay
 			bool control, Point<int16_t> position);
 
 		// Draws the current animation and name/function tags.
-		void draw(const Camera& camera, float inter) const override;
+		void draw(Point<int16_t> viewpos, float inter) const override;
 		// Updates the current animation and physics.
 		int8_t update(const Physics& physics) override;
 

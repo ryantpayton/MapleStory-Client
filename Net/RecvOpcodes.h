@@ -104,8 +104,9 @@ namespace Net
 		SPAWN_REACTOR = 279,
 		REMOVE_REACTOR = 280,
 
-		// Messaging 3
+		// NPC Interaction
 		NPC_DIALOGUE = 304,
+		OPEN_NPC_SHOP = 305,
 
 		KEYMAP = 335
 	};

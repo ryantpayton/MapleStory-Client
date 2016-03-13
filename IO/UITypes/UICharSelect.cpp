@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Journey.h"
-#include "Constants.h"
-#include "Configuration.h"
 #include "UICharSelect.h"
 #include "UISoftkey.h"
 #include "UICharcreation.h"
+#include "Constants.h"
+#include "Configuration.h"
+
 #include "Audio\AudioPlayer.h"
 #include "Net\Session.h"
 #include "Net\Packets\SelectCharPackets.h"
@@ -28,6 +28,7 @@
 #include "IO\UI.h"
 #include "IO\Components\MapleButton.h"
 #include "IO\Components\AreaButton.h"
+
 #include "nlnx\nx.hpp"
 
 namespace IO
@@ -109,19 +110,17 @@ namespace IO
 		for (char i = 0; i < displaycount; i++)
 		{
 			addchar(i);
-			nametags.push_back(
-				Nametag(charselect["nameTag"],
-				Text::A13M, Text::CENTER, Text::WHITE, 
-				login.getchar(i).getstats().name
-				));
+
+			auto nametag = Nametag(charselect["nameTag"], Text::A13M, Text::WHITE, login.getchar(i).getstats().name);
+			nametags.push_back(nametag);
 		}
 
 		if (haschars)
 		{
-			namelabel = Text(Text::A18M, Text::CENTER, Text::WHITE);
+			namelabel = OutlinedText(Text::A18M, Text::CENTER);
 			for (size_t i = 0; i < NUM_LABELS; i++)
 			{
-				infolabels[i] = Text(Text::A11M, Text::RIGHT, Text::WHITE);
+				infolabels[i] = OutlinedText(Text::A11M, Text::RIGHT);
 			}
 
 			updateinfo();
@@ -216,7 +215,9 @@ namespace IO
 		{
 			charlooks[selected].setstance(Stance::WALK1);
 			nametags[selected].setselected(true);
-			namelabel.settext(Session::get().getlogin().getchar(selected).getstats().name);
+
+			string name = Session::get().getlogin().getchar(selected).getstats().name;
+			namelabel.settext(name);
 			for (size_t i = 0; i < NUM_LABELS; i++)
 			{
 				infolabels[i].settext(getstringfor(i));

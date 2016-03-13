@@ -28,15 +28,40 @@ namespace Character
 		twohanded = (prefix == STAFF) || (prefix >= SWORD_2H && prefix <= POLEARM) || (prefix == CROSSBOW);
 
 		using nl::node;
-		node infonode = nl::nx::character["Weapon"]["0" + std::to_string(equipid) + ".img"]["info"];
+		node src = nl::nx::character["Weapon"]["0" + std::to_string(equipid) + ".img"]["info"];
 
-		afterimage = infonode["afterImage"];
-		attackspeed = static_cast<uint8_t>(infonode["attackSpeed"]);
-		attack = static_cast<uint8_t>(infonode["attack"]);
+		int32_t standno = src["stand"];
+		switch (standno)
+		{
+		case 1:
+			stand = Stance::STAND1;
+			break;
+		case 2:
+			stand = Stance::STAND2;
+			break;
+		default:
+			stand = twohanded ? Stance::STAND2 : Stance::STAND1;
+		}
+		int32_t walkno = src["walk"];
+		switch (walkno)
+		{
+		case 1:
+			walk = Stance::WALK1;
+			break;
+		case 2:
+			walk = Stance::WALK2;
+			break;
+		default:
+			walk = twohanded ? Stance::WALK2 : Stance::WALK1;
+		}
 
-		node soundnode = nl::nx::sound["Weapon.img"][infonode["sfx"]];
-		firstattack = Sound(soundnode["Attack"]);
-		secondattack = Sound(soundnode["Attack2"]);
+		afterimage = src["afterImage"];
+		attackspeed = static_cast<uint8_t>(src["attackSpeed"]);
+		attack = static_cast<uint8_t>(src["attack"]);
+
+		node soundsrc = nl::nx::sound["Weapon.img"][src["sfx"]];
+		firstattack = soundsrc["Attack"];
+		secondattack = soundsrc["Attack2"];
 	}
 
 	Weapon::Weapon()
@@ -47,6 +72,16 @@ namespace Character
 	Weapon::Type Weapon::gettype() const
 	{
 		return type;
+	}
+
+	Stance::Value Weapon::getstand() const
+	{
+		return stand;
+	}
+
+	Stance::Value Weapon::getwalk() const
+	{
+		return walk;
 	}
 
 	bool Weapon::istwohanded() const

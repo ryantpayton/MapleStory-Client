@@ -18,14 +18,13 @@
 #include "UIItemInventory.h"
 #include "Configuration.h"
 
+#include "Gameplay\Stage.h"
 #include "IO\UI.h"
 #include "IO\Components\MapleButton.h"
 #include "IO\Components\TwoSpriteButton.h"
-
 #include "Net\Session.h"
 #include "Net\Packets\InventoryPackets.h"
-
-#include "Gameplay\Stage.h"
+#include "Util\Misc.h"
 
 #include "nlnx\nx.hpp"
 
@@ -89,9 +88,9 @@ namespace IO
 		buttons[BT_SORT]->setactive(false);
 		buttons[buttonbytab(tab)]->setstate(Button::PRESSED);
 
-		mesolabel = Text(Text::A11M, Text::RIGHT, Text::DARKGREY);
+		mesolabel = Text(Text::A11M, Text::RIGHT, Text::LIGHTGREY);
 		slider = unique_ptr<Slider>(
-			new Slider(11, Range<int16_t>(50, 248), 152, inventory.getslots(tab) / 4 - 5, 
+			new Slider(11, Range<int16_t>(50, 248), 152, 6, 1 + inventory.getslots(tab) / 4, 
 			[&](bool upwards){
 			int16_t shift = upwards ? -4 : 4;
 			bool above = slotrange.first + shift > 0;
@@ -156,7 +155,9 @@ namespace IO
 		newitemtab.update(4);
 		newitemslot.update(6);
 
-		mesolabel.settext(getmesostr());
+		int64_t meso = Stage::get().getplayer().getinvent().getmeso();
+		string mesostr = Format::splitnumber(std::to_string(meso));
+		mesolabel.settext(mesostr);
 	}
 
 	void UIItemInventory::updateslot(int16_t slot)
@@ -173,7 +174,7 @@ namespace IO
 				int32_t itemid = item.map(&Item::getid);
 				int16_t count = item.map(&Item::getcount);
 				if (tab == Inventory::EQUIP)
-					count = 0;
+					count = -1;
 
 				Equipslot::Value eqslot = inventory.findequipslot(itemid);
 				icons[slot] = unique_ptr<Icon>(new Icon(new ItemIcon(tab, eqslot, slot), *texture, count));
@@ -231,7 +232,7 @@ namespace IO
 			slotrange.first = 1;
 			slotrange.second = 24;
 
-			slider->setrows(inventory.getslots(tab) / 4 - 5);
+			slider->setrows(6, 1 + inventory.getslots(tab) / 4);
 
 			loadicons();
 
@@ -334,33 +335,39 @@ namespace IO
 		{
 			switch (mode)
 			{
-			case 0:
-			case 3:
+			case Inventory::ADD:
 				updateslot(slot);
+				newtab = type;
+				newslot = slot;
 				break;
-			case 1:
+			case Inventory::CHANGECOUNT:
+			case Inventory::ADDCOUNT:
 				geticon(slot)
 					.ifpresent(&Icon::setcount, arg);
 				break;
-			case 2:
+			case Inventory::SWAP:
 				if (arg != slot)
 				{
 					updateslot(slot);
 					updateslot(arg);
 				}
 				break;
+			case Inventory::REMOVE:
+				updateslot(slot);
+				break;
 			}
 		}
 
 		switch (mode)
 		{
-		case 0:
-		case 1:
+		case Inventory::ADD:
+		case Inventory::ADDCOUNT:
 			newtab = type;
 			newslot = slot;
 			break;
-		case 2:
-		case 3:
+		case Inventory::CHANGECOUNT:
+		case Inventory::SWAP:
+		case Inventory::REMOVE:
 			if (newslot == slot && newtab == type)
 			{
 				newslot = 0;
@@ -408,18 +415,6 @@ namespace IO
 	void UIItemInventory::cleartooltip()
 	{
 		UI::get().withstate(&UIState::cleartooltip, ITEMINVENTORY);
-	}
-
-	string UIItemInventory::getmesostr() const
-	{
-		string meso = std::to_string(inventory.getmeso());
-		size_t pos = meso.size();
-		while (pos > 3)
-		{
-			meso.insert(pos - 3, 1, ',');
-			pos -= 3;
-		}
-		return meso;
 	}
 
 	bool UIItemInventory::isvisible(int16_t slot) const

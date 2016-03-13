@@ -56,12 +56,9 @@ namespace IO
 
 		enum LineType
 		{
-			NORMAL,
+			UNK0,
+			WHITE,
 			RED,
-			UNK1,
-			UNK2,
-			UNK3,
-			UNK4,
 			BLUE
 		};
 

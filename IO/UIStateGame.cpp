@@ -22,6 +22,7 @@
 #include "UITypes\UIStatusbar.h"
 #include "UITypes\UIBuffList.h"
 #include "UITypes\UINpcTalk.h"
+#include "UITypes\UIShop.h"
 #include "UITypes\UIStatsinfo.h"
 #include "UITypes\UIItemInventory.h"
 #include "UITypes\UIEquipInventory.h"
@@ -41,6 +42,7 @@ namespace IO
 		add(ElementStatusbar());
 		add(ElementBuffList());
 		add(ElementNpcTalk());
+		add(ElementShop());
 	}
 
 	void UIStateGame::draw(float inter, Point<int16_t> cursor) const

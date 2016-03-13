@@ -68,7 +68,45 @@ namespace IO
 		uint8_t page;
 		vector<Nametag> nametags;
 		Charset levelset;
-		Text namelabel;
+
+		struct OutlinedText
+		{
+			Text inner;
+			Text l;
+			Text r;
+			Text t;
+			Text b;
+
+			OutlinedText(Text::Font font, Text::Alignment alignment)
+			{
+				inner = Text(font, alignment, Text::WHITE);
+				l = Text(font, alignment, Text::BLACK);
+				r = Text(font, alignment, Text::BLACK);
+				t = Text(font, alignment, Text::BLACK);
+				b = Text(font, alignment, Text::BLACK);
+			}
+
+			OutlinedText() {}
+
+			void draw(Point<int16_t> position) const
+			{
+				l.draw(position + Point<int16_t>(-1, 0));
+				r.draw(position + Point<int16_t>(1, 0));
+				t.draw(position + Point<int16_t>(0, -1));
+				b.draw(position + Point<int16_t>(0, 1));
+				inner.draw(position);
+			}
+
+			void settext(string text)
+			{
+				inner.settext(text);
+				l.settext(text);
+				r.settext(text);
+				t.settext(text);
+				b.settext(text);
+			}
+		};
+		OutlinedText namelabel;
 
 		static const size_t NUM_LABELS = 7;
 		enum InfoLabel
@@ -76,7 +114,7 @@ namespace IO
 			JOB, WORLDRANK, JOBRANK,
 			STR, DEX, INT, LUK
 		};
-		Text infolabels[NUM_LABELS];
+		OutlinedText infolabels[NUM_LABELS];
 	};
 
 	// Factory for the character selection screen.

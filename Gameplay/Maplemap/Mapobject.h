@@ -17,7 +17,6 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Gameplay\Physics\Physics.h"
-#include "Gameplay\Camera.h"
 
 namespace Gameplay
 {
@@ -27,29 +26,35 @@ namespace Gameplay
 	public:
 		virtual ~MapObject(){}
 
-		// Draws the object.
-		virtual void draw(const Camera& camera, float inter) const = 0;
+		// Draws the object at the given position and with the specified interpolation.
+		virtual void draw(Point<int16_t> viewpos, float inter) const = 0;
 
 		// Updates the object and returns the updated layer.
 		virtual int8_t update(const Physics& physics);
-		virtual void setactive(bool active);
+		// Reactivates the object.
+		virtual void makeactive();
+		// Deactivates the object.
+		virtual void deactivate();
+		// Checks wether this object is active.
 		virtual bool isactive() const;
+		// Obtains the layer used to determine the drawing order on the map.
+		virtual int8_t getlayer() const;
 
 		// Changes the objects position.
 		void setposition(int16_t x, int16_t y);
 		// Changes the objects position.
 		void setposition(Point<int16_t> position);
 
-		// Obtains the layer used to determine the drawing order on the map.
-		virtual int8_t getlayer() const;
 		// Returns the object id unique to every object on one map.
 		int32_t getoid() const;
 		// Returns the current position.
 		Point<int16_t> getposition() const;
-		Point<double> getrealposition() const;
+		// Return a reference to this object's physics.
 		PhysicsObject& getphobj();
 
 	protected:
+		MapObject(int32_t oid);
+
 		PhysicsObject phobj;
 		int32_t oid;
 		bool active;

@@ -20,19 +20,20 @@
 
 #include "IO\UI.h"
 #include "IO\Messages.h"
+#include "IO\UITypes\UIShop.h"
 #include "IO\UITypes\UIEquipInventory.h"
 #include "IO\UITypes\UIItemInventory.h"
-#include "Character\Char.h"
 #include "Character\Inventory\Inventory.h"
 #include "Gameplay\Stage.h"
 
 namespace Net
 {
-	using Character::Char;
 	using Character::Inventory; 
+	using Character::Item;
 	using Gameplay::Stage;
 	using IO::UI;
 	using IO::UIElement;
+	using IO::UIShop;
 	using IO::UIEquipInventory;
 	using IO::UIItemInventory;
 	using IO::Messages;
@@ -77,6 +78,10 @@ namespace Net
 				ItemParser::parseitem(recv, mod.type, mod.pos, inventory);
 				break;
 			case 1:
+				mod.arg = recv.readshort();
+				if (inventory.changecount(mod.type, mod.pos, mod.arg))
+					mod.mode = 4;
+				break;
 			case 2:
 				mod.arg = recv.readshort();
 				break;
@@ -94,10 +99,12 @@ namespace Net
 
 		for (Mod& mod : mods)
 		{
-			if (mod.mode > 0 && mod.mode < 3)
+			if (mod.mode == 2)
 			{
 				inventory.modify(mod.type, mod.pos, mod.mode, mod.arg, move);
 			}
+
+			UI::get().withelement(UIElement::SHOP, &UIShop::modify, mod.type);
 
 			auto eqinvent = UI::get().getelement<UIEquipInventory>(UIElement::EQUIPINVENTORY);
 			auto itinvent = UI::get().getelement<UIItemInventory>(UIElement::ITEMINVENTORY);

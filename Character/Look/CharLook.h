@@ -39,6 +39,7 @@ namespace Character
 
 		void reset();
 		void draw(Point<int16_t> pos, float inter) const;
+		void drawstanding(Point<int16_t> pos, bool flip) const;
 		bool update(uint16_t timestep);
 
 		void sethair(int32_t hairid);
@@ -53,6 +54,8 @@ namespace Character
 		void setaction(string action);
 		void setflip(bool mirrored);
 
+		bool istwohanded(Stance::Value stance) const;
+
 		const Body* getbodytype() const;
 		const Hair* gethairstyle() const;
 		const Face* getfacetype() const;
@@ -60,6 +63,8 @@ namespace Character
 
 	private:
 		void updatetwohanded();
+		void draw(Point<int16_t> position, bool flip, Stance::Value interstance, 
+			Expression::Value interexp, uint8_t interframe, uint8_t interfcframe) const;
 		Stance::Value getattackstance(uint8_t attack, bool degenerate) const;
 
 		Stance::Value stance;

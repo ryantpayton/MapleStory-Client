@@ -24,10 +24,10 @@ namespace IO
 	class AreaButton : public Button
 	{
 	public:
-		AreaButton(Point<int16_t>, Point<int16_t>);
+		AreaButton(Point<int16_t> position, Point<int16_t> dimensions);
 
 		void draw(Point<int16_t>) const {}
-		rectangle2d<int16_t> bounds(Point<int16_t>) const;
+		rectangle2d<int16_t> bounds(Point<int16_t> parentpos) const;
 
 	private:
 		Point<int16_t> dimension;

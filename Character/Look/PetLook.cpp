@@ -64,10 +64,10 @@ namespace Character
 		stance = Stance::STAND;
 	}
 
-	void PetLook::draw(const Camera& camera, float inter) const
+	void PetLook::draw(Point<int16_t> viewpos, float inter) const
 	{
 		using Graphics::DrawArgument;
-		Point<int16_t> absp = phobj.getposition(inter) + camera.getposition(inter);
+		Point<int16_t> absp = phobj.getposition(inter) + viewpos;
 
 		string stname = stancenames[stance / 2];
 		if (animations.count(stname))
