@@ -67,8 +67,8 @@ namespace Gameplay
 
 	rectangle2d<int16_t> Portal::bounds() const
 	{
-		auto lt = position + Point<int16_t>(-25, -50);
-		auto rb = position + Point<int16_t>(25, 50);
+		auto lt = position + Point<int16_t>(-25, -100);
+		auto rb = position + Point<int16_t>(25, 25);
 		return rectangle2d<int16_t>(lt, rb);
 	}
 

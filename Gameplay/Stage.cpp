@@ -16,11 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Stage.h"
+
+#include "Audio\AudioPlayer.h"
 #include "Net\InPacket.h"
 #include "Net\Packets\GameplayPackets.h"
 #include "Net\Packets\AttackAndSkillPackets.h"
 #include "Net\Session.h"
-#include "Audio\AudioPlayer.h"
+
 #include "nlnx\nx.hpp"
 #include "nlnx\audio.hpp"
 
@@ -191,30 +193,41 @@ namespace Gameplay
 
 	void Stage::useskill(int32_t skillid)
 	{
-		using Character::Skill;
-		const Skill& skill = player.useskill(skillid);
-
-		if (skill.isoffensive())
+		if (!skillcache.count(skillid))
 		{
-			Attack attack = player.prepareskillattack(skillid);
-			mobs.sendattack(attack);
+			skillcache[skillid] = skillid;
 		}
-		else
-		{
-			uint8_t levelbyte = static_cast<uint8_t>(player.getskills().getlevel(skillid));
+		const Skill& skill = skillcache[skillid];
 
-			using Net::UseSkillPacket;
-			Session::get().dispatch(UseSkillPacket(skillid, levelbyte));
+		bool canuse = player.canuseskill(skill);
+		if (canuse)
+		{
+			player.useskill(skill);
+
+			bool offensive = skill.isoffensive();
+			if (offensive)
+			{
+				Attack attack = player.prepareskillattack(skillid);
+				mobs.sendattack(attack);
+			}
+			else
+			{
+				int32_t level = player.getskills().getlevel(skillid);
+
+				using Net::UseSkillPacket;
+				Session::get().dispatch(UseSkillPacket(skillid, level));
+			}
 		}
 	}
 
 	void Stage::useattack()
 	{
-		if (!player.canattack())
-			return;
-
-		Attack attack = player.prepareregularattack();
-		mobs.sendattack(attack);
+		bool canattack = player.canattack();
+		if (canattack)
+		{
+			Attack attack = player.prepareregularattack();
+			mobs.sendattack(attack);
+		}
 	}
 
 	void Stage::checkportals()
@@ -227,7 +240,8 @@ namespace Gameplay
 		if (warpinfo.mapid == mapid)
 		{
 			Point<int16_t> spawnpoint = portals.getspawnpoint(warpinfo.portal);
-			player.respawn(spawnpoint, mapinfo.isswimmap());
+			Point<int16_t> startpos = physics.getgroundbelow(spawnpoint);
+			player.respawn(startpos, mapinfo.isswimmap());
 		}
 		else if (warpinfo.valid)
 		{
@@ -299,8 +313,7 @@ namespace Gameplay
 			playable->sendaction(Keyboard::actionbyid(action), down);
 			break;
 		case Keyboard::SKILL:
-			if (player.canuseskill(action))
-				useskill(action);
+			useskill(1121008);
 			break;
 		case Keyboard::ITEM:
 			player.useitem(action);

@@ -27,11 +27,22 @@ namespace Graphics
 	class EffectLayer
 	{
 	public:
-		void draw(Point<int16_t> position, float inter) const;
+		void draw(Point<int16_t> position, float alpha) const;
 		void update();
+		void add(Animation effect, bool flip);
 		void add(Animation effect);
 
 	private:
-		list<Animation> effects;
+		struct Effect
+		{
+			Animation animation;
+			bool flip;
+
+			void draw(Point<int16_t> position, float alpha) const
+			{
+				animation.draw(DrawArgument(position, flip), alpha);
+			}
+		};
+		list<Effect> effects;
 	};
 }

@@ -29,8 +29,8 @@ namespace Gameplay
 	class Foothold
 	{
 	public:
-		Foothold(node src);
-		Foothold(InPacket& recv);
+		Foothold(node src, uint8_t layer);
+		Foothold(InPacket& recv, uint8_t layer);
 		Foothold();
 		~Foothold();
 
@@ -40,6 +40,8 @@ namespace Gameplay
 		uint16_t getprev() const { return prev; }
 		// Returns the platform right to this.
 		uint16_t getnext() const { return next; }
+		// Returns the platform's layer.
+		uint8_t getlayer() const { return layer; }
 		// Returns the horizontal component.
 		const Range<int16_t>& gethor() const { return horizontal; }
 		// Returns the vertical component.
@@ -77,6 +79,7 @@ namespace Gameplay
 		uint16_t id;
 		uint16_t prev;
 		uint16_t next;
+		uint8_t layer;
 		Range<int16_t> horizontal;
 		Range<int16_t> vertical;
 	};

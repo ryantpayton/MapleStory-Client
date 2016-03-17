@@ -29,12 +29,12 @@ namespace Gameplay
 		animation = backsrc[src["bS"] + ".img"][animated ? "ani" : "back"][src["no"]];
 		opacity = src["a"];
 		flipped = src["f"].get_bool();
-		moveobj.fx = src["x"];
-		moveobj.fy = src["y"];
 		cx = src["cx"];
 		cy = src["cy"];
 		rx = src["rx"];
 		ry = src["ry"];
+		moveobj.setx(src["x"]);
+		moveobj.sety(src["y"]);
 
 		Type type = typebyid(src["type"]);
 		settype(type);
@@ -46,12 +46,12 @@ namespace Gameplay
 		animation = backsrc[recv.readascii()];
 		opacity = recv.readshort();
 		flipped = recv.readbool();
-		moveobj.fx = recv.readshort();
-		moveobj.fy = recv.readshort();
 		cx = recv.readshort();
 		cy = recv.readshort();
 		rx = recv.readshort();
 		ry = recv.readshort();
+		moveobj.setx(recv.readshort());
+		moveobj.sety(recv.readshort());
 
 		Type type = typebyid(recv.readbyte());
 		settype(type);

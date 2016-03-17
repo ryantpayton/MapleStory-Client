@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Graphics\Texture.h"
+#include "Util\Interpolated.h"
 #include "Util\rectangle2d.h"
 #include <vector>
 #include <map>
@@ -38,6 +39,8 @@ namespace Graphics
 		void reset();
 		void draw(const DrawArgument& arguments, float inter) const;
 
+		uint16_t getdelay(int16_t frame) const;
+		uint16_t getdelayuntil(int16_t frame) const;
 		Point<int16_t> getorigin() const;
 		Point<int16_t> getdimensions() const;
 		Point<int16_t> gethead() const;
@@ -46,74 +49,29 @@ namespace Graphics
 	private:
 		struct Frame
 		{
+			Frame(node src);
+			Frame();
+
+			float opcstep(float opacity, uint16_t timestep) const;
+
 			Texture texture;
 			uint16_t delay;
 			pair<uint8_t, uint8_t> opacities;
 			rectangle2d<int16_t> bounds;
 			Point<int16_t> head;
-
-			Frame(node src)
-			{
-				texture = src;
-				bounds = src;
-				head = src["head"];
-				delay = src["delay"];
-				if (delay == 0)
-					delay = 100;
-
-				uint8_t a0;
-				uint8_t a1;
-				node::type a0type = src["a0"].data_type();
-				if (a0type == node::type::integer)
-				{
-					node::type a1type = src["a1"].data_type();
-					if (a1type == node::type::integer)
-					{
-						a0 = src["a0"];
-						a1 = src["a1"];
-					}
-					else
-					{
-						a0 = src["a0"];
-						a1 = 255 - a0;
-					}
-				}
-				else
-				{
-					a0 = 255;
-					a1 = 255;
-				}
-				opacities = { a0, a1 };
-			}
-
-			Frame()
-			{
-				delay = 0;
-				opacities = { 0, 0 };
-			}
-
-			float alphastep(float alpha, uint16_t timestep) const
-			{
-				return timestep * (opacities.second - alpha) / delay;
-			}
 		};
+		const Frame& getframe() const;
 
-		// Data
 		vector<Frame> frames;
 		bool animated;
 		bool zigzag;
 
-		// Values for the current state.
-		uint8_t frame;
-		int8_t framestep;
-		uint16_t elapsed;
-		float alphastep;
-		float alpha;
+		Linear<float> opacity;
+		Nominal<int16_t> frame;
 
-		// Values for interpolation.
-		uint8_t lastframe;
-		uint16_t lastelapsed;
-		float lastalpha;
+		uint16_t delay;
+		int16_t framestep;
+		float opcstep;
 	};
 }
 

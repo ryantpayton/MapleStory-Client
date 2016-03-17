@@ -16,7 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UIBuffList.h"
+
 #include "Data\DataFactory.h"
+#include "Util\Misc.h"
+
+#include "nlnx\nx.hpp"
 
 namespace IO
 {
@@ -24,24 +28,29 @@ namespace IO
 	{
 		buffid = buff;
 		duration = dur;
-		opacity = 1.0f;
+		opacity.set(1.0f);
+
+		if (buffid >= 0)
+		{
+			string strid = Format::extendid(buffid, 7);
+			node src = nl::nx::skill[strid.substr(0, 3) + ".img"]["skill"][strid];
+			icon = src["icon"];
+		}
+		else
+		{
+			using Data::DataFactory;
+			icon = DataFactory::get().getitemdata(-buffid).geticon(true);
+		}
 	}
 
 	BuffIcon::BuffIcon() {}
 
 	BuffIcon::~BuffIcon() {}
 
-	void BuffIcon::draw(Point<int16_t> position) const
+	void BuffIcon::draw(Point<int16_t> position, float alpha) const
 	{
-		using Character::Skill;
-		using Data::DataFactory;
-
-		bool skill = buffid >= 0;
-		const Texture& texture = skill ? DataFactory::get().getskill(buffid).geticon(Skill::NORMAL)
-			: DataFactory::get().getitemdata(-buffid).geticon(true);
-
 		using Graphics::DrawArgument;
-		texture.draw(DrawArgument(position, opacity));
+		icon.draw(DrawArgument(position, opacity.get(alpha)));
 	}
 
 	bool BuffIcon::update()
@@ -50,11 +59,12 @@ namespace IO
 		if (duration < 160)
 		{
 			opacity -= 0.05f;
-			if (opacity < 0.05f)
+			if (opacity.last() <= 0.05f)
 				return true;
 		}
 		return false;
 	}
+
 
 	UIBuffList::UIBuffList() 
 	{
@@ -62,12 +72,12 @@ namespace IO
 		active = true;
 	}
 
-	void UIBuffList::draw(float) const
+	void UIBuffList::draw(float alpha) const
 	{
 		Point<int16_t> icpos = position;
 		for (auto& icon : icons)
 		{
-			icon.second.draw(icpos);
+			icon.second.draw(icpos, alpha);
 			icpos.shiftx(-32);
 		}
 	}

@@ -96,7 +96,7 @@ namespace Character
 
 	void Char::showeffect(Animation toshow)
 	{
-		effects.add(toshow);
+		effects.add(toshow, flip);
 	}
 
 	void Char::showeffectbyid(Effect toshow)

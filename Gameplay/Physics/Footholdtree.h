@@ -54,7 +54,6 @@ namespace Gameplay
 		double getedge(uint16_t fhid, bool left) const;
 		const Foothold& getfh(uint16_t fhid) const;
 
-		unordered_map<uint16_t, int8_t> layersbyfh;
 		unordered_map<uint16_t, Foothold> footholds;
 		unordered_multimap<int16_t, uint16_t> footholdsbyx;
 

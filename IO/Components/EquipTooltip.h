@@ -25,6 +25,7 @@
 
 namespace IO
 {
+	using std::map;
 	using Character::Equip;
 	using Character::Maplestat;
 	using Character::Equipstat;

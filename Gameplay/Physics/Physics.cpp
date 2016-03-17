@@ -20,12 +20,13 @@
 
 namespace Gameplay
 {
-	const double GRAVFORCE = 0.2f;
-	const double SWIMGRAVFORCE = 0.03f;
-	const double FRICTION = 0.3f;
-	const double SLOPEFACTOR = 0.1f;
-	const double FLYFRICTION = 0.05f;
-	const double SWIMFRICTION = 0.08f;
+	const double GRAVFORCE = 0.2;
+	const double SWIMGRAVFORCE = 0.03;
+	const double FRICTION = 0.3;
+	const double SLOPEFACTOR = 0.1;
+	const double GROUNDSLIP = 3.0;
+	const double FLYFRICTION = 0.05;
+	const double SWIMFRICTION = 0.08;
 
 	Physics::Physics(node src) 
 	{
@@ -71,30 +72,38 @@ namespace Gameplay
 
 	void Physics::movenormal(PhysicsObject& phobj) const
 	{
-		phobj.vacc = phobj.vforce / phobj.mass;
-		phobj.vforce = 0.0f;
+		phobj.vacc = phobj.vforce;
+		phobj.vforce = 0.0;
 
-		phobj.hacc = 0.0f;
+		phobj.hacc = 0.0;
 		if (phobj.onground)
 		{
-			phobj.hacc += phobj.hforce / phobj.mass;
-			phobj.hforce = 0.0f;
+			phobj.hacc += phobj.hforce;
 
-			if (phobj.hacc == 0.0f && phobj.hspeed < 0.1f && phobj.hspeed > -0.1f)
+			if (phobj.hacc == 0.0 && phobj.hspeed < 0.1 && phobj.hspeed > -0.1)
 			{
-				phobj.hspeed = 0.0f;
+				phobj.hspeed = 0.0;
 			}
-			double slopef = phobj.fhslope;
-			if (slopef > 0.5f)
-				slopef = 0.5f;
-			else if (slopef < -0.5f)
-				slopef = -0.5f;
-			phobj.hacc -= (SLOPEFACTOR * (1.0f + (slopef * -phobj.hspeed)) + FRICTION) * phobj.hspeed;
+			else
+			{
+				double inertia = phobj.hspeed / GROUNDSLIP;
+				double slopef = phobj.fhslope;
+				if (slopef > 0.5)
+				{
+					slopef = 0.5;
+				}
+				else if (slopef < -0.5)
+				{
+					slopef = -0.5;
+				}
+				phobj.hacc -= (FRICTION + SLOPEFACTOR * (1.0 + slopef * -inertia)) * inertia;
+			}
 		}
 		else if (phobj.flagnotset(PhysicsObject::NOGRAVITY))
 		{
-			phobj.vacc += GRAVFORCE / phobj.mass;
+			phobj.vacc += GRAVFORCE;
 		}
+		phobj.hforce = 0.0;
 
 		phobj.hspeed += phobj.hacc;
 		phobj.vspeed += phobj.vacc;
@@ -102,10 +111,10 @@ namespace Gameplay
 
 	void Physics::moveflying(PhysicsObject& phobj) const
 	{
-		phobj.hacc = phobj.hforce / phobj.mass;
-		phobj.vacc = phobj.vforce / phobj.mass;
-		phobj.hforce = 0.0f;
-		phobj.vforce = 0.0f;
+		phobj.hacc = phobj.hforce;
+		phobj.vacc = phobj.vforce;
+		phobj.hforce = 0.0;
+		phobj.vforce = 0.0;
 
 		phobj.hacc -= FLYFRICTION * phobj.hspeed;
 		phobj.vacc -= FLYFRICTION * phobj.vspeed;
@@ -113,53 +122,39 @@ namespace Gameplay
 		phobj.hspeed += phobj.hacc;
 		phobj.vspeed += phobj.vacc;
 
-		if (phobj.hacc == 0.0f && phobj.hspeed < 0.1f && phobj.hspeed > -0.1f)
+		if (phobj.hacc == 0.0 && phobj.hspeed < 0.1 && phobj.hspeed > -0.1)
 		{
-			phobj.hspeed = 0.0f;
+			phobj.hspeed = 0.0;
 		}
-		if (phobj.vacc == 0.0f && phobj.vspeed < 0.1f && phobj.vspeed > -0.1f)
+		if (phobj.vacc == 0.0 && phobj.vspeed < 0.1 && phobj.vspeed > -0.1)
 		{
-			phobj.vspeed = 0.0f;
+			phobj.vspeed = 0.0;
 		}
 	}
 
 	void Physics::moveswimming(PhysicsObject& phobj) const
 	{
-		phobj.hacc = phobj.hforce / phobj.mass;
-		phobj.vacc = phobj.vforce / phobj.mass;
-		phobj.hforce = 0.0f;
-		phobj.vforce = 0.0f;
+		phobj.hacc = phobj.hforce;
+		phobj.vacc = phobj.vforce;
+		phobj.hforce = 0.0;
+		phobj.vforce = 0.0;
 
-		if (phobj.onground)
+		phobj.hacc -= SWIMFRICTION * phobj.hspeed;
+		phobj.vacc -= SWIMFRICTION * phobj.vspeed;
+
+		if (phobj.flagnotset(PhysicsObject::NOGRAVITY))
 		{
-			phobj.hacc += phobj.hforce / phobj.mass;
-			phobj.hforce = 0.0f;
-
-			if (phobj.hacc == 0.0f && phobj.hspeed < 0.1f && phobj.hspeed > -0.1f)
-			{
-				phobj.hspeed = 0.0f;
-			}
-			else
-			{
-				phobj.hacc -= FRICTION * phobj.hspeed;
-			}
-		}
-		else if (phobj.flagnotset(PhysicsObject::NOGRAVITY))
-		{
-			phobj.hacc -= SWIMFRICTION * phobj.hspeed;
-			phobj.vacc -= SWIMFRICTION * phobj.vspeed;
-
-			phobj.vacc += SWIMGRAVFORCE / phobj.mass;
+			phobj.vacc += SWIMGRAVFORCE;
 		}
 
 		phobj.hspeed += phobj.hacc;
 		phobj.vspeed += phobj.vacc;
 
-		if (phobj.hacc == 0.0f && phobj.hspeed < 0.1f && phobj.hspeed > -0.1f)
+		if (phobj.hacc == 0.0 && phobj.hspeed < 0.1 && phobj.hspeed > -0.1)
 		{
-			phobj.hspeed = 0.0f;
+			phobj.hspeed = 0.0;
 		}
-		if (phobj.vacc == 0.0f && phobj.vspeed < 0.1f && phobj.vspeed > -0.1f)
+		if (phobj.vacc == 0.0 && phobj.vspeed < 0.1 && phobj.vspeed > -0.1)
 		{
 			phobj.vspeed = 0.0f;
 		}

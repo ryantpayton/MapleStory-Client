@@ -220,7 +220,7 @@ namespace Graphics
 
 		static const GLshort ATLASW = 10000;
 		static const GLshort ATLASH = 10000;
-		static const GLshort MINLOSIZE = 16;
+		static const GLshort MINLOSIZE = 32;
 
 		bool locked;
 

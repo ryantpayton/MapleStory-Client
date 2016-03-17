@@ -43,4 +43,16 @@ namespace Net
 	{
 		void handle(InPacket& recv) const override;
 	};
+
+	// Handler for a packet which contains a server message.
+	class ServerMessageHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+	// Handler for a packet which contains another type of server message.
+	class WeekEventMessageHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
 }

@@ -33,8 +33,8 @@ namespace Gameplay
 
 	void MapObject::setposition(int16_t x, int16_t y)
 	{
-		phobj.fx = x;
-		phobj.fy = y;
+		phobj.setx(x);
+		phobj.sety(y);
 	}
 
 	void MapObject::setposition(Point<int16_t> position)
@@ -71,8 +71,8 @@ namespace Gameplay
 
 	Point<int16_t> MapObject::getposition() const
 	{
-		int16_t x = static_cast<int16_t>(phobj.fx);
-		int16_t y = static_cast<int16_t>(phobj.fy);
+		int16_t x = phobj.getx();
+		int16_t y = phobj.gety();
 		return Point<int16_t>(x, y);
 	}
 

@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Chatbar.h"
 #include "MapleButton.h"
+#include "Graphics\GraphicsGL.h"
 #include "Net\Session.h"
 #include "Net\Packets\MessagingPackets.h"
 #include "IO\UI.h"
@@ -24,6 +25,7 @@
 
 namespace IO
 {
+	using Graphics::GraphicsGL;
 	using Net::Session;
 
 	Chatbar::Chatbar(Point<int16_t> pos)
@@ -118,19 +120,16 @@ namespace IO
 			Point<int16_t> tabpos = position - Point<int16_t>(576, chatheight + 65);
 			tapbartop.draw(tabpos);
 			tabpos.shifty(2);
+			GraphicsGL::get().drawrectangle(0, tabpos.y(), 502, 1 + chatrows * tapbarheight, 0.0f, 0.0f, 0.0f, 0.5f);
 			for (int16_t i = 0; i < chatrows; i++)
 			{
-				Point<int16_t> startpos = tabpos + Point<int16_t>(70, -1);
-				for (int16_t j = 0; j < tapbarheight; j++)
-				{
-					tapbar.draw(DrawArgument(tabpos, 0.5f));
-					tabpos.shifty(1);
-				}
+				Point<int16_t> startpos = tabpos + Point<int16_t>(66, -3);
 				int16_t rowid = rowpos + i - chatrows + 1;
 				if (rowtexts.count(rowid))
 				{
 					rowtexts.at(rowid).draw(startpos);
 				}
+				tabpos.shifty(tapbarheight);
 			}
 			slider->draw(position + Point<int16_t>(0, - chatheight - 60));
 
@@ -216,16 +215,19 @@ namespace IO
 		switch (type)
 		{
 		case RED:
-			color = Text::RED;
+			color = Text::DARKRED;
 			break;
 		case BLUE:
 			color = Text::MEDIUMBLUE;
+			break;
+		case YELLOW:
+			color = Text::YELLOW;
 			break;
 		default:
 			color = Text::WHITE;
 			break;
 		}
-		rowtexts[rowmax] = Text(Text::A11M, Text::LEFT, color);
+		rowtexts[rowmax] = Text(Text::A12M, Text::LEFT, color);
 		rowtexts[rowmax].settext(line);
 	}
 }

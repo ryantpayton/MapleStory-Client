@@ -30,7 +30,7 @@ namespace IO
 				{
 					c = '/';
 				}
-				chars[c] = Texture(sub);
+				chars[c] = sub;
 			}
 		}
 		alignment = alg;
@@ -49,9 +49,13 @@ namespace IO
 	int16_t Charset::getw(int8_t c) const
 	{
 		if (chars.count(c))
+		{
 			return chars.at(c).getdimensions().x();
+		}
 		else
+		{
 			return 0;
+		}
 	}
 
 	int16_t Charset::draw(string str, const DrawArgument& args) const
@@ -87,7 +91,7 @@ namespace IO
 		return shift;
 	}
 
-	int16_t Charset::draw(string str, int16_t space, const DrawArgument& args) const
+	int16_t Charset::draw(string str, int16_t hspace, const DrawArgument& args) const
 	{
 		size_t length = str.size();
 		int16_t shift = 0;
@@ -96,18 +100,18 @@ namespace IO
 		switch (alignment)
 		{
 		case CENTER:
-			shift -= (space * static_cast<int16_t>(length)) / 2;
+			shift -= (hspace * static_cast<int16_t>(length)) / 2;
 		case LEFT:
 			for (size_t i = 0; i < length; i++)
 			{
 				draw(str[i], DrawArgument(args.getpos() + Point<int16_t>(shift, 0), args.getalpha()));
-				shift += space;
+				shift += hspace;
 			}
 			break;
 		case RIGHT:
 			for (size_t i = length - 1; i >= 0 && i < length; i--)
 			{
-				shift += space;
+				shift += hspace;
 				draw(str[i], DrawArgument(args.getpos() - Point<int16_t>(shift, 0), args.getalpha()));
 			}
 			break;

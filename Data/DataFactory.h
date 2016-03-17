@@ -24,7 +24,6 @@
 #include "Character\Look\Face.h"
 #include "Character\Look\Clothing.h"
 #include "Character\Look\Weapon.h"
-#include "Character\Skill.h"
 
 namespace Data
 {
@@ -37,7 +36,6 @@ namespace Data
 	using Character::BulletData;
 	using Character::Clothing;
 	using Character::Weapon;
-	using Character::Skill;
 
 	class DataFactory : public Singleton<DataFactory>
 	{
@@ -53,7 +51,6 @@ namespace Data
 		const BulletData& getbulletdata(int32_t itemid);
 		const Clothing& getclothing(int32_t itemid);
 		const Weapon& getweapon(int32_t itemid);
-		const Skill& getskill(int32_t skillid);
 
 	private:
 		BodyDrawinfo drawinfo;
@@ -64,6 +61,5 @@ namespace Data
 		map<int32_t, BulletData> bullets;
 		map<int32_t, Clothing> clothing;
 		map<int32_t, Weapon> weapons;
-		map<int32_t, Skill> skills;
 	};
 }

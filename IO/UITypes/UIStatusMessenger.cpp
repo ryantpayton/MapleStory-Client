@@ -22,32 +22,33 @@ namespace IO
 {
 	UIStatusMessenger::UIStatusMessenger()
 	{
-		position = Point<int16_t>(790, 510);
+		position = Point<int16_t>(790, 500);
 	}
 
 	void UIStatusMessenger::draw(float inter) const
 	{
-		int16_t offset = static_cast<int16_t>(statusinfos.size()) * 16;
-		Point<int16_t> infopos = Point<int16_t>(position.x(), position.y() - offset);
+		auto infopos = Point<int16_t>(position.x(), position.y());
 		for (auto& info : statusinfos)
 		{
 			info.draw(infopos, inter);
-			infopos.shifty(16);
+			infopos.shifty(-16);
 		}
 	}
 
 	void UIStatusMessenger::update()
 	{
-		int32_t remove = std::accumulate(statusinfos.begin(), statusinfos.end(), 0, [](const int32_t& x, StatusInfo& info){
-			return info.update() ? (x + 1) : x;
-		});
-
-		statusinfos.erase(statusinfos.begin(), statusinfos.begin() + remove);
+		for (auto& info : statusinfos)
+		{
+			info.update();
+		}
 	}
 
 	void UIStatusMessenger::showstatus(Text::Color color, string message)
 	{
 		StatusInfo statusinfo = StatusInfo(message, color);
-		statusinfos.push_back(statusinfo);
+		statusinfos.push_front(statusinfo);
+
+		if (statusinfos.size() > MAX_MESSAGES)
+			statusinfos.pop_back();
 	}
 }

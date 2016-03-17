@@ -71,8 +71,6 @@ namespace Character
 		int8_t getlayer() const override;
 
 		// Display an animation as an effect ontop of the character.
-		void showeffect(Animation toshow);
-		// Display an animation as an effect ontop of the character.
 		void showeffectbyid(Effect toshow);
 		// Display a chat bubble with the specified line in it.
 		void speak(string line);
@@ -113,6 +111,9 @@ namespace Character
 	protected:
 		Char(int32_t oid, CharLook look, string name);
 
+		// Display an animation as an effect ontop of the character.
+		void showeffect(Animation toshow);
+		// Update the character's animation with the given speed.
 		bool update(const Physics& physics, float speed);
 
 		CharLook look;

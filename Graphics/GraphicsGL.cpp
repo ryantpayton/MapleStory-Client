@@ -299,23 +299,37 @@ namespace Graphics
 
 			leftovers.erase(lid);
 
+			if (wasted < w * h)
+			{
+				wasted = wasted;
+			}
 			wasted -= w * h;
-
-			if (wdelta >= MINLOSIZE && h >= MINLOSIZE)
-			{
-				leftovers.add(rlid, Leftover(x + w, y, wdelta, h));
-				rlid++;
-			}
-
-			if (hdelta >= MINLOSIZE && w >= MINLOSIZE)
-			{
-				leftovers.add(rlid, Leftover(x, y + h, w, hdelta));
-				rlid++;
-			}
 
 			if (wdelta >= MINLOSIZE && hdelta >= MINLOSIZE)
 			{
 				leftovers.add(rlid, Leftover(x + w, y + h, wdelta, hdelta));
+				rlid++;
+
+				if (w >= MINLOSIZE)
+				{
+					leftovers.add(rlid, Leftover(x, y + h, w, hdelta));
+					rlid++;
+				}
+
+				if (h >= MINLOSIZE)
+				{
+					leftovers.add(rlid, Leftover(x + w, y, wdelta, h));
+					rlid++;
+				}
+			}
+			else if (wdelta >= MINLOSIZE)
+			{
+				leftovers.add(rlid, Leftover(x + w, y, wdelta, h + hdelta));
+				rlid++;
+			}
+			else if (hdelta >= MINLOSIZE)
+			{
+				leftovers.add(rlid, Leftover(x, y + h, w + wdelta, hdelta));
 				rlid++;
 			}
 		}
@@ -347,7 +361,7 @@ namespace Graphics
 					rlid++;
 				}
 
-				wasted += yrange.first() * (h - yrange.second());
+				wasted += x * (h - yrange.second());
 
 				yrange.setfirst(y + h);
 				yrange.setsecond(h);
@@ -503,7 +517,8 @@ namespace Graphics
 			{ 1.0f, 1.0f, 1.0f }, // White
 			{ 1.0f, 1.0f, 0.0f }, // Yellow
 			{ 0.0f, 0.0f, 1.0f }, // Blue
-			{ 0.75f, 0.25f, 0.0f }, // Red
+			{ 1.0f, 0.0f, 0.0f }, // Red
+			{ 0.6f, 0.3f, 0.3f }, // DarkRed
 			{ 0.5f, 0.25f, 0.0f }, // Brown
 			{ 0.5f, 0.5f, 0.5f }, // Lightgrey
 			{ 0.25f, 0.25f, 0.25f }, // Darkgrey
@@ -570,6 +585,19 @@ namespace Graphics
 
 	void GraphicsGL::flush(float opacity)
 	{
+		/*static bool showatlas = false;
+		if (showatlas)
+		{
+			quads.clear();
+
+			for (auto& oit : offsets)
+			{
+				const Offset& off = oit.second;
+				Quad quad = Quad(off.l / 10, off.r / 10, off.t / 10, off.b / 10, off, 0.0f, 0.0f, 0.0f, 1.0f);
+				quads.push_back(quad);
+			}
+		}*/
+
 		bool coverscene = opacity != 1.0f;
 		if (coverscene)
 		{

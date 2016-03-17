@@ -33,27 +33,11 @@ namespace Gameplay
 	class Seat
 	{
 	public:
-		Seat(node src)
-		{
-			pos = src;
-		}
+		Seat(node source);
+		Seat(InPacket& recv);
 
-		Seat(InPacket& recv)
-		{
-			pos = recv.readpoint();
-		}
-
-		bool inrange(Point<int16_t> position) const
-		{
-			auto hor = Range<int16_t>::symmetric(position.x(), 10);
-			auto ver = Range<int16_t>::symmetric(position.y(), 10);
-			return hor.contains(pos.x()) && ver.contains(pos.y());
-		}
-
-		Point<int16_t> getpos() const
-		{
-			return pos;
-		}
+		bool inrange(Point<int16_t> position) const;
+		Point<int16_t> getpos() const;
 
 	private:
 		Point<int16_t> pos;
@@ -62,47 +46,13 @@ namespace Gameplay
 	class Ladder
 	{
 	public:
-		Ladder(node src)
-		{
-			x = src["x"];
-			y1 = src["y1"];
-			y2 = src["y2"];
-			ladder = src["l"].get_bool();
-		}
+		Ladder(node source);
+		Ladder(InPacket& recv);
 
-		Ladder(InPacket& recv)
-		{
-			x = recv.readshort();
-			y1 = recv.readshort();
-			y2 = recv.readshort();
-			ladder = recv.readbool();
-		}
-
-		bool isladder() const
-		{
-			return ladder;
-		}
-
-		bool inrange(Point<int16_t> position, bool upwards) const
-		{
-			auto hor = Range<int16_t>::symmetric(position.x(), 25);
-			auto ver = Range<int16_t>(y1, y2);
-			int16_t y = upwards ?
-				position.y() - 5 :
-				position.y() + 5;
-			return hor.contains(x) && ver.contains(y);
-		}
-
-		bool felloff(int16_t y, bool downwards) const
-		{
-			int16_t dy = downwards ? y + 5 : y - 5;
-			return dy > y2 || y + 5 < y1;
-		}
-
-		int16_t getx() const
-		{
-			return x;
-		}
+		bool isladder() const;
+		bool inrange(Point<int16_t> position, bool upwards) const;
+		bool felloff(int16_t y, bool downwards) const;
+		int16_t getx() const;
 
 	private:
 		int16_t x;

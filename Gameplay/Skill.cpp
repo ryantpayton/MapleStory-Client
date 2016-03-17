@@ -16,77 +16,95 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Skill.h"
+
+#include "Util\Misc.h"
+
 #include "nlnx\node.hpp"
 #include "nlnx\nx.hpp"
 
-namespace Character
+namespace Gameplay
 {
 	Skill::Skill(int32_t id)
 	{
-		string strid = std::to_string(id);
-		strid.insert(0, 7 - strid.length(), '0');
-		nl::node src = nl::nx::skill[strid.substr(0, 3) + ".img"]["skill"][strid];
+		string strid = Format::extendid(id, 7);
+		node src = nl::nx::skill[strid.substr(0, 3) + ".img"]["skill"][strid];
 
-		icons[NORMAL] = Texture(src["icon"]);
-		icons[DISABLED] = Texture(src["iconDisabled"]);
-		icons[MOUSEOVER] = Texture(src["iconMouseOver"]);
+		skillid = id;
 
-		if (src["effect"]["0"].data_type() == nl::node::type::bitmap)
+		icons[NORMAL] = src["icon"];
+		icons[DISABLED] = src["iconDisabled"];
+		icons[MOUSEOVER] = src["iconMouseOver"];
+
+		oneuseeffect = src["effect"]["0"].data_type() == node::type::bitmap;
+		if (oneuseeffect)
 		{
-			effects.push_back(Animation(src["effect"]));
+			useeffects[false] = src["effect"];
 		}
 		else
 		{
-			for (auto effectn : src["effect"])
-			{
-				effects.push_back(Animation(effectn));
-			}
+			useeffects[false] = src["effect"]["0"];
+			useeffects[true] = src["effect"]["1"];
 		}
 
-		if (src["hit"]["0"].data_type() == nl::node::type::bitmap)
+		onehiteffect = src["hit"]["0"].data_type() == node::type::bitmap;
+		if (onehiteffect)
 		{
-			hit.push_back(Animation(src["hit"]));
+			hiteffects[false] = src["hit"];
 		}
 		else
 		{
-			for (auto effectn : src["hit"])
-			{
-				hit.push_back(Animation(effectn));
-			}
+			hiteffects[false] = src["hit"]["0"];
+			hiteffects[true] = src["hit"]["1"];
 		}
 
-		affected = Animation(src["affected"]);
+		actions[false] = src["action"]["0"];
+		actions[true] = src["action"]["1"];
+		oneaction = actions[false] == "";
+
+		affected = src["affected"];
 
 		preparestance = src["prepare"]["action"];
 		preparetime = src["prepare"]["time"];
-		offensive = src["level"]["1"]["damage"].data_type() == nl::node::type::integer;
 
-		for (auto actionn : src["action"])
+		offensive = false;
+		for (node leveln : src["level"])
 		{
-			actions.push_back(actionn);
-		}
-
-		for (auto leveln : src["level"])
-		{
-			int32_t lvlid = std::stoi(leveln.name());
-			SkillLevel level;
-			if (leveln["prop"].data_type() == nl::node::type::integer)
-				level.chance = static_cast<float>(leveln["prop"]) / 100.0f;
-			else
-				level.chance = 1.0f;
-			if (offensive)
+			Level level;
+			if (leveln["damage"].data_type() == node::type::integer)
 			{
-				level.damage = static_cast<float>(leveln["damage"]) / 100.0f;
-				level.attackcount = static_cast<uint8_t>(leveln["attackCount"]);
+				offensive = true;
+
+				level.damage = leveln["damage"];
+				level.damage /= 100;
+				level.attackcount = leveln["attackCount"];
 				if (level.attackcount == 0)
 					level.attackcount = 1;
-				level.mobcount = static_cast<uint8_t>(leveln["mobCount"]);
+				level.mobcount = leveln["mobCount"];
 				if (level.mobcount == 0)
 					level.mobcount = 1;
+
+				if (attackframes.count(skillid))
+				{
+					for (auto frameit : attackframes[skillid])
+					{
+						bool twohanded = frameit.first;
+						for (int16_t frame : frameit.second)
+						{
+							uint16_t delay = useeffects[twohanded].getdelayuntil(frame);
+							level.hitdelays[twohanded].push_back(delay);
+						}
+					}
+				}
 			}
+			level.chance = leveln["prop"];
+			if (level.chance <= 0.0f)
+				level.chance = 100;
+			level.chance /= 100;
 			level.hpcost = leveln["hpCon"];
 			level.mpcost = leveln["mpCon"];
 			level.range = rectangle2d<int16_t>(leveln["lt"], leveln["rb"]);
+
+			int32_t lvlid = std::stoi(leveln.name());
 			levels[lvlid] = level;
 		}
 	}
@@ -100,42 +118,32 @@ namespace Character
 		return offensive;
 	}
 
+	bool Skill::canbetwohanded() const
+	{
+		return !onehiteffect;
+	}
+
 	int32_t Skill::getid() const
 	{
-		return id;
+		return skillid;
 	}
 
 	string Skill::getaction(bool twohanded) const
 	{
-		if (actions.size() == 0)
-			return "";
-
-		if (actions.size() > 1 && twohanded)
-			return actions[1];
-		else
-			return actions[0];
+		bool second = twohanded && !oneaction;
+		return actions[second];
 	}
 
 	Animation Skill::gethitanimation(bool twohanded) const
 	{
-		if (effects.size() == 0)
-			return Animation();
-
-		if (effects.size() > 1 && twohanded)
-			return hit[1];
-		else
-			return hit[0];
+		bool second = twohanded && !onehiteffect;
+		return hiteffects[second];
 	}
 
 	Animation Skill::geteffect(bool twohanded) const
 	{
-		if (effects.size() == 0)
-			return Animation();
-
-		if (effects.size() > 1 && twohanded)
-			return effects[1];
-		else
-			return effects[0];
+		bool second = twohanded && !oneuseeffect;
+		return useeffects[second];
 	}
 
 	const Texture& Skill::geticon(IconType type) const
@@ -143,8 +151,16 @@ namespace Character
 		return icons.at(type);
 	}
 
-	const SkillLevel* Skill::getlevel(int32_t level) const
+	const Skill::Level* Skill::getlevel(int32_t level) const
 	{
 		return levels.count(level) ? &levels.at(level) : nullptr;
 	}
+
+
+	void Skill::init()
+	{
+		attackframes[BRANDISH][false] = { 3, 5 };
+		attackframes[BRANDISH][true] = { 2, 6 };
+	}
+	unordered_map<int32_t, BoolPair<vector<int16_t>>> Skill::attackframes;
 }

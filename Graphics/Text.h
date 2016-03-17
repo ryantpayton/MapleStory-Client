@@ -50,7 +50,7 @@ namespace Graphics
 			RIGHT
 		};
 
-		static const size_t NUM_COLORS = 11;
+		static const size_t NUM_COLORS = 12;
 		enum Color
 		{
 			BLACK,
@@ -58,6 +58,7 @@ namespace Graphics
 			YELLOW,
 			BLUE,
 			RED,
+			DARKRED,
 			BROWN,
 			LIGHTGREY,
 			DARKGREY,

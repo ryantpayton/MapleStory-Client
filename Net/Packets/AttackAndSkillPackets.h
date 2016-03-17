@@ -104,11 +104,11 @@ namespace Net
 	class UseSkillPacket : public OutPacket
 	{
 	public:
-		UseSkillPacket(int32_t skillid, uint8_t level) : OutPacket(USE_SKILL)
+		UseSkillPacket(int32_t skillid, int32_t level) : OutPacket(USE_SKILL)
 		{
 			writetime();
 			writeint(skillid);
-			writech(level);
+			writech(static_cast<uint8_t>(level));
 
 			// if monster magnet : some more bytes
 

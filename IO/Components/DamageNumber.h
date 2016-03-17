@@ -17,13 +17,19 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Charset.h"
+#include "Gameplay\Physics\PhysicsObject.h"
+#include "Util\Interpolated.h"
 #include "Util\Point.h"
 
 namespace IO
 {
+	using std::pair;
+	using Gameplay::MovingObject;
+
 	class DamageNumber
 	{
 	public:
+		static const size_t NUM_TYPES = 3;
 		enum Type
 		{
 			NORMAL,
@@ -31,24 +37,28 @@ namespace IO
 			TOPLAYER
 		};
 
-		static void init();
-
-		DamageNumber(Type type, int damage, float alpha, Point<int16_t> position);
+		DamageNumber(Type type, int32_t damage, Point<int16_t> position);
 		DamageNumber();
 		~DamageNumber();
 
-		void draw(Point<int16_t> viewpos) const;
+		void draw(Point<int16_t> parentpos, float alpha) const;
 		bool update();
 
+		static void init();
+
 	private:
+		int16_t getadvance(char c, bool first) const;
+
 		Type type;
 		bool miss;
+		bool multiple;
 		int8_t firstnum;
 		string restnum;
 		int16_t shift;
-		float fx;
-		float fy;
-		float alpha;
+		MovingObject moveobj;
+		Linear<float> opacity;
+
+		static pair<Charset, Charset> charsets[NUM_TYPES];
 	};
 }
 

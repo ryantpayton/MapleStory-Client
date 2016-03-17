@@ -16,105 +16,160 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "DamageNumber.h"
+#include "Constants.h"
+
 #include "nlnx\nx.hpp"
 #include "nlnx\node.hpp"
 
 namespace IO
 {
-	const std::pair<Charset, Charset>* getcharsets(DamageNumber::Type type)
-	{
-		static std::map<DamageNumber::Type, std::pair<Charset, Charset>> charsets;
-		if (!charsets.count(type))
-		{
-			switch (type)
-			{
-			case DamageNumber::NORMAL:
-				charsets[type].first = Charset(nl::nx::effect["BasicEff.img"]["NoRed1"], Charset::LEFT);
-				charsets[type].second = Charset(nl::nx::effect["BasicEff.img"]["NoRed0"], Charset::LEFT);
-				break;
-			case DamageNumber::CRITICAL:
-				charsets[type].first = Charset(nl::nx::effect["BasicEff.img"]["NoCri1"], Charset::LEFT);
-				charsets[type].second = Charset(nl::nx::effect["BasicEff.img"]["NoCri0"], Charset::LEFT);
-				break;
-			case DamageNumber::TOPLAYER:
-				charsets[type].first = Charset(nl::nx::effect["BasicEff.img"]["NoViolet1"], Charset::LEFT);
-				charsets[type].second = Charset(nl::nx::effect["BasicEff.img"]["NoViolet0"], Charset::LEFT);
-				break;
-			default:
-				return nullptr;
-			}
-		}
-		return &charsets[type];
-	}
-
-	DamageNumber::DamageNumber(Type t, int32_t damage, float a, Point<int16_t> pos)
+	DamageNumber::DamageNumber(Type t, int32_t damage, Point<int16_t> pos)
 	{
 		type = t;
-		miss = damage == 0;
 
-		string number = std::to_string(damage);
-		firstnum = number[0];
-		if (number.size() > 1)
-			restnum = number.substr(1);
-		else
-			restnum = "";
-
-		const std::pair<Charset, Charset>* charsets = getcharsets(type);
-		int16_t total = charsets->first.getw(firstnum);
-		for (size_t i = 0; i < restnum.length(); i++)
+		if (damage > 0)
 		{
-			total += charsets->second.getw(restnum[i]);
-		}
-		shift = total / 2;
+			miss = false;
 
-		fx = static_cast<float>(pos.x());
-		fy = static_cast<float>(pos.y());
-		alpha = a;
+			string number = std::to_string(damage);
+			firstnum = number[0];
+			if (number.size() > 1)
+			{
+				restnum = number.substr(1);
+				multiple = true;
+			}
+			else
+			{
+				restnum = "";
+				multiple = false;
+			}
+
+			int16_t total = getadvance(firstnum, true);
+			for (size_t i = 0; i < restnum.length(); i++)
+			{
+				char c = restnum[i];
+				int16_t advance;
+				if (i < restnum.length() - 1)
+				{
+					char n = restnum[i + 1];
+					advance = (getadvance(c, false) + getadvance(n, false)) / 2;
+				}
+				else
+				{
+					advance = getadvance(c, false);
+				}
+				total += advance;
+			}
+			shift = total / 2;
+		}
+		else
+		{
+			shift = charsets[type].second.getw('M') / 2;
+			miss = true;
+		}
+
+		opacity.set(1.5f);
+		moveobj.setx(pos.x());
+		moveobj.sety(pos.y());
+		moveobj.vspeed = -0.25;
 	}
 
 	DamageNumber::DamageNumber() {}
 
 	DamageNumber::~DamageNumber() {}
 
-	void DamageNumber::draw(Point<int16_t> viewpos) const
+	void DamageNumber::draw(Point<int16_t> parentpos, float alpha) const
 	{
-		if (alpha > 1.0f)
-			return;
-
-		const std::pair<Charset, Charset>* charsets = getcharsets(type);
-		Point<int16_t> drawpos =  Point<int16_t>(
-			static_cast<int16_t>(fx), 
-			static_cast<int16_t>(fy)
-			) + viewpos;
+		Point<int16_t> position = moveobj.getposition(alpha) + parentpos - Point<int16_t>(0, shift);
+		float interopc = opacity.get(alpha);
 		if (miss)
 		{
-			charsets->second.draw('M', DrawArgument(drawpos, alpha));
-		}
-		else if (restnum.size() > 0)
-		{
-			drawpos.shiftx(-shift);
-			charsets->first.draw(firstnum, DrawArgument(drawpos, alpha));
-			drawpos.shiftx(charsets->first.getw(firstnum) - 7);
-
-			for (size_t i = 0; i < restnum.length(); i++)
-			{
-				charsets->second.draw(
-					restnum[i], 
-					DrawArgument(drawpos + Point<int16_t>(0, (i % 2 == 1) ? -6 : 0), 
-					alpha));
-				drawpos.shiftx(charsets->second.getw(restnum[i]) - 7);
-			}
+			charsets[type].second.draw('M', DrawArgument(position, interopc));
 		}
 		else
 		{
-			charsets->first.draw(firstnum, DrawArgument(drawpos, alpha));
+			charsets[type].first.draw(firstnum, DrawArgument(position, interopc));
+
+			if (multiple)
+			{
+				position.shiftx(getadvance(firstnum, true));
+
+				for (size_t i = 0; i < restnum.length(); i++)
+				{
+					char c = restnum[i];
+					charsets[type].second.draw(c, DrawArgument(position, interopc));
+
+					int16_t advance;
+					if (i < restnum.length() - 1)
+					{
+						char n = restnum[i + 1];
+						advance = (getadvance(c, false) + getadvance(n, false)) / 2;
+					}
+					else
+					{
+						advance = getadvance(c, false);
+					}
+
+					position.shiftx(advance);
+				}
+			}
+		}
+	}
+
+	int16_t DamageNumber::getadvance(char c, bool first) const
+	{
+		static const size_t LENGTH = 10;
+		static const int16_t advances[LENGTH] =
+		{
+			24, 20, 22, 22, 24, 23, 24, 22, 24, 24
+		};
+
+		size_t index = c - 48;
+		if (index < LENGTH)
+		{
+			int16_t advance = advances[index];
+			switch (type)
+			{
+			case CRITICAL:
+				if (first)
+				{
+					advance += 8;
+				}
+				else
+				{
+					advance += 4;
+				}
+				break;
+			default:
+				if (first)
+				{
+					advance += 2;
+				}
+			}
+			return advance;
+		}
+		else
+		{
+			return 0;
 		}
 	}
 
 	bool DamageNumber::update()
 	{
-		fy -= 0.4f;
-		alpha -= 0.008f;
-		return alpha <= 0.0f;
+		moveobj.move();
+		opacity -= Constants::TIMESTEP * 0.0015f;
+		return opacity.last() <= 0.0f;
 	}
+
+
+	void DamageNumber::init()
+	{
+		charsets[NORMAL].first = Charset(nl::nx::effect["BasicEff.img"]["NoRed1"], Charset::LEFT);
+		charsets[NORMAL].second = Charset(nl::nx::effect["BasicEff.img"]["NoRed0"], Charset::LEFT);
+		charsets[CRITICAL].first = Charset(nl::nx::effect["BasicEff.img"]["NoCri1"], Charset::LEFT);
+		charsets[CRITICAL].second = Charset(nl::nx::effect["BasicEff.img"]["NoCri0"], Charset::LEFT);
+		charsets[TOPLAYER].first = Charset(nl::nx::effect["BasicEff.img"]["NoViolet1"], Charset::LEFT);
+		charsets[TOPLAYER].second = Charset(nl::nx::effect["BasicEff.img"]["NoViolet0"], Charset::LEFT);
+	}
+	pair<Charset, Charset> DamageNumber::charsets[NUM_TYPES];
 }

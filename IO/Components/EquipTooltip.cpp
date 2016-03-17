@@ -213,10 +213,13 @@ namespace IO
 		name = Text(Text::A12B, Text::CENTER, namecolor);
 		name.settext(namestr, 400);
 
-		desc = Itemtext(cloth.getdesc(), 150);
-		int16_t descdelta = desc.getheight() - 80;
-		if (descdelta > 0)
-			filllength += descdelta;
+		string desctext = cloth.getdesc();
+		hasdesc = desctext.size() > 0;
+		if (hasdesc)
+		{
+			desc = Itemtext(desctext, 250);
+			filllength += desc.getheight() + 10;
+		}
 
 		category = Text(Text::A11L, Text::LEFT, Text::WHITE);
 		category.settext("CATEGORY: " + cloth.gettype());

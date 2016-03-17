@@ -47,13 +47,14 @@ namespace IO
 		sprites.push_back(Sprite(title["signboard"], Point<int16_t>(410, 300)));
 		sprites.push_back(Sprite(common["frame"], Point<int16_t>(400, 290)));
 
-		auto effectpos = Point<int16_t>(420, -50);
+		// I prefer the title without this.
+		/*auto effectpos = Point<int16_t>(420, -50);
 		node effect = title["effect"];
 		for (node sub : effect)
 		{
 			auto sprite = Sprite(sub, DrawArgument(effectpos, true, 0.5f));
 			sprites.push_back(sprite);
-		}
+		}*/
 
 		buttons[BT_LOGIN] = unique_ptr<Button>(new MapleButton(title["BtLogin"], Point<int16_t>(475, 248)));
 		buttons[BT_REGISTER] = unique_ptr<Button>(new MapleButton(title["BtNew"], Point<int16_t>(309, 320)));

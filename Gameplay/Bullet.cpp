@@ -23,10 +23,9 @@ namespace Gameplay
 	{
 		animation = a;
 		flip = !toleft;
-		moveobj.fx = origin.x() + (toleft ? -30.0f : 30.0f);
-		moveobj.fy = origin.y() - 26.0f;
-		moveobj.hspeed = 0.0f;
-		moveobj.vspeed = 0.0f;
+
+		moveobj.setx(origin.x() + (toleft ? -30.0 : 30.0));
+		moveobj.sety(origin.y() - 26.0);
 	}
 
 	void Bullet::draw(Point<int16_t> viewpos, float alpha) const
@@ -44,11 +43,11 @@ namespace Gameplay
 	{
 		animation.update();
 
-		double xdelta = target.x() - moveobj.fx;
-		double ydelta = target.y() - moveobj.fy;
+		double xdelta = target.x() - moveobj.crntx();
+		double ydelta = target.y() - moveobj.crnty();
 		moveobj.hspeed = (moveobj.hspeed + xdelta / 10) / 2;
 		moveobj.vspeed = (moveobj.vspeed + ydelta / 10) / 2;
-		flip = xdelta < 0.0;
+		flip = xdelta > 0.0;
 		moveobj.move();
 		return Point<double>(xdelta, ydelta).length() < 10.0;
 	}

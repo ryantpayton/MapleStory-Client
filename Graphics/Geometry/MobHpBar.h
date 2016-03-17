@@ -27,7 +27,7 @@ namespace Graphics
 		void draw(Point<int16_t> position, int16_t hppercent) const;
 
 	private:
-		static const int16_t WIDTH = 44;
-		static const int16_t HEIGHT = 9;
+		static const int16_t WIDTH = 50;
+		static const int16_t HEIGHT = 10;
 	};
 }

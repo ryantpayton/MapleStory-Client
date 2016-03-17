@@ -37,12 +37,16 @@ namespace IO
 	void UI::draw(float inter) const
 	{
 		state->draw(inter, cursor.getposition());
+
+		scrollingnotice.draw(inter);
 		cursor.draw(inter);
 	}
 
 	void UI::update()
 	{
 		state->update();
+
+		scrollingnotice.update();
 		cursor.update();
 	}
 
@@ -145,6 +149,11 @@ namespace IO
 		}
 
 		keydown[keycode] = pressed;
+	}
+
+	void UI::setscrollingnotice(string notice)
+	{
+		scrollingnotice.setnotice(notice);
 	}
 
 	void UI::focustextfield(Textfield* tofocus)

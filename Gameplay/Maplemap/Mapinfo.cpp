@@ -115,4 +115,70 @@ namespace Gameplay
 	{
 		return Optional<Ladder>::findfirst(ladders, &Ladder::inrange, position, upwards);
 	}
+
+
+	Seat::Seat(node src)
+	{
+		pos = src;
+	}
+
+	Seat::Seat(InPacket& recv)
+	{
+		pos = recv.readpoint();
+	}
+
+	bool Seat::inrange(Point<int16_t> position) const
+	{
+		auto hor = Range<int16_t>::symmetric(position.x(), 10);
+		auto ver = Range<int16_t>::symmetric(position.y(), 10);
+		return hor.contains(pos.x()) && ver.contains(pos.y());
+	}
+
+	Point<int16_t> Seat::getpos() const
+	{
+		return pos;
+	}
+
+
+	Ladder::Ladder(node src)
+	{
+		x = src["x"];
+		y1 = src["y1"];
+		y2 = src["y2"];
+		ladder = src["l"].get_bool();
+	}
+
+	Ladder::Ladder(InPacket& recv)
+	{
+		x = recv.readshort();
+		y1 = recv.readshort();
+		y2 = recv.readshort();
+		ladder = recv.readbool();
+	}
+
+	bool Ladder::isladder() const
+	{
+		return ladder;
+	}
+
+	bool Ladder::inrange(Point<int16_t> position, bool upwards) const
+	{
+		auto hor = Range<int16_t>::symmetric(position.x(), 10);
+		auto ver = Range<int16_t>(y1, y2);
+		int16_t y = upwards ?
+			position.y() - 5 :
+			position.y() + 5;
+		return hor.contains(x) && ver.contains(y);
+	}
+
+	bool Ladder::felloff(int16_t y, bool downwards) const
+	{
+		int16_t dy = downwards ? y + 5 : y - 5;
+		return dy > y2 || y + 5 < y1;
+	}
+
+	int16_t Ladder::getx() const
+	{
+		return x;
+	}
 }

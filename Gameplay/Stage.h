@@ -120,6 +120,8 @@ namespace Gameplay
 		Optional<Playable> playable;
 		int32_t mapid;
 		uint8_t portalid;
+
+		unordered_map<int32_t, Skill> skillcache;
 	};
 }
 

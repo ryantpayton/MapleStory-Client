@@ -80,10 +80,10 @@ namespace IO
 			OutlinedText(Text::Font font, Text::Alignment alignment)
 			{
 				inner = Text(font, alignment, Text::WHITE);
-				l = Text(font, alignment, Text::BLACK);
-				r = Text(font, alignment, Text::BLACK);
-				t = Text(font, alignment, Text::BLACK);
-				b = Text(font, alignment, Text::BLACK);
+				l = Text(font, alignment, Text::DARKGREY);
+				r = Text(font, alignment, Text::DARKGREY);
+				t = Text(font, alignment, Text::DARKGREY);
+				b = Text(font, alignment, Text::DARKGREY);
 			}
 
 			OutlinedText() {}

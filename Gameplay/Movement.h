@@ -52,13 +52,7 @@ namespace Gameplay
 			: Movement(_ABSOLUTE, 0, x, y, lx, ly, 0, s, Constants::TIMESTEP) {}
 
 		Movement(const PhysicsObject& phobj, uint8_t s)
-			: Movement(
-			static_cast<int16_t>(phobj.fx),
-			static_cast<int16_t>(phobj.fy),
-			static_cast<int16_t>(phobj.lastx),
-			static_cast<int16_t>(phobj.lasty),
-			s
-			) {}
+			: Movement(phobj.getx(), phobj.gety(), phobj.lastx(), phobj.lasty(), s) {}
 
 		Movement()
 			: Movement(NONE, 0, 0, 0, 0) {}

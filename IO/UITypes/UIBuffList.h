@@ -18,6 +18,7 @@
 #pragma once
 #include "IO\Element.h"
 #include "Graphics\Texture.h"
+#include "Util\Interpolated.h"
 #include "Constants.h"
 #include <unordered_map>
 
@@ -33,14 +34,14 @@ namespace IO
 		BuffIcon();
 		~BuffIcon();
 
-		void draw(Point<int16_t> position) const;
-
+		void draw(Point<int16_t> position, float alpha) const;
 		bool update();
 
 	private:
+		Texture icon;
 		int32_t buffid;
 		int32_t duration;
-		float opacity;
+		Linear<float> opacity;
 	};
 
 	class UIBuffList : public UIElement

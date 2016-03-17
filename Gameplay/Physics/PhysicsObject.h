@@ -17,46 +17,116 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Foothold.h"
+#include "Util\Interpolated.h"
 
 namespace Gameplay
 {
 	// Struct that contains all properties for movement calculations.
 	struct MovingObject
 	{
-		double fx = 0.0;
-		double fy = 0.0;
-		double lastx = 0.0;
-		double lasty = 0.0;
+		Linear<double> x;
+		Linear<double> y;
 		double hspeed = 0.0;
 		double vspeed = 0.0;
 
+		void normalize()
+		{
+			x.normalize();
+			y.normalize();
+		}
+
 		void move()
 		{
-			lastx = fx;
-			lasty = fy;
-			fx += hspeed;
-			fy += vspeed;
+			x += hspeed;
+			y += vspeed;
+		}
+
+		void setx(double d)
+		{
+			x.set(d);
+		}
+
+		void sety(double d)
+		{
+			y.set(d);
+		}
+
+		void limitx(double d)
+		{
+			x = d;
+			hspeed = 0.0;
+		}
+
+		void limity(double d)
+		{
+			y = d;
+			vspeed = 0.0;
+		}
+
+		bool hmobile() const
+		{
+			return hspeed != 0.0;
+		}
+
+		bool vmobile() const
+		{
+			return vspeed != 0.0;
+		}
+
+		bool mobile() const
+		{
+			return hmobile() || vmobile();
+		}
+
+		double crntx() const
+		{
+			return x.get();
+		}
+
+		double crnty() const
+		{
+			return y.get();
+		}
+
+		double nextx() const
+		{
+			return x + hspeed;
+		}
+
+		double nexty() const
+		{
+			return y + vspeed;
 		}
 
 		int16_t getx() const
 		{
-			return static_cast<int16_t>(fx);
+			return static_cast<int16_t>(x.get());
 		}
 
 		int16_t gety() const
 		{
-			return static_cast<int16_t>(fy);
+			return static_cast<int16_t>(y.get());
 		}
 
-		int16_t getx(float inter) const
+		int16_t lastx() const
 		{
-			auto interx = static_cast<int16_t>((1.0f - inter) * lastx + inter * fx);
+			return static_cast<int16_t>(x.last());
+		}
+
+		int16_t lasty() const
+		{
+			return static_cast<int16_t>(y.last());
+		}
+
+		int16_t getx(float alpha) const
+		{
+			auto interx = static_cast<int16_t>(x.get(alpha));
 			return interx;
 		}
 
-		int16_t gety(float inter) const
+		int16_t gety(float alpha) const
 		{
-			auto intery = static_cast<int16_t>((1.0f - inter) * lasty + inter * fy);
+			auto intery = static_cast<int16_t>(y.get(alpha));
 			return intery;
 		}
 
@@ -95,7 +165,6 @@ namespace Gameplay
 		double groundbelow = 0.0;
 		bool onground = true;
 		bool enablejd = false;
-		double mass = 1.0;
 
 		double hforce = 0.0;
 		double vforce = 0.0;

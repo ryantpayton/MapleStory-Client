@@ -17,24 +17,29 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Mapobject.h"
+#include "Audio\Sound.h"
 #include "Gameplay\Attack.h"
 #include "Gameplay\Bullet.h"
 #include "Gameplay\Physics\PhysicsObject.h"
 #include "Graphics\Text.h"
 #include "Graphics\EffectLayer.h"
 #include "Graphics\Geometry\MobHpBar.h"
-#include "Audio\Sound.h"
 #include "IO\Components\DamageNumber.h"
 #include "Util\rectangle2d.h"
-#include "Util\Randomizer.h"
 #include "Util\Enum.h"
+#include "Util\Interpolated.h"
+#include "Util\Randomizer.h"
+#include "Util\TimedBool.h"
 #include <list>
+#include <queue>
+#include <deque>
 
 namespace Gameplay
 {
 	using std::string;
 	using std::pair;
-	using std::vector;
+	using std::queue;
+	using std::deque;
 	using std::list;
 	using std::map;
 	using Graphics::Text;
@@ -75,39 +80,66 @@ namespace Gameplay
 		Mob(int32_t oid, int32_t mobid, int8_t mode, int8_t stance, uint16_t fhid, 
 			bool newspawn, int8_t team, Point<int16_t> position);
 
-		// Draw the object.
+		// Draw the mob.
 		void draw(Point<int16_t> viewpos, float inter) const override;
+		// Draw effects on the top layer.
+		void draweffects(Point<int16_t> viewpos, float inter) const;
 		// Update movement and animations.
 		int8_t update(const Physics& physics) override;
 
+		// Change this mob's control mode:
+		// 0 - no control, 1 - control, 2 - aggro
 		void setcontrol(int8_t mode);
-
-		bool isinrange(const rectangle2d<int16_t>& range) const;
-		bool isalive() const;
-
-		vector<int32_t> damage(const Attack& attack);
-
 		// Kill the mob with the appropriate type:
-		// 0: make inactive 1: death animation 2: fade out
+		// 0 - make inactive 1 - death animation 2 - fade out
 		void kill(int8_t killtype);
 		// Display the hp percentage above the mob.
 		// Use the playerlevel to determine color of nametag.
 		void sendhp(int8_t percentage, uint16_t playerlevel);
+		// Check if this mob collides with the specified rectangle.
+
+		bool isinrange(const rectangle2d<int16_t>& range) const;
+		// Check if this mob is still alive.
+		bool isalive() const;
+		// Damage the mob with an attack and return all damage lines.
+		vector<int32_t> damage(const Attack& attack);
 
 	private:
-		struct AttackEffect
+		struct SingleEffect
 		{
+			DamageNumber number;
+			Animation hiteffect;
+			Sound hitsound;
+			uint16_t delay;
+
+			SingleEffect(DamageNumber n, Animation he, Sound hs, uint16_t d)
+			{
+				number = n;
+				hiteffect = he;
+				hitsound = hs;
+				delay = d;
+			}
+		};
+
+		class AttackEffect
+		{
+		public:
+			AttackEffect(const Attack& attack);
+
+			void push_back(pair<int32_t, bool> number);
+
+			bool toleft() const;
+			int32_t gettotal() const;
+			queue<SingleEffect> seperate(Point<int16_t> head) const;
+
+		private:
 			Animation hiteffect;
 			Sound hitsound;
 			Attack::Direction direction;
-			vector<pair<int32_t, bool>> numbers;
+			vector<uint16_t> hitdelays;
 
-			AttackEffect(const Attack& attack)
-			{
-				hiteffect = attack.hiteffect;
-				hitsound = attack.hitsound;
-				direction = attack.direction;
-			}
+			vector<pair<int32_t, bool>> numbers;
+			int32_t total;
 		};
 
 		static const size_t NUM_DIRECTIONS = 3;
@@ -128,11 +160,15 @@ namespace Gameplay
 			return directions[index];
 		}
 
+		void applysingle(const SingleEffect& singleeffect);
 		void applyattack(const AttackEffect& damageeffect);
 		void applyknockback(bool fromright);
 		void sendmovement();
 		void setstance(Stance newstance);
 		void nextmove();
+		float calchitchance(int16_t leveldelta, int32_t accuracy) const;
+		double calcmindamage(int16_t leveldelta, double mindamage) const;
+		double calcmaxdamage(int16_t leveldelta, double maxdamage) const;
 		Point<int16_t> getheadpos(Point<int16_t> position) const;
 		pair<int32_t, bool> randomdamage(double mindamage, 
 			double maxdamage, float hitchance, float critical) const;
@@ -159,19 +195,23 @@ namespace Gameplay
 		bool canjump;
 		bool canfly;
 
+		list<SingleEffect> singlelist;
 		list<pair<Bullet, AttackEffect>> bulletlist;
 
 		EffectLayer effects;
 		Text namelabel;
 		MobHpBar hpbar;
 		Randomizer randomizer;
-		vector<DamageNumber> damagenumbers;
+		deque<DamageNumber> damagenumbers;
 
+		TimedBool showhp;
 		uint16_t counter;
 
 		int32_t id;
 		int8_t effect;
 		int8_t team;
+		bool dying;
+		bool dead;
 		bool control;
 		bool aggro;
 		Stance stance;
@@ -181,7 +221,7 @@ namespace Gameplay
 		int8_t hppercent;
 		bool fading;
 		bool fadein;
-		float alpha;
+		Linear<float> opacity;
 	};
 }
 

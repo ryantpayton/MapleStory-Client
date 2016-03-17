@@ -17,14 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Graphics\Texture.h"
-#include <map>
+#include <unordered_map>
 
 namespace IO
 {
 	using std::int8_t;
 	using std::int16_t;
 	using std::string;
-	using std::map;
+	using std::unordered_map;
 	using nl::node;
 	using Graphics::Texture;
 	using Graphics::DrawArgument;
@@ -39,18 +39,18 @@ namespace IO
 			RIGHT
 		};
 
-		Charset(node, Alignment);
+		Charset(node source, Alignment alignment);
 		Charset(){}
 		~Charset();
 
-		void draw(int8_t, const DrawArgument&) const;
-		int16_t draw(string, const DrawArgument&) const;
-		int16_t draw(string, int16_t, const DrawArgument&) const;
-		int16_t getw(int8_t) const;
+		void draw(int8_t character, const DrawArgument& args) const;
+		int16_t draw(string text, const DrawArgument& args) const;
+		int16_t draw(string text, int16_t hspace, const DrawArgument& args) const;
+		int16_t getw(int8_t character) const;
 
 	private:
+		unordered_map<int8_t, Texture> chars;
 		Alignment alignment;
-		map<int8_t, Texture> chars;
 	};
 }
 

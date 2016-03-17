@@ -17,10 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Mob.h"
 #include "Constants.h"
+
 #include "Gameplay\Movement.h"
 #include "Net\Session.h"
 #include "Net\Packets\GameplayPackets.h"
+#include "Util\Misc.h"
+
 #include "nlnx\nx.hpp"
+
 #include <algorithm>
 
 namespace Gameplay
@@ -30,10 +34,8 @@ namespace Gameplay
 	Mob::Mob(int32_t oi, int32_t mid, int8_t mode, int8_t st, uint16_t fh, 
 		bool newspawn, int8_t tm, Point<int16_t> position) : MapObject(oi) {
 
-		string path = std::to_string(mid);
-		path.insert(0, 7 - path.size(), '0');
-
-		node src = nl::nx::mob[path + ".img"];
+		string strid = Format::extendid(mid, 7);
+		node src = nl::nx::mob[strid + ".img"];
 
 		node info = src["info"];
 		level = info["level"];
@@ -70,12 +72,12 @@ namespace Gameplay
 
 		name = nl::nx::string["Mob.img"][std::to_string(mid)]["name"];
 
-		node sndsrc = nl::nx::sound["Mob.img"][path];
+		node sndsrc = nl::nx::sound["Mob.img"][strid];
 		hitsound = sndsrc["Damage"];
 		diesound = sndsrc["Die"];
 
 		speed += 100;
-		speed *= 0.003f;
+		speed *= 0.001f;
 
 		flyspeed += 100;
 		flyspeed *= 0.0005f;
@@ -95,23 +97,30 @@ namespace Gameplay
 		if (flip)
 			st -= 1;
 		stance = static_cast<Stance>(st);
+		dying = false;
+		dead = false;
 		fading = false;
 		flydirection = STRAIGHT;
 		counter = 0;
 
 		namelabel = Text(Text::A13M, Text::CENTER, Text::WHITE);
-		namelabel.settext(name);
 		namelabel.setback(Text::NAMETAG);
+		namelabel.settext(name);
 
 		if (newspawn)
 		{
 			fadein = true;
-			alpha = 0.0f;
+			opacity.set(0.0f);
 		}
 		else
 		{
 			fadein = false;
-			alpha = 1.0f;
+			opacity.set(1.0f);
+		}
+
+		if (control && stance == Stance::STAND)
+		{
+			nextmove();
 		}
 	}
 
@@ -120,6 +129,14 @@ namespace Gameplay
 		if (stance != st)
 		{
 			stance = st;
+
+			switch (stance)
+			{
+			case DIE:
+				dying = true;
+				break;
+			}
+
 			animations.at(stance).reset();
 		}
 	}
@@ -129,44 +146,56 @@ namespace Gameplay
 		if (!active)
 			return phobj.fhlayer;
 
+		bool aniend = animations.at(stance).update();
+		if (aniend && dying)
+		{
+			dead = true;
+		}
+
 		if (fading)
 		{
-			alpha -= 0.025f;
-			if (alpha < 0.025f)
+			opacity -= 0.025f;
+			if (opacity.last() < 0.025f)
 			{
-				alpha = 0.0f;
+				opacity.set(0.0f);
 				fading = false;
-				active = false;
-				return -1;
+				dead = true;
 			}
 		}
 		else if (fadein)
 		{
-			alpha += 0.025f;
-			if (alpha > 0.975f)
+			opacity += 0.025f;
+			if (opacity.last() > 0.975f)
 			{
-				alpha = 1.0f;
+				opacity.set(1.0f);
 				fadein = false;
 			}
 		}
 
-		Point<int16_t> bodypos = getposition();
-		bodypos.shifty(-animations.at(stance).getdimensions().y() / 2);
+		Point<int16_t> head = getheadpos(getposition());
 		bulletlist.remove_if([&](pair<Bullet, AttackEffect>& bulletattack) {
-			bool apply = bulletattack.first.update(bodypos);
+			bool apply = bulletattack.first.update(head);
 			if (apply)
 			{
 				applyattack(bulletattack.second);
 			}
 			return apply;
 		});
+		bool nobullets = bulletlist.size() == 0;
 
-		bool aniend = animations.at(stance).update();
-		if (aniend && stance == DIE)
-		{
-			active = false;
-			return -1;
-		}
+		singlelist.remove_if([&](SingleEffect& single) {
+			if (single.delay <= Constants::TIMESTEP)
+			{
+				applysingle(single);
+				return true;
+			}
+			else
+			{
+				single.delay -= Constants::TIMESTEP;
+				return false;
+			}
+		});
+		bool nosingle = singlelist.size() == 0;
 
 		size_t remove = 0;
 		for (auto& dmg : damagenumbers)
@@ -174,15 +203,22 @@ namespace Gameplay
 			if (dmg.update())
 				remove++;
 		}
-
 		for (size_t i = remove; i--;)
 		{
 			damagenumbers.erase(damagenumbers.begin());
 		}
+		bool nonumbers = damagenumbers.size() == 0;
+
+		if (dead && nobullets && nosingle && nonumbers)
+		{
+			active = false;
+			return -1;
+		}
 
 		effects.update();
+		showhp.update();
 
-		if (control && stance != DIE)
+		if (control && !dying)
 		{
 			if (!canfly)
 			{
@@ -190,6 +226,9 @@ namespace Gameplay
 				{
 					flip = !flip;
 					phobj.setflag(PhysicsObject::TURNATEDGES);
+
+					if (stance == HIT)
+						setstance(STAND);
 				}
 			}
 
@@ -221,28 +260,27 @@ namespace Gameplay
 			case HIT:
 				if (canmove)
 				{
-					if (phobj.onground)
-					{
-						phobj.hforce = flip ? -0.5f : 0.5f;
-					}
-					else
-					{
-						phobj.hforce = flip ? -0.2f : 0.2f;
-					}
+					double KBFORCE = phobj.onground ? 0.2 : 0.1;
+					phobj.hforce = flip ? -KBFORCE : KBFORCE;
 				}
 				break;
 			}
 
 			counter++;
-			if (counter > 200)
+			if (aniend && counter > 200)
 			{
 				nextmove();
 				sendmovement();
 				counter = 0;
 			}
-		}
 
-		physics.moveobject(phobj);
+			physics.moveobject(phobj);
+		}
+		else
+		{
+			phobj.normalize();
+			physics.getfht().updatefh(phobj);
+		}
 
 		return phobj.fhlayer;
 	}
@@ -289,7 +327,8 @@ namespace Gameplay
 	void Mob::sendmovement()
 	{
 		using Net::MoveMobPacket;
-		Session::get().dispatch(MoveMobPacket(
+		Session::get().dispatch(
+			MoveMobPacket(
 			oid, 
 			1, 0, 0, 0, 0, 0, 0, 
 			getposition(),
@@ -297,33 +336,41 @@ namespace Gameplay
 			)));
 	}
 
-	void Mob::draw(Point<int16_t> viewpos, float inter) const
+	void Mob::draw(Point<int16_t> viewpos, float alpha) const
 	{
-		Point<int16_t> absp = phobj.getposition(inter) + viewpos;
+		Point<int16_t> absp = phobj.getposition(alpha) + viewpos;
 
-		using Graphics::DrawArgument;
-		animations.at(stance).draw(DrawArgument(absp, flip && !noflip, alpha), inter);
-
-		effects.draw(absp, inter);
-
-		if (hppercent > 0)
+		if (!dead)
 		{
-			namelabel.draw(absp);
+			float interopc = opacity.get(alpha);
 
-			if (stance != DIE)
+			using Graphics::DrawArgument;
+			animations.at(stance).draw(DrawArgument(absp, flip && !noflip, interopc), alpha);
+
+			if (showhp)
 			{
-				hpbar.draw(getheadpos(absp), hppercent);
+				namelabel.draw(absp);
+
+				if (stance != DIE)
+				{
+					hpbar.draw(getheadpos(absp), hppercent);
+				}
 			}
 		}
 
+		effects.draw(absp, alpha);
+	}
+
+	void Mob::draweffects(Point<int16_t> viewpos, float alpha) const
+	{
 		for (auto& bullet : bulletlist)
 		{
-			bullet.first.draw(viewpos, inter);
+			bullet.first.draw(viewpos, alpha);
 		}
 
 		for (auto& dmg : damagenumbers)
 		{
-			dmg.draw(viewpos);
+			dmg.draw(viewpos, alpha);
 		}
 	}
 
@@ -354,6 +401,7 @@ namespace Gameplay
 			break;
 		case 2:
 			fading = true;
+			dying = true;
 			break;
 		}
 	}
@@ -369,15 +417,20 @@ namespace Gameplay
 				namelabel.setcolor(Text::RED);
 		}
 		if (percent > 100)
+		{
 			percent = 100;
+		}
 		else if (percent < 0)
+		{
 			percent = 0;
+		}
 		hppercent = percent;
+		showhp.setfor(2000);
 	}
 
 	bool Mob::isalive() const
 	{
-		return active && stance != DIE;
+		return active && !dying;
 	}
 
 	bool Mob::isinrange(const rectangle2d<int16_t>& range) const
@@ -390,28 +443,57 @@ namespace Gameplay
 		return range.overlaps(bounds);
 	}
 
+	float Mob::calchitchance(int16_t leveldelta, int32_t accuracy) const
+	{
+		float faccuracy = static_cast<float>(accuracy);
+		float hitchance = faccuracy / (((1.84f + 0.07f * leveldelta) * avoid) + 1.0f);
+		if (hitchance < 0.01f)
+		{
+			hitchance = 0.01f;
+		}
+		return hitchance;
+	}
+
+	double Mob::calcmindamage(int16_t leveldelta, double damage) const
+	{
+		double mindamage = damage * (1 - 0.01f * leveldelta) - wdef * 0.5f;
+		if (mindamage < 1.0)
+		{
+			mindamage = 1.0;
+		}
+		return mindamage;
+	}
+
+	double Mob::calcmaxdamage(int16_t leveldelta, double damage) const
+	{
+		double maxdamage = damage * (1 - 0.01f * leveldelta) - wdef * 0.6f;
+		if (maxdamage < 1.0)
+		{
+			maxdamage = 1.0;
+		}
+		return maxdamage;
+	}
+
 	vector<int32_t> Mob::damage(const Attack& attack)
 	{
 		int16_t leveldelta = level - attack.playerlevel;
 		if (leveldelta < 0)
 			leveldelta = 0;
-		float hitchance = static_cast<float>(attack.accuracy) / (((1.84f + 0.07f * leveldelta) * avoid) + 1.0f);
-		if (hitchance < 0.01f)
-			hitchance = 0.01f;
-		double mindamage = attack.mindamage * (1 - 0.01f * leveldelta) - wdef * 0.5f;
-		if (mindamage < 1.0)
-			mindamage = 1.0;
-		double maxdamage = attack.maxdamage * (1 - 0.01f * leveldelta) - wdef * 0.6f;
-		if (maxdamage < 1.0)
-			maxdamage = 1.0;
+
+		float hitchance = calchitchance(leveldelta, attack.accuracy);
+		double mindamage = calcmindamage(leveldelta, attack.mindamage);
+		double maxdamage = calcmaxdamage(leveldelta, attack.maxdamage);
 
 		AttackEffect attackeffect = attack;
-		vector<int32_t> damagelines;
+
+		vector<int32_t> result;
 		for (int32_t i = 0; i < attack.hitcount; i++)
 		{
 			auto singledamage = randomdamage(mindamage, maxdamage, hitchance, attack.critical);
-			attackeffect.numbers.push_back(singledamage);
-			damagelines.push_back(singledamage.first);
+			attackeffect.push_back(singledamage);
+
+			auto singlenumber = singledamage.first;
+			result.push_back(singlenumber);
 		}
 
 		bool ranged = attack.type == Attack::RANGED;
@@ -427,27 +509,32 @@ namespace Gameplay
 
 		sendmovement();
 
-		return damagelines;
+		return result;
 	}
 
-	pair<int32_t, bool> Mob::randomdamage(double mindamage, 
-		double maxdamage, float hitchance, float critical) const {
-
+	pair<int32_t, bool> Mob::randomdamage(double mindamage, double maxdamage, float hitchance, float critical) const 
+	{
 		bool hit = randomizer.below(hitchance);
 		if (hit)
 		{
 			static const double DAMAGECAP = 999999.0;
 
-			double damage = randomizer.nextreal<double>(mindamage, maxdamage);
+			auto damage = randomizer.nextreal<double>(mindamage, maxdamage);
 			bool iscritical = randomizer.below(critical);
 			if (iscritical)
+			{
 				damage *= 1.5;
+			}
 			if (damage < 1)
+			{
 				damage = 1;
+			}
 			else if (damage > DAMAGECAP)
+			{
 				damage = DAMAGECAP;
+			}
 
-			int32_t intdamage = static_cast<int32_t>(damage);
+			auto intdamage = static_cast<int32_t>(damage);
 			return std::make_pair(intdamage, iscritical);
 		}
 		else
@@ -459,41 +546,94 @@ namespace Gameplay
 	void Mob::applyattack(const AttackEffect& attackeffect)
 	{
 		Point<int16_t> head = getheadpos(getposition());
-		float alphashift = 0.0f;
+		queue<SingleEffect> singleffects = attackeffect.seperate(head);
 
-		int32_t total = 0;
-		for (auto& number : attackeffect.numbers)
+		applysingle(singleffects.front());
+		singleffects.pop();
+		for (; singleffects.size(); singleffects.pop())
 		{
-			int32_t amount = number.first;
-			total += amount;
-
-			DamageNumber damagenumber = DamageNumber(
-				number.second ? DamageNumber::CRITICAL : DamageNumber::NORMAL,
-				number.first,
-				1.0f + alphashift,
-				head);
-			damagenumbers.push_back(damagenumber);
-
-			head.shifty(-24);
-			alphashift += 0.1f;
-
-			attackeffect.hitsound.play();
-			hitsound.play();
+			singlelist.push_back(singleffects.front());
 		}
 
+		int32_t total = attackeffect.gettotal();
+		bool toleft = attackeffect.toleft();
 		if (total >= knockback)
-			applyknockback(attackeffect.direction == Attack::TOLEFT);
+		{
+			applyknockback(toleft);
+		}
+	}
 
-		effects.add(attackeffect.hiteffect);
+	void Mob::applysingle(const SingleEffect& singleeffect)
+	{
+		damagenumbers.push_back(singleeffect.number);
+		effects.add(singleeffect.hiteffect);
+		singleeffect.hitsound.play();
+		hitsound.play();
 	}
 
 	void Mob::applyknockback(bool fromright)
 	{
-		if (active && stance != DIE)
+		if (isalive())
 		{
 			flip = fromright;
-			counter = 160;
+			counter = 170;
 			setstance(HIT);
 		}
+	}
+
+
+	Mob::AttackEffect::AttackEffect(const Attack& attack)
+	{
+		hiteffect = attack.hiteffect;
+		hitsound = attack.hitsound;
+		direction = attack.direction;
+		hitdelays = attack.hitdelays;
+	}
+
+	void Mob::AttackEffect::push_back(pair<int32_t, bool> number)
+	{
+		numbers.push_back(number);
+
+		total += number.first;
+	}
+
+	bool Mob::AttackEffect::toleft() const
+	{
+		return direction == Attack::TOLEFT;
+	}
+
+	int32_t Mob::AttackEffect::gettotal() const
+	{
+		return total;
+	}
+
+	queue<Mob::SingleEffect> Mob::AttackEffect::seperate(Point<int16_t> head) const
+	{
+		queue<SingleEffect> singleeffects;
+		for (size_t i = 0; i < numbers.size(); i++)
+		{
+			int32_t amount = numbers[i].first;
+			bool critical = numbers[i].second;
+
+			DamageNumber::Type type = critical ? DamageNumber::CRITICAL : DamageNumber::NORMAL;
+			auto damagenumber = DamageNumber(type, amount, head);
+
+			uint16_t delay;
+			if (i > 0 && i - 1 < hitdelays.size())
+			{
+				delay = hitdelays[i - 1];
+			}
+			else
+			{
+				delay = 0;
+			}
+
+			auto singleeffect = SingleEffect(damagenumber, hiteffect, hitsound, delay);
+			singleeffects.push(singleeffect);
+
+			int16_t vspace = critical ? 36 : 30;
+			head.shifty(-vspace);
+		}
+		return singleeffects;
 	}
 }

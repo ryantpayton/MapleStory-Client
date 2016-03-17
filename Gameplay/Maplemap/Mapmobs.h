@@ -25,7 +25,6 @@
 namespace Gameplay
 {
 	using std::list;
-	using std::pair;
 
 	class MapMobs : public MapObjects
 	{
@@ -41,8 +40,8 @@ namespace Gameplay
 
 	private:
 		void applyattack(const Attack& attack);
-		vector<int32_t> findclose(rectangle2d<int16_t> range, uint8_t mobcount) const;
-		vector<int32_t> findranged(rectangle2d<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const;
+		//vector<int32_t> findclose(rectangle2d<int16_t> range, uint8_t mobcount) const;
+		vector<int32_t> findclosest(rectangle2d<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const;
 		Optional<Mob> getmob(int32_t oid);
 
 		list<Attack> attacklist;

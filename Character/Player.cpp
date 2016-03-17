@@ -207,7 +207,7 @@ namespace Character
 		switch (state)
 		{
 		case WALK:
-			return static_cast<float>(1.0 + std::abs(phobj.hspeed) / 10);
+			return static_cast<float>(std::abs(phobj.hspeed) / 1.25);
 		case LADDER:
 		case ROPE:
 			return static_cast<float>(std::abs(phobj.vspeed));
@@ -236,12 +236,10 @@ namespace Character
 		return !attacking && !isclimbing() && !issitting() && look.getequips().hasweapon();
 	}
 
-	bool Player::canuseskill(int32_t skillid) const
+	bool Player::canuseskill(const Skill& skill) const
 	{
-		const Skill& skill = DataFactory::get().getskill(skillid);
-		
-		int32_t skilllevel = skillbook.getlevel(skillid);
-		Optional<const SkillLevel> level = skill.getlevel(skilllevel);
+		int32_t skilllevel = skillbook.getlevel(skill.getid());
+		const Skill::Level* level = skill.getlevel(skilllevel);
 		if (level)
 		{
 			if (level->hpcost >= stats.getstat(Maplestat::HP))
@@ -250,7 +248,13 @@ namespace Character
 			if (level->mpcost > stats.getstat(Maplestat::MP))
 				return false;
 
-			return canattack();
+			if (state == PRONE)
+				return false;
+
+			if (skill.isoffensive())
+				return canattack();
+
+			return true;
 		}
 		else
 		{
@@ -258,10 +262,8 @@ namespace Character
 		}
 	}
 
-	const Skill& Player::useskill(int32_t skillid)
+	void Player::useskill(const Skill& skill)
 	{
-		const Skill& skill = DataFactory::get().getskill(skillid);
-
 		bool twohanded = look.getequips().istwohanded();
 		string action = skill.getaction(twohanded);
 		if (action == "")
@@ -275,7 +277,6 @@ namespace Character
 			attacking = true;
 		}
 		showeffect(skill.geteffect(twohanded));
-		return skill;
 	}
 
 	Attack Player::prepareattack(bool degenerate) const
@@ -301,21 +302,29 @@ namespace Character
 
 	Attack Player::prepareregularattack()
 	{
-		Weapon::Type weapontype = look.getequips().getweapontype();
 		Attack::Type attacktype;
 		bool degenerate;
-		switch (weapontype)
+		if (state == PRONE)
 		{
-		case Weapon::BOW:
-		case Weapon::CROSSBOW:
-		case Weapon::CLAW:
-		case Weapon::GUN:
-			degenerate = !inventory.hasprojectile();
-			attacktype = degenerate ? Attack::CLOSE : Attack::RANGED;
-			break;
-		default:
+			degenerate = true;
 			attacktype = Attack::CLOSE;
-			degenerate = false;
+		}
+		else
+		{
+			Weapon::Type weapontype = look.getequips().getweapontype();
+			switch (weapontype)
+			{
+			case Weapon::BOW:
+			case Weapon::CROSSBOW:
+			case Weapon::CLAW:
+			case Weapon::GUN:
+				degenerate = !inventory.hasprojectile();
+				attacktype = degenerate ? Attack::CLOSE : Attack::RANGED;
+				break;
+			default:
+				attacktype = Attack::CLOSE;
+				degenerate = false;
+			}
 		}
 
 		uint16_t delay = look.attack(degenerate);
@@ -347,15 +356,14 @@ namespace Character
 		return attack;
 	}
 
-	Attack Player::prepareskillattack(int32_t skillid) const
+	Attack Player::prepareskillattack(const Skill& skill) const
 	{
 		Attack attack = prepareattack(false);
-		attack.skill = skillid;
+		attack.skill = skill.getid();
 
-		const Skill& skill = DataFactory::get().getskill(skillid);
-
-		int32_t skilllevel = skillbook.getlevel(skillid);
-		Optional<const SkillLevel> level = skill.getlevel(skilllevel);
+		bool twohanded = look.getequips().istwohanded();
+		int32_t skilllevel = skillbook.getlevel(attack.skill);
+		const Skill::Level* level = skill.getlevel(skilllevel);
 		if (level)
 		{
 			attack.mindamage *= level->damage;
@@ -365,13 +373,20 @@ namespace Character
 			attack.critical += level->critical;
 			attack.ignoredef += level->ignoredef;
 			attack.range = level->range;
+
+			attack.hitdelays = level->hitdelays[twohanded && skill.canbetwohanded()];
+			if (attack.hitdelays.size() > 0)
+			{
+				attack.delay = attack.hitdelays[0];
+				attack.hitdelays.pop_back();
+			}
 		}
 
 		if (attack.range.empty())
 			attack.range = look.getequips().getweapon()
 			.map(&Weapon::getrange);
 
-		attack.hiteffect = skill.gethitanimation(look.getequips().istwohanded());
+		attack.hiteffect = skill.gethitanimation(twohanded);
 		return attack;
 	}
 
@@ -421,7 +436,7 @@ namespace Character
 
 		if (ladder)
 		{
-			phobj.fx = ldr->getx();
+			phobj.setx(ldr->getx());
 			phobj.hspeed = 0.0;
 			phobj.vspeed = 0.0;
 			setstate(ldr->isladder() ? Char::LADDER : Char::ROPE);
@@ -451,7 +466,7 @@ namespace Character
 	
 	float Player::getwforce() const
 	{
-		return 0.05f + 0.5f * static_cast<float>(stats.gettotal(Equipstat::SPEED)) / 100;
+		return 0.05f + 0.15f * static_cast<float>(stats.gettotal(Equipstat::SPEED)) / 100;
 	}
 
 	float Player::getjforce() const

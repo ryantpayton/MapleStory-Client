@@ -23,7 +23,6 @@
 #include "Telerock.h"
 #include "Monsterbook.h"
 #include "Buff.h"
-#include "Skill.h"
 
 #include "Look\CharLook.h"
 #include "Inventory\Inventory.h"
@@ -33,6 +32,7 @@
 #include "Gameplay\Movement.h"
 #include "Gameplay\Maplemap\MapInfo.h"
 #include "Gameplay\Attack.h"
+#include "Gameplay\Skill.h"
 
 namespace Character
 {
@@ -43,6 +43,7 @@ namespace Character
 	using Gameplay::Ladder;
 	using Gameplay::Seat;
 	using Gameplay::Attack;
+	using Gameplay::Skill;
 	using IO::Keyboard;
 
 	class Player : public Playable, public Char
@@ -75,15 +76,15 @@ namespace Character
 		// Return wether the player can attack or not.
 		bool canattack() const;
 		// Return wether the player can use a skill or not.
-		bool canuseskill(int32_t skillid) const;
+		bool canuseskill(const Skill& skill) const;
 		// Use a skill.
-		const Skill& useskill(int32_t skillid);
+		void useskill(const Skill& skill);
 		// Create an attack struct using the player's stats.
 		Attack prepareattack(bool degenerate) const;
 		// Create an attack struct for and use a regular attack.
 		Attack prepareregularattack();
 		// Create an attack struct for a skill attack.
-		Attack prepareskillattack(int32_t skillid) const;
+		Attack prepareskillattack(const Skill& skill) const;
 
 		// Apply a buff to the player.
 		void givebuff(Buff buff);

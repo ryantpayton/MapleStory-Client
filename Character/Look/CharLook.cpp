@@ -55,16 +55,12 @@ namespace Character
 	void CharLook::reset()
 	{
 		setstance(Stance::STAND1);
-		lastframe = 0;
-		frame = 0;
-		lastelapsed = 0;
-		elapsed = 0;
+		stframe.set(0);
+		stelapsed = 0;
 
 		setexpression(Expression::DEFAULT);
-		lastfcframe = 0;
-		fcframe = 0;
-		lastfcelapsed = 0;
-		fcelapsed = 0;
+		expframe.set(0);
+		expelapsed = 0;
 
 		action = nullptr;
 		actionstr = "";
@@ -74,7 +70,7 @@ namespace Character
 	}
 
 	void CharLook::draw(Point<int16_t> absp, bool flipped, Stance::Value interstance,
-		Expression::Value interexpression, uint8_t interframe, uint8_t interfcframe) const {
+		Expression::Value interexpression, uint8_t interframe, uint8_t interexpframe) const {
 
 		using Graphics::DrawArgument;
 		DrawArgument args = DrawArgument(absp, flipped);
@@ -83,7 +79,7 @@ namespace Character
 
 		if (Stance::isclimbing(interstance))
 		{
-			body->draw(interstance, Body::BODY, lastframe, args);
+			body->draw(interstance, Body::BODY, interframe, args);
 			equips.draw(Equipslot::GLOVES, interstance, Clothing::GLOVE, interframe, args);
 			equips.draw(Equipslot::SHOES, interstance, Clothing::SHOES, interframe, args);
 			equips.draw(Equipslot::PANTS, interstance, Clothing::PANTS, interframe, args);
@@ -141,7 +137,7 @@ namespace Character
 			equips.draw(Equipslot::EARRINGS, interstance, Clothing::EARRINGS, interframe, args);
 			body->draw(interstance, Body::HEAD, interframe, args);
 			hair->draw(interstance, Hair::SHADE, interframe, args);
-			face->draw(interexpression, interfcframe, faceargs);
+			face->draw(interexpression, interexpframe, faceargs);
 			equips.draw(Equipslot::FACEACC, interstance, Clothing::FACEACC, 0, faceargs);
 			equips.draw(Equipslot::EYEACC, interstance, Clothing::EYEACC, interframe, args);
 			equips.draw(Equipslot::SHIELD, interstance, Clothing::SHIELD, interframe, args);
@@ -197,46 +193,16 @@ namespace Character
 		}
 	}
 
-	void CharLook::draw(Point<int16_t> pos, float inter) const
+	void CharLook::draw(Point<int16_t> pos, float alpha) const
 	{
 		if (!body || !hair || !face)
 			return;
-
-		uint16_t delay = action ?
-			action->getdelay() :
-			DataFactory::get().getdrawinfo().getdelay(laststance, lastframe);
-		Stance::Value interstance;
-		uint8_t interframe;
-		if (lastelapsed + Constants::TIMESTEP * inter > delay)
-		{
-			interstance = stance;
-			interframe = frame;
-		}
-		else
-		{
-			interstance = laststance;
-			interframe = lastframe;
-		}
-
-		uint16_t fcdelay = face->getdelay(lastexpression, lastfcframe);
-		Expression::Value interexpression;
-		uint8_t fcinterframe;
-		if (lastfcelapsed + Constants::TIMESTEP * inter > fcdelay)
-		{
-			interexpression = expression;
-			fcinterframe = fcframe;
-		}
-		else
-		{
-			interexpression = lastexpression;
-			fcinterframe = lastfcframe;
-		}
 
 		Point<int16_t> absp = pos;
 		if (action)
 			absp.shift(action->getmove());
 
-		draw(absp, flip, interstance, interexpression, interframe, fcinterframe);
+		draw(absp, flip, stance.get(alpha), expression.get(alpha), stframe.get(alpha), expframe.get(alpha));
 	}
 
 	void CharLook::drawstanding(Point<int16_t> position, bool flipped) const
@@ -250,45 +216,56 @@ namespace Character
 	bool CharLook::update(uint16_t timestep)
 	{
 		if (timestep == 0)
+		{
+			stance.normalize();
+			stframe.normalize();
+			expression.normalize();
+			expframe.normalize();
 			return false;
-
-		lastframe = frame;
-		laststance = stance;
-		lastelapsed = elapsed;
-		lastfcframe = fcframe;
-		lastexpression = expression;
-		lastfcelapsed = fcelapsed;
-
-		elapsed += timestep;
+		}
 
 		bool aniend = false;
 		if (action == nullptr)
 		{
-			uint16_t delay = DataFactory::get().getdrawinfo().getdelay(stance, frame);
-			if (elapsed > delay)
+			uint16_t delay = getdelay(stance.get(), stframe.get());
+			uint16_t delta = delay - stelapsed;
+			if (timestep >= delta)
 			{
-				elapsed -= delay;
-				frame = DataFactory::get().getdrawinfo().nextframe(stance, frame);
+				stelapsed = timestep - delta;
 
-				if (frame == 0)
+				uint8_t nextframe = getnextframe(stance.get(), stframe.get());
+				float threshold = static_cast<float>(delta) / timestep;
+				stframe.next(nextframe, threshold);
+
+				if (stframe == 0)
 				{
 					aniend = true;
 				}
+			}
+			else
+			{
+				stance.normalize();
+				stframe.normalize();
+
+				stelapsed += timestep;
 			}
 		}
 		else
 		{
 			uint16_t delay = action->getdelay();
-			if (elapsed > delay)
+			uint16_t delta = delay - stelapsed;
+			if (timestep >= delta)
 			{
-				elapsed -= delay;
+				stelapsed = timestep - delta;
 
 				actframe = DataFactory::get().getdrawinfo().nextacframe(actionstr, actframe);
 				if (actframe > 0)
 				{
 					action = DataFactory::get().getdrawinfo().getaction(actionstr, actframe);
-					frame = action->getframe();
-					stance = action->getstance();
+					
+					float threshold = static_cast<float>(delta) / timestep;
+					stance.next(action->getstance(), threshold);
+					stframe.next(action->getframe(), threshold);
 				}
 				else
 				{
@@ -298,27 +275,43 @@ namespace Character
 					setstance(Stance::STAND1);
 				}
 			}
+			else
+			{
+				stance.normalize();
+				stframe.normalize();
+
+				stelapsed += timestep;
+			}
 		}
 
-		fcelapsed += timestep;
-
-		uint16_t fcdelay = face->getdelay(expression, fcframe);
-		if (fcelapsed > fcdelay)
+		uint16_t expdelay = face->getdelay(expression.get(), expframe.get());
+		uint16_t expdelta = expdelay - expelapsed;
+		if (timestep >= expdelta)
 		{
-			fcelapsed -= fcdelay;
-			fcframe = face->nextframe(expression, fcframe);
+			expelapsed = timestep - expdelta;
 
-			if (fcframe == 0)
+			uint8_t nextexpframe = face->nextframe(expression.get(), expframe.get());
+			float fcthreshold = static_cast<float>(expdelta) / timestep;
+			expframe.next(nextexpframe, fcthreshold);
+
+			if (expframe == 0)
 			{
 				if (expression == Expression::DEFAULT)
 				{
-					setexpression(Expression::BLINK);
+					expression.next(Expression::BLINK, fcthreshold);
 				}
 				else
 				{
-					setexpression(Expression::DEFAULT);
+					expression.next(Expression::DEFAULT, fcthreshold);
 				}
 			}
+		}
+		else
+		{
+			expression.normalize();
+			expframe.normalize();
+
+			expelapsed += timestep;
 		}
 
 		return aniend;
@@ -341,7 +334,7 @@ namespace Character
 
 	void CharLook::updatetwohanded()
 	{
-		Stance::Value basestance = Stance::baseof(stance);
+		Stance::Value basestance = Stance::baseof(stance.get());
 		setstance(basestance);
 	}
 
@@ -388,9 +381,10 @@ namespace Character
 			Stance::Value newstance = getattackstance(attack, degenerate);
 			if (stance != newstance)
 			{
-				frame = 0;
-				elapsed = 0;
-				stance = newstance;
+				stance.set(newstance);
+				stframe.set(0);
+
+				stelapsed = 0;
 			}
 			return DataFactory::get().getdrawinfo().getdelay(newstance, 0);
 		}
@@ -419,9 +413,10 @@ namespace Character
 
 		if (stance != newstance)
 		{
-			frame = 0;
-			elapsed = 0;
-			stance = newstance;
+			stance.set(newstance);
+			stframe.set(0);
+
+			stelapsed = 0;
 		}
 	}
 
@@ -464,13 +459,24 @@ namespace Character
 		}
 	}
 
+	uint16_t CharLook::getdelay(Stance::Value stance, uint8_t frame) const
+	{
+		return DataFactory::get().getdrawinfo().getdelay(stance, frame);
+	}
+
+	uint8_t CharLook::getnextframe(Stance::Value stance, uint8_t frame) const
+	{
+		return DataFactory::get().getdrawinfo().nextframe(stance, frame);
+	}
+
 	void CharLook::setexpression(Expression::Value newexpression)
 	{
 		if (expression != newexpression)
 		{
-			fcframe = 0;
-			fcelapsed = 0;
-			expression = newexpression;
+			expression.set(newexpression);
+			expframe.set(0);
+
+			expelapsed = 0;
 		}
 	}
 
@@ -480,13 +486,13 @@ namespace Character
 			return;
 
 		actframe = 0;
-		elapsed = 0;
+		stelapsed = 0;
 		actionstr = acstr;
 		action = DataFactory::get().getdrawinfo().getaction(acstr, 0);
 		if (action)
 		{
-			stance = action->getstance();
-			frame = action->getframe();
+			stance.set(action->getstance());
+			stframe.set(action->getframe());
 		}
 	}
 

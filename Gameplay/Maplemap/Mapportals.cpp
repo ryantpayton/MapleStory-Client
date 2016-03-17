@@ -104,7 +104,7 @@ namespace Gameplay
 	Point<int16_t> MapPortals::getspawnpoint(uint8_t pid) const
 	{
 		if (portals.count(pid))
-			return portals.at(pid).getposition() - Point<int16_t>(0, 40);
+			return portals.at(pid).getposition() - Point<int16_t>(0, 30);
 		else
 			return Point<int16_t>();
 	}

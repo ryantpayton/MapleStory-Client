@@ -59,6 +59,17 @@ namespace Net
 		// Read a long.
 		int64_t readlong() { return read<int64_t>(); }
 
+		// Inspect a byte and check if it is 1.
+		bool inspectbool() { return inspect<int8_t>() == 1; }
+		// Inspect a byte.
+		int8_t inspectbyte() { return inspect<int8_t>(); }
+		// Inspect a short.
+		int16_t inspectshort() { return inspect<int16_t>(); }
+		// Inspect an int.
+		int32_t inspectint() { return inspect<int32_t>(); }
+		// Inspect a long.
+		int64_t inspectlong() { return inspect<int64_t>(); }
+
 		// Read an array into a buffer.
 		template <class T>
 		void readarray(T* buffer, size_t count)
@@ -94,6 +105,7 @@ namespace Net
 		}
 
 	private:
+		// Read and advance the buffer position.
 		template <typename T>
 		T read()
 		{
@@ -106,6 +118,16 @@ namespace Net
 				skip(1);
 			}
 			return static_cast<T>(all);
+		}
+
+		// Read without advancing the buffer position.
+		template <class T>
+		T inspect()
+		{
+			size_t before = pos;
+			T value = read<T>();
+			pos = before;
+			return value;
 		}
 
 		const int8_t* bytes;

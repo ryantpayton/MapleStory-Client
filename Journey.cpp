@@ -19,13 +19,14 @@
 #include "Configuration.h"
 #include "Constants.h"
 #include "Audio\AudioPlayer.h"
-#include "Net\Session.h"
+#include "Character\Char.h"
+#include "Data\DataFactory.h"
+#include "Gameplay\Stage.h"
+#include "IO\Components\DamageNumber.h"
 #include "IO\UI.h"
 #include "IO\Window.h"
-#include "Gameplay\Stage.h"
+#include "Net\Session.h"
 #include "Util\NxFiles.h"
-#include "Data\DataFactory.h"
-#include "Character\Char.h"
 #include <iostream>
 
 using Audio::AudioPlayer;
@@ -34,6 +35,8 @@ using Data::DataFactory;
 using Gameplay::Stage;
 using Gameplay::MapPortals;
 using Gameplay::MapDrops;
+using Gameplay::Skill;
+using IO::DamageNumber;
 using IO::UI;
 using IO::Window;
 using Net::Session;
@@ -75,8 +78,10 @@ Error init()
 		return AUDIO;
 
 	Char::init();
+	DamageNumber::init();
 	MapPortals::init();
 	MapDrops::init();
+	Skill::init();
 
 	DataFactory::get().init();
 	UI::get().init();

@@ -19,11 +19,15 @@
 #include "IO\Element.h"
 #include "Graphics\Text.h"
 #include <vector>
+#include <memory>
+#include <deque>
 
 namespace IO
 {
 	using std::string;
 	using std::vector;
+	using std::unique_ptr;
+	using std::deque;
 	using Graphics::Text;
 
 	struct StatusInfo
@@ -66,7 +70,9 @@ namespace IO
 		void showstatus(Text::Color color, string message);
 
 	private:
-		vector<StatusInfo> statusinfos;
+		static const size_t MAX_MESSAGES = 5;
+
+		deque<StatusInfo> statusinfos;
 	};
 
 	class ElementStatusMessenger : public Element

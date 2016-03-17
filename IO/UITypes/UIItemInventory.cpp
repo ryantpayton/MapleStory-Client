@@ -152,7 +152,7 @@ namespace IO
 	{
 		UIElement::update();
 
-		newitemtab.update(4);
+		newitemtab.update(6);
 		newitemslot.update(6);
 
 		int64_t meso = Stage::get().getplayer().getinvent().getmeso();

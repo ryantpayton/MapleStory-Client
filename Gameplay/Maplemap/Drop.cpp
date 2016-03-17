@@ -43,7 +43,7 @@ namespace Gameplay
 			break;
 		case 2:
 			state = FLOATING;
-			basey = phobj.fy;
+			basey = phobj.crnty();
 			phobj.setflag(PhysicsObject::NOGRAVITY);
 			break;
 		case 3:
@@ -67,7 +67,7 @@ namespace Gameplay
 		
 		if (state == FLOATING)
 		{
-			phobj.fy = basey + 5.0f + (cos(moved) - 1.0f) * 2.5f;
+			phobj.y = basey + 5.0f + (cos(moved) - 1.0f) * 2.5f;
 			moved = (moved < 360.0f) ? moved + 0.025f : 0.0f;
 		}
 		
@@ -76,7 +76,10 @@ namespace Gameplay
 			static const uint16_t PICKUPTIME = 48;
 
 			if (looter)
-				phobj.hspeed = looter->hspeed / 2.0 + (looter->fx - phobj.fx - 16.0) / PICKUPTIME;
+			{
+				double hdelta = looter->x - phobj.x;
+				phobj.hspeed = looter->hspeed / 2.0 + (hdelta - 16.0) / PICKUPTIME;
+			}
 
 			opacity -= 1.0f / PICKUPTIME;
 			if (opacity <= 1.0f / PICKUPTIME)

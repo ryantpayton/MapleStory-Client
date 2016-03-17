@@ -73,12 +73,14 @@ namespace Net
 		// Messaging handlers
 		handlers[SHOW_STATUS_INFO] = unique_ptr<PacketHandler>(new ShowStatusInfoHandler());
 		handlers[CHAT_RECEIVED] = unique_ptr<PacketHandler>(new ChatReceivedHandler());
+		handlers[SCROLL_RESULT] = unique_ptr<PacketHandler>(new ScrollResultHandler());
+		handlers[SERVER_MESSAGE] = unique_ptr<PacketHandler>(new ServerMessageHandler());
+		handlers[WEEK_EVENT_MESSAGE] = unique_ptr<PacketHandler>(new WeekEventMessageHandler());
 
 		// Inventory Handlers
 		handlers[MODIFY_INVENTORY] = unique_ptr<PacketHandler>(new ModifyInventoryHandler());
 		handlers[GATHER_RESULT] = unique_ptr<PacketHandler>(new GatherResultHandler());
 		handlers[SORT_RESULT] = unique_ptr<PacketHandler>(new SortResultHandler());
-		handlers[SCROLL_RESULT] = unique_ptr<PacketHandler>(new ScrollResultHandler());
 
 		// Npc Interaction Handlers
 		handlers[NPC_DIALOGUE] = unique_ptr<PacketHandler>(new NpcDialogueHandler());
@@ -89,8 +91,6 @@ namespace Net
 		handlers[ENABLE_REPORT] = unique_ptr<PacketHandler>(new NullHandler());
 		handlers[BUDDY_LIST] = unique_ptr<PacketHandler>(new NullHandler());
 		handlers[GUILD_OPERATION] = unique_ptr<PacketHandler>(new NullHandler());
-		handlers[SERVER_MESSAGE] = unique_ptr<PacketHandler>(new NullHandler());
-		handlers[WEEK_EVENT_MESSAGE] = unique_ptr<PacketHandler>(new NullHandler());
 		handlers[FAMILY_PRIV_LIST] = unique_ptr<PacketHandler>(new NullHandler());
 		handlers[SCRIPT_PROGRESS_MESSAGE] = unique_ptr<PacketHandler>(new NullHandler());
 		handlers[RECEIVE_POLICE] = unique_ptr<PacketHandler>(new NullHandler());

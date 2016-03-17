@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,68 +16,67 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Animation.h"
-#include "Util\Optional.h"
-#include "Util\rectangle2d.h"
+#include "Constants.h"
 #include <cstdint>
-#include <string>
-#include <map>
 
-namespace Character
+class TimedBool
 {
-	using std::int32_t;
-	using std::string;
-	using std::map;
-	using std::vector;
-	using Graphics::Texture;
-	using Graphics::Animation;
-
-	struct SkillLevel
+public:
+	TimedBool()
 	{
-		float chance = 0.0f;
-		float damage = 0.0f;
-		float critical = 0.0f;
-		float ignoredef = 0.0f;
-		uint8_t attackcount = 1;
-		uint8_t mobcount = 1;
-		int32_t hpcost = 0;
-		int32_t mpcost = 0;
-		rectangle2d<int16_t> range;
-	};
+		value = false;
+		delay = 0;
+	}
 
-	class Skill
+	explicit operator bool() const
 	{
-	public:
-		enum IconType
+		return value;
+	}
+
+	void setfor(uint16_t millis)
+	{
+		delay = millis;
+		value = true;
+	}
+
+	void update()
+	{
+		update(Constants::TIMESTEP);
+	}
+
+	void update(uint16_t timestep)
+	{
+		if (value)
 		{
-			NORMAL,
-			MOUSEOVER,
-			DISABLED
-		};
+			if (timestep >= delay)
+			{
+				value = false;
+				delay = 0;
+			}
+			else
+			{
+				delay -= timestep;
+			}
+		}
+	}
 
-		Skill(int32_t);
-		Skill();
-		~Skill();
+	void operator = (bool b)
+	{
+		value = b;
+		delay = 0;
+	}
 
-		bool isoffensive() const;
-		int32_t getid() const;
-		string getaction(bool twohanded) const;
+	bool operator == (bool b)
+	{
+		return value == b;
+	}
 
-		Animation gethitanimation(bool twohanded) const;
-		Animation geteffect(bool twohanded) const;
-		const Texture& geticon(IconType type) const;
-		const SkillLevel* getlevel(int32_t level) const;
+	bool operator != (bool b)
+	{
+		return value != b;
+	}
 
-	private:
-		int32_t id;
-		map<IconType, Texture> icons;
-		vector<Animation> effects;
-		vector<Animation> hit;
-		Animation affected;
-		string preparestance;
-		int32_t preparetime;
-		bool offensive;
-		vector<string> actions;
-		map<int32_t, SkillLevel> levels;
-	};
-}
+private:
+	uint16_t delay;
+	bool value;
+};

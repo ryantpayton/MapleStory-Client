@@ -52,10 +52,8 @@ namespace Character
 		}
 		setstate(byvalue(laststate));
 
-		phobj.lastx = phobj.fx;
-		phobj.lasty = phobj.fy;
-		phobj.fx = lastmove.xpos;
-		phobj.fy = lastmove.ypos;
+		phobj.x = lastmove.xpos;
+		phobj.y = lastmove.ypos;
 
 		physics.getfht().updatefh(phobj);
 

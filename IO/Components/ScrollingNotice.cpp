@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,40 +15,49 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Util\Interpolated.h"
-#include "Util\Point.h"
-#include "Util\Range.h"
-#include <cstdint>
+#include "ScrollingNotice.h"
+#include "Constants.h"
 
-namespace Gameplay
+#include "Graphics\GraphicsGL.h"
+
+namespace IO
 {
-	// View on stage which follows the player object.
-	class Camera
+	using Graphics::GraphicsGL;
+
+	ScrollingNotice::ScrollingNotice()
 	{
-	public:
-		// Initialize everything to 0, we need the player's spawnpoint first to properly set the position.
-		Camera();
-		// Empty destructor.
-		~Camera();
+		notice = Text(Text::A12M, Text::LEFT, Text::YELLOW);
+		xpos.set(0.0f);
+		active = false;
+	}
 
-		// Update the view with the current player position. (Or any other target)
-		void update(Point<int16_t> position);
-		// Set the position, changing the view immediatly.
-		void setposition(Point<int16_t> position);
-		// Updates the view's boundaries. Determined by mapinfo or footholds.
-		void updateview(Range<int16_t> hborders, Range<int16_t> vborders);
-		// Return the current position for drawing.
-		Point<int16_t> getposition(float inter) const;
+	void ScrollingNotice::setnotice(string n)
+	{
+		notice.settext(n);
+		xpos.set(800.0f);
+		active = n.size() > 0;
+	}
 
-	private:
-		// Movement variables.
-		Linear<double> x;
-		Linear<double> y;
+	void ScrollingNotice::draw(float alpha) const
+	{
+		if (active)
+		{
+			GraphicsGL::get().drawrectangle(0, -Constants::VIEWYOFFSET, 800, 20, 0.0f, 0.0f, 0.0f, 0.5f);
+			int16_t interx = static_cast<int16_t>(xpos.get(alpha));
+			auto position = Point<int16_t>(interx, -Constants::VIEWYOFFSET - 2);
+			notice.draw(position);
+		}
+	}
 
-		// View limits.
-		Range<int16_t> hbounds;
-		Range<int16_t> vbounds;
-	};
+	void ScrollingNotice::update()
+	{
+		if (active)
+		{
+			xpos -= 0.5f;
+			if (xpos < -notice.width())
+			{
+				xpos.set(800.0f);
+			}
+		}
+	}
 }
-

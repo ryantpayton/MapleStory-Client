@@ -160,8 +160,8 @@ namespace Character
 
 	void PetLook::setposition(int16_t x, int16_t y)
 	{
-		phobj.fx = static_cast<float>(x);
-		phobj.fy = static_cast<float>(y);
+		phobj.setx(x);
+		phobj.sety(y);
 	}
 
 	void PetLook::setstance(Stance st)

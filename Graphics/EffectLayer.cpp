@@ -19,23 +19,28 @@
 
 namespace Graphics
 {
-	void EffectLayer::draw(Point<int16_t> position, float inter) const
+	void EffectLayer::draw(Point<int16_t> position, float alpha) const
 	{
 		for (auto& effect : effects)
 		{
-			effect.draw(position, inter);
+			effect.draw(position, alpha);
 		}
 	}
 
 	void EffectLayer::update()
 	{
-		effects.remove_if([](Animation& animation){
-			return animation.update();
+		effects.remove_if([](Effect& effect){
+			return effect.animation.update();
 		});
+	}
+
+	void EffectLayer::add(Animation animation, bool flip)
+	{
+		effects.push_back({ animation, flip });
 	}
 
 	void EffectLayer::add(Animation animation)
 	{
-		effects.push_back(animation);
+		add(animation, false);
 	}
 }

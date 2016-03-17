@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,39 +16,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Graphics\Text.h"
 #include "Util\Interpolated.h"
-#include "Util\Point.h"
-#include "Util\Range.h"
-#include <cstdint>
 
-namespace Gameplay
+namespace IO
 {
-	// View on stage which follows the player object.
-	class Camera
+	using Graphics::Text;
+
+	class ScrollingNotice
 	{
 	public:
-		// Initialize everything to 0, we need the player's spawnpoint first to properly set the position.
-		Camera();
-		// Empty destructor.
-		~Camera();
+		ScrollingNotice();
 
-		// Update the view with the current player position. (Or any other target)
-		void update(Point<int16_t> position);
-		// Set the position, changing the view immediatly.
-		void setposition(Point<int16_t> position);
-		// Updates the view's boundaries. Determined by mapinfo or footholds.
-		void updateview(Range<int16_t> hborders, Range<int16_t> vborders);
-		// Return the current position for drawing.
-		Point<int16_t> getposition(float inter) const;
+		void setnotice(string notice);
+		void draw(float alpha) const;
+		void update();
 
 	private:
-		// Movement variables.
-		Linear<double> x;
-		Linear<double> y;
-
-		// View limits.
-		Range<int16_t> hbounds;
-		Range<int16_t> vbounds;
+		Text notice;
+		Linear<float> xpos;
+		bool active;
 	};
 }
-

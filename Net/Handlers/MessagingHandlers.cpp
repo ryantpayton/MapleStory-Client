@@ -16,26 +16,27 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "MessagingHandlers.h"
+
 #include "Character\Char.h"
+#include "Data\DataFactory.h"
 #include "Gameplay\Stage.h"
 #include "IO\UI.h"
 #include "IO\Messages.h"
 #include "IO\UITypes\UIStatusMessenger.h"
 #include "IO\UITypes\UIStatusbar.h"
-#include "Data\DataFactory.h"
 
 namespace Net
 {
+	using Character::ItemData;
+	using Character::Char;
+	using Data::DataFactory;
+	using Gameplay::Stage;
 	using IO::UI;
 	using IO::Messages;
 	using IO::Chatbar;
 	using IO::UIElement;
 	using IO::UIStatusMessenger;
 	using IO::UIStatusbar;
-	using Character::ItemData;
-	using Character::Char;
-	using Data::DataFactory;
-	using Gameplay::Stage;
 
 	// Modes:
 	// 0 - Item(0) or Meso(1) 
@@ -169,5 +170,40 @@ namespace Net
 			UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::displaymessage, message, Chatbar::RED);
 			UI::get().enable();
 		}
+	}
+
+	void ServerMessageHandler::handle(InPacket& recv) const
+	{
+		int8_t type = recv.readbyte();
+		bool servermessage = recv.inspectbool();
+		if (servermessage)
+			recv.skip(1);
+		string message = recv.readascii();
+		
+		if (type == 3)
+		{
+			int8_t channel = recv.readbyte();
+			bool megaphone = recv.readbool();
+		}
+		else if (type == 4)
+		{
+			UI::get().setscrollingnotice(message);
+		}
+		else if (type == 7)
+		{
+			int32_t npcid = recv.readint();
+		}
+	}
+
+	void WeekEventMessageHandler::handle(InPacket& recv) const
+	{
+		recv.readbyte(); // always 0xFF in solaxia and moople
+		string message = recv.readascii();
+
+		static const string MAPLETIP = "[MapleTip]";
+		if (message.substr(0, MAPLETIP.length()).compare("[MapleTip]"))
+			message = "[Notice] " + message;
+
+		UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::sendchatline, message, Chatbar::YELLOW);
 	}
 }

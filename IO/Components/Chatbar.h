@@ -59,7 +59,8 @@ namespace IO
 			UNK0,
 			WHITE,
 			RED,
-			BLUE
+			BLUE,
+			YELLOW
 		};
 
 		Chatbar(Point<int16_t> position);

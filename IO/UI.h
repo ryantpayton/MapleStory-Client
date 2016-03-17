@@ -23,6 +23,7 @@
 
 #include "Components\Icon.h"
 #include "Components\Textfield.h"
+#include "Components\ScrollingNotice.h"
 
 #include "Util\Singleton.h"
 #include "Util\Optional.h"
@@ -54,6 +55,7 @@ namespace IO
 		void doubleclick();
 		void sendkey(int32_t keycode, bool pressed);
 
+		void setscrollingnotice(string notice);
 		void focustextfield(Textfield* textfield);
 		void dragicon(Icon* icon);
 
@@ -83,6 +85,7 @@ namespace IO
 		unique_ptr<UIState> state;
 		Keyboard keyboard;
 		Cursor cursor;
+		ScrollingNotice scrollingnotice;
 
 		Optional<Textfield> focusedtextfield;
 		unordered_map<int32_t, bool> keydown;

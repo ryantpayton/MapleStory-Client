@@ -55,22 +55,14 @@ namespace Character
 		}
 		else
 		{
-			PhysicsObject::Type phtype = player.getphobj().type;
-			if (phtype == PhysicsObject::FLYING || phtype == PhysicsObject::SWIMMING)
+			Optional<const Ladder> ladder = player.getladder();
+			if (ladder)
 			{
-				state = Char::SWIM;
+				state = ladder->isladder() ? Char::LADDER : Char::ROPE;
 			}
 			else
 			{
-				Optional<const Ladder> ladder = player.getladder();
-				if (ladder)
-				{
-					state = ladder->isladder() ? Char::LADDER : Char::ROPE;
-				}
-				else
-				{
-					state = Char::FALL;
-				}
+				state = Char::FALL;
 			}
 		}
 		player.setstate(state);
@@ -85,6 +77,9 @@ namespace Character
 
 	void PlayerStandState::sendaction(Player& player, Keyboard::Action ka, bool down) const
 	{
+		if (player.isattacking())
+			return;
+
 		if (down)
 		{
 			switch (ka)
@@ -125,6 +120,9 @@ namespace Character
 
 	void PlayerWalkState::sendaction(Player& player, Keyboard::Action ka, bool down) const
 	{
+		if (player.isattacking())
+			return;
+
 		if (down)
 		{
 			switch (ka)
@@ -153,10 +151,7 @@ namespace Character
 
 	void PlayerWalkState::update(Player& player) const
 	{
-		if (player.isattacking())
-			return;
-
-		if (haswalkinput(player))
+		if (!player.isattacking() && haswalkinput(player))
 			player.getphobj().hforce += player.getflip() ? player.getwforce() : -player.getwforce();
 	}
 
@@ -216,7 +211,7 @@ namespace Character
 				if (player.getphobj().enablejd && player.keydown(Keyboard::DOWN))
 				{
 					playjumpsound();
-					player.getphobj().fy = player.getphobj().groundbelow;
+					player.getphobj().y = player.getphobj().groundbelow;
 					player.setstate(Char::FALL);
 				}
 				else
@@ -290,6 +285,9 @@ namespace Character
 
 	void PlayerFlyState::update(Player& player) const
 	{
+		if (player.isattacking())
+			return;
+
 		if (player.keydown(Keyboard::LEFT))
 			player.getphobj().hforce = -player.getflyforce();
 		else if (player.keydown(Keyboard::RIGHT))
@@ -346,7 +344,7 @@ namespace Character
 				{
 					playjumpsound();
 					player.setflip(false);
-					player.getphobj().hspeed = -player.getwforce() * 3.0f;
+					player.getphobj().hspeed = -player.getwforce() * 8.0f;
 					player.getphobj().vforce = -player.getjforce() / 1.5f;
 					cancelladder(player);
 				}
@@ -354,7 +352,7 @@ namespace Character
 				{
 					playjumpsound();
 					player.setflip(true);
-					player.getphobj().hspeed = player.getwforce() * 3.0f;
+					player.getphobj().hspeed = player.getwforce() * 8.0f;
 					player.getphobj().vforce = -player.getjforce() / 1.5f;
 					cancelladder(player);
 				}
@@ -381,7 +379,7 @@ namespace Character
 
 	void PlayerClimbState::nextstate(Player& player) const
 	{
-		int16_t y = static_cast<int16_t>(player.getphobj().fy);
+		int16_t y = player.getphobj().gety();
 		bool downwards = player.keydown(Keyboard::DOWN);
 		bool felloff = player.getladder()
 			.maporfalse(&Ladder::felloff, y, downwards);

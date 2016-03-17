@@ -22,58 +22,63 @@ namespace Gameplay
 {
 	Camera::Camera()
 	{
-		fx = 0.0;
-		fy = 0.0;
-		lastx = 0.0;
-		lasty = 0.0;
+		x.set(0.0);
+		y.set(0.0);
 	}
 
 	Camera::~Camera() {}
 
 	void Camera::update(Point<int16_t> position)
 	{
-		static const double hspeed = 12.0 / Constants::VIEWWIDTH;
-		static const double vspeed = 12.0 / Constants::VIEWHEIGHT;
+		double hdelta = Constants::VIEWWIDTH / 2 - position.x() - x.get();
+		if (std::abs(hdelta) < 1.0)
+			hdelta = 0.0;
 
-		double destx = Constants::VIEWWIDTH / 2 - position.x();
-		double desty = Constants::VIEWHEIGHT / 2 - position.y();
+		double vdelta = Constants::VIEWHEIGHT / 2 - position.y() - y.get();
+		if (std::abs(vdelta) < 1.0)
+			vdelta = 0.0;
 
-		lastx = fx;
-		lasty = fy;
+		double nextx = x + hdelta * (12.0 / Constants::VIEWWIDTH);
+		double nexty = y + vdelta * (12.0 / Constants::VIEWHEIGHT);
 
-		if (abs(destx - fx) > 1.0)
-			fx += hspeed * (destx - fx);
+		if (nextx > hbounds.first() || hbounds.length() < Constants::VIEWWIDTH)
+		{
+			nextx = hbounds.first();
+		}
+		else if (nextx < hbounds.second() + Constants::VIEWWIDTH)
+		{
+			nextx = hbounds.second() + Constants::VIEWWIDTH;
+		}
 
-		if (abs(desty - fy) > 1.0)
-			fy += vspeed * (desty - fy);
+		if (nexty > vbounds.first() || vbounds.length() < Constants::VIEWHEIGHT)
+		{
+			nexty = vbounds.first();
+		}
+		else if (nexty < vbounds.second() + Constants::VIEWHEIGHT)
+		{
+			nexty = vbounds.second() + Constants::VIEWHEIGHT;
+		}
 
-		if (fx > hbounds.first() || hbounds.length() < Constants::VIEWWIDTH)
-			fx = hbounds.first();
-		else if (fx < hbounds.second() + Constants::VIEWWIDTH)
-			fx = hbounds.second() + Constants::VIEWWIDTH;
-
-		if (fy > vbounds.first() || vbounds.length() < Constants::VIEWHEIGHT)
-			fy = vbounds.first();
-		else if (fy < vbounds.second() + Constants::VIEWHEIGHT)
-			fy = vbounds.second() + Constants::VIEWHEIGHT;
+		x = nextx;
+		y = nexty;
 	}
 
 	void Camera::setposition(Point<int16_t> position)
 	{
-		fx = Constants::VIEWWIDTH / 2 - position.x();
-		fy = Constants::VIEWHEIGHT / 2 - position.y();
+		x.set(Constants::VIEWWIDTH / 2 - position.x());
+		y.set(Constants::VIEWHEIGHT / 2 - position.y());
 	}
 
 	void Camera::updateview(Range<int16_t> mapwalls, Range<int16_t> mapborders)
 	{
 		hbounds = Range<int16_t>(-mapwalls.first() - 10, -mapwalls.second() + 10);
-		vbounds = -mapborders;
+		vbounds = Range<int16_t>(-mapborders.first() - Constants::VIEWYOFFSET * 3 - 1, -mapborders.second() - Constants::VIEWYOFFSET * 3 - 1);
 	}
 
-	Point<int16_t> Camera::getposition(float inter) const
+	Point<int16_t> Camera::getposition(float alpha) const
 	{
-		int16_t interx = static_cast<int16_t>((1.0f - inter) * lastx + inter * fx);
-		int16_t intery = static_cast<int16_t>((1.0f - inter) * lasty + inter * fy);
+		int16_t interx = static_cast<int16_t>(x.get(alpha));
+		int16_t intery = static_cast<int16_t>(y.get(alpha));
 		return Point<int16_t>(interx, intery);
 	}
 }

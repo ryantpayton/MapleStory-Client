@@ -109,12 +109,4 @@ namespace Data
 
 		return weapons[itemid];
 	}
-
-	const Skill& DataFactory::getskill(int32_t skillid)
-	{
-		if (!skills.count(skillid))
-			skills[skillid] = Skill(skillid);
-
-		return skills[skillid];
-	}
 }

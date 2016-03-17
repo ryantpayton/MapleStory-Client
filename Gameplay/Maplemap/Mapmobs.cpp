@@ -23,21 +23,29 @@
 
 #include "Util\BinaryTree.h"
 
-#include <algorithm>
-
 namespace Gameplay
 {
 	void MapMobs::draw(int8_t layer, Point<int16_t> viewpos, float alpha) const
 	{
-		if (layer == 7)
+		MapObjects::draw(layer, viewpos, alpha);
+
+		switch (layer)
 		{
+		case 7:
 			for (auto& mb : missbullets)
 			{
 				mb.draw(viewpos, alpha);
 			}
+			for (auto& mmo : objects)
+			{
+				const Mob* mob = reinterpret_cast<const Mob*>(mmo.second.get());
+				if (mob)
+				{
+					mob->draweffects(viewpos, alpha);
+				}
+			}
+			break;
 		}
-
-		MapObjects::draw(layer, viewpos, alpha);
 	}
 
 	void MapMobs::update(const Physics& physics)
@@ -47,12 +55,8 @@ namespace Gameplay
 			if (apply)
 			{
 				applyattack(attack);
-				return true;
 			}
-			else
-			{
-				return false;
-			}
+			return apply;
 		});
 
 		missbullets.remove_if([](MissBullet& mb){ 
@@ -108,18 +112,8 @@ namespace Gameplay
 			break;
 		}
 
-		vector<int32_t> targets;
-		switch (attack.type)
-		{
-		case Attack::CLOSE:
-			targets = findclose(range, mobcount);
-			break;
-		case Attack::RANGED:
-			targets = findranged(range, origin, mobcount);
-			break;
-		}
-
-		AttackResult result = AttackResult(attack);
+		vector<int32_t> targets = findclosest(range, origin, mobcount);
+		AttackResult result = attack;
 		for (auto& target : targets)
 		{
 			Optional<Mob> mob = getmob(target);
@@ -154,7 +148,8 @@ namespace Gameplay
 		}
 	}
 
-	vector<int32_t> MapMobs::findclose(rectangle2d<int16_t> range, uint8_t mobcount) const
+	// Not sure if I need this, maybe for AOE?
+	/*vector<int32_t> MapMobs::findclose(rectangle2d<int16_t> range, uint8_t mobcount) const
 	{
 		vector<int32_t> targets;
 		for (auto& object : objects)
@@ -174,9 +169,9 @@ namespace Gameplay
 			}
 		}
 		return targets;
-	}
+	}*/
 
-	vector<int32_t> MapMobs::findranged(rectangle2d<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const
+	vector<int32_t> MapMobs::findclosest(rectangle2d<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const
 	{
 		BinaryTree<int32_t, int16_t> distancetree;
 		for (auto& object : objects)

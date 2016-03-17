@@ -20,9 +20,9 @@
 #include "Hair.h"
 #include "Face.h"
 #include "CharEquips.h"
-
 #include "Gameplay\Attack.h"
 #include "Net\Login.h"
+#include "Util\Interpolated.h"
 #include "Util\Randomizer.h"
 
 namespace Character
@@ -65,21 +65,23 @@ namespace Character
 		void updatetwohanded();
 		void draw(Point<int16_t> position, bool flip, Stance::Value interstance, 
 			Expression::Value interexp, uint8_t interframe, uint8_t interfcframe) const;
+		uint16_t getdelay(Stance::Value stance, uint8_t frame) const;
+		uint8_t getnextframe(Stance::Value stance, uint8_t frame) const;
 		Stance::Value getattackstance(uint8_t attack, bool degenerate) const;
 
-		Stance::Value stance;
-		uint8_t frame;
-		uint16_t elapsed;
+		Nominal<Stance::Value> stance;
+		Nominal<uint8_t> stframe;
+		uint16_t stelapsed;
 
-		Expression::Value expression;
-		uint8_t fcframe;
-		uint16_t fcelapsed;
+		Nominal<Expression::Value> expression;
+		Nominal<uint8_t> expframe;
+		uint16_t expelapsed;
+
+		bool flip;
 
 		const BodyAction* action;
 		string actionstr;
 		uint8_t actframe;
-
-		bool flip;
 
 		const Body* body;
 		const Hair* hair;
@@ -87,13 +89,6 @@ namespace Character
 		CharEquips equips;
 
 		Randomizer randomizer;
-
-		Stance::Value laststance;
-		uint8_t lastframe;
-		uint16_t lastelapsed;
-		Expression::Value lastexpression;
-		uint8_t lastfcframe;
-		uint16_t lastfcelapsed;
 	};
 }
 
