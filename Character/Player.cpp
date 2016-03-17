@@ -251,10 +251,7 @@ namespace Character
 			if (state == PRONE)
 				return false;
 
-			if (skill.isoffensive())
-				return canattack();
-
-			return true;
+			return canattack();
 		}
 		else
 		{

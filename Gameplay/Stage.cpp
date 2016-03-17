@@ -313,7 +313,7 @@ namespace Gameplay
 			playable->sendaction(Keyboard::actionbyid(action), down);
 			break;
 		case Keyboard::SKILL:
-			useskill(1121008);
+			useskill(action);
 			break;
 		case Keyboard::ITEM:
 			player.useitem(action);

@@ -137,6 +137,7 @@ namespace Gameplay
 			Sound hitsound;
 			Attack::Direction direction;
 			vector<uint16_t> hitdelays;
+			uint16_t firstdelay;
 
 			vector<pair<int32_t, bool>> numbers;
 			int32_t total;

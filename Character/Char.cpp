@@ -47,9 +47,6 @@ namespace Character
 		namelabel.draw(absp);
 		chatballoon.draw(absp);
 
-		if (flip)
-			absp.shiftx(8);
-
 		effects.draw(absp, inter);
 	}
 

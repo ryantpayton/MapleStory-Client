@@ -59,7 +59,7 @@ namespace Gameplay
 
 		actions[false] = src["action"]["0"];
 		actions[true] = src["action"]["1"];
-		oneaction = actions[false] == "";
+		oneaction = actions[true] == "";
 
 		affected = src["affected"];
 
@@ -159,8 +159,8 @@ namespace Gameplay
 
 	void Skill::init()
 	{
-		attackframes[BRANDISH][false] = { 3, 5 };
-		attackframes[BRANDISH][true] = { 2, 6 };
+		attackframes[BRANDISH][true] = { 3, 5 };
+		attackframes[BRANDISH][false] = { 2, 6 };
 	}
 	unordered_map<int32_t, BoolPair<vector<int16_t>>> Skill::attackframes;
 }

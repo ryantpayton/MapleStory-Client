@@ -588,6 +588,7 @@ namespace Gameplay
 		hitsound = attack.hitsound;
 		direction = attack.direction;
 		hitdelays = attack.hitdelays;
+		firstdelay = attack.delay;
 	}
 
 	void Mob::AttackEffect::push_back(pair<int32_t, bool> number)
@@ -628,7 +629,7 @@ namespace Gameplay
 				delay = 0;
 			}
 
-			auto singleeffect = SingleEffect(damagenumber, hiteffect, hitsound, delay);
+			auto singleeffect = SingleEffect(damagenumber, hiteffect, hitsound, delay - firstdelay);
 			singleeffects.push(singleeffect);
 
 			int16_t vspace = critical ? 36 : 30;
