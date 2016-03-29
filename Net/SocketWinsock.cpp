@@ -100,6 +100,11 @@ namespace Net
 		return error != SOCKET_ERROR;
 	}
 
+	bool SocketWinsock::dispatch(const int8_t* bytes, size_t length) const
+	{
+		return send(sock, (char*)bytes, static_cast<int>(length), 0) != SOCKET_ERROR;
+	}
+
 	size_t SocketWinsock::receive(bool* success)
 	{
 		timeval timeout = { 0, 1000 };
@@ -108,7 +113,7 @@ namespace Net
 		int result = select(0, &sockset, 0, 0, &timeout);
 		if (result > 0)
 		{
-			result = recv(sock, (char*)buffer, 10240, 0);
+			result = recv(sock, (char*)buffer, MAX_PACKET_LENGTH, 0);
 		}
 		if (result == SOCKET_ERROR)
 		{
@@ -121,14 +126,9 @@ namespace Net
 		}
 	}
 
-	const int8_t* SocketWinsock::getbuffer()
+	const int8_t* SocketWinsock::getbuffer() const
 	{
 		return buffer;
-	}
-
-	bool SocketWinsock::dispatch(const int8_t* bytes, size_t length)
-	{
-		return send(sock, (char*)bytes, static_cast<int>(length), 0) != SOCKET_ERROR;
 	}
 }
 #endif

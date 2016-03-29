@@ -30,6 +30,23 @@ namespace Character
 		using nl::node;
 		node src = nl::nx::character["Weapon"]["0" + std::to_string(equipid) + ".img"]["info"];
 
+		attackspeed = static_cast<uint8_t>(src["attackSpeed"]);
+		attack = static_cast<uint8_t>(src["attack"]);
+
+		node soundsrc = nl::nx::sound["Weapon.img"][src["sfx"]];
+
+		bool twosounds = soundsrc["Attack2"].data_type() == node::type::audio;
+		if (twosounds)
+		{
+			usesounds[false] = soundsrc["Attack"];
+			usesounds[true] = soundsrc["Attack2"];
+		}
+		else
+		{
+			usesounds[false] = soundsrc["Attack"];
+			usesounds[true] = soundsrc["Attack"];
+		}
+
 		int32_t standno = src["stand"];
 		switch (standno)
 		{
@@ -55,13 +72,15 @@ namespace Character
 			walk = twohanded ? Stance::WALK2 : Stance::WALK1;
 		}
 
-		afterimage = src["afterImage"];
-		attackspeed = static_cast<uint8_t>(src["attackSpeed"]);
-		attack = static_cast<uint8_t>(src["attack"]);
-
-		node soundsrc = nl::nx::sound["Weapon.img"][src["sfx"]];
-		firstattack = soundsrc["Attack"];
-		secondattack = soundsrc["Attack2"];
+		string ainame = src["afterImage"];
+		int16_t lvprefix = getreqstat(Maplestat::LEVEL) / 10;
+		string prefixstr = std::to_string(lvprefix);
+		string fullname = ainame + prefixstr;
+		if (!afterimages.count(fullname))
+		{
+			afterimages[fullname] = nl::nx::character["Afterimage"][ainame + ".img"][prefixstr];
+		}
+		afterimage = afterimages.at(fullname);
 	}
 
 	Weapon::Weapon()
@@ -69,29 +88,9 @@ namespace Character
 		type = NONE;
 	}
 
-	Weapon::Type Weapon::gettype() const
-	{
-		return type;
-	}
-
-	Stance::Value Weapon::getstand() const
-	{
-		return stand;
-	}
-
-	Stance::Value Weapon::getwalk() const
-	{
-		return walk;
-	}
-
 	bool Weapon::istwohanded() const
 	{
 		return twohanded;
-	}
-
-	string Weapon::getafterimage() const
-	{
-		return afterimage;
 	}
 
 	uint8_t Weapon::getspeed() const
@@ -139,39 +138,89 @@ namespace Character
 			return 50 - 25 / attackspeed;
 	}
 
-	rectangle2d<int16_t> Weapon::getrange() const
+	rectangle2d<int16_t> Weapon::getrange(Stance::Value stance) const
 	{
-		switch (type)
+		return afterimage.range(stance);
+	}
+
+	Weapon::Type Weapon::gettype() const
+	{
+		return type;
+	}
+
+	Stance::Value Weapon::getstand() const
+	{
+		return stand;
+	}
+
+	Stance::Value Weapon::getwalk() const
+	{
+		return walk;
+	}
+
+	Sound Weapon::getusesound(bool degenerate) const
+	{
+		return usesounds[degenerate];
+	}
+
+	Weapon::AfterImage Weapon::getafterimage(Stance::Value stance) const
+	{
+		return afterimage.get(stance);
+	}
+
+	unordered_map<string, Weapon::AfterImageStances> Weapon::afterimages;
+
+
+	Weapon::AfterImage::AfterImage(node src)
+	{
+		for (node sub : src)
 		{
-		case SWORD_1H:
-		case AXE_1H:
-		case MACE_1H:
-		case KNUCKLE:
-		case DAGGER:
-		case BOW:
-		case CROSSBOW:
-		case GUN:
-		case CLAW:
-			return rectangle2d<int16_t>(-75, -5, -50, 0);
-		case SWORD_2H:
-		case AXE_2H:
-		case MACE_2H:
-			return rectangle2d<int16_t>(-100, -5, -50, 0);
-		case SPEAR:
-		case POLEARM:
-			return rectangle2d<int16_t>(-125, -5, -50, 0);
-		default:
-			return rectangle2d<int16_t>();
+			uint8_t frame = StringConversion<uint8_t>(sub.name())
+				.ordefault(255);
+			if (frame < 255)
+			{
+				animation = sub;
+				firstframe = frame;
+			}
+		}
+
+		range = src;
+		displayed = false;
+	}
+
+	Weapon::AfterImage::AfterImage() 
+	{
+		firstframe = 0;
+		displayed = true;
+	}
+
+	void Weapon::AfterImage::draw(uint8_t stframe, const DrawArgument& args, float alpha) const
+	{
+		if (!displayed && stframe >= firstframe)
+		{
+			animation.draw(args, alpha);
 		}
 	}
 
-	Animation Weapon::gethiteffect() const
+	void Weapon::AfterImage::update(uint8_t stframe, uint16_t timestep)
 	{
-		return Animation();
+		if (!displayed && stframe >= firstframe)
+		{
+			bool ended = animation.update(timestep);
+			if (ended)
+			{
+				displayed = true;
+			}
+		}
 	}
 
-	const Sound& Weapon::getsound(bool degenerate) const
+	uint8_t Weapon::AfterImage::getfirstframe() const
 	{
-		return degenerate ? secondattack : firstattack;
+		return firstframe;
+	}
+
+	rectangle2d<int16_t> Weapon::AfterImage::getrange() const
+	{
+		return range;
 	}
 }

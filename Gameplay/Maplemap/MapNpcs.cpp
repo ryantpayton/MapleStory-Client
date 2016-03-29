@@ -17,13 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MapNpcs.h"
 
-#include "Net\Session.h"
 #include "Net\Packets\NpcInteractionPackets.h"
 
 namespace Gameplay
 {
-	using Net::Session;
-
 	void MapNpcs::sendspawn(const NpcSpawn& spawn, const Physics& physics)
 	{
 		int32_t oid = spawn.getoid();
@@ -56,7 +53,7 @@ namespace Gameplay
 				{
 					// try finding dialogue first
 					using Net::TalkToNPCPacket;
-					Session::get().dispatch(TalkToNPCPacket(npc->getoid()));
+					TalkToNPCPacket(npc->getoid()).dispatch();
 					return Cursor::IDLE;
 				}
 				else

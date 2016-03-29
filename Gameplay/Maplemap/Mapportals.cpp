@@ -62,9 +62,9 @@ namespace Gameplay
 		for (uint8_t pid = 0; pid < numportals; pid++)
 		{
 			Portal::Type type = Portal::typebyid(recv.readint());
-			string name = recv.readascii();
+			string name = recv.read<string>();
 			int32_t targetid = recv.readint();
-			string targetname = recv.readascii();
+			string targetname = recv.read<string>();
 			Point<int16_t> pos = recv.readpoint();
 
 			portals[pid] = Portal(&animations[type], type, name, targetid == 0, pos, targetid, targetname);

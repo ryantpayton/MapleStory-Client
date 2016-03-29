@@ -16,72 +16,82 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Cryptography.h"
-#include "Journey.h"
-
-#ifndef JOURNEY_USE_CRYPTO
 
 namespace Net
 {
+	Cryptography::Cryptography(const int8_t* handshake) 
+	{
+#ifdef JOURNEY_USE_CRYPTO
+		for (size_t i = 0; i < HEADER_LENGTH; i++)
+		{
+			sendiv[i] = handshake[i + 7];
+		}
+
+		for (size_t i = 0; i < HEADER_LENGTH; i++)
+		{
+			recviv[i] = handshake[i + 11];
+		}
+#endif
+	}
+
 	Cryptography::Cryptography() {}
 
 	Cryptography::~Cryptography() {}
 
-	size_t Cryptography::getlength(const int8_t* bytes) const
+	void Cryptography::encrypt(int8_t* bytes, size_t length)
 	{
-		size_t length = 0;
-		for (int32_t i = 0; i < HEADERLEN; i++)
-		{
-			length += static_cast<uint8_t>(bytes[i]) << (8 * i);
-		}
-		return length;
+#ifdef JOURNEY_USE_CRYPTO
+		mapleencrypt(bytes, length);
+		aesofb(bytes, length, sendiv);
+#endif
 	}
 
-	void Cryptography::getheader(int8_t* buffer, size_t slength) const
+	void Cryptography::decrypt(int8_t* bytes, size_t length) 
 	{
+#ifdef JOURNEY_USE_CRYPTO
+		aesofb(bytes, length, recviv);
+		mapledecrypt(bytes, length);
+#endif
+	}
+
+	void Cryptography::getheader(int8_t* buffer, size_t length) const
+	{
+#ifdef JOURNEY_USE_CRYPTO
+		static const uint8_t MAPLEVERSION = 83;
+
+		size_t a = ((sendiv[3] << 8) | sendiv[2]) ^ MAPLEVERSION;
+		size_t b = a ^ length;
+		buffer[0] = static_cast<int8_t>(a % 0x100);
+		buffer[1] = static_cast<int8_t>(a / 0x100);
+		buffer[2] = static_cast<int8_t>(b % 0x100);
+		buffer[3] = static_cast<int8_t>(b / 0x100);
+#else
 		int32_t length = static_cast<int32_t>(slength);
 		for (int32_t i = 0; i < HEADERLEN; i++)
 		{
 			buffer[i] = static_cast<int8_t>(length);
 			length = length >> 8;
 		}
+#endif
 	}
-}
-#else
-
-namespace Net
-{
-	Cryptography::Cryptography() {}
-
-	Cryptography::~Cryptography() {}
 
 	size_t Cryptography::getlength(const int8_t* bytes) const
 	{
+#ifdef JOURNEY_USE_CRYPTO
 		uint32_t headermask = 0;
 		for (size_t i = 0; i < 4; i++)
 		{
 			headermask |= static_cast<uint8_t>(bytes[i]) << (8 * i);
 		}
 		return static_cast<int16_t>((headermask >> 16) ^ (headermask & 0xFFFF));
-	}
-
-	void Cryptography::encrypt(int8_t* bytes, size_t packetlen, uint8_t* sendiv) const
-	{
-		static const uint8_t MAPLEVERSION = 83;
-
-		size_t a = ((sendiv[3] << 8) | sendiv[2]) ^ MAPLEVERSION;
-		size_t b = a ^ packetlen;
-		bytes[0] = static_cast<int8_t>(a % 0x100);
-		bytes[1] = static_cast<int8_t>(a / 0x100);
-		bytes[2] = static_cast<int8_t>(b % 0x100);
-		bytes[3] = static_cast<int8_t>(b / 0x100);
-		mapleencrypt(bytes + 4, packetlen);
-		aesofb(bytes + 4, packetlen, sendiv);
-	}
-
-	void Cryptography::decrypt(int8_t* bytes, size_t length, uint8_t* recviv) const
-	{
-		aesofb(bytes, length, recviv);
-		mapledecrypt(bytes, length);
+#else
+		size_t length = 0;
+		for (int32_t i = 0; i < HEADERLEN; i++)
+		{
+			length += static_cast<uint8_t>(bytes[i]) << (8 * i);
+		}
+		return length;
+#endif
 	}
 
 	void Cryptography::mapleencrypt(int8_t* bytes, size_t length) const
@@ -366,4 +376,3 @@ namespace Net
 		}
 	}
 }
-#endif

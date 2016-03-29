@@ -22,7 +22,6 @@
 #include "IO\UI.h"
 #include "IO\Components\MapleButton.h"
 #include "IO\Components\TwoSpriteButton.h"
-#include "Net\Session.h"
 #include "Net\Packets\InventoryPackets.h"
 #include "Util\Misc.h"
 
@@ -30,7 +29,6 @@
 
 namespace IO
 {
-	using Net::Session;
 	using Gameplay::Stage;
 	using Character::Item;
 	using Character::ItemData;
@@ -125,11 +123,11 @@ namespace IO
 			}
 		}
 
-		int16_t pslot = inventory.getprojectile();
-		if (tab == Inventory::USE && isvisible(pslot))
+		int16_t bulletslot = inventory.getbulletslot();
+		if (tab == Inventory::USE && isvisible(bulletslot))
 		{
-			Point<int16_t> pslotpos = position + getslotpos(pslot);
-			projectile.draw(pslotpos);
+			Point<int16_t> bulletslotpos = position + getslotpos(bulletslot);
+			projectile.draw(bulletslotpos);
 		}
 		else if (newtab == tab && isvisible(newslot))
 		{
@@ -219,11 +217,11 @@ namespace IO
 			break;
 		case BT_GATHER:
 			using Net::GatherItemsPacket;
-			Session::get().dispatch(GatherItemsPacket(tab));
+			GatherItemsPacket(tab).dispatch();
 			break;
 		case BT_SORT:
 			using Net::SortItemsPacket;
-			Session::get().dispatch(SortItemsPacket(tab));
+			SortItemsPacket(tab).dispatch();
 			break;
 		}
 
@@ -254,11 +252,11 @@ namespace IO
 				{
 				case Inventory::EQUIP:
 					using Net::EquipItemPacket;
-					Session::get().dispatch(EquipItemPacket(slot, inventory.findequipslot(itemid)));
+					EquipItemPacket(slot, inventory.findequipslot(itemid)).dispatch();
 					break;
 				case Inventory::USE:
 					using Net::UseItemPacket;
-					Session::get().dispatch(UseItemPacket(slot, itemid));
+					UseItemPacket(slot, itemid).dispatch();
 					break;
 				}
 			}
@@ -289,6 +287,13 @@ namespace IO
 
 	Cursor::State UIItemInventory::sendmouse(bool pressed, Point<int16_t> cursorpos)
 	{
+		Cursor::State dstate = UIDragElement::sendmouse(pressed, cursorpos);
+		if (dragged)
+		{
+			cleartooltip();
+			return dstate;
+		}
+
 		Point<int16_t> cursoroffset = cursorpos - position;
 		if (slider && slider->isenabled())
 		{
@@ -322,7 +327,7 @@ namespace IO
 		else
 		{
 			cleartooltip();
-			return UIDragElement::sendmouse(pressed, cursorpos);
+			return Cursor::IDLE;
 		}
 	}
 
@@ -499,7 +504,7 @@ namespace IO
 	void UIItemInventory::ItemIcon::ondrop() const
 	{
 		using Net::MoveItemPacket;
-		Session::get().dispatch(MoveItemPacket(sourcetab, source, 0, 1));
+		MoveItemPacket(sourcetab, source, 0, 1).dispatch();
 	}
 
 	void UIItemInventory::ItemIcon::ondropequips(Equipslot::Value eqslot) const
@@ -510,12 +515,12 @@ namespace IO
 			if (eqsource == eqslot)
 			{
 				using Net::EquipItemPacket;
-				Session::get().dispatch(EquipItemPacket(source, eqslot));
+				EquipItemPacket(source, eqslot).dispatch();
 			}
 			break;
 		case Inventory::USE:
 			using Net::ScrollEquipPacket;
-			Session::get().dispatch(ScrollEquipPacket(source, eqslot));
+			ScrollEquipPacket(source, eqslot).dispatch();
 			break;
 		}
 	}
@@ -526,6 +531,6 @@ namespace IO
 			return;
 
 		using Net::MoveItemPacket;
-		Session::get().dispatch(MoveItemPacket(tab, source, slot, 1));
+		MoveItemPacket(tab, source, slot, 1).dispatch();
 	}
 }

@@ -53,9 +53,6 @@ namespace IO
 	private:
 		UIStatsinfo& operator = (const UIStatsinfo&) = delete;
 
-		void updateap();
-		void sendappacket(Maplestat::Value stat) const;
-
 		static const size_t NUMLABELS = 27;
 		static const size_t NUMNORMAL = 12;
 		static const size_t NUMDETAIL = 15;
@@ -70,6 +67,12 @@ namespace IO
 			WDEF, MDEF, ACCURACY, AVOID,
 			SPEED, JUMP, HONOR
 		};
+
+		void updateap();
+		void updatesimple(StatLabel label, Maplestat::Value stat);
+		void updatebasevstotal(StatLabel label, Maplestat::Value bstat, Equipstat::Value tstat);
+		void updatebuffed(StatLabel label, Equipstat::Value stat);
+		void sendappacket(Maplestat::Value stat) const;
 
 		const CharStats& stats;
 

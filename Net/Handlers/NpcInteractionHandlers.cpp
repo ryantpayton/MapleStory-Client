@@ -35,7 +35,7 @@ namespace Net
 		int32_t npcid = recv.readint();
 		int8_t msgtype = recv.readbyte(); //0 - textonly, 1 - yes/no, 4 - selection, 12 - accept/decline
 		int8_t speaker = recv.readbyte();
-		string text = recv.readascii();
+		string text = recv.read<string>();
 
 		int16_t style = 0;
 		if (msgtype == 0 && recv.length() > 0)

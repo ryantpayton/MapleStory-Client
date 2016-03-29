@@ -18,9 +18,6 @@
 #include "MapMobs.h"
 #include "Constants.h"
 
-#include "Net\Session.h"
-#include "Net\Packets\AttackAndSkillPackets.h"
-
 #include "Util\BinaryTree.h"
 
 namespace Gameplay
@@ -32,17 +29,13 @@ namespace Gameplay
 		switch (layer)
 		{
 		case 7:
-			for (auto& mb : missbullets)
+			for (auto& be : bulleteffects)
 			{
-				mb.draw(viewpos, alpha);
+				be.draw(viewpos, alpha);
 			}
-			for (auto& mmo : objects)
+			for (auto& dn : damagenumbers)
 			{
-				const Mob* mob = reinterpret_cast<const Mob*>(mmo.second.get());
-				if (mob)
-				{
-					mob->draweffects(viewpos, alpha);
-				}
+				dn.draw(viewpos, alpha);
 			}
 			break;
 		}
@@ -50,17 +43,35 @@ namespace Gameplay
 
 	void MapMobs::update(const Physics& physics)
 	{
-		attacklist.remove_if([&](Attack& attack){
-			bool apply = attack.update(Constants::TIMESTEP);
+		damageeffects.remove_if([&](DamageEffect& effect){
+			bool apply = effect.update();
 			if (apply)
 			{
-				applyattack(attack);
+				applyeffect(effect);
 			}
 			return apply;
 		});
 
-		missbullets.remove_if([](MissBullet& mb){ 
-			return mb.update(); 
+		bulleteffects.remove_if([&](BulletEffect& mb){
+			Optional<Mob> mob = getmob(mb.gettarget());
+			if (mob)
+			{
+				Point<int16_t> target = mob->getheadpos();
+				bool apply = mb.update(target);
+				if (apply)
+				{
+					applyeffect(mb.geteffect());
+				}
+				return apply;
+			}
+			else
+			{
+				return mb.update();
+			}
+		});
+
+		damagenumbers.remove_if([](DamageNumber& dn){
+			return dn.update();
 		});
 
 		MapObjects::update(physics);
@@ -68,8 +79,7 @@ namespace Gameplay
 
 	void MapMobs::sendspawn(const MobSpawn& spawn)
 	{
-		int32_t oid = spawn.getoid();
-		Optional<Mob> mob = getmob(oid);
+		Optional<Mob> mob = getmob(spawn.getoid());
 		if (mob)
 		{
 			int8_t mode = spawn.getmode();
@@ -85,15 +95,21 @@ namespace Gameplay
 		}
 	}
 
-	void MapMobs::applyattack(const Attack& attack)
+	void MapMobs::movemob(int32_t oid, Point<int16_t> start, const Movement& movement)
+	{
+		Optional<Mob> mob = getmob(oid);
+		if (mob)
+		{
+			mob->sendmovement(start, movement);
+		}
+	}
+
+	AttackResult MapMobs::sendattack(Attack attack)
 	{
 		uint8_t mobcount = attack.mobcount;
-		if (mobcount == 0)
-			return;
-
-		Attack::Direction direction = attack.direction;
 		Point<int16_t> origin = attack.origin;
 		rectangle2d<int16_t> range = attack.range;
+		Attack::Direction direction = attack.direction;
 		switch (direction)
 		{
 		case Attack::TOLEFT:
@@ -119,32 +135,87 @@ namespace Gameplay
 			Optional<Mob> mob = getmob(target);
 			if (mob)
 			{
-				result.damagelines[target] = mob->damage(attack);
+				result.damagelines[target] = mob->calculatedamage(attack);
 				result.mobcount++;
 			}
 		}
+		return result;
+	}
 
-		attack.usesound.play();
-
-		using Net::Session;
-		switch (attack.type)
+	void MapMobs::showresult(const Char& user, const SpecialMove& move, const AttackResult& result)
+	{
+		if (result.bullet)
 		{
-		case Attack::CLOSE:
-			using Net::CloseRangeAttackPacket;
-			Session::get().dispatch(CloseRangeAttackPacket(result));
-			break;
-		case Attack::RANGED:
-			using Net::RangedAttackPacket;
-			Session::get().dispatch(RangedAttackPacket(result));
-			break;
+			Point<int16_t> origin = user.getposition();
+			bool toleft = result.direction == Attack::TOLEFT;
+			Animation animation = move.getbullet(result.bullet);
+			Bullet bullet = Bullet(animation, origin, toleft);
+
+			for (auto& line : result.damagelines)
+			{
+				int32_t oid = line.first;
+				Optional<Mob> mob = getmob(oid);
+				if (mob)
+				{
+					vector<DamageNumber> numbers = mob->placenumbers(line.second);
+					Point<int16_t> head = mob->getheadpos();
+
+					size_t i = 0;
+					for (auto& number : numbers)
+					{
+						uint16_t delay = user.getattackdelay(i, result.speed);
+						DamageEffect effect = DamageEffect(move, user.getlevel(), user.istwohanded(), number, toleft, line.second[i].first, oid, delay);
+						bulleteffects.push_back(BulletEffect(bullet, head, effect));
+						i++;
+					}
+				}
+			}
+
+			if (result.damagelines.size() == 0)
+			{
+				auto target = Point<int16_t>(toleft ? origin.x() - 400 : origin.x() + 400, origin.y() - 26);
+				for (uint8_t i = 0; i < result.hitcount; i++)
+				{
+					uint16_t delay = user.getattackdelay(i, result.speed);
+					DamageEffect effect = DamageEffect(move, 0, 0, DamageNumber(), false, 0, 0, delay);
+					bulleteffects.push_back(BulletEffect(bullet, target, effect));
+				}
+			}
 		}
-
-		if (targets.size() == 0 && attack.type == Attack::RANGED)
+		else
 		{
-			bool toleft = attack.direction == Attack::TOLEFT;
-			auto bullet = Bullet(attack.bullet, attack.origin, toleft);
-			auto target = Point<int16_t>(toleft ? range.l() : range.r(), origin.y() - 26);
-			missbullets.push_back(MissBullet(bullet, target));
+			bool toleft = result.direction == Attack::TOLEFT;
+
+			for (auto& line : result.damagelines)
+			{
+				int32_t oid = line.first;
+				Optional<Mob> mob = getmob(oid);
+				if (mob)
+				{
+					vector<DamageNumber> numbers = mob->placenumbers(line.second);
+
+					size_t i = 0;
+					for (auto& number : numbers)
+					{
+						uint16_t delay = user.getattackdelay(i, result.speed);
+						DamageEffect effect = DamageEffect(move, user.getlevel(), user.istwohanded(), number, toleft, line.second[i].first, oid, delay);
+						damageeffects.push_back(effect);
+
+						i++;
+					}
+				}
+			}
+		}
+	}
+
+	void MapMobs::applyeffect(const DamageEffect& effect)
+	{
+		damagenumbers.push_back(effect.getnumber());
+
+		Optional<Mob> mob = getmob(effect.gettarget());
+		if (mob)
+		{
+			effect.apply(*mob);
 		}
 	}
 
@@ -176,12 +247,9 @@ namespace Gameplay
 		BinaryTree<int32_t, int16_t> distancetree;
 		for (auto& object : objects)
 		{
-			Optional<MapObject> mmo = object.second.get();
-			if (mmo.isempty())
-				continue;
-
-			Optional<Mob> mob = mmo.reinterpret<Mob>();
-			if (mob->isalive() && mob->isinrange(range))
+			auto mob = Optional<MapObject>(object.second.get())
+				.reinterpret<Mob>();
+			if (mob && mob->isalive() && mob->isinrange(range))
 			{
 				int32_t oid = mob->getoid();
 				int16_t distance = mob->getposition().distance(origin);
@@ -208,11 +276,6 @@ namespace Gameplay
 	{
 		getmob(oid)
 			.ifpresent(&Mob::sendhp, percent, playerlevel);
-	}
-
-	void MapMobs::sendattack(Attack attack)
-	{
-		attacklist.push_back(attack);
 	}
 
 	void MapMobs::setcontrol(int32_t oid, bool control)

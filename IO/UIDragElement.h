@@ -27,14 +27,18 @@ namespace IO
 	class UIDragElement : public UIElement
 	{
 	public:
-		Cursor::State sendmouse(bool pressed, Point<int16_t> cursorpos) override;
+		bool cursorleave(bool clicked, Point<int16_t> cursorpos) override;
+		Cursor::State sendmouse(bool clicked, Point<int16_t> cursorpos) override;
 
 	protected:
 		UIDragElement(Settings::Type setting, Point<int16_t> dragarea);
-
+		
 		bool dragged;
 		Settings::Type setting;
 		Point<int16_t> dragarea;
 		Point<int16_t> cursoroffset;
+
+	private:
+		bool indragrange(Point<int16_t> cursorpos) const;
 	};
 }

@@ -19,10 +19,7 @@
 
 #include "IO\UI.h"
 #include "IO\Components\MapleButton.h"
-
-#include "Net\Session.h"
 #include "Net\Packets\PlayerPackets.h"
-
 #include "Gameplay\Stage.h"
 
 #include "nlnx\nx.hpp"
@@ -137,23 +134,37 @@ namespace IO
 		statlabels[NAME].settext(stats.getname());
 		statlabels[JOB].settext(stats.getjobname());
 		statlabels[GUILD].settext("");
-		statlabels[FAME].settext(std::to_string(stats.getstat(Maplestat::FAME)));
+
+		updatesimple(FAME, Maplestat::FAME);
+
 		statlabels[DAMAGE].settext(std::to_string(stats.getmindamage()) + " ~ " + std::to_string(stats.getmaxdamage()));
+		if (stats.isdamagebuffed())
+		{
+			statlabels[DAMAGE].setcolor(Text::RED);
+		}
+		else
+		{
+			statlabels[DAMAGE].setcolor(Text::LIGHTGREY);
+		}
+
 		statlabels[HP].settext(std::to_string(stats.getstat(Maplestat::HP)) + " / " + std::to_string(stats.gettotal(Equipstat::HP)));
 		statlabels[MP].settext(std::to_string(stats.getstat(Maplestat::MP)) + " / " + std::to_string(stats.gettotal(Equipstat::MP)));
-		statlabels[AP].settext(std::to_string(stats.getstat(Maplestat::AP)));
-		statlabels[STR].settext(std::to_string(stats.gettotal(Equipstat::STR)) + " (" + std::to_string(stats.getstat(Maplestat::STR)) + " + " +
-			std::to_string(stats.gettotal(Equipstat::STR) - stats.getstat(Maplestat::STR)) + ")");
-		statlabels[DEX].settext(std::to_string(stats.gettotal(Equipstat::DEX)) + " (" + std::to_string(stats.getstat(Maplestat::DEX)) + " + " +
-			std::to_string(stats.gettotal(Equipstat::DEX) - stats.getstat(Maplestat::DEX)) + ")");
-		statlabels[INT].settext(std::to_string(stats.gettotal(Equipstat::INT)) + " (" + std::to_string(stats.getstat(Maplestat::INT)) + " + " +
-			std::to_string(stats.gettotal(Equipstat::INT) - stats.getstat(Maplestat::INT)) + ")");
-		statlabels[LUK].settext(std::to_string(stats.gettotal(Equipstat::LUK)) + " (" + std::to_string(stats.getstat(Maplestat::LUK)) + " + " +
-			std::to_string(stats.gettotal(Equipstat::LUK) - stats.getstat(Maplestat::LUK)) + ")");
+
+		updatesimple(AP, Maplestat::AP);
+
+		updatebasevstotal(STR, Maplestat::STR, Equipstat::STR);
+		updatebasevstotal(DEX, Maplestat::DEX, Equipstat::DEX);
+		updatebasevstotal(INT, Maplestat::INT, Equipstat::INT);
+		updatebasevstotal(LUK, Maplestat::LUK, Equipstat::LUK);
 
 		if (showdetail)
 		{
-			statlabels[ATTACK].settext(std::to_string(stats.gettotal(Equipstat::WATK)));
+			updatebuffed(ATTACK, Equipstat::WATK);
+			updatebuffed(WDEF, Equipstat::WDEF);
+			updatebuffed(MDEF, Equipstat::MDEF);
+			updatebuffed(ACCURACY, Equipstat::ACC);
+			updatebuffed(AVOID, Equipstat::AVOID);
+
 			statlabels[CRIT].settext(std::to_string(static_cast<int32_t>(stats.getcritical() * 100)) + "%");
 			statlabels[MINCRIT].settext(std::to_string(static_cast<int32_t>(stats.getmincrit() * 100)) + "%");
 			statlabels[MAXCRIT].settext(std::to_string(static_cast<int32_t>(stats.getmaxcrit() * 100)) + "%");
@@ -161,10 +172,6 @@ namespace IO
 			statlabels[IGNOREDEF].settext(std::to_string(static_cast<int32_t>(stats.getignoredef() * 100)) + "%");
 			statlabels[RESIST].settext(std::to_string(static_cast<int32_t>(stats.getresist() * 100)) + "%");
 			statlabels[STANCE].settext(std::to_string(static_cast<int32_t>(stats.getstance() * 100)) + "%");
-			statlabels[WDEF].settext(std::to_string(stats.gettotal(Equipstat::WDEF)));
-			statlabels[MDEF].settext(std::to_string(stats.gettotal(Equipstat::MDEF)));
-			statlabels[ACCURACY].settext(std::to_string(stats.gettotal(Equipstat::ACC)));
-			statlabels[AVOID].settext(std::to_string(stats.gettotal(Equipstat::AVOID)));
 			statlabels[SPEED].settext(std::to_string(stats.gettotal(Equipstat::SPEED)) + "%");
 			statlabels[JUMP].settext(std::to_string(stats.gettotal(Equipstat::JUMP)) + "%");
 			statlabels[HONOR].settext(std::to_string(stats.gethonor()));
@@ -210,9 +217,8 @@ namespace IO
 
 	void UIStatsinfo::sendappacket(Maplestat::Value stat) const
 	{
-		using Net::Session;
 		using Net::SpendApPacket;
-		Session::get().dispatch(SpendApPacket(stat));
+		SpendApPacket(stat).dispatch();
 
 		UI::get().disable();
 	}
@@ -251,5 +257,59 @@ namespace IO
 		buttons[BT_INT]->setstate(newstate);
 
 		hasap = nowap;
+	}
+
+	void UIStatsinfo::updatesimple(StatLabel label, Maplestat::Value stat)
+	{
+		statlabels[label].settext(std::to_string(stats.getstat(stat)));
+	}
+
+	void UIStatsinfo::updatebasevstotal(StatLabel label, Maplestat::Value bstat, Equipstat::Value tstat)
+	{
+		int32_t base = stats.getstat(bstat);
+		int32_t total = stats.gettotal(tstat);
+		int32_t delta = total - base;
+
+		string stattext = std::to_string(total);
+		if (delta)
+		{
+			stattext += " (" + std::to_string(base);
+			if (delta > 0)
+			{
+				stattext += " + " + std::to_string(delta);
+			}
+			else if (delta < 0)
+			{
+				stattext += " - " + std::to_string(-delta);
+			}
+			stattext += ")";
+		}
+		statlabels[label].settext(stattext);
+	}
+
+	void UIStatsinfo::updatebuffed(StatLabel label, Equipstat::Value stat)
+	{
+		int32_t total = stats.gettotal(stat);
+		int32_t delta = stats.getbuffdelta(stat);
+
+		string stattext = std::to_string(total);
+		if (delta)
+		{
+			stattext += " (" + std::to_string(total - delta);
+			if (delta > 0)
+			{
+				stattext += " + " + std::to_string(delta);
+
+				statlabels[label].setcolor(Text::RED);
+			}
+			else if (delta < 0)
+			{
+				stattext += " - " + std::to_string(-delta);
+
+				statlabels[label].setcolor(Text::BLUE);
+			}
+			stattext += ")";
+		}
+		statlabels[label].settext(stattext);
 	}
 }

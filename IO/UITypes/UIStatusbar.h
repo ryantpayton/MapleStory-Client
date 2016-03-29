@@ -39,7 +39,6 @@ namespace IO
 	public:
 		enum Buttons : uint16_t
 		{
-			// Main
 			BT_WHISPER,
 			BT_CALLGM,
 			BT_CASHSHOP,
@@ -59,8 +58,8 @@ namespace IO
 		void draw(float inter) const override;
 		void update() override;
 		void buttonpressed(uint16_t buttonid) override;
-		rectangle2d<int16_t> bounds() const override;
-		Cursor::State sendmouse(bool pressed, Point<int16_t> position) override;
+		bool isinrange(Point<int16_t> cursorpos) const override;
+		Cursor::State sendmouse(bool pressed, Point<int16_t> cursorpos) override;
 
 		void sendchatline(string line, Chatbar::LineType type);
 		void displaymessage(Messages::Type line, Chatbar::LineType type);

@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\UIElement.h"
+#include "UIElement.h"
 
 namespace IO
 {
@@ -25,13 +25,18 @@ namespace IO
 	public:
 		virtual ~Element() {}
 
+		// Add the element to the current UI state.
+		void add() const;
+
 		// Return wether the element can only be created once.
-		// Such elements will be activated/deactived when adding them again.
-		virtual bool isunique() const { return false; }
+		// Such elements will have their visibility toggled when adding them again.
+		// Default: false
+		virtual bool isunique() const;
 
 		// Return wether the element is focused.
 		// These elements always stay on top of the screen.
-		virtual bool isfocused() const { return false; }
+		// Default: false
+		virtual bool isfocused() const;
 
 		// Return the type of this element.
 		virtual UIElement::Type type() const = 0;

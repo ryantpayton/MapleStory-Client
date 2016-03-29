@@ -116,11 +116,11 @@ namespace IO
 				{
 				case CHARSELECT:
 					using Net::SelectCharPicPacket;
-					Session::get().dispatch(SelectCharPicPacket(entered, cid));
+					SelectCharPicPacket(entered, cid).dispatch();
 					break;
 				case REGISTER:
 					using Net::RegisterPicPacket;
-					Session::get().dispatch(RegisterPicPacket(cid, entered));
+					RegisterPicPacket(cid, entered).dispatch();
 					break;
 				}
 				active = false;

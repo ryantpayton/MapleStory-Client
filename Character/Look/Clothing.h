@@ -18,12 +18,14 @@
 #pragma once
 #include "BodyDrawinfo.h"
 #include "Equipslot.h"
+#include "Console.h"
+
 #include "Character\Equipstat.h"
 #include "Character\Maplestat.h"
 #include "Character\Inventory\ItemData.h"
 #include "Graphics\Texture.h"
 #include "Util\Enum.h"
-#include "Console.h"
+
 #include <vector>
 
 namespace Character
@@ -102,6 +104,7 @@ namespace Character
 		Clothing();
 
 		void draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
+
 		bool islayer(Stance::Value stance, Layer layer) const;
 		bool istransparent() const;
 		bool isweapon() const;

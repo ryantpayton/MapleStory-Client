@@ -166,10 +166,7 @@ namespace IO
 				opcstep = -opcstep;
 
 				GraphicsGL::get().clear();
-
-				if (fadeprocedure)
-					(*fadeprocedure)();
-
+				fadeprocedure();
 				GraphicsGL::get().unlock();
 			}
 		}
@@ -191,7 +188,7 @@ namespace IO
 		glfwPollEvents();
 	}
 
-	void Window::fadeout(float step, void(*fadeproc)())
+	void Window::fadeout(float step, function<void()> fadeproc)
 	{
 		opcstep = -step;
 		fadeprocedure = fadeproc;

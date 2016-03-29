@@ -88,7 +88,7 @@ namespace IO
 			Session::get().getlogin().setchannelid(channelid);
 
 			using Net::CharlistRequestPacket;
-			Session::get().dispatch(CharlistRequestPacket(worldid, channelid));
+			CharlistRequestPacket(worldid, channelid).dispatch();
 		}
 		else if (id >= BT_WORLD0 && id < BT_CHANNEL0)
 		{

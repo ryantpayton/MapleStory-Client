@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -16,15 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Singleton.h"
 #include "nlnx\node.hpp"
-
+#include <unordered_map>
 #include <cstdint>
 #include <string>
-#include <unordered_map>
-
-#define WIN32_LEAN_AND_MEAN
-#include "bass.h"
 
 namespace Audio
 {
@@ -32,12 +27,12 @@ namespace Audio
 	using std::unordered_map;
 	using nl::node;
 
-	class AudioPlayer : public Singleton<AudioPlayer>
+	class Sound
 	{
 	public:
 		// Preloaded sounds.
 		static const size_t NUM_SOUNDS = 9;
-		enum Sound
+		enum Name
 		{
 			// UI
 			BUTTONCLICK,
@@ -55,27 +50,40 @@ namespace Audio
 			LEVELUP
 		};
 
-		AudioPlayer();
-		~AudioPlayer();
+		Sound(Name name);
+		Sound(node src);
+		Sound();
+		~Sound();
 
-		bool init(uint8_t sfxvolume, uint8_t bgmvolume);
-		void close();
-		void setsfxvolume(uint8_t volume);
-		void setbgmvolume(uint8_t volume);
+		void play() const;
 
-		void playsound(Sound sound) const;
-		void playsound(size_t soundid) const;
-		void playbgm(string path);
-		size_t addsound(node src);
+		static bool init(uint8_t volume);
+		static void close();
+		static bool setsfxvolume(uint8_t volume);
 
 	private:
-		void playbgm(const void* data, size_t length);
-		void addsound(Sound sound, node src);
+		size_t id;
 
-		unordered_map<size_t, HSAMPLE> staticsounds;
-		unordered_map<size_t, HSAMPLE> soundcache;
+		static void playsound(size_t id);
 
-		HSTREAM bgm;
-		string bgmpath;
+		static size_t addsound(node src);
+		static void addsound(Sound::Name name, node src);
+
+		static unordered_map<size_t, uint64_t> samples;
+		static unordered_map<Sound::Name, size_t> soundids;
+	};
+
+	class Music
+	{
+	public:
+		Music(string path);
+
+		void play() const;
+
+		static bool init(uint8_t volume);
+		static bool setbgmvolume(uint8_t volume);
+
+	private:
+		string path;
 	};
 }

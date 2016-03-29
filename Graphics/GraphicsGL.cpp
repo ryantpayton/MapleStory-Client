@@ -518,7 +518,7 @@ namespace Graphics
 			{ 1.0f, 1.0f, 0.0f }, // Yellow
 			{ 0.0f, 0.0f, 1.0f }, // Blue
 			{ 1.0f, 0.0f, 0.0f }, // Red
-			{ 0.6f, 0.3f, 0.3f }, // DarkRed
+			{ 0.8f, 0.3f, 0.3f }, // DarkRed
 			{ 0.5f, 0.25f, 0.0f }, // Brown
 			{ 0.5f, 0.5f, 0.5f }, // Lightgrey
 			{ 0.25f, 0.25f, 0.25f }, // Darkgrey

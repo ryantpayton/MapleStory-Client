@@ -18,8 +18,9 @@
 #pragma once
 #include "MapObjects.h"
 #include "Drop.h"
-#include "Graphics\Animation.h"
+
 #include "Gameplay\Spawn.h"
+#include "Graphics\Animation.h"
 
 namespace Gameplay
 {
@@ -34,13 +35,13 @@ namespace Gameplay
 
 		void sendspawn(const DropSpawn& spawn);
 		void removedrop(int32_t oid, int8_t mode, const PhysicsObject* looter);
+
 		const Drop* findinrange(Point<int16_t> playerpos);
+		Optional<Drop> getdrop(int32_t oid);
 
 		static void init();
 
 	private:
-		Optional<Drop> getdrop(int32_t oid);
-
 		bool lootenabled;
 
 		enum MesoType

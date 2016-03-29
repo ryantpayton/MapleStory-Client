@@ -18,7 +18,6 @@
 #include "UINpcTalk.h"
 
 #include "IO\Components\MapleButton.h"
-#include "Net\Session.h"
 #include "Net\Packets\NpcInteractionPackets.h"
 
 #include "nlnx\nx.hpp"
@@ -66,13 +65,11 @@ namespace IO
 
 	void UINpcTalk::buttonpressed(uint16_t buttonid)
 	{
-		using Net::Session;
-
 		switch (buttonid)
 		{
 		case END:
 			using Net::NpcTalkMorePacket;
-			Session::get().dispatch(NpcTalkMorePacket(type, 0));
+			NpcTalkMorePacket(type, 0).dispatch();
 			active = false;
 			break;
 		}

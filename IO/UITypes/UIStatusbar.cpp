@@ -162,17 +162,18 @@ namespace IO
 		buttons[id].get()->setstate(Button::MOUSEOVER);
 	}
 
-	rectangle2d<int16_t> UIStatusbar::bounds() const
+	bool UIStatusbar::isinrange(Point<int16_t> cursorpos) const
 	{
-		return rectangle2d<int16_t>(
-			position - Point<int16_t>(512, 84), 
+		auto bounds = rectangle2d<int16_t>(
+			position - Point<int16_t>(512, 84),
 			position - Point<int16_t>(512, 84) + dimension
 			);
+		return bounds.contains(cursorpos) || chatbar->isinrange(cursorpos);
 	}
 
 	Cursor::State UIStatusbar::sendmouse(bool pressed, Point<int16_t> cursorpos)
 	{
-		if (chatbar->bounds().contains(cursorpos))
+		if (chatbar->isinrange(cursorpos))
 		{
 			UIElement::sendmouse(pressed, cursorpos);
 			return chatbar->sendmouse(pressed, cursorpos);

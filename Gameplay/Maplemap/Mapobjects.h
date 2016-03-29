@@ -42,10 +42,10 @@ namespace Gameplay
 
 		// Removes all mapobjects of this type.
 		void clear();
-		// Adds a mapobject of this type.
-		void add(MapObject* mapobject);
 
 	protected:
+		// Adds a mapobject of this type.
+		void add(MapObject* mapobject);
 		// Removes the mapobject with the given oid.
 		void remove(int32_t oid);
 		// Obtains a pointer to the mapobject with the given oid.

@@ -121,7 +121,7 @@ namespace Net
 	{
 		int32_t charid = recv.readint();
 		recv.readbool(); // 'gm'
-		string message = recv.readascii();
+		string message = recv.read<string>();
 		int8_t type = recv.readbyte();
 
 		auto speaker = Stage::get().getcharacter(charid);
@@ -178,12 +178,12 @@ namespace Net
 		bool servermessage = recv.inspectbool();
 		if (servermessage)
 			recv.skip(1);
-		string message = recv.readascii();
+		string message = recv.read<string>();
 		
 		if (type == 3)
 		{
-			int8_t channel = recv.readbyte();
-			bool megaphone = recv.readbool();
+			recv.readbyte(); // channel
+			recv.readbool(); // megaphone
 		}
 		else if (type == 4)
 		{
@@ -191,14 +191,14 @@ namespace Net
 		}
 		else if (type == 7)
 		{
-			int32_t npcid = recv.readint();
+			recv.readint(); // npcid
 		}
 	}
 
 	void WeekEventMessageHandler::handle(InPacket& recv) const
 	{
 		recv.readbyte(); // always 0xFF in solaxia and moople
-		string message = recv.readascii();
+		string message = recv.read<string>();
 
 		static const string MAPLETIP = "[MapleTip]";
 		if (message.substr(0, MAPLETIP.length()).compare("[MapleTip]"))

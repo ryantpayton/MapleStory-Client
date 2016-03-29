@@ -21,7 +21,7 @@
 #include "Constants.h"
 #include "Configuration.h"
 
-#include "Audio\AudioPlayer.h"
+#include "Audio\Audio.h"
 #include "Net\Session.h"
 #include "Net\Packets\SelectCharPackets.h"
 #include "Graphics\Sprite.h"
@@ -243,11 +243,11 @@ namespace IO
 			case 2:
 				UI::get().disable();
 
-				using Audio::AudioPlayer;
-				AudioPlayer::get().playsound(AudioPlayer::SELECTCHAR);
+				using Audio::Sound;
+				Sound(Sound::SELECTCHAR).play();
 
 				using Net::SelectCharPacket;
-				Session::get().dispatch(SelectCharPacket(cid));
+				SelectCharPacket(cid).dispatch();
 				break;
 			}
 		}

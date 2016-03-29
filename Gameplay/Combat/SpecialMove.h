@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,29 +16,49 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Physics\PhysicsObject.h"
-#include "Graphics\Animation.h"
-#include "Util\Point.h"
+#include "Attack.h"
+#include "SkillAction.h"
+#include "SkillBullet.h"
+#include "SkillHitEffect.h"
+#include "SkillUseEffect.h"
+#include <memory>
 
 namespace Gameplay
 {
-	using Graphics::Animation;
+	using std::unique_ptr;
+	using Character::Weapon;
 
-	// Represents a projectile on a map.
-	class Bullet
+	// Base class for attacks and buffs.
+	class SpecialMove
 	{
 	public:
-		Bullet(Animation animation, Point<int16_t> origin, bool toleft);
+		enum ForbidReason
+		{
+			FBR_NONE,
+			FBR_WEAPONTYPE,
+			FBR_HPCOST,
+			FBR_MPCOST,
+			FBR_BULLETCOST,
+			FBR_OTHER
+		};
 
-		void draw(Point<int16_t> viewpos, float alpha) const;
-		bool update(Point<int16_t> target);
+		virtual ~SpecialMove() {}
 
-	private:
-		Point<int16_t> getposition(float alpha) const;
+		virtual void applyuseeffects(Char& user, Attack::Type type) const;
+		virtual void applyhiteffects(Mob& target, uint16_t level, bool twohanded) const;		
+		virtual Animation getbullet(int32_t bulletid) const;
 
-		Animation animation;
-		bool flip;
+		virtual void applystats(const Char& user, Attack& attack) const = 0;
+		virtual bool isoffensive() const = 0;
+		virtual int32_t getid() const = 0;
+		virtual ForbidReason canuse(int32_t level, Weapon::Type weapon, uint16_t job, uint16_t hp, uint16_t mp, uint16_t bullets) const = 0;
 
-		MovingObject moveobj;
+		bool isskill() const;
+
+	protected:
+		unique_ptr<SkillAction> action;
+		unique_ptr<SkillBullet> bullet;
+		unique_ptr<SkillUseEffect> useeffect;
+		unique_ptr<SkillHitEffect> hiteffect;
 	};
 }

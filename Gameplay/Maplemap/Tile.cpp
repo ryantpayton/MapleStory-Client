@@ -32,8 +32,8 @@ namespace Gameplay
 
 	Tile::Tile(InPacket& recv, string ts)
 	{
-		string u = recv.readascii();
-		string no = recv.readascii();
+		string u = recv.read<string>();
+		string no = recv.read<string>();
 		node dsrc = nl::nx::map["Tile"][ts][u][no];
 		texture = Texture(dsrc);
 		pos = recv.readpoint();

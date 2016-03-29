@@ -55,6 +55,12 @@ namespace Graphics
 			float xs, float ys, float a)
 			: DrawArgument(p, c, Point<int16_t>(), xs, ys, a) {}
 
+		DrawArgument(float xs, float ys, float a)
+			: DrawArgument(Point<int16_t>(), xs, ys, a) {}
+
+		DrawArgument(Point<int16_t> p, float xs, float ys, float a)
+			: DrawArgument(p, p, xs, ys, a) {}
+
 		DrawArgument(Point<int16_t> p, Point<int16_t> c, 
 			Point<int16_t> s, float xs, float ys, float a) {
 

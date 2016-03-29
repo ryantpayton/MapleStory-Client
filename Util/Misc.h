@@ -19,10 +19,43 @@
 #include <cstdint>
 #include <string>
 
+using std::string;
+
+template<typename T>
+class StringConversion
+{
+public:
+	StringConversion(string s)
+	{
+		str = s;
+	}
+
+	T ordefault(T def)
+	{
+		T value;
+		try
+		{
+			int32_t intval = std::stoi(str);
+			value = static_cast<T>(intval);
+		}
+		catch (const std::exception&)
+		{
+			value = def;
+		}
+		return value;
+	}
+
+	T orzero()
+	{
+		return ordefault(0);
+	}
+
+private:
+	string str;
+};
+
 namespace Format
 {
-	using std::string;
-
 	// Format a number string so that each 3 decimal points
 	// are seperated by a ',' character.
 	string splitnumber(string input);

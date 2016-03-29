@@ -97,7 +97,8 @@ namespace IO
 				for (size_t i = 0; i < restnum.length(); i++)
 				{
 					char c = restnum[i];
-					charsets[type].second.draw(c, DrawArgument(position, interopc));
+					auto yshift = Point<int16_t>(0, (i % 2) ? -2 : 2);
+					charsets[type].second.draw(c, DrawArgument(position + yshift, interopc));
 
 					int16_t advance;
 					if (i < restnum.length() - 1)

@@ -16,15 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "PlayerStates.h"
-#include "Audio\Audioplayer.h"
+#include "Audio\Audio.h"
 
 namespace Character
 {
 	// Base class
 	void PlayerState::playjumpsound() const
 	{
-		using Audio::AudioPlayer;
-		AudioPlayer::get().playsound(AudioPlayer::JUMP);
+		using Audio::Sound;
+		Sound(Sound::JUMP).play();
 	}
 
 
@@ -344,16 +344,16 @@ namespace Character
 				{
 					playjumpsound();
 					player.setflip(false);
-					player.getphobj().hspeed = -player.getwforce() * 8.0f;
-					player.getphobj().vforce = -player.getjforce() / 1.5f;
+					player.getphobj().hspeed = -player.getwforce() * 8.0;
+					player.getphobj().vspeed = -player.getjforce() / 1.5;
 					cancelladder(player);
 				}
 				else if (player.keydown(Keyboard::RIGHT))
 				{
 					playjumpsound();
 					player.setflip(true);
-					player.getphobj().hspeed = player.getwforce() * 8.0f;
-					player.getphobj().vforce = -player.getjforce() / 1.5f;
+					player.getphobj().hspeed = player.getwforce() * 8.0;
+					player.getphobj().vspeed = -player.getjforce() / 1.5;
 					cancelladder(player);
 				}
 				break;
@@ -373,7 +373,7 @@ namespace Character
 		}
 		else
 		{
-			player.getphobj().vspeed = 0.0f;
+			player.getphobj().vspeed = 0.0;
 		}
 	}
 

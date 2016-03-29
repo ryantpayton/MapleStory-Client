@@ -178,6 +178,7 @@ namespace IO
 
 	void UI::add(const Element& element)
 	{
+		focusedtextfield = Optional<Textfield>();
 		state->add(element);
 	}
 

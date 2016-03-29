@@ -18,7 +18,8 @@
 #pragma once
 #include "Camera.h"
 #include "Spawn.h"
-#include "Physics\Physics.h"
+
+#include "Character\Player.h"
 #include "Maplemap\MapInfo.h"
 #include "Maplemap\MapLayers.h"
 #include "Maplemap\MapBackgrounds.h"
@@ -27,23 +28,24 @@
 #include "Maplemap\MapMobs.h"
 #include "Maplemap\MapNpcs.h"
 #include "Maplemap\MapDrops.h"
-#include "Character\Player.h"
+#include "Physics\Physics.h"
 #include "Util\Singleton.h"
+
 #include <queue>
 
 namespace Gameplay
 {
 	using std::queue;
 	using Character::Player;
-	using Character::Char;
+	using Net::CharEntry;
 
 	class Stage : public Singleton<Stage>
 	{
 	public:
 		Stage();
 
-		// Adds a player object with the given properties.
-		bool loadplayer(int32_t charid);
+		// Contruct the player from a character entry.
+		void loadplayer(const CharEntry& entry);
 		// Set the map which will be loaded with the next call to reload().
 		void setmap(uint8_t portalid, int32_t mapid);
 		// Loads the map to display. 
@@ -54,12 +56,14 @@ namespace Gameplay
 		void clear();
 
 		// Call 'draw()' of all objects on stage.
-		void draw(float inter) const;
+		void draw(float alpha) const;
 		// Calls 'update()' of all objects on stage.
 		void update();
 
 		// Add a spawn to the spawn queue.
 		void queuespawn(const Spawn* spawn);
+		// Show an attack.
+		void showattack(int32_t cid, const AttackResult& attack);
 
 		// Send key input to the stage.
 		void sendkey(Keyboard::Keytype keytype, int32_t keycode, bool pressed);
@@ -91,8 +95,9 @@ namespace Gameplay
 		void checkseats();
 		void checkladders(bool up);
 		void checkdrops();
-		void useattack();
-		void useskill(int32_t skillid);
+		void usemove(int32_t moveid);
+		void applymove(const SpecialMove& move);
+		const SpecialMove& getmove(int32_t moveid);
 
 		enum State
 		{
@@ -105,6 +110,11 @@ namespace Gameplay
 		Physics physics;
 		Player player;
 
+		Optional<Playable> playable;
+		State state;
+		int32_t mapid;
+		uint8_t portalid;
+
 		MapInfo mapinfo;
 		MapLayers layers;
 		MapBackgrounds backgrounds;
@@ -116,12 +126,7 @@ namespace Gameplay
 
 		queue<unique_ptr<const Spawn>> spawnqueue;
 
-		State state;
-		Optional<Playable> playable;
-		int32_t mapid;
-		uint8_t portalid;
-
-		unordered_map<int32_t, Skill> skillcache;
+		unordered_map<int32_t, unique_ptr<SpecialMove>> specialmoves;
 	};
 }
 

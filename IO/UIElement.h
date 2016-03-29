@@ -65,10 +65,12 @@ namespace IO
 
 		virtual void togglehide();
 		virtual void buttonpressed(uint16_t buttonid);
-		virtual void doubleclick(Point<int16_t> cursorpos);
 		virtual void sendicon(const Icon& icon, Point<int16_t> cursorpos);
+
+		virtual void doubleclick(Point<int16_t> cursorpos);
+		virtual bool isinrange(Point<int16_t> cursorpos) const;
+		virtual bool cursorleave(bool clicked, Point<int16_t> cursorpos);
 		virtual Cursor::State sendmouse(bool clicked, Point<int16_t> cursorpos);
-		virtual rectangle2d<int16_t> bounds() const;
 
 	protected:
 		UIElement();

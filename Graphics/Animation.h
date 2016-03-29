@@ -52,11 +52,13 @@ namespace Graphics
 			Frame(node src);
 			Frame();
 
-			float opcstep(float opacity, uint16_t timestep) const;
+			float opcstep(uint16_t timestep) const;
+			float scalestep(uint16_t timestep) const;
 
 			Texture texture;
 			uint16_t delay;
 			pair<uint8_t, uint8_t> opacities;
+			pair<int16_t, int16_t> scales;
 			rectangle2d<int16_t> bounds;
 			Point<int16_t> head;
 		};
@@ -66,8 +68,9 @@ namespace Graphics
 		bool animated;
 		bool zigzag;
 
-		Linear<float> opacity;
 		Nominal<int16_t> frame;
+		Linear<float> opacity;
+		Linear<float> xyscale;
 
 		uint16_t delay;
 		int16_t framestep;

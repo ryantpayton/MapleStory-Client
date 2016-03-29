@@ -18,7 +18,8 @@
 #include "Timer.h"
 #include "Configuration.h"
 #include "Constants.h"
-#include "Audio\AudioPlayer.h"
+
+#include "Audio\Audio.h"
 #include "Character\Char.h"
 #include "Data\DataFactory.h"
 #include "Gameplay\Stage.h"
@@ -27,9 +28,11 @@
 #include "IO\Window.h"
 #include "Net\Session.h"
 #include "Util\NxFiles.h"
+
 #include <iostream>
 
-using Audio::AudioPlayer;
+using Audio::Music;
+using Audio::Sound;
 using Character::Char;
 using Data::DataFactory;
 using Gameplay::Stage;
@@ -74,14 +77,13 @@ Error init()
 
 	uint8_t sfxvolume = Configuration::get().getbyte(Settings::SFX_VOLUME);
 	uint8_t bgmvolume = Configuration::get().getbyte(Settings::BGM_VOLUME);
-	if (!AudioPlayer::get().init(sfxvolume, bgmvolume))
+	if (!Sound::init(sfxvolume) || !Music::init(bgmvolume))
 		return AUDIO;
 
 	Char::init();
 	DamageNumber::init();
 	MapPortals::init();
 	MapDrops::init();
-	Skill::init();
 
 	DataFactory::get().init();
 	UI::get().init();
@@ -130,6 +132,7 @@ int main()
 			draw(inter);
 		}
 
+		Sound::close();
 		Configuration::get().save();
 	}
 	else

@@ -20,16 +20,12 @@
 #include "MesoDrop.h"
 #include "Constants.h"
 
-#include "Audio\AudioPlayer.h"
 #include "Data\DataFactory.h"
 
 #include "nlnx\nx.hpp"
 
-#include <string>
-
 namespace Gameplay
 {
-	using Audio::AudioPlayer;
 	using Data::DataFactory;
 
 	MapDrops::MapDrops() 

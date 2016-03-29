@@ -25,7 +25,7 @@ namespace Character
 
 	Inventory::Inventory()
 	{
-		projectile = 0;
+		bulletslot = 0;
 		meso = 0;
 		slots[EQUIPPED] = 255;
 	}
@@ -73,7 +73,7 @@ namespace Character
 			break;
 		}
 
-		projectile = 0;
+		bulletslot = 0;
 		if (prefix > 0)
 		{
 			for (auto& use : inventories[USE])
@@ -81,15 +81,15 @@ namespace Character
 				Item* item = use.second;
 				if (item && item->getid() / 1000 == prefix && item->getcount() > 0)
 				{
-					projectile = use.first;
+					bulletslot = use.first;
 					break;
 				}
 			}
 		}
 
-		if (projectile > 0)
+		if (bulletslot)
 		{
-			int16_t watkbonus = getitem(USE, projectile)
+			int16_t watkbonus = getitem(USE, bulletslot)
 				.transform(DataFactory::get(), &DataFactory::getbulletdata, &Item::getid)
 				.mapordefault(&BulletData::getwatk, int16_t(0));
 
@@ -259,9 +259,9 @@ namespace Character
 		return meso;
 	}
 
-	bool Inventory::hasprojectile()
+	bool Inventory::hasprojectile() const
 	{
-		return projectile > 0;
+		return bulletslot > 0;
 	}
 
 	bool Inventory::hasequipped(Equipslot::Value slot) const
@@ -270,9 +270,21 @@ namespace Character
 		return inventories.at(Inventory::EQUIPPED).count(value) > 0;
 	}
 
-	int16_t Inventory::getprojectile() const
+	int16_t Inventory::getbulletslot() const
 	{
-		return projectile;
+		return bulletslot;
+	}
+
+	uint16_t Inventory::getbulletcount() const
+	{
+		return getitem(Inventory::USE, bulletslot)
+			.map(&Item::getcount);
+	}
+
+	int32_t Inventory::getbulletid() const
+	{
+		return getitem(Inventory::USE, bulletslot)
+			.map(&Item::getid);
 	}
 
 	Equipslot::Value Inventory::findequipslot(int32_t itemid) const

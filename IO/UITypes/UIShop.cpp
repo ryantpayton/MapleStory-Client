@@ -25,7 +25,6 @@
 #include "IO\Components\AreaButton.h"
 #include "IO\Components\MapleButton.h"
 #include "IO\Components\TwoSpriteButton.h"
-#include "Net\Session.h"
 #include "Net\Packets\NpcInteractionPackets.h"
 #include "Util\Misc.h"
 
@@ -39,7 +38,6 @@ namespace IO
 	using Character::ItemData;
 	using Gameplay::Stage;
 	using Data::DataFactory;
-	using Net::Session;
 
 	UIShop::UIShop()
 	{
@@ -171,7 +169,7 @@ namespace IO
 				break;
 			case EXIT:
 				using Net::NpcShopActionPacket;
-				Session::get().dispatch(NpcShopActionPacket());
+				NpcShopActionPacket().dispatch();
 				active = false;
 				break;
 			case EQUIP:
@@ -493,7 +491,7 @@ namespace IO
 				auto shortqty = static_cast<int16_t>(qty);
 
 				using Net::NpcShopActionPacket;
-				Session::get().dispatch(NpcShopActionPacket(slot, itemid, shortqty, true));
+				NpcShopActionPacket(slot, itemid, shortqty, true).dispatch();
 			};
 			UI::get().add(ElementEnterNumber(question, onenter, 1, buyable, 1));
 		}
@@ -504,7 +502,7 @@ namespace IO
 				if (yes)
 				{
 					using Net::NpcShopActionPacket;
-					Session::get().dispatch(NpcShopActionPacket(slot, itemid, 1, true));
+					NpcShopActionPacket(slot, itemid, 1, true).dispatch();
 				}
 			};
 			UI::get().add(ElementYesNo(question, ondecide));
@@ -610,7 +608,7 @@ namespace IO
 				auto shortqty = static_cast<int16_t>(qty);
 
 				using Net::NpcShopActionPacket;
-				Session::get().dispatch(NpcShopActionPacket(slot, itemid, shortqty, false));
+				NpcShopActionPacket(slot, itemid, shortqty, false).dispatch();
 			};
 			UI::get().add(ElementEnterNumber(question, onenter, 1, sellable, 1));
 		}
@@ -621,7 +619,7 @@ namespace IO
 				if (yes)
 				{
 					using Net::NpcShopActionPacket;
-					Session::get().dispatch(NpcShopActionPacket(slot, itemid, 1, false));
+					NpcShopActionPacket(slot, itemid, 1, false).dispatch();
 				}
 			};
 			UI::get().add(ElementYesNo(question, ondecide));

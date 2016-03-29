@@ -203,6 +203,8 @@ namespace Character
 			absp.shift(action->getmove());
 
 		draw(absp, flip, stance.get(alpha), expression.get(alpha), stframe.get(alpha), expframe.get(alpha));
+
+		afterimage.draw(stframe.get(alpha), DrawArgument(absp, flip), alpha);
 	}
 
 	void CharLook::drawstanding(Point<int16_t> position, bool flipped) const
@@ -215,6 +217,8 @@ namespace Character
 
 	bool CharLook::update(uint16_t timestep)
 	{
+		afterimage.update(stframe.get(), timestep);
+
 		if (timestep == 0)
 		{
 			stance.normalize();
@@ -359,40 +363,51 @@ namespace Character
 			updatetwohanded();
 	}
 
-	uint16_t CharLook::attack(bool degenerate)
+	void CharLook::attack(bool degenerate)
 	{
 		Optional<const Weapon> weapon = equips.getweapon();
-		uint8_t attack = weapon.mapordefault(&Weapon::getattack, uint8_t(0));
-		bool isaction = attack == 9 && !degenerate;
-		weapon.transform(&Weapon::getsound, degenerate)
-			.ifpresent(&Sound::play);
-		if (isaction)
+		uint8_t attacktype = weapon.mapordefault(&Weapon::getattack, uint8_t(0));
+
+		Stance::Value newstance;
+		if (attacktype == 9 && !degenerate)
 		{
-			switch (attack)
-			{
-			case 9:
-				setaction("handgun");
-				break;
-			}
-			return action->getdelay();
+			setaction("handgun");
+			newstance = Stance::SHOT;
 		}
 		else
 		{
-			Stance::Value newstance = getattackstance(attack, degenerate);
-			if (stance != newstance)
-			{
-				stance.set(newstance);
-				stframe.set(0);
-
-				stelapsed = 0;
-			}
-			return DataFactory::get().getdrawinfo().getdelay(newstance, 0);
+			newstance = getattackstance(attacktype, degenerate);
+			stance.set(newstance);
+			stframe.set(0);
+			stelapsed = 0;
 		}
+
+		afterimage = weapon.map(&Weapon::getafterimage, newstance);
+		weapon.map(&Weapon::getusesound, degenerate).play();
+
+	}
+
+	void CharLook::attack(Stance::Value newstance)
+	{
+		if (action || newstance == Stance::NONE)
+			return;
+
+		switch (newstance)
+		{
+		case Stance::SHOT:
+			setaction("handgun");
+			break;
+		default:
+			setstance(newstance);
+		}
+
+		afterimage = equips.getweapon()
+			.map(&Weapon::getafterimage, newstance);
 	}
 
 	void CharLook::setstance(Stance::Value newstance)
 	{
-		if (action)
+		if (action || newstance == Stance::NONE)
 			return;
 
 		Optional<const Weapon> weapon = equips.getweapon();
@@ -513,6 +528,31 @@ namespace Character
 			return true;
 		default:
 			return equips.istwohanded();
+		}
+	}
+
+	CharLook::AttackLook CharLook::getattacklook() const
+	{
+		Stance::Value astance = action ? Stance::SHOT : stance.get();
+		rectangle2d<int16_t> range = afterimage.getrange();
+		return{ astance, range };
+	}
+
+	uint16_t CharLook::getattackdelay(size_t no) const
+	{
+		if (action)
+		{
+			return DataFactory::get().getdrawinfo().getattackdelay(actionstr, no);
+		}
+		else
+		{
+			uint8_t firstframe = afterimage.getfirstframe();
+			uint16_t delay = 0;
+			for (uint8_t frame = 0; frame < firstframe; frame++)
+			{
+				delay += getdelay(stance.get(), frame);
+			}
+			return delay * (no + 1);
 		}
 	}
 

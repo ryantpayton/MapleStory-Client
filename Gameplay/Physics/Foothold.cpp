@@ -43,6 +43,7 @@ namespace Gameplay
 		id = 0;
 		prev = 0;
 		next = 0;
+		layer = 0;
 	}
 
 	Foothold::~Foothold() {}

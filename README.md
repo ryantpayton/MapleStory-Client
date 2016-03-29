@@ -1,9 +1,9 @@
 # JourneyClient
-JourneyClient is a custom, made-from-scratch game client for the 2D MMORPG MapleStory.
+JourneyClient is a custom, made-from-scratch game client.
 
 # Supported versions
 The client is currently compatible with version 83 servers.
-For the UI file, a v142+ version should be used.
+For the UI file, a v154+ version should be used.
 
 # Configuration
 The build can be configured by editing the Journey.h file. The following options are available:

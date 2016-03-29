@@ -36,6 +36,9 @@ namespace Character
 	void Char::draw(Point<int16_t> viewpos, float inter) const
 	{
 		Point<int16_t> absp = phobj.getposition(inter) + viewpos;
+
+		effects.drawbelow(absp, inter);
+
 		look.draw(absp, inter);
 
 		for (int32_t i = 0; i < 3; i++)
@@ -47,7 +50,7 @@ namespace Character
 		namelabel.draw(absp);
 		chatballoon.draw(absp);
 
-		effects.draw(absp, inter);
+		effects.drawabove(absp, inter);
 	}
 
 	bool Char::update(const Physics& physics, float speed)
@@ -76,8 +79,36 @@ namespace Character
 			}
 		}
 
-		uint16_t stancespeed = static_cast<uint16_t>(Constants::TIMESTEP * speed);
+		uint16_t stancespeed = 0;
+		if (speed >= 1.0f / Constants::TIMESTEP)
+		{
+			stancespeed = static_cast<uint16_t>(Constants::TIMESTEP * speed);
+		}
 		return look.update(stancespeed);
+	}
+
+	float Char::getstancespeed() const
+	{
+		if (attacking)
+			return getattackspeed();
+
+		switch (state)
+		{
+		case WALK:
+			return static_cast<float>(std::abs(phobj.hspeed) / 1.25);
+		case LADDER:
+		case ROPE:
+			return static_cast<float>(std::abs(phobj.vspeed));
+		default:
+			return 1.0f;
+		}
+	}
+
+	uint16_t Char::getattackdelay(size_t no, uint8_t speed) const
+	{
+		uint16_t delay = look.getattackdelay(no);
+		float fspeed = 1.7f - static_cast<float>(speed) / 10;
+		return static_cast<uint16_t>(delay / fspeed);
 	}
 
 	int8_t Char::update(const Physics& physics)
@@ -91,9 +122,10 @@ namespace Character
 		return isclimbing() ? 7 : phobj.fhlayer;
 	}
 
-	void Char::showeffect(Animation toshow)
+	void Char::showeffect(Animation toshow, int8_t z)
 	{
-		effects.add(toshow, flip);
+		float attackspeed = getattackspeed();
+		effects.add(toshow, flip, z, attackspeed);
 	}
 
 	void Char::showeffectbyid(Effect toshow)
@@ -126,10 +158,47 @@ namespace Character
 		}
 	}
 
+	void Char::setstate(uint8_t statebyte)
+	{
+		if (statebyte % 2 == 1)
+		{
+			setflip(false);
+			statebyte -= 1;
+		}
+		else
+		{
+			setflip(true);
+		}
+
+		Char::State newstate = byvalue(statebyte);
+		setstate(newstate);
+	}
+
 	void Char::sendface(int32_t expid)
 	{
 		Expression::Value expression = Expression::byaction(expid);
 		look.setexpression(expression);
+	}
+
+	void Char::attack(string action)
+	{
+		look.setaction(action);
+
+		attacking = true;
+	}
+
+	void Char::attack(Stance::Value stance)
+	{
+		look.attack(stance);
+
+		attacking = true;
+	}
+
+	void Char::attack(bool degenerate)
+	{
+		look.attack(degenerate);
+
+		attacking = true;
 	}
 
 	void Char::setflip(bool f)
@@ -190,6 +259,11 @@ namespace Character
 	string Char::getname() const
 	{
 		return namelabel.gettext();
+	}
+
+	CharLook& Char::getlook()
+	{
+		return look;
 	}
 
 	const CharLook& Char::getlook() const

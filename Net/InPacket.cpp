@@ -44,18 +44,12 @@ namespace Net
 		pos += count;
 	}
 
-	string InPacket::readascii()
-	{
-		auto length = read<int16_t>();
-		return readpadascii(length);
-	}
-
 	string InPacket::readpadascii(int16_t count)
 	{
 		string ret;
 		for (int16_t i = 0; i < count; i++)
 		{
-			auto letter = read<char>();
+			char letter = readbyte();
 			if (letter != '\0')
 			{
 				ret.push_back(letter);

@@ -39,7 +39,7 @@ namespace Gameplay
 
 	Layer::Layer(InPacket& recv)
 	{
-		string tileset = recv.readascii();
+		string tileset = recv.read<string>();
 		uint16_t numtiles = recv.readshort();
 		for (uint16_t i = 0; i < numtiles; i++)
 		{

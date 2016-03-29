@@ -16,31 +16,76 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "EffectLayer.h"
+#include "Constants.h"
 
 namespace Graphics
 {
-	void EffectLayer::draw(Point<int16_t> position, float alpha) const
+	void EffectLayer::drawbelow(Point<int16_t> position, float alpha) const
 	{
-		for (auto& effect : effects)
+		for (auto& effectlist : effectsbelow)
 		{
-			effect.draw(position, alpha);
+			for (auto& effect : effectlist.second)
+			{
+				effect.draw(position, alpha);
+			}
+		}
+	}
+
+	void EffectLayer::drawabove(Point<int16_t> position, float alpha) const
+	{
+		for (auto& effectlist : effectsabove)
+		{
+			for (auto& effect : effectlist.second)
+			{
+				effect.draw(position, alpha);
+			}
 		}
 	}
 
 	void EffectLayer::update()
 	{
-		effects.remove_if([](Effect& effect){
-			return effect.animation.update();
-		});
+		for (auto& effectlist : effectsbelow)
+		{
+			effectlist.second.remove_if([](Effect& effect){
+				return effect.update();
+			});
+		}
+
+		for (auto& effectlist : effectsabove)
+		{
+			effectlist.second.remove_if([](Effect& effect){
+				return effect.update();
+			});
+		}
+	}
+
+	void EffectLayer::add(Animation animation, bool flip, int8_t z, float speed)
+	{
+		auto timestep = static_cast<uint16_t>(Constants::TIMESTEP * speed);
+		auto effect = Effect(animation, timestep, flip);
+		bool below = z < 0;
+		if (below)
+		{
+			effectsbelow[z].push_back(effect);
+		}
+		else
+		{
+			effectsabove[z].push_back(effect);
+		}
+	}
+
+	void EffectLayer::add(Animation animation, bool flip, int8_t z)
+	{
+		add(animation, flip, z, 1.0f);
 	}
 
 	void EffectLayer::add(Animation animation, bool flip)
 	{
-		effects.push_back({ animation, flip });
+		add(animation, flip, 0, 1.0f);
 	}
 
 	void EffectLayer::add(Animation animation)
 	{
-		add(animation, false);
+		add(animation, false, 0, 1.0f);
 	}
 }

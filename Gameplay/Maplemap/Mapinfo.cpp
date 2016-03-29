@@ -61,11 +61,11 @@ namespace Gameplay
 		mapwalls.setsecond(recv.readshort());
 		mapborders.setfirst(recv.readshort());
 		mapborders.setsecond(recv.readshort());
-		bgm = recv.readascii();
+		bgm = recv.read<string>();
 		cloud = recv.readbool();
 		fieldlimit = recv.readint();
 		hideminimap = recv.readbool();
-		mapmark = recv.readascii();
+		mapmark = recv.read<string>();
 		swim = recv.readbool();
 		town = recv.readbool();
 

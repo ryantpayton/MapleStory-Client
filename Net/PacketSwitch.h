@@ -23,9 +23,6 @@ namespace Net
 {
 	using std::unique_ptr;
 
-	// Maximum number of handler classes needed for now.
-	const uint16_t NUM_HANDLERS = 500;
-
 	// Class which contains the array of handler classes to use.
 	class PacketSwitch
 	{
@@ -39,6 +36,9 @@ namespace Net
 		void forward(int8_t* buffer, size_t length) const;
 
 	private:
+		// Maximum number of handler classes needed for now.
+		static const uint16_t NUM_HANDLERS = 500;
+
 		unique_ptr<PacketHandler> handlers[NUM_HANDLERS];
 	};
 }

@@ -17,17 +17,17 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Chatbar.h"
 #include "MapleButton.h"
-#include "Graphics\GraphicsGL.h"
-#include "Net\Session.h"
-#include "Net\Packets\MessagingPackets.h"
+
 #include "IO\UI.h"
+#include "Net\Packets\MessagingPackets.h"
+
 #include "nlnx\nx.hpp"
+
+//temporary
+#include "Gameplay\Stage.h"
 
 namespace IO
 {
-	using Graphics::GraphicsGL;
-	using Net::Session;
-
 	Chatbar::Chatbar(Point<int16_t> pos)
 	{
 		position = pos;
@@ -66,6 +66,8 @@ namespace IO
 		tapbar = chat["tapBar"];
 		tapbartop = chat["tapBarOver"];
 
+		chatbox = Rectangle(502, 1 + chatrows * CHATROWHEIGHT, Geometry::BLACK, 0.6f);
+
 		chatfield = Textfield(Text::A11M, Text::LEFT, Text::BLACK, 
 			rectangle2d<int16_t>(
 			Point<int16_t>(-435, -58),
@@ -73,8 +75,17 @@ namespace IO
 			), 0);
 		chatfield.setstate(chatopen ? Textfield::NORMAL : Textfield::DISABLED);
 		chatfield.setonreturn([&](string msg) {
-			using Net::GeneralChatPacket;
-			Session::get().dispatch(GeneralChatPacket(msg, true));
+			// temporary
+			if (msg[0] == 's')
+			{
+				int32_t id = std::stoi(msg.substr(1));
+				Gameplay::Stage::get().sendkey(Keyboard::SKILL, id, true);
+			}
+			else
+			{
+				using Net::GeneralChatPacket;
+				GeneralChatPacket(msg, true).dispatch();
+			}
 
 			lastentered.push_back(msg);
 			lastpos = lastentered.size();
@@ -95,7 +106,7 @@ namespace IO
 		});
 
 		slider = unique_ptr<Slider>(
-			new Slider(11, Range<int16_t>(0, tapbarheight * chatrows - 14), -22, chatrows, 1, [&](bool up){
+			new Slider(11, Range<int16_t>(0, CHATROWHEIGHT * chatrows - 14), -22, chatrows, 1, [&](bool up){
 			int16_t next = up ? 
 				rowpos - 1 : 
 				rowpos + 1;
@@ -115,23 +126,27 @@ namespace IO
 
 		if (chatopen)
 		{
-			using Graphics::DrawArgument;
-			int16_t chatheight = tapbarheight * chatrows;
-			Point<int16_t> tabpos = position - Point<int16_t>(576, chatheight + 65);
-			tapbartop.draw(tabpos);
-			tabpos.shifty(2);
-			GraphicsGL::get().drawrectangle(0, tabpos.y(), 502, 1 + chatrows * tapbarheight, 0.0f, 0.0f, 0.0f, 0.5f);
+			tapbartop.draw(Point<int16_t>(position.x() - 576, getchattop()));
+			chatbox.draw(Point<int16_t>(0, getchattop() + 2));
+
+			int16_t chatheight = CHATROWHEIGHT * chatrows;
+			int16_t yshift = -chatheight;
 			for (int16_t i = 0; i < chatrows; i++)
 			{
-				Point<int16_t> startpos = tabpos + Point<int16_t>(66, -3);
-				int16_t rowid = rowpos + i - chatrows + 1;
-				if (rowtexts.count(rowid))
+				int16_t rowid = rowpos - i;
+				if (!rowtexts.count(rowid))
+					break;
+
+				int16_t textheight = rowtexts.at(rowid).height() / CHATROWHEIGHT;
+				while (textheight > 0)
 				{
-					rowtexts.at(rowid).draw(startpos);
+					yshift += CHATROWHEIGHT;
+					textheight--;
 				}
-				tabpos.shifty(tapbarheight);
+				rowtexts.at(rowid).draw(Point<int16_t>(4, getchattop() - yshift - 1));
 			}
-			slider->draw(position + Point<int16_t>(0, - chatheight - 60));
+
+			slider->draw(Point<int16_t>(position.x(), getchattop() + 5));
 
 			chattargets[chattarget].draw(position + Point<int16_t>(0, 2));
 			chatcover.draw(position);
@@ -139,7 +154,7 @@ namespace IO
 		}
 		else if (rowtexts.count(rowmax))
 		{
-			rowtexts.at(rowmax).draw(position + Point<int16_t>(-500, -58));
+			rowtexts.at(rowmax).draw(position + Point<int16_t>(-500, -60));
 		}
 	}
 
@@ -160,7 +175,6 @@ namespace IO
 			buttons[BT_CLOSECHAT]->setactive(true);
 			buttons[BT_CHATTARGETS]->setactive(true);
 			chatfield.setstate(Textfield::NORMAL);
-			//config.getconfig()->chatopen = true;
 			break;
 		case BT_CLOSECHAT:
 			chatopen = false;
@@ -168,24 +182,25 @@ namespace IO
 			buttons[BT_CLOSECHAT]->setactive(false);
 			buttons[BT_CHATTARGETS]->setactive(false);
 			chatfield.setstate(Textfield::DISABLED);
-			//config.getconfig()->chatopen = false;
 			break;
 		}
 
 		buttons[id]->setstate(Button::NORMAL);
 	}
 
-	rectangle2d<int16_t> Chatbar::bounds() const
+	bool Chatbar::isinrange(Point<int16_t> cursorpos) const
 	{
-		Point<int16_t> absp = position - Point<int16_t>(512, 90);
-		return rectangle2d<int16_t>(absp, absp + dimension);
+		auto absp = Point<int16_t>(0, getchattop());
+		auto dim = Point<int16_t>(500, chatrows * CHATROWHEIGHT + CHATYOFFSET);
+		return rectangle2d<int16_t>(absp, absp + dim).contains(cursorpos);
 	}
 
-	Cursor::State Chatbar::sendmouse(bool down, Point<int16_t> cursorpos)
+	Cursor::State Chatbar::sendmouse(bool clicking, Point<int16_t> cursorpos)
 	{
 		if (slider && slider->isenabled())
 		{
-			Cursor::State sstate = slider->sendcursor(cursorpos - Point<int16_t>(512, 480), down);
+			auto cursoroffset = cursorpos - Point<int16_t>(position.x(), getchattop() + 5);
+			Cursor::State sstate = slider->sendcursor(cursoroffset, clicking);
 			if (sstate != Cursor::IDLE)
 			{
 				return sstate;
@@ -194,14 +209,58 @@ namespace IO
 
 		if (chatfield.getstate() == Textfield::NORMAL)
 		{
-			Cursor::State tstate = chatfield.sendcursor(cursorpos, down);
+			Cursor::State tstate = chatfield.sendcursor(cursorpos, clicking);
 			if (tstate != Cursor::IDLE)
 			{
 				return tstate;
 			}
 		}
+		
+		auto chattop = rectangle2d<int16_t>(
+			0,  502, 
+			getchattop(),
+			getchattop() + 6
+			);
+		bool contains = chattop.contains(cursorpos);
+		if (dragchattop)
+		{
+			if (clicking)
+			{
+				int16_t ydelta = cursorpos.y() - getchattop();
+				while (ydelta > 0)
+				{
+					chatrows--;
+					ydelta -= CHATROWHEIGHT;
+				}
+				while (ydelta < 0)
+				{
+					chatrows++;
+					ydelta += CHATROWHEIGHT;
+				}
+				chatbox.setheight(1 + chatrows * CHATROWHEIGHT);
+				slider->setvertical(Range<int16_t>(0, CHATROWHEIGHT * chatrows - 14));
+				slider->setrows(chatrows, rowmax);
+				return Cursor::CLICKING;
+			}
+			else
+			{
+				dragchattop = false;
+			}
+		}
+		else if (contains)
+		{
+			if (clicking)
+			{
+				dragchattop = true;
+				return Cursor::CLICKING;
+			}
+			else
+			{
+				return Cursor::CANCLICK;
+			}
+		}
 
-		return UIElement::sendmouse(down, cursorpos);
+		return UIElement::sendmouse(clicking, cursorpos);
 	}
 
 	void Chatbar::sendline(string line, LineType type)
@@ -228,6 +287,11 @@ namespace IO
 			break;
 		}
 		rowtexts[rowmax] = Text(Text::A12M, Text::LEFT, color);
-		rowtexts[rowmax].settext(line);
+		rowtexts[rowmax].settext(line, 480);
+	}
+
+	int16_t Chatbar::getchattop() const
+	{
+		return position.y() - chatrows * CHATROWHEIGHT - CHATYOFFSET;
 	}
 }

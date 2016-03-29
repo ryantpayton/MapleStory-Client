@@ -58,6 +58,17 @@ namespace Character
 		}
 	}
 
+	bool CharJob::issubjob(uint16_t subid) const
+	{
+		for (int32_t lvit = JOB_BEGINNER; lvit <= JOB_FOURTHT; lvit++)
+		{
+			Joblevel lv = static_cast<Joblevel>(lvit);
+			if (subid == getsubjob(lv))
+				return true;
+		}
+		return false;
+	}
+
 	uint16_t CharJob::getid() const
 	{
 		return id;

@@ -17,31 +17,26 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Mapobject.h"
-#include "Audio\Sound.h"
-#include "Gameplay\Attack.h"
-#include "Gameplay\Bullet.h"
-#include "Gameplay\Physics\PhysicsObject.h"
+#include "Constants.h"
+
+#include "Audio\Audio.h"
+#include "Gameplay\Combat\Attack.h"
+#include "Gameplay\Combat\Bullet.h"
+#include "Gameplay\Movement.h"
 #include "Graphics\Text.h"
 #include "Graphics\EffectLayer.h"
-#include "Graphics\Geometry\MobHpBar.h"
+#include "Graphics\Geometry.h"
 #include "IO\Components\DamageNumber.h"
 #include "Util\rectangle2d.h"
 #include "Util\Enum.h"
 #include "Util\Interpolated.h"
 #include "Util\Randomizer.h"
 #include "Util\TimedBool.h"
-#include <list>
-#include <queue>
-#include <deque>
 
 namespace Gameplay
 {
 	using std::string;
 	using std::pair;
-	using std::queue;
-	using std::deque;
-	using std::list;
-	using std::map;
 	using Graphics::Text;
 	using Graphics::EffectLayer;
 	using Graphics::MobHpBar;
@@ -82,67 +77,38 @@ namespace Gameplay
 
 		// Draw the mob.
 		void draw(Point<int16_t> viewpos, float inter) const override;
-		// Draw effects on the top layer.
-		void draweffects(Point<int16_t> viewpos, float inter) const;
 		// Update movement and animations.
 		int8_t update(const Physics& physics) override;
 
 		// Change this mob's control mode:
 		// 0 - no control, 1 - control, 2 - aggro
 		void setcontrol(int8_t mode);
+		// Send movement to the mob.
+		void sendmovement(Point<int16_t> start, const Movement& movement);
 		// Kill the mob with the appropriate type:
 		// 0 - make inactive 1 - death animation 2 - fade out
 		void kill(int8_t killtype);
 		// Display the hp percentage above the mob.
 		// Use the playerlevel to determine color of nametag.
 		void sendhp(int8_t percentage, uint16_t playerlevel);
-		// Check if this mob collides with the specified rectangle.
+		// Show an effect at the mob's position.
+		void showeffect(Animation animation, int8_t pos);
 
+		// Calculate the damage to this mob with the spcecified attack.
+		vector<pair<int32_t, bool>> calculatedamage(const Attack& attack);
+		// Get a placement for damage numbers above the mob's head.
+		vector<DamageNumber> placenumbers(vector<pair<int32_t, bool>> damagelines) const;
+		// Apply damage to the mob.
+		void applydamage(int32_t damage, bool toleft);
+
+		// Check if this mob collides with the specified rectangle.
 		bool isinrange(const rectangle2d<int16_t>& range) const;
 		// Check if this mob is still alive.
 		bool isalive() const;
-		// Damage the mob with an attack and return all damage lines.
-		vector<int32_t> damage(const Attack& attack);
+		// Return the head position.
+		Point<int16_t> getheadpos() const;
 
 	private:
-		struct SingleEffect
-		{
-			DamageNumber number;
-			Animation hiteffect;
-			Sound hitsound;
-			uint16_t delay;
-
-			SingleEffect(DamageNumber n, Animation he, Sound hs, uint16_t d)
-			{
-				number = n;
-				hiteffect = he;
-				hitsound = hs;
-				delay = d;
-			}
-		};
-
-		class AttackEffect
-		{
-		public:
-			AttackEffect(const Attack& attack);
-
-			void push_back(pair<int32_t, bool> number);
-
-			bool toleft() const;
-			int32_t gettotal() const;
-			queue<SingleEffect> seperate(Point<int16_t> head) const;
-
-		private:
-			Animation hiteffect;
-			Sound hitsound;
-			Attack::Direction direction;
-			vector<uint16_t> hitdelays;
-			uint16_t firstdelay;
-
-			vector<pair<int32_t, bool>> numbers;
-			int32_t total;
-		};
-
 		static const size_t NUM_DIRECTIONS = 3;
 		enum FlyDirection
 		{
@@ -161,10 +127,8 @@ namespace Gameplay
 			return directions[index];
 		}
 
-		void applysingle(const SingleEffect& singleeffect);
-		void applyattack(const AttackEffect& damageeffect);
-		void applyknockback(bool fromright);
-		void sendmovement();
+		void updatemovement();
+		void setstance(uint8_t stancebyte);
 		void setstance(Stance newstance);
 		void nextmove();
 		float calchitchance(int16_t leveldelta, int32_t accuracy) const;
@@ -196,16 +160,14 @@ namespace Gameplay
 		bool canjump;
 		bool canfly;
 
-		list<SingleEffect> singlelist;
-		list<pair<Bullet, AttackEffect>> bulletlist;
-
 		EffectLayer effects;
 		Text namelabel;
 		MobHpBar hpbar;
 		Randomizer randomizer;
-		deque<DamageNumber> damagenumbers;
 
 		TimedBool showhp;
+
+		Movement lastmove;
 		uint16_t counter;
 
 		int32_t id;

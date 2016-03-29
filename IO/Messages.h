@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Character\Look\Weapon.h"
 #include <string>
 
 namespace IO
@@ -25,27 +26,50 @@ namespace IO
 	class Messages
 	{
 	public:
-		static const size_t LENGTH = 3;
+		static const size_t LENGTH = 6;
 		enum Type
 		{
+			// Cannot use a skill
+			SKILL_WEAPONTYPE,
+			SKILL_HPCOST,
+			SKILL_MPCOST,
+			SKILL_NOARROWS,
+			SKILL_NOBULLETS,
+			SKILL_NOSTARS,
+
+			// Scrolling result
 			SCROLL_SUCCESS,
 			SCROLL_FAILURE,
 			SCROLL_DESTROYED
 		};
 
-		Messages()
-		{
-			messages[SCROLL_SUCCESS] = "The scroll lights up and it's mysterious powers have been transferred to the item.";
-			messages[SCROLL_FAILURE] = "The scroll lights up but the item remains as if nothing happened.";
-			messages[SCROLL_DESTROYED] = "The item has been destroyed by the overwhelming power of the scroll.";
-		}
+		Messages();
 
-		string stringfor(Type type)
-		{
-			return messages[type];
-		}
+		string stringfor(Type type);
 
 	private:
 		string messages[LENGTH];
+	};
+
+	class InChatMessage
+	{
+	public:
+		InChatMessage(Messages::Type type);
+
+		void drop() const;
+
+	private:
+		Messages::Type type;
+	};
+
+	class NoBulletsMessage : public InChatMessage
+	{
+	public:
+		using Weapon = Character::Weapon;
+
+		NoBulletsMessage(Weapon::Type weapon);
+
+	private:
+		Messages::Type messagebyweapon(Weapon::Type weapon);
 	};
 }

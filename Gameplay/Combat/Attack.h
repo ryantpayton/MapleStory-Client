@@ -16,85 +16,85 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Audio\Audio.h"
+#include "Character\Look\Stance.h"
 #include "Graphics\Animation.h"
-#include "Util\BoolPair.h"
-#include "Util\Optional.h"
 #include "Util\rectangle2d.h"
 #include <cstdint>
-#include <string>
-#include <unordered_map>
 
 namespace Gameplay
 {
-	using std::int32_t;
-	using std::string;
-	using std::unordered_map;
 	using std::vector;
-	using Graphics::Texture;
+	using std::map;
 	using Graphics::Animation;
+	using Audio::Sound;
 
-	class Skill
+	struct Attack 
 	{
-	public:
-		enum Name
+		enum Type
 		{
-			BRANDISH = 1121008,
-			SACRIFICE = 1311005,
-			DRAGONS_ROAR = 1311006
+			CLOSE,
+			RANGED,
+			MAGIC
 		};
 
-		enum IconType
+		enum Direction : uint8_t
 		{
-			NORMAL,
-			MOUSEOVER,
-			DISABLED
+			CENTERED = 0,
+			TOLEFT = 1,
+			TORIGHT = 2
 		};
 
-		struct Level
+		Type type = CLOSE;
+
+		double mindamage = 1.0;
+		double maxdamage = 1.0;
+		float critical = 0.0f;
+		float ignoredef = 0.0f;
+		int32_t accuracy = 0;
+		int16_t playerlevel = 1;
+
+		uint8_t hitcount = 0;
+		uint8_t mobcount = 0;
+		uint8_t speed = 0;
+		uint8_t stance = 0;
+		int32_t skill = 0;
+		int32_t bullet = 0;
+
+		uint16_t delay = 0;
+		Direction direction = CENTERED;
+		vector<uint16_t> hitdelays;
+		Point<int16_t> origin;
+		rectangle2d<int16_t> range;
+	};
+
+
+	struct AttackResult
+	{
+		AttackResult(const Attack& attack)
 		{
-			float chance = 0.0f;
-			float damage = 0.0f;
-			float critical = 0.0f;
-			float ignoredef = 0.0f;
-			uint8_t attackcount = 1;
-			uint8_t mobcount = 1;
-			int32_t hpcost = 0;
-			int32_t mpcost = 0;
-			rectangle2d<int16_t> range;
-			BoolPair<vector<uint16_t>> hitdelays;
-		};
+			type = attack.type;
+			hitcount = attack.hitcount;
+			skill = attack.skill;
+			direction = attack.direction;
+			speed = attack.speed;
+			stance = attack.stance;
+			bullet = attack.bullet;
+		}
 
-		Skill(int32_t);
-		Skill();
-		~Skill();
+		AttackResult() {}
 
-		bool isoffensive() const;
-		bool canbetwohanded() const;
-		int32_t getid() const;
-		string getaction(bool twohanded) const;
-
-		Animation gethitanimation(bool twohanded) const;
-		Animation geteffect(bool twohanded) const;
-		const Texture& geticon(IconType type) const;
-		const Level* getlevel(int32_t level) const;
-
-		static void init();
-
-	private:
-		int32_t skillid;
-		unordered_map<int32_t, Level> levels;
-		unordered_map<IconType, Texture> icons;
-		BoolPair<Animation> useeffects;
-		bool oneuseeffect;
-		BoolPair<Animation> hiteffects;
-		bool onehiteffect;
-		BoolPair<string> actions;
-		bool oneaction;
-		Animation affected;
-		string preparestance;
-		int32_t preparetime;
-		bool offensive;
-
-		static unordered_map<int32_t, BoolPair<vector<int16_t>>> attackframes;
+		Attack::Type type;
+		uint8_t mobcount = 0;
+		uint8_t hitcount = 1;
+		int32_t skill = 0;
+		int32_t charge = 0;
+		int32_t bullet = 0;
+		uint8_t level = 0;
+		uint8_t display = 0;
+		uint8_t direction = 0;
+		uint8_t stance = 0;
+		uint8_t speed = 0;
+		map<int32_t, vector<pair<int32_t, bool>>> damagelines;
 	};
 }

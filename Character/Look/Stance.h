@@ -28,11 +28,11 @@ namespace Character
 	class Stance
 	{
 	public:
-		static const size_t LENGTH = 35;
-		enum Value
+		static const size_t LENGTH = 36;
+		enum Value : uint8_t
 		{
 			NONE, ALERT, DEAD, FLY, HEAL, JUMP, LADDER, PRONE, PRONESTAB,
-			ROPE, SHOOT1, SHOOT2, SHOOTF, SIT, STABO1, STABO2, STABOF,
+			ROPE, SHOT, SHOOT1, SHOOT2, SHOOTF, SIT, STABO1, STABO2, STABOF,
 			STABT1, STABT2, STABTF, STAND1, STAND2, SWINGO1, SWINGO2,
 			SWINGO3, SWINGOF, SWINGP1, SWINGP2, SWINGPF, SWINGT1, SWINGT2,
 			SWINGT3, SWINGTF, WALK1, WALK2
@@ -58,6 +58,17 @@ namespace Character
 			return statevalues[index];
 		}
 
+		static Value byid(uint8_t id)
+		{
+			for (auto it = getit(); it.hasnext(); it.increment())
+			{
+				Stance::Value value = it.get();
+				if (id == value)
+					return value;
+			}
+			return NONE;
+		}
+
 		static Value bystring(string name)
 		{
 			for (auto it = getit(); it.hasnext(); it.increment())
@@ -77,7 +88,7 @@ namespace Character
 			static const string stancenames[LENGTH] =
 			{
 				"", "alert", "dead", "fly", "heal", "jump", "ladder", "prone", "proneStab",
-				"rope", "shoot1", "shoot2", "shootF", "sit", "stabO1", "stabO2", "stabOF",
+				"rope", "shot", "shoot1", "shoot2", "shootF", "sit", "stabO1", "stabO2", "stabOF",
 				"stabT1", "stabT2", "stabTF", "stand1", "stand2", "swingO1", "swingO2",
 				"swingO3", "swingOF", "swingP1", "swingP2", "swingPF", "swingT1", "swingT2",
 				"swingT3", "swingTF", "walk1", "walk2"

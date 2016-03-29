@@ -263,12 +263,19 @@ namespace IO
 		case BT_CHARC_OK:
 			if (named)
 			{
+				string cname = namechar.gettext();
+				uint16_t cjob = 1;
+				int32_t cface = faces[female][face];
+				int32_t chair = hairs[female][hair];
+				uint8_t chairc = haircolors[female][haircolor];
+				uint8_t cskin = skins[female][skin];
+				int32_t ctop = tops[female][top];
+				int32_t cbot = bots[female][bot];
+				int32_t cshoe = shoes[female][shoe];
+				int32_t cwep = weapons[female][weapon];
+
 				using Net::CreateCharPacket;
-				Session::get().dispatch(CreateCharPacket(
-					namechar.gettext(), 1, faces[female][face], hairs[female][hair], 
-					haircolors[female][haircolor], skins[female][skin], tops[female][top], 
-					bots[female][bot], shoes[female][shoe], weapons[female][weapon], female)
-					);
+				CreateCharPacket(cname, cjob, cface, chair, chairc, cskin, ctop, cbot, cshoe, cwep, female).dispatch();
 			}
 			else
 			{
@@ -280,7 +287,7 @@ namespace IO
 					namechar.setstate(Textfield::NORMAL);
 
 					using Net::NameCharPacket;
-					Session::get().dispatch(NameCharPacket(name));
+					NameCharPacket(name).dispatch();
 				}
 				else
 				{

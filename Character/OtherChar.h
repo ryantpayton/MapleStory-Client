@@ -17,12 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Char.h"
+
 #include "Look\CharLook.h"
 #include "Gameplay\Movement.h"
 
+#include <queue>
+
 namespace Character
 {
-	using std::vector;
+	using std::queue;
 	using Gameplay::Physics;
 	using Gameplay::Movement;
 
@@ -34,14 +37,29 @@ namespace Character
 			int16_t job, string name, int8_t stance, Point<int16_t> position);
 
 		// Update the character.
-		int8_t update(const Physics& physics);
+		int8_t update(const Physics& physics) override;
 		// Add the movements which this character will go through next.
-		void sendmovement(const vector<Movement>& movements);
+		void sendmovement(queue<Movement> movements);
+		
+		// Update attack related stats.
+		void updatestats(int32_t skillid, uint8_t skilllevel, uint8_t attackspeed);
+		// Update character look.
+		void updatelook(LookEntry look);
+
+		// Return the character's level.
+		uint16_t getlevel() const override;
+		// Return the character's level of a skill.
+		int32_t getskilllevel(int32_t skillid) const override;
+		// Return the character's attacking speed.
+		float getattackspeed() const override;
 
 	private:
-		uint8_t level;
+		uint16_t level;
 		int16_t job;
-		vector<Movement> movements;
+		queue<Movement> movements;
 		Movement lastmove;
+
+		unordered_map<int32_t, int32_t> skilllevels;
+		uint8_t attackspeed;
 	};
 }

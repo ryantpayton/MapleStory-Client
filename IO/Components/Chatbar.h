@@ -22,12 +22,15 @@
 #include "IO\UIElement.h"
 #include "IO\Cursor.h"
 #include "Graphics\Texture.h"
+#include "Graphics\Geometry.h"
 #include <vector>
 
 namespace IO
 {
 	using std::unordered_map;
 	using std::vector;
+	using Graphics::Geometry;
+	using Graphics::Rectangle;
 	using Graphics::Text;
 	using Graphics::Texture;
 
@@ -69,12 +72,14 @@ namespace IO
 		void draw(float inter) const override;
 		void update() override;
 		void buttonpressed(uint16_t buttonid) override;
-		rectangle2d<int16_t> bounds() const override;
-		Cursor::State sendmouse(bool pressed, Point<int16_t> position) override;
+		bool isinrange(Point<int16_t> cursorpos) const override;
+		Cursor::State sendmouse(bool pressed, Point<int16_t> cursorpos) override;
 
 		void sendline(string line, LineType type);
 
 	private:
+		int16_t getchattop() const;
+
 		Textfield chatfield;
 		Texture chatspace[2];
 		Texture chattargets[NUM_TARGETS];
@@ -91,10 +96,13 @@ namespace IO
 
 		unordered_map<int16_t, Text> rowtexts;
 
-		static const int16_t tapbarheight = 16;
+		static const int16_t CHATYOFFSET = 65;
+		static const int16_t CHATROWHEIGHT = 16;
+		Rectangle chatbox;
 		int16_t chatrows;
 		int16_t rowpos;
 		int16_t rowmax;
 		unique_ptr<Slider> slider;
+		bool dragchattop;
 	};
 }

@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "OutPacket.h"
+#include "Session.h"
 #include <chrono>
 
 namespace Net
@@ -25,14 +26,9 @@ namespace Net
 		writesh(opcode);
 	}
 
-	size_t OutPacket::length() const
+	void OutPacket::dispatch()
 	{
-		return bytes.size();
-	}
-
-	const int8_t* OutPacket::getbytes() const
-	{
-		return bytes.data();
+		Session::get().dispatch(bytes.data(), bytes.size());
 	}
 
 	void OutPacket::skip(size_t count)
@@ -52,8 +48,8 @@ namespace Net
 	{
 		for (size_t i = 0; i < 2; i++)
 		{
-			bytes.push_back(static_cast<int8_t>(sh));
-			sh = sh >> 8;
+			writech(static_cast<int8_t>(sh));
+			sh >>= 8;
 		}
 	}
 
@@ -61,8 +57,8 @@ namespace Net
 	{
 		for (size_t i = 0; i < 4; i++)
 		{
-			bytes.push_back(static_cast<int8_t>(in));
-			in = in >> 8;
+			writech(static_cast<int8_t>(in));
+			in >>= 8;
 		}
 	}
 
@@ -70,8 +66,8 @@ namespace Net
 	{
 		for (size_t i = 0; i < 8; i++)
 		{
-			bytes.push_back(static_cast<int8_t>(lg));
-			lg = lg >> 8;
+			writech(static_cast<int8_t>(lg));
+			lg >>= 8;
 		}
 	}
 
@@ -79,9 +75,10 @@ namespace Net
 	{
 		int16_t len = static_cast<int16_t>(str.length());
 		writesh(len);
+
 		for (int16_t i = 0; i < len; i++)
 		{
-			bytes.push_back(str[i]);
+			writech(str[i]);
 		}
 	}
 
@@ -94,10 +91,11 @@ namespace Net
 	void OutPacket::writetime()
 	{
 		using std::chrono::steady_clock;
-		using std::chrono::seconds;
+		using std::chrono::milliseconds;
 
-		seconds since_epoch = std::chrono::duration_cast<seconds>(steady_clock::now().time_since_epoch());
-		int32_t timestamp = static_cast<int32_t>(since_epoch.count());
+		auto duration = steady_clock::now().time_since_epoch();
+		auto since_epoch = std::chrono::duration_cast<milliseconds>(duration);
+		auto timestamp = static_cast<int32_t>(since_epoch.count());
 		writeint(timestamp);
 	}
 }

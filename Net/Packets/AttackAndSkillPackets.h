@@ -19,31 +19,41 @@
 #include "Net\OutPacket.h"
 #include "Net\SendOpcodes.h"
 
-#include "Gameplay\Attack.h"
+#include "Gameplay\Combat\Attack.h"
 
 namespace Net
 {
+	using Gameplay::Attack;
 	using Gameplay::AttackResult;
 
-	// Base class for attack packets.
+	// Notifies the server of an attack. The opcode is determined by the attack type.
+	// Attack::CLOSE = CLOSE_ATTACK(44)
+	// Attack::RANGED = RANGED_ATTACK(45)
+	// Attack::MAGIC = MAGIC_ATTACK(46)
 	class AttackPacket : public OutPacket
 	{
-	protected:
-		AttackPacket(SendOpcode opc, const AttackResult& attack) : OutPacket(opc)
-		{
+	public:
+		AttackPacket(const AttackResult& attack) 
+			: OutPacket(opcodefor(attack.type)) {
+
 			skip(1);
+
 			writech((attack.mobcount << 4) | attack.hitcount);
 			writeint(attack.skill);
 			if (attack.charge > 0)
 				writeint(attack.charge);
+
 			skip(8);
+
 			writech(attack.display);
 			writech(attack.direction);
 			writech(attack.stance);
+
 			skip(1);
+
 			writech(attack.speed);
 
-			if (attack.ranged)
+			if (attack.type == Attack::RANGED)
 			{
 				skip(1);
 				writech(attack.direction);
@@ -58,44 +68,33 @@ namespace Net
 			for (auto& damagetomob : attack.damagelines)
 			{
 				writeint(damagetomob.first);
+
 				skip(14);
 
 				for (auto& singledamage : damagetomob.second)
 				{
-					writeint(singledamage);
+					writeint(singledamage.first);
+					// add critical here
 				}
 
 				if (attack.skill != 5221004)
 					skip(4);
 			}
 		}
-	};
 
-
-	// Packet which notifies the server of a close-range attack.
-	// Opcode: CLOSE_ATTACK(44)
-	class CloseRangeAttackPacket : public AttackPacket
-	{
-	public:
-		CloseRangeAttackPacket(const AttackResult& attack) : AttackPacket(CLOSE_ATTACK, attack) {}
-	};
-
-
-	// Packet which notifies the server of a ranged attack.
-	// Opcode: RANGED_ATTACK(45)
-	class RangedAttackPacket : public AttackPacket
-	{
-	public:
-		RangedAttackPacket(const AttackResult& attack) : AttackPacket(RANGED_ATTACK, attack) {}
-	};
-
-
-	// Packet which notifies the server of a magic attack.
-	// Opcode: MAGIC_ATTACK(46)
-	class MagicAttackPacket : public AttackPacket
-	{
-	public:
-		MagicAttackPacket(const AttackResult& attack) : AttackPacket(MAGIC_ATTACK, attack) {}
+	private:
+		static SendOpcode opcodefor(Attack::Type type)
+		{
+			switch (type)
+			{
+			case Attack::CLOSE:
+				return CLOSE_ATTACK;
+			case Attack::RANGED:
+				return RANGED_ATTACK;
+			default:
+				return MAGIC_ATTACK;
+			}
+		}
 	};
 
 

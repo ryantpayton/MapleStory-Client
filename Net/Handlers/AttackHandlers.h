@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,40 +15,49 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Bullet.h"
+#pragma once
+#include "Net\PacketHandler.h"
+#include "Net\Session.h"
 
-namespace Gameplay
+#include "Gameplay\Combat\Attack.h"
+
+namespace Net
 {
-	Bullet::Bullet(Animation a, Point<int16_t> origin, bool toleft)
+	class AttackHandler : public PacketHandler
 	{
-		animation = a;
-		flip = !toleft;
+	public:
+		void handle(InPacket& recv) const override;
 
-		moveobj.setx(origin.x() + (toleft ? -30.0 : 30.0));
-		moveobj.sety(origin.y() - 26.0);
-	}
+	protected:
+		using Attack = Gameplay::Attack;
 
-	void Bullet::draw(Point<int16_t> viewpos, float alpha) const
+		AttackHandler(Attack::Type type);
+
+	private:
+		Attack::Type type;
+	};
+
+
+	class CloseAttackHandler : public AttackHandler
 	{
-		Point<int16_t> bulletpos = getposition(alpha) + viewpos;
-		animation.draw(bulletpos, alpha);
-	}
+	public:
+		CloseAttackHandler()
+			: AttackHandler(Attack::CLOSE) {}
+	};
 
-	Point<int16_t> Bullet::getposition(float alpha) const
+
+	class RangedAttackHandler : public AttackHandler
 	{
-		return moveobj.getposition(alpha);
-	}
+	public:
+		RangedAttackHandler()
+			: AttackHandler(Attack::RANGED) {}
+	};
 
-	bool Bullet::update(Point<int16_t> target)
+
+	class MagicAttackHandler : public AttackHandler
 	{
-		animation.update();
-
-		double xdelta = target.x() - moveobj.crntx();
-		double ydelta = target.y() - moveobj.crnty();
-		moveobj.hspeed = (moveobj.hspeed + xdelta / 10) / 2;
-		moveobj.vspeed = (moveobj.vspeed + ydelta / 10) / 2;
-		flip = xdelta > 0.0;
-		moveobj.move();
-		return Point<double>(xdelta, ydelta).length() < 10.0;
-	}
+	public:
+		MagicAttackHandler()
+			: AttackHandler(Attack::MAGIC) {}
+	};
 }

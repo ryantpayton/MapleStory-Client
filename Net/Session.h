@@ -16,11 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Singleton.h"
 #include "OutPacket.h"
 #include "Login.h"
 #include "Cryptography.h"
 #include "PacketSwitch.h"
+#include "Util\Singleton.h"
 
 #include "Journey.h"
 #ifdef JOURNEY_USE_ASIO
@@ -40,43 +40,35 @@ namespace Net
 		// Connect to the server using the default values for adress and login port, return if successfull.
 		bool init();
 		// Closes the current connection and opens a new one.
-		bool reconnect(const char* adress, const char* port);
-		// The next call to receive() will return false, qutting the game.
+		void reconnect(const char* adress, const char* port);
+		// Mark the session as disconnected.
 		void disconnect();
 		// Check for incoming packets and handle them. Returns if the connection is still alive.
 		bool receive();
-		// Sends a packet to the server, using the cryptography to encrypt data and add the header.
-		void dispatch(const OutPacket& tosend);
 
 		// Obtain a reference to the login information.
 		Login& getlogin();
 
 	private:
-		bool init(const char* host, const char* port);
+		void dispatch(int8_t* bytes, size_t length);
+		friend void OutPacket::dispatch();
+
 		void process(const int8_t* bytes, size_t available);
+		bool init(const char* host, const char* port);
 
-		static const size_t MIN_PACKET_LEN = HEADERLEN + 2;
-
-		const Cryptography crypto;
-		const PacketSwitch packetswitch;
-
+		PacketSwitch packetswitch;
+		Cryptography cryptography;
 		Login login;
 
-		bool connected;
-
-		int8_t buffer[MAX_PACKET_LEN];
+		int8_t buffer[MAX_PACKET_LENGTH];
 		size_t length;
 		size_t pos;
+		bool connected;
 
 #ifdef JOURNEY_USE_ASIO
 		SocketAsio socket;
 #else
 		SocketWinsock socket;
-#endif
-
-#ifdef JOURNEY_USE_CRYPTO
-		uint8_t sendiv[HEADERLEN];
-		uint8_t recviv[HEADERLEN];
 #endif
 	};
 }

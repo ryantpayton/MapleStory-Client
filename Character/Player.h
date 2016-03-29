@@ -26,13 +26,12 @@
 
 #include "Look\CharLook.h"
 #include "Inventory\Inventory.h"
-
 #include "Gameplay\Playable.h"
 #include "Gameplay\Physics\Physics.h"
 #include "Gameplay\Movement.h"
 #include "Gameplay\Maplemap\MapInfo.h"
-#include "Gameplay\Attack.h"
-#include "Gameplay\Skill.h"
+#include "Gameplay\Combat\Attack.h"
+#include "Gameplay\Combat\Skill.h"
 
 namespace Character
 {
@@ -44,6 +43,7 @@ namespace Character
 	using Gameplay::Seat;
 	using Gameplay::Attack;
 	using Gameplay::Skill;
+	using Gameplay::SpecialMove;
 	using IO::Keyboard;
 
 	class Player : public Playable, public Char
@@ -53,6 +53,8 @@ namespace Character
 		Player(const CharEntry& entry);
 		Player();
 
+		// Draw the player.
+		void draw(uint8_t layer, Point<int16_t> viewpos, float alpha) const;
 		// Update the player's animation, physics and states.
 		int8_t update(const Physics& physics) override;
 		// Set flipped ignore if attacking.
@@ -76,15 +78,9 @@ namespace Character
 		// Return wether the player can attack or not.
 		bool canattack() const;
 		// Return wether the player can use a skill or not.
-		bool canuseskill(const Skill& skill) const;
-		// Use a skill.
-		void useskill(const Skill& skill);
+		bool canuse(const SpecialMove& move) const;
 		// Create an attack struct using the player's stats.
-		Attack prepareattack(bool degenerate) const;
-		// Create an attack struct for and use a regular attack.
-		Attack prepareregularattack();
-		// Create an attack struct for a skill attack.
-		Attack prepareskillattack(const Skill& skill) const;
+		Attack prepareattack(bool skill) const;
 
 		// Apply a buff to the player.
 		void givebuff(Buff buff);
@@ -97,6 +93,13 @@ namespace Character
 		void changelevel(uint16_t level);
 		// Change the player's job, display the job change effect.
 		void changejob(uint16_t jobid);
+
+		// Return the character's level.
+		uint16_t getlevel() const override;
+		// Return the character's level of a skill.
+		int32_t getskilllevel(int32_t skillid) const override;
+		// Return the character's attacking speed.
+		float getattackspeed() const override;
 
 		// Returns the current walking force, calculated from the total ES_SPEED stat.
 		float getwforce() const;
@@ -133,9 +136,6 @@ namespace Character
 		Monsterbook& getmonsterbook();
 
 	private:
-		float getattackspeed() const;
-		float getstancespeed() const;
-
 		CharStats stats;
 		Inventory inventory;
 		Skillbook skillbook;
@@ -149,12 +149,9 @@ namespace Character
 
 		vector<Movement> movements;
 		Movement lastmove;
-		uint16_t sendcd;
 
 		Optional<const Ladder> ladder;
 		bool underwater;
-
-		bool attacking;
 	};
 }
 

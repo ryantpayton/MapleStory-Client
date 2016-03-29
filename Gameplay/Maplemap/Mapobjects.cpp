@@ -16,48 +16,52 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Mapobjects.h"
-#include "Util\AlgorithmExt.h"
 #include <vector>
 
 namespace Gameplay
 {
-	void MapObjects::draw(int8_t layer, Point<int16_t> viewpos, float inter) const
+	void MapObjects::draw(int8_t layer, Point<int16_t> viewpos, float alpha) const
 	{
 		for (auto& oid : layers[layer])
 		{
-			Optional<const MapObject> mmo = get(oid);
+			auto mmo = get(oid);
 			if (mmo && mmo->isactive())
 			{
-				mmo->draw(viewpos, inter);
+				mmo->draw(viewpos, alpha);
 			}
 		}
 	}
 
 	void MapObjects::update(const Physics& physics)
 	{
-		Algorithm::remove_all<int32_t, unique_ptr<MapObject>>(objects, 
-			[&](unique_ptr<MapObject>& obit){
-			MapObject* mmo = obit.get();
+		vector<int32_t> toremove;
+		for (auto& obit : objects)
+		{
+			int32_t oid = obit.first;
+			MapObject* mmo = obit.second.get();
 			if (mmo)
 			{
 				int8_t oldlayer = mmo->getlayer();
 				int8_t newlayer = mmo->update(physics);
 				if (newlayer == -1)
-					return true;
-
-				if (newlayer != oldlayer)
 				{
-					int32_t oid = mmo->getoid();
+					toremove.push_back(oid);
+				}
+				else if (newlayer != oldlayer)
+				{
 					layers[oldlayer].erase(oid);
 					layers[newlayer].insert(oid);
 				}
-				return false;
 			}
 			else
 			{
-				return true;
+				toremove.push_back(oid);
 			}
-		});
+		}
+		for (auto& oid : toremove)
+		{
+			remove(oid);
+		}
 	}
 
 	void MapObjects::clear()
@@ -94,11 +98,25 @@ namespace Gameplay
 
 	Optional<MapObject> MapObjects::get(int32_t oid)
 	{
-		return objects.count(oid) ? objects.at(oid).get() : Optional<MapObject>();
+		if (objects.count(oid))
+		{
+			return objects.at(oid).get();
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	Optional<const MapObject> MapObjects::get(int32_t oid) const
 	{
-		return objects.count(oid) ? objects.at(oid).get() : Optional<const MapObject>();
+		if (objects.count(oid))
+		{
+			return objects.at(oid).get();
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 }

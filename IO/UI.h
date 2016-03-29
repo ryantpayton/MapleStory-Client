@@ -20,11 +20,9 @@
 #include "Keyboard.h"
 #include "Element.h"
 #include "UIState.h"
-
 #include "Components\Icon.h"
 #include "Components\Textfield.h"
 #include "Components\ScrollingNotice.h"
-
 #include "Util\Singleton.h"
 #include "Util\Optional.h"
 

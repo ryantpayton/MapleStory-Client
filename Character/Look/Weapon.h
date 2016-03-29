@@ -17,9 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Clothing.h"
-#include "Util\rectangle2d.h"
+#include "Audio\Audio.h"
 #include "Graphics\Animation.h"
-#include "Audio\Sound.h"
+#include "Util\Misc.h"
+#include "Util\rectangle2d.h"
 
 namespace Character
 {
@@ -59,33 +60,85 @@ namespace Character
 			return static_cast<Type>(value);
 		}
 
+		class AfterImage
+		{
+		public:
+			AfterImage(node src);
+			AfterImage();
+
+			void draw(uint8_t stframe, const DrawArgument& args, float alpha) const;
+			void update(uint8_t stframe, uint16_t timestep);
+
+			uint8_t getfirstframe() const;
+			rectangle2d<int16_t> getrange() const;
+
+		private:
+			Animation animation;
+			rectangle2d<int16_t> range;
+			uint8_t firstframe;
+			bool displayed;
+		};
+
 		Weapon(int32_t, const BodyDrawinfo&);
 		Weapon();
 
 		bool istwohanded() const;
-		string getafterimage() const;
 		uint8_t getspeed() const;
 		uint8_t getattack() const;
 		string getspeedstring() const;
 		uint8_t getattackdelay() const;
-		rectangle2d<int16_t> getrange() const;
+		rectangle2d<int16_t> getrange(Stance::Value stance) const;
 		Type gettype() const;
 		Stance::Value getstand() const;
 		Stance::Value getwalk() const;
-		Animation gethiteffect() const;
-
-		const Sound& getsound(bool degenerate) const;
+		Sound getusesound(bool degenerate) const;
+		AfterImage getafterimage(Stance::Value stance) const;
 
 	private:
 		Type type;
 		bool twohanded;
 		Stance::Value walk;
 		Stance::Value stand;
-		string afterimage;
 		uint8_t attackspeed;
 		uint8_t attack;
-		Sound firstattack;
-		Sound secondattack;
+		BoolPair<Sound> usesounds;
+
+		struct AfterImageStances
+		{
+			unordered_map<Stance::Value, AfterImage> afterimages;
+
+			AfterImageStances(node src)
+			{
+				for (node sub : src)
+				{
+					Stance::Value stance = Stance::bystring(sub.name());
+					afterimages[stance] = sub;
+				}
+			}
+
+			AfterImageStances() {}
+
+			AfterImage get(Stance::Value stance) const
+			{
+				if (afterimages.count(stance))
+				{
+					return afterimages.at(stance);
+				}
+				else
+				{
+					return AfterImage();
+				}
+			}
+
+			rectangle2d<int16_t> range(Stance::Value stance) const
+			{
+				return get(stance).getrange();
+			}
+		};
+		AfterImageStances afterimage;
+
+		static AfterImageStances getafterimage(string ainame, int16_t lvprefix);
+		static unordered_map<string, AfterImageStances> afterimages;
 	};
 }
 

@@ -26,8 +26,6 @@ namespace Gameplay
 		y.set(0.0);
 	}
 
-	Camera::~Camera() {}
-
 	void Camera::update(Point<int16_t> position)
 	{
 		double hdelta = Constants::VIEWWIDTH / 2 - position.x() - x.get();
@@ -71,14 +69,14 @@ namespace Gameplay
 
 	void Camera::updateview(Range<int16_t> mapwalls, Range<int16_t> mapborders)
 	{
-		hbounds = Range<int16_t>(-mapwalls.first() - 10, -mapwalls.second() + 10);
-		vbounds = Range<int16_t>(-mapborders.first() - Constants::VIEWYOFFSET * 3 - 1, -mapborders.second() - Constants::VIEWYOFFSET * 3 - 1);
+		hbounds = -mapwalls;
+		vbounds = -mapborders;
 	}
 
 	Point<int16_t> Camera::getposition(float alpha) const
 	{
-		int16_t interx = static_cast<int16_t>(x.get(alpha));
-		int16_t intery = static_cast<int16_t>(y.get(alpha));
+		auto interx = static_cast<int16_t>(x.get(alpha));
+		auto intery = static_cast<int16_t>(y.get(alpha));
 		return Point<int16_t>(interx, intery);
 	}
 }

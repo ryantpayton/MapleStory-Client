@@ -18,6 +18,7 @@
 #pragma once
 #include "Journey.h"
 #ifdef JOURNEY_USE_ASIO
+#include "NetConstants.h"
 
 #define BOOST_DATE_TIME_NO_LIB
 #define BOOST_REGEX_NO_LIB
@@ -25,8 +26,6 @@
 
 namespace Net
 {
-	const size_t MAX_PACKET_LEN = 131072;
-
 #ifndef JOURNEY_USE_CRYPTO
 	const size_t HANDSHAKE_LEN = 2;
 #else
@@ -54,7 +53,7 @@ namespace Net
 		io_service ioservice;
 		tcp::resolver resolver;
 		tcp::socket socket;
-		int8_t buffer[MAX_PACKET_LEN];
+		int8_t buffer[MAX_PACKET_LENGTH];
 	};
 }
 #endif

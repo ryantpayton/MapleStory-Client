@@ -35,17 +35,24 @@ namespace Character
 		void inittotalstats();
 		void setstat(Maplestat::Value stat, uint16_t value);
 		void settotal(Equipstat::Value stat, int32_t value);
+		void addbuff(Equipstat::Value stat, int32_t value);
 		void addtotal(Equipstat::Value stat, int32_t value);
 		void closetotalstats(Weapon::Type weapontype);
 
+		bool isdamagebuffed() const;
 		int64_t getexpneeded() const;
 		uint16_t getstat(Maplestat::Value stat) const;
 		int32_t gettotal(Equipstat::Value stat) const;
+		int32_t getbuffdelta(Equipstat::Value stat) const;
 		rectangle2d<int16_t> getrange() const;
 
 		void setexp(int64_t ex) { stats.exp = ex; }
 		void setportal(uint8_t pt) { stats.portal = pt; }
-		void setjob(uint16_t id) { stats.job.changejob(id); }
+		void setjob(uint16_t id) 
+		{ 
+			stats.stats[Maplestat::JOB] = id;
+			stats.job.changejob(id); 
+		}
 
 		int32_t getmapid() const { return stats.mapid; }
 		uint8_t getportal() const { return stats.portal; }
@@ -77,6 +84,7 @@ namespace Character
 		StatsEntry stats;
 
 		map<Equipstat::Value, int32_t> totalstats;
+		map<Equipstat::Value, int32_t> buffdeltas;
 		int32_t maxdamage;
 		int32_t mindamage;
 		uint16_t honor;

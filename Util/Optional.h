@@ -20,6 +20,7 @@
 #include <vector>
 #include <unordered_map>
 #include <map>
+#include <type_traits>
 
 using std::function;
 
@@ -188,12 +189,12 @@ public:
 		return *ptr;
 	}
 
-	T* get() const
+	T* operator ->() const
 	{
 		return ptr;
 	}
 
-	T* operator ->() const
+	T* get() const
 	{
 		return ptr;
 	}

@@ -52,7 +52,7 @@ namespace Net
 		uint8_t size = recv.readbyte();
 		for (uint8_t i = 0; i < size; i++)
 		{
-			recv.readascii(); // name
+			recv.read<string>(); // name
 			recv.readbyte(); // 'shout' byte
 			recv.readint(); // skill 1
 			recv.readint(); // skill 2
@@ -100,9 +100,9 @@ namespace Net
 					break;
 				}
 			}
-
-			UI::get().enable();
 		}
+
+		UI::get().enable();
 	}
 
 	void RecalculateStatsHandler::handle(InPacket&) const
@@ -126,6 +126,13 @@ namespace Net
 	{
 		int64_t firstmask = recv.readlong();
 		int64_t secondmask = recv.readlong();
+
+		switch (secondmask)
+		{
+		case Buffstat::BATTLESHIP:
+			handlebuff(recv, Buffstat::BATTLESHIP);
+			return;
+		}
 
 		for (size_t i = 0; i < Buffstat::FIRST_BUFFS; i++)
 		{

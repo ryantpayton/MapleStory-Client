@@ -17,14 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MapObjectHandlers.h"
 
-#include "Audio\AudioPlayer.h"
+#include "Audio\Audio.h"
 
 #include "Gameplay\Stage.h"
 #include "Gameplay\Spawn.h"
 
 namespace Net
 {
-	using Audio::AudioPlayer;
+	using Audio::Sound;
 	using Character::Char;
 	using Gameplay::Stage;
 	using Gameplay::NpcSpawn;
@@ -155,6 +155,24 @@ namespace Net
 		}
 	}
 
+	void MobMovedHandler::handle(InPacket& recv) const
+	{
+		int32_t oid = recv.readint();
+
+		recv.readbyte();
+		recv.readbyte(); // useskill
+		recv.readbyte(); // skill
+		recv.readbyte(); // skill 1
+		recv.readbyte(); // skill 2
+		recv.readbyte(); // skill 3
+		recv.readbyte(); // skill 4
+
+		Point<int16_t> position = recv.readpoint();
+		queue<Movement> movements = recv.readqueue<uint8_t, Movement>();
+
+		Stage::get().getmobs().movemob(oid, position, movements.front());
+	}
+
 	void ShowMobHpHandler::handle(InPacket& recv) const
 	{
 		int32_t oid = recv.readint();
@@ -176,9 +194,9 @@ namespace Net
 	{
 		int32_t cid = recv.readint();
 		uint8_t level = recv.readbyte();
-		string name = recv.readascii();
+		string name = recv.read<string>();
 
-		recv.readascii(); // guildname
+		recv.read<string>(); // guildname
 		recv.readshort(); // guildlogobg
 		recv.readbyte(); // guildlogobgcolor
 		recv.readshort(); // guildlogo
@@ -220,7 +238,7 @@ namespace Net
 			{
 				recv.readbyte(); // 'byte2'
 				recv.readint(); // petid
-				recv.readascii(); // name
+				recv.read<string>(); // name
 				recv.readint(); // unique id
 				recv.readint();
 				recv.readpoint(); // pos
@@ -242,13 +260,14 @@ namespace Net
 		//shop stuff end
 
 		bool chalkboard = recv.readbool();
-		string chalktext = chalkboard ? recv.readascii() : "";
+		string chalktext = chalkboard ? recv.read<string>() : "";
 
 		recv.skip(3);
 		recv.readbyte(); // team
 
 		Stage::get().queuespawn(new CharSpawn(cid, look, level, job, name, stance, position));
 	}
+
 
 	void RemoveCharHandler::handle(InPacket& recv) const
 	{
@@ -257,88 +276,26 @@ namespace Net
 		Stage::get().getchars().removechar(cid);
 	}
 
-	Movement MovementHandler::parsemovement(InPacket& recv) const
-	{
-		Movement fragment;
 
-		fragment.command = recv.readbyte();
-		switch (fragment.command)
-		{
-		case 0:
-		case 5:
-		case 17:
-			fragment.type = Movement::_ABSOLUTE;
-			fragment.xpos = recv.readshort();
-			fragment.ypos = recv.readshort();
-			fragment.lastx = recv.readshort();
-			fragment.lasty = recv.readshort();
-			recv.skip(2);
-			fragment.newstate = recv.readbyte();
-			fragment.duration = recv.readshort();
-			break;
-		case 1:
-		case 2:
-		case 6:
-		case 12:
-		case 13:
-		case 16:
-			fragment.type = Movement::_RELATIVE;
-			fragment.xpos = recv.readshort();
-			fragment.ypos = recv.readshort();
-			fragment.newstate = recv.readbyte();
-			fragment.duration = recv.readshort();
-			break;
-		case 11:
-			fragment.type = Movement::CHAIR;
-			fragment.xpos = recv.readshort();
-			fragment.ypos = recv.readshort();
-			recv.skip(2);
-			fragment.newstate = recv.readbyte();
-			fragment.duration = recv.readshort();
-			break;
-		case 15:
-			fragment.type = Movement::JUMPDOWN;
-			fragment.xpos = recv.readshort();
-			fragment.ypos = recv.readshort();
-			fragment.lastx = recv.readshort();
-			fragment.lasty = recv.readshort();
-			recv.skip(2);
-			fragment.fh = recv.readshort();
-			fragment.newstate = recv.readbyte();
-			fragment.duration = recv.readshort();
-			break;
-		case 3:
-		case 4:
-		case 7:
-		case 8:
-		case 9:
-		case 14:
-			fragment.type = Movement::NONE;
-			break;
-		case 10:
-			fragment.type = Movement::NONE;
-			//change equip
-			break;
-		}
-
-		return fragment;
-	}
-
-	void MoveCharHandler::handle(InPacket& recv) const
+	void CharMovedHandler::handle(InPacket& recv) const
 	{
 		int32_t cid = recv.readint();
-
 		recv.skip(4);
-
-		vector<Movement> movements;
-		uint8_t nummoves = recv.readbyte();
-		for (uint8_t i = 0; i < nummoves; i++)
-		{
-			movements.push_back(parsemovement(recv));
-		}
+		queue<Movement> movements = recv.readqueue<uint8_t, Movement>();
 
 		Stage::get().getchars().movechar(cid, movements);
 	}
+
+
+	void UpdateCharLookHandler::handle(InPacket& recv) const
+	{
+		int32_t cid = recv.readint();
+		recv.readbyte();
+		LookEntry look = Session::get().getlogin().parselook(recv);
+
+		Stage::get().getchars().updatelook(cid, look);
+	}
+
 
 	void SpawnPetHandler::handle(InPacket& recv) const
 	{
@@ -355,7 +312,7 @@ namespace Net
 			recv.skip(1);
 
 			int32_t itemid = recv.readint();
-			string name = recv.readascii();
+			string name = recv.read<string>();
 			int32_t uniqueid = recv.readint();
 
 			recv.skip(4);
@@ -373,6 +330,7 @@ namespace Net
 			character->removepet(petindex, hunger);
 		}
 	}
+
 
 	void DropItemHandler::handle(InPacket& recv) const
 	{
@@ -407,6 +365,7 @@ namespace Net
 		Stage::get().queuespawn(new DropSpawn(oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mode, playerdrop));
 	}
 
+
 	void RemoveDropHandler::handle(InPacket& recv) const
 	{
 		int8_t mode = recv.readbyte();
@@ -427,7 +386,7 @@ namespace Net
 					.transform(&Char::getphobj);
 			}
 
-			AudioPlayer::get().playsound(AudioPlayer::PICKUP);
+			Sound(Sound::PICKUP).play();
 		}
 		Stage::get().getdrops().removedrop(oid, mode, looter.get());
 	}

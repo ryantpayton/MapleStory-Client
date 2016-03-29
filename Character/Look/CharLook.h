@@ -20,14 +20,12 @@
 #include "Hair.h"
 #include "Face.h"
 #include "CharEquips.h"
-#include "Gameplay\Attack.h"
 #include "Net\Login.h"
 #include "Util\Interpolated.h"
 #include "Util\Randomizer.h"
 
 namespace Character
 {
-	using Gameplay::Attack;
 	using Net::LookEntry;
 
 	class CharLook
@@ -48,7 +46,8 @@ namespace Character
 		void addequip(int32_t equipid);
 		void removeequip(Equipslot::Value slot);
 
-		uint16_t attack(bool degenerate);
+		void attack(bool degenerate);
+		void attack(Stance::Value stance);
 		void setstance(Stance::Value stance);
 		void setexpression(Expression::Value expression);
 		void setaction(string action);
@@ -60,6 +59,14 @@ namespace Character
 		const Hair* gethairstyle() const;
 		const Face* getfacetype() const;
 		const CharEquips& getequips() const;
+
+		struct AttackLook
+		{
+			Stance::Value stance;
+			rectangle2d<int16_t> range;
+		};
+		AttackLook getattacklook() const;
+		uint16_t getattackdelay(size_t no) const;
 
 	private:
 		void updatetwohanded();
@@ -78,6 +85,8 @@ namespace Character
 		uint16_t expelapsed;
 
 		bool flip;
+
+		Weapon::AfterImage afterimage;
 
 		const BodyAction* action;
 		string actionstr;

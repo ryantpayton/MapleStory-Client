@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -29,8 +29,6 @@ namespace Gameplay
 	public:
 		// Initialize everything to 0, we need the player's spawnpoint first to properly set the position.
 		Camera();
-		// Empty destructor.
-		~Camera();
 
 		// Update the view with the current player position. (Or any other target)
 		void update(Point<int16_t> position);
@@ -39,7 +37,7 @@ namespace Gameplay
 		// Updates the view's boundaries. Determined by mapinfo or footholds.
 		void updateview(Range<int16_t> hborders, Range<int16_t> vborders);
 		// Return the current position for drawing.
-		Point<int16_t> getposition(float inter) const;
+		Point<int16_t> getposition(float alpha) const;
 
 	private:
 		// Movement variables.

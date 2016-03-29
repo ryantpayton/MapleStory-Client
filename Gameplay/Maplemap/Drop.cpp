@@ -38,7 +38,7 @@ namespace Gameplay
 		case 1:
 			state = DROPPED;
 			basey = static_cast<double>(dest.y() - 4);
-			phobj.vforce = -5.0f;
+			phobj.vspeed = -5.0f;
 			phobj.hspeed = static_cast<double>(dest.x() - start.x()) / 48;
 			break;
 		case 2:
@@ -48,7 +48,7 @@ namespace Gameplay
 			break;
 		case 3:
 			state = PICKEDUP;
-			phobj.vforce = -5.0f;
+			phobj.vspeed = -5.0f;
 			break;
 		}
 	}
@@ -107,7 +107,7 @@ namespace Gameplay
 		case 2:
 			state = PICKEDUP;
 			looter = lt;
-			phobj.vforce = -4.5f;
+			phobj.vspeed = -4.5f;
 			phobj.clearflag(PhysicsObject::NOGRAVITY);
 			break;
 		}

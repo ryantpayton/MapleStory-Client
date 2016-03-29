@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -16,27 +16,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "SetfieldHandlers.h"
+#include "ItemParser.h"
 #include "Configuration.h"
+#include "Console.h"
 #include "Constants.h"
 #include "Timer.h"
 
-#include "Audio\AudioPlayer.h"
-
-#include "Net\Session.h"
-#include "Net\Handlers\ItemParser.h"
-
+#include "Audio\Audio.h"
+#include "Gameplay\Stage.h"
 #include "IO\UI.h"
 #include "IO\Window.h"
-
-#include "Gameplay\Stage.h"
+#include "Net\Session.h"
 
 namespace Net
 {
-	using Audio::AudioPlayer;
+	using Audio::Sound;
+	using Character::Player;
+	using Gameplay::Stage;
 	using IO::UI;
 	using IO::Element;
 	using IO::Window;
-	using Gameplay::Stage;
 
 	void stagetransition(uint8_t portalid, int32_t mapid)
 	{
@@ -72,7 +71,6 @@ namespace Net
 	{
 		recv.skip(3);
 
-		// Spawn information.
 		int32_t mapid = recv.readint();
 		int8_t portalid = recv.readbyte();
 
@@ -84,18 +82,23 @@ namespace Net
 		recv.skip(23);
 
 		int32_t cid = recv.readint();
-		if (!Stage::get().loadplayer(cid))
-			return;
 
-		using Character::Player;
-		Player& player = Stage::get().getplayer();
+		const CharEntry& playerentry = Session::get().getlogin().getcharbyid(cid);
+		if (playerentry.cid != cid)
+		{
+			Console::get().print("Nonexisting cid: " + std::to_string(cid));
+		}
+
+		Stage::get().loadplayer(playerentry);
 
 		Session::get().getlogin().parsestats(recv);
+
+		Player& player = Stage::get().getplayer();
 
 		recv.readbyte(); // 'buddycap'
 		if (recv.readbool())
 		{
-			recv.readascii(); // 'linkedname'
+			recv.read<string>(); // 'linkedname'
 		}
 
 		parseinventory(recv, player.getinvent());
@@ -116,7 +119,8 @@ namespace Net
 
 		stagetransition(player.getstats().getportal(), player.getstats().getmapid());
 
-		AudioPlayer::get().playsound(AudioPlayer::GAMESTART);
+		Sound(Sound::GAMESTART).play();
+
 		UI::get().changestate(UI::GAME);
 	}
 
@@ -190,7 +194,7 @@ namespace Net
 		for (int16_t i = 0; i < size; i++)
 		{
 			int16_t qid = recv.readshort();
-			string qdata = recv.readascii();
+			string qdata = recv.read<string>();
 			if (quests.isstarted(qid))
 			{
 				int16_t qidl = quests.getlaststarted();
@@ -310,7 +314,7 @@ namespace Net
 		for (int16_t i = 0; i < arsize; i++)
 		{
 			int16_t area = recv.readshort();
-			areainfo[area] = recv.readascii();
+			areainfo[area] = recv.read<string>();
 		}
 	}
 

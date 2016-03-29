@@ -39,13 +39,23 @@ namespace Gameplay
 		remove(cid);
 	}
 
-	void MapChars::movechar(int32_t cid, const vector<Movement>& movements)
+	void MapChars::movechar(int32_t cid, queue<Movement> movements)
 	{
 		Optional<OtherChar> otherchar = getchar(cid);
 		if (otherchar)
 		{
 			otherchar->sendmovement(movements);
 		}
+	}
+
+	void MapChars::updatelook(int32_t cid, LookEntry look)
+	{
+		Optional<OtherChar> otherchar = getchar(cid);
+		if (otherchar)
+		{
+			otherchar->updatelook(look);
+		}
+
 	}
 
 	Optional<OtherChar> MapChars::getchar(int32_t cid)

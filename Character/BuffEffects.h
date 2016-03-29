@@ -40,7 +40,7 @@ namespace Character
 		{
 			float floatvalue = static_cast<float>(value) / 100;
 			int32_t total = static_cast<int32_t>(stats.gettotal(es) * floatvalue);
-			stats.addtotal(es, total);
+			stats.addbuff(es, total);
 		}
 	};
 
@@ -50,7 +50,7 @@ namespace Character
 	public:
 		void applyto(int16_t value, CharStats& stats) const override
 		{
-			stats.addtotal(stat, value);
+			stats.addbuff(stat, value);
 		}
 
 	protected:

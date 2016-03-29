@@ -19,7 +19,6 @@
 #include "Constants.h"
 
 #include "Gameplay\Movement.h"
-#include "Net\Session.h"
 #include "Net\Packets\GameplayPackets.h"
 #include "Util\Misc.h"
 
@@ -29,8 +28,6 @@
 
 namespace Gameplay
 {
-	using Net::Session;
-
 	Mob::Mob(int32_t oi, int32_t mid, int8_t mode, int8_t st, uint16_t fh, 
 		bool newspawn, int8_t tm, Point<int16_t> position) : MapObject(oi) {
 
@@ -93,13 +90,10 @@ namespace Gameplay
 		phobj.setflag(PhysicsObject::TURNATEDGES);
 
 		hppercent = 0;
-		flip = (st % 2) == 1;
-		if (flip)
-			st -= 1;
-		stance = static_cast<Stance>(st);
 		dying = false;
 		dead = false;
 		fading = false;
+		setstance(st);
 		flydirection = STRAIGHT;
 		counter = 0;
 
@@ -124,18 +118,23 @@ namespace Gameplay
 		}
 	}
 
-	void Mob::setstance(Stance st)
+	void Mob::setstance(uint8_t stancebyte)
 	{
-		if (stance != st)
+		flip = (stancebyte % 2) == 0;
+		if (!flip)
 		{
-			stance = st;
+			stancebyte -= 1;
+		}
+		if (stancebyte < MOVE)
+			stancebyte = MOVE;
+		setstance(static_cast<Stance>(stancebyte));
+	}
 
-			switch (stance)
-			{
-			case DIE:
-				dying = true;
-				break;
-			}
+	void Mob::setstance(Stance newstance)
+	{
+		if (stance != newstance)
+		{
+			stance = newstance;
 
 			animations.at(stance).reset();
 		}
@@ -147,7 +146,7 @@ namespace Gameplay
 			return phobj.fhlayer;
 
 		bool aniend = animations.at(stance).update();
-		if (aniend && dying)
+		if (aniend && stance == DIE)
 		{
 			dead = true;
 		}
@@ -172,44 +171,7 @@ namespace Gameplay
 			}
 		}
 
-		Point<int16_t> head = getheadpos(getposition());
-		bulletlist.remove_if([&](pair<Bullet, AttackEffect>& bulletattack) {
-			bool apply = bulletattack.first.update(head);
-			if (apply)
-			{
-				applyattack(bulletattack.second);
-			}
-			return apply;
-		});
-		bool nobullets = bulletlist.size() == 0;
-
-		singlelist.remove_if([&](SingleEffect& single) {
-			if (single.delay <= Constants::TIMESTEP)
-			{
-				applysingle(single);
-				return true;
-			}
-			else
-			{
-				single.delay -= Constants::TIMESTEP;
-				return false;
-			}
-		});
-		bool nosingle = singlelist.size() == 0;
-
-		size_t remove = 0;
-		for (auto& dmg : damagenumbers)
-		{
-			if (dmg.update())
-				remove++;
-		}
-		for (size_t i = remove; i--;)
-		{
-			damagenumbers.erase(damagenumbers.begin());
-		}
-		bool nonumbers = damagenumbers.size() == 0;
-
-		if (dead && nobullets && nosingle && nonumbers)
+		if (dead)
 		{
 			active = false;
 			return -1;
@@ -218,7 +180,7 @@ namespace Gameplay
 		effects.update();
 		showhp.update();
 
-		if (control && !dying)
+		if (!dying)
 		{
 			if (!canfly)
 			{
@@ -251,10 +213,6 @@ namespace Gameplay
 				else
 				{
 					phobj.hforce = flip ? speed : -speed;
-					if (canjump && phobj.onground && counter > 50 && counter < 150 && randomizer.below(0.005f))
-					{
-						phobj.vforce = -5.0f;
-					}
 				}
 				break;
 			case HIT:
@@ -264,17 +222,38 @@ namespace Gameplay
 					phobj.hforce = flip ? -KBFORCE : KBFORCE;
 				}
 				break;
-			}
-
-			counter++;
-			if (aniend && counter > 200)
-			{
-				nextmove();
-				sendmovement();
-				counter = 0;
+			case JUMP:
+				phobj.vforce = -5.0;
+				break;
 			}
 
 			physics.moveobject(phobj);
+
+			if (control)
+			{
+				counter++;
+
+				bool next;
+				switch (stance)
+				{
+				case HIT:
+					next = counter > 200;
+					break;
+				case JUMP:
+					next = phobj.onground;
+					break;
+				default:
+					next = aniend && counter > 200;
+					break;
+				}
+
+				if (next)
+				{
+					nextmove();
+					updatemovement();
+					counter = 0;
+				}
+			}
 		}
 		else
 		{
@@ -291,26 +270,35 @@ namespace Gameplay
 		{
 			switch (stance)
 			{
+			case HIT:
 			case STAND:
 				setstance(MOVE);
 				flip = randomizer.nextbool();
 				break;
 			case MOVE:
-			case HIT:
-				switch (randomizer.nextint(2))
+			case JUMP:
+				if (canjump && phobj.onground && randomizer.below(0.25f))
 				{
-				case 0:
-					setstance(STAND);
-					break;
-				case 1:
-					setstance(MOVE);
-					flip = false;
-					break;
-				case 2:
-					setstance(MOVE);
-					flip = true;
-					break;
+					setstance(JUMP);
 				}
+				else
+				{
+					switch (randomizer.nextint(2))
+					{
+					case 0:
+						setstance(STAND);
+						break;
+					case 1:
+						setstance(MOVE);
+						flip = false;
+						break;
+					case 2:
+						setstance(MOVE);
+						flip = true;
+						break;
+					}
+				}
+				break;
 			}
 
 			if (stance == MOVE && canfly)
@@ -324,21 +312,23 @@ namespace Gameplay
 		}
 	}
 
-	void Mob::sendmovement()
+	void Mob::updatemovement()
 	{
 		using Net::MoveMobPacket;
-		Session::get().dispatch(
-			MoveMobPacket(
+		MoveMobPacket(
 			oid, 
 			1, 0, 0, 0, 0, 0, 0, 
 			getposition(),
-			Movement(phobj, valueof(stance, flip)
-			)));
+			Movement(phobj, valueof(stance, flip))
+			).dispatch();
 	}
 
 	void Mob::draw(Point<int16_t> viewpos, float alpha) const
 	{
 		Point<int16_t> absp = phobj.getposition(alpha) + viewpos;
+		Point<int16_t> headpos = getheadpos(absp);
+
+		effects.drawbelow(headpos, alpha);
 
 		if (!dead)
 		{
@@ -353,31 +343,32 @@ namespace Gameplay
 
 				if (stance != DIE)
 				{
-					hpbar.draw(getheadpos(absp), hppercent);
+					hpbar.draw(headpos, hppercent);
 				}
 			}
 		}
 
-		effects.draw(absp, alpha);
-	}
-
-	void Mob::draweffects(Point<int16_t> viewpos, float alpha) const
-	{
-		for (auto& bullet : bulletlist)
-		{
-			bullet.first.draw(viewpos, alpha);
-		}
-
-		for (auto& dmg : damagenumbers)
-		{
-			dmg.draw(viewpos, alpha);
-		}
+		effects.drawabove(headpos, alpha);
 	}
 
 	void Mob::setcontrol(int8_t mode)
 	{
 		control = mode > 0;
 		aggro = mode == 2;
+	}
+
+	void Mob::sendmovement(Point<int16_t> start, const Movement& movement)
+	{
+		if (control)
+			return;
+
+		setposition(start);
+		lastmove = movement;
+
+		uint8_t laststance = lastmove.newstate;
+		setstance(laststance);
+
+		phobj.fhid = lastmove.fh;
 	}
 
 	Point<int16_t> Mob::getheadpos(Point<int16_t> position) const
@@ -396,8 +387,7 @@ namespace Gameplay
 			active = false;
 			break;
 		case 1:
-			diesound.play();
-			setstance(DIE);
+			dying = true;
 			break;
 		case 2:
 			fading = true;
@@ -428,19 +418,12 @@ namespace Gameplay
 		showhp.setfor(2000);
 	}
 
-	bool Mob::isalive() const
+	void Mob::showeffect(Animation animation, int8_t)
 	{
-		return active && !dying;
-	}
-
-	bool Mob::isinrange(const rectangle2d<int16_t>& range) const
-	{
-		if (!active)
-			return false;
-
-		rectangle2d<int16_t> bounds = animations.at(stance).getbounds();
-		bounds.shift(getposition());
-		return range.overlaps(bounds);
+		if (active)
+		{
+			effects.add(animation);
+		}
 	}
 
 	float Mob::calchitchance(int16_t leveldelta, int32_t accuracy) const
@@ -474,7 +457,7 @@ namespace Gameplay
 		return maxdamage;
 	}
 
-	vector<int32_t> Mob::damage(const Attack& attack)
+	vector<pair<int32_t, bool>> Mob::calculatedamage(const Attack& attack)
 	{
 		int16_t leveldelta = level - attack.playerlevel;
 		if (leveldelta < 0)
@@ -484,30 +467,12 @@ namespace Gameplay
 		double mindamage = calcmindamage(leveldelta, attack.mindamage);
 		double maxdamage = calcmaxdamage(leveldelta, attack.maxdamage);
 
-		AttackEffect attackeffect = attack;
-
-		vector<int32_t> result;
+		vector<pair<int32_t, bool>> result;
 		for (int32_t i = 0; i < attack.hitcount; i++)
 		{
 			auto singledamage = randomdamage(mindamage, maxdamage, hitchance, attack.critical);
-			attackeffect.push_back(singledamage);
-
-			auto singlenumber = singledamage.first;
-			result.push_back(singlenumber);
+			result.push_back(singledamage);
 		}
-
-		bool ranged = attack.type == Attack::RANGED;
-		if (ranged)
-		{
-			Bullet bullet = Bullet(attack.bullet, attack.origin, attack.direction == Attack::TOLEFT);
-			bulletlist.push_back({ bullet, attackeffect });
-		}
-		else
-		{
-			applyattack(attackeffect);
-		}
-
-		sendmovement();
 
 		return result;
 	}
@@ -543,98 +508,60 @@ namespace Gameplay
 		}
 	}
 
-	void Mob::applyattack(const AttackEffect& attackeffect)
+	vector<DamageNumber> Mob::placenumbers(vector<pair<int32_t, bool>> damagelines) const
 	{
+		vector<DamageNumber> numbers;
 		Point<int16_t> head = getheadpos(getposition());
-		queue<SingleEffect> singleffects = attackeffect.seperate(head);
-
-		applysingle(singleffects.front());
-		singleffects.pop();
-		for (; singleffects.size(); singleffects.pop())
+		for (size_t i = 0; i < damagelines.size(); i++)
 		{
-			singlelist.push_back(singleffects.front());
-		}
-
-		int32_t total = attackeffect.gettotal();
-		bool toleft = attackeffect.toleft();
-		if (total >= knockback)
-		{
-			applyknockback(toleft);
-		}
-	}
-
-	void Mob::applysingle(const SingleEffect& singleeffect)
-	{
-		damagenumbers.push_back(singleeffect.number);
-		effects.add(singleeffect.hiteffect);
-		singleeffect.hitsound.play();
-		hitsound.play();
-	}
-
-	void Mob::applyknockback(bool fromright)
-	{
-		if (isalive())
-		{
-			flip = fromright;
-			counter = 170;
-			setstance(HIT);
-		}
-	}
-
-
-	Mob::AttackEffect::AttackEffect(const Attack& attack)
-	{
-		hiteffect = attack.hiteffect;
-		hitsound = attack.hitsound;
-		direction = attack.direction;
-		hitdelays = attack.hitdelays;
-		firstdelay = attack.delay;
-	}
-
-	void Mob::AttackEffect::push_back(pair<int32_t, bool> number)
-	{
-		numbers.push_back(number);
-
-		total += number.first;
-	}
-
-	bool Mob::AttackEffect::toleft() const
-	{
-		return direction == Attack::TOLEFT;
-	}
-
-	int32_t Mob::AttackEffect::gettotal() const
-	{
-		return total;
-	}
-
-	queue<Mob::SingleEffect> Mob::AttackEffect::seperate(Point<int16_t> head) const
-	{
-		queue<SingleEffect> singleeffects;
-		for (size_t i = 0; i < numbers.size(); i++)
-		{
-			int32_t amount = numbers[i].first;
-			bool critical = numbers[i].second;
-
+			int32_t amount = damagelines[i].first;
+			bool critical = damagelines[i].second;
 			DamageNumber::Type type = critical ? DamageNumber::CRITICAL : DamageNumber::NORMAL;
-			auto damagenumber = DamageNumber(type, amount, head);
-
-			uint16_t delay;
-			if (i > 0 && i - 1 < hitdelays.size())
-			{
-				delay = hitdelays[i - 1];
-			}
-			else
-			{
-				delay = 0;
-			}
-
-			auto singleeffect = SingleEffect(damagenumber, hiteffect, hitsound, delay - firstdelay);
-			singleeffects.push(singleeffect);
+			numbers.push_back(DamageNumber(type, amount, head));
 
 			int16_t vspace = critical ? 36 : 30;
 			head.shifty(-vspace);
 		}
-		return singleeffects;
+		return numbers;
+	}
+
+	void Mob::applydamage(int32_t damage, bool toleft)
+	{
+		hitsound.play();
+
+		if (dying && stance != DIE)
+		{
+			setstance(DIE);
+			diesound.play();
+		}
+		else if (control && isalive() && damage >= knockback)
+		{
+			flip = toleft;
+			counter = 170;
+			setstance(HIT);
+
+			updatemovement();
+		}
+	}
+
+	bool Mob::isalive() const
+	{
+		return active && !dying;
+	}
+
+	bool Mob::isinrange(const rectangle2d<int16_t>& range) const
+	{
+		if (!active)
+			return false;
+
+		rectangle2d<int16_t> bounds = animations.at(stance).getbounds();
+		bounds.shift(getposition());
+		return range.overlaps(bounds);
+	}
+
+	Point<int16_t> Mob::getheadpos() const
+	{
+		Point<int16_t> position = getposition();
+		return getheadpos(position);
 	}
 }

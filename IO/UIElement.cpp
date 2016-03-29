@@ -18,7 +18,7 @@
 #include "UIElement.h"
 #include "Constants.h"
 
-#include "Audio\AudioPlayer.h"
+#include "Audio\Audio.h"
 
 namespace IO
 {
@@ -72,9 +72,30 @@ namespace IO
 
 	void UIElement::buttonpressed(uint16_t) {}
 
+	void UIElement::sendicon(const Icon&, Point<int16_t>) {}
+
 	void UIElement::doubleclick(Point<int16_t>) {}
 
-	void UIElement::sendicon(const Icon&, Point<int16_t>) {}
+	bool UIElement::isinrange(Point<int16_t> cursorpos) const
+	{
+		auto bounds = rectangle2d<int16_t>(position, position + dimension);
+		return bounds.contains(cursorpos);
+	}
+
+	bool UIElement::cursorleave(bool, Point<int16_t>)
+	{
+		for (auto& btit : buttons)
+		{
+			Button* button = btit.second.get();
+			switch (button->getstate())
+			{
+			case Button::MOUSEOVER:
+				button->setstate(Button::NORMAL);
+				break;
+			}
+		}
+		return false;
+	}
 
 	Cursor::State UIElement::sendmouse(bool down, Point<int16_t> pos)
 	{
@@ -86,8 +107,8 @@ namespace IO
 			{
 				if (btit.second->getstate() == Button::NORMAL)
 				{
-					using Audio::AudioPlayer;
-					AudioPlayer::get().playsound(AudioPlayer::BUTTONOVER);
+					using Audio::Sound;
+					Sound(Sound::BUTTONOVER).play();
 
 					btit.second->setstate(Button::MOUSEOVER);
 					ret = Cursor::CANCLICK;
@@ -96,8 +117,8 @@ namespace IO
 				{
 					if (down)
 					{
-						using Audio::AudioPlayer;
-						AudioPlayer::get().playsound(AudioPlayer::BUTTONCLICK);
+						using Audio::Sound;
+						Sound(Sound::BUTTONCLICK).play();
 
 						btit.second->setstate(Button::PRESSED);
 						buttonpressed(btit.first);
@@ -116,10 +137,5 @@ namespace IO
 		}
 
 		return ret;
-	}
-
-	rectangle2d<int16_t> UIElement::bounds() const
-	{
-		return rectangle2d<int16_t>(position, position + dimension);
 	}
 }

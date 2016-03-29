@@ -31,10 +31,10 @@ namespace Gameplay
 	Obj::Obj(InPacket& recv)
 	{
 		using std::string;
-		string oS = recv.readascii();
-		string l0 = recv.readascii();
-		string l1 = recv.readascii();
-		string l2 = recv.readascii();
+		string oS = recv.read<string>();
+		string l0 = recv.read<string>();
+		string l1 = recv.read<string>();
+		string l2 = recv.read<string>();
 		animation = Animation(nl::nx::map["Obj"][oS][l0][l1][l2]);
 		pos = recv.readpoint();
 		flip = recv.readbool();

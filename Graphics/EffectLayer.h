@@ -17,32 +17,51 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Animation.h"
+#include <map>
 #include <list>
 
 namespace Graphics
 {
+	using std::map;
 	using std::list;
 
 	// A list of animations. Animations will be removed after all frames were displayed.
 	class EffectLayer
 	{
 	public:
-		void draw(Point<int16_t> position, float alpha) const;
+		void drawbelow(Point<int16_t> position, float alpha) const;
+		void drawabove(Point<int16_t> position, float alpha) const;
 		void update();
+		void add(Animation effect, bool flip, int8_t z, float speed);
+		void add(Animation effect, bool flip, int8_t z);
 		void add(Animation effect, bool flip);
 		void add(Animation effect);
 
 	private:
-		struct Effect
+		class Effect
 		{
-			Animation animation;
-			bool flip;
+		public:
+			friend class EffectLayer;
+
+		protected:
+			Effect(Animation a, uint16_t ts, bool f) : animation(a), timestep(ts), flip(f) {}
 
 			void draw(Point<int16_t> position, float alpha) const
 			{
 				animation.draw(DrawArgument(position, flip), alpha);
 			}
+
+			bool update()
+			{
+				return animation.update(timestep);
+			}
+
+		private:
+			Animation animation;
+			uint16_t timestep;
+			bool flip;
 		};
-		list<Effect> effects;
+		map<int8_t, list<Effect>> effectsbelow;
+		map<int8_t, list<Effect>> effectsabove;
 	};
 }

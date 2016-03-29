@@ -30,6 +30,8 @@ namespace Character
 		lastmove.xpos = pos.x();
 		lastmove.ypos = pos.y();
 		lastmove.newstate = st;
+
+		attacking = false;
 	}
 
 	int8_t OtherChar::update(const Physics& physics)
@@ -37,34 +39,63 @@ namespace Character
 		if (movements.size() > 0)
 		{
 			lastmove = movements.front();
-			movements.erase(movements.begin());
+			movements.pop();
 		}
 
-		uint8_t laststate = lastmove.newstate;
-		if (laststate % 2 == 1)
+		if (!attacking)
 		{
-			setflip(false);
-			laststate -= 1;
+			uint8_t laststate = lastmove.newstate;
+			setstate(laststate);
 		}
-		else
-		{
-			setflip(true);
-		}
-		setstate(byvalue(laststate));
 
-		phobj.x = lastmove.xpos;
-		phobj.y = lastmove.ypos;
+		phobj.hspeed = lastmove.xpos - phobj.x.get();
+		phobj.vspeed = lastmove.ypos - phobj.y.get();
+
+		phobj.move();
 
 		physics.getfht().updatefh(phobj);
 
-		return Char::update(physics);
+		bool aniend = Char::update(physics, getstancespeed());
+		if (aniend && attacking)
+		{
+			attacking = false;
+		}
+
+		return getlayer();
 	}
 
-	void OtherChar::sendmovement(const vector<Movement>& mvts)
+	void OtherChar::sendmovement(queue<Movement> newmoves)
 	{
-		for (auto& mv : mvts)
-		{
-			movements.push_back(mv);
-		}
+		movements = newmoves;
+	}
+
+	void OtherChar::updatestats(int32_t skillid, uint8_t skilllevel, uint8_t as)
+	{
+		skilllevels[skillid] = skilllevel;
+		attackspeed = as;
+	}
+
+	void OtherChar::updatelook(LookEntry newlook)
+	{
+		look = newlook;
+
+		uint8_t laststate = lastmove.newstate;
+		setstate(laststate);
+	}
+
+	uint16_t OtherChar::getlevel() const
+	{
+		return level;
+	}
+
+	int32_t OtherChar::getskilllevel(int32_t skillid) const
+	{
+		return skilllevels.count(skillid) ? skilllevels.at(skillid) : 0;
+	}
+
+	float OtherChar::getattackspeed() const
+	{
+		float delay = static_cast<float>(attackspeed);
+		return 1.7f - (delay / 10);
 	}
 }

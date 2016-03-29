@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -20,13 +20,11 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-#include <map>
 
 namespace Net
 {
 	using std::string;
 	using std::vector;
-	using std::map;
 
 	// A packet to be sent to the server. Used as a base class to create specific packets.
 	class OutPacket
@@ -35,10 +33,8 @@ namespace Net
 		// Construct a packet by writing its opcode.
 		OutPacket(int16_t opcode);
 
-		// Return the length in bytes.
-		size_t length() const;
-		// Return a pointer to this packet's bytes.
-		const int8_t* getbytes() const;
+		// Send the packet to the server.
+		void dispatch();
 
 	protected:
 		// Skip a number of bytes (filled with zeroes).
@@ -51,12 +47,13 @@ namespace Net
 		void writeint(int32_t in);
 		// Write a long.
 		void writelg(int64_t lg);
+
 		// Write a string. Writes the length as a short
 		// and then each individual character as a byte.
 		void writestr(string str);
 		// Write a point, one short for x and one for y.
 		void writepoint(Point<int16_t> point);
-		// Write the second count since epoch as an integer.
+		// Write a timestamp as an integer.
 		void writetime();
 
 	private:

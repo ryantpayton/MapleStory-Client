@@ -43,7 +43,7 @@ namespace Gameplay
 	Background::Background(InPacket& recv)
 	{
 		node backsrc = nl::nx::map["Back"];
-		animation = backsrc[recv.readascii()];
+		animation = backsrc[recv.read<string>()];
 		opacity = recv.readshort();
 		flipped = recv.readbool();
 		cx = recv.readshort();

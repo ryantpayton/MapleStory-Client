@@ -133,12 +133,13 @@ namespace IO
 		}
 		else
 		{
+			bool clicked = mst == Cursor::CLICKING;
 			UIElement* focusedelement = get(focused);
 			if (focusedelement)
 			{
 				if (focusedelement->isactive())
 				{
-					return focusedelement->sendmouse(mst == Cursor::CLICKING, pos);
+					return focusedelement->sendmouse(clicked, pos);
 				}
 				else
 				{
@@ -154,20 +155,34 @@ namespace IO
 				for (auto& elit : elementorder)
 				{
 					UIElement* element = get(elit);
-					if (element && element->isactive() && element->bounds().contains(pos))
+					bool found = false;
+					if (element && element->isactive())
 					{
-						if (front)
-							front->sendmouse(false, element->bounds().getlt() - Point<int16_t>(1, 1));
+						if (element->isinrange(pos))
+						{
+							found = true;
+						}
+						else
+						{
+							found = element->cursorleave(clicked, pos);
+						}
 
-						front = element;
-						fronttype = elit;
+						if (found)
+						{
+							if (front)
+							{
+								element->cursorleave(false, pos);
+							}
+
+							front = element;
+							fronttype = elit;
+						}
 					}
 				}
 
 				if (fronttype != tooltipparent)
 					cleartooltip(tooltipparent);
 
-				bool clicked = mst == Cursor::CLICKING;
 				if (front)
 				{
 					if (clicked)
@@ -279,7 +294,7 @@ namespace IO
 		for (auto& entry : elementorder)
 		{
 			UIElement* element = get(entry);
-			if (element && element->isactive() && element->bounds().contains(pos))
+			if (element && element->isactive() && element->isinrange(pos))
 				front = element;
 		}
 		return front;

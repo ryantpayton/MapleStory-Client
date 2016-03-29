@@ -58,15 +58,14 @@ namespace Net
 				break;
 			case 23:
 				// The server sends a request to accept the terms of service. For convenience, just auto-accept.
-				Session::get().dispatch(TOSPacket());
+				TOSPacket().dispatch();
 				break;
 			default:
 				// Other reasons.
 				if (reason > 0)
 				{
-					UI::get().add(ElementLoginNotice(
-						static_cast<int8_t>(reason - 1))
-						);
+					auto reasonbyte = static_cast<int8_t>(reason - 1);
+					UI::get().add(ElementLoginNotice(reasonbyte));
 				}
 			}
 
@@ -85,7 +84,7 @@ namespace Net
 			}
 
 			// Request the list of worlds and channels online.
-			Session::get().dispatch(ServerRequestPacket());
+			ServerRequestPacket().dispatch();
 		}
 	}
 
@@ -122,7 +121,7 @@ namespace Net
 	void CharnameResponseHandler::handle(InPacket& recv) const
 	{
 		// Read the name and if it is already in use.
-		string name = recv.readascii();
+		string name = recv.read<string>();
 		bool used = recv.readbool();
 
 		if (used)
@@ -189,12 +188,10 @@ namespace Net
 		// Read the port adress in a string.
 		string portstr = std::to_string(recv.readshort());
 
-		// Attempt to reconnect to the server and if successfull, login to the game.
 		int32_t cid = recv.readint();
-		bool connected = Session::get().reconnect(addrstr.c_str(), portstr.c_str());
-		if (connected)
-			Session::get().dispatch(PlayerLoginPacket(cid));
-		else
-			Session::get().disconnect();
+
+		// Attempt to reconnect to the server and if successfull, login to the game.
+		Session::get().reconnect(addrstr.c_str(), portstr.c_str());
+		PlayerLoginPacket(cid).dispatch();
 	}
 }

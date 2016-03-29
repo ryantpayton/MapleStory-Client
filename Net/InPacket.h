@@ -21,9 +21,15 @@
 #include <cstdint>
 #include <functional>
 #include <unordered_map>
+#include <vector>
+#include <queue>
+#include <array>
 
 namespace Net
 {
+	using std::array;
+	using std::queue;
+	using std::vector;
 	using std::function;
 	using std::unordered_map;
 
@@ -41,20 +47,30 @@ namespace Net
 		size_t length() const;
 		// Skip a number of bytes (by increasing the offset).
 		void skip(size_t count);
-		// Read a string.
-		string readascii();
+
 		// Read a fixed-length string.
 		string readpadascii(int16_t length);
 		// Read a point.
 		Point<int16_t> readpoint();
 
+		template <typename T>
+		T read();
+
+		template <>
+		// Read a string. The size is specified by a short at the current position.
+		string read<string>()
+		{
+			auto length = read<uint16_t>();
+			return readpadascii(length);
+		}
+
 		// Read a byte and check if it is 1.
-		bool readbool() { return read<int8_t>() == 1; }
+		bool readbool() { return read<bool>(); }
 		// Read a byte.
 		int8_t readbyte() { return read<int8_t>(); }
 		// Read a short.
 		int16_t readshort() { return read<int16_t>(); }
-		// Read an int.
+		// Read a int.
 		int32_t readint() { return read<int32_t>(); }
 		// Read a long.
 		int64_t readlong() { return read<int64_t>(); }
@@ -70,18 +86,8 @@ namespace Net
 		// Inspect a long.
 		int64_t inspectlong() { return inspect<int64_t>(); }
 
-		// Read an array into a buffer.
-		template <class T>
-		void readarray(T* buffer, size_t count)
-		{
-			for (size_t i = 0; i < count; i++)
-			{
-				buffer[i] = read<T>();
-			}
-		}
-
-		// Read a pair.
 		template <typename T1, typename T2>
+		// Read a pair.
 		pair<T1, T2> read()
 		{
 			auto first = read<T1>();
@@ -89,8 +95,36 @@ namespace Net
 			return std::make_pair(first, second);
 		}
 
-		// Read an unordered_map.
+		template<typename S, typename T>
+		// Read a vector of type T. The length is read as a variable of type S.
+		queue<T> readqueue()
+		{
+			queue<T> values;
+			auto size = read<S>();
+			for (S i = 0; i < size; i++)
+			{
+				auto value = read<T>();
+				values.push(value);
+			}
+			return values;
+		}
+
+		template<typename S, typename T>
+		// Read a vector of type T. The length is read as a variable of type S.
+		vector<T> readvector()
+		{
+			vector<T> values;
+			auto size = read<S>();
+			for (S i = 0; i < size; i++)
+			{
+				auto value = read<T>();
+				values.push_back(value);
+			}
+			return values;
+		}
+
 		template<typename K, typename V>
+		// Read an unordered_map.
 		unordered_map<K, V> readmap()
 		{
 			unordered_map<K, V> result;
@@ -105,9 +139,41 @@ namespace Net
 		}
 
 	private:
-		// Read and advance the buffer position.
+		template <>
+		// Read a byte and check if it is 1.
+		bool read<bool>() { return readnumber<int8_t>() == 1; }
+
+		template <>
+		// Read a byte.
+		int8_t read<int8_t>() { return readnumber<int8_t>(); }
+		template <>
+		// Read an unsigned byte.
+		uint8_t read<uint8_t>() { return readnumber<int8_t>(); }
+
+		template <>
+		// Read a short.
+		int16_t read<int16_t>() { return readnumber<int16_t>(); }
+		template <>
+		// Read an unsigned short.
+		uint16_t read<uint16_t>() { return readnumber<uint16_t>(); }
+
+		template <>
+		// Read an int.
+		int32_t read<int32_t>() { return readnumber<int32_t>(); }
+		template <>
+		// Read an unsigned int.
+		uint32_t read<uint32_t>() { return readnumber<uint32_t>(); }
+
+		template <>
+		// Read a long.
+		int64_t read<int64_t>() { return readnumber<int64_t>(); }
+		template <>
+		// Read an unsigned long.
+		uint64_t read<uint64_t>() { return readnumber<uint64_t>(); }
+
 		template <typename T>
-		T read()
+		// Read a number and advance the buffer position.
+		T readnumber()
 		{
 			size_t count = sizeof(T) / sizeof(int8_t);
 			T all = 0;
@@ -115,13 +181,14 @@ namespace Net
 			{
 				T val = static_cast<uint8_t>(bytes[pos]);
 				all += val << (8 * i);
+
 				skip(1);
 			}
 			return static_cast<T>(all);
 		}
 
-		// Read without advancing the buffer position.
 		template <class T>
+		// Read without advancing the buffer position.
 		T inspect()
 		{
 			size_t before = pos;

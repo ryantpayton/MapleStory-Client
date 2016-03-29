@@ -36,31 +36,29 @@ namespace Character
 		{
 			string ststr = stancenode.name();
 
+			uint16_t attackdelay = 0;
 			uint8_t frame = 0;
 			node framenode = stancenode[std::to_string(frame)];
 			while (framenode.size() > 0)
 			{
-				uint16_t delay;
-				if (framenode["delay"].data_type() == node::type::integer)
+				bool isaction = framenode["action"].data_type() == node::type::string;
+				if (isaction)
 				{
-					int16_t sdelay = framenode["delay"];
-					delay = (sdelay < 0) ? -sdelay : sdelay;
-				}
-				else
-					delay = 50;
+					BodyAction action = framenode;
+					bodyactions[ststr][frame] = action;
 
-				node actionnode = framenode.resolve("action");
-				if (actionnode.data_type() == node::type::string)
-				{
-					string acstr = actionnode.get_string();
-					Stance::Value acstance = Stance::bystring(acstr);
-					uint8_t acframe = framenode["frame"];
-					Point<int16_t> move = framenode["move"];
-					bodyactions[ststr][frame] = BodyAction(acstance, acframe, delay, move);
+					if (action.isattackframe())
+					{
+						attackdelays[ststr].push_back(attackdelay);
+					}
+					attackdelay += action.getdelay();
 				}
 				else
 				{
 					Stance::Value stance = Stance::bystring(ststr);
+					int16_t delay = framenode["delay"];
+					if (delay <= 0)
+						delay = 100;
 					stancedelays[stance][frame] = delay;
 
 					unordered_map<Body::Layer, unordered_map<string, Point<int16_t>>> bodyshiftmap;
@@ -138,7 +136,19 @@ namespace Character
 
 	uint16_t BodyDrawinfo::getdelay(Stance::Value stance, uint8_t frame) const
 	{
-		return stancedelays[stance].count(frame) ? stancedelays[stance].at(frame) : 50;
+		return stancedelays[stance].count(frame) ? stancedelays[stance].at(frame) : 100;
+	}
+
+	uint16_t BodyDrawinfo::getattackdelay(string action, size_t no) const
+	{
+		if (attackdelays.count(action))
+		{
+			if (no < attackdelays.at(action).size())
+			{
+				return attackdelays.at(action)[no];
+			}
+		}
+		return 0;
 	}
 
 	uint8_t BodyDrawinfo::nextacframe(string action, uint8_t frame) const

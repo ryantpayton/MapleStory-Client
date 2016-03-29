@@ -29,16 +29,34 @@ namespace IO
 		position = Configuration::get().getpoint(setting);
 	}
 
-	Cursor::State UIDragElement::sendmouse(bool pressed, Point<int16_t> cursorpos)
+	bool UIDragElement::cursorleave(bool clicked, Point<int16_t> cursorpos)
 	{
-		if (pressed)
+		if (dragged)
+		{
+			if (clicked)
+			{
+				position = cursorpos - cursoroffset;
+				return true;
+			}
+			else
+			{
+				dragged = false;
+				Configuration::get().setpoint(setting, position);
+			}
+		}
+		return false;
+	}
+
+	Cursor::State UIDragElement::sendmouse(bool clicked, Point<int16_t> cursorpos)
+	{
+		if (clicked)
 		{
 			if (dragged)
 			{
 				position = cursorpos - cursoroffset;
 				return Cursor::CLICKING;
 			}
-			else if (rectangle2d<int16_t>(position, position + dragarea).contains(cursorpos))
+			else if (indragrange(cursorpos))
 			{
 				cursoroffset = cursorpos - position;
 				dragged = true;
@@ -53,6 +71,12 @@ namespace IO
 				Configuration::get().setpoint(setting, position);
 			}
 		}
-		return UIElement::sendmouse(pressed, cursorpos);
+		return UIElement::sendmouse(clicked, cursorpos);
+	}
+
+	bool UIDragElement::indragrange(Point<int16_t> cursorpos) const
+	{
+		auto bounds = rectangle2d<int16_t>(position, position + dragarea);
+		return bounds.contains(cursorpos);
 	}
 }

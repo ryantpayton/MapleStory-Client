@@ -17,16 +17,17 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "PacketSwitch.h"
 #include "RecvOpcodes.h"
+#include "Console.h"
+
 #include "Handlers\CommonHandlers.h"
 #include "Handlers\LoginHandlers.h"
 #include "Handlers\SetfieldHandlers.h"
 #include "Handlers\PlayerHandlers.h"
+#include "Handlers\AttackHandlers.h"
 #include "Handlers\MapobjectHandlers.h"
 #include "Handlers\InventoryHandlers.h"
 #include "Handlers\MessagingHandlers.h"
 #include "Handlers\NpcInteractionHandlers.h"
-
-#include "Console.h"
 
 namespace Net
 {
@@ -52,15 +53,21 @@ namespace Net
 		handlers[SPAWN_NPC_C] = unique_ptr<PacketHandler>(new SpawnNpcControllerHandler());
 		handlers[SPAWN_MOB] = unique_ptr<PacketHandler>(new SpawnMobHandler());
 		handlers[SPAWN_MOB_C] = unique_ptr<PacketHandler>(new SpawnMobControllerHandler());
-		handlers[MOVE_MOB_RESPONSE] = unique_ptr<PacketHandler>(new NullHandler());
+		handlers[MOB_MOVED] = unique_ptr<PacketHandler>(new MobMovedHandler());
 		handlers[SHOW_MOB_HP] = unique_ptr<PacketHandler>(new ShowMobHpHandler());
 		handlers[KILL_MOB] = unique_ptr<PacketHandler>(new KillMobHandler());
-		handlers[SPAWN_PLAYER] = unique_ptr<PacketHandler>(new SpawnCharHandler());
-		handlers[PLAYER_MOVED] = unique_ptr<PacketHandler>(new MoveCharHandler());
-		handlers[REMOVE_PLAYER] = unique_ptr<PacketHandler>(new RemoveCharHandler());
+		handlers[SPAWN_CHAR] = unique_ptr<PacketHandler>(new SpawnCharHandler());
+		handlers[CHAR_MOVED] = unique_ptr<PacketHandler>(new CharMovedHandler());
+		handlers[UPDATE_CHARLOOK] = unique_ptr<PacketHandler>(new UpdateCharLookHandler());
+		handlers[REMOVE_CHAR] = unique_ptr<PacketHandler>(new RemoveCharHandler());
 		handlers[SPAWN_PET] = unique_ptr<PacketHandler>(new SpawnPetHandler());
 		handlers[DROP_ITEM_FROMOBJECT] = unique_ptr<PacketHandler>(new DropItemHandler());
 		handlers[REMOVE_MAPITEM] = unique_ptr<PacketHandler>(new RemoveDropHandler());
+
+		// Attack handlers
+		handlers[ATTACKED_CLOSE] = unique_ptr<PacketHandler>(new CloseAttackHandler());
+		handlers[ATTACKED_RANGED] = unique_ptr<PacketHandler>(new RangedAttackHandler());
+		handlers[ATTACKED_MAGIC] = unique_ptr<PacketHandler>(new MagicAttackHandler());
 
 		// Player handlers
 		handlers[KEYMAP] = unique_ptr<PacketHandler>(new KeymapHandler());
@@ -87,6 +94,7 @@ namespace Net
 		handlers[OPEN_NPC_SHOP] = unique_ptr<PacketHandler>(new OpenNpcShopHandler());
 
 		// Todo
+		handlers[MOVE_MOB_RESPONSE] = unique_ptr<PacketHandler>(new NullHandler());
 		handlers[MEMO_RESULT] = unique_ptr<PacketHandler>(new NullHandler());
 		handlers[ENABLE_REPORT] = unique_ptr<PacketHandler>(new NullHandler());
 		handlers[BUDDY_LIST] = unique_ptr<PacketHandler>(new NullHandler());
@@ -128,7 +136,7 @@ namespace Net
 			else
 			{
 				// Notice about unhandled packet.
-				Console::get().print("Received unhandled packet. Opcode: " + opcode);
+				Console::get().print("Received unhandled packet. Opcode: " + std::to_string(opcode));
 			}
 		}
 	}

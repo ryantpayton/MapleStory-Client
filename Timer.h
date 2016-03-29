@@ -20,9 +20,6 @@
 #include <cstdint>
 #include <chrono>
 
-using std::chrono::high_resolution_clock;
-using std::chrono::microseconds;
-
 // Small class for measuring elapsed time between game loops.
 class Timer : public Singleton<Timer>
 {
@@ -37,18 +34,21 @@ public:
 	// Start the timer by setting the last measurement to now.
 	void start()
 	{
-		last = high_resolution_clock::now();
+		point = clock::now();
 	}
 
 	// Return time elapsed since the last measurement.
 	double stop()
 	{
-		double elapsed = static_cast<double>((std::chrono::duration_cast
-			<microseconds>(high_resolution_clock::now() - last)).count());
-		last = high_resolution_clock::now();
-		return elapsed;
+		clock::time_point last = point;
+		point = clock::now();
+
+		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(point - last);
+		return static_cast<double>(duration.count());
 	}
 
 private:
-	high_resolution_clock::time_point last;
+	using clock = std::chrono::high_resolution_clock;
+
+	clock::time_point point;
 };

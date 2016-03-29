@@ -17,14 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "MapObjects.h"
+
 #include "Character\OtherChar.h"
 #include "Gameplay\Movement.h"
 #include "Gameplay\Spawn.h"
 
 namespace Gameplay
 {
+	using std::queue;
 	using std::string;
-	using std::vector;
 	using Character::OtherChar;
 	using Net::LookEntry;
 
@@ -33,7 +34,8 @@ namespace Gameplay
 	public:
 		void sendspawn(const CharSpawn& spawn);
 		void removechar(int32_t cid);
-		void movechar(int32_t cid, const vector<Movement>& movements);
+		void movechar(int32_t cid, queue<Movement> movements);
+		void updatelook(int32_t cid, LookEntry look);
 
 		Optional<OtherChar> getchar(int32_t cid);
 	};

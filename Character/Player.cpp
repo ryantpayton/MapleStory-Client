@@ -20,15 +20,12 @@
 #include "Constants.h"
 
 #include "Data\DataFactory.h"
-
-#include "Net\Session.h"
 #include "Net\Packets\GameplayPackets.h"
 #include "Net\Packets\InventoryPackets.h"
 
 namespace Character
 {
 	using Data::DataFactory;
-	using Net::Session;
 
 	const PlayerNullState nullstate;
 
@@ -69,7 +66,6 @@ namespace Character
 
 		stats = entry.stats;
 
-		sendcd = Constants::TIMESTEP;
 		attacking = false;
 		underwater = false;
 
@@ -85,7 +81,6 @@ namespace Character
 		setposition(pos.x(), pos.y());
 		underwater = uw;
 		keysdown.clear();
-		sendcd = Constants::TIMESTEP;
 		attacking = false;
 		ladder = nullptr;
 		nullstate.nextstate(*this);
@@ -147,9 +142,17 @@ namespace Character
 			{
 			case Inventory::USE:
 				using Net::UseItemPacket;
-				Session::get().dispatch(UseItemPacket(slot, itemid));
+				UseItemPacket(slot, itemid).dispatch();
 				break;
 			}
+		}
+	}
+
+	void Player::draw(uint8_t layer, Point<int16_t> viewpos, float alpha) const
+	{
+		if (layer == getlayer())
+		{
+			Char::draw(viewpos, alpha);
 		}
 	}
 
@@ -173,57 +176,54 @@ namespace Character
 			}
 		}
 
-		if (sendcd > 0)
+		uint8_t stancebyte = flip ? state : state + 1;
+		auto newmove = Movement(phobj, stancebyte);
+		bool needupdate = lastmove.hasmoved(newmove) || movements.size() > 0;
+		if (needupdate)
 		{
-			sendcd -= Constants::TIMESTEP;
-		}
-		else
-		{
-			uint8_t stancebyte = flip ? state : state + 1;
-			Movement newmove = Movement(phobj, stancebyte);
-			bool needupdate = lastmove.hasmoved(newmove) || movements.size() > 0;
-			if (needupdate)
-			{
-				movements.push_back(newmove);
-				lastmove = newmove;
+			movements.push_back(newmove);
+			lastmove = newmove;
 
-				if (movements.size() > 4)
-				{
-					using Net::MovePlayerPacket;
-					Session::get().dispatch(MovePlayerPacket(movements));
-					movements.clear();
-				}
+			if (movements.size() > 4)
+			{
+				using Net::MovePlayerPacket;
+				MovePlayerPacket(movements).dispatch();
+
+				movements.clear();
 			}
 		}
 
 		return getlayer();
 	}
 
-	float Player::getstancespeed() const
-	{
-		if (attacking)
-			return getattackspeed();
-
-		switch (state)
-		{
-		case WALK:
-			return static_cast<float>(std::abs(phobj.hspeed) / 1.25);
-		case LADDER:
-		case ROPE:
-			return static_cast<float>(std::abs(phobj.vspeed));
-		default:
-			return 1.0f;
-		}
-	}
-
 	float Player::getattackspeed() const
 	{
-		uint8_t statsspeed = stats.getattackspeed();
+		int8_t statsspeed = stats.getattackspeed();
 		uint8_t weaponspeed = look.getequips().getweapon()
 			.mapordefault(&Weapon::getspeed, uint8_t(0));
 
 		float delay = static_cast<float>(weaponspeed + statsspeed);
 		return 1.7f - (delay / 10);
+	}
+
+	void Player::setflip(bool flipped)
+	{
+		if (!attacking)
+			Char::setflip(flipped);
+	}
+
+	void Player::setstate(State st)
+	{
+		if (!attacking)
+		{
+			Char::setstate(st);
+
+			const PlayerState* pst = getstate(st);
+			if (pst)
+			{
+				pst->onentry(*this);
+			}
+		}
 	}
 
 	bool Player::isattacking() const
@@ -236,68 +236,18 @@ namespace Character
 		return !attacking && !isclimbing() && !issitting() && look.getequips().hasweapon();
 	}
 
-	bool Player::canuseskill(const Skill& skill) const
+	bool Player::canuse(const SpecialMove& move) const
 	{
-		int32_t skilllevel = skillbook.getlevel(skill.getid());
-		const Skill::Level* level = skill.getlevel(skilllevel);
-		if (level)
-		{
-			if (level->hpcost >= stats.getstat(Maplestat::HP))
-				return false;
-
-			if (level->mpcost > stats.getstat(Maplestat::MP))
-				return false;
-
-			if (state == PRONE)
-				return false;
-
-			return canattack();
-		}
-		else
-		{
-			return false;
-		}
+		int32_t level = skillbook.getlevel(move.getid());
+		Weapon::Type weapon = look.getequips().getweapontype();
+		uint16_t job = stats.getstat(Maplestat::JOB);
+		uint16_t hp = stats.getstat(Maplestat::HP);
+		uint16_t mp = stats.getstat(Maplestat::MP);
+		uint16_t bullets = inventory.getbulletcount();
+		return move.canuse(level, weapon, job, hp, mp, bullets) == SpecialMove::FBR_NONE;
 	}
 
-	void Player::useskill(const Skill& skill)
-	{
-		bool twohanded = look.getequips().istwohanded();
-		string action = skill.getaction(twohanded);
-		if (action == "")
-		{
-			look.attack(Attack::CLOSE);
-			attacking = true;
-		}
-		else
-		{
-			look.setaction(action);
-			attacking = true;
-		}
-		showeffect(skill.geteffect(twohanded));
-	}
-
-	Attack Player::prepareattack(bool degenerate) const
-	{
-		Attack attack;
-		attack.mindamage = stats.getmindamage();
-		attack.maxdamage = stats.getmaxdamage();
-		if (degenerate)
-		{
-			attack.mindamage /= 10;
-			attack.maxdamage /= 10;
-		}
-		attack.critical = stats.getcritical();
-		attack.ignoredef = stats.getignoredef();
-		attack.accuracy = stats.gettotal(Equipstat::ACC);
-		attack.playerlevel = stats.getstat(Maplestat::LEVEL);
-		attack.speed = look.getequips().getweapon()
-			.mapordefault(&Weapon::getspeed, uint8_t(0));
-		attack.origin = getposition();
-		attack.direction = flip ? Attack::TORIGHT : Attack::TOLEFT;
-		return attack;
-	}
-
-	Attack Player::prepareregularattack()
+	Attack Player::prepareattack(bool skill) const
 	{
 		Attack::Type attacktype;
 		bool degenerate;
@@ -318,72 +268,37 @@ namespace Character
 				degenerate = !inventory.hasprojectile();
 				attacktype = degenerate ? Attack::CLOSE : Attack::RANGED;
 				break;
+			case Weapon::WAND:
+			case Weapon::STAFF:
+				degenerate = !skill;
+				attacktype = degenerate ? Attack::CLOSE : Attack::MAGIC;
+				break;
 			default:
 				attacktype = Attack::CLOSE;
 				degenerate = false;
 			}
 		}
 
-		uint16_t delay = look.attack(degenerate);
-		attacking = true;
-
-		Attack attack = prepareattack(degenerate);
-		attack.skill = 0;
-		attack.mobcount = 1;
-		attack.hitcount = 1;
-
-		attack.delay = delay;
+		Attack attack;
 		attack.type = attacktype;
-
-		if (attacktype == Attack::RANGED)
+		attack.mindamage = stats.getmindamage();
+		attack.maxdamage = stats.getmaxdamage();
+		if (degenerate)
 		{
-			int16_t projectile = inventory.getprojectile();
-			attack.bullet = inventory.getitem(Inventory::USE, projectile)
-				.transform(DataFactory::get(), &DataFactory::getbulletdata, &Item::getid)
-				.map(&BulletData::getbullet);
-			attack.range = stats.getrange();
+			attack.mindamage /= 10;
+			attack.maxdamage /= 10;
 		}
-		else
-		{
-			Optional<const Weapon> weapon = look.getequips().getweapon();
-			attack.range = weapon.map(&Weapon::getrange);
-			attack.hiteffect = weapon.map(&Weapon::gethiteffect);
-		}
+		attack.critical = stats.getcritical();
+		attack.ignoredef = stats.getignoredef();
+		attack.accuracy = stats.gettotal(Equipstat::ACC);
+		attack.playerlevel = stats.getstat(Maplestat::LEVEL);
+		attack.range = stats.getrange();
+		attack.bullet = inventory.getbulletid();
+		attack.origin = getposition();
+		attack.direction = flip ? Attack::TORIGHT : Attack::TOLEFT;
+		attack.speed = stats.getattackspeed() + look.getequips().getweapon()
+			.mapordefault(&Weapon::getspeed, uint8_t(0));
 
-		return attack;
-	}
-
-	Attack Player::prepareskillattack(const Skill& skill) const
-	{
-		Attack attack = prepareattack(false);
-		attack.skill = skill.getid();
-
-		bool twohanded = look.getequips().istwohanded();
-		int32_t skilllevel = skillbook.getlevel(attack.skill);
-		const Skill::Level* level = skill.getlevel(skilllevel);
-		if (level)
-		{
-			attack.mindamage *= level->damage;
-			attack.maxdamage *= level->damage;
-			attack.hitcount = level->attackcount;
-			attack.mobcount = level->mobcount;
-			attack.critical += level->critical;
-			attack.ignoredef += level->ignoredef;
-			attack.range = level->range;
-
-			attack.hitdelays = level->hitdelays[twohanded && skill.canbetwohanded()];
-			if (attack.hitdelays.size() > 0)
-			{
-				attack.delay = attack.hitdelays[0];
-				attack.hitdelays.pop_back();
-			}
-		}
-
-		if (attack.range.empty())
-			attack.range = look.getequips().getweapon()
-			.map(&Weapon::getrange);
-
-		attack.hiteffect = skill.gethitanimation(twohanded);
 		return attack;
 	}
 
@@ -404,12 +319,22 @@ namespace Character
 
 	void Player::changelevel(uint16_t level)
 	{
-		uint16_t oldlevel = stats.getstat(Maplestat::LEVEL);
+		uint16_t oldlevel = getlevel();
 		if (level > oldlevel)
 		{
 			showeffectbyid(LEVELUP);
 		}
 		stats.setstat(Maplestat::LEVEL, level);
+	}
+
+	uint16_t Player::getlevel() const
+	{
+		return stats.getstat(Maplestat::LEVEL);
+	}
+
+	int32_t Player::getskilllevel(int32_t skillid) const
+	{
+		return skillbook.getlevel(skillid);
 	}
 
 	void Player::changejob(uint16_t jobid)
@@ -438,26 +363,6 @@ namespace Character
 			phobj.vspeed = 0.0;
 			setstate(ldr->isladder() ? Char::LADDER : Char::ROPE);
 			setflip(false);
-		}
-	}
-
-	void Player::setflip(bool flipped)
-	{
-		if (!attacking)
-			Char::setflip(flipped);
-	}
-
-	void Player::setstate(State st)
-	{
-		if (!attacking)
-		{
-			Char::setstate(st);
-
-			const PlayerState* pst = getstate(st);
-			if (pst)
-			{
-				pst->onentry(*this);
-			}
 		}
 	}
 	

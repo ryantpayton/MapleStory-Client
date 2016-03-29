@@ -75,13 +75,22 @@ namespace IO
 			for (auto& elit : elements)
 			{
 				UIElement* element = elit.second.get();
-				if (element && element->isactive() && element->bounds().contains(pos))
+				if (element && element->isactive())
 				{
-					if (front)
-						front->sendmouse(false, element->bounds().getlt() - Point<int16_t>(1, 1));
+					if (element->isinrange(pos))
+					{
+						if (front)
+						{
+							element->cursorleave(false, pos);
+						}
 
-					front = element;
-					fronttype = elit.first;
+						front = element;
+						fronttype = elit.first;
+					}
+					else
+					{
+						element->cursorleave(false, pos);
+					}
 				}
 			}
 
@@ -135,7 +144,7 @@ namespace IO
 		for (auto& entry : elements)
 		{
 			UIElement* element = entry.second.get();
-			if (element && element->isactive() && element->bounds().contains(pos))
+			if (element && element->isactive() && element->isinrange(pos))
 				front = element;
 		}
 		return front;

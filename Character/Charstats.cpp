@@ -33,6 +33,7 @@ namespace Character
 	void CharStats::inittotalstats()
 	{
 		totalstats.clear();
+		buffdeltas.clear();
 
 		totalstats[Equipstat::HP] = getstat(Maplestat::MAXHP);
 		totalstats[Equipstat::MP] = getstat(Maplestat::MAXMP);
@@ -148,10 +149,30 @@ namespace Character
 		totalstats[stat] = value;
 	}
 
+	void CharStats::addbuff(Equipstat::Value stat, int32_t value)
+	{
+		int32_t current = gettotal(stat);
+		settotal(stat, current + value);
+
+		if (buffdeltas.count(stat))
+		{
+			buffdeltas[stat] += value;
+		}
+		else
+		{
+			buffdeltas[stat] = value;
+		}
+	}
+
 	void CharStats::addtotal(Equipstat::Value stat, int32_t value)
 	{
 		int32_t current = gettotal(stat);
 		settotal(stat, current + value);
+	}
+
+	bool CharStats::isdamagebuffed() const
+	{
+		return getbuffdelta(Equipstat::WATK) > 0 || getbuffdelta(Equipstat::MAGIC) > 0;
 	}
 
 	uint16_t CharStats::getstat(Maplestat::Value stat) const
@@ -162,6 +183,11 @@ namespace Character
 	int32_t CharStats::gettotal(Equipstat::Value stat) const
 	{
 		return totalstats.count(stat) ? totalstats.at(stat) : 0;
+	}
+
+	int32_t CharStats::getbuffdelta(Equipstat::Value stat) const
+	{
+		return buffdeltas.count(stat) ? buffdeltas.at(stat) : 0;
 	}
 
 	int64_t CharStats::getexpneeded() const

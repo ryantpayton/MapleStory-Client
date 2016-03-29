@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,26 +15,28 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Sound.h"
-#include "AudioPlayer.h"
+#include "SpecialMove.h"
 
-namespace Audio
+namespace Gameplay
 {
-	Sound::Sound(node src)
+	void SpecialMove::applyuseeffects(Char& target, Attack::Type type) const
 	{
-		id = AudioPlayer::get().addsound(src);
+		useeffect->apply(target);
+		action->apply(target, type);
 	}
 
-	Sound::Sound()
+	void SpecialMove::applyhiteffects(Mob& target, uint16_t level, bool twohanded) const
 	{
-		id = 0;
+		hiteffect->apply(target, level, twohanded);
 	}
 
-	Sound::~Sound() {}
-
-	void Sound::play() const
+	Animation SpecialMove::getbullet(int32_t bulletid) const
 	{
-		if (id > 0)
-			AudioPlayer::get().playsound(id);
+		return bullet->get(bulletid);
+	}
+
+	bool SpecialMove::isskill() const
+	{
+		return getid() > 0;
 	}
 }

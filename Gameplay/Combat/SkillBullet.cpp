@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
@@ -15,29 +15,26 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include <map>
-#include <unordered_map>
-#include <functional>
-#include <vector>
+#include "SkillBullet.h"
 
-class Algorithm
+#include "Data\DataFactory.h"
+
+namespace Gameplay
 {
-public:
-	template<typename K, typename V>
-	static void remove_all(std::unordered_map<K, V>& container, std::function<bool(V&)> predicate)
+	Animation RegularBullet::get(int32_t bulletid) const
 	{
-		std::vector<K> toremove;
-		for (auto& it : container)
-		{
-			if (predicate(it.second))
-			{
-				toremove.push_back(it.first);
-			}
-		}
-		for (auto& it : toremove)
-		{
-			container.erase(it);
-		}
+		using Data::DataFactory;
+		return DataFactory::get().getbulletdata(bulletid).getbullet();
 	}
-};
+
+
+	SingleBullet::SingleBullet(node src)
+	{
+		ball = src["ball"];
+	}
+
+	Animation SingleBullet::get(int32_t) const
+	{
+		return ball.animation;
+	}
+}

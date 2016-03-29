@@ -18,13 +18,12 @@
 #pragma once
 #include "Journey.h"
 #ifndef JOURNEY_USE_ASIO
+#include "NetConstants.h"
 #include <cstdlib>
 #include <cstdint>
 
 namespace Net
 {
-	const size_t MAX_PACKET_LEN = 131072;
-
 #ifdef JOURNEY_USE_CRYPTO
 	const size_t HANDSHAKE_LEN = 16;
 #else
@@ -36,13 +35,14 @@ namespace Net
 	public:
 		bool open(const char* adress, const char* port);
 		bool close();
+
+		bool dispatch(const int8_t* bytes, size_t length) const;
 		size_t receive(bool* connected);
-		const int8_t* getbuffer();
-		bool dispatch(const int8_t* bytes, size_t length);
+		const int8_t* getbuffer() const;
 
 	private:
 		uint64_t sock;
-		int8_t buffer[MAX_PACKET_LEN];
+		int8_t buffer[MAX_PACKET_LENGTH];
 	};
 }
 #endif

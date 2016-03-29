@@ -38,6 +38,7 @@ namespace IO
 		bool isenabled() const;
 		void setenabled(bool enabled);
 		void setrows(int16_t unitrows, int16_t rowmax);
+		void setvertical(Range<int16_t> vertical);
 
 		void draw(Point<int16_t> position) const;
 		Cursor::State sendcursor(Point<int16_t> cursor, bool pressed);

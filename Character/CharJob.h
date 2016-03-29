@@ -42,6 +42,7 @@ namespace Character
 		~CharJob();
 
 		void changejob(uint16_t id);
+		bool issubjob(uint16_t subid) const;
 		uint16_t getid() const;
 		uint16_t getsubjob(Joblevel level) const;
 		string getname() const;

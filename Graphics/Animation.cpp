@@ -29,40 +29,62 @@ namespace Graphics
 		if (delay == 0)
 			delay = 100;
 
-		uint8_t a0;
-		uint8_t a1;
-		node::type a0type = src["a0"].data_type();
-		if (a0type == node::type::integer)
+		bool hasa0 = src["a0"].data_type() == node::type::integer;
+		bool hasa1 = src["a1"].data_type() == node::type::integer;
+		if (hasa0 && hasa1)
 		{
-			node::type a1type = src["a1"].data_type();
-			if (a1type == node::type::integer)
-			{
-				a0 = src["a0"];
-				a1 = src["a1"];
-			}
-			else
-			{
-				a0 = src["a0"];
-				a1 = 255 - a0;
-			}
+			opacities = { src["a0"], src["a1"] };
+		}
+		else if (hasa0)
+		{
+			uint8_t a0 = src["a0"];
+			opacities = { a0, 255 - a0 };
+		}
+		else if (hasa1)
+		{
+			uint8_t a1 = src["a1"];
+			opacities = { 255 - a1, a1 };
 		}
 		else
 		{
-			a0 = 255;
-			a1 = 255;
+			opacities = { 255, 255 };
 		}
-		opacities = { a0, a1 };
+
+		bool hasz0 = src["z0"].data_type() == node::type::integer;
+		bool hasz1 = src["z1"].data_type() == node::type::integer;
+		if (hasz0 && hasz1)
+		{
+			scales = { src["z0"], src["z1"] };
+		}
+		else if (hasz0)
+		{
+			scales = { src["z0"], 0 };
+		}
+		else if (hasz1)
+		{
+			scales = { 100, src["z1"] };
+		}
+		else
+		{
+			scales = { 100, 100 };
+		}
 	}
 
 	Animation::Frame::Frame()
 	{
 		delay = 0;
 		opacities = { 0, 0 };
+		scales = { 0, 0 };
 	}
 
-	float Animation::Frame::opcstep(float opacity, uint16_t timestep) const
+	float Animation::Frame::opcstep(uint16_t timestep) const
 	{
-		return timestep * (opacities.second - opacity) / delay;
+		return timestep * static_cast<float>(opacities.second - opacities.first) / delay;
+	}
+
+	float Animation::Frame::scalestep(uint16_t timestep) const
+	{
+		return timestep * static_cast<float>(scales.second - scales.first) / delay;
 	}
 
 
@@ -109,7 +131,7 @@ namespace Graphics
 	{
 		frame.set(0);
 		opacity.set(frames[0].opacities.first);
-		opcstep = frames[0].opcstep(opacity.get(), Constants::TIMESTEP);
+		xyscale.set(frames[0].scales.first);
 		delay = frames[0].delay;
 		framestep = 1;
 	}
@@ -117,12 +139,15 @@ namespace Graphics
 	void Animation::draw(const DrawArgument& args, float alpha) const
 	{
 		int16_t interframe = frame.get(alpha);
-		float interopc = opacity.get(alpha);
+		float interopc = opacity.get(alpha) / 255;
+		float interscale = xyscale.get(alpha) / 100;
 
-		bool modifyopc = interopc != 255.0f;
-		if (modifyopc)
+		bool modifyopc = interopc != 1.0f;
+		bool modifyscale = interscale != 1.0f;
+		if (modifyopc || modifyscale)
 		{
-			frames[interframe].texture.draw(args + interopc / 255);
+			auto absargs = args + DrawArgument(interscale, interscale, interopc);
+			frames[interframe].texture.draw(absargs);
 		}
 		else
 		{
@@ -137,17 +162,22 @@ namespace Graphics
 
 	bool Animation::update(uint16_t timestep)
 	{
-		if (!animated)
-			return true;
+		auto& framedata = frames[frame.get()];
 
-		opacity += opcstep;
-		if (opacity < 0.0f)
+		opacity += framedata.opcstep(timestep);
+		if (opacity.last() < 0.0f)
 		{
-			opacity = 0.0f;
+			opacity.set(0.0f);
 		}
-		else if (opacity > 255.0f)
+		else if (opacity.last() > 255.0f)
 		{
-			opacity = 255.0f;
+			opacity.set(255.0f);
+		}
+
+		xyscale += framedata.scalestep(timestep);
+		if (xyscale.last() < 0.0f)
+		{
+			opacity.set(0.0f);
 		}
 
 		if (timestep >= delay)
@@ -155,7 +185,7 @@ namespace Graphics
 			int16_t lastframe = static_cast<int16_t>(frames.size() - 1);
 			int16_t nextframe;
 			bool ended;
-			if (zigzag)
+			if (zigzag && lastframe > 0)
 			{
 				if (framestep == 1 && frame == lastframe)
 				{
@@ -192,8 +222,12 @@ namespace Graphics
 			float threshold = static_cast<float>(delta) / timestep;
 			frame.next(nextframe, threshold);
 
-			delay = frames[nextframe].delay - delta;
-			opcstep = frames[nextframe].opcstep(opacity.get(), timestep);
+			delay = frames[nextframe].delay;
+			if (delay >= delta)
+				delay -= delta;
+
+			opacity.set(frames[nextframe].opacities.first);
+			xyscale.set(frames[nextframe].scales.first);
 			return ended;
 		}
 		else

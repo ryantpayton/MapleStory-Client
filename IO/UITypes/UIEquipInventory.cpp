@@ -17,19 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIEquipInventory.h"
 
+#include "Gameplay\Stage.h"
 #include "IO\UI.h"
 #include "IO\Components\MapleButton.h"
-
-#include "Net\Session.h"
 #include "Net\Packets\InventoryPackets.h"
-
-#include "Gameplay\Stage.h"
 
 #include "nlnx\nx.hpp"
 
 namespace IO
 {
-	using Net::Session;
 	using Gameplay::Stage;
 	using Character::Item;
 	using Character::ItemData;
@@ -146,6 +142,13 @@ namespace IO
 
 	Cursor::State UIEquipInventory::sendmouse(bool pressed, Point<int16_t> cursorpos)
 	{
+		Cursor::State dstate = UIDragElement::sendmouse(pressed, cursorpos);
+		if (dragged)
+		{
+			cleartooltip();
+			return dstate;
+		}
+
 		int16_t slot = slotbypos(cursorpos);
 		Optional<Icon> icon = geticon(slot);
 		if (icon)
@@ -164,9 +167,11 @@ namespace IO
 				return Cursor::CANGRAB;
 			}
 		}
-
-		cleartooltip();
-		return UIDragElement::sendmouse(pressed, cursorpos);
+		else
+		{
+			cleartooltip();
+			return Cursor::IDLE;
+		}
 	}
 
 	void UIEquipInventory::doubleclick(Point<int16_t> cursorpos)
@@ -178,7 +183,7 @@ namespace IO
 			if (freeslot > 0)
 			{
 				using Net::UnequipItemPacket;
-				Session::get().dispatch(UnequipItemPacket(slot, freeslot));
+				UnequipItemPacket(slot, freeslot).dispatch();
 			}
 		}
 	}
@@ -257,7 +262,7 @@ namespace IO
 	void UIEquipInventory::EquipIcon::ondrop() const
 	{
 		using Net::UnequipItemPacket;
-		Session::get().dispatch(UnequipItemPacket(source, 0));
+		UnequipItemPacket(source, 0).dispatch();
 	}
 
 	void UIEquipInventory::EquipIcon::ondropitems(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const
@@ -270,13 +275,13 @@ namespace IO
 			if (eqslot == source)
 			{
 				using Net::EquipItemPacket;
-				Session::get().dispatch(EquipItemPacket(slot, eqslot));
+				EquipItemPacket(slot, eqslot).dispatch();
 			}
 		}
 		else
 		{
 			using Net::UnequipItemPacket;
-			Session::get().dispatch(UnequipItemPacket(source, slot));
+			UnequipItemPacket(source, slot).dispatch();
 		}
 	}
 }

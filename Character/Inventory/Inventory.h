@@ -130,11 +130,15 @@ namespace Character
 		bool changecount(Type type, int16_t slot, int16_t count);
 
 		// Check if the use inventory contains at least one projectile.
-		bool hasprojectile();
+		bool hasprojectile() const;
 		// Return if an equip is equipped in the specfied slot.
 		bool hasequipped(Equipslot::Value slot) const;
-		// Return the currently active projectile.
-		int16_t getprojectile() const;
+		// Return the currently active projectile slot.
+		int16_t getbulletslot() const;
+		// Return the count of the currently active projectile.
+		uint16_t getbulletcount() const;
+		// Return the itemid of the currently active projectile.
+		int32_t getbulletid() const;
 		// Return the number of slots for the specified inventory.
 		uint8_t getslots(Type type) const;
 		// Return a total stat.
@@ -161,7 +165,7 @@ namespace Character
 		map<Type, map<int16_t, Item*>> inventories;
 		map<Equipstat::Value, uint16_t> totalstats;
 
-		int16_t projectile;
+		int16_t bulletslot;
 	};
 }
 

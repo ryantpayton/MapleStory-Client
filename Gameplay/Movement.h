@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -16,8 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Physics\PhysicsObject.h"
 #include "Constants.h"
+
+#include "Net\InPacket.h"
+#include "Physics\PhysicsObject.h"
 
 namespace Gameplay
 {
@@ -36,26 +38,16 @@ namespace Gameplay
 		};
 
 		Movement(Type t, uint8_t c, int16_t x, int16_t y, int16_t lx, int16_t ly, uint16_t f, uint8_t s, int16_t d)
-		{
-			type = t;
-			command = c;
-			xpos = x;
-			ypos = y;
-			lastx = lx;
-			lasty = ly;
-			fh = f;
-			newstate = s;
-			duration = d;
-		}
+			: type(t), command(c), xpos(x), ypos(y), lastx(lx), lasty(ly), fh(f), newstate(s), duration(d) {}
 
-		Movement(int16_t x, int16_t y, int16_t lx, int16_t ly, uint8_t s)
-			: Movement(_ABSOLUTE, 0, x, y, lx, ly, 0, s, Constants::TIMESTEP) {}
+		Movement(int16_t x, int16_t y, int16_t lx, int16_t ly, uint8_t s, int16_t d)
+			: Movement(_ABSOLUTE, 0, x, y, lx, ly, 0, s, d) {}
 
 		Movement(const PhysicsObject& phobj, uint8_t s)
-			: Movement(phobj.getx(), phobj.gety(), phobj.lastx(), phobj.lasty(), s) {}
+			: Movement(_ABSOLUTE, 0, phobj.getx(), phobj.gety(), phobj.lastx(), phobj.lasty(), phobj.fhid, s, 1) {}
 
 		Movement()
-			: Movement(NONE, 0, 0, 0, 0) {}
+			: Movement(NONE, 0, 0, 0, 0, 0) {}
 
 		bool hasmoved(const Movement& newmove) const
 		{
@@ -72,4 +64,12 @@ namespace Gameplay
 		uint8_t newstate;
 		int16_t duration;
 	};
+}
+
+namespace Net
+{
+	using Gameplay::Movement;
+
+	template <>
+	Movement InPacket::read<Movement>();
 }

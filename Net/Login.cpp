@@ -31,7 +31,7 @@ namespace Net
 		recv.readbool(); //is admin
 		account.gmlevel = recv.readbyte();
 		recv.readbyte();
-		account.name = recv.readascii();
+		account.name = recv.read<string>();
 		recv.readbyte();
 		account.muted = recv.readbool();
 		recv.readlong(); //muted until
@@ -48,16 +48,16 @@ namespace Net
 		{
 			World world;
 			world.wid = worldid;
-			world.name = recv.readascii();
+			world.name = recv.read<string>();
 			world.flag = recv.readbyte();
-			world.message = recv.readascii();
+			world.message = recv.read<string>();
 
 			recv.skip(5);
 
 			world.channelcount = recv.readbyte();
 			for (uint8_t i = 0; i < world.channelcount; i++)
 			{
-				recv.readascii();
+				recv.read<string>();
 				recv.skip(4);
 				world.chloads.push_back(recv.readbyte());
 				recv.skip(2);

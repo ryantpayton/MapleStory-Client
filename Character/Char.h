@@ -70,25 +70,44 @@ namespace Character
 		// Return the current map layer, or 7 if on a ladder or rope.
 		int8_t getlayer() const override;
 
+		// Return the character's level.
+		virtual uint16_t getlevel() const = 0;
+		// Return the character's level.
+		virtual int32_t getskilllevel(int32_t skillid) const = 0;
+		// Return the character's attacking speed.
+		virtual float getattackspeed() const = 0;
+		// Return the delay until applying an attack.
+		uint16_t getattackdelay(size_t no, uint8_t speed) const;
+
+		// Set if the character sprite is mirrored (true = facing left)
+		virtual void setflip(bool flipped);
+		// Change the character's state.
+		virtual void setstate(State newstate);
+		// Change the character's stance to an attack action.
+		void attack(string action);
+		// Change the character's stance to an attack stance.
+		void attack(Stance::Value stance);
+		// Change the character's stance to it's regular attack.
+		void attack(bool degenerate);
+
+		// Display an animation as an effect with the character.
+		void showeffect(Animation animation, int8_t z);
 		// Display an animation as an effect ontop of the character.
 		void showeffectbyid(Effect toshow);
 		// Display a chat bubble with the specified line in it.
 		void speak(string line);
 		// Change a part of the character's look.
 		void changelook(Maplestat::Value stat, int32_t id);
+		// Change the character's state by id.
+		void setstate(uint8_t statebyte);
+		// Change the character's face expression by id.
+		void sendface(int32_t expression);
 
 		// Add a pet with the specified stats.
 		void addpet(uint8_t index, int32_t iid, string name, 
 			int32_t uniqueid, Point<int16_t> pos, uint8_t stance, int32_t fhid);
 		// Remove a pet with the specified index and reason.
 		void removepet(uint8_t index, bool hunger);
-
-		// Change the character's face expression by id.
-		void sendface(int32_t expression);
-		// Set if the character sprite is mirrored (true = facing left)
-		virtual void setflip(bool flipped);
-		// Change the character's state.
-		virtual void setstate(State newstate);
 
 		// Return if the character is facing left.
 		bool getflip() const;
@@ -103,6 +122,8 @@ namespace Character
 		bool istwohanded() const;
 
 		// Obtain a reference to this character's look.
+		CharLook& getlook();
+		// Obtain a const reference to this character's look.
 		const CharLook& getlook() const;
 
 		// Initialize character effects.
@@ -111,10 +132,10 @@ namespace Character
 	protected:
 		Char(int32_t oid, CharLook look, string name);
 
-		// Display an animation as an effect ontop of the character.
-		void showeffect(Animation toshow);
 		// Update the character's animation with the given speed.
 		bool update(const Physics& physics, float speed);
+		// Get a speed modifier for the current stance.
+		float getstancespeed() const;
 
 		CharLook look;
 		ChatBalloon chatballoon;
@@ -123,6 +144,7 @@ namespace Character
 		PetLook pets[3];
 
 		State state;
+		bool attacking;
 		bool flip;
 
 	private:

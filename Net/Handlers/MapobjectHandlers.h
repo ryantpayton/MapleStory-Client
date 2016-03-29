@@ -18,20 +18,9 @@
 #pragma once
 #include "Net\PacketHandler.h"
 #include "Net\Session.h"
-#include "Gameplay\Movement.h"
-#include "Gameplay\Stage.h"
 
 namespace Net
 {
-	using::Gameplay::Movement;
-
-	// Base handler for packets which update map object positions.
-	class MovementHandler : public PacketHandler
-	{
-	protected:
-		Movement parsemovement(InPacket& recv) const;
-	};
-
 	// Handles a packet which tells the client to spawn an npc on the current map.
 	class SpawnNpcHandler : public PacketHandler
 	{
@@ -52,6 +41,12 @@ namespace Net
 
 	// Handles a packet which tells the client to spawn and control a mob.
 	class SpawnMobControllerHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+	//  Handles a packet which updates mob movement with the client.
+	class MobMovedHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};
@@ -78,7 +73,12 @@ namespace Net
 		void handle(InPacket& recv) const override;
 	};
 
-	class MoveCharHandler : public MovementHandler
+	class CharMovedHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+	class UpdateCharLookHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};

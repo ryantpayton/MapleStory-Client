@@ -20,10 +20,12 @@
 #include "GL\glew.h"
 #include "glfw3.h"
 #include <string>
+#include <functional>
 
 namespace IO
 {
 	using std::string;
+	using std::function;
 
 	class Window : public Singleton<Window>
 	{
@@ -36,7 +38,7 @@ namespace IO
 		void update();
 		void begin() const;
 		void end() const;
-		void fadeout(float step, void(*fadeproc)());
+		void fadeout(float step, function<void()> fadeprocedure);
 
 		void setclipboard(string text) const;
 		string getclipboard() const;
@@ -44,13 +46,12 @@ namespace IO
 	private:
 		void updateopc();
 
-		void(*fadeprocedure)();
-
 		GLFWwindow* glwnd;
 		GLFWwindow* context;
 		bool fullscreen;
 		float opacity;
 		float opcstep;
+		function<void()> fadeprocedure;
 	};
 }
 

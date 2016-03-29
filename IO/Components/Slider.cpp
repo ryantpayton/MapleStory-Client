@@ -76,6 +76,14 @@ namespace IO
 		row = 0;
 	}
 
+	void Slider::setvertical(Range<int16_t> ver)
+	{
+		vertical = ver;
+		start = Point<int16_t>(x, vertical.first());
+		end = Point<int16_t>(x, vertical.second());
+		rowheight = (vertical.length() - buttonheight * 2) / rowmax;
+	}
+
 	void Slider::draw(Point<int16_t> position) const
 	{
 		Point<int16_t> fill = Point<int16_t>(0, vertical.length() + buttonheight);

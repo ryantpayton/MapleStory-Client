@@ -72,12 +72,11 @@ namespace Gameplay
 
 	void Physics::movenormal(PhysicsObject& phobj) const
 	{
-		phobj.vacc = phobj.vforce;
-		phobj.vforce = 0.0;
-
+		phobj.vacc = 0.0;
 		phobj.hacc = 0.0;
 		if (phobj.onground)
 		{
+			phobj.vacc += phobj.vforce;
 			phobj.hacc += phobj.hforce;
 
 			if (phobj.hacc == 0.0 && phobj.hspeed < 0.1 && phobj.hspeed > -0.1)
@@ -104,6 +103,7 @@ namespace Gameplay
 			phobj.vacc += GRAVFORCE;
 		}
 		phobj.hforce = 0.0;
+		phobj.vforce = 0.0;
 
 		phobj.hspeed += phobj.hacc;
 		phobj.vspeed += phobj.vacc;

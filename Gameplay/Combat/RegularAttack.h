@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,21 +15,19 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "MobHpBar.h"
+#pragma once
+#include "SpecialMove.h"
 
-namespace Graphics
+namespace Gameplay
 {
-	void MobHpBar::draw(Point<int16_t> position, int16_t hppercent) const
+	class RegularAttack : public SpecialMove
 	{
-		int16_t x = position.x() - WIDTH / 2;
-		int16_t y = position.y() - HEIGHT * 3;
-		int16_t fillw = static_cast<int16_t>((WIDTH - 6) * static_cast<float>(hppercent) / 100);
-		Geometry::draw(x, y, WIDTH, HEIGHT, BLACK, 1.0f);
-		Geometry::draw(x + 1, y + 1, WIDTH - 2, 1, WHITE, 1.0f);
-		Geometry::draw(x + 1, y + HEIGHT - 2, WIDTH - 2, 1, WHITE, 1.0f);
-		Geometry::draw(x + 1, y + 2, 1, HEIGHT - 4, WHITE, 1.0f);
-		Geometry::draw(x + WIDTH - 2, y + 2, 1, HEIGHT - 4, WHITE, 1.0f);
-		Geometry::draw(x + 3, y + 3, fillw, 3, HPBAR_LIGHTGREEN, 1.0f);
-		Geometry::draw(x + 3, y + 6, fillw, 1, HPBAR_DARKGREEN, 1.0f);
-	}
+	public:
+		RegularAttack();
+
+		void applystats(const Char& user, Attack& attack) const override;
+		bool isoffensive() const override;
+		int32_t getid() const override;
+		ForbidReason canuse(int32_t level, Weapon::Type weapon, uint16_t job, uint16_t hp, uint16_t mp, uint16_t bullets) const override;
+	};
 }

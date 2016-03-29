@@ -17,25 +17,23 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UILogin.h"
 #include "UILoginwait.h"
-#include "IO\UI.h"
-#include "Net\Session.h"
 #include "Configuration.h"
-#include "Audio\AudioPlayer.h"
+
+#include "Audio\Audio.h"
+#include "Graphics\Sprite.h"
+#include "Net\Session.h"
 #include "Net\Packets\LoginPackets.h"
 #include "IO\Components\MapleButton.h"
-#include "Graphics\Sprite.h"
+
 #include "nlnx\nx.hpp"
 #include "nlnx\audio.hpp"
 
 namespace IO
 {
-	using Audio::AudioPlayer;
-	using Graphics::DrawArgument;
-	using Net::Session;
-
 	UILogin::UILogin()
 	{
-		AudioPlayer::get().playbgm("BgmUI.img/Title");
+		using Audio::Music;
+		Music("BgmUI.img/Title").play();
 
 		node title = nl::nx::ui["Login.img"]["Title"];
 		node common = nl::nx::ui["Login.img"]["Common"];
@@ -98,7 +96,8 @@ namespace IO
 		saveid = Configuration::get().getbool(Settings::SAVE_LOGIN);
 		if (saveid)
 		{
-			account.settext(Configuration::get().getsetting(Settings::ACCOUNT));
+			string accname = Configuration::get().getsetting(Settings::ACCOUNT);
+			account.settext(accname);
 			password.setstate(Textfield::FOCUSED);
 		}
 		else
@@ -118,13 +117,17 @@ namespace IO
 		account.draw(position);
 		password.draw(position);
 
-		using::Graphics::DrawArgument;
 		if (account.getstate() == Textfield::NORMAL && account.gettext().size() == 0)
-			accountbg.draw(DrawArgument(310, 249));
-		if (password.getstate() == Textfield::NORMAL && password.gettext().size() == 0)
-			passwordbg.draw(DrawArgument(310, 275));
+		{
+			accountbg.draw(Point<int16_t>(310, 249));
+		}
 
-		checkbox.at(saveid).draw(DrawArgument(position + Point<int16_t>(313, 304)));
+		if (password.getstate() == Textfield::NORMAL && password.gettext().size() == 0)
+		{
+			passwordbg.draw(Point<int16_t>(310, 275));
+		}
+
+		checkbox.at(saveid).draw(position + Point<int16_t>(313, 304));
 	}
 
 	void UILogin::update()
@@ -143,6 +146,7 @@ namespace IO
 			login();
 			return;
 		case BT_QUIT:
+			using Net::Session;
 			Session::get().disconnect();
 			return;
 		case BT_SAVEID:
@@ -155,9 +159,7 @@ namespace IO
 
 	void UILogin::login()
 	{
-		UI::get().disable();
-		UI::get().focustextfield(nullptr);
-		UI::get().add(ElementLoginwait());
+		ElementLoginwait().add();
 
 		account.setstate(Textfield::NORMAL);
 		password.setstate(Textfield::NORMAL);
@@ -165,7 +167,7 @@ namespace IO
 		buttons[BT_LOGIN]->setstate(Button::MOUSEOVER);
 
 		using Net::LoginPacket;
-		Session::get().dispatch(LoginPacket(account.gettext(), password.gettext()));
+		LoginPacket(account.gettext(), password.gettext()).dispatch();
 	}
 
 	Cursor::State UILogin::sendmouse(bool clicked, Point<int16_t> cursorpos)

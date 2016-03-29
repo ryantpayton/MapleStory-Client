@@ -33,7 +33,7 @@ namespace Net
 			int64_t uniqueid = cash ? recv.readlong() : -1;
 			int64_t expire = recv.readlong();
 			int16_t count = recv.readshort();
-			string owner = recv.readascii();
+			string owner = recv.read<string>();
 			int16_t flag = recv.readshort();
 
 			// If the item is a rechargable projectile, some additional bytes are sent.
@@ -88,7 +88,7 @@ namespace Net
 			}
 
 			// Some more information.
-			string owner = recv.readascii();
+			string owner = recv.read<string>();
 			int16_t flag = recv.readshort();
 			uint8_t itemlevel = 0;
 			uint16_t itemexp = 0;

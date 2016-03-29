@@ -15,19 +15,41 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Graphics\Geometry.h"
-#include "Util\Point.h"
+#include "Bullet.h"
 
-namespace Graphics
+namespace Gameplay
 {
-	class MobHpBar : public Geometry
+	Bullet::Bullet(Animation a, Point<int16_t> origin, bool toleft)
 	{
-	public:
-		void draw(Point<int16_t> position, int16_t hppercent) const;
+		animation = a;
+		flip = !toleft;
 
-	private:
-		static const int16_t WIDTH = 50;
-		static const int16_t HEIGHT = 10;
-	};
+		moveobj.setx(origin.x() + (toleft ? -30.0 : 30.0));
+		moveobj.sety(origin.y() - 26.0);
+	}
+
+	void Bullet::draw(Point<int16_t> viewpos, float alpha) const
+	{
+		using Graphics::DrawArgument;
+		Point<int16_t> bulletpos = moveobj.getposition(alpha) + viewpos;
+		animation.draw(DrawArgument(bulletpos, flip), alpha);
+	}
+
+	Point<int16_t> Bullet::getposition(float alpha) const
+	{
+		return moveobj.getposition(alpha);
+	}
+
+	bool Bullet::update(Point<int16_t> target)
+	{
+		animation.update();
+
+		double xdelta = target.x() - moveobj.crntx();
+		double ydelta = target.y() - moveobj.crnty();
+		moveobj.hspeed = (moveobj.hspeed + xdelta / 15) / 2;
+		moveobj.vspeed = (moveobj.vspeed + ydelta / 15) / 2;
+		flip = xdelta > 0.0;
+		moveobj.move();
+		return Point<double>(xdelta, ydelta).length() < 10.0;
+	}
 }

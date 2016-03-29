@@ -18,7 +18,8 @@
 #pragma once
 #include "MapObjects.h"
 #include "Mob.h"
-#include "Gameplay\Attack.h"
+#include "Gameplay\Combat\Attack.h"
+#include "Gameplay\Combat\SpecialMove.h"
 #include "Gameplay\Spawn.h"
 #include <list>
 
@@ -33,40 +34,138 @@ namespace Gameplay
 		void update(const Physics& physics) override;
 
 		void sendspawn(const MobSpawn& spawn);
+		void movemob(int32_t oid, Point<int16_t> start, const Movement& movement);
 		void killmob(int32_t oid, int8_t effect);
 		void sendmobhp(int32_t oid, int8_t percent, uint16_t playerlevel);
-		void sendattack(Attack attack);
 		void setcontrol(int32_t oid, bool control);
 
+		AttackResult sendattack(Attack attack);
+		void showresult(const Char& user, const SpecialMove& skill, const AttackResult& result);
+
 	private:
-		void applyattack(const Attack& attack);
-		//vector<int32_t> findclose(rectangle2d<int16_t> range, uint8_t mobcount) const;
 		vector<int32_t> findclosest(rectangle2d<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const;
 		Optional<Mob> getmob(int32_t oid);
 
-		list<Attack> attacklist;
+		list<DamageNumber> damagenumbers;
 
-		class MissBullet
+		class DamageEffect
 		{
 		public:
-			MissBullet(Bullet b, Point<int16_t> t)
-				: bullet(b), target(t) {}
+			DamageEffect(const SpecialMove& m, uint16_t l, bool th, DamageNumber n,
+				bool tl, int32_t dm, int32_t t, uint16_t d)
+				: move(m), level(l), twohanded(th), number(n), toleft(tl), damage(dm), target(t), delay(d) {}
 
-			void draw(Point<int16_t> viewpos, float alpha) const
+			void apply(Mob& target) const
 			{
-				bullet.draw(viewpos, alpha);
+				move.applyhiteffects(target, level, twohanded);
+
+				target.applydamage(damage, toleft);
+			}
+
+			bool expired() const
+			{
+				return delay <= Constants::TIMESTEP;
 			}
 
 			bool update()
 			{
-				return bullet.update(target);
+				if (delay <= Constants::TIMESTEP)
+				{
+					return true;
+				}
+				else
+				{
+					delay -= Constants::TIMESTEP;
+					return false;
+				}
+			}
+
+			int32_t gettarget() const
+			{
+				return target;
+			}
+
+			DamageNumber getnumber() const
+			{
+				return number;
 			}
 
 		private:
+			const DamageEffect& operator =(const DamageEffect&) = delete;
+
+			const SpecialMove& move;
+			DamageNumber number;
+			uint16_t level;
+			bool twohanded;
+			int32_t damage;
+			bool toleft;
+			int32_t target;
+			uint16_t delay;
+		};
+		list<DamageEffect> damageeffects;
+
+		void applyeffect(const DamageEffect& effect);
+
+		class BulletEffect
+		{
+		public:
+			BulletEffect(Bullet b, Point<int16_t> t, DamageEffect de)
+				: bullet(b), target(t), damageeffect(de) {}
+
+			void draw(Point<int16_t> viewpos, float alpha) const
+			{
+				if (damageeffect.expired())
+				{
+					bullet.draw(viewpos, alpha);
+				}
+			}
+
+			bool update()
+			{
+				bool expired = damageeffect.update();
+				if (expired)
+				{
+					return bullet.update(target);
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			bool update(Point<int16_t> newtarget)
+			{
+				target = newtarget;
+
+				bool expired = damageeffect.update();
+				if (expired)
+				{
+					return bullet.update(target);
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			int32_t gettarget() const
+			{
+				return damageeffect.gettarget();
+			}
+
+			const DamageEffect& geteffect() const
+			{
+				return damageeffect;
+			}
+
+		private:
+			const BulletEffect& operator =(const BulletEffect&) = delete;
+
 			Bullet bullet;
 			Point<int16_t> target;
+			DamageEffect damageeffect;
 		};
-		list<MissBullet> missbullets;
+		list<BulletEffect> bulleteffects;
 	};
 }
 
