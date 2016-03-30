@@ -26,7 +26,7 @@ namespace IO
 	class Messages
 	{
 	public:
-		static const size_t LENGTH = 6;
+		static const size_t LENGTH = 9;
 		enum Type
 		{
 			// Cannot use a skill

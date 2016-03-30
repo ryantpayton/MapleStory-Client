@@ -219,6 +219,9 @@ namespace Gameplay
 
 	void Footholdtree::updatefh(PhysicsObject& phobj) const
 	{
+		if (phobj.type == PhysicsObject::FIXATED && phobj.fhid > 0)
+			return;
+
 		const Foothold& curfh = getfh(phobj.fhid);
 		bool checkslope = false;
 

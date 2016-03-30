@@ -47,8 +47,10 @@ namespace IO
 		UIStatsinfo();
 
 		void draw(float inter) const override;
-		void update() override;
 		void buttonpressed(uint16_t buttonid) override;
+
+		void updateall();
+		void updatestat(Maplestat::Value stat);
 
 	private:
 		UIStatsinfo& operator = (const UIStatsinfo&) = delete;

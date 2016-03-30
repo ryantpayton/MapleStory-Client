@@ -263,15 +263,10 @@ namespace Graphics
 		}
 	}
 
-	bool GraphicsGL::available(size_t id)
-	{
-		return offsets.count(id) > 0;
-	}
-
 	void GraphicsGL::addbitmap(const bitmap& bmp)
 	{
 		size_t id = bmp.id();
-		if (locked || available(id))
+		if (locked || offsets.count(id))
 			return;
 
 		GLshort x = 0;
@@ -387,13 +382,21 @@ namespace Graphics
 		Console::get().print("Used: " + std::to_string(usedpercent) + ", wasted: " + std::to_string(wastedpercent));*/
 	}
 
-	void GraphicsGL::draw(size_t id, int16_t x, int16_t y, int16_t w, int16_t h, float alpha,
+	void GraphicsGL::draw(const bitmap& bmp, int16_t x, int16_t y, int16_t w, int16_t h, float alpha,
 		float xscale, float yscale, int16_t centerx, int16_t centery) {
 
-		if (locked || !available(id))
+		if (locked)
 			return;
 
-		Offset offset = offsets[id];
+		size_t id = bmp.id();
+		auto& offiter = offsets.find(id);
+		if (offiter == offsets.end())
+		{
+			addbitmap(bmp);
+			offiter = offsets.find(id);
+		}
+
+		const Offset& offset = offiter->second;
 		int16_t tw = offset.r - offset.l;
 		int16_t th = offset.b - offset.t;
 		int16_t tx = w / tw;

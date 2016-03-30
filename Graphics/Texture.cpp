@@ -40,8 +40,6 @@ namespace Graphics
 			source = src;
 			origin = src["origin"];
 			dimensions = Point<int16_t>(source.width(),  source.height());
-
-			GraphicsGL::get().addbitmap(source);
 		}
 	}
 
@@ -65,12 +63,7 @@ namespace Graphics
 
 		Point<int16_t> absp = args.getpos() - origin;
 
-		GraphicsGL& graphics = GraphicsGL::get();
-		if (!graphics.available(id))
-		{
-			graphics.addbitmap(source);
-		}
-		graphics.draw(id, absp.x(), absp.y(), w, h, args.getalpha(), args.getxscale(),
+		GraphicsGL::get().draw(source, absp.x(), absp.y(), w, h, args.getalpha(), args.getxscale(),
 			args.getyscale(), args.getcenter().x(), args.getcenter().y());
 	}
 

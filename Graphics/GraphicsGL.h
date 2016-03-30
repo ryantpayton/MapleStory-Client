@@ -55,11 +55,9 @@ namespace Graphics
 		void clear();
 
 		// Add a bitmap to the available resources.
-		void addbitmap(const bitmap& toadd);
-		// Return wether the bitmap with the given id is in the resource pool.
-		bool available(size_t id);
-		// Draw the bitmap with the given id and paramters.
-		void draw(size_t id, int16_t x, int16_t y, int16_t tx, int16_t ty, 
+		void addbitmap(const bitmap& bmp);
+		// Draw the bitmap with the given parameters.
+		void draw(const bitmap& bmp, int16_t x, int16_t y, int16_t tx, int16_t ty,
 			float a, float xs, float ys, int16_t cx, int16_t cy);
 
 		// Create a layout for the text with the parameters specified.

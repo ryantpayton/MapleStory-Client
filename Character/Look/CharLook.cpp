@@ -552,7 +552,7 @@ namespace Character
 			{
 				delay += getdelay(stance.get(), frame);
 			}
-			return delay * (no + 1);
+			return delay;
 		}
 	}
 

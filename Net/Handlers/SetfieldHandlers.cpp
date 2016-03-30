@@ -39,7 +39,7 @@ namespace Net
 
 	void stagetransition(uint8_t portalid, int32_t mapid)
 	{
-		float fadestep = 0.2f / Constants::TIMESTEP;
+		float fadestep = 0.025f;
 		Window::get().fadeout(fadestep, [](){
 			Stage::get().reload();
 			UI::get().enable();

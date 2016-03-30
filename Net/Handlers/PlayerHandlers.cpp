@@ -68,11 +68,13 @@ namespace Net
 
 		Player& player = Stage::get().getplayer();
 
+		bool recalculate = false;
 		for (auto it = Maplestat::it(); it.hasnext(); it.increment())
 		{
 			Maplestat::Value stat = it.get();
 			if (Maplestat::compare(stat, updatemask))
 			{
+				bool updatesingle = false;
 				switch (stat)
 				{
 				case Maplestat::SKIN:
@@ -84,9 +86,11 @@ namespace Net
 					break;
 				case Maplestat::LEVEL:
 					player.changelevel(recv.readbyte());
+					updatesingle = true;
 					break;
 				case Maplestat::JOB:
 					player.changejob(recv.readshort());
+					updatesingle = true;
 					break;
 				case Maplestat::EXP:
 					player.getstats().setexp(recv.readint());
@@ -96,10 +100,20 @@ namespace Net
 					break;
 				default:
 					player.getstats().setstat(stat, recv.readshort());
-					player.recalcstats(false);
+					recalculate = true;
 					break;
 				}
+
+				if (updatesingle)
+				{
+					UI::get().withelement(UIElement::STATSINFO, &UIStatsinfo::updatestat, stat);
+				}
 			}
+		}
+
+		if (recalculate)
+		{
+			player.recalcstats(false);
 		}
 
 		UI::get().enable();

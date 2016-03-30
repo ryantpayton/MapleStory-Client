@@ -95,6 +95,10 @@ namespace IO
 		statoffsets[JUMP] = Point<int16_t>(168, 235);
 		statoffsets[HONOR] = Point<int16_t>(73, 353);
 
+		updateall();
+		updatestat(Maplestat::JOB);
+		updatestat(Maplestat::FAME);
+
 		dimension = Point<int16_t>(212, 318);
 		showdetail = false;
 	}
@@ -123,19 +127,24 @@ namespace IO
 		}
 	}
 
-	void UIStatsinfo::update()
+	void UIStatsinfo::updateall()
 	{
-		bool nowap = stats.getstat(Maplestat::AP) > 0;
-		if (hasap ^ nowap)
+		updatesimple(AP, Maplestat::AP);
+		if (hasap ^ (stats.getstat(Maplestat::AP) > 0))
 		{
 			updateap();
 		}
 
 		statlabels[NAME].settext(stats.getname());
-		statlabels[JOB].settext(stats.getjobname());
 		statlabels[GUILD].settext("");
 
-		updatesimple(FAME, Maplestat::FAME);
+		statlabels[HP].settext(std::to_string(stats.getstat(Maplestat::HP)) + " / " + std::to_string(stats.gettotal(Equipstat::HP)));
+		statlabels[MP].settext(std::to_string(stats.getstat(Maplestat::MP)) + " / " + std::to_string(stats.gettotal(Equipstat::MP)));
+
+		updatebasevstotal(STR, Maplestat::STR, Equipstat::STR);
+		updatebasevstotal(DEX, Maplestat::DEX, Equipstat::DEX);
+		updatebasevstotal(INT, Maplestat::INT, Equipstat::INT);
+		updatebasevstotal(LUK, Maplestat::LUK, Equipstat::LUK);
 
 		statlabels[DAMAGE].settext(std::to_string(stats.getmindamage()) + " ~ " + std::to_string(stats.getmaxdamage()));
 		if (stats.isdamagebuffed())
@@ -147,34 +156,34 @@ namespace IO
 			statlabels[DAMAGE].setcolor(Text::LIGHTGREY);
 		}
 
-		statlabels[HP].settext(std::to_string(stats.getstat(Maplestat::HP)) + " / " + std::to_string(stats.gettotal(Equipstat::HP)));
-		statlabels[MP].settext(std::to_string(stats.getstat(Maplestat::MP)) + " / " + std::to_string(stats.gettotal(Equipstat::MP)));
+		updatebuffed(ATTACK, Equipstat::WATK);
+		updatebuffed(WDEF, Equipstat::WDEF);
+		updatebuffed(MDEF, Equipstat::MDEF);
+		updatebuffed(ACCURACY, Equipstat::ACC);
+		updatebuffed(AVOID, Equipstat::AVOID);
 
-		updatesimple(AP, Maplestat::AP);
+		statlabels[CRIT].settext(std::to_string(static_cast<int32_t>(stats.getcritical() * 100)) + "%");
+		statlabels[MINCRIT].settext(std::to_string(static_cast<int32_t>(stats.getmincrit() * 100)) + "%");
+		statlabels[MAXCRIT].settext(std::to_string(static_cast<int32_t>(stats.getmaxcrit() * 100)) + "%");
+		statlabels[BDM].settext(std::to_string(static_cast<int32_t>(stats.getbossdmg() * 100)) + "%");
+		statlabels[IGNOREDEF].settext(std::to_string(static_cast<int32_t>(stats.getignoredef() * 100)) + "%");
+		statlabels[RESIST].settext(std::to_string(static_cast<int32_t>(stats.getresist() * 100)) + "%");
+		statlabels[STANCE].settext(std::to_string(static_cast<int32_t>(stats.getstance() * 100)) + "%");
+		statlabels[SPEED].settext(std::to_string(stats.gettotal(Equipstat::SPEED)) + "%");
+		statlabels[JUMP].settext(std::to_string(stats.gettotal(Equipstat::JUMP)) + "%");
+		statlabels[HONOR].settext(std::to_string(stats.gethonor()));
+	}
 
-		updatebasevstotal(STR, Maplestat::STR, Equipstat::STR);
-		updatebasevstotal(DEX, Maplestat::DEX, Equipstat::DEX);
-		updatebasevstotal(INT, Maplestat::INT, Equipstat::INT);
-		updatebasevstotal(LUK, Maplestat::LUK, Equipstat::LUK);
-
-		if (showdetail)
+	void UIStatsinfo::updatestat(Maplestat::Value stat)
+	{
+		switch (stat)
 		{
-			updatebuffed(ATTACK, Equipstat::WATK);
-			updatebuffed(WDEF, Equipstat::WDEF);
-			updatebuffed(MDEF, Equipstat::MDEF);
-			updatebuffed(ACCURACY, Equipstat::ACC);
-			updatebuffed(AVOID, Equipstat::AVOID);
-
-			statlabels[CRIT].settext(std::to_string(static_cast<int32_t>(stats.getcritical() * 100)) + "%");
-			statlabels[MINCRIT].settext(std::to_string(static_cast<int32_t>(stats.getmincrit() * 100)) + "%");
-			statlabels[MAXCRIT].settext(std::to_string(static_cast<int32_t>(stats.getmaxcrit() * 100)) + "%");
-			statlabels[BDM].settext(std::to_string(static_cast<int32_t>(stats.getbossdmg() * 100)) + "%");
-			statlabels[IGNOREDEF].settext(std::to_string(static_cast<int32_t>(stats.getignoredef() * 100)) + "%");
-			statlabels[RESIST].settext(std::to_string(static_cast<int32_t>(stats.getresist() * 100)) + "%");
-			statlabels[STANCE].settext(std::to_string(static_cast<int32_t>(stats.getstance() * 100)) + "%");
-			statlabels[SPEED].settext(std::to_string(stats.gettotal(Equipstat::SPEED)) + "%");
-			statlabels[JUMP].settext(std::to_string(stats.gettotal(Equipstat::JUMP)) + "%");
-			statlabels[HONOR].settext(std::to_string(stats.gethonor()));
+		case Maplestat::JOB:
+			statlabels[JOB].settext(stats.getjobname());
+			break;
+		case Maplestat::FAME:
+			updatesimple(FAME, Maplestat::FAME);
+			break;
 		}
 	}
 

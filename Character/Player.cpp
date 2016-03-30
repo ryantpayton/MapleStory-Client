@@ -20,6 +20,8 @@
 #include "Constants.h"
 
 #include "Data\DataFactory.h"
+#include "IO\UI.h"
+#include "IO\UITypes\UIStatsinfo.h"
 #include "Net\Packets\GameplayPackets.h"
 #include "Net\Packets\InventoryPackets.h"
 
@@ -114,6 +116,11 @@ namespace Character
 		}
 
 		stats.closetotalstats(weapontype);
+
+		using IO::UI;
+		using IO::UIElement;
+		using IO::UIStatsinfo;
+		UI::get().withelement(UIElement::STATSINFO, &UIStatsinfo::updateall);
 	}
 
 	void Player::changecloth(int16_t slot)

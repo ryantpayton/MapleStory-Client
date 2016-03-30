@@ -113,14 +113,31 @@ int main()
 	if (error == NONE)
 	{
 		Timer::get().start();
-		double elapsed = 0;
+		double elapsed = 0.0;
+		//double invfps = 0.0;
+		//int32_t samples = 0;
 
 		// Run the game as long as the connection is alive.
 		while (Session::get().receive())
 		{
 			// Update game with constant timestep as many times as possible.
-			double elapsedmicro = Timer::get().stop();
-			elapsed += elapsedmicro / 1000;
+			double lastelapsed = Timer::get().stop() / 1000;
+
+			/*if (samples < 1000)
+			{
+				invfps += lastelapsed;
+				samples++;
+			}
+			else
+			{
+				int32_t fps = static_cast<int32_t>((samples * 1000) / invfps);
+				std::cout << "FPS: " << std::to_string(fps) << std::endl;
+					
+				invfps = 0.0;
+				samples = 0;
+			}*/
+
+			elapsed += lastelapsed;
 			while (elapsed >= Constants::TIMESTEP)
 			{
 				update();

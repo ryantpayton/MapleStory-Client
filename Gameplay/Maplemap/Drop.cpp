@@ -44,7 +44,7 @@ namespace Gameplay
 		case 2:
 			state = FLOATING;
 			basey = phobj.crnty();
-			phobj.setflag(PhysicsObject::NOGRAVITY);
+			phobj.type = PhysicsObject::FIXATED;
 			break;
 		case 3:
 			state = PICKEDUP;
@@ -60,7 +60,7 @@ namespace Gameplay
 		if (state == DROPPED && phobj.onground)
 		{
 			phobj.hspeed = 0.0;
-			phobj.setflag(PhysicsObject::NOGRAVITY);
+			phobj.type = PhysicsObject::FIXATED;
 			setposition(dest.x(), dest.y() - 4);
 			state = FLOATING;
 		}
@@ -108,7 +108,7 @@ namespace Gameplay
 			state = PICKEDUP;
 			looter = lt;
 			phobj.vspeed = -4.5f;
-			phobj.clearflag(PhysicsObject::NOGRAVITY);
+			phobj.type = PhysicsObject::NORMAL;
 			break;
 		}
 	}
