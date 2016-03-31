@@ -139,7 +139,7 @@ namespace IO
 					}
 					break;
 				case Keyboard::SPACE:
-					if (belowlimit())
+					if (markerpos > 0 && belowlimit())
 					{
 						text.insert(markerpos, 1, ' ');
 						markerpos++;

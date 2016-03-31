@@ -263,11 +263,12 @@ namespace Graphics
 		}
 	}
 
-	void GraphicsGL::addbitmap(const bitmap& bmp)
+	const GraphicsGL::Offset& GraphicsGL::getoffset(const bitmap& bmp)
 	{
 		size_t id = bmp.id();
-		if (locked || offsets.count(id))
-			return;
+		auto offiter = offsets.find(id);
+		if (offiter != offsets.end())
+			return offiter->second;
 
 		GLshort x = 0;
 		GLshort y = 0;
@@ -275,7 +276,7 @@ namespace Graphics
 		GLshort h = bmp.height();
 
 		if (w <= 0 || h <= 0)
-			return;
+			return nulloffset;
 
 		auto value = Leftover(x, y, w, h);
 		size_t lid = leftovers.findnode(value, [](const Leftover& val, const Leftover& leaf){
@@ -373,13 +374,14 @@ namespace Graphics
 			}
 		}
 
-		glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_BGRA, GL_UNSIGNED_BYTE, bmp.data());
-		offsets[id] = Offset(x, y, w, h);
-
 		/*size_t used = ATLASW * border.y() + border.x() * yrange.second();
 		double usedpercent = static_cast<double>(used) / (ATLASW * ATLASH);
 		double wastedpercent = static_cast<double>(wasted) / used;
 		Console::get().print("Used: " + std::to_string(usedpercent) + ", wasted: " + std::to_string(wastedpercent));*/
+
+		glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_BGRA, GL_UNSIGNED_BYTE, bmp.data());
+		offsets[id] = Offset(x, y, w, h);
+		return offsets[id];
 	}
 
 	void GraphicsGL::draw(const bitmap& bmp, int16_t x, int16_t y, int16_t w, int16_t h, float alpha,
@@ -388,15 +390,7 @@ namespace Graphics
 		if (locked)
 			return;
 
-		size_t id = bmp.id();
-		auto& offiter = offsets.find(id);
-		if (offiter == offsets.end())
-		{
-			addbitmap(bmp);
-			offiter = offsets.find(id);
-		}
-
-		const Offset& offset = offiter->second;
+		const Offset& offset = getoffset(bmp);
 		int16_t tw = offset.r - offset.l;
 		int16_t th = offset.b - offset.t;
 		int16_t tx = w / tw;
@@ -419,10 +413,10 @@ namespace Graphics
 				GLshort top = cyj + static_cast<GLshort>(yscale * (yj - cyj));
 				GLshort bottom = cyj + static_cast<GLshort>(yscale * (yj + th - cyj));
 
-				GLshort tl = std::min(left, right);
-				GLshort tr = std::max(left, right);
-				GLshort tt = std::min(top, bottom) + Constants::VIEWYOFFSET;
-				GLshort tb = std::max(top, bottom) + Constants::VIEWYOFFSET;
+				GLshort tl = left < right ? left : right;
+				GLshort tr = left > right ? left : right;
+				GLshort tt = (top < bottom ? top : bottom) + Constants::VIEWYOFFSET;
+				GLshort tb = (top > bottom ? top : bottom) + Constants::VIEWYOFFSET;
 				if (tr > 0 && tl < Constants::VIEWWIDTH && tb > 0 && tt < Constants::VIEWHEIGHT)
 				{
 					Quad quad = Quad(left, right, top, bottom, offset, 1.0f, 1.0f, 1.0f, alpha);
@@ -434,57 +428,88 @@ namespace Graphics
 
 	Text::Layout GraphicsGL::createlayout(const string& text, Text::Font id, Text::Alignment alignment, int16_t maxwidth)
 	{
-		Text::Layout layout = Text::Layout(alignment);
+		auto builder = LayoutBuilder(fonts[id], alignment, maxwidth);
+
+		const char* p_text = text.c_str();
+		size_t last = text.length();
+		if (last == 0)
+			return Text::Layout();
 
 		size_t first = 0;
 		size_t offset = 0;
-		size_t last = text.length();
-
-		const Font& font = fonts[id];
-
-		int16_t totaladvance = 0;
-		int16_t ax = 0;
-		int16_t ay = font.linespace();
 		while (offset < last)
 		{
 			size_t space = text.find(' ', offset + 1);
 			if (space == string::npos)
 				space = last;
 
-			int16_t width = font.wordwidth(text.c_str(), offset, space);
-			if (ax + width > maxwidth)
-			{
-				layout.addline(ax, ay, first, offset);
-				first = offset;
-
-				ax = 0;
-				ay += font.linespace();
-			}
-
-			for (size_t pos = offset; pos < space; pos++)
-			{
-				char c = text[pos];
-				const Font::Char& ch = font.chars[c];
-
-				layout.advances[pos] = ax;
-
-				if (ax == 0 && c == ' ')
-					continue;
-
-				ax += ch.ax;
-				totaladvance += ch.ax;
-			}
-
+			first = builder.addword(p_text, first, offset, space);
 			offset = space;
 		}
-		layout.addline(ax, ay, first, offset);
 
-		layout.advances[text.length()] = totaladvance;
-		layout.dimensions = Point<int16_t>(std::min(totaladvance, maxwidth), layout.linecount * font.linespace());
+		return builder.finish(first, offset, last);
+	}
+
+
+	GraphicsGL::LayoutBuilder::LayoutBuilder(const Font& f, Text::Alignment a, int16_t mw)
+		: font(f), layout(a), maxwidth(mw) {
+
+		advance = 0;
+		ax = 0;
+		ay = font.linespace();
+	}
+
+	size_t GraphicsGL::LayoutBuilder::addword(const char* text, size_t prev, size_t first, size_t last)
+	{
+		if (first == last)
+			return prev;
+
+		int16_t width = font.wordwidth(text, first, last);
+		if (ax + width > maxwidth)
+		{
+			if (width > maxwidth)
+			{
+				if (last - first == 1)
+				{
+					return last;
+				}
+				else
+				{
+					prev = addword(text, prev, first, last - 1);
+					return addword(text, prev, last - 1, last);
+				}
+			}
+			layout.addline(ax, ay, prev, first);
+			ax = 0;
+			ay += font.linespace();
+		}
+		bool newline = ax == 0;
+
+		for (size_t pos = first; pos < last; pos++)
+		{
+			char c = text[pos];
+			const Font::Char& ch = font.chars[c];
+
+			layout.advances[pos] = ax;
+
+			if (newline && c == ' ')
+				continue;
+
+			ax += ch.ax;
+			advance += ch.ax;
+		}
+		return newline ? first : prev;
+	}
+
+	Text::Layout GraphicsGL::LayoutBuilder::finish(size_t first, size_t last, size_t length)
+	{
+		layout.addline(ax, ay, first, last);
+		layout.advances[length] = advance;
+		layout.dimensions = Point<int16_t>(std::min(advance, maxwidth), layout.linecount * font.linespace());
 		layout.endoffset = Point<int16_t>(ax % maxwidth, (layout.linecount - 1) * font.linespace());
-
 		return layout;
 	}
+
 
 	void GraphicsGL::drawtext(const string& text, const Text::Layout& layout, Text::Font id, Text::Color colorid,
 		Text::Background background, Point<int16_t> origin, float opacity) {

@@ -87,36 +87,25 @@ namespace Gameplay
 
 	void MapObjects::remove(int32_t oid)
 	{
-		Optional<MapObject> mmo = get(oid);
-		if (mmo)
+		auto iter = objects.find(oid);
+		if (iter != objects.end() && iter->second)
 		{
-			int8_t layer = mmo->getlayer();
+			int8_t layer = iter->second->getlayer();
+			objects.erase(iter);
+
 			layers[layer].erase(oid);
-			objects.erase(oid);
 		}
 	}
 
 	Optional<MapObject> MapObjects::get(int32_t oid)
 	{
-		if (objects.count(oid))
-		{
-			return objects.at(oid).get();
-		}
-		else
-		{
-			return nullptr;
-		}
+		auto iter = objects.find(oid);
+		return iter != objects.end() ? iter->second.get() : nullptr;
 	}
 
 	Optional<const MapObject> MapObjects::get(int32_t oid) const
 	{
-		if (objects.count(oid))
-		{
-			return objects.at(oid).get();
-		}
-		else
-		{
-			return nullptr;
-		}
+		auto iter = objects.find(oid);
+		return iter != objects.end() ? iter->second.get() : nullptr;
 	}
 }

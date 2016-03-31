@@ -368,6 +368,7 @@ namespace Character
 			phobj.setx(ldr->getx());
 			phobj.hspeed = 0.0;
 			phobj.vspeed = 0.0;
+			phobj.fhlayer = 7;
 			setstate(ldr->isladder() ? Char::LADDER : Char::ROPE);
 			setflip(false);
 		}

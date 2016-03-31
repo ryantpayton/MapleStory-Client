@@ -27,7 +27,6 @@ namespace IO
 	using std::function;
 	using std::unique_ptr;
 	using std::pair;
-	using Graphics::Texture;
 
 	class Slider
 	{
@@ -37,6 +36,7 @@ namespace IO
 
 		bool isenabled() const;
 		void setenabled(bool enabled);
+		void setrows(int16_t newrow, int16_t unitrows, int16_t rowmax);
 		void setrows(int16_t unitrows, int16_t rowmax);
 		void setvertical(Range<int16_t> vertical);
 
@@ -44,11 +44,15 @@ namespace IO
 		Cursor::State sendcursor(Point<int16_t> cursor, bool pressed);
 
 	private:
+		using Texture = Graphics::Texture;
+
 		Point<int16_t> getthumbpos() const;
 
 		function<void(bool upwards)> onmoved;
 
 		Range<int16_t> vertical;
+		Point<int16_t> start;
+		Point<int16_t> end;
 		int16_t buttonheight;
 		int16_t rowheight;
 		int16_t x;
@@ -57,15 +61,10 @@ namespace IO
 		bool scrolling;
 		bool enabled;
 
-		Point<int16_t> start;
-		Point<int16_t> end;
-
 		Texture dbase;
 		Texture dnext;
 		Texture dprev;
-
 		Texture base;
-
 		unique_ptr<Button> next;
 		unique_ptr<Button> prev;
 		unique_ptr<Button> thumb;

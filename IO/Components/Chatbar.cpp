@@ -23,9 +23,6 @@
 
 #include "nlnx\nx.hpp"
 
-//temporary
-#include "Gameplay\Stage.h"
-
 namespace IO
 {
 	Chatbar::Chatbar(Point<int16_t> pos)
@@ -75,20 +72,18 @@ namespace IO
 			), 0);
 		chatfield.setstate(chatopen ? Textfield::NORMAL : Textfield::DISABLED);
 		chatfield.setonreturn([&](string msg) {
-			// temporary
-			if (msg[0] == 's')
+
+			size_t last = msg.find_last_not_of(' ');
+			if (last != string::npos)
 			{
-				int32_t id = std::stoi(msg.substr(1));
-				Gameplay::Stage::get().sendkey(Keyboard::SKILL, id, true);
-			}
-			else
-			{
+				msg.erase(last + 1);
+
 				using Net::GeneralChatPacket;
 				GeneralChatPacket(msg, true).dispatch();
-			}
 
-			lastentered.push_back(msg);
-			lastpos = lastentered.size();
+				lastentered.push_back(msg);
+				lastpos = lastentered.size();
+			}
 		});
 		chatfield.setkey(Keyboard::UP, [&](){
 			if (lastpos > 0)
@@ -190,8 +185,8 @@ namespace IO
 
 	bool Chatbar::isinrange(Point<int16_t> cursorpos) const
 	{
-		auto absp = Point<int16_t>(0, getchattop());
-		auto dim = Point<int16_t>(500, chatrows * CHATROWHEIGHT + CHATYOFFSET);
+		auto absp = Point<int16_t>(0, getchattop() - 16);
+		auto dim = Point<int16_t>(500, chatrows * CHATROWHEIGHT + CHATYOFFSET + 16);
 		return rectangle2d<int16_t>(absp, absp + dim).contains(cursorpos);
 	}
 
@@ -227,19 +222,19 @@ namespace IO
 			if (clicking)
 			{
 				int16_t ydelta = cursorpos.y() - getchattop();
-				while (ydelta > 0)
+				while (ydelta > 0 && chatrows > MINCHATROWS)
 				{
 					chatrows--;
 					ydelta -= CHATROWHEIGHT;
 				}
-				while (ydelta < 0)
+				while (ydelta < 0 && chatrows < MAXCHATROWS)
 				{
 					chatrows++;
 					ydelta += CHATROWHEIGHT;
 				}
 				chatbox.setheight(1 + chatrows * CHATROWHEIGHT);
+				slider->setrows(rowpos, chatrows, rowmax);
 				slider->setvertical(Range<int16_t>(0, CHATROWHEIGHT * chatrows - 14));
-				slider->setrows(chatrows, rowmax);
 				return Cursor::CLICKING;
 			}
 			else
@@ -268,7 +263,7 @@ namespace IO
 		rowmax++;
 		rowpos = rowmax;
 
-		slider->setrows(chatrows, rowmax);
+		slider->setrows(rowpos, chatrows, rowmax);
 
 		Text::Color color;
 		switch (type)

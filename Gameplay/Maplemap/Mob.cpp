@@ -474,6 +474,8 @@ namespace Gameplay
 			result.push_back(singledamage);
 		}
 
+		updatemovement();
+
 		return result;
 	}
 

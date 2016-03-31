@@ -39,6 +39,9 @@ namespace Graphics
 
 	void Text::settext(const string& t, uint16_t maxwidth)
 	{
+		if (text == t)
+			return;
+
 		text = string(t);
 		if (text.size() > 0)
 		{

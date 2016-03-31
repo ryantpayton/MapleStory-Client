@@ -54,8 +54,6 @@ namespace Graphics
 		// Clear all bitmaps if most of the space is used up.
 		void clear();
 
-		// Add a bitmap to the available resources.
-		void addbitmap(const bitmap& bmp);
 		// Draw the bitmap with the given parameters.
 		void draw(const bitmap& bmp, int16_t x, int16_t y, int16_t tx, int16_t ty,
 			float a, float xs, float ys, int16_t cx, int16_t cy);
@@ -108,6 +106,8 @@ namespace Graphics
 				b = 0;
 			}
 		};
+		// Add a bitmap to the available resources.
+		const Offset& getoffset(const bitmap& bmp);
 
 		struct Leftover
 		{
@@ -214,6 +214,25 @@ namespace Graphics
 			{
 				return static_cast<int16_t>(height * 1.35 + 1);
 			}
+		};
+
+		class LayoutBuilder
+		{
+		public:
+			LayoutBuilder(const Font& font, Text::Alignment alignment, int16_t maxwidth);
+
+			size_t addword(const char* text, size_t prev, size_t first, size_t last);
+			Text::Layout finish(size_t first, size_t last, size_t length);
+
+		private:
+			LayoutBuilder& operator = (const LayoutBuilder&) = delete;
+
+			const Font& font;
+			Text::Layout layout;
+			int16_t maxwidth;
+			int16_t advance;
+			int16_t ax;
+			int16_t ay;
 		};
 
 		static const GLshort ATLASW = 10000;

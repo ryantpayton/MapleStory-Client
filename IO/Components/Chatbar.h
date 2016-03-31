@@ -80,6 +80,11 @@ namespace IO
 	private:
 		int16_t getchattop() const;
 
+		static const int16_t CHATYOFFSET = 65;
+		static const int16_t CHATROWHEIGHT = 16;
+		static const int16_t MAXCHATROWS = 16;
+		static const int16_t MINCHATROWS = 1;
+
 		Textfield chatfield;
 		Texture chatspace[2];
 		Texture chattargets[NUM_TARGETS];
@@ -95,9 +100,6 @@ namespace IO
 		size_t lastpos;
 
 		unordered_map<int16_t, Text> rowtexts;
-
-		static const int16_t CHATYOFFSET = 65;
-		static const int16_t CHATROWHEIGHT = 16;
 		Rectangle chatbox;
 		int16_t chatrows;
 		int16_t rowpos;

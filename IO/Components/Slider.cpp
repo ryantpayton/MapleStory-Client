@@ -40,8 +40,8 @@ namespace IO
 		node esrc = src["enabled"];
 		base = esrc["base"];
 
-		next = unique_ptr<Button>(new TwoSpriteButton(esrc["next0"], esrc["next1"], end));
 		prev = unique_ptr<Button>(new TwoSpriteButton(esrc["prev0"], esrc["prev1"], start));
+		next = unique_ptr<Button>(new TwoSpriteButton(esrc["next0"], esrc["next1"], end));
 		thumb = unique_ptr<Button>(new TwoSpriteButton(esrc["thumb0"], esrc["thumb1"]));
 
 		buttonheight = dnext.getdimensions().y();
@@ -62,7 +62,7 @@ namespace IO
 		enabled = en;
 	}
 
-	void Slider::setrows(int16_t ur, int16_t rm)
+	void Slider::setrows(int16_t nr, int16_t ur, int16_t rm)
 	{
 		rowmax = rm - ur;
 		if (rowmax > 0)
@@ -73,7 +73,12 @@ namespace IO
 		{
 			rowheight = 0;
 		}
-		row = 0;
+		row = nr;
+	}
+
+	void Slider::setrows(int16_t ur, int16_t rm)
+	{
+		setrows(0, ur, rm);
 	}
 
 	void Slider::setvertical(Range<int16_t> ver)
@@ -81,7 +86,16 @@ namespace IO
 		vertical = ver;
 		start = Point<int16_t>(x, vertical.first());
 		end = Point<int16_t>(x, vertical.second());
-		rowheight = (vertical.length() - buttonheight * 2) / rowmax;
+		prev->setposition(start);
+		next->setposition(end);
+		if (rowmax > 0)
+		{
+			rowheight = (vertical.length() - buttonheight * 2) / rowmax;
+		}
+		else
+		{
+			rowheight = 0;
+		}
 	}
 
 	void Slider::draw(Point<int16_t> position) const
@@ -91,17 +105,15 @@ namespace IO
 		using Graphics::DrawArgument;
 		if (enabled)
 		{
-			base.draw(DrawArgument(start + position, fill));
+			base.draw(DrawArgument(position + start, fill));
 			if (rowheight > 0)
-			{
-				thumb->draw(getthumbpos() + position);
-			}
+				thumb->draw(position + getthumbpos());
 			prev->draw(position);
 			next->draw(position);
 		}
 		else
 		{
-			dbase.draw(DrawArgument(start + position, fill));
+			dbase.draw(DrawArgument(position + start, fill));
 			dprev.draw(position);
 			dnext.draw(position);
 		}

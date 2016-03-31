@@ -23,17 +23,11 @@
 #include "IO\Components\Bar.h"
 #include "IO\Components\Textfield.h"
 #include "Character\CharStats.h"
-#include "Character\Inventory\Inventory.h"
 #include "Graphics\Animation.h"
 #include "Graphics\Text.h"
 
 namespace IO
 {
-	using Character::CharStats;
-	using Character::Inventory;
-	using Graphics::Text;
-	using Graphics::Animation;
-
 	class UIStatusbar : public UIElement
 	{
 	public:
@@ -65,6 +59,10 @@ namespace IO
 		void displaymessage(Messages::Type line, Chatbar::LineType type);
 
 	private:
+		using Animation = Graphics::Animation;
+		using CharStats = Character::CharStats;
+		using Text = Graphics::Text;
+
 		UIStatusbar& operator = (const UIStatusbar&) = delete;
 
 		float getexppercent() const;

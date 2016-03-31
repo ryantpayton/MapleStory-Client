@@ -35,28 +35,28 @@ namespace IO
 	{
 		node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
 
-		sprites.push_back(Sprite(mainbar["backgrnd"]));
-		sprites.push_back(Sprite(mainbar["gaugeBackgrd"]));
-		sprites.push_back(Sprite(mainbar["notice"]));
-		sprites.push_back(Sprite(mainbar["lvBacktrnd"]));
-		sprites.push_back(Sprite(mainbar["lvCover"]));
+		sprites.push_back(mainbar["backgrnd"]);
+		sprites.push_back(mainbar["gaugeBackgrd"]);
+		sprites.push_back(mainbar["notice"]);
+		sprites.push_back(mainbar["lvBacktrnd"]);
+		sprites.push_back(mainbar["lvCover"]);
 
 		expbar = Bar(
-			Texture(mainbar.resolve("gauge/exp/0")), 
-			Texture(mainbar.resolve("gauge/exp/1")), 
-			Texture(mainbar.resolve("gauge/exp/2")), 
+			mainbar.resolve("gauge/exp/0"), 
+			mainbar.resolve("gauge/exp/1"), 
+			mainbar.resolve("gauge/exp/2"), 
 			308, getexppercent()
 			);
 		hpbar = Bar(
-			Texture(mainbar.resolve("gauge/hp/0")), 
-			Texture(mainbar.resolve("gauge/hp/1")), 
-			Texture(mainbar.resolve("gauge/hp/2")), 
+			mainbar.resolve("gauge/hp/0"), 
+			mainbar.resolve("gauge/hp/1"), 
+			mainbar.resolve("gauge/hp/2"), 
 			137, gethppercent()
 			);
 		mpbar = Bar(
-			Texture(mainbar.resolve("gauge/mp/0")), 
-			Texture(mainbar.resolve("gauge/mp/1")), 
-			Texture(mainbar.resolve("gauge/mp/2")), 
+			mainbar.resolve("gauge/mp/0"), 
+			mainbar.resolve("gauge/mp/1"), 
+			mainbar.resolve("gauge/mp/2"), 
 			137, getmppercent()
 			);
 
@@ -106,19 +106,19 @@ namespace IO
 		string expstring = std::to_string(100 * getexppercent());
 		statset.draw(
 			std::to_string(currentexp) + "[" + expstring.substr(0, expstring.find('.') + 3) + "%]",
-			DrawArgument(position + Point<int16_t>(47, -13))
+			position + Point<int16_t>(47, -13)
 			);
 		statset.draw(
 			"[" + std::to_string(currenthp) + "/" + std::to_string(maxhp) + "]",
-			DrawArgument(position + Point<int16_t>(-124, -29))
+			position + Point<int16_t>(-124, -29)
 			);
 		statset.draw(
 			"[" + std::to_string(currentmp) + "/" + std::to_string(maxmp) + "]",
-			DrawArgument(position + Point<int16_t>(47, -29))
+			position + Point<int16_t>(47, -29)
 			);
 		levelset.draw(
 			std::to_string(stats.getstat(Maplestat::LEVEL)),
-			DrawArgument(position + Point<int16_t>(-480, -24))
+			position + Point<int16_t>(-480, -24)
 			);
 
 		joblabel.draw(position + Point<int16_t>(-435, -21));
