@@ -25,10 +25,12 @@
 namespace IO
 {
 	BuffIcon::BuffIcon(int32_t buff, int32_t dur)
-	{
+		: cover(IconCover::BUFF, dur - FLASH_TIME) {
+
 		buffid = buff;
 		duration = dur;
 		opacity.set(1.0f);
+		opcstep = -0.05f;
 
 		if (buffid >= 0)
 		{
@@ -43,7 +45,8 @@ namespace IO
 		}
 	}
 
-	BuffIcon::BuffIcon() {}
+	BuffIcon::BuffIcon()
+		: cover(IconCover::BUFF, 0) {}
 
 	BuffIcon::~BuffIcon() {}
 
@@ -51,18 +54,27 @@ namespace IO
 	{
 		using Graphics::DrawArgument;
 		icon.draw(DrawArgument(position, opacity.get(alpha)));
+		cover.draw(position + Point<int16_t>(1, -31), alpha);
 	}
 
 	bool BuffIcon::update()
 	{
-		duration -= Constants::TIMESTEP;
-		if (duration < 160)
+		if (duration <= FLASH_TIME)
 		{
-			opacity -= 0.05f;
-			if (opacity.last() <= 0.05f)
-				return true;
+			opacity += opcstep;
+
+			bool fadedout = opcstep < 0.0f && opacity.last() <= 0.0f;
+			bool fadedin = opcstep > 0.0f && opacity.last() >= 1.0f;
+			if (fadedout || fadedin)
+				opcstep = -opcstep;
 		}
-		return false;
+		else
+		{
+			cover.update();
+		}
+
+		duration -= Constants::TIMESTEP;
+		return duration < Constants::TIMESTEP;
 	}
 
 

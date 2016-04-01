@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,67 +15,68 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
+#include "IconCover.h"
 #include "Constants.h"
-#include "Graphics\Texture.h"
-#include "IO\Element.h"
-#include "IO\Components\IconCover.h"
-#include <unordered_map>
 
 namespace IO
 {
-	using std::unordered_map;
-
-	class BuffIcon
+	IconCover::IconCover(Type t, int32_t duration)
 	{
-	public:
-		BuffIcon(int32_t buff, int32_t dur);
-		BuffIcon();
-		~BuffIcon();
+		using Graphics::Geometry;
+		cover = Rectangle(30, 30, Geometry::BLACK, 0.6f);
 
-		void draw(Point<int16_t> position, float alpha) const;
-		bool update();
-
-	private:
-		using Texture = Graphics::Texture;
-
-		static const uint16_t FLASH_TIME = 3000;
-
-		Texture icon;
-		IconCover cover;
-		int32_t buffid;
-		int32_t duration;
-		Linear<float> opacity;
-		float opcstep;
-	};
-
-
-	class UIBuffList : public UIElement
-	{
-	public:
-		UIBuffList();
-
-		void draw(float inter) const override;
-		void update() override;
-		Cursor::State sendmouse(bool pressed, Point<int16_t> position) override;
-
-		void addbuff(int32_t buffid, int32_t duration);
-
-	private:
-		unordered_map<int32_t, BuffIcon> icons;
-	};
-
-
-	class ElementBuffList : public Element
-	{
-		UIElement::Type type() const override
+		if (duration <= Constants::TIMESTEP)
 		{
-			return UIElement::BUFFLIST;
+			scalestep = 1.0f;
+		}
+		else
+		{
+			scalestep = Constants::TIMESTEP * 1.0f / duration;
 		}
 
-		UIElement* instantiate() const override
+		type = t;
+		switch (type)
 		{
-			return new UIBuffList();
+		case BUFF:
+			yscale.set(0.0f);
+			break;
+		case COOLDOWN:
+			yscale.set(1.0f);
+			break;
 		}
-	};
+	}
+
+	void IconCover::draw(Point<int16_t> position, float alpha) const
+	{
+		float interyscale = yscale.get(alpha);
+		auto interheight = static_cast<int16_t>(30 * interyscale);
+		if (interheight == 0)
+			return;
+
+		using Graphics::DrawArgument;
+		cover.draw(DrawArgument(position + Point<int16_t>(0, 30 - interheight), Point<int16_t>(30, interheight)));
+	}
+
+	void IconCover::update()
+	{
+		switch (type)
+		{
+		case BUFF:
+			yscale += scalestep;
+			if (yscale.last() >= 1.0f)
+			{
+				yscale.set(1.0f);
+				scalestep = 0.0f;
+			}
+			break;
+		case COOLDOWN:
+			yscale -= scalestep;
+			if (yscale.last() <= 0.0f)
+			{
+				yscale.set(0.0f);
+				scalestep = 0.0f;
+			}
+			break;
+		}
+	}
 }

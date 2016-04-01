@@ -24,15 +24,13 @@ namespace IO
 	{
 		auto& tag = textures[selected];
 
-		int16_t tagwidth = tag[1].width();
 		int16_t width = name.width();
-		int16_t advance = (width / tagwidth) * tagwidth;
-		auto startpos = position - Point<int16_t>(8 + advance / 2, -2);
+		auto startpos = position - Point<int16_t>(8 + width / 2, -2);
 
 		using::Graphics::DrawArgument;
 		tag[0].draw(startpos);
 		tag[1].draw(DrawArgument(startpos + Point<int16_t>(8, 0), Point<int16_t>(width, 0)));
-		tag[2].draw(DrawArgument(startpos + Point<int16_t>(advance + 8, 0)));
+		tag[2].draw(DrawArgument(startpos + Point<int16_t>(width + 8, 0)));
 
 		name.draw(position);
 	}

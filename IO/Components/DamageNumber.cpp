@@ -23,7 +23,7 @@
 
 namespace IO
 {
-	DamageNumber::DamageNumber(Type t, int32_t damage, Point<int16_t> pos)
+	DamageNumber::DamageNumber(Type t, int32_t damage, int16_t starty)
 	{
 		type = t;
 
@@ -68,10 +68,9 @@ namespace IO
 			miss = true;
 		}
 
-		opacity.set(1.5f);
-		moveobj.setx(pos.x());
-		moveobj.sety(pos.y());
+		moveobj.sety(starty);
 		moveobj.vspeed = -0.25;
+		opacity.set(1.5f);
 	}
 
 	DamageNumber::DamageNumber() {}
@@ -155,6 +154,11 @@ namespace IO
 		}
 	}
 
+	void DamageNumber::setx(int16_t headx)
+	{
+		moveobj.setx(headx);
+	}
+
 	bool DamageNumber::update()
 	{
 		moveobj.move();
@@ -162,6 +166,11 @@ namespace IO
 		return opacity.last() <= 0.0f;
 	}
 
+
+	int16_t DamageNumber::rowheight(bool critical)
+	{
+		return critical ? 36 : 30;
+	}
 
 	void DamageNumber::init()
 	{

@@ -77,11 +77,14 @@ namespace Gameplay
 			}
 			level.chance = sub["prop"];
 			if (level.chance <= 0.0f)
-				level.chance = 100;
+				level.chance = 100.0f;
 			level.chance /= 100;
 			level.hpcost = sub["hpCon"];
 			level.mpcost = sub["mpCon"];
 			level.hrange = sub["range"];
+			if (level.hrange <= 0.0f)
+				level.hrange = 100.0f;
+			level.hrange /= 100;
 			level.range = sub;
 			level.overriderange = !level.range.empty();
 
@@ -222,6 +225,7 @@ namespace Gameplay
 			attack.critical += level->critical;
 			attack.ignoredef += level->ignoredef;
 			attack.mobcount = level->mobcount;
+			attack.hrange = level->hrange;
 
 			switch (attack.type)
 			{

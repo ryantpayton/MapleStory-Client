@@ -93,6 +93,7 @@ namespace Gameplay
 		dying = false;
 		dead = false;
 		fading = false;
+		awaitdeath = false;
 		setstance(st);
 		flydirection = STRAIGHT;
 		counter = 0;
@@ -388,6 +389,8 @@ namespace Gameplay
 			break;
 		case 1:
 			dying = true;
+			if (awaitdeath)
+				applydeath();
 			break;
 		case 2:
 			fading = true;
@@ -475,6 +478,7 @@ namespace Gameplay
 		}
 
 		updatemovement();
+		awaitdeath = false;
 
 		return result;
 	}
@@ -513,16 +517,16 @@ namespace Gameplay
 	vector<DamageNumber> Mob::placenumbers(vector<pair<int32_t, bool>> damagelines) const
 	{
 		vector<DamageNumber> numbers;
-		Point<int16_t> head = getheadpos(getposition());
+		int16_t head = getheadpos(getposition()).y();
 		for (size_t i = 0; i < damagelines.size(); i++)
 		{
 			int32_t amount = damagelines[i].first;
 			bool critical = damagelines[i].second;
-			DamageNumber::Type type = critical ? DamageNumber::CRITICAL : DamageNumber::NORMAL;
-			numbers.push_back(DamageNumber(type, amount, head));
+			auto type = critical ? DamageNumber::CRITICAL : DamageNumber::NORMAL;
+			auto number = DamageNumber(type, amount, head);
+			numbers.push_back(number);
 
-			int16_t vspace = critical ? 36 : 30;
-			head.shifty(-vspace);
+			head -= DamageNumber::rowheight(critical);
 		}
 		return numbers;
 	}
@@ -533,8 +537,7 @@ namespace Gameplay
 
 		if (dying && stance != DIE)
 		{
-			setstance(DIE);
-			diesound.play();
+			applydeath();
 		}
 		else if (control && isalive() && damage >= knockback)
 		{
@@ -543,7 +546,15 @@ namespace Gameplay
 			setstance(HIT);
 
 			updatemovement();
+			awaitdeath = true;
 		}
+	}
+
+	void Mob::applydeath()
+	{
+		setstance(DIE);
+		diesound.play();
+		dying = true;
 	}
 
 	bool Mob::isalive() const

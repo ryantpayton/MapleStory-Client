@@ -39,7 +39,7 @@ namespace Gameplay
 		void sendmobhp(int32_t oid, int8_t percent, uint16_t playerlevel);
 		void setcontrol(int32_t oid, bool control);
 
-		AttackResult sendattack(Attack attack);
+		AttackResult sendattack(const Attack& attack);
 		void showresult(const Char& user, const SpecialMove& skill, const AttackResult& result);
 
 	private:

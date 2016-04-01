@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,52 +15,32 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Charset.h"
-#include "Gameplay\Physics\PhysicsObject.h"
+#include "Graphics\Geometry.h"
 #include "Util\Interpolated.h"
-#include "Util\Point.h"
 
 namespace IO
 {
-	using std::pair;
-	using Gameplay::MovingObject;
-
-	class DamageNumber
+	// A transparent rectangle with icon size (30x30).
+	class IconCover
 	{
 	public:
-		static const size_t NUM_TYPES = 3;
 		enum Type
 		{
-			NORMAL,
-			CRITICAL,
-			TOPLAYER
+			BUFF,
+			COOLDOWN
 		};
 
-		DamageNumber(Type type, int32_t damage, int16_t starty);
-		DamageNumber();
-		~DamageNumber();
+		IconCover(Type type, int32_t duration);
 
-		void draw(Point<int16_t> parentpos, float alpha) const;
-		void setx(int16_t headx);
-		bool update();
-
-		static int16_t rowheight(bool critical);
-		static void init();
+		void draw(Point<int16_t> position, float alpha) const;
+		void update();
 
 	private:
-		int16_t getadvance(char c, bool first) const;
+		using Rectangle = Graphics::Rectangle;
 
+		Rectangle cover;
+		Linear<float> yscale;
+		float scalestep;
 		Type type;
-		bool miss;
-		bool multiple;
-		int8_t firstnum;
-		string restnum;
-		int16_t shift;
-		MovingObject moveobj;
-		Linear<float> opacity;
-
-		static pair<Charset, Charset> charsets[NUM_TYPES];
 	};
 }
-

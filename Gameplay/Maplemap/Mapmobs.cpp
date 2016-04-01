@@ -104,7 +104,7 @@ namespace Gameplay
 		}
 	}
 
-	AttackResult MapMobs::sendattack(Attack attack)
+	AttackResult MapMobs::sendattack(const Attack& attack)
 	{
 		uint8_t mobcount = attack.mobcount;
 		Point<int16_t> origin = attack.origin;
@@ -114,14 +114,16 @@ namespace Gameplay
 		{
 		case Attack::TOLEFT:
 			range = rectangle2d<int16_t>(
-				range.getlt() + origin,
-				range.getrb() + origin
+				origin.x() + static_cast<int16_t>(range.l() * attack.hrange),
+				origin.x() + range.r(),
+				origin.y() + range.t(),
+				origin.y() + range.b()
 				);
 			break;
 		case Attack::TORIGHT:
 			range = rectangle2d<int16_t>(
 				origin.x() - range.r(),
-				origin.x() - range.l(),
+				origin.x() - static_cast<int16_t>(range.l() * attack.hrange),
 				origin.y() + range.t(),
 				origin.y() + range.b()
 				);
@@ -210,12 +212,15 @@ namespace Gameplay
 
 	void MapMobs::applyeffect(const DamageEffect& effect)
 	{
-		damagenumbers.push_back(effect.getnumber());
-
 		Optional<Mob> mob = getmob(effect.gettarget());
 		if (mob)
 		{
 			effect.apply(*mob);
+
+			DamageNumber number = effect.getnumber();
+			Point<int16_t> head = mob->getheadpos();
+			number.setx(head.x());
+			damagenumbers.push_back(number);
 		}
 	}
 

@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "DrawArgument.h"
 #include "Util\Point.h"
 #include <cstdint>
 
@@ -55,7 +56,7 @@ namespace Graphics
 		void setcolor(Geometry::Color color);
 		void setopacity(float opacity);
 
-		void draw(Point<int16_t> position) const;
+		void draw(const DrawArgument& args) const;
 
 	private:
 		int16_t width;

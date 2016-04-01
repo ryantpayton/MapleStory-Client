@@ -127,6 +127,7 @@ namespace Gameplay
 			return directions[index];
 		}
 
+		void applydeath();
 		void updatemovement();
 		void setstance(uint8_t stancebyte);
 		void setstance(Stance newstance);
@@ -175,6 +176,7 @@ namespace Gameplay
 		int8_t team;
 		bool dying;
 		bool dead;
+		bool awaitdeath;
 		bool control;
 		bool aggro;
 		Stance stance;

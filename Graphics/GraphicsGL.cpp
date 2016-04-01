@@ -236,8 +236,8 @@ namespace Graphics
 
 		glBindTexture(GL_TEXTURE_2D, atlas);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		clearinternal();
 	}
@@ -390,39 +390,20 @@ namespace Graphics
 		if (locked)
 			return;
 
-		const Offset& offset = getoffset(bmp);
-		int16_t tw = offset.r - offset.l;
-		int16_t th = offset.b - offset.t;
-		int16_t tx = w / tw;
-		int16_t ty = h / th;
-		if (tx <= 0 || xscale != 1.0f)
-			tx = 1;
-		if (ty <= 0 || yscale != 1.0f)
-			ty = 1;
-		for (int16_t i = 0; i < tx; i++)
+		GLshort left = centerx + static_cast<GLshort>(xscale * (x - centerx));
+		GLshort right = centerx + static_cast<GLshort>(xscale * (x + w - centerx));
+		GLshort top = centery + static_cast<GLshort>(yscale * (y - centery));
+		GLshort bottom = centery + static_cast<GLshort>(yscale * (y + h - centery));
+
+		GLshort tl = left < right ? left : right;
+		GLshort tr = left > right ? left : right;
+		GLshort tt = (top < bottom ? top : bottom) + Constants::VIEWYOFFSET;
+		GLshort tb = (top > bottom ? top : bottom) + Constants::VIEWYOFFSET;
+		if (tr > 0 && tl < Constants::VIEWWIDTH && tb > 0 && tt < Constants::VIEWHEIGHT)
 		{
-			for (int16_t j = 0; j < ty; j++)
-			{
-				GLshort xi = x + tw * i;
-				GLshort yj = y + th * j;
-				GLshort cxi = centerx + tw * i;
-				GLshort cyj = centery + th * j;
-
-				GLshort left = cxi + static_cast<GLshort>(xscale * (xi - cxi));
-				GLshort right = cxi + static_cast<GLshort>(xscale * (xi + tw - cxi));
-				GLshort top = cyj + static_cast<GLshort>(yscale * (yj - cyj));
-				GLshort bottom = cyj + static_cast<GLshort>(yscale * (yj + th - cyj));
-
-				GLshort tl = left < right ? left : right;
-				GLshort tr = left > right ? left : right;
-				GLshort tt = (top < bottom ? top : bottom) + Constants::VIEWYOFFSET;
-				GLshort tb = (top > bottom ? top : bottom) + Constants::VIEWYOFFSET;
-				if (tr > 0 && tl < Constants::VIEWWIDTH && tb > 0 && tt < Constants::VIEWHEIGHT)
-				{
-					Quad quad = Quad(left, right, top, bottom, offset, 1.0f, 1.0f, 1.0f, alpha);
-					quads.push_back(quad);
-				}
-			}
+			const Offset& offset = getoffset(bmp);
+			Quad quad = Quad(left, right, top, bottom, offset, 1.0f, 1.0f, 1.0f, alpha);
+			quads.push_back(quad);
 		}
 	}
 
@@ -464,9 +445,12 @@ namespace Graphics
 		if (first == last)
 			return prev;
 
-		int16_t width = font.wordwidth(text, first, last);
-		if (ax + width > maxwidth)
+		int16_t width = 0;
+		for (size_t i = first; i < last; i++)
 		{
+			char c = text[i];
+			width += font.chars[c].ax;
+
 			if (width > maxwidth)
 			{
 				if (last - first == 1)
@@ -475,10 +459,14 @@ namespace Graphics
 				}
 				else
 				{
-					prev = addword(text, prev, first, last - 1);
-					return addword(text, prev, last - 1, last);
+					prev = addword(text, prev, first, i);
+					return addword(text, prev, i, last);
 				}
 			}
+		}
+		
+		if (ax + width > maxwidth)
+		{
 			layout.addline(ax, ay, prev, first);
 			ax = 0;
 			ay += font.linespace();

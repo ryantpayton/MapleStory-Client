@@ -69,9 +69,19 @@ namespace Graphics
 		opacity = o;
 	}
 
-	void Rectangle::draw(Point<int16_t> position) const
+	void Rectangle::draw(const DrawArgument& args) const
 	{
-		Geometry::draw(position.x(), position.y(), width, height, color, opacity);
+		Point<int16_t> absp = args.getpos();
+		int16_t absw = args.getstretch().x();
+		if (absw == 0)
+			absw = width;
+		int16_t absh = args.getstretch().y();
+		if (absh == 0)
+			absh = height;
+		absw = static_cast<int16_t>(absw * args.getxscale());
+		absh = static_cast<int16_t>(absh * args.getyscale());
+		float absopc = opacity * args.getalpha();
+		Geometry::draw(absp.x(), absp.y(), absw, absh, color, absopc);
 	}
 
 
