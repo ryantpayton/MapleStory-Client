@@ -63,12 +63,10 @@ namespace Net
 		MOVE_ITEM = 71,
 		USE_ITEM = 72,
 		SCROLL_EQUIP = 86,
+		SPEND_AP = 87,
 
 		// Skill
 		USE_SKILL = 91,
-
-		// Player
-		SPEND_AP = 87,
 
 		// Gameplay 2
 		MOVE_MONSTER = 188,

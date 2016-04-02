@@ -27,16 +27,9 @@ namespace Audio
 {
 	using nl::audio;
 
-	Sound::Sound(Sound::Name name)
+	Sound::Sound(Name name)
 	{
-		if (soundids.count(name))
-		{
-			id = soundids.at(name);
-		}
-		else
-		{
-			id = 0;
-		}
+		id = soundids[name];
 	}
 
 	Sound::Sound(node src)
@@ -118,7 +111,7 @@ namespace Audio
 		}
 	}
 
-	void Sound::addsound(Sound::Name name, node src)
+	void Sound::addsound(Name name, node src)
 	{
 		size_t id = addsound(src);
 		if (id)
@@ -127,7 +120,7 @@ namespace Audio
 		}
 	}
 	unordered_map<size_t, uint64_t> Sound::samples;
-	unordered_map<Sound::Name, size_t> Sound::soundids;
+	EnumMap<Sound::Name, size_t> Sound::soundids;
 
 
 	Music::Music(string p)

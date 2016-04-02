@@ -64,6 +64,10 @@ namespace Gameplay
 		void queuespawn(const Spawn* spawn);
 		// Show an attack.
 		void showattack(int32_t cid, const AttackResult& attack);
+		// Show a buff effect.
+		void showbuff(int32_t cid, int32_t skillid, int8_t level);
+		// Show a buff effect.
+		void showplayerbuff(int32_t skillid);
 
 		// Send key input to the stage.
 		void sendkey(Keyboard::Keytype keytype, int32_t keycode, bool pressed);

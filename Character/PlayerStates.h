@@ -38,6 +38,8 @@ namespace Character
 		virtual void nextstate(Player& player) const = 0;
 
 	protected:
+		using PhysicsObject = Gameplay::PhysicsObject;
+
 		// Play the jumping sound.
 		void playjumpsound() const;
 	};

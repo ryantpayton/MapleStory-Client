@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Character\Look\Weapon.h"
+#include "Util\EnumMap.h"
 #include <string>
 
 namespace IO
@@ -26,7 +27,6 @@ namespace IO
 	class Messages
 	{
 	public:
-		static const size_t LENGTH = 9;
 		enum Type
 		{
 			// Cannot use a skill
@@ -40,7 +40,8 @@ namespace IO
 			// Scrolling result
 			SCROLL_SUCCESS,
 			SCROLL_FAILURE,
-			SCROLL_DESTROYED
+			SCROLL_DESTROYED,
+			LENGTH
 		};
 
 		Messages();
@@ -48,7 +49,7 @@ namespace IO
 		string stringfor(Type type);
 
 	private:
-		string messages[LENGTH];
+		EnumMap<Type, string> messages;
 	};
 
 	class InChatMessage

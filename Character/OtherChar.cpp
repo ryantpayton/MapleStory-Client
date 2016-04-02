@@ -69,9 +69,13 @@ namespace Character
 		movements = newmoves;
 	}
 
-	void OtherChar::updatestats(int32_t skillid, uint8_t skilllevel, uint8_t as)
+	void OtherChar::updateskill(int32_t skillid, uint8_t skilllevel)
 	{
 		skilllevels[skillid] = skilllevel;
+	}
+
+	void OtherChar::updateattack(uint8_t as)
+	{
 		attackspeed = as;
 	}
 

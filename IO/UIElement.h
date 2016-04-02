@@ -17,17 +17,19 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Cursor.h"
-#include "Graphics\Sprite.h"
+
 #include "Components\Button.h"
 #include "Components\Icon.h"
-#include "Util\Optional.h"
+#include "Graphics\Sprite.h"
+
+#include <map>
 #include <memory>
 
 namespace IO
 {
 	using std::vector;
+	using std::map;
 	using std::unique_ptr;
-	using Graphics::Sprite;
 
 	// Base class for all types of user interfaces on screen.
 	class UIElement
@@ -73,6 +75,8 @@ namespace IO
 		virtual Cursor::State sendmouse(bool clicked, Point<int16_t> cursorpos);
 
 	protected:
+		using Sprite = Graphics::Sprite;
+
 		UIElement();
 
 		Point<int16_t> dimension;

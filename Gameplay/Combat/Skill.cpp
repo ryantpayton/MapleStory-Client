@@ -49,18 +49,25 @@ namespace Gameplay
 		preparestance = src["prepare"]["action"];
 		preparetime = src["prepare"]["time"];*/
 
+		passive = (skillid % 10000) / 1000 == 0;
+
 		overregular = false;
 		offensive = false;
 		for (node sub : src["level"])
 		{
 			Level level;
-			if (sub["damage"].data_type() == node::type::integer || sub["mad"].data_type() == node::type::integer)
-			{
-				offensive = true;
 
-				level.damage = sub["damage"];
-				level.damage /= 100;
-				level.matk = sub["mad"];
+			bool hasdamage = sub["damage"].data_type() == node::type::integer;
+			bool hasmad = sub["mad"].data_type() == node::type::integer;
+
+			level.damage = sub["damage"];
+			level.damage /= 100;
+			level.matk = sub["mad"];
+
+			offensive = !passive && (hasdamage || hasmad);
+
+			if (offensive)
+			{
 				level.mastery = sub["mastery"];
 				level.attackcount = sub["attackCount"];
 				if (level.attackcount == 0)
@@ -86,7 +93,6 @@ namespace Gameplay
 				level.hrange = 100.0f;
 			level.hrange /= 100;
 			level.range = sub;
-			level.overriderange = !level.range.empty();
 
 			int32_t lvlid = StringConversion<int32_t>(sub.name()).ordefault(-1);
 			levels[lvlid] = level;
@@ -236,7 +242,7 @@ namespace Gameplay
 				attack.hitcount = level->attackcount;
 			}
 
-			if (level->overriderange)
+			if (!level->range.empty())
 				attack.range = level->range;
 		}
 

@@ -23,7 +23,8 @@ namespace Net
 {
 	using Graphics::Text;
 
-	// Handler for a packet which contains status messages.
+	// Show a status message.
+	// Opcode: SHOW_STATUS_INFO(39)
 	class ShowStatusInfoHandler : public PacketHandler
 	{
 	public:
@@ -32,26 +33,42 @@ namespace Net
 		void showstatus(Text::Color color, string message) const;
 	};
 
-	// Handler for a packet which contains chat messages.
-	class ChatReceivedHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
 
-	// Handler for a packet which shows the effect of a scroll.
-	class ScrollResultHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
-
-	// Handler for a packet which contains a server message.
+	// Show a server message.
+	// Opcode: SERVER_MESSAGE(68)
 	class ServerMessageHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};
 
-	// Handler for a packet which contains another type of server message.
+
+	// Show another type of server message.
+	// Opcode: WEEK_EVENT_MESSAGE(77)
 	class WeekEventMessageHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+
+	// Show a chat message.
+	// CHAT_RECEIVED(162)
+	class ChatReceivedHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+
+	// Shows the effect of a scroll.
+	// Opcode: SCROLL_RESULT(167)
+	class ScrollResultHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+
+	// Can contain numerous different effects and messages.
+	// Opcode: SHOW_ITEM_GAIN_INCHAT(206)
+	class ShowItemGainInChatHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};

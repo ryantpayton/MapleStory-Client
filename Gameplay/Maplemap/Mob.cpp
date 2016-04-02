@@ -342,7 +342,7 @@ namespace Gameplay
 			{
 				namelabel.draw(absp);
 
-				if (stance != DIE)
+				if (!dying)
 				{
 					hpbar.draw(headpos, hppercent);
 				}

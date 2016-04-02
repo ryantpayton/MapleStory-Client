@@ -47,6 +47,14 @@ public:
 		return static_cast<double>(duration.count());
 	}
 
+	// Return the current time in seconds.
+	int32_t seconds()
+	{
+		auto duration = clock::now().time_since_epoch();
+		auto since_epoch = std::chrono::duration_cast<std::chrono::seconds>(duration);
+		return static_cast<int32_t>(since_epoch.count());
+	}
+
 private:
 	using clock = std::chrono::high_resolution_clock;
 

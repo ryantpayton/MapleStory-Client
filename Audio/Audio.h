@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Util\EnumMap.h"
 #include "nlnx\node.hpp"
 #include <unordered_map>
 #include <cstdint>
@@ -31,7 +32,6 @@ namespace Audio
 	{
 	public:
 		// Preloaded sounds.
-		static const size_t NUM_SOUNDS = 9;
 		enum Name
 		{
 			// UI
@@ -47,7 +47,8 @@ namespace Audio
 			DROP,
 			PICKUP,
 			PORTAL,
-			LEVELUP
+			LEVELUP,
+			LENGTH
 		};
 
 		Sound(Name name);
@@ -70,7 +71,7 @@ namespace Audio
 		static void addsound(Sound::Name name, node src);
 
 		static unordered_map<size_t, uint64_t> samples;
-		static unordered_map<Sound::Name, size_t> soundids;
+		static EnumMap<Name, size_t> soundids;
 	};
 
 	class Music

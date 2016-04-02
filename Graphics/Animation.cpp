@@ -18,6 +18,10 @@
 #include "Animation.h"
 #include "Constants.h"
 
+#include "Util\Misc.h"
+
+#include <set>
+
 namespace Graphics
 {
 	Animation::Frame::Frame(node src)
@@ -97,16 +101,25 @@ namespace Graphics
 		}
 		else
 		{
-			int16_t fc = 0;
-			node nodeit = src[std::to_string(fc)];
-			while (nodeit.data_type() == node::type::bitmap)
+			using std::set;
+			set<int16_t> frameids;
+			for (node sub : src)
 			{
-				frames.push_back(nodeit);
-
-				fc++;
-				nodeit = src[std::to_string(fc)];
+				if (sub.data_type() == node::type::bitmap)
+				{
+					int16_t fid = StringConversion<int16_t>(sub.name()).ordefault(-1);
+					if (fid >= 0)
+					{
+						frameids.insert(fid);
+					}
+				}
 			}
 
+			for (auto& fid : frameids)
+			{
+				node sub = src[std::to_string(fid)];
+				frames.push_back(sub);
+			}
 			if (frames.size() == 0)
 				frames.push_back(Frame());
 		}

@@ -21,30 +21,30 @@
 
 namespace Character
 {
-	struct SkillEntry
-	{
-		int32_t level = 0;
-		int32_t masterlevel = 0;
-		int32_t cooldown = 1;
-		int64_t expiration = -1;
-	};
-
 	using::std::unordered_map;
 
 	// Class that stores all information about the skills of an individual character.
 	class Skillbook
 	{
 	public:
-		void setskill(int32_t, int32_t, int32_t, int64_t);
-		void setcd(int32_t, int32_t);
+		void setskill(int32_t skillid, int32_t level, int32_t masterlevel, int64_t expiration);
+		void setcd(int32_t skillid, int32_t time);
+		bool iscooling(int32_t skillid);
 
 		bool hasskill(int32_t skillid) const;
-		bool iscooling(int32_t skillid) const;
 		int32_t getlevel(int32_t skillid) const;
 		int32_t getmasterlevel(int32_t skillid) const;
 
 	private:
+		struct SkillEntry
+		{
+			int32_t level;
+			int32_t masterlevel;
+			int64_t expiration;
+		};
+
 		unordered_map<int32_t, SkillEntry> skillentries;
+		unordered_map<int32_t, int32_t> cooldowns;
 	};
 }
 

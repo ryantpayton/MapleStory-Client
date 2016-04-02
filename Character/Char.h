@@ -21,13 +21,12 @@
 #include "Gameplay\Maplemap\Mapobject.h"
 #include "IO\Components\ChatBalloon.h"
 #include "Graphics\EffectLayer.h"
+#include "Util\EnumMap.h"
 #include "Util\rectangle2d.h"
 
 namespace Character
 {
-	using IO::ChatBalloon;
 	using Gameplay::MapObject;
-	using Graphics::EffectLayer;
 
 	// Base for characters, e.g. the player and other clients on the same map.
 	class Char : public MapObject
@@ -60,7 +59,9 @@ namespace Character
 			LEVELUP,
 			JOBCHANGE,
 			SCROLL_SUCCESS,
-			SCROLL_FAILURE
+			SCROLL_FAILURE,
+			MONSTER_CARD,
+			LENGTH
 		};
 
 		// Draw look, nametag, effects and chat bubble.
@@ -130,6 +131,10 @@ namespace Character
 		static void init();
 
 	protected:
+		using EffectLayer = Graphics::EffectLayer;
+		using Text = Graphics::Text;
+		using ChatBalloon = IO::ChatBalloon;
+
 		Char(int32_t oid, CharLook look, string name);
 
 		// Update the character's animation with the given speed.
@@ -148,6 +153,6 @@ namespace Character
 		bool flip;
 
 	private:
-		static map<Effect, Animation> effectdata;
+		static EnumMap<Effect, Animation> effectdata;
 	};
 }

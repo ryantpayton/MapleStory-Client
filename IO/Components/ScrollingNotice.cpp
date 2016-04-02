@@ -54,7 +54,7 @@ namespace IO
 		if (active)
 		{
 			xpos -= 0.5f;
-			if (xpos < -notice.width())
+			if (xpos < static_cast<float>(-notice.width()))
 			{
 				xpos.set(800.0f);
 			}

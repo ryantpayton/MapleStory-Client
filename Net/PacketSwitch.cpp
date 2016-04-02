@@ -59,10 +59,11 @@ namespace Net
 		handlers[SPAWN_CHAR] = unique_ptr<PacketHandler>(new SpawnCharHandler());
 		handlers[CHAR_MOVED] = unique_ptr<PacketHandler>(new CharMovedHandler());
 		handlers[UPDATE_CHARLOOK] = unique_ptr<PacketHandler>(new UpdateCharLookHandler());
+		handlers[SHOW_FOREIGN_EFFECT] = unique_ptr<PacketHandler>(new ShowForeignEffectHandler());
 		handlers[REMOVE_CHAR] = unique_ptr<PacketHandler>(new RemoveCharHandler());
 		handlers[SPAWN_PET] = unique_ptr<PacketHandler>(new SpawnPetHandler());
-		handlers[DROP_ITEM_FROMOBJECT] = unique_ptr<PacketHandler>(new DropItemHandler());
-		handlers[REMOVE_MAPITEM] = unique_ptr<PacketHandler>(new RemoveDropHandler());
+		handlers[DROP_LOOT] = unique_ptr<PacketHandler>(new DropLootHandler());
+		handlers[REMOVE_LOOT] = unique_ptr<PacketHandler>(new RemoveLootHandler());
 
 		// Attack handlers
 		handlers[ATTACKED_CLOSE] = unique_ptr<PacketHandler>(new CloseAttackHandler());
@@ -76,6 +77,7 @@ namespace Net
 		handlers[GIVE_BUFF] = unique_ptr<PacketHandler>(new ApplyBuffHandler());
 		handlers[RECALCULATE_STATS] = unique_ptr<PacketHandler>(new RecalculateStatsHandler());
 		handlers[UPDATE_SKILLS] = unique_ptr<PacketHandler>(new UpdateskillsHandler());
+		handlers[ADD_COOLDOWN] = unique_ptr<PacketHandler>(new AddCooldownHandler());
 
 		// Messaging handlers
 		handlers[SHOW_STATUS_INFO] = unique_ptr<PacketHandler>(new ShowStatusInfoHandler());
@@ -83,6 +85,7 @@ namespace Net
 		handlers[SCROLL_RESULT] = unique_ptr<PacketHandler>(new ScrollResultHandler());
 		handlers[SERVER_MESSAGE] = unique_ptr<PacketHandler>(new ServerMessageHandler());
 		handlers[WEEK_EVENT_MESSAGE] = unique_ptr<PacketHandler>(new WeekEventMessageHandler());
+		handlers[SHOW_ITEM_GAIN_INCHAT] = unique_ptr<PacketHandler>(new ShowItemGainInChatHandler());
 
 		// Inventory Handlers
 		handlers[MODIFY_INVENTORY] = unique_ptr<PacketHandler>(new ModifyInventoryHandler());

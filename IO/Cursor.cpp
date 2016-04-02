@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Cursor.h"
+
 #include "nlnx\nx.hpp"
 
 namespace IO
@@ -27,20 +28,17 @@ namespace IO
 
 	void Cursor::init()
 	{
-		for (auto it = getstateit(); it.hasnext(); it.increment())
+		node cursor = nl::nx::ui["Basic.img"]["Cursor"];
+		for (auto animation : animations)
 		{
-			State st = it.get();
-			animations[st] = Animation(nl::nx::ui["Basic.img"]["Cursor"][std::to_string(st)]);
+			State st = animation.first;
+			animations[st] = cursor[std::to_string(st)];
 		}
 	}
 
-	void Cursor::draw(float inter) const
+	void Cursor::draw(float alpha) const
 	{
-		if (!animations.count(state))
-			return;
-
-		using Graphics::DrawArgument;
-		animations.at(state).draw(DrawArgument(position), inter);
+		animations[state].draw(position, alpha);
 	}
 
 	void Cursor::update()
@@ -50,7 +48,11 @@ namespace IO
 
 	void Cursor::setstate(State s)
 	{
-		state = s;
+		if (state != s)
+		{
+			state = s;
+			animations[state].reset();
+		}
 	}
 
 	void Cursor::setposition(Point<int16_t> pos)

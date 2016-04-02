@@ -130,11 +130,8 @@ namespace Character
 
 	void Char::showeffectbyid(Effect toshow)
 	{
-		if (effectdata.count(toshow))
-		{
-			Animation effect = effectdata.at(toshow);
-			effects.add(effect);
-		}
+		Animation effect = effectdata[toshow];
+		effects.add(effect);
 	}
 
 	void Char::speak(string line)
@@ -271,7 +268,6 @@ namespace Character
 		return look;
 	}
 
-
 	void Char::init()
 	{
 		using nl::node;
@@ -281,7 +277,7 @@ namespace Character
 		effectdata[JOBCHANGE] = src["JobChanged"];
 		effectdata[SCROLL_SUCCESS] = src["Enchant"]["Success"];
 		effectdata[SCROLL_FAILURE] = src["Enchant"]["Failure"];
+		effectdata[MONSTER_CARD] = src["MonsterBook"]["cardGet"];
 	}
-
-	map<Char::Effect, Animation> Char::effectdata;
+	EnumMap<Char::Effect, Animation> Char::effectdata;
 }

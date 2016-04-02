@@ -21,79 +21,121 @@
 
 namespace Net
 {
-	// Handles a packet which tells the client to spawn an npc on the current map.
-	class SpawnNpcHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
-
-	// Handles a packet which tells the client to spawn a controlled npc on the current map.
-	class SpawnNpcControllerHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
-
-	// Handles a packet which tells the client to spawn a mob.
-	class SpawnMobHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
-
-	// Handles a packet which tells the client to spawn and control a mob.
-	class SpawnMobControllerHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
-
-	//  Handles a packet which updates mob movement with the client.
-	class MobMovedHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
-
-	// Handles a packet which updates a mob's hp with the client.
-	class ShowMobHpHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
-
-	// Handles a packet which removes a mob from the current map.
-	class KillMobHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
-
+	// Spawn a character on the stage.
+	// Opcode: SPAWN_CHAR(160)
 	class SpawnCharHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};
 
+
+	// Remove a character from the stage.
+	// Opcode: REMOVE_CHAR(161)
 	class RemoveCharHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};
 
-	class CharMovedHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
 
-	class UpdateCharLookHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
-
+	// Spawn a pet on the stage.
+	// Opcode: SPAWN_PET(168)
 	class SpawnPetHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};
 
-	class DropItemHandler : public PacketHandler
+
+	// Move a character.
+	// Opcode: CHAR_MOVED(185)
+	class CharMovedHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};
 
-	class RemoveDropHandler : public PacketHandler
+
+	// Update the look of a character.
+	// Opcode: UPDATE_CHARLOOK(197)
+	class UpdateCharLookHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+
+	// Display an effect on a character.
+	// Opcode: SHOW_FOREIGN_EFFECT(198)
+	class ShowForeignEffectHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+
+	// Spawn a mob on the stage.
+	// Opcode: SPAWN_MOB(236)
+	class SpawnMobHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+
+	// Remove a map from the stage, either by killing it or making it invisible.
+	// Opcode: KILL_MOB(237)
+	class KillMobHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+
+	// Spawn a mob on the stage and take control of it.
+	// Opcode: SPAWN_MOB_C(238)
+	class SpawnMobControllerHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+
+	// Update mob state and position with the client.
+	// Opcode: MOB_MOVED(239)
+	class MobMovedHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+
+	// Updates a mob's hp with the client.
+	// Opcode: SHOW_MOB_HP(250)
+	class ShowMobHpHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+
+	// Spawn an npc on the current stage.
+	// Opcode: SPAWN_NPC(257)
+	class SpawnNpcHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+
+	// Spawn an npc on the current stage and take control of it.
+	// Opcode: SPAWN_NPC_C(259)
+	class SpawnNpcControllerHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+
+	// Drop a lootable item on the stage.
+	// Opcode: DROP_LOOT(268)
+	class DropLootHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+
+	// Remove an item from the stage.
+	// Opcode: REMOVE_LOOT(269)
+	class RemoveLootHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};

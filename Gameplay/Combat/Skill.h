@@ -121,8 +121,6 @@ namespace Gameplay
 			int32_t mastery = 0;
 			float hrange = 1.0f;
 			rectangle2d<int16_t> range;
-			BoolPair<vector<uint16_t>> hitdelays;
-			bool overriderange = false;
 		};
 
 		Skill(int32_t skillid);
@@ -143,6 +141,7 @@ namespace Gameplay
 		Sound hitsound;
 		Weapon::Type reqweapon;
 		int32_t skillid;
+		bool passive;
 		bool offensive;
 		bool overregular;
 	};

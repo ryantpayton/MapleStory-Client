@@ -199,17 +199,6 @@ namespace Graphics
 				height = 0;
 			}
 
-			int16_t wordwidth(const char* text, size_t first, size_t last) const
-			{
-				int16_t width = 0;
-				for (size_t i = first; i < last; i++)
-				{
-					char c = text[i];
-					width += chars[c].ax;
-				}
-				return width;
-			}
-
 			int16_t linespace() const
 			{
 				return static_cast<int16_t>(height * 1.35 + 1);

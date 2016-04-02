@@ -61,12 +61,10 @@ namespace Gameplay
 		int32_t skill = 0;
 		int32_t bullet = 0;
 
-		float hrange = 1.0f;
-		uint16_t delay = 0;
 		Direction direction = CENTERED;
-		vector<uint16_t> hitdelays;
 		Point<int16_t> origin;
 		rectangle2d<int16_t> range;
+		float hrange = 1.0f;
 	};
 
 

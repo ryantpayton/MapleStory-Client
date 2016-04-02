@@ -16,6 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "PlayerHandlers.h"
+#include "Timer.h"
+
 #include "Character\Buff.h"
 #include "Gameplay\Stage.h"
 #include "IO\UI.h"
@@ -47,6 +49,7 @@ namespace Net
 		}
 	}
 
+
 	void SkillMacrosHandler::handle(InPacket& recv) const
 	{
 		uint8_t size = recv.readbyte();
@@ -59,6 +62,7 @@ namespace Net
 			recv.readint(); // skill 3
 		}
 	}
+
 
 	void ChangeStatsHandler::handle(InPacket& recv) const
 	{
@@ -119,22 +123,6 @@ namespace Net
 		UI::get().enable();
 	}
 
-	void RecalculateStatsHandler::handle(InPacket&) const
-	{
-		Stage::get().getplayer().recalcstats(false);
-	}
-
-	void UpdateskillsHandler::handle(InPacket& recv) const
-	{
-		recv.skip(3);
-
-		int32_t skillid = recv.readint();
-		int32_t level = recv.readint();
-		int32_t masterlevel = recv.readint();
-		int64_t expire = recv.readlong();
-
-		Stage::get().getplayer().getskills().setskill(skillid, level, masterlevel, expire);
-	}
 
 	void BuffHandler::handle(InPacket& recv) const
 	{
@@ -179,5 +167,35 @@ namespace Net
 	void CancelBuffHandler::handlebuff(InPacket&, Buffstat::Value bs) const
 	{
 		Stage::get().getplayer().cancelbuff(bs);
+	}
+
+
+	void RecalculateStatsHandler::handle(InPacket&) const
+	{
+		Stage::get().getplayer().recalcstats(false);
+	}
+
+
+	void UpdateskillsHandler::handle(InPacket& recv) const
+	{
+		recv.skip(3);
+
+		int32_t skillid = recv.readint();
+		int32_t level = recv.readint();
+		int32_t masterlevel = recv.readint();
+		int64_t expire = recv.readlong();
+
+		Stage::get().getplayer().getskills().setskill(skillid, level, masterlevel, expire);
+	}
+
+
+	void AddCooldownHandler::handle(InPacket& recv) const
+	{
+		int32_t skillid = recv.readint();
+		int16_t time = recv.readshort();
+
+		int32_t seconds = Timer::get().seconds() + time;
+
+		Stage::get().getplayer().getskills().setcd(skillid, seconds);
 	}
 }

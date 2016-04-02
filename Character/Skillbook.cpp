@@ -16,35 +16,44 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Skillbook.h"
+#include "Timer.h"
 
 namespace Character
 {
 	void Skillbook::setskill(int32_t id, int32_t level, int32_t mlevel, int64_t expire)
 	{
-		SkillEntry entry;
-		entry.level = level;
-		entry.masterlevel = mlevel;
-		entry.expiration = expire;
-		entry.cooldown = 0;
-		skillentries[id] = entry;
+		skillentries[id] = { level, mlevel, expire };
+	}
+
+	void Skillbook::setcd(int32_t id, int32_t cd)
+	{
+		cooldowns[id] = cd;
+	}
+
+	bool Skillbook::iscooling(int32_t id)
+	{
+		auto cditer = cooldowns.find(id);
+		if (cditer != cooldowns.end())
+		{
+			if (cditer->second <= Timer::get().seconds())
+			{
+				cooldowns.erase(cditer);
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	bool Skillbook::hasskill(int32_t id) const
 	{
 		return skillentries.count(id) > 0;
-	}
-
-	void Skillbook::setcd(int32_t id, int32_t cd)
-	{
-		if (hasskill(id))
-		{
-			skillentries[id].cooldown = cd;
-		}
-	}
-
-	bool Skillbook::iscooling(int32_t id) const
-	{
-		return hasskill(id) ? (skillentries.at(id).cooldown > 0) : true;
 	}
 
 	int32_t Skillbook::getlevel(int32_t id) const

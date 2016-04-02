@@ -78,13 +78,19 @@ namespace Net
 		FIELD_EFFECT = 138,
 		CLOCK = 147,
 
+		// Mapobject
 		SPAWN_CHAR = 160,
 		REMOVE_CHAR = 161,
+
+		// Messaging
 		CHAT_RECEIVED = 162,
 		SCROLL_RESULT = 167,
 
+		// Mapobject
 		SPAWN_PET = 168,
 		CHAR_MOVED = 185,
+
+		// Attack
 		ATTACKED_CLOSE = 186,
 		ATTACKED_RANGED = 187,
 		ATTACKED_MAGIC = 188,
@@ -93,8 +99,12 @@ namespace Net
 		SHOW_CHAIR = 196,
 		UPDATE_CHARLOOK = 197,
 		SHOW_FOREIGN_EFFECT = 198,
+		SHOW_ITEM_GAIN_INCHAT = 206, // this is terribly named
 		LOCK_UI = 221,
 		TOGGLE_UI = 222,
+
+		// Player
+		ADD_COOLDOWN = 234,
 
 		// Mapobject
 		SPAWN_MOB = 236,
@@ -106,8 +116,8 @@ namespace Net
 		SPAWN_NPC = 257,
 		SPAWN_NPC_C = 259,
 		MAKE_NPC_SCRIPTED = 263,
-		DROP_ITEM_FROMOBJECT = 268,
-		REMOVE_MAPITEM = 269,
+		DROP_LOOT = 268,
+		REMOVE_LOOT = 269,
 		SPAWN_REACTOR = 279,
 		REMOVE_REACTOR = 280,
 

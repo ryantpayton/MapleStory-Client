@@ -295,10 +295,6 @@ namespace Graphics
 
 			leftovers.erase(lid);
 
-			if (wasted < w * h)
-			{
-				wasted = wasted;
-			}
 			wasted -= w * h;
 
 			if (wdelta >= MINLOSIZE && hdelta >= MINLOSIZE)

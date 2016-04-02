@@ -117,6 +117,44 @@ namespace Net
 		UI::get().withelement(UIElement::STATUSMESSENGER, &UIStatusMessenger::showstatus, color, message);
 	}
 
+
+	void ServerMessageHandler::handle(InPacket& recv) const
+	{
+		int8_t type = recv.readbyte();
+		bool servermessage = recv.inspectbool();
+		if (servermessage)
+			recv.skip(1);
+		string message = recv.read<string>();
+		
+		if (type == 3)
+		{
+			recv.readbyte(); // channel
+			recv.readbool(); // megaphone
+		}
+		else if (type == 4)
+		{
+			UI::get().setscrollingnotice(message);
+		}
+		else if (type == 7)
+		{
+			recv.readint(); // npcid
+		}
+	}
+
+
+	void WeekEventMessageHandler::handle(InPacket& recv) const
+	{
+		recv.readbyte(); // always 0xFF in solaxia and moople
+		string message = recv.read<string>();
+
+		static const string MAPLETIP = "[MapleTip]";
+		if (message.substr(0, MAPLETIP.length()).compare("[MapleTip]"))
+			message = "[Notice] " + message;
+
+		UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::sendchatline, message, Chatbar::YELLOW);
+	}
+
+
 	void ChatReceivedHandler::handle(InPacket& recv) const
 	{
 		int32_t charid = recv.readint();
@@ -134,6 +172,7 @@ namespace Net
 		auto linetype = static_cast<Chatbar::LineType>(type);
 		UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::sendchatline, message, linetype);
 	}
+
 
 	void ScrollResultHandler::handle(InPacket& recv) const
 	{
@@ -172,38 +211,47 @@ namespace Net
 		}
 	}
 
-	void ServerMessageHandler::handle(InPacket& recv) const
+
+	void ShowItemGainInChatHandler::handle(InPacket& recv) const
 	{
-		int8_t type = recv.readbyte();
-		bool servermessage = recv.inspectbool();
-		if (servermessage)
-			recv.skip(1);
-		string message = recv.read<string>();
-		
-		if (type == 3)
+		int8_t mode1 = recv.readbyte();
+		if (mode1 == 3)
 		{
-			recv.readbyte(); // channel
-			recv.readbool(); // megaphone
+			int8_t mode2 = recv.readbyte();
+			if (mode2 == 1) // this actually is 'item gain in chat'
+			{
+				int32_t itemid = recv.readint();
+				int32_t qty = recv.readint();
+
+				const ItemData& idata = DataFactory::get().getitemdata(itemid);
+				if (!idata.isloaded())
+					return;
+
+				string name = idata.getname();
+				string sign = (qty < 0) ? "-" : "+";
+				string message = "Gained an item: " + name + " (" + sign + std::to_string(qty) + ")";
+
+				UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::sendchatline, message, Chatbar::BLUE);
+			}
 		}
-		else if (type == 4)
+		else if (mode1 == 13) // card effect
 		{
-			UI::get().setscrollingnotice(message);
+			Stage::get().getplayer().showeffectbyid(Char::MONSTER_CARD);
 		}
-		else if (type == 7)
+		else if (mode1 == 18) // intro effect
 		{
-			recv.readint(); // npcid
+			recv.read<string>(); // path
 		}
-	}
-
-	void WeekEventMessageHandler::handle(InPacket& recv) const
-	{
-		recv.readbyte(); // always 0xFF in solaxia and moople
-		string message = recv.read<string>();
-
-		static const string MAPLETIP = "[MapleTip]";
-		if (message.substr(0, MAPLETIP.length()).compare("[MapleTip]"))
-			message = "[Notice] " + message;
-
-		UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::sendchatline, message, Chatbar::YELLOW);
+		else if (mode1 == 23) // info
+		{
+			recv.read<string>(); // path
+			recv.readint(); // some int
+		}
+		else // buff effect
+		{
+			int32_t skillid = recv.readint();
+			// more bytes, but we don't need them
+			Stage::get().showplayerbuff(skillid);
+		}
 	}
 }

@@ -17,43 +17,40 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "PetLook.h"
 #include "Constants.h"
+
 #include "nlnx\nx.hpp"
 #include "nlnx\node.hpp"
 
 namespace Character
 {
-	const string stancenames[4] = 
-	{
-		"stand0", "move", "hang", "fly"
-	};
-
 	PetLook::PetLook(int32_t iid, string nm, int32_t uqid,
-		Point<int16_t> pos, uint8_t st, int32_t fhid) {
+		Point<int16_t> pos, uint8_t st, int32_t) {
 
 		itemid = iid;
 		name = nm;
 		uniqueid = uqid;
-		flip = st % 2 == 1;
-		if (flip)
-			stance = static_cast<Stance>(st - 1);
-		else
-			stance = static_cast<Stance>(st);
-
 		setposition(pos.x(), pos.y());
-		phobj.fhid = static_cast<uint16_t>(fhid);
+		setstance(st);
 
 		namelabel = Text(Text::A13M, Text::CENTER, Text::WHITE);
 		namelabel.settext(name);
 		namelabel.setback(Text::NAMETAG);
 
-		using nl::node;
-		node src = nl::nx::item["Pet"][std::to_string(iid) + ".img"];
-		for (node sub : src)
-		{
-			string stname = sub.name();
-			if (stname != "info")
-				animations[stname] = Animation(sub);
-		}
+		string strid = std::to_string(iid);
+
+		node src = nl::nx::item["Pet"][strid + ".img"];
+
+		animations[MOVE] = src["move"];
+		animations[STAND] = src["stand0"];
+		animations[JUMP] = src["jump"];
+		animations[ALERT] = src["alert"];
+		animations[PRONE] = src["prone"];
+		animations[FLY] = src["fly"];
+		animations[HANG] = src["hang"];
+
+		node effsrc = nl::nx::effect["PetEff.img"][strid];
+
+		animations[WARP] = effsrc["warp"];
 	}
 
 	PetLook::PetLook()
@@ -69,10 +66,7 @@ namespace Character
 		using Graphics::DrawArgument;
 		Point<int16_t> absp = phobj.getposition(inter) + viewpos;
 
-		string stname = stancenames[stance / 2];
-		if (animations.count(stname))
-			animations.at(stname).draw(DrawArgument(absp, flip), inter);
-
+		animations[stance].draw(DrawArgument(absp, flip), inter);
 		namelabel.draw(absp);
 	}
 
@@ -153,9 +147,7 @@ namespace Character
 
 		physics.moveobject(phobj);
 
-		string stname = stancenames[stance / 2];
-		if (animations.count(stname))
-			animations.at(stname).update(Constants::TIMESTEP);
+		animations[stance].update();
 	}
 
 	void PetLook::setposition(int16_t x, int16_t y)
@@ -166,21 +158,17 @@ namespace Character
 
 	void PetLook::setstance(Stance st)
 	{
-		bool tempflip = st % 2 == 1;
-		Stance newstance;
-		if (tempflip)
-			newstance = static_cast<Stance>(st - 1);
-		else
-			newstance = static_cast<Stance>(st);
-
-		if (stance != newstance)
+		if (stance != st)
 		{
-			stance = newstance;
-
-			string stname = stancenames[stance / 2];
-			if (animations.count(stname))
-				animations[stname].reset();
+			stance = st;
+			animations[stance].reset();
 		}
+	}
+
+	void PetLook::setstance(uint8_t stancebyte)
+	{
+		flip = stancebyte % 2 == 1;
+		stance = stancebyvalue(stancebyte);
 	}
 
 	int32_t PetLook::getiid() const

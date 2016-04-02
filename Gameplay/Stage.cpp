@@ -242,8 +242,8 @@ namespace Gameplay
 		if (ouser)
 		{
 			OtherChar& user = *ouser;
-
-			user.updatestats(attack.skill, attack.level, attack.speed);
+			user.updateskill(attack.skill, attack.level);
+			user.updateattack(attack.speed);
 
 			const SpecialMove& move = getmove(attack.skill);
 			move.applyuseeffects(user, attack.type);
@@ -254,6 +254,26 @@ namespace Gameplay
 
 			mobs.showresult(user, move, attack);
 		}
+	}
+
+	void Stage::showbuff(int32_t cid, int32_t skillid, int8_t level)
+	{
+		Optional<OtherChar> ouser = chars.getchar(cid);
+		if (ouser)
+		{
+			OtherChar& user = *ouser;
+			user.updateskill(skillid, level);
+
+			const SpecialMove& move = getmove(skillid);
+			move.applyuseeffects(user, Attack::MAGIC);
+		}
+	}
+
+	void Stage::showplayerbuff(int32_t skillid)
+	{
+		const SpecialMove& move = getmove(skillid);
+		if (player.canuse(move))
+			move.applyuseeffects(player, Attack::MAGIC);
 	}
 
 	void Stage::checkportals()

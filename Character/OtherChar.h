@@ -41,9 +41,11 @@ namespace Character
 		// Add the movements which this character will go through next.
 		void sendmovement(queue<Movement> movements);
 		
-		// Update attack related stats.
-		void updatestats(int32_t skillid, uint8_t skilllevel, uint8_t attackspeed);
-		// Update character look.
+		// Update a skill level.
+		void updateskill(int32_t skillid, uint8_t skilllevel);
+		// Update the attack speed.
+		void updateattack(uint8_t attackspeed);
+		// Update the character look.
 		void updatelook(LookEntry look);
 
 		// Return the character's level.
@@ -59,7 +61,7 @@ namespace Character
 		queue<Movement> movements;
 		Movement lastmove;
 
-		unordered_map<int32_t, int32_t> skilllevels;
+		unordered_map<int32_t, uint8_t> skilllevels;
 		uint8_t attackspeed;
 	};
 }
