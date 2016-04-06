@@ -82,6 +82,9 @@ namespace Character
 		// Create an attack struct using the player's stats.
 		Attack prepareattack(bool skill) const;
 
+		// Execute a rush movement.
+		void rush(double targetx);
+
 		// Apply a buff to the player.
 		void givebuff(Buff buff);
 		// Cancel a buff.
@@ -136,6 +139,8 @@ namespace Character
 		Monsterbook& getmonsterbook();
 
 	private:
+		using PhysicsObject = Gameplay::PhysicsObject;
+
 		CharStats stats;
 		Inventory inventory;
 		Skillbook skillbook;

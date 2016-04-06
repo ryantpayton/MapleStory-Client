@@ -29,10 +29,9 @@ namespace IO
 	void Cursor::init()
 	{
 		node cursor = nl::nx::ui["Basic.img"]["Cursor"];
-		for (auto animation : animations)
+		for (auto& key : animations.getkeys())
 		{
-			State st = animation.first;
-			animations[st] = cursor[std::to_string(st)];
+			animations[key] = cursor[std::to_string(key)];
 		}
 	}
 

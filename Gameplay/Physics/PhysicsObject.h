@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Foothold.h"
+#include "Constants.h"
+
 #include "Util\Interpolated.h"
 
 namespace Gameplay
@@ -63,6 +65,24 @@ namespace Gameplay
 			vspeed = 0.0;
 		}
 
+		void movexuntil(double d, uint16_t delay)
+		{
+			if (delay)
+			{
+				double hdelta = d - x.get();
+				hspeed = Constants::TIMESTEP * hdelta / delay;
+			}
+		}
+
+		void moveyuntil(double d, uint16_t delay)
+		{
+			if (delay)
+			{
+				double vdelta = d - y.get();
+				vspeed = Constants::TIMESTEP * vdelta / delay;
+			}
+		}
+
 		bool hmobile() const
 		{
 			return hspeed != 0.0;
@@ -100,34 +120,38 @@ namespace Gameplay
 
 		int16_t getx() const
 		{
-			return static_cast<int16_t>(x.get());
+			double rounded = std::round(x.get());
+			return static_cast<int16_t>(rounded);
 		}
 
 		int16_t gety() const
 		{
-			return static_cast<int16_t>(y.get());
+			double rounded = std::round(y.get());
+			return static_cast<int16_t>(rounded);
 		}
 
 		int16_t lastx() const
 		{
-			return static_cast<int16_t>(x.last());
+			double rounded = std::round(x.last());
+			return static_cast<int16_t>(rounded);
 		}
 
 		int16_t lasty() const
 		{
-			return static_cast<int16_t>(y.last());
+			double rounded = std::round(y.last());
+			return static_cast<int16_t>(rounded);
 		}
 
 		int16_t getx(float alpha) const
 		{
-			auto interx = static_cast<int16_t>(x.get(alpha));
-			return interx;
+			double rounded = std::round(x.get(alpha));
+			return static_cast<int16_t>(rounded);
 		}
 
 		int16_t gety(float alpha) const
 		{
-			auto intery = static_cast<int16_t>(y.get(alpha));
-			return intery;
+			double rounded = std::round(y.get(alpha));
+			return static_cast<int16_t>(rounded);
 		}
 
 		Point<int16_t> getposition(float inter) const

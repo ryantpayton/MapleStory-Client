@@ -93,11 +93,10 @@ namespace IO
 		passwordbg = Texture(title["PW"]);
 		password.setcrypt('*');
 
-		saveid = Configuration::get().getbool(Settings::SAVE_LOGIN);
+		saveid = Setting<SaveLogin>::get().load();
 		if (saveid)
 		{
-			string accname = Configuration::get().getsetting(Settings::ACCOUNT);
-			account.settext(accname);
+			account.settext(Setting<DefaultAccount>::get().load());
 			password.setstate(Textfield::FOCUSED);
 		}
 		else
@@ -151,7 +150,7 @@ namespace IO
 			return;
 		case BT_SAVEID:
 			saveid = !saveid;
-			Configuration::get().setbool(Settings::SAVE_LOGIN, saveid);
+			Setting<SaveLogin>::get().save(saveid);
 			buttons[BT_SAVEID]->setstate(Button::MOUSEOVER);
 			return;
 		}

@@ -19,12 +19,12 @@
 #include <cstdint>
 #include <string>
 
-using std::string;
-
 template<typename T>
 class StringConversion
 {
 public:
+	using string = std::string;
+
 	StringConversion(string s)
 	{
 		str = s;
@@ -56,6 +56,8 @@ private:
 
 namespace Format
 {
+	using std::string;
+
 	// Format a number string so that each 3 decimal points
 	// are seperated by a ',' character.
 	string splitnumber(string input);

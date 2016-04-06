@@ -16,7 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Inventory.h"
+
 #include "Data\DataFactory.h"
+
 #include <numeric>
 
 namespace Character
@@ -34,11 +36,9 @@ namespace Character
 	{
 		for (auto& sub : inventories)
 		{
-			Type type = sub.first;
 			for (auto& item : sub.second)
 			{
-				int16_t slot = item.first;
-				remove(type, slot);
+				delete item.second;
 			}
 		}
 	}

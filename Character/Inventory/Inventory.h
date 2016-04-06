@@ -22,7 +22,6 @@
 #include "Console.h"
 
 #include "Character\CharStats.h"
-
 #include "Util\Optional.h"
 
 namespace Character
@@ -120,6 +119,7 @@ namespace Character
 			int64_t expire, uint8_t slots, uint8_t level, map<Equipstat::Value, uint16_t> stats, 
 			string owner, int16_t flag, uint8_t itemlevel, uint16_t itemexp, int32_t vicious
 			);
+
 		// Remove an item.
 		void remove(Type type, int16_t slot);
 		// Swap two items.

@@ -42,9 +42,11 @@ namespace Gameplay
 		AttackResult sendattack(const Attack& attack);
 		void showresult(const Char& user, const SpecialMove& skill, const AttackResult& result);
 
+		Optional<Mob> getmob(int32_t oid);
+		Optional<const Mob> getmob(int32_t oid) const;
+
 	private:
 		vector<int32_t> findclosest(rectangle2d<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const;
-		Optional<Mob> getmob(int32_t oid);
 
 		list<DamageNumber> damagenumbers;
 

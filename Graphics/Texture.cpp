@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Texture.h"
 #include "GraphicsGL.h"
+
 #include "nlnx\nx.hpp"
 
 namespace Graphics
@@ -40,6 +41,8 @@ namespace Graphics
 			source = src;
 			origin = src["origin"];
 			dimensions = Point<int16_t>(source.width(),  source.height());
+
+			GraphicsGL::get().addbitmap(source);
 		}
 	}
 

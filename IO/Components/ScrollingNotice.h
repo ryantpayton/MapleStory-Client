@@ -16,13 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Graphics\Geometry.h"
 #include "Graphics\Text.h"
 #include "Util\Interpolated.h"
 
 namespace IO
 {
-	using Graphics::Text;
-
+	// The scrolling server notice at the top of the screen.
 	class ScrollingNotice
 	{
 	public:
@@ -33,8 +33,13 @@ namespace IO
 		void update();
 
 	private:
+		using Rectangle = Graphics::Rectangle;
+		using Text = Graphics::Text;
+
+		Rectangle background;
+		Point<int16_t> backposition;
 		Text notice;
-		Linear<float> xpos;
+		Linear<double> xpos;
 		bool active;
 	};
 }

@@ -101,6 +101,9 @@ namespace Gameplay
 		void checkdrops();
 		void usemove(int32_t moveid);
 		void applymove(const SpecialMove& move);
+		void applyusemovement(const SpecialMove& move);
+		void applyresultmovement(const SpecialMove& move, const AttackResult& result);
+		void applyrush(const AttackResult& result);
 		const SpecialMove& getmove(int32_t moveid);
 
 		enum State

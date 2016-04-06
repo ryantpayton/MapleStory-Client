@@ -35,8 +35,7 @@ namespace IO
 	using Character::Equipslot;
 
 	UIItemInventory::UIItemInventory() : 
-		UIDragElement(Settings::POS_INV, Point<int16_t>(172, 20)), 
-		inventory(Stage::get().getplayer().getinvent()) {
+		UIDragElement<PosINV>(Point<int16_t>(172, 20)), inventory(Stage::get().getplayer().getinvent()) {
 
 		node src = nl::nx::ui["UIWindow2.img"]["Item"];
 

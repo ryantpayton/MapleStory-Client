@@ -65,6 +65,10 @@ namespace Character
 				state = Char::FALL;
 			}
 		}
+
+		player.getphobj().clearflag(PhysicsObject::TURNATEDGES);
+		player.getphobj().clearflag(PhysicsObject::NOGRAVITY);
+
 		player.setstate(state);
 	}
 

@@ -18,14 +18,12 @@
 #include "ScrollingNotice.h"
 #include "Constants.h"
 
-#include "Graphics\GraphicsGL.h"
-
 namespace IO
 {
-	using Graphics::GraphicsGL;
-
 	ScrollingNotice::ScrollingNotice()
 	{
+		background = Rectangle(800, 20, Rectangle::BLACK, 0.6f);
+		backposition = Point<int16_t>(0, -Constants::VIEWYOFFSET);
 		notice = Text(Text::A12M, Text::LEFT, Text::YELLOW);
 		xpos.set(0.0f);
 		active = false;
@@ -42,9 +40,9 @@ namespace IO
 	{
 		if (active)
 		{
-			GraphicsGL::get().drawrectangle(0, -Constants::VIEWYOFFSET, 800, 20, 0.0f, 0.0f, 0.0f, 0.5f);
-			int16_t interx = static_cast<int16_t>(xpos.get(alpha));
+			int16_t interx = static_cast<int16_t>(std::round(xpos.get(alpha)));
 			auto position = Point<int16_t>(interx, -Constants::VIEWYOFFSET - 2);
+			background.draw(backposition);
 			notice.draw(position);
 		}
 	}
@@ -53,10 +51,12 @@ namespace IO
 	{
 		if (active)
 		{
-			xpos -= 0.5f;
-			if (xpos < static_cast<float>(-notice.width()))
+			xpos -= 0.5;
+
+			auto xmin = static_cast<double>(-notice.width());
+			if (xpos.last() < xmin)
 			{
-				xpos.set(800.0f);
+				xpos.set(800.0);
 			}
 		}
 	}

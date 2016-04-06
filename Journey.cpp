@@ -55,29 +55,24 @@ void showerror(const char* error)
 enum Error
 {
 	NONE,
-	NXFILES,
 	CONNECTION,
+	NXFILES,
 	WINDOW,
 	AUDIO
 };
 
 Error init()
 {
-	Configuration::get().load();
+	if (!Session::get().init())
+		return CONNECTION;
 
 	if (!NxFiles::get().init())
 		return NXFILES;
 
-	if (!Session::get().init())
-		return CONNECTION;
-
-	bool fullscreen = Configuration::get().getbool(Settings::FULLSCREEN);
-	if (!Window::get().init(fullscreen))
+	if (!Window::get().init())
 		return WINDOW;
 
-	uint8_t sfxvolume = Configuration::get().getbyte(Settings::SFX_VOLUME);
-	uint8_t bgmvolume = Configuration::get().getbyte(Settings::BGM_VOLUME);
-	if (!Sound::init(sfxvolume) || !Music::init(bgmvolume))
+	if (!Sound::init() || !Music::init())
 		return AUDIO;
 
 	Char::init();
@@ -106,7 +101,7 @@ void draw(float inter)
 	Window::get().end();
 }
 
-int main()
+int start()
 {
 	// Initialise and check for errors.
 	Error error = init();
@@ -114,16 +109,16 @@ int main()
 	{
 		Timer::get().start();
 		double elapsed = 0.0;
-		//double invfps = 0.0;
-		//int32_t samples = 0;
+		double invfps = 0.0;
+		int32_t samples = 0;
 
 		// Run the game as long as the connection is alive.
-		while (Session::get().receive())
+		while (Session::get().receive() && Window::get().notclosed())
 		{
 			// Update game with constant timestep as many times as possible.
 			double lastelapsed = Timer::get().stop() / 1000;
 
-			/*if (samples < 1000)
+			if (samples < 1000)
 			{
 				invfps += lastelapsed;
 				samples++;
@@ -132,10 +127,10 @@ int main()
 			{
 				int32_t fps = static_cast<int32_t>((samples * 1000) / invfps);
 				std::cout << "FPS: " << std::to_string(fps) << std::endl;
-					
+
 				invfps = 0.0;
 				samples = 0;
-			}*/
+			}
 
 			elapsed += lastelapsed;
 			while (elapsed >= Constants::TIMESTEP)
@@ -150,18 +145,19 @@ int main()
 		}
 
 		Sound::close();
-		Configuration::get().save();
 	}
 	else
 	{
 		// Display a critical error. These are errors that prevent the game from starting.
+		bool canretry = false;
 		switch (error)
 		{
-		case NXFILES :
-			showerror("Error: Could not find valid game files.");
+		case CONNECTION:
+			showerror("Error: The server seems to be offline. Please start the server and enter 'retry'.");
+			canretry = true;
 			break;
-		case CONNECTION :
-			showerror("Error: The server seems to be offline.");
+		case NXFILES:
+			showerror("Error: Could not find valid game files.");
 			break;
 		case WINDOW:
 			showerror("Error: Could not initialize graphics.");
@@ -171,9 +167,17 @@ int main()
 			break;
 		}
 
-		// Run an infinite loop to keep the console on screen.
-		while (error != NONE) {}
+		string command;
+		std::cin >> command;
+		if (canretry && command == "retry")
+		{
+			return start();
+		}
 	}
+	return error;
+}
 
-	return 0;
+int main()
+{
+	return start();
 }

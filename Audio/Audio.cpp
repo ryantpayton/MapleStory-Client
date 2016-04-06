@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Audio.h"
+#include "Configuration.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include "bass.h"
@@ -51,7 +52,7 @@ namespace Audio
 	}
 
 
-	bool Sound::init(uint8_t volume)
+	bool Sound::init()
 	{
 		if (!BASS_Init(1, 44100, 0, nullptr, 0))
 			return false;
@@ -71,6 +72,7 @@ namespace Audio
 		addsound(Sound::PORTAL, gamesrc["Portal"]);
 		addsound(Sound::LEVELUP, gamesrc["LevelUp"]);
 
+		uint8_t volume = Setting<SFXVolume>::get().load();
 		return setsfxvolume(volume);
 	}
 
@@ -153,8 +155,9 @@ namespace Audio
 	}
 
 
-	bool Music::init(uint8_t volume)
+	bool Music::init()
 	{
+		uint8_t volume = Setting<BGMVolume>::get().load();
 		return setbgmvolume(volume);
 	}
 

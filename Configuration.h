@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,96 +16,240 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Singleton.h"
-#include "Util\Enum.h"
+#include "Util\Misc.h"
 #include "Util\Point.h"
+#include "Util\Singleton.h"
+#include "Util\TypeMap.h"
 #include <cstdint>
 #include <string>
-#include <unordered_map>
+#include <type_traits>
+#include <functional>
 
-using std::string;
-using std::unordered_map;
-
-class Settings
-{
-public:
-	static const size_t LENGTH = 12;
-	enum Type : int32_t
-	{
-		SERVER_IP, FULLSCREEN, BGM_VOLUME, SFX_VOLUME,
-		SAVE_LOGIN, ACCOUNT, WORLD, CHANNEL, CHARACTER,
-		POS_STATS, POS_EQINV, POS_INV
-	};
-
-	static EnumIterator<Type> getit()
-	{
-		return EnumIterator<Type>(SERVER_IP, POS_INV);
-	}
-
-	static string nameof(Type type)
-	{
-		static const string names[LENGTH] =
-		{
-			"ServerIP", "Fullscreen", "BGMVolume", "SFXVolume",
-			"SaveLogin", "Account", "World", "Channel", "Character",
-			"PosSTATS", "PosEQINV", "PosINV"
-		};
-		return names[type];
-	}
-
-	static string defaultof(Type type)
-	{
-		const string defaults[LENGTH] =
-		{
-			"127.0.0.1", "false", "50", "50",
-			"false", "", "0", "0", "0",
-			"(100,150)", "(250,150)", "(300, 150)"
-		};
-		return defaults[type];
-	}
-
-	static const string filename()
-	{
-		return "Settings";
-	}
-};
-
+// Manages the 'Settings' file which contains configurations set by user behaviour.
 class Configuration : public Singleton<Configuration>
 {
 public:
+	// Add the settings which will be used and open the file.
+	Configuration();
+	// Close the file.
+	~Configuration();
+
 	// Load all settings. If something is missing, set the default value. Can be used for reloading.
 	void load();
 	// Save the current settings. 
 	void save() const;
 
-	// Set the specified setting to the specified value.
-	void setbool(Settings::Type setting, bool value);
-	// Set the specified setting to the specified value.
-	void setint(Settings::Type setting, uint32_t value);
-	// Set the specified setting to the specified value.
-	void setpoint(Settings::Type setting, Point<int16_t> value);
-	// Set the specified setting to the specified value.
-	void setstring(Settings::Type setting, string value);
+	// Base class for an entry in the settings file.
+	class Entry
+	{
+	protected:
+		using string = std::string;
 
-	// Returns a bool based on the value of the setting specified.
-	// Returns false if the setting is anything but "true".
-	bool getbool(Settings::Type setting);
-	// Returns a byte based on the value of the setting specified. 
-	// Returns 0 if an exception occurs.
-	uint8_t getbyte(Settings::Type setting);
-	// Returns a short based on the value of the setting specified. 
-	// Returns 0 if an exception occurs.
-	uint16_t getshort(Settings::Type setting);
-	// Returns an int based on the value of the setting specified. 
-	// Returns 0 if an exception occurs.
-	uint32_t getinteger(Settings::Type setting);
-	// Returns a string based on the value of the setting specified.
-	string getsetting(Settings::Type setting);
-	// Returns a short vector2d based on the value of the setting specified.
-	// Returns (0, 0) if an exception occurs.
-	Point<int16_t> getpoint(Settings::Type setting);
+		Entry(const char* n, const char* v)
+			: name(n), value(v) {}
+
+		string name;
+		string value;
+
+	private:
+		friend class Configuration;
+
+		string tostring() const
+		{
+			return name + " = " + value;
+		}
+	};
+
+	// Setting which converts to a bool.
+	class BoolEntry : public Entry
+	{
+	public:
+		void save(bool b);
+		bool load() const;
+
+	protected:
+		// Reminder to replace with "using Entry::Entry;".
+		// Constructor inheritance is still bugged in MSVC.
+		BoolEntry(const char* n, const char* v)
+			: Entry(n, v) {}
+	};
+
+	// Setting which uses the raw string.
+	class StringEntry : public Entry
+	{
+	public:
+		void save(string str);
+		string load() const;
+
+	protected:
+		StringEntry(const char* n, const char* v)
+			: Entry(n, v) {}
+	};
+
+	// Setting which converts to a Point<int16_t>.
+	class PointEntry : public Entry
+	{
+	public:
+		void save(Point<int16_t> p);
+		Point<int16_t> load() const;
+
+	protected:
+		PointEntry(const char* n, const char* v)
+			: Entry(n, v) {}
+	};
+
+	// Setting which converts to an integer type.
+	template <class T>
+	class IntegerEntry : public Entry
+	{
+	public:
+		void save(T num)
+		{
+			value = std::to_string(num);
+		}
+
+		T load() const
+		{
+			return StringConversion<T>(value).orzero();
+		}
+
+	protected:
+		IntegerEntry(const char* n, const char* v) : Entry(n, v) {}
+	};
+
+	// Setting which converts to a byte.
+	class ByteEntry : public IntegerEntry<uint8_t>
+	{
+	protected:
+		ByteEntry(const char* n, const char* v) : IntegerEntry(n, v) {}
+	};
+
+	// Setting which converts to a short.
+	class ShortEntry : public IntegerEntry<uint16_t>
+	{
+	protected:
+		ShortEntry(const char* n, const char* v) : IntegerEntry(n, v) {}
+	};
+
+	// Setting which converts to an int.
+	class IntEntry : public IntegerEntry<uint32_t>
+	{
+	protected:
+		IntEntry(const char* n, const char* v) : IntegerEntry(n, v) {}
+	};
+
+	// Setting which converts to a long.
+	class LongEntry : public IntegerEntry<uint64_t>
+	{
+	protected:
+		LongEntry(const char* n, const char* v) : IntegerEntry(n, v) {}
+	};
 
 private:
-	unordered_map<Settings::Type, string> settings;
+	template <typename T>
+	friend struct Setting;
+
+	const char* FILENAME = "Settings";
+	TypeMap<Entry> settings;
 };
 
+// IP Adress which the client will connect to.
+struct ServerIP : public Configuration::StringEntry
+{
+	ServerIP() : StringEntry("ServerIP", "127.0.0.1") {}
+};
+
+// Wether to start in fullscreen mode.
+struct Fullscreen : public Configuration::BoolEntry
+{
+	Fullscreen() : BoolEntry("Fullscreen", "false") {}
+};
+
+// Wether to use vsync.
+struct VSync : public Configuration::BoolEntry
+{
+	VSync() : BoolEntry("VSync", "true") {}
+};
+
+// Music Volume, a number from 0 to 100.
+struct BGMVolume : public Configuration::ByteEntry
+{
+	BGMVolume() : ByteEntry("BGMVolume", "50") {}
+};
+
+// Sound Volume, a number from 0 to 100.
+struct SFXVolume : public Configuration::ByteEntry
+{
+	SFXVolume() : ByteEntry("SFXVolume", "50") {}
+};
+
+// Wether to save the last used account name.
+struct SaveLogin : public Configuration::BoolEntry
+{
+	SaveLogin() : BoolEntry("SaveLogin", "false") {}
+};
+
+// The last used account name.
+struct DefaultAccount : public Configuration::StringEntry
+{
+	DefaultAccount() : StringEntry("Account", "") {}
+};
+
+// The last used world.
+struct DefaultWorld : public Configuration::ByteEntry
+{
+	DefaultWorld() : ByteEntry("World", "0") {}
+};
+
+// The last used channel.
+struct DefaultChannel : public Configuration::ByteEntry
+{
+	DefaultChannel() : ByteEntry("Channel", "0") {}
+};
+
+// The last used character.
+struct DefaultCharacter : public Configuration::ByteEntry
+{
+	DefaultCharacter() : ByteEntry("Character", "0") {}
+};
+
+// The default position of the character stats inventory.
+struct PosSTATS : public Configuration::PointEntry
+{
+	PosSTATS() : PointEntry("PosSTATS", "(100,150)") {}
+};
+
+// The default position of the equip inventory.
+struct PosEQINV : public Configuration::PointEntry
+{
+	PosEQINV() : PointEntry("PosEQINV", "(250,150)") {}
+};
+
+// The default position of the item inventory.
+struct PosINV : public Configuration::PointEntry
+{
+	PosINV() : PointEntry("PosINV", "(300,150)") {}
+};
+
+template <typename T>
+// Can be used to access settings.
+struct Setting
+{
+	// Access a setting.
+	static T& get()
+	{
+		static_assert(std::is_base_of<Configuration::Entry, T>::value,
+			"template parameter T for Setting must inherit from Configuration::Entry.");
+
+		auto* entry = Configuration::get().settings.get<T>();
+		if (entry)
+		{
+			return *entry;
+		}
+		else
+		{
+			static T defaultentry;
+			return defaultentry;
+		}
+	}
+};

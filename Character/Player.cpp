@@ -309,6 +309,16 @@ namespace Character
 		return attack;
 	}
 
+	void Player::rush(double targetx)
+	{
+		if (phobj.onground)
+		{
+			uint16_t delay = look.getattackdelay(1);
+			phobj.movexuntil(targetx, delay);
+			phobj.setflag(PhysicsObject::TURNATEDGES);
+		}
+	}
+
 	void Player::givebuff(Buff buff)
 	{
 		buffs[buff.getstat()] = buff;

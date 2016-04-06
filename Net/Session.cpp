@@ -50,7 +50,7 @@ namespace Net
 
 	bool Session::init()
 	{
-		string HOST = Configuration::get().getsetting(Settings::SERVER_IP);
+		string HOST = Setting<ServerIP>::get().load();
 		string PORT = "8484";
 		return init(HOST.c_str(), PORT.c_str());
 	}

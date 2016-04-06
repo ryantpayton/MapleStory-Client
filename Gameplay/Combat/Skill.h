@@ -20,10 +20,6 @@
 
 namespace Gameplay
 {
-	using std::vector;
-	using Character::Weapon;
-	using Graphics::Texture;
-
 	class Skill : public SpecialMove
 	{
 	public:
@@ -60,7 +56,11 @@ namespace Gameplay
 			// Crusader
 
 			// Hero
+			HERO_RUSH = 1121006,
 			BRANDISH = 1121008,
+
+			// Paladin
+			PALADIN_RUSH = 1221007,
 
 			// Spearman
 			SPEAR_MASTERY = 1300000,
@@ -80,6 +80,9 @@ namespace Gameplay
 			SACRIFICE = 1311005,
 			DRAGONS_ROAR = 1311006,
 
+			// Dark Knight
+			DK_RUSH = 1321003,
+
 			// Magician
 			IMPROVE_HP_RECOVERY = 2000000,
 			IMPROVE_MAX_HP = 2000001,
@@ -88,8 +91,18 @@ namespace Gameplay
 			ENERGY_BOLT = 2001004,
 			MAGIC_CLAW = 2001005,
 
+			// F/P Mage
+			FP_TELEPORT = 2101002,
+
+			// I/L Mage
+			IL_TELEPORT = 2201002,
+
+			// Priest
+			PRIEST_TELEPORT = 2301001,
+
 			// Hermit
 			AVENGER = 4111005,
+			FLASH_JUMP = 4111006,
 
 			// Night Lord
 			TRIPLE_THROW = 4121007,
@@ -129,8 +142,8 @@ namespace Gameplay
 
 		void applyuseeffects(Char& user, Attack::Type type) const override;
 		void applyhiteffects(Mob& target, uint16_t level, bool twohanded) const override;
-
 		void applystats(const Char& user, Attack& attack) const override;
+
 		bool isoffensive() const override;
 		int32_t getid() const override;
 		ForbidReason canuse(int32_t level, Weapon::Type weapon, uint16_t job, uint16_t hp, uint16_t mp, uint16_t bullets) const override;

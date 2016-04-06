@@ -32,7 +32,7 @@ namespace IO
 	using Character::Inventory;
 
 	// The Item inventory.
-	class UIItemInventory : public UIDragElement
+	class UIItemInventory : public UIDragElement<PosINV>
 	{
 	public:
 		enum Buttons

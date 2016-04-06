@@ -16,13 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UIWorldSelect.h"
+#include "Configuration.h"
+
+#include "Graphics\Sprite.h"
 #include "IO\UI.h"
-#include "Net\Session.h"
 #include "IO\Components\MapleButton.h"
 #include "IO\Components\TwoSpriteButton.h"
-#include "Graphics\Sprite.h"
+#include "Net\Session.h"
 #include "Net\Packets\LoginPackets.h"
-#include "Configuration.h"
+
 #include "nlnx\nx.hpp"
 
 namespace IO
@@ -31,8 +33,8 @@ namespace IO
 
 	UIWorldSelect::UIWorldSelect()
 	{
-		worldid = Configuration::get().getbyte(Settings::WORLD);
-		channelid = Configuration::get().getbyte(Settings::CHANNEL);
+		worldid = Setting<DefaultWorld>::get().load();
+		channelid = Setting<DefaultChannel>::get().load();
 
 		node back = nl::nx::map["Back"]["login.img"]["back"];
 		node worlds = nl::nx::ui["Login.img"]["WorldSelect"]["BtWorld"]["release"];

@@ -295,4 +295,10 @@ namespace Gameplay
 		return get(oid)
 			.reinterpret<Mob>();
 	}
+
+	Optional<const Mob> MapMobs::getmob(int32_t oid) const
+	{
+		return get(oid)
+			.reinterpret<const Mob>();
+	}
 }

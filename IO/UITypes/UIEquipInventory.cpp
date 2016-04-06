@@ -32,8 +32,7 @@ namespace IO
 	using Character::Equipslot;
 
 	UIEquipInventory::UIEquipInventory() :
-		UIDragElement(Settings::POS_EQINV, Point<int16_t>(184, 20)),
-		inventory(Stage::get().getplayer().getinvent()) {
+		UIDragElement<PosEQINV>(Point<int16_t>(184, 20)), inventory(Stage::get().getplayer().getinvent()) {
 
 		iconpositions[1] = Point<int16_t>(43, 25);
 		iconpositions[2] = Point<int16_t>(43, 91);

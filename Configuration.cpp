@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,51 +16,66 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Configuration.h"
+
 #include <fstream>
-#include <stdexcept>
+
+Configuration::Configuration()
+{
+	settings.emplace<ServerIP>();
+	settings.emplace<Fullscreen>();
+	settings.emplace<VSync>();
+	settings.emplace<BGMVolume>();
+	settings.emplace<SFXVolume>();
+	settings.emplace<SaveLogin>();
+	settings.emplace<DefaultAccount>();
+	settings.emplace<DefaultWorld>();
+	settings.emplace<DefaultChannel>();
+	settings.emplace<DefaultCharacter>();
+	settings.emplace<PosSTATS>();
+	settings.emplace<PosEQINV>();
+	settings.emplace<PosINV>();
+
+	load();
+}
+
+Configuration::~Configuration()
+{
+	save();
+}
 
 void Configuration::load()
 {
-	// Open the settings file.
-	using std::ifstream;
-	ifstream config;
-	config.open(Settings::filename());
-	if (config.is_open())
-	{
-		// Go through the file line for line. The same order is always assumed.
-		for (auto it = Settings::getit(); it.hasnext(); it.increment())
-		{
-			string line;
-			if (!getline(config, line))
-				break;
+	using std::string;
+	using std::unordered_map;
+	unordered_map<string, string> rawsettings;
 
-			bool loaded = false;
+	using std::ifstream;
+	ifstream file;
+	file.open(FILENAME);
+	if (file.is_open())
+	{
+		// Go through the file line for line.
+		string line;
+		while (getline(file, line))
+		{
+			// If the setting is not empty, load the value.
 			size_t split = line.find('=');
 			if (split != string::npos && split + 2 < line.size())
 			{
-				Settings::Type setting = it.get();
-				if (line.substr(0, split - 1) == Settings::nameof(setting))
-				{
-					// If everything seems correct, load the setting.
-					string value = line.substr(split + 2);
-					settings[setting] = value;
-					loaded = true;
-				}
+				rawsettings.emplace(
+					line.substr(0, split - 1),
+					line.substr(split + 2)
+					);
 			}
-
-			if (!loaded)
-				break;
 		}
-		config.close();
 	}
-	// Replace missing values with default ones.
-	for (auto it = Settings::getit(); it.hasnext(); it.increment())
+
+	// Replace default values with loaded values.
+	for (auto& setting : settings)
 	{
-		Settings::Type setting = it.get();
-		if (!settings.count(setting))
-		{
-			settings[setting] = Settings::defaultof(setting);
-		}
+		auto rsiter = rawsettings.find(setting.second->name);
+		if (rsiter != rawsettings.end())
+			setting.second->value = rsiter->second;
 	}
 }
 
@@ -69,90 +84,52 @@ void Configuration::save() const
 	// Open the settings file.
 	using std::ofstream;
 	ofstream config;
-	config.open(Settings::filename());
+	config.open(FILENAME);
 	if (config.is_open())
 	{
 		// Save settings line by line.
-		for (auto it = Settings::getit(); it.hasnext(); it.increment())
+		for (auto& setting : settings)
 		{
-			Settings::Type setting = it.get();
-			string name = Settings::nameof(setting);
-			string value = settings.at(setting);
-			config << name << " = " << value << std::endl;
+			config << setting.second->tostring() << std::endl;
 		}
-		config.close();
 	}
 }
 
-void Configuration::setbool(Settings::Type setting, bool b)
+void Configuration::BoolEntry::save(bool b)
 {
-	settings[setting] = b ? "true" : "false";
+	value = b ? "true" : "false";
 }
 
-void Configuration::setint(Settings::Type setting, uint32_t i)
+bool Configuration::BoolEntry::load() const
 {
-	settings[setting] = std::to_string(i);
+	return value == "true";
 }
 
-void Configuration::setpoint(Settings::Type setting, Point<int16_t> vec)
+void Configuration::StringEntry::save(string str)
 {
-	settings[setting] = vec.tostring();
+	value = str;
 }
 
-void Configuration::setstring(Settings::Type setting, string str)
+string Configuration::StringEntry::load() const
 {
-	settings[setting] = str;
+	return value;
 }
 
-bool Configuration::getbool(Settings::Type setting)
+void Configuration::PointEntry::save(Point<int16_t> vec)
 {
-	return settings.count(setting) ? settings.at(setting) == "true" : false;
+	value = vec.tostring();
 }
 
-uint8_t Configuration::getbyte(Settings::Type setting)
+Point<int16_t> Configuration::PointEntry::load() const
 {
-	return static_cast<uint8_t>(getinteger(setting));
-}
+	string xstr = value
+		.substr(1, value
+		.find(",") - 1);
+	string ystr = value
+		.substr(value
+		.find(",") + 1, value.find(")") - value.find(",") - 1);
 
-uint16_t Configuration::getshort(Settings::Type setting)
-{
-	return static_cast<uint16_t>(getinteger(setting));
-}
-
-uint32_t Configuration::getinteger(Settings::Type setting)
-{
-	try
-	{
-		return std::stoi(settings.at(setting));
-	}
-	catch (std::exception&)
-	{
-		return 0;
-	}
-}
-
-string Configuration::getsetting(Settings::Type setting)
-{
-	return settings.count(setting) ? settings.at(setting) : "";
-}
-
-Point<int16_t> Configuration::getpoint(Settings::Type setting)
-{
-	try
-	{
-		string xstr = settings.at(setting)
-			.substr(1, settings.at(setting)
-			.find(",") - 1);
-		string ystr = settings.at(setting)
-			.substr(settings.at(setting)
-			.find(",") + 1, settings.at(setting).find(")") - settings.at(setting).find(",") - 1);
-
-		return Point<int16_t>
-			(static_cast<int16_t>(std::stoi(xstr)), static_cast<int16_t>(std::stoi(ystr))
-			);
-	}
-	catch (std::exception&)
-	{
-		return Point<int16_t>();
-	}
+	auto x = StringConversion<int16_t>(xstr).orzero();
+	auto y = StringConversion<int16_t>(ystr).orzero();
+	return{ x, y };
 }

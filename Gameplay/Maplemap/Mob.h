@@ -37,6 +37,7 @@ namespace Gameplay
 {
 	using std::string;
 	using std::pair;
+	using std::map;
 	using Graphics::Text;
 	using Graphics::EffectLayer;
 	using Graphics::MobHpBar;

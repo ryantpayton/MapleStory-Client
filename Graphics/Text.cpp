@@ -67,9 +67,9 @@ namespace Graphics
 		draw(pos, 1.0f);
 	}
 
-	void Text::draw(Point<int16_t> position, float alpha) const
+	void Text::draw(Point<int16_t> position, float opacity) const
 	{
-		GraphicsGL::get().drawtext(text, layout, font, color, background, position, alpha);
+		GraphicsGL::get().drawtext(text, layout, font, color, background, position, opacity);
 	}
 
 	uint16_t Text::advance(size_t pos) const

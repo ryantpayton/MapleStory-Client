@@ -29,7 +29,7 @@ namespace IO
 	using Graphics::Texture;
 
 	// The Equip inventory.
-	class UIEquipInventory : public UIDragElement
+	class UIEquipInventory : public UIDragElement<PosEQINV>
 	{
 	public:
 		enum Buttons

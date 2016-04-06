@@ -30,12 +30,25 @@ public:
 
 	BoolPair() {}
 
-	const T& operator [](bool b) const
+	template <typename...Args>
+	void set(bool b, Args&&...args)
+	{
+		if (b)
+		{
+			first = T(std::forward<Args>(args)...);
+		}
+		else
+		{
+			second = T(std::forward<Args>(args)...);
+		}
+	}
+
+	T& operator [](bool b)
 	{
 		return b ? first : second;
 	}
 
-	T& operator [](bool b)
+	const T& operator [](bool b) const
 	{
 		return b ? first : second;
 	}

@@ -16,50 +16,69 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Attack.h"
-#include "SkillAction.h"
-#include "SkillBullet.h"
-#include "SkillHitEffect.h"
-#include "SkillUseEffect.h"
+#include <typeindex>
+#include <unordered_map>
 #include <memory>
 
-namespace Gameplay
+template <typename T>
+// An unordered map which uses the type as key.
+class TypeMap
 {
-	using std::unique_ptr;
-
-	// Base class for attacks and buffs.
-	class SpecialMove
+public:
+	using t_ptr = typename std::unique_ptr<T>;
+	using pair = typename std::pair<std::type_index, t_ptr>;
+	using cpair = typename std::pair<const std::type_index, t_ptr>;
+	using underlying_map = typename std::unordered_map<std::type_index, t_ptr>;
+	
+	template <typename T, typename...Args>
+	void emplace(Args&&... args)
 	{
-	public:
-		using Weapon = Character::Weapon;
+		container.emplace(typeid(T), std::make_unique<T>(args...));
+	}
 
-		enum ForbidReason
-		{
-			FBR_NONE,
-			FBR_WEAPONTYPE,
-			FBR_HPCOST,
-			FBR_MPCOST,
-			FBR_BULLETCOST,
-			FBR_OTHER
-		};
+	template <typename T>
+	void erase()
+	{
+		container.erase(typeid(T));
+	}
 
-		virtual ~SpecialMove() {}
+	void clear()
+	{
+		container.clear();
+	}
 
-		virtual void applyuseeffects(Char& user, Attack::Type type) const;
-		virtual void applyhiteffects(Mob& target, uint16_t level, bool twohanded) const;		
-		virtual Animation getbullet(int32_t bulletid) const;
+	template <typename T>
+	T* get()
+	{
+		return reinterpret_cast<T*>(container[typeid(T)].get());
+	}
 
-		virtual void applystats(const Char& user, Attack& attack) const = 0;
-		virtual bool isoffensive() const = 0;
-		virtual int32_t getid() const = 0;
-		virtual ForbidReason canuse(int32_t level, Weapon::Type weapon, uint16_t job, uint16_t hp, uint16_t mp, uint16_t bullets) const = 0;
+	template <typename T>
+	const T* get() const
+	{
+		return reinterpret_cast<T*>(container[typeid(T)].get());
+	}
 
-		bool isskill() const;
+	typename underlying_map::iterator begin()
+	{
+		return container.begin();
+	}
 
-	protected:
-		unique_ptr<SkillAction> action;
-		unique_ptr<SkillBullet> bullet;
-		unique_ptr<SkillUseEffect> useeffect;
-		unique_ptr<SkillHitEffect> hiteffect;
-	};
-}
+	typename underlying_map::iterator end()
+	{
+		return container.end();
+	}
+
+	typename underlying_map::const_iterator begin() const
+	{
+		return container.begin();
+	}
+
+	typename underlying_map::const_iterator end() const
+	{
+		return container.end();
+	}
+
+private:
+	underlying_map container;
+};

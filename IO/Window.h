@@ -33,8 +33,9 @@ namespace IO
 		Window();
 		~Window();
 
-		bool init(bool fullscreen);
+		bool init();
 		bool initwindow();
+		bool notclosed() const;
 		void update();
 		void begin() const;
 		void end() const;

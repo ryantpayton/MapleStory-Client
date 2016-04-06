@@ -204,7 +204,6 @@ namespace Gameplay
 			return;
 
 		const SpecialMove& move = getmove(moveid);
-
 		if (player.canuse(move))
 			applymove(move);
 	}
@@ -222,6 +221,9 @@ namespace Gameplay
 			AttackResult result = mobs.sendattack(attack);
 			mobs.showresult(player, move, result);
 
+			applyusemovement(move);
+			applyresultmovement(move, result);
+
 			using Net::AttackPacket;
 			AttackPacket(result).dispatch();
 		}
@@ -233,6 +235,45 @@ namespace Gameplay
 			int32_t level = player.getskills().getlevel(moveid);
 			using Net::UseSkillPacket;
 			UseSkillPacket(moveid, level).dispatch();
+		}
+	}
+
+	void Stage::applyusemovement(const SpecialMove& move)
+	{
+		switch (move.getid())
+		{
+		case Skill::FP_TELEPORT:
+		case Skill::IL_TELEPORT:
+		case Skill::PRIEST_TELEPORT:
+			break;
+		case Skill::FLASH_JUMP:
+			break;
+		}
+	}
+
+	void Stage::applyresultmovement(const SpecialMove& move, const AttackResult& result)
+	{
+		switch (move.getid())
+		{
+		case Skill::HERO_RUSH:
+		case Skill::PALADIN_RUSH:
+		case Skill::DK_RUSH:
+			applyrush(result);
+			break;
+		}
+	}
+
+	void Stage::applyrush(const AttackResult& result)
+	{
+		if (result.mobcount == 0)
+			return;
+
+		int32_t oid = result.lastoid();
+		auto mob = mobs.getmob(oid);
+		if (mob)
+		{
+			int16_t targetx = mob->getposition().x();
+			player.rush(targetx);
 		}
 	}
 
@@ -273,7 +314,9 @@ namespace Gameplay
 	{
 		const SpecialMove& move = getmove(skillid);
 		if (player.canuse(move))
+		{
 			move.applyuseeffects(player, Attack::MAGIC);
+		}
 	}
 
 	void Stage::checkportals()
@@ -386,6 +429,9 @@ namespace Gameplay
 				break;
 			case 105:
 				usemove(Skill::AVENGER);
+				break;
+			case 106:
+				usemove(Skill::DK_RUSH);
 				break;
 			}
 			break;

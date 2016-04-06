@@ -21,24 +21,71 @@
 
 namespace IO
 {
-	using std::string;
-
+	template <typename T>
 	// Base class for UI Windows which can be moved with the mouse cursor.
 	class UIDragElement : public UIElement
 	{
 	public:
-		bool cursorleave(bool clicked, Point<int16_t> cursorpos) override;
-		Cursor::State sendmouse(bool clicked, Point<int16_t> cursorpos) override;
+		bool cursorleave(bool clicked, Point<int16_t> cursorpos) override
+		{
+			if (dragged)
+			{
+				if (clicked)
+				{
+					position = cursorpos - cursoroffset;
+					return true;
+				}
+				else
+				{
+					dragged = false;
+					Setting<T>::get().save(position);
+				}
+			}
+			return false;
+		}
+
+		Cursor::State sendmouse(bool clicked, Point<int16_t> cursorpos) override
+		{
+			if (clicked)
+			{
+				if (dragged)
+				{
+					position = cursorpos - cursoroffset;
+					return Cursor::CLICKING;
+				}
+				else if (indragrange(cursorpos))
+				{
+					cursoroffset = cursorpos - position;
+					dragged = true;
+					return Cursor::CLICKING;
+				}
+			}
+			else
+			{
+				if (dragged)
+				{
+					dragged = false;
+					Setting<T>::get().save(position);
+				}
+			}
+			return UIElement::sendmouse(clicked, cursorpos);
+		}
 
 	protected:
-		UIDragElement(Settings::Type setting, Point<int16_t> dragarea);
+		UIDragElement(Point<int16_t> d) : dragarea(d) 
+		{
+			position = Setting<T>::get().load();
+		}
 		
 		bool dragged;
-		Settings::Type setting;
 		Point<int16_t> dragarea;
 		Point<int16_t> cursoroffset;
 
 	private:
-		bool indragrange(Point<int16_t> cursorpos) const;
+		bool indragrange(Point<int16_t> cursorpos) const
+		{
+			auto bounds = rectangle2d<int16_t>(position, position + dragarea);
+			return bounds.contains(cursorpos);
+		}
 	};
 }

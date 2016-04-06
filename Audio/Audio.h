@@ -58,7 +58,7 @@ namespace Audio
 
 		void play() const;
 
-		static bool init(uint8_t volume);
+		static bool init();
 		static void close();
 		static bool setsfxvolume(uint8_t volume);
 
@@ -81,7 +81,7 @@ namespace Audio
 
 		void play() const;
 
-		static bool init(uint8_t volume);
+		static bool init();
 		static bool setbgmvolume(uint8_t volume);
 
 	private:

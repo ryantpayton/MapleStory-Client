@@ -96,7 +96,7 @@ namespace IO
 				);
 		}
 
-		selected = Configuration::get().getbyte(Settings::CHARACTER);
+		selected = Setting<DefaultCharacter>::get().load();
 		if (selected >= charcount)
 			selected = 0;
 		page = selected % 8;
@@ -229,7 +229,7 @@ namespace IO
 	{
 		if (selected < charcount)
 		{
-			Configuration::get().setint(Settings::CHARACTER, selected);
+			Setting<DefaultCharacter>::get().save(selected);
 			int32_t cid = Session::get().getlogin().getchar(selected).cid;
 			Session::get().getlogin().setcharid(cid);
 			switch (Session::get().getlogin().getaccount().pic)

@@ -18,6 +18,7 @@
 #pragma once
 #include "Character\Look\Weapon.h"
 #include "Util\EnumMap.h"
+
 #include <string>
 
 namespace IO

@@ -23,15 +23,12 @@
 
 namespace IO
 {
-	using Character::CharStats;
-	using Character::Maplestat;
-	using Character::Equipstat;
-	using Graphics::Text;
-	using Graphics::Texture;
-
-	class UIStatsinfo : public UIDragElement
+	class UIStatsinfo : public UIDragElement<PosSTATS>
 	{
 	public:
+		using Maplestat = Character::Maplestat;
+		using Equipstat = Character::Equipstat;
+
 		enum Buttons
 		{
 			BT_HP,
@@ -53,6 +50,10 @@ namespace IO
 		void updatestat(Maplestat::Value stat);
 
 	private:
+		using CharStats = Character::CharStats;
+		using Text = Graphics::Text;
+		using Texture = Graphics::Texture;
+
 		UIStatsinfo& operator = (const UIStatsinfo&) = delete;
 
 		static const size_t NUMLABELS = 27;

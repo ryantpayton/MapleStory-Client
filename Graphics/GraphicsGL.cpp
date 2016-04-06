@@ -17,7 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "GraphicsGL.h"
 #include "Console.h"
+
 #include "glm.hpp"
+
 #include <algorithm>
 
 namespace Graphics
@@ -263,6 +265,11 @@ namespace Graphics
 		}
 	}
 
+	void GraphicsGL::addbitmap(const bitmap& bmp)
+	{
+		getoffset(bmp);
+	}
+
 	const GraphicsGL::Offset& GraphicsGL::getoffset(const bitmap& bmp)
 	{
 		size_t id = bmp.id();
@@ -376,8 +383,11 @@ namespace Graphics
 		Console::get().print("Used: " + std::to_string(usedpercent) + ", wasted: " + std::to_string(wastedpercent));*/
 
 		glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_BGRA, GL_UNSIGNED_BYTE, bmp.data());
-		offsets[id] = Offset(x, y, w, h);
-		return offsets[id];
+		return offsets.emplace(
+			std::piecewise_construct, 
+			std::forward_as_tuple(id), 
+			std::forward_as_tuple(x, y, w, h)
+			).first->second;
 	}
 
 	void GraphicsGL::draw(const bitmap& bmp, int16_t x, int16_t y, int16_t w, int16_t h, float alpha,
@@ -397,9 +407,7 @@ namespace Graphics
 		GLshort tb = (top > bottom ? top : bottom) + Constants::VIEWYOFFSET;
 		if (tr > 0 && tl < Constants::VIEWWIDTH && tb > 0 && tt < Constants::VIEWHEIGHT)
 		{
-			const Offset& offset = getoffset(bmp);
-			Quad quad = Quad(left, right, top, bottom, offset, 1.0f, 1.0f, 1.0f, alpha);
-			quads.push_back(quad);
+			quads.emplace_back(left, right, top, bottom, getoffset(bmp), 1.0f, 1.0f, 1.0f, alpha);
 		}
 	}
 
@@ -516,9 +524,9 @@ namespace Graphics
 				GLshort top = y + line.position.y() - font.linespace() + 5;
 				GLshort bottom = top + layout.dimensions.y() - 2;
 
-				quads.push_back(Quad(left, right, top, bottom, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f));
-				quads.push_back(Quad(left - 1, left, top + 1, bottom - 1, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f));
-				quads.push_back(Quad(right, right + 1, top + 1, bottom - 1, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f));
+				quads.emplace_back(left, right, top, bottom, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f);
+				quads.emplace_back(left - 1, left, top + 1, bottom - 1, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f);
+				quads.emplace_back(right, right + 1, top + 1, bottom - 1, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f);
 			}
 			break;
 		}
@@ -565,8 +573,7 @@ namespace Graphics
 				if (chw <= 0 || chh <= 0)
 					continue;
 
-				Quad quad = Quad(chx, chx + chw, chy, chy + chh, ch.offset, color[0], color[1], color[2], opacity);
-				quads.push_back(quad);
+				quads.emplace_back(chx, chx + chw, chy, chy + chh, ch.offset, color[0], color[1], color[2], opacity);
 			}
 		}
 	}
@@ -576,8 +583,7 @@ namespace Graphics
 		if (locked)
 			return;
 
-		Quad quad = Quad(x, x + w, y, y + h, nulloffset, r, g, b, a);
-		quads.push_back(quad);
+		quads.emplace_back(x, x + w, y, y + h, nulloffset, r, g, b, a);
 	}
 
 	void GraphicsGL::drawscreenfill(float r, float g, float b, float a)
@@ -597,19 +603,6 @@ namespace Graphics
 
 	void GraphicsGL::flush(float opacity)
 	{
-		/*static bool showatlas = false;
-		if (showatlas)
-		{
-			quads.clear();
-
-			for (auto& oit : offsets)
-			{
-				const Offset& off = oit.second;
-				Quad quad = Quad(off.l / 10, off.r / 10, off.t / 10, off.b / 10, off, 0.0f, 0.0f, 0.0f, 1.0f);
-				quads.push_back(quad);
-			}
-		}*/
-
 		bool coverscene = opacity != 1.0f;
 		if (coverscene)
 		{
@@ -619,8 +612,7 @@ namespace Graphics
 			int16_t bottom = top + Constants::VIEWHEIGHT;
 			float complement = 1.0f - opacity;
 
-			Quad quad = Quad(left, right, top, bottom, nulloffset, 0.0f, 0.0f, 0.0f, complement);
-			quads.push_back(quad);
+			quads.emplace_back(left, right, top, bottom, nulloffset, 0.0f, 0.0f, 0.0f, complement);
 		}
 
 		glClearColor(1.0, 1.0, 1.0, 1.0);

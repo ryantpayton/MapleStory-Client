@@ -25,7 +25,7 @@
 namespace Gameplay
 {
 	using std::vector;
-	using std::map;
+	using std::unordered_map;
 	using Graphics::Animation;
 	using Audio::Sound;
 
@@ -94,6 +94,17 @@ namespace Gameplay
 		uint8_t direction = 0;
 		uint8_t stance = 0;
 		uint8_t speed = 0;
-		map<int32_t, vector<pair<int32_t, bool>>> damagelines;
+		unordered_map<int32_t, vector<pair<int32_t, bool>>> damagelines;
+
+		int32_t firstoid() const
+		{
+			auto begin = damagelines.begin();
+			return begin != damagelines.end() ? begin->first : 0;
+		}
+
+		int32_t lastoid() const
+		{
+			return damagelines.size() > 0 ? (--damagelines.end())->first : 0;
+		}
 	};
 }

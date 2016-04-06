@@ -48,12 +48,14 @@ namespace Graphics
 
 		// Initialise all resources.
 		bool init();
-		// Re-initialise, for example after changing screen modes.
+		// Re-initialise after changing screen modes.
 		void reinit();
 
 		// Clear all bitmaps if most of the space is used up.
 		void clear();
 
+		// Add a bitmap to the available resources.
+		void addbitmap(const bitmap& bmp);
 		// Draw the bitmap with the given parameters.
 		void draw(const bitmap& bmp, int16_t x, int16_t y, int16_t tx, int16_t ty,
 			float a, float xs, float ys, int16_t cx, int16_t cy);

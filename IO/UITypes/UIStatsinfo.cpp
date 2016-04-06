@@ -17,10 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIStatsinfo.h"
 
+#include "Gameplay\Stage.h"
 #include "IO\UI.h"
 #include "IO\Components\MapleButton.h"
 #include "Net\Packets\PlayerPackets.h"
-#include "Gameplay\Stage.h"
 
 #include "nlnx\nx.hpp"
 
@@ -29,8 +29,7 @@ namespace IO
 	using Gameplay::Stage;
 
 	UIStatsinfo::UIStatsinfo() :
-		UIDragElement(Settings::POS_STATS, Point<int16_t>(212, 20)),
-		stats(Stage::get().getplayer().getstats()) {
+		UIDragElement<PosSTATS>(Point<int16_t>(212, 20)), stats(Stage::get().getplayer().getstats()) {
 
 		using nl::node;
 		node src = nl::nx::ui["UIWindow4.img"]["Stat"]["main"];

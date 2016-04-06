@@ -19,6 +19,7 @@
 #include "UI.h"
 #include "Constants.h"
 #include "Timer.h"
+#include "Configuration.h"
 
 #include "Graphics\GraphicsGL.h"
 #include "Gameplay\Stage.h"
@@ -87,8 +88,10 @@ namespace IO
 		UI::get().sendmouse(pos);
 	}
 
-	bool Window::init(bool fs)
+	bool Window::init()
 	{
+		fullscreen = Setting<Fullscreen>::get().load();
+
 		if (!glfwInit())
 			return false;
 
@@ -96,11 +99,8 @@ namespace IO
 		context = glfwCreateWindow(1, 1, "", nullptr, nullptr);
 		glfwMakeContextCurrent(context);
 		glfwSetErrorCallback(error_callback);
-
 		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
 		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-		fullscreen = fs;
 
 		if (!GraphicsGL::get().init())
 			return false;
@@ -110,14 +110,14 @@ namespace IO
 
 	bool Window::initwindow()
 	{
-		if (glwnd) 
+		if (glwnd)
 			glfwDestroyWindow(glwnd);
 
 		glwnd = glfwCreateWindow(
-			Constants::VIEWWIDTH, 
-			Constants::VIEWHEIGHT, 
-			"Journey", 
-			fullscreen ? glfwGetPrimaryMonitor() : nullptr, 
+			Constants::VIEWWIDTH,
+			Constants::VIEWHEIGHT,
+			"Journey",
+			fullscreen ? glfwGetPrimaryMonitor() : nullptr,
 			context
 			);
 
@@ -125,7 +125,14 @@ namespace IO
 			return false;
 
 		glfwMakeContextCurrent(glwnd);
-		glfwSwapInterval(0);
+
+		bool vsync = Setting<VSync>::get().load();
+		glfwSwapInterval(vsync ? 1 : 0);
+
+		glViewport(0, 0, Constants::VIEWWIDTH, Constants::VIEWHEIGHT);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
 		glfwSetInputMode(glwnd, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		glfwSetInputMode(glwnd, GLFW_STICKY_KEYS, 1);
 		glfwSetKeyCallback(glwnd, key_callback);
@@ -135,6 +142,11 @@ namespace IO
 		GraphicsGL::get().reinit();
 
 		return true;
+	}
+
+	bool Window::notclosed() const
+	{
+		return glfwWindowShouldClose(glwnd) == 0;
 	}
 
 	void Window::update()

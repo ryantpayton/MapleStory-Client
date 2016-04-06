@@ -77,10 +77,11 @@ namespace Net
 			Session::get().getlogin().parseaccount(recv);
 
 			// Save the Login ID if the box for it on the login panel is checked.
-			if (Configuration::get().getbool(Settings::SAVE_LOGIN))
+			bool savelogin = Setting<SaveLogin>::get().load();
+			if (savelogin)
 			{
 				string name = Session::get().getlogin().getaccount().name;
-				Configuration::get().setstring(Settings::ACCOUNT, name);
+				Setting<DefaultAccount>::get().save(name);
 			}
 
 			// Request the list of worlds and channels online.

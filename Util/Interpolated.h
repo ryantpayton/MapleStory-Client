@@ -16,7 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include <functional>
 
 template <typename T>
 class Interpolated
@@ -123,7 +122,7 @@ public:
 
 	T get(float alpha) const
 	{
-		return static_cast<T>((1.0f - alpha) * before + alpha * now);
+		return (1.0f - alpha) * before + alpha * now;
 	}
 
 	void operator = (T value)
