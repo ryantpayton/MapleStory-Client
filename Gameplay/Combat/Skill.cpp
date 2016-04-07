@@ -43,6 +43,8 @@ namespace Gameplay
 		int32_t reqw = src["weapon"];
 		reqweapon = Weapon::typebyvalue(100 + reqw);
 
+		element = src["elemAttr"];
+
 		/*
 		affected = src["affected"];
 

@@ -21,6 +21,9 @@
 // JOURNEY_USE_ASIO : Use asio for networking , if not defined use Winsock.
 //#define JOURNEY_USE_ASIO
 
+// JOURNEY_USE_XXHASH : Use xxhash for file check (additional dependency)
+//#define JOURNEY_USE_XXHASH
+
 // JOURNEY_USE_CRYPTO : Use cryptography for communication with the server.
 #define JOURNEY_USE_CRYPTO
 

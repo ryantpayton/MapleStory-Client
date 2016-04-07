@@ -19,8 +19,6 @@
 
 namespace Gameplay
 {
-	using std::map;
-
 	class SkillAction
 	{
 	public:
@@ -78,6 +76,9 @@ namespace Gameplay
 		void apply(Char& target, Attack::Type atype) const override;
 
 	private:
+		template <typename K, typename V>
+		using map = std::map<K, V>;
+
 		map<int32_t, string> actions;
 		int32_t skillid;
 	};

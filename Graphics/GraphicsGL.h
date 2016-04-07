@@ -58,7 +58,7 @@ namespace Graphics
 		void addbitmap(const bitmap& bmp);
 		// Draw the bitmap with the given parameters.
 		void draw(const bitmap& bmp, int16_t x, int16_t y, int16_t tx, int16_t ty,
-			float a, float xs, float ys, int16_t cx, int16_t cy);
+			float a, float xs, float ys, int16_t cx, int16_t cy, float ang);
 
 		// Create a layout for the text with the parameters specified.
 		Text::Layout createlayout(const string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth);
@@ -163,12 +163,30 @@ namespace Graphics
 			static const size_t LENGTH = 4;
 			Vertex vertices[LENGTH];
 
-			Quad(GLshort l, GLshort r, GLshort t, GLshort b, const Offset& o, GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca)
+			Quad(GLshort l, GLshort r, GLshort t, GLshort b, const Offset& o, GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, GLfloat rot)
 			{
 				vertices[0] = { l, t, o.l, o.t, cr, cg, cb, ca };
 				vertices[1] = { l, b, o.l, o.b, cr, cg, cb, ca };
 				vertices[2] = { r, b, o.r, o.b, cr, cg, cb, ca };
 				vertices[3] = { r, t, o.r, o.t, cr, cg, cb, ca };
+
+				if (rot != 0.0f)
+				{
+					float cos = std::cos(rot);
+					float sin = std::sin(rot);
+					GLshort cx = (l + r) / 2;
+					GLshort cy = (t + b) / 2;
+
+					for (int i = 0; i < 4; i++)
+					{
+						GLshort vx = vertices[i].x - cx;
+						GLshort vy = vertices[i].y - cy;
+						GLfloat rx = std::roundf(vx * cos - vy * sin);
+						GLfloat ry = std::roundf(vx * sin + vy * cos);
+						vertices[i].x = static_cast<GLshort>(rx + cx);
+						vertices[i].y = static_cast<GLshort>(ry + cy);
+					}
+				}
 			}
 		};
 

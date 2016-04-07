@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Journey.h"
 #include <cstdint>
 #include <string>
 
@@ -27,8 +28,11 @@ namespace Util
 		using std::uint64_t;
 		using std::string;
 
+#ifdef JOURNEY_USE_XXHASH
 		// Calculate file hash using the fast xxhash algorithm.
 		string getfilehash(const char* filename, uint64_t seed);
+#endif
+
 		// Calculate file hash using the slower Sha-256 algorithm.
 		string getfilehash(const char* filename);
 	}

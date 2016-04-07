@@ -80,7 +80,7 @@ namespace Graphics
 			absh = height;
 		absw = static_cast<int16_t>(absw * args.getxscale());
 		absh = static_cast<int16_t>(absh * args.getyscale());
-		float absopc = opacity * args.getalpha();
+		float absopc = opacity * args.getopacity();
 		Geometry::draw(absp.x(), absp.y(), absw, absh, color, absopc);
 	}
 

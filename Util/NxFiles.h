@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Journey.h"
 #include "Util\Singleton.h"
 #include <cstdint>
 #include <string>
@@ -33,8 +34,11 @@ namespace Util
 		// When successfull also tests if the UI file contains valid images.
 		bool init();
 
+#ifdef JOURNEY_USE_XXHASH
 		// Obtains a hash value for a file of game assets. Fast version.
 		string gethash(size_t fileindex, uint64_t seed);
+#endif
+
 		// Obtains a hash value for a file of game assets. Slow version.
 		string gethash(size_t fileindex);
 

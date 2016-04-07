@@ -19,10 +19,9 @@
 
 namespace Gameplay
 {
-	Bullet::Bullet(Animation a, Point<int16_t> origin, bool tl)
+	Bullet::Bullet(Animation a, Point<int16_t> origin, bool toleft)
 	{
 		animation = a;
-		toleft = tl;
 
 		moveobj.setx(origin.x() + (toleft ? -30.0 : 30.0));
 		moveobj.sety(origin.y() - 26.0);
@@ -77,6 +76,6 @@ namespace Gameplay
 		moveobj.move();
 
 		int16_t xdelta = target.x() - moveobj.getx();
-		return toleft ? xdelta > 10 : xdelta < 10;
+		return moveobj.hspeed > 0.0 ? xdelta < 10 : xdelta > 10;
 	}
 }

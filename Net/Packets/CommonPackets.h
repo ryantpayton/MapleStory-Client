@@ -18,12 +18,11 @@
 #pragma once
 #include "OutPacket.h"
 #include "SendOpcodes.h"
+
 #include "Util\NxFiles.h"
 
 namespace Net
 {
-	using Util::NxFiles;
-
 	// Packet which notifies the server that the connection is still alive.
 	// Opcode: PONG(24)
 	class PongPacket : public OutPacket
@@ -38,6 +37,9 @@ namespace Net
 	class NxCheckPacket : public OutPacket
 	{
 	public:
+		using NxFiles = Util::NxFiles;
+
+#ifdef JOURNEY_USE_XXHASH
 		NxCheckPacket(uint64_t seed) : OutPacket(HASH_CHECK)
 		{
 			NxFiles& files = NxFiles::get();
@@ -47,6 +49,7 @@ namespace Net
 				writestr(files.gethash(i, seed));
 			}
 		}
+#endif
 
 		NxCheckPacket() : OutPacket(HASH_CHECK)
 		{

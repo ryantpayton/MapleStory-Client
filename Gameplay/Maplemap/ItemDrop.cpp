@@ -27,14 +27,14 @@ namespace Gameplay
 		itemid = iid;
 	}
 
-	void ItemDrop::draw(Point<int16_t> viewpos, float inter) const
+	void ItemDrop::draw(Point<int16_t> viewpos, float alpha) const
 	{
 		if (!active || !icon)
 			return;
 
-		Point<int16_t> absp = phobj.getposition(inter) + viewpos;
+		Point<int16_t> absp = phobj.getposition(alpha) + viewpos;
 
 		using Graphics::DrawArgument;
-		icon->draw(DrawArgument(absp, opacity));
+		icon->draw(DrawArgument(angle.get(alpha), absp, opacity.get(alpha)));
 	}
 }

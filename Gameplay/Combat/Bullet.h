@@ -37,7 +37,6 @@ namespace Gameplay
 	private:
 		Animation animation;
 		MovingObject moveobj;
-		bool toleft;
 		bool flip;
 	};
 }

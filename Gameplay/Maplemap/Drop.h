@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "MapObject.h"
+
+#include "Util\Interpolated.h"
 #include "Util\rectangle2d.h"
 
 namespace Gameplay
@@ -24,13 +26,6 @@ namespace Gameplay
 	class Drop : public MapObject
 	{
 	public:
-		enum State
-		{
-			DROPPED,
-			FLOATING,
-			PICKEDUP
-		};
-
 		virtual int8_t update(const Physics& physics) override;
 
 		void init(int8_t);
@@ -42,14 +37,25 @@ namespace Gameplay
 		Drop(int32_t oid, int32_t owner, Point<int16_t> start,
 			Point<int16_t> dest, int8_t type, int8_t mode, bool playerdrop);
 
+		Linear<float> opacity;
+		Linear<float> angle;
+
+	private:
+		enum State
+		{
+			DROPPED,
+			FLOATING,
+			PICKEDUP
+		};
+
 		int32_t owner;
-		Point<int16_t> dest;
 		int8_t pickuptype;
 		bool playerdrop;
 
 		const PhysicsObject* looter;
 		State state;
-		float opacity;
+
+		Point<int16_t> dest;
 		double basey;
 		double moved;
 	};

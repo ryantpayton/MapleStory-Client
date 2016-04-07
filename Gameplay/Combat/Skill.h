@@ -149,6 +149,7 @@ namespace Gameplay
 		Sound usesound;
 		Sound hitsound;
 		Weapon::Type reqweapon;
+		string element;
 		int32_t skillid;
 		bool passive;
 		bool offensive;

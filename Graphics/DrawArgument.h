@@ -37,42 +37,49 @@ namespace Graphics
 			: DrawArgument(p, p, xs, ys, 1.0f) {}
 
 		DrawArgument(Point<int16_t> p, Point<int16_t> s)
-			: DrawArgument(p, p, s, 1.0f, 1.0f, 1.0f) {}
+			: DrawArgument(p, p, s, 1.0f, 1.0f, 1.0f, 0.0f) {}
 
 		DrawArgument(Point<int16_t> p, bool flip)
 			: DrawArgument(p, flip, 1.0f) {}
 
-		DrawArgument(Point<int16_t> p, float a)
-			: DrawArgument(p, false, a) {}
+		DrawArgument(float ang, Point<int16_t> p, float opc)
+			: DrawArgument(ang, p, false, opc) {}
 
-		DrawArgument(Point<int16_t> p, bool flip, float a)
-			: DrawArgument(p, p, flip ? -1.0f : 1.0f, 1.0f, a) {}
+		DrawArgument(Point<int16_t> p, float opc)
+			: DrawArgument(p, false, opc) {}
+
+		DrawArgument(Point<int16_t> p, bool flip, float opc)
+			: DrawArgument(p, p, flip ? -1.0f : 1.0f, 1.0f, opc) {}
+
+		DrawArgument(float ang, Point<int16_t> p, bool flip, float opc)
+			: DrawArgument(p, p, Point<int16_t>(), flip ? -1.0f : 1.0f, 1.0f, opc, ang) {}
 
 		DrawArgument(Point<int16_t> p, bool flip, Point<int16_t> c)
 			: DrawArgument(p, c, flip ? -1.0f : 1.0f, 1.0f, 1.0f) {}
 
 		DrawArgument(Point<int16_t> p, Point<int16_t> c,
-			float xs, float ys, float a)
-			: DrawArgument(p, c, Point<int16_t>(), xs, ys, a) {}
+			float xs, float ys, float opc)
+			: DrawArgument(p, c, Point<int16_t>(), xs, ys, opc, 0.0f) {}
 
 		DrawArgument(bool flip)
 			: DrawArgument(flip ? -1.0f : 1.0f, 1.0f, 1.0f) {}
 
-		DrawArgument(float xs, float ys, float a)
-			: DrawArgument(Point<int16_t>(), xs, ys, a) {}
+		DrawArgument(float xs, float ys, float opc)
+			: DrawArgument(Point<int16_t>(), xs, ys, opc) {}
 
-		DrawArgument(Point<int16_t> p, float xs, float ys, float a)
-			: DrawArgument(p, p, xs, ys, a) {}
+		DrawArgument(Point<int16_t> p, float xs, float ys, float opc)
+			: DrawArgument(p, p, xs, ys, opc) {}
 
 		DrawArgument(Point<int16_t> p, Point<int16_t> c, 
-			Point<int16_t> s, float xs, float ys, float a) {
+			Point<int16_t> s, float xs, float ys, float opc, float ang) {
 
 			pos = p;
 			center = c;
 			stretch = s;
 			xscale = xs;
 			yscale = ys;
-			alpha = a;
+			opacity = opc;
+			angle = ang;
 		}
 
 		~DrawArgument() {}
@@ -102,44 +109,51 @@ namespace Graphics
 			return yscale; 
 		}
 
-		float getalpha() const 
+		float getopacity() const 
 		{ 
-			return alpha; 
+			return opacity; 
+		}
+
+		float getangle() const
+		{
+			return angle;
 		}
 
 		DrawArgument operator + (Point<int16_t> argpos) const
 		{
 			auto psum = pos + argpos;
 			auto csum = center + argpos;
-			return DrawArgument(psum, csum, stretch, xscale, yscale, alpha);
+			return DrawArgument(psum, csum, stretch, xscale, yscale, opacity, angle);
 		}
 
-		DrawArgument operator + (float argalpha) const
+		DrawArgument operator + (float argopc) const
 		{
-			auto opcsum = alpha * argalpha;
-			return DrawArgument(pos, center, stretch, xscale, yscale, opcsum);
+			auto opcsum = opacity * argopc;
+			return DrawArgument(pos, center, stretch, xscale, yscale, opcsum, angle);
 		}
 
 		DrawArgument operator + (const DrawArgument& args) const
 		{
-			auto psum = pos + args.getpos();
-			auto csum = center + args.getcenter();
-			auto ssum = stretch + args.getstretch();
-			auto xssum = xscale * args.getxscale();
-			auto yssum = yscale * args.getyscale();
-			auto opcsum = alpha * args.getalpha();
-			return DrawArgument(psum, csum, ssum, xssum, yssum, opcsum);
+			auto psum = pos + args.pos;
+			auto csum = center + args.center;
+			auto ssum = stretch + args.stretch;
+			auto xssum = xscale * args.xscale;
+			auto yssum = yscale * args.yscale;
+			auto opcsum = opacity * args.opacity;
+			auto anglesum = angle + args.angle;
+			return DrawArgument(psum, csum, ssum, xssum, yssum, opcsum, anglesum);
 		}
 
 		DrawArgument operator - (const DrawArgument& args) const
 		{
-			auto pdiff = pos - args.getpos();
-			auto cdiff = center - args.getcenter();
-			auto sdiff = stretch - args.getstretch();
-			auto xsdiff = xscale / args.getxscale();
-			auto ysdiff = yscale / args.getyscale();
-			auto opcdiff = alpha / args.getalpha();
-			return DrawArgument(pdiff, cdiff, sdiff, xsdiff, ysdiff, opcdiff);
+			auto pdiff = pos - args.pos;
+			auto cdiff = center - args.center;
+			auto sdiff = stretch - args.stretch;
+			auto xsdiff = xscale / args.xscale;
+			auto ysdiff = yscale / args.yscale;
+			auto opcdiff = opacity / args.opacity;
+			auto anglediff = angle / args.angle;
+			return DrawArgument(pdiff, cdiff, sdiff, xsdiff, ysdiff, opcdiff, anglediff);
 		}
 
 	private:
@@ -148,6 +162,7 @@ namespace Graphics
 		Point<int16_t> stretch;
 		float xscale;
 		float yscale;
-		float alpha;
+		float opacity;
+		float angle;
 	};
 }

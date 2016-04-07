@@ -18,8 +18,12 @@
 #pragma once
 #include "HashUtility.h"
 #include "Sha256.h"
-#include "xxhash.h"
 #include <fstream>
+
+#ifdef JOURNEY_USE_XXHASH
+#include "xxhash.h"
+#endif
+
 
 namespace Util
 {
@@ -28,6 +32,7 @@ namespace Util
 		// 128 MB.
 		const size_t CHUNK_SIZE = 134217728;
 
+#ifdef JOURNEY_USE_XXHASH
 		string getfilehash(const char* filename, uint64_t seed)
 		{
 			// Open file stream.
@@ -92,6 +97,7 @@ namespace Util
 			file.close();
 			return std::to_string(result);
 		}
+#endif
 
 		string getfilehash(const char* filename)
 		{

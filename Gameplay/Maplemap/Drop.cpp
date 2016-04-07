@@ -28,7 +28,8 @@ namespace Gameplay
 		pickuptype = type;
 		playerdrop = pldrp;
 
-		opacity = 1.0f;
+		angle.set(0.0f);
+		opacity.set(1.0f);
 		moved = 0.0f;
 		looter = nullptr;
 
@@ -57,12 +58,21 @@ namespace Gameplay
 	{
 		physics.moveobject(phobj);
 
-		if (state == DROPPED && phobj.onground)
+		if (state == DROPPED)
 		{
-			phobj.hspeed = 0.0;
-			phobj.type = PhysicsObject::FIXATED;
-			setposition(dest.x(), dest.y() - 4);
-			state = FLOATING;
+			if (phobj.onground)
+			{
+				phobj.hspeed = 0.0;
+				phobj.type = PhysicsObject::FIXATED;
+				state = FLOATING;
+				angle.set(0.0f);
+				setposition(dest.x(), dest.y() - 4);
+			}
+			else
+			{
+				static const float SPINSTEP = 0.2f;
+				angle += SPINSTEP;
+			}
 		}
 		
 		if (state == FLOATING)
@@ -74,6 +84,7 @@ namespace Gameplay
 		if (state == PICKEDUP)
 		{
 			static const uint16_t PICKUPTIME = 48;
+			static const float OPCSTEP = 1.0f / PICKUPTIME;
 
 			if (looter)
 			{
@@ -81,10 +92,10 @@ namespace Gameplay
 				phobj.hspeed = looter->hspeed / 2.0 + (hdelta - 16.0) / PICKUPTIME;
 			}
 
-			opacity -= 1.0f / PICKUPTIME;
-			if (opacity <= 1.0f / PICKUPTIME)
+			opacity -= OPCSTEP;
+			if (opacity.last() <= OPCSTEP)
 			{
-				opacity = 0.0f;
+				opacity.set(1.0f);
 
 				MapObject::deactivate();
 				return -1;
@@ -105,6 +116,7 @@ namespace Gameplay
 			MapObject::deactivate();
 			break;
 		case 2:
+			angle.set(0.0f);
 			state = PICKEDUP;
 			looter = lt;
 			phobj.vspeed = -4.5f;

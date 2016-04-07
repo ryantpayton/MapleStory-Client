@@ -18,8 +18,6 @@
 #include "GraphicsGL.h"
 #include "Console.h"
 
-#include "glm.hpp"
-
 #include <algorithm>
 
 namespace Graphics
@@ -230,8 +228,8 @@ namespace Graphics
 		glUniform2f(uniform_screensize, Constants::VIEWWIDTH, Constants::VIEWHEIGHT);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glVertexAttribPointer(attribute_coord, 4, GL_SHORT, GL_FALSE, 24, 0);
-		glVertexAttribPointer(attribute_color, 4, GL_FLOAT, GL_FALSE, 24, (const void*)8);
+		glVertexAttribPointer(attribute_coord, 4, GL_SHORT, GL_FALSE, sizeof(Quad::Vertex), 0);
+		glVertexAttribPointer(attribute_color, 4, GL_FLOAT, GL_FALSE, sizeof(Quad::Vertex), (const void*)8);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -391,7 +389,7 @@ namespace Graphics
 	}
 
 	void GraphicsGL::draw(const bitmap& bmp, int16_t x, int16_t y, int16_t w, int16_t h, float alpha,
-		float xscale, float yscale, int16_t centerx, int16_t centery) {
+		float xscale, float yscale, int16_t centerx, int16_t centery, float angle) {
 
 		if (locked)
 			return;
@@ -407,7 +405,7 @@ namespace Graphics
 		GLshort tb = (top > bottom ? top : bottom) + Constants::VIEWYOFFSET;
 		if (tr > 0 && tl < Constants::VIEWWIDTH && tb > 0 && tt < Constants::VIEWHEIGHT)
 		{
-			quads.emplace_back(left, right, top, bottom, getoffset(bmp), 1.0f, 1.0f, 1.0f, alpha);
+			quads.emplace_back(left, right, top, bottom, getoffset(bmp), 1.0f, 1.0f, 1.0f, alpha, angle);
 		}
 	}
 
@@ -524,9 +522,9 @@ namespace Graphics
 				GLshort top = y + line.position.y() - font.linespace() + 5;
 				GLshort bottom = top + layout.dimensions.y() - 2;
 
-				quads.emplace_back(left, right, top, bottom, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f);
-				quads.emplace_back(left - 1, left, top + 1, bottom - 1, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f);
-				quads.emplace_back(right, right + 1, top + 1, bottom - 1, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f);
+				quads.emplace_back(left, right, top, bottom, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f, 0.0f);
+				quads.emplace_back(left - 1, left, top + 1, bottom - 1, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f, 0.0f);
+				quads.emplace_back(right, right + 1, top + 1, bottom - 1, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f, 0.0f);
 			}
 			break;
 		}
@@ -573,7 +571,7 @@ namespace Graphics
 				if (chw <= 0 || chh <= 0)
 					continue;
 
-				quads.emplace_back(chx, chx + chw, chy, chy + chh, ch.offset, color[0], color[1], color[2], opacity);
+				quads.emplace_back(chx, chx + chw, chy, chy + chh, ch.offset, color[0], color[1], color[2], opacity, 0.0f);
 			}
 		}
 	}
@@ -583,7 +581,7 @@ namespace Graphics
 		if (locked)
 			return;
 
-		quads.emplace_back(x, x + w, y, y + h, nulloffset, r, g, b, a);
+		quads.emplace_back(x, x + w, y, y + h, nulloffset, r, g, b, a, 0.0f);
 	}
 
 	void GraphicsGL::drawscreenfill(float r, float g, float b, float a)
@@ -612,7 +610,7 @@ namespace Graphics
 			int16_t bottom = top + Constants::VIEWHEIGHT;
 			float complement = 1.0f - opacity;
 
-			quads.emplace_back(left, right, top, bottom, nulloffset, 0.0f, 0.0f, 0.0f, complement);
+			quads.emplace_back(left, right, top, bottom, nulloffset, 0.0f, 0.0f, 0.0f, complement, 0.0f);
 		}
 
 		glClearColor(1.0, 1.0, 1.0, 1.0);

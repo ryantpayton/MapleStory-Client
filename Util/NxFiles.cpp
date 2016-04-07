@@ -59,10 +59,12 @@ namespace Util
 		return bmptest.data() != nullptr;
 	}
 
+#ifdef JOURNEY_USE_XXHASH
 	string NxFiles::gethash(size_t index, uint64_t seed)
 	{
 		return (index < NUM_FILES) ? HashUtility::getfilehash(filenames[index].c_str(), seed) : 0;
 	}
+#endif
 
 	string NxFiles::gethash(size_t index)
 	{

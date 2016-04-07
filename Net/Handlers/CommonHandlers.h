@@ -24,11 +24,18 @@ namespace Net
 {
 	class NxCheckRequestHandler : public PacketHandler
 	{
+#ifdef JOURNEY_USE_XXHASH
 		void handle(InPacket& recv) const override
 		{
 			uint64_t seed = recv.readlong();
 			NxCheckPacket(seed).dispatch();
 		}
+#else
+		void handle(InPacket&) const override
+		{
+			NxCheckPacket().dispatch();
+		}
+#endif
 	};
 
 	class PingHandler : public PacketHandler

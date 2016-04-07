@@ -76,7 +76,7 @@ namespace IO
 		case LEFT:
 			for (size_t i = 0; i < length; i++)
 			{
-				draw(str[i], DrawArgument(args.getpos() + Point<int16_t>(shift, 0), args.getalpha()));
+				draw(str[i], DrawArgument(args.getpos() + Point<int16_t>(shift, 0), args.getopacity()));
 				shift += getw(str[i]);
 			}
 			break;
@@ -84,7 +84,7 @@ namespace IO
 			for (size_t i = length - 1; i >= 0 && i < length; i--)
 			{
 				shift += getw(str[i]);
-				draw(str[i], DrawArgument(args.getpos() - Point<int16_t>(shift, 0), args.getalpha()));
+				draw(str[i], DrawArgument(args.getpos() - Point<int16_t>(shift, 0), args.getopacity()));
 			}
 			break;
 		}
@@ -104,7 +104,7 @@ namespace IO
 		case LEFT:
 			for (size_t i = 0; i < length; i++)
 			{
-				draw(str[i], DrawArgument(args.getpos() + Point<int16_t>(shift, 0), args.getalpha()));
+				draw(str[i], DrawArgument(args.getpos() + Point<int16_t>(shift, 0), args.getopacity()));
 				shift += hspace;
 			}
 			break;
@@ -112,7 +112,7 @@ namespace IO
 			for (size_t i = length - 1; i >= 0 && i < length; i--)
 			{
 				shift += hspace;
-				draw(str[i], DrawArgument(args.getpos() - Point<int16_t>(shift, 0), args.getalpha()));
+				draw(str[i], DrawArgument(args.getpos() - Point<int16_t>(shift, 0), args.getopacity()));
 			}
 			break;
 		}

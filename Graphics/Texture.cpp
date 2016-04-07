@@ -66,8 +66,8 @@ namespace Graphics
 
 		Point<int16_t> absp = args.getpos() - origin;
 
-		GraphicsGL::get().draw(source, absp.x(), absp.y(), w, h, args.getalpha(), args.getxscale(),
-			args.getyscale(), args.getcenter().x(), args.getcenter().y());
+		GraphicsGL::get().draw(source, absp.x(), absp.y(), w, h, args.getopacity(), args.getxscale(),
+			args.getyscale(), args.getcenter().x(), args.getcenter().y(), args.getangle());
 	}
 
 	void Texture::shift(Point<int16_t> amount)
