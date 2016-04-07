@@ -79,10 +79,10 @@ namespace Gameplay
 	void ByLevelAction::apply(Char& target, Attack::Type) const
 	{
 		int32_t level = target.getskilllevel(skillid);
-		if (actions.count(level))
+		auto iter = actions.find(level);
+		if (iter != actions.end())
 		{
-			string action = actions.at(level);
-			target.attack(action);
+			target.attack(iter->second);
 		}
 	}
 }

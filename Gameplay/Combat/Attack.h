@@ -38,20 +38,23 @@ namespace Gameplay
 			MAGIC
 		};
 
-		enum Direction : uint8_t
+		enum DamageType
 		{
-			CENTERED = 0,
-			TOLEFT = 1,
-			TORIGHT = 2
+			DMG_WEAPON,
+			DMG_MAGIC,
+			DMG_FIXED
 		};
 
 		Type type = CLOSE;
+		DamageType damagetype = DMG_WEAPON;
 
 		double mindamage = 1.0;
 		double maxdamage = 1.0;
 		float critical = 0.0f;
 		float ignoredef = 0.0f;
+		int32_t matk = 0;
 		int32_t accuracy = 0;
+		int32_t fixdamage = 0;
 		int16_t playerlevel = 1;
 
 		uint8_t hitcount = 0;
@@ -61,10 +64,10 @@ namespace Gameplay
 		int32_t skill = 0;
 		int32_t bullet = 0;
 
-		Direction direction = CENTERED;
 		Point<int16_t> origin;
 		rectangle2d<int16_t> range;
 		float hrange = 1.0f;
+		bool toleft = false;
 	};
 
 
@@ -75,10 +78,10 @@ namespace Gameplay
 			type = attack.type;
 			hitcount = attack.hitcount;
 			skill = attack.skill;
-			direction = attack.direction;
 			speed = attack.speed;
 			stance = attack.stance;
 			bullet = attack.bullet;
+			toleft = attack.toleft;
 		}
 
 		AttackResult() {}
@@ -91,9 +94,9 @@ namespace Gameplay
 		int32_t bullet = 0;
 		uint8_t level = 0;
 		uint8_t display = 0;
-		uint8_t direction = 0;
 		uint8_t stance = 0;
 		uint8_t speed = 0;
+		bool toleft = false;
 		unordered_map<int32_t, vector<pair<int32_t, bool>>> damagelines;
 
 		int32_t firstoid() const
@@ -106,5 +109,13 @@ namespace Gameplay
 		{
 			return damagelines.size() > 0 ? (--damagelines.end())->first : 0;
 		}
+	};
+
+	struct AttackUser
+	{
+		int32_t skilllevel;
+		uint16_t level;
+		bool secondweapon;
+		bool flip;
 	};
 }

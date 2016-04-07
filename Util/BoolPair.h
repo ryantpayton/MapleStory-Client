@@ -22,11 +22,12 @@ template <typename T>
 class BoolPair
 {
 public:
+	template <typename...Args>
+	BoolPair(Args&&...argsf, Args&&...argss)
+		: first(std::forward<Args>(argsf)...), second(std::forward<Args>(argss)...) {}
+
 	BoolPair(T f, T s)
-	{
-		first = f;
-		second = s;
-	}
+		: first(f), second(s) {}
 
 	BoolPair() {}
 

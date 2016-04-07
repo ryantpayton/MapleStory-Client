@@ -22,27 +22,20 @@
 namespace Gameplay
 {
 	SingleHitEffect::SingleHitEffect(node src)
-	{
-		effect = src["hit"]["0"];
-	}
+		: effect(src["hit"]["0"]) {}
 
-	void SingleHitEffect::apply(Mob& target, uint16_t, bool) const
+	void SingleHitEffect::apply(const AttackUser& user, Mob& target) const
 	{
-		target.showeffect(effect.animation, effect.pos);
+		effect.apply(target, user.flip);
 	}
 
 
 	TwoHHitEffect::TwoHHitEffect(node src)
-	{
-		effects[false] = src["hit"]["0"];
-		effects[true] = src["hit"]["1"];
-	}
+		: effects(src["hit"]["0"], src["hit"]["1"]) {}
 
-	void TwoHHitEffect::apply(Mob& target, uint16_t, bool twohanded) const
+	void TwoHHitEffect::apply(const AttackUser& user, Mob& target) const
 	{
-		const Effect& effect = effects[twohanded];
-
-		target.showeffect(effect.animation, effect.pos);
+		effects[user.secondweapon].apply(target, user.flip);
 	}
 
 
@@ -51,32 +44,21 @@ namespace Gameplay
 		for (node sub : src["CharLevel"])
 		{
 			uint16_t level = StringConversion<uint16_t>(sub.name()).orzero();
-			effects[level] = sub["hit"]["0"];
+			effects.emplace(level, sub["hit"]["0"]);
 		}
 	}
 
-	void ByLevelHitEffect::apply(Mob& target, uint16_t level, bool) const
+	void ByLevelHitEffect::apply(const AttackUser& user, Mob& target) const
 	{
-		uint16_t max = 0;
-		for (auto& hit : effects)
-		{
-			uint16_t required = hit.first;
-			if (level < required)
-			{
-				break;
-			}
-			else
-			{
-				max = required;
-			}
-		}
+		if (effects.size() == 0)
+			return;
 
-		if (effects.count(max))
-		{
-			const Effect& effect = effects.at(max);
+		auto iter = effects.begin();
+		for (; iter != effects.end() && user.level > iter->first; ++iter) {}
+		if (iter != effects.begin())
+			iter--;
 
-			target.showeffect(effect.animation, effect.pos);
-		}
+		iter->second.apply(target, user.flip);
 	}
 
 
@@ -84,33 +66,43 @@ namespace Gameplay
 	{
 		for (node sub : src["CharLevel"])
 		{
-			uint16_t level = StringConversion<uint16_t>(sub.name()).orzero();
-			effects[level][false] = sub["hit"]["0"];
-			effects[level][true] = sub["hit"]["1"];
+			auto level = StringConversion<uint16_t>(sub.name()).orzero();
+			effects.emplace(std::piecewise_construct,
+				std::forward_as_tuple(level), 
+				std::forward_as_tuple(sub["hit"]["0"], sub["hit"]["1"])
+				);
 		}
 	}
 
-	void ByLevelTwoHHitEffect::apply(Mob& target, uint16_t level, bool twohanded) const
+	void ByLevelTwoHHitEffect::apply(const AttackUser& user, Mob& target) const
 	{
-		uint16_t max = 0;
-		for (auto& hit : effects)
+		if (effects.size() == 0)
+			return;
+
+		auto iter = effects.begin();
+		for (; iter != effects.end() && user.level > iter->first; ++iter) {}
+		if (iter != effects.begin())
+			iter--;
+
+		iter->second[user.secondweapon].apply(target, user.flip);
+	}
+
+
+	BySkillLevelHitEffect::BySkillLevelHitEffect(node src)
+	{
+		for (auto sub : src["level"])
 		{
-			uint16_t required = hit.first;
-			if (level < required)
-			{
-				break;
-			}
-			else
-			{
-				max = required;
-			}
+			auto level = StringConversion<int32_t>(sub.name()).orzero();
+			effects.emplace(level, sub["hit"]["0"]);
 		}
+	}
 
-		if (effects.count(max))
+	void BySkillLevelHitEffect::apply(const AttackUser& user, Mob& target) const
+	{
+		auto iter = effects.find(user.skilllevel);
+		if (iter != effects.end())
 		{
-			const Effect& effect = effects.at(max)[twohanded];
-
-			target.showeffect(effect.animation, effect.pos);
+			iter->second.apply(target, user.flip);
 		}
 	}
 }

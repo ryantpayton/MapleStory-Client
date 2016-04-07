@@ -22,46 +22,53 @@
 
 namespace Gameplay
 {
+	// Interface for hit effects, animations applied to a mob for each hit.
 	class SkillHitEffect
 	{
 	public:
 		virtual ~SkillHitEffect() {}
 
-		virtual void apply(Mob& target, uint16_t level, bool twohanded) const = 0;
+		virtual void apply(const AttackUser& user, Mob& target) const = 0;
 
 	protected:
-		struct Effect
+		class Effect
 		{
-			Animation animation;
-			int8_t pos;
-
+		public:
 			Effect(node src)
 			{
 				animation = src;
 				pos = src["pos"];
+				z = src["z"];
 			}
 
-			Effect()
+			void apply(Mob& target, bool flip) const
 			{
-				pos = 0;
+				target.showeffect(animation, pos, z, flip);
 			}
+
+		private:
+			Animation animation;
+			int8_t pos;
+			int8_t z;
 		};
 	};
 
 
+	// No animation.
 	class NoHitEffect : public SkillHitEffect
 	{
 	public:
-		void apply(Mob&, uint16_t, bool) const override {}
+		void apply(const AttackUser&, Mob&) const override {}
 	};
 
 
+	// A single animation.
 	class SingleHitEffect : public SkillHitEffect
 	{
 	public:
 		SingleHitEffect(node src);
 
-		void apply(Mob& target, uint16_t level, bool twohanded) const override;
+		void apply(const AttackUser& user, Mob& target) const override;
 
 	private:
 		Effect effect;
@@ -74,7 +81,7 @@ namespace Gameplay
 	public:
 		TwoHHitEffect(node src);
 
-		void apply(Mob& target, uint16_t level, bool twohanded) const override;
+		void apply(const AttackUser& user, Mob& target) const override;
 
 	private:
 		BoolPair<Effect> effects;
@@ -87,10 +94,10 @@ namespace Gameplay
 	public:
 		ByLevelHitEffect(node src);
 
-		void apply(Mob& target, uint16_t level, bool twohanded) const override;
+		void apply(const AttackUser& user, Mob& target) const override;
 
 	private:
-		unordered_map<uint16_t, Effect> effects;
+		map<uint16_t, Effect> effects;
 	};
 
 
@@ -100,9 +107,22 @@ namespace Gameplay
 	public:
 		ByLevelTwoHHitEffect(node src);
 
-		void apply(Mob& target, uint16_t level, bool twohanded) const override;
+		void apply(const AttackUser& user, Mob& target) const override;
 
 	private:
-		unordered_map<uint16_t, BoolPair<Effect>> effects;
+		map<uint16_t, BoolPair<Effect>> effects;
+	};
+
+
+	// The animation changes with the skill level.
+	class BySkillLevelHitEffect : public SkillHitEffect
+	{
+	public:
+		BySkillLevelHitEffect(node src);
+
+		void apply(const AttackUser& user, Mob& target) const override;
+
+	private:
+		map<int32_t, Effect> effects;
 	};
 }

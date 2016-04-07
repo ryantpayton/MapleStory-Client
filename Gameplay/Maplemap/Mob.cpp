@@ -25,6 +25,7 @@
 #include "nlnx\nx.hpp"
 
 #include <algorithm>
+#include <functional>
 
 namespace Gameplay
 {
@@ -329,7 +330,7 @@ namespace Gameplay
 		Point<int16_t> absp = phobj.getposition(alpha) + viewpos;
 		Point<int16_t> headpos = getheadpos(absp);
 
-		effects.drawbelow(headpos, alpha);
+		effects.drawbelow(absp, alpha);
 
 		if (!dead)
 		{
@@ -342,14 +343,14 @@ namespace Gameplay
 			{
 				namelabel.draw(absp);
 
-				if (!dying)
+				if (!dying && hppercent > 0)
 				{
 					hpbar.draw(headpos, hppercent);
 				}
 			}
 		}
 
-		effects.drawabove(headpos, alpha);
+		effects.drawabove(absp, alpha);
 	}
 
 	void Mob::setcontrol(int8_t mode)
@@ -421,11 +422,26 @@ namespace Gameplay
 		showhp.setfor(2000);
 	}
 
-	void Mob::showeffect(Animation animation, int8_t)
+	void Mob::showeffect(Animation animation, int8_t pos, int8_t z, bool f)
 	{
 		if (active)
 		{
-			effects.add(animation);
+			Point<int16_t> shift;
+			switch (pos)
+			{
+			case 0:
+				break;
+			case 1:
+				break;
+			case 2:
+				break;
+			case 3:
+				break;
+			case 4:
+				break;
+			}
+			using Graphics::DrawArgument;
+			effects.add(animation, DrawArgument(shift, f), z);
 		}
 	}
 
@@ -440,42 +456,54 @@ namespace Gameplay
 		return hitchance;
 	}
 
-	double Mob::calcmindamage(int16_t leveldelta, double damage) const
+	double Mob::calcmindamage(int16_t leveldelta, double damage, bool magic) const
 	{
-		double mindamage = damage * (1 - 0.01f * leveldelta) - wdef * 0.5f;
-		if (mindamage < 1.0)
-		{
-			mindamage = 1.0;
-		}
-		return mindamage;
+		double mindamage = magic ?
+			damage - (1 + 0.01 * leveldelta) * mdef * 0.6 :
+			damage * (1 - 0.01 * leveldelta) - wdef * 0.6;
+		return mindamage < 1.0 ? 1.0 : mindamage;
 	}
 
-	double Mob::calcmaxdamage(int16_t leveldelta, double damage) const
+	double Mob::calcmaxdamage(int16_t leveldelta, double damage, bool magic) const
 	{
-		double maxdamage = damage * (1 - 0.01f * leveldelta) - wdef * 0.6f;
-		if (maxdamage < 1.0)
-		{
-			maxdamage = 1.0;
-		}
-		return maxdamage;
+		double maxdamage = magic ?
+			damage - (1 + 0.01 * leveldelta) * mdef * 0.5 :
+			damage * (1 - 0.01 * leveldelta) - wdef * 0.5;
+		return maxdamage < 1.0 ? 1.0 : maxdamage;
 	}
 
 	vector<pair<int32_t, bool>> Mob::calculatedamage(const Attack& attack)
 	{
+		double mindamage;
+		double maxdamage;
+		float hitchance;
+		float critical;
 		int16_t leveldelta = level - attack.playerlevel;
 		if (leveldelta < 0)
 			leveldelta = 0;
 
-		float hitchance = calchitchance(leveldelta, attack.accuracy);
-		double mindamage = calcmindamage(leveldelta, attack.mindamage);
-		double maxdamage = calcmaxdamage(leveldelta, attack.maxdamage);
-
-		vector<pair<int32_t, bool>> result;
-		for (int32_t i = 0; i < attack.hitcount; i++)
+		Attack::DamageType damagetype = attack.damagetype;
+		switch (damagetype)
 		{
-			auto singledamage = randomdamage(mindamage, maxdamage, hitchance, attack.critical);
-			result.push_back(singledamage);
+		case Attack::DMG_WEAPON:
+		case Attack::DMG_MAGIC:
+			mindamage = calcmindamage(leveldelta, attack.mindamage, damagetype == Attack::DMG_MAGIC);
+			maxdamage = calcmaxdamage(leveldelta, attack.maxdamage, damagetype == Attack::DMG_MAGIC);
+			hitchance = calchitchance(leveldelta, attack.accuracy);
+			critical = attack.critical;
+			break;
+		case Attack::DMG_FIXED:
+			mindamage = attack.fixdamage;
+			maxdamage = attack.fixdamage;
+			hitchance = 1.0f;
+			critical = 0.0f;
+			break;
 		}
+
+		auto result = vector<pair<int32_t, bool>>(attack.hitcount);
+		std::generate(result.begin(), result.end(), [&](){
+			return randomdamage(mindamage, maxdamage, hitchance, critical);
+		});
 
 		updatemovement();
 		awaitdeath = false;

@@ -17,30 +17,27 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "RegularAttack.h"
 
-#include "Data\DataFactory.h"
-
 namespace Gameplay
 {
 	RegularAttack::RegularAttack()
 	{
 		action = unique_ptr<SkillAction>(new RegularAction());
+		bullet = unique_ptr<SkillBullet>(new RegularBullet());
+		sound = unique_ptr<SkillSound>(new NoSkillSound());
 		useeffect = unique_ptr<SkillUseEffect>(new NoUseEffect());
 		hiteffect = unique_ptr<SkillHitEffect>(new NoHitEffect());
-		bullet = unique_ptr<SkillBullet>(new RegularBullet());
 	}
 
 	void RegularAttack::applystats(const Char& user, Attack& attack) const
 	{
+		attack.damagetype = Attack::DMG_WEAPON;
 		attack.skill = 0;
 		attack.mobcount = 1;
 		attack.hitcount = 1;
-
-		using Character::CharLook;
-		CharLook::AttackLook attacklook = user.getlook().getattacklook();
-		attack.stance = attacklook.stance;
+		attack.stance = user.getlook().getattacklook().stance;
 		if (attack.type == Attack::CLOSE)
 		{
-			attack.range = attacklook.range;
+			attack.range = user.getlook().getattacklook().range;
 		}
 	}
 

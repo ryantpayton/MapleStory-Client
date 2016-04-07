@@ -93,7 +93,7 @@ namespace Gameplay
 		// Use the playerlevel to determine color of nametag.
 		void sendhp(int8_t percentage, uint16_t playerlevel);
 		// Show an effect at the mob's position.
-		void showeffect(Animation animation, int8_t pos);
+		void showeffect(Animation animation, int8_t pos, int8_t z, bool flip);
 
 		// Calculate the damage to this mob with the spcecified attack.
 		vector<pair<int32_t, bool>> calculatedamage(const Attack& attack);
@@ -128,17 +128,29 @@ namespace Gameplay
 			return directions[index];
 		}
 
-		void applydeath();
-		void updatemovement();
+		// Set the stance by byte value.
 		void setstance(uint8_t stancebyte);
+		// Set the stance by enum value.
 		void setstance(Stance newstance);
+		// Start the death animation.
+		void applydeath();
+		// Decide on the next state.
 		void nextmove();
+		// Send the current position and state to the server.
+		void updatemovement();
+
+		// Calculate the hit chance.
 		float calchitchance(int16_t leveldelta, int32_t accuracy) const;
-		double calcmindamage(int16_t leveldelta, double mindamage) const;
-		double calcmaxdamage(int16_t leveldelta, double maxdamage) const;
-		Point<int16_t> getheadpos(Point<int16_t> position) const;
+		// Calculate the minimum damage.
+		double calcmindamage(int16_t leveldelta, double mindamage, bool magic) const;
+		// Calculate the maximum damage.
+		double calcmaxdamage(int16_t leveldelta, double maxdamage, bool magic) const;
+		// Calculate a random damage line based on the specified values.
 		pair<int32_t, bool> randomdamage(double mindamage, 
 			double maxdamage, float hitchance, float critical) const;
+
+		// Return the current 'head' position.
+		Point<int16_t> getheadpos(Point<int16_t> position) const;
 
 		map<Stance, Animation> animations;
 		string name;

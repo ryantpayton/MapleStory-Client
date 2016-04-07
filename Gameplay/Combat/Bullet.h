@@ -22,23 +22,22 @@
 
 namespace Gameplay
 {
-	using Graphics::Animation;
-
 	// Represents a projectile on a map.
 	class Bullet
 	{
 	public:
+		using Animation = Graphics::Animation;
+
 		Bullet(Animation animation, Point<int16_t> origin, bool toleft);
 
 		void draw(Point<int16_t> viewpos, float alpha) const;
+		bool settarget(Point<int16_t> target);
 		bool update(Point<int16_t> target);
 
 	private:
-		Point<int16_t> getposition(float alpha) const;
-
 		Animation animation;
-		bool flip;
-
 		MovingObject moveobj;
+		bool toleft;
+		bool flip;
 	};
 }

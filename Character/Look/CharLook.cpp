@@ -459,6 +459,8 @@ namespace Character
 				return Stance::SHOOT2;
 		case 5:
 			return randomizer.nextbool() ? Stance::STABO1 : Stance::SWINGT1;
+		case 6:
+			return randomizer.nextbool() ? Stance::SWINGO1 : Stance::SWINGO2;
 		case 7:
 			if (degenerate)
 				return random ? Stance::SWINGT1 : Stance::STABT1;

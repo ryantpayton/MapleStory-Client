@@ -172,23 +172,29 @@ namespace Character
 
 	void Inventory::remove(Type type, int16_t slot)
 	{
-		if (slot >= slots[type])
-			return;
+		auto& inventory = inventories[type];
+		auto itemiter = inventory.find(slot);
+		if (itemiter != inventory.end() && itemiter->second)
+		{
+			delete itemiter->second;
+			itemiter->second = nullptr;
 
-		delete inventories[type][slot];
-		inventories[type][slot] = nullptr;
-		inventories[type].erase(slot);
+			inventory.erase(itemiter);
+		}
 	}
 
 	void Inventory::swap(Type firsttype, int16_t firstslot, Type secondtype, int16_t secondslot)
 	{
-		Item* temp = inventories[firsttype][firstslot];
-		inventories[firsttype][firstslot] = inventories[secondtype][secondslot];
-		inventories[secondtype][secondslot] = temp;
+		map<int16_t, Item*>& firstinventory = inventories[firsttype];
+		map<int16_t, Item*>& secondinventory = inventories[secondtype];
 
-		if (inventories[firsttype][firstslot] == nullptr)
+		Item* temp = firstinventory[firstslot];
+		firstinventory[firstslot] = secondinventory[secondslot];
+		secondinventory[secondslot] = temp;
+
+		if (firstinventory[firstslot] == nullptr)
 			inventories[firsttype].erase(firstslot);
-		else if (inventories[secondtype][secondslot] == nullptr)
+		if (secondinventory[secondslot] == nullptr)
 			inventories[secondtype].erase(secondslot);
 	}
 

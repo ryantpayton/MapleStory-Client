@@ -18,15 +18,15 @@
 #pragma once
 #include "MapObjects.h"
 #include "Mob.h"
+
 #include "Gameplay\Combat\Attack.h"
 #include "Gameplay\Combat\SpecialMove.h"
 #include "Gameplay\Spawn.h"
+
 #include <list>
 
 namespace Gameplay
 {
-	using std::list;
-
 	class MapMobs : public MapObjects
 	{
 	public:
@@ -46,20 +46,18 @@ namespace Gameplay
 		Optional<const Mob> getmob(int32_t oid) const;
 
 	private:
-		vector<int32_t> findclosest(rectangle2d<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const;
-
-		list<DamageNumber> damagenumbers;
+		template <typename T>
+		using list = std::list<T>;
 
 		class DamageEffect
 		{
 		public:
-			DamageEffect(const SpecialMove& m, uint16_t l, bool th, DamageNumber n,
-				bool tl, int32_t dm, int32_t t, uint16_t d)
-				: move(m), level(l), twohanded(th), number(n), toleft(tl), damage(dm), target(t), delay(d) {}
+			DamageEffect(const SpecialMove& m, AttackUser u, DamageNumber n, bool tl, int32_t dm, int32_t t, uint16_t d)
+				: move(m), user(u), number(n), toleft(tl), damage(dm), target(t), delay(d) {}
 
 			void apply(Mob& target) const
 			{
-				move.applyhiteffects(target, level, twohanded);
+				move.applyhiteffects(user, target);
 
 				target.applydamage(damage, toleft);
 			}
@@ -96,42 +94,47 @@ namespace Gameplay
 			const DamageEffect& operator =(const DamageEffect&) = delete;
 
 			const SpecialMove& move;
+			AttackUser user;
 			DamageNumber number;
-			uint16_t level;
-			bool twohanded;
 			int32_t damage;
 			bool toleft;
 			int32_t target;
 			uint16_t delay;
 		};
-		list<DamageEffect> damageeffects;
-
-		void applyeffect(const DamageEffect& effect);
 
 		class BulletEffect
 		{
 		public:
 			BulletEffect(Bullet b, Point<int16_t> t, DamageEffect de)
-				: bullet(b), target(t), damageeffect(de) {}
+				: bullet(b), target(t), damageeffect(de) {
+
+				fired = false;
+			}
 
 			void draw(Point<int16_t> viewpos, float alpha) const
 			{
-				if (damageeffect.expired())
-				{
+				if (fired)
 					bullet.draw(viewpos, alpha);
-				}
 			}
 
 			bool update()
 			{
-				bool expired = damageeffect.update();
-				if (expired)
+				if (fired)
 				{
 					return bullet.update(target);
 				}
 				else
 				{
-					return false;
+					bool expired = damageeffect.update();
+					if (expired)
+					{
+						fired = true;
+						return bullet.settarget(target);
+					}
+					else
+					{
+						return false;
+					}
 				}
 			}
 
@@ -139,15 +142,7 @@ namespace Gameplay
 			{
 				target = newtarget;
 
-				bool expired = damageeffect.update();
-				if (expired)
-				{
-					return bullet.update(target);
-				}
-				else
-				{
-					return false;
-				}
+				return update();
 			}
 
 			int32_t gettarget() const
@@ -166,7 +161,14 @@ namespace Gameplay
 			Bullet bullet;
 			Point<int16_t> target;
 			DamageEffect damageeffect;
+			bool fired;
 		};
+
+		void applyeffect(const DamageEffect& effect);
+		vector<int32_t> findclosest(rectangle2d<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const;
+
+		list<DamageNumber> damagenumbers;
+		list<DamageEffect> damageeffects;
 		list<BulletEffect> bulleteffects;
 	};
 }

@@ -15,32 +15,28 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "SpecialMove.h"
+#include "SkillSound.h"
+
+#include "nlnx\nx.hpp"
 
 namespace Gameplay
 {
-	void SpecialMove::applyuseeffects(Char& target, Attack::Type type) const
+	SingleSkillSound::SingleSkillSound(string strid)
 	{
-		useeffect->apply(target);
-		action->apply(target, type);
+		using nl::node;
+		node soundsrc = nl::nx::sound["Skill.img"][strid];
 
-		sound->playuse();
+		usesound = soundsrc["Use"];
+		hitsound = soundsrc["Hit"];
 	}
 
-	void SpecialMove::applyhiteffects(const AttackUser& user, Mob& target) const
+	void SingleSkillSound::playuse() const
 	{
-		hiteffect->apply(user, target);
-
-		sound->playhit();
+		usesound.play();
 	}
 
-	bool SpecialMove::isskill() const
+	void SingleSkillSound::playhit() const
 	{
-		return getid() > 0;
-	}
-
-	Animation SpecialMove::getbullet(const Char& user, int32_t bulletid) const
-	{
-		return bullet->get(user, bulletid);
+		hitsound.play();
 	}
 }

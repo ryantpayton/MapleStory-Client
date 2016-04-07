@@ -106,30 +106,29 @@ namespace Gameplay
 
 	AttackResult MapMobs::sendattack(const Attack& attack)
 	{
-		uint8_t mobcount = attack.mobcount;
 		Point<int16_t> origin = attack.origin;
 		rectangle2d<int16_t> range = attack.range;
-		Attack::Direction direction = attack.direction;
-		switch (direction)
+		int16_t hrange = static_cast<int16_t>(range.l() * attack.hrange);
+		if (attack.toleft)
 		{
-		case Attack::TOLEFT:
 			range = rectangle2d<int16_t>(
-				origin.x() + static_cast<int16_t>(range.l() * attack.hrange),
+				origin.x() + hrange,
 				origin.x() + range.r(),
 				origin.y() + range.t(),
 				origin.y() + range.b()
 				);
-			break;
-		case Attack::TORIGHT:
+		}
+		else
+		{
 			range = rectangle2d<int16_t>(
 				origin.x() - range.r(),
-				origin.x() - static_cast<int16_t>(range.l() * attack.hrange),
+				origin.x() - hrange,
 				origin.y() + range.t(),
 				origin.y() + range.b()
 				);
-			break;
 		}
 
+		uint8_t mobcount = attack.mobcount;
 		vector<int32_t> targets = findclosest(range, origin, mobcount);
 		AttackResult result = attack;
 		for (auto& target : targets)
@@ -146,12 +145,19 @@ namespace Gameplay
 
 	void MapMobs::showresult(const Char& user, const SpecialMove& move, const AttackResult& result)
 	{
+		AttackUser attackuser = { 
+			user.getskilllevel(move.getid()), 
+			user.getlevel(), 
+			user.istwohanded(),
+			!result.toleft
+		};
 		if (result.bullet)
 		{
-			Point<int16_t> origin = user.getposition();
-			bool toleft = result.direction == Attack::TOLEFT;
-			Animation animation = move.getbullet(result.bullet);
-			Bullet bullet = Bullet(animation, origin, toleft);
+			auto bullet = Bullet(
+				move.getbullet(user, result.bullet), 
+				user.getposition(),
+				result.toleft
+				);
 
 			for (auto& line : result.damagelines)
 			{
@@ -165,9 +171,16 @@ namespace Gameplay
 					size_t i = 0;
 					for (auto& number : numbers)
 					{
-						uint16_t delay = user.getattackdelay(i, result.speed);
-						DamageEffect effect = DamageEffect(move, user.getlevel(), user.istwohanded(), number, toleft, line.second[i].first, oid, delay);
-						bulleteffects.push_back(BulletEffect(bullet, head, effect));
+						auto effect = DamageEffect(
+							move, 
+							attackuser,
+							number, 
+							result.toleft,
+							line.second[i].first, 
+							oid, 
+							user.getattackdelay(i, result.speed)
+							);
+						bulleteffects.emplace_back(bullet, head, effect);
 						i++;
 					}
 				}
@@ -175,19 +188,25 @@ namespace Gameplay
 
 			if (result.damagelines.size() == 0)
 			{
-				auto target = Point<int16_t>(toleft ? origin.x() - 400 : origin.x() + 400, origin.y() - 26);
+				int16_t xshift = result.toleft ? -400 : 400;
+				Point<int16_t> target = user.getposition() + Point<int16_t>(xshift, -26);
 				for (uint8_t i = 0; i < result.hitcount; i++)
 				{
-					uint16_t delay = user.getattackdelay(i, result.speed);
-					DamageEffect effect = DamageEffect(move, 0, 0, DamageNumber(), false, 0, 0, delay);
-					bulleteffects.push_back(BulletEffect(bullet, target, effect));
+					auto effect = DamageEffect(
+						move, 
+						attackuser,
+						DamageNumber(), 
+						false, 
+						0, 
+						0, 
+						user.getattackdelay(i, result.speed)
+						);
+					bulleteffects.emplace_back(bullet, target, effect);
 				}
 			}
 		}
 		else
 		{
-			bool toleft = result.direction == Attack::TOLEFT;
-
 			for (auto& line : result.damagelines)
 			{
 				int32_t oid = line.first;
@@ -199,9 +218,15 @@ namespace Gameplay
 					size_t i = 0;
 					for (auto& number : numbers)
 					{
-						uint16_t delay = user.getattackdelay(i, result.speed);
-						DamageEffect effect = DamageEffect(move, user.getlevel(), user.istwohanded(), number, toleft, line.second[i].first, oid, delay);
-						damageeffects.push_back(effect);
+						damageeffects.emplace_back(
+							move, 
+							attackuser,
+							number, 
+							result.toleft,
+							line.second[i].first, 
+							oid, 
+							user.getattackdelay(i, result.speed)
+							);
 
 						i++;
 					}

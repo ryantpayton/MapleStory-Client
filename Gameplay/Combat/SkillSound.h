@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,53 +15,45 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Sprite.h"
-#include "Constants.h"
-#include <map>
-#include <list>
+#include "Audio\Audio.h"
 
-namespace Graphics
+namespace Gameplay
 {
-	using std::map;
-	using std::list;
-
-	// A list of animations. Animations will be removed after all frames were displayed.
-	class EffectLayer
+	// Interface for skill sound.
+	class SkillSound
 	{
 	public:
-		void drawbelow(Point<int16_t> position, float alpha) const;
-		void drawabove(Point<int16_t> position, float alpha) const;
-		void update();
-		void add(Animation effect, DrawArgument args, int8_t z, float speed);
-		void add(Animation effect, DrawArgument args, int8_t z);
-		void add(Animation effect, DrawArgument args);
-		void add(Animation effect);
+		virtual ~SkillSound() {}
+
+		virtual void playuse() const = 0;
+		virtual void playhit() const = 0;
+	};
+
+
+	// No sound.
+	class NoSkillSound : public SkillSound
+	{
+	public:
+		void playuse() const override {}
+		void playhit() const override {}
+	};
+
+
+	// Plays one use and one hit sound.
+	class SingleSkillSound : public SkillSound
+	{
+	public:
+		using string = std::string;
+
+		SingleSkillSound(string strid);
+
+		void playuse() const override;
+		void playhit() const override;
 
 	private:
-		class Effect
-		{
-		public:
-			Effect(Animation a, DrawArgument args, float s)
-				: sprite(a, args), speed(s) {}
+		using Sound = Audio::Sound;
 
-			void draw(Point<int16_t> position, float alpha) const
-			{
-				sprite.draw(position, alpha);
-			}
-
-			bool update()
-			{
-				return sprite.update(
-					static_cast<uint16_t>(Constants::TIMESTEP * speed)
-					);
-			}
-
-		private:
-			Sprite sprite;
-			float speed;
-		};
-
-		map<int8_t, list<Effect>> effects;
+		Sound usesound;
+		Sound hitsound;
 	};
 }

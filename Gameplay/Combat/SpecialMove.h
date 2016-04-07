@@ -19,14 +19,14 @@
 #include "Attack.h"
 #include "SkillAction.h"
 #include "SkillBullet.h"
+#include "SkillSound.h"
 #include "SkillHitEffect.h"
 #include "SkillUseEffect.h"
+
 #include <memory>
 
 namespace Gameplay
 {
-	using std::unique_ptr;
-
 	// Base class for attacks and buffs.
 	class SpecialMove
 	{
@@ -45,20 +45,23 @@ namespace Gameplay
 
 		virtual ~SpecialMove() {}
 
-		virtual void applyuseeffects(Char& user, Attack::Type type) const;
-		virtual void applyhiteffects(Mob& target, uint16_t level, bool twohanded) const;		
-		virtual Animation getbullet(int32_t bulletid) const;
+		void applyuseeffects(Char& user, Attack::Type type) const;
+		void applyhiteffects(const AttackUser& user, Mob& target) const;
+		bool isskill() const;
+		Animation getbullet(const Char& user, int32_t bulletid) const;
 
 		virtual void applystats(const Char& user, Attack& attack) const = 0;
 		virtual bool isoffensive() const = 0;
 		virtual int32_t getid() const = 0;
 		virtual ForbidReason canuse(int32_t level, Weapon::Type weapon, uint16_t job, uint16_t hp, uint16_t mp, uint16_t bullets) const = 0;
 
-		bool isskill() const;
-
 	protected:
+		template <typename T>
+		using unique_ptr = std::unique_ptr<T>;
+
 		unique_ptr<SkillAction> action;
 		unique_ptr<SkillBullet> bullet;
+		unique_ptr<SkillSound> sound;
 		unique_ptr<SkillUseEffect> useeffect;
 		unique_ptr<SkillHitEffect> hiteffect;
 	};

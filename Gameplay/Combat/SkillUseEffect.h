@@ -19,45 +19,50 @@
 #include "Character\Char.h"
 #include "Graphics\Animation.h"
 #include "Util\BoolPair.h"
+
 #include <unordered_map>
 #include <vector>
 
 namespace Gameplay
 {
 	using std::vector;
-	using std::unordered_map;
-	using Character::Char;
-	using Graphics::Animation;
+	using std::map;
 
 	// Interface for skill effects.
 	class SkillUseEffect
 	{
 	public:
+		using Char = Character::Char;
+
 		virtual ~SkillUseEffect() {}
 
 		virtual void apply(Char& target) const = 0;
 
 	protected:
-		struct Effect
+		class Effect
 		{
-			Animation animation;
-			int8_t z;
-
+		public:
 			Effect(node src)
 			{
 				animation = src;
 				z = src["z"];
 			}
 
-			Effect()
+			void apply(Char& target) const
 			{
-				z = 0;
+				target.showeffect(animation, z);
 			}
+
+		private:
+			using Animation = Graphics::Animation;
+
+			Animation animation;
+			int8_t z;
 		};
 	};
 
 
-	// An effect which does nothing.
+	// No animation.
 	class NoUseEffect : public SkillUseEffect
 	{
 	public:
@@ -114,6 +119,6 @@ namespace Gameplay
 		void apply(Char& target) const override;
 
 	private:
-		unordered_map<uint16_t, Effect> leveleffects;
+		map<uint16_t, Effect> effects;
 	};
 }

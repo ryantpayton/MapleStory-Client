@@ -154,11 +154,14 @@ namespace Gameplay
 			return static_cast<int16_t>(rounded);
 		}
 
-		Point<int16_t> getposition(float inter) const
+		Point<int16_t> getposition() const
 		{
-			auto interx = getx(inter);
-			auto intery = gety(inter);
-			return Point<int16_t>(interx, intery);
+			return{ getx(), gety() };
+		}
+
+		Point<int16_t> getposition(float alpha) const
+		{
+			return{ getx(alpha), gety(alpha) };
 		}
 	};
 

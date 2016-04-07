@@ -19,6 +19,9 @@
 
 namespace Graphics
 {
+	Sprite::Sprite(Animation a, DrawArgument args)
+		: animation(a), stateargs(args) {}
+
 	Sprite::Sprite(node src, DrawArgument args)
 		: animation(src), stateargs(args) {}
 
@@ -27,14 +30,19 @@ namespace Graphics
 
 	Sprite::~Sprite() {}
 
-	void Sprite::draw(Point<int16_t> parentpos, float inter) const
+	void Sprite::draw(Point<int16_t> parentpos, float alpha) const
 	{
 		auto absargs = stateargs + parentpos;
-		animation.draw(absargs, inter);
+		animation.draw(absargs, alpha);
 	}
 
-	void Sprite::update()
+	bool Sprite::update(uint16_t timestep)
 	{
-		animation.update();
+		return animation.update(timestep);
+	}
+
+	bool Sprite::update()
+	{
+		return animation.update();
 	}
 }

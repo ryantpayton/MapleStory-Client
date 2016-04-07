@@ -16,15 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "EffectLayer.h"
-#include "Constants.h"
 
 namespace Graphics
 {
 	void EffectLayer::drawbelow(Point<int16_t> position, float alpha) const
 	{
-		for (auto& effectlist : effectsbelow)
+		for (auto iter = effects.begin(); iter != effects.upper_bound(-1); ++iter)
 		{
-			for (auto& effect : effectlist.second)
+			for (auto& effect : iter->second)
 			{
 				effect.draw(position, alpha);
 			}
@@ -33,9 +32,9 @@ namespace Graphics
 
 	void EffectLayer::drawabove(Point<int16_t> position, float alpha) const
 	{
-		for (auto& effectlist : effectsabove)
+		for (auto iter = effects.upper_bound(-1); iter != effects.end(); ++iter)
 		{
-			for (auto& effect : effectlist.second)
+			for (auto& effect : iter->second)
 			{
 				effect.draw(position, alpha);
 			}
@@ -44,14 +43,7 @@ namespace Graphics
 
 	void EffectLayer::update()
 	{
-		for (auto& effectlist : effectsbelow)
-		{
-			effectlist.second.remove_if([](Effect& effect){
-				return effect.update();
-			});
-		}
-
-		for (auto& effectlist : effectsabove)
+		for (auto& effectlist : effects)
 		{
 			effectlist.second.remove_if([](Effect& effect){
 				return effect.update();
@@ -59,33 +51,23 @@ namespace Graphics
 		}
 	}
 
-	void EffectLayer::add(Animation animation, bool flip, int8_t z, float speed)
+	void EffectLayer::add(Animation animation, DrawArgument args, int8_t z, float speed)
 	{
-		auto timestep = static_cast<uint16_t>(Constants::TIMESTEP * speed);
-		auto effect = Effect(animation, timestep, flip);
-		bool below = z < 0;
-		if (below)
-		{
-			effectsbelow[z].push_back(effect);
-		}
-		else
-		{
-			effectsabove[z].push_back(effect);
-		}
+		effects[z].emplace_back(animation, args, speed);
 	}
 
-	void EffectLayer::add(Animation animation, bool flip, int8_t z)
+	void EffectLayer::add(Animation animation, DrawArgument args, int8_t z)
 	{
-		add(animation, flip, z, 1.0f);
+		add(animation, args, z, 1.0f);
 	}
 
-	void EffectLayer::add(Animation animation, bool flip)
+	void EffectLayer::add(Animation animation, DrawArgument args)
 	{
-		add(animation, flip, 0, 1.0f);
+		add(animation, args, 0, 1.0f);
 	}
 
 	void EffectLayer::add(Animation animation)
 	{
-		add(animation, false, 0, 1.0f);
+		add(animation, DrawArgument(), 0, 1.0f);
 	}
 }

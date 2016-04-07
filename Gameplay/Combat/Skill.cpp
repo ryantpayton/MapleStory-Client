@@ -49,25 +49,28 @@ namespace Gameplay
 		preparestance = src["prepare"]["action"];
 		preparetime = src["prepare"]["time"];*/
 
-		passive = (skillid % 10000) / 1000 == 0;
-
+		projectile = true;
 		overregular = false;
 		offensive = false;
+		passive = (skillid % 10000) / 1000 == 0;
+
 		for (node sub : src["level"])
 		{
 			Level level;
 
 			bool hasdamage = sub["damage"].data_type() == node::type::integer;
 			bool hasmad = sub["mad"].data_type() == node::type::integer;
+			bool hasfixdamage = sub["fixdamage"].data_type() == node::type::integer;
 
 			level.damage = sub["damage"];
 			level.damage /= 100;
 			level.matk = sub["mad"];
 
-			offensive = !passive && (hasdamage || hasmad);
+			offensive = !passive && (hasdamage || hasmad || hasfixdamage);
 
 			if (offensive)
 			{
+				level.fixdamage = sub["fixdamage"];
 				level.mastery = sub["mastery"];
 				level.attackcount = sub["attackCount"];
 				if (level.attackcount == 0)
@@ -98,9 +101,7 @@ namespace Gameplay
 			levels[lvlid] = level;
 		}
 
-		node soundsrc = nl::nx::sound["Skill.img"][strid];
-		usesound = soundsrc["Use"];
-		hitsound = soundsrc["Hit"];
+		sound = unique_ptr<SkillSound>(new SingleSkillSound(strid));
 
 		bool byleveleffect = src["CharLevel"]["10"]["effect"].size() > 0;
 		bool multieffect = src["effect0"].size() > 0;
@@ -131,6 +132,7 @@ namespace Gameplay
 		}
 
 		bool bylevelhit = src["CharLevel"]["10"]["hit"].size() > 0;
+		bool byskilllevelhit = src["level"]["1"]["hit"].size() > 0;
 		bool hashit0 = src["hit"]["0"].size() > 0;
 		bool hashit1 = src["hit"]["1"].size() > 0;
 		if (bylevelhit)
@@ -139,14 +141,14 @@ namespace Gameplay
 			{
 				hiteffect = unique_ptr<SkillHitEffect>(new ByLevelTwoHHitEffect(src));
 			}
-			else if (hashit0)
+			else
 			{
 				hiteffect = unique_ptr<SkillHitEffect>(new ByLevelHitEffect(src));
 			}
-			else
-			{
-				hiteffect = unique_ptr<SkillHitEffect>(new NoHitEffect());
-			}
+		}
+		else if (byskilllevelhit)
+		{
+			hiteffect = unique_ptr<SkillHitEffect>(new BySkillLevelHitEffect(src));
 		}
 		else if (hashit0 && hashit1)
 		{
@@ -190,32 +192,20 @@ namespace Gameplay
 		}
 
 		bool hasball = src["ball"].size() > 0;
-		if (hasball)
+		bool bylevelball = src["level"]["1"]["ball"].size() > 0;
+		if (bylevelball)
+		{
+			bullet = unique_ptr<SkillBullet>(new BySkillLevelBullet(src, skillid));
+		}
+		else if (hasball)
 		{
 			bullet = unique_ptr<SkillBullet>(new SingleBullet(src));
 		}
 		else
 		{
 			bullet = unique_ptr<SkillBullet>(new RegularBullet());
+			projectile = false;
 		}
-	}
-
-	Skill::Skill() {}
-
-	Skill::~Skill() {}
-
-	void Skill::applyuseeffects(Char& target, Attack::Type type) const
-	{
-		SpecialMove::applyuseeffects(target, type);
-
-		usesound.play();
-	}
-
-	void Skill::applyhiteffects(Mob& target, uint16_t level, bool twohanded) const
-	{
-		SpecialMove::applyhiteffects(target, level, twohanded);
-
-		hitsound.play();
 	}
 
 	void Skill::applystats(const Char& user, Attack& attack) const
@@ -226,8 +216,22 @@ namespace Gameplay
 		auto level = Optional<Level>::from(levels, lv);
 		if (level)
 		{
-			attack.mindamage *= level->damage;
-			attack.maxdamage *= level->damage;
+			if (level->fixdamage)
+			{
+				attack.fixdamage = level->fixdamage;
+				attack.damagetype = Attack::DMG_FIXED;
+			}
+			else if (level->matk)
+			{
+				attack.matk += level->matk;
+				attack.damagetype = Attack::DMG_MAGIC;
+			}
+			else
+			{
+				attack.mindamage *= level->damage;
+				attack.maxdamage *= level->damage;
+				attack.damagetype = Attack::DMG_WEAPON;
+			}
 			attack.critical += level->critical;
 			attack.ignoredef += level->ignoredef;
 			attack.mobcount = level->mobcount;
@@ -246,12 +250,35 @@ namespace Gameplay
 				attack.range = level->range;
 		}
 
+		if (projectile && !attack.bullet)
+		{
+			switch (skillid)
+			{
+			case THREE_SNAILS:
+				switch (lv)
+				{
+				case 1:
+					attack.bullet = 4000019;
+					break;
+				case 2:
+					attack.bullet = 4000000;
+					break;
+				case 3:
+					attack.bullet = 4000016;
+					break;
+				}
+				break;
+			default:
+				attack.bullet = skillid;
+			}
+		}
+
 		if (overregular)
 		{
 			using Character::CharLook;
 			CharLook::AttackLook attacklook = user.getlook().getattacklook();
 			attack.stance = attacklook.stance;
-			if (attack.type == Attack::CLOSE)
+			if (attack.type == Attack::CLOSE && !projectile)
 			{
 				attack.range = attacklook.range;
 			}

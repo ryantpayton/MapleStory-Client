@@ -115,6 +115,7 @@ namespace Character
 			buff.second.applyto(stats);
 		}
 
+
 		stats.closetotalstats(weapontype);
 
 		using IO::UI;
@@ -302,7 +303,7 @@ namespace Character
 		attack.range = stats.getrange();
 		attack.bullet = inventory.getbulletid();
 		attack.origin = getposition();
-		attack.direction = flip ? Attack::TORIGHT : Attack::TOLEFT;
+		attack.toleft = !flip;
 		attack.speed = stats.getattackspeed() + look.getequips().getweapon()
 			.mapordefault(&Weapon::getspeed, uint8_t(0));
 

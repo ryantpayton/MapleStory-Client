@@ -132,18 +132,14 @@ namespace Gameplay
 			int16_t bulletcost = 0;
 			int32_t matk = 0;
 			int32_t mastery = 0;
+			int32_t fixdamage = 0;
 			float hrange = 1.0f;
 			rectangle2d<int16_t> range;
 		};
 
 		Skill(int32_t skillid);
-		Skill();
-		~Skill();
 
-		void applyuseeffects(Char& user, Attack::Type type) const override;
-		void applyhiteffects(Mob& target, uint16_t level, bool twohanded) const override;
 		void applystats(const Char& user, Attack& attack) const override;
-
 		bool isoffensive() const override;
 		int32_t getid() const override;
 		ForbidReason canuse(int32_t level, Weapon::Type weapon, uint16_t job, uint16_t hp, uint16_t mp, uint16_t bullets) const override;
@@ -157,5 +153,6 @@ namespace Gameplay
 		bool passive;
 		bool offensive;
 		bool overregular;
+		bool projectile;
 	};
 }

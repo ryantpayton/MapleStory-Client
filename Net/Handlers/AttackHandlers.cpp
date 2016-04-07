@@ -45,7 +45,7 @@ namespace Net
 		attack.skill = (attack.level > 0) ? recv.readint() : 0;
 
 		attack.display = recv.readbyte();
-		attack.direction = recv.readbyte();
+		attack.toleft = recv.readbool();
 		attack.stance = recv.readbyte();
 		attack.speed = recv.readbyte();
 

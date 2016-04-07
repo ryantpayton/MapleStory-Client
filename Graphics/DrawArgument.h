@@ -55,6 +55,9 @@ namespace Graphics
 			float xs, float ys, float a)
 			: DrawArgument(p, c, Point<int16_t>(), xs, ys, a) {}
 
+		DrawArgument(bool flip)
+			: DrawArgument(flip ? -1.0f : 1.0f, 1.0f, 1.0f) {}
+
 		DrawArgument(float xs, float ys, float a)
 			: DrawArgument(Point<int16_t>(), xs, ys, a) {}
 
@@ -107,7 +110,8 @@ namespace Graphics
 		DrawArgument operator + (Point<int16_t> argpos) const
 		{
 			auto psum = pos + argpos;
-			return DrawArgument(psum, center, stretch, xscale, yscale, alpha);
+			auto csum = center + argpos;
+			return DrawArgument(psum, csum, stretch, xscale, yscale, alpha);
 		}
 
 		DrawArgument operator + (float argalpha) const

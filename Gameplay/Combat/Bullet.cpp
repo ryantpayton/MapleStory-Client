@@ -19,10 +19,10 @@
 
 namespace Gameplay
 {
-	Bullet::Bullet(Animation a, Point<int16_t> origin, bool toleft)
+	Bullet::Bullet(Animation a, Point<int16_t> origin, bool tl)
 	{
 		animation = a;
-		flip = !toleft;
+		toleft = tl;
 
 		moveobj.setx(origin.x() + (toleft ? -30.0 : 30.0));
 		moveobj.sety(origin.y() - 26.0);
@@ -35,21 +35,48 @@ namespace Gameplay
 		animation.draw(DrawArgument(bulletpos, flip), alpha);
 	}
 
-	Point<int16_t> Bullet::getposition(float alpha) const
+	bool Bullet::settarget(Point<int16_t> target)
 	{
-		return moveobj.getposition(alpha);
+		double xdelta = target.x() - moveobj.crntx();
+		double ydelta = target.y() - moveobj.crnty();
+		if (std::abs(xdelta) < 10.0)
+			return true;
+
+		flip = xdelta > 0.0;
+
+		moveobj.hspeed = xdelta / 32;
+		if (xdelta > 0.0)
+		{
+			if (moveobj.hspeed < 3.0)
+			{
+				moveobj.hspeed = 3.0;
+			}
+			else if (moveobj.hspeed > 6.0)
+			{
+				moveobj.hspeed = 6.0;
+			}
+		}
+		else if (xdelta < 0.0)
+		{
+			if (moveobj.hspeed > -3.0)
+			{
+				moveobj.hspeed = -3.0;
+			}
+			else if (moveobj.hspeed < -6.0)
+			{
+				moveobj.hspeed = -6.0;
+			}
+		}
+		moveobj.vspeed = moveobj.hspeed * ydelta / xdelta;
+		return false;
 	}
 
 	bool Bullet::update(Point<int16_t> target)
 	{
 		animation.update();
-
-		double xdelta = target.x() - moveobj.crntx();
-		double ydelta = target.y() - moveobj.crnty();
-		moveobj.hspeed = (moveobj.hspeed + xdelta / 15) / 2;
-		moveobj.vspeed = (moveobj.vspeed + ydelta / 15) / 2;
-		flip = xdelta > 0.0;
 		moveobj.move();
-		return Point<double>(xdelta, ydelta).length() < 10.0;
+
+		int16_t xdelta = target.x() - moveobj.getx();
+		return toleft ? xdelta > 10 : xdelta < 10;
 	}
 }

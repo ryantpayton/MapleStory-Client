@@ -19,11 +19,13 @@
 
 namespace Gameplay
 {
-	using Character::Char;
+	using std::map;
 
 	class SkillAction
 	{
 	public:
+		using Char = Character::Char;
+
 		virtual ~SkillAction() {}
 
 		virtual void apply(Char& target, Attack::Type atype) const = 0;
@@ -76,7 +78,7 @@ namespace Gameplay
 		void apply(Char& target, Attack::Type atype) const override;
 
 	private:
-		unordered_map<int32_t, string> actions;
+		map<int32_t, string> actions;
 		int32_t skillid;
 	};
 }

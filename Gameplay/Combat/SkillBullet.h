@@ -16,10 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Character\Char.h"
 #include "Graphics\Animation.h"
+
+#include <unordered_map>
 
 namespace Gameplay
 {
+	using Character::Char;
 	using Graphics::Animation;
 
 	class SkillBullet
@@ -27,7 +31,7 @@ namespace Gameplay
 	public:
 		virtual ~SkillBullet() {}
 
-		virtual Animation get(int32_t bulletid) const = 0;
+		virtual Animation get(const Char& user, int32_t bulletid) const = 0;
 
 	protected:
 		struct Ball
@@ -47,7 +51,7 @@ namespace Gameplay
 	class RegularBullet : public SkillBullet
 	{
 	public:
-		Animation get(int32_t bulletid) const override;
+		Animation get(const Char& user, int32_t bulletid) const override;
 	};
 
 
@@ -56,9 +60,22 @@ namespace Gameplay
 	public:
 		SingleBullet(node src);
 
-		Animation get(int32_t bulletid) const override;
+		Animation get(const Char& user, int32_t bulletid) const override;
 
 	private:
 		Ball ball;
+	};
+
+
+	class BySkillLevelBullet : public SkillBullet
+	{
+	public:
+		BySkillLevelBullet(node src, int32_t skillid);
+
+		Animation get(const Char& user, int32_t bulletid) const override;
+
+	private:
+		std::unordered_map<int32_t, Ball> bullets;
+		int32_t skillid;
 	};
 }

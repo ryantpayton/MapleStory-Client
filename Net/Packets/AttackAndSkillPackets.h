@@ -46,7 +46,7 @@ namespace Net
 			skip(8);
 
 			writech(attack.display);
-			writech(attack.direction);
+			writech(attack.toleft);
 			writech(attack.stance);
 
 			skip(1);
@@ -56,7 +56,7 @@ namespace Net
 			if (attack.type == Attack::RANGED)
 			{
 				skip(1);
-				writech(attack.direction);
+				writech(attack.toleft);
 				skip(7);
 				// skip(4); if hurricane, piercing arrow or rapidfire
 			}

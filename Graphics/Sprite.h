@@ -27,12 +27,14 @@ namespace Graphics
 	class Sprite
 	{
 	public:
+		Sprite(Animation animation, DrawArgument stateargs);
 		Sprite(node src, DrawArgument stateargs);
 		Sprite(node src);
 		~Sprite();
 
-		void update();
-		void draw(Point<int16_t> parentpos, float inter) const;
+		void draw(Point<int16_t> parentpos, float alpha) const;
+		bool update(uint16_t timestep);
+		bool update();
 
 	private:
 		Animation animation;

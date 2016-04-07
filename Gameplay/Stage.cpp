@@ -416,10 +416,10 @@ namespace Gameplay
 				usemove(Skill::DRAGON_BUSTER);
 				break;
 			case 101:
-				usemove(Skill::DRAGONS_ROAR);
+				usemove(Skill::ENERGY_BOLT);
 				break;
 			case 102:
-				usemove(Skill::BRANDISH);
+				usemove(Skill::MAGIC_CLAW);
 				break;
 			case 103:
 				usemove(Skill::SLASH_BLAST);

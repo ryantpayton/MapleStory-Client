@@ -22,28 +22,21 @@
 namespace Gameplay
 {
 	SingleUseEffect::SingleUseEffect(node src)
-	{
-		effect = src["effect"];
-	}
+		: effect(src["effect"]) {}
 
 	void SingleUseEffect::apply(Char& target) const
 	{
-		target.showeffect(effect.animation, effect.z);
+		effect.apply(target);
 	}
 
 
 	TwoHUseEffect::TwoHUseEffect(node src)
-	{
-		effects[false] = src["effect"]["0"];
-		effects[true] = src["effect"]["1"];
-	}
+		: effects(src["effect"]["0"], src["effect"]["1"]) {}
 
 	void TwoHUseEffect::apply(Char& target) const
 	{
 		bool twohanded = target.istwohanded();
-		const Effect& effect = effects[twohanded];
-
-		target.showeffect(effect.animation, effect.z);
+		effects[twohanded].apply(target);
 	}
 
 
@@ -62,9 +55,9 @@ namespace Gameplay
 
 	void MultiUseEffect::apply(Char& target) const
 	{
-		for (auto& efit : effects)
+		for (auto& effect : effects)
 		{
-			target.showeffect(efit.animation, efit.z);
+			effect.apply(target);
 		}
 	}
 
@@ -73,32 +66,22 @@ namespace Gameplay
 	{
 		for (node sub : src["CharLevel"])
 		{
-			uint16_t level = StringConversion<uint16_t>(sub.name()).orzero();
-			leveleffects[level] = sub["effect"];
+			auto level = StringConversion<uint16_t>(sub.name()).orzero();
+			effects.emplace(level, sub["effect"]);
 		}
 	}
 
 	void ByLevelUseEffect::apply(Char& target) const
 	{
-		uint16_t level = target.getlevel();
-		uint16_t max = 0;
-		for (auto& effect : leveleffects)
-		{
-			uint16_t required = effect.first;
-			if (level < required)
-			{
-				break;
-			}
-			else
-			{
-				max = required;
-			}
-		}
+		if (effects.size() == 0)
+			return;
 
-		if (leveleffects.count(max))
-		{
-			const Effect& effect = leveleffects.at(max);
-			target.showeffect(effect.animation, effect.z);
-		}
+		uint16_t level = target.getlevel();
+		auto iter = effects.begin();
+		for (; iter != effects.end() && level > iter->first; ++iter) {}
+		if (iter != effects.begin())
+			iter--;
+
+		iter->second.apply(target);
 	}
 }

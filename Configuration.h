@@ -29,9 +29,9 @@
 class Configuration : public Singleton<Configuration>
 {
 public:
-	// Add the settings which will be used and open the file.
+	// Add the settings which will be used and load them.
 	Configuration();
-	// Close the file.
+	// Save.
 	~Configuration();
 
 	// Load all settings. If something is missing, set the default value. Can be used for reloading.

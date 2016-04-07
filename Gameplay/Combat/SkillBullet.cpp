@@ -18,10 +18,11 @@
 #include "SkillBullet.h"
 
 #include "Data\DataFactory.h"
+#include "Util\Misc.h"
 
 namespace Gameplay
 {
-	Animation RegularBullet::get(int32_t bulletid) const
+	Animation RegularBullet::get(const Char&, int32_t bulletid) const
 	{
 		using Data::DataFactory;
 		return DataFactory::get().getbulletdata(bulletid).getbullet();
@@ -33,8 +34,34 @@ namespace Gameplay
 		ball = src["ball"];
 	}
 
-	Animation SingleBullet::get(int32_t) const
+	Animation SingleBullet::get(const Char&, int32_t) const
 	{
 		return ball.animation;
+	}
+
+
+	BySkillLevelBullet::BySkillLevelBullet(node src, int32_t id)
+	{
+		skillid = id;
+
+		for (auto sub : src["level"])
+		{
+			auto level = StringConversion<int32_t>(sub.name()).orzero();
+			bullets[level] = sub["ball"];
+		}
+	}
+
+	Animation BySkillLevelBullet::get(const Char& user, int32_t) const
+	{
+		int32_t level = user.getskilllevel(skillid);
+		auto iter = bullets.find(level);
+		if (iter != bullets.end())
+		{
+			return iter->second.animation;
+		}
+		else
+		{
+			return Animation();
+		}
 	}
 }
