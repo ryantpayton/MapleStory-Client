@@ -16,10 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Enum.h"
-#include "Util\Misc.h"
+#include "..\Util\Enum.h"
+#include "..\Util\Misc.h"
 
-namespace Character
+namespace jrc
 {
 	class Maplestat
 	{
@@ -59,7 +59,7 @@ namespace Character
 
 		static bool compare(Value first, int32_t second)
 		{
-			return Bits::compare(valueof(first), second);
+			return bytecode::compare(valueof(first), second);
 		}
 	};
 }

@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MapleButton.h"
 
-namespace IO
+namespace jrc
 {
-	MapleButton::MapleButton(node src, Point<int16_t> pos)
+	MapleButton::MapleButton(nl::node src, Point<int16_t> pos)
 	{
 		textures[PRESSED] = src["pressed"]["0"];
 		textures[MOUSEOVER] = src["mouseOver"]["0"];
@@ -30,10 +30,10 @@ namespace IO
 		active = true;
 	}
 
-	MapleButton::MapleButton(node src, int16_t x, int16_t y)
+	MapleButton::MapleButton(nl::node src, int16_t x, int16_t y)
 		: MapleButton(src, Point<int16_t>(x, y)) {}
 
-	MapleButton::MapleButton(node src)
+	MapleButton::MapleButton(nl::node src)
 		: MapleButton(src, Point<int16_t>()) {}
 
 	void MapleButton::draw(Point<int16_t> parentpos) const
@@ -44,10 +44,10 @@ namespace IO
 		}
 	}
 
-	rectangle2d<int16_t> MapleButton::bounds(Point<int16_t> parentpos) const
+	Rectangle<int16_t> MapleButton::bounds(Point<int16_t> parentpos) const
 	{
 		auto lt = parentpos + position - textures[state].getorigin();
 		auto rb = lt + textures[state].getdimensions();
-		return rectangle2d<int16_t>(lt, rb);
+		return Rectangle<int16_t>(lt, rb);
 	}
 }

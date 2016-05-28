@@ -16,113 +16,70 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UICharcreation.h"
-#include "IO\UI.h"
-#include "Net\Session.h"
-#include "Net\Packets\CharCreationPackets.h"
-#include "IO\Components\MapleButton.h"
-#include "IO\UITypes\UILoginNotice.h"
-#include "IO\UITypes\UICharSelect.h"
-#include "Constants.h"
+
+#include "..\UI.h"
+#include "..\Components\MapleButton.h"
+#include "..\UITypes\UILoginNotice.h"
+#include "..\UITypes\UICharSelect.h"
+
+#include "..\..\Constants.h"
+#include "..\..\Net\Session.h"
+#include "..\..\Net\Packets\CharCreationPackets.h"
+
 #include "nlnx\nx.hpp"
 
-namespace IO
+namespace jrc
 {
-	using Character::Clothing;
-	using Character::Equipslot;
-	using Net::Session;
-
 	UICharcreation::UICharcreation()
 	{
 		female = Session::get().getlogin().getaccount().female;
 
-		using nl::node;
-		node src = nl::nx::ui["Login.img"];
-		node bgsrc = nl::nx::map["Back"]["login.img"]["back"];
-		node crsrc = src["NewChar"];
+		nl::node src = nl::nx::ui["Login.img"];
+		nl::node bgsrc = nl::nx::map["Back"]["login.img"]["back"];
+		nl::node crsrc = src["NewChar"];
 
-		sky = Texture(bgsrc["2"]);
-		cloud = Texture(bgsrc["27"]);
+		sky = bgsrc["2"];
+		cloud = bgsrc["27"];
 
-		sprites.push_back(Sprite(bgsrc["15"], Point<int16_t>(153, 685)));
-		sprites.push_back(Sprite(bgsrc["16"], Point<int16_t>(200, 400)));
-		sprites.push_back(Sprite(bgsrc["17"], Point<int16_t>(160, 263)));
-		sprites.push_back(Sprite(bgsrc["18"], Point<int16_t>(349, 1220)));
-		sprites.push_back(Sprite(src["Common"]["frame"], Point<int16_t>(400, 290)));
+		sprites.emplace_back(bgsrc["15"], Point<int16_t>(153, 685));
+		sprites.emplace_back(bgsrc["16"], Point<int16_t>(200, 400));
+		sprites.emplace_back(bgsrc["17"], Point<int16_t>(160, 263));
+		sprites.emplace_back(bgsrc["18"], Point<int16_t>(349, 1220));
+		sprites.emplace_back(src["Common"]["frame"], Point<int16_t>(400, 290));
 
-		nameboard = Texture(crsrc["charName"]);
+		nameboard = crsrc["charName"];
 
-		lookboard.push_back(Sprite(crsrc["charSet"], Point<int16_t>(450, 115)));
-		lookboard.push_back(Sprite(crsrc["avatarSel"]["0"]["normal"], Point<int16_t>(461, 217)));
-		lookboard.push_back(Sprite(crsrc["avatarSel"]["1"]["normal"], Point<int16_t>(461, 236)));
-		lookboard.push_back(Sprite(crsrc["avatarSel"]["2"]["normal"], Point<int16_t>(461, 255)));
-		lookboard.push_back(Sprite(crsrc["avatarSel"]["3"]["normal"], Point<int16_t>(461, 274)));
-		lookboard.push_back(Sprite(crsrc["avatarSel"]["4"]["normal"], Point<int16_t>(461, 293)));
-		lookboard.push_back(Sprite(crsrc["avatarSel"]["5"]["normal"], Point<int16_t>(461, 312)));
-		lookboard.push_back(Sprite(crsrc["avatarSel"]["6"]["normal"], Point<int16_t>(461, 331)));
-		lookboard.push_back(Sprite(crsrc["avatarSel"]["7"]["normal"], Point<int16_t>(461, 350)));
-		lookboard.push_back(Sprite(crsrc["avatarSel"]["8"]["normal"], Point<int16_t>(461, 369)));
+		lookboard.emplace_back(crsrc["charSet"], Point<int16_t>(450, 115));
+		lookboard.emplace_back(crsrc["avatarSel"]["0"]["normal"], Point<int16_t>(461, 217));
+		lookboard.emplace_back(crsrc["avatarSel"]["1"]["normal"], Point<int16_t>(461, 236));
+		lookboard.emplace_back(crsrc["avatarSel"]["2"]["normal"], Point<int16_t>(461, 255));
+		lookboard.emplace_back(crsrc["avatarSel"]["3"]["normal"], Point<int16_t>(461, 274));
+		lookboard.emplace_back(crsrc["avatarSel"]["4"]["normal"], Point<int16_t>(461, 293));
+		lookboard.emplace_back(crsrc["avatarSel"]["5"]["normal"], Point<int16_t>(461, 312));
+		lookboard.emplace_back(crsrc["avatarSel"]["6"]["normal"], Point<int16_t>(461, 331));
+		lookboard.emplace_back(crsrc["avatarSel"]["7"]["normal"], Point<int16_t>(461, 350));
+		lookboard.emplace_back(crsrc["avatarSel"]["8"]["normal"], Point<int16_t>(461, 369));
 
-		buttons[BT_CHARC_OK] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtYes"], Point<int16_t>(482, 292))
-			);
-		buttons[BT_CHARC_CANCEL] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtNo"], Point<int16_t>(555, 292))
-			);
-
-		buttons[BT_CHARC_FACEL] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtLeft"], Point<int16_t>(521, 216))
-			);
-		buttons[BT_CHARC_FACER] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtRight"], Point<int16_t>(645, 216))
-			);
-		buttons[BT_CHARC_HAIRL] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtLeft"], Point<int16_t>(521, 235))
-			);
-		buttons[BT_CHARC_HAIRR] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtRight"], Point<int16_t>(645, 235))
-			);
-		buttons[BT_CHARC_HAIRCL] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtLeft"], Point<int16_t>(521, 254))
-			);
-		buttons[BT_CHARC_HAIRCR] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtRight"], Point<int16_t>(645, 254))
-			);
-		buttons[BT_CHARC_SKINL] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtLeft"], Point<int16_t>(521, 273))
-			);
-		buttons[BT_CHARC_SKINR] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtRight"], Point<int16_t>(645, 273))
-			);
-		buttons[BT_CHARC_TOPL] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtLeft"], Point<int16_t>(521, 292))
-			);
-		buttons[BT_CHARC_TOPR] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtRight"], Point<int16_t>(645, 292))
-			);
-		buttons[BT_CHARC_BOTL] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtLeft"], Point<int16_t>(521, 311))
-			);
-		buttons[BT_CHARC_BOTR] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtRight"], Point<int16_t>(645, 311))
-			);
-		buttons[BT_CHARC_SHOESL] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtLeft"], Point<int16_t>(521, 330))
-			);
-		buttons[BT_CHARC_SHOESR] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtRight"], Point<int16_t>(645, 330))
-			);
-		buttons[BT_CHARC_WEPL] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtLeft"], Point<int16_t>(521, 349))
-			);
-		buttons[BT_CHARC_WEPR] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtRight"], Point<int16_t>(645, 348))
-			);
-		buttons[BT_CHARC_GENDERL] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtLeft"], Point<int16_t>(521, 368))
-			);
-		buttons[BT_CHARC_GEMDERR] = unique_ptr<Button>(
-			new MapleButton(crsrc["BtRight"], Point<int16_t>(645, 368))
-			);
+		buttons[BT_CHARC_OK] = std::make_unique<MapleButton>(crsrc["BtYes"], Point<int16_t>(482, 292));
+		buttons[BT_CHARC_CANCEL] = std::make_unique<MapleButton>(crsrc["BtNo"], Point<int16_t>(555, 292));
+		buttons[BT_CHARC_FACEL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 216));
+		buttons[BT_CHARC_FACER] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 216));
+		buttons[BT_CHARC_HAIRL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 235));
+		buttons[BT_CHARC_HAIRR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 235));
+		buttons[BT_CHARC_HAIRCL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 254));
+		buttons[BT_CHARC_HAIRCR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 254));
+		buttons[BT_CHARC_SKINL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 273));
+		buttons[BT_CHARC_SKINR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 273));
+		buttons[BT_CHARC_TOPL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 292));
+		buttons[BT_CHARC_TOPR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 292));
+		buttons[BT_CHARC_BOTL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 311));
+		buttons[BT_CHARC_BOTR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 311));
+		buttons[BT_CHARC_SHOESL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 330));
+		buttons[BT_CHARC_SHOESR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 330));
+		buttons[BT_CHARC_WEPL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 349));
+		buttons[BT_CHARC_WEPR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 348));
+		buttons[BT_CHARC_GENDERL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 368));
+		buttons[BT_CHARC_GEMDERR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 368));
 
 		buttons[BT_CHARC_FACEL]->setactive(false);
 		buttons[BT_CHARC_FACER]->setactive(false);
@@ -143,7 +100,7 @@ namespace IO
 		buttons[BT_CHARC_GENDERL]->setactive(false);
 		buttons[BT_CHARC_GEMDERR]->setactive(false);
 
-		rectangle2d<int16_t> txfae = rectangle2d<int16_t>(
+		Rectangle<int16_t> txfae = Rectangle<int16_t>(
 			Point<int16_t>(490, 219),
 			Point<int16_t>(630, 243)
 			);
@@ -162,11 +119,11 @@ namespace IO
 		wepname = Text(Text::A11M, Text::CENTER, Text::BLACK);
 		gendername = Text(Text::A11M, Text::CENTER, Text::BLACK);
 
-		node mkinfo = nl::nx::etc["MakeCharInfo.img"]["Info"];
+		nl::node mkinfo = nl::nx::etc["MakeCharInfo.img"]["Info"];
 		for (int32_t i = 0; i < 2; i++)
 		{
 			bool f;
-			node mk_n;
+			nl::node mk_n;
 			if (i == 0)
 			{
 				f = true;
@@ -178,10 +135,10 @@ namespace IO
 				mk_n = mkinfo["CharMale"];
 			}
 
-			for (node subnode : mk_n)
+			for (auto subnode : mk_n)
 			{
 				int num = stoi(subnode.name());
-				for (node idnode : subnode)
+				for (auto idnode : subnode)
 				{
 					int value = idnode;
 					switch (num)
@@ -263,7 +220,7 @@ namespace IO
 		case BT_CHARC_OK:
 			if (named)
 			{
-				string cname = namechar.gettext();
+				std::string cname = namechar.gettext();
 				uint16_t cjob = 1;
 				int32_t cface = faces[female][face];
 				int32_t chair = hairs[female][hair];
@@ -273,25 +230,22 @@ namespace IO
 				int32_t cbot = bots[female][bot];
 				int32_t cshoe = shoes[female][shoe];
 				int32_t cwep = weapons[female][weapon];
-
-				using Net::CreateCharPacket;
 				CreateCharPacket(cname, cjob, cface, chair, chairc, cskin, ctop, cbot, cshoe, cwep, female).dispatch();
 			}
 			else
 			{
-				string name = namechar.gettext();
+				std::string name = namechar.gettext();
 				if (name.size() >= 4)
 				{
-					UI::get().disable();
-					UI::get().focustextfield(nullptr);
 					namechar.setstate(Textfield::NORMAL);
 
-					using Net::NameCharPacket;
+					UI::get().disable();
+					UI::get().focustextfield(nullptr);
 					NameCharPacket(name).dispatch();
 				}
 				else
 				{
-					UI::get().add(ElementLoginNotice(10));
+					UI::get().add(ElementTag<UILoginNotice, int8_t>(10));
 					buttons[id]->setstate(Button::NORMAL);
 				}
 			}
@@ -327,7 +281,7 @@ namespace IO
 			{
 				active = false;
 				UI::get().remove(CHARSELECT);
-				UI::get().add(ElementCharSelect());
+				UI::get().add(ElementTag<UICharSelect>());
 			}
 			break;
 		}

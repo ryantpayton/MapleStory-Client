@@ -16,10 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Buffstat.h"
-#include "CharStats.h"
+#include "BuffEffects.h"
 
-namespace Character
+namespace jrc
 {
 	class Buff
 	{
@@ -36,5 +35,7 @@ namespace Character
 		int16_t value;
 		int32_t skillid;
 		int32_t duration;
+
+		static BuffEffects effects;
 	};
 }

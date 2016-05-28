@@ -16,16 +16,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Character\OtherChar.h"
 #include "Maplemap\MapObject.h"
 #include "Maplemap\Npc.h"
 #include "Maplemap\Mob.h"
 #include "Maplemap\ItemDrop.h"
 #include "Maplemap\MesoDrop.h"
-#include "Net\Login.h"
+
+#include "..\Character\OtherChar.h"
+#include "..\Net\Login.h"
+
 #include <cstdint>
 
-namespace Gameplay
+namespace jrc
 {
 	class Spawn
 	{
@@ -163,13 +165,10 @@ namespace Gameplay
 	};
 
 
-	using Character::OtherChar;
-	using Net::LookEntry;
-
 	class CharSpawn : public Spawn
 	{
 	public:
-		CharSpawn(int32_t c, LookEntry lk, uint8_t l, int16_t j, string nm, int8_t st, Point<int16_t> p)
+		CharSpawn(int32_t c, LookEntry lk, uint8_t l, int16_t j, const std::string& nm, int8_t st, Point<int16_t> p)
 			: cid(c), look(lk), level(l), job(j), name(nm), stance(st), position(p) {}
 
 		int32_t getcid() const
@@ -191,7 +190,7 @@ namespace Gameplay
 		int32_t cid;
 		uint8_t level;
 		int16_t job; 
-		string name;
+		std::string name;
 		int8_t stance;
 		Point<int16_t> position;
 		LookEntry look;

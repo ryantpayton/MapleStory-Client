@@ -17,25 +17,19 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Foothold.h"
 
-namespace Gameplay
+#include "..\..\Util\Misc.h"
+
+namespace jrc
 {
-	Foothold::Foothold(node src, uint8_t ly)
+	Foothold::Foothold(nl::node src, uint8_t ly)
 	{
-		id = static_cast<uint16_t>(stoi(src.name()));
+		id = string_conversion::or_zero<uint16_t>(src.name());
 		prev = src["prev"];
 		next = src["next"];
 		layer = ly;
 
 		horizontal = Range<int16_t>(src["x1"], src["x2"]);
 		vertical = Range<int16_t>(src["y1"], src["y2"]);
-	}
-
-	Foothold::Foothold(InPacket& recv, uint8_t ly)
-	{
-		id = recv.readshort();
-		prev = recv.readshort();
-		next = recv.readshort();
-		layer = ly;
 	}
 
 	Foothold::Foothold()
@@ -45,8 +39,6 @@ namespace Gameplay
 		next = 0;
 		layer = 0;
 	}
-
-	Foothold::~Foothold() {}
 
 	double Foothold::getslope() const
 	{ 

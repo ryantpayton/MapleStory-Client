@@ -18,12 +18,10 @@
 #pragma once
 #include "ItemData.h"
 
-#include "Graphics\Animation.h"
+#include "..\..\Graphics\Animation.h"
 
-namespace Character
+namespace jrc
 {
-	using Graphics::Animation;
-
 	class BulletData : public ItemData
 	{
 	public:

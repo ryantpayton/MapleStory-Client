@@ -16,16 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Constants.h"
-#include "Graphics\Texture.h"
-#include "IO\Element.h"
-#include "IO\Components\IconCover.h"
+#include "..\Element.h"
+#include "..\Components\IconCover.h"
+
+#include "..\..\Constants.h"
+#include "..\..\Graphics\Texture.h"
+
 #include <unordered_map>
 
-namespace IO
+namespace jrc
 {
-	using std::unordered_map;
-
 	class BuffIcon
 	{
 	public:
@@ -37,9 +37,7 @@ namespace IO
 		bool update();
 
 	private:
-		using Texture = Graphics::Texture;
-
-		static const uint16_t FLASH_TIME = 3000;
+		static const uint16_t FLASH_TIME = 3'000;
 
 		Texture icon;
 		IconCover cover;
@@ -53,6 +51,10 @@ namespace IO
 	class UIBuffList : public UIElement
 	{
 	public:
+		static constexpr Type TYPE = BUFFLIST;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = false;
+
 		UIBuffList();
 
 		void draw(float inter) const override;
@@ -62,20 +64,6 @@ namespace IO
 		void addbuff(int32_t buffid, int32_t duration);
 
 	private:
-		unordered_map<int32_t, BuffIcon> icons;
-	};
-
-
-	class ElementBuffList : public Element
-	{
-		UIElement::Type type() const override
-		{
-			return UIElement::BUFFLIST;
-		}
-
-		UIElement* instantiate() const override
-		{
-			return new UIBuffList();
-		}
+		std::unordered_map<int32_t, BuffIcon> icons;
 	};
 }

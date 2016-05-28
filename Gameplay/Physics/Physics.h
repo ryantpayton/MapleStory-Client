@@ -18,19 +18,14 @@
 #pragma once
 #include "Footholdtree.h"
 
-namespace Gameplay
+namespace jrc
 {
 	// Class that uses physics engines and the collection of platforms to determine object movement.
 	class Physics
 	{
 	public:
-		// Load the footholdtree from a node of game data.
-		Physics(node src);
-		// Load the footholdtree from a packet.
-		Physics(InPacket& recv);
-
+		Physics(nl::node src);
 		Physics();
-		~Physics();
 
 		// Move the specified object over the specified game-time.
 		void moveobject(PhysicsObject& tomove) const;

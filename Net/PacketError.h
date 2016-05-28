@@ -19,15 +19,16 @@
 #include <string>
 #include <stdexcept>
 
-namespace Net
+namespace jrc
 {
-	using std::string;
-	using std::runtime_error;
-
 	// Error that occurs if the number of bytes a packet has available is insufficient.
-	class PacketError : public runtime_error
+	class PacketError : public std::runtime_error
 	{
 	public:
-		PacketError(string msg) : runtime_error(msg) {}
+		PacketError(const std::string& msg) 
+			: std::runtime_error(PREFIX + msg) {}
+
+	private:
+		static constexpr char* PREFIX = "Packet Error: ";
 	};
 }

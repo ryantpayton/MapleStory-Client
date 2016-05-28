@@ -16,17 +16,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\OutPacket.h"
-#include "Net\SendOpcodes.h"
+#include "..\OutPacket.h"
+#include "..\SendOpcodes.h"
 
-namespace Net
+namespace jrc
 {
 	// Packet which sends a message to general chat.
 	// Opcode: GENERAL_CHAT(49)
 	class GeneralChatPacket : public OutPacket
 	{
 	public:
-		GeneralChatPacket(string message, bool show) : OutPacket(GENERAL_CHAT)
+		GeneralChatPacket(const std::string& message, bool show) : OutPacket(GENERAL_CHAT)
 		{
 			writestr(message);
 			writech(show);

@@ -16,19 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Text.h"
+#include "..\..\Graphics\Text.h"
+
 #include <vector>
 
-namespace IO
+namespace jrc
 {
-	using std::vector;
-	using std::string;
-	using Graphics::Text;
-
 	class Itemtext
 	{
 	public:
-		Itemtext(string text, int16_t maxwidth);
+		Itemtext(std::string text, int16_t maxwidth);
 		Itemtext();
 		~Itemtext();
 
@@ -49,7 +46,7 @@ namespace IO
 			}
 		};
 
-		vector<Line> lines;
+		std::vector<Line> lines;
 		Point<int16_t> dimensions;
 	};
 }

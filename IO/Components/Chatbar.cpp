@@ -18,12 +18,13 @@
 #include "Chatbar.h"
 #include "MapleButton.h"
 
-#include "IO\UI.h"
-#include "Net\Packets\MessagingPackets.h"
+#include "..\UI.h"
+
+#include "..\..\Net\Packets\MessagingPackets.h"
 
 #include "nlnx\nx.hpp"
 
-namespace IO
+namespace jrc
 {
 	Chatbar::Chatbar(Point<int16_t> pos)
 	{
@@ -35,13 +36,13 @@ namespace IO
 		rowmax = -1;
 		lastpos = 0;
 
-		node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
+		nl::node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
 
-		buttons[BT_OPENCHAT] = unique_ptr<Button>(new MapleButton(mainbar["chatOpen"]));
-		buttons[BT_CLOSECHAT] = unique_ptr<Button>(new MapleButton(mainbar["chatClose"]));
-		buttons[BT_SCROLLUP] = unique_ptr<Button>(new MapleButton(mainbar["scrollUp"]));
-		buttons[BT_SCROLLDOWN] = unique_ptr<Button>(new MapleButton(mainbar["scrollDown"]));
-		buttons[BT_CHATTARGETS] = unique_ptr<Button>(new MapleButton(mainbar["chatTarget"]["base"]));
+		buttons[BT_OPENCHAT] = std::make_unique<MapleButton>(mainbar["chatOpen"]);
+		buttons[BT_CLOSECHAT] = std::make_unique<MapleButton>(mainbar["chatClose"]);
+		buttons[BT_SCROLLUP] = std::make_unique<MapleButton>(mainbar["scrollUp"]);
+		buttons[BT_SCROLLDOWN] = std::make_unique<MapleButton>(mainbar["scrollDown"]);
+		buttons[BT_CHATTARGETS] = std::make_unique<MapleButton>(mainbar["chatTarget"]["base"]);
 
 		buttons[chatopen ? BT_OPENCHAT : BT_CLOSECHAT]->setactive(false);
 		buttons[BT_CHATTARGETS]->setactive(chatopen);
@@ -58,27 +59,22 @@ namespace IO
 		chattargets[CHT_PARTY] = mainbar["chatTarget"]["party"];
 		chattargets[CHT_SQUAD] = mainbar["chatTarget"]["expedition"];
 
-		node chat = nl::nx::ui["StatusBar2.img"]["chat"];
+		nl::node chat = nl::nx::ui["StatusBar2.img"]["chat"];
 
 		tapbar = chat["tapBar"];
 		tapbartop = chat["tapBarOver"];
 
-		chatbox = Rectangle(502, 1 + chatrows * CHATROWHEIGHT, Geometry::BLACK, 0.6f);
+		chatbox = { 502, 1 + chatrows * CHATROWHEIGHT, Geometry::BLACK, 0.6f };
 
-		chatfield = Textfield(Text::A11M, Text::LEFT, Text::BLACK, 
-			rectangle2d<int16_t>(
-			Point<int16_t>(-435, -58),
-			Point<int16_t>(-40, -35)
-			), 0);
+		chatfield = { Text::A11M, Text::LEFT, Text::BLACK, { { -435, -58 }, { -40, -35} }, 0 };
 		chatfield.setstate(chatopen ? Textfield::NORMAL : Textfield::DISABLED);
-		chatfield.setonreturn([&](string msg) {
+		chatfield.setonreturn([&](std::string msg) {
 
 			size_t last = msg.find_last_not_of(' ');
-			if (last != string::npos)
+			if (last != std::string::npos)
 			{
 				msg.erase(last + 1);
 
-				using Net::GeneralChatPacket;
 				GeneralChatPacket(msg, true).dispatch();
 
 				lastentered.push_back(msg);
@@ -100,14 +96,14 @@ namespace IO
 			}
 		});
 
-		slider = unique_ptr<Slider>(
-			new Slider(11, Range<int16_t>(0, CHATROWHEIGHT * chatrows - 14), -22, chatrows, 1, [&](bool up){
+		slider = std::make_unique<Slider>(
+			11, Range<int16_t>(0, CHATROWHEIGHT * chatrows - 14), -22, chatrows, 1, [&](bool up){
 			int16_t next = up ? 
 				rowpos - 1 : 
 				rowpos + 1;
 			if (next >= 0 && next <= rowmax)
 				rowpos = next;
-		}));
+		});
 	}
 
 	Chatbar::~Chatbar() {}
@@ -187,7 +183,7 @@ namespace IO
 	{
 		auto absp = Point<int16_t>(0, getchattop() - 16);
 		auto dim = Point<int16_t>(500, chatrows * CHATROWHEIGHT + CHATYOFFSET + 16);
-		return rectangle2d<int16_t>(absp, absp + dim).contains(cursorpos);
+		return Rectangle<int16_t>(absp, absp + dim).contains(cursorpos);
 	}
 
 	Cursor::State Chatbar::sendmouse(bool clicking, Point<int16_t> cursorpos)
@@ -211,7 +207,7 @@ namespace IO
 			}
 		}
 		
-		auto chattop = rectangle2d<int16_t>(
+		auto chattop = Rectangle<int16_t>(
 			0,  502, 
 			getchattop(),
 			getchattop() + 6
@@ -258,7 +254,7 @@ namespace IO
 		return UIElement::sendmouse(clicking, cursorpos);
 	}
 
-	void Chatbar::sendline(string line, LineType type)
+	void Chatbar::sendline(const std::string& line, LineType type)
 	{
 		rowmax++;
 		rowpos = rowmax;
@@ -281,8 +277,12 @@ namespace IO
 			color = Text::WHITE;
 			break;
 		}
-		rowtexts[rowmax] = Text(Text::A12M, Text::LEFT, color);
-		rowtexts[rowmax].settext(line, 480);
+
+		rowtexts.emplace(
+			std::piecewise_construct,
+			std::forward_as_tuple(rowmax),
+			std::forward_as_tuple(Text::A12M, Text::LEFT, color)
+		).first->second.settext(line, 480);
 	}
 
 	int16_t Chatbar::getchattop() const

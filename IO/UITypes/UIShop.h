@@ -16,22 +16,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
-#include "IO\Components\Slider.h"
-#include "Character\Inventory\Inventory.h"
-#include "Graphics\Text.h"
-#include "Graphics\Texture.h"
+#include "..\Element.h"
+#include "..\Components\Slider.h"
 
-namespace IO
+#include "..\..\Character\Inventory\Inventory.h"
+#include "..\..\Graphics\Text.h"
+#include "..\..\Graphics\Texture.h"
+
+namespace jrc
 {
-	using Character::Inventory;
-	using Character::Item;
-	using Graphics::Text;
-	using Graphics::Texture;
-
 	class UIShop : public UIElement
 	{
 	public:
+		static constexpr Type TYPE = SHOP;
+		static constexpr bool FOCUSED = true;
+		static constexpr bool TOGGLED = true;
+
 		UIShop();
 
 		void draw(float alpha) const override;
@@ -78,8 +78,8 @@ namespace IO
 		Texture meso;
 		Text mesolabel;
 
-		unique_ptr<Slider> buyslider;
-		unique_ptr<Slider> sellslider;
+		std::unique_ptr<Slider> buyslider;
+		std::unique_ptr<Slider> sellslider;
 
 		class BuyItem
 		{
@@ -128,7 +128,7 @@ namespace IO
 
 		struct BuyState
 		{
-			vector<BuyItem> items;
+			std::vector<BuyItem> items;
 			int16_t offset;
 			int16_t lastslot;
 			int16_t selection;
@@ -144,7 +144,7 @@ namespace IO
 
 		struct SellState
 		{
-			vector<SellItem> items;
+			std::vector<SellItem> items;
 			int16_t offset;
 			Inventory::Type tab;
 			int16_t lastslot;
@@ -158,23 +158,5 @@ namespace IO
 			void select(int16_t selected);
 		};
 		SellState sellstate;
-	};
-
-	class ElementShop : public Element
-	{
-		bool isunique() const override
-		{
-			return true;
-		}
-
-		UIElement::Type type() const override
-		{
-			return UIElement::SHOP;
-		}
-
-		UIElement* instantiate() const override
-		{
-			return new UIShop();
-		}
 	};
 }

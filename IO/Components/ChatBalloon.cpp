@@ -16,18 +16,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "ChatBalloon.h"
-#include "Constants.h"
+
+#include "..\..\Constants.h"
+
 #include "nlnx\nx.hpp"
 #include "nlnx\node.hpp"
 
-namespace IO
+namespace jrc
 {
 	// How long a line stays on screen. 4 seconds.
 	const int16_t DURATION = 4000;
 
 	ChatBalloon::ChatBalloon(int8_t type)
 	{
-		string typestr;
+		std::string typestr;
 		if (type < 0)
 		{
 			switch (type)
@@ -42,19 +44,17 @@ namespace IO
 			typestr = std::to_string(type);
 		}
 
-		using nl::node;
-		node src = nl::nx::ui["ChatBalloon.img"][typestr];
-
-		arrow = Texture(src["arrow"]);
-		center = Texture(src["c"]);
-		east = Texture(src["e"]);
-		northeast = Texture(src["ne"]);
-		north = Texture(src["n"]);
-		northwest = Texture(src["nw"]);
-		west = Texture(src["w"]);
-		southwest = Texture(src["sw"]);
-		south = Texture(src["s"]);
-		southeast = Texture(src["se"]);
+		nl::node src = nl::nx::ui["ChatBalloon.img"][typestr];
+		arrow = src["arrow"];
+		center = src["c"];
+		east = src["e"];
+		northeast = src["ne"];
+		north = src["n"];
+		northwest = src["nw"];
+		west = src["w"];
+		southwest = src["sw"];
+		south = src["s"];
+		southeast = src["se"];
 
 		textlabel = Text(Text::A11M, Text::CENTER, Text::BLACK);
 
@@ -64,11 +64,10 @@ namespace IO
 		duration = 0;
 	}
 
-	ChatBalloon::ChatBalloon() : ChatBalloon(0) {}
+	ChatBalloon::ChatBalloon() 
+		: ChatBalloon(0) {}
 
-	ChatBalloon::~ChatBalloon() {}
-
-	void ChatBalloon::settext(string text)
+	void ChatBalloon::settext(std::string text)
 	{
 		textlabel.settext(text, 80);
 

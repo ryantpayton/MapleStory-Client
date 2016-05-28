@@ -16,26 +16,23 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Console.h"
-#include "Constants.h"
-#include "Net\InPacket.h"
-#include "Graphics\Texture.h"
-#include "Graphics\Animation.h"
-#include "Gameplay\Physics\PhysicsObject.h"
+#include "..\Physics\PhysicsObject.h"
+
+#include "..\..\Console.h"
+#include "..\..\Constants.h"
+#include "..\..\Graphics\Texture.h"
+#include "..\..\Graphics\Animation.h"
+
 #include <vector>
 
-namespace Gameplay
+namespace jrc
 {
-	using Net::InPacket;
-	using Graphics::Animation;
-
 	class Background
 	{
 	public:
-		Background(node src);
-		Background(InPacket& recv);
+		Background(nl::node src);
 
-		void draw(Point<int16_t> viewpos, float inter) const;
+		void draw(double viewx, double viewy, float alpha) const;
 		void update();
 
 	private:
@@ -70,8 +67,8 @@ namespace Gameplay
 		bool animated;
 		int16_t cx;
 		int16_t cy;
-		float rx;
-		float ry;
+		double rx;
+		double ry;
 		int16_t htile;
 		int16_t vtile;
 		float opacity;
@@ -80,22 +77,20 @@ namespace Gameplay
 		MovingObject moveobj;
 	};
 
-	using std::vector;
 
 	class MapBackgrounds
 	{
 	public:
-		MapBackgrounds(node src);
-		MapBackgrounds(InPacket& recv);
+		MapBackgrounds(nl::node src);
 		MapBackgrounds();
 
-		void drawbackgrounds(Point<int16_t> viewpos, float inter) const;
-		void drawforegrounds(Point<int16_t> viewpos, float inter) const;
+		void drawbackgrounds(double viewx, double viewy, float alpha) const;
+		void drawforegrounds(double viewx, double viewy, float alpha) const;
 		void update();
 
 	private:
-		vector<Background> backgrounds;
-		vector<Background> foregrounds;
+		std::vector<Background> backgrounds;
+		std::vector<Background> foregrounds;
 		bool black;
 	};
 }

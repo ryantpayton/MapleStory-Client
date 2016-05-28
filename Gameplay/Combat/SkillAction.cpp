@@ -15,10 +15,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SkillAction.h"
 
-namespace Gameplay
+namespace jrc
 {
-	using Character::Weapon;
-
 	void RegularAction::apply(Char& target, Attack::Type atype) const
 	{
 		Weapon::Type weapontype = target.getlook().getequips().getweapontype();
@@ -39,7 +37,7 @@ namespace Gameplay
 	}
 
 
-	SingleAction::SingleAction(node src)
+	SingleAction::SingleAction(nl::node src)
 	{
 		action = src["action"]["0"];
 	}
@@ -50,7 +48,7 @@ namespace Gameplay
 	}
 
 
-	TwoHAction::TwoHAction(node src)
+	TwoHAction::TwoHAction(nl::node src)
 	{
 		actions[false] = src["action"]["0"];
 		actions[true] = src["action"]["1"];
@@ -59,17 +57,17 @@ namespace Gameplay
 	void TwoHAction::apply(Char& target, Attack::Type) const
 	{
 		bool twohanded = target.istwohanded();
-		string action = actions[twohanded];
+		std::string action = actions[twohanded];
 
 		target.attack(action);
 	}
 
 
-	ByLevelAction::ByLevelAction(node src, int32_t id)
+	ByLevelAction::ByLevelAction(nl::node src, int32_t id)
 	{
-		for (node sub : src["level"])
+		for (auto sub : src["level"])
 		{
-			int32_t level = StringConversion<int32_t>(sub.name()).orzero();
+			int32_t level = string_conversion::or_zero<int32_t>(sub.name());
 			actions[level] = sub["action"];
 		}
 

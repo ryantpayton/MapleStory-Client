@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Journey.h"
+#include "..\Journey.h"
 #ifdef JOURNEY_USE_ASIO
 #include "NetConstants.h"
 
@@ -24,7 +24,7 @@
 #define BOOST_REGEX_NO_LIB
 #include "asio.hpp"
 
-namespace Net
+namespace jrc
 {
 #ifndef JOURNEY_USE_CRYPTO
 	const size_t HANDSHAKE_LEN = 2;

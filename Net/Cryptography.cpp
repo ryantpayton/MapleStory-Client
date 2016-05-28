@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Cryptography.h"
 
-namespace Net
+namespace jrc
 {
 	Cryptography::Cryptography(const int8_t* handshake) 
 	{
@@ -128,21 +128,21 @@ namespace Net
 			uint8_t remember = 0;
 			uint8_t datalen = static_cast<uint8_t>(length & 0xFF);
 
-			for (size_t i = length; i--;)
+			for (size_t j = length; j--;)
 			{
-				uint8_t cur = rollleft(bytes[i], 3) ^ 0x13;
-				bytes[i] = rollright((cur ^ remember) - datalen, 4);
+				uint8_t cur = rollleft(bytes[j], 3) ^ 0x13;
+				bytes[j] = rollright((cur ^ remember) - datalen, 4);
 				remember = cur;
 				datalen--;
 			}
 
 			remember = 0;
 			datalen = static_cast<uint8_t>(length & 0xFF);
-			for (size_t i = 0; i < length; i++)
+			for (size_t j = 0; j < length; j++)
 			{
-				uint8_t cur = (~(bytes[i] - 0x48)) & 0xFF;
+				uint8_t cur = (~(bytes[j] - 0x48)) & 0xFF;
 				cur = rollleft(cur, static_cast<int32_t>(datalen)& 0xFF);
-				bytes[i] = rollright((cur ^ remember) - datalen, 3);
+				bytes[j] = rollright((cur ^ remember) - datalen, 3);
 				remember = cur;
 				datalen--;
 			}
@@ -190,10 +190,11 @@ namespace Net
 			mask |= (mbytes[2] << 16) & 0xFF0000;
 			mask |= (mbytes[3] << 24) & 0xFF000000;
 			mask = (mask >> 0x1D) | (mask << 3);
-			for (size_t i = 0; i < 4; i++)
+
+			for (size_t j = 0; j < 4; j++)
 			{
-				size_t value = mask >> (8 * i);
-				mbytes[i] = static_cast<uint8_t>(value & 0xFF);
+				size_t value = mask >> (8 * j);
+				mbytes[j] = static_cast<uint8_t>(value & 0xFF);
 			}
 		}
 

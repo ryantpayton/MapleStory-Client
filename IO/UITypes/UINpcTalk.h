@@ -16,19 +16,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
-#include "IO\Components\Npctext.h"
-#include "Graphics\Text.h"
-#include "Graphics\Texture.h"
+#include "..\Element.h"
+#include "..\Components\Npctext.h"
 
-namespace IO
+#include "..\..\Graphics\Text.h"
+#include "..\..\Graphics\Texture.h"
+
+namespace jrc
 {
-	using Graphics::Text;
-	using Graphics::Texture;
-
 	class UINpcTalk : public UIElement
 	{
 	public:
+		static constexpr Type TYPE = NPCTALK;
+		static constexpr bool FOCUSED = true;
+		static constexpr bool TOGGLED = true;
+
 		enum Buttons
 		{
 			OK,
@@ -43,7 +45,7 @@ namespace IO
 
 		void draw(float inter) const override;
 		void buttonpressed(uint16_t buttonid) override;
-		void settext(int32_t npcid, int8_t msgtype, int16_t style, int8_t speaker, string text);
+		void settext(int32_t npcid, int8_t msgtype, int16_t style, int8_t speaker, const std::string& text);
 
 	private:
 		Texture top;
@@ -59,23 +61,5 @@ namespace IO
 		bool slider;
 
 		int8_t type;
-	};
-
-	class ElementNpcTalk : public Element
-	{
-		bool isunique() const override
-		{
-			return true;
-		}
-
-		UIElement::Type type() const override
-		{
-			return UIElement::NPCTALK;
-		}
-
-		UIElement* instantiate() const override
-		{
-			return new UINpcTalk();
-		}
 	};
 }

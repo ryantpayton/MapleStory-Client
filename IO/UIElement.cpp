@@ -16,11 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UIElement.h"
-#include "Constants.h"
 
-#include "Audio\Audio.h"
+#include "..\Constants.h"
+#include "..\Audio\Audio.h"
 
-namespace IO
+namespace jrc
 {
 	UIElement::UIElement()
 	{
@@ -78,7 +78,7 @@ namespace IO
 
 	bool UIElement::isinrange(Point<int16_t> cursorpos) const
 	{
-		auto bounds = rectangle2d<int16_t>(position, position + dimension);
+		auto bounds = Rectangle<int16_t>(position, position + dimension);
 		return bounds.contains(cursorpos);
 	}
 
@@ -107,7 +107,6 @@ namespace IO
 			{
 				if (btit.second->getstate() == Button::NORMAL)
 				{
-					using Audio::Sound;
 					Sound(Sound::BUTTONOVER).play();
 
 					btit.second->setstate(Button::MOUSEOVER);
@@ -117,7 +116,6 @@ namespace IO
 				{
 					if (down)
 					{
-						using Audio::Sound;
 						Sound(Sound::BUTTONCLICK).play();
 
 						btit.second->setstate(Button::PRESSED);

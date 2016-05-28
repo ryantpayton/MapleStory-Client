@@ -19,27 +19,30 @@
 #include "Item.h"
 #include "Pet.h"
 #include "Equip.h"
-#include "Console.h"
 
-#include "Character\CharStats.h"
-#include "Util\Optional.h"
+#include "..\CharStats.h"
 
-namespace Character
+#include "..\..\Console.h"
+#include "..\..\Util\EnumMap.h"
+#include "..\..\Util\Optional.h"
+
+namespace jrc
 {
 	// The player's inventory.
 	class Inventory
 	{
 	public:
-		// Inventorytypes used by the server.
+		// Inventorytypes.
 		enum Type : int8_t
 		{
-			EQUIPPED = -1,
 			NONE = 0,
 			EQUIP = 1,
 			USE = 2,
 			SETUP = 3,
 			ETC = 4,
-			CASH = 5
+			CASH = 5,
+			EQUIPPED = 6,
+			NUM_TYPES
 		};
 
 		// Return the inventory type by itemid.
@@ -57,8 +60,21 @@ namespace Character
 		// Return the inventory type by value.
 		static Type typebyvalue(int8_t value)
 		{
-			if (value >= EQUIPPED && value <= CASH)
-				return static_cast<Type>(value);
+			switch (value)
+			{
+			case -1:
+				return EQUIPPED;
+			case 1:
+				return EQUIP;
+			case 2:
+				return USE;
+			case 3:
+				return SETUP;
+			case 4:
+				return ETC;
+			case 5:
+				return CASH;
+			}
 
 			Console::get().print("Unknown inventory type: " + std::to_string(value));
 			return NONE;
@@ -106,18 +122,18 @@ namespace Character
 		// Add a general item.
 		void additem(
 			Type type, int16_t slot, int32_t itemid, bool cash,
-			int64_t uniqueid, int64_t expire, uint16_t coundt, string owner, int16_t flag
+			int64_t uniqueid, int64_t expire, uint16_t coundt, const std::string& owner, int16_t flag
 			);
 		// Add a pet item.
 		void addpet(
 			Type type, int16_t slot, int32_t itemid, bool cash, int64_t uniqueid,
-			int64_t expire, string name, int8_t level, int16_t closeness, int8_t fullness
+			int64_t expire, const std::string& name, int8_t level, int16_t closeness, int8_t fullness
 			);
 		// Add an equip item.
 		void addequip(
 			Type type, int16_t slot, int32_t itemid, bool cash, int64_t uniqueid, 
-			int64_t expire, uint8_t slots, uint8_t level, map<Equipstat::Value, uint16_t> stats, 
-			string owner, int16_t flag, uint8_t itemlevel, uint16_t itemexp, int32_t vicious
+			int64_t expire, uint8_t slots, uint8_t level, const EnumMap<Equipstat::Value, uint16_t>& stats,
+			const std::string& owner, int16_t flag, uint8_t itemlevel, uint16_t itemexp, int32_t vicious
 			);
 
 		// Remove an item.
@@ -161,9 +177,9 @@ namespace Character
 		void add(Type type, int16_t slot, Item* toadd);
 
 		int64_t meso;
-		map<Type, uint8_t> slots;
-		map<Type, map<int16_t, Item*>> inventories;
-		map<Equipstat::Value, uint16_t> totalstats;
+		EnumMap<Type, uint8_t, NUM_TYPES> slots;
+		EnumMap<Type, std::map<int16_t, Item*>, NUM_TYPES> inventories;
+		EnumMap<Equipstat::Value, uint16_t> totalstats;
 
 		int16_t bulletslot;
 	};

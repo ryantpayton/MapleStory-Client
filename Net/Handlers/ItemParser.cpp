@@ -17,24 +17,20 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "ItemParser.h"
 
-namespace Net
+namespace jrc
 {
 	namespace ItemParser
 	{
-		using::Character::Item;
-		using::Character::Pet;
-		using::Character::Equip;
-
 		// Parse a normal item from a packet.
 		void additem(InPacket& recv, Inventory::Type invtype, int16_t slot, int32_t id, Inventory& inventory)
 		{
 			// Read all item stats.
-			bool cash = recv.readbool();
-			int64_t uniqueid = cash ? recv.readlong() : -1;
-			int64_t expire = recv.readlong();
-			int16_t count = recv.readshort();
-			string owner = recv.read<string>();
-			int16_t flag = recv.readshort();
+			bool cash = recv.read_bool();
+			int64_t uniqueid = cash ? recv.read_long() : -1;
+			int64_t expire = recv.read_long();
+			int16_t count = recv.read_short();
+			std::string owner = recv.read_string();
+			int16_t flag = recv.read_short();
 
 			// If the item is a rechargable projectile, some additional bytes are sent.
 			if ((id / 10000 == 233) || (id / 10000 == 207))
@@ -49,13 +45,13 @@ namespace Net
 		void addpet(InPacket& recv, Inventory::Type invtype, int16_t slot, int32_t id, Inventory& inventory)
 		{
 			// Read all pet stats.
-			bool cash = recv.readbool();
-			int64_t uniqueid = cash ? recv.readlong() : -1;
-			int64_t expire = recv.readlong();
-			string petname = recv.readpadascii(13);
-			int8_t petlevel = recv.readbyte();
-			int16_t closeness = recv.readshort();
-			int8_t fullness = recv.readbyte();
+			bool cash = recv.read_bool();
+			int64_t uniqueid = cash ? recv.read_long() : -1;
+			int64_t expire = recv.read_long();
+			std::string petname = recv.read_padded_string(13);
+			int8_t petlevel = recv.read_byte();
+			int16_t closeness = recv.read_short();
+			int8_t fullness = recv.read_byte();
 
 			// Some unused bytes.
 			recv.skip(18);
@@ -67,29 +63,26 @@ namespace Net
 		void addequip(InPacket& recv, Inventory::Type invtype, int16_t slot, int32_t id, Inventory& inventory)
 		{
 			// Read equip information.
-			bool cash = recv.readbool();
+			bool cash = recv.read_bool();
 			int64_t uniqueid = -1;
 			if (cash)
 			{
-				uniqueid = recv.readlong();
+				uniqueid = recv.read_long();
 			}
-			int64_t expire = recv.readlong();
-			uint8_t slots = recv.readbyte();
-			uint8_t level = recv.readbyte();
+			int64_t expire = recv.read_long();
+			uint8_t slots = recv.read_byte();
+			uint8_t level = recv.read_byte();
 
 			// Read equip stats.
-			using std::map;
-			using Character::Equipstat;
-			map<Equipstat::Value, uint16_t> stats;
-			for (auto it = Equipstat::it(); it.hasnext(); it.increment())
+			EnumMap<Equipstat::Value, uint16_t> stats;
+			for (auto es : stats.getkeys())
 			{
-				Equipstat::Value es = it.get();
-				stats[es] = recv.readshort();
+				stats[es] = recv.read_short();
 			}
 
 			// Some more information.
-			string owner = recv.read<string>();
-			int16_t flag = recv.readshort();
+			std::string owner = recv.read_string();
+			int16_t flag = recv.read_short();
 			uint8_t itemlevel = 0;
 			uint16_t itemexp = 0;
 			int32_t vicious = 0;
@@ -100,12 +93,12 @@ namespace Net
 			}
 			else
 			{
-				recv.readbyte();
-				itemlevel = recv.readbyte();
-				recv.readshort();
-				itemexp = recv.readshort();
-				vicious = recv.readint();
-				recv.readlong();
+				recv.read_byte();
+				itemlevel = recv.read_byte();
+				recv.read_short();
+				itemexp = recv.read_short();
+				vicious = recv.read_int();
+				recv.read_long();
 			}
 
 			recv.skip(12);
@@ -123,8 +116,8 @@ namespace Net
 		void parseitem(InPacket& recv, Inventory::Type invtype, int16_t slot, Inventory& inventory)
 		{
 			// Read type and item id.
-			recv.readbyte(); // 'type' byte
-			int32_t iid = recv.readint();
+			recv.read_byte(); // 'type' byte
+			int32_t iid = recv.read_int();
 
 			if (invtype == Inventory::EQUIP || invtype == Inventory::EQUIPPED)
 			{

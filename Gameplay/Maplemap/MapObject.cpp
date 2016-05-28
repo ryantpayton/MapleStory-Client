@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MapObject.h"
 
-namespace Gameplay
+namespace jrc
 {
 	MapObject::MapObject(int32_t o)
 	{
@@ -71,9 +71,7 @@ namespace Gameplay
 
 	Point<int16_t> MapObject::getposition() const
 	{
-		int16_t x = phobj.getx();
-		int16_t y = phobj.gety();
-		return Point<int16_t>(x, y);
+		return phobj.getposition();
 	}
 
 	PhysicsObject& MapObject::getphobj()

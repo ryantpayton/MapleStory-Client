@@ -16,23 +16,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "ScrollingNotice.h"
-#include "Constants.h"
 
-namespace IO
+#include "..\..\Constants.h"
+
+namespace jrc
 {
 	ScrollingNotice::ScrollingNotice()
 	{
-		background = Rectangle(800, 20, Rectangle::BLACK, 0.6f);
+		background = ColorBox(800, 20, ColorBox::BLACK, 0.6f);
 		backposition = Point<int16_t>(0, -Constants::VIEWYOFFSET);
 		notice = Text(Text::A12M, Text::LEFT, Text::YELLOW);
-		xpos.set(0.0f);
+		xpos.set(0.0);
 		active = false;
 	}
 
-	void ScrollingNotice::setnotice(string n)
+	void ScrollingNotice::setnotice(std::string n)
 	{
 		notice.settext(n);
-		xpos.set(800.0f);
+		xpos.set(800.0);
 		active = n.size() > 0;
 	}
 

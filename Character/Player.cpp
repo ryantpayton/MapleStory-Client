@@ -17,18 +17,16 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Player.h"
 #include "PlayerStates.h"
-#include "Constants.h"
 
-#include "Data\DataFactory.h"
-#include "IO\UI.h"
-#include "IO\UITypes\UIStatsinfo.h"
-#include "Net\Packets\GameplayPackets.h"
-#include "Net\Packets\InventoryPackets.h"
+#include "..\Constants.h"
+#include "..\Data\DataFactory.h"
+#include "..\IO\UI.h"
+#include "..\IO\UITypes\UIStatsinfo.h"
+#include "..\Net\Packets\GameplayPackets.h"
+#include "..\Net\Packets\InventoryPackets.h"
 
-namespace Character
+namespace jrc
 {
-	using Data::DataFactory;
-
 	const PlayerNullState nullstate;
 
 	const PlayerState* getstate(Char::State state)
@@ -76,7 +74,7 @@ namespace Character
 	}
 
 	Player::Player() 
-		: Char(0, CharLook(), "") {}
+		: Char(0, {}, "") {}
 
 	void Player::respawn(Point<int16_t> pos, bool uw)
 	{
@@ -118,10 +116,9 @@ namespace Character
 
 		stats.closetotalstats(weapontype);
 
-		using IO::UI;
-		using IO::UIElement;
-		using IO::UIStatsinfo;
-		UI::get().withelement(UIElement::STATSINFO, &UIStatsinfo::updateall);
+		UI::get().getelement(UIElement::STATSINFO)
+			.reinterpret<UIStatsinfo>()
+			.ifpresent(&UIStatsinfo::updateall);
 	}
 
 	void Player::changecloth(int16_t slot)
@@ -149,18 +146,17 @@ namespace Character
 			switch (type)
 			{
 			case Inventory::USE:
-				using Net::UseItemPacket;
 				UseItemPacket(slot, itemid).dispatch();
 				break;
 			}
 		}
 	}
 
-	void Player::draw(uint8_t layer, Point<int16_t> viewpos, float alpha) const
+	void Player::draw(uint8_t layer, double viewx, double viewy, float alpha) const
 	{
 		if (layer == getlayer())
 		{
-			Char::draw(viewpos, alpha);
+			Char::draw(viewx, viewy, alpha);
 		}
 	}
 
@@ -194,8 +190,8 @@ namespace Character
 
 			if (movements.size() > 4)
 			{
-				using Net::MovePlayerPacket;
-				MovePlayerPacket(movements).dispatch();
+				MovePlayerPacket(movements)
+					.dispatch();
 
 				movements.clear();
 			}
@@ -246,7 +242,10 @@ namespace Character
 
 	bool Player::canuse(const SpecialMove& move) const
 	{
-		int32_t level = skillbook.getlevel(move.getid());
+		if (state == PRONE)
+			return false;
+
+		int32_t level = skillbook.get_level(move.getid());
 		Weapon::Type weapon = look.getequips().getweapontype();
 		uint16_t job = stats.getstat(Maplestat::JOB);
 		uint16_t hp = stats.getstat(Maplestat::HP);
@@ -352,7 +351,7 @@ namespace Character
 
 	int32_t Player::getskilllevel(int32_t skillid) const
 	{
-		return skillbook.getlevel(skillid);
+		return skillbook.get_level(skillid);
 	}
 
 	void Player::changejob(uint16_t jobid)

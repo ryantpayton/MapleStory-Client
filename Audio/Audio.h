@@ -16,18 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\EnumMap.h"
+#include "..\Util\EnumMap.h"
+
 #include "nlnx\node.hpp"
+
 #include <unordered_map>
 #include <cstdint>
 #include <string>
 
-namespace Audio
+namespace jrc
 {
-	using std::string;
-	using std::unordered_map;
-	using nl::node;
-
 	class Sound
 	{
 	public:
@@ -52,39 +50,38 @@ namespace Audio
 		};
 
 		Sound(Name name);
-		Sound(node src);
+		Sound(nl::node src);
 		Sound();
-		~Sound();
 
 		void play() const;
 
 		static bool init();
 		static void close();
-		static bool setsfxvolume(uint8_t volume);
+		static bool set_sfxvolume(uint8_t volume);
 
 	private:
 		size_t id;
 
-		static void playsound(size_t id);
+		static void play(size_t id);
 
-		static size_t addsound(node src);
-		static void addsound(Sound::Name name, node src);
+		static size_t add_sound(nl::node src);
+		static void add_sound(Sound::Name name, nl::node src);
 
-		static unordered_map<size_t, uint64_t> samples;
+		static std::unordered_map<size_t, uint64_t> samples;
 		static EnumMap<Name, size_t> soundids;
 	};
 
 	class Music
 	{
 	public:
-		Music(string path);
+		Music(std::string path);
 
 		void play() const;
 
 		static bool init();
-		static bool setbgmvolume(uint8_t volume);
+		static bool set_bgmvolume(uint8_t volume);
 
 	private:
-		string path;
+		std::string path;
 	};
 }

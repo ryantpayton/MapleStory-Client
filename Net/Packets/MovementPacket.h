@@ -16,14 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\OutPacket.h"
-#include "Net\SendOpcodes.h"
-#include "Gameplay\Movement.h"
+#include "..\OutPacket.h"
+#include "..\SendOpcodes.h"
 
-namespace Net
+#include "..\..\Gameplay\Movement.h"
+
+namespace jrc
 {
-	using Gameplay::Movement;
-
 	// Base class for packets which update object movements with the server.
 	class MovementPacket : public OutPacket
 	{

@@ -16,23 +16,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Text.h"
-#include "Graphics\Texture.h"
+#include "..\..\Graphics\Text.h"
+#include "..\..\Graphics\Texture.h"
+
 #include <vector>
 
-namespace IO
+namespace jrc
 {
-	using std::vector;
-	using std::string;
-	using Graphics::Text;
-	using Graphics::Texture;
-
 	class Npctext
 	{
 	public:
-		Npctext(string text, int16_t maxwidth);
+		Npctext(std::string text, int16_t maxwidth);
 		Npctext();
-		~Npctext();
 
 		void draw(Point<int16_t> position) const;
 
@@ -51,13 +46,13 @@ namespace IO
 			Point<int16_t> offset;
 		};
 
-		size_t parseL(string& str, size_t pos);
-		size_t parseh(string& str, size_t pos);
-		size_t parsez(string& str, size_t pos);
-		size_t parsev(string& str, size_t pos);
+		size_t parseL(std::string& str, size_t pos);
+		size_t parseh(std::string& str, size_t pos);
+		size_t parsez(std::string& str, size_t pos);
+		size_t parsev(std::string& str, size_t pos);
 
 		Point<int16_t> offset;
-		vector<Line> lines;
-		vector<Image> images;
+		std::vector<Line> lines;
+		std::vector<Image> images;
 	};
 }

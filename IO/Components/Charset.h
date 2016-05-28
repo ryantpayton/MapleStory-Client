@@ -16,19 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Texture.h"
+#include "..\..\Graphics\Texture.h"
+
 #include <unordered_map>
 
-namespace IO
+namespace jrc
 {
-	using std::int8_t;
-	using std::int16_t;
-	using std::string;
-	using std::unordered_map;
-	using nl::node;
-	using Graphics::Texture;
-	using Graphics::DrawArgument;
-
 	class Charset
 	{
 	public:
@@ -39,17 +32,17 @@ namespace IO
 			RIGHT
 		};
 
-		Charset(node source, Alignment alignment);
+		Charset(nl::node source, Alignment alignment);
 		Charset(){}
 		~Charset();
 
 		void draw(int8_t character, const DrawArgument& args) const;
-		int16_t draw(string text, const DrawArgument& args) const;
-		int16_t draw(string text, int16_t hspace, const DrawArgument& args) const;
+		int16_t draw(std::string text, const DrawArgument& args) const;
+		int16_t draw(std::string text, int16_t hspace, const DrawArgument& args) const;
 		int16_t getw(int8_t character) const;
 
 	private:
-		unordered_map<int8_t, Texture> chars;
+		std::unordered_map<int8_t, Texture> chars;
 		Alignment alignment;
 	};
 }

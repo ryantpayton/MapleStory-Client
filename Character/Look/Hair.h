@@ -17,15 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "BodyDrawinfo.h"
-#include "Graphics\Texture.h"
-#include "Util\Enum.h"
-#include "Console.h"
 
-namespace Character
+#include "..\..\Console.h"
+#include "..\..\Graphics\Texture.h"
+#include "..\..\Util\Enum.h"
+
+namespace jrc
 {
-	using Graphics::Texture;
-	using Graphics::DrawArgument;
-
 	class Hair
 	{
 	public:
@@ -41,12 +39,12 @@ namespace Character
 			return EnumIterator<Layer>(DEFAULT, BELOWCAP);
 		}
 
-		static Layer layerbystring(string name)
+		static Layer layerbystring(std::string name)
 		{
 			if (name == "backHairBelowCapWide" || name == "backHairBelowCapNarrow")
 				return BELOWCAP;
 
-			static string layernames[NUM_LAYERS] =
+			static std::string layernames[NUM_LAYERS] =
 			{
 				"", "hair", "hairBelowBody", "hairOverHead",
 				"hairShade", "backHair", "backHairBelowCap"
@@ -68,13 +66,13 @@ namespace Character
 		Hair();
 
 		void draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
-		string getname() const;
-		string getcolor() const;
+		std::string getname() const;
+		std::string getcolor() const;
 
 	private:
-		unordered_map<Layer, unordered_map<uint8_t, Texture>> stances[Stance::LENGTH];
-		string name;
-		string color;
+		std::unordered_map<Layer, std::unordered_map<uint8_t, Texture>> stances[Stance::LENGTH];
+		std::string name;
+		std::string color;
 	};
 }
 

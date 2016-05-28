@@ -19,21 +19,17 @@
 #include "Button.h"
 #include "Textfield.h"
 #include "Slider.h"
-#include "IO\UIElement.h"
-#include "IO\Cursor.h"
-#include "Graphics\Texture.h"
-#include "Graphics\Geometry.h"
+
+#include "..\UIElement.h"
+#include "..\Cursor.h"
+
+#include "..\..\Graphics\Texture.h"
+#include "..\..\Graphics\Geometry.h"
+
 #include <vector>
 
-namespace IO
+namespace jrc
 {
-	using std::unordered_map;
-	using std::vector;
-	using Graphics::Geometry;
-	using Graphics::Rectangle;
-	using Graphics::Text;
-	using Graphics::Texture;
-
 	class Chatbar : public UIElement
 	{
 	public:
@@ -75,15 +71,15 @@ namespace IO
 		bool isinrange(Point<int16_t> cursorpos) const override;
 		Cursor::State sendmouse(bool pressed, Point<int16_t> cursorpos) override;
 
-		void sendline(string line, LineType type);
+		void sendline(const std::string& line, LineType type);
 
 	private:
 		int16_t getchattop() const;
 
-		static const int16_t CHATYOFFSET = 65;
-		static const int16_t CHATROWHEIGHT = 16;
-		static const int16_t MAXCHATROWS = 16;
-		static const int16_t MINCHATROWS = 1;
+		static constexpr int16_t CHATYOFFSET = 65;
+		static constexpr int16_t CHATROWHEIGHT = 16;
+		static constexpr int16_t MAXCHATROWS = 16;
+		static constexpr int16_t MINCHATROWS = 1;
 
 		Textfield chatfield;
 		Texture chatspace[2];
@@ -96,15 +92,15 @@ namespace IO
 		bool chatopen;
 		ChatTarget chattarget;
 
-		vector<string> lastentered;
+		std::vector<std::string> lastentered;
 		size_t lastpos;
 
-		unordered_map<int16_t, Text> rowtexts;
-		Rectangle chatbox;
+		std::unordered_map<int16_t, Text> rowtexts;
+		ColorBox chatbox;
 		int16_t chatrows;
 		int16_t rowpos;
 		int16_t rowmax;
-		unique_ptr<Slider> slider;
+		std::unique_ptr<Slider> slider;
 		bool dragchattop;
 	};
 }

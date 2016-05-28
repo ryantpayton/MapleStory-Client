@@ -16,34 +16,40 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Journey.h"
-#include "Util\Singleton.h"
+#include "EnumMap.h"
+#include "Singleton.h"
+
+#include "..\Journey.h"
+
 #include <cstdint>
 #include <string>
+#include <queue>
+#include <array>
 
-namespace Util
+namespace jrc
 {
-	using std::string;
-
 	class NxFiles : public Singleton<NxFiles>
 	{
 	public:
-		static const size_t NUM_FILES = 14;
-
 		// Makes sure that all game files exist. 
 		// When successfull also tests if the UI file contains valid images.
 		bool init();
 
 #ifdef JOURNEY_USE_XXHASH
 		// Obtains a hash value for a file of game assets. Fast version.
-		string gethash(size_t fileindex, uint64_t seed);
+		std::queue<std::string> gethashes(uint64_t seed);
 #endif
 
-		// Obtains a hash value for a file of game assets. Slow version.
-		string gethash(size_t fileindex);
-
 	private:
-		bool exists(size_t index);
+		static const size_t NUM_FILES = 14;
+		// Names of game files in alphabetical order.
+		std::array<const char*, NUM_FILES> filenames =
+		{
+			"Character.nx", "Effect.nx", "Etc.nx", "Item.nx", "Map.nx", "Mob.nx", "Npc.nx",
+			"Quest.nx", "Reactor.nx", "Skill.nx", "Sound.nx", "String.nx", "TamingMob.nx", "UI.nx"
+		};
+
+		bool exists(const char* filename);
 	};
 }
 

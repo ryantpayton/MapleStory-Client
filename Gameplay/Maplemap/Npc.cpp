@@ -17,45 +17,45 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Npc.h"
-#include "nlnx\node.hpp"
-#include "nlnx\nx.hpp"
 
-namespace Gameplay
+#include <nlnx\node.hpp>
+#include <nlnx\nx.hpp>
+
+namespace jrc
 {
 	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, bool cnt, Point<int16_t> position) 
 		: MapObject(o) {
 
-		string strid = std::to_string(id);
+		std::string strid = std::to_string(id);
 		strid.insert(0, 7 - strid.size(), '0');
 		strid.append(".img");
 
-		using nl::node;
-		node src = nl::nx::npc[strid];
-		node strsrc = nl::nx::string["Npc.img"][std::to_string(id)];
+		nl::node src = nl::nx::npc[strid];
+		nl::node strsrc = nl::nx::string["Npc.img"][std::to_string(id)];
 
-		string link = src["info"]["link"];
+		std::string link = src["info"]["link"];
 		if (link.size() > 0)
 		{
 			link.append(".img");
 			src = nl::nx::npc[link];
 		}
 
-		node info = src["info"];
+		nl::node info = src["info"];
 
 		hidename = info["hideName"].get_bool();
 		mouseonly = info["talkMouseOnly"].get_bool();
 		scripted = info["script"].size() > 0 || info["shop"].get_bool();
 
-		for (node npcnode : src)
+		for (auto npcnode : src)
 		{
-			string state = npcnode.name();
+			std::string state = npcnode.name();
 			if (state != "info")
 			{
 				animations[state] = npcnode;
 				states.push_back(state);
 			}
 
-			for (node speaknode : npcnode["speak"])
+			for (auto speaknode : npcnode["speak"])
 			{
 				lines[state].push_back(strsrc[speaknode.get_string()]);
 			}
@@ -80,13 +80,12 @@ namespace Gameplay
 		setposition(position);
 	}
 
-	void Npc::draw(Point<int16_t> viewpos, float inter) const
+	void Npc::draw(double viewx, double viewy, float alpha) const
 	{
-		Point<int16_t> absp = phobj.getposition(inter) + viewpos;
+		Point<int16_t> absp = phobj.getabsolute(viewx, viewy, alpha);
 		if (animations.count(stance))
 		{
-			using Graphics::DrawArgument;
-			animations.at(stance).draw(DrawArgument(absp, flip), inter);
+			animations.at(stance).draw(DrawArgument(absp, flip), alpha);
 		}
 		if (!hidename)
 		{
@@ -107,23 +106,26 @@ namespace Gameplay
 			bool aniend = animations.at(stance).update();
 			if (aniend && states.size() > 0)
 			{
-				string newstate = states[random.nextint(states.size() - 1)];
-				setstance(newstate);
+				size_t next_stance = random.nextint(states.size() - 1);
+				std::string new_stance = states[next_stance];
+				setstance(new_stance);
 			}
 		}
 
 		return phobj.fhlayer;
 	}
 
-	void Npc::setstance(string st)
+	void Npc::setstance(const std::string& st)
 	{
 		if (stance != st)
 		{
 			stance = st;
-			if (animations.count(stance))
-			{
-				animations.at(stance).reset();
-			}
+
+			auto iter = animations.find(stance);
+			if (iter == animations.end())
+				return;
+
+			iter->second.reset();
 		}
 	}
 
@@ -142,7 +144,7 @@ namespace Gameplay
 			animations.at(stance).getdimensions() :
 			Point<int16_t>();
 
-		return rectangle2d<int16_t>(
+		return Rectangle<int16_t>(
 			absp.x() - dim.x() / 2, 
 			absp.x() + dim.x() / 2, 
 			absp.y() - dim.y(), 

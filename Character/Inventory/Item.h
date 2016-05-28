@@ -18,12 +18,12 @@
 #pragma once
 #include "ItemData.h"
 
-namespace Character
+namespace jrc
 {
 	class Item
 	{
 	public:
-		Item(const ItemData&, int32_t, bool, int64_t, int64_t, int16_t, string, int16_t);
+		Item(const ItemData&, int32_t, bool, int64_t, int64_t, int16_t, std::string, int16_t);
 
 		void setcount(int16_t count);
 
@@ -39,7 +39,7 @@ namespace Character
 		int64_t uniqueid;
 		int64_t expire;
 		int16_t count;
-		string owner;
+		std::string owner;
 		int16_t flag;
 
 	private:

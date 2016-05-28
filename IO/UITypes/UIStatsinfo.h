@@ -16,18 +16,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
-#include "IO\UIDragElement.h"
-#include "Character\CharStats.h"
-#include "Graphics\Text.h"
+#include "..\Element.h"
+#include "..\UIDragElement.h"
 
-namespace IO
+#include "..\..\Character\CharStats.h"
+#include "..\..\Graphics\Text.h"
+
+namespace jrc
 {
 	class UIStatsinfo : public UIDragElement<PosSTATS>
 	{
 	public:
-		using Maplestat = Character::Maplestat;
-		using Equipstat = Character::Equipstat;
+		static constexpr Type TYPE = STATSINFO;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = true;
 
 		enum Buttons
 		{
@@ -50,10 +52,6 @@ namespace IO
 		void updatestat(Maplestat::Value stat);
 
 	private:
-		using CharStats = Character::CharStats;
-		using Text = Graphics::Text;
-		using Texture = Graphics::Texture;
-
 		UIStatsinfo& operator = (const UIStatsinfo&) = delete;
 
 		static const size_t NUMLABELS = 27;
@@ -79,31 +77,13 @@ namespace IO
 
 		const CharStats& stats;
 
-		vector<Texture> detailtextures;
-		map<string, Texture> abilities;
+		std::vector<Texture> detailtextures;
+		std::map<std::string, Texture> abilities;
 		bool showdetail;
 
 		bool hasap;
 
 		Text statlabels[NUMLABELS];
 		Point<int16_t> statoffsets[NUMLABELS];
-	};
-
-	class ElementStatsinfo : public Element
-	{
-		bool isunique() const override
-		{
-			return true;
-		}
-
-		UIElement::Type type() const override
-		{
-			return UIElement::STATSINFO;
-		}
-
-		UIElement* instantiate() const override
-		{
-			return new UIStatsinfo();
-		}
 	};
 }

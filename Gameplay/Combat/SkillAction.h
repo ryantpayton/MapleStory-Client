@@ -15,15 +15,14 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Attack.h"
-#include "Character\Char.h"
 
-namespace Gameplay
+#include "..\..\Character\Char.h"
+
+namespace jrc
 {
 	class SkillAction
 	{
 	public:
-		using Char = Character::Char;
-
 		virtual ~SkillAction() {}
 
 		virtual void apply(Char& target, Attack::Type atype) const = 0;
@@ -47,39 +46,36 @@ namespace Gameplay
 	class SingleAction : public SkillAction
 	{
 	public:
-		SingleAction(node src);
+		SingleAction(nl::node src);
 
 		void apply(Char& target, Attack::Type atype) const override;
 
 	private:
-		string action;
+		std::string action;
 	};
 
 
 	class TwoHAction : public SkillAction
 	{
 	public:
-		TwoHAction(node src);
+		TwoHAction(nl::node src);
 
 		void apply(Char& target, Attack::Type atype) const override;
 
 	private:
-		BoolPair<string> actions;
+		BoolPair<std::string> actions;
 	};
 
 
 	class ByLevelAction : public SkillAction
 	{
 	public:
-		ByLevelAction(node src, int32_t skillid);
+		ByLevelAction(nl::node src, int32_t skillid);
 
 		void apply(Char& target, Attack::Type atype) const override;
 
 	private:
-		template <typename K, typename V>
-		using map = std::map<K, V>;
-
-		map<int32_t, string> actions;
+		std::map<int32_t, std::string> actions;
 		int32_t skillid;
 	};
 }

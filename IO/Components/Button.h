@@ -16,10 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\rectangle2d.h"
+#include "..\..\Util\Rectangle.h"
+
 #include <cstdint>
 
-namespace IO
+namespace jrc
 {
 	// Base class for different button types.
 	class Button
@@ -37,7 +38,7 @@ namespace IO
 		virtual ~Button() {}
 
 		virtual void draw(Point<int16_t> parentpos) const = 0;
-		virtual rectangle2d<int16_t> bounds(Point<int16_t> parentpos) const = 0;
+		virtual Rectangle<int16_t> bounds(Point<int16_t> parentpos) const = 0;
 
 		void setposition(Point<int16_t> position);
 		void setstate(State state);

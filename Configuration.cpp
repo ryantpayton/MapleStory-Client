@@ -19,117 +19,114 @@
 
 #include <fstream>
 
-Configuration::Configuration()
+namespace jrc
 {
-	settings.emplace<ServerIP>();
-	settings.emplace<Fullscreen>();
-	settings.emplace<VSync>();
-	settings.emplace<BGMVolume>();
-	settings.emplace<SFXVolume>();
-	settings.emplace<SaveLogin>();
-	settings.emplace<DefaultAccount>();
-	settings.emplace<DefaultWorld>();
-	settings.emplace<DefaultChannel>();
-	settings.emplace<DefaultCharacter>();
-	settings.emplace<PosSTATS>();
-	settings.emplace<PosEQINV>();
-	settings.emplace<PosINV>();
-
-	load();
-}
-
-Configuration::~Configuration()
-{
-	save();
-}
-
-void Configuration::load()
-{
-	using std::string;
-	using std::unordered_map;
-	unordered_map<string, string> rawsettings;
-
-	using std::ifstream;
-	ifstream file;
-	file.open(FILENAME);
-	if (file.is_open())
+	Configuration::Configuration()
 	{
-		// Go through the file line for line.
-		string line;
-		while (getline(file, line))
+		settings.emplace<ServerIP>();
+		settings.emplace<Fullscreen>();
+		settings.emplace<VSync>();
+		settings.emplace<BGMVolume>();
+		settings.emplace<SFXVolume>();
+		settings.emplace<SaveLogin>();
+		settings.emplace<DefaultAccount>();
+		settings.emplace<DefaultWorld>();
+		settings.emplace<DefaultChannel>();
+		settings.emplace<DefaultCharacter>();
+		settings.emplace<PosSTATS>();
+		settings.emplace<PosEQINV>();
+		settings.emplace<PosINV>();
+
+		load();
+	}
+
+	Configuration::~Configuration()
+	{
+		save();
+	}
+
+	void Configuration::load()
+	{
+		std::unordered_map<std::string, std::string> rawsettings;
+
+		std::ifstream file(FILENAME);
+		if (file.is_open())
 		{
-			// If the setting is not empty, load the value.
-			size_t split = line.find('=');
-			if (split != string::npos && split + 2 < line.size())
+			// Go through the file line for line.
+			std::string line;
+			while (getline(file, line))
 			{
-				rawsettings.emplace(
-					line.substr(0, split - 1),
-					line.substr(split + 2)
-					);
+				// If the setting is not empty, load the value.
+				size_t split = line.find('=');
+				if (split != std::string::npos && split + 2 < line.size())
+				{
+					rawsettings.emplace(
+						line.substr(0, split - 1),
+						line.substr(split + 2)
+						);
+				}
+			}
+		}
+
+		// Replace default values with loaded values.
+		for (auto& setting : settings)
+		{
+			auto rsiter = rawsettings.find(setting.second->name);
+			if (rsiter != rawsettings.end())
+				setting.second->value = rsiter->second;
+		}
+	}
+
+	void Configuration::save() const
+	{
+		// Open the settings file.
+		std::ofstream config(FILENAME);
+		if (config.is_open())
+		{
+			// Save settings line by line.
+			for (auto& setting : settings)
+			{
+				config << setting.second->tostring() << std::endl;
 			}
 		}
 	}
 
-	// Replace default values with loaded values.
-	for (auto& setting : settings)
+	void Configuration::BoolEntry::save(bool b)
 	{
-		auto rsiter = rawsettings.find(setting.second->name);
-		if (rsiter != rawsettings.end())
-			setting.second->value = rsiter->second;
+		value = b ? "true" : "false";
 	}
-}
 
-void Configuration::save() const
-{
-	// Open the settings file.
-	using std::ofstream;
-	ofstream config;
-	config.open(FILENAME);
-	if (config.is_open())
+	bool Configuration::BoolEntry::load() const
 	{
-		// Save settings line by line.
-		for (auto& setting : settings)
-		{
-			config << setting.second->tostring() << std::endl;
-		}
+		return value == "true";
 	}
-}
 
-void Configuration::BoolEntry::save(bool b)
-{
-	value = b ? "true" : "false";
-}
+	void Configuration::StringEntry::save(std::string str)
+	{
+		value = str;
+	}
 
-bool Configuration::BoolEntry::load() const
-{
-	return value == "true";
-}
+	std::string Configuration::StringEntry::load() const
+	{
+		return value;
+	}
 
-void Configuration::StringEntry::save(string str)
-{
-	value = str;
-}
+	void Configuration::PointEntry::save(Point<int16_t> vec)
+	{
+		value = vec.tostring();
+	}
 
-string Configuration::StringEntry::load() const
-{
-	return value;
-}
+	Point<int16_t> Configuration::PointEntry::load() const
+	{
+		std::string xstr = value
+			.substr(1, value
+			.find(",") - 1);
+		std::string ystr = value
+			.substr(value
+			.find(",") + 1, value.find(")") - value.find(",") - 1);
 
-void Configuration::PointEntry::save(Point<int16_t> vec)
-{
-	value = vec.tostring();
-}
-
-Point<int16_t> Configuration::PointEntry::load() const
-{
-	string xstr = value
-		.substr(1, value
-		.find(",") - 1);
-	string ystr = value
-		.substr(value
-		.find(",") + 1, value.find(")") - value.find(",") - 1);
-
-	auto x = StringConversion<int16_t>(xstr).orzero();
-	auto y = StringConversion<int16_t>(ystr).orzero();
-	return{ x, y };
+		auto x = string_conversion::or_zero<int16_t>(xstr);
+		auto y = string_conversion::or_zero<int16_t>(ystr);
+		return{ x, y };
+	}
 }

@@ -18,16 +18,14 @@
 #include "MapDrops.h"
 #include "ItemDrop.h"
 #include "MesoDrop.h"
-#include "Constants.h"
 
-#include "Data\DataFactory.h"
+#include "..\..\Constants.h"
+#include "..\..\Data\DataFactory.h"
 
 #include "nlnx\nx.hpp"
 
-namespace Gameplay
+namespace jrc
 {
-	using Data::DataFactory;
-
 	MapDrops::MapDrops() 
 	{
 		lootenabled = false;
@@ -115,12 +113,12 @@ namespace Gameplay
 
 	void MapDrops::init()
 	{
-		node src = nl::nx::item["Special"]["0900.img"];
+		nl::node src = nl::nx::item["Special"]["0900.img"];
 
 		mesoicons[BRONZE] = src["09000000"]["iconRaw"];
 		mesoicons[GOLD] = src["09000001"]["iconRaw"];
 		mesoicons[BUNDLE] = src["09000002"]["iconRaw"];
 		mesoicons[BAG] = src["09000003"]["iconRaw"];
 	}
-	unordered_map<MapDrops::MesoType, Animation> MapDrops::mesoicons;
+	std::unordered_map<MapDrops::MesoType, Animation> MapDrops::mesoicons;
 }

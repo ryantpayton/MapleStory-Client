@@ -16,13 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\OutPacket.h"
-#include "Net\SendOpcodes.h"
+#include "..\OutPacket.h"
+#include "..\SendOpcodes.h"
 
-namespace Net
+namespace jrc
 {
-	const string MACS = "68-5D-43-F8-B8-6C, 7A-79-19-8B-31-3F";
-	const string HWID = "685D43F8_B86C7A79";
+	constexpr char* MACS = "68-5D-43-F8-B8-6C, 7A-79-19-8B-31-3F";
+	constexpr char* HWID = "685D43F8_B86C7A79";
 
 	// Tell the server which character was picked.
 	// Opcode: SELECT_CHAR(19)
@@ -42,7 +42,7 @@ namespace Net
 	class RegisterPicPacket : public OutPacket
 	{
 	public:
-		RegisterPicPacket(int32_t cid, string pic) : OutPacket(REGISTER_PIC)
+		RegisterPicPacket(int32_t cid, const std::string& pic) : OutPacket(REGISTER_PIC)
 		{
 			skip(1);
 
@@ -58,7 +58,7 @@ namespace Net
 	class SelectCharPicPacket : public OutPacket
 	{
 	public:
-		SelectCharPicPacket(string pic, int32_t cid) : OutPacket(SELECT_CHAR_PIC)
+		SelectCharPicPacket(const std::string& pic, int32_t cid) : OutPacket(SELECT_CHAR_PIC)
 		{
 			writestr(pic);
 			writeint(cid);

@@ -17,15 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIStateLogin.h"
 
-#include "IO\UITypes\UILogin.h"
+#include "UITypes\UILogin.h"
 
-namespace IO
+namespace jrc
 {
 	UIStateLogin::UIStateLogin()
 	{
 		focused = UIElement::NONE;
 
-		add(ElementLogin());
+		add(ElementTag<UILogin>());
 	}
 
 	void UIStateLogin::draw(float inter, Point<int16_t>) const
@@ -109,12 +109,12 @@ namespace IO
 	void UIStateLogin::add(const Element& element)
 	{
 		UIElement::Type type = element.type();
-		bool isfocused = element.isfocused();
+		bool isfocused = element.focused();
 
 		if (get(type))
 			remove(type);
 
-		elements[type] = unique_ptr<UIElement>(element.instantiate());
+		elements.emplace(type, element.instantiate());
 
 		if (isfocused)
 			focused = type;

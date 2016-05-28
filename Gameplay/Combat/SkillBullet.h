@@ -16,16 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Character\Char.h"
-#include "Graphics\Animation.h"
+#include "..\..\Character\Char.h"
+#include "..\..\Graphics\Animation.h"
 
 #include <unordered_map>
 
-namespace Gameplay
+namespace jrc
 {
-	using Character::Char;
-	using Graphics::Animation;
-
 	class SkillBullet
 	{
 	public:
@@ -38,7 +35,7 @@ namespace Gameplay
 		{
 			Animation animation;
 
-			Ball(node src)
+			Ball(nl::node src)
 			{
 				animation = src;
 			}
@@ -58,7 +55,7 @@ namespace Gameplay
 	class SingleBullet : public SkillBullet
 	{
 	public:
-		SingleBullet(node src);
+		SingleBullet(nl::node src);
 
 		Animation get(const Char& user, int32_t bulletid) const override;
 
@@ -70,7 +67,7 @@ namespace Gameplay
 	class BySkillLevelBullet : public SkillBullet
 	{
 	public:
-		BySkillLevelBullet(node src, int32_t skillid);
+		BySkillLevelBullet(nl::node src, int32_t skillid);
 
 		Animation get(const Char& user, int32_t bulletid) const override;
 

@@ -31,19 +31,7 @@
 
 #include <iostream>
 
-using Audio::Music;
-using Audio::Sound;
-using Character::Char;
-using Data::DataFactory;
-using Gameplay::Stage;
-using Gameplay::MapPortals;
-using Gameplay::MapDrops;
-using Gameplay::Skill;
-using IO::DamageNumber;
-using IO::UI;
-using IO::Window;
-using Net::Session;
-using Util::NxFiles;
+using namespace jrc;
 
 // Print errors to the console while testing.
 void showerror(const char* error)
@@ -76,11 +64,10 @@ Error init()
 		return AUDIO;
 
 	Char::init();
+	DataFactory::get().init();
 	DamageNumber::init();
 	MapPortals::init();
 	MapDrops::init();
-
-	DataFactory::get().init();
 	UI::get().init();
 
 	return NONE;
@@ -88,17 +75,59 @@ Error init()
 
 void update()
 {
+	Window::get().checkevents();
 	Window::get().update();
 	Stage::get().update();
 	UI::get().update();
 }
 
-void draw(float inter)
+void draw(float alpha)
 {
 	Window::get().begin();
-	Stage::get().draw(inter);
-	UI::get().draw(inter);
+	Stage::get().draw(alpha);
+	UI::get().draw(alpha);
 	Window::get().end();
+}
+
+void loop()
+{
+	Timer::get().start();
+	int64_t timestep = Constants::TIMESTEP * 1000;
+	int64_t elapsed = 0;
+	int64_t total = 0;
+	int32_t samples = 0;
+
+	// Run the game as long as the connection is alive.
+	while (Session::get().receive() && Window::get().notclosed())
+	{
+		int64_t lastelapsed = Timer::get().stop();
+		elapsed += lastelapsed;
+
+		// Update game with constant timestep as many times as possible.
+		while (elapsed >= timestep)
+		{
+			update();
+			elapsed -= timestep;
+		}
+
+		// Draw the game. Interpolate to account for remaining time.
+		float alpha = static_cast<float>(elapsed) / timestep;
+		draw(alpha);
+
+		if (samples < 1000)
+		{
+			total += lastelapsed;
+			samples++;
+		}
+		else
+		{
+			int64_t fps = (samples * 1000000) / total;
+			std::cout << "FPS: " << std::to_string(fps) << std::endl;
+
+			total = 0;
+			samples = 0;
+		}
+	}
 }
 
 int start()
@@ -107,42 +136,7 @@ int start()
 	Error error = init();
 	if (error == NONE)
 	{
-		Timer::get().start();
-		double elapsed = 0.0;
-		double invfps = 0.0;
-		int32_t samples = 0;
-
-		// Run the game as long as the connection is alive.
-		while (Session::get().receive() && Window::get().notclosed())
-		{
-			// Update game with constant timestep as many times as possible.
-			double lastelapsed = Timer::get().stop() / 1000;
-
-			if (samples < 1000)
-			{
-				invfps += lastelapsed;
-				samples++;
-			}
-			else
-			{
-				int32_t fps = static_cast<int32_t>((samples * 1000) / invfps);
-				std::cout << "FPS: " << std::to_string(fps) << std::endl;
-
-				invfps = 0.0;
-				samples = 0;
-			}
-
-			elapsed += lastelapsed;
-			while (elapsed >= Constants::TIMESTEP)
-			{
-				update();
-				elapsed -= Constants::TIMESTEP;
-			}
-
-			// Draw the game. Interpolate to account for remaining time.
-			float inter = static_cast<float>(std::floor(elapsed) / Constants::TIMESTEP);
-			draw(inter);
-		}
+		loop();
 
 		Sound::close();
 	}
@@ -167,7 +161,7 @@ int start()
 			break;
 		}
 
-		string command;
+		std::string command;
 		std::cin >> command;
 		if (canretry && command == "retry")
 		{

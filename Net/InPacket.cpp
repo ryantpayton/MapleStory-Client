@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "InPacket.h"
 
-namespace Net
+namespace jrc
 {
 	InPacket::InPacket(const int8_t* recv, size_t length)
 	{
@@ -44,18 +44,23 @@ namespace Net
 		pos += count;
 	}
 
-	string InPacket::readpadascii(int16_t count)
+	std::string InPacket::read_padded_string(uint16_t count)
 	{
-		string ret;
+		std::string ret;
 		for (int16_t i = 0; i < count; i++)
 		{
-			char letter = readbyte();
+			char letter = read_byte();
 			if (letter != '\0')
 			{
 				ret.push_back(letter);
 			}
 		}
 		return ret;
+	}
+
+	std::string InPacket::read_string()
+	{
+		return read<std::string>();
 	}
 
 	Point<int16_t> InPacket::readpoint()

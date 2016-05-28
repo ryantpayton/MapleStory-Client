@@ -17,32 +17,25 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Mapobject.h"
-#include "Constants.h"
 
-#include "Audio\Audio.h"
-#include "Gameplay\Combat\Attack.h"
-#include "Gameplay\Combat\Bullet.h"
-#include "Gameplay\Movement.h"
-#include "Graphics\Text.h"
-#include "Graphics\EffectLayer.h"
-#include "Graphics\Geometry.h"
-#include "IO\Components\DamageNumber.h"
-#include "Util\rectangle2d.h"
-#include "Util\Enum.h"
-#include "Util\Interpolated.h"
-#include "Util\Randomizer.h"
-#include "Util\TimedBool.h"
+#include "..\Combat\Attack.h"
+#include "..\Combat\Bullet.h"
+#include "..\Movement.h"
 
-namespace Gameplay
+#include "..\..\Audio\Audio.h"
+#include "..\..\Constants.h"
+#include "..\..\Graphics\Text.h"
+#include "..\..\Graphics\EffectLayer.h"
+#include "..\..\Graphics\Geometry.h"
+#include "..\..\IO\Components\DamageNumber.h"
+#include "..\..\Util\Rectangle.h"
+#include "..\..\Util\Enum.h"
+#include "..\..\Util\Interpolated.h"
+#include "..\..\Util\Randomizer.h"
+#include "..\..\Util\TimedBool.h"
+
+namespace jrc
 {
-	using std::string;
-	using std::pair;
-	using std::map;
-	using Graphics::Text;
-	using Graphics::EffectLayer;
-	using Graphics::MobHpBar;
-	using IO::DamageNumber;
-
 	class Mob : public MapObject
 	{
 	public:
@@ -56,9 +49,9 @@ namespace Gameplay
 			DIE = 10
 		};
 
-		static string nameof(Stance stance)
+		static std::string nameof(Stance stance)
 		{
-			static const string stancenames[NUM_STANCES] =
+			static const std::string stancenames[NUM_STANCES] =
 			{
 				"move", "stand", "jump", "hit1", "die1", "fly"
 			};
@@ -77,7 +70,7 @@ namespace Gameplay
 			bool newspawn, int8_t team, Point<int16_t> position);
 
 		// Draw the mob.
-		void draw(Point<int16_t> viewpos, float inter) const override;
+		void draw(double viewx, double viewy, float alpha) const override;
 		// Update movement and animations.
 		int8_t update(const Physics& physics) override;
 
@@ -96,14 +89,14 @@ namespace Gameplay
 		void showeffect(Animation animation, int8_t pos, int8_t z, bool flip);
 
 		// Calculate the damage to this mob with the spcecified attack.
-		vector<pair<int32_t, bool>> calculatedamage(const Attack& attack);
+		std::vector<std::pair<int32_t, bool>> calculatedamage(const Attack& attack);
 		// Get a placement for damage numbers above the mob's head.
-		vector<DamageNumber> placenumbers(vector<pair<int32_t, bool>> damagelines) const;
+		std::vector<DamageNumber> placenumbers(std::vector<std::pair<int32_t, bool>> damagelines) const;
 		// Apply damage to the mob.
 		void applydamage(int32_t damage, bool toleft);
 
 		// Check if this mob collides with the specified rectangle.
-		bool isinrange(const rectangle2d<int16_t>& range) const;
+		bool isinrange(const Rectangle<int16_t>& range) const;
 		// Check if this mob is still alive.
 		bool isalive() const;
 		// Return the head position.
@@ -146,14 +139,14 @@ namespace Gameplay
 		// Calculate the maximum damage.
 		double calcmaxdamage(int16_t leveldelta, double maxdamage, bool magic) const;
 		// Calculate a random damage line based on the specified values.
-		pair<int32_t, bool> randomdamage(double mindamage, 
+		std::pair<int32_t, bool> randomdamage(double mindamage,
 			double maxdamage, float hitchance, float critical) const;
 
 		// Return the current 'head' position.
 		Point<int16_t> getheadpos(Point<int16_t> position) const;
 
-		map<Stance, Animation> animations;
-		string name;
+		std::map<Stance, Animation> animations;
+		std::string name;
 		Sound hitsound;
 		Sound diesound;
 		uint16_t level;

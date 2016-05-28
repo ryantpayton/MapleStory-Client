@@ -18,16 +18,15 @@
 #pragma once
 #include "Look\CharLook.h"
 #include "Look\PetLook.h"
-#include "Gameplay\Maplemap\Mapobject.h"
-#include "IO\Components\ChatBalloon.h"
-#include "Graphics\EffectLayer.h"
-#include "Util\EnumMap.h"
-#include "Util\rectangle2d.h"
 
-namespace Character
+#include "..\Gameplay\Maplemap\Mapobject.h"
+#include "..\Graphics\EffectLayer.h"
+#include "..\IO\Components\ChatBalloon.h"
+#include "..\Util\EnumMap.h"
+#include "..\Util\Rectangle.h"
+
+namespace jrc
 {
-	using Gameplay::MapObject;
-
 	// Base for characters, e.g. the player and other clients on the same map.
 	class Char : public MapObject
 	{
@@ -65,7 +64,7 @@ namespace Character
 		};
 
 		// Draw look, nametag, effects and chat bubble.
-		void draw(Point<int16_t> viewpos, float inter) const override;
+		void draw(double viewx, double viewy, float alpha) const override;
 		// Update look and movements.
 		int8_t update(const Physics& physics) override;
 		// Return the current map layer, or 7 if on a ladder or rope.
@@ -85,7 +84,7 @@ namespace Character
 		// Change the character's state.
 		virtual void setstate(State newstate);
 		// Change the character's stance to an attack action.
-		void attack(string action);
+		void attack(const std::string& action);
 		// Change the character's stance to an attack stance.
 		void attack(Stance::Value stance);
 		// Change the character's stance to it's regular attack.
@@ -96,7 +95,7 @@ namespace Character
 		// Display an animation as an effect ontop of the character.
 		void showeffectbyid(Effect toshow);
 		// Display a chat bubble with the specified line in it.
-		void speak(string line);
+		void speak(const std::string& line);
 		// Change a part of the character's look.
 		void changelook(Maplestat::Value stat, int32_t id);
 		// Change the character's state by id.
@@ -105,7 +104,7 @@ namespace Character
 		void sendface(int32_t expression);
 
 		// Add a pet with the specified stats.
-		void addpet(uint8_t index, int32_t iid, string name, 
+		void addpet(uint8_t index, int32_t iid, const std::string& name,
 			int32_t uniqueid, Point<int16_t> pos, uint8_t stance, int32_t fhid);
 		// Remove a pet with the specified index and reason.
 		void removepet(uint8_t index, bool hunger);
@@ -113,7 +112,7 @@ namespace Character
 		// Return if the character is facing left.
 		bool getflip() const;
 		// Return the name of this character.
-		string getname() const;
+		std::string getname() const;
 
 		// Return if the char is in the Char::SIT state.
 		bool issitting() const;
@@ -131,11 +130,7 @@ namespace Character
 		static void init();
 
 	protected:
-		using EffectLayer = Graphics::EffectLayer;
-		using Text = Graphics::Text;
-		using ChatBalloon = IO::ChatBalloon;
-
-		Char(int32_t oid, CharLook look, string name);
+		Char(int32_t oid, const CharLook& look, const std::string& name);
 
 		// Update the character's animation with the given speed.
 		bool update(const Physics& physics, float speed);

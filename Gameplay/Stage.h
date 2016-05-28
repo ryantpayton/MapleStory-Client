@@ -19,7 +19,6 @@
 #include "Camera.h"
 #include "Spawn.h"
 
-#include "Character\Player.h"
 #include "Maplemap\MapInfo.h"
 #include "Maplemap\MapLayers.h"
 #include "Maplemap\MapBackgrounds.h"
@@ -29,16 +28,14 @@
 #include "Maplemap\MapNpcs.h"
 #include "Maplemap\MapDrops.h"
 #include "Physics\Physics.h"
-#include "Util\Singleton.h"
+
+#include "..\Character\Player.h"
+#include "..\Util\Singleton.h"
 
 #include <queue>
 
-namespace Gameplay
+namespace jrc
 {
-	using std::queue;
-	using Character::Player;
-	using Net::CharEntry;
-
 	class Stage : public Singleton<Stage>
 	{
 	public:
@@ -50,8 +47,6 @@ namespace Gameplay
 		void setmap(uint8_t portalid, int32_t mapid);
 		// Loads the map to display. 
 		void reload();
-		// Parses and displays a map from a packet.
-		void parsemap(InPacket& recv);
 		// Remove all map objects and graphics.
 		void clear();
 
@@ -131,9 +126,9 @@ namespace Gameplay
 		MapMobs mobs;
 		MapDrops drops;
 
-		queue<unique_ptr<const Spawn>> spawnqueue;
+		std::queue<std::unique_ptr<const Spawn>> spawnqueue;
 
-		unordered_map<int32_t, unique_ptr<SpecialMove>> specialmoves;
+		std::unordered_map<int32_t, std::unique_ptr<SpecialMove>> specialmoves;
 	};
 }
 

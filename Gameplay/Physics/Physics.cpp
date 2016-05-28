@@ -18,7 +18,7 @@
 #include "Physics.h"
 #include <functional>
 
-namespace Gameplay
+namespace jrc
 {
 	const double GRAVFORCE = 0.2;
 	const double SWIMGRAVFORCE = 0.03;
@@ -28,19 +28,12 @@ namespace Gameplay
 	const double FLYFRICTION = 0.05;
 	const double SWIMFRICTION = 0.08;
 
-	Physics::Physics(node src) 
+	Physics::Physics(nl::node src) 
 	{
 		fht = src;
 	}
 
-	Physics::Physics(InPacket& recv) 
-	{
-		fht = recv;
-	}
-
 	Physics::Physics() {}
-
-	Physics::~Physics() {}
 
 	void Physics::moveobject(PhysicsObject& phobj) const
 	{

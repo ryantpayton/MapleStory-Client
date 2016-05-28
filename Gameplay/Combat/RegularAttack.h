@@ -18,7 +18,7 @@
 #pragma once
 #include "SpecialMove.h"
 
-namespace Gameplay
+namespace jrc
 {
 	class RegularAttack : public SpecialMove
 	{

@@ -17,47 +17,45 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIStatsinfo.h"
 
-#include "Gameplay\Stage.h"
-#include "IO\UI.h"
-#include "IO\Components\MapleButton.h"
-#include "Net\Packets\PlayerPackets.h"
+#include "..\UI.h"
+#include "..\Components\MapleButton.h"
+
+#include "..\..\Gameplay\Stage.h"
+#include "..\..\Net\Packets\PlayerPackets.h"
 
 #include "nlnx\nx.hpp"
 
-namespace IO
+namespace jrc
 {
-	using Gameplay::Stage;
-
 	UIStatsinfo::UIStatsinfo() :
 		UIDragElement<PosSTATS>(Point<int16_t>(212, 20)), stats(Stage::get().getplayer().getstats()) {
 
-		using nl::node;
-		node src = nl::nx::ui["UIWindow4.img"]["Stat"]["main"];
-		node detail = nl::nx::ui["UIWindow4.img"]["Stat"]["detail"];
+		nl::node src = nl::nx::ui["UIWindow4.img"]["Stat"]["main"];
+		nl::node detail = nl::nx::ui["UIWindow4.img"]["Stat"]["detail"];
 
-		sprites.push_back(Sprite(src["backgrnd"]));
-		sprites.push_back(Sprite(src["backgrnd2"]));
-		sprites.push_back(Sprite(src["backgrnd3"]));
+		sprites.emplace_back(src["backgrnd"]);
+		sprites.emplace_back(src["backgrnd2"]);
+		sprites.emplace_back(src["backgrnd3"]);
 
-		detailtextures.push_back(Texture(detail["backgrnd"]));
-		detailtextures.push_back(Texture(detail["backgrnd2"]));
-		detailtextures.push_back(Texture(detail["backgrnd3"]));
+		detailtextures.emplace_back(detail["backgrnd"]);
+		detailtextures.emplace_back(detail["backgrnd2"]);
+		detailtextures.emplace_back(detail["backgrnd3"]);
 
-		abilities["rare"] = Texture(detail["abilityTitle"]["rare"]["0"]);
-		abilities["epic"] = Texture(detail["abilityTitle"]["epic"]["0"]);
-		abilities["unique"] = Texture(detail["abilityTitle"]["unique"]["0"]);
-		abilities["legendary"] = Texture(detail["abilityTitle"]["legendary"]["0"]);
-		abilities["none"] = Texture(detail["abilityTitle"]["normal"]["0"]);
+		abilities["rare"] = detail["abilityTitle"]["rare"]["0"];
+		abilities["epic"] = detail["abilityTitle"]["epic"]["0"];
+		abilities["unique"] = detail["abilityTitle"]["unique"]["0"];
+		abilities["legendary"] = detail["abilityTitle"]["legendary"]["0"];
+		abilities["none"] = detail["abilityTitle"]["normal"]["0"];
 
-		buttons[BT_HP] = unique_ptr<Button>(new MapleButton(src["BtHpUp"]));
-		buttons[BT_MP] = unique_ptr<Button>(new MapleButton(src["BtMpUp"]));
-		buttons[BT_STR] = unique_ptr<Button>(new MapleButton(src["BtStrUp"]));
-		buttons[BT_DEX] = unique_ptr<Button>(new MapleButton(src["BtDexUp"]));
-		buttons[BT_LUK] = unique_ptr<Button>(new MapleButton(src["BtLukUp"]));
-		buttons[BT_INT] = unique_ptr<Button>(new MapleButton(src["BtIntUp"]));
+		buttons[BT_HP] = std::make_unique<MapleButton>(src["BtHpUp"]);
+		buttons[BT_MP] = std::make_unique<MapleButton>(src["BtMpUp"]);
+		buttons[BT_STR] = std::make_unique<MapleButton>(src["BtStrUp"]);
+		buttons[BT_DEX] = std::make_unique<MapleButton>(src["BtDexUp"]);
+		buttons[BT_LUK] = std::make_unique<MapleButton>(src["BtLukUp"]);
+		buttons[BT_INT] = std::make_unique<MapleButton>(src["BtIntUp"]);
 
-		buttons[BT_DETAILOPEN] = unique_ptr<Button>(new MapleButton(src["BtDetailOpen"]));
-		buttons[BT_DETAILCLOSE] = unique_ptr<Button>(new MapleButton(src["BtDetailClose"]));
+		buttons[BT_DETAILOPEN] = std::make_unique<MapleButton>(src["BtDetailOpen"]);
+		buttons[BT_DETAILCLOSE] = std::make_unique<MapleButton>(src["BtDetailClose"]);
 		buttons[BT_DETAILCLOSE]->setactive(false);
 
 		updateap();
@@ -225,9 +223,7 @@ namespace IO
 
 	void UIStatsinfo::sendappacket(Maplestat::Value stat) const
 	{
-		using Net::SpendApPacket;
 		SpendApPacket(stat).dispatch();
-
 		UI::get().disable();
 	}
 
@@ -278,7 +274,7 @@ namespace IO
 		int32_t total = stats.gettotal(tstat);
 		int32_t delta = total - base;
 
-		string stattext = std::to_string(total);
+		std::string stattext = std::to_string(total);
 		if (delta)
 		{
 			stattext += " (" + std::to_string(base);
@@ -300,7 +296,7 @@ namespace IO
 		int32_t total = stats.gettotal(stat);
 		int32_t delta = stats.getbuffdelta(stat);
 
-		string stattext = std::to_string(total);
+		std::string stattext = std::to_string(total);
 		if (delta)
 		{
 			stattext += " (" + std::to_string(total - delta);

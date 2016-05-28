@@ -17,13 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Charset.h"
 
-namespace IO
+namespace jrc
 {
-	Charset::Charset(node src, Alignment alg)
+	Charset::Charset(nl::node src, Alignment alg)
 	{
-		for (node sub : src)
+		for (auto sub : src)
 		{
-			if (sub.data_type() == node::type::bitmap)
+			if (sub.data_type() == nl::node::type::bitmap)
 			{
 				int8_t c = sub.name()[0];
 				if (c == '\\')
@@ -40,31 +40,23 @@ namespace IO
 
 	void Charset::draw(int8_t c, const DrawArgument& args) const
 	{
-		if (chars.count(c))
-		{
-			chars.at(c).draw(args);
-		}
+		auto iter = chars.find(c);
+		if (iter != chars.end())
+			iter->second.draw(args);
 	}
 
 	int16_t Charset::getw(int8_t c) const
 	{
-		if (chars.count(c))
-		{
-			return chars.at(c).getdimensions().x();
-		}
-		else
-		{
-			return 0;
-		}
+		auto iter = chars.find(c);
+		return iter != chars.end() ? iter->second.width() : 0;
 	}
 
-	int16_t Charset::draw(string str, const DrawArgument& args) const
+	int16_t Charset::draw(std::string str, const DrawArgument& args) const
 	{
 		size_t length = str.size();
 		int16_t shift = 0;
 		int16_t total = 0;
 
-		using Graphics::DrawArgument;
 		switch (alignment)
 		{
 		case CENTER:
@@ -91,12 +83,11 @@ namespace IO
 		return shift;
 	}
 
-	int16_t Charset::draw(string str, int16_t hspace, const DrawArgument& args) const
+	int16_t Charset::draw(std::string str, int16_t hspace, const DrawArgument& args) const
 	{
 		size_t length = str.size();
 		int16_t shift = 0;
 
-		using Graphics::DrawArgument;
 		switch (alignment)
 		{
 		case CENTER:

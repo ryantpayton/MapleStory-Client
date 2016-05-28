@@ -16,17 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Point.h"
+#include "..\Util\Point.h"
+
 #include <cstdint>
 #include <map>
 #include <vector>
 
-namespace Graphics
+namespace jrc
 {
-	using std::map;
-	using std::vector;
-	using std::string;
-
 	class Text
 	{
 	public:
@@ -86,9 +83,9 @@ namespace Graphics
 
 			Point<int16_t> dimensions;
 			Point<int16_t> endoffset;
-			map<size_t, float> advances;
+			std::map<size_t, float> advances;
 
-			vector<Line> lines;
+			std::vector<Line> lines;
 			int16_t linecount;
 
 			Layout(Alignment a)
@@ -122,14 +119,16 @@ namespace Graphics
 			}
 		};
 
+		Text(Font font, Alignment alignment, Color color, Background background, const std::string& text);
+		Text(Font font, Alignment alignment, Color color, const std::string& text);
 		Text(Font font, Alignment alignment, Color color);
 		Text();
 
 		void draw(Point<int16_t> position, float alpha) const;
 		void draw(Point<int16_t> position) const;
 
-		void settext(const string& text);
-		void settext(const string& text, uint16_t maxwidth);
+		void settext(const std::string& text);
+		void settext(const std::string& text, uint16_t maxwidth);
 		void setcolor(Color color);
 		void setback(Background background);
 
@@ -140,7 +139,7 @@ namespace Graphics
 		uint16_t advance(size_t pos) const;
 		Point<int16_t> dimensions() const;
 		Point<int16_t> endoffset() const;
-		string gettext() const;
+		std::string gettext() const;
 
 	private:
 		Font font;
@@ -148,6 +147,6 @@ namespace Graphics
 		Color color;
 		Background background;
 		Layout layout;
-		string text;
+		std::string text;
 	};
 }

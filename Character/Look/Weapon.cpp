@@ -19,7 +19,7 @@
 #include "Weapon.h"
 #include "nlnx\nx.hpp"
 
-namespace Character
+namespace jrc
 {
 	Weapon::Weapon(int32_t equipid, const BodyDrawinfo& drawinfo) : Clothing(equipid, drawinfo)
 	{
@@ -27,15 +27,14 @@ namespace Character
 		type = typebyvalue(prefix);
 		twohanded = (prefix == STAFF) || (prefix >= SWORD_2H && prefix <= POLEARM) || (prefix == CROSSBOW);
 
-		using nl::node;
-		node src = nl::nx::character["Weapon"]["0" + std::to_string(equipid) + ".img"]["info"];
+		nl::node src = nl::nx::character["Weapon"]["0" + std::to_string(equipid) + ".img"]["info"];
 
 		attackspeed = static_cast<uint8_t>(src["attackSpeed"]);
 		attack = static_cast<uint8_t>(src["attack"]);
 
-		node soundsrc = nl::nx::sound["Weapon.img"][src["sfx"]];
+		nl::node soundsrc = nl::nx::sound["Weapon.img"][src["sfx"]];
 
-		bool twosounds = soundsrc["Attack2"].data_type() == node::type::audio;
+		bool twosounds = soundsrc["Attack2"].data_type() == nl::node::type::audio;
 		if (twosounds)
 		{
 			usesounds[false] = soundsrc["Attack"];
@@ -72,10 +71,10 @@ namespace Character
 			walk = twohanded ? Stance::WALK2 : Stance::WALK1;
 		}
 
-		string ainame = src["afterImage"];
+		std::string ainame = src["afterImage"];
 		int16_t lvprefix = getreqstat(Maplestat::LEVEL) / 10;
-		string prefixstr = std::to_string(lvprefix);
-		string fullname = ainame + prefixstr;
+		std::string prefixstr = std::to_string(lvprefix);
+		std::string fullname = ainame + prefixstr;
 		if (!afterimages.count(fullname))
 		{
 			afterimages[fullname] = nl::nx::character["Afterimage"][ainame + ".img"][prefixstr];
@@ -103,7 +102,7 @@ namespace Character
 		return attack;
 	}
 
-	string Weapon::getspeedstring() const
+	std::string Weapon::getspeedstring() const
 	{
 		switch (attackspeed)
 		{
@@ -138,7 +137,7 @@ namespace Character
 			return 50 - 25 / attackspeed;
 	}
 
-	rectangle2d<int16_t> Weapon::getrange(Stance::Value stance) const
+	Rectangle<int16_t> Weapon::getrange(Stance::Value stance) const
 	{
 		return afterimage.range(stance);
 	}
@@ -168,15 +167,14 @@ namespace Character
 		return afterimage.get(stance);
 	}
 
-	unordered_map<string, Weapon::AfterImageStances> Weapon::afterimages;
+	std::unordered_map<std::string, Weapon::AfterImageStances> Weapon::afterimages;
 
 
-	Weapon::AfterImage::AfterImage(node src)
+	Weapon::AfterImage::AfterImage(nl::node src)
 	{
-		for (node sub : src)
+		for (nl::node sub : src)
 		{
-			uint8_t frame = StringConversion<uint8_t>(sub.name())
-				.ordefault(255);
+			uint8_t frame = string_conversion::or_default<uint8_t>(sub.name(), 255);
 			if (frame < 255)
 			{
 				animation = sub;
@@ -219,7 +217,7 @@ namespace Character
 		return firstframe;
 	}
 
-	rectangle2d<int16_t> Weapon::AfterImage::getrange() const
+	Rectangle<int16_t> Weapon::AfterImage::getrange() const
 	{
 		return range;
 	}

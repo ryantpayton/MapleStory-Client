@@ -18,62 +18,57 @@
 #include "UICharSelect.h"
 #include "UISoftkey.h"
 #include "UICharcreation.h"
-#include "Constants.h"
-#include "Configuration.h"
 
-#include "Audio\Audio.h"
-#include "Net\Session.h"
-#include "Net\Packets\SelectCharPackets.h"
-#include "Graphics\Sprite.h"
-#include "IO\UI.h"
-#include "IO\Components\MapleButton.h"
-#include "IO\Components\AreaButton.h"
+#include "..\UI.h"
+#include "..\Components\MapleButton.h"
+#include "..\Components\AreaButton.h"
+
+#include "..\..\Constants.h"
+#include "..\..\Configuration.h"
+#include "..\..\Audio\Audio.h"
+#include "..\..\Net\Session.h"
+#include "..\..\Net\Packets\SelectCharPackets.h"
+#include "..\..\Graphics\Sprite.h"
 
 #include "nlnx\nx.hpp"
 
-namespace IO
+namespace jrc
 {
-	using Net::Login;
-	using Net::Session;
-	using Net::StatsEntry;
-	using Character::Stance;
-
 	UICharSelect::UICharSelect()
 	{
 		Login& login = Session::get().getlogin();
-		string channelid = std::to_string(login.getchannelid());
+		std::string channelid = std::to_string(login.getchannelid());
 		charcount = static_cast<uint8_t>(login.getaccount().chars.size());
 		charslots = static_cast<uint8_t>(login.getaccount().slots);
 		haschars = charcount > 0;
 
-		node title = nl::nx::ui["Login.img"]["Title"];
-		node common = nl::nx::ui["Login.img"]["Common"];
-		node charselect = nl::nx::ui["Login.img"]["CharSelect"];
+		nl::node title = nl::nx::ui["Login.img"]["Title"];
+		nl::node common = nl::nx::ui["Login.img"]["Common"];
+		nl::node charselect = nl::nx::ui["Login.img"]["CharSelect"];
 
-		using Graphics::Sprite;
-		sprites.push_back(title["worldsel"]);
-		sprites.push_back(Sprite(common["frame"], Point<int16_t>(400, 290)));
+		sprites.emplace_back(title["worldsel"]);
+		sprites.emplace_back(common["frame"], Point<int16_t>(400, 290));
 
 		// Post BB
 		/*selworldpos = Point<int16_t>(578, 42);
 		charinfopos = Point<int16_t>(662, 355);
-		buttons[BT_ARBEIT] = unique_ptr<Button>(new MapleButton(charsel["arbeit"], Point<int16_t>(580, 115)));
-		buttons[BT_CARDS] = unique_ptr<Button>(new MapleButton(charsel["characterCard"], Point<int16_t>(665, 115)));*/
+		buttons[BT_ARBEIT] = std::make_unique<MapleButton>(charsel["arbeit"], Point<int16_t>(580, 115)));
+		buttons[BT_CARDS] = std::make_unique<MapleButton>(charsel["characterCard"], Point<int16_t>(665, 115)));*/
 
 		charinfopos = Point<int16_t>(662, 305);
 		selworldpos = Point<int16_t>(578, 112);
 
-		sprites.push_back(Sprite(charselect["charInfo"], charinfopos));
-		sprites.push_back(Sprite(common["selectWorld"], selworldpos));
-		sprites.push_back(Sprite(charselect["selectedWorld"]["icon"]["15"], selworldpos));
-		sprites.push_back(Sprite(charselect["selectedWorld"]["name"]["15"], selworldpos));
-		sprites.push_back(Sprite(charselect["selectedWorld"]["ch"][channelid], selworldpos));
+		sprites.emplace_back(charselect["charInfo"], charinfopos);
+		sprites.emplace_back(common["selectWorld"], selworldpos);
+		sprites.emplace_back(charselect["selectedWorld"]["icon"]["15"], selworldpos);
+		sprites.emplace_back(charselect["selectedWorld"]["name"]["15"], selworldpos);
+		sprites.emplace_back(charselect["selectedWorld"]["ch"][channelid], selworldpos);
 
-		buttons[BT_SELECTCHAR] = unique_ptr<Button>(new MapleButton(charselect["BtSelect"], charinfopos + Point<int16_t>(-76, 72)));
-		buttons[BT_CREATECHAR] = unique_ptr<Button>(new MapleButton(charselect["BtNew"], Point<int16_t>(200, 495)));
-		buttons[BT_DELETECHAR] = unique_ptr<Button>(new MapleButton(charselect["BtDelete"], Point<int16_t>(320, 495)));
-		buttons[BT_PAGELEFT] = unique_ptr<Button>(new MapleButton(charselect["pageL"], Point<int16_t>(100, 490)));
-		buttons[BT_PAGERIGHT] = unique_ptr<Button>(new MapleButton(charselect["pageR"], Point<int16_t>(490, 490)));
+		buttons[BT_SELECTCHAR] = std::make_unique<MapleButton>(charselect["BtSelect"], charinfopos + Point<int16_t>(-76, 72));
+		buttons[BT_CREATECHAR] = std::make_unique<MapleButton>(charselect["BtNew"], Point<int16_t>(200, 495));
+		buttons[BT_DELETECHAR] = std::make_unique<MapleButton>(charselect["BtDelete"], Point<int16_t>(320, 495));
+		buttons[BT_PAGELEFT] = std::make_unique<MapleButton>(charselect["pageL"], Point<int16_t>(100, 490));
+		buttons[BT_PAGERIGHT] = std::make_unique<MapleButton>(charselect["pageR"], Point<int16_t>(490, 490));
 
 		levelset = Charset(charselect["lv"], Charset::CENTER);
 
@@ -111,16 +106,17 @@ namespace IO
 		{
 			addchar(i);
 
-			auto nametag = Nametag(charselect["nameTag"], Text::A13M, Text::WHITE, login.getchar(i).getstats().name);
-			nametags.push_back(nametag);
+			nametags.emplace_back(
+				charselect["nameTag"], Text::A13M, Text::WHITE, login.getchar(i).getstats().name
+			);
 		}
 
 		if (haschars)
 		{
-			namelabel = OutlinedText(Text::A18M, Text::CENTER);
+			namelabel = { Text::A18M, Text::CENTER };
 			for (size_t i = 0; i < NUM_LABELS; i++)
 			{
-				infolabels[i] = OutlinedText(Text::A11M, Text::RIGHT);
+				infolabels[i] = { Text::A11M, Text::RIGHT };
 			}
 
 			updateinfo();
@@ -194,7 +190,7 @@ namespace IO
 				{
 					active = false;
 					UI::get().remove(CHARCREATION);
-					UI::get().add(ElementCharcreation());
+					UI::get().add(ElementTag<UICharcreation>());
 				}
 				break;
 			case BT_DELETECHAR:
@@ -216,7 +212,7 @@ namespace IO
 			charlooks[selected].setstance(Stance::WALK1);
 			nametags[selected].setselected(true);
 
-			string name = Session::get().getlogin().getchar(selected).getstats().name;
+			std::string name = Session::get().getlogin().getchar(selected).getstats().name;
 			namelabel.settext(name);
 			for (size_t i = 0; i < NUM_LABELS; i++)
 			{
@@ -235,18 +231,14 @@ namespace IO
 			switch (Session::get().getlogin().getaccount().pic)
 			{
 			case 0:
-				UI::get().add(ElementSoftkey(UISoftkey::REGISTER));
+				UI::get().add(ElementTag<UISoftkey, UISoftkey::SkType>(UISoftkey::REGISTER));
 				break;
 			case 1:
-				UI::get().add(ElementSoftkey(UISoftkey::CHARSELECT));
+				UI::get().add(ElementTag<UISoftkey, UISoftkey::SkType>(UISoftkey::CHARSELECT));
 				break;
 			case 2:
 				UI::get().disable();
-
-				using Audio::Sound;
 				Sound(Sound::SELECTCHAR).play();
-
-				using Net::SelectCharPacket;
 				SelectCharPacket(cid).dispatch();
 				break;
 			}
@@ -255,13 +247,14 @@ namespace IO
 
 	void UICharSelect::addchar(uint8_t index)
 	{
-		CharLook look = CharLook(Session::get().getlogin().getchar(index).getlook());
-		charlooks.push_back(look);
+		charlooks.emplace_back(
+			Session::get().getlogin().getchar(index).getlook()
+		);
 
-		auto lt = Point<int16_t>(105 + (120 * (index % 4)), 170 + (200 * (index > 3)));
-		auto rb = Point<int16_t>(50, 80);
+		Point<int16_t> lt = { 105 + (120 * (index % 4)), 170 + (200 * (index > 3)) };
+		Point<int16_t> rb = { 50, 80 };
 		int16_t buttonindex = BT_CHAR0 + index;
-		buttons[buttonindex] = unique_ptr<Button>(new AreaButton(lt, rb));
+		buttons[buttonindex] = std::make_unique<AreaButton>(lt, rb);
 		if (index == selected)
 			buttons[buttonindex]->setstate(Button::PRESSED);
 	}
@@ -276,7 +269,7 @@ namespace IO
 		}
 	}
 
-	string UICharSelect::getstringfor(size_t label) const
+	std::string UICharSelect::getstringfor(size_t label) const
 	{
 		auto& stats = Session::get().getlogin().getchar(selected).getstats();
 		switch (label)

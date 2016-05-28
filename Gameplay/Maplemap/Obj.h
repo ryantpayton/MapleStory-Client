@@ -16,24 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Animation.h"
-#include "Util\Point.h"
-#include "Net\InPacket.h"
+#include "..\..\Graphics\Animation.h"
+#include "..\..\Util\Point.h"
 
-namespace Gameplay
+namespace jrc
 {
-	using nl::node;
-	using Graphics::Animation;
-	using Net::InPacket;
-
 	// Represents an obj (map decoration) on a map.
 	class Obj
 	{
 	public:
-		Obj(node source);
-		Obj(InPacket& recv);
-		// Empty destructor.
-		~Obj();
+		Obj(nl::node source);
 
 		// Update animation.
 		void update();

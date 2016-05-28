@@ -20,65 +20,69 @@
 #include <unordered_map>
 #include <memory>
 
-template <typename T>
-// An unordered map which uses the type as key.
-class TypeMap
+namespace jrc
 {
-public:
-	using t_ptr = typename std::unique_ptr<T>;
-	using pair = typename std::pair<std::type_index, t_ptr>;
-	using cpair = typename std::pair<const std::type_index, t_ptr>;
-	using underlying_map = typename std::unordered_map<std::type_index, t_ptr>;
-	
-	template <typename T, typename...Args>
-	void emplace(Args&&... args)
-	{
-		container.emplace(typeid(T), std::make_unique<T>(args...));
-	}
-
 	template <typename T>
-	void erase()
+	// An unordered map which uses the type as key.
+	class TypeMap
 	{
-		container.erase(typeid(T));
-	}
+	public:
+		using t_ptr = typename std::unique_ptr<T>;
+		using pair = typename std::pair<std::type_index, t_ptr>;
+		using cpair = typename std::pair<const std::type_index, t_ptr>;
+		using underlying_map = typename std::unordered_map<std::type_index, t_ptr>;
 
-	void clear()
-	{
-		container.clear();
-	}
+		template <typename T, typename...Args>
+		T* emplace(Args&&... args)
+		{
+			auto* ptr = container.emplace(typeid(T), std::make_unique<T>(args...)).first->second.get();
+			return static_cast<T*>(ptr);
+		}
 
-	template <typename T>
-	T* get()
-	{
-		return reinterpret_cast<T*>(container[typeid(T)].get());
-	}
+		template <typename T>
+		void erase()
+		{
+			container.erase(typeid(T));
+		}
 
-	template <typename T>
-	const T* get() const
-	{
-		return reinterpret_cast<T*>(container[typeid(T)].get());
-	}
+		void clear()
+		{
+			container.clear();
+		}
 
-	typename underlying_map::iterator begin()
-	{
-		return container.begin();
-	}
+		template <typename T>
+		T* get()
+		{
+			return reinterpret_cast<T*>(container[typeid(T)].get());
+		}
 
-	typename underlying_map::iterator end()
-	{
-		return container.end();
-	}
+		template <typename T>
+		const T* get() const
+		{
+			return reinterpret_cast<T*>(container[typeid(T)].get());
+		}
 
-	typename underlying_map::const_iterator begin() const
-	{
-		return container.begin();
-	}
+		typename underlying_map::iterator begin()
+		{
+			return container.begin();
+		}
 
-	typename underlying_map::const_iterator end() const
-	{
-		return container.end();
-	}
+		typename underlying_map::iterator end()
+		{
+			return container.end();
+		}
 
-private:
-	underlying_map container;
-};
+		typename underlying_map::const_iterator begin() const
+		{
+			return container.begin();
+		}
+
+		typename underlying_map::const_iterator end() const
+		{
+			return container.end();
+		}
+
+	private:
+		underlying_map container;
+	};
+}

@@ -17,22 +17,25 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-template <class T>
-class Singleton
+namespace jrc
 {
-public:
-	virtual ~Singleton() {}
-
-	static T& get()
+	template <class T>
+	class Singleton
 	{
-		return instance;
-	}
+	public:
+		virtual ~Singleton() {}
 
-private:
-	T& operator = (const T&) = delete;
+		static T& get()
+		{
+			return instance;
+		}
 
-	static T instance;
-};
+	private:
+		T& operator = (const T&) = delete;
 
-template <class T>
-T Singleton<T>::instance;
+		static T instance;
+	};
+
+	template <class T>
+	T Singleton<T>::instance;
+}

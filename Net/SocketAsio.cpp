@@ -15,12 +15,10 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Journey.h"
-#ifdef JOURNEY_USE_ASIO
 #include "SocketAsio.h"
+#ifdef JOURNEY_USE_ASIO
 
-namespace Net
+namespace jrc
 {
 	SocketAsio::SocketAsio() : resolver(ioservice), socket(ioservice) {}
 

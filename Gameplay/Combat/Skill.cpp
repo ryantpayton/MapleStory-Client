@@ -17,28 +17,28 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Skill.h"
 
-#include "Data\DataFactory.h"
-#include "Util\Misc.h"
+#include "..\..\Data\DataFactory.h"
+#include "..\..\Util\Misc.h"
 
 #include "nlnx\node.hpp"
 #include "nlnx\nx.hpp"
 
-namespace Gameplay
+namespace jrc
 {
 	Skill::Skill(int32_t id)
 	{
 		skillid = id;
 
-		string strid;
+		std::string strid;
 		if (skillid < 10000000)
 		{
-			strid = Format::extendid(skillid, 7);
+			strid = string_format::extend_id(skillid, 7);
 		}
 		else
 		{
 			strid = std::to_string(skillid);
 		}
-		node src = nl::nx::skill[strid.substr(0, 3) + ".img"]["skill"][strid];
+		nl::node src = nl::nx::skill[strid.substr(0, 3) + ".img"]["skill"][strid];
 
 		int32_t reqw = src["weapon"];
 		reqweapon = Weapon::typebyvalue(100 + reqw);
@@ -56,13 +56,13 @@ namespace Gameplay
 		offensive = false;
 		passive = (skillid % 10000) / 1000 == 0;
 
-		for (node sub : src["level"])
+		for (nl::node sub : src["level"])
 		{
 			Level level;
 
-			bool hasdamage = sub["damage"].data_type() == node::type::integer;
-			bool hasmad = sub["mad"].data_type() == node::type::integer;
-			bool hasfixdamage = sub["fixdamage"].data_type() == node::type::integer;
+			bool hasdamage = sub["damage"].data_type() == nl::node::type::integer;
+			bool hasmad = sub["mad"].data_type() == nl::node::type::integer;
+			bool hasfixdamage = sub["fixdamage"].data_type() == nl::node::type::integer;
 
 			level.damage = sub["damage"];
 			level.damage /= 100;
@@ -99,37 +99,37 @@ namespace Gameplay
 			level.hrange /= 100;
 			level.range = sub;
 
-			int32_t lvlid = StringConversion<int32_t>(sub.name()).ordefault(-1);
+			int32_t lvlid = string_conversion::or_default<int32_t>(sub.name(), -1);
 			levels[lvlid] = level;
 		}
 
-		sound = unique_ptr<SkillSound>(new SingleSkillSound(strid));
+		sound = std::make_unique<SingleSkillSound>(strid);
 
 		bool byleveleffect = src["CharLevel"]["10"]["effect"].size() > 0;
 		bool multieffect = src["effect0"].size() > 0;
 		if (byleveleffect)
 		{
-			useeffect = unique_ptr<SkillUseEffect>(new ByLevelUseEffect(src));
+			useeffect = std::make_unique<ByLevelUseEffect>(src);
 		}
 		else if (multieffect)
 		{
-			useeffect = unique_ptr<SkillUseEffect>(new MultiUseEffect(src));
+			useeffect = std::make_unique<MultiUseEffect>(src);
 		}
 		else
 		{
-			bool isanimation = src["effect"]["0"].data_type() == node::type::bitmap;
+			bool isanimation = src["effect"]["0"].data_type() == nl::node::type::bitmap;
 			bool haseffect1 = src["effect"]["1"].size() > 0;
 			if (isanimation)
 			{
-				useeffect = unique_ptr<SkillUseEffect>(new SingleUseEffect(src));
+				useeffect = std::make_unique<SingleUseEffect>(src);
 			}
 			else if (haseffect1)
 			{
-				useeffect = unique_ptr<SkillUseEffect>(new TwoHUseEffect(src));
+				useeffect = std::make_unique<TwoHUseEffect>(src);
 			}
 			else
 			{
-				useeffect = unique_ptr<SkillUseEffect>(new NoUseEffect());
+				useeffect = std::make_unique<NoUseEffect>();
 			}
 		}
 
@@ -141,71 +141,71 @@ namespace Gameplay
 		{
 			if (hashit0 && hashit1)
 			{
-				hiteffect = unique_ptr<SkillHitEffect>(new ByLevelTwoHHitEffect(src));
+				hiteffect = std::make_unique<ByLevelTwoHHitEffect>(src);
 			}
 			else
 			{
-				hiteffect = unique_ptr<SkillHitEffect>(new ByLevelHitEffect(src));
+				hiteffect = std::make_unique<ByLevelHitEffect>(src);
 			}
 		}
 		else if (byskilllevelhit)
 		{
-			hiteffect = unique_ptr<SkillHitEffect>(new BySkillLevelHitEffect(src));
+			hiteffect = std::make_unique<BySkillLevelHitEffect>(src);
 		}
 		else if (hashit0 && hashit1)
 		{
-			hiteffect = unique_ptr<SkillHitEffect>(new TwoHHitEffect(src));
+			hiteffect = std::make_unique<TwoHHitEffect>(src);
 		}
 		else if (hashit0)
 		{
-			hiteffect = unique_ptr<SkillHitEffect>(new SingleHitEffect(src));
+			hiteffect = std::make_unique<SingleHitEffect>(src);
 		}
 		else
 		{
-			hiteffect = unique_ptr<SkillHitEffect>(new NoHitEffect());
+			hiteffect = std::make_unique<NoHitEffect>();
 		}
 
-		bool hasaction0 = src["action"]["0"].data_type() == node::type::string;
-		bool hasaction1 = src["action"]["1"].data_type() == node::type::string;
+		bool hasaction0 = src["action"]["0"].data_type() == nl::node::type::string;
+		bool hasaction1 = src["action"]["1"].data_type() == nl::node::type::string;
 		if (hasaction0 && hasaction1)
 		{
-			action = unique_ptr<SkillAction>(new TwoHAction(src));
+			action = std::make_unique<TwoHAction>(src);
 		}
 		else if (hasaction0)
 		{
-			action = unique_ptr<SkillAction>(new SingleAction(src));
+			action = std::make_unique<SingleAction>(src);
 		}
 		else if (offensive)
 		{
-			bool bylevel = src["level"]["1"]["action"].data_type() == node::type::string;
+			bool bylevel = src["level"]["1"]["action"].data_type() == nl::node::type::string;
 			if (bylevel)
 			{
-				action = unique_ptr<SkillAction>(new ByLevelAction(src, skillid));
+				action = std::make_unique<ByLevelAction>(src, skillid);
 			}
 			else
 			{
-				action = unique_ptr<SkillAction>(new RegularAction());
+				action = std::make_unique<RegularAction>();
 				overregular = true;
 			}
 		}
 		else
 		{
-			action = unique_ptr<SkillAction>(new NoAction());
+			action = std::make_unique<NoAction>();
 		}
 
 		bool hasball = src["ball"].size() > 0;
 		bool bylevelball = src["level"]["1"]["ball"].size() > 0;
 		if (bylevelball)
 		{
-			bullet = unique_ptr<SkillBullet>(new BySkillLevelBullet(src, skillid));
+			bullet = std::make_unique<BySkillLevelBullet>(src, skillid);
 		}
 		else if (hasball)
 		{
-			bullet = unique_ptr<SkillBullet>(new SingleBullet(src));
+			bullet = std::make_unique<SingleBullet>(src);
 		}
 		else
 		{
-			bullet = unique_ptr<SkillBullet>(new RegularBullet());
+			bullet = std::make_unique<RegularBullet>();
 			projectile = false;
 		}
 	}
@@ -277,7 +277,6 @@ namespace Gameplay
 
 		if (overregular)
 		{
-			using Character::CharLook;
 			CharLook::AttackLook attacklook = user.getlook().getattacklook();
 			attack.stance = attacklook.stance;
 			if (attack.type == Attack::CLOSE && !projectile)
@@ -303,7 +302,6 @@ namespace Gameplay
 		if (level)
 		{
 			auto reqjob = static_cast<uint16_t>(skillid / 10000);
-			using Character::CharJob;
 			if (!CharJob(job).issubjob(reqjob))
 				return FBR_OTHER;
 

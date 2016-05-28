@@ -20,16 +20,17 @@
 #include "Login.h"
 #include "Cryptography.h"
 #include "PacketSwitch.h"
-#include "Util\Singleton.h"
 
-#include "Journey.h"
+#include "..\Util\Singleton.h"
+
+#include "..\Journey.h"
 #ifdef JOURNEY_USE_ASIO
 #include "SocketAsio.h"
 #else
 #include "SocketWinsock.h"
 #endif
 
-namespace Net
+namespace jrc
 {
 	class Session : public Singleton<Session>
 	{

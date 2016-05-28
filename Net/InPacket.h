@@ -16,8 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\PacketError.h"
-#include "Util\Point.h"
+#include "PacketError.h"
+
+#include "..\Util\Point.h"
+
 #include <cstdint>
 #include <functional>
 #include <unordered_map>
@@ -25,14 +27,8 @@
 #include <queue>
 #include <array>
 
-namespace Net
+namespace jrc
 {
-	using std::array;
-	using std::queue;
-	using std::vector;
-	using std::function;
-	using std::unordered_map;
-
 	// A packet received from the server. 
 	// Contains reading functions. 
 	class InPacket
@@ -48,32 +44,24 @@ namespace Net
 		// Skip a number of bytes (by increasing the offset).
 		void skip(size_t count);
 
-		// Read a fixed-length string.
-		string readpadascii(int16_t length);
+		// Read a byte and check if it is 1.
+		bool read_bool() { return read<bool>(); }
+		// Read a byte.
+		int8_t read_byte() { return read<int8_t>(); }
+		// Read a short.
+		int16_t read_short() { return read<int16_t>(); }
+		// Read a int.
+		int32_t read_int() { return read<int32_t>(); }
+		// Read a long.
+		int64_t read_long() { return read<int64_t>(); }
+
 		// Read a point.
 		Point<int16_t> readpoint();
 
-		template <typename T>
-		T read();
-
-		template <>
-		// Read a string. The size is specified by a short at the current position.
-		string read<string>()
-		{
-			auto length = read<uint16_t>();
-			return readpadascii(length);
-		}
-
-		// Read a byte and check if it is 1.
-		bool readbool() { return read<bool>(); }
-		// Read a byte.
-		int8_t readbyte() { return read<int8_t>(); }
-		// Read a short.
-		int16_t readshort() { return read<int16_t>(); }
-		// Read a int.
-		int32_t readint() { return read<int32_t>(); }
-		// Read a long.
-		int64_t readlong() { return read<int64_t>(); }
+		// Read a string.
+		std::string read_string();
+		// Read a fixed-length string.
+		std::string read_padded_string(uint16_t length);
 
 		// Inspect a byte and check if it is 1.
 		bool inspectbool() { return inspect<int8_t>() == 1; }
@@ -86,9 +74,20 @@ namespace Net
 		// Inspect a long.
 		int64_t inspectlong() { return inspect<int64_t>(); }
 
+		template <typename T>
+		T read();
+
+		template <>
+		// Read a string. The size is specified by a short at the current position.
+		std::string read<std::string>()
+		{
+			auto length = read<uint16_t>();
+			return read_padded_string(length);
+		}
+
 		template <typename T1, typename T2>
 		// Read a pair.
-		pair<T1, T2> read()
+		std::pair<T1, T2> read()
 		{
 			auto first = read<T1>();
 			auto second = read<T2>();
@@ -97,9 +96,9 @@ namespace Net
 
 		template<typename S, typename T>
 		// Read a vector of type T. The length is read as a variable of type S.
-		queue<T> readqueue()
+		std::queue<T> readqueue()
 		{
-			queue<T> values;
+			std::queue<T> values;
 			auto size = read<S>();
 			for (S i = 0; i < size; i++)
 			{
@@ -111,9 +110,9 @@ namespace Net
 
 		template<typename S, typename T>
 		// Read a vector of type T. The length is read as a variable of type S.
-		vector<T> readvector()
+		std::vector<T> readvector()
 		{
-			vector<T> values;
+			std::vector<T> values;
 			auto size = read<S>();
 			for (S i = 0; i < size; i++)
 			{
@@ -125,9 +124,9 @@ namespace Net
 
 		template<typename K, typename V>
 		// Read an unordered_map.
-		unordered_map<K, V> readmap()
+		std::unordered_map<K, V> readmap()
 		{
-			unordered_map<K, V> result;
+			std::unordered_map<K, V> result;
 			auto size = read<int16_t>();
 			for (int16_t i = 0; i < size; i++)
 			{

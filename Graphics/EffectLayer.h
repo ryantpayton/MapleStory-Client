@@ -17,15 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Sprite.h"
-#include "Constants.h"
+
+#include "..\Constants.h"
+
 #include <map>
 #include <list>
 
-namespace Graphics
+namespace jrc
 {
-	using std::map;
-	using std::list;
-
 	// A list of animations. Animations will be removed after all frames were displayed.
 	class EffectLayer
 	{
@@ -62,6 +61,6 @@ namespace Graphics
 			float speed;
 		};
 
-		map<int8_t, list<Effect>> effects;
+		std::map<int8_t, std::list<Effect>> effects;
 	};
 }

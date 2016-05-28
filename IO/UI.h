@@ -20,19 +20,18 @@
 #include "Keyboard.h"
 #include "Element.h"
 #include "UIState.h"
+
 #include "Components\Icon.h"
 #include "Components\Textfield.h"
 #include "Components\ScrollingNotice.h"
-#include "Util\Singleton.h"
-#include "Util\Optional.h"
+
+#include "..\Util\Singleton.h"
+#include "..\Util\Optional.h"
 
 #include <unordered_map>
 
-namespace IO
+namespace jrc
 {
-	using std::unique_ptr;
-	using std::unordered_map;
-
 	class UI : public Singleton<UI>
 	{
 	public:
@@ -45,7 +44,7 @@ namespace IO
 		UI();
 
 		void init();
-		void draw(float inter) const;
+		void draw(float alpha) const;
 		void update();
 
 		void sendmouse(Point<int16_t> pos);
@@ -53,7 +52,7 @@ namespace IO
 		void doubleclick();
 		void sendkey(int32_t keycode, bool pressed);
 
-		void setscrollingnotice(string notice);
+		void setscrollingnotice(const std::string& notice);
 		void focustextfield(Textfield* textfield);
 		void dragicon(Icon* icon);
 
@@ -68,25 +67,23 @@ namespace IO
 		bool haselement(UIElement::Type type) const;
 		Optional<UIElement> getelement(UIElement::Type type) const;
 
+		void cleartooltip(UIElement::Type type);
+		void show_equip(UIElement::Type parent, Equip* equip, int16_t slot);
+		void show_item(UIElement::Type parent, int32_t item_id);
+
 		template <class T>
 		Optional<T> getelement(UIElement::Type type) const;
-
-		template <class T, typename ...Args>
-		void withelement(UIElement::Type type, void(T::*action)(Args...), Args... args) const;
-
-		template <typename ...Args>
-		void withstate(void(UIState::*action)(Args...), Args... args);
 
 	private:
 		void sendmouse(Point<int16_t> cursorpos, Cursor::State cursorstate);
 
-		unique_ptr<UIState> state;
+		UIState::UPtr state;
 		Keyboard keyboard;
 		Cursor cursor;
 		ScrollingNotice scrollingnotice;
 
 		Optional<Textfield> focusedtextfield;
-		unordered_map<int32_t, bool> keydown;
+		std::unordered_map<int32_t, bool> keydown;
 
 		bool enabled;
 	};
@@ -96,19 +93,5 @@ namespace IO
 	{
 		return getelement(type)
 			.reinterpret<T>();
-	}
-
-	template <class T, typename ...Args>
-	void UI::withelement(UIElement::Type type, void(T::*action)(Args...), Args... args) const
-	{
-		getelement<T>(type)
-			.ifpresent(action, args...);
-	}
-
-	template <typename ...Args>
-	void UI::withstate(void(UIState::*action)(Args...), Args... args)
-	{
-		Optional<UIState> os = state.get();
-		os.ifpresent(action, args...);
 	}
 }

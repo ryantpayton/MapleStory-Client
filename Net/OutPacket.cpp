@@ -16,10 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "OutPacket.h"
+
 #include "Session.h"
+
 #include <chrono>
 
-namespace Net
+namespace jrc
 {
 	OutPacket::OutPacket(int16_t opcode)
 	{
@@ -28,7 +30,8 @@ namespace Net
 
 	void OutPacket::dispatch()
 	{
-		Session::get().dispatch(bytes.data(), bytes.size());
+		Session::get()
+			.dispatch(bytes.data(), bytes.size());
 	}
 
 	void OutPacket::skip(size_t count)
@@ -71,15 +74,12 @@ namespace Net
 		}
 	}
 
-	void OutPacket::writestr(string str)
+	void OutPacket::writetime()
 	{
-		int16_t len = static_cast<int16_t>(str.length());
-		writesh(len);
-
-		for (int16_t i = 0; i < len; i++)
-		{
-			writech(str[i]);
-		}
+		auto duration = std::chrono::steady_clock::now().time_since_epoch();
+		auto since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+		auto timestamp = static_cast<int32_t>(since_epoch.count());
+		writeint(timestamp);
 	}
 
 	void OutPacket::writepoint(Point<int16_t> position)
@@ -88,14 +88,14 @@ namespace Net
 		writesh(position.y());
 	}
 
-	void OutPacket::writetime()
+	void OutPacket::writestr(const std::string& str)
 	{
-		using std::chrono::steady_clock;
-		using std::chrono::milliseconds;
+		int16_t length = static_cast<int16_t>(str.length());
+		writesh(length);
 
-		auto duration = steady_clock::now().time_since_epoch();
-		auto since_epoch = std::chrono::duration_cast<milliseconds>(duration);
-		auto timestamp = static_cast<int32_t>(since_epoch.count());
-		writeint(timestamp);
+		for (int16_t i = 0; i < length; i++)
+		{
+			writech(str[i]);
+		}
 	}
 }

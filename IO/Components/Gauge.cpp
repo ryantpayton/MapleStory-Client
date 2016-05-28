@@ -15,32 +15,57 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Graphics\Texture.h"
+#include "Gauge.h"
 
-namespace IO
+namespace jrc
 {
-	using::Graphics::Texture;
-
-	class Bar
+	Gauge::Gauge(Texture front, Texture mid, Texture end, int16_t max, float percent)
 	{
-	public:
-		Bar(Texture front, Texture mid, Texture end, int16_t maximum, float percentage);
-		Bar();
-		~Bar();
+		barfront = front;
+		barmid = mid;
+		barend = end;
+		maximum = max;
+		percentage = percent;
 
-		void draw(Point<int16_t>) const;
-		void update(float target);
+		target = percentage;
+	}
 
-	private:
-		Texture barfront;
-		Texture barmid;
-		Texture barend;
-		int16_t maximum;
+	Gauge::Gauge() {}
 
-		float percentage;
-		float target;
-		float step;
-	};
+	Gauge::~Gauge() {}
+
+	void Gauge::draw(Point<int16_t> position) const
+	{
+		int16_t length = static_cast<int16_t>(percentage * maximum);
+		if (length > 0)
+		{
+			barfront.draw(DrawArgument(position));
+			barmid.draw(DrawArgument(position + Point<int16_t>(1, 0), Point<int16_t>(length, 0)));
+			barend.draw(DrawArgument(position + Point<int16_t>(length + 1, 0)));
+		}
+	}
+
+	void Gauge::update(float t)
+	{
+		if (target != t)
+		{
+			target = t;
+			step = (target - percentage) / 24;
+		}
+
+		if (percentage != target)
+		{
+			percentage += step;
+			if (step < 0.0f)
+			{
+				if (target - percentage >= step)
+					percentage = target;
+			}
+			else if (step > 0.0f)
+			{
+				if (target - percentage <= step)
+					percentage = target;
+			}
+		}
+	}
 }
-

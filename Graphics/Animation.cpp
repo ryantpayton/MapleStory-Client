@@ -16,15 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Animation.h"
-#include "Constants.h"
 
-#include "Util\Misc.h"
+#include "..\Constants.h"
+#include "..\Util\Misc.h"
 
 #include <set>
 
-namespace Graphics
+namespace jrc
 {
-	Animation::Frame::Frame(node src)
+	Animation::Frame::Frame(nl::node src)
 	{
 		texture = src;
 		bounds = src;
@@ -33,8 +33,8 @@ namespace Graphics
 		if (delay == 0)
 			delay = 100;
 
-		bool hasa0 = src["a0"].data_type() == node::type::integer;
-		bool hasa1 = src["a1"].data_type() == node::type::integer;
+		bool hasa0 = src["a0"].data_type() == nl::node::type::integer;
+		bool hasa1 = src["a1"].data_type() == nl::node::type::integer;
 		if (hasa0 && hasa1)
 		{
 			opacities = { src["a0"], src["a1"] };
@@ -54,8 +54,8 @@ namespace Graphics
 			opacities = { 255, 255 };
 		}
 
-		bool hasz0 = src["z0"].data_type() == node::type::integer;
-		bool hasz1 = src["z1"].data_type() == node::type::integer;
+		bool hasz0 = src["z0"].data_type() == nl::node::type::integer;
+		bool hasz1 = src["z1"].data_type() == nl::node::type::integer;
 		if (hasz0 && hasz1)
 		{
 			scales = { src["z0"], src["z1"] };
@@ -92,22 +92,21 @@ namespace Graphics
 	}
 
 
-	Animation::Animation(node src)
+	Animation::Animation(nl::node src)
 	{
-		bool istexture = src.data_type() == node::type::bitmap;
+		bool istexture = src.data_type() == nl::node::type::bitmap;
 		if (istexture)
 		{
 			frames.push_back(src);
 		}
 		else
 		{
-			using std::set;
-			set<int16_t> frameids;
-			for (node sub : src)
+			std::set<int16_t> frameids;
+			for (auto sub : src)
 			{
-				if (sub.data_type() == node::type::bitmap)
+				if (sub.data_type() == nl::node::type::bitmap)
 				{
-					int16_t fid = StringConversion<int16_t>(sub.name()).ordefault(-1);
+					int16_t fid = string_conversion::or_default<int16_t>(sub.name(), -1);
 					if (fid >= 0)
 					{
 						frameids.insert(fid);
@@ -117,7 +116,7 @@ namespace Graphics
 
 			for (auto& fid : frameids)
 			{
-				node sub = src[std::to_string(fid)];
+				auto sub = src[std::to_string(fid)];
 				frames.push_back(sub);
 			}
 			if (frames.size() == 0)
@@ -252,20 +251,20 @@ namespace Graphics
 		}
 	}
 
-	uint16_t Animation::getdelay(int16_t frame) const
+	uint16_t Animation::getdelay(int16_t frame_id) const
 	{
-		return frame < frames.size() ? frames[frame].delay : 0;
+		return frame_id < frames.size() ? frames[frame_id].delay : 0;
 	}
 
-	uint16_t Animation::getdelayuntil(int16_t frame) const
+	uint16_t Animation::getdelayuntil(int16_t frame_id) const
 	{
 		uint16_t total = 0;
-		for (int16_t i = 0; i < frame; i++)
+		for (int16_t i = 0; i < frame_id; i++)
 		{
 			if (i >= frames.size())
 				break;
 
-			total += frames[frame].delay;
+			total += frames[frame_id].delay;
 		}
 		return total;
 	}
@@ -285,7 +284,7 @@ namespace Graphics
 		return getframe().head;
 	}
 
-	rectangle2d<int16_t> Animation::getbounds() const
+	Rectangle<int16_t> Animation::getbounds() const
 	{
 		return getframe().bounds;
 	}

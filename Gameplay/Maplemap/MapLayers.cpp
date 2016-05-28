@@ -19,45 +19,27 @@
 #include "MapLayers.h"
 #include "nlnx\nx.hpp"
 
-namespace Gameplay
+namespace jrc
 {
-	Layer::Layer(node src)
+	Layer::Layer(nl::node src)
 	{
-		string tileset = src["info"]["tS"] + ".img";
-		for (node tilenode : src["tile"])
+		auto tileset = src["info"]["tS"] + ".img";
+		for (auto tilenode : src["tile"])
 		{
-			Tile tile = Tile(tilenode, tileset);
-			tiles[tile.getz()].push_back(tile);
+			Tile tile(tilenode, tileset);
+			tiles[tile.getz()]
+				.push_back(tile);
 		}
 
-		for (node objnode : src["obj"])
+		for (auto objnode : src["obj"])
 		{
-			Obj obj = Obj(objnode);
-			objs[obj.getz()].push_back(obj);
-		}
-	}
-
-	Layer::Layer(InPacket& recv)
-	{
-		string tileset = recv.read<string>();
-		uint16_t numtiles = recv.readshort();
-		for (uint16_t i = 0; i < numtiles; i++)
-		{
-			Tile tile = Tile(recv, tileset);
-			tiles[tile.getz()].push_back(tile);
-		}
-
-		uint16_t numobjs = recv.readshort();
-		for (uint16_t i = 0; i < numobjs; i++)
-		{
-			Obj obj = Obj(recv);
-			objs[obj.getz()].push_back(obj);
+			Obj obj(objnode);
+			objs[obj.getz()]
+				.push_back(obj);
 		}
 	}
 
 	Layer::Layer() {}
-
-	Layer::~Layer() {}
 
 	void Layer::update()
 	{
@@ -70,13 +52,13 @@ namespace Gameplay
 		}
 	}
 
-	void Layer::draw(Point<int16_t> viewpos, float inter) const
+	void Layer::draw(Point<int16_t> viewpos, float alpha) const
 	{
 		for (auto& lyit : objs)
 		{
 			for (auto& obit : lyit.second)
 			{
-				obit.draw(viewpos, inter);
+				obit.draw(viewpos, alpha);
 			}
 		}
 
@@ -89,29 +71,20 @@ namespace Gameplay
 		}
 	}
 
-	MapLayers::MapLayers(node src)
+	MapLayers::MapLayers(nl::node src)
 	{
 		for (size_t i = 0; i < NUM_LAYERS; i++)
 		{
-			layers[i] = Layer(src[std::to_string(i)]);
-		}
-	}
-
-	MapLayers::MapLayers(InPacket& recv)
-	{
-		for (size_t i = 0; i < NUM_LAYERS; i++)
-		{
-			layers[i] = Layer(recv);
+			layers[i] = src[std::to_string(i)];
 		}
 	}
 
 	MapLayers::MapLayers() {}
 
-	MapLayers::~MapLayers() {}
-
-	void MapLayers::draw(uint8_t layer, Point<int16_t> viewpos, float inter) const
+	void MapLayers::draw(uint8_t layer, Point<int16_t> viewpos, float alpha) const
 	{
-		layers[layer].draw(viewpos, inter);
+		layers[layer]
+			.draw(viewpos, alpha);
 	}
 
 	void MapLayers::update()

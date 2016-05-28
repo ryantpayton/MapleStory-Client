@@ -16,24 +16,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Character\Char.h"
-#include "Graphics\Animation.h"
-#include "Util\BoolPair.h"
+#include "..\..\Character\Char.h"
+#include "..\..\Graphics\Animation.h"
+#include "..\..\Util\BoolPair.h"
 
 #include <unordered_map>
 #include <vector>
 
-namespace Gameplay
+namespace jrc
 {
-	using std::vector;
-	using std::map;
-
 	// Interface for skill effects.
 	class SkillUseEffect
 	{
 	public:
-		using Char = Character::Char;
-
 		virtual ~SkillUseEffect() {}
 
 		virtual void apply(Char& target) const = 0;
@@ -42,7 +37,7 @@ namespace Gameplay
 		class Effect
 		{
 		public:
-			Effect(node src)
+			Effect(nl::node src)
 			{
 				animation = src;
 				z = src["z"];
@@ -54,8 +49,6 @@ namespace Gameplay
 			}
 
 		private:
-			using Animation = Graphics::Animation;
-
 			Animation animation;
 			int8_t z;
 		};
@@ -74,7 +67,7 @@ namespace Gameplay
 	class SingleUseEffect : public SkillUseEffect
 	{
 	public:
-		SingleUseEffect(node src);
+		SingleUseEffect(nl::node src);
 
 		void apply(Char& target) const override;
 
@@ -88,7 +81,7 @@ namespace Gameplay
 	class TwoHUseEffect : public SkillUseEffect
 	{
 	public:
-		TwoHUseEffect(node src);
+		TwoHUseEffect(nl::node src);
 
 		void apply(Char& target) const override;
 
@@ -101,12 +94,12 @@ namespace Gameplay
 	class MultiUseEffect : public SkillUseEffect
 	{
 	public:
-		MultiUseEffect(node src);
+		MultiUseEffect(nl::node src);
 
 		void apply(Char& target) const override;
 
 	private:
-		vector<Effect> effects;
+		std::vector<Effect> effects;
 	};
 
 
@@ -114,11 +107,11 @@ namespace Gameplay
 	class ByLevelUseEffect : public SkillUseEffect
 	{
 	public:
-		ByLevelUseEffect(node src);
+		ByLevelUseEffect(nl::node src);
 
 		void apply(Char& target) const override;
 
 	private:
-		map<uint16_t, Effect> effects;
+		std::map<uint16_t, Effect> effects;
 	};
 }

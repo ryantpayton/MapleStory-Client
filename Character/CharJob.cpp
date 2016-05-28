@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "CharJob.h"
 
-namespace Character
+namespace jrc
 {
 	CharJob::CharJob(uint16_t i)
 	{
@@ -62,7 +62,7 @@ namespace Character
 	{
 		for (int32_t lvit = JOB_BEGINNER; lvit <= JOB_FOURTHT; lvit++)
 		{
-			Joblevel lv = static_cast<Joblevel>(lvit);
+			Level lv = static_cast<Level>(lvit);
 			if (subid == getsubjob(lv))
 				return true;
 		}
@@ -74,7 +74,7 @@ namespace Character
 		return id;
 	}
 
-	uint16_t CharJob::getsubjob(Joblevel lv) const
+	uint16_t CharJob::getsubjob(Level lv) const
 	{
 		if (lv <= level)
 		{
@@ -95,19 +95,19 @@ namespace Character
 		return 0;
 	}
 
-	string CharJob::getname() const
+	std::string CharJob::getname() const
 	{
 		return name;
 	}
 
-	Joblevel CharJob::getlevel() const
+	CharJob::Level CharJob::getlevel() const
 	{
 		return level;
 	}
 
-	string CharJob::getname(uint16_t id) const
+	std::string CharJob::getname(uint16_t jid) const
 	{
-		switch (id)
+		switch (jid)
 		{
 		case 0:
 			return "Beginner";
@@ -199,9 +199,9 @@ namespace Character
 		case 2111:
 		case 2112:
 			return "Aran";
+		default:
+			return "";
 		}
-
-		return "";
 	}
 
 	Equipstat::Value CharJob::primarystat(Weapon::Type weapontype) const

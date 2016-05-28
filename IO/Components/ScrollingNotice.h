@@ -16,11 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Geometry.h"
-#include "Graphics\Text.h"
-#include "Util\Interpolated.h"
+#include "..\..\Graphics\Geometry.h"
+#include "..\..\Graphics\Text.h"
+#include "..\..\Util\Interpolated.h"
 
-namespace IO
+namespace jrc
 {
 	// The scrolling server notice at the top of the screen.
 	class ScrollingNotice
@@ -28,15 +28,12 @@ namespace IO
 	public:
 		ScrollingNotice();
 
-		void setnotice(string notice);
+		void setnotice(std::string notice);
 		void draw(float alpha) const;
 		void update();
 
 	private:
-		using Rectangle = Graphics::Rectangle;
-		using Text = Graphics::Text;
-
-		Rectangle background;
+		ColorBox background;
 		Point<int16_t> backposition;
 		Text notice;
 		Linear<double> xpos;

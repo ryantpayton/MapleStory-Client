@@ -17,35 +17,33 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "BodyDrawinfo.h"
-#include "Graphics\Texture.h"
-#include "Util\Enum.h"
-#include "Console.h"
 
-namespace Character
+#include "..\..\Console.h"
+#include "..\..\Graphics\Texture.h"
+#include "..\..\Util\Enum.h"
+#include "..\..\Util\EnumMap.h"
+
+namespace jrc
 {
 	class Expression
 	{
 	public:
-		static const size_t LENGTH = 24;
 		enum Value
 		{
 			DEFAULT, BLINK, HIT, SMILE, TROUBLED, CRY, ANGRY,
 			BEWILDERED, STUNNED, BLAZE, BOWING, CHEERS, CHU, DAM,
 			DESPAIR, GLITTER, HOT, HUM, LOVE, OOPS, PAIN, SHINE,
-			VOMIT, WINK
+			VOMIT, WINK,
+			LENGTH
 		};
 
-		static string nameof(Value value)
+		static constexpr char* names[LENGTH] = 
 		{
-			static const string expnames[LENGTH] =
-			{
-				"default", "blink", "hit", "smile", "troubled", "cry", "angry",
-				"bewildered", "stunned", "blaze", "bowing", "cheers", "chu", "dam",
-				"despair", "glitter", "hot", "hum", "love", "oops", "pain", "shine",
-				"vomit", "wink"
-			};
-			return expnames[value];
-		}
+			"default", "blink", "hit", "smile", "troubled", "cry", "angry",
+			"bewildered", "stunned", "blaze", "bowing", "cheers", "chu", "dam",
+			"despair", "glitter", "hot", "hum", "love", "oops", "pain", "shine",
+			"vomit", "wink"
+		};
 
 		static EnumIterator<Value> getit(Value s = DEFAULT, Value l = WINK)
 		{
@@ -71,12 +69,12 @@ namespace Character
 			return DEFAULT;
 		}
 
-		static Value bystring(string name)
+		static Value bystring(std::string name)
 		{
 			for (auto it = getit(); it.hasnext(); it.increment())
 			{
 				Value value = it.get();
-				if (nameof(value) == name)
+				if (names[value] == name)
 					return value;
 			}
 
@@ -86,8 +84,6 @@ namespace Character
 		}
 	};
 
-	using Graphics::Texture;
-	using Graphics::DrawArgument;
 
 	class Face
 	{
@@ -98,12 +94,29 @@ namespace Character
 		void draw(Expression::Value expression, uint8_t frame, const DrawArgument& args) const;
 		uint8_t nextframe(Expression::Value expression, uint8_t frame) const;
 		int16_t getdelay(Expression::Value expression, uint8_t frame) const;
-		string getname() const;
+		std::string getname() const;
 
 	private:
-		unordered_map<uint8_t, Texture> expressions[Expression::LENGTH];
-		unordered_map<uint8_t, int16_t> delays[Expression::LENGTH];
-		string name;
+		struct Frame
+		{
+			Texture texture;
+			uint16_t delay;
+
+			Frame(nl::node src)
+			{
+				texture = src["face"];
+
+				Point<int16_t> shift = src["face"]["map"]["brow"];
+				texture.shift(-shift);
+
+				delay = src["delay"];
+				if (delay == 0)
+					delay = 2500;
+			}
+		};
+
+		EnumMap<Expression::Value, std::unordered_map<uint8_t, Frame>> expressions;
+		std::string name;
 	};
 }
 

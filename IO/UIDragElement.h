@@ -17,9 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "UIElement.h"
-#include "Configuration.h"
 
-namespace IO
+#include "..\Configuration.h"
+
+namespace jrc
 {
 	template <typename T>
 	// Base class for UI Windows which can be moved with the mouse cursor.
@@ -84,7 +85,7 @@ namespace IO
 	private:
 		bool indragrange(Point<int16_t> cursorpos) const
 		{
-			auto bounds = rectangle2d<int16_t>(position, position + dragarea);
+			auto bounds = Rectangle<int16_t>(position, position + dragarea);
 			return bounds.contains(cursorpos);
 		}
 	};

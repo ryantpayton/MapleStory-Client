@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Telerock.h"
 
-namespace Character
+namespace jrc
 {
 	void Telerock::addlocation(int32_t mapid)
 	{

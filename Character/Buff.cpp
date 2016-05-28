@@ -16,9 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Buff.h"
-#include "BuffEffects.h"
 
-namespace Character
+namespace jrc
 {
 	Buff::Buff(Buffstat::Value s, int16_t v, int32_t i, int32_t d)
 	{
@@ -34,7 +33,7 @@ namespace Character
 
 	void Buff::applyto(CharStats& stats) const
 	{
-		const BuffEffect* effect = BuffEffects::get().bystat(stat);
+		const BuffEffect* effect = effects.bystat(stat);
 		if (effect)
 			effect->applyto(value, stats);
 	}
@@ -43,4 +42,7 @@ namespace Character
 	{
 		return stat;
 	}
+
+
+	BuffEffects Buff::effects;
 }

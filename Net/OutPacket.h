@@ -16,16 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Point.h"
+#include "..\Util\Point.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
 
-namespace Net
+namespace jrc
 {
-	using std::string;
-	using std::vector;
-
 	// A packet to be sent to the server. Used as a base class to create specific packets.
 	class OutPacket
 	{
@@ -48,16 +46,16 @@ namespace Net
 		// Write a long.
 		void writelg(int64_t lg);
 
-		// Write a string. Writes the length as a short
-		// and then each individual character as a byte.
-		void writestr(string str);
 		// Write a point, one short for x and one for y.
 		void writepoint(Point<int16_t> point);
 		// Write a timestamp as an integer.
 		void writetime();
+		// Write a string. Writes the length as a short
+		// and then each individual character as a byte.
+		void writestr(const std::string& str);
 
 	private:
-		vector<int8_t> bytes;
+		std::vector<int8_t> bytes;
 	};
 }
 

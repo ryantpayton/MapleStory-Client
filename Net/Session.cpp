@@ -16,10 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Session.h"
-#include "Configuration.h"
-#include "Console.h"
 
-namespace Net
+#include "..\Configuration.h"
+#include "..\Console.h"
+
+namespace jrc
 {
 	Session::Session()
 	{
@@ -43,16 +44,16 @@ namespace Net
 		if (connected)
 		{
 			// Read keys neccessary for communicating with the server.
-			cryptography = Cryptography(socket.getbuffer());
+			cryptography = { socket.getbuffer() };
 		}
 		return connected;
 	}
 
 	bool Session::init()
 	{
-		string HOST = Setting<ServerIP>::get().load();
-		string PORT = "8484";
-		return init(HOST.c_str(), PORT.c_str());
+		std::string HOST = Setting<ServerIP>::get().load();
+		constexpr char* PORT = "8484";
+		return init(HOST.c_str(), PORT);
 	}
 
 	void Session::reconnect(const char* address, const char* port)
@@ -104,7 +105,7 @@ namespace Net
 			}
 			catch (const PacketError& err)
 			{
-				Console::get().print("Packet Error: " + string(err.what()));
+				Console::get().print(err.what());
 			}
 
 			pos = 0;
@@ -134,16 +135,16 @@ namespace Net
 		return connected;
 	}
 
-	void Session::dispatch(int8_t* bytes, size_t length)
+	void Session::dispatch(int8_t* packet_bytes, size_t packet_length)
 	{
 		if (connected)
 		{
 			int8_t header[HEADER_LENGTH];
-			cryptography.getheader(header, length);
-			cryptography.encrypt(bytes, length);
+			cryptography.getheader(header, packet_length);
+			cryptography.encrypt(packet_bytes, packet_length);
 
 			socket.dispatch(header, HEADER_LENGTH);
-			socket.dispatch(bytes, length);
+			socket.dispatch(packet_bytes, packet_length);
 		}
 	}
 

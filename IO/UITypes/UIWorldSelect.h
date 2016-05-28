@@ -16,13 +16,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
+#include "..\Element.h"
 
-namespace IO
+namespace jrc
 {
 	class UIWorldSelect : public UIElement
 	{
 	public:
+		static constexpr Type TYPE = WORLDSELECT;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = false;
+
 		enum Buttons
 		{
 			BT_ENTERWORLD = 0,
@@ -37,22 +41,6 @@ namespace IO
 		size_t worldcount;
 		uint8_t worldid;
 		uint8_t channelid;
-	};
-
-	class ElementWorldSelect : public Element
-	{
-	public:
-		ElementWorldSelect() {}
-
-		UIElement::Type type() const override
-		{
-			return UIElement::WORLDSELECT;
-		}
-
-		UIElement* instantiate() const override
-		{
-			return new UIWorldSelect();
-		}
 	};
 }
 

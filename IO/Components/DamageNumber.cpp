@@ -16,12 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "DamageNumber.h"
-#include "Constants.h"
 
-#include "nlnx\nx.hpp"
-#include "nlnx\node.hpp"
+#include "..\..\Constants.h"
 
-namespace IO
+#include <nlnx\nx.hpp>
+#include <nlnx\node.hpp>
+
+namespace jrc
 {
 	DamageNumber::DamageNumber(Type t, int32_t damage, int16_t starty)
 	{
@@ -31,7 +32,7 @@ namespace IO
 		{
 			miss = false;
 
-			string number = std::to_string(damage);
+			std::string number = std::to_string(damage);
 			firstnum = number[0];
 			if (number.size() > 1)
 			{
@@ -75,35 +76,41 @@ namespace IO
 
 	DamageNumber::DamageNumber() {}
 
-	DamageNumber::~DamageNumber() {}
-
-	void DamageNumber::draw(Point<int16_t> parentpos, float alpha) const
+	void DamageNumber::draw(double viewx, double viewy, float alpha) const
 	{
-		Point<int16_t> position = moveobj.getposition(alpha) + parentpos - Point<int16_t>(0, shift);
+		Point<int16_t> absolute = moveobj.getabsolute(viewx, viewy, alpha);
+		Point<int16_t> position = absolute - Point<int16_t>(0, shift);
 		float interopc = opacity.get(alpha);
+
 		if (miss)
 		{
-			charsets[type].second.draw('M', DrawArgument(position, interopc));
+			charsets[type].second
+				.draw('M', { position, interopc });
 		}
 		else
 		{
-			charsets[type].first.draw(firstnum, DrawArgument(position, interopc));
+			charsets[type].first
+				.draw(firstnum, { position, interopc });
 
 			if (multiple)
 			{
-				position.shiftx(getadvance(firstnum, true));
+				int16_t first_advance = getadvance(firstnum, true);
+				position.shiftx(first_advance);
 
 				for (size_t i = 0; i < restnum.length(); i++)
 				{
 					char c = restnum[i];
-					auto yshift = Point<int16_t>(0, (i % 2) ? -2 : 2);
-					charsets[type].second.draw(c, DrawArgument(position + yshift, interopc));
+					Point<int16_t> yshift = { 0, (i % 2) ? -2 : 2 };
+					charsets[type].second
+						.draw(c, { position + yshift, interopc });
 
 					int16_t advance;
 					if (i < restnum.length() - 1)
 					{
 						char n = restnum[i + 1];
-						advance = (getadvance(c, false) + getadvance(n, false)) / 2;
+						int16_t c_advance = getadvance(c, false);
+						int16_t n_advance = getadvance(n, false);
+						advance = (c_advance + n_advance) / 2;
 					}
 					else
 					{
@@ -118,8 +125,8 @@ namespace IO
 
 	int16_t DamageNumber::getadvance(char c, bool first) const
 	{
-		static const size_t LENGTH = 10;
-		static const int16_t advances[LENGTH] =
+		constexpr size_t LENGTH = 10;
+		constexpr int16_t advances[LENGTH] =
 		{
 			24, 20, 22, 22, 24, 23, 24, 22, 24, 24
 		};
@@ -181,5 +188,5 @@ namespace IO
 		charsets[TOPLAYER].first = Charset(nl::nx::effect["BasicEff.img"]["NoViolet1"], Charset::LEFT);
 		charsets[TOPLAYER].second = Charset(nl::nx::effect["BasicEff.img"]["NoViolet0"], Charset::LEFT);
 	}
-	pair<Charset, Charset> DamageNumber::charsets[NUM_TYPES];
+	std::pair<Charset, Charset> DamageNumber::charsets[NUM_TYPES];
 }

@@ -17,10 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Item.h"
 
-namespace Character
+namespace jrc
 {
 	Item::Item(const ItemData& idt, int32_t id, bool cs, int64_t uqi, 
-		int64_t exp, int16_t ct, string ow, int16_t fl) : idata(idt) {
+		int64_t exp, int16_t ct, std::string ow, int16_t fl) : idata(idt) {
 
 		iid = id;
 		cash = cs;

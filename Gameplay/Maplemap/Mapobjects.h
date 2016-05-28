@@ -18,17 +18,15 @@
 #pragma once
 #include "MapLayers.h"
 #include "MapObject.h"
-#include "Util\Optional.h"
+
+#include "..\..\Util\Optional.h"
+
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
 
-namespace Gameplay
+namespace jrc
 {
-	using std::unique_ptr;
-	using std::unordered_map;
-	using std::unordered_set;
-
 	// Collection of mapobjects of a type. 
 	class MapObjects
 	{
@@ -36,7 +34,7 @@ namespace Gameplay
 		virtual ~MapObjects() {}
 
 		// Draw all mapobjects that are on the specified layer.
-		virtual void draw(int8_t layer, Point<int16_t> viewpos, float inter) const;
+		virtual void draw(int8_t layer, double viewx, double viewy, float alpha) const;
 		// Update all mapobjects of this type. Also updates layers eg. drawing order.
 		virtual void update(const Physics& physics);
 
@@ -53,8 +51,8 @@ namespace Gameplay
 		// Obtains a const pointer to the mapobject with the given oid.
 		Optional<const MapObject> get(int32_t oid) const;
 
-		unordered_map<int32_t, unique_ptr<MapObject>> objects;
-		unordered_set<int32_t> layers[MapLayers::NUM_LAYERS];
+		std::unordered_map<int32_t, std::unique_ptr<MapObject>> objects;
+		std::unordered_set<int32_t> layers[MapLayers::NUM_LAYERS];
 	};
 }
 

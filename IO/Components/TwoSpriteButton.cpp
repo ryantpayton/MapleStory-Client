@@ -17,18 +17,17 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "TwoSpriteButton.h"
 
-namespace IO
+namespace jrc
 {
-	TwoSpriteButton::TwoSpriteButton(node nsrc, node ssrc, Point<int16_t> pos)
-	{
-		textures[false] = Texture(nsrc);
-		textures[true] = Texture(ssrc);
+	TwoSpriteButton::TwoSpriteButton(nl::node nsrc, nl::node ssrc, Point<int16_t> pos)
+		: textures(ssrc, nsrc) {
+
 		position = pos;
 		state = NORMAL;
 		active = true;
 	}
 
-	TwoSpriteButton::TwoSpriteButton(node nsrc, node ssrc)
+	TwoSpriteButton::TwoSpriteButton(nl::node nsrc, nl::node ssrc)
 		: TwoSpriteButton(nsrc, ssrc, Point<int16_t>()) {}
 
 	void TwoSpriteButton::draw(Point<int16_t> parentpos) const
@@ -36,16 +35,14 @@ namespace IO
 		if (active)
 		{
 			bool selected = state == MOUSEOVER || state == PRESSED;
-
-			using Graphics::DrawArgument;
-			textures.at(selected).draw(DrawArgument(position + parentpos));
+			textures[selected].draw(position + parentpos);
 		}
 	}
 
-	rectangle2d<int16_t> TwoSpriteButton::bounds(Point<int16_t> parentpos) const
+	Rectangle<int16_t> TwoSpriteButton::bounds(Point<int16_t> parentpos) const
 	{
 		bool selected = state == MOUSEOVER || state == PRESSED;
-		Point<int16_t> absp = parentpos + position - textures.at(selected).getorigin();
-		return rectangle2d<int16_t>(absp, absp + textures.at(selected).getdimensions());
+		Point<int16_t> absp = parentpos + position - textures[selected].getorigin();
+		return Rectangle<int16_t>(absp, absp + textures[selected].getdimensions());
 	}
 }

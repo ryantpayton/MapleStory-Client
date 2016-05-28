@@ -17,29 +17,31 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Misc.h"
 
-namespace Format
+namespace jrc
 {
-	string splitnumber(string input)
+	namespace string_format
 	{
-		for (size_t i = input.size(); i > 3; i -= 3)
+		void split_number(std::string& input)
 		{
-			input.insert(i - 3, 1, ',');
+			for (size_t i = input.size(); i > 3; i -= 3)
+			{
+				input.insert(i - 3, 1, ',');
+			}
 		}
-		return input;
+
+		std::string extend_id(int32_t id, size_t length)
+		{
+			std::string strid = std::to_string(id);
+			strid.insert(0, length - strid.size(), '0');
+			return strid;
+		}
 	}
 
-	string extendid(int32_t id, size_t length)
+	namespace bytecode
 	{
-		string strid = std::to_string(id);
-		strid.insert(0, length - strid.size(), '0');
-		return strid;
-	}
-}
-
-namespace Bits
-{
-	bool compare(int32_t mask, int32_t value)
-	{
-		return (mask & value) != 0;
+		bool compare(int32_t mask, int32_t value)
+		{
+			return (mask & value) != 0;
+		}
 	}
 }

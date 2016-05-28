@@ -16,7 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Audio.h"
-#include "Configuration.h"
+
+#include "..\Configuration.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include "bass.h"
@@ -24,18 +25,16 @@
 #include "nlnx\nx.hpp"
 #include "nlnx\audio.hpp"
 
-namespace Audio
+namespace jrc
 {
-	using nl::audio;
-
 	Sound::Sound(Name name)
 	{
 		id = soundids[name];
 	}
 
-	Sound::Sound(node src)
+	Sound::Sound(nl::node src)
 	{
-		id = addsound(src);
+		id = add_sound(src);
 	}
 
 	Sound::Sound()
@@ -43,12 +42,10 @@ namespace Audio
 		id = 0;
 	}
 
-	Sound::~Sound() {}
-
 	void Sound::play() const
 	{
 		if (id > 0)
-			playsound(id);
+			play(id);
 	}
 
 
@@ -57,23 +54,23 @@ namespace Audio
 		if (!BASS_Init(1, 44100, 0, nullptr, 0))
 			return false;
 
-		node uisrc = nl::nx::sound["UI.img"];
+		nl::node uisrc = nl::nx::sound["UI.img"];
 
-		addsound(Sound::BUTTONCLICK, uisrc["BtMouseClick"]);
-		addsound(Sound::BUTTONOVER, uisrc["BtMouseOver"]);
-		addsound(Sound::SELECTCHAR, uisrc["CharSelect"]);
+		add_sound(Sound::BUTTONCLICK, uisrc["BtMouseClick"]);
+		add_sound(Sound::BUTTONOVER, uisrc["BtMouseOver"]);
+		add_sound(Sound::SELECTCHAR, uisrc["CharSelect"]);
 
-		node gamesrc = nl::nx::sound["Game.img"];
+		nl::node gamesrc = nl::nx::sound["Game.img"];
 
-		addsound(Sound::GAMESTART, gamesrc["GameIn"]);
-		addsound(Sound::JUMP, gamesrc["Jump"]);
-		addsound(Sound::DROP, gamesrc["DropItem"]);
-		addsound(Sound::PICKUP, gamesrc["PickUpItem"]);
-		addsound(Sound::PORTAL, gamesrc["Portal"]);
-		addsound(Sound::LEVELUP, gamesrc["LevelUp"]);
+		add_sound(Sound::GAMESTART, gamesrc["GameIn"]);
+		add_sound(Sound::JUMP, gamesrc["Jump"]);
+		add_sound(Sound::DROP, gamesrc["DropItem"]);
+		add_sound(Sound::PICKUP, gamesrc["PickUpItem"]);
+		add_sound(Sound::PORTAL, gamesrc["Portal"]);
+		add_sound(Sound::LEVELUP, gamesrc["LevelUp"]);
 
 		uint8_t volume = Setting<SFXVolume>::get().load();
-		return setsfxvolume(volume);
+		return set_sfxvolume(volume);
 	}
 
 	void Sound::close()
@@ -81,12 +78,12 @@ namespace Audio
 		BASS_Free();
 	}
 
-	bool Sound::setsfxvolume(uint8_t vol)
+	bool Sound::set_sfxvolume(uint8_t vol)
 	{
 		return BASS_SetConfig(BASS_CONFIG_GVOL_STREAM, vol * 100) == TRUE;
 	}
 
-	void Sound::playsound(size_t id)
+	void Sound::play(size_t id)
 	{
 		if (!samples.count(id))
 			return;
@@ -95,9 +92,9 @@ namespace Audio
 		BASS_ChannelPlay(channel, true);
 	}
 
-	size_t Sound::addsound(node src)
+	size_t Sound::add_sound(nl::node src)
 	{
-		audio ad = src;
+		nl::audio ad = src;
 
 		auto data = reinterpret_cast<const void*>(ad.data());
 		if (data)
@@ -113,19 +110,19 @@ namespace Audio
 		}
 	}
 
-	void Sound::addsound(Name name, node src)
+	void Sound::add_sound(Name name, nl::node src)
 	{
-		size_t id = addsound(src);
+		size_t id = add_sound(src);
 		if (id)
 		{
 			soundids[name] = id;
 		}
 	}
-	unordered_map<size_t, uint64_t> Sound::samples;
+	std::unordered_map<size_t, uint64_t> Sound::samples;
 	EnumMap<Sound::Name, size_t> Sound::soundids;
 
 
-	Music::Music(string p)
+	Music::Music(std::string p)
 	{
 		path = p;
 	}
@@ -133,12 +130,12 @@ namespace Audio
 	void Music::play() const
 	{
 		static HSTREAM stream = 0;
-		static string bgmpath = "";
+		static std::string bgmpath = "";
 
 		if (path == bgmpath)
 			return;
 
-		audio ad = nl::nx::sound.resolve(path);
+		nl::audio ad = nl::nx::sound.resolve(path);
 		auto data = reinterpret_cast<const void*>(ad.data());
 		if (data)
 		{
@@ -158,10 +155,10 @@ namespace Audio
 	bool Music::init()
 	{
 		uint8_t volume = Setting<BGMVolume>::get().load();
-		return setbgmvolume(volume);
+		return set_bgmvolume(volume);
 	}
 
-	bool Music::setbgmvolume(uint8_t vol)
+	bool Music::set_bgmvolume(uint8_t vol)
 	{
 		return BASS_SetConfig(BASS_CONFIG_GVOL_SAMPLE, vol * 100) == TRUE;
 	}

@@ -18,9 +18,9 @@
 #include "Messages.h"
 #include "UI.h"
 
-#include "IO\UITypes\UIStatusbar.h"
+#include "UITypes\UIStatusbar.h"
 
-namespace IO
+namespace jrc
 {
 	Messages::Messages()
 	{
@@ -38,7 +38,7 @@ namespace IO
 		messages[SCROLL_DESTROYED] = "The item has been destroyed due to the overwhelming power of the scroll.";
 	}
 
-	string Messages::stringfor(Type type)
+	std::string Messages::stringfor(Type type)
 	{
 		return messages[type];
 	}
@@ -51,7 +51,9 @@ namespace IO
 
 	void InChatMessage::drop() const
 	{
-		UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::displaymessage, type, Chatbar::RED);
+		UI::get().getelement(UIElement::STATUSBAR)
+			.reinterpret<UIStatusbar>()
+			->displaymessage(type, Chatbar::RED);
 	}
 
 

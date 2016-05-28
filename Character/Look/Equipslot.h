@@ -16,11 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Enum.h"
-#include "Console.h"
+#include "..\..\Console.h"
+#include "..\..\Util\Enum.h"
+
 #include <cstdint>
 
-namespace Character
+namespace jrc
 {
 	class Equipslot
 	{

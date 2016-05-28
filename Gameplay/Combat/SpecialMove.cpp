@@ -17,21 +17,21 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SpecialMove.h"
 
-namespace Gameplay
+namespace jrc
 {
 	void SpecialMove::applyuseeffects(Char& target, Attack::Type type) const
 	{
 		useeffect->apply(target);
 		action->apply(target, type);
 
-		sound->playuse();
+		sound->play_use();
 	}
 
 	void SpecialMove::applyhiteffects(const AttackUser& user, Mob& target) const
 	{
 		hiteffect->apply(user, target);
 
-		sound->playhit();
+		sound->play_hit();
 	}
 
 	bool SpecialMove::isskill() const

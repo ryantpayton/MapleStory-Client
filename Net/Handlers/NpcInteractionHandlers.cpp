@@ -17,65 +17,70 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "NpcInteractionHandlers.h"
 
-#include "IO\UI.h"
-#include "IO\UITypes\UINpcTalk.h"
-#include "IO\UITypes\UIShop.h"
+#include "..\..\IO\UI.h"
+#include "..\..\IO\UITypes\UINpcTalk.h"
+#include "..\..\IO\UITypes\UIShop.h"
 
-namespace Net
+namespace jrc
 {
-	using IO::UI;
-	using IO::UIElement;
-	using IO::UINpcTalk;
-	using IO::UIShop;
-
 	void NpcDialogueHandler::handle(InPacket& recv) const
 	{
 		recv.skip(1);
 
-		int32_t npcid = recv.readint();
-		int8_t msgtype = recv.readbyte(); //0 - textonly, 1 - yes/no, 4 - selection, 12 - accept/decline
-		int8_t speaker = recv.readbyte();
-		string text = recv.read<string>();
+		int32_t npcid = recv.read_int();
+		int8_t msgtype = recv.read_byte(); //0 - textonly, 1 - yes/no, 4 - selection, 12 - accept/decline
+		int8_t speaker = recv.read_byte();
+		std::string text = recv.read_string();
 
 		int16_t style = 0;
 		if (msgtype == 0 && recv.length() > 0)
-			style = recv.readshort();
+			style = recv.read_short();
 
-		UI::get().withelement(UIElement::NPCTALK, &UINpcTalk::settext, npcid, msgtype, style, speaker, text);
+		UI::get().getelement(UIElement::NPCTALK)
+			.reinterpret<UINpcTalk>()
+			->settext(npcid, msgtype, style, speaker, text);
 		UI::get().enable();
 	}
 
 
 	void OpenNpcShopHandler::handle(InPacket& recv) const
 	{
-		int32_t npcid = recv.readint();
-		UI::get().withelement(UIElement::SHOP, &UIShop::reset, npcid);
+		int32_t npcid = recv.read_int();
+		Optional<UIShop> oshop = UI::get().getelement(UIElement::SHOP)
+			.reinterpret<UIShop>();
 
-		int16_t size = recv.readshort();
+		if (!oshop)
+			return;
+
+		UIShop& shop = *oshop;
+
+		shop.reset(npcid);
+
+		int16_t size = recv.read_short();
 		for (int16_t i = 0; i < size; i++)
 		{
-			int32_t itemid = recv.readint();
-			int32_t price = recv.readint();
-			int32_t pitch = recv.readint();
-			int32_t time = recv.readint();
+			int32_t itemid = recv.read_int();
+			int32_t price = recv.read_int();
+			int32_t pitch = recv.read_int();
+			int32_t time = recv.read_int();
 
 			recv.skip(4);
 
-			bool norecharge = recv.readshort() == 1;
+			bool norecharge = recv.read_short() == 1;
 			if (norecharge)
 			{
-				int16_t buyable = recv.readshort();
+				int16_t buyable = recv.read_short();
 
-				UI::get().withelement(UIElement::SHOP, &UIShop::additem, itemid, price, pitch, time, buyable);
+				shop.additem(itemid, price, pitch, time, buyable);
 			}
 			else
 			{
 				recv.skip(4);
 
-				int16_t rechargeprice = recv.readshort();
-				int16_t slotmax = recv.readshort();
+				int16_t rechargeprice = recv.read_short();
+				int16_t slotmax = recv.read_short();
 
-				UI::get().withelement(UIElement::SHOP, &UIShop::addrechargable, itemid, price, pitch, time, rechargeprice, slotmax);
+				shop.addrechargable(itemid, price, pitch, time, rechargeprice, slotmax);
 			}
 		}
 	}

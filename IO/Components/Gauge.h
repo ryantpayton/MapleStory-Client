@@ -1,6 +1,6 @@
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2016 Daniel Allendorf                                        //
+// Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,23 +15,30 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Element.h"
-#include "UI.h"
+#pragma once
+#include "..\..\Graphics\Texture.h"
 
-namespace IO
+namespace jrc
 {
-	void Element::add() const
+	class Gauge
 	{
-		UI::get().add(*this);
-	}
+	public:
+		Gauge(Texture front, Texture mid, Texture end, int16_t maximum, float percentage);
+		Gauge();
+		~Gauge();
 
-	bool Element::isunique() const
-	{ 
-		return false; 
-	}
+		void draw(Point<int16_t>) const;
+		void update(float target);
 
-	bool Element::isfocused() const
-	{ 
-		return false; 
-	}
+	private:
+		Texture barfront;
+		Texture barmid;
+		Texture barend;
+		int16_t maximum;
+
+		float percentage;
+		float target;
+		float step;
+	};
 }
+

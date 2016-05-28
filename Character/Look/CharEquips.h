@@ -19,9 +19,9 @@
 #include "Clothing.h"
 #include "Weapon.h"
 
-#include "Util\Optional.h"
+#include "..\..\Util\Optional.h"
 
-namespace Character
+namespace jrc
 {
 	class CharEquips
 	{
@@ -48,7 +48,7 @@ namespace Character
 		bool istwohanded() const;
 		CapType getcaptype() const;
 		Weapon::Type getweapontype() const;
-		string getequipname(Equipslot::Value slot) const;
+		std::string getequipname(Equipslot::Value slot) const;
 
 		Optional<const Clothing> getequip(Equipslot::Value slot) const;
 		Optional<const Weapon> getweapon() const;

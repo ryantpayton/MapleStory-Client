@@ -16,10 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\OutPacket.h"
-#include "Net\SendOpcodes.h"
+#include "..\OutPacket.h"
+#include "..\SendOpcodes.h"
 
-namespace Net
+namespace jrc
 {
 	// Packet which requests a dialogue with a server-sided npc.
 	// Opcode: TALK_TO_NPC(58)
@@ -43,7 +43,7 @@ namespace Net
 			writech(response);
 		}
 
-		NpcTalkMorePacket(string response) : NpcTalkMorePacket(2, 1)
+		NpcTalkMorePacket(const std::string& response) : NpcTalkMorePacket(2, 1)
 		{
 			writestr(response);
 		}

@@ -17,20 +17,16 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIEquipInventory.h"
 
-#include "Gameplay\Stage.h"
-#include "IO\UI.h"
-#include "IO\Components\MapleButton.h"
-#include "Net\Packets\InventoryPackets.h"
+#include "..\UI.h"
+#include "..\Components\MapleButton.h"
+
+#include "..\..\Gameplay\Stage.h"
+#include "..\..\Net\Packets\InventoryPackets.h"
 
 #include "nlnx\nx.hpp"
 
-namespace IO
+namespace jrc
 {
-	using Gameplay::Stage;
-	using Character::Item;
-	using Character::ItemData;
-	using Character::Equipslot;
-
 	UIEquipInventory::UIEquipInventory() :
 		UIDragElement<PosEQINV>(Point<int16_t>(184, 20)), inventory(Stage::get().getplayer().getinvent()) {
 
@@ -55,22 +51,21 @@ namespace IO
 		iconpositions[49] = Point<int16_t>(10, 58);
 		iconpositions[50] = Point<int16_t>(76, 157);
 
-		using nl::node;
-		node source = nl::nx::ui["UIWindow2.img"]["Equip"]["character"];
-		node petsource = nl::nx::ui["UIWindow2.img"]["Equip"]["pet"];
+		nl::node source = nl::nx::ui["UIWindow2.img"]["Equip"]["character"];
+		nl::node petsource = nl::nx::ui["UIWindow2.img"]["Equip"]["pet"];
 
-		sprites.push_back(source["backgrnd"]);
-		sprites.push_back(source["backgrnd2"]);
-		sprites.push_back(source["backgrnd3_Kanna"]);
-		sprites.push_back(source["cashPendant"]);
-		sprites.push_back(source["charmPocket"]);
-		sprites.push_back(source["emblem"]);
+		sprites.emplace_back(source["backgrnd"]);
+		sprites.emplace_back(source["backgrnd2"]);
+		sprites.emplace_back(source["backgrnd3_Kanna"]);
+		sprites.emplace_back(source["cashPendant"]);
+		sprites.emplace_back(source["charmPocket"]);
+		sprites.emplace_back(source["emblem"]);
 
-		buttons[BT_TOGGLEPETS] = unique_ptr<Button>(new MapleButton(source["BtPet"]));
+		buttons[BT_TOGGLEPETS] = std::make_unique<MapleButton>(source["BtPet"]);
 
-		pettextures.push_back(petsource["backgrnd"]);
-		pettextures.push_back(petsource["backgrnd2"]);
-		pettextures.push_back(petsource["backgrnd3"]);
+		pettextures.emplace_back(petsource["backgrnd"]);
+		pettextures.emplace_back(petsource["backgrnd2"]);
+		pettextures.emplace_back(petsource["backgrnd3"]);
 
 		loadicons();
 
@@ -92,7 +87,6 @@ namespace IO
 
 		if (showpetequips)
 		{
-			using Graphics::DrawArgument;
 			for (auto& ptit : pettextures)
 			{
 				Point<int16_t> petposition = position + Point<int16_t>(184, 0);
@@ -118,7 +112,11 @@ namespace IO
 
 		if (texture)
 		{
-			icons[slot] = unique_ptr<Icon>(new Icon(new EquipIcon(slot), *texture, -1));
+			icons[slot] = std::make_unique<Icon>(
+				std::make_unique<EquipIcon>(slot), 
+				*texture, 
+				-1
+				);
 		}
 		else if (icons.count(slot))
 		{
@@ -181,8 +179,8 @@ namespace IO
 			int16_t freeslot = inventory.findslot(Inventory::EQUIP);
 			if (freeslot > 0)
 			{
-				using Net::UnequipItemPacket;
-				UnequipItemPacket(slot, freeslot).dispatch();
+				UnequipItemPacket(slot, freeslot)
+					.dispatch();
 			}
 		}
 	}
@@ -222,12 +220,12 @@ namespace IO
 	{
 		Optional<Equip> equip = inventory.getequip(Inventory::EQUIPPED, slot);
 		int16_t eqslot = -slot;
-		UI::get().withstate(&UIState::showequip, EQUIPINVENTORY, equip.get(), eqslot);
+		UI::get().show_equip(EQUIPINVENTORY, equip.get(), eqslot);
 	}
 
 	void UIEquipInventory::cleartooltip()
 	{
-		UI::get().withstate(&UIState::cleartooltip, EQUIPINVENTORY);
+		UI::get().cleartooltip(EQUIPINVENTORY);
 	}
 
 	int16_t UIEquipInventory::slotbypos(Point<int16_t> cursorpos) const
@@ -235,7 +233,7 @@ namespace IO
 		for (auto& icit : iconpositions)
 		{
 			int16_t slot = icit.first;
-			rectangle2d<int16_t> iconrect = rectangle2d<int16_t>(
+			Rectangle<int16_t> iconrect = Rectangle<int16_t>(
 				position + icit.second,
 				position + icit.second + Point<int16_t>(32, 32)
 				);
@@ -260,7 +258,6 @@ namespace IO
 
 	void UIEquipInventory::EquipIcon::ondrop() const
 	{
-		using Net::UnequipItemPacket;
 		UnequipItemPacket(source, 0).dispatch();
 	}
 
@@ -273,14 +270,14 @@ namespace IO
 		{
 			if (eqslot == source)
 			{
-				using Net::EquipItemPacket;
-				EquipItemPacket(slot, eqslot).dispatch();
+				EquipItemPacket(slot, eqslot)
+					.dispatch();
 			}
 		}
 		else
 		{
-			using Net::UnequipItemPacket;
-			UnequipItemPacket(source, slot).dispatch();
+			UnequipItemPacket(source, slot)
+				.dispatch();
 		}
 	}
 }

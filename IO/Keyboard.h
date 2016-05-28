@@ -16,15 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Optional.h"
+#include "..\Util\Optional.h"
+
 #include <map>
 #include <cstdint>
 
-namespace IO
+namespace jrc
 {
-	using std::int32_t;
-	using std::map;
-
 	class Keyboard
 	{
 	public:
@@ -149,9 +147,9 @@ namespace IO
 		Optional<const Mapping> getmapping(int32_t keycode) const;
 
 	private:
-		map<int32_t, Mapping> keymap;
-		map<int32_t, Mapping> maplekeys;
-		map<int32_t, Action> textactions;
-		map<int32_t, bool> keystate;
+		std::map<int32_t, Mapping> keymap;
+		std::map<int32_t, Mapping> maplekeys;
+		std::map<int32_t, Action> textactions;
+		std::map<int32_t, bool> keystate;
 	};
 }

@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Button.h"
 
-namespace IO
+namespace jrc
 {
 	void Button::setposition(Point<int16_t> pos) 
 	{ 

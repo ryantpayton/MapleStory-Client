@@ -18,7 +18,7 @@
 #include "Geometry.h"
 #include "GraphicsGL.h"
 
-namespace Graphics
+namespace jrc
 {
 	void Geometry::draw(int16_t x, int16_t y, int16_t w, int16_t h, Geometry::Color cid, float opacity) const
 	{
@@ -38,7 +38,7 @@ namespace Graphics
 	}
 
 
-	Rectangle::Rectangle(int16_t w, int16_t h, Geometry::Color c, float o)
+	ColorBox::ColorBox(int16_t w, int16_t h, Geometry::Color c, float o)
 	{
 		width = w;
 		height = h;
@@ -46,30 +46,30 @@ namespace Graphics
 		opacity = o;
 	}
 
-	Rectangle::Rectangle()
-		: Rectangle(0, 0, Geometry::BLACK, 0.0f) {}
+	ColorBox::ColorBox()
+		: ColorBox(0, 0, Geometry::BLACK, 0.0f) {}
 
-	void Rectangle::setwidth(int16_t w)
+	void ColorBox::setwidth(int16_t w)
 	{
 		width = w;
 	}
 
-	void Rectangle::setheight(int16_t h)
+	void ColorBox::setheight(int16_t h)
 	{
 		height = h;
 	}
 
-	void Rectangle::setcolor(Geometry::Color c)
+	void ColorBox::setcolor(Geometry::Color c)
 	{
 		color = c;
 	}
 
-	void Rectangle::setopacity(float o)
+	void ColorBox::setopacity(float o)
 	{
 		opacity = o;
 	}
 
-	void Rectangle::draw(const DrawArgument& args) const
+	void ColorBox::draw(const DrawArgument& args) const
 	{
 		Point<int16_t> absp = args.getpos();
 		int16_t absw = args.getstretch().x();

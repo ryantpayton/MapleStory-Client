@@ -16,27 +16,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Singleton.h"
-#include "Character\Inventory\ItemData.h"
-#include "Character\Inventory\BulletData.h"
-#include "Character\Look\Body.h"
-#include "Character\Look\Hair.h"
-#include "Character\Look\Face.h"
-#include "Character\Look\Clothing.h"
-#include "Character\Look\Weapon.h"
+#include "..\Character\Inventory\ItemData.h"
+#include "..\Character\Inventory\BulletData.h"
+#include "..\Character\Look\Body.h"
+#include "..\Character\Look\Hair.h"
+#include "..\Character\Look\Face.h"
+#include "..\Character\Look\Clothing.h"
+#include "..\Character\Look\Weapon.h"
+#include "..\Util\Singleton.h"
 
-namespace Data
+namespace jrc
 {
-	using std::map;
-	using Character::BodyDrawinfo;
-	using Character::Body;
-	using Character::Hair;
-	using Character::Face;
-	using Character::ItemData;
-	using Character::BulletData;
-	using Character::Clothing;
-	using Character::Weapon;
-
 	class DataFactory : public Singleton<DataFactory>
 	{
 	public:
@@ -54,12 +44,12 @@ namespace Data
 
 	private:
 		BodyDrawinfo drawinfo;
-		map<int32_t, Body> bodytypes;
-		map<int32_t, Hair> hairstyles;
-		map<int32_t, Face> facetypes;
-		map<int32_t, ItemData> itemdata;
-		map<int32_t, BulletData> bullets;
-		map<int32_t, Clothing> clothing;
-		map<int32_t, Weapon> weapons;
+		std::map<int32_t, Body> bodytypes;
+		std::map<int32_t, Hair> hairstyles;
+		std::map<int32_t, Face> facetypes;
+		std::map<int32_t, ItemData> itemdata;
+		std::map<int32_t, BulletData> bullets;
+		std::map<int32_t, Clothing> clothing;
+		std::map<int32_t, Weapon> weapons;
 	};
 }

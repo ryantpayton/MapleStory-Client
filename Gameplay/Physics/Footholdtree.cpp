@@ -16,18 +16,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Footholdtree.h"
-#include "Graphics\GraphicsGL.h"
 
-namespace Gameplay
+#include "..\..\Graphics\GraphicsGL.h"
+
+namespace jrc
 {
-	Footholdtree::Footholdtree(node src)
+	Footholdtree::Footholdtree(nl::node src)
 	{
 		int16_t leftw = 30000;
 		int16_t rightw = -30000;
 		int16_t botb = -30000;
 		int16_t topb = 30000;
 
-		for (node basef : src)
+		for (auto basef : src)
 		{
 			uint8_t layer;
 			try
@@ -39,9 +40,9 @@ namespace Gameplay
 				continue;
 			}
 
-			for (node midf : basef)
+			for (auto midf : basef)
 			{
-				for (node lastf : midf)
+				for (auto lastf : midf)
 				{
 					Foothold foothold = Foothold(lastf, layer);
 
@@ -98,66 +99,7 @@ namespace Gameplay
 		}*/
 	}
 
-	Footholdtree::Footholdtree(InPacket& recv)
-	{
-		int16_t leftw = 30000;
-		int16_t rightw = -30000;
-		int16_t botb = -30000;
-		int16_t topb = 30000;
-
-		uint16_t numbase = recv.readshort();
-		for (uint16_t i = 0; i < numbase; i++)
-		{
-			uint8_t layer = recv.readbyte();
-			uint16_t nummid = recv.readshort();
-			for (uint16_t j = 0; j < nummid; j++)
-			{
-				uint16_t numlast = recv.readshort();
-				for (uint16_t k = 0; k < numlast; k++)
-				{
-					Foothold foothold = Foothold(recv, layer);
-
-					if (foothold.getl() < leftw)
-					{
-						leftw = foothold.getl();
-					}
-					else if (foothold.getr() > rightw)
-					{
-						rightw = foothold.getr();
-					}
-
-					if (foothold.getb() > botb)
-					{
-						botb = foothold.getb();
-					}
-					else if (foothold.gett() < topb)
-					{
-						topb = foothold.gett();
-					}
-
-					uint16_t id = foothold.getid();
-					footholds[id] = foothold;
-
-					if (abs(foothold.getslope()) < 0.5)
-					{
-						int16_t start = foothold.getl();
-						int16_t end = foothold.getr();
-						for (int16_t i = start; i <= end; i++)
-						{
-							footholdsbyx.insert(std::make_pair(i, id));
-						}
-					}
-				}
-			}
-		}
-
-		walls = Range<int16_t>(leftw + 25, rightw - 25);
-		borders = Range<int16_t>(topb - 400, botb + 400);
-	}
-
 	Footholdtree::Footholdtree() {}
-
-	Footholdtree::~Footholdtree() {}
 
 	void Footholdtree::limitmoves(PhysicsObject& phobj) const
 	{
@@ -283,16 +225,21 @@ namespace Gameplay
 
 		phobj.onground = phobj.y == ground;
 
-		uint16_t belowid = getbelow(x, nextfh.resolvex(x) + 1.0);
-		if (belowid > 0)
+		if (phobj.enablejd || phobj.flagset(PhysicsObject::CHECKBELOW))
 		{
-			double nextground = getfh(belowid).resolvex(x);
-			phobj.enablejd = (nextground - ground) < 600.0;
-			phobj.groundbelow = ground + 1.0;
-		}
-		else
-		{
-			phobj.enablejd = false;
+			uint16_t belowid = getbelow(x, nextfh.resolvex(x) + 1.0);
+			if (belowid > 0)
+			{
+				double nextground = getfh(belowid).resolvex(x);
+				phobj.enablejd = (nextground - ground) < 600.0;
+				phobj.groundbelow = ground + 1.0;
+			}
+			else
+			{
+				phobj.enablejd = false;
+			}
+
+			phobj.clearflag(PhysicsObject::CHECKBELOW);
 		}
 
 		if (phobj.fhlayer == 0 || phobj.onground)

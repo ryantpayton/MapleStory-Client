@@ -20,31 +20,22 @@
 #include <string>
 #include <map>
 
-namespace Character
+namespace jrc
 {
-	using::std::int16_t;
-	using::std::int64_t;
-	using::std::string;
-	using::std::map;
-	using::std::pair;
-
 	// Class that stores information on the questlog of an individual character.
 	class Questlog
 	{
 	public:
-		Questlog();
-		~Questlog();
-
-		void addstarted(int16_t, string);
-		void addprogress(int16_t, int16_t, string);
-		void addcompleted(int16_t, int64_t);
-		bool isstarted(int16_t);
-		int16_t getlaststarted();
+		void add_started(int16_t, const std::string& quest_data);
+		void add_in_progress(int16_t, int16_t, const std::string& quest_data);
+		void add_completed(int16_t, int64_t);
+		bool is_started(int16_t);
+		int16_t get_last_started();
 
 	private:
-		map<int16_t, string> started;
-		map<int16_t, pair<int16_t, string>> progress;
-		map<int16_t, int64_t> completed;
+		std::map<int16_t, std::string> started;
+		std::map<int16_t, std::pair<int16_t, std::string>> in_progress;
+		std::map<int16_t, int64_t> completed;
 	};
 }
 

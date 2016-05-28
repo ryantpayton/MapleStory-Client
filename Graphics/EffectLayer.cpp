@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "EffectLayer.h"
 
-namespace Graphics
+namespace jrc
 {
 	void EffectLayer::drawbelow(Point<int16_t> position, float alpha) const
 	{

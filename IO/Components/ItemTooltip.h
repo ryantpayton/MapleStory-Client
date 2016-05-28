@@ -20,7 +20,7 @@
 #include "Charset.h"
 #include "Itemtext.h"
 
-namespace IO
+namespace jrc
 {
 	class ItemTooltip : public Tooltip
 	{

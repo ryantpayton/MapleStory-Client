@@ -18,7 +18,7 @@
 #pragma once
 #include <cstdint>
 
-namespace Net
+namespace jrc
 {
 	// Opcodes for OutPackets associated with version 83 of the game.
 	enum SendOpcode : int16_t

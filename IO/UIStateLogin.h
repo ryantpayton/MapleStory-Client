@@ -17,14 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "UIState.h"
+
 #include <unordered_map>
 #include <memory>
 
-namespace IO
+namespace jrc
 {
-	using std::unordered_map;
-	using std::unique_ptr;
-
 	class UIStateLogin : public UIState
 	{
 	public:
@@ -48,7 +46,7 @@ namespace IO
 		UIElement* getfront(Point<int16_t> pos) const override;
 
 	private:
-		unordered_map<UIElement::Type, unique_ptr<UIElement>> elements;
+		std::unordered_map<UIElement::Type, UIElement::UPtr> elements;
 		UIElement::Type focused;
 	};
 }

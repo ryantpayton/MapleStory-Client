@@ -18,22 +18,20 @@
 #pragma once
 #include "BodyDrawinfo.h"
 #include "Equipslot.h"
-#include "Console.h"
 
-#include "Character\Equipstat.h"
-#include "Character\Maplestat.h"
-#include "Character\Inventory\ItemData.h"
-#include "Graphics\Texture.h"
-#include "Util\Enum.h"
+#include "..\Equipstat.h"
+#include "..\Maplestat.h"
+#include "..\Inventory\ItemData.h"
+
+#include "..\..\Console.h"
+#include "..\..\Graphics\Texture.h"
+#include "..\..\Util\Enum.h"
 
 #include <vector>
+#include <map>
 
-namespace Character
+namespace jrc
 {
-	using std::vector;
-	using Graphics::Texture;
-	using Graphics::DrawArgument;
-
 	class Clothing : public ItemData
 	{
 	public:
@@ -53,7 +51,7 @@ namespace Character
 			return EnumIterator<Layer>(CAPE, WEAPONOGLOVE);
 		}
 
-		static Layer sublayer(Layer base, string name)
+		static Layer sublayer(Layer base, std::string name)
 		{
 			switch (base)
 			{
@@ -110,14 +108,14 @@ namespace Character
 		bool isweapon() const;
 		int16_t getreqstat(Maplestat::Value stat) const;
 		int16_t getdefstat(Equipstat::Value stat) const;
-		string gettype() const;
-		string getvslot() const;
+		std::string gettype() const;
+		std::string getvslot() const;
 		Equipslot::Value geteqslot() const;
 
 	private:
 		struct Whole
 		{
-			vector<Texture> parts;
+			std::vector<Texture> parts;
 
 			void add(Texture part)
 			{
@@ -132,17 +130,18 @@ namespace Character
 				}
 			}
 		};
-		unordered_map<Layer, unordered_map<uint8_t, Whole>> stances[Stance::LENGTH];
-		string type;
-		string vslot;
+
+		std::unordered_map<Layer, std::unordered_map<uint8_t, Whole>> stances[Stance::LENGTH];
+		std::map<Maplestat::Value, int16_t> reqstats;
+		std::map<Equipstat::Value, int16_t> defstats;
+		std::string type;
+		std::string vslot;
+		int32_t price;
 		Equipslot::Value eqslot;
+		uint8_t slots;
 		bool cash;
 		bool tradeblock;
 		bool transparent;
-		int32_t price;
-		uint8_t slots;
-		map<Maplestat::Value, int16_t> reqstats;
-		map<Equipstat::Value, int16_t> defstats;
 	};
 }
 

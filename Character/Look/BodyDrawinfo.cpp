@@ -16,32 +16,29 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "BodyDrawinfo.h"
+
 #include "Body.h"
+
 #include "nlnx\nx.hpp"
 #include "nlnx\node.hpp"
 
-namespace Character
+namespace jrc
 {
-	BodyDrawinfo::BodyDrawinfo() {}
-
-	BodyDrawinfo::~BodyDrawinfo() {}
-
 	void BodyDrawinfo::init()
 	{
-		using nl::node;
-		node bodynode = nl::nx::character["00002000.img"];
-		node headnode = nl::nx::character["00012000.img"];
+		nl::node bodynode = nl::nx::character["00002000.img"];
+		nl::node headnode = nl::nx::character["00012000.img"];
 
-		for (node stancenode : bodynode)
+		for (nl::node stancenode : bodynode)
 		{
-			string ststr = stancenode.name();
+			std::string ststr = stancenode.name();
 
 			uint16_t attackdelay = 0;
 			uint8_t frame = 0;
-			node framenode = stancenode[std::to_string(frame)];
+			nl::node framenode = stancenode[std::to_string(frame)];
 			while (framenode.size() > 0)
 			{
-				bool isaction = framenode["action"].data_type() == node::type::string;
+				bool isaction = framenode["action"].data_type() == nl::node::type::string;
 				if (isaction)
 				{
 					BodyAction action = framenode;
@@ -61,24 +58,24 @@ namespace Character
 						delay = 100;
 					stancedelays[stance][frame] = delay;
 
-					unordered_map<Body::Layer, unordered_map<string, Point<int16_t>>> bodyshiftmap;
-					for (node partnode : framenode)
+					std::unordered_map<Body::Layer, std::unordered_map<std::string, Point<int16_t>>> bodyshiftmap;
+					for (auto partnode : framenode)
 					{
-						string part = partnode.name();
+						std::string part = partnode.name();
 						if (part != "delay" && part != "face")
 						{
-							string zstr = partnode["z"];
+							std::string zstr = partnode["z"];
 							Body::Layer z = Body::layerbystring(zstr);
 
-							for (node mapnode : partnode["map"])
+							for (auto mapnode : partnode["map"])
 							{
 								bodyshiftmap[z][mapnode.name()] = Point<int16_t>(mapnode);
 							}
 						}
 					}
 
-					node headmap = headnode[ststr][std::to_string(frame)]["head"]["map"];
-					for (node mapnode : headmap)
+					nl::node headmap = headnode[ststr][std::to_string(frame)]["head"]["map"];
+					for (auto mapnode : headmap)
 					{
 						bodyshiftmap[Body::HEAD][mapnode.name()] = Point<int16_t>(mapnode);
 					}
@@ -139,7 +136,7 @@ namespace Character
 		return stancedelays[stance].count(frame) ? stancedelays[stance].at(frame) : 100;
 	}
 
-	uint16_t BodyDrawinfo::getattackdelay(string action, size_t no) const
+	uint16_t BodyDrawinfo::getattackdelay(std::string action, size_t no) const
 	{
 		if (attackdelays.count(action))
 		{
@@ -151,7 +148,7 @@ namespace Character
 		return 0;
 	}
 
-	uint8_t BodyDrawinfo::nextacframe(string action, uint8_t frame) const
+	uint8_t BodyDrawinfo::nextacframe(std::string action, uint8_t frame) const
 	{
 		if (bodyactions.count(action))
 		{
@@ -163,7 +160,7 @@ namespace Character
 		return 0;
 	}
 
-	const BodyAction* BodyDrawinfo::getaction(string stance, uint8_t frame) const
+	const BodyAction* BodyDrawinfo::getaction(std::string stance, uint8_t frame) const
 	{
 		if (bodyactions.count(stance))
 		{

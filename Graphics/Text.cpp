@@ -18,31 +18,35 @@
 #include "Text.h"
 #include "GraphicsGL.h"
 
-namespace Graphics
+namespace jrc
 {
-	Text::Text(Font f, Alignment a, Color c)
-	{
-		font = f;
-		alignment = a;
-		color = c;
+	Text::Text(Font f, Alignment a, Color c, Background b, const std::string& t)
+		: font(f), alignment(a), color(c), background(b) {
 
-		text = "";
-		background = NONE;
+		settext(t);
 	}
 
-	Text::Text() {}
+	Text::Text(Font f, Alignment a, Color c, const std::string& t)
+		: Text(f, a, c, NONE, t) {}
 
-	void Text::settext(const string& t)
+	Text::Text(Font f, Alignment a, Color c)
+		: Text(f, a, c, NONE, "") {}
+
+	Text::Text()
+		: Text(A11M, LEFT, BLACK, NONE, "") {}
+
+	void Text::settext(const std::string& t)
 	{
 		settext(t, 0);
 	}
 
-	void Text::settext(const string& t, uint16_t maxwidth)
+	void Text::settext(const std::string& t, uint16_t maxwidth)
 	{
 		if (text == t)
 			return;
 
-		text = string(t);
+		text = t;
+
 		if (text.size() > 0)
 		{
 			if (maxwidth < 1)
@@ -114,7 +118,7 @@ namespace Graphics
 		return layout.endoffset;
 	}
 
-	string Text::gettext() const
+	std::string Text::gettext() const
 	{
 		return text;
 	}

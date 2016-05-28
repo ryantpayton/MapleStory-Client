@@ -17,14 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Inventory.h"
 
-#include "Data\DataFactory.h"
+#include "..\..\Data\DataFactory.h"
 
 #include <numeric>
 
-namespace Character
+namespace jrc
 {
-	using Data::DataFactory;
-
 	Inventory::Inventory()
 	{
 		bulletslot = 0;
@@ -34,9 +32,9 @@ namespace Character
 
 	Inventory::~Inventory() 
 	{
-		for (auto& sub : inventories)
+		for (auto& sub : inventories.getvalues())
 		{
-			for (auto& item : sub.second)
+			for (auto& item : sub)
 			{
 				delete item.second;
 			}
@@ -45,14 +43,15 @@ namespace Character
 
 	void Inventory::recalcstats(Weapon::Type type)
 	{
-		for (auto it = Equipstat::it(); it.hasnext(); it.increment())
+		for (auto iter : totalstats)
 		{
-			Equipstat::Value es = it.get();
-			totalstats[es] = static_cast<uint16_t>(std::accumulate(
+			Equipstat::Value es = iter.first;
+			uint16_t& stat = iter.second;
+			stat = static_cast<uint16_t>(std::accumulate(
 				inventories[EQUIPPED].begin(), 
 				inventories[EQUIPPED].end(), 0,
-				[es](const uint16_t& val, const std::pair<int16_t, Item*>& itit) {
-				return val + reinterpret_cast<Equip*>(itit.second)->getstat(es);
+				[es](const auto& val, const auto& iter) {
+				return val + reinterpret_cast<Equip*>(iter.second)->getstat(es);
 			}));
 		}
 
@@ -99,7 +98,7 @@ namespace Character
 
 	void Inventory::addtotalsto(CharStats& stats) const
 	{
-		for (auto& tsit : totalstats)
+		for (auto tsit : totalstats)
 		{
 			Equipstat::Value es = tsit.first;
 			stats.addtotal(es, tsit.second);
@@ -117,7 +116,7 @@ namespace Character
 	}
 
 	void Inventory::additem(Type invtype, int16_t slot, int32_t iid, bool cash,
-		int64_t uniqueid, int64_t expire, uint16_t count, string owner, int16_t flag) {
+		int64_t uniqueid, int64_t expire, uint16_t count, const std::string& owner, int16_t flag) {
 
 		if (slot >= slots[invtype])
 			return;
@@ -132,7 +131,7 @@ namespace Character
 	}
 
 	void Inventory::addpet(Type invtype, int16_t slot, int32_t iid, bool cash, int64_t uniqueid, 
-		int64_t expire, string name, int8_t level, int16_t closeness, int8_t fullness) {
+		int64_t expire, const std::string& name, int8_t level, int16_t closeness, int8_t fullness) {
 
 		if (slot >= slots[invtype])
 			return;
@@ -147,8 +146,8 @@ namespace Character
 	}
 
 	void Inventory::addequip(Type invtype, int16_t slot, int32_t iid, bool cash, int64_t uniqueid, 
-		int64_t expire, uint8_t equipslots, uint8_t level, map<Equipstat::Value, uint16_t> stats, string owner, 
-		int16_t flag, uint8_t ilevel, uint16_t iexp, int32_t vicious) {
+		int64_t expire, uint8_t equipslots, uint8_t level, const EnumMap<Equipstat::Value, uint16_t>& stats,
+		const std::string& owner, int16_t flag, uint8_t ilevel, uint16_t iexp, int32_t vicious) {
 
 		if (slot >= slots[invtype])
 			return;
@@ -185,8 +184,8 @@ namespace Character
 
 	void Inventory::swap(Type firsttype, int16_t firstslot, Type secondtype, int16_t secondslot)
 	{
-		map<int16_t, Item*>& firstinventory = inventories[firsttype];
-		map<int16_t, Item*>& secondinventory = inventories[secondtype];
+		std::map<int16_t, Item*>& firstinventory = inventories[firsttype];
+		std::map<int16_t, Item*>& secondinventory = inventories[secondtype];
 
 		Item* temp = firstinventory[firstslot];
 		firstinventory[firstslot] = secondinventory[secondslot];
@@ -249,15 +248,12 @@ namespace Character
 
 	uint8_t Inventory::getslots(Type type) const
 	{
-		if (slots.count(type))
-			return slots.at(type);
-		else
-			return 0;
+		return slots[type];
 	}
 
 	uint16_t Inventory::getstat(Equipstat::Value type) const
 	{
-		return totalstats.count(type) ? totalstats.at(type) : 0;
+		return totalstats[type];
 	}
 
 	int64_t Inventory::getmeso() const
@@ -273,7 +269,7 @@ namespace Character
 	bool Inventory::hasequipped(Equipslot::Value slot) const
 	{
 		int16_t value = Equipslot::valueof(slot);
-		return inventories.at(Inventory::EQUIPPED).count(value) > 0;
+		return inventories[EQUIPPED].find(value) != inventories[EQUIPPED].end();
 	}
 
 	int16_t Inventory::getbulletslot() const
@@ -321,13 +317,10 @@ namespace Character
 
 	int16_t Inventory::findslot(Type type) const
 	{
-		uint8_t numslots = slots.at(type);
+		uint8_t numslots = slots[type];
 		for (uint8_t i = 1; i < numslots; i++)
 		{
-			if (inventories.count(type) == 0)
-				return 1;
-
-			if (inventories.at(type).count(i) == 0)
+			if (inventories[type].find(i) == inventories[type].end())
 				return i;
 		}
 		return 0;
@@ -335,10 +328,7 @@ namespace Character
 
 	int16_t Inventory::finditem(Type type, int32_t itemid) const
 	{
-		if (inventories.count(type) == 0)
-			return -1;
-
-		for (auto& item : inventories.at(type))
+		for (auto& item : inventories[type])
 		{
 			int32_t id = item.second->getid();
 			if (id == itemid)
@@ -349,13 +339,10 @@ namespace Character
 
 	Optional<Item> Inventory::getitem(Type type, int16_t slot) const
 	{
-		if (!inventories.count(type))
+		if (!inventories[type].count(slot))
 			return Optional<Item>();
 
-		if (!inventories.at(type).count(slot))
-			return Optional<Item>();
-
-		return inventories.at(type).at(slot);
+		return inventories[type].at(slot);
 	}
 
 	Optional<Equip> Inventory::getequip(Type type, int16_t slot) const

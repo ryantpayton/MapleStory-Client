@@ -17,46 +17,50 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Util\Singleton.h"
+
 #include <cstdint>
 #include <chrono>
 
-// Small class for measuring elapsed time between game loops.
-class Timer : public Singleton<Timer>
+namespace jrc
 {
-public:
-	Timer() 
+	// Small class for measuring elapsed time between game loops.
+	class Timer : public Singleton<Timer>
 	{
-		start();
-	}
+	public:
+		Timer()
+		{
+			start();
+		}
 
-	~Timer() {}
+		~Timer() {}
 
-	// Start the timer by setting the last measurement to now.
-	void start()
-	{
-		point = clock::now();
-	}
+		// Start the timer by setting the last measurement to now.
+		void start()
+		{
+			point = clock::now();
+		}
 
-	// Return time elapsed since the last measurement.
-	double stop()
-	{
-		clock::time_point last = point;
-		point = clock::now();
+		// Return time elapsed since the last measurement.
+		int64_t stop()
+		{
+			clock::time_point last = point;
+			point = clock::now();
 
-		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(point - last);
-		return static_cast<double>(duration.count());
-	}
+			auto duration = std::chrono::duration_cast<std::chrono::microseconds>(point - last);
+			return duration.count();
+		}
 
-	// Return the current time in seconds.
-	int32_t seconds()
-	{
-		auto duration = clock::now().time_since_epoch();
-		auto since_epoch = std::chrono::duration_cast<std::chrono::seconds>(duration);
-		return static_cast<int32_t>(since_epoch.count());
-	}
+		// Return the current time in seconds.
+		int32_t seconds()
+		{
+			auto duration = clock::now().time_since_epoch();
+			auto since_epoch = std::chrono::duration_cast<std::chrono::seconds>(duration);
+			return static_cast<int32_t>(since_epoch.count());
+		}
 
-private:
-	using clock = std::chrono::high_resolution_clock;
+	private:
+		using clock = std::chrono::high_resolution_clock;
 
-	clock::time_point point;
-};
+		clock::time_point point;
+	};
+}

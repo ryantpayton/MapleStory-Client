@@ -18,7 +18,7 @@
 #pragma once
 #include <cstdint>
 
-namespace Net
+namespace jrc
 {
 	const size_t HEADER_LENGTH = 4;
 	const size_t OPCODE_LENGTH = 2;

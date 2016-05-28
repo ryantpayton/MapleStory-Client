@@ -19,21 +19,18 @@
 #include <cstdint>
 #include <vector>
 
-namespace Character
+namespace jrc
 {
-	using::std::int32_t;
-	using::std::vector;
 	// Saved locations for the 'teleport rock' and 'VIP teleport rock' cash items.
 	class Telerock
 	{
 	public:
-		Telerock(){}
-		~Telerock(){}
 		void addlocation(int32_t);
 		void addviplocation(int32_t);
+
 	private:
-		vector<int32_t> locations;
-		vector<int32_t> viplocations;
+		std::vector<int32_t> locations;
+		std::vector<int32_t> viplocations;
 	};
 }
 

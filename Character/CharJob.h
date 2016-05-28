@@ -20,23 +20,20 @@
 #include <cstdint>
 #include <string>
 
-namespace Character
+namespace jrc
 {
-	enum Joblevel
-	{
-		JOB_BEGINNER,
-		JOB_FIRST,
-		JOB_SECOND,
-		JOB_THIRD,
-		JOB_FOURTHT
-	};
-
-	using std::uint16_t;
-	using std::string;
-
 	class CharJob
 	{
 	public:
+		enum Level
+		{
+			JOB_BEGINNER,
+			JOB_FIRST,
+			JOB_SECOND,
+			JOB_THIRD,
+			JOB_FOURTHT
+		};
+
 		CharJob(uint16_t id);
 		CharJob();
 		~CharJob();
@@ -44,17 +41,17 @@ namespace Character
 		void changejob(uint16_t id);
 		bool issubjob(uint16_t subid) const;
 		uint16_t getid() const;
-		uint16_t getsubjob(Joblevel level) const;
-		string getname() const;
-		Joblevel getlevel() const;
+		uint16_t getsubjob(Level level) const;
+		std::string getname() const;
+		Level getlevel() const;
 		Equipstat::Value primarystat(Weapon::Type weapontype) const;
 		Equipstat::Value secondarystat(Weapon::Type weapontype) const;
 
 	private:
-		string getname(uint16_t id) const;
+		std::string getname(uint16_t id) const;
 
+		std::string name;
 		uint16_t id;
-		string name;
-		Joblevel level;
+		Level level;
 	};
 }

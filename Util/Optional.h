@@ -22,255 +22,256 @@
 #include <map>
 #include <type_traits>
 
-using std::function;
-
-template <typename T>
-class Optional
+namespace jrc
 {
-public:
-	Optional(T* p)
+	template <typename T>
+	class Optional
 	{
-		ptr = p;
-	}
-
-	Optional(T& p)
-	{
-		ptr = &p;
-	}
-
-	Optional()
-	{
-		ptr = nullptr;
-	}
-
-	explicit operator bool() const
-	{
-		return ispresent();
-	}
-
-	bool ispresent() const
-	{
-		return ptr != nullptr;
-	}
-
-	bool isempty() const
-	{
-		return ptr == nullptr;
-	}
-
-	template<typename T, typename ...Args>
-	void ifpresent(void (T::*action)(Args...) const, Args... args) const
-	{
-		if (ptr)
-			(ptr->*action)(args...);
-	}
-
-	template<typename T, typename ...Args>
-	void ifpresent(void (T::*action)(Args...), Args... args) const
-	{
-		if (ptr)
-			(ptr->*action)(args...);
-	}
-
-	template<typename T, typename R, typename ...Args>
-	R mapordefault(R(T::*mapper)(Args...) const, R def, Args... args) const
-	{
-		if (ptr)
-			return (ptr->*mapper)(args...);
-		else
-			return def;
-	}
-
-	template<typename T, typename R, typename ...Args>
-	R map(R(T::*mapper)(Args...) const, Args... args) const
-	{
-		return mapordefault(mapper, R(), args...);
-	}
-
-	template<typename T, typename ...Args>
-	bool maporfalse(bool (T::*mapper)(Args...) const, Args... args) const
-	{
-		return mapordefault<T, bool, Args...>(mapper, false, args...);
-	}
-
-	template<typename T, typename ...Args>
-	bool maportrue(bool (T::*mapper)(Args...) const, Args... args) const
-	{
-		return mapordefault<T, bool, Args...>(mapper, true, args...);
-	}
-
-	template<typename T, typename R, typename ...Args>
-	Optional<R> transform(R& (T::*mapper)(Args...) const, Args... args) const
-	{
-		if (ptr)
-			return (ptr->*mapper)(args...);
-		else
-			return Optional<R>();
-	}
-
-	template<typename T, typename R, typename ...Args>
-	Optional<R> transform(R& (T::*mapper)(Args...), Args... args) const
-	{
-		if (ptr)
-			return (ptr->*mapper)(args...);
-		else
-			return Optional<R>();
-	}
-
-	template<typename E, typename R>
-	Optional<R> transform(E& ext, Optional<R> (E::*mapper)(const T&)) const
-	{
-		if (ptr)
-			return (ext.*mapper)(*ptr);
-		else
-			return Optional<R>();
-	}
-
-	template<typename T, typename E, typename V, typename R>
-	Optional<R> transform(E& ext, R& (E::*mapper)(V), V (T::*mapper2)() const) const
-	{
-		if (ptr)
-			return (ext.*mapper)((ptr->*mapper2)());
-		else
-			return Optional<R>();
-	}
-
-	template<typename T, typename E, typename V, typename R>
-	Optional<R> transform(E& ext, Optional<R> (E::*mapper)(V), V (T::*mapper2)() const) const
-	{
-		if (ptr)
-			return (ext.*mapper)((ptr->*mapper2)());
-		else
-			return Optional<R>();
-	}
-
-	template<typename R>
-	Optional<R> askey(const std::map<T, R>& container) const
-	{
-		if (ptr)
+	public:
+		Optional(T* p)
 		{
-			T& key = *ptr;
+			ptr = p;
+		}
+
+		Optional(T& p)
+		{
+			ptr = &p;
+		}
+
+		Optional()
+		{
+			ptr = nullptr;
+		}
+
+		explicit operator bool() const
+		{
+			return ispresent();
+		}
+
+		bool ispresent() const
+		{
+			return ptr != nullptr;
+		}
+
+		bool isempty() const
+		{
+			return ptr == nullptr;
+		}
+
+		template<typename T, typename ...Args>
+		void ifpresent(void (T::*action)(Args...) const, Args... args) const
+		{
+			if (ptr)
+				(ptr->*action)(args...);
+		}
+
+		template<typename T, typename ...Args>
+		void ifpresent(void (T::*action)(Args...), Args... args) const
+		{
+			if (ptr)
+				(ptr->*action)(args...);
+		}
+
+		template<typename T, typename R, typename ...Args>
+		R mapordefault(R(T::*mapper)(Args...) const, R def, Args... args) const
+		{
+			if (ptr)
+				return (ptr->*mapper)(args...);
+			else
+				return def;
+		}
+
+		template<typename T, typename R, typename ...Args>
+		R map(R(T::*mapper)(Args...) const, Args... args) const
+		{
+			return mapordefault(mapper, R(), args...);
+		}
+
+		template<typename T, typename ...Args>
+		bool maporfalse(bool (T::*mapper)(Args...) const, Args... args) const
+		{
+			return mapordefault<T, bool, Args...>(mapper, false, args...);
+		}
+
+		template<typename T, typename ...Args>
+		bool maportrue(bool (T::*mapper)(Args...) const, Args... args) const
+		{
+			return mapordefault<T, bool, Args...>(mapper, true, args...);
+		}
+
+		template<typename T, typename R, typename ...Args>
+		Optional<R> transform(R& (T::*mapper)(Args...) const, Args... args) const
+		{
+			if (ptr)
+				return (ptr->*mapper)(args...);
+			else
+				return Optional<R>();
+		}
+
+		template<typename T, typename R, typename ...Args>
+		Optional<R> transform(R& (T::*mapper)(Args...), Args... args) const
+		{
+			if (ptr)
+				return (ptr->*mapper)(args...);
+			else
+				return Optional<R>();
+		}
+
+		template<typename E, typename R>
+		Optional<R> transform(E& ext, Optional<R>(E::*mapper)(const T&)) const
+		{
+			if (ptr)
+				return (ext.*mapper)(*ptr);
+			else
+				return Optional<R>();
+		}
+
+		template<typename T, typename E, typename V, typename R>
+		Optional<R> transform(E& ext, R& (E::*mapper)(V), V(T::*mapper2)() const) const
+		{
+			if (ptr)
+				return (ext.*mapper)((ptr->*mapper2)());
+			else
+				return Optional<R>();
+		}
+
+		template<typename T, typename E, typename V, typename R>
+		Optional<R> transform(E& ext, Optional<R>(E::*mapper)(V), V(T::*mapper2)() const) const
+		{
+			if (ptr)
+				return (ext.*mapper)((ptr->*mapper2)());
+			else
+				return Optional<R>();
+		}
+
+		template<typename R>
+		Optional<R> askey(const std::map<T, R>& container) const
+		{
+			if (ptr)
+			{
+				T& key = *ptr;
+				if (container.count(key))
+				{
+					return container.at(key);
+				}
+			}
+			return Optional<R>();
+		}
+
+		template<typename R>
+		Optional<R> reinterpret() const
+		{
+			if (ptr)
+				return reinterpret_cast<R*>(ptr);
+			else
+				return Optional<R>();
+		}
+
+		template<typename R>
+		Optional<R> cast() const
+		{
+			if (ptr)
+				return static_cast<R*>(ptr);
+			else
+				return Optional<R>();
+		}
+
+		T& getordefault(T& def) const
+		{
+			if (ptr)
+				return *ptr;
+			else
+				return def;
+		}
+
+		T& operator *() const
+		{
+			return *ptr;
+		}
+
+		T* operator ->() const
+		{
+			return ptr;
+		}
+
+		T* get() const
+		{
+			return ptr;
+		}
+
+		template<typename T, typename ...Args>
+		static Optional<const T> findfirst(const std::vector<T>& container, bool(T::*predicate)(Args...) const, Args... args)
+		{
+			for (auto& it : container)
+			{
+				if ((it.*predicate)(args...))
+				{
+					return it;
+				}
+			}
+			return Optional<const T>();
+		}
+
+		template <typename K, typename T>
+		static Optional<const T> from(const std::map<K, T>& container, K key)
+		{
 			if (container.count(key))
 			{
 				return container.at(key);
 			}
-		}
-		return Optional<R>();
-	}
-
-	template<typename R>
-	Optional<R> reinterpret() const
-	{
-		if (ptr)
-			return reinterpret_cast<R*>(ptr);
-		else
-			return Optional<R>();
-	}
-
-	template<typename R>
-	Optional<R> cast() const
-	{
-		if (ptr)
-			return static_cast<R*>(ptr);
-		else
-			return Optional<R>();
-	}
-
-	T& getordefault(T& def) const
-	{
-		if (ptr)
-			return *ptr;
-		else
-			return def;
-	}
-
-	T& operator *() const
-	{
-		return *ptr;
-	}
-
-	T* operator ->() const
-	{
-		return ptr;
-	}
-
-	T* get() const
-	{
-		return ptr;
-	}
-
-	template<typename T, typename ...Args>
-	static Optional<const T> findfirst(const std::vector<T>& container, bool(T::*predicate)(Args...) const, Args... args)
-	{
-		for (auto& it : container)
-		{
-			if ((it.*predicate)(args...))
+			else
 			{
-				return it;
+				return Optional<const T>();
 			}
 		}
-		return Optional<const T>();
-	}
 
-	template <typename K, typename T>
-	static Optional<const T> from(const std::map<K, T>& container, K key)
-	{
-		if (container.count(key))
+		template <typename K, typename T>
+		static Optional<const T> from(const std::unordered_map<K, T>& container, K key)
 		{
-			return container.at(key);
-		}
-		else
-		{
-			return Optional<const T>();
-		}
-	}
-
-	template <typename K, typename T>
-	static Optional<const T> from(const std::unordered_map<K, T>& container, K key)
-	{
-		if (container.count(key))
-		{
-			return container.at(key);
-		}
-		else
-		{
-			return Optional<const T>();
-		}
-	}
-
-
-	template <typename T, typename V>
-	static Optional<T> comparevalues(const std::map<T, V>& container, function<bool(const V&, const V&)> predicate)
-	{
-		Optional<T> result;
-		V current;
-		for (auto& it : container)
-		{
-			if (!result || predicate(it.second, current))
+			if (container.count(key))
 			{
-				result = &it.first;
-				current = it.second;
+				return container.at(key);
+			}
+			else
+			{
+				return Optional<const T>();
 			}
 		}
-		return result;
-	}
 
-	template <typename T, typename V>
-	static Optional<T> minvalue(const std::map<T, V>& container)
-	{
-		return Optional<T>::comparevalues<T, V>(container, [](const V& v1, const V& v2) {
-			return v1 < v2;
-		});
-	}
 
-	template <typename T, typename V>
-	static Optional<T> maxvalue(const std::map<T, V>& container)
-	{
-		return Optional<T>::comparevalues<T, V>(container, [](const V& v1, const V& v2) {
-			return v1 > v2;
-		});
-	}
+		template <typename T, typename V>
+		static Optional<T> comparevalues(const std::map<T, V>& container, std::function<bool(const V&, const V&)> predicate)
+		{
+			Optional<T> result;
+			V current;
+			for (auto& it : container)
+			{
+				if (!result || predicate(it.second, current))
+				{
+					result = &it.first;
+					current = it.second;
+				}
+			}
+			return result;
+		}
 
-private:
-	T* ptr;
-};
+		template <typename T, typename V>
+		static Optional<T> minvalue(const std::map<T, V>& container)
+		{
+			return Optional<T>::comparevalues<T, V>(container, [](const V& v1, const V& v2) {
+				return v1 < v2;
+			});
+		}
+
+		template <typename T, typename V>
+		static Optional<T> maxvalue(const std::map<T, V>& container)
+		{
+			return Optional<T>::comparevalues<T, V>(container, [](const V& v1, const V& v2) {
+				return v1 > v2;
+			});
+		}
+
+	private:
+		T* ptr;
+	};
+}

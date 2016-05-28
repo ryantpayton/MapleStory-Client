@@ -17,17 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Portal.h"
-#include "Net\InPacket.h"
-#include "Util\Optional.h"
-#include "nlnx\node.hpp"
+
+#include "..\..\Util\Optional.h"
+
+#include <nlnx\node.hpp>
+
 #include <unordered_map>
 
-namespace Gameplay
+namespace jrc
 {
-	using std::unordered_map;
-	using nl::node;
-	using Net::InPacket;
-
 	// Collecton of portals on a map. Draws and updates portals.
 	// Also contains methods for using portals and obtaining spawn points.
 	class MapPortals
@@ -35,25 +33,22 @@ namespace Gameplay
 	public:
 		static void init();
 
-		MapPortals(node source, int32_t mapid);
-		MapPortals(InPacket& recv);
+		MapPortals(nl::node source, int32_t mapid);
 		MapPortals();
-		~MapPortals();
 
 		void update(Point<int16_t> playerpos);
 		void draw(Point<int16_t> viewpos, float inter) const;
 
 		Portal::WarpInfo findportal(Point<int16_t> playerpos);
 
-		uint8_t getportalbyname(string name) const;
-		Point<int16_t> getspawnpoint(uint8_t id) const;
-		Point<int16_t> getspawnpoint(string name) const;
+		Point<int16_t> get_portal_by_id(uint8_t id) const;
+		Point<int16_t> get_portal_by_name(const std::string& name) const;
 
 	private:
-		static unordered_map<Portal::Type, Animation> animations;
+		static std::unordered_map<Portal::Type, Animation> animations;
 
-		unordered_map<uint8_t, Portal> portals;
-		unordered_map<string, uint8_t> idsbyname;
+		std::unordered_map<uint8_t, Portal> portals_by_id;
+		std::unordered_map<std::string, uint8_t> portal_ids_by_name;
 
 		static const int16_t WARPCD = 48;
 		int16_t cooldown;

@@ -17,36 +17,32 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Char.h"
-
 #include "Look\CharLook.h"
-#include "Gameplay\Movement.h"
+
+#include "..\Gameplay\Movement.h"
 
 #include <queue>
 
-namespace Character
+namespace jrc
 {
-	using std::queue;
-	using Gameplay::Physics;
-	using Gameplay::Movement;
-
 	// Other client's players.
 	class OtherChar : public Char
 	{
 	public:
-		OtherChar(int32_t charid, CharLook look, uint8_t level,
-			int16_t job, string name, int8_t stance, Point<int16_t> position);
+		OtherChar(int32_t charid, const CharLook& look, uint8_t level,
+			int16_t job, const std::string& name, int8_t stance, Point<int16_t> position);
 
 		// Update the character.
 		int8_t update(const Physics& physics) override;
 		// Add the movements which this character will go through next.
-		void sendmovement(queue<Movement> movements);
+		void sendmovement(std::queue<Movement> movements);
 		
 		// Update a skill level.
 		void updateskill(int32_t skillid, uint8_t skilllevel);
 		// Update the attack speed.
 		void updateattack(uint8_t attackspeed);
 		// Update the character look.
-		void updatelook(LookEntry look);
+		void updatelook(const LookEntry& look);
 
 		// Return the character's level.
 		uint16_t getlevel() const override;
@@ -58,10 +54,10 @@ namespace Character
 	private:
 		uint16_t level;
 		int16_t job;
-		queue<Movement> movements;
+		std::queue<Movement> movements;
 		Movement lastmove;
 
-		unordered_map<int32_t, uint8_t> skilllevels;
+		std::unordered_map<int32_t, uint8_t> skilllevels;
 		uint8_t attackspeed;
 	};
 }

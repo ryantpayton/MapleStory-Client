@@ -16,22 +16,23 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
-#include "IO\UIDragElement.h"
-#include "IO\Components\Icon.h"
-#include "IO\Components\EquipTooltip.h"
-#include "Character\Inventory\Inventory.h"
+#include "..\Element.h"
+#include "..\UIDragElement.h"
+#include "..\Components\Icon.h"
+#include "..\Components\EquipTooltip.h"
 
-namespace IO
+#include "..\..\Character\Inventory\Inventory.h"
+
+namespace jrc
 {
-	using std::map;
-	using Character::Inventory;
-	using Graphics::Texture;
-
 	// The Equip inventory.
 	class UIEquipInventory : public UIDragElement<PosEQINV>
 	{
 	public:
+		static constexpr Type TYPE = EQUIPINVENTORY;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = true;
+
 		enum Buttons
 		{
 			BT_TOGGLEPETS
@@ -74,28 +75,10 @@ namespace IO
 
 		const Inventory& inventory;
 
-		map<int16_t, Point<int16_t>> iconpositions;
-		map<int16_t, unique_ptr<Icon>> icons;
-		vector<Texture> pettextures;
+		std::map<int16_t, Point<int16_t>> iconpositions;
+		std::map<int16_t, std::unique_ptr<Icon>> icons;
+		std::vector<Texture> pettextures;
 
 		bool showpetequips;
-	};
-
-	class ElementEquipInventory : public Element
-	{
-		bool isunique() const override
-		{
-			return true;
-		}
-
-		UIElement::Type type() const override
-		{
-			return UIElement::EQUIPINVENTORY;
-		}
-
-		UIElement* instantiate() const override
-		{
-			return new UIEquipInventory();
-		}
 	};
 }

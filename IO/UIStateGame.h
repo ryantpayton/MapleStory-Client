@@ -17,19 +17,18 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "UIState.h"
+
 #include "Components\EquipTooltip.h"
 #include "Components\ItemTooltip.h"
-#include "Util\Optional.h"
+
+#include "..\Util\Optional.h"
+
 #include <unordered_map>
 #include <list>
 #include <memory>
 
-namespace IO
+namespace jrc
 {
-	using std::unordered_map;
-	using std::list;
-	using std::unique_ptr;
-
 	class UIStateGame : public UIState
 	{
 	public:
@@ -55,8 +54,8 @@ namespace IO
 	private:
 		void dropicon(const Icon& icon, Point<int16_t> pos);
 
-		unordered_map<UIElement::Type, unique_ptr<UIElement>> elements;
-		list<UIElement::Type> elementorder;
+		std::unordered_map<UIElement::Type, UIElement::UPtr> elements;
+		std::list<UIElement::Type> elementorder;
 		UIElement::Type focused;
 
 		EquipTooltip eqtooltip;

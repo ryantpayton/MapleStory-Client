@@ -17,14 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Itemtext.h"
 
-namespace IO
+namespace jrc
 {
-	Itemtext::Itemtext(string text, int16_t maxwidth)
+	Itemtext::Itemtext(std::string text, int16_t maxwidth)
 	{
-		vector<string> strings;
+		std::vector<std::string> strings;
 		size_t pos = 0;
 		size_t split = text.find("\\n", pos);
-		while (split != string::npos)
+		while (split != std::string::npos)
 		{
 			strings.push_back(text.substr(pos, split));
 			pos = split + 2;
@@ -44,7 +44,7 @@ namespace IO
 			while (pos2 < length)
 			{
 				size_t special = str.find_first_of('#', pos2);
-				if (special != string::npos)
+				if (special != std::string::npos)
 				{
 					if (length > special + 1)
 					{

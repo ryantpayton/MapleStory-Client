@@ -18,10 +18,10 @@
 #pragma once
 #include "MapObject.h"
 
-#include "Util\Interpolated.h"
-#include "Util\rectangle2d.h"
+#include "..\..\Util\Interpolated.h"
+#include "..\..\Util\Rectangle.h"
 
-namespace Gameplay
+namespace jrc
 {
 	class Drop : public MapObject
 	{
@@ -31,7 +31,7 @@ namespace Gameplay
 		void init(int8_t);
 		void expire(int8_t, const PhysicsObject*);
 
-		rectangle2d<int16_t> bounds() const;
+		Rectangle<int16_t> bounds() const;
 
 	protected:
 		Drop(int32_t oid, int32_t owner, Point<int16_t> start,

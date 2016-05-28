@@ -17,15 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "BodyDrawinfo.h"
-#include "Graphics\Texture.h"
-#include "Util\Enum.h"
-#include "Console.h"
 
-namespace Character
+#include "..\..\Console.h"
+#include "..\..\Graphics\Texture.h"
+#include "..\..\Util\Enum.h"
+
+namespace jrc
 {
-	using Graphics::Texture;
-	using Graphics::DrawArgument;
-
 	class Body
 	{
 	public:
@@ -41,12 +39,12 @@ namespace Character
 			return EnumIterator<Layer>(s, l);
 		}
 
-		static Layer layerbystring(string name)
+		static Layer layerbystring(std::string name)
 		{
 			if (name == "backBody")
 				return BODY;
 
-			static string layernames[NUM_LAYERS] =
+			static std::string layernames[NUM_LAYERS] =
 			{
 				"", "body", "arm", "armOverHair",
 				"handBelowWeapon", "handOverHair", "handOverWeapon", "head"
@@ -68,11 +66,11 @@ namespace Character
 		Body();
 
 		void draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
-		string getname() const;
+		std::string getname() const;
 
 	private:
-		unordered_map<Layer, unordered_map<uint8_t, Texture>> stances[Stance::LENGTH];
-		string name;
+		std::unordered_map<Layer, std::unordered_map<uint8_t, Texture>> stances[Stance::LENGTH];
+		std::string name;
 	};
 }
 

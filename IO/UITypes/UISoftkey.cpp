@@ -16,42 +16,46 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UISoftKey.h"
-#include "IO\UI.h"
-#include "Net\Session.h"
-#include "IO\Components\MapleButton.h"
-#include "Net\Packets\SelectCharPackets.h"
-#include "nlnx\nx.hpp"
-#include "nlnx\node.hpp"
 
-namespace IO
+#include "..\UI.h"
+#include "..\Components\MapleButton.h"
+
+#include "..\..\Net\Session.h"
+#include "..\..\Net\Packets\SelectCharPackets.h"
+
+#include <nlnx\nx.hpp>
+#include <nlnx\node.hpp>
+
+#include <algorithm>
+
+namespace jrc
 {
-	const uint8_t NUM_KEYS = 10;
-
 	UISoftkey::UISoftkey(SkType t)
-	{
-		type = t;
+		: type(t) {
 
-		node src = nl::nx::ui["Login.img"]["Common"]["SoftKey"];
-		sprites.push_back(Sprite(src["backgrnd"]));
-		sprites.push_back(Sprite(src["backgrnd2"]));
-		sprites.push_back(Sprite(src["backgrnd3"]));
+		nl::node src = nl::nx::ui["Login.img"]["Common"]["SoftKey"];
 
-		buttons[BT_NEXT] = unique_ptr<Button>(new MapleButton(src["BtNext"]));
-		buttons[BT_BACK] = unique_ptr<Button>(new MapleButton(src["BtDel"]));
-		buttons[BT_OK] = unique_ptr<Button>(new MapleButton(src["BtOK"], Point<int16_t>(72, 235)));
-		buttons[BT_CANCEL] = unique_ptr<Button>(new MapleButton(src["BtCancel"], Point<int16_t>(13, 235)));
+		sprites.emplace_back(src["backgrnd"]);
+		sprites.emplace_back(src["backgrnd2"]);
+		sprites.emplace_back(src["backgrnd3"]);
 
-		node keys = src["BtNum"];
-		buttons[BT_0] = unique_ptr<Button>(new MapleButton(keys["0"]));
-		buttons[BT_1] = unique_ptr<Button>(new MapleButton(keys["1"]));
-		buttons[BT_2] = unique_ptr<Button>(new MapleButton(keys["2"]));
-		buttons[BT_3] = unique_ptr<Button>(new MapleButton(keys["3"]));
-		buttons[BT_4] = unique_ptr<Button>(new MapleButton(keys["4"]));
-		buttons[BT_5] = unique_ptr<Button>(new MapleButton(keys["5"]));
-		buttons[BT_6] = unique_ptr<Button>(new MapleButton(keys["6"]));
-		buttons[BT_7] = unique_ptr<Button>(new MapleButton(keys["7"]));
-		buttons[BT_8] = unique_ptr<Button>(new MapleButton(keys["8"]));
-		buttons[BT_9] = unique_ptr<Button>(new MapleButton(keys["9"]));
+		buttons[BT_NEXT] = std::make_unique<MapleButton>(src["BtNext"]);
+		buttons[BT_BACK] = std::make_unique<MapleButton>(src["BtDel"]);
+		buttons[BT_OK] = std::make_unique<MapleButton>(src["BtOK"], Point<int16_t>(72, 235));
+		buttons[BT_CANCEL] = std::make_unique<MapleButton>(src["BtCancel"], Point<int16_t>(13, 235));
+
+		nl::node keys = src["BtNum"];
+
+		buttons[BT_0] = std::make_unique<MapleButton>(keys["0"]);
+		buttons[BT_1] = std::make_unique<MapleButton>(keys["1"]);
+		buttons[BT_2] = std::make_unique<MapleButton>(keys["2"]);
+		buttons[BT_3] = std::make_unique<MapleButton>(keys["3"]);
+		buttons[BT_4] = std::make_unique<MapleButton>(keys["4"]);
+		buttons[BT_5] = std::make_unique<MapleButton>(keys["5"]);
+		buttons[BT_6] = std::make_unique<MapleButton>(keys["6"]);
+		buttons[BT_7] = std::make_unique<MapleButton>(keys["7"]);
+		buttons[BT_8] = std::make_unique<MapleButton>(keys["8"]);
+		buttons[BT_9] = std::make_unique<MapleButton>(keys["9"]);
 
 		buttons[BT_OK]->setstate(Button::DISABLED);
 
@@ -73,8 +77,7 @@ namespace IO
 
 	void UISoftkey::buttonpressed(uint16_t id)
 	{
-		using::std::string;
-		string entered = entry.gettext();
+		std::string entered = entry.gettext();
 
 		switch (id)
 		{
@@ -110,17 +113,17 @@ namespace IO
 			{
 				UI::get().disable();
 
-				using Net::Session;
-				int32_t cid = Session::get().getlogin().getcharid();
+				int32_t cid = Session::get().getlogin()
+					.getcharid();
 				switch (type)
 				{
 				case CHARSELECT:
-					using Net::SelectCharPicPacket;
-					SelectCharPicPacket(entered, cid).dispatch();
+					SelectCharPicPacket(entered, cid)
+						.dispatch();
 					break;
 				case REGISTER:
-					using Net::RegisterPicPacket;
-					RegisterPicPacket(cid, entered).dispatch();
+					RegisterPicPacket(cid, entered)
+						.dispatch();
 					break;
 				}
 				active = false;
@@ -158,23 +161,26 @@ namespace IO
 
 	void UISoftkey::shufflekeys()
 	{
-		using::std::vector;
-		vector<uint8_t> reserve;
-		for (uint8_t i = 0; i < NUM_KEYS; i++)
+		std::vector<uint8_t> keys(NUM_KEYS);
+		uint8_t i;
+		std::generate(keys.begin(), keys.end(), [&]() { return i++; });
+
+		std::random_device rd;
+		std::mt19937 g(rd());
+		std::shuffle(keys.begin(), keys.end(), g);
+
+		for (uint8_t j = 0; j < NUM_KEYS; j++)
 		{
-			reserve.push_back(i);
-		}
-		for (uint8_t i = 0; i < NUM_KEYS; i++)
-		{
-			size_t rand = random.nextint(reserve.size() - 1);
-			Point<int16_t> pos = keypos(reserve[rand]);
-			buttons[BT_0 + i]->setposition(pos);
-			reserve.erase(reserve.begin() + rand);
+			auto button_position = keypos(keys[j]);
+			buttons[BT_0 + j]->setposition(button_position);
 		}
 	}
 
 	Point<int16_t> UISoftkey::keypos(uint8_t num) const
 	{
-		return Point<int16_t>(12 + (num % 3) * 39, 94 + (num / 3) * 35);
+		return Point<int16_t>(
+			12 + (num % 3) * 39,
+			94 + (num / 3) * 35
+			);
 	}
 }

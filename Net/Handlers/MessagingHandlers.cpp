@@ -17,27 +17,16 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MessagingHandlers.h"
 
-#include "Character\Char.h"
-#include "Data\DataFactory.h"
-#include "Gameplay\Stage.h"
-#include "IO\UI.h"
-#include "IO\Messages.h"
-#include "IO\UITypes\UIStatusMessenger.h"
-#include "IO\UITypes\UIStatusbar.h"
+#include "..\..\Character\Char.h"
+#include "..\..\Data\DataFactory.h"
+#include "..\..\Gameplay\Stage.h"
+#include "..\..\IO\UI.h"
+#include "..\..\IO\Messages.h"
+#include "..\..\IO\UITypes\UIStatusMessenger.h"
+#include "..\..\IO\UITypes\UIStatusbar.h"
 
-namespace Net
+namespace jrc
 {
-	using Character::ItemData;
-	using Character::Char;
-	using Data::DataFactory;
-	using Gameplay::Stage;
-	using IO::UI;
-	using IO::Messages;
-	using IO::Chatbar;
-	using IO::UIElement;
-	using IO::UIStatusMessenger;
-	using IO::UIStatusbar;
-
 	// Modes:
 	// 0 - Item(0) or Meso(1) 
 	// 3 - Exp gain
@@ -46,21 +35,21 @@ namespace Net
 	// 6 - Guild points
 	void ShowStatusInfoHandler::handle(InPacket& recv) const
 	{
-		int8_t mode = recv.readbyte();
+		int8_t mode = recv.read_byte();
 		if (mode == 0)
 		{
-			int8_t mode2 = recv.readbyte();
+			int8_t mode2 = recv.read_byte();
 			if (mode2 == 0)
 			{
-				int32_t itemid = recv.readint();
-				int32_t qty = recv.readint();
+				int32_t itemid = recv.read_int();
+				int32_t qty = recv.read_int();
 
 				const ItemData& idata = DataFactory::get().getitemdata(itemid);
 				if (!idata.isloaded())
 					return;
 
-				string name = idata.getname();
-				string sign = (qty < 0) ? "-" : "+";
+				std::string name = idata.getname();
+				std::string sign = (qty < 0) ? "-" : "+";
 
 				showstatus(Text::WHITE, "Gained an item: " + name + " (" + sign + std::to_string(qty) + ")");
 			}
@@ -68,27 +57,27 @@ namespace Net
 			{
 				recv.skip(1);
 
-				int32_t gain = recv.readint();
-				string sign = (gain < 0) ? "-" : "+";
+				int32_t gain = recv.read_int();
+				std::string sign = (gain < 0) ? "-" : "+";
 
 				showstatus(Text::WHITE, "Received mesos (" + sign + std::to_string(gain) + ")");
 			}
 		}
 		else if (mode == 3)
 		{
-			bool white = recv.readbool();
-			int32_t gain = recv.readint();
-			bool inchat = recv.readbool();
-			int32_t bonus1 = recv.readint();
+			bool white = recv.read_bool();
+			int32_t gain = recv.read_int();
+			bool inchat = recv.read_bool();
+			int32_t bonus1 = recv.read_int();
 
-			recv.readshort();
-			recv.readint(); // bonus 2
-			recv.readbool(); // 'event or party'
-			recv.readint(); // bonus 3
-			recv.readint(); // bonus 4
-			recv.readint(); // bonus 5
+			recv.read_short();
+			recv.read_int(); // bonus 2
+			recv.read_bool(); // 'event or party'
+			recv.read_int(); // bonus 3
+			recv.read_int(); // bonus 4
+			recv.read_int(); // bonus 5
 
-			string message = "You have gained experience (+" + std::to_string(gain) + ")";
+			std::string message = "You have gained experience (+" + std::to_string(gain) + ")";
 			if (inchat)
 			{
 
@@ -102,8 +91,8 @@ namespace Net
 		}
 		else if (mode == 4)
 		{
-			int32_t gain = recv.readint();
-			string sign = (gain < 0) ? "-" : "+";
+			int32_t gain = recv.read_int();
+			std::string sign = (gain < 0) ? "-" : "+";
 
 			showstatus(Text::WHITE, "Received fame (" + sign + std::to_string(gain) + ")");
 		}
@@ -112,24 +101,27 @@ namespace Net
 		}
 	}
 
-	void ShowStatusInfoHandler::showstatus(Text::Color color, string message) const
+	void ShowStatusInfoHandler::showstatus(Text::Color color, const std::string& message) const
 	{
-		UI::get().withelement(UIElement::STATUSMESSENGER, &UIStatusMessenger::showstatus, color, message);
+		UIStatusMessenger* messenger = UI::get().getelement(UIElement::STATUSMESSENGER)
+			.reinterpret<UIStatusMessenger>().get();
+		if (messenger)
+			messenger->showstatus(color, message);
 	}
 
 
 	void ServerMessageHandler::handle(InPacket& recv) const
 	{
-		int8_t type = recv.readbyte();
+		int8_t type = recv.read_byte();
 		bool servermessage = recv.inspectbool();
 		if (servermessage)
 			recv.skip(1);
-		string message = recv.read<string>();
+		std::string message = recv.read_string();
 		
 		if (type == 3)
 		{
-			recv.readbyte(); // channel
-			recv.readbool(); // megaphone
+			recv.read_byte(); // channel
+			recv.read_bool(); // megaphone
 		}
 		else if (type == 4)
 		{
@@ -137,30 +129,32 @@ namespace Net
 		}
 		else if (type == 7)
 		{
-			recv.readint(); // npcid
+			recv.read_int(); // npcid
 		}
 	}
 
 
 	void WeekEventMessageHandler::handle(InPacket& recv) const
 	{
-		recv.readbyte(); // always 0xFF in solaxia and moople
-		string message = recv.read<string>();
+		recv.read_byte(); // always 0xFF in solaxia and moople
+		std::string message = recv.read_string();
 
-		static const string MAPLETIP = "[MapleTip]";
+		static const std::string MAPLETIP = "[MapleTip]";
 		if (message.substr(0, MAPLETIP.length()).compare("[MapleTip]"))
 			message = "[Notice] " + message;
 
-		UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::sendchatline, message, Chatbar::YELLOW);
+		UI::get().getelement(UIElement::STATUSBAR)
+			.reinterpret<UIStatusbar>()
+			->sendchatline(message, Chatbar::YELLOW);
 	}
 
 
 	void ChatReceivedHandler::handle(InPacket& recv) const
 	{
-		int32_t charid = recv.readint();
-		recv.readbool(); // 'gm'
-		string message = recv.read<string>();
-		int8_t type = recv.readbyte();
+		int32_t charid = recv.read_int();
+		recv.read_bool(); // 'gm'
+		std::string message = recv.read_string();
+		int8_t type = recv.read_byte();
 
 		auto speaker = Stage::get().getcharacter(charid);
 		if (speaker)
@@ -170,16 +164,18 @@ namespace Net
 		}
 
 		auto linetype = static_cast<Chatbar::LineType>(type);
-		UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::sendchatline, message, linetype);
+		UI::get().getelement(UIElement::STATUSBAR)
+			.reinterpret<UIStatusbar>()
+			->sendchatline(message, linetype);
 	}
 
 
 	void ScrollResultHandler::handle(InPacket& recv) const
 	{
-		int32_t cid = recv.readint();
-		bool success = recv.readbool();
-		bool destroyed = recv.readbool();
-		recv.readshort(); // legendary spirit if 1
+		int32_t cid = recv.read_int();
+		bool success = recv.read_bool();
+		bool destroyed = recv.read_bool();
+		recv.read_short(); // legendary spirit if 1
 
 		Char::Effect effect;
 		Messages::Type message;
@@ -206,7 +202,9 @@ namespace Net
 
 		if (Stage::get().isplayer(cid))
 		{
-			UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::displaymessage, message, Chatbar::RED);
+			UI::get().getelement(UIElement::STATUSBAR)
+				.reinterpret<UIStatusbar>()
+				.ifpresent(&UIStatusbar::displaymessage, message, Chatbar::RED);
 			UI::get().enable();
 		}
 	}
@@ -214,24 +212,26 @@ namespace Net
 
 	void ShowItemGainInChatHandler::handle(InPacket& recv) const
 	{
-		int8_t mode1 = recv.readbyte();
+		int8_t mode1 = recv.read_byte();
 		if (mode1 == 3)
 		{
-			int8_t mode2 = recv.readbyte();
+			int8_t mode2 = recv.read_byte();
 			if (mode2 == 1) // this actually is 'item gain in chat'
 			{
-				int32_t itemid = recv.readint();
-				int32_t qty = recv.readint();
+				int32_t itemid = recv.read_int();
+				int32_t qty = recv.read_int();
 
 				const ItemData& idata = DataFactory::get().getitemdata(itemid);
 				if (!idata.isloaded())
 					return;
 
-				string name = idata.getname();
-				string sign = (qty < 0) ? "-" : "+";
-				string message = "Gained an item: " + name + " (" + sign + std::to_string(qty) + ")";
+				std::string name = idata.getname();
+				std::string sign = (qty < 0) ? "-" : "+";
+				std::string message = "Gained an item: " + name + " (" + sign + std::to_string(qty) + ")";
 
-				UI::get().withelement(UIElement::STATUSBAR, &UIStatusbar::sendchatline, message, Chatbar::BLUE);
+				UI::get().getelement(UIElement::STATUSBAR)
+					.reinterpret<UIStatusbar>()
+					->sendchatline(message, Chatbar::BLUE);
 			}
 		}
 		else if (mode1 == 13) // card effect
@@ -240,16 +240,16 @@ namespace Net
 		}
 		else if (mode1 == 18) // intro effect
 		{
-			recv.read<string>(); // path
+			recv.read_string(); // path
 		}
 		else if (mode1 == 23) // info
 		{
-			recv.read<string>(); // path
-			recv.readint(); // some int
+			recv.read_string(); // path
+			recv.read_int(); // some int
 		}
 		else // buff effect
 		{
-			int32_t skillid = recv.readint();
+			int32_t skillid = recv.read_int();
 			// more bytes, but we don't need them
 			Stage::get().showplayerbuff(skillid);
 		}

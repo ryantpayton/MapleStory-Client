@@ -19,17 +19,13 @@
 #include "Tooltip.h"
 #include "Charset.h"
 #include "Itemtext.h"
-#include "Character\Look\Clothing.h"
-#include "Character\Look\Weapon.h"
-#include "Character\Inventory\Equip.h"
 
-namespace IO
+#include "..\..\Character\Look\Clothing.h"
+#include "..\..\Character\Look\Weapon.h"
+#include "..\..\Character\Inventory\Equip.h"
+
+namespace jrc
 {
-	using std::map;
-	using Character::Equip;
-	using Character::Maplestat;
-	using Character::Equipstat;
-
 	class EquipTooltip : public Tooltip
 	{
 	public:
@@ -44,7 +40,7 @@ namespace IO
 		bool hasdesc;
 		bool hasslots;
 		bool isweapon;
-		map<Maplestat::Value, string> reqstatstrings;
+		std::map<Maplestat::Value, std::string> reqstatstrings;
 		Texture itemicon;
 
 		Text name;
@@ -55,7 +51,7 @@ namespace IO
 		Text wepspeed;
 		Text slots;
 		Text hammers;
-		map<Equipstat::Value, Text> statlabels;
+		std::map<Equipstat::Value, Text> statlabels;
 
 		Texture top;
 		Texture mid;
@@ -63,20 +59,20 @@ namespace IO
 		Texture bot;
 		Texture base;
 
-		map<Equip::Potential, Texture> potential;
+		std::map<Equip::Potential, Texture> potential;
 		Equip::Potential prank;
 
 		Texture cover;
 		Texture shade;
 
-		vector<Maplestat::Value> requirements;
-		map<Maplestat::Value, map<bool, Texture>> reqstattextures;
-		map<Maplestat::Value, bool> canequip;
-		map<Maplestat::Value, Point<int16_t>> reqstatpositions;
-		map<bool, Charset> reqset;
+		std::vector<Maplestat::Value> requirements;
+		std::map<Maplestat::Value, std::map<bool, Texture>> reqstattextures;
+		std::map<Maplestat::Value, bool> canequip;
+		std::map<Maplestat::Value, Point<int16_t>> reqstatpositions;
+		std::map<bool, Charset> reqset;
 
 		Texture jobsback;
-		map<bool, map<uint8_t, Texture>> jobs;
-		vector<uint8_t> okjobs;
+		std::map<bool, std::map<uint8_t, Texture>> jobs;
+		std::vector<uint8_t> okjobs;
 	};
 }

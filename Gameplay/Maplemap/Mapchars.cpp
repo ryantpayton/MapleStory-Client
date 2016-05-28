@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MapChars.h"
 
-namespace Gameplay
+namespace jrc
 {
 	void MapChars::sendspawn(const CharSpawn& spawn)
 	{
@@ -39,7 +39,7 @@ namespace Gameplay
 		remove(cid);
 	}
 
-	void MapChars::movechar(int32_t cid, queue<Movement> movements)
+	void MapChars::movechar(int32_t cid, std::queue<Movement> movements)
 	{
 		Optional<OtherChar> otherchar = getchar(cid);
 		if (otherchar)

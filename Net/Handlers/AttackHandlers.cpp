@@ -17,13 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "AttackHandlers.h"
 
-#include "Gameplay\Combat\Skill.h"
-#include "Gameplay\Stage.h"
+#include "..\..\Gameplay\Combat\Skill.h"
+#include "..\..\Gameplay\Stage.h"
 
 #include <unordered_map>
 #include <vector>
 
-namespace Net
+namespace jrc
 {
 	AttackHandler::AttackHandler(Attack::Type t)
 	{
@@ -32,47 +32,44 @@ namespace Net
 
 	void AttackHandler::handle(InPacket& recv) const
 	{
-		int32_t cid = recv.readint();
-		uint8_t count = recv.readbyte();
+		int32_t cid = recv.read_int();
+		uint8_t count = recv.read_byte();
 
 		recv.skip(1);
 
-		using Gameplay::AttackResult;
 		AttackResult attack;
 		attack.type = type;
 
-		attack.level = recv.readbyte();
-		attack.skill = (attack.level > 0) ? recv.readint() : 0;
+		attack.level = recv.read_byte();
+		attack.skill = (attack.level > 0) ? recv.read_int() : 0;
 
-		attack.display = recv.readbyte();
-		attack.toleft = recv.readbool();
-		attack.stance = recv.readbyte();
-		attack.speed = recv.readbyte();
+		attack.display = recv.read_byte();
+		attack.toleft = recv.read_bool();
+		attack.stance = recv.read_byte();
+		attack.speed = recv.read_byte();
 
 		recv.skip(1);
 
-		attack.bullet = recv.readint();
+		attack.bullet = recv.read_int();
 
 		attack.mobcount = (count >> 4) & 0xF;
 		attack.hitcount = count & 0xF;
 		for (uint8_t i = 0; i < attack.mobcount; i++)
 		{
-			int32_t oid = recv.readint();
+			int32_t oid = recv.read_int();
 
 			recv.skip(1);
 
-			using Gameplay::Skill;
-			uint8_t length = (attack.skill == Skill::MESO_EXPLOSION) ? recv.readbyte() : attack.hitcount;
+			uint8_t length = (attack.skill == Skill::MESO_EXPLOSION) ? recv.read_byte() : attack.hitcount;
 			for (uint8_t j = 0; j < length; j++)
 			{
-				int32_t damage = recv.readint();
+				int32_t damage = recv.read_int();
 				bool critical = false; // todo
 				auto singledamage = std::make_pair(damage, critical);
 				attack.damagelines[oid].push_back(singledamage);
 			}
 		}
 
-		using Gameplay::Stage;
 		Stage::get().showattack(cid, attack);
 	}
 }

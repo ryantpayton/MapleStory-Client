@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Drop.h"
 
-namespace Gameplay
+namespace jrc
 {
 	Drop::Drop(int32_t id, int32_t own, Point<int16_t> start, Point<int16_t> dst, 
 		int8_t type, int8_t mode, bool pldrp) : MapObject(id) {
@@ -125,10 +125,10 @@ namespace Gameplay
 		}
 	}
 
-	rectangle2d<int16_t> Drop::bounds() const
+	Rectangle<int16_t> Drop::bounds() const
 	{ 
 		auto lt = getposition();
 		auto rb = lt + Point<int16_t>(32, 32);
-		return rectangle2d<int16_t>(lt, rb); 
+		return Rectangle<int16_t>(lt, rb); 
 	}
 }

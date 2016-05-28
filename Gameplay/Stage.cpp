@@ -17,30 +17,27 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Stage.h"
 
-#include "Audio\Audio.h"
 #include "Combat\RegularAttack.h"
-#include "IO\Messages.h"
-#include "Net\InPacket.h"
-#include "Net\Packets\GameplayPackets.h"
-#include "Net\Packets\AttackAndSkillPackets.h"
-#include "Util\Misc.h"
+
+#include "..\Audio\Audio.h"
+#include "..\IO\Messages.h"
+#include "..\Net\InPacket.h"
+#include "..\Net\Packets\GameplayPackets.h"
+#include "..\Net\Packets\AttackAndSkillPackets.h"
+#include "..\Util\Misc.h"
 
 #include "nlnx\nx.hpp"
 #include "nlnx\audio.hpp"
 
-namespace Gameplay
+namespace jrc
 {
-	using IO::Messages;
-	using IO::InChatMessage;
-	using IO::NoBulletsMessage;
-
 	Stage::Stage()
 	{
 		state = INACTIVE;
 		mapid = 0;
 		portalid = 0;
 
-		specialmoves[0] = unique_ptr<SpecialMove>(new RegularAttack());
+		specialmoves[0] = std::make_unique<RegularAttack>();
 	}
 
 	void Stage::loadplayer(const CharEntry& entry)
@@ -67,9 +64,9 @@ namespace Gameplay
 
 	void Stage::loadmap()
 	{
-		string strid = Format::extendid(mapid, 9);
-		string prefix = std::to_string(mapid / 100000000);
-		node src = nl::nx::map["Map"]["Map" + prefix][strid + ".img"];
+		std::string strid = string_format::extend_id(mapid, 9);
+		std::string prefix = std::to_string(mapid / 100000000);
+		nl::node src = nl::nx::map["Map"]["Map" + prefix][strid + ".img"];
 
 		layers = MapLayers(src);
 		backgrounds = MapBackgrounds(src["back"]);
@@ -78,25 +75,11 @@ namespace Gameplay
 		portals = MapPortals(src["portal"], mapid);
 	}
 
-	void Stage::parsemap(InPacket& recv)
-	{
-		mapid = recv.readint();
-		portalid = recv.readbyte();
-		layers = recv;
-		backgrounds = recv;
-		physics = recv;
-		mapinfo = recv;
-		portals = recv;
-
-		state = TRANSITION;
-	}
-
 	void Stage::respawn()
 	{
-		using Audio::Music;
 		Music(mapinfo.getbgm()).play();
 
-		Point<int16_t> spawnpoint = portals.getspawnpoint(portalid);
+		Point<int16_t> spawnpoint = portals.get_portal_by_id(portalid);
 		Point<int16_t> startpos = physics.getgroundbelow(spawnpoint);
 		player.respawn(startpos, mapinfo.isswimmap());
 		camera.setposition(startpos);
@@ -123,19 +106,23 @@ namespace Gameplay
 	{
 		if (state == ACTIVE)
 		{
-			Point<int16_t> viewpos = camera.getposition(alpha);
-			backgrounds.drawbackgrounds(viewpos, alpha);
+			Point<int16_t> viewpos = camera.position(alpha);
+			Point<double> viewrpos = camera.realposition(alpha);
+			double viewx = viewrpos.x();
+			double viewy = viewrpos.y();
+
+			backgrounds.drawbackgrounds(viewx, viewy, alpha);
 			for (uint8_t i = 0; i < MapLayers::NUM_LAYERS; i++)
 			{
 				layers.draw(i, viewpos, alpha);
-				npcs.draw(i, viewpos, alpha);
-				mobs.draw(i, viewpos, alpha);
-				chars.draw(i, viewpos, alpha);
-				player.draw(i, viewpos, alpha);
-				drops.draw(i, viewpos, alpha);
+				npcs.draw(i, viewx, viewy, alpha);
+				mobs.draw(i, viewx, viewy, alpha);
+				chars.draw(i, viewx, viewy, alpha);
+				player.draw(i, viewx, viewy, alpha);
+				drops.draw(i, viewx, viewy, alpha);
 			}
 			portals.draw(viewpos, alpha);
-			backgrounds.drawforegrounds(viewpos, alpha);
+			backgrounds.drawforegrounds(viewx, viewy, alpha);
 		}
 	}
 
@@ -185,7 +172,7 @@ namespace Gameplay
 
 	void Stage::queuespawn(const Spawn* spawn)
 	{
-		spawnqueue.push(unique_ptr<const Spawn>(spawn));
+		spawnqueue.emplace(spawn);
 	}
 
 	const SpecialMove& Stage::getmove(int32_t moveid)
@@ -193,7 +180,7 @@ namespace Gameplay
 		bool newmove = !specialmoves.count(moveid);
 		if (newmove)
 		{
-			specialmoves[moveid] = unique_ptr<SpecialMove>(new Skill(moveid));
+			specialmoves[moveid] = std::make_unique<Skill>(moveid);
 		}
 		return *specialmoves[moveid];
 	}
@@ -224,7 +211,6 @@ namespace Gameplay
 			applyusemovement(move);
 			applyresultmovement(move, result);
 
-			using Net::AttackPacket;
 			AttackPacket(result).dispatch();
 		}
 		else
@@ -232,8 +218,7 @@ namespace Gameplay
 			move.applyuseeffects(player, Attack::MAGIC);
 
 			int32_t moveid = move.getid();
-			int32_t level = player.getskills().getlevel(moveid);
-			using Net::UseSkillPacket;
+			int32_t level = player.getskills().get_level(moveid);
 			UseSkillPacket(moveid, level).dispatch();
 		}
 	}
@@ -268,7 +253,7 @@ namespace Gameplay
 		if (result.mobcount == 0)
 			return;
 
-		int32_t oid = result.lastoid();
+		int32_t oid = result.get_last_oid();
 		auto mob = mobs.getmob(oid);
 		if (mob)
 		{
@@ -289,7 +274,6 @@ namespace Gameplay
 			const SpecialMove& move = getmove(attack.skill);
 			move.applyuseeffects(user, attack.type);
 
-			using Character::Stance;
 			Stance::Value stance = Stance::byid(attack.stance);
 			user.attack(stance);
 
@@ -328,13 +312,12 @@ namespace Gameplay
 		Portal::WarpInfo warpinfo = portals.findportal(playerpos);
 		if (warpinfo.mapid == mapid)
 		{
-			Point<int16_t> spawnpoint = portals.getspawnpoint(warpinfo.portal);
+			Point<int16_t> spawnpoint = portals.get_portal_by_name(warpinfo.portal);
 			Point<int16_t> startpos = physics.getgroundbelow(spawnpoint);
 			player.respawn(startpos, mapinfo.isswimmap());
 		}
 		else if (warpinfo.valid)
 		{
-			using Net::ChangeMapPacket;
 			ChangeMapPacket(false, warpinfo.mapid, warpinfo.portal, false).dispatch();
 		}
 	}
@@ -363,7 +346,6 @@ namespace Gameplay
 		const Drop* drop = drops.findinrange(playerpos);
 		if (drop)
 		{
-			using Net::PickupItemPacket;
 			PickupItemPacket(drop->getoid(), drop->getposition()).dispatch();
 		}
 	}
@@ -440,7 +422,7 @@ namespace Gameplay
 
 	Cursor::State Stage::sendmouse(bool pressed, Point<int16_t> position)
 	{
-		return npcs.sendmouse(pressed, position, camera.getposition(1.0f));
+		return npcs.sendmouse(pressed, position, camera.position());
 	}
 
 	bool Stage::isplayer(int32_t cid) const

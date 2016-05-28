@@ -16,12 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Constants.h"
 #include "Text.h"
 
-#include "Util\QuadTree.h"
-#include "Util\Singleton.h"
-#include "Util\rectangle2d.h"
+#include "..\Constants.h"
+#include "..\Util\QuadTree.h"
+#include "..\Util\Rectangle.h"
+#include "..\Util\Singleton.h"
 
 #include "nlnx\bitmap.hpp"
 
@@ -31,15 +31,10 @@
 #include FT_FREETYPE_H
 
 #include <unordered_map>
-#include <hash_set>
 #include <vector>
 
-namespace Graphics 
+namespace jrc 
 {
-	using std::vector;
-	using std::unordered_map;
-	using nl::bitmap;
-
 	// Graphics engine which uses OpenGL.
 	class GraphicsGL : public Singleton<GraphicsGL>
 	{
@@ -55,15 +50,15 @@ namespace Graphics
 		void clear();
 
 		// Add a bitmap to the available resources.
-		void addbitmap(const bitmap& bmp);
+		void addbitmap(const nl::bitmap& bmp);
 		// Draw the bitmap with the given parameters.
-		void draw(const bitmap& bmp, int16_t x, int16_t y, int16_t tx, int16_t ty,
+		void draw(const nl::bitmap& bmp, int16_t x, int16_t y, int16_t tx, int16_t ty,
 			float a, float xs, float ys, int16_t cx, int16_t cy, float ang);
 
 		// Create a layout for the text with the parameters specified.
-		Text::Layout createlayout(const string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth);
+		Text::Layout createlayout(const std::string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth);
 		// Draw a text with the given parameters.
-		void drawtext(const string& text, const Text::Layout& layout, Text::Font font, 
+		void drawtext(const std::string& text, const Text::Layout& layout, Text::Font font,
 			Text::Color color, Text::Background back, Point<int16_t> origin, float opacity);
 
 		// Draw a rectangle filled with the specified color.
@@ -109,7 +104,7 @@ namespace Graphics
 			}
 		};
 		// Add a bitmap to the available resources.
-		const Offset& getoffset(const bitmap& bmp);
+		const Offset& getoffset(const nl::bitmap& bmp);
 
 		struct Leftover
 		{
@@ -250,7 +245,7 @@ namespace Graphics
 
 		bool locked;
 
-		vector<Quad> quads;
+		std::vector<Quad> quads;
 		GLuint vbo;
 		GLuint atlas;
 
@@ -263,7 +258,7 @@ namespace Graphics
 		GLint uniform_yoffset;
 		GLint uniform_fontregion;
 
-		unordered_map<size_t, Offset> offsets;
+		std::unordered_map<size_t, Offset> offsets;
 		Offset nulloffset;
 
 		QuadTree<size_t, Leftover> leftovers;

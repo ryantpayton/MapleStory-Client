@@ -16,17 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\OutPacket.h"
-#include "Net\SendOpcodes.h"
+#include "..\OutPacket.h"
+#include "..\SendOpcodes.h"
 
-#include "Character\Inventory\Inventory.h"
+#include "..\..\Character\Inventory\Inventory.h"
 
-namespace Net
+namespace jrc
 {
-	using Character::Inventory;
-	using Character::Clothing;
-	using Character::Equipslot;
-
 	// Packet which requests that the inventory is sorted.
 	// Opcode: GATHER_ITEMS(69)
 	class GatherItemsPacket : public OutPacket

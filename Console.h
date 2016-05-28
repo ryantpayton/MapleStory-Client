@@ -16,31 +16,33 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Singleton.h"
 #include "Journey.h"
-#include <hash_set>
+
+#include "Util\Singleton.h"
+
+#include <unordered_set>
 #include <string>
 #include <iostream>
 
-using std::hash_set;
-using std::string;
-
-class Console : public Singleton<Console>
+namespace jrc
 {
-public:
-	void print(string str)
+	class Console : public Singleton<Console>
 	{
+	public:
+		void print(const std::string& str)
+		{
 #ifdef JOURNEY_PRINT_WARNINGS
 
-		if (!printed.count(str))
-		{
-			std::cout << str << std::endl;
-			printed.insert(str);
-		}
+			if (!printed.count(str))
+			{
+				std::cout << str << std::endl;
+				printed.insert(str);
+			}
 
 #endif
-	}
+		}
 
-private:
-	hash_set<string> printed;
-};
+	private:
+		std::unordered_set<std::string> printed;
+	};
+}

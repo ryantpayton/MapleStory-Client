@@ -16,13 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Textfield.h"
-#include "Constants.h"
-#include "IO\UI.h"
 
-namespace IO
+#include "..\UI.h"
+
+#include "..\..\Constants.h"
+
+namespace jrc
 {
 	Textfield::Textfield(Text::Font font, Text::Alignment alignment, 
-		Text::Color color, rectangle2d<int16_t> bnd, size_t lim) {
+		Text::Color color, Rectangle<int16_t> bnd, size_t lim) {
 
 		textlabel = Text(font, alignment, color);
 		marker = Text(font, alignment, color);
@@ -90,12 +92,12 @@ namespace IO
 		}
 	}
 
-	void Textfield::setonreturn(function<void(string)> or)
+	void Textfield::setonreturn(std::function<void(std::string)> or)
 	{
 		onreturn = or;
 	}
 
-	void Textfield::setkey(Keyboard::Action key, function<void(void)> action)
+	void Textfield::setkey(Keyboard::Action key, std::function<void(void)> action)
 	{
 		callbacks[key] = action;
 	}
@@ -171,7 +173,7 @@ namespace IO
 		}
 	}
 
-	void Textfield::sendstring(string str)
+	void Textfield::sendstring(std::string str)
 	{
 		for (char c : str)
 		{
@@ -184,11 +186,11 @@ namespace IO
 		}
 	}
 
-	void Textfield::modifytext(string t)
+	void Textfield::modifytext(std::string t)
 	{
 		if (crypt > 0)
 		{
-			string crypted;
+			std::string crypted;
 			crypted.insert(0, t.size(), crypt);
 			textlabel.settext(crypted, 0);
 		}
@@ -205,8 +207,8 @@ namespace IO
 		if (state == DISABLED)
 			return Cursor::IDLE;
 
-		auto bounds = getbounds();
-		if (bounds.contains(cursorpos))
+		auto abs_bounds = getbounds();
+		if (abs_bounds.contains(cursorpos))
 		{
 			if (clicked)
 			{
@@ -238,7 +240,7 @@ namespace IO
 		}
 	}
 
-	void Textfield::settext(string t)
+	void Textfield::settext(std::string t)
 	{
 		modifytext(t);
 		markerpos = text.size();
@@ -262,7 +264,7 @@ namespace IO
 		}
 	}
 
-	string Textfield::gettext() const
+	std::string Textfield::gettext() const
 	{
 		return text;
 	}
@@ -272,8 +274,11 @@ namespace IO
 		return state;
 	}
 
-	rectangle2d<int16_t> Textfield::getbounds() const
+	Rectangle<int16_t> Textfield::getbounds() const
 	{
-		return rectangle2d<int16_t>(bounds.getlt() + parentpos, bounds.getrb() + parentpos);
+		return Rectangle<int16_t>(
+			bounds.getlt() + parentpos, 
+			bounds.getrb() + parentpos
+			);
 	}
 }

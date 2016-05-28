@@ -16,21 +16,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Skillbook.h"
-#include "Timer.h"
 
-namespace Character
+#include "..\Timer.h"
+
+namespace jrc
 {
-	void Skillbook::setskill(int32_t id, int32_t level, int32_t mlevel, int64_t expire)
+	void Skillbook::set_skill(int32_t id, int32_t level, int32_t mlevel, int64_t expire)
 	{
 		skillentries[id] = { level, mlevel, expire };
 	}
 
-	void Skillbook::setcd(int32_t id, int32_t cd)
+	void Skillbook::set_cd(int32_t id, int32_t cd)
 	{
 		cooldowns[id] = cd;
 	}
 
-	bool Skillbook::iscooling(int32_t id)
+	bool Skillbook::is_cooling(int32_t id)
 	{
 		auto cditer = cooldowns.find(id);
 		if (cditer != cooldowns.end())
@@ -51,18 +52,18 @@ namespace Character
 		}
 	}
 
-	bool Skillbook::hasskill(int32_t id) const
+	bool Skillbook::has_skill(int32_t id) const
 	{
 		return skillentries.count(id) > 0;
 	}
 
-	int32_t Skillbook::getlevel(int32_t id) const
+	int32_t Skillbook::get_level(int32_t id) const
 	{
-		return hasskill(id) ? skillentries.at(id).level : 0;
+		return has_skill(id) ? skillentries.at(id).level : 0;
 	}
 
-	int32_t Skillbook::getmasterlevel(int32_t id) const
+	int32_t Skillbook::get_masterlevel(int32_t id) const
 	{
-		return hasskill(id) ? skillentries.at(id).masterlevel : 0;
+		return has_skill(id) ? skillentries.at(id).masterlevel : 0;
 	}
 }

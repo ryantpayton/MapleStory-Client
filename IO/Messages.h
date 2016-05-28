@@ -16,15 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Character\Look\Weapon.h"
-#include "Util\EnumMap.h"
+#include "..\Character\Look\Weapon.h"
+#include "..\Util\EnumMap.h"
 
 #include <string>
 
-namespace IO
+namespace jrc
 {
-	using std::string;
-
 	class Messages
 	{
 	public:
@@ -47,11 +45,12 @@ namespace IO
 
 		Messages();
 
-		string stringfor(Type type);
+		std::string stringfor(Type type);
 
 	private:
-		EnumMap<Type, string> messages;
+		EnumMap<Type, std::string> messages;
 	};
+
 
 	class InChatMessage
 	{
@@ -64,11 +63,10 @@ namespace IO
 		Messages::Type type;
 	};
 
+
 	class NoBulletsMessage : public InChatMessage
 	{
 	public:
-		using Weapon = Character::Weapon;
-
 		NoBulletsMessage(Weapon::Type weapon);
 
 	private:

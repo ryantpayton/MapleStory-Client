@@ -16,11 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "GraphicsGL.h"
-#include "Console.h"
+
+#include "..\Console.h"
 
 #include <algorithm>
 
-namespace Graphics
+namespace jrc
 {
 	GraphicsGL::GraphicsGL()
 	{
@@ -263,12 +264,12 @@ namespace Graphics
 		}
 	}
 
-	void GraphicsGL::addbitmap(const bitmap& bmp)
+	void GraphicsGL::addbitmap(const nl::bitmap& bmp)
 	{
 		getoffset(bmp);
 	}
 
-	const GraphicsGL::Offset& GraphicsGL::getoffset(const bitmap& bmp)
+	const GraphicsGL::Offset& GraphicsGL::getoffset(const nl::bitmap& bmp)
 	{
 		size_t id = bmp.id();
 		auto offiter = offsets.find(id);
@@ -388,7 +389,7 @@ namespace Graphics
 			).first->second;
 	}
 
-	void GraphicsGL::draw(const bitmap& bmp, int16_t x, int16_t y, int16_t w, int16_t h, float alpha,
+	void GraphicsGL::draw(const nl::bitmap& bmp, int16_t x, int16_t y, int16_t w, int16_t h, float alpha,
 		float xscale, float yscale, int16_t centerx, int16_t centery, float angle) {
 
 		if (locked)
@@ -409,7 +410,7 @@ namespace Graphics
 		}
 	}
 
-	Text::Layout GraphicsGL::createlayout(const string& text, Text::Font id, Text::Alignment alignment, int16_t maxwidth)
+	Text::Layout GraphicsGL::createlayout(const std::string& text, Text::Font id, Text::Alignment alignment, int16_t maxwidth)
 	{
 		auto builder = LayoutBuilder(fonts[id], alignment, maxwidth);
 
@@ -423,7 +424,7 @@ namespace Graphics
 		while (offset < last)
 		{
 			size_t space = text.find(' ', offset + 1);
-			if (space == string::npos)
+			if (space == std::string::npos)
 				space = last;
 
 			first = builder.addword(p_text, first, offset, space);
@@ -501,7 +502,7 @@ namespace Graphics
 	}
 
 
-	void GraphicsGL::drawtext(const string& text, const Text::Layout& layout, Text::Font id, Text::Color colorid,
+	void GraphicsGL::drawtext(const std::string& text, const Text::Layout& layout, Text::Font id, Text::Color colorid,
 		Text::Background background, Point<int16_t> origin, float opacity) {
 
 		if (locked)
@@ -636,6 +637,9 @@ namespace Graphics
 
 	void GraphicsGL::clearscene()
 	{
-		quads.clear();
+		if (!locked)
+		{
+			quads.clear();
+		}
 	}
 }

@@ -18,7 +18,7 @@
 #pragma once
 #include "InPacket.h"
 
-namespace Net
+namespace jrc
 {
 	// Interface for classes that handle InPackets.
 	class PacketHandler

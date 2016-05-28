@@ -16,16 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\Packets\MovementPacket.h"
+#include "MovementPacket.h"
 
-namespace Net
+namespace jrc
 {
 	// Requests the server to warp the player to a different map.
 	// Opcode: CHANGE_MAP(38)
 	class ChangeMapPacket : public OutPacket
 	{
 	public:
-		ChangeMapPacket(bool died, int32_t targetid, string targetp, bool usewheel) : OutPacket(CHANGEMAP)
+		ChangeMapPacket(bool died, int32_t targetid, const std::string& targetp, bool usewheel) : OutPacket(CHANGEMAP)
 		{
 			writech(died);
 			writeint(targetid);
@@ -41,7 +41,7 @@ namespace Net
 	class MovePlayerPacket : public MovementPacket
 	{
 	public:
-		MovePlayerPacket(const vector<Movement>& movements) : MovementPacket(MOVE_PLAYER)
+		MovePlayerPacket(const std::vector<Movement>& movements) : MovementPacket(MOVE_PLAYER)
 		{
 			skip(9);
 			writech(static_cast<int8_t>(movements.size()));

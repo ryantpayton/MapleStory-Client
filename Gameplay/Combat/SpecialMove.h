@@ -25,14 +25,12 @@
 
 #include <memory>
 
-namespace Gameplay
+namespace jrc
 {
 	// Base class for attacks and buffs.
 	class SpecialMove
 	{
 	public:
-		using Weapon = Character::Weapon;
-
 		enum ForbidReason
 		{
 			FBR_NONE,
@@ -56,13 +54,10 @@ namespace Gameplay
 		virtual ForbidReason canuse(int32_t level, Weapon::Type weapon, uint16_t job, uint16_t hp, uint16_t mp, uint16_t bullets) const = 0;
 
 	protected:
-		template <typename T>
-		using unique_ptr = std::unique_ptr<T>;
-
-		unique_ptr<SkillAction> action;
-		unique_ptr<SkillBullet> bullet;
-		unique_ptr<SkillSound> sound;
-		unique_ptr<SkillUseEffect> useeffect;
-		unique_ptr<SkillHitEffect> hiteffect;
+		std::unique_ptr<SkillAction> action;
+		std::unique_ptr<SkillBullet> bullet;
+		std::unique_ptr<SkillSound> sound;
+		std::unique_ptr<SkillUseEffect> useeffect;
+		std::unique_ptr<SkillHitEffect> hiteffect;
 	};
 }

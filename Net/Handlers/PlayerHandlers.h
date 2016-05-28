@@ -16,10 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\PacketHandler.h"
-#include "Character\Buffstat.h"
+#include "..\PacketHandler.h"
 
-namespace Net
+#include "..\..\Character\Buffstat.h"
+
+namespace jrc
 {
 	// Parses keymappings and sends them to the Keyboard.
 	class KeymapHandler : public PacketHandler
@@ -50,8 +51,6 @@ namespace Net
 		void handle(InPacket& recv) const override;
 
 	protected:
-		using Buffstat = Character::Buffstat;
-
 		virtual void handlebuff(InPacket& recv, Buffstat::Value buff) const = 0;
 	};
 
@@ -61,8 +60,6 @@ namespace Net
 	class ApplyBuffHandler : public BuffHandler
 	{
 	protected:
-		using Buffstat = Character::Buffstat;
-
 		void handlebuff(InPacket& recv, Buffstat::Value buff) const override;
 	};
 
@@ -72,8 +69,6 @@ namespace Net
 	class CancelBuffHandler : public BuffHandler
 	{
 	protected:
-		using Buffstat = Character::Buffstat;
-
 		void handlebuff(InPacket& recv, Buffstat::Value buff) const override;
 	};
 

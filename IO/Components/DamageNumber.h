@@ -17,15 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Charset.h"
-#include "Gameplay\Physics\PhysicsObject.h"
-#include "Util\Interpolated.h"
-#include "Util\Point.h"
 
-namespace IO
+#include "..\..\Gameplay\Physics\PhysicsObject.h"
+#include "..\..\Util\Interpolated.h"
+#include "..\..\Util\Point.h"
+
+namespace jrc
 {
-	using std::pair;
-	using Gameplay::MovingObject;
-
 	class DamageNumber
 	{
 	public:
@@ -39,9 +37,8 @@ namespace IO
 
 		DamageNumber(Type type, int32_t damage, int16_t starty);
 		DamageNumber();
-		~DamageNumber();
 
-		void draw(Point<int16_t> parentpos, float alpha) const;
+		void draw(double viewx, double viewy, float alpha) const;
 		void setx(int16_t headx);
 		bool update();
 
@@ -55,12 +52,12 @@ namespace IO
 		bool miss;
 		bool multiple;
 		int8_t firstnum;
-		string restnum;
+		std::string restnum;
 		int16_t shift;
 		MovingObject moveobj;
 		Linear<float> opacity;
 
-		static pair<Charset, Charset> charsets[NUM_TYPES];
+		static std::pair<Charset, Charset> charsets[NUM_TYPES];
 	};
 }
 

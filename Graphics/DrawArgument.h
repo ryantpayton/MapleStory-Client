@@ -16,10 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Point.h"
+#include "..\Util\Point.h"
+
 #include <cstdint>
 
-namespace Graphics
+namespace jrc
 {
 	class DrawArgument
 	{

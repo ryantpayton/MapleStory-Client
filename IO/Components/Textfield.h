@@ -16,20 +16,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Cursor.h"
-#include "IO\Keyboard.h"
-#include "Graphics\Text.h"
-#include "Util\rectangle2d.h"
+#include "..\Cursor.h"
+#include "..\Keyboard.h"
+
+#include "..\..\Graphics\Text.h"
+#include "..\..\Util\Rectangle.h"
+
 #include <map>
 #include <functional>
 
-namespace IO
+namespace jrc
 {
-	using std::map;
-	using std::function;
-	using std::string;
-	using Graphics::Text;
-
 	class Textfield
 	{
 	public:
@@ -41,46 +38,46 @@ namespace IO
 		};
 
 		Textfield(Text::Font font, Text::Alignment alignment, Text::Color color,
-			rectangle2d<int16_t> bounds, size_t limit);
+			Rectangle<int16_t> bounds, size_t limit);
 		Textfield();
 		~Textfield();
 
 		void draw(Point<int16_t> position) const;
 		void update(Point<int16_t> parentpos);
 		void sendkey(Keyboard::Keytype type, int32_t code, bool down);
-		void sendstring(string str);
+		void sendstring(std::string str);
 
 		void setstate(State state);
-		void settext(string text);
+		void settext(std::string text);
 		void setcrypt(int8_t character);
 
-		void setonreturn(function<void(string)> onreturn);
-		void setkey(Keyboard::Action key, function<void(void)> action);
+		void setonreturn(std::function<void(std::string)> onreturn);
+		void setkey(Keyboard::Action key, std::function<void(void)> action);
 
 		Cursor::State sendcursor(Point<int16_t> cursorpos, bool clicked);
 
-		string gettext() const;
+		std::string gettext() const;
 		State getstate() const;
-		rectangle2d<int16_t> getbounds() const;
+		Rectangle<int16_t> getbounds() const;
 
 	private:
-		void modifytext(string);
+		void modifytext(std::string);
 		bool belowlimit() const;
 
 		Text textlabel;
-		string text;
+		std::string text;
 		Text marker;
 		bool showmarker;
 		uint16_t elapsed;
 		size_t markerpos;
-		rectangle2d<int16_t> bounds;
+		Rectangle<int16_t> bounds;
 		Point<int16_t> parentpos;
 		size_t limit;
 		int8_t crypt;
 		State state;
 
-		map<int32_t, function<void(void)>> callbacks;
-		function<void(string)> onreturn;
+		std::map<int32_t, std::function<void(void)>> callbacks;
+		std::function<void(std::string)> onreturn;
 	};
 }
 

@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Pet.h"
 
-namespace Character
+namespace jrc
 {
-	Pet::Pet(const ItemData& idt, int32_t id, bool cs, int64_t uqi, int64_t exp, string name, 
+	Pet::Pet(const ItemData& idt, int32_t id, bool cs, int64_t uqi, int64_t exp, std::string name,
 		int8_t level, int16_t cls, int8_t ful) : Item(idt, id, cs, uqi, exp, 1, "", 0) {
 
 		petname = name;

@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MapNpcs.h"
 
-#include "Net\Packets\NpcInteractionPackets.h"
+#include "..\..\Net\Packets\NpcInteractionPackets.h"
 
-namespace Gameplay
+namespace jrc
 {
 	void MapNpcs::sendspawn(const NpcSpawn& spawn, const Physics& physics)
 	{
@@ -52,7 +52,6 @@ namespace Gameplay
 				if (pressed)
 				{
 					// try finding dialogue first
-					using Net::TalkToNPCPacket;
 					TalkToNPCPacket(npc->getoid()).dispatch();
 					return Cursor::IDLE;
 				}

@@ -16,11 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Animation.h"
-#include "Util\Enum.h"
-#include "Util\EnumMap.h"
+#include "..\Graphics\Animation.h"
+#include "..\Util\EnumMap.h"
 
-namespace IO
+namespace jrc
 {
 	// Class that represents the mouse cursor.
 	class Cursor
@@ -58,8 +57,6 @@ namespace IO
 		Point<int16_t> getposition() const;
 
 	private:
-		using Animation = Graphics::Animation;
-
 		EnumMap<State, Animation> animations;
 
 		State state;

@@ -19,7 +19,7 @@
 
 #include "nlnx\nx.hpp"
 
-namespace IO
+namespace jrc
 {
 	Cursor::Cursor()
 	{
@@ -28,7 +28,7 @@ namespace IO
 
 	void Cursor::init()
 	{
-		node cursor = nl::nx::ui["Basic.img"]["Cursor"];
+		nl::node cursor = nl::nx::ui["Basic.img"]["Cursor"];
 		for (auto& key : animations.getkeys())
 		{
 			animations[key] = cursor[std::to_string(key)];

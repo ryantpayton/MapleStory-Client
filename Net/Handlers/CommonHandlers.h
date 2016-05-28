@@ -16,24 +16,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\PacketHandler.h"
-#include "Net\Session.h"
-#include "Net\Packets\CommonPackets.h"
+#include "..\PacketHandler.h"
+#include "..\Packets\CommonPackets.h"
 
-namespace Net
+namespace jrc
 {
 	class NxCheckRequestHandler : public PacketHandler
 	{
 #ifdef JOURNEY_USE_XXHASH
 		void handle(InPacket& recv) const override
 		{
-			uint64_t seed = recv.readlong();
-			NxCheckPacket(seed).dispatch();
-		}
-#else
-		void handle(InPacket&) const override
-		{
-			NxCheckPacket().dispatch();
+			uint64_t seed = recv.read_long();
+			NxCheckPacket(seed)
+				.dispatch();
 		}
 #endif
 	};

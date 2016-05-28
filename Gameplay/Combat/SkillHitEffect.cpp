@@ -17,11 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SkillHitEffect.h"
 
-#include "Util\Misc.h"
+#include "..\..\Util\Misc.h"
 
-namespace Gameplay
+namespace jrc
 {
-	SingleHitEffect::SingleHitEffect(node src)
+	SingleHitEffect::SingleHitEffect(nl::node src)
 		: effect(src["hit"]["0"]) {}
 
 	void SingleHitEffect::apply(const AttackUser& user, Mob& target) const
@@ -30,7 +30,7 @@ namespace Gameplay
 	}
 
 
-	TwoHHitEffect::TwoHHitEffect(node src)
+	TwoHHitEffect::TwoHHitEffect(nl::node src)
 		: effects(src["hit"]["0"], src["hit"]["1"]) {}
 
 	void TwoHHitEffect::apply(const AttackUser& user, Mob& target) const
@@ -39,11 +39,11 @@ namespace Gameplay
 	}
 
 
-	ByLevelHitEffect::ByLevelHitEffect(node src)
+	ByLevelHitEffect::ByLevelHitEffect(nl::node src)
 	{
-		for (node sub : src["CharLevel"])
+		for (auto sub : src["CharLevel"])
 		{
-			uint16_t level = StringConversion<uint16_t>(sub.name()).orzero();
+			uint16_t level = string_conversion::or_zero<uint16_t>(sub.name());
 			effects.emplace(level, sub["hit"]["0"]);
 		}
 	}
@@ -62,11 +62,11 @@ namespace Gameplay
 	}
 
 
-	ByLevelTwoHHitEffect::ByLevelTwoHHitEffect(node src)
+	ByLevelTwoHHitEffect::ByLevelTwoHHitEffect(nl::node src)
 	{
-		for (node sub : src["CharLevel"])
+		for (auto sub : src["CharLevel"])
 		{
-			auto level = StringConversion<uint16_t>(sub.name()).orzero();
+			auto level = string_conversion::or_zero<uint16_t>(sub.name());
 			effects.emplace(std::piecewise_construct,
 				std::forward_as_tuple(level), 
 				std::forward_as_tuple(sub["hit"]["0"], sub["hit"]["1"])
@@ -88,11 +88,11 @@ namespace Gameplay
 	}
 
 
-	BySkillLevelHitEffect::BySkillLevelHitEffect(node src)
+	BySkillLevelHitEffect::BySkillLevelHitEffect(nl::node src)
 	{
 		for (auto sub : src["level"])
 		{
-			auto level = StringConversion<int32_t>(sub.name()).orzero();
+			auto level = string_conversion::or_zero<int32_t>(sub.name());
 			effects.emplace(level, sub["hit"]["0"]);
 		}
 	}

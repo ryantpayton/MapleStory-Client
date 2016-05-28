@@ -18,15 +18,15 @@
 #pragma once
 #include "Item.h"
 
-namespace Character
+namespace jrc
 {
 	class Pet : public Item
 	{
 	public:
-		Pet(const ItemData&, int32_t, bool, int64_t, int64_t, string, int8_t, int16_t, int8_t);
+		Pet(const ItemData&, int32_t, bool, int64_t, int64_t, std::string, int8_t, int16_t, int8_t);
 		~Pet();
 	private:
-		string petname;
+		std::string petname;
 		char petlevel;
 		short closeness;
 		char fullness;

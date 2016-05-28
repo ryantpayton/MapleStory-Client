@@ -17,15 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "RegularAttack.h"
 
-namespace Gameplay
+namespace jrc
 {
 	RegularAttack::RegularAttack()
 	{
-		action = unique_ptr<SkillAction>(new RegularAction());
-		bullet = unique_ptr<SkillBullet>(new RegularBullet());
-		sound = unique_ptr<SkillSound>(new NoSkillSound());
-		useeffect = unique_ptr<SkillUseEffect>(new NoUseEffect());
-		hiteffect = unique_ptr<SkillHitEffect>(new NoHitEffect());
+		action = std::make_unique<RegularAction>();
+		bullet = std::make_unique<RegularBullet>();
+		sound = std::make_unique<NoSkillSound>();
+		useeffect = std::make_unique<NoUseEffect>();
+		hiteffect = std::make_unique<NoHitEffect>();
 	}
 
 	void RegularAttack::applystats(const Char& user, Attack& attack) const

@@ -16,34 +16,29 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Character\Maplestat.h"
-#include "Character\CharJob.h"
-#include "Net\InPacket.h"
+#include "InPacket.h"
+
+#include "..\Character\Maplestat.h"
+#include "..\Character\CharJob.h"
+
 #include <cstdint>
 #include <string>
 #include <map>
 #include <vector>
 
-namespace Net
+namespace jrc
 {
-	using std::string;
-	using std::vector;
-	using std::map;
-	using std::pair;
-	using Character::CharJob;
-	using Character::Maplestat;
-
 	struct StatsEntry
 	{
-		string name;
-		vector<int64_t> petids;
-		map<Maplestat::Value, uint16_t> stats;
+		std::string name;
+		std::vector<int64_t> petids;
+		std::map<Maplestat::Value, uint16_t> stats;
 		CharJob job;
 		int64_t exp;
 		int32_t mapid;
 		uint8_t portal;
-		pair<int32_t, int8_t> rank;
-		pair<int32_t, int8_t> jobrank;
+		std::pair<int32_t, int8_t> rank;
+		std::pair<int32_t, int8_t> jobrank;
 
 		uint16_t getstat(Maplestat::Value st) const
 		{
@@ -60,9 +55,9 @@ namespace Net
 		uint8_t skin;
 		int32_t faceid;
 		int32_t hairid;
-		map<int8_t, int32_t> equips;
-		map<int8_t, int32_t> maskedequips;
-		vector<int32_t> petids;
+		std::map<int8_t, int32_t> equips;
+		std::map<int8_t, int32_t> maskedequips;
+		std::vector<int32_t> petids;
 	};
 
 	struct CharEntry
@@ -77,8 +72,8 @@ namespace Net
 
 	struct Account
 	{
-		vector<CharEntry> chars;
-		string name = "";
+		std::vector<CharEntry> chars;
+		std::string name = "";
 		int32_t accid = 0;
 		bool female = true;
 		bool muted = false;
@@ -92,19 +87,16 @@ namespace Net
 	struct World
 	{
 		uint8_t wid = 0;
-		string name = "";
+		std::string name = "";
 		int8_t flag = 0;
-		string message = "";
+		std::string message = "";
 		uint8_t channelcount = 0;
-		vector<int8_t> chloads;
+		std::vector<int8_t> chloads;
 	};
 
 	class Login
 	{
 	public:
-		Login();
-		~Login();
-
 		void parseaccount(InPacket& recv);
 		void parseworlds(InPacket& recv);
 		void parsecharlist(InPacket& recv);
@@ -130,7 +122,7 @@ namespace Net
 	private:
 		Account account;
 		CharEntry nullchar;
-		vector<World> worlds;
+		std::vector<World> worlds;
 		uint8_t worldid;
 		uint8_t channelid;
 		int32_t charid;

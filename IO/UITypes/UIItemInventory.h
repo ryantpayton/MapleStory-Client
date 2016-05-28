@@ -16,25 +16,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
-#include "IO\UIDragElement.h"
-#include "IO\Components\Icon.h"
-#include "IO\Components\EquipTooltip.h"
-#include "IO\Components\ItemTooltip.h"
-#include "IO\Components\Slider.h"
-#include "Character\Inventory\Inventory.h"
+#include "..\Element.h"
+#include "..\UIDragElement.h"
+#include "..\Components\Icon.h"
+#include "..\Components\EquipTooltip.h"
+#include "..\Components\ItemTooltip.h"
+#include "..\Components\Slider.h"
 
-namespace IO
+#include "..\..\Character\Inventory\Inventory.h"
+
+namespace jrc
 {
-	using std::pair;
-	using Graphics::Animation;
-	using Graphics::Text;
-	using Character::Inventory;
-
 	// The Item inventory.
 	class UIItemInventory : public UIDragElement<PosINV>
 	{
 	public:
+		static constexpr Type TYPE = ITEMINVENTORY;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = true;
+
 		enum Buttons
 		{
 			BT_TAB_EQUIP,
@@ -103,31 +103,13 @@ namespace IO
 		Animation newitemtab;
 		Texture projectile;
 		Text mesolabel;
-		unique_ptr<Slider> slider;
+		std::unique_ptr<Slider> slider;
 
-		map<int16_t, unique_ptr<Icon>> icons;
+		std::map<int16_t, std::unique_ptr<Icon>> icons;
 
 		Inventory::Type tab;
-		pair<int16_t, int16_t> slotrange;
+		std::pair<int16_t, int16_t> slotrange;
 		Inventory::Type newtab;
 		int16_t newslot;
-	};
-
-	class ElementItemInventory : public Element
-	{
-		bool isunique() const override
-		{
-			return true;
-		}
-
-		UIElement::Type type() const override
-		{
-			return UIElement::ITEMINVENTORY;
-		}
-
-		UIElement* instantiate() const override
-		{
-			return new UIItemInventory();
-		}
 	};
 }

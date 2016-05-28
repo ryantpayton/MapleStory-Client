@@ -16,16 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Constants.h"
-
-#include "Net\InPacket.h"
 #include "Physics\PhysicsObject.h"
 
-namespace Gameplay
-{
-	using std::uint8_t;
-	using std::int16_t;
+#include "..\Constants.h"
+#include "..\Net\InPacket.h"
 
+namespace jrc
+{
 	struct Movement
 	{
 		enum Type
@@ -64,11 +61,6 @@ namespace Gameplay
 		uint8_t newstate;
 		int16_t duration;
 	};
-}
-
-namespace Net
-{
-	using Gameplay::Movement;
 
 	template <>
 	Movement InPacket::read<Movement>();

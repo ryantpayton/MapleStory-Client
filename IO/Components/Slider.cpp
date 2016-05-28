@@ -19,9 +19,9 @@
 #include "TwoSpriteButton.h"
 #include "nlnx\nx.hpp"
 
-namespace IO
+namespace jrc
 {
-	Slider::Slider(int32_t type, Range<int16_t> ver, int16_t xp, int16_t ur, int16_t rm, function<void(bool)> om)
+	Slider::Slider(int32_t type, Range<int16_t> ver, int16_t xp, int16_t ur, int16_t rm, std::function<void(bool)> om)
 	{
 		vertical = ver;
 		x = xp;
@@ -30,19 +30,19 @@ namespace IO
 		start = Point<int16_t>(x, vertical.first());
 		end = Point<int16_t>(x, vertical.second());
 
-		node src = nl::nx::ui["Basic.img"]["VScr" + std::to_string(type)];
+		auto src = nl::nx::ui["Basic.img"]["VScr" + std::to_string(type)];
 
-		node dsrc = src["disabled"];
+		auto dsrc = src["disabled"];
 		dbase = dsrc["base"];
 		dnext = dsrc["next"];
 		dprev = dsrc["prev"];
 
-		node esrc = src["enabled"];
+		auto esrc = src["enabled"];
 		base = esrc["base"];
 
-		prev = unique_ptr<Button>(new TwoSpriteButton(esrc["prev0"], esrc["prev1"], start));
-		next = unique_ptr<Button>(new TwoSpriteButton(esrc["next0"], esrc["next1"], end));
-		thumb = unique_ptr<Button>(new TwoSpriteButton(esrc["thumb0"], esrc["thumb1"]));
+		prev = std::make_unique<TwoSpriteButton>(esrc["prev0"], esrc["prev1"], start);
+		next = std::make_unique<TwoSpriteButton>(esrc["next0"], esrc["next1"], end);
+		thumb = std::make_unique<TwoSpriteButton>(esrc["thumb0"], esrc["thumb1"]);
 
 		buttonheight = dnext.getdimensions().y();
 
@@ -102,7 +102,6 @@ namespace IO
 	{
 		Point<int16_t> fill = Point<int16_t>(0, vertical.length() + buttonheight);
 
-		using Graphics::DrawArgument;
 		if (enabled)
 		{
 			base.draw(DrawArgument(position + start, fill));

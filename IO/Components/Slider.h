@@ -17,22 +17,21 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Button.h"
-#include "IO\Cursor.h"
-#include "Graphics\Texture.h"
+
+#include "..\Cursor.h"
+
+#include "..\..\Graphics\Texture.h"
+
 #include <functional>
 #include <memory>
 
-namespace IO
+namespace jrc
 {
-	using std::function;
-	using std::unique_ptr;
-	using std::pair;
-
 	class Slider
 	{
 	public:
 		Slider(int32_t type, Range<int16_t> vertical, int16_t x, 
-			int16_t unitrows, int16_t rowmax, function<void(bool upwards)> onmoved);
+			int16_t unitrows, int16_t rowmax, std::function<void(bool upwards)> onmoved);
 
 		bool isenabled() const;
 		void setenabled(bool enabled);
@@ -44,11 +43,9 @@ namespace IO
 		Cursor::State sendcursor(Point<int16_t> cursor, bool pressed);
 
 	private:
-		using Texture = Graphics::Texture;
-
 		Point<int16_t> getthumbpos() const;
 
-		function<void(bool upwards)> onmoved;
+		std::function<void(bool upwards)> onmoved;
 
 		Range<int16_t> vertical;
 		Point<int16_t> start;
@@ -65,8 +62,8 @@ namespace IO
 		Texture dnext;
 		Texture dprev;
 		Texture base;
-		unique_ptr<Button> next;
-		unique_ptr<Button> prev;
-		unique_ptr<Button> thumb;
+		std::unique_ptr<Button> next;
+		std::unique_ptr<Button> prev;
+		std::unique_ptr<Button> thumb;
 	};
 }

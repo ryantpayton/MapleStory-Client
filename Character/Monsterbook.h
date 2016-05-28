@@ -19,12 +19,8 @@
 #include <cstdint>
 #include <map>
 
-namespace Character
+namespace jrc
 {
-	using::std::int8_t;
-	using::std::int16_t;
-	using::std::int32_t;
-	using::std::map;
 	// Class that represents the monster card collection of an individual character.
 	class Monsterbook
 	{
@@ -35,7 +31,7 @@ namespace Character
 		void addcard(int16_t, int8_t);
 	private:
 		int32_t cover;
-		map<int16_t, int8_t> cards;
+		std::map<int16_t, int8_t> cards;
 	};
 }
 

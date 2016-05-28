@@ -16,14 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "PlayerStates.h"
-#include "Audio\Audio.h"
 
-namespace Character
+#include "..\Audio\Audio.h"
+
+namespace jrc
 {
 	// Base class
 	void PlayerState::playjumpsound() const
 	{
-		using Audio::Sound;
 		Sound(Sound::JUMP).play();
 	}
 
@@ -66,8 +66,7 @@ namespace Character
 			}
 		}
 
-		player.getphobj().clearflag(PhysicsObject::TURNATEDGES);
-		player.getphobj().clearflag(PhysicsObject::NOGRAVITY);
+		player.getphobj().clearflags();
 
 		player.setstate(state);
 	}
@@ -105,6 +104,12 @@ namespace Character
 				break;
 			}
 		}
+	}
+
+	void PlayerStandState::update(Player& player) const
+	{
+		if (player.getphobj().enablejd == false)
+			player.getphobj().setflag(PhysicsObject::CHECKBELOW);
 	}
 
 	void PlayerStandState::nextstate(Player& player) const
@@ -157,6 +162,9 @@ namespace Character
 	{
 		if (!player.isattacking() && haswalkinput(player))
 			player.getphobj().hforce += player.getflip() ? player.getwforce() : -player.getwforce();
+
+		if (player.getphobj().enablejd == false)
+			player.getphobj().setflag(PhysicsObject::CHECKBELOW);
 	}
 
 	void PlayerWalkState::nextstate(Player& player) const
@@ -235,6 +243,12 @@ namespace Character
 				break;
 			}
 		}
+	}
+
+	void PlayerProneState::update(Player& player) const
+	{
+		if (player.getphobj().enablejd == false)
+			player.getphobj().setflag(PhysicsObject::CHECKBELOW);
 	}
 
 

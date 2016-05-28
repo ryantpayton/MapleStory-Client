@@ -16,17 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Animation.h"
-#include "Util\rectangle2d.h"
+#include "..\..\Graphics\Animation.h"
+#include "..\..\Util\Rectangle.h"
+
 #include <cstdint>
 #include <map>
 
-namespace Gameplay
+namespace jrc
 {
-	using std::string;
-	using std::pair;
-	using Graphics::Animation;
-
 	class Portal
 	{
 	public:
@@ -57,10 +54,10 @@ namespace Gameplay
 		struct WarpInfo
 		{
 			int32_t mapid;
-			string portal;
+			std::string portal;
 			bool valid;
 
-			WarpInfo(int32_t mid, string pt)
+			WarpInfo(int32_t mid, std::string pt)
 			{
 				mapid = mid;
 				portal = pt;
@@ -71,25 +68,24 @@ namespace Gameplay
 				: WarpInfo(999999999, "") {}
 		};
 
-		Portal(const Animation* animation, Type type, string name, bool intramap, 
-			Point<int16_t> position, int32_t tomap, string toname);
+		Portal(const Animation* animation, Type type, std::string name, bool intramap,
+			Point<int16_t> position, int32_t tomap, std::string toname);
 		Portal();
-		~Portal();
 
+		void update(Point<int16_t> playerpos);
 		void draw(Point<int16_t> viewpos, float alpha) const;
-		void settouch(bool touched);
 
-		string getname() const;
+		std::string getname() const;
 		Type gettype() const;
 		Point<int16_t> getposition() const;
-		rectangle2d<int16_t> bounds() const;
+		Rectangle<int16_t> bounds() const;
 
 		WarpInfo getwarpinfo() const;
 
 	private:
 		const Animation* animation;
 		Type type;
-		string name;
+		std::string name;
 		Point<int16_t> position;
 		WarpInfo warpinfo;
 		bool touched;

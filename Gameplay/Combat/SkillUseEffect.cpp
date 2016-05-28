@@ -17,11 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SkillUseEffect.h"
 
-#include "Util\Misc.h"
+#include "..\..\Util\Misc.h"
 
-namespace Gameplay
+namespace jrc
 {
-	SingleUseEffect::SingleUseEffect(node src)
+	SingleUseEffect::SingleUseEffect(nl::node src)
 		: effect(src["effect"]) {}
 
 	void SingleUseEffect::apply(Char& target) const
@@ -30,7 +30,7 @@ namespace Gameplay
 	}
 
 
-	TwoHUseEffect::TwoHUseEffect(node src)
+	TwoHUseEffect::TwoHUseEffect(nl::node src)
 		: effects(src["effect"]["0"], src["effect"]["1"]) {}
 
 	void TwoHUseEffect::apply(Char& target) const
@@ -40,10 +40,10 @@ namespace Gameplay
 	}
 
 
-	MultiUseEffect::MultiUseEffect(node src)
+	MultiUseEffect::MultiUseEffect(nl::node src)
 	{
 		int8_t no = -1;
-		node sub = src["effect"];
+		nl::node sub = src["effect"];
 		while (sub)
 		{
 			effects.push_back(sub);
@@ -62,11 +62,11 @@ namespace Gameplay
 	}
 
 
-	ByLevelUseEffect::ByLevelUseEffect(node src)
+	ByLevelUseEffect::ByLevelUseEffect(nl::node src)
 	{
-		for (node sub : src["CharLevel"])
+		for (auto sub : src["CharLevel"])
 		{
-			auto level = StringConversion<uint16_t>(sub.name()).orzero();
+			auto level = string_conversion::or_zero<uint16_t>(sub.name());
 			effects.emplace(level, sub["effect"]);
 		}
 	}

@@ -16,26 +16,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "MapMobs.h"
-#include "Constants.h"
 
-#include "Util\BinaryTree.h"
+#include "..\..\Constants.h"
 
-namespace Gameplay
+#include <map>
+#include <algorithm>
+
+namespace jrc
 {
-	void MapMobs::draw(int8_t layer, Point<int16_t> viewpos, float alpha) const
+	void MapMobs::draw(int8_t layer, double viewx, double viewy, float alpha) const
 	{
-		MapObjects::draw(layer, viewpos, alpha);
+		MapObjects::draw(layer, viewx, viewy, alpha);
 
 		switch (layer)
 		{
 		case 7:
 			for (auto& be : bulleteffects)
 			{
-				be.draw(viewpos, alpha);
+				be.draw(viewx, viewy, alpha);
 			}
 			for (auto& dn : damagenumbers)
 			{
-				dn.draw(viewpos, alpha);
+				dn.draw(viewx, viewy, alpha);
 			}
 			break;
 		}
@@ -107,11 +109,11 @@ namespace Gameplay
 	AttackResult MapMobs::sendattack(const Attack& attack)
 	{
 		Point<int16_t> origin = attack.origin;
-		rectangle2d<int16_t> range = attack.range;
+		Rectangle<int16_t> range = attack.range;
 		int16_t hrange = static_cast<int16_t>(range.l() * attack.hrange);
 		if (attack.toleft)
 		{
-			range = rectangle2d<int16_t>(
+			range = Rectangle<int16_t>(
 				origin.x() + hrange,
 				origin.x() + range.r(),
 				origin.y() + range.t(),
@@ -120,7 +122,7 @@ namespace Gameplay
 		}
 		else
 		{
-			range = rectangle2d<int16_t>(
+			range = Rectangle<int16_t>(
 				origin.x() - range.r(),
 				origin.x() - hrange,
 				origin.y() + range.t(),
@@ -129,8 +131,8 @@ namespace Gameplay
 		}
 
 		uint8_t mobcount = attack.mobcount;
-		vector<int32_t> targets = findclosest(range, origin, mobcount);
 		AttackResult result = attack;
+		std::vector<int32_t> targets = findclosest(range, origin, mobcount);
 		for (auto& target : targets)
 		{
 			Optional<Mob> mob = getmob(target);
@@ -165,7 +167,7 @@ namespace Gameplay
 				Optional<Mob> mob = getmob(oid);
 				if (mob)
 				{
-					vector<DamageNumber> numbers = mob->placenumbers(line.second);
+					std::vector<DamageNumber> numbers = mob->placenumbers(line.second);
 					Point<int16_t> head = mob->getheadpos();
 
 					size_t i = 0;
@@ -213,7 +215,7 @@ namespace Gameplay
 				Optional<Mob> mob = getmob(oid);
 				if (mob)
 				{
-					vector<DamageNumber> numbers = mob->placenumbers(line.second);
+					std::vector<DamageNumber> numbers = mob->placenumbers(line.second);
 
 					size_t i = 0;
 					for (auto& number : numbers)
@@ -250,7 +252,7 @@ namespace Gameplay
 	}
 
 	// Not sure if I need this, maybe for AOE?
-	/*vector<int32_t> MapMobs::findclose(rectangle2d<int16_t> range, uint8_t mobcount) const
+	/*vector<int32_t> MapMobs::findclose(Rectangle<int16_t> range, uint8_t mobcount) const
 	{
 		vector<int32_t> targets;
 		for (auto& object : objects)
@@ -272,9 +274,9 @@ namespace Gameplay
 		return targets;
 	}*/
 
-	vector<int32_t> MapMobs::findclosest(rectangle2d<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const
+	std::vector<int32_t> MapMobs::findclosest(Rectangle<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const
 	{
-		BinaryTree<int32_t, int16_t> distancetree;
+		std::multimap<int16_t, int32_t> distances;
 		for (auto& object : objects)
 		{
 			auto mob = Optional<MapObject>(object.second.get())
@@ -283,16 +285,18 @@ namespace Gameplay
 			{
 				int32_t oid = mob->getoid();
 				int16_t distance = mob->getposition().distance(origin);
-				distancetree.add(oid, distance);
+				distances.emplace(distance, oid);
 			}
 		}
 
-		vector<int32_t> targets;
-		auto collector = [&](int32_t oid){
-			if (targets.size() < mobcount)
-				targets.push_back(oid);
-		};
-		distancetree.minwalk(collector);
+		std::vector<int32_t> targets;
+		for (auto& iter : distances)
+		{
+			if (targets.size() >= mobcount)
+				break;
+
+			targets.push_back(iter.second);
+		}
 		return targets;
 	}
 

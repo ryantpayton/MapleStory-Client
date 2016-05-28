@@ -19,23 +19,22 @@
 
 #include "nlnx\nx.hpp"
 
-namespace Gameplay
+namespace jrc
 {
-	SingleSkillSound::SingleSkillSound(string strid)
+	SingleSkillSound::SingleSkillSound(std::string strid)
 	{
-		using nl::node;
-		node soundsrc = nl::nx::sound["Skill.img"][strid];
+		nl::node soundsrc = nl::nx::sound["Skill.img"][strid];
 
 		usesound = soundsrc["Use"];
 		hitsound = soundsrc["Hit"];
 	}
 
-	void SingleSkillSound::playuse() const
+	void SingleSkillSound::play_use() const
 	{
 		usesound.play();
 	}
 
-	void SingleSkillSound::playhit() const
+	void SingleSkillSound::play_hit() const
 	{
 		hitsound.play();
 	}

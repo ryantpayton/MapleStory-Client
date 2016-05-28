@@ -16,26 +16,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Mob.h"
-#include "Constants.h"
 
-#include "Gameplay\Movement.h"
-#include "Net\Packets\GameplayPackets.h"
-#include "Util\Misc.h"
+#include "..\Movement.h"
+
+#include "..\..\Constants.h"
+#include "..\..\Net\Packets\GameplayPackets.h"
+#include "..\..\Util\Misc.h"
 
 #include "nlnx\nx.hpp"
 
 #include <algorithm>
 #include <functional>
 
-namespace Gameplay
+namespace jrc
 {
 	Mob::Mob(int32_t oi, int32_t mid, int8_t mode, int8_t st, uint16_t fh, 
 		bool newspawn, int8_t tm, Point<int16_t> position) : MapObject(oi) {
 
-		string strid = Format::extendid(mid, 7);
-		node src = nl::nx::mob[strid + ".img"];
+		std::string strid = string_format::extend_id(mid, 7);
+		nl::node src = nl::nx::mob[strid + ".img"];
 
-		node info = src["info"];
+		nl::node info = src["info"];
+
 		level = info["level"];
 		watk = info["PADamage"];
 		matk = info["MADamage"];
@@ -70,7 +72,8 @@ namespace Gameplay
 
 		name = nl::nx::string["Mob.img"][std::to_string(mid)]["name"];
 
-		node sndsrc = nl::nx::sound["Mob.img"][strid];
+		nl::node sndsrc = nl::nx::sound["Mob.img"][strid];
+
 		hitsound = sndsrc["Damage"];
 		diesound = sndsrc["Die"];
 
@@ -316,7 +319,6 @@ namespace Gameplay
 
 	void Mob::updatemovement()
 	{
-		using Net::MoveMobPacket;
 		MoveMobPacket(
 			oid, 
 			1, 0, 0, 0, 0, 0, 0, 
@@ -325,9 +327,9 @@ namespace Gameplay
 			).dispatch();
 	}
 
-	void Mob::draw(Point<int16_t> viewpos, float alpha) const
+	void Mob::draw(double viewx, double viewy, float alpha) const
 	{
-		Point<int16_t> absp = phobj.getposition(alpha) + viewpos;
+		Point<int16_t> absp = phobj.getabsolute(viewx, viewy, alpha);
 		Point<int16_t> headpos = getheadpos(absp);
 
 		effects.drawbelow(absp, alpha);
@@ -336,7 +338,6 @@ namespace Gameplay
 		{
 			float interopc = opacity.get(alpha);
 
-			using Graphics::DrawArgument;
 			animations.at(stance).draw(DrawArgument(absp, flip && !noflip, interopc), alpha);
 
 			if (showhp)
@@ -440,14 +441,13 @@ namespace Gameplay
 			case 4:
 				break;
 			}
-			using Graphics::DrawArgument;
 			effects.add(animation, DrawArgument(shift, f), z);
 		}
 	}
 
-	float Mob::calchitchance(int16_t leveldelta, int32_t accuracy) const
+	float Mob::calchitchance(int16_t leveldelta, int32_t player_accuracy) const
 	{
-		float faccuracy = static_cast<float>(accuracy);
+		float faccuracy = static_cast<float>(player_accuracy);
 		float hitchance = faccuracy / (((1.84f + 0.07f * leveldelta) * avoid) + 1.0f);
 		if (hitchance < 0.01f)
 		{
@@ -472,7 +472,7 @@ namespace Gameplay
 		return maxdamage < 1.0 ? 1.0 : maxdamage;
 	}
 
-	vector<pair<int32_t, bool>> Mob::calculatedamage(const Attack& attack)
+	std::vector<std::pair<int32_t, bool>> Mob::calculatedamage(const Attack& attack)
 	{
 		double mindamage;
 		double maxdamage;
@@ -500,7 +500,7 @@ namespace Gameplay
 			break;
 		}
 
-		auto result = vector<pair<int32_t, bool>>(attack.hitcount);
+		std::vector<std::pair<int32_t, bool>> result(attack.hitcount);
 		std::generate(result.begin(), result.end(), [&](){
 			return randomdamage(mindamage, maxdamage, hitchance, critical);
 		});
@@ -511,7 +511,7 @@ namespace Gameplay
 		return result;
 	}
 
-	pair<int32_t, bool> Mob::randomdamage(double mindamage, double maxdamage, float hitchance, float critical) const 
+	std::pair<int32_t, bool> Mob::randomdamage(double mindamage, double maxdamage, float hitchance, float critical) const
 	{
 		bool hit = randomizer.below(hitchance);
 		if (hit)
@@ -542,9 +542,9 @@ namespace Gameplay
 		}
 	}
 
-	vector<DamageNumber> Mob::placenumbers(vector<pair<int32_t, bool>> damagelines) const
+	std::vector<DamageNumber> Mob::placenumbers(std::vector<std::pair<int32_t, bool>> damagelines) const
 	{
-		vector<DamageNumber> numbers;
+		std::vector<DamageNumber> numbers;
 		int16_t head = getheadpos(getposition()).y();
 		for (size_t i = 0; i < damagelines.size(); i++)
 		{
@@ -590,12 +590,12 @@ namespace Gameplay
 		return active && !dying;
 	}
 
-	bool Mob::isinrange(const rectangle2d<int16_t>& range) const
+	bool Mob::isinrange(const Rectangle<int16_t>& range) const
 	{
 		if (!active)
 			return false;
 
-		rectangle2d<int16_t> bounds = animations.at(stance).getbounds();
+		Rectangle<int16_t> bounds = animations.at(stance).getbounds();
 		bounds.shift(getposition());
 		return range.overlaps(bounds);
 	}

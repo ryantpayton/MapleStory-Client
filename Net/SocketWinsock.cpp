@@ -15,10 +15,8 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Journey.h"
-#ifndef JOURNEY_USE_ASIO
 #include "SocketWinsock.h"
+#ifndef JOURNEY_USE_ASIO
 #include <WinSock2.h>
 #include <ws2tcpip.h>
 
@@ -26,7 +24,7 @@
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
 
-namespace Net
+namespace jrc
 {
 	bool SocketWinsock::open(const char* iaddr, const char* port)
 	{
@@ -107,7 +105,7 @@ namespace Net
 
 	size_t SocketWinsock::receive(bool* success)
 	{
-		timeval timeout = { 0, 1000 };
+		timeval timeout = { 0, 0 };
 		fd_set sockset = { 0 };
 		FD_SET(sock, &sockset);
 		int result = select(0, &sockset, 0, 0, &timeout);

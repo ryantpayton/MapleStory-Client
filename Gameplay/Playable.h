@@ -16,12 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Keyboard.h"
+#include "..\IO\Keyboard.h"
 
-namespace Gameplay
+namespace jrc
 {
-	using IO::Keyboard;
-
 	// Interface for classes which can be controlled through key inputs.
 	class Playable
 	{

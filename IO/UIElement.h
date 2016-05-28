@@ -20,21 +20,20 @@
 
 #include "Components\Button.h"
 #include "Components\Icon.h"
-#include "Graphics\Sprite.h"
+
+#include "..\Graphics\Sprite.h"
 
 #include <map>
 #include <memory>
 
-namespace IO
+namespace jrc
 {
-	using std::vector;
-	using std::map;
-	using std::unique_ptr;
-
 	// Base class for all types of user interfaces on screen.
 	class UIElement
 	{
 	public:
+		using UPtr = std::unique_ptr<UIElement>;
+
 		enum Type
 		{
 			NONE,
@@ -75,13 +74,11 @@ namespace IO
 		virtual Cursor::State sendmouse(bool clicked, Point<int16_t> cursorpos);
 
 	protected:
-		using Sprite = Graphics::Sprite;
-
 		UIElement();
 
 		Point<int16_t> dimension;
-		map<uint16_t, unique_ptr<Button>> buttons;
-		vector<Sprite> sprites;
+		std::map<uint16_t, std::unique_ptr<Button>> buttons;
+		std::vector<Sprite> sprites;
 
 		Point<int16_t> position;
 		bool active;

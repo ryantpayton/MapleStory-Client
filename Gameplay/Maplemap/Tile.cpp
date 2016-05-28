@@ -18,31 +18,17 @@
 #include "Tile.h"
 #include "nlnx\nx.hpp"
 
-namespace Gameplay
+namespace jrc
 {
-	Tile::Tile(node src, string ts)
+	Tile::Tile(nl::node src, const std::string& ts)
 	{
-		node dsrc = nl::nx::map["Tile"][ts][src["u"]][src["no"]];
+		nl::node dsrc = nl::nx::map["Tile"][ts][src["u"]][src["no"]];
 		texture = Texture(nl::nx::map["Tile"][ts][src["u"]][src["no"]]);
 		pos = Point<int16_t>(src["x"], src["y"]);
 		z = dsrc["z"];
 		if (z == 0)
 			z = dsrc["zM"];
 	}
-
-	Tile::Tile(InPacket& recv, string ts)
-	{
-		string u = recv.read<string>();
-		string no = recv.read<string>();
-		node dsrc = nl::nx::map["Tile"][ts][u][no];
-		texture = Texture(dsrc);
-		pos = recv.readpoint();
-		z = dsrc["z"];
-		if (z == 0)
-			z = dsrc["zM"];
-	}
-
-	Tile::~Tile() {}
 
 	void Tile::draw(Point<int16_t> viewpos) const
 	{

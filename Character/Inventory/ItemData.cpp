@@ -16,15 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "ItemData.h"
+
 #include "nlnx\nx.hpp"
 
-namespace Character
+namespace jrc
 {
 	ItemData::ItemData(int32_t id)
 	{
-		using nl::node;
-		node src;
-		node strsrc;
+		nl::node src;
+		nl::node strsrc;
 
 		int32_t prefix = id / 1000000;
 		switch (prefix)
@@ -86,9 +86,9 @@ namespace Character
 
 	ItemData::~ItemData() {}
 
-	string ItemData::geteqcategory(int32_t id) const
+	std::string ItemData::geteqcategory(int32_t id) const
 	{
-		static const string categorynames[15] =
+		static constexpr char* categorynames[15] =
 		{
 			"Cap", "Accessory", "Accessory", "Accessory", "Coat", "Longcoat",
 			"Pants", "Shoes", "Glove", "Shield", "Cape", "Ring", "Accessory",
@@ -104,7 +104,7 @@ namespace Character
 			return "";
 	}
 
-	string ItemData::getcategory() const
+	std::string ItemData::getcategory() const
 	{
 		return category;
 	}
@@ -124,12 +124,12 @@ namespace Character
 		return price;
 	}
 
-	string ItemData::getname() const
+	std::string ItemData::getname() const
 	{
 		return name;
 	}
 
-	string ItemData::getdesc() const
+	std::string ItemData::getdesc() const
 	{
 		return desc;
 	}

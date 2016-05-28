@@ -26,26 +26,16 @@
 
 #include "Look\CharLook.h"
 #include "Inventory\Inventory.h"
-#include "Gameplay\Playable.h"
-#include "Gameplay\Physics\Physics.h"
-#include "Gameplay\Movement.h"
-#include "Gameplay\Maplemap\MapInfo.h"
-#include "Gameplay\Combat\Attack.h"
-#include "Gameplay\Combat\Skill.h"
 
-namespace Character
+#include "..\Gameplay\Playable.h"
+#include "..\Gameplay\Physics\Physics.h"
+#include "..\Gameplay\Movement.h"
+#include "..\Gameplay\Maplemap\MapInfo.h"
+#include "..\Gameplay\Combat\Attack.h"
+#include "..\Gameplay\Combat\Skill.h"
+
+namespace jrc
 {
-	using Net::CharEntry;
-	using Gameplay::Playable;
-	using Gameplay::Physics;
-	using Gameplay::Movement;
-	using Gameplay::Ladder;
-	using Gameplay::Seat;
-	using Gameplay::Attack;
-	using Gameplay::Skill;
-	using Gameplay::SpecialMove;
-	using IO::Keyboard;
-
 	class Player : public Playable, public Char
 	{
 	public:
@@ -54,7 +44,7 @@ namespace Character
 		Player();
 
 		// Draw the player.
-		void draw(uint8_t layer, Point<int16_t> viewpos, float alpha) const;
+		void draw(uint8_t layer, double viewx, double viewy, float alpha) const;
 		// Update the player's animation, physics and states.
 		int8_t update(const Physics& physics) override;
 		// Set flipped ignore if attacking.
@@ -139,8 +129,6 @@ namespace Character
 		Monsterbook& getmonsterbook();
 
 	private:
-		using PhysicsObject = Gameplay::PhysicsObject;
-
 		CharStats stats;
 		Inventory inventory;
 		Skillbook skillbook;
@@ -148,11 +136,11 @@ namespace Character
 		Telerock telerock;
 		Monsterbook monsterbook;
 
-		map<Buffstat::Value, Buff> buffs;
+		std::map<Buffstat::Value, Buff> buffs;
 
-		map<Keyboard::Action, bool> keysdown;
+		std::map<Keyboard::Action, bool> keysdown;
 
-		vector<Movement> movements;
+		std::vector<Movement> movements;
 		Movement lastmove;
 
 		Optional<const Ladder> ladder;

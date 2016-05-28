@@ -18,34 +18,34 @@
 #include "Mapobjects.h"
 #include <vector>
 
-namespace Gameplay
+namespace jrc
 {
-	void MapObjects::draw(int8_t layer, Point<int16_t> viewpos, float alpha) const
+	void MapObjects::draw(int8_t layer, double viewx, double viewy, float alpha) const
 	{
 		for (auto& oid : layers[layer])
 		{
 			auto mmo = get(oid);
 			if (mmo && mmo->isactive())
 			{
-				mmo->draw(viewpos, alpha);
+				mmo->draw(viewx, viewy, alpha);
 			}
 		}
 	}
 
 	void MapObjects::update(const Physics& physics)
 	{
-		vector<int32_t> toremove;
-		for (auto& obit : objects)
+		for (auto iter = objects.begin(); iter != objects.end();)
 		{
-			int32_t oid = obit.first;
-			MapObject* mmo = obit.second.get();
+			bool remove_mob = false;
+			int32_t oid = iter->first;
+			MapObject* mmo = iter->second.get();
 			if (mmo)
 			{
 				int8_t oldlayer = mmo->getlayer();
 				int8_t newlayer = mmo->update(physics);
 				if (newlayer == -1)
 				{
-					toremove.push_back(oid);
+					remove_mob = true;
 				}
 				else if (newlayer != oldlayer)
 				{
@@ -55,12 +55,17 @@ namespace Gameplay
 			}
 			else
 			{
-				toremove.push_back(oid);
+				remove_mob = true;
 			}
-		}
-		for (auto& oid : toremove)
-		{
-			remove(oid);
+
+			if (remove_mob)
+			{
+				iter = objects.erase(iter);
+			}
+			else
+			{
+				iter++;
+			}
 		}
 	}
 
@@ -80,7 +85,7 @@ namespace Gameplay
 		{
 			int32_t oid = toadd->getoid();
 			int8_t layer = toadd->getlayer();
-			objects[oid] = unique_ptr<MapObject>(toadd);
+			objects[oid] = std::unique_ptr<MapObject>(toadd);
 			layers[layer].insert(oid);
 		}
 	}

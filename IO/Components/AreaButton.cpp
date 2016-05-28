@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "AreaButton.h"
 
-namespace IO
+namespace jrc
 {
 	AreaButton::AreaButton(Point<int16_t> pos, Point<int16_t> dim)
 	{
@@ -27,9 +27,9 @@ namespace IO
 		active = true;
 	}
 
-	rectangle2d<int16_t> AreaButton::bounds(Point<int16_t> parentpos) const
+	Rectangle<int16_t> AreaButton::bounds(Point<int16_t> parentpos) const
 	{
 		Point<int16_t> absp = position + parentpos;
-		return rectangle2d<int16_t>(absp, absp + dimension);
+		return Rectangle<int16_t>(absp, absp + dimension);
 	}
 }

@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Monsterbook.h"
 
-namespace Character
+namespace jrc
 {
 	Monsterbook::Monsterbook() 
 	{

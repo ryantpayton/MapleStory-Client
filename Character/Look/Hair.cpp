@@ -18,28 +18,27 @@
 #include "Hair.h"
 #include "nlnx\nx.hpp"
 
-namespace Character
+namespace jrc
 {
 	Hair::Hair(int32_t hairid, const BodyDrawinfo& drawinfo)
 	{
-		using nl::node;
-		node hairnode = nl::nx::character["Hair"]["000" + std::to_string(hairid) + ".img"];
+		nl::node hairnode = nl::nx::character["Hair"]["000" + std::to_string(hairid) + ".img"];
 
 		for (auto it = Stance::getit(); it.hasnext(); it.increment())
 		{
 			Stance::Value stance = it.get();
-			string stancename = Stance::nameof(stance);
-			node stancenode = hairnode[stancename];
+			std::string stancename = Stance::nameof(stance);
+			nl::node stancenode = hairnode[stancename];
 			if (stancenode.size() == 0)
 				continue;
 
 			uint8_t frame = 0;
-			node framenode = stancenode[std::to_string(frame)];
+			nl::node framenode = stancenode[std::to_string(frame)];
 			while (framenode.size() > 0)
 			{
-				for (node partnode : framenode)
+				for (nl::node partnode : framenode)
 				{
-					string part = partnode.name();
+					std::string part = partnode.name();
 					Layer layer = layerbystring(part);
 
 					stances[stance][layer][frame] = partnode;
@@ -54,7 +53,7 @@ namespace Character
 
 		name = nl::nx::string["Eqp.img"]["Eqp"]["Hair"][std::to_string(hairid)]["name"];
 
-		static const string haircolors[8] =
+		static constexpr char* haircolors[8] =
 		{
 			"Black", "Red", "Orange", "Blonde", "Green", "Blue", "Violet", "Brown"
 		};
@@ -69,21 +68,23 @@ namespace Character
 
 	void Hair::draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const
 	{
-		if (!stances[stance].count(layer))
+		auto layerit = stances[stance].find(layer);
+		if (layerit == stances[stance].end())
 			return;
 
-		if (!stances[stance].at(layer).count(frame))
+		auto frameit = layerit->second.find(frame);
+		if (frameit == layerit->second.end())
 			return;
 
-		stances[stance].at(layer).at(frame).draw(args);
+		frameit->second.draw(args);
 	}
 
-	string Hair::getname() const
+	std::string Hair::getname() const
 	{ 
 		return name; 
 	}
 
-	string Hair::getcolor() const
+	std::string Hair::getcolor() const
 	{ 
 		return color; 
 	}

@@ -16,14 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "IconCover.h"
-#include "Constants.h"
 
-namespace IO
+#include "..\..\Constants.h"
+
+namespace jrc
 {
 	IconCover::IconCover(Type t, int32_t duration)
 	{
-		using Graphics::Geometry;
-		cover = Rectangle(30, 30, Geometry::BLACK, 0.6f);
+		cover = ColorBox(30, 30, Geometry::BLACK, 0.6f);
 
 		if (duration <= Constants::TIMESTEP)
 		{
@@ -53,7 +53,6 @@ namespace IO
 		if (interheight == 0)
 			return;
 
-		using Graphics::DrawArgument;
 		cover.draw(DrawArgument(position + Point<int16_t>(0, 30 - interheight), Point<int16_t>(30, interheight)));
 	}
 

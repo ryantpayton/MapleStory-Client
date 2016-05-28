@@ -16,12 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Interpolated.h"
-#include "Util\Point.h"
-#include "Util\Range.h"
+#include "..\Util\Interpolated.h"
+#include "..\Util\Point.h"
+#include "..\Util\Range.h"
+
 #include <cstdint>
 
-namespace Gameplay
+namespace jrc
 {
 	// View on stage which follows the player object.
 	class Camera
@@ -36,8 +37,12 @@ namespace Gameplay
 		void setposition(Point<int16_t> position);
 		// Updates the view's boundaries. Determined by mapinfo or footholds.
 		void updateview(Range<int16_t> hborders, Range<int16_t> vborders);
-		// Return the current position for drawing.
-		Point<int16_t> getposition(float alpha) const;
+		// Return the current position.
+		Point<int16_t> position() const;
+		// Return the interpolated position.
+		Point<int16_t> position(double alpha) const;
+		// Return the interpolated position.
+		Point<double> realposition(double alpha) const;
 
 	private:
 		// Movement variables.

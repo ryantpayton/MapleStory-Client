@@ -18,159 +18,162 @@
 #pragma once
 #include <stdexcept>
 
-template <typename T>
-class BoolPair
+namespace jrc
 {
-public:
-	template <typename...Args>
-	BoolPair(Args&&...argsf, Args&&...argss)
-		: first(std::forward<Args>(argsf)...), second(std::forward<Args>(argss)...) {}
-
-	BoolPair(T f, T s)
-		: first(f), second(s) {}
-
-	BoolPair() {}
-
-	template <typename...Args>
-	void set(bool b, Args&&...args)
-	{
-		if (b)
-		{
-			first = T(std::forward<Args>(args)...);
-		}
-		else
-		{
-			second = T(std::forward<Args>(args)...);
-		}
-	}
-
-	T& operator [](bool b)
-	{
-		return b ? first : second;
-	}
-
-	const T& operator [](bool b) const
-	{
-		return b ? first : second;
-	}
-
 	template <typename T>
-	class iterator
+	class BoolPair
 	{
 	public:
-		iterator(BoolPair<T>& p, size_t i)
-			: parent(p), index(i) {}
+		template <typename...Args>
+		BoolPair(Args&&...argsf, Args&&...argss)
+			: first(std::forward<Args>(argsf)...), second(std::forward<Args>(argss)...) {}
 
-		pair<bool, T&> operator *()
-		{
-			return pair<bool, T&>(first(), second());
-		}
+		BoolPair(T f, T s)
+			: first(f), second(s) {}
 
-		bool first() const
-		{
-			return index == 0;
-		}
+		BoolPair() {}
 
-		T& second()
+		template <typename...Args>
+		void set(bool b, Args&&...args)
 		{
-			switch (index)
+			if (b)
 			{
-			case 0:
-				return parent[true];
-			case 1:
-				return parent[false];
-			default:
-				throw std::out_of_range("iterator out of range");
+				first = T(std::forward<Args>(args)...);
+			}
+			else
+			{
+				second = T(std::forward<Args>(args)...);
 			}
 		}
 
-		iterator<T>& operator ++() 
+		T& operator [](bool b)
 		{
-			index++;
-			return *this;
+			return b ? first : second;
 		}
 
-		bool operator != (const iterator<T>& other) const
+		const T& operator [](bool b) const
 		{
-			return index != other.index;
+			return b ? first : second;
 		}
 
-	private:
-		iterator& operator = (const iterator&) = delete;
-
-		BoolPair<T>& parent;
-		size_t index;
-	};
-
-	template <typename T>
-	class const_iterator
-	{
-	public:
-		const_iterator(const BoolPair<T>& p, size_t i)
-			: parent(p), index(i) {}
-
-		pair<bool, const T&> operator *() const
+		template <typename T>
+		class iterator
 		{
-			return pair<bool, T&>(first(), second());
-		}
+		public:
+			iterator(BoolPair<T>& p, size_t i)
+				: parent(p), index(i) {}
 
-		bool first() const
-		{
-			return index == 0;
-		}
-
-		const T& second() const
-		{
-			switch (index)
+			std::pair<bool, T&> operator *()
 			{
-			case 0:
-				return parent[true];
-			case 1:
-				return parent[false];
-			default:
-				throw std::out_of_range("iterator out of range");
+				return pair<bool, T&>(first(), second());
 			}
+
+			bool first() const
+			{
+				return index == 0;
+			}
+
+			T& second()
+			{
+				switch (index)
+				{
+				case 0:
+					return parent[true];
+				case 1:
+					return parent[false];
+				default:
+					throw std::out_of_range("iterator out of range");
+				}
+			}
+
+			iterator<T>& operator ++()
+			{
+				index++;
+				return *this;
+			}
+
+			bool operator != (const iterator<T>& other) const
+			{
+				return index != other.index;
+			}
+
+		private:
+			iterator& operator = (const iterator&) = delete;
+
+			BoolPair<T>& parent;
+			size_t index;
+		};
+
+		template <typename T>
+		class const_iterator
+		{
+		public:
+			const_iterator(const BoolPair<T>& p, size_t i)
+				: parent(p), index(i) {}
+
+			std::pair<bool, const T&> operator *() const
+			{
+				return pair<bool, T&>(first(), second());
+			}
+
+			bool first() const
+			{
+				return index == 0;
+			}
+
+			const T& second() const
+			{
+				switch (index)
+				{
+				case 0:
+					return parent[true];
+				case 1:
+					return parent[false];
+				default:
+					throw std::out_of_range("iterator out of range");
+				}
+			}
+
+			iterator<T>& operator ++()
+			{
+				index++;
+				return *this;
+			}
+
+			bool operator != (const iterator<T>& other) const
+			{
+				return index != other.index;
+			}
+
+		private:
+			const_iterator& operator = (const const_iterator&) = delete;
+
+			const BoolPair<T>& parent;
+			size_t index;
+		};
+
+		iterator<T> begin()
+		{
+			return iterator<T>(*this, 0);
 		}
 
-		iterator<T>& operator ++()
+		iterator<T> end()
 		{
-			index++;
-			return *this;
+			return iterator<T>(*this, 2);
 		}
 
-		bool operator != (const iterator<T>& other) const
+		const_iterator<T> begin() const
 		{
-			return index != other.index;
+			return iterator<T>(*this, 0);
+		}
+
+		const_iterator<T> end() const
+		{
+			return iterator<T>(*this, 2);
 		}
 
 	private:
-		const_iterator& operator = (const const_iterator&) = delete;
-
-		const BoolPair<T>& parent;
-		size_t index;
+		T first;
+		T second;
 	};
-
-	iterator<T> begin()
-	{
-		return iterator<T>(*this, 0);
-	}
-
-	iterator<T> end()
-	{
-		return iterator<T>(*this, 2);
-	}
-
-	const_iterator<T> begin() const
-	{
-		return iterator<T>(*this, 0);
-	}
-
-	const_iterator<T> end() const
-	{
-		return iterator<T>(*this, 2);
-	}
-
-private:
-	T first;
-	T second;
-};
+}

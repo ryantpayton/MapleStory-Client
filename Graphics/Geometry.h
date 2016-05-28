@@ -17,10 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "DrawArgument.h"
-#include "Util\Point.h"
+
+#include "..\Util\Point.h"
+
 #include <cstdint>
 
-namespace Graphics
+namespace jrc
 {
 	class Geometry
 	{
@@ -45,11 +47,11 @@ namespace Graphics
 	};
 
 
-	class Rectangle : public Geometry
+	class ColorBox : public Geometry
 	{
 	public:
-		Rectangle(int16_t width, int16_t height, Geometry::Color color, float opacity);
-		Rectangle();
+		ColorBox(int16_t width, int16_t height, Geometry::Color color, float opacity);
+		ColorBox();
 
 		void setwidth(int16_t width);
 		void setheight(int16_t height);

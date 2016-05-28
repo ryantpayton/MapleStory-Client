@@ -17,25 +17,22 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Stance.h"
-#include "Util\Point.h"
+
+#include "..\..\Util\Point.h"
+
 #include <cstdint>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-namespace Character
+namespace jrc
 {
-	using std::uint8_t;
-	using std::uint16_t;
-	using std::string;
-	using std::vector;
-
 	// A frame of animation for a skill or similiar 'meta-stance'. 
 	// This simply redirects to a different stance and frame to use.
 	class BodyAction
 	{
 	public:
-		BodyAction(node src)
+		BodyAction(nl::node src)
 		{
 			stance = Stance::bystring(src["action"]);
 			frame = src["frame"];
@@ -91,15 +88,10 @@ namespace Character
 		bool attackframe;
 	};
 
-	using std::int16_t;
-	using std::unordered_map;
 
 	class BodyDrawinfo
 	{
 	public:
-		BodyDrawinfo();
-		~BodyDrawinfo();
-
 		void init();
 
 		Point<int16_t> getbodypos(Stance::Value stance, uint8_t frame) const;
@@ -111,20 +103,20 @@ namespace Character
 		uint8_t nextframe(Stance::Value stance, uint8_t frame) const;
 		uint16_t getdelay(Stance::Value stance, uint8_t frame) const;
 
-		uint16_t getattackdelay(string action, size_t no) const;
-		uint8_t nextacframe(string action, uint8_t frame) const;
-		const BodyAction* getaction(string action, uint8_t frame) const;
+		uint16_t getattackdelay(std::string action, size_t no) const;
+		uint8_t nextacframe(std::string action, uint8_t frame) const;
+		const BodyAction* getaction(std::string action, uint8_t frame) const;
 
 	private:
-		unordered_map<uint8_t, Point<int16_t>> bodyposmap[Stance::LENGTH];
-		unordered_map<uint8_t, Point<int16_t>> armposmap[Stance::LENGTH];
-		unordered_map<uint8_t, Point<int16_t>> handposmap[Stance::LENGTH];
-		unordered_map<uint8_t, Point<int16_t>> headposmap[Stance::LENGTH];
-		unordered_map<uint8_t, Point<int16_t>> hairposmap[Stance::LENGTH];
-		unordered_map<uint8_t, Point<int16_t>> faceposmap[Stance::LENGTH];
-		unordered_map<uint8_t, uint16_t> stancedelays[Stance::LENGTH];
+		std::unordered_map<uint8_t, Point<int16_t>> bodyposmap[Stance::LENGTH];
+		std::unordered_map<uint8_t, Point<int16_t>> armposmap[Stance::LENGTH];
+		std::unordered_map<uint8_t, Point<int16_t>> handposmap[Stance::LENGTH];
+		std::unordered_map<uint8_t, Point<int16_t>> headposmap[Stance::LENGTH];
+		std::unordered_map<uint8_t, Point<int16_t>> hairposmap[Stance::LENGTH];
+		std::unordered_map<uint8_t, Point<int16_t>> faceposmap[Stance::LENGTH];
+		std::unordered_map<uint8_t, uint16_t> stancedelays[Stance::LENGTH];
 
-		unordered_map<string, unordered_map<uint8_t, BodyAction>> bodyactions;
-		unordered_map<string, vector<uint16_t>> attackdelays;
+		std::unordered_map<std::string, std::unordered_map<uint8_t, BodyAction>> bodyactions;
+		std::unordered_map<std::string, std::vector<uint16_t>> attackdelays;
 	};
 }

@@ -17,10 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "NetConstants.h"
-#include "Journey.h"
+
+#include "..\Journey.h"
+
 #include <cstdint>
 
-namespace Net
+namespace jrc
 {
 	// Used to encrypt and decrypt packets for communication with the server.
 	class Cryptography

@@ -17,12 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Item.h"
-#include "Character\Look\Clothing.h"
 
-namespace Character
+#include "..\Look\Clothing.h"
+#include "..\..\Util\EnumMap.h"
+
+namespace jrc
 {
-	using::std::map;
-
 	class Equip : public Item
 	{
 	public:
@@ -47,8 +47,7 @@ namespace Character
 		};
 
 		Equip(const ItemData&, int32_t, bool, int64_t, int64_t, uint8_t, uint8_t, 
-			map<Equipstat::Value, uint16_t>, string, int16_t, uint8_t, int16_t, int32_t);
-		~Equip();
+			const EnumMap<Equipstat::Value, uint16_t>&, const std::string&, int16_t, uint8_t, int16_t, int32_t);
 
 		uint8_t getslots() const;
 		uint8_t getlevel() const;
@@ -63,9 +62,9 @@ namespace Character
 	private:
 		void checkquality();
 
+		EnumMap<Equipstat::Value, uint16_t> stats;
 		uint8_t slots;
 		uint8_t level;
-		map<Equipstat::Value, uint16_t> stats;
 		uint8_t itemlevel;
 		int16_t itemexp;
 		int32_t vicious;

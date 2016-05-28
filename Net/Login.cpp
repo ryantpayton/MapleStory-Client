@@ -17,49 +17,45 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Login.h"
 
-namespace Net
+namespace jrc
 {
-	Login::Login() {}
-
-	Login::~Login() {}
-
 	void Login::parseaccount(InPacket& recv)
 	{
-		recv.readshort();
-		account.accid = recv.readint();
-		account.female = recv.readbool();
-		recv.readbool(); //is admin
-		account.gmlevel = recv.readbyte();
-		recv.readbyte();
-		account.name = recv.read<string>();
-		recv.readbyte();
-		account.muted = recv.readbool();
-		recv.readlong(); //muted until
-		recv.readlong(); //creation date
-		recv.readint();
-		account.pin = recv.readshort();
+		recv.read_short();
+		account.accid = recv.read_int();
+		account.female = recv.read_bool();
+		recv.read_bool(); //is admin
+		account.gmlevel = recv.read_byte();
+		recv.read_byte();
+		account.name = recv.read_string();
+		recv.read_byte();
+		account.muted = recv.read_bool();
+		recv.read_long(); //muted until
+		recv.read_long(); //creation date
+		recv.read_int();
+		account.pin = recv.read_short();
 		account.selected = 0;
 	}
 
 	void Login::parseworlds(InPacket& recv)
 	{
-		int8_t worldid = recv.readbyte();
-		if (worldid != -1)
+		int8_t wid = recv.read_byte();
+		if (wid != -1)
 		{
 			World world;
-			world.wid = worldid;
-			world.name = recv.read<string>();
-			world.flag = recv.readbyte();
-			world.message = recv.read<string>();
+			world.wid = wid;
+			world.name = recv.read_string();
+			world.flag = recv.read_byte();
+			world.message = recv.read_string();
 
 			recv.skip(5);
 
-			world.channelcount = recv.readbyte();
+			world.channelcount = recv.read_byte();
 			for (uint8_t i = 0; i < world.channelcount; i++)
 			{
-				recv.read<string>();
+				recv.read_string();
 				recv.skip(4);
-				world.chloads.push_back(recv.readbyte());
+				world.chloads.push_back(recv.read_byte());
 				recv.skip(2);
 			}
 
@@ -69,14 +65,14 @@ namespace Net
 
 	void Login::parsecharlist(InPacket& recv)
 	{
-		size_t numchars = recv.readbyte();
+		size_t numchars = recv.read_byte();
 		for (size_t i = 0; i < numchars; i++)
 		{
 			addcharentry(recv);
 		}
 
-		account.pic = recv.readbyte();
-		account.slots = static_cast<int8_t>(recv.readint());
+		account.pic = recv.read_byte();
+		account.slots = static_cast<int8_t>(recv.read_int());
 	}
 
 	void Login::addcharentry(InPacket& recv)
@@ -87,17 +83,17 @@ namespace Net
 	CharEntry Login::parsecharentry(InPacket& recv) const
 	{
 		CharEntry toparse;
-		toparse.cid = recv.readint();
+		toparse.cid = recv.read_int();
 		toparse.stats = parsestats(recv);
 		toparse.look = parselook(recv);
 
-		recv.readbool(); // 'rankinfo' bool
-		if (recv.readbool())
+		recv.read_bool(); // 'rankinfo' bool
+		if (recv.read_bool())
 		{
-			int32_t currank = recv.readint();
-			int32_t rankmv = recv.readint();
-			int32_t curjobrank = recv.readint();
-			int32_t jobrankmv = recv.readint();
+			int32_t currank = recv.read_int();
+			int32_t rankmv = recv.read_int();
+			int32_t curjobrank = recv.read_int();
+			int32_t jobrankmv = recv.read_int();
 			int8_t rankmc = (rankmv > 0) ? '+' : (rankmv < 0) ? '-' : '=';
 			int8_t jobrankmc = (jobrankmv > 0) ? '+' : (jobrankmv < 0) ? '-' : '=';
 
@@ -112,27 +108,27 @@ namespace Net
 	{
 		LookEntry look;
 
-		look.female = recv.readbool();
-		look.skin = recv.readbyte();
-		look.faceid = recv.readint();
-		recv.readbool(); //megaphone
-		look.hairid = recv.readint();
-		uint8_t slot = recv.readbyte();
+		look.female = recv.read_bool();
+		look.skin = recv.read_byte();
+		look.faceid = recv.read_int();
+		recv.read_bool(); //megaphone
+		look.hairid = recv.read_int();
+		uint8_t slot = recv.read_byte();
 		while (slot != 0xFF)
 		{
-			look.equips[slot] = recv.readint();
-			slot = recv.readbyte();
+			look.equips[slot] = recv.read_int();
+			slot = recv.read_byte();
 		}
-		slot = recv.readbyte();
+		slot = recv.read_byte();
 		while (slot != 0xFF)
 		{
-			look.maskedequips[slot] = recv.readint();
-			slot = recv.readbyte();
+			look.maskedequips[slot] = recv.read_int();
+			slot = recv.read_byte();
 		}
-		look.maskedequips[-111] = recv.readint();
+		look.maskedequips[-111] = recv.read_int();
 		for (uint8_t i = 0; i < 3; i++)
 		{
-			look.petids.push_back(recv.readint());
+			look.petids.push_back(recv.read_int());
 		}
 
 		return look;
@@ -142,36 +138,36 @@ namespace Net
 	{
 		StatsEntry statsentry;
 
-		statsentry.name = recv.readpadascii(13);
+		statsentry.name = recv.read_padded_string(13);
 
-		recv.readbool(); //gender
-		recv.readbyte(); //skin
-		recv.readint(); //face
-		recv.readint(); //hair
+		recv.read_bool(); //gender
+		recv.read_byte(); //skin
+		recv.read_int(); //face
+		recv.read_int(); //hair
 
 		for (size_t i = 0; i < 3; i++)
 		{
-			statsentry.petids.push_back(recv.readlong());
+			statsentry.petids.push_back(recv.read_long());
 		}
 
-		statsentry.stats[Maplestat::LEVEL] = recv.readbyte();
-		statsentry.stats[Maplestat::JOB] = recv.readshort();
-		statsentry.stats[Maplestat::STR] = recv.readshort();
-		statsentry.stats[Maplestat::DEX] = recv.readshort();
-		statsentry.stats[Maplestat::INT] = recv.readshort();
-		statsentry.stats[Maplestat::LUK] = recv.readshort();
-		statsentry.stats[Maplestat::HP] = recv.readshort();
-		statsentry.stats[Maplestat::MAXHP] = recv.readshort();
-		statsentry.stats[Maplestat::MP] = recv.readshort();
-		statsentry.stats[Maplestat::MAXMP] = recv.readshort();
-		statsentry.stats[Maplestat::AP] = recv.readshort();
-		statsentry.stats[Maplestat::SP] = recv.readshort();
-		statsentry.exp = recv.readint();
-		statsentry.stats[Maplestat::FAME] = recv.readshort();
+		statsentry.stats[Maplestat::LEVEL] = recv.read_byte();
+		statsentry.stats[Maplestat::JOB] = recv.read_short();
+		statsentry.stats[Maplestat::STR] = recv.read_short();
+		statsentry.stats[Maplestat::DEX] = recv.read_short();
+		statsentry.stats[Maplestat::INT] = recv.read_short();
+		statsentry.stats[Maplestat::LUK] = recv.read_short();
+		statsentry.stats[Maplestat::HP] = recv.read_short();
+		statsentry.stats[Maplestat::MAXHP] = recv.read_short();
+		statsentry.stats[Maplestat::MP] = recv.read_short();
+		statsentry.stats[Maplestat::MAXMP] = recv.read_short();
+		statsentry.stats[Maplestat::AP] = recv.read_short();
+		statsentry.stats[Maplestat::SP] = recv.read_short();
+		statsentry.exp = recv.read_int();
+		statsentry.stats[Maplestat::FAME] = recv.read_short();
 
 		recv.skip(4); //gachaexp
-		statsentry.mapid = recv.readint();
-		statsentry.portal = recv.readbyte();
+		statsentry.mapid = recv.read_int();
+		statsentry.portal = recv.read_byte();
 		recv.skip(4); //timestamp
 
 		statsentry.job = CharJob(statsentry.stats[Maplestat::JOB]);

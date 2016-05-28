@@ -19,13 +19,12 @@
 #include "MapObjects.h"
 #include "Drop.h"
 
-#include "Gameplay\Spawn.h"
-#include "Graphics\Animation.h"
+#include "..\Spawn.h"
 
-namespace Gameplay
+#include "..\..\Graphics\Animation.h"
+
+namespace jrc
 {
-	using Graphics::Animation;
-
 	class MapDrops : public MapObjects
 	{
 	public:
@@ -48,6 +47,6 @@ namespace Gameplay
 		{
 			BRONZE, GOLD, BUNDLE, BAG
 		};
-		static unordered_map<MesoType, Animation> mesoicons;
+		static std::unordered_map<MesoType, Animation> mesoicons;
 	};
 }

@@ -16,25 +16,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Point.h"
-#include "Util\Range.h"
-#include "Util\Optional.h"
-#include "Net\InPacket.h"
-#include "nlnx\node.hpp"
+#include "..\..\Util\Point.h"
+#include "..\..\Util\Range.h"
+#include "..\..\Util\Optional.h"
+
+#include <nlnx\node.hpp>
+
 #include <vector>
 
-namespace Gameplay
+namespace jrc
 {
-	using std::vector;
-	using std::string;
-	using nl::node;
-	using Net::InPacket;
-
 	class Seat
 	{
 	public:
-		Seat(node source);
-		Seat(InPacket& recv);
+		Seat(nl::node source);
 
 		bool inrange(Point<int16_t> position) const;
 		Point<int16_t> getpos() const;
@@ -43,11 +38,11 @@ namespace Gameplay
 		Point<int16_t> pos;
 	};
 
+
 	class Ladder
 	{
 	public:
-		Ladder(node source);
-		Ladder(InPacket& recv);
+		Ladder(nl::node source);
 
 		bool isladder() const;
 		bool inrange(Point<int16_t> position, bool upwards) const;
@@ -61,16 +56,15 @@ namespace Gameplay
 		bool ladder;
 	};
 
+
 	class MapInfo
 	{
 	public:
-		MapInfo(node src, Range<int16_t> walls, Range<int16_t> borders);
-		MapInfo(InPacket& recv);
+		MapInfo(nl::node src, Range<int16_t> walls, Range<int16_t> borders);
 		MapInfo();
-		~MapInfo();
 
 		bool isswimmap() const;
-		string getbgm() const;
+		std::string getbgm() const;
 		Range<int16_t> getwalls() const;
 		Range<int16_t> getborders() const;
 
@@ -82,17 +76,17 @@ namespace Gameplay
 	private:
 		int32_t fieldlimit;
 		bool cloud;
-		string bgm;
-		string mapdesc;
-		string mapname;
-		string streetname;
-		string mapmark;
+		std::string bgm;
+		std::string mapdesc;
+		std::string mapname;
+		std::string streetname;
+		std::string mapmark;
 		bool swim;
 		bool town;
 		bool hideminimap;
 		Range<int16_t> mapwalls;
 		Range<int16_t> mapborders;
-		vector<Seat> seats;
-		vector<Ladder> ladders;
+		std::vector<Seat> seats;
+		std::vector<Ladder> ladders;
 	};
 }

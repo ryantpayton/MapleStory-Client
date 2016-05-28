@@ -20,14 +20,13 @@
 #include "Hair.h"
 #include "Face.h"
 #include "CharEquips.h"
-#include "Net\Login.h"
-#include "Util\Interpolated.h"
-#include "Util\Randomizer.h"
 
-namespace Character
+#include "..\..\Net\Login.h"
+#include "..\..\Util\Interpolated.h"
+#include "..\..\Util\Randomizer.h"
+
+namespace jrc
 {
-	using Net::LookEntry;
-
 	class CharLook
 	{
 	public:
@@ -50,7 +49,7 @@ namespace Character
 		void attack(Stance::Value stance);
 		void setstance(Stance::Value stance);
 		void setexpression(Expression::Value expression);
-		void setaction(string action);
+		void setaction(const std::string& action);
 		void setflip(bool mirrored);
 
 		bool istwohanded(Stance::Value stance) const;
@@ -63,7 +62,7 @@ namespace Character
 		struct AttackLook
 		{
 			Stance::Value stance;
-			rectangle2d<int16_t> range;
+			Rectangle<int16_t> range;
 		};
 		AttackLook getattacklook() const;
 		uint16_t getattackdelay(size_t no) const;
@@ -89,7 +88,7 @@ namespace Character
 		Weapon::AfterImage afterimage;
 
 		const BodyAction* action;
-		string actionstr;
+		std::string actionstr;
 		uint8_t actframe;
 
 		const Body* body;

@@ -17,32 +17,35 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-template <typename e>
-class EnumIterator
+namespace jrc
 {
-public:
-	EnumIterator(e v, e l)
+	template <typename e>
+	class EnumIterator
 	{
-		value = v;
-		last = l;
-	}
+	public:
+		EnumIterator(e v, e l)
+		{
+			value = v;
+			last = l;
+		}
 
-	void increment()
-	{
-		value = value + 1;
-	}
+		void increment()
+		{
+			value = value + 1;
+		}
 
-	bool hasnext()
-	{
-		return value <= last;
-	}
+		bool hasnext()
+		{
+			return value <= last;
+		}
 
-	e get()
-	{
-		return static_cast<e>(value);
-	}
+		e get()
+		{
+			return static_cast<e>(value);
+		}
 
-private:
-	size_t value;
-	size_t last;
-};
+	private:
+		size_t value;
+		size_t last;
+	};
+}

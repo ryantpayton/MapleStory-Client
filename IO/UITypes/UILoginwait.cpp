@@ -17,18 +17,19 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "UILoginwait.h"
-#include "Graphics\Sprite.h"
-#include "nlnx\nx.hpp"
 
-namespace IO
+#include "..\..\Graphics\Sprite.h"
+
+#include <nlnx\nx.hpp>
+
+namespace jrc
 {
 	UILoginwait::UILoginwait()
 	{
-		using nl::node;
+		nl::node src = nl::nx::ui["Login.img"]["Notice"]["Loading"];
 
-		node src = nl::nx::ui["Login.img"]["Notice"]["Loading"];
-		sprites.push_back(Sprite(src["backgrnd"], Point<int16_t>()));
-		sprites.push_back(Sprite(src["circle"], Point<int16_t>(125, 72)));
+		sprites.emplace_back(src["backgrnd"]);
+		sprites.emplace_back(src["circle"], Point<int16_t>(125, 72));
 
 		position = Point<int16_t>(292, 200);
 		dimension = Point<int16_t>(282, 144);

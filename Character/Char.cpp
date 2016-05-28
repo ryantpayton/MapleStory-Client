@@ -16,41 +16,34 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Char.h"
-#include "Constants.h"
 
-#include "nlnx\nx.hpp"
-#include "nlnx\node.hpp"
+#include "..\Constants.h"
 
-namespace Character
+#include <nlnx\nx.hpp>
+#include <nlnx\node.hpp>
+
+namespace jrc
 {
-	Char::Char(int32_t o, CharLook lk, string name)
-		: MapObject(o) {
+	Char::Char(int32_t o, const CharLook& lk, const std::string& name)
+		: MapObject(o), look(lk), namelabel({ Text::A13M, Text::CENTER, Text::WHITE, Text::NAMETAG, name }) {}
 
-		look = lk;
-
-		namelabel = Text(Text::A13M, Text::CENTER, Text::WHITE);
-		namelabel.setback(Text::NAMETAG);
-		namelabel.settext(name);
-	}
-
-	void Char::draw(Point<int16_t> viewpos, float inter) const
+	void Char::draw(double viewx, double viewy, float alpha) const
 	{
-		Point<int16_t> absp = phobj.getposition(inter) + viewpos;
+		Point<int16_t> absp = phobj.getabsolute(viewx, viewy, alpha);
 
-		effects.drawbelow(absp, inter);
-
-		look.draw(absp, inter);
+		effects.drawbelow(absp, alpha);
+		look.draw(absp, alpha);
 
 		for (int32_t i = 0; i < 3; i++)
 		{
 			if (pets[i].getiid() > 0)
-				pets[i].draw(viewpos, inter);
+				pets[i].draw(viewx, viewy, alpha);
 		}
 
 		namelabel.draw(absp);
 		chatballoon.draw(absp);
 
-		effects.drawabove(absp, inter);
+		effects.drawabove(absp, alpha);
 	}
 
 	bool Char::update(const Physics& physics, float speed)
@@ -134,7 +127,7 @@ namespace Character
 		effects.add(effect);
 	}
 
-	void Char::speak(string line)
+	void Char::speak(const std::string& line)
 	{
 		chatballoon.settext(line);
 	}
@@ -177,7 +170,7 @@ namespace Character
 		look.setexpression(expression);
 	}
 
-	void Char::attack(string action)
+	void Char::attack(const std::string& action)
 	{
 		look.setaction(action);
 
@@ -212,7 +205,7 @@ namespace Character
 		look.setstance(stance);
 	}
 
-	void Char::addpet(uint8_t index, int32_t iid, string name,
+	void Char::addpet(uint8_t index, int32_t iid, const std::string& name,
 		int32_t uniqueid, Point<int16_t> pos, uint8_t stance, int32_t fhid) {
 
 		if (index > 2)
@@ -253,7 +246,7 @@ namespace Character
 		return flip;
 	}
 
-	string Char::getname() const
+	std::string Char::getname() const
 	{
 		return namelabel.gettext();
 	}
@@ -270,8 +263,7 @@ namespace Character
 
 	void Char::init()
 	{
-		using nl::node;
-		node src = nl::nx::effect["BasicEff.img"];
+		nl::node src = nl::nx::effect["BasicEff.img"];
 
 		effectdata[LEVELUP] = src["LevelUp"];
 		effectdata[JOBCHANGE] = src["JobChanged"];

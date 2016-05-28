@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Bullet.h"
 
-namespace Gameplay
+namespace jrc
 {
 	Bullet::Bullet(Animation a, Point<int16_t> origin, bool toleft)
 	{
@@ -27,11 +27,11 @@ namespace Gameplay
 		moveobj.sety(origin.y() - 26.0);
 	}
 
-	void Bullet::draw(Point<int16_t> viewpos, float alpha) const
+	void Bullet::draw(double viewx, double viewy, float alpha) const
 	{
-		using Graphics::DrawArgument;
-		Point<int16_t> bulletpos = moveobj.getposition(alpha) + viewpos;
-		animation.draw(DrawArgument(bulletpos, flip), alpha);
+		Point<int16_t> bulletpos = moveobj.getabsolute(viewx, viewy, alpha);
+		DrawArgument args(bulletpos, flip);
+		animation.draw(args, alpha);
 	}
 
 	bool Bullet::settarget(Point<int16_t> target)

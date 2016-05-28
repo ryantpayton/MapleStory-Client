@@ -18,30 +18,15 @@
 #include "Obj.h"
 #include "nlnx\nx.hpp"
 
-namespace Gameplay
+namespace jrc
 {
-	Obj::Obj(node src)
+	Obj::Obj(nl::node src)
 	{
 		animation = Animation(nl::nx::map["Obj"][src["oS"] + ".img"][src["l0"]][src["l1"]][src["l2"]]);
 		pos = Point<int16_t>(src["x"], src["y"]);
 		flip = src["f"].get_bool();
 		z = src["z"];
 	}
-
-	Obj::Obj(InPacket& recv)
-	{
-		using std::string;
-		string oS = recv.read<string>();
-		string l0 = recv.read<string>();
-		string l1 = recv.read<string>();
-		string l2 = recv.read<string>();
-		animation = Animation(nl::nx::map["Obj"][oS][l0][l1][l2]);
-		pos = recv.readpoint();
-		flip = recv.readbool();
-		z = recv.readbyte();
-	}
-
-	Obj::~Obj() {}
 
 	void Obj::update()
 	{
@@ -50,7 +35,6 @@ namespace Gameplay
 
 	void Obj::draw(Point<int16_t> viewpos, float inter) const
 	{
-		using::Graphics::DrawArgument;
 		animation.draw(DrawArgument(pos + viewpos, flip), inter);
 	}
 

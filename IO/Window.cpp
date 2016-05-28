@@ -17,20 +17,17 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Window.h"
 #include "UI.h"
-#include "Constants.h"
-#include "Timer.h"
-#include "Configuration.h"
 
-#include "Graphics\GraphicsGL.h"
-#include "Gameplay\Stage.h"
-#include "Util\Optional.h"
+#include "..\Constants.h"
+#include "..\Timer.h"
+#include "..\Configuration.h"
+#include "..\Graphics\GraphicsGL.h"
+#include "..\Gameplay\Stage.h"
 
 #include <iostream>
 
-namespace IO
+namespace jrc
 {
-	using Graphics::GraphicsGL;
-
 	Window::Window()
 	{
 		context = nullptr;
@@ -151,13 +148,6 @@ namespace IO
 
 	void Window::update()
 	{
-		int32_t tabstate = glfwGetKey(glwnd, GLFW_KEY_F11);
-		if (tabstate == GLFW_PRESS)
-		{
-			fullscreen = !fullscreen;
-			initwindow();
-		}
-
 		updateopc();
 	}
 
@@ -177,43 +167,45 @@ namespace IO
 				opacity = 0.0f;
 				opcstep = -opcstep;
 
-				GraphicsGL::get().clear();
 				fadeprocedure();
-				GraphicsGL::get().unlock();
 			}
 		}
 	}
 
+	void Window::checkevents()
+	{
+		int32_t tabstate = glfwGetKey(glwnd, GLFW_KEY_F11);
+		if (tabstate == GLFW_PRESS)
+		{
+			fullscreen = !fullscreen;
+			initwindow();
+		}
+		glfwPollEvents();
+	}
+
 	void Window::begin() const
 	{
-		if (opcstep >= 0.0f)
-		{
-			GraphicsGL::get().clearscene();
-		}
+		GraphicsGL::get().clearscene();
 	}
 
 	void Window::end() const
 	{
 		GraphicsGL::get().flush(opacity);
-
 		glfwSwapBuffers(glwnd);
-		glfwPollEvents();
 	}
 
-	void Window::fadeout(float step, function<void()> fadeproc)
+	void Window::fadeout(float step, std::function<void()> fadeproc)
 	{
 		opcstep = -step;
 		fadeprocedure = fadeproc;
-
-		GraphicsGL::get().lock();
 	}
 
-	void Window::setclipboard(string text) const
+	void Window::setclipboard(const std::string& text) const
 	{
 		glfwSetClipboardString(glwnd, text.c_str());
 	}
 
-	string Window::getclipboard() const
+	std::string Window::getclipboard() const
 	{
 		const char* text = glfwGetClipboardString(glwnd);
 		return text ? text : "";

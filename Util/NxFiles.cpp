@@ -17,36 +17,27 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "NxFiles.h"
 #include "HashUtility.h"
+
 #include "nlnx\nx.hpp"
 #include "nlnx\node.hpp"
 #include "nlnx\bitmap.hpp"
+
 #include <string>
 #include <fstream>
 
-namespace Util
+namespace jrc
 {
-	// Names of game files in alphabetical order.
-	const string filenames[NxFiles::NUM_FILES] =
+	bool NxFiles::exists(const char* filename)
 	{
-		"Character.nx", "Effect.nx", "Etc.nx", "Item.nx", "Map.nx", "Mob.nx", "Npc.nx",
-		"Quest.nx", "Reactor.nx", "Skill.nx", "Sound.nx", "String.nx", "TamingMob.nx", "UI.nx"
-	};
-
-	bool NxFiles::exists(size_t index)
-	{
-		using std::ifstream;
-		ifstream f;
-		f.open(filenames[index].c_str());
-		bool success = f.good();
-		f.close();
-		return success;
+		std::ifstream f(filename);
+		return f.good();
 	}
 
 	bool NxFiles::init()
 	{
-		for (size_t i = 0; i < NUM_FILES; i++)
+		for (auto filename : filenames)
 		{
-			if (!exists(i))
+			if (!exists(filename))
 			{
 				return false;
 			}
@@ -54,20 +45,21 @@ namespace Util
 
 		nl::nx::load_all();
 
-		using nl::bitmap;
-		bitmap bmptest = nl::nx::ui["Login.img"]["WorldSelect"]["BtChannel"]["layer:bg"].get_bitmap();
+		nl::bitmap bmptest = nl::nx::ui["Login.img"]["WorldSelect"]["BtChannel"]["layer:bg"];
 		return bmptest.data() != nullptr;
 	}
 
 #ifdef JOURNEY_USE_XXHASH
-	string NxFiles::gethash(size_t index, uint64_t seed)
+	std::queue<std::string> NxFiles::gethashes(uint64_t seed)
 	{
-		return (index < NUM_FILES) ? HashUtility::getfilehash(filenames[index].c_str(), seed) : 0;
+		std::queue<std::string> hashes;
+		for (auto& filename : filenames.getvalues())
+		{
+			hashes.push(
+				HashUtility::getfilehash(filename, seed)
+				);
+		}
+		return hashes;
 	}
 #endif
-
-	string NxFiles::gethash(size_t index)
-	{
-		return (index < NUM_FILES) ? HashUtility::getfilehash(filenames[index].c_str()) : 0;
-	}
 }

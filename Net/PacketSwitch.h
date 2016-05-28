@@ -17,20 +17,17 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "PacketHandler.h"
+
 #include <memory>
 
-namespace Net
+namespace jrc
 {
-	using std::unique_ptr;
-
 	// Class which contains the array of handler classes to use.
 	class PacketSwitch
 	{
 	public:
 		// Register all handlers.
 		PacketSwitch();
-		// Empty destructor.
-		~PacketSwitch();
 
 		// Forward a packet to the correct handler.
 		void forward(int8_t* buffer, size_t length) const;
@@ -39,6 +36,6 @@ namespace Net
 		// Maximum number of handler classes needed for now.
 		static const uint16_t NUM_HANDLERS = 500;
 
-		unique_ptr<PacketHandler> handlers[NUM_HANDLERS];
+		std::unique_ptr<PacketHandler> handlers[NUM_HANDLERS];
 	};
 }

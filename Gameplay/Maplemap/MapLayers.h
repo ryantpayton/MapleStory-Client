@@ -18,41 +18,36 @@
 #pragma once
 #include "Tile.h"
 #include "Obj.h"
+
 #include <vector>
 #include <map>
 
-namespace Gameplay
+namespace jrc
 {
-	using std::vector;
-	using std::map;
-
 	class Layer
 	{
 	public:
-		Layer(node src);
-		Layer(InPacket& recv);
+		Layer(nl::node src);
 		Layer();
-		~Layer();
 
-		void draw(Point<int16_t> viewpos, float inter) const;
+		void draw(Point<int16_t> viewpos, float alpha) const;
 		void update();
 
 	private:
-		map<uint8_t, vector<Tile>> tiles;
-		map<uint8_t, vector<Obj>> objs;
+		std::map<uint8_t, std::vector<Tile>> tiles;
+		std::map<uint8_t, std::vector<Obj>> objs;
 	};
+
 
 	class MapLayers
 	{
 	public:
 		static const uint8_t NUM_LAYERS = 8;
 
-		MapLayers(node src);
-		MapLayers(InPacket& recv);
+		MapLayers(nl::node src);
 		MapLayers();
-		~MapLayers();
 
-		void draw(uint8_t layer, Point<int16_t> viewpos, float inter) const;
+		void draw(uint8_t layer, Point<int16_t> viewpos, float alpha) const;
 		void update();
 
 	private:

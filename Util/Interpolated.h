@@ -17,199 +17,210 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-template <typename T>
-class Interpolated
+namespace jrc
 {
-public:
-	Interpolated()
+	template <typename T>
+	class Interpolated
 	{
-		set(T());
-	}
+	public:
+		Interpolated()
+		{
+			set(T());
+		}
 
-	void set(T value)
+		void set(T value)
+		{
+			now = value;
+			before = value;
+		}
+
+		void normalize()
+		{
+			before = now;
+		}
+
+		bool normalized() const
+		{
+			return before == now;
+		}
+
+		T last() const
+		{
+			return before;
+		}
+
+		virtual T get() const = 0;
+
+		virtual T get(double alpha) const = 0;
+
+	protected:
+		T now;
+		T before;
+	};
+
+	template <typename T>
+	class Nominal : public Interpolated<T>
 	{
-		now = value;
-		before = value;
-	}
+	public:
+		Nominal()
+		{
+			threshold = 0.0f;
+		}
 
-	void normalize()
+		T get() const
+		{
+			return now;
+		}
+
+		T get(double alpha) const
+		{
+			return alpha >= threshold ? now : before;
+		}
+
+		void next(T value, double thrs)
+		{
+			before = now;
+			now = value;
+			threshold = thrs;
+		}
+
+		bool operator == (T value) const
+		{
+			return now == value;
+		}
+
+		bool operator != (T value) const
+		{
+			return now != value;
+		}
+
+		T operator + (T value) const
+		{
+			return now + value;
+		}
+
+		T operator - (T value) const
+		{
+			return now - value;
+		}
+
+		T operator * (T value) const
+		{
+			return now * value;
+		}
+
+		T operator / (T value) const
+		{
+			return now / value;
+		}
+
+	private:
+		double threshold;
+	};
+
+	template <typename T>
+	class Linear : public Interpolated<T>
 	{
-		before = now;
-	}
+	public:
+		T get() const
+		{
+			return now;
+		}
 
-	T last() const
-	{
-		return before;
-	}
+		T get(double alpha) const
+		{
+			if (before == now)
+				return now;
+			else
+				return static_cast<T>((1.0 - alpha) * before + alpha * now);
+		}
 
-	virtual T get() const = 0;
+		void operator = (T value)
+		{
+			before = now;
+			now = value;
+		}
 
-	virtual T get(float alpha) const = 0;
+		void operator += (T value)
+		{
+			before = now;
+			now += value;
+		}
 
-protected:
-	T now;
-	T before;
-};
+		void operator -= (T value)
+		{
+			before = now;
+			now -= value;
+		}
 
-template <typename T>
-class Nominal : public Interpolated<T>
-{
-public:
-	Nominal()
-	{
-		threshold = 0.0f;
-	}
+		bool operator == (T value) const
+		{
+			return now == value;
+		}
 
-	T get() const
-	{
-		return now;
-	}
+		bool operator != (T value) const
+		{
+			return now != value;
+		}
 
-	T get(float alpha) const
-	{
-		return alpha >= threshold ? now : before;
-	}
+		bool operator < (T value) const
+		{
+			return now < value;
+		}
 
-	void next(T value, float thrs)
-	{
-		before = now;
-		now = value;
-		threshold = thrs;
-	}
+		bool operator <= (T value) const
+		{
+			return now <= value;
+		}
 
-	bool operator == (T value) const
-	{
-		return now == value;
-	}
+		bool operator > (T value) const
+		{
+			return now > value;
+		}
 
-	bool operator != (T value) const
-	{
-		return now != value;
-	}
+		bool operator >= (T value) const
+		{
+			return now >= value;
+		}
 
-	T operator + (T value) const
-	{
-		return now + value;
-	}
+		T operator + (T value) const
+		{
+			return now + value;
+		}
 
-	T operator - (T value) const
-	{
-		return now - value;
-	}
+		T operator - (T value) const
+		{
+			return now - value;
+		}
 
-	T operator * (T value) const
-	{
-		return now * value;
-	}
+		T operator * (T value) const
+		{
+			return now * value;
+		}
 
-	T operator / (T value) const
-	{
-		return now / value;
-	}
+		T operator / (T value) const
+		{
+			return now / value;
+		}
 
-private:
-	float threshold;
-};
+		T operator + (Linear<T> value) const
+		{
+			return now + value.get();
+		}
 
-template <typename T>
-class Linear : public Interpolated<T>
-{
-public:
-	T get() const
-	{
-		return now;
-	}
+		T operator - (Linear<T> value) const
+		{
+			return now - value.get();
+		}
 
-	T get(float alpha) const
-	{
-		return (1.0f - alpha) * before + alpha * now;
-	}
+		T operator * (Linear<T> value) const
+		{
+			return now * value.get();
+		}
 
-	void operator = (T value)
-	{
-		before = now;
-		now = value;
-	}
-
-	void operator += (T value)
-	{
-		before = now;
-		now += value;
-	}
-
-	void operator -= (T value)
-	{
-		before = now;
-		now -= value;
-	}
-
-	bool operator == (T value) const
-	{
-		return now == value;
-	}
-
-	bool operator != (T value) const
-	{
-		return now != value;
-	}
-
-	bool operator < (T value) const
-	{
-		return now < value;
-	}
-
-	bool operator <= (T value) const
-	{
-		return now <= value;
-	}
-
-	bool operator > (T value) const
-	{
-		return now > value;
-	}
-
-	bool operator >= (T value) const
-	{
-		return now >= value;
-	}
-
-	T operator + (T value) const
-	{
-		return now + value;
-	}
-
-	T operator - (T value) const
-	{
-		return now - value;
-	}
-
-	T operator * (T value) const
-	{
-		return now * value;
-	}
-
-	T operator / (T value) const
-	{
-		return now / value;
-	}
-
-	T operator + (Linear<T> value) const
-	{
-		return now + value.get();
-	}
-
-	T operator - (Linear<T> value) const
-	{
-		return now - value.get();
-	}
-
-	T operator * (Linear<T> value) const
-	{
-		return now * value.get();
-	}
-
-	T operator / (Linear<T> value) const
-	{
-		return now / value.get();
-	}
-};
+		T operator / (Linear<T> value) const
+		{
+			return now / value.get();
+		}
+	};
+}

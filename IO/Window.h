@@ -16,17 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Singleton.h"
+#include "..\Util\Singleton.h"
+
 #include "GL\glew.h"
 #include "glfw3.h"
+
 #include <string>
 #include <functional>
 
-namespace IO
+namespace jrc
 {
-	using std::string;
-	using std::function;
-
 	class Window : public Singleton<Window>
 	{
 	public:
@@ -39,10 +38,11 @@ namespace IO
 		void update();
 		void begin() const;
 		void end() const;
-		void fadeout(float step, function<void()> fadeprocedure);
+		void fadeout(float step, std::function<void()> fadeprocedure);
+		void checkevents();
 
-		void setclipboard(string text) const;
-		string getclipboard() const;
+		void setclipboard(const std::string& text) const;
+		std::string getclipboard() const;
 
 	private:
 		void updateopc();
@@ -52,7 +52,7 @@ namespace IO
 		bool fullscreen;
 		float opacity;
 		float opcstep;
-		function<void()> fadeprocedure;
+		std::function<void()> fadeprocedure;
 	};
 }
 

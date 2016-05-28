@@ -17,26 +17,26 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Movement.h"
 
-namespace Net
+namespace jrc
 {
 	template <>
 	Movement InPacket::read<Movement>()
 	{
 		Movement fragment;
-		fragment.command = readbyte();
+		fragment.command = read_byte();
 		switch (fragment.command)
 		{
 		case 0:
 		case 5:
 		case 17:
 			fragment.type = Movement::_ABSOLUTE;
-			fragment.xpos = readshort();
-			fragment.ypos = readshort();
-			fragment.lastx = readshort();
-			fragment.lasty = readshort();
-			fragment.fh = readshort();
-			fragment.newstate = readbyte();
-			fragment.duration = readshort();
+			fragment.xpos = read_short();
+			fragment.ypos = read_short();
+			fragment.lastx = read_short();
+			fragment.lasty = read_short();
+			fragment.fh = read_short();
+			fragment.newstate = read_byte();
+			fragment.duration = read_short();
 			break;
 		case 1:
 		case 2:
@@ -45,29 +45,29 @@ namespace Net
 		case 13:
 		case 16:
 			fragment.type = Movement::_RELATIVE;
-			fragment.xpos = readshort();
-			fragment.ypos = readshort();
-			fragment.newstate = readbyte();
-			fragment.duration = readshort();
+			fragment.xpos = read_short();
+			fragment.ypos = read_short();
+			fragment.newstate = read_byte();
+			fragment.duration = read_short();
 			break;
 		case 11:
 			fragment.type = Movement::CHAIR;
-			fragment.xpos = readshort();
-			fragment.ypos = readshort();
+			fragment.xpos = read_short();
+			fragment.ypos = read_short();
 			skip(2);
-			fragment.newstate = readbyte();
-			fragment.duration = readshort();
+			fragment.newstate = read_byte();
+			fragment.duration = read_short();
 			break;
 		case 15:
 			fragment.type = Movement::JUMPDOWN;
-			fragment.xpos = readshort();
-			fragment.ypos = readshort();
-			fragment.lastx = readshort();
-			fragment.lasty = readshort();
+			fragment.xpos = read_short();
+			fragment.ypos = read_short();
+			fragment.lastx = read_short();
+			fragment.lasty = read_short();
 			skip(2);
-			fragment.fh = readshort();
-			fragment.newstate = readbyte();
-			fragment.duration = readshort();
+			fragment.fh = read_short();
+			fragment.newstate = read_byte();
+			fragment.duration = read_short();
 			break;
 		case 3:
 		case 4:

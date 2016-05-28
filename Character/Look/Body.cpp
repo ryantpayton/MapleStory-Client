@@ -18,39 +18,38 @@
 #include "Body.h"
 #include "nlnx\nx.hpp"
 
-namespace Character
+namespace jrc
 {
 	Body::Body(int32_t skin, const BodyDrawinfo& drawinfo)
 	{
-		string sk;
+		std::string sk;
 		if (skin < 10)
 		{
 			sk.append("0");
 		}
 		sk.append(std::to_string(skin));
 
-		using nl::node;
-		node bodynode = nl::nx::character["000020" + sk + ".img"];
-		node headnode = nl::nx::character["000120" + sk + ".img"];
+		nl::node bodynode = nl::nx::character["000020" + sk + ".img"];
+		nl::node headnode = nl::nx::character["000120" + sk + ".img"];
 
 		for (auto it = Stance::getit(); it.hasnext(); it.increment())
 		{
 			Stance::Value stance = it.get();
-			string stancename = Stance::nameof(stance);
-			node stancenode = bodynode[stancename];
+			std::string stancename = Stance::nameof(stance);
+			nl::node stancenode = bodynode[stancename];
 			if (stancenode.size() == 0)
 				continue;
 
 			uint8_t frame = 0;
-			node framenode = stancenode[std::to_string(frame)];
+			nl::node framenode = stancenode[std::to_string(frame)];
 			while (framenode.size() > 0)
 			{
-				for (node partnode : framenode)
+				for (auto partnode : framenode)
 				{
-					string part = partnode.name();
+					std::string part = partnode.name();
 					if (part != "delay" && part != "face")
 					{
-						string z = partnode["z"];
+						std::string z = partnode["z"];
 						Layer layer = layerbystring(z);
 
 						stances[stance][layer][frame] = partnode;
@@ -58,7 +57,7 @@ namespace Character
 						stances[stance][layer][frame].shift(-Point<int16_t>(partnode["map"]["navel"]));
 					}
 
-					node headsfnode = headnode[stancename][std::to_string(frame)]["head"];
+					nl::node headsfnode = headnode[stancename][std::to_string(frame)]["head"];
 					if (headsfnode.size() > 0)
 					{
 						stances[stance][Layer::HEAD][frame] = headsfnode;
@@ -71,7 +70,7 @@ namespace Character
 			}
 		}
 
-		static const string skintypes[12] =
+		static constexpr char* skintypes[12] =
 		{
 			"Light", "Tan", "Dark", "Pale", "Blue", "Green", "", "", "", "Grey", "Pink", "Red"
 		};
@@ -85,16 +84,18 @@ namespace Character
 
 	void Body::draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const
 	{
-		if (!stances[stance].count(layer))
+		auto layerit = stances[stance].find(layer);
+		if (layerit == stances[stance].end())
 			return;
 
-		if (!stances[stance].at(layer).count(frame))
+		auto frameit = layerit->second.find(frame);
+		if (frameit == layerit->second.end())
 			return;
 
-		stances[stance].at(layer).at(frame).draw(args);
+		frameit->second.draw(args);
 	}
 
-	string Body::getname() const
+	std::string Body::getname() const
 	{
 		return name;
 	}

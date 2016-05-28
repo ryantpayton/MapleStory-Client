@@ -16,19 +16,43 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UIStatusMessenger.h"
-#include <numeric>
 
-namespace IO
+#include "..\..\Constants.h"
+
+namespace jrc
 {
+	StatusInfo::StatusInfo(const std::string& str, Text::Color color)
+	{
+		text = { Text::A12M, Text::RIGHT, color, str };
+		shadow = { Text::A12M, Text::RIGHT, Text::BLACK, str };
+		opacity.set(1.0f);
+	}
+
+	void StatusInfo::draw(Point<int16_t> position, float alpha) const
+	{
+		float interopc = opacity.get(alpha);
+		shadow.draw(position + Point<int16_t>(1, 1), interopc);
+		text.draw(position, interopc);
+	}
+
+	bool StatusInfo::update()
+	{
+		constexpr float FADE_STEP = Constants::TIMESTEP * 1.0f / FADE_DURATION;
+
+		opacity -= FADE_STEP;
+		return opacity.last() < FADE_STEP;
+	}
+
+
 	UIStatusMessenger::UIStatusMessenger()
 	{
-		position = Point<int16_t>(790, 500);
+		position = { 790, 500 };
 	}
 
 	void UIStatusMessenger::draw(float inter) const
 	{
-		auto infopos = Point<int16_t>(position.x(), position.y());
-		for (auto& info : statusinfos)
+		Point<int16_t> infopos = { position.x(), position.y() };
+		for (const StatusInfo& info : statusinfos)
 		{
 			info.draw(infopos, inter);
 			infopos.shifty(-16);
@@ -37,16 +61,15 @@ namespace IO
 
 	void UIStatusMessenger::update()
 	{
-		for (auto& info : statusinfos)
+		for (StatusInfo& info : statusinfos)
 		{
 			info.update();
 		}
 	}
 
-	void UIStatusMessenger::showstatus(Text::Color color, string message)
+	void UIStatusMessenger::showstatus(Text::Color color, const std::string& message)
 	{
-		StatusInfo statusinfo = StatusInfo(message, color);
-		statusinfos.push_front(statusinfo);
+		statusinfos.push_front({ message, color });
 
 		if (statusinfos.size() > MAX_MESSAGES)
 			statusinfos.pop_back();

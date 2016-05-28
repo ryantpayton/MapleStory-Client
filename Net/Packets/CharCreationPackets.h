@@ -16,17 +16,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\OutPacket.h"
-#include "Net\SendOpcodes.h"
+#include "..\OutPacket.h"
+#include "..\SendOpcodes.h"
 
-namespace Net
+namespace jrc
 {
 	// Reserve a name for the character to be created.
 	// Opcode: NAME_CHAR(21)
 	class NameCharPacket : public OutPacket
 	{
 	public:
-		NameCharPacket(string name) : OutPacket(NAME_CHAR)
+		NameCharPacket(const std::string& name) : OutPacket(NAME_CHAR)
 		{
 			writestr(name);
 		}
@@ -37,7 +37,7 @@ namespace Net
 	class CreateCharPacket : public OutPacket
 	{
 	public:
-		CreateCharPacket(string name, uint16_t job, int32_t face, int32_t hair,
+		CreateCharPacket(const std::string& name, uint16_t job, int32_t face, int32_t hair,
 			uint8_t hairc, uint8_t skin, int32_t top, int32_t bot, int32_t shoes,
 			int32_t weapon, bool female) : OutPacket(CREATE_CHAR) {
 

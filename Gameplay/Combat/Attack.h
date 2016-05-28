@@ -16,19 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Audio\Audio.h"
-#include "Character\Look\Stance.h"
-#include "Graphics\Animation.h"
-#include "Util\rectangle2d.h"
+#include "..\..\Util\Rectangle.h"
+
 #include <cstdint>
+#include <vector>
+#include <unordered_map>
 
-namespace Gameplay
+namespace jrc
 {
-	using std::vector;
-	using std::unordered_map;
-	using Graphics::Animation;
-	using Audio::Sound;
-
 	struct Attack 
 	{
 		enum Type
@@ -65,7 +60,7 @@ namespace Gameplay
 		int32_t bullet = 0;
 
 		Point<int16_t> origin;
-		rectangle2d<int16_t> range;
+		Rectangle<int16_t> range;
 		float hrange = 1.0f;
 		bool toleft = false;
 	};
@@ -97,15 +92,15 @@ namespace Gameplay
 		uint8_t stance = 0;
 		uint8_t speed = 0;
 		bool toleft = false;
-		unordered_map<int32_t, vector<pair<int32_t, bool>>> damagelines;
+		std::unordered_map<int32_t, std::vector<std::pair<int32_t, bool>>> damagelines;
 
-		int32_t firstoid() const
+		int32_t get_first_oid() const
 		{
 			auto begin = damagelines.begin();
 			return begin != damagelines.end() ? begin->first : 0;
 		}
 
-		int32_t lastoid() const
+		int32_t get_last_oid() const
 		{
 			return damagelines.size() > 0 ? (--damagelines.end())->first : 0;
 		}

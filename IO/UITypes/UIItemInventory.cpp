@@ -16,65 +16,51 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UIItemInventory.h"
-#include "Configuration.h"
 
-#include "Gameplay\Stage.h"
-#include "IO\UI.h"
-#include "IO\Components\MapleButton.h"
-#include "IO\Components\TwoSpriteButton.h"
-#include "Net\Packets\InventoryPackets.h"
-#include "Util\Misc.h"
+#include "..\UI.h"
+#include "..\Components\MapleButton.h"
+#include "..\Components\TwoSpriteButton.h"
+
+#include "..\..\Configuration.h"
+#include "..\..\Gameplay\Stage.h"
+#include "..\..\Net\Packets\InventoryPackets.h"
+#include "..\..\Util\Misc.h"
 
 #include "nlnx\nx.hpp"
 
-namespace IO
+namespace jrc
 {
-	using Gameplay::Stage;
-	using Character::Item;
-	using Character::ItemData;
-	using Character::Equipslot;
-
 	UIItemInventory::UIItemInventory() : 
 		UIDragElement<PosINV>(Point<int16_t>(172, 20)), inventory(Stage::get().getplayer().getinvent()) {
 
-		node src = nl::nx::ui["UIWindow2.img"]["Item"];
+		nl::node src = nl::nx::ui["UIWindow2.img"]["Item"];
 
-		sprites.push_back(src["backgrnd"]);
-		sprites.push_back(src["backgrnd2"]);
-		sprites.push_back(src["backgrnd3"]);
+		sprites.emplace_back(src["backgrnd"]);
+		sprites.emplace_back(src["backgrnd2"]);
+		sprites.emplace_back(src["backgrnd3"]);
 
 		newitemslot = src["New"]["inventory"];
 		newitemtab = src["New"]["Tab0"];
 		projectile = src["activeIcon"];
 
-		node taben = src["Tab"]["enabled"];
-		node tabdis = src["Tab"]["disabled"];
+		nl::node taben = src["Tab"]["enabled"];
+		nl::node tabdis = src["Tab"]["disabled"];
 
-		buttons[BT_TAB_EQUIP]= unique_ptr<Button>(
-			new TwoSpriteButton(tabdis["0"], taben["0"], Point<int16_t>(-1, -4))
-			);
-		buttons[BT_TAB_USE]= unique_ptr<Button>(
-			new TwoSpriteButton(tabdis["1"], taben["1"], Point<int16_t>(-1, -4))
-			);
-		buttons[BT_TAB_ETC]= unique_ptr<Button>(
-			new TwoSpriteButton(tabdis["2"], taben["2"], Point<int16_t>(0, -4))
-			);
-		buttons[BT_TAB_SETUP]= unique_ptr<Button>(
-			new TwoSpriteButton(tabdis["3"], taben["3"], Point<int16_t>(-1, -4))
-			);
-		buttons[BT_TAB_CASH]= unique_ptr<Button>(
-			new TwoSpriteButton(tabdis["4"], taben["4"], Point<int16_t>(-1, -4))
-			);
+		buttons[BT_TAB_EQUIP]= std::make_unique<TwoSpriteButton>(tabdis["0"], taben["0"], Point<int16_t>(-1, -4));
+		buttons[BT_TAB_USE] = std::make_unique<TwoSpriteButton>(tabdis["1"], taben["1"], Point<int16_t>(-1, -4));
+		buttons[BT_TAB_ETC] = std::make_unique<TwoSpriteButton>(tabdis["2"], taben["2"], Point<int16_t>(0, -4));
+		buttons[BT_TAB_SETUP] = std::make_unique<TwoSpriteButton>(tabdis["3"], taben["3"], Point<int16_t>(-1, -4));
+		buttons[BT_TAB_CASH]= std::make_unique<TwoSpriteButton>(tabdis["4"], taben["4"], Point<int16_t>(-1, -4));
 
-		buttons[BT_DROPMESO]= unique_ptr<Button>(new MapleButton(src["BtCoin"]));
-		buttons[BT_POINTS]= unique_ptr<Button>(new MapleButton(src["BtPoint0"]));
-		buttons[BT_GATHER]= unique_ptr<Button>(new MapleButton(src["BtGather"]));
-		buttons[BT_SORT]= unique_ptr<Button>(new MapleButton(src["BtSort"]));
-		buttons[BT_EXPAND]= unique_ptr<Button>(new MapleButton(src["BtFull"]));
-		buttons[BT_ITEMPOT]= unique_ptr<Button>(new MapleButton(src["BtPot3"]));
-		buttons[BT_UPGRADE]= unique_ptr<Button>(new MapleButton(src["BtUpgrade3"]));
-		buttons[BT_MAGNIFY]= unique_ptr<Button>(new MapleButton(src["BtAppraise3"]));
-		buttons[BT_BITCASE]= unique_ptr<Button>(new MapleButton(src["BtBits3"]));
+		buttons[BT_DROPMESO]= std::make_unique<MapleButton>(src["BtCoin"]);
+		buttons[BT_POINTS]= std::make_unique<MapleButton>(src["BtPoint0"]);
+		buttons[BT_GATHER]= std::make_unique<MapleButton>(src["BtGather"]);
+		buttons[BT_SORT]= std::make_unique<MapleButton>(src["BtSort"]);
+		buttons[BT_EXPAND]= std::make_unique<MapleButton>(src["BtFull"]);
+		buttons[BT_ITEMPOT]= std::make_unique<MapleButton>(src["BtPot3"]);
+		buttons[BT_UPGRADE]= std::make_unique<MapleButton>(src["BtUpgrade3"]);
+		buttons[BT_MAGNIFY]= std::make_unique<MapleButton>(src["BtAppraise3"]);
+		buttons[BT_BITCASE]= std::make_unique<MapleButton>(src["BtBits3"]);
 
 		tab = Inventory::EQUIP;
 		slotrange.first = 1;
@@ -86,9 +72,9 @@ namespace IO
 		buttons[buttonbytab(tab)]->setstate(Button::PRESSED);
 
 		mesolabel = Text(Text::A11M, Text::RIGHT, Text::LIGHTGREY);
-		slider = unique_ptr<Slider>(
-			new Slider(11, Range<int16_t>(50, 248), 152, 6, 1 + inventory.getslots(tab) / 4, 
-			[&](bool upwards){
+		slider = std::make_unique<Slider>(
+			11, Range<int16_t>(50, 248), 152, 6, 1 + inventory.getslots(tab) / 4, [&](bool upwards){
+
 			int16_t shift = upwards ? -4 : 4;
 			bool above = slotrange.first + shift > 0;
 			bool below = slotrange.second + shift < inventory.getslots(tab) + 1 + 4;
@@ -97,7 +83,7 @@ namespace IO
 				slotrange.first += shift;
 				slotrange.second += shift;
 			}
-		}));
+		});
 
 		dimension = Point<int16_t>(172, 335);
 		active = true;
@@ -153,7 +139,8 @@ namespace IO
 		newitemslot.update(6);
 
 		int64_t meso = Stage::get().getplayer().getinvent().getmeso();
-		string mesostr = Format::splitnumber(std::to_string(meso));
+		std::string mesostr = std::to_string(meso);
+		string_format::split_number(mesostr);
 		mesolabel.settext(mesostr);
 	}
 
@@ -174,7 +161,7 @@ namespace IO
 					count = -1;
 
 				Equipslot::Value eqslot = inventory.findequipslot(itemid);
-				icons[slot] = unique_ptr<Icon>(new Icon(new ItemIcon(tab, eqslot, slot), *texture, count));
+				icons[slot] = std::make_unique<Icon>(std::make_unique<ItemIcon>(tab, eqslot, slot), *texture, count);
 			}
 		}
 		else if (icons.count(slot))
@@ -215,11 +202,9 @@ namespace IO
 			tab = Inventory::CASH;
 			break;
 		case BT_GATHER:
-			using Net::GatherItemsPacket;
 			GatherItemsPacket(tab).dispatch();
 			break;
 		case BT_SORT:
-			using Net::SortItemsPacket;
 			SortItemsPacket(tab).dispatch();
 			break;
 		}
@@ -250,11 +235,9 @@ namespace IO
 				switch (tab)
 				{
 				case Inventory::EQUIP:
-					using Net::EquipItemPacket;
 					EquipItemPacket(slot, inventory.findequipslot(itemid)).dispatch();
 					break;
 				case Inventory::USE:
-					using Net::UseItemPacket;
 					UseItemPacket(slot, itemid).dispatch();
 					break;
 				}
@@ -293,10 +276,10 @@ namespace IO
 			return dstate;
 		}
 
-		Point<int16_t> cursoroffset = cursorpos - position;
+		Point<int16_t> cursor_relative = cursorpos - position;
 		if (slider && slider->isenabled())
 		{
-			Cursor::State sstate = slider->sendcursor(cursoroffset, pressed);
+			Cursor::State sstate = slider->sendcursor(cursor_relative, pressed);
 			if (sstate != Cursor::IDLE)
 			{
 				cleartooltip();
@@ -304,14 +287,14 @@ namespace IO
 			}
 		}
 
-		int16_t slot = slotbypos(cursoroffset);
+		int16_t slot = slotbypos(cursor_relative);
 		Optional<Icon> icon = geticon(slot);
 		if (icon && isvisible(slot))
 		{
 			Point<int16_t> slotpos = getslotpos(slot);
 			if (pressed)
 			{
-				icon->startdrag(cursoroffset - slotpos);
+				icon->startdrag(cursor_relative - slotpos);
 				UI::get().dragicon(icon.get());
 
 				cleartooltip();
@@ -406,19 +389,19 @@ namespace IO
 		if (tab == Inventory::EQUIP)
 		{
 			Optional<Equip> equip = inventory.getequip(tab, slot);
-			UI::get().withstate(&UIState::showequip, ITEMINVENTORY, equip.get(), slot);
+			UI::get().show_equip(ITEMINVENTORY, equip.get(), slot);
 		}
 		else
 		{
 			Optional<Item> item = inventory.getitem(tab, slot);
 			int32_t itemid = item.mapordefault(&Item::getid, 0);
-			UI::get().withstate(&UIState::showitem, ITEMINVENTORY, itemid);
+			UI::get().show_item(ITEMINVENTORY, itemid);
 		}
 	}
 
 	void UIItemInventory::cleartooltip()
 	{
-		UI::get().withstate(&UIState::cleartooltip, ITEMINVENTORY);
+		UI::get().cleartooltip(ITEMINVENTORY);
 	}
 
 	bool UIItemInventory::isvisible(int16_t slot) const
@@ -502,7 +485,6 @@ namespace IO
 
 	void UIItemInventory::ItemIcon::ondrop() const
 	{
-		using Net::MoveItemPacket;
 		MoveItemPacket(sourcetab, source, 0, 1).dispatch();
 	}
 
@@ -513,12 +495,10 @@ namespace IO
 		case Inventory::EQUIP:
 			if (eqsource == eqslot)
 			{
-				using Net::EquipItemPacket;
 				EquipItemPacket(source, eqslot).dispatch();
 			}
 			break;
 		case Inventory::USE:
-			using Net::ScrollEquipPacket;
 			ScrollEquipPacket(source, eqslot).dispatch();
 			break;
 		}
@@ -529,7 +509,6 @@ namespace IO
 		if (tab != sourcetab || slot == source)
 			return;
 
-		using Net::MoveItemPacket;
 		MoveItemPacket(tab, source, slot, 1).dispatch();
 	}
 }

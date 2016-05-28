@@ -18,22 +18,17 @@
 #pragma once
 #include "Foothold.h"
 #include "PhysicsObject.h"
-#include "Net\InPacket.h"
+
 #include <unordered_map>
 
-namespace Gameplay
+namespace jrc
 {
-	using std::unordered_map;
-	using std::unordered_multimap;
-
 	// The collection of platforms in a maple-map. Used for collision-detection.
 	class Footholdtree
 	{
 	public:
-		Footholdtree(node source);
-		Footholdtree(InPacket& recv);
+		Footholdtree(nl::node source);
 		Footholdtree();
-		~Footholdtree();
 
 		void draw(Point<int16_t> pos) const;
 
@@ -54,8 +49,8 @@ namespace Gameplay
 		double getedge(uint16_t fhid, bool left) const;
 		const Foothold& getfh(uint16_t fhid) const;
 
-		unordered_map<uint16_t, Foothold> footholds;
-		unordered_multimap<int16_t, uint16_t> footholdsbyx;
+		std::unordered_map<uint16_t, Foothold> footholds;
+		std::unordered_multimap<int16_t, uint16_t> footholdsbyx;
 
 		Foothold nullfh;
 		Range<int16_t> walls;

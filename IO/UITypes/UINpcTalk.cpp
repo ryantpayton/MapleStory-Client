@@ -17,37 +17,36 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UINpcTalk.h"
 
-#include "IO\Components\MapleButton.h"
-#include "Net\Packets\NpcInteractionPackets.h"
+#include "..\Components\MapleButton.h"
+
+#include "..\..\Net\Packets\NpcInteractionPackets.h"
 
 #include "nlnx\nx.hpp"
 #include "nlnx\node.hpp"
 
-namespace IO
+namespace jrc
 {
 	UINpcTalk::UINpcTalk()
 	{
-		node src = nl::nx::ui["UIWindow2.img"]["UtilDlgEx"];
+		nl::node src = nl::nx::ui["UIWindow2.img"]["UtilDlgEx"];
 
 		top = src["t"];
 		fill = src["c"];
 		bottom = src["s"];
 		nametag = src["bar"];
 
-		buttons[OK] = unique_ptr<MapleButton>(new MapleButton(src["BtOK"]));
-		buttons[NEXT] = unique_ptr<MapleButton>(new MapleButton(src["BtNext"]));
-		buttons[PREV] = unique_ptr<MapleButton>(new MapleButton(src["BtPrev"]));
-		buttons[END] = unique_ptr<MapleButton>(new MapleButton(src["BtClose"]));
-		buttons[YES] = unique_ptr<MapleButton>(new MapleButton(src["BtYes"]));
-		buttons[NO] = unique_ptr<MapleButton>(new MapleButton(src["BtNo"]));
+		buttons[OK] = std::make_unique<MapleButton>(src["BtOK"]);
+		buttons[NEXT] = std::make_unique<MapleButton>(src["BtNext"]);
+		buttons[PREV] = std::make_unique<MapleButton>(src["BtPrev"]);
+		buttons[END] = std::make_unique<MapleButton>(src["BtClose"]);
+		buttons[YES] = std::make_unique<MapleButton>(src["BtYes"]);
+		buttons[NO] = std::make_unique<MapleButton>(src["BtNo"]);
 
 		active = false;
 	}
 
 	void UINpcTalk::draw(float inter) const
 	{
-		using Graphics::DrawArgument;
-
 		Point<int16_t> drawpos = position;
 		top.draw(drawpos);
 		drawpos.shifty(top.height());
@@ -68,20 +67,19 @@ namespace IO
 		switch (buttonid)
 		{
 		case END:
-			using Net::NpcTalkMorePacket;
 			NpcTalkMorePacket(type, 0).dispatch();
 			active = false;
 			break;
 		}
 	}
 
-	void UINpcTalk::settext(int32_t npcid, int8_t msgtype, int16_t, int8_t speakerbyte, string text)
+	void UINpcTalk::settext(int32_t npcid, int8_t msgtype, int16_t, int8_t speakerbyte, const std::string& text)
 	{
 		npctext = Npctext(text, 320);
 
 		if (speakerbyte == 0)
 		{
-			string strid = std::to_string(npcid);
+			std::string strid = std::to_string(npcid);
 			strid.insert(0, 7 - strid.size(), '0');
 			strid.append(".img");
 			speaker = nl::nx::npc[strid]["stand"]["0"];

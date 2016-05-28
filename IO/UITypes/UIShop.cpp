@@ -18,61 +18,56 @@
 #include "UIShop.h"
 #include "UINotice.h"
 
-#include "Character\Inventory\Inventory.h"
-#include "Data\DataFactory.h"
-#include "Gameplay\Stage.h"
-#include "IO\UI.h"
-#include "IO\Components\AreaButton.h"
-#include "IO\Components\MapleButton.h"
-#include "IO\Components\TwoSpriteButton.h"
-#include "Net\Packets\NpcInteractionPackets.h"
-#include "Util\Misc.h"
+#include "..\UI.h"
+#include "..\Components\AreaButton.h"
+#include "..\Components\MapleButton.h"
+#include "..\Components\TwoSpriteButton.h"
+
+#include "..\..\Character\Inventory\Inventory.h"
+#include "..\..\Data\DataFactory.h"
+#include "..\..\Gameplay\Stage.h"
+#include "..\..\Net\Packets\NpcInteractionPackets.h"
+#include "..\..\Util\Misc.h"
 
 #include "nlnx\nx.hpp"
 #include "nlnx\node.hpp"
 
-namespace IO
+namespace jrc
 {
-	using Character::Player;
-	using Character::Item;
-	using Character::ItemData;
-	using Gameplay::Stage;
-	using Data::DataFactory;
-
 	UIShop::UIShop()
 	{
-		node src = nl::nx::ui["UIWindow2.img"]["Shop"];
-		node src2 = nl::nx::ui["UIWindow2.img"]["Shop2"];
+		nl::node src = nl::nx::ui["UIWindow2.img"]["Shop"];
+		nl::node src2 = nl::nx::ui["UIWindow2.img"]["Shop2"];
 
-		sprites.push_back(src["backgrnd"]);
-		sprites.push_back(src["backgrnd2"]);
-		sprites.push_back(src["backgrnd3"]);
+		sprites.emplace_back(src["backgrnd"]);
+		sprites.emplace_back(src["backgrnd2"]);
+		sprites.emplace_back(src["backgrnd3"]);
 
-		buttons[BUY_ITEM] = unique_ptr<Button>(new MapleButton(src["BtBuy"]));
-		buttons[SELL_ITEM] = unique_ptr<Button>(new MapleButton(src["BtSell"]));
-		buttons[EXIT] = unique_ptr<Button>(new MapleButton(src["BtExit"]));
+		buttons[BUY_ITEM] =std::make_unique<MapleButton>(src["BtBuy"]);
+		buttons[SELL_ITEM] =std::make_unique<MapleButton>(src["BtSell"]);
+		buttons[EXIT] =std::make_unique<MapleButton>(src["BtExit"]);
 
-		node sellen = src2["TabSell"]["enabled"];
-		node selldis = src2["TabSell"]["disabled"];
+		nl::node sellen = src2["TabSell"]["enabled"];
+		nl::node selldis = src2["TabSell"]["disabled"];
 
 		auto stshift = Point<int16_t>(-43, -9);
 		for (uint16_t i = EQUIP; i <= CASH; i++)
 		{
-			string tabnum = std::to_string(i - EQUIP);
-			buttons[i] = unique_ptr<Button>(new TwoSpriteButton(selldis[tabnum], sellen[tabnum], stshift));
+			std::string tabnum = std::to_string(i - EQUIP);
+			buttons[i] = std::make_unique<TwoSpriteButton>(selldis[tabnum], sellen[tabnum], stshift);
 		}
 
 		for (uint16_t i = BUY0; i <= BUY4; i++)
 		{
 			auto pos = Point<int16_t>(8, 116 + 42 * (i - BUY0));
 			auto dim = Point<int16_t>(200, 36);
-			buttons[i] = unique_ptr<Button>(new AreaButton(pos, dim));
+			buttons[i] = std::make_unique<AreaButton>(pos, dim);
 		}
 		for (uint16_t i = SELL0; i <= SELL4; i++)
 		{
 			auto pos = Point<int16_t>(242, 116 + 42 * (i - SELL0));
 			auto dim = Point<int16_t>(200, 36);
-			buttons[i] = unique_ptr<Button>(new AreaButton(pos, dim));
+			buttons[i] = std::make_unique<AreaButton>(pos, dim);
 		}
 
 		selection = src["select"];
@@ -81,9 +76,8 @@ namespace IO
 
 		mesolabel = Text(Text::A11M, Text::RIGHT, Text::LIGHTGREY);
 
-		buyslider = unique_ptr<Slider>(
-			new Slider(11, Range<int16_t>(115, 308), 214, 5, 1, 
-			[&](bool upwards){
+		buyslider = std::make_unique<Slider>(
+			11, Range<int16_t>(115, 308), 214, 5, 1, [&](bool upwards){
 
 			int16_t shift = upwards ? -1 : 1;
 			bool above = buystate.offset + shift >= 0;
@@ -92,10 +86,9 @@ namespace IO
 			{
 				buystate.offset += shift;
 			}
-		}));
-		sellslider = unique_ptr<Slider>(
-			new Slider(11, Range<int16_t>(115, 308), 445, 5, 1,
-			[&](bool upwards){
+		});
+		sellslider = std::make_unique<Slider>(
+			11, Range<int16_t>(115, 308), 445, 5, 1, [&](bool upwards){
 
 			int16_t shift = upwards ? -1 : 1;
 			bool above = sellstate.offset + shift >= 0;
@@ -104,10 +97,11 @@ namespace IO
 			{
 				sellstate.offset += shift;
 			}
-		}));
+		});
 
 		active = false;
-		dimension = Texture(src["backgrnd"]).getdimensions();
+		dimension = Texture(src["backgrnd"])
+			.getdimensions();
 		position = Point<int16_t>(400 - dimension.x() / 2, 240 - dimension.y() / 2);
 	}
 
@@ -115,7 +109,6 @@ namespace IO
 	{
 		UIElement::draw(alpha);
 
-		using Graphics::DrawArgument;
 		npc.draw(DrawArgument(position + Point<int16_t>(64, 76), true));
 
 		Stage::get().getplayer().getlook()
@@ -132,8 +125,9 @@ namespace IO
 
 	void UIShop::update()
 	{
-		int64_t meso = Stage::get().getplayer().getinvent().getmeso();
-		string mesostr = Format::splitnumber(std::to_string(meso));
+		int64_t num_mesos = Stage::get().getplayer().getinvent().getmeso();
+		std::string mesostr = std::to_string(num_mesos);
+		string_format::split_number(mesostr);
 		mesolabel.settext(mesostr);
 	}
 
@@ -168,7 +162,6 @@ namespace IO
 				buttons[buttonid]->setstate(Button::NORMAL);
 				break;
 			case EXIT:
-				using Net::NpcShopActionPacket;
 				NpcShopActionPacket().dispatch();
 				active = false;
 				break;
@@ -237,7 +230,7 @@ namespace IO
 
 	void UIShop::cleartooltip()
 	{
-		UI::get().withstate(&UIState::cleartooltip, SHOP);
+		UI::get().cleartooltip(SHOP);
 	}
 
 	void UIShop::showitem(int16_t slot, bool buy)
@@ -272,7 +265,7 @@ namespace IO
 
 	void UIShop::reset(int32_t npcid)
 	{
-		string strid = Format::extendid(npcid, 7);
+		std::string strid = string_format::extend_id(npcid, 7);
 		npc = nl::nx::npc[strid + ".img"]["stand"]["0"];
 
 		for (auto& button : buttons)
@@ -360,7 +353,8 @@ namespace IO
 			namelabel.settext(item.getname());
 		}
 
-		string mesostr = Format::splitnumber(std::to_string(price));
+		std::string mesostr = std::to_string(price);
+		string_format::split_number(mesostr);
 		pricelabel.settext(mesostr + " Mesos");
 	}
 
@@ -395,11 +389,12 @@ namespace IO
 		namelabel = Text(Text::A11M, Text::LEFT, Text::DARKGREY);
 		pricelabel = Text(Text::A11M, Text::LEFT, Text::DARKGREY);
 
-		string name = item.getidata().getname();
+		std::string name = item.getidata().getname();
 		namelabel.settext(name);
 
 		int32_t price = item.getidata().getprice();
-		string mesostr = Format::splitnumber(std::to_string(price));
+		std::string mesostr = std::to_string(price);
+		string_format::split_number(mesostr);
 		pricelabel.settext(mesostr + " Mesos");
 	}
 
@@ -441,7 +436,7 @@ namespace IO
 		selection = -1;
 	}
 
-	void UIShop::BuyState::draw(Point<int16_t> position, const Texture& selected) const
+	void UIShop::BuyState::draw(Point<int16_t> parentpos, const Texture& selected) const
 	{
 		for (int16_t i = 0; i < 5; i++)
 		{
@@ -452,9 +447,9 @@ namespace IO
 			auto itempos = Point<int16_t>(12, 116 + 42 * i);
 			if (slot == selection)
 			{
-				selected.draw(position + itempos + Point<int16_t>(35, -1));
+				selected.draw(parentpos + itempos + Point<int16_t>(35, -1));
 			}
-			items[slot].draw(position + itempos);
+			items[slot].draw(parentpos + itempos);
 		}
 	}
 
@@ -465,7 +460,7 @@ namespace IO
 			return;
 
 		int32_t itemid = items[absslot].getid();
-		UI::get().withstate(&UIState::showitem, SHOP, itemid);
+		UI::get().show_item(SHOP, itemid);
 	}
 
 	void UIShop::BuyState::add(BuyItem item)
@@ -486,26 +481,32 @@ namespace IO
 		int32_t itemid = item.getid();
 		if (buyable > 1)
 		{
-			string question = "How many would you like to buy?";
+			constexpr char* question = "How many would you like to buy?";
 			auto onenter = [slot, itemid](int32_t qty){
 				auto shortqty = static_cast<int16_t>(qty);
 
-				using Net::NpcShopActionPacket;
 				NpcShopActionPacket(slot, itemid, shortqty, true).dispatch();
 			};
-			UI::get().add(ElementEnterNumber(question, onenter, 1, buyable, 1));
+			UI::get().add(
+				ElementTag<UIEnterNumber, std::string, std::function<void(int32_t)>, int32_t, int32_t, int32_t>(
+					question, onenter, 1, buyable, 1
+					)
+			);
 		}
 		else if (buyable > 0)
 		{
-			string question = "Would you like to buy the item?";
+			constexpr char* question = "Would you like to buy the item?";
 			auto ondecide = [slot, itemid](bool yes){
 				if (yes)
 				{
-					using Net::NpcShopActionPacket;
 					NpcShopActionPacket(slot, itemid, 1, true).dispatch();
 				}
 			};
-			UI::get().add(ElementYesNo(question, ondecide));
+			UI::get().add(
+				ElementTag<UIYesNo, std::string, std::function<void(bool)>>(
+					question, ondecide
+					)
+			);
 		}
 	}
 
@@ -556,7 +557,7 @@ namespace IO
 		lastslot = static_cast<int16_t>(items.size());
 	}
 
-	void UIShop::SellState::draw(Point<int16_t> position, const Texture& selected) const
+	void UIShop::SellState::draw(Point<int16_t> parentpos, const Texture& selected) const
 	{
 		for (int16_t i = 0; i < 5; i++)
 		{
@@ -567,9 +568,9 @@ namespace IO
 			auto itempos = Point<int16_t>(243, 116 + 42 * i);
 			if (slot == selection)
 			{
-				selected.draw(position + itempos + Point<int16_t>(35, -1));
+				selected.draw(parentpos + itempos + Point<int16_t>(35, -1));
 			}
-			items[slot].draw(position + itempos);
+			items[slot].draw(parentpos + itempos);
 		}
 	}
 
@@ -582,13 +583,15 @@ namespace IO
 		if (tab == Inventory::EQUIP)
 		{
 			int16_t realslot = items[absslot].getslot();
-			Optional<Equip> equip = Stage::get().getplayer().getinvent().getequip(Inventory::EQUIP, realslot);
-			UI::get().withstate(&UIState::showequip, SHOP, equip.get(), realslot);
+			Optional<Equip> equip = Stage::get().getplayer()
+				.getinvent()
+				.getequip(Inventory::EQUIP, realslot);
+			UI::get().show_equip(SHOP, equip.get(), realslot);
 		}
 		else
 		{
 			int32_t itemid = items[absslot].getid();
-			UI::get().withstate(&UIState::showitem, SHOP, itemid);
+			UI::get().show_item(SHOP, itemid);
 		}
 	}
 
@@ -603,26 +606,32 @@ namespace IO
 		int16_t slot = item.getslot();
 		if (sellable > 1)
 		{
-			string question = "How many would you like to sell?";
+			constexpr char* question = "How many would you like to sell?";
 			auto onenter = [itemid, slot](int32_t qty){
 				auto shortqty = static_cast<int16_t>(qty);
 
-				using Net::NpcShopActionPacket;
 				NpcShopActionPacket(slot, itemid, shortqty, false).dispatch();
 			};
-			UI::get().add(ElementEnterNumber(question, onenter, 1, sellable, 1));
+			UI::get().add(
+				ElementTag<UIEnterNumber, std::string, std::function<void(int32_t)>, int32_t, int32_t, int32_t>(
+					question, onenter, 1, sellable, 1
+					)
+			);
 		}
 		else if (sellable > 0)
 		{
-			string question = "Would you like to sell the item?";
+			constexpr char* question = "Would you like to sell the item?";
 			auto ondecide = [itemid, slot](bool yes){
 				if (yes)
 				{
-					using Net::NpcShopActionPacket;
 					NpcShopActionPacket(slot, itemid, 1, false).dispatch();
 				}
 			};
-			UI::get().add(ElementYesNo(question, ondecide));
+			UI::get().add(
+				ElementTag<UIYesNo, std::string, std::function<void(bool)>>(
+					question, ondecide
+					)
+			);
 		}
 	}
 

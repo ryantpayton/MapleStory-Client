@@ -16,12 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "OutPacket.h"
-#include "SendOpcodes.h"
+#include "..\OutPacket.h"
+#include "..\SendOpcodes.h"
 
-#include "Util\NxFiles.h"
+#include "..\..\Util\NxFiles.h"
 
-namespace Net
+namespace jrc
 {
 	// Packet which notifies the server that the connection is still alive.
 	// Opcode: PONG(24)
@@ -37,28 +37,17 @@ namespace Net
 	class NxCheckPacket : public OutPacket
 	{
 	public:
-		using NxFiles = Util::NxFiles;
 
 #ifdef JOURNEY_USE_XXHASH
 		NxCheckPacket(uint64_t seed) : OutPacket(HASH_CHECK)
 		{
-			NxFiles& files = NxFiles::get();
-			writech(static_cast<uint8_t>(NxFiles::NUM_FILES));
-			for (size_t i = 0; i < NxFiles::NUM_FILES; i++)
+			auto hashes = NxFiles::get().gethashes(seed);
+			writech(static_cast<uint8_t>(hashes.size()));
+			for (; hashes.size() > 0; hashes.pop())
 			{
-				writestr(files.gethash(i, seed));
+				writestr(hashes.front());
 			}
 		}
 #endif
-
-		NxCheckPacket() : OutPacket(HASH_CHECK)
-		{
-			NxFiles& files = NxFiles::get();
-			writech(static_cast<uint8_t>(NxFiles::NUM_FILES));
-			for (size_t i = 0; i < NxFiles::NUM_FILES; i++)
-			{
-				writestr(files.gethash(i));
-			}
-		}
 	};
 }

@@ -16,21 +16,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
-#include "IO\Components\Textfield.h"
-#include "Graphics\Texture.h"
+#include "..\Element.h"
+#include "..\Components\Textfield.h"
+
+#include "..\..\Graphics\Texture.h"
+
 #include <functional>
 
-namespace IO
+namespace jrc
 {
-	using std::function;
-	using Graphics::Texture;
-	using Graphics::Text;
-
 	class UINotice : public UIElement
 	{
+	public:
+		static constexpr Type TYPE = NOTICE;
+		static constexpr bool FOCUSED = true;
+		static constexpr bool TOGGLED = false;
+
 	protected:
-		UINotice(string question);
+		UINotice(std::string question);
 
 		void draw(bool textfield) const;
 
@@ -52,7 +55,7 @@ namespace IO
 	class UIYesNo : public UINotice
 	{
 	public:
-		UIYesNo(string question, function<void(bool yes)> yesnohandler);
+		UIYesNo(std::string question, std::function<void(bool yes)> yesnohandler);
 
 		void draw(float alpha) const override;
 
@@ -65,14 +68,15 @@ namespace IO
 		void buttonpressed(uint16_t buttonid) override;
 
 	private:
-		function<void(bool yes)> yesnohandler;
+		std::function<void(bool yes)> yesnohandler;
 	};
 
 
 	class UIEnterNumber : public UINotice
 	{
 	public:
-		UIEnterNumber(string question, function<void(int32_t number)> numhandler, int32_t min, int32_t max, int32_t def);
+		UIEnterNumber(std::string question, std::function<void(int32_t number)> numhandler,
+			int32_t min, int32_t max, int32_t def);
 
 		void draw(float alpha) const override;
 		void update() override;
@@ -87,68 +91,11 @@ namespace IO
 		void buttonpressed(uint16_t buttonid) override;
 
 	private:
-		void handlestring(string numstr);
+		void handlestring(std::string numstr);
 
-		function<void(int32_t number)> numhandler;
+		std::function<void(int32_t number)> numhandler;
 		Textfield numfield;
 		int32_t min;
 		int32_t max;
-	};
-
-
-	class ElementNotice : public Element
-	{
-	public:
-		bool isunique() const override
-		{
-			return false;
-		}
-
-		bool isfocused() const override
-		{
-			return true;
-		}
-
-		UIElement::Type type() const override
-		{
-			return UIElement::NOTICE;
-		}
-	};
-
-
-	class ElementYesNo : public ElementNotice
-	{
-	public:
-		ElementYesNo(string q, function<void(bool)> yh)
-			: question(q), yesnohandler(yh) {}
-
-		UIElement* instantiate() const override
-		{
-			return new UIYesNo(question, yesnohandler);
-		}
-
-	private:
-		string question;
-		function<void(bool yes)> yesnohandler;
-	};
-
-
-	class ElementEnterNumber : public ElementNotice
-	{
-	public:
-		ElementEnterNumber(string q, function<void(int32_t)> nh, int32_t mi, int32_t ma, int32_t de)
-			: question(q), numhandler(nh), min(mi), max(ma), def(de) {}
-
-		UIElement* instantiate() const override
-		{
-			return new UIEnterNumber(question, numhandler, min, max, def);
-		}
-
-	private:
-		string question;
-		function<void(int32_t number)> numhandler;
-		int32_t min;
-		int32_t max;
-		int32_t def;
 	};
 }

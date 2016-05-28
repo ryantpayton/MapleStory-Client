@@ -18,39 +18,35 @@
 #include "InventoryHandlers.h"
 #include "ItemParser.h"
 
-#include "IO\UI.h"
-#include "IO\Messages.h"
-#include "IO\UITypes\UIShop.h"
-#include "IO\UITypes\UIEquipInventory.h"
-#include "IO\UITypes\UIItemInventory.h"
-#include "Character\Inventory\Inventory.h"
-#include "Gameplay\Stage.h"
+#include "..\..\Character\Inventory\Inventory.h"
+#include "..\..\Gameplay\Stage.h"
+#include "..\..\IO\UI.h"
+#include "..\..\IO\Messages.h"
+#include "..\..\IO\UITypes\UIShop.h"
+#include "..\..\IO\UITypes\UIEquipInventory.h"
+#include "..\..\IO\UITypes\UIItemInventory.h"
 
-namespace Net
+namespace jrc
 {
-	using Character::Inventory; 
-	using Character::Item;
-	using Gameplay::Stage;
-	using IO::UI;
-	using IO::UIElement;
-	using IO::UIShop;
-	using IO::UIEquipInventory;
-	using IO::UIItemInventory;
-	using IO::Messages;
-
 	void GatherResultHandler::handle(InPacket&) const
 	{
-		UI::get().withelement(UIElement::ITEMINVENTORY, &UIItemInventory::enablesort);
+		UI::get().getelement(UIElement::ITEMINVENTORY)
+			.reinterpret<UIItemInventory>()
+			.ifpresent(&UIItemInventory::enablesort);
 	}
+
 
 	void SortResultHandler::handle(InPacket&) const
 	{
-		UI::get().withelement(UIElement::ITEMINVENTORY, &UIItemInventory::enablegather);
+		UI::get().getelement(UIElement::ITEMINVENTORY)
+			.reinterpret<UIItemInventory>()
+			.ifpresent(&UIItemInventory::enablegather);
 	}
+
 
 	void ModifyInventoryHandler::handle(InPacket& recv) const
 	{
-		recv.readbool(); // 'updatetick'
+		recv.read_bool(); // 'updatetick'
 
 		Inventory& inventory = Stage::get().getplayer().getinvent();
 
@@ -61,15 +57,15 @@ namespace Net
 			int16_t pos;
 			int16_t arg;
 		};
-		vector<Mod> mods;
+		std::vector<Mod> mods;
 
-		int8_t size = recv.readbyte();
+		int8_t size = recv.read_byte();
 		for (int8_t i = 0; i < size; i++)
 		{
 			Mod mod;
-			mod.mode = recv.readbyte();
-			mod.type = Inventory::typebyvalue(recv.readbyte());
-			mod.pos = recv.readshort();
+			mod.mode = recv.read_byte();
+			mod.type = Inventory::typebyvalue(recv.read_byte());
+			mod.pos = recv.read_short();
 
 			mod.arg = 0;
 			switch (mod.mode)
@@ -78,12 +74,12 @@ namespace Net
 				ItemParser::parseitem(recv, mod.type, mod.pos, inventory);
 				break;
 			case 1:
-				mod.arg = recv.readshort();
+				mod.arg = recv.read_short();
 				if (inventory.changecount(mod.type, mod.pos, mod.arg))
 					mod.mode = 4;
 				break;
 			case 2:
-				mod.arg = recv.readshort();
+				mod.arg = recv.read_short();
 				break;
 			case 3:
 				inventory.modify(mod.type, mod.pos, mod.mode, mod.arg, Inventory::MOVE_INTERNAL);
@@ -94,7 +90,7 @@ namespace Net
 		}
 
 		Inventory::Movement move = (recv.length() > 0) ?
-			Inventory::movementbyvalue(recv.readbyte()) :
+			Inventory::movementbyvalue(recv.read_byte()) :
 			Inventory::MOVE_INTERNAL;
 
 		for (Mod& mod : mods)
@@ -104,7 +100,9 @@ namespace Net
 				inventory.modify(mod.type, mod.pos, mod.mode, mod.arg, move);
 			}
 
-			UI::get().withelement(UIElement::SHOP, &UIShop::modify, mod.type);
+			UI::get().getelement(UIElement::SHOP)
+				.reinterpret<UIShop>()
+				.ifpresent(&UIShop::modify, mod.type);
 
 			auto eqinvent = UI::get().getelement<UIEquipInventory>(UIElement::EQUIPINVENTORY);
 			auto itinvent = UI::get().getelement<UIItemInventory>(UIElement::ITEMINVENTORY);

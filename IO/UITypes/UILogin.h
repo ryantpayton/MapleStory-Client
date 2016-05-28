@@ -16,17 +16,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
-#include "IO\UI.h"
-#include "IO\Components\Textfield.h"
+#include "..\Element.h"
+#include "..\UI.h"
+#include "..\Components\Textfield.h"
 
-namespace IO
+namespace jrc
 {
-	using Graphics::Texture;
-
 	class UILogin : public UIElement
 	{
 	public:
+		static constexpr Type TYPE = LOGIN;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = false;
+
 		enum Buttons
 		{
 			BT_LOGIN,
@@ -52,20 +54,7 @@ namespace IO
 		Textfield password;
 		Texture accountbg;
 		Texture passwordbg;
-		map<bool, Texture> checkbox;
+		std::map<bool, Texture> checkbox;
 		bool saveid;
-	};
-
-	class ElementLogin : public Element
-	{
-		UIElement::Type type() const override
-		{
-			return UIElement::LOGIN;
-		}
-
-		UIElement* instantiate() const override
-		{
-			return new UILogin();
-		}
 	};
 }

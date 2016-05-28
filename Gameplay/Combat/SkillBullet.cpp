@@ -17,19 +17,20 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SkillBullet.h"
 
-#include "Data\DataFactory.h"
-#include "Util\Misc.h"
+#include "..\..\Data\DataFactory.h"
+#include "..\..\Util\Misc.h"
 
-namespace Gameplay
+namespace jrc
 {
 	Animation RegularBullet::get(const Char&, int32_t bulletid) const
 	{
-		using Data::DataFactory;
-		return DataFactory::get().getbulletdata(bulletid).getbullet();
+		return DataFactory::get()
+			.getbulletdata(bulletid)
+			.getbullet();
 	}
 
 
-	SingleBullet::SingleBullet(node src)
+	SingleBullet::SingleBullet(nl::node src)
 	{
 		ball = src["ball"];
 	}
@@ -40,13 +41,13 @@ namespace Gameplay
 	}
 
 
-	BySkillLevelBullet::BySkillLevelBullet(node src, int32_t id)
+	BySkillLevelBullet::BySkillLevelBullet(nl::node src, int32_t id)
 	{
 		skillid = id;
 
 		for (auto sub : src["level"])
 		{
-			auto level = StringConversion<int32_t>(sub.name()).orzero();
+			auto level = string_conversion::or_zero<int32_t>(sub.name());
 			bullets[level] = sub["ball"];
 		}
 	}

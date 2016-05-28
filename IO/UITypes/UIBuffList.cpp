@@ -17,12 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIBuffList.h"
 
-#include "Data\DataFactory.h"
-#include "Util\Misc.h"
+#include "..\..\Data\DataFactory.h"
+#include "..\..\Util\Misc.h"
 
 #include "nlnx\nx.hpp"
 
-namespace IO
+namespace jrc
 {
 	BuffIcon::BuffIcon(int32_t buff, int32_t dur)
 		: cover(IconCover::BUFF, dur - FLASH_TIME) {
@@ -34,13 +34,12 @@ namespace IO
 
 		if (buffid >= 0)
 		{
-			string strid = Format::extendid(buffid, 7);
-			node src = nl::nx::skill[strid.substr(0, 3) + ".img"]["skill"][strid];
+			std::string strid = string_format::extend_id(buffid, 7);
+			nl::node src = nl::nx::skill[strid.substr(0, 3) + ".img"]["skill"][strid];
 			icon = src["icon"];
 		}
 		else
 		{
-			using Data::DataFactory;
 			icon = DataFactory::get().getitemdata(-buffid).geticon(true);
 		}
 	}
@@ -52,7 +51,6 @@ namespace IO
 
 	void BuffIcon::draw(Point<int16_t> position, float alpha) const
 	{
-		using Graphics::DrawArgument;
 		icon.draw(DrawArgument(position, opacity.get(alpha)));
 		cover.draw(position + Point<int16_t>(1, -31), alpha);
 	}
@@ -96,7 +94,7 @@ namespace IO
 
 	void UIBuffList::update()
 	{
-		vector<int32_t> expiredbuffs;
+		std::vector<int32_t> expiredbuffs;
 		for (auto& icon : icons)
 		{
 			bool expired = icon.second.update();
@@ -110,9 +108,9 @@ namespace IO
 		}
 	}
 
-	Cursor::State UIBuffList::sendmouse(bool pressed, Point<int16_t> position)
+	Cursor::State UIBuffList::sendmouse(bool pressed, Point<int16_t> cursorposition)
 	{
-		return UIElement::sendmouse(pressed, position);
+		return UIElement::sendmouse(pressed, cursorposition);
 	}
 
 	void UIBuffList::addbuff(int32_t buffid, int32_t duration)

@@ -16,12 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "OtherChar.h"
-#include "Constants.h"
 
-namespace Character
+#include "..\Constants.h"
+
+namespace jrc
 {
-	OtherChar::OtherChar(int32_t id, CharLook lk, uint8_t lvl,
-		int16_t jb, string nm, int8_t st, Point<int16_t> pos) : Char(id, lk, nm) {
+	OtherChar::OtherChar(int32_t id, const CharLook& lk, uint8_t lvl,
+		int16_t jb, const std::string& nm, int8_t st, Point<int16_t> pos) : Char(id, lk, nm) {
 
 		level = lvl;
 		job = jb;
@@ -64,7 +65,7 @@ namespace Character
 		return getlayer();
 	}
 
-	void OtherChar::sendmovement(queue<Movement> newmoves)
+	void OtherChar::sendmovement(std::queue<Movement> newmoves)
 	{
 		movements = newmoves;
 	}
@@ -79,7 +80,7 @@ namespace Character
 		attackspeed = as;
 	}
 
-	void OtherChar::updatelook(LookEntry newlook)
+	void OtherChar::updatelook(const LookEntry& newlook)
 	{
 		look = newlook;
 

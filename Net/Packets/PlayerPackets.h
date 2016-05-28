@@ -16,14 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\OutPacket.h"
-#include "Net\SendOpcodes.h"
-#include "Character\Maplestat.h"
+#include "..\OutPacket.h"
+#include "..\SendOpcodes.h"
 
-namespace Net
+#include "..\..\Character\Maplestat.h"
+
+namespace jrc
 {
-	using Character::Maplestat;
-
 	// Requests a stat increase by spending ap.
 	// Opcode: SPEND_AP(87)
 	class SpendApPacket : public OutPacket

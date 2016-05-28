@@ -16,25 +16,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Enum.h"
+#include "..\Util\Enum.h"
 
-namespace Character
+namespace jrc
 {
 	class Equipstat
 	{
 	public:
-		static const size_t LENGTH = 15;
 		enum Value
 		{
 			STR, DEX, INT, LUK, HP, MP,
 			WATK, MAGIC, WDEF, MDEF,
-			ACC, AVOID, HANDS, SPEED, JUMP
+			ACC, AVOID, HANDS, SPEED, JUMP,
+			LENGTH
 		};
-
-		static EnumIterator<Value> it(Value s = STR, Value l = JUMP)
-		{
-			return EnumIterator<Value>(s, l);
-		}
 
 		static Value byid(size_t id)
 		{
@@ -46,15 +41,11 @@ namespace Character
 			return value;
 		}
 
-		static string nameof(Value value)
+		static constexpr char* names[LENGTH] =
 		{
-			static const string names[LENGTH] =
-			{
-				"STR", "DEX", "INT", "LUK", "MAX HP", "MAX MP",
-				"WEAPON ATT", "MAGIC ATT", "WEAPON DEFENSE", "MAGIC DEFENSE",
-				"ACCURACY", "AVOID", "HANDS", "SPEED", "JUMP"
-			};
-			return names[value];
-		}
+			"STR", "DEX", "INT", "LUK", "MAX HP", "MAX MP",
+			"WEAPON ATT", "MAGIC ATT", "WEAPON DEFENSE", "MAGIC DEFENSE",
+			"ACCURACY", "AVOID", "HANDS", "SPEED", "JUMP"
+		};
 	};
 }

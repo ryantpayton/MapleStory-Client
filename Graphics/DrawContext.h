@@ -15,58 +15,17 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Bar.h"
+#pragma once
 
-namespace IO
-{
-	Bar::Bar(Texture front, Texture mid, Texture end, int16_t max, float percent)
+namespace jrc
+{ 
+	class DrawContext
 	{
-		barfront = front;
-		barmid = mid;
-		barend = end;
-		maximum = max;
-		percentage = percent;
-
-		target = percentage;
-	}
-
-	Bar::Bar() {}
-
-	Bar::~Bar() {}
-
-	void Bar::draw(Point<int16_t> position) const
-	{
-		int16_t length = static_cast<int16_t>(percentage * maximum);
-		if (length > 0)
+	public:
+		enum Type
 		{
-			using::Graphics::DrawArgument;
-			barfront.draw(DrawArgument(position));
-			barmid.draw(DrawArgument(position + Point<int16_t>(1, 0), Point<int16_t>(length, 0)));
-			barend.draw(DrawArgument(position + Point<int16_t>(length + 1, 0)));
-		}
-	}
-
-	void Bar::update(float t)
-	{
-		if (target != t)
-		{
-			target = t;
-			step = (target - percentage) / 24;
-		}
-
-		if (percentage != target)
-		{
-			percentage += step;
-			if (step < 0.0f)
-			{
-				if (target - percentage >= step)
-					percentage = target;
-			}
-			else if (step > 0.0f)
-			{
-				if (target - percentage <= step)
-					percentage = target;
-			}
-		}
-	}
+			STAGE,
+			UI
+		};
+	};
 }

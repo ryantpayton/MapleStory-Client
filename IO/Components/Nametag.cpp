@@ -1,9 +1,9 @@
 #pragma once
 #include "Nametag.h"
 
-namespace IO
+namespace jrc
 {
-	Nametag::Nametag(node src, Text::Font f, Text::Color c, string n)
+	Nametag::Nametag(nl::node src, Text::Font f, Text::Color c, std::string n)
 	{
 		name = Text(f, Text::CENTER, c);
 		name.settext(n);
@@ -18,8 +18,6 @@ namespace IO
 		selected = false;
 	}
 
-	Nametag::~Nametag() {}
-
 	void Nametag::draw(Point<int16_t> position) const
 	{
 		auto& tag = textures[selected];
@@ -27,7 +25,6 @@ namespace IO
 		int16_t width = name.width();
 		auto startpos = position - Point<int16_t>(8 + width / 2, -2);
 
-		using::Graphics::DrawArgument;
 		tag[0].draw(startpos);
 		tag[1].draw(DrawArgument(startpos + Point<int16_t>(8, 0), Point<int16_t>(width, 0)));
 		tag[2].draw(DrawArgument(startpos + Point<int16_t>(width + 8, 0)));

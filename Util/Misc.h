@@ -19,55 +19,44 @@
 #include <cstdint>
 #include <string>
 
-template<typename T>
-class StringConversion
+namespace jrc
 {
-public:
-	using string = std::string;
-
-	StringConversion(string s)
+	namespace string_conversion
 	{
-		str = s;
-	}
-
-	T ordefault(T def)
-	{
-		T value;
-		try
+		template<typename T>
+		inline T or_default(const std::string& str, T def)
 		{
-			int32_t intval = std::stoi(str);
-			value = static_cast<T>(intval);
+			try
+			{
+				int32_t intval = std::stoi(str);
+				return static_cast<T>(intval);
+			}
+			catch (const std::exception&)
+			{
+				return def;
+			}
 		}
-		catch (const std::exception&)
+
+		template<typename T>
+		inline T or_zero(const std::string& str)
 		{
-			value = def;
+			return or_default<T>(str, T(0));
 		}
-		return value;
-	}
+	};
 
-	T orzero()
+	namespace string_format
 	{
-		return ordefault(0);
+		// Format a number string so that each 3 decimal points
+		// are seperated by a ',' character.
+		void split_number(std::string& input);
+
+		// Prefix an id with zeroes so that it has the minimum specified length.
+		std::string extend_id(int32_t id, size_t length);
+	};
+
+	namespace bytecode
+	{
+		// Check if a bit mask contains the specified value.
+		bool compare(int32_t mask, int32_t value);
 	}
-
-private:
-	string str;
-};
-
-namespace Format
-{
-	using std::string;
-
-	// Format a number string so that each 3 decimal points
-	// are seperated by a ',' character.
-	string splitnumber(string input);
-
-	// Prefix an id with zeroes so that it has the minimum specified length.
-	string extendid(int32_t id, size_t length);
-};
-
-namespace Bits
-{
-	// Check if a bit mask contains the specified value.
-	bool compare(int32_t mask, int32_t value);
 }

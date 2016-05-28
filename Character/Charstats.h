@@ -16,19 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\Login.h"
-#include "Character\Look\Weapon.h"
+#include "Look\Weapon.h"
 
-namespace Character
+#include "..\Net\Login.h"
+
+namespace jrc
 {
-	using std::vector;
-	using std::map;
-	using Net::StatsEntry;
-
 	class CharStats
 	{
 	public:
-		CharStats(StatsEntry);
+		CharStats(StatsEntry entry);
 		CharStats();
 		~CharStats();
 
@@ -44,7 +41,7 @@ namespace Character
 		uint16_t getstat(Maplestat::Value stat) const;
 		int32_t gettotal(Equipstat::Value stat) const;
 		int32_t getbuffdelta(Equipstat::Value stat) const;
-		rectangle2d<int16_t> getrange() const;
+		Rectangle<int16_t> getrange() const;
 
 		void setexp(int64_t ex) { stats.exp = ex; }
 		void setportal(uint8_t pt) { stats.portal = pt; }
@@ -57,8 +54,8 @@ namespace Character
 		int32_t getmapid() const { return stats.mapid; }
 		uint8_t getportal() const { return stats.portal; }
 		int64_t getexp() const { return stats.exp; }
-		string getname() const { return stats.name; }
-		string getjobname() const { return stats.job.getname(); }
+		std::string getname() const { return stats.name; }
+		std::string getjobname() const { return stats.job.getname(); }
 		float getmastery() const { return mastery; }
 		float getcritical() const { return critical; }
 		float getmincrit() const { return mincrit; }
@@ -83,8 +80,8 @@ namespace Character
 
 		StatsEntry stats;
 
-		map<Equipstat::Value, int32_t> totalstats;
-		map<Equipstat::Value, int32_t> buffdeltas;
+		std::map<Equipstat::Value, int32_t> totalstats;
+		std::map<Equipstat::Value, int32_t> buffdeltas;
 		int32_t maxdamage;
 		int32_t mindamage;
 		uint16_t honor;

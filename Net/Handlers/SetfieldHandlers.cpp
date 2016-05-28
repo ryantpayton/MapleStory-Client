@@ -17,35 +17,32 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SetfieldHandlers.h"
 #include "ItemParser.h"
-#include "Configuration.h"
-#include "Console.h"
-#include "Constants.h"
-#include "Timer.h"
 
-#include "Audio\Audio.h"
-#include "Gameplay\Stage.h"
-#include "IO\UI.h"
-#include "IO\Window.h"
-#include "Net\Session.h"
+#include "..\..\Configuration.h"
+#include "..\..\Console.h"
+#include "..\..\Constants.h"
+#include "..\..\Timer.h"
+#include "..\..\Audio\Audio.h"
+#include "..\..\Gameplay\Stage.h"
+#include "..\..\Graphics\GraphicsGL.h"
+#include "..\..\IO\UI.h"
+#include "..\..\IO\Window.h"
+#include "..\..\Net\Session.h"
 
-namespace Net
+namespace jrc
 {
-	using Audio::Sound;
-	using Character::Player;
-	using Gameplay::Stage;
-	using IO::UI;
-	using IO::Element;
-	using IO::Window;
-
 	void stagetransition(uint8_t portalid, int32_t mapid)
 	{
 		float fadestep = 0.025f;
 		Window::get().fadeout(fadestep, [](){
+			GraphicsGL::get().clear();
 			Stage::get().reload();
 			UI::get().enable();
 			Timer::get().start();
+			GraphicsGL::get().unlock();
 		});
 
+		GraphicsGL::get().lock();
 		Stage::get().clear();
 		Timer::get().start();
 
@@ -54,34 +51,34 @@ namespace Net
 
 	void SetfieldHandler::handle(InPacket& recv) const
 	{
-		int32_t channel = recv.readint();
-		int8_t mode1 = recv.readbyte();
-		int8_t mode2 = recv.readbyte();
+		int32_t channel = recv.read_int();
+		int8_t mode1 = recv.read_byte();
+		int8_t mode2 = recv.read_byte();
 		if (mode1 == 0 && mode2 == 0)
 		{
-			changemap(recv, channel);
+			change_map(recv, channel);
 		}
 		else
 		{
-			setfield(recv);
+			set_field(recv);
 		}
 	}
 
-	void SetfieldHandler::changemap(InPacket& recv, int32_t) const
+	void SetfieldHandler::change_map(InPacket& recv, int32_t) const
 	{
 		recv.skip(3);
 
-		int32_t mapid = recv.readint();
-		int8_t portalid = recv.readbyte();
+		int32_t mapid = recv.read_int();
+		int8_t portalid = recv.read_byte();
 
 		stagetransition(portalid, mapid);
 	}
 
-	void SetfieldHandler::setfield(InPacket& recv) const
+	void SetfieldHandler::set_field(InPacket& recv) const
 	{
 		recv.skip(23);
 
-		int32_t cid = recv.readint();
+		int32_t cid = recv.read_int();
 
 		const CharEntry& playerentry = Session::get().getlogin().getcharbyid(cid);
 		if (playerentry.cid != cid)
@@ -95,15 +92,15 @@ namespace Net
 
 		Player& player = Stage::get().getplayer();
 
-		recv.readbyte(); // 'buddycap'
-		if (recv.readbool())
+		recv.read_byte(); // 'buddycap'
+		if (recv.read_bool())
 		{
-			recv.read<string>(); // 'linkedname'
+			recv.read_string(); // 'linkedname'
 		}
 
-		parseinventory(recv, player.getinvent());
-		parseskillbook(recv, player.getskills());
-		parsequestlog(recv, player.getquests());
+		parse_inventory(recv, player.getinvent());
+		parse_skillbook(recv, player.getskills());
+		parse_questlog(recv, player.getquests());
 		parseminigame(recv);
 		parsering1(recv);
 		parsering2(recv);
@@ -124,26 +121,26 @@ namespace Net
 		UI::get().changestate(UI::GAME);
 	}
 
-	void SetfieldHandler::parseinventory(InPacket& recv, Inventory& invent) const
+	void SetfieldHandler::parse_inventory(InPacket& recv, Inventory& invent) const
 	{
-		invent.setmeso(recv.readint());
-		invent.setslots(Inventory::EQUIP, recv.readbyte());
-		invent.setslots(Inventory::USE, recv.readbyte());
-		invent.setslots(Inventory::SETUP, recv.readbyte());
-		invent.setslots(Inventory::ETC, recv.readbyte());
-		invent.setslots(Inventory::CASH, recv.readbyte());
+		invent.setmeso(recv.read_int());
+		invent.setslots(Inventory::EQUIP, recv.read_byte());
+		invent.setslots(Inventory::USE, recv.read_byte());
+		invent.setslots(Inventory::SETUP, recv.read_byte());
+		invent.setslots(Inventory::ETC, recv.read_byte());
+		invent.setslots(Inventory::CASH, recv.read_byte());
 
 		recv.skip(8);
 
 		for (size_t i = 0; i < 3; i++)
 		{
 			Inventory::Type inv = (i == 0) ? Inventory::EQUIPPED : Inventory::EQUIP;
-			int16_t pos = recv.readshort();
+			int16_t pos = recv.read_short();
 			while (pos != 0)
 			{
 				int16_t slot = (i == 1) ? -pos : pos;
 				ItemParser::parseitem(recv, inv, slot, invent);
-				pos = recv.readshort();
+				pos = recv.read_short();
 			}
 		}
 
@@ -157,114 +154,114 @@ namespace Net
 		for (size_t i = 0; i < 4; i++)
 		{
 			Inventory::Type inv = toparse[i];
-			int8_t pos = recv.readbyte();
+			int8_t pos = recv.read_byte();
 			while (pos != 0)
 			{
 				ItemParser::parseitem(recv, inv, pos, invent);
-				pos = recv.readbyte();
+				pos = recv.read_byte();
 			}
 		}
 	}
 
-	void SetfieldHandler::parseskillbook(InPacket& recv, Skillbook& skills) const
+	void SetfieldHandler::parse_skillbook(InPacket& recv, Skillbook& skills) const
 	{
-		int16_t size = recv.readshort();
+		int16_t size = recv.read_short();
 		for (int16_t i = 0; i < size; i++)
 		{
-			int32_t skillid = recv.readint();
-			int32_t level = recv.readint();
-			int64_t expiration = recv.readlong();
+			int32_t skillid = recv.read_int();
+			int32_t level = recv.read_int();
+			int64_t expiration = recv.read_long();
 			bool fourthtjob = ((skillid % 100000) / 10000 == 2);
-			int32_t masterlevel = fourthtjob ? recv.readint() : -1;
-			skills.setskill(skillid, level, masterlevel, expiration);
+			int32_t masterlevel = fourthtjob ? recv.read_int() : -1;
+			skills.set_skill(skillid, level, masterlevel, expiration);
 		}
 
-		size = recv.readshort();
+		size = recv.read_short();
 		for (int16_t i = 0; i < size; i++)
 		{
-			int32_t skillid = recv.readint();
-			int32_t cooldown = recv.readshort();
-			skills.setcd(skillid, cooldown);
+			int32_t skillid = recv.read_int();
+			int32_t cooldown = recv.read_short();
+			skills.set_cd(skillid, cooldown);
 		}
 	}
 
-	void SetfieldHandler::parsequestlog(InPacket& recv, Questlog& quests) const
+	void SetfieldHandler::parse_questlog(InPacket& recv, Questlog& quests) const
 	{
-		int16_t size = recv.readshort();
+		int16_t size = recv.read_short();
 		for (int16_t i = 0; i < size; i++)
 		{
-			int16_t qid = recv.readshort();
-			string qdata = recv.read<string>();
-			if (quests.isstarted(qid))
+			int16_t qid = recv.read_short();
+			std::string qdata = recv.read_string();
+			if (quests.is_started(qid))
 			{
-				int16_t qidl = quests.getlaststarted();
-				quests.addprogress(qidl, qid, qdata);
+				int16_t qidl = quests.get_last_started();
+				quests.add_in_progress(qidl, qid, qdata);
 				i--;
 			}
 			else
 			{
-				quests.addstarted(qid, qdata);
+				quests.add_started(qid, qdata);
 			}
 		}
 
-		map<int16_t, int64_t> completed;
-		size = recv.readshort();
+		std::map<int16_t, int64_t> completed;
+		size = recv.read_short();
 		for (int16_t i = 0; i < size; i++)
 		{
-			int16_t qid = recv.readshort();
-			int64_t time = recv.readlong();
-			quests.addcompleted(qid, time);
+			int16_t qid = recv.read_short();
+			int64_t time = recv.read_long();
+			quests.add_completed(qid, time);
 		}
 	}
 
 	void SetfieldHandler::parsering1(InPacket& recv) const
 	{
-		int16_t rsize = recv.readshort();
+		int16_t rsize = recv.read_short();
 		for (int16_t i = 0; i < rsize; i++)
 		{
-			recv.readint();
-			recv.readpadascii(13);
-			recv.readint();
-			recv.readint();
-			recv.readint();
-			recv.readint();
+			recv.read_int();
+			recv.read_padded_string(13);
+			recv.read_int();
+			recv.read_int();
+			recv.read_int();
+			recv.read_int();
 		}
 	}
 
 	void SetfieldHandler::parsering2(InPacket& recv) const
 	{
-		int16_t rsize = recv.readshort();
+		int16_t rsize = recv.read_short();
 		for (int16_t i = 0; i < rsize; i++)
 		{
-			recv.readint();
-			recv.readpadascii(13);
-			recv.readint();
-			recv.readint();
-			recv.readint();
-			recv.readint();
-			recv.readint();
+			recv.read_int();
+			recv.read_padded_string(13);
+			recv.read_int();
+			recv.read_int();
+			recv.read_int();
+			recv.read_int();
+			recv.read_int();
 		}
 	}
 
 	void SetfieldHandler::parsering3(InPacket& recv) const
 	{
-		int16_t rsize = recv.readshort();
+		int16_t rsize = recv.read_short();
 		for (int16_t i = 0; i < rsize; i++)
 		{
-			recv.readint();
-			recv.readint();
-			recv.readint();
-			recv.readshort();
-			recv.readint();
-			recv.readint();
-			recv.readpadascii(13);
-			recv.readpadascii(13);
+			recv.read_int();
+			recv.read_int();
+			recv.read_int();
+			recv.read_short();
+			recv.read_int();
+			recv.read_int();
+			recv.read_padded_string(13);
+			recv.read_padded_string(13);
 		}
 	}
 
 	void SetfieldHandler::parseminigame(InPacket& recv) const
 	{
-		int16_t mgsize = recv.readshort();
+		int16_t mgsize = recv.read_short();
 		for (int16_t i = 0; i < mgsize; i++)
 		{
 		}
@@ -272,15 +269,15 @@ namespace Net
 
 	void SetfieldHandler::parsemonsterbook(InPacket& recv, Monsterbook& monsterbook) const
 	{
-		monsterbook.setcover(recv.readint());
+		monsterbook.setcover(recv.read_int());
 
 		recv.skip(1);
 
-		int16_t size = recv.readshort();
+		int16_t size = recv.read_short();
 		for (int16_t i = 0; i < size; i++)
 		{
-			int16_t cid = recv.readshort();
-			int8_t mblv = recv.readbyte();
+			int16_t cid = recv.read_short();
+			int8_t mblv = recv.read_byte();
 
 			monsterbook.addcard(cid, mblv);
 		}
@@ -290,18 +287,18 @@ namespace Net
 	{
 		for (size_t i = 0; i < 5; i++)
 		{
-			trock.addlocation(recv.readint());
+			trock.addlocation(recv.read_int());
 		}
 
 		for (size_t i = 0; i < 10; i++)
 		{
-			trock.addviplocation(recv.readint());
+			trock.addviplocation(recv.read_int());
 		}
 	}
 
 	void SetfieldHandler::parsenewyear(InPacket& recv) const
 	{
-		int16_t nysize = recv.readshort();
+		int16_t nysize = recv.read_short();
 		for (int16_t i = 0; i < nysize; i++)
 		{
 		}
@@ -309,26 +306,12 @@ namespace Net
 
 	void SetfieldHandler::parseareainfo(InPacket& recv) const
 	{
-		map<int16_t, string> areainfo;
-		int16_t arsize = recv.readshort();
+		std::map<int16_t, std::string> areainfo;
+		int16_t arsize = recv.read_short();
 		for (int16_t i = 0; i < arsize; i++)
 		{
-			int16_t area = recv.readshort();
-			areainfo[area] = recv.read<string>();
+			int16_t area = recv.read_short();
+			areainfo[area] = recv.read_string();
 		}
-	}
-
-	void ChangeChannelHandler::handle(InPacket& recv) const
-	{
-		// Spawn information.
-		recv.readbyte(); // channel
-		// ip adress etc.
-	}
-
-	void MapPacketHandler::handle(InPacket& recv) const
-	{
-		stagetransition(0, 0);
-
-		Stage::get().parsemap(recv);
 	}
 }

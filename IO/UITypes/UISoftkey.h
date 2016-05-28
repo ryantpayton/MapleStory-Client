@@ -16,18 +16,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
-#include "Graphics\Text.h"
-#include "Util\Randomizer.h"
+#include "..\Element.h"
 
-namespace IO
+#include "..\..\Graphics\Text.h"
+#include "..\..\Util\Randomizer.h"
+
+namespace jrc
 {
-	using Graphics::Text;
-
 	// Keyboard which is used via the mouse. The game uses this for pic/pin input.
 	class UISoftkey : public UIElement
 	{
 	public:
+		static constexpr Type TYPE = SOFTKEYBOARD;
+		static constexpr bool FOCUSED = true;
+		static constexpr bool TOGGLED = false;
+
 		enum Buttons
 		{
 			BT_0,
@@ -54,7 +57,7 @@ namespace IO
 			MERCHANT
 		};
 
-		UISoftkey(SkType);
+		UISoftkey(SkType type);
 
 		void draw(float) const override;
 		void buttonpressed(uint16_t) override;
@@ -63,36 +66,12 @@ namespace IO
 		void shufflekeys();
 		Point<int16_t> keypos(uint8_t) const;
 
+		static constexpr uint8_t NUM_KEYS = 10;
+
 		SkType type;
 
 		Text entry;
 		Randomizer random;
-	};
-
-	class ElementSoftkey : public Element
-	{
-	public:
-		ElementSoftkey(UISoftkey::SkType t) 
-		{
-			sktype = t;
-		}
-
-		bool isfocused() const override
-		{
-			return true;
-		}
-
-		UIElement::Type type() const override
-		{
-			return UIElement::SOFTKEYBOARD;
-		}
-
-		UISoftkey* instantiate() const override
-		{
-			return new UISoftkey(sktype);
-		}
-	private:
-		UISoftkey::SkType sktype;
 	};
 }
 

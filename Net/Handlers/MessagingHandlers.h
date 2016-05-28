@@ -16,13 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\PacketHandler.h"
-#include "Graphics\Text.h"
+#include "..\PacketHandler.h"
 
-namespace Net
+#include "..\..\Graphics\Text.h"
+
+namespace jrc
 {
-	using Graphics::Text;
-
 	// Show a status message.
 	// Opcode: SHOW_STATUS_INFO(39)
 	class ShowStatusInfoHandler : public PacketHandler
@@ -30,7 +29,7 @@ namespace Net
 	public:
 		void handle(InPacket& recv) const override;
 	private:
-		void showstatus(Text::Color color, string message) const;
+		void showstatus(Text::Color color, const std::string& message) const;
 	};
 
 

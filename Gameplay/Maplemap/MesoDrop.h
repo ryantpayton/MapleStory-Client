@@ -17,19 +17,18 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Drop.h"
-#include "Graphics\Animation.h"
 
-namespace Gameplay
+#include "..\..\Graphics\Animation.h"
+
+namespace jrc
 {
-	using Graphics::Animation;
-
 	class MesoDrop : public Drop
 	{
 	public:
 		MesoDrop(int32_t oid, int32_t owner, Point<int16_t> start, Point<int16_t> dest, 
 			int8_t type, int8_t mode, bool playerdrop, const Animation* icon);
 
-		void draw(Point<int16_t> viewpos, float inter) const override;
+		void draw(double viewx, double viewy, float alpha) const override;
 
 	private:
 		const Animation* icon;

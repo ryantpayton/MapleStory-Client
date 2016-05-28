@@ -20,11 +20,11 @@
 #include "UIStateGame.h"
 #include "Window.h"
 
-namespace IO
+namespace jrc
 {
 	UI::UI()
 	{
-		state = unique_ptr<UIState>(new UIStateNull());
+		state = std::make_unique<UIStateNull>();
 		enabled = true;
 	}
 
@@ -34,12 +34,12 @@ namespace IO
 		changestate(LOGIN);
 	}
 
-	void UI::draw(float inter) const
+	void UI::draw(float alpha) const
 	{
-		state->draw(inter, cursor.getposition());
+		state->draw(alpha, cursor.getposition());
 
-		scrollingnotice.draw(inter);
-		cursor.draw(inter);
+		scrollingnotice.draw(alpha);
+		cursor.draw(alpha);
 	}
 
 	void UI::update()
@@ -65,10 +65,10 @@ namespace IO
 		switch (id)
 		{
 		case LOGIN:
-			state = unique_ptr<UIState>(new UIStateLogin());
+			state = std::make_unique<UIStateLogin>();
 			break;
 		case GAME:
-			state = unique_ptr<UIState>(new UIStateGame());
+			state = std::make_unique<UIStateGame>();
 			break;
 		}
 	}
@@ -151,7 +151,7 @@ namespace IO
 		keydown[keycode] = pressed;
 	}
 
-	void UI::setscrollingnotice(string notice)
+	void UI::setscrollingnotice(const std::string& notice)
 	{
 		scrollingnotice.setnotice(notice);
 	}
@@ -197,5 +197,20 @@ namespace IO
 	Optional<UIElement> UI::getelement(UIElement::Type type) const
 	{
 		return state->get(type);
+	}
+
+	void UI::cleartooltip(UIElement::Type type)
+	{
+		state->cleartooltip(type);
+	}
+
+	void UI::show_equip(UIElement::Type parent, Equip* equip, int16_t slot)
+	{
+		state->showequip(parent, equip, slot);
+	}
+
+	void UI::show_item(UIElement::Type parent, int32_t item_id)
+	{
+		state->showitem(parent, item_id);
 	}
 }

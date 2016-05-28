@@ -17,26 +17,25 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Button.h"
-#include "Graphics\Texture.h"
+
+#include "..\..\Graphics\Texture.h"
+#include "..\..\Util\BoolPair.h"
+
 #include <map>
 
-namespace IO
+namespace jrc
 {
-	using std::map;
-	using nl::node;
-	using Graphics::Texture;
-
 	class TwoSpriteButton : public Button
 	{
 	public:
-		TwoSpriteButton(node nsrc, node ssrc, Point<int16_t> position);
-		TwoSpriteButton(node nsrc, node ssrc);
+		TwoSpriteButton(nl::node nsrc, nl::node ssrc, Point<int16_t> position);
+		TwoSpriteButton(nl::node nsrc, nl::node ssrc);
 
 		void draw(Point<int16_t> position) const;
-		rectangle2d<int16_t> bounds(Point<int16_t> position) const;
+		Rectangle<int16_t> bounds(Point<int16_t> position) const;
 
 	private:
-		map<bool, Texture> textures;
+		BoolPair<Texture> textures;
 	};
 }
 

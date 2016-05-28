@@ -18,7 +18,9 @@
 #pragma once
 #include "SpecialMove.h"
 
-namespace Gameplay
+#include "..\..\Audio\Audio.h"
+
+namespace jrc
 {
 	class Skill : public SpecialMove
 	{
@@ -134,7 +136,7 @@ namespace Gameplay
 			int32_t mastery = 0;
 			int32_t fixdamage = 0;
 			float hrange = 1.0f;
-			rectangle2d<int16_t> range;
+			Rectangle<int16_t> range;
 		};
 
 		Skill(int32_t skillid);
@@ -145,11 +147,11 @@ namespace Gameplay
 		ForbidReason canuse(int32_t level, Weapon::Type weapon, uint16_t job, uint16_t hp, uint16_t mp, uint16_t bullets) const override;
 
 	private:
-		unordered_map<int32_t, Level> levels;
+		std::unordered_map<int32_t, Level> levels;
 		Sound usesound;
 		Sound hitsound;
 		Weapon::Type reqweapon;
-		string element;
+		std::string element;
 		int32_t skillid;
 		bool passive;
 		bool offensive;

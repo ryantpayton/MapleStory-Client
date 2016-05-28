@@ -18,7 +18,7 @@
 #pragma once
 #include <cstdint>
 
-namespace Net
+namespace jrc
 {
 	// Opcodes for InPacket Handlers associated with version 83 of the game.
 	enum RecvOpcode : int16_t

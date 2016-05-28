@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "ItemDrop.h"
 
-namespace Gameplay
+namespace jrc
 {
 	ItemDrop::ItemDrop(int32_t oid, int32_t owner, Point<int16_t> start,
 		Point<int16_t> dest, int8_t type, int8_t mode, int32_t iid, bool pd, const Texture* icn) 
@@ -27,14 +27,12 @@ namespace Gameplay
 		itemid = iid;
 	}
 
-	void ItemDrop::draw(Point<int16_t> viewpos, float alpha) const
+	void ItemDrop::draw(double viewx, double viewy, float alpha) const
 	{
 		if (!active || !icon)
 			return;
 
-		Point<int16_t> absp = phobj.getposition(alpha) + viewpos;
-
-		using Graphics::DrawArgument;
+		Point<int16_t> absp = phobj.getabsolute(viewx, viewy, alpha);
 		icon->draw(DrawArgument(angle.get(alpha), absp, opacity.get(alpha)));
 	}
 }

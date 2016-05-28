@@ -16,16 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\OutPacket.h"
-#include "Net\SendOpcodes.h"
+#include "..\OutPacket.h"
+#include "..\SendOpcodes.h"
 
-#include "Gameplay\Combat\Attack.h"
+#include "..\..\Gameplay\Combat\Attack.h"
 
-namespace Net
+namespace jrc
 {
-	using Gameplay::Attack;
-	using Gameplay::AttackResult;
-
 	// Notifies the server of an attack. The opcode is determined by the attack type.
 	// Attack::CLOSE = CLOSE_ATTACK(44)
 	// Attack::RANGED = RANGED_ATTACK(45)

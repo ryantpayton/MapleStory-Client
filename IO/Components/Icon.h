@@ -16,17 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Character\Inventory\Inventory.h"
-#include "Graphics\Texture.h"
+#include "..\..\Character\Inventory\Inventory.h"
+#include "..\..\Graphics\Texture.h"
+
 #include <memory>
 
-namespace IO
+namespace jrc
 {
-	using std::unique_ptr;
-	using Graphics::Texture;
-	using Character::Inventory;
-	using Character::Equipslot;
-
 	class Icon
 	{
 	public:
@@ -40,7 +36,7 @@ namespace IO
 			virtual void ondropitems(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const = 0;
 		};
 
-		Icon(Type* type, Texture texture, int16_t count);
+		Icon(std::unique_ptr<Type> type, Texture texture, int16_t count);
 		Icon();
 
 		void draw(Point<int16_t> position) const;
@@ -57,7 +53,7 @@ namespace IO
 		int16_t getcount() const;
 
 	private:
-		unique_ptr<Type> type;
+		std::unique_ptr<Type> type;
 		Texture texture;
 		bool showcount;
 		int16_t count;

@@ -16,26 +16,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Util\Enum.h"
-#include "Console.h"
+#include "..\..\Console.h"
+#include "..\..\Util\Enum.h"
+
 #include <cstdint>
 #include <string>
 
-namespace Character
+namespace jrc
 {
-	using std::string;
-
 	class Stance
 	{
 	public:
-		static const size_t LENGTH = 36;
 		enum Value : uint8_t
 		{
 			NONE, ALERT, DEAD, FLY, HEAL, JUMP, LADDER, PRONE, PRONESTAB,
 			ROPE, SHOT, SHOOT1, SHOOT2, SHOOTF, SIT, STABO1, STABO2, STABOF,
 			STABT1, STABT2, STABTF, STAND1, STAND2, SWINGO1, SWINGO2,
 			SWINGO3, SWINGOF, SWINGP1, SWINGP2, SWINGPF, SWINGT1, SWINGT2,
-			SWINGT3, SWINGTF, WALK1, WALK2
+			SWINGT3, SWINGTF, WALK1, WALK2,
+			LENGTH
 		};
 
 		static EnumIterator<Value> getit()
@@ -69,7 +68,7 @@ namespace Character
 			return NONE;
 		}
 
-		static Value bystring(string name)
+		static Value bystring(std::string name)
 		{
 			for (auto it = getit(); it.hasnext(); it.increment())
 			{
@@ -83,9 +82,9 @@ namespace Character
 			return NONE;
 		}
 
-		static string nameof(Value value)
+		static std::string nameof(Value value)
 		{
-			static const string stancenames[LENGTH] =
+			static const std::string stancenames[LENGTH] =
 			{
 				"", "alert", "dead", "fly", "heal", "jump", "ladder", "prone", "proneStab",
 				"rope", "shot", "shoot1", "shoot2", "shootF", "sit", "stabO1", "stabO2", "stabOF",

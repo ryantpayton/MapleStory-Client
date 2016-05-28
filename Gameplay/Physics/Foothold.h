@@ -16,23 +16,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\InPacket.h"
-#include "Util\Range.h"
-#include "nlnx\node.hpp"
+#include "..\..\Util\Range.h"
 
-namespace Gameplay
+#include <nlnx\node.hpp>
+
+namespace jrc
 {
-	using nl::node;
-	using Net::InPacket;
-
 	// Represents a platform part on a maple-map.
 	class Foothold
 	{
 	public:
-		Foothold(node src, uint8_t layer);
-		Foothold(InPacket& recv, uint8_t layer);
+		Foothold(nl::node src, uint8_t layer);
 		Foothold();
-		~Foothold();
 
 		// Returns the foothold id aka the identifier in game data of this platform.
 		uint16_t getid() const { return id; }

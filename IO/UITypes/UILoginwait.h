@@ -16,33 +16,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
+#include "..\Element.h"
 
-namespace IO
+namespace jrc
 {
 	class UILoginwait : public UIElement
 	{
 	public:
+		static constexpr Type TYPE = LOGINWAIT;
+		static constexpr bool FOCUSED = true;
+		static constexpr bool TOGGLED = false;
+
 		UILoginwait();
+
 		void buttonpressed(uint16_t) override {}
-	};
-
-	class ElementLoginwait : public Element
-	{
-		bool isfocused() const override
-		{
-			return true;
-		}
-
-		UIElement::Type type() const override
-		{
-			return UIElement::LOGINWAIT;
-		}
-
-		UIElement* instantiate() const override
-		{
-			return new UILoginwait();
-		}
 	};
 }
 

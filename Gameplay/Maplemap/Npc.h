@@ -17,20 +17,17 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "MapObject.h"
-#include "Graphics\Animation.h"
-#include "Graphics\Text.h"
-#include "Gameplay\Physics\PhysicsObject.h"
-#include "Util\Randomizer.h"
+
+#include "..\Physics\PhysicsObject.h"
+
+#include "..\..\Graphics\Animation.h"
+#include "..\..\Graphics\Text.h"
+#include "..\..\Util\Randomizer.h"
+
 #include <map>
 
-namespace Gameplay
+namespace jrc
 {
-	using std::string;
-	using std::map;
-	using std::vector;
-	using Graphics::Animation;
-	using Graphics::Text;
-
 	// Represents a npc on the current map.
 	// Implements the 'Mapobject' interface to be used in a 'Mapobjects' template.
 	class Npc : public MapObject
@@ -42,12 +39,12 @@ namespace Gameplay
 			bool control, Point<int16_t> position);
 
 		// Draws the current animation and name/function tags.
-		void draw(Point<int16_t> viewpos, float inter) const override;
+		void draw(double viewx, double viewy, float alpha) const override;
 		// Updates the current animation and physics.
 		int8_t update(const Physics& physics) override;
 
 		// Changes stance and resets animation.
-		void setstance(string stance);
+		void setstance(const std::string& stance);
 
 		// Check wether this is a server-sided npc.
 		bool isscripted() const;
@@ -55,18 +52,18 @@ namespace Gameplay
 		bool inrange(Point<int16_t> cursorpos, Point<int16_t> viewpos) const;
 
 	private:
-		map<string, Animation> animations;
-		map<string, vector<string>> lines;
-		vector<string> states;
-		string name;
-		string func;
+		std::map<std::string, Animation> animations;
+		std::map<std::string, std::vector<std::string>> lines;
+		std::vector<std::string> states;
+		std::string name;
+		std::string func;
 		bool hidename;
 		bool scripted;
 		bool mouseonly;
 
 		int32_t npcid;
 		bool flip;
-		string stance;
+		std::string stance;
 		bool control;
 
 		Randomizer random;

@@ -16,9 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "DataFactory.h"
-#include <map>
 
-namespace Data
+namespace jrc
 {
 	void DataFactory::init()
 	{

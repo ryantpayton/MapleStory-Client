@@ -17,78 +17,66 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MapObjectHandlers.h"
 
-#include "Audio\Audio.h"
+#include "..\..\Audio\Audio.h"
+#include "..\..\Gameplay\Stage.h"
+#include "..\..\Gameplay\Spawn.h"
 
-#include "Gameplay\Stage.h"
-#include "Gameplay\Spawn.h"
-
-namespace Net
+namespace jrc
 {
-	using Audio::Sound;
-	using Character::Char;
-	using Gameplay::Stage;
-	using Gameplay::NpcSpawn;
-	using Gameplay::MobSpawn;
-	using Gameplay::DropSpawn;
-	using Gameplay::CharSpawn;
-	using Gameplay::MapMobs;
-	using Gameplay::MapDrops;
-	using Gameplay::MapChars;
-
 	void SpawnCharHandler::handle(InPacket& recv) const
 	{
-		int32_t cid = recv.readint();
-		uint8_t level = recv.readbyte();
-		string name = recv.read<string>();
+		int32_t cid = recv.read_int();
+		uint8_t level = recv.read_byte();
+		std::string name = recv.read_string();
 
-		recv.read<string>(); // guildname
-		recv.readshort(); // guildlogobg
-		recv.readbyte(); // guildlogobgcolor
-		recv.readshort(); // guildlogo
-		recv.readbyte(); // guildlogocolor
+		recv.read_string(); // guildname
+		recv.read_short(); // guildlogobg
+		recv.read_byte(); // guildlogobgcolor
+		recv.read_short(); // guildlogo
+		recv.read_byte(); // guildlogocolor
 
 		recv.skip(8);
 
-		bool morphed = recv.readint() == 2;
-		int32_t buffmask1 = recv.readint();
+		bool morphed = recv.read_int() == 2;
+		int32_t buffmask1 = recv.read_int();
 		int16_t buffvalue = 0;
 		if (buffmask1 != 0)
 		{
-			buffvalue = morphed ? recv.readshort() : recv.readbyte();
+			buffvalue = morphed ? recv.read_short() : recv.read_byte();
 		}
-		recv.readint(); // buffmask 2
+		recv.read_int(); // buffmask 2
 
 		recv.skip(43);
 
-		recv.readint(); // 'mount'
+		recv.read_int(); // 'mount'
 
 		recv.skip(61);
 
-		int16_t job = recv.readshort();
+		int16_t job = recv.read_short();
 		LookEntry look = Session::get().getlogin().parselook(recv);
 
-		recv.readint(); //count of 5110000 
-		recv.readint(); // 'itemeffect'
-		recv.readint(); // 'chair'
+		recv.read_int(); //count of 5110000 
+		recv.read_int(); // 'itemeffect'
+		recv.read_int(); // 'chair'
 
 		Point<int16_t> position = recv.readpoint();
-		int8_t stance = recv.readbyte();
+		int8_t stance = recv.read_byte();
 
 		recv.skip(3);
 
 		for (size_t i = 0; i < 3; i++)
 		{
-			int8_t available = recv.readbyte();
+			int8_t available = recv.read_byte();
 			if (available == 1)
 			{
-				recv.readbyte(); // 'byte2'
-				recv.readint(); // petid
-				recv.read<string>(); // name
-				recv.readint(); // unique id
-				recv.readint();
+				recv.read_byte(); // 'byte2'
+				recv.read_int(); // petid
+				recv.read_string(); // name
+				recv.read_int(); // unique id
+				recv.read_int();
 				recv.readpoint(); // pos
-				recv.readbyte(); // stance
-				recv.readint(); // fhid
+				recv.read_byte(); // stance
+				recv.read_int(); // fhid
 			}
 			else
 			{
@@ -96,19 +84,19 @@ namespace Net
 			}
 		}
 
-		recv.readint(); // mountlevel
-		recv.readint(); // mountexp
-		recv.readint(); // mounttiredness
+		recv.read_int(); // mountlevel
+		recv.read_int(); // mountexp
+		recv.read_int(); // mounttiredness
 
 		//shop stuff, TO DO
-		recv.readbyte();
+		recv.read_byte();
 		//shop stuff end
 
-		bool chalkboard = recv.readbool();
-		string chalktext = chalkboard ? recv.read<string>() : "";
+		bool chalkboard = recv.read_bool();
+		std::string chalktext = chalkboard ? recv.read_string() : "";
 
 		recv.skip(3);
-		recv.readbyte(); // team
+		recv.read_byte(); // team
 
 		Stage::get().queuespawn(new CharSpawn(cid, look, level, job, name, stance, position));
 	}
@@ -116,7 +104,7 @@ namespace Net
 
 	void RemoveCharHandler::handle(InPacket& recv) const
 	{
-		int32_t cid = recv.readint();
+		int32_t cid = recv.read_int();
 
 		Stage::get().getchars().removechar(cid);
 	}
@@ -124,33 +112,34 @@ namespace Net
 
 	void SpawnPetHandler::handle(InPacket& recv) const
 	{
-		using Character::Char;
-		Optional<Char> character = Stage::get().getcharacter(recv.readint());
+		int32_t cid = recv.read_int();
+		Optional<Char> character = Stage::get()
+			.getcharacter(cid);
 		if (!character)
 			return;
 
-		uint8_t petindex = recv.readbyte();
-		int8_t mode = recv.readbyte();
+		uint8_t petindex = recv.read_byte();
+		int8_t mode = recv.read_byte();
 
 		if (mode == 1)
 		{
 			recv.skip(1);
 
-			int32_t itemid = recv.readint();
-			string name = recv.read<string>();
-			int32_t uniqueid = recv.readint();
+			int32_t itemid = recv.read_int();
+			std::string name = recv.read_string();
+			int32_t uniqueid = recv.read_int();
 
 			recv.skip(4);
 
 			Point<int16_t> pos = recv.readpoint();
-			uint8_t stance = recv.readbyte();
-			int32_t fhid = recv.readint();
+			uint8_t stance = recv.read_byte();
+			int32_t fhid = recv.read_int();
 
 			character->addpet(petindex, itemid, name, uniqueid, pos, stance, fhid);
 		}
 		else if (mode == 0)
 		{
-			bool hunger = recv.readbool();
+			bool hunger = recv.read_bool();
 
 			character->removepet(petindex, hunger);
 		}
@@ -159,9 +148,9 @@ namespace Net
 
 	void CharMovedHandler::handle(InPacket& recv) const
 	{
-		int32_t cid = recv.readint();
+		int32_t cid = recv.read_int();
 		recv.skip(4);
-		queue<Movement> movements = recv.readqueue<uint8_t, Movement>();
+		std::queue<Movement> movements = recv.readqueue<uint8_t, Movement>();
 
 		Stage::get().getchars().movechar(cid, movements);
 	}
@@ -169,8 +158,8 @@ namespace Net
 
 	void UpdateCharLookHandler::handle(InPacket& recv) const
 	{
-		int32_t cid = recv.readint();
-		recv.readbyte();
+		int32_t cid = recv.read_int();
+		recv.read_byte();
 		LookEntry look = Session::get().getlogin().parselook(recv);
 
 		Stage::get().getchars().updatelook(cid, look);
@@ -179,11 +168,11 @@ namespace Net
 
 	void ShowForeignEffectHandler::handle(InPacket& recv) const
 	{
-		int32_t cid = recv.readint();
-		int8_t effect = recv.readbyte();
+		int32_t cid = recv.read_int();
+		int8_t effect = recv.read_byte();
 		if (effect == 10) // recovery
 		{
-			recv.readbyte(); // 'amount'
+			recv.read_byte(); // 'amount'
 		}
 		else if (effect == 13) // card effect
 		{
@@ -192,8 +181,8 @@ namespace Net
 		}
 		else if (recv.hasmore()) // skill
 		{
-			int32_t skillid = recv.readint();
-			recv.readbyte(); // 'direction'
+			int32_t skillid = recv.read_int();
+			recv.read_byte(); // 'direction'
 			// 9 more bytes after this
 
 			Stage::get().showbuff(cid, skillid, effect);
@@ -207,31 +196,31 @@ namespace Net
 
 	void SpawnMobHandler::handle(InPacket& recv) const
 	{
-		int32_t oid = recv.readint();
-		recv.readbyte(); // 5 if controller == null
-		int32_t id = recv.readint();
+		int32_t oid = recv.read_int();
+		recv.read_byte(); // 5 if controller == null
+		int32_t id = recv.read_int();
 
 		recv.skip(22);
 
 		Point<int16_t> position = recv.readpoint();
-		int8_t stance = recv.readbyte();
+		int8_t stance = recv.read_byte();
 
 		recv.skip(2);
 
-		uint16_t fh = recv.readshort();
-		int8_t effect = recv.readbyte();
+		uint16_t fh = recv.read_short();
+		int8_t effect = recv.read_byte();
 
 		if (effect > 0)
 		{
-			recv.readbyte();
-			recv.readshort();
+			recv.read_byte();
+			recv.read_short();
 			if (effect == 15)
 			{
-				recv.readbyte();
+				recv.read_byte();
 			}
 		}
 
-		int8_t team = recv.readbyte();
+		int8_t team = recv.read_byte();
 
 		recv.skip(4);
 
@@ -241,8 +230,8 @@ namespace Net
 
 	void KillMobHandler::handle(InPacket& recv) const
 	{
-		int32_t oid = recv.readint();
-		int8_t animation = recv.readbyte();
+		int32_t oid = recv.read_int();
+		int8_t animation = recv.read_byte();
 
 		Stage::get().getmobs().killmob(oid, animation);
 	}
@@ -250,8 +239,8 @@ namespace Net
 
 	void SpawnMobControllerHandler::handle(InPacket& recv) const
 	{
-		int8_t mode = recv.readbyte();
-		int32_t oid = recv.readint();
+		int8_t mode = recv.read_byte();
+		int32_t oid = recv.read_int();
 		if (mode == 0)
 		{
 			Stage::get().getmobs().setcontrol(oid, false);
@@ -262,29 +251,29 @@ namespace Net
 			{
 				recv.skip(1);
 
-				int32_t id = recv.readint();
+				int32_t id = recv.read_int();
 
 				recv.skip(22);
 
 				Point<int16_t> position = recv.readpoint();
-				int8_t stance = recv.readbyte();
+				int8_t stance = recv.read_byte();
 
 				recv.skip(2);
 
-				uint16_t fh = recv.readshort();
-				int8_t effect = recv.readbyte();
+				uint16_t fh = recv.read_short();
+				int8_t effect = recv.read_byte();
 
 				if (effect > 0)
 				{
-					recv.readbyte();
-					recv.readshort();
+					recv.read_byte();
+					recv.read_short();
 					if (effect == 15)
 					{
-						recv.readbyte();
+						recv.read_byte();
 					}
 				}
 
-				int8_t team = recv.readbyte();
+				int8_t team = recv.read_byte();
 
 				recv.skip(4);
 
@@ -300,18 +289,18 @@ namespace Net
 
 	void MobMovedHandler::handle(InPacket& recv) const
 	{
-		int32_t oid = recv.readint();
+		int32_t oid = recv.read_int();
 
-		recv.readbyte();
-		recv.readbyte(); // useskill
-		recv.readbyte(); // skill
-		recv.readbyte(); // skill 1
-		recv.readbyte(); // skill 2
-		recv.readbyte(); // skill 3
-		recv.readbyte(); // skill 4
+		recv.read_byte();
+		recv.read_byte(); // useskill
+		recv.read_byte(); // skill
+		recv.read_byte(); // skill 1
+		recv.read_byte(); // skill 2
+		recv.read_byte(); // skill 3
+		recv.read_byte(); // skill 4
 
 		Point<int16_t> position = recv.readpoint();
-		queue<Movement> movements = recv.readqueue<uint8_t, Movement>();
+		std::queue<Movement> movements = recv.readqueue<uint8_t, Movement>();
 
 		Stage::get().getmobs().movemob(oid, position, movements.front());
 	}
@@ -319,8 +308,8 @@ namespace Net
 
 	void ShowMobHpHandler::handle(InPacket& recv) const
 	{
-		int32_t oid = recv.readint();
-		int8_t hppercent = recv.readbyte();
+		int32_t oid = recv.read_int();
+		int8_t hppercent = recv.read_byte();
 		uint16_t playerlevel = Stage::get().getplayer().getstats().getstat(Maplestat::LEVEL);
 
 		Stage::get().getmobs().sendmobhp(oid, hppercent, playerlevel);
@@ -329,14 +318,14 @@ namespace Net
 
 	void SpawnNpcHandler::handle(InPacket& recv) const
 	{
-		int32_t oid = recv.readint();
-		int32_t id = recv.readint();
+		int32_t oid = recv.read_int();
+		int32_t id = recv.read_int();
 		Point<int16_t> position = recv.readpoint();
-		bool flip = recv.readbool();
-		uint16_t fh = recv.readshort();
+		bool flip = recv.read_bool();
+		uint16_t fh = recv.read_short();
 
-		recv.readshort(); // 'rx'
-		recv.readshort(); // 'ry'
+		recv.read_short(); // 'rx'
+		recv.read_short(); // 'ry'
 
 		Stage::get().queuespawn(new NpcSpawn(oid, id, position, flip, fh));
 	}
@@ -344,8 +333,8 @@ namespace Net
 
 	void SpawnNpcControllerHandler::handle(InPacket& recv) const
 	{
-		int8_t mode = recv.readbyte();
-		int32_t oid = recv.readint();
+		int8_t mode = recv.read_byte();
+		int32_t oid = recv.read_int();
 
 		if (mode == 0)
 		{
@@ -353,14 +342,14 @@ namespace Net
 		}
 		else
 		{
-			int32_t id = recv.readint();
+			int32_t id = recv.read_int();
 			Point<int16_t> position = recv.readpoint();
-			bool flip = recv.readbool();
-			uint16_t fh = recv.readshort();
+			bool flip = recv.read_bool();
+			uint16_t fh = recv.read_short();
 
-			recv.readshort(); // 'rx'
-			recv.readshort(); // 'ry'
-			recv.readbool(); // 'minimap'
+			recv.read_short(); // 'rx'
+			recv.read_short(); // 'ry'
+			recv.read_bool(); // 'minimap'
 
 			Stage::get().queuespawn(new NpcSpawn(oid, id, position, flip, fh));
 		}
@@ -369,12 +358,12 @@ namespace Net
 
 	void DropLootHandler::handle(InPacket& recv) const
 	{
-		int8_t mode = recv.readbyte();
-		int32_t oid = recv.readint();
-		bool meso = recv.readbool();
-		int32_t itemid = recv.readint();
-		int32_t owner = recv.readint();
-		int8_t pickuptype = recv.readbyte();
+		int8_t mode = recv.read_byte();
+		int32_t oid = recv.read_int();
+		bool meso = recv.read_bool();
+		int32_t itemid = recv.read_int();
+		int32_t owner = recv.read_int();
+		int8_t pickuptype = recv.read_byte();
 		Point<int16_t> dropto = recv.readpoint();
 
 		recv.skip(4);
@@ -395,7 +384,7 @@ namespace Net
 		{
 			recv.skip(8);
 		}
-		bool playerdrop = !recv.readbool();
+		bool playerdrop = !recv.read_bool();
 
 		Stage::get().queuespawn(new DropSpawn(oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mode, playerdrop));
 	}
@@ -403,17 +392,16 @@ namespace Net
 
 	void RemoveLootHandler::handle(InPacket& recv) const
 	{
-		int8_t mode = recv.readbyte();
-		int32_t oid = recv.readint();
+		int8_t mode = recv.read_byte();
+		int32_t oid = recv.read_int();
 
-		using Gameplay::PhysicsObject;
 		Optional<PhysicsObject> looter;
 		if (mode > 1)
 		{
-			int32_t cid = recv.readint();
+			int32_t cid = recv.read_int();
 			if (recv.length() > 0)
 			{
-				recv.readbyte(); // pet
+				recv.read_byte(); // pet
 			}
 			else
 			{

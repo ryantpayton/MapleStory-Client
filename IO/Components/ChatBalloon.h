@@ -16,25 +16,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Text.h"
-#include "Graphics\Texture.h"
+#include "..\..\Graphics\Text.h"
+#include "..\..\Graphics\Texture.h"
 
-namespace IO
+namespace jrc
 {
-	using std::string;
-	using Graphics::Texture;
-	using Graphics::Text;
-
 	class ChatBalloon
 	{
 	public:
-		ChatBalloon(int8_t);
+		ChatBalloon(int8_t type);
 		ChatBalloon();
-		~ChatBalloon();
 
 		void draw(Point<int16_t> position) const;
 		void update();
-		void settext(string text);
+		void settext(std::string text);
 		void expire();
 
 	private:

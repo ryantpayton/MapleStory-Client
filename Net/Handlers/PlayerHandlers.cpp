@@ -16,34 +16,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "PlayerHandlers.h"
-#include "Timer.h"
 
-#include "Character\Buff.h"
-#include "Gameplay\Stage.h"
-#include "IO\UI.h"
-#include "IO\UITypes\UIBuffList.h"
-#include "IO\UITypes\UIStatsinfo.h"
+#include "..\..\Timer.h"
+#include "..\..\Character\Buff.h"
+#include "..\..\Gameplay\Stage.h"
+#include "..\..\IO\UI.h"
+#include "..\..\IO\UITypes\UIBuffList.h"
+#include "..\..\IO\UITypes\UIStatsinfo.h"
 
-namespace Net
+namespace jrc
 {
-	using Character::Char;
-	using Character::Player;
-	using Character::Buff;
-	using Character::Maplestat;
-	using Gameplay::Stage;
-	using IO::UI;
-	using IO::UIElement;
-	using IO::UIBuffList;
-	using IO::UIStatsinfo;
-
 	void KeymapHandler::handle(InPacket& recv) const
 	{
 		recv.skip(1);
 
 		for (uint8_t i = 0; i < 90; i++)
 		{
-			uint8_t type = recv.readbyte();
-			int32_t action = recv.readint();
+			uint8_t type = recv.read_byte();
+			int32_t action = recv.read_int();
 
 			UI::get().addkeymapping(i, type, action);
 		}
@@ -52,23 +42,23 @@ namespace Net
 
 	void SkillMacrosHandler::handle(InPacket& recv) const
 	{
-		uint8_t size = recv.readbyte();
+		uint8_t size = recv.read_byte();
 		for (uint8_t i = 0; i < size; i++)
 		{
-			recv.read<string>(); // name
-			recv.readbyte(); // 'shout' byte
-			recv.readint(); // skill 1
-			recv.readint(); // skill 2
-			recv.readint(); // skill 3
+			recv.read_string(); // name
+			recv.read_byte(); // 'shout' byte
+			recv.read_int(); // skill 1
+			recv.read_int(); // skill 2
+			recv.read_int(); // skill 3
 		}
 	}
 
 
 	void ChangeStatsHandler::handle(InPacket& recv) const
 	{
-		recv.readbool(); // 'itemreaction'
+		recv.read_bool(); // 'itemreaction'
 
-		int32_t updatemask = recv.readint();
+		int32_t updatemask = recv.read_int();
 
 		Player& player = Stage::get().getplayer();
 
@@ -82,35 +72,37 @@ namespace Net
 				switch (stat)
 				{
 				case Maplestat::SKIN:
-					player.changelook(stat, recv.readshort());
+					player.changelook(stat, recv.read_short());
 					break;
 				case Maplestat::FACE:
 				case Maplestat::HAIR:
-					player.changelook(stat, recv.readint());
+					player.changelook(stat, recv.read_int());
 					break;
 				case Maplestat::LEVEL:
-					player.changelevel(recv.readbyte());
+					player.changelevel(recv.read_byte());
 					updatesingle = true;
 					break;
 				case Maplestat::JOB:
-					player.changejob(recv.readshort());
+					player.changejob(recv.read_short());
 					updatesingle = true;
 					break;
 				case Maplestat::EXP:
-					player.getstats().setexp(recv.readint());
+					player.getstats().setexp(recv.read_int());
 					break;
 				case Maplestat::MESO:
-					player.getinvent().setmeso(recv.readint());
+					player.getinvent().setmeso(recv.read_int());
 					break;
 				default:
-					player.getstats().setstat(stat, recv.readshort());
+					player.getstats().setstat(stat, recv.read_short());
 					recalculate = true;
 					break;
 				}
 
 				if (updatesingle)
 				{
-					UI::get().withelement(UIElement::STATSINFO, &UIStatsinfo::updatestat, stat);
+					UI::get().getelement(UIElement::STATSINFO)
+						.reinterpret<UIStatsinfo>()
+						->updatestat(stat);
 				}
 			}
 		}
@@ -126,8 +118,8 @@ namespace Net
 
 	void BuffHandler::handle(InPacket& recv) const
 	{
-		int64_t firstmask = recv.readlong();
-		int64_t secondmask = recv.readlong();
+		int64_t firstmask = recv.read_long();
+		int64_t secondmask = recv.read_long();
 
 		switch (secondmask)
 		{
@@ -154,14 +146,16 @@ namespace Net
 
 	void ApplyBuffHandler::handlebuff(InPacket& recv, Buffstat::Value bs) const
 	{
-		int16_t value = recv.readshort();
-		int32_t skillid = recv.readint();
-		int32_t duration = recv.readint();
+		int16_t value = recv.read_short();
+		int32_t skillid = recv.read_int();
+		int32_t duration = recv.read_int();
 
-		Buff buff = Buff(bs, value, skillid, duration);
+		Buff buff(bs, value, skillid, duration);
 		Stage::get().getplayer().givebuff(buff);
 
-		UI::get().withelement(UIElement::BUFFLIST, &UIBuffList::addbuff, skillid, duration);
+		UI::get().getelement(UIElement::BUFFLIST)
+			.reinterpret<UIBuffList>()
+			->addbuff(skillid, duration);
 	}
 
 	void CancelBuffHandler::handlebuff(InPacket&, Buffstat::Value bs) const
@@ -180,22 +174,22 @@ namespace Net
 	{
 		recv.skip(3);
 
-		int32_t skillid = recv.readint();
-		int32_t level = recv.readint();
-		int32_t masterlevel = recv.readint();
-		int64_t expire = recv.readlong();
+		int32_t skillid = recv.read_int();
+		int32_t level = recv.read_int();
+		int32_t masterlevel = recv.read_int();
+		int64_t expire = recv.read_long();
 
-		Stage::get().getplayer().getskills().setskill(skillid, level, masterlevel, expire);
+		Stage::get().getplayer().getskills().set_skill(skillid, level, masterlevel, expire);
 	}
 
 
 	void AddCooldownHandler::handle(InPacket& recv) const
 	{
-		int32_t skillid = recv.readint();
-		int16_t time = recv.readshort();
+		int32_t skillid = recv.read_int();
+		int16_t time = recv.read_short();
 
 		int32_t seconds = Timer::get().seconds() + time;
 
-		Stage::get().getplayer().getskills().setcd(skillid, seconds);
+		Stage::get().getplayer().getskills().set_cd(skillid, seconds);
 	}
 }

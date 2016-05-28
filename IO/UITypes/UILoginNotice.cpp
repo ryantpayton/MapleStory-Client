@@ -15,25 +15,25 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "UILoginNotice.h"
-#include "IO\Components\MapleButton.h"
-#include "Graphics\Sprite.h"
-#include "nlnx\nx.hpp"
 
-namespace IO
+#include "..\Components\MapleButton.h"
+
+#include "..\..\Graphics\Sprite.h"
+
+#include <nlnx\nx.hpp>
+
+namespace jrc
 {
 	UILoginNotice::UILoginNotice(int8_t text)
 	{
-		node notice = nl::nx::ui["Login.img"]["Notice"];
+		nl::node notice = nl::nx::ui["Login.img"]["Notice"];
 
-		using std::string;
-		using Graphics::Sprite;
-		string back = (text == 16) ? "1" : "0";
-		sprites.push_back(Sprite(notice["backgrnd"][back], Point<int16_t>()));
-		sprites.push_back(Sprite(notice["text"][std::to_string(text)], Point<int16_t>(17, 13)));
+		std::string back = (text == 16) ? "1" : "0";
+		sprites.emplace_back(notice["backgrnd"][back]);
+		sprites.emplace_back(notice["text"][std::to_string(text)], Point<int16_t>(17, 13));
 
-		buttons[BT_OK] = unique_ptr<Button>(new MapleButton(notice["BtYes"], Point<int16_t>(100, 100)));
+		buttons[BT_OK] = std::make_unique<MapleButton>(notice["BtYes"], Point<int16_t>(100, 100));
 
 		position = Point<int16_t>(292, 200);
 		dimension = Point<int16_t>(362, 219);

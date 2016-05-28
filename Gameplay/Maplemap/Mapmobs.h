@@ -19,18 +19,18 @@
 #include "MapObjects.h"
 #include "Mob.h"
 
-#include "Gameplay\Combat\Attack.h"
-#include "Gameplay\Combat\SpecialMove.h"
-#include "Gameplay\Spawn.h"
+#include "..\Combat\Attack.h"
+#include "..\Combat\SpecialMove.h"
+#include "..\Spawn.h"
 
 #include <list>
 
-namespace Gameplay
+namespace jrc
 {
 	class MapMobs : public MapObjects
 	{
 	public:
-		void draw(int8_t layer, Point<int16_t> viewpos, float alpha) const override;
+		void draw(int8_t layer, double viewx, double viewy, float alpha) const override;
 		void update(const Physics& physics) override;
 
 		void sendspawn(const MobSpawn& spawn);
@@ -46,20 +46,17 @@ namespace Gameplay
 		Optional<const Mob> getmob(int32_t oid) const;
 
 	private:
-		template <typename T>
-		using list = std::list<T>;
-
 		class DamageEffect
 		{
 		public:
 			DamageEffect(const SpecialMove& m, AttackUser u, DamageNumber n, bool tl, int32_t dm, int32_t t, uint16_t d)
 				: move(m), user(u), number(n), toleft(tl), damage(dm), target(t), delay(d) {}
 
-			void apply(Mob& target) const
+			void apply(Mob& mob) const
 			{
-				move.applyhiteffects(user, target);
+				move.applyhiteffects(user, mob);
 
-				target.applydamage(damage, toleft);
+				mob.applydamage(damage, toleft);
 			}
 
 			bool expired() const
@@ -91,9 +88,8 @@ namespace Gameplay
 			}
 
 		private:
-			const DamageEffect& operator =(const DamageEffect&) = delete;
-
 			const SpecialMove& move;
+
 			AttackUser user;
 			DamageNumber number;
 			int32_t damage;
@@ -111,10 +107,10 @@ namespace Gameplay
 				fired = false;
 			}
 
-			void draw(Point<int16_t> viewpos, float alpha) const
+			void draw(double viewx, double viewy, float alpha) const
 			{
 				if (fired)
-					bullet.draw(viewpos, alpha);
+					bullet.draw(viewx, viewy, alpha);
 			}
 
 			bool update()
@@ -156,8 +152,6 @@ namespace Gameplay
 			}
 
 		private:
-			const BulletEffect& operator =(const BulletEffect&) = delete;
-
 			Bullet bullet;
 			Point<int16_t> target;
 			DamageEffect damageeffect;
@@ -165,11 +159,11 @@ namespace Gameplay
 		};
 
 		void applyeffect(const DamageEffect& effect);
-		vector<int32_t> findclosest(rectangle2d<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const;
+		std::vector<int32_t> findclosest(Rectangle<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const;
 
-		list<DamageNumber> damagenumbers;
-		list<DamageEffect> damageeffects;
-		list<BulletEffect> bulleteffects;
+		std::list<DamageNumber> damagenumbers;
+		std::list<DamageEffect> damageeffects;
+		std::list<BulletEffect> bulleteffects;
 	};
 }
 

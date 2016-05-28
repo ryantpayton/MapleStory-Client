@@ -19,11 +19,11 @@
 #include "Charset.h"
 #include "nlnx\nx.hpp"
 
-namespace IO
+namespace jrc
 {
-	Icon::Icon(Type* t, Texture tx, int16_t c) 
+	Icon::Icon(std::unique_ptr<Type> t, Texture tx, int16_t c) 
 	{
-		type = unique_ptr<Type>(t);
+		type = std::move(t);
 		texture = tx;
 		showcount = c > -1;
 		count = c;
@@ -41,7 +41,6 @@ namespace IO
 
 	void Icon::draw(Point<int16_t> position) const
 	{
-		using Graphics::DrawArgument;
 		texture.draw(DrawArgument(position, dragged ? 0.5f : 1.0f));
 
 		if (showcount)
@@ -56,7 +55,6 @@ namespace IO
 	{
 		if (dragged)
 		{
-			using Graphics::DrawArgument;
 			texture.draw(DrawArgument(cursorpos - cursoroffset, 0.5f));
 		}
 	}

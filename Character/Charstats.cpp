@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "CharStats.h"
 
-namespace Character
+namespace jrc
 {
 	CharStats::CharStats(StatsEntry st)
 	{
@@ -220,8 +220,8 @@ namespace Character
 		return (level < LEVELCAP) ? exptable[level] : 0;
 	}
 
-	rectangle2d<int16_t> CharStats::getrange() const
+	Rectangle<int16_t> CharStats::getrange() const
 	{
-		return rectangle2d<int16_t>(-projectilerange, -5, -50, 50);
+		return Rectangle<int16_t>(-projectilerange, -5, -50, 50);
 	}
 }

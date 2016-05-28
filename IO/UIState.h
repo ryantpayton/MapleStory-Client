@@ -19,18 +19,21 @@
 #include "Element.h"
 #include "UIElement.h"
 #include "Keyboard.h"
-#include "Console.h"
 
 #include "Components\Icon.h"
-#include "Character\Inventory\Equip.h"
 
-namespace IO
+#include "..\Console.h"
+#include "..\Character\Inventory\Equip.h"
+
+#include <memory>
+
+namespace jrc
 {
-	using Character::Equip;
-
 	class UIState
 	{
 	public:
+		using UPtr = std::unique_ptr<UIState>;
+
 		virtual ~UIState() {}
 
 		virtual void draw(float inter, Point<int16_t> cursor) const = 0;

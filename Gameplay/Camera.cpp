@@ -16,9 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Camera.h"
-#include "Constants.h"
 
-namespace Gameplay
+#include "..\Constants.h"
+
+namespace jrc
 {
 	Camera::Camera()
 	{
@@ -28,16 +29,19 @@ namespace Gameplay
 
 	void Camera::update(Point<int16_t> position)
 	{
-		double hdelta = Constants::VIEWWIDTH / 2 - position.x() - x.get();
-		if (std::abs(hdelta) < 1.0)
-			hdelta = 0.0;
-
-		double vdelta = Constants::VIEWHEIGHT / 2 - position.y() - y.get();
-		if (std::abs(vdelta) < 1.0)
-			vdelta = 0.0;
-
-		double nextx = x + hdelta * (12.0 / Constants::VIEWWIDTH);
-		double nexty = y + vdelta * (12.0 / Constants::VIEWHEIGHT);
+		double nextx = x.get();
+		double hdelta = Constants::VIEWWIDTH / 2 - position.x() - nextx;
+		if (std::abs(hdelta) >= 5.0)
+		{
+			nextx += hdelta * (12.0 / Constants::VIEWWIDTH);
+		}
+		
+		double nexty = y.get();
+		double vdelta = Constants::VIEWHEIGHT / 2 - position.y() - nexty;
+		if (std::abs(vdelta) >= 5.0)
+		{
+			nexty += vdelta * (12.0 / Constants::VIEWHEIGHT);
+		}
 
 		if (nextx > hbounds.first() || hbounds.length() < Constants::VIEWWIDTH)
 		{
@@ -73,10 +77,22 @@ namespace Gameplay
 		vbounds = -mapborders;
 	}
 
-	Point<int16_t> Camera::getposition(float alpha) const
+	Point<int16_t> Camera::position() const
 	{
-		auto interx = static_cast<int16_t>(x.get(alpha));
-		auto intery = static_cast<int16_t>(y.get(alpha));
-		return Point<int16_t>(interx, intery);
+		auto shortx = static_cast<int16_t>(std::round(x.get()));
+		auto shorty = static_cast<int16_t>(std::round(y.get()));
+		return{ shortx, shorty };
+	}
+
+	Point<int16_t> Camera::position(double alpha) const
+	{
+		auto interx = static_cast<int16_t>(std::round(x.get(alpha)));
+		auto intery = static_cast<int16_t>(std::round(y.get(alpha)));
+		return{ interx, intery };
+	}
+
+	Point<double> Camera::realposition(double alpha) const
+	{
+		return{ x.get(alpha), y.get(alpha) };
 	}
 }

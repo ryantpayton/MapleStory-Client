@@ -16,21 +16,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
-#include "IO\Messages.h"
-#include "IO\Components\Chatbar.h"
-#include "IO\Components\Charset.h"
-#include "IO\Components\Bar.h"
-#include "IO\Components\Textfield.h"
-#include "Character\CharStats.h"
-#include "Graphics\Animation.h"
-#include "Graphics\Text.h"
+#include "..\Element.h"
+#include "..\Messages.h"
+#include "..\Components\Chatbar.h"
+#include "..\Components\Charset.h"
+#include "..\Components\Gauge.h"
+#include "..\Components\Textfield.h"
 
-namespace IO
+#include "..\..\Character\CharStats.h"
+#include "..\..\Graphics\Animation.h"
+#include "..\..\Graphics\Text.h"
+
+namespace jrc
 {
 	class UIStatusbar : public UIElement
 	{
 	public:
+		static constexpr Type TYPE = STATUSBAR;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = true;
+
 		enum Buttons : uint16_t
 		{
 			BT_WHISPER,
@@ -55,16 +60,10 @@ namespace IO
 		bool isinrange(Point<int16_t> cursorpos) const override;
 		Cursor::State sendmouse(bool pressed, Point<int16_t> cursorpos) override;
 
-		void sendchatline(string line, Chatbar::LineType type);
+		void sendchatline(const std::string& line, Chatbar::LineType type);
 		void displaymessage(Messages::Type line, Chatbar::LineType type);
 
 	private:
-		using Animation = Graphics::Animation;
-		using CharStats = Character::CharStats;
-		using Text = Graphics::Text;
-
-		UIStatusbar& operator = (const UIStatusbar&) = delete;
-
 		float getexppercent() const;
 		float gethppercent() const;
 		float getmppercent() const;
@@ -73,33 +72,15 @@ namespace IO
 
 		Messages messages;
 
-		unique_ptr<Chatbar> chatbar;
-		Bar expbar;
-		Bar hpbar;
-		Bar mpbar;
+		std::unique_ptr<Chatbar> chatbar;
+		Gauge expbar;
+		Gauge hpbar;
+		Gauge mpbar;
 		Charset statset;
 		Charset levelset;
 		Text namelabel;
 		Text joblabel;
 		Animation hpanimation;
 		Animation mpanimation;
-	};
-
-	class ElementStatusbar : public Element
-	{
-		bool isunique() const override
-		{
-			return true;
-		}
-
-		UIElement::Type type() const override
-		{
-			return UIElement::STATUSBAR;
-		}
-
-		UIElement* instantiate() const override
-		{
-			return new UIStatusbar();
-		}
 	};
 }

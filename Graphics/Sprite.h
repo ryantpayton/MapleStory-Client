@@ -19,17 +19,15 @@
 #include "Animation.h"
 #include "nlnx\node.hpp"
 
-namespace Graphics
+namespace jrc
 {
-	using::nl::node;
-
 	// Combines an Animation with additional state.
 	class Sprite
 	{
 	public:
 		Sprite(Animation animation, DrawArgument stateargs);
-		Sprite(node src, DrawArgument stateargs);
-		Sprite(node src);
+		Sprite(nl::node src, DrawArgument stateargs);
+		Sprite(nl::node src);
 		~Sprite();
 
 		void draw(Point<int16_t> parentpos, float alpha) const;

@@ -18,13 +18,13 @@
 #pragma once
 #include "MapObjects.h"
 #include "Npc.h"
-#include "Gameplay\Spawn.h"
-#include "IO\Cursor.h"
 
-namespace Gameplay
+#include "..\Spawn.h"
+
+#include "..\..\IO\Cursor.h"
+
+namespace jrc
 {
-	using IO::Cursor;
-
 	class MapNpcs : public MapObjects
 	{
 	public:

@@ -15,10 +15,11 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Graphics\Geometry.h"
-#include "Util\Interpolated.h"
+#pragma once
+#include "..\..\Graphics\Geometry.h"
+#include "..\..\Util\Interpolated.h"
 
-namespace IO
+namespace jrc
 {
 	// A transparent rectangle with icon size (30x30).
 	class IconCover
@@ -36,9 +37,7 @@ namespace IO
 		void update();
 
 	private:
-		using Rectangle = Graphics::Rectangle;
-
-		Rectangle cover;
+		ColorBox cover;
 		Linear<float> yscale;
 		float scalestep;
 		Type type;

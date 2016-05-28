@@ -16,9 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Gameplay\Physics\Physics.h"
+#include "..\Camera.h"
+#include "..\Physics\Physics.h"
 
-namespace Gameplay
+namespace jrc
 {
 	// Base for objects on a map, eg. mobs, npcs, characters etc.
 	class MapObject
@@ -27,7 +28,7 @@ namespace Gameplay
 		virtual ~MapObject(){}
 
 		// Draws the object at the given position and with the specified interpolation.
-		virtual void draw(Point<int16_t> viewpos, float inter) const = 0;
+		virtual void draw(double viewx, double viewy, float alpha) const = 0;
 
 		// Updates the object and returns the updated layer.
 		virtual int8_t update(const Physics& physics);

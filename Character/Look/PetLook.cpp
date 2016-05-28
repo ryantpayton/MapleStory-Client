@@ -16,14 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "PetLook.h"
-#include "Constants.h"
+
+#include "..\..\Constants.h"
 
 #include "nlnx\nx.hpp"
 #include "nlnx\node.hpp"
 
-namespace Character
+namespace jrc
 {
-	PetLook::PetLook(int32_t iid, string nm, int32_t uqid,
+	PetLook::PetLook(int32_t iid, std::string nm, int32_t uqid,
 		Point<int16_t> pos, uint8_t st, int32_t) {
 
 		itemid = iid;
@@ -36,9 +37,9 @@ namespace Character
 		namelabel.settext(name);
 		namelabel.setback(Text::NAMETAG);
 
-		string strid = std::to_string(iid);
+		std::string strid = std::to_string(iid);
 
-		node src = nl::nx::item["Pet"][strid + ".img"];
+		nl::node src = nl::nx::item["Pet"][strid + ".img"];
 
 		animations[MOVE] = src["move"];
 		animations[STAND] = src["stand0"];
@@ -48,7 +49,7 @@ namespace Character
 		animations[FLY] = src["fly"];
 		animations[HANG] = src["hang"];
 
-		node effsrc = nl::nx::effect["PetEff.img"][strid];
+		nl::node effsrc = nl::nx::effect["PetEff.img"][strid];
 
 		animations[WARP] = effsrc["warp"];
 	}
@@ -61,12 +62,11 @@ namespace Character
 		stance = Stance::STAND;
 	}
 
-	void PetLook::draw(Point<int16_t> viewpos, float inter) const
+	void PetLook::draw(double viewx, double viewy, float alpha) const
 	{
-		using Graphics::DrawArgument;
-		Point<int16_t> absp = phobj.getposition(inter) + viewpos;
+		Point<int16_t> absp = phobj.getabsolute(viewx, viewy, alpha);
 
-		animations[stance].draw(DrawArgument(absp, flip), inter);
+		animations[stance].draw(DrawArgument(absp, flip), alpha);
 		namelabel.draw(absp);
 	}
 
@@ -75,7 +75,7 @@ namespace Character
 		static const double PETWALKFORCE = 0.35;
 		static const double PETFLYFORCE = 0.2;
 
-		Point<int16_t> curpos = phobj.getposition(1.0f);
+		Point<int16_t> curpos = phobj.getposition();
 		switch (stance)
 		{
 		case STAND:

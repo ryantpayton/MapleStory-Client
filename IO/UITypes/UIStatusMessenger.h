@@ -16,75 +16,49 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
-#include "Graphics\Text.h"
-#include <vector>
-#include <memory>
+#include "..\Element.h"
+
+#include "..\..\Graphics\Text.h"
+#include "..\..\Util\Interpolated.h"
+
 #include <deque>
 
-namespace IO
+namespace jrc
 {
-	using std::string;
-	using std::vector;
-	using std::unique_ptr;
-	using std::deque;
-	using Graphics::Text;
-
-	struct StatusInfo
+	class StatusInfo
 	{
+	public:
+		StatusInfo(const std::string& str, Text::Color color);
+
+		void draw(Point<int16_t> position, float alpha) const;
+		bool update();
+
+	private:
 		Text text;
 		Text shadow;
-		float alpha = 1.0f;
-		float lastalpha = 1.0f;
+		Linear<float> opacity;
 
-		StatusInfo(string str, Text::Color color)
-		{
-			text = Text(Text::A12M, Text::RIGHT, color);
-			text.settext(str);
-			shadow = Text(Text::A12M, Text::RIGHT, Text::BLACK);
-			shadow.settext(str);
-		}
-
-		void draw(Point<int16_t> position, float inter) const
-		{
-			float interalpha = (1.0f - inter) * lastalpha + inter * alpha;
-			shadow.draw(position + Point<int16_t>(1, 1), interalpha);
-			text.draw(position, interalpha);
-		}
-
-		bool update()
-		{
-			lastalpha = alpha;
-			alpha -= 0.00125f;
-			return alpha < 0.00125f;
-		}
+		// 8 seconds.
+		static constexpr int64_t FADE_DURATION = 8'000;
 	};
+
 
 	class UIStatusMessenger : public UIElement
 	{
 	public:
+		static constexpr Type TYPE = STATUSMESSENGER;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = false;
+
 		UIStatusMessenger();
 
 		void draw(float inter) const override;
 		void update() override;
-		void showstatus(Text::Color color, string message);
+		void showstatus(Text::Color color, const std::string& message);
 
 	private:
-		static const size_t MAX_MESSAGES = 5;
+		static constexpr size_t MAX_MESSAGES = 5;
 
-		deque<StatusInfo> statusinfos;
-	};
-
-	class ElementStatusMessenger : public Element
-	{
-		UIElement::Type type() const override
-		{
-			return UIElement::STATUSMESSENGER;
-		}
-
-		UIElement* instantiate() const override
-		{
-			return new UIStatusMessenger();
-		}
+		std::deque<StatusInfo> statusinfos;
 	};
 }

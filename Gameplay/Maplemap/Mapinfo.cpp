@@ -17,12 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Mapinfo.h"
 
-namespace Gameplay
+namespace jrc
 {
-	MapInfo::MapInfo(node src, Range<int16_t> walls, Range<int16_t> borders)
+	MapInfo::MapInfo(nl::node src, Range<int16_t> walls, Range<int16_t> borders)
 	{
-		node info = src["info"];
-		if (info["VRLeft"].data_type() == node::type::integer)
+		nl::node info = src["info"];
+		if (info["VRLeft"].data_type() == nl::node::type::integer)
 		{
 			mapwalls = Range<int16_t>(info["VRLeft"], info["VRRight"]);
 			mapborders = Range<int16_t>(info["VRTop"], info["VRBottom"]);
@@ -33,7 +33,7 @@ namespace Gameplay
 			mapborders = borders;
 		}
 
-		string bgmpath = info["bgm"];
+		std::string bgmpath = info["bgm"];
 		size_t split = bgmpath.find('/');
 		bgm = bgmpath.substr(0, split) + ".img/" + bgmpath.substr(split + 1);
 
@@ -44,54 +44,25 @@ namespace Gameplay
 		swim = info["swim"].get_bool();
 		town = info["town"].get_bool();
 
-		for (node seat : src["seat"])
+		for (auto seat : src["seat"])
 		{
 			seats.push_back(seat);
 		}
 
-		for (node ladder : src["ladderRope"])
+		for (auto ladder : src["ladderRope"])
 		{
 			ladders.push_back(ladder);
 		}
 	}
 
-	MapInfo::MapInfo(InPacket& recv)
-	{
-		mapwalls.setfirst(recv.readshort());
-		mapwalls.setsecond(recv.readshort());
-		mapborders.setfirst(recv.readshort());
-		mapborders.setsecond(recv.readshort());
-		bgm = recv.read<string>();
-		cloud = recv.readbool();
-		fieldlimit = recv.readint();
-		hideminimap = recv.readbool();
-		mapmark = recv.read<string>();
-		swim = recv.readbool();
-		town = recv.readbool();
-
-		uint16_t numseats = recv.readshort();
-		for (uint16_t i = 0; i < numseats; i++)
-		{
-			seats.push_back(recv);
-		}
-
-		uint16_t numladders = recv.readshort();
-		for (uint16_t i = 0; i < numladders; i++)
-		{
-			ladders.push_back(recv);
-		}
-	}
-
 	MapInfo::MapInfo() {}
-
-	MapInfo::~MapInfo() {}
 
 	bool MapInfo::isswimmap() const
 	{
 		return swim;
 	}
 
-	string MapInfo::getbgm() const
+	std::string MapInfo::getbgm() const
 	{
 		return bgm;
 	}
@@ -117,14 +88,9 @@ namespace Gameplay
 	}
 
 
-	Seat::Seat(node src)
+	Seat::Seat(nl::node src)
 	{
 		pos = src;
-	}
-
-	Seat::Seat(InPacket& recv)
-	{
-		pos = recv.readpoint();
 	}
 
 	bool Seat::inrange(Point<int16_t> position) const
@@ -140,20 +106,12 @@ namespace Gameplay
 	}
 
 
-	Ladder::Ladder(node src)
+	Ladder::Ladder(nl::node src)
 	{
 		x = src["x"];
 		y1 = src["y1"];
 		y2 = src["y2"];
 		ladder = src["l"].get_bool();
-	}
-
-	Ladder::Ladder(InPacket& recv)
-	{
-		x = recv.readshort();
-		y1 = recv.readshort();
-		y2 = recv.readshort();
-		ladder = recv.readbool();
 	}
 
 	bool Ladder::isladder() const

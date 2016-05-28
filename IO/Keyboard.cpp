@@ -18,7 +18,7 @@
 #include "Keyboard.h"
 #include "glfw3.h"
 
-namespace IO
+namespace jrc
 {
 	const int32_t Keytable[90] =
 	{

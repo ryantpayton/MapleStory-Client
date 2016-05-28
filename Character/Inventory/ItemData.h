@@ -16,17 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Texture.h"
-#include "Util\BoolPair.h"
-#include <map>
+#include "..\..\Graphics\Texture.h"
+#include "..\..\Util\BoolPair.h"
 
-namespace Character
+namespace jrc
 {
-	using::std::int32_t;
-	using::std::string;
-	using::std::map;
-	using::Graphics::Texture;
-
 	// Class that represents an item loaded from the game's files. Contains all shared data between concrete items.
 	class ItemData
 	{
@@ -46,24 +40,24 @@ namespace Character
 		// Returns the item price.
 		int32_t getprice() const;
 		// Returns the item's name loaded from the String.nx file.
-		string getname() const;
+		std::string getname() const;
 		// Returns the item's description loaded from the String.nx file.
-		string getdesc() const;
+		std::string getdesc() const;
 		// Returns one of the item's icons. For each item there is a 'raw' icon and an icon with a drop shadow.
 		const Texture& geticon(bool raw) const;
 
 	protected:
-		string getcategory() const;
+		std::string getcategory() const;
 
 	private:
-		string geteqcategory(int32_t) const;
+		std::string geteqcategory(int32_t) const;
 
 		BoolPair<Texture> icons;
 		int32_t itemid;
 		int32_t price;
-		string name;
-		string desc;
-		string category;
+		std::string name;
+		std::string desc;
+		std::string category;
 		bool loaded;
 	};
 }

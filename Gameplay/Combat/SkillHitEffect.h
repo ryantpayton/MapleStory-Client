@@ -17,10 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Attack.h"
-#include "Gameplay\Maplemap\Mob.h"
-#include "Util\BoolPair.h"
 
-namespace Gameplay
+#include "..\Maplemap\Mob.h"
+
+#include "..\..\Util\BoolPair.h"
+
+namespace jrc
 {
 	// Interface for hit effects, animations applied to a mob for each hit.
 	class SkillHitEffect
@@ -34,7 +36,7 @@ namespace Gameplay
 		class Effect
 		{
 		public:
-			Effect(node src)
+			Effect(nl::node src)
 			{
 				animation = src;
 				pos = src["pos"];
@@ -66,7 +68,7 @@ namespace Gameplay
 	class SingleHitEffect : public SkillHitEffect
 	{
 	public:
-		SingleHitEffect(node src);
+		SingleHitEffect(nl::node src);
 
 		void apply(const AttackUser& user, Mob& target) const override;
 
@@ -79,7 +81,7 @@ namespace Gameplay
 	class TwoHHitEffect : public SkillHitEffect
 	{
 	public:
-		TwoHHitEffect(node src);
+		TwoHHitEffect(nl::node src);
 
 		void apply(const AttackUser& user, Mob& target) const override;
 
@@ -92,12 +94,12 @@ namespace Gameplay
 	class ByLevelHitEffect : public SkillHitEffect
 	{
 	public:
-		ByLevelHitEffect(node src);
+		ByLevelHitEffect(nl::node src);
 
 		void apply(const AttackUser& user, Mob& target) const override;
 
 	private:
-		map<uint16_t, Effect> effects;
+		std::map<uint16_t, Effect> effects;
 	};
 
 
@@ -105,12 +107,12 @@ namespace Gameplay
 	class ByLevelTwoHHitEffect : public SkillHitEffect
 	{
 	public:
-		ByLevelTwoHHitEffect(node src);
+		ByLevelTwoHHitEffect(nl::node src);
 
 		void apply(const AttackUser& user, Mob& target) const override;
 
 	private:
-		map<uint16_t, BoolPair<Effect>> effects;
+		std::map<uint16_t, BoolPair<Effect>> effects;
 	};
 
 
@@ -118,11 +120,11 @@ namespace Gameplay
 	class BySkillLevelHitEffect : public SkillHitEffect
 	{
 	public:
-		BySkillLevelHitEffect(node src);
+		BySkillLevelHitEffect(nl::node src);
 
 		void apply(const AttackUser& user, Mob& target) const override;
 
 	private:
-		map<int32_t, Effect> effects;
+		std::map<int32_t, Effect> effects;
 	};
 }

@@ -16,19 +16,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Npctext.h"
-#include "Data\DataFactory.h"
-#include "Gameplay\Stage.h"
 
-namespace IO
+#include "..\..\Data\DataFactory.h"
+#include "..\..\Gameplay\Stage.h"
+
+namespace jrc
 {
-	using Data::DataFactory;
-
-	Npctext::Npctext(string text, int16_t maxwidth)
+	Npctext::Npctext(std::string text, int16_t maxwidth)
 	{
-		vector<string> strings;
+		std::vector<std::string> strings;
 		size_t pos = 0;
 		size_t split = text.find_first_of("\n", pos);
-		while (split != string::npos)
+		while (split != std::string::npos)
 		{
 			strings.push_back(text.substr(pos, split - pos));
 			pos = split + 1;
@@ -46,7 +45,7 @@ namespace IO
 			while (pos2 < length)
 			{
 				size_t special = str.find_first_of('#', pos2);
-				if (special != string::npos)
+				if (special != std::string::npos)
 				{
 					if (special > pos2)
 					{
@@ -121,12 +120,10 @@ namespace IO
 
 	Npctext::Npctext() {}
 
-	Npctext::~Npctext() {}
-
-	size_t Npctext::parseL(string& str, size_t pos)
+	size_t Npctext::parseL(std::string& str, size_t pos)
 	{
 		size_t next = str.find_first_of('#', pos + 2);
-		if (next != string::npos)
+		if (next != std::string::npos)
 		{
 			try
 			{
@@ -147,14 +144,13 @@ namespace IO
 		}
 	}
 
-	size_t Npctext::parsez(string& str, size_t pos)
+	size_t Npctext::parsez(std::string& str, size_t pos)
 	{
 		size_t next = str.find_first_of('#', pos + 2);
-		if (next != string::npos)
+		if (next != std::string::npos)
 		{
 			try
 			{
-				using Character::ItemData;
 				const ItemData& idata = DataFactory::get().getitemdata(std::stoi(str.substr(pos + 2, next)));
 				if (idata.isloaded())
 				{
@@ -180,19 +176,18 @@ namespace IO
 		}
 	}
 
-	size_t Npctext::parseh(string& str, size_t pos)
+	size_t Npctext::parseh(std::string& str, size_t pos)
 	{
 		size_t next = str.find_first_of('#', pos + 2);
-		if (next != string::npos)
+		if (next != std::string::npos)
 		{
 			try 
 			{
 				int32_t type = std::stoi(str.substr(pos + 2, next - pos + 2));
-				string insert;
+				std::string insert;
 				switch (type)
 				{
 				case 0:
-					using Gameplay::Stage;
 					insert = Stage::get().getplayer().getstats().getname();
 					break;
 				default:
@@ -214,14 +209,13 @@ namespace IO
 		}
 	}
 
-	size_t Npctext::parsev(string& str, size_t pos)
+	size_t Npctext::parsev(std::string& str, size_t pos)
 	{
 		size_t next = str.find_first_of('#', pos + 2);
-		if (next != string::npos)
+		if (next != std::string::npos)
 		{
 			try
 			{
-				using Character::ItemData;
 				const ItemData& idata = DataFactory::get().getitemdata(std::stoi(str.substr(pos + 2, next)));
 				if (idata.isloaded())
 				{
@@ -255,11 +249,14 @@ namespace IO
 	{
 		for (auto& line : lines)
 		{
-			line.text.draw(line.offset + position);
+			line.text
+				.draw(line.offset + position);
 		}
+
 		for (auto& image : images)
 		{
-			image.texture.draw(image.offset + position);
+			image.texture
+				.draw(image.offset + position);
 		}
 	}
 

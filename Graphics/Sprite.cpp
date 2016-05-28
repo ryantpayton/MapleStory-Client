@@ -17,15 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Sprite.h"
 
-namespace Graphics
+namespace jrc
 {
 	Sprite::Sprite(Animation a, DrawArgument args)
 		: animation(a), stateargs(args) {}
 
-	Sprite::Sprite(node src, DrawArgument args)
+	Sprite::Sprite(nl::node src, DrawArgument args)
 		: animation(src), stateargs(args) {}
 
-	Sprite::Sprite(node src)
+	Sprite::Sprite(nl::node src)
 		: Sprite(src, DrawArgument()) {}
 
 	Sprite::~Sprite() {}

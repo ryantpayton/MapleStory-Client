@@ -18,10 +18,8 @@
 #pragma once
 #include "Player.h"
 
-namespace Character
+namespace jrc
 {
-	using IO::Keyboard;
-
 	// Base class for player states
 	class PlayerState
 	{
@@ -38,8 +36,6 @@ namespace Character
 		virtual void nextstate(Player& player) const = 0;
 
 	protected:
-		using PhysicsObject = Gameplay::PhysicsObject;
-
 		// Play the jumping sound.
 		void playjumpsound() const;
 	};
@@ -61,9 +57,7 @@ namespace Character
 	public:
 		void onentry(Player& player) const override;
 		void sendaction(Player& player, Keyboard::Action ka, bool down) const override;
-
-		void update(Player&) const override {}
-
+		void update(Player&) const override;
 		void nextstate(Player& player) const override;
 	};
 
@@ -98,8 +92,8 @@ namespace Character
 		void onentry(Player&) const override {}
 
 		void sendaction(Player& player, Keyboard::Action ka, bool down) const override;
+		void update(Player&) const override;
 
-		void update(Player&) const override {}
 		void nextstate(Player&) const override {}
 	};
 

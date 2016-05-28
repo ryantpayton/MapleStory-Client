@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\PacketHandler.h"
+#include "..\PacketHandler.h"
 
-namespace Net
+namespace jrc
 {
 	// Handler for a packet that contains the response to an attempt at logging in.
 	class LoginResultHandler : public PacketHandler

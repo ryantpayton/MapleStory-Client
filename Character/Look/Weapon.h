@@ -17,16 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Clothing.h"
-#include "Audio\Audio.h"
-#include "Graphics\Animation.h"
-#include "Util\Misc.h"
-#include "Util\rectangle2d.h"
 
-namespace Character
+#include "..\..\Audio\Audio.h"
+#include "..\..\Graphics\Animation.h"
+#include "..\..\Util\Misc.h"
+#include "..\..\Util\Rectangle.h"
+
+namespace jrc
 {
-	using Audio::Sound;
-	using Graphics::Animation;
-
 	class Weapon : public Clothing
 	{
 	public:
@@ -63,18 +61,18 @@ namespace Character
 		class AfterImage
 		{
 		public:
-			AfterImage(node src);
+			AfterImage(nl::node src);
 			AfterImage();
 
 			void draw(uint8_t stframe, const DrawArgument& args, float alpha) const;
 			void update(uint8_t stframe, uint16_t timestep);
 
 			uint8_t getfirstframe() const;
-			rectangle2d<int16_t> getrange() const;
+			Rectangle<int16_t> getrange() const;
 
 		private:
 			Animation animation;
-			rectangle2d<int16_t> range;
+			Rectangle<int16_t> range;
 			uint8_t firstframe;
 			bool displayed;
 		};
@@ -85,9 +83,9 @@ namespace Character
 		bool istwohanded() const;
 		uint8_t getspeed() const;
 		uint8_t getattack() const;
-		string getspeedstring() const;
+		std::string getspeedstring() const;
 		uint8_t getattackdelay() const;
-		rectangle2d<int16_t> getrange(Stance::Value stance) const;
+		Rectangle<int16_t> getrange(Stance::Value stance) const;
 		Type gettype() const;
 		Stance::Value getstand() const;
 		Stance::Value getwalk() const;
@@ -105,11 +103,11 @@ namespace Character
 
 		struct AfterImageStances
 		{
-			unordered_map<Stance::Value, AfterImage> afterimages;
+			std::unordered_map<Stance::Value, AfterImage> afterimages;
 
-			AfterImageStances(node src)
+			AfterImageStances(nl::node src)
 			{
-				for (node sub : src)
+				for (nl::node sub : src)
 				{
 					Stance::Value stance = Stance::bystring(sub.name());
 					afterimages[stance] = sub;
@@ -130,15 +128,15 @@ namespace Character
 				}
 			}
 
-			rectangle2d<int16_t> range(Stance::Value stance) const
+			Rectangle<int16_t> range(Stance::Value stance) const
 			{
 				return get(stance).getrange();
 			}
 		};
 		AfterImageStances afterimage;
 
-		static AfterImageStances getafterimage(string ainame, int16_t lvprefix);
-		static unordered_map<string, AfterImageStances> afterimages;
+		static AfterImageStances getafterimage(std::string ainame, int16_t lvprefix);
+		static std::unordered_map<std::string, AfterImageStances> afterimages;
 	};
 }
 

@@ -16,20 +16,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\DrawArgument.h"
+#include "DrawArgument.h"
+
 #include "nlnx\node.hpp"
 #include "nlnx\bitmap.hpp"
 
-namespace Graphics
+namespace jrc
 {
-	using nl::node;
-	using nl::bitmap;
-	
-	// Represents a single image loaded from a node of game data.
+	// Represents a single image loaded from a of game data.
 	class Texture
 	{
 	public:
-		Texture(node source);
+		Texture(nl::node source);
 		Texture();
 		~Texture();
 
@@ -43,7 +41,7 @@ namespace Graphics
 		Point<int16_t> getdimensions() const;
 
 	private:
-		bitmap source;
+		nl::bitmap bitmap;
 		Point<int16_t> origin;
 		Point<int16_t> dimensions;
 	};

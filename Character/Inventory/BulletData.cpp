@@ -16,13 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "BulletData.h"
-#include "nlnx\nx.hpp"
 
-namespace Character
+#include <nlnx\nx.hpp>
+
+namespace jrc
 {
-	BulletData::BulletData(int32_t id) : ItemData(id)
-	{
-		node src = src = nl::nx::item["Consume"]["0" + std::to_string(id / 10000) + ".img"]["0" + std::to_string(id)];
+	BulletData::BulletData(int32_t id) 
+		: ItemData(id) {
+
+		nl::node src = src = nl::nx::item["Consume"]["0" + std::to_string(id / 10000) + ".img"]["0" + std::to_string(id)];
 
 		bullet = src["bullet"];
 		watk = src["info"]["incPAD"];

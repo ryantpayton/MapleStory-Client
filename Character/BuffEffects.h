@@ -18,11 +18,11 @@
 #pragma once
 #include "Buffstat.h"
 #include "CharStats.h"
-#include "Util\Singleton.h"
+
 #include <unordered_map>
 #include <memory>
 
-namespace Character
+namespace jrc
 {
 	// Interface for buff effects which are applied to character stats.
 	class BuffEffect
@@ -157,10 +157,7 @@ namespace Character
 	};
 
 
-	using std::unordered_map;
-	using std::unique_ptr;
-
-	class BuffEffects : public Singleton<BuffEffects>
+	class BuffEffects
 	{
 	public:
 		// Register all buffs effects.
@@ -170,6 +167,6 @@ namespace Character
 		const BuffEffect* bystat(Buffstat::Value stat) const;
 
 	private:
-		unordered_map<Buffstat::Value, unique_ptr<BuffEffect>> buffeffects;
+		std::unordered_map<Buffstat::Value, std::unique_ptr<BuffEffect>> buffeffects;
 	};
 }

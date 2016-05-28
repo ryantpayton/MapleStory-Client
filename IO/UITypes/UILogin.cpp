@@ -17,33 +17,33 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UILogin.h"
 #include "UILoginwait.h"
-#include "Configuration.h"
 
-#include "Audio\Audio.h"
-#include "Graphics\Sprite.h"
-#include "Net\Session.h"
-#include "Net\Packets\LoginPackets.h"
-#include "IO\Components\MapleButton.h"
+#include "..\Components\MapleButton.h"
+
+#include "..\..\Configuration.h"
+#include "..\..\Audio\Audio.h"
+#include "..\..\Graphics\Sprite.h"
+#include "..\..\Net\Session.h"
+#include "..\..\Net\Packets\LoginPackets.h"
 
 #include "nlnx\nx.hpp"
 #include "nlnx\audio.hpp"
 
-namespace IO
+namespace jrc
 {
 	UILogin::UILogin()
 	{
-		using Audio::Music;
-		Music("BgmUI.img/Title").play();
+		Music("BgmUI.img/Title")
+			.play();
 
-		node title = nl::nx::ui["Login.img"]["Title"];
-		node common = nl::nx::ui["Login.img"]["Common"];
+		nl::node title = nl::nx::ui["Login.img"]["Title"];
+		nl::node common = nl::nx::ui["Login.img"]["Common"];
 
-		using::Graphics::Sprite;
-		sprites.push_back(Sprite(title["11"], Point<int16_t>(410, 300)));
-		sprites.push_back(Sprite(title["35"], Point<int16_t>(410, 260)));
-		sprites.push_back(Sprite(title["Logo"], Point<int16_t>(410, 130)));
-		sprites.push_back(Sprite(title["signboard"], Point<int16_t>(410, 300)));
-		sprites.push_back(Sprite(common["frame"], Point<int16_t>(400, 290)));
+		sprites.emplace_back(title["11"], Point<int16_t>(410, 300));
+		sprites.emplace_back(title["35"], Point<int16_t>(410, 260));
+		sprites.emplace_back(title["Logo"], Point<int16_t>(410, 130));
+		sprites.emplace_back(title["signboard"], Point<int16_t>(410, 300));
+		sprites.emplace_back(common["frame"], Point<int16_t>(400, 290));
 
 		// I prefer the title without this.
 		/*auto effectpos = Point<int16_t>(420, -50);
@@ -54,43 +54,33 @@ namespace IO
 			sprites.push_back(sprite);
 		}*/
 
-		buttons[BT_LOGIN] = unique_ptr<Button>(new MapleButton(title["BtLogin"], Point<int16_t>(475, 248)));
-		buttons[BT_REGISTER] = unique_ptr<Button>(new MapleButton(title["BtNew"], Point<int16_t>(309, 320)));
-		buttons[BT_HOMEPAGE] = unique_ptr<Button>(new MapleButton(title["BtHomePage"], Point<int16_t>(382, 320)));
-		buttons[BT_PASSLOST] = unique_ptr<Button>(new MapleButton(title["BtPasswdLost"], Point<int16_t>(470, 300)));
-		buttons[BT_QUIT] = unique_ptr<Button>(new MapleButton(title["BtQuit"], Point<int16_t>(455, 320)));
-		buttons[BT_IDLOST] = unique_ptr<Button>(new MapleButton(title["BtLoginIDLost"], Point<int16_t>(395, 300)));
-		buttons[BT_SAVEID] = unique_ptr<Button>(new MapleButton(title["BtLoginIDSave"], Point<int16_t>(325, 300)));
+		buttons[BT_LOGIN] = std::make_unique<MapleButton>(title["BtLogin"], Point<int16_t>(475, 248));
+		buttons[BT_REGISTER] = std::make_unique<MapleButton>(title["BtNew"], Point<int16_t>(309, 320));
+		buttons[BT_HOMEPAGE] = std::make_unique<MapleButton>(title["BtHomePage"], Point<int16_t>(382, 320));
+		buttons[BT_PASSLOST] = std::make_unique<MapleButton>(title["BtPasswdLost"], Point<int16_t>(470, 300));
+		buttons[BT_QUIT] = std::make_unique<MapleButton>(title["BtQuit"], Point<int16_t>(455, 320));
+		buttons[BT_IDLOST] = std::make_unique<MapleButton>(title["BtLoginIDLost"], Point<int16_t>(395, 300));
+		buttons[BT_SAVEID] = std::make_unique<MapleButton>(title["BtLoginIDSave"], Point<int16_t>(325, 300));
 
-		checkbox[false] = Texture(title["check"]["0"]);
-		checkbox[true] = Texture(title["check"]["1"]);
+		checkbox[false] = title["check"]["0"];
+		checkbox[true] = title["check"]["1"];
 
-		account = Textfield(
-			Text::A13M, Text::LEFT, Text::WHITE, 
-			rectangle2d<int16_t>(
-			Point<int16_t>(315, 249), 
-			Point<int16_t>(465, 273)), 12
-			);
-		account.setkey(Keyboard::TAB, [&](){
+		account = { Text::A13M, Text::LEFT, Text::WHITE,{ { 315, 249 },{ 465, 273 } }, 12 };
+		account.setkey(Keyboard::TAB, [&]{
 			account.setstate(Textfield::NORMAL);
 			password.setstate(Textfield::FOCUSED);
 		});
-		accountbg = Texture(title["ID"]);
+		accountbg = title["ID"];
 
-		password = Textfield(
-			Text::A13M, Text::LEFT, Text::WHITE,
-			rectangle2d<int16_t>(
-			Point<int16_t>(315, 275),
-			Point<int16_t>(465, 299)), 12
-			);
-		password.setkey(Keyboard::TAB, [&](){
+		password = { Text::A13M, Text::LEFT, Text::WHITE, { {315, 275}, {465, 299} }, 12 };
+		password.setkey(Keyboard::TAB, [&]{
 			password.setstate(Textfield::NORMAL);
 			account.setstate(Textfield::FOCUSED);
 		});
-		password.setonreturn([&](string msg){
+		password.setonreturn([&](std::string msg){
 			login();
 		});
-		passwordbg = Texture(title["PW"]);
+		passwordbg = title["PW"];
 		password.setcrypt('*');
 
 		saveid = Setting<SaveLogin>::get().load();
@@ -104,8 +94,8 @@ namespace IO
 			account.setstate(Textfield::FOCUSED);
 		}
 
-		position = Point<int16_t>(0, 0);
-		dimension = Point<int16_t>(800, 600);
+		position = { 0, 0 };
+		dimension = { 800, 600 };
 		active = true;
 	}
 
@@ -118,12 +108,12 @@ namespace IO
 
 		if (account.getstate() == Textfield::NORMAL && account.gettext().size() == 0)
 		{
-			accountbg.draw(Point<int16_t>(310, 249));
+			accountbg.draw({ 310, 249 });
 		}
 
 		if (password.getstate() == Textfield::NORMAL && password.gettext().size() == 0)
 		{
-			passwordbg.draw(Point<int16_t>(310, 275));
+			passwordbg.draw({ 310, 275 });
 		}
 
 		checkbox.at(saveid).draw(position + Point<int16_t>(313, 304));
@@ -145,7 +135,6 @@ namespace IO
 			login();
 			return;
 		case BT_QUIT:
-			using Net::Session;
 			Session::get().disconnect();
 			return;
 		case BT_SAVEID:
@@ -158,14 +147,13 @@ namespace IO
 
 	void UILogin::login()
 	{
-		ElementLoginwait().add();
+		UI::get().add(ElementTag<UILoginwait>());
 
 		account.setstate(Textfield::NORMAL);
 		password.setstate(Textfield::NORMAL);
 
 		buttons[BT_LOGIN]->setstate(Button::MOUSEOVER);
 
-		using Net::LoginPacket;
 		LoginPacket(account.gettext(), password.gettext()).dispatch();
 	}
 

@@ -16,15 +16,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "MapBackgrounds.h"
-#include "Constants.h"
-#include "Graphics\GraphicsGL.h"
+
+#include "..\..\Constants.h"
+#include "..\..\Graphics\GraphicsGL.h"
+
 #include "nlnx\nx.hpp"
 
-namespace Gameplay
+namespace jrc
 {
-	Background::Background(node src)
+	Background::Background(nl::node src)
 	{
-		node backsrc = nl::nx::map["Back"];
+		nl::node backsrc = nl::nx::map["Back"];
 		animated = src["ani"].get_bool();
 		animation = backsrc[src["bS"] + ".img"][animated ? "ani" : "back"][src["no"]];
 		opacity = src["a"];
@@ -37,23 +39,6 @@ namespace Gameplay
 		moveobj.sety(src["y"]);
 
 		Type type = typebyid(src["type"]);
-		settype(type);
-	}
-
-	Background::Background(InPacket& recv)
-	{
-		node backsrc = nl::nx::map["Back"];
-		animation = backsrc[recv.read<string>()];
-		opacity = recv.readshort();
-		flipped = recv.readbool();
-		cx = recv.readshort();
-		cy = recv.readshort();
-		rx = recv.readshort();
-		ry = recv.readshort();
-		moveobj.setx(recv.readshort());
-		moveobj.sety(recv.readshort());
-
-		Type type = typebyid(recv.readbyte());
 		settype(type);
 	}
 
@@ -97,27 +82,28 @@ namespace Gameplay
 		}
 	}
 
-	void Background::draw(Point<int16_t> position, float inter) const
+	void Background::draw(double viewx, double viewy, float alpha) const
 	{
-		int16_t shiftx = static_cast<int16_t>(rx * (-position.x() + WOFFSET) / 100 + WOFFSET);
-		int16_t shifty = static_cast<int16_t>(ry * (-position.y() + HOFFSET) / 100 + HOFFSET);
-		int16_t x = moveobj.getx(inter);
-		int16_t y = moveobj.gety(inter);
-		
-		if (moveobj.hspeed != 0.0)
+		double x;
+		if (moveobj.hmobile())
 		{
-			x += position.x();
-			y += shifty;
-		}
-		else if (moveobj.vspeed != 0.0)
-		{
-			x += shiftx;
-			y += position.y();
+			x = moveobj.getabsx(viewx, alpha);
 		}
 		else
 		{
-			x += shiftx;
-			y += shifty;
+			double shiftx = rx * (WOFFSET - viewx) / 100 + WOFFSET;
+			x = moveobj.getabsx(shiftx, alpha);
+		}
+
+		double y;
+		if (moveobj.vmobile())
+		{
+			y = moveobj.getabsy(viewy, alpha);
+		}
+		else
+		{
+			double shifty = ry * (HOFFSET - viewy) / 100 + HOFFSET;
+			y = moveobj.getabsy(shifty, alpha);
 		}
 
 		if (htile > 1)
@@ -143,15 +129,16 @@ namespace Gameplay
 				y += cy;
 			}
 		}
+		int16_t ix = static_cast<int16_t>(std::round(x));
+		int16_t iy = static_cast<int16_t>(std::round(y));
 
-		int16_t endx = x + cx * htile;
-		int16_t endy = y + cy * vtile;
-		for (int16_t tx = x; tx < endx; tx += cx)
+		int16_t tw = cx * htile;
+		int16_t th = cy * vtile;
+		for (int16_t tx = 0; tx < tw; tx += cx)
 		{
-			for (int16_t ty = y; ty < endy; ty += cy)
+			for (int16_t ty = 0; ty < th; ty += cy)
 			{
-				using Graphics::DrawArgument;
-				animation.draw(DrawArgument(Point<int16_t>(tx, ty), flipped, opacity / 255), inter);
+				animation.draw(DrawArgument(Point<int16_t>(ix + tx, iy + ty), flipped, opacity / 255), alpha);
 			}
 		}
 	}
@@ -163,10 +150,10 @@ namespace Gameplay
 	}
 
 
-	MapBackgrounds::MapBackgrounds(node src)
+	MapBackgrounds::MapBackgrounds(nl::node src)
 	{
 		int16_t no = 0;
-		node back = src[std::to_string(no)];
+		nl::node back = src[std::to_string(no)];
 		while (back.size() > 0)
 		{
 			bool front = back["front"].get_bool();
@@ -186,46 +173,28 @@ namespace Gameplay
 		black = src["0"]["bS"].get_string() == "";
 	}
 
-	MapBackgrounds::MapBackgrounds(InPacket& recv)
-	{
-		int16_t size = recv.readshort();
-		for (int16_t i = 0; i < size; i++)
-		{
-			bool front = recv.readbool();
-			if (front)
-			{
-				foregrounds.push_back(recv);
-			}
-			else
-			{
-				backgrounds.push_back(recv);
-			}
-		}
-
-		black = recv.readbool();
-	}
 
 	MapBackgrounds::MapBackgrounds() {}
 
-	void MapBackgrounds::drawbackgrounds(Point<int16_t> position, float inter) const
+	void MapBackgrounds::drawbackgrounds(double viewx, double viewy, float alpha) const
 	{
 		if (black)
 		{
-			using Graphics::GraphicsGL;
-			GraphicsGL::get().drawscreenfill(0.0f, 0.0f, 0.0f, 1.0f);
+			GraphicsGL::get()
+				.drawscreenfill(0.0f, 0.0f, 0.0f, 1.0f);
 		}
 
 		for (auto& background : backgrounds)
 		{
-			background.draw(position, inter);
+			background.draw(viewx, viewy, alpha);
 		}
 	}
 
-	void MapBackgrounds::drawforegrounds(Point<int16_t> position, float inter) const
+	void MapBackgrounds::drawforegrounds(double viewx, double viewy, float alpha) const
 	{
 		for (auto& foreground : foregrounds)
 		{
-			foreground.draw(position, inter);
+			foreground.draw(viewx, viewy, alpha);
 		}
 	}
 

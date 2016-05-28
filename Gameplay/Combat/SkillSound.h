@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Audio\Audio.h"
+#include "..\..\Audio\Audio.h"
 
-namespace Gameplay
+namespace jrc
 {
 	// Interface for skill sound.
 	class SkillSound
@@ -25,8 +25,8 @@ namespace Gameplay
 	public:
 		virtual ~SkillSound() {}
 
-		virtual void playuse() const = 0;
-		virtual void playhit() const = 0;
+		virtual void play_use() const = 0;
+		virtual void play_hit() const = 0;
 	};
 
 
@@ -34,8 +34,8 @@ namespace Gameplay
 	class NoSkillSound : public SkillSound
 	{
 	public:
-		void playuse() const override {}
-		void playhit() const override {}
+		void play_use() const override {}
+		void play_hit() const override {}
 	};
 
 
@@ -43,16 +43,12 @@ namespace Gameplay
 	class SingleSkillSound : public SkillSound
 	{
 	public:
-		using string = std::string;
+		SingleSkillSound(std::string strid);
 
-		SingleSkillSound(string strid);
-
-		void playuse() const override;
-		void playhit() const override;
+		void play_use() const override;
+		void play_hit() const override;
 
 	private:
-		using Sound = Audio::Sound;
-
 		Sound usesound;
 		Sound hitsound;
 	};

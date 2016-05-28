@@ -20,73 +20,70 @@
 #include "UIItemInventory.h"
 #include "UIEquipInventory.h"
 
-#include "IO\UI.h"
-#include "IO\Components\MapleButton.h"
+#include "..\UI.h"
+#include "..\Components\MapleButton.h"
 
-#include "Gameplay\Stage.h"
+#include "..\..\Gameplay\Stage.h"
 
 #include "nlnx\nx.hpp"
 
-namespace IO
+namespace jrc
 {
-	using Gameplay::Stage;
+	UIStatusbar::UIStatusbar() 
+		: stats(Stage::get().getplayer().getstats()) {
 
-	UIStatusbar::UIStatusbar() : stats(Stage::get().getplayer().getstats()) 
-	{
-		node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
+		nl::node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
 
-		sprites.push_back(mainbar["backgrnd"]);
-		sprites.push_back(mainbar["gaugeBackgrd"]);
-		sprites.push_back(mainbar["notice"]);
-		sprites.push_back(mainbar["lvBacktrnd"]);
-		sprites.push_back(mainbar["lvCover"]);
+		sprites.emplace_back(mainbar["backgrnd"]);
+		sprites.emplace_back(mainbar["gaugeBackgrd"]);
+		sprites.emplace_back(mainbar["notice"]);
+		sprites.emplace_back(mainbar["lvBacktrnd"]);
+		sprites.emplace_back(mainbar["lvCover"]);
 
-		expbar = Bar(
+		expbar = { 
 			mainbar.resolve("gauge/exp/0"), 
-			mainbar.resolve("gauge/exp/1"), 
+			mainbar.resolve("gauge/exp/1"),
 			mainbar.resolve("gauge/exp/2"), 
-			308, getexppercent()
-			);
-		hpbar = Bar(
-			mainbar.resolve("gauge/hp/0"), 
-			mainbar.resolve("gauge/hp/1"), 
-			mainbar.resolve("gauge/hp/2"), 
+			308, getexppercent() 
+		};
+		hpbar = {
+			mainbar.resolve("gauge/hp/0"),
+			mainbar.resolve("gauge/hp/1"),
+			mainbar.resolve("gauge/hp/2"),
 			137, gethppercent()
-			);
-		mpbar = Bar(
-			mainbar.resolve("gauge/mp/0"), 
-			mainbar.resolve("gauge/mp/1"), 
-			mainbar.resolve("gauge/mp/2"), 
+		};
+		mpbar = {
+			mainbar.resolve("gauge/mp/0"),
+			mainbar.resolve("gauge/mp/1"),
+			mainbar.resolve("gauge/mp/2"),
 			137, getmppercent()
-			);
+		};
 
-		statset = Charset(mainbar.resolve("gauge/number"), Charset::RIGHT);
-		levelset = Charset(mainbar.resolve("lvNumber"), Charset::LEFT);
+		statset = { mainbar["gauge"]["number"], Charset::RIGHT };
+		levelset = { mainbar["lvNumber"], Charset::LEFT };
 
-		joblabel = Text(Text::A11M, Text::LEFT, Text::YELLOW);
-		joblabel.settext(stats.getjobname());
-		namelabel = Text(Text::A13M, Text::LEFT, Text::WHITE);
-		namelabel.settext(stats.getname());
+		joblabel = { Text::A11M, Text::LEFT, Text::YELLOW, stats.getjobname() };
+		namelabel = { Text::A13M, Text::LEFT, Text::WHITE, stats.getname() };
 
-		buttons[BT_WHISPER] = unique_ptr<Button>(new MapleButton(mainbar["BtChat"]));
-		buttons[BT_CALLGM] = unique_ptr<Button>(new MapleButton(mainbar["BtClaim"]));
+		buttons[BT_WHISPER] = std::make_unique<MapleButton>(mainbar["BtChat"]);
+		buttons[BT_CALLGM] = std::make_unique<MapleButton>(mainbar["BtClaim"]);
 
-		buttons[BT_CASHSHOP] = unique_ptr<Button>(new MapleButton(mainbar["BtCashShop"]));
-		buttons[BT_TRADE] = unique_ptr<Button>(new MapleButton(mainbar["BtMTS"]));
-		buttons[BT_MENU] = unique_ptr<Button>(new MapleButton(mainbar["BtMenu"]));
-		buttons[BT_OPTIONS] = unique_ptr<Button>(new MapleButton(mainbar["BtSystem"]));
+		buttons[BT_CASHSHOP] = std::make_unique<MapleButton>(mainbar["BtCashShop"]);
+		buttons[BT_TRADE] = std::make_unique<MapleButton>(mainbar["BtMTS"]);
+		buttons[BT_MENU] = std::make_unique<MapleButton>(mainbar["BtMenu"]);
+		buttons[BT_OPTIONS] = std::make_unique<MapleButton>(mainbar["BtSystem"]);
 
-		buttons[BT_CHARACTER] = unique_ptr<Button>(new MapleButton(mainbar["BtCharacter"]));
-		buttons[BT_STATS] = unique_ptr<Button>(new MapleButton(mainbar["BtStat"]));
-		buttons[BT_QUEST] = unique_ptr<Button>(new MapleButton(mainbar["BtQuest"]));
-		buttons[BT_INVENTORY] = unique_ptr<Button>(new MapleButton(mainbar["BtInven"]));
-		buttons[BT_EQUIPS] = unique_ptr<Button>(new MapleButton(mainbar["BtEquip"]));
-		buttons[BT_SKILL] = unique_ptr<Button>(new MapleButton(mainbar["BtSkill"]));
+		buttons[BT_CHARACTER] = std::make_unique<MapleButton>(mainbar["BtCharacter"]);
+		buttons[BT_STATS] = std::make_unique<MapleButton>(mainbar["BtStat"]);
+		buttons[BT_QUEST] = std::make_unique<MapleButton>(mainbar["BtQuest"]);
+		buttons[BT_INVENTORY] = std::make_unique<MapleButton>(mainbar["BtInven"]);
+		buttons[BT_EQUIPS] = std::make_unique<MapleButton>(mainbar["BtEquip"]);
+		buttons[BT_SKILL] = std::make_unique<MapleButton>(mainbar["BtSkill"]);
 
-		position = Point<int16_t>(512, 590);
-		dimension = Point<int16_t>(1366, 80);
+		position = { 512, 590 };
+		dimension = { 1366, 80 };
 
-		chatbar = unique_ptr<Chatbar>(new Chatbar(position));
+		chatbar = std::make_unique<Chatbar>(position);
 	}
 
 	void UIStatusbar::draw(float inter) const
@@ -103,7 +100,7 @@ namespace IO
 		hpbar.draw(position + Point<int16_t>(-261, -31));
 		mpbar.draw(position + Point<int16_t>(-90, -31));
 
-		string expstring = std::to_string(100 * getexppercent());
+		std::string expstring = std::to_string(100 * getexppercent());
 		statset.draw(
 			std::to_string(currentexp) + "[" + expstring.substr(0, expstring.find('.') + 3) + "%]",
 			position + Point<int16_t>(47, -13)
@@ -149,13 +146,13 @@ namespace IO
 			uinterface.add(UI_SYSTEM);
 			break;*/
 		case BT_STATS:
-			UI::get().add(ElementStatsinfo());
+			UI::get().add(ElementTag<UIStatsinfo>());
 			break;
 		case BT_INVENTORY:
-			UI::get().add(ElementItemInventory());
+			UI::get().add(ElementTag<UIItemInventory>());
 			break;
 		case BT_EQUIPS:
-			UI::get().add(ElementEquipInventory());
+			UI::get().add(ElementTag<UIEquipInventory>());
 			break;
 		}
 
@@ -164,7 +161,7 @@ namespace IO
 
 	bool UIStatusbar::isinrange(Point<int16_t> cursorpos) const
 	{
-		auto bounds = rectangle2d<int16_t>(
+		auto bounds = Rectangle<int16_t>(
 			position - Point<int16_t>(512, 84),
 			position - Point<int16_t>(512, 84) + dimension
 			);
@@ -185,14 +182,14 @@ namespace IO
 		}
 	}
 
-	void UIStatusbar::sendchatline(string line, Chatbar::LineType type)
+	void UIStatusbar::sendchatline(const std::string& line, Chatbar::LineType type)
 	{
 		chatbar->sendline(line, type);
 	}
 
 	void UIStatusbar::displaymessage(Messages::Type line, Chatbar::LineType type)
 	{
-		string message = messages.stringfor(line);
+		std::string message = messages.stringfor(line);
 	    chatbar->sendline(message, type);
 	}
 

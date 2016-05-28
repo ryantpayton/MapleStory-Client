@@ -17,15 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UINotice.h"
 
-#include "IO\Components\MapleButton.h"
+#include "..\Components\MapleButton.h"
 
 #include "nlnx\nx.hpp"
 
-namespace IO
+namespace jrc
 {
-	UINotice::UINotice(string q)
+	UINotice::UINotice(std::string q)
 	{
-		node src = nl::nx::ui["Basic.img"]["Notice6"];
+		nl::node src = nl::nx::ui["Basic.img"]["Notice6"];
 
 		top = src["t"];
 		center = src["c"];
@@ -53,7 +53,6 @@ namespace IO
 		start.shifty(centerbox.height());
 
 		Point<int16_t> textpos = start;
-		using Graphics::DrawArgument;
 		box.draw(DrawArgument(textpos, Point<int16_t>(0, height)));
 		start.shifty(box.height() * (height / box.height()));
 		box.draw(start);
@@ -76,17 +75,17 @@ namespace IO
 	}
 
 
-	UIYesNo::UIYesNo(string q, function<void(bool)> yh)
+	UIYesNo::UIYesNo(std::string q, std::function<void(bool)> yh)
 		: UINotice(q) {
 
 		yesnohandler = yh;
 
 		int16_t belowtext = UINotice::box2offset();
 
-		node src = nl::nx::ui["Basic.img"];
+		nl::node src = nl::nx::ui["Basic.img"];
 
-		buttons[YES] = unique_ptr<Button>(new MapleButton(src["BtOK4"], 90, belowtext + 1));
-		buttons[NO] = unique_ptr<Button>(new MapleButton(src["BtCancel4"], 132, belowtext + 1));
+		buttons[YES] = std::make_unique<MapleButton>(src["BtOK4"], 90, belowtext + 1);
+		buttons[NO] = std::make_unique<MapleButton>(src["BtCancel4"], 132, belowtext + 1);
 	}
 
 	void UIYesNo::draw(float alpha) const
@@ -110,7 +109,7 @@ namespace IO
 	}
 
 
-	UIEnterNumber::UIEnterNumber(string q, function<void(int32_t)> nh, int32_t mi, int32_t ma, int32_t de)
+	UIEnterNumber::UIEnterNumber(std::string q, std::function<void(int32_t)> nh, int32_t mi, int32_t ma, int32_t de)
 		: UINotice(q) {
 
 		numhandler = nh;
@@ -119,16 +118,16 @@ namespace IO
 
 		int16_t belowtext = UINotice::box2offset();
 
-		node src = nl::nx::ui["Basic.img"];
+		nl::node src = nl::nx::ui["Basic.img"];
 
-		buttons[OK] = unique_ptr<Button>(new MapleButton(src["BtOK4"], 90, belowtext + 21));
-		buttons[CANCEL] = unique_ptr<Button>(new MapleButton(src["BtCancel4"], 132, belowtext + 21));
+		buttons[OK] = std::make_unique<MapleButton>(src["BtOK4"], 90, belowtext + 21);
+		buttons[CANCEL] = std::make_unique<MapleButton>(src["BtCancel4"], 132, belowtext + 21);
 
-		auto area = rectangle2d<int16_t>(26, 232, belowtext, belowtext + 20);
+		Rectangle<int16_t> area(26, 232, belowtext, belowtext + 20);
 		numfield = Textfield(Text::A11M, Text::LEFT, Text::LIGHTGREY, area, 9);
 		numfield.setstate(Textfield::FOCUSED);
 		numfield.settext(std::to_string(de));
-		numfield.setonreturn([&](string numstr){
+		numfield.setonreturn([&](std::string numstr){
 			handlestring(numstr);
 		});
 	}
@@ -165,7 +164,7 @@ namespace IO
 	{
 		if (buttonid == OK)
 		{
-			string numstr = numfield.gettext();
+			std::string numstr = numfield.gettext();
 			handlestring(numstr);
 		}
 		else
@@ -174,7 +173,7 @@ namespace IO
 		}
 	}
 
-	void UIEnterNumber::handlestring(string numstr)
+	void UIEnterNumber::handlestring(std::string numstr)
 	{
 		if (numstr.size() > 0)
 		{

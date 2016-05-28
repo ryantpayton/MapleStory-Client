@@ -16,12 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Foothold.h"
-#include "Constants.h"
+#include "..\..\Constants.h"
+#include "..\..\Util\Interpolated.h"
+#include "..\..\Util\Point.h"
 
-#include "Util\Interpolated.h"
-
-namespace Gameplay
+namespace jrc
 {
 	// Struct that contains all properties for movement calculations.
 	struct MovingObject
@@ -142,26 +141,30 @@ namespace Gameplay
 			return static_cast<int16_t>(rounded);
 		}
 
-		int16_t getx(float alpha) const
-		{
-			double rounded = std::round(x.get(alpha));
-			return static_cast<int16_t>(rounded);
-		}
-
-		int16_t gety(float alpha) const
-		{
-			double rounded = std::round(y.get(alpha));
-			return static_cast<int16_t>(rounded);
-		}
-
 		Point<int16_t> getposition() const
 		{
 			return{ getx(), gety() };
 		}
 
-		Point<int16_t> getposition(float alpha) const
+		int16_t getabsx(double viewx, float alpha) const
 		{
-			return{ getx(alpha), gety(alpha) };
+			double interx = x.normalized() ? std::round(x.get()) : x.get(alpha);
+			return static_cast<int16_t>(
+				std::round(interx + viewx)
+				);
+		}
+
+		int16_t getabsy(double viewy, float alpha) const
+		{
+			double intery = y.normalized() ? std::round(y.get()) : y.get(alpha);
+			return static_cast<int16_t>(
+				std::round(intery + viewy)
+				);
+		}
+
+		Point<int16_t> getabsolute(double viewx, double viewy, float alpha) const
+		{
+			return{ getabsx(viewx, alpha), getabsy(viewy, alpha) };
 		}
 	};
 
@@ -182,6 +185,7 @@ namespace Gameplay
 		{
 			NOGRAVITY = 0x0001,
 			TURNATEDGES = 0x0002,
+			CHECKBELOW = 0x0004
 		};
 
 		Type type = NORMAL;
@@ -217,6 +221,11 @@ namespace Gameplay
 		{
 			if (flagset(f))
 				flags ^= f;
+		}
+
+		void clearflags()
+		{
+			flags = 0;
 		}
 	};
 }

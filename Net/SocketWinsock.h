@@ -16,13 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Journey.h"
+#include "..\Journey.h"
 #ifndef JOURNEY_USE_ASIO
 #include "NetConstants.h"
 #include <cstdlib>
 #include <cstdint>
 
-namespace Net
+namespace jrc
 {
 #ifdef JOURNEY_USE_CRYPTO
 	const size_t HANDSHAKE_LEN = 16;

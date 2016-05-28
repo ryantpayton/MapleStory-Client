@@ -16,15 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\InPacket.h"
-#include "Character\Inventory\Inventory.h"
+#include "..\InPacket.h"
 
-namespace Net
+#include "..\..\Character\Inventory\Inventory.h"
+
+namespace jrc
 {
 	namespace ItemParser
 	{
-		using::Character::Inventory;
-
 		void parseitem(InPacket& recv, Inventory::Type invtype, int16_t slot, Inventory& inventory);
 	}
 }

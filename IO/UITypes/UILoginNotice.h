@@ -16,14 +16,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
+#include "..\Element.h"
 
-namespace IO
+namespace jrc
 {
 	class UILoginNotice : public UIElement
 	{
 	public:
-		enum Type
+		static constexpr Type TYPE = LOGINNOTICE;
+		static constexpr bool FOCUSED = true;
+		static constexpr bool TOGGLED = false;
+
+		enum Message : int8_t
 		{
 			VULGAR_NAME,
 			DELETE_CHAR_ENTER_BIRTHDAY,
@@ -96,31 +100,5 @@ namespace IO
 
 	private:
 		bool saveid;
-	};
-
-	class ElementLoginNotice : public Element
-	{
-	public:
-		ElementLoginNotice(int8_t t)
-		{
-			text = t;
-		}
-
-		bool isfocused() const override
-		{
-			return true;
-		}
-
-		UIElement::Type type() const override
-		{
-			return UIElement::LOGINNOTICE;
-		}
-
-		UIElement* instantiate() const override
-		{
-			return new UILoginNotice(text);
-		}
-	private:
-		int8_t text;
 	};
 }

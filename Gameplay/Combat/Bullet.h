@@ -16,21 +16,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Gameplay\Physics\PhysicsObject.h"
-#include "Graphics\Animation.h"
-#include "Util\Point.h"
+#include "..\Physics\PhysicsObject.h"
 
-namespace Gameplay
+#include "..\..\Graphics\Animation.h"
+#include "..\..\Util\Point.h"
+
+namespace jrc
 {
 	// Represents a projectile on a map.
 	class Bullet
 	{
 	public:
-		using Animation = Graphics::Animation;
-
 		Bullet(Animation animation, Point<int16_t> origin, bool toleft);
 
-		void draw(Point<int16_t> viewpos, float alpha) const;
+		void draw(double viewx, double viewy, float alpha) const;
 		bool settarget(Point<int16_t> target);
 		bool update(Point<int16_t> target);
 

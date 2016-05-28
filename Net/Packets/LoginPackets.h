@@ -16,10 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\OutPacket.h"
-#include "Net\SendOpcodes.h"
+#include "..\OutPacket.h"
+#include "..\SendOpcodes.h"
 
-namespace Net
+namespace jrc
 {
 	// Accept the Terms of Service.
 	// Opcode: ACCEPT_TOS(7)
@@ -37,7 +37,7 @@ namespace Net
 	class LoginPacket : public OutPacket
 	{
 	public:
-		LoginPacket(string acc, string pass) : OutPacket(LOGIN)
+		LoginPacket(const std::string& acc, const std::string& pass) : OutPacket(LOGIN)
 		{
 			writestr(acc);
 			writestr(pass);

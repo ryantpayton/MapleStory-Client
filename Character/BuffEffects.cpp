@@ -17,21 +17,21 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "BuffEffects.h"
 
-namespace Character
+namespace jrc
 {
 	BuffEffects::BuffEffects()
 	{
-		buffeffects[Buffstat::MAPLE_WARRIOR] = unique_ptr<BuffEffect>(new MapleWarriorEffect());
-		buffeffects[Buffstat::STANCE] = unique_ptr<BuffEffect>(new StanceEffect());
-		buffeffects[Buffstat::BOOSTER] = unique_ptr<BuffEffect>(new BoosterEffect());
-		buffeffects[Buffstat::WATK] = unique_ptr<BuffEffect>(new WATKEffect());
-		buffeffects[Buffstat::WDEF] = unique_ptr<BuffEffect>(new WDEFEffect());
-		buffeffects[Buffstat::MATK] = unique_ptr<BuffEffect>(new MATKEffect());
-		buffeffects[Buffstat::MDEF] = unique_ptr<BuffEffect>(new MDEFEffect());
-		buffeffects[Buffstat::SPEED] = unique_ptr<BuffEffect>(new SPEEDEffect());
-		buffeffects[Buffstat::JUMP] = unique_ptr<BuffEffect>(new JUMPEffect());
-		buffeffects[Buffstat::HYPERBODYHP] = unique_ptr<BuffEffect>(new HyperbodyHPEffect());
-		buffeffects[Buffstat::HYPERBODYMP] = unique_ptr<BuffEffect>(new HyperbodyMPEffect());
+		buffeffects[Buffstat::MAPLE_WARRIOR] = std::make_unique<MapleWarriorEffect>();
+		buffeffects[Buffstat::STANCE] = std::make_unique<StanceEffect>();
+		buffeffects[Buffstat::BOOSTER] = std::make_unique<BoosterEffect>();
+		buffeffects[Buffstat::WATK] = std::make_unique<WATKEffect>();
+		buffeffects[Buffstat::WDEF] = std::make_unique<WDEFEffect>();
+		buffeffects[Buffstat::MATK] = std::make_unique<MATKEffect>();
+		buffeffects[Buffstat::MDEF] = std::make_unique<MDEFEffect>();
+		buffeffects[Buffstat::SPEED] = std::make_unique<SPEEDEffect>();
+		buffeffects[Buffstat::JUMP] = std::make_unique<JUMPEffect>();
+		buffeffects[Buffstat::HYPERBODYHP] = std::make_unique<HyperbodyHPEffect>();
+		buffeffects[Buffstat::HYPERBODYMP] = std::make_unique<HyperbodyMPEffect>();
 	}
 
 	const BuffEffect* BuffEffects::bystat(Buffstat::Value stat) const

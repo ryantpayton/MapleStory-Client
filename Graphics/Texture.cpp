@@ -18,19 +18,20 @@
 #include "Texture.h"
 #include "GraphicsGL.h"
 
+#include "..\Configuration.h"
+
 #include "nlnx\nx.hpp"
 
-namespace Graphics
+namespace jrc
 {
-	Texture::Texture(node src)
+	Texture::Texture(nl::node src)
 	{
-		if (src.data_type() == node::type::bitmap)
+		if (src.data_type() == nl::node::type::bitmap)
 		{
-			using std::string;
-			string link = src["source"];
+			std::string link = src["source"];
 			if (link != "")
 			{
-				node srcfile = src;
+				nl::node srcfile = src;
 				while (srcfile != srcfile.root())
 				{
 					srcfile = srcfile.root();
@@ -38,11 +39,11 @@ namespace Graphics
 				src = srcfile.resolve(link.substr(link.find('/') + 1));
 			}
 
-			source = src;
+			bitmap = src;
 			origin = src["origin"];
-			dimensions = Point<int16_t>(source.width(),  source.height());
+			dimensions = Point<int16_t>(bitmap.width(),  bitmap.height());
 
-			GraphicsGL::get().addbitmap(source);
+			GraphicsGL::get().addbitmap(bitmap);
 		}
 	}
 
@@ -52,7 +53,7 @@ namespace Graphics
 
 	void Texture::draw(const DrawArgument& args) const
 	{
-		size_t id = source.id();
+		size_t id = bitmap.id();
 		if (id == 0)
 			return;
 
@@ -66,7 +67,7 @@ namespace Graphics
 
 		Point<int16_t> absp = args.getpos() - origin;
 
-		GraphicsGL::get().draw(source, absp.x(), absp.y(), w, h, args.getopacity(), args.getxscale(),
+		GraphicsGL::get().draw(bitmap, absp.x(), absp.y(), w, h, args.getopacity(), args.getxscale(),
 			args.getyscale(), args.getcenter().x(), args.getcenter().y(), args.getangle());
 	}
 
@@ -77,7 +78,7 @@ namespace Graphics
 
 	bool Texture::isloaded() const
 	{
-		return source.id() > 0;
+		return bitmap.id() > 0;
 	}
 
 	int16_t Texture::width() const

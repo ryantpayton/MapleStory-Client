@@ -16,21 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Net\PacketHandler.h"
-#include "Character\Inventory\Inventory.h"
-#include "Character\Skillbook.h"
-#include "Character\Questlog.h"
-#include "Character\Monsterbook.h"
-#include "Character\Telerock.h"
+#include "..\PacketHandler.h"
 
-namespace Net
+#include "..\..\Character\Inventory\Inventory.h"
+#include "..\..\Character\Skillbook.h"
+#include "..\..\Character\Questlog.h"
+#include "..\..\Character\Monsterbook.h"
+#include "..\..\Character\Telerock.h"
+
+namespace jrc
 {
-	using Character::Inventory;
-	using Character::Skillbook;
-	using Character::Questlog;
-	using Character::Monsterbook;
-	using Character::Telerock;
-
 	// Handler for a packet which contains all character information on first login
 	// or warps the player to a different map.
 	class SetfieldHandler : public PacketHandler
@@ -38,11 +33,11 @@ namespace Net
 	public:
 		void handle(InPacket& recv) const override;
 	private:
-		void changemap(InPacket& recv, int32_t) const;
-		void setfield(InPacket& recv) const;
-		void parseinventory(InPacket& recv, Inventory& invent) const;
-		void parseskillbook(InPacket& recv, Skillbook& skills) const;
-		void parsequestlog(InPacket& recv, Questlog& quests) const;
+		void change_map(InPacket& recv, int32_t) const;
+		void set_field(InPacket& recv) const;
+		void parse_inventory(InPacket& recv, Inventory& invent) const;
+		void parse_skillbook(InPacket& recv, Skillbook& skills) const;
+		void parse_questlog(InPacket& recv, Questlog& quests) const;
 		void parsering1(InPacket& recv) const;
 		void parsering2(InPacket& recv) const;
 		void parsering3(InPacket& recv) const;
@@ -51,17 +46,5 @@ namespace Net
 		void parsetelerock(InPacket& recv, Telerock& trock) const;
 		void parsenewyear(InPacket& recv) const;
 		void parseareainfo(InPacket& recv) const;
-	};
-
-	// Handler for a packet which moves the player to a different channel.
-	class ChangeChannelHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
-
-	// Handler for a packet which contains a custom, server-sided map.
-	class MapPacketHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
 	};
 }

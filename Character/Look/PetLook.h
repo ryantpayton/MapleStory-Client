@@ -16,20 +16,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Gameplay\Physics\Physics.h"
-#include "Graphics\Text.h"
-#include "Graphics\Animation.h"
-#include "Util\EnumMap.h"
-#include "Util\Point.h"
+#include "..\..\Gameplay\Physics\Physics.h"
+#include "..\..\Graphics\Text.h"
+#include "..\..\Graphics\Animation.h"
+#include "..\..\Util\EnumMap.h"
+#include "..\..\Util\Point.h"
+
 #include <cstdint>
 #include <string>
 #include <map>
 
-namespace Character
+namespace jrc
 {
-	using std::string;
-	using Gameplay::Physics;
-
 	class PetLook
 	{
 	public:
@@ -52,11 +50,11 @@ namespace Character
 			return valueh >= LENGTH ? STAND : static_cast<Stance>(valueh);
 		}
 
-		PetLook(int32_t iid, string name, int32_t uniqueid, 
+		PetLook(int32_t iid, std::string name, int32_t uniqueid,
 			Point<int16_t> pos, uint8_t stance, int32_t fhid);
 		PetLook();
 
-		void draw(Point<int16_t> viewpos, float inter) const;
+		void draw(double viewx, double viewy, float alpha) const;
 		void update(const Physics& physics, Point<int16_t> charpos);
 
 		void setposition(int16_t xpos, int16_t ypos);
@@ -67,12 +65,8 @@ namespace Character
 		Stance getstance() const;
 
 	private:
-		using PhysicsObject = Gameplay::PhysicsObject;
-		using Text = Graphics::Text;
-		using Animation = Graphics::Animation;
-
 		int32_t itemid;
-		string name;
+		std::string name;
 		int32_t uniqueid;
 		Stance stance;
 		bool flip;

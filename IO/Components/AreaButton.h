@@ -18,7 +18,7 @@
 #pragma once
 #include "Button.h"
 
-namespace IO
+namespace jrc
 {
 	// An invisible button which is only defined by it's area.
 	class AreaButton : public Button
@@ -27,7 +27,7 @@ namespace IO
 		AreaButton(Point<int16_t> position, Point<int16_t> dimensions);
 
 		void draw(Point<int16_t>) const {}
-		rectangle2d<int16_t> bounds(Point<int16_t> parentpos) const;
+		Rectangle<int16_t> bounds(Point<int16_t> parentpos) const;
 
 	private:
 		Point<int16_t> dimension;

@@ -16,67 +16,71 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Constants.h"
+#include "..\Constants.h"
+
 #include <cstdint>
 
-class TimedBool
+namespace jrc
 {
-public:
-	TimedBool()
+	class TimedBool
 	{
-		value = false;
-		delay = 0;
-	}
-
-	explicit operator bool() const
-	{
-		return value;
-	}
-
-	void setfor(uint16_t millis)
-	{
-		delay = millis;
-		value = true;
-	}
-
-	void update()
-	{
-		update(Constants::TIMESTEP);
-	}
-
-	void update(uint16_t timestep)
-	{
-		if (value)
+	public:
+		TimedBool()
 		{
-			if (timestep >= delay)
+			value = false;
+			delay = 0;
+		}
+
+		explicit operator bool() const
+		{
+			return value;
+		}
+
+		void setfor(uint16_t millis)
+		{
+			delay = millis;
+			value = true;
+		}
+
+		void update()
+		{
+			update(Constants::TIMESTEP);
+		}
+
+		void update(uint16_t timestep)
+		{
+			if (value)
 			{
-				value = false;
-				delay = 0;
-			}
-			else
-			{
-				delay -= timestep;
+				if (timestep >= delay)
+				{
+					value = false;
+					delay = 0;
+				}
+				else
+				{
+					delay -= timestep;
+				}
 			}
 		}
-	}
 
-	void operator = (bool b)
-	{
-		value = b;
-		delay = 0;
-	}
+		void operator = (bool b)
+		{
+			value = b;
+			delay = 0;
+		}
 
-	bool operator == (bool b)
-	{
-		return value == b;
-	}
+		bool operator == (bool b)
+		{
+			return value == b;
+		}
 
-	bool operator != (bool b)
-	{
-		return value != b;
-	}
+		bool operator != (bool b)
+		{
+			return value != b;
+		}
 
-private:
-	uint16_t delay;
-	bool value;
-};
+	private:
+		uint16_t delay;
+		bool value;
+	};
+}

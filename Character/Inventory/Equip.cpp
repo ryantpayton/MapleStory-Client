@@ -17,11 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Equip.h"
 
-namespace Character
+namespace jrc
 {
 	Equip::Equip(const ItemData& eqd, int32_t id, bool cs, int64_t uqi, int64_t exp, 
-		uint8_t sl, uint8_t lv, map<Equipstat::Value, uint16_t> st, string ow, int16_t fl, 
-		uint8_t ilv, int16_t iexp, int32_t vic) : Item(eqd, id, cs, uqi, exp, 1, ow, fl) {
+		uint8_t sl, uint8_t lv, const EnumMap<Equipstat::Value, uint16_t>& st, const std::string& ow, 
+		int16_t fl, uint8_t ilv, int16_t iexp, int32_t vic) : Item(eqd, id, cs, uqi, exp, 1, ow, fl) {
 
 		slots = sl;
 		level = lv;
@@ -38,20 +38,11 @@ namespace Character
 	{
 		int16_t totaldelta = 0;
 		const Clothing& cloth = getcloth();
-		for (auto it = Equipstat::it(); it.hasnext(); it.increment())
+		for (auto iter : stats)
 		{
-			Equipstat::Value es = it.get();
-			if (stats.count(es))
-			{
-				totaldelta += stats[es] - cloth.getdefstat(es);
-			}
-			else
-			{
-				if (cloth.getdefstat(es) > 0)
-				{
-					totaldelta -= cloth.getdefstat(es);
-				}
-			}
+			Equipstat::Value es = iter.first;
+			uint16_t stat = iter.second;
+			totaldelta += stat - cloth.getdefstat(es);
 		}
 
 		if (totaldelta < -4)
@@ -83,7 +74,7 @@ namespace Character
 
 	uint16_t Equip::getstat(Equipstat::Value type) const
 	{
-		return stats.count(type) ? stats.at(type) : 0;
+		return stats[type];
 	}
 
 	int32_t Equip::getvicious() const

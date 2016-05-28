@@ -16,13 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "CharLook.h"
-#include "Data\DataFactory.h"
-#include "Constants.h"
 
-namespace Character
+#include "..\..\Constants.h"
+#include "..\..\Data\DataFactory.h"
+
+namespace jrc
 {
-	using Data::DataFactory;
-
 	CharLook::CharLook(const LookEntry& entry)
 	{
 		reset();
@@ -54,6 +53,12 @@ namespace Character
 
 	void CharLook::reset()
 	{
+		flip = true;
+
+		action = nullptr;
+		actionstr = "";
+		actframe = 0;
+
 		setstance(Stance::STAND1);
 		stframe.set(0);
 		stelapsed = 0;
@@ -61,18 +66,11 @@ namespace Character
 		setexpression(Expression::DEFAULT);
 		expframe.set(0);
 		expelapsed = 0;
-
-		action = nullptr;
-		actionstr = "";
-		actframe = 0;
-
-		flip = true;
 	}
 
 	void CharLook::draw(Point<int16_t> absp, bool flipped, Stance::Value interstance,
 		Expression::Value interexpression, uint8_t interframe, uint8_t interexpframe) const {
 
-		using Graphics::DrawArgument;
 		DrawArgument args = DrawArgument(absp, flipped);
 		Point<int16_t> faceshift = DataFactory::get().getdrawinfo().getfacepos(interstance, interframe);
 		DrawArgument faceargs = DrawArgument(absp + faceshift, flipped, absp);
@@ -476,14 +474,14 @@ namespace Character
 		}
 	}
 
-	uint16_t CharLook::getdelay(Stance::Value stance, uint8_t frame) const
+	uint16_t CharLook::getdelay(Stance::Value st, uint8_t fr) const
 	{
-		return DataFactory::get().getdrawinfo().getdelay(stance, frame);
+		return DataFactory::get().getdrawinfo().getdelay(st, fr);
 	}
 
-	uint8_t CharLook::getnextframe(Stance::Value stance, uint8_t frame) const
+	uint8_t CharLook::getnextframe(Stance::Value st, uint8_t fr) const
 	{
-		return DataFactory::get().getdrawinfo().nextframe(stance, frame);
+		return DataFactory::get().getdrawinfo().nextframe(st, fr);
 	}
 
 	void CharLook::setexpression(Expression::Value newexpression)
@@ -497,7 +495,7 @@ namespace Character
 		}
 	}
 
-	void CharLook::setaction(string acstr)
+	void CharLook::setaction(const std::string& acstr)
 	{
 		if (acstr == actionstr || acstr == "")
 			return;
@@ -518,9 +516,9 @@ namespace Character
 		flip = f;
 	}
 
-	bool CharLook::istwohanded(Stance::Value stance) const
+	bool CharLook::istwohanded(Stance::Value st) const
 	{
-		switch (stance)
+		switch (st)
 		{
 		case Stance::STAND1:
 		case Stance::WALK1:
@@ -536,7 +534,7 @@ namespace Character
 	CharLook::AttackLook CharLook::getattacklook() const
 	{
 		Stance::Value astance = action ? Stance::SHOT : stance.get();
-		rectangle2d<int16_t> range = afterimage.getrange();
+		Rectangle<int16_t> range = afterimage.getrange();
 		return{ astance, range };
 	}
 

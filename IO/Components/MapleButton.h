@@ -17,25 +17,21 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Button.h"
-#include "Graphics\Texture.h"
-#include <map>
 
-namespace IO
+#include "..\..\Graphics\Texture.h"
+
+namespace jrc
 {
-	using std::map;
-	using nl::node;
-	using Graphics::Texture;
-
 	// A standard maplestory-button with 4 states and a texture for each state.
 	class MapleButton : public Button
 	{
 	public:
-		MapleButton(node src, Point<int16_t> position);
-		MapleButton(node src, int16_t x, int16_t y);
-		MapleButton(node src);
+		MapleButton(nl::node src, Point<int16_t> position);
+		MapleButton(nl::node src, int16_t x, int16_t y);
+		MapleButton(nl::node src);
 
 		void draw(Point<int16_t> position) const;
-		rectangle2d<int16_t> bounds(Point<int16_t> parentpos) const;
+		Rectangle<int16_t> bounds(Point<int16_t> parentpos) const;
 
 	private:
 		Texture textures[NUM_STATES];

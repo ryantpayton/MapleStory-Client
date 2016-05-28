@@ -16,27 +16,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Graphics\Texture.h"
-#include "Util\Point.h"
-#include "Net\InPacket.h"
-#include "nlnx\node.hpp"
+#include "..\..\Graphics\Texture.h"
+#include "..\..\Util\Point.h"
+
+#include <nlnx\node.hpp>
+
 #include <cstdint>
 #include <string>
 
-namespace Gameplay
+namespace jrc
 {
-	using nl::node;
-	using Graphics::Texture;
-	using Net::InPacket;
-
 	// Represents a tile on a map.
 	class Tile
 	{
 	public:
-		Tile(node src, string tileset);
-		Tile(InPacket& recv, string tileset);
-		// Empty destructor.
-		~Tile();
+		Tile(nl::node src, const std::string& tileset);
 
 		// Draw the tile.
 		void draw(Point<int16_t> viewpos) const;

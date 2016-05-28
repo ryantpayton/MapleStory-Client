@@ -16,26 +16,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
-#include "IO\Components\Textfield.h"
-#include "Graphics\Texture.h"
-#include "Graphics\Text.h"
-#include "Character\Look\CharLook.h"
-#include "Util\Randomizer.h"
+#include "..\Element.h"
+#include "..\Components\Textfield.h"
+
+#include "..\..\Character\Look\CharLook.h"
+#include "..\..\Graphics\Texture.h"
+#include "..\..\Graphics\Text.h"
+#include "..\..\Util\Randomizer.h"
+
 #include <map>
 
-namespace IO
+namespace jrc
 {
-	using std::map;
-	using std::string;
-	using Graphics::Texture;
-	using Graphics::Text;
-	using Character::CharLook;
-
 	// Character creation screen.
 	class UICharcreation : public UIElement
 	{
 	public:
+		static constexpr Type TYPE = CHARCREATION;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = false;
+
 		enum Buttons
 		{
 			BT_CHARC_OK,
@@ -77,18 +77,18 @@ namespace IO
 		float cloudfx;
 		Texture nameboard;
 		Textfield namechar;
-		vector<Sprite> lookboard;
+		std::vector<Sprite> lookboard;
 		CharLook newchar;
 		Randomizer randomizer;
 
-		map<bool, vector<uint8_t>> skins;
-		map<bool, vector<uint8_t>> haircolors;
-		map<bool, vector<int32_t>> faces;
-		map<bool, vector<int32_t>> hairs;
-		map<bool, vector<int32_t>> tops;
-		map<bool, vector<int32_t>> bots;
-		map<bool, vector<int32_t>> shoes;
-		map<bool, vector<int32_t>> weapons;
+		std::map<bool, std::vector<uint8_t>> skins;
+		std::map<bool, std::vector<uint8_t>> haircolors;
+		std::map<bool, std::vector<int32_t>> faces;
+		std::map<bool, std::vector<int32_t>> hairs;
+		std::map<bool, std::vector<int32_t>> tops;
+		std::map<bool, std::vector<int32_t>> bots;
+		std::map<bool, std::vector<int32_t>> shoes;
+		std::map<bool, std::vector<int32_t>> weapons;
 
 		bool named;
 		bool female;
@@ -109,20 +109,6 @@ namespace IO
 		Text shoename;
 		Text wepname;
 		Text gendername;
-	};
-
-	// Factory for the character creation screen.
-	class ElementCharcreation : public Element
-	{
-		UIElement::Type type() const override
-		{
-			return UIElement::CHARCREATION;
-		}
-
-		UIElement* instantiate() const override
-		{
-			return new UICharcreation();
-		}
 	};
 }
 

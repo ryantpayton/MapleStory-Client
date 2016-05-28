@@ -16,18 +16,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "ItemTooltip.h"
-#include "Data\DataFactory.h"
+
+#include "..\..\Data\DataFactory.h"
+
 #include "nlnx\nx.hpp"
 #include "nlnx\node.hpp"
 
-namespace IO
+namespace jrc
 {
-	using Data::DataFactory;
-	using Character::ItemData;
-
 	ItemTooltip::ItemTooltip()
 	{
-		node itemtt = nl::nx::ui["UIToolTip.img"]["Item"];
+		nl::node itemtt = nl::nx::ui["UIToolTip.img"]["Item"];
+
 		top = itemtt["Frame"]["top"];
 		mid = itemtt["Frame"]["line"];
 		line = itemtt["Frame"]["dotline"];
@@ -66,8 +66,6 @@ namespace IO
 	{
 		if (itemid == 0)
 			return;
-
-		using Graphics::DrawArgument;
 
 		top.draw(pos);
 		mid.draw(DrawArgument(pos + Point<int16_t>(0, 13), Point<int16_t>(0, filllength)));

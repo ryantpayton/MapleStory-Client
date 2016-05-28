@@ -27,22 +27,20 @@
 #include "UITypes\UIItemInventory.h"
 #include "UITypes\UIEquipInventory.h"
 
-#include "Gameplay\Stage.h"
+#include "..\Gameplay\Stage.h"
 
-namespace IO
+namespace jrc
 {
-	using Gameplay::Stage;
-
 	UIStateGame::UIStateGame()
 	{
 		focused = UIElement::NONE;
 		tooltipparent = UIElement::NONE;
 
-		add(ElementStatusMessenger());
-		add(ElementStatusbar());
-		add(ElementBuffList());
-		add(ElementNpcTalk());
-		add(ElementShop());
+		add(ElementTag<UIStatusMessenger>());
+		add(ElementTag<UIStatusbar>());
+		add(ElementTag<UIBuffList>());
+		add(ElementTag<UINpcTalk>());
+		add(ElementTag<UIShop>());
 	}
 
 	void UIStateGame::draw(float inter, Point<int16_t> cursor) const
@@ -97,13 +95,13 @@ namespace IO
 				switch (action)
 				{
 				case Keyboard::CHARSTATS:
-					add(ElementStatsinfo());
+					add(ElementTag<UIStatsinfo>());
 					break;
 				case Keyboard::INVENTORY:
-					add(ElementItemInventory());
+					add(ElementTag<UIItemInventory>());
 					break;
 				case Keyboard::EQUIPS:
-					add(ElementEquipInventory());
+					add(ElementTag<UIEquipInventory>());
 					break;
 				}
 			break;
@@ -241,8 +239,8 @@ namespace IO
 	void UIStateGame::add(const Element& element)
 	{
 		UIElement::Type type = element.type();
-		bool isfocused = element.isfocused();
-		bool isunique = element.isunique();
+		bool isfocused = element.focused();
+		bool isunique = element.unique();
 
 		if (get(type))
 		{
@@ -259,7 +257,7 @@ namespace IO
 			}
 		}
 
-		elements[type] = unique_ptr<UIElement>(element.instantiate());
+		elements.emplace(type, element.instantiate());
 		elementorder.push_back(type);
 
 		if (isfocused)

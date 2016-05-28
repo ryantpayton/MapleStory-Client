@@ -16,21 +16,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "IO\Element.h"
-#include "IO\Components\Nametag.h"
-#include "IO\Components\Charset.h"
-#include "Character\Look\CharLook.h"
+#include "..\Element.h"
+#include "..\Components\Nametag.h"
+#include "..\Components\Charset.h"
 
-namespace IO
+#include "..\..\Character\Look\CharLook.h"
+
+namespace jrc
 {
-	using std::vector;
-	using Character::CharLook;
-	using Character::Maplestat;
-
 	// The character selection screen.
 	class UICharSelect : public UIElement
 	{
 	public:
+		static constexpr Type TYPE = CHARSELECT;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = false;
+
 		enum Buttons
 		{
 			BT_CREATECHAR,
@@ -44,6 +45,7 @@ namespace IO
 		};
 
 		UICharSelect();
+
 		void draw(float) const override;
 		void update() override;
 		void buttonpressed(uint16_t) override;
@@ -53,7 +55,7 @@ namespace IO
 		void addchar(uint8_t id);
 		void selectchar();
 		void updateinfo();
-		string getstringfor(size_t label) const;
+		std::string getstringfor(size_t label) const;
 		Point<int16_t> getlabelpos(size_t label) const;
 		Point<int16_t> getcharpos(size_t id) const;
 
@@ -61,12 +63,12 @@ namespace IO
 		Point<int16_t> charinfopos;
 
 		bool haschars;
-		vector<CharLook> charlooks;
+		std::vector<CharLook> charlooks;
 		uint8_t charcount;
 		uint8_t charslots;
 		uint8_t selected;
 		uint8_t page;
-		vector<Nametag> nametags;
+		std::vector<Nametag> nametags;
 		Charset levelset;
 
 		struct OutlinedText
@@ -88,16 +90,16 @@ namespace IO
 
 			OutlinedText() {}
 
-			void draw(Point<int16_t> position) const
+			void draw(Point<int16_t> parentpos) const
 			{
-				l.draw(position + Point<int16_t>(-1, 0));
-				r.draw(position + Point<int16_t>(1, 0));
-				t.draw(position + Point<int16_t>(0, -1));
-				b.draw(position + Point<int16_t>(0, 1));
-				inner.draw(position);
+				l.draw(parentpos + Point<int16_t>(-1, 0));
+				r.draw(parentpos + Point<int16_t>(1, 0));
+				t.draw(parentpos + Point<int16_t>(0, -1));
+				b.draw(parentpos + Point<int16_t>(0, 1));
+				inner.draw(parentpos);
 			}
 
-			void settext(string text)
+			void settext(const std::string& text)
 			{
 				inner.settext(text);
 				l.settext(text);
@@ -115,20 +117,6 @@ namespace IO
 			STR, DEX, INT, LUK
 		};
 		OutlinedText infolabels[NUM_LABELS];
-	};
-
-	// Factory for the character selection screen.
-	class ElementCharSelect : public Element
-	{
-		UIElement::Type type() const override
-		{
-			return UIElement::CHARSELECT;
-		}
-
-		UIElement* instantiate() const override
-		{
-			return new UICharSelect();
-		}
 	};
 }
 

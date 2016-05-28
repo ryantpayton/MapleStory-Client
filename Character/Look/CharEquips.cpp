@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "CharEquips.h"
 
-namespace Character
+namespace jrc
 {
 	CharEquips::CharEquips()
 	{
@@ -83,7 +83,7 @@ namespace Character
 		Optional<const Clothing> cap = getequip(Equipslot::CAP);
 		if (cap)
 		{
-			string vslot = cap->getvslot();
+			std::string vslot = cap->getvslot();
 			if (vslot == "CpH1H5")
 				return HALFCOVER;
 			else if (vslot == "CpH1H5AyAs")
@@ -105,10 +105,10 @@ namespace Character
 			.mapordefault(&Weapon::gettype, Weapon::NONE);
 	}
 
-	string CharEquips::getequipname(Equipslot::Value slot) const
+	std::string CharEquips::getequipname(Equipslot::Value slot) const
 	{
 		return getequip(slot)
-			.mapordefault(&Clothing::getname, string(""));
+			.mapordefault(&Clothing::getname, std::string(""));
 	}
 
 	Optional<const Clothing> CharEquips::getequip(Equipslot::Value slot) const

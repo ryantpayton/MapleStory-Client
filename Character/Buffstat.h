@@ -18,7 +18,7 @@
 #pragma once
 #include <cstdint>
 
-namespace Character
+namespace jrc
 {
 	class Buffstat
 	{

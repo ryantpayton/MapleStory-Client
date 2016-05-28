@@ -16,12 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Clothing.h"
-#include "nlnx\nx.hpp"
 
-namespace Character
+#include <nlnx\nx.hpp>
+
+namespace jrc
 {
-	Clothing::Clothing(int32_t equipid, const BodyDrawinfo& drawinfo) : ItemData(equipid)
-	{
+	Clothing::Clothing(int32_t equipid, const BodyDrawinfo& drawinfo) 
+		: ItemData(equipid) {
+
 		static const Layer layers[15] = 
 		{
 			Layer::CAP, Layer::FACEACC, Layer::EYEACC, Layer::EARRINGS, Layer::TOP, Layer::MAIL,
@@ -36,7 +38,7 @@ namespace Character
 			Equipslot::PENDANT, Equipslot::BELT, Equipslot::MEDAL
 		};
 
-		static const string equiptypes[15] = 
+		static const std::string equiptypes[15] = 
 		{
 			"HAT", "FACE ACCESSORY", "EYE ACCESSORY", "EARRINGS", "TOP", "OVERALL",
 			"BOTTOM", "SHOES", "GLOVES", "SHIELD", "CAPE", "RING",
@@ -56,7 +58,7 @@ namespace Character
 			chlayer = Layer::WEAPON;
 			eqslot = Equipslot::WEAPON;
 
-			static const string weapontypes[20] =
+			static const std::string weapontypes[20] =
 			{
 				"ONE-HANDED SWORD", "ONE-HANDED AXE", "ONE-HANDED MACE", "DAGGER",
 				"", "", "", "WAND", "STAFF", "", "TWO-HANDED SWORD", "TWO-HANDED AXE",
@@ -77,10 +79,9 @@ namespace Character
 			type = "";
 		}
 
-		using nl::node;
-		node equipnode = nl::nx::character[getcategory()]["0" + std::to_string(equipid) + ".img"];
+		nl::node equipnode = nl::nx::character[getcategory()]["0" + std::to_string(equipid) + ".img"];
 
-		node infonode = equipnode["info"];
+		nl::node infonode = equipnode["info"];
 		cash = infonode["cash"].get_bool();
 		tradeblock = infonode["tradeBlock"].get_bool();
 		price = infonode["price"];
@@ -111,32 +112,32 @@ namespace Character
 		for (auto it = Stance::getit(); it.hasnext(); it.increment())
 		{
 			Stance::Value stance = it.get();
-			string stancename = Stance::nameof(stance);
-			node stancenode = equipnode[stancename];
+			std::string stancename = Stance::nameof(stance);
+			nl::node stancenode = equipnode[stancename];
 			if (stancenode.size() == 0)
 				continue;
 
 			uint8_t frame = 0;
-			node framenode = stancenode[std::to_string(frame)];
+			nl::node framenode = stancenode[std::to_string(frame)];
 			while (framenode.size() > 0)
 			{
-				for (node partnode : framenode)
+				for (auto partnode : framenode)
 				{
-					string part = partnode.name();
-					if (partnode.data_type() == node::type::bitmap)
+					std::string part = partnode.name();
+					if (partnode.data_type() == nl::node::type::bitmap)
 					{
 						Layer z = chlayer;
-						string zs = partnode["z"];
+						std::string zs = partnode["z"];
 						if (part == "mailArm")
 							z = Layer::MAILARM;
 						else
 							z = sublayer(chlayer, zs);
 
-						string parent;
+						std::string parent;
 						Point<int16_t> parentpos;
-						for (node mapnode : partnode["map"])
+						for (auto mapnode : partnode["map"])
 						{
-							if (mapnode.data_type() == node::type::vector)
+							if (mapnode.data_type() == nl::node::type::vector)
 							{
 								parent = mapnode.name();
 								parentpos = Point<int16_t>(mapnode);
@@ -208,13 +209,15 @@ namespace Character
 
 	void Clothing::draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const
 	{
-		if (!stances[stance].count(layer))
+		auto layerit = stances[stance].find(layer);
+		if (layerit == stances[stance].end())
 			return;
 
-		if (!stances[stance].at(layer).count(frame))
+		auto frameit = layerit->second.find(frame);
+		if (frameit == layerit->second.end())
 			return;
 
-		stances[stance].at(layer).at(frame).draw(args);
+		frameit->second.draw(args);
 	}
 
 	bool Clothing::islayer(Stance::Value stance, Layer layer) const
@@ -248,12 +251,12 @@ namespace Character
 			return 0;
 	}
 
-	string Clothing::gettype() const
+	std::string Clothing::gettype() const
 	{
 		return type;
 	}
 
-	string Clothing::getvslot() const
+	std::string Clothing::getvslot() const
 	{
 		return vslot;
 	}
