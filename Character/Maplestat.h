@@ -24,14 +24,14 @@ namespace jrc
 	class Maplestat
 	{
 	public:
-		static const size_t LENGTH = 20;
 		enum Value
 		{
 			SKIN, FACE, HAIR, LEVEL, JOB,
 			STR, DEX, INT, LUK,
 			HP, MAXHP, MP, MAXMP,
 			AP, SP, EXP, FAME, MESO,
-			PET, GACHAEXP
+			PET, GACHAEXP,
+			LENGTH
 		};
 
 		static EnumIterator<Value> it(Value s = SKIN, Value l = GACHAEXP)

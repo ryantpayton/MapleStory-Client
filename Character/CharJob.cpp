@@ -69,6 +69,12 @@ namespace jrc
 		return false;
 	}
 
+	bool CharJob::can_use(int32_t skill_id) const
+	{
+		uint16_t required = static_cast<uint16_t>(skill_id / 10000);
+		return issubjob(required);
+	}
+
 	uint16_t CharJob::getid() const
 	{
 		return id;

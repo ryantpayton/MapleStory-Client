@@ -188,18 +188,7 @@ namespace jrc
 		state->remove(type);
 	}
 
-	bool UI::haselement(UIElement::Type type) const
-	{
-		return getelement(type)
-			.ispresent();
-	}
-
-	Optional<UIElement> UI::getelement(UIElement::Type type) const
-	{
-		return state->get(type);
-	}
-
-	void UI::cleartooltip(UIElement::Type type)
+	void UI::clear_tooltip(UIElement::Type type)
 	{
 		state->cleartooltip(type);
 	}

@@ -20,6 +20,7 @@
 
 #include "..\Combat\Attack.h"
 #include "..\Combat\Bullet.h"
+#include "..\Combat\DamageNumber.h"
 #include "..\Movement.h"
 
 #include "..\..\Audio\Audio.h"
@@ -27,7 +28,6 @@
 #include "..\..\Graphics\Text.h"
 #include "..\..\Graphics\EffectLayer.h"
 #include "..\..\Graphics\Geometry.h"
-#include "..\..\IO\Components\DamageNumber.h"
 #include "..\..\Util\Rectangle.h"
 #include "..\..\Util\Enum.h"
 #include "..\..\Util\Interpolated.h"

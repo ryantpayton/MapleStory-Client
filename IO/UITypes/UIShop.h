@@ -66,7 +66,7 @@ namespace jrc
 		void buttonpressed(uint16_t buttonid) override;
 
 	private:
-		void cleartooltip();
+		void clear_tooltip();
 		void showitem(int16_t slot, bool sale);
 		void changeselltab(Inventory::Type tab);
 		int16_t slotbypos(int16_t y);
@@ -78,8 +78,8 @@ namespace jrc
 		Texture meso;
 		Text mesolabel;
 
-		std::unique_ptr<Slider> buyslider;
-		std::unique_ptr<Slider> sellslider;
+		Slider buyslider;
+		Slider sellslider;
 
 		class BuyItem
 		{

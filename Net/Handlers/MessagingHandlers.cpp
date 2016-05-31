@@ -103,8 +103,7 @@ namespace jrc
 
 	void ShowStatusInfoHandler::showstatus(Text::Color color, const std::string& message) const
 	{
-		UIStatusMessenger* messenger = UI::get().getelement(UIElement::STATUSMESSENGER)
-			.reinterpret<UIStatusMessenger>().get();
+		UIStatusMessenger* messenger = UI::get().get_element<UIStatusMessenger>().get();
 		if (messenger)
 			messenger->showstatus(color, message);
 	}
@@ -143,8 +142,7 @@ namespace jrc
 		if (message.substr(0, MAPLETIP.length()).compare("[MapleTip]"))
 			message = "[Notice] " + message;
 
-		UI::get().getelement(UIElement::STATUSBAR)
-			.reinterpret<UIStatusbar>()
+		UI::get().get_element<UIStatusbar>()
 			->sendchatline(message, Chatbar::YELLOW);
 	}
 
@@ -164,8 +162,7 @@ namespace jrc
 		}
 
 		auto linetype = static_cast<Chatbar::LineType>(type);
-		UI::get().getelement(UIElement::STATUSBAR)
-			.reinterpret<UIStatusbar>()
+		UI::get().get_element<UIStatusbar>()
 			->sendchatline(message, linetype);
 	}
 
@@ -202,8 +199,7 @@ namespace jrc
 
 		if (Stage::get().isplayer(cid))
 		{
-			UI::get().getelement(UIElement::STATUSBAR)
-				.reinterpret<UIStatusbar>()
+			UI::get().get_element<UIStatusbar>()
 				.ifpresent(&UIStatusbar::displaymessage, message, Chatbar::RED);
 			UI::get().enable();
 		}
@@ -229,9 +225,9 @@ namespace jrc
 				std::string sign = (qty < 0) ? "-" : "+";
 				std::string message = "Gained an item: " + name + " (" + sign + std::to_string(qty) + ")";
 
-				UI::get().getelement(UIElement::STATUSBAR)
-					.reinterpret<UIStatusbar>()
-					->sendchatline(message, Chatbar::BLUE);
+				UI::get().with_element<UIStatusbar>([&message](auto& sb) { 
+					sb.sendchatline(message, Chatbar::BLUE);
+				});
 			}
 		}
 		else if (mode1 == 13) // card effect

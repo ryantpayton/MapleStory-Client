@@ -123,7 +123,7 @@ namespace jrc
 			icons.erase(slot);
 		}
 
-		cleartooltip();
+		clear_tooltip();
 	}
 
 	void UIEquipInventory::loadicons()
@@ -142,7 +142,7 @@ namespace jrc
 		Cursor::State dstate = UIDragElement::sendmouse(pressed, cursorpos);
 		if (dragged)
 		{
-			cleartooltip();
+			clear_tooltip();
 			return dstate;
 		}
 
@@ -155,7 +155,7 @@ namespace jrc
 				icon->startdrag(cursorpos - position - iconpositions[slot]);
 				UI::get().dragicon(icon.get());
 
-				cleartooltip();
+				clear_tooltip();
 				return Cursor::GRABBING;
 			}
 			else
@@ -166,7 +166,7 @@ namespace jrc
 		}
 		else
 		{
-			cleartooltip();
+			clear_tooltip();
 			return Cursor::IDLE;
 		}
 	}
@@ -197,7 +197,7 @@ namespace jrc
 
 	void UIEquipInventory::togglehide()
 	{
-		cleartooltip();
+		clear_tooltip();
 		UIElement::togglehide();
 	}
 
@@ -223,9 +223,9 @@ namespace jrc
 		UI::get().show_equip(EQUIPINVENTORY, equip.get(), eqslot);
 	}
 
-	void UIEquipInventory::cleartooltip()
+	void UIEquipInventory::clear_tooltip()
 	{
-		UI::get().cleartooltip(EQUIPINVENTORY);
+		UI::get().clear_tooltip(EQUIPINVENTORY);
 	}
 
 	int16_t UIEquipInventory::slotbypos(Point<int16_t> cursorpos) const

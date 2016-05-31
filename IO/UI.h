@@ -64,15 +64,15 @@ namespace jrc
 		void add(const Element& element);
 		void remove(UIElement::Type type);
 
-		bool haselement(UIElement::Type type) const;
-		Optional<UIElement> getelement(UIElement::Type type) const;
-
-		void cleartooltip(UIElement::Type type);
+		void clear_tooltip(UIElement::Type type);
 		void show_equip(UIElement::Type parent, Equip* equip, int16_t slot);
 		void show_item(UIElement::Type parent, int32_t item_id);
 
 		template <class T>
-		Optional<T> getelement(UIElement::Type type) const;
+		void with_element(std::function<void(T&)> action);
+
+		template <class T>
+		Optional<T> get_element();
 
 	private:
 		void sendmouse(Point<int16_t> cursorpos, Cursor::State cursorstate);
@@ -89,9 +89,22 @@ namespace jrc
 	};
 
 	template <class T>
-	Optional<T> UI::getelement(UIElement::Type type) const
+	void UI::with_element(std::function<void(T&)> action)
 	{
-		return getelement(type)
-			.reinterpret<T>();
+		UIElement::Type type = T::TYPE;
+		UIElement* element = state->get(type);
+		if (element)
+		{
+			T* t = static_cast<T*>(element);
+			action(*t);
+		}
+	}
+
+	template <class T>
+	Optional<T> UI::get_element()
+	{
+		UIElement::Type type = T::TYPE;
+		UIElement* element = state->get(type);
+		return static_cast<T*>(element);
 	}
 }

@@ -128,7 +128,7 @@ namespace jrc
 
 	void Stage::pollspawns()
 	{
-		for (; spawnqueue.size() > 0; spawnqueue.pop())
+		for (; !spawnqueue.empty(); spawnqueue.pop())
 		{
 			Optional<const Spawn> spawn = spawnqueue.front().get();
 			if (spawn)
@@ -152,11 +152,48 @@ namespace jrc
 		}
 	}
 
+	void Stage::pollattacks()
+	{
+		attackqueue.remove_if([&](DelayedAttack& da) {
+			bool apply = da.update();
+			if (apply)
+			{
+				int32_t cid = da.char_id;
+				Optional<OtherChar> ouser = chars.getchar(cid);
+				if (ouser)
+				{
+					const AttackResult& attack = da.attack;
+
+					OtherChar& user = *ouser;
+					user.updateskill(attack.skill, attack.level);
+					user.updateattack(attack.speed);
+
+					const SpecialMove& move = getmove(attack.skill);
+					move.applyuseeffects(user, attack.type);
+
+					Stance::Value stance = Stance::byid(attack.stance);
+					user.attack(stance);
+
+					mobs.showresult(user, move, attack);
+				}
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		});
+
+
+		
+	}
+
 	void Stage::update()
 	{
 		if (state == ACTIVE)
 		{
 			pollspawns();
+			pollattacks();
 
 			backgrounds.update();
 			layers.update();
@@ -191,8 +228,18 @@ namespace jrc
 			return;
 
 		const SpecialMove& move = getmove(moveid);
-		if (player.canuse(move))
+
+		SpecialMove::ForbidReason reason = player.canuse(move);
+		Weapon::Type weapontype = player.getstats().get_weapontype();
+		switch (reason)
+		{
+		case SpecialMove::FBR_NONE:
 			applymove(move);
+			break;
+		default:
+			ForbidSkillMessage(reason, weapontype).drop();
+			break;
+		}
 	}
 
 	void Stage::applymove(const SpecialMove& move)
@@ -240,9 +287,9 @@ namespace jrc
 	{
 		switch (move.getid())
 		{
-		case Skill::HERO_RUSH:
-		case Skill::PALADIN_RUSH:
-		case Skill::DK_RUSH:
+		case Skill::RUSH_HERO:
+		case Skill::RUSH_PALADIN:
+		case Skill::RUSH_DK:
 			applyrush(result);
 			break;
 		}
@@ -264,21 +311,7 @@ namespace jrc
 
 	void Stage::showattack(int32_t cid, const AttackResult& attack)
 	{
-		Optional<OtherChar> ouser = chars.getchar(cid);
-		if (ouser)
-		{
-			OtherChar& user = *ouser;
-			user.updateskill(attack.skill, attack.level);
-			user.updateattack(attack.speed);
-
-			const SpecialMove& move = getmove(attack.skill);
-			move.applyuseeffects(user, attack.type);
-
-			Stance::Value stance = Stance::byid(attack.stance);
-			user.attack(stance);
-
-			mobs.showresult(user, move, attack);
-		}
+		attackqueue.emplace_back(attack, cid);
 	}
 
 	void Stage::showbuff(int32_t cid, int32_t skillid, int8_t level)
@@ -398,10 +431,10 @@ namespace jrc
 				usemove(Skill::DRAGON_BUSTER);
 				break;
 			case 101:
-				usemove(Skill::ENERGY_BOLT);
+				usemove(Skill::HYPER_BODY);
 				break;
 			case 102:
-				usemove(Skill::MAGIC_CLAW);
+				usemove(Skill::SPEAR_BOOSTER);
 				break;
 			case 103:
 				usemove(Skill::SLASH_BLAST);
@@ -413,7 +446,7 @@ namespace jrc
 				usemove(Skill::AVENGER);
 				break;
 			case 106:
-				usemove(Skill::DK_RUSH);
+				usemove(Skill::RUSH_DK);
 				break;
 			}
 			break;

@@ -18,6 +18,7 @@
 #pragma once
 #include <cstdint>
 #include <unordered_map>
+#include <map>
 
 namespace jrc
 {
@@ -32,6 +33,15 @@ namespace jrc
 		bool has_skill(int32_t skillid) const;
 		int32_t get_level(int32_t skillid) const;
 		int32_t get_masterlevel(int32_t skillid) const;
+
+		// Return id and level of all passive skills.
+		// An ordered map is used so that lower passive skills don't override higher ones.
+		std::map<int32_t, int32_t> collect_passives() const;
+
+		static constexpr bool is_passive(int32_t skill_id)
+		{
+			return (skill_id % 10000) < 1000;
+		}
 
 	private:
 		struct SkillEntry

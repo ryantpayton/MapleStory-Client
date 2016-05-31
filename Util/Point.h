@@ -145,67 +145,60 @@ namespace jrc
 		}
 
 		// Return a point whose coordaintes are the negation of this point's coordinates.
-		Point<T> operator - ()
+		constexpr Point<T> operator - () const
 		{
-			return Point<T>(-a, -b);
+			return{ -a, -b };
 		}
 
 		// Return a point whose coordinates have been added the specified amount.
-		Point<T> operator + (T v) const
+		constexpr Point<T> operator + (T v) const
 		{
-			return Point<T>(a + v, b + v);
+			return{ a + v, b + v };
 		}
 
 		// Return a point whose coordinates have been substracted the specified amount.
-		Point<T> operator - (T v) const
+		constexpr Point<T> operator - (T v) const
 		{
-			return Point<T>(a - v, b - v);
+			return{ a - v, b - v };
 		}
 
 		// Return a point whose coordinates have been multiplied by the specified amount.
-		Point<T> operator * (T v) const
+		constexpr Point<T> operator * (T v) const
 		{
-			return Point<T>(a * v, b * v);
+			return{ a * v, b * v };
 		}
 
 		// Return a point whose coordinates have been divided by the specified amount.
-		Point<T> operator / (T v) const
+		constexpr Point<T> operator / (T v) const
 		{
-			return Point<T>(a / v, b / v);
+			return{ a / v, b / v };
 		}
 
 		// Return a point whose coordinates are the sum of this and another points coordinates.
-		Point<T> operator + (Point<T> v) const
+		constexpr Point<T> operator + (Point<T> v) const
 		{
-			return Point<T>(a + v.a, b + v.b);
+			return{ a + v.a, b + v.b };
 		}
 
 		// Return a point whose coordinates are the difference of this and another points coordinates.
-		Point<T> operator - (Point<T> v) const
+		constexpr Point<T> operator - (Point<T> v) const
 		{
-			return Point<T>(a - v.a, b - v.b);
+			return{ a - v.a, b - v.b };
 		}
 
 		// Return a point whose coordinates are the product of this and another points coordinates.
-		Point<T> operator * (Point<T> v) const
+		constexpr Point<T> operator * (Point<T> v) const
 		{
-			return Point<T>(a / v.a, b / v.b);
+			return{ a / v.a, b / v.b };
 		}
 
 		// Return a point whose coordinates are the division of this and another points coordinates.
-		Point<T> operator / (Point<T> v) const
+		constexpr Point<T> operator / (Point<T> v) const
 		{
-			T va = v.a;
-			if (va == 0)
-			{
-				va = 1;
-			}
-			T vb = v.b;
-			if (vb == 0)
-			{
-				vb = 1;
-			}
-			return Point<T>(a / va, b / vb);
+			return{ 
+				a / (v.a == 0 ? 1 : v.a),
+				b / (v.b == 0 ? 1 : v.b)
+			};
 		}
 
 	private:

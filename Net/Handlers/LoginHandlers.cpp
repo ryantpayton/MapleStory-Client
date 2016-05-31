@@ -131,9 +131,9 @@ namespace jrc
 		}
 
 		// Notify character creation screen.
-		UI::get().getelement(UIElement::CHARCREATION)
-			.reinterpret<UICharcreation>()
-			->nameresult(used);
+		UI::get().with_element<UICharcreation>([&used](auto& cc) {
+			cc.nameresult(used);
+		});
 
 		UI::get().enable();
 	}

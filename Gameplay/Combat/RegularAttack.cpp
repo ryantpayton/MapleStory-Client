@@ -51,8 +51,9 @@ namespace jrc
 		return 0;
 	}
 
-	SpecialMove::ForbidReason RegularAttack::canuse(int32_t, Weapon::Type weapon, uint16_t, uint16_t, uint16_t, uint16_t bullets) const
-	{
+	SpecialMove::ForbidReason RegularAttack::canuse(int32_t, Weapon::Type weapon, 
+		const CharJob&, uint16_t, uint16_t, uint16_t bullets) const {
+
 		switch (weapon)
 		{
 		case Weapon::BOW:

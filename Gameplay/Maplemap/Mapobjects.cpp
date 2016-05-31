@@ -79,13 +79,13 @@ namespace jrc
 		}
 	}
 
-	void MapObjects::add(MapObject* toadd)
+	void MapObjects::add(std::unique_ptr<MapObject> toadd)
 	{
 		if (toadd)
 		{
 			int32_t oid = toadd->getoid();
 			int8_t layer = toadd->getlayer();
-			objects[oid] = std::unique_ptr<MapObject>(toadd);
+			objects[oid] = std::move(toadd);
 			layers[layer].insert(oid);
 		}
 	}
@@ -112,5 +112,25 @@ namespace jrc
 	{
 		auto iter = objects.find(oid);
 		return iter != objects.end() ? iter->second.get() : nullptr;
+	}
+
+	MapObjects::underlying_t::iterator MapObjects::begin()
+	{
+		return objects.begin();
+	}
+
+	MapObjects::underlying_t::iterator MapObjects::end()
+	{
+		return objects.end();
+	}
+
+	MapObjects::underlying_t::const_iterator MapObjects::begin() const
+	{
+		return objects.begin();
+	}
+
+	MapObjects::underlying_t::const_iterator MapObjects::end() const
+	{
+		return objects.end();
 	}
 }

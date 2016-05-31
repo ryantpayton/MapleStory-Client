@@ -18,7 +18,7 @@
 #pragma once
 #include "..\PacketHandler.h"
 
-#include "..\..\Character\Buffstat.h"
+#include "..\..\Character\Buff.h"
 
 namespace jrc
 {
@@ -51,7 +51,7 @@ namespace jrc
 		void handle(InPacket& recv) const override;
 
 	protected:
-		virtual void handlebuff(InPacket& recv, Buffstat::Value buff) const = 0;
+		virtual void handlebuff(InPacket& recv, Buff::Stat stat) const = 0;
 	};
 
 
@@ -60,7 +60,7 @@ namespace jrc
 	class ApplyBuffHandler : public BuffHandler
 	{
 	protected:
-		void handlebuff(InPacket& recv, Buffstat::Value buff) const override;
+		void handlebuff(InPacket& recv, Buff::Stat stat) const override;
 	};
 
 
@@ -69,7 +69,7 @@ namespace jrc
 	class CancelBuffHandler : public BuffHandler
 	{
 	protected:
-		void handlebuff(InPacket& recv, Buffstat::Value buff) const override;
+		void handlebuff(InPacket& recv, Buff::Stat stat) const override;
 	};
 
 

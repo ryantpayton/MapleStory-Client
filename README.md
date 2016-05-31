@@ -27,3 +27,5 @@ The build can be configured by editing the Journey.h file. The following options
 - Networking:
 [Asio](http://think-async.com/) (optional)
 
+# Binaries
+The latest build can be found here: [Journey.zip](http://www.mediafire.com/download/1hffg345wjrad7u/Journey.zip)

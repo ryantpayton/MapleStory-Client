@@ -40,6 +40,7 @@ namespace jrc
 
 		void changejob(uint16_t id);
 		bool issubjob(uint16_t subid) const;
+		bool can_use(int32_t skill_id) const;
 		uint16_t getid() const;
 		uint16_t getsubjob(Level level) const;
 		std::string getname() const;

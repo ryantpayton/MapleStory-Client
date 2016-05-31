@@ -26,7 +26,7 @@ namespace jrc
 {
 	void MapMobs::draw(int8_t layer, double viewx, double viewy, float alpha) const
 	{
-		MapObjects::draw(layer, viewx, viewy, alpha);
+		mobs.draw(layer, viewx, viewy, alpha);
 
 		switch (layer)
 		{
@@ -55,7 +55,7 @@ namespace jrc
 		});
 
 		bulleteffects.remove_if([&](BulletEffect& mb){
-			Optional<Mob> mob = getmob(mb.gettarget());
+			Optional<Mob> mob = getmob(mb.get_target());
 			if (mob)
 			{
 				Point<int16_t> target = mob->getheadpos();
@@ -76,7 +76,7 @@ namespace jrc
 			return dn.update();
 		});
 
-		MapObjects::update(physics);
+		mobs.update(physics);
 	}
 
 	void MapMobs::sendspawn(const MobSpawn& spawn)
@@ -92,8 +92,9 @@ namespace jrc
 		}
 		else
 		{
-			Mob* newmob = spawn.instantiate();
-			add(newmob);
+			mobs.add(
+				spawn.instantiate()
+			);
 		}
 	}
 
@@ -239,48 +240,24 @@ namespace jrc
 
 	void MapMobs::applyeffect(const DamageEffect& effect)
 	{
-		Optional<Mob> mob = getmob(effect.gettarget());
+		Optional<Mob> mob = getmob(effect.get_target());
 		if (mob)
 		{
 			effect.apply(*mob);
 
-			DamageNumber number = effect.getnumber();
+			DamageNumber number = effect.get_number();
 			Point<int16_t> head = mob->getheadpos();
 			number.setx(head.x());
 			damagenumbers.push_back(number);
 		}
 	}
 
-	// Not sure if I need this, maybe for AOE?
-	/*vector<int32_t> MapMobs::findclose(Rectangle<int16_t> range, uint8_t mobcount) const
-	{
-		vector<int32_t> targets;
-		for (auto& object : objects)
-		{
-			Optional<MapObject> mmo = object.second.get();
-			if (mmo.isempty())
-				continue;
-
-			Optional<Mob> mob = mmo.reinterpret<Mob>();
-			if (mob->isalive() && mob->isinrange(range))
-			{
-				int32_t oid = mob->getoid();
-				targets.push_back(oid);
-
-				if (targets.size() == mobcount)
-					break;
-			}
-		}
-		return targets;
-	}*/
-
 	std::vector<int32_t> MapMobs::findclosest(Rectangle<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const
 	{
 		std::multimap<int16_t, int32_t> distances;
-		for (auto& object : objects)
+		for (auto& mmo : mobs)
 		{
-			auto mob = Optional<MapObject>(object.second.get())
-				.reinterpret<Mob>();
+			const Mob* mob = static_cast<const Mob*>(mmo.second.get());
 			if (mob && mob->isalive() && mob->isinrange(range))
 			{
 				int32_t oid = mob->getoid();
@@ -319,15 +296,20 @@ namespace jrc
 			.ifpresent(&Mob::setcontrol, mode);
 	}
 
+	void MapMobs::clear()
+	{
+		mobs.clear();
+	}
+
 	Optional<Mob> MapMobs::getmob(int32_t oid)
 	{
-		return get(oid)
+		return mobs.get(oid)
 			.reinterpret<Mob>();
 	}
 
 	Optional<const Mob> MapMobs::getmob(int32_t oid) const
 	{
-		return get(oid)
+		return mobs.get(oid)
 			.reinterpret<const Mob>();
 	}
 }

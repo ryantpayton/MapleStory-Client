@@ -31,7 +31,8 @@
 namespace jrc
 {
 	UIItemInventory::UIItemInventory() : 
-		UIDragElement<PosINV>(Point<int16_t>(172, 20)), inventory(Stage::get().getplayer().getinvent()) {
+		UIDragElement<PosINV>(Point<int16_t>(172, 20)), 
+		inventory(Stage::get().getplayer().getinvent()) {
 
 		nl::node src = nl::nx::ui["UIWindow2.img"]["Item"];
 
@@ -71,10 +72,11 @@ namespace jrc
 		buttons[BT_SORT]->setactive(false);
 		buttons[buttonbytab(tab)]->setstate(Button::PRESSED);
 
-		mesolabel = Text(Text::A11M, Text::RIGHT, Text::LIGHTGREY);
-		slider = std::make_unique<Slider>(
-			11, Range<int16_t>(50, 248), 152, 6, 1 + inventory.getslots(tab) / 4, [&](bool upwards){
+		mesolabel = { Text::A11M, Text::RIGHT, Text::LIGHTGREY };
 
+		slider = {
+			11, { 50, 248 }, 152, 6, 1 + inventory.getslots(tab) / 4, 
+			[&](bool upwards) {
 			int16_t shift = upwards ? -4 : 4;
 			bool above = slotrange.first + shift > 0;
 			bool below = slotrange.second + shift < inventory.getslots(tab) + 1 + 4;
@@ -83,9 +85,9 @@ namespace jrc
 				slotrange.first += shift;
 				slotrange.second += shift;
 			}
-		});
+		} };
 
-		dimension = Point<int16_t>(172, 335);
+		dimension = { 172, 335 };
 		active = true;
 
 		loadicons();
@@ -95,8 +97,7 @@ namespace jrc
 	{
 		UIElement::draw(inter);
 
-		if (slider)
-			slider->draw(position);
+		slider.draw(position);
 
 		for (auto& icon : icons)
 		{
@@ -112,19 +113,19 @@ namespace jrc
 		if (tab == Inventory::USE && isvisible(bulletslot))
 		{
 			Point<int16_t> bulletslotpos = position + getslotpos(bulletslot);
-			projectile.draw(bulletslotpos);
+			projectile.draw({ bulletslotpos });
 		}
 		else if (newtab == tab && isvisible(newslot))
 		{
 			Point<int16_t> newslotpos = position + getslotpos(newslot);
 			newslotpos.shifty(1);
-			newitemslot.draw(newslotpos, inter);
+			newitemslot.draw({ newslotpos }, inter);
 		}
 		
 		if (newtab != tab && newtab != Inventory::NONE)
 		{
 			Point<int16_t> newtabpos = position + gettabpos(newtab);
-			newitemtab.draw(newtabpos, inter);
+			newitemtab.draw({ newtabpos }, inter);
 		}
 
 		Point<int16_t> mesopos = position + Point<int16_t>(124, 264);
@@ -214,7 +215,7 @@ namespace jrc
 			slotrange.first = 1;
 			slotrange.second = 24;
 
-			slider->setrows(6, 1 + inventory.getslots(tab) / 4);
+			slider.setrows(6, 1 + inventory.getslots(tab) / 4);
 
 			loadicons();
 
@@ -272,17 +273,17 @@ namespace jrc
 		Cursor::State dstate = UIDragElement::sendmouse(pressed, cursorpos);
 		if (dragged)
 		{
-			cleartooltip();
+			clear_tooltip();
 			return dstate;
 		}
 
 		Point<int16_t> cursor_relative = cursorpos - position;
-		if (slider && slider->isenabled())
+		if (slider.isenabled())
 		{
-			Cursor::State sstate = slider->sendcursor(cursor_relative, pressed);
+			Cursor::State sstate = slider.sendcursor(cursor_relative, pressed);
 			if (sstate != Cursor::IDLE)
 			{
-				cleartooltip();
+				clear_tooltip();
 				return sstate;
 			}
 		}
@@ -297,7 +298,7 @@ namespace jrc
 				icon->startdrag(cursor_relative - slotpos);
 				UI::get().dragicon(icon.get());
 
-				cleartooltip();
+				clear_tooltip();
 				return Cursor::GRABBING;
 			}
 			else
@@ -308,7 +309,7 @@ namespace jrc
 		}
 		else
 		{
-			cleartooltip();
+			clear_tooltip();
 			return Cursor::IDLE;
 		}
 	}
@@ -380,7 +381,7 @@ namespace jrc
 
 	void UIItemInventory::togglehide()
 	{
-		cleartooltip();
+		clear_tooltip();
 		UIElement::togglehide();
 	}
 
@@ -399,9 +400,9 @@ namespace jrc
 		}
 	}
 
-	void UIItemInventory::cleartooltip()
+	void UIItemInventory::clear_tooltip()
 	{
-		UI::get().cleartooltip(ITEMINVENTORY);
+		UI::get().clear_tooltip(ITEMINVENTORY);
 	}
 
 	bool UIItemInventory::isvisible(int16_t slot) const

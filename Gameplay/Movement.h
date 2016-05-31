@@ -48,7 +48,8 @@ namespace jrc
 
 		bool hasmoved(const Movement& newmove) const
 		{
-			return newmove.newstate != newstate || newmove.xpos != xpos || newmove.ypos != ypos;
+			return newmove.newstate != newstate || newmove.xpos != xpos || 
+				newmove.ypos != ypos || newmove.lastx != lastx || newmove.lasty != lasty;
 		}
 
 		Type type;

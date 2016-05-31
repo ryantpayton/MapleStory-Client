@@ -19,6 +19,8 @@
 
 #include "..\Timer.h"
 
+#include <algorithm>
+
 namespace jrc
 {
 	void Skillbook::set_skill(int32_t id, int32_t level, int32_t mlevel, int64_t expire)
@@ -65,5 +67,19 @@ namespace jrc
 	int32_t Skillbook::get_masterlevel(int32_t id) const
 	{
 		return has_skill(id) ? skillentries.at(id).masterlevel : 0;
+	}
+
+	std::map<int32_t, int32_t> Skillbook::collect_passives() const
+	{
+		std::map<int32_t, int32_t> passives;
+		for (auto& iter : skillentries)
+		{
+			bool passive = is_passive(iter.first);
+			if (passive)
+			{
+				passives.emplace(iter.first, iter.second.level);
+			}
+		}
+		return passives;
 	}
 }

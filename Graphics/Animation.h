@@ -22,10 +22,38 @@
 #include "..\Util\Rectangle.h"
 
 #include <vector>
-#include <map>
 
 namespace jrc
 {
+	// A single frame within an animation.
+	class Frame
+	{
+	public:
+		Frame(nl::node src);
+		Frame();
+
+		void draw(const DrawArgument& args) const;
+
+		uint8_t start_opacity() const;
+		uint16_t start_scale() const;
+		uint16_t get_delay() const;
+		Point<int16_t> get_origin() const;
+		Point<int16_t> get_dimensions() const;
+		Point<int16_t> get_head() const;
+		Rectangle<int16_t> get_bounds() const;
+		float opcstep(uint16_t timestep) const;
+		float scalestep(uint16_t timestep) const;
+
+	private:
+		Texture texture;
+		uint16_t delay;
+		std::pair<uint8_t, uint8_t> opacities;
+		std::pair<int16_t, int16_t> scales;
+		Rectangle<int16_t> bounds;
+		Point<int16_t> head;
+	};
+
+
 	// Class which consists of multiple textures to make an Animation.
 	class Animation
 	{
@@ -47,21 +75,6 @@ namespace jrc
 		Rectangle<int16_t> getbounds() const;
 
 	private:
-		struct Frame
-		{
-			Frame(nl::node src);
-			Frame();
-
-			float opcstep(uint16_t timestep) const;
-			float scalestep(uint16_t timestep) const;
-
-			Texture texture;
-			uint16_t delay;
-			std::pair<uint8_t, uint8_t> opacities;
-			std::pair<int16_t, int16_t> scales;
-			Rectangle<int16_t> bounds;
-			Point<int16_t> head;
-		};
 		const Frame& getframe() const;
 
 		std::vector<Frame> frames;

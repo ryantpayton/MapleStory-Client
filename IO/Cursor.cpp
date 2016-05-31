@@ -17,32 +17,52 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Cursor.h"
 
-#include "nlnx\nx.hpp"
+#include "..\Constants.h"
+
+#include <nlnx\nx.hpp>
 
 namespace jrc
 {
 	Cursor::Cursor()
 	{
 		state = IDLE;
+		hide_counter = 0;
 	}
 
 	void Cursor::init()
 	{
-		nl::node cursor = nl::nx::ui["Basic.img"]["Cursor"];
-		for (auto& key : animations.getkeys())
+		nl::node src = nl::nx::ui["Basic.img"]["Cursor"];
+		for (auto iter : animations)
 		{
-			animations[key] = cursor[std::to_string(key)];
+			iter.second = src[iter.first];
 		}
 	}
 
 	void Cursor::draw(float alpha) const
 	{
-		animations[state].draw(position, alpha);
+		constexpr int32_t HIDE_AFTER = HIDE_TIME / Constants::TIMESTEP;
+
+		if (hide_counter < HIDE_AFTER)
+		{
+			animations[state]
+				.draw(position, alpha);
+		}
 	}
 
 	void Cursor::update()
 	{
 		animations[state].update();
+
+		switch (state)
+		{
+		case CLICKING:
+		case GRABBING:
+			hide_counter = 0;
+			break;
+		default:
+			hide_counter++;
+			break;
+		}
 	}
 
 	void Cursor::setstate(State s)
@@ -50,13 +70,16 @@ namespace jrc
 		if (state != s)
 		{
 			state = s;
+
 			animations[state].reset();
+			hide_counter = 0;
 		}
 	}
 
 	void Cursor::setposition(Point<int16_t> pos)
 	{
 		position = pos;
+		hide_counter = 0;
 	}
 
 	Cursor::State Cursor::getstate() const

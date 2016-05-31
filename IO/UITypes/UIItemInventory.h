@@ -86,7 +86,7 @@ namespace jrc
 		UIItemInventory& operator = (const UIItemInventory&) = delete;
 
 		void showitem(int16_t slot);
-		void cleartooltip();
+		void clear_tooltip();
 		void loadicons();
 		void updateslot(int16_t slot);
 		bool isvisible(int16_t slot) const;
@@ -103,7 +103,7 @@ namespace jrc
 		Animation newitemtab;
 		Texture projectile;
 		Text mesolabel;
-		std::unique_ptr<Slider> slider;
+		Slider slider;
 
 		std::map<int16_t, std::unique_ptr<Icon>> icons;
 

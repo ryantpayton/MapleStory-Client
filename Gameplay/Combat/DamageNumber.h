@@ -15,34 +15,51 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Buff.h"
+#pragma once
+#include "..\Physics\PhysicsObject.h"
+#include "..\..\IO\Components\Charset.h"
+#include "..\..\Util\BoolPair.h"
+#include "..\..\Util\Interpolated.h"
+#include "..\..\Util\Point.h"
 
 namespace jrc
 {
-	Buff::Buff(Buffstat::Value s, int16_t v, int32_t i, int32_t d)
+	class DamageNumber
 	{
-		stat = s;
-		value = v;
-		skillid = i;
-		duration = d;
-	}
+	public:
+		static const size_t NUM_TYPES = 3;
+		enum Type
+		{
+			NORMAL,
+			CRITICAL,
+			TOPLAYER
+		};
 
-	Buff::Buff() {}
+		DamageNumber(Type type, int32_t damage, int16_t starty);
+		DamageNumber();
 
-	Buff::~Buff() {}
+		void draw(double viewx, double viewy, float alpha) const;
+		void setx(int16_t headx);
+		bool update();
 
-	void Buff::applyto(CharStats& stats) const
-	{
-		const BuffEffect* effect = effects.bystat(stat);
-		if (effect)
-			effect->applyto(value, stats);
-	}
+		static int16_t rowheight(bool critical);
+		static void init();
 
-	Buffstat::Value Buff::getstat() const
-	{
-		return stat;
-	}
+	private:
+		int16_t getadvance(char c, bool first) const;
 
+		static constexpr uint16_t FADE_TIME = 500;
 
-	BuffEffects Buff::effects;
+		Type type;
+		bool miss;
+		bool multiple;
+		int8_t firstnum;
+		std::string restnum;
+		int16_t shift;
+		MovingObject moveobj;
+		Linear<float> opacity;
+
+		static BoolPair<Charset> charsets[NUM_TYPES];
+	};
 }
+

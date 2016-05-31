@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "..\Character\Look\Weapon.h"
+#include "..\Gameplay\Combat\SpecialMove.h"
 #include "..\Util\EnumMap.h"
 
 #include <string>
@@ -28,6 +29,7 @@ namespace jrc
 	public:
 		enum Type
 		{
+			NONE,
 			// Cannot use a skill
 			SKILL_WEAPONTYPE,
 			SKILL_HPCOST,
@@ -64,12 +66,13 @@ namespace jrc
 	};
 
 
-	class NoBulletsMessage : public InChatMessage
+	class ForbidSkillMessage : public InChatMessage
 	{
 	public:
-		NoBulletsMessage(Weapon::Type weapon);
+		ForbidSkillMessage(SpecialMove::ForbidReason reason, Weapon::Type weapon);
 
 	private:
-		Messages::Type messagebyweapon(Weapon::Type weapon);
+		Messages::Type message_by_reason(SpecialMove::ForbidReason reason, Weapon::Type weapon);
+		Messages::Type message_by_weapon(Weapon::Type weapon);
 	};
 }

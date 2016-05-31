@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2016 Daniel Allendorf                                        //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,16 +16,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include <unordered_map>
+#include <cstdint>
 
 namespace jrc
-{ 
-	class DrawContext
+{
+	// Externalising this for easier configurability.
+	const std::unordered_map<Equipstat::Value, int32_t> EQSTAT_CAPS =
 	{
-	public:
-		enum Type
-		{
-			STAGE,
-			UI
-		};
+		{ Equipstat::STR, 999 },
+		{ Equipstat::DEX, 999 },
+		{ Equipstat::INT, 999 },
+		{ Equipstat::LUK, 999 },
+		{ Equipstat::HP, 30000 },
+		{ Equipstat::MP, 30000 },
+		{ Equipstat::WATK, 999 },
+		{ Equipstat::MAGIC, 2000 },
+		{ Equipstat::WDEF, 999 },
+		{ Equipstat::MDEF, 999 },
+		{ Equipstat::ACC, 999 },
+		{ Equipstat::AVOID, 999 },
+		{ Equipstat::HANDS, 999 },
+		{ Equipstat::SPEED, 140 },
+		{ Equipstat::JUMP, 123 },
 	};
 }

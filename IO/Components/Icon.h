@@ -36,20 +36,25 @@ namespace jrc
 			virtual void ondropitems(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const = 0;
 		};
 
+
+		class NullType : public Type
+		{
+			void ondrop() const override {}
+			void ondropequips(Equipslot::Value) const override {}
+			void ondropitems(Inventory::Type, Equipslot::Value, int16_t, bool) const override {}
+		};
+
 		Icon(std::unique_ptr<Type> type, Texture texture, int16_t count);
 		Icon();
 
 		void draw(Point<int16_t> position) const;
 		void dragdraw(Point<int16_t> cursorpos) const;
-
 		void drop() const;
 		void droponequips(Equipslot::Value eqslot) const;
 		void droponitems(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const;
-
 		void startdrag(Point<int16_t> offset);
 		void resetdrag();
 		void setcount(int16_t count);
-
 		int16_t getcount() const;
 
 	private:

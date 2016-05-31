@@ -161,18 +161,17 @@ namespace jrc
 
 	void UISoftkey::shufflekeys()
 	{
-		std::vector<uint8_t> keys(NUM_KEYS);
-		uint8_t i;
-		std::generate(keys.begin(), keys.end(), [&]() { return i++; });
-
-		std::random_device rd;
-		std::mt19937 g(rd());
-		std::shuffle(keys.begin(), keys.end(), g);
-
-		for (uint8_t j = 0; j < NUM_KEYS; j++)
+		std::vector<uint8_t> reserve;
+		for (uint8_t i = 0; i < NUM_KEYS; i++)
 		{
-			auto button_position = keypos(keys[j]);
-			buttons[BT_0 + j]->setposition(button_position);
+			reserve.push_back(i);
+		}
+		for (uint8_t i = 0; i < NUM_KEYS; i++)
+		{
+			size_t rand = random.nextint(reserve.size() - 1);
+			Point<int16_t> pos = keypos(reserve[rand]);
+			buttons[BT_0 + i]->setposition(pos);
+			reserve.erase(reserve.begin() + rand);
 		}
 	}
 

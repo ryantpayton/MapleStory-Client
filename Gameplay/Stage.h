@@ -33,9 +33,33 @@
 #include "..\Util\Singleton.h"
 
 #include <queue>
+#include <list>
 
 namespace jrc
 {
+	class DelayedAttack
+	{
+	public:
+		DelayedAttack(const AttackResult& a, int32_t c)
+			: attack(a), char_id(c) {
+		
+			delay = 50;
+		}
+
+		bool update()
+		{
+			delay--;
+			return delay <= 1;
+		}
+
+		AttackResult attack;
+		int32_t char_id;
+
+	private:
+		int16_t delay;
+	};
+
+
 	class Stage : public Singleton<Stage>
 	{
 	public:
@@ -88,6 +112,7 @@ namespace jrc
 
 	private:
 		void pollspawns();
+		void pollattacks();
 		void loadmap();
 		void respawn();
 		void checkportals();
@@ -127,7 +152,7 @@ namespace jrc
 		MapDrops drops;
 
 		std::queue<std::unique_ptr<const Spawn>> spawnqueue;
-
+		std::list<DelayedAttack> attackqueue;
 		std::unordered_map<int32_t, std::unique_ptr<SpecialMove>> specialmoves;
 	};
 }

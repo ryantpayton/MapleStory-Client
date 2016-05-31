@@ -87,22 +87,22 @@ namespace jrc
 					updatesingle = true;
 					break;
 				case Maplestat::EXP:
-					player.getstats().setexp(recv.read_int());
+					player.getstats().set_exp(recv.read_int());
 					break;
 				case Maplestat::MESO:
 					player.getinvent().setmeso(recv.read_int());
 					break;
 				default:
-					player.getstats().setstat(stat, recv.read_short());
+					player.getstats().set_stat(stat, recv.read_short());
 					recalculate = true;
 					break;
 				}
 
 				if (updatesingle)
 				{
-					UI::get().getelement(UIElement::STATSINFO)
-						.reinterpret<UIStatsinfo>()
-						->updatestat(stat);
+					UI::get().with_element<UIStatsinfo>([&stat](auto& si) {
+						si.updatestat(stat);
+					});
 				}
 			}
 		}
@@ -123,42 +123,43 @@ namespace jrc
 
 		switch (secondmask)
 		{
-		case Buffstat::BATTLESHIP:
-			handlebuff(recv, Buffstat::BATTLESHIP);
+		case Buff::BATTLESHIP:
+			handlebuff(recv, Buff::BATTLESHIP);
 			return;
 		}
 
-		for (size_t i = 0; i < Buffstat::FIRST_BUFFS; i++)
+		for (Buff::Stat stat : Buff::FIRST_BUFFS)
 		{
-			Buffstat::Value buffvalue = Buffstat::firstbyid(i);
-			if (firstmask & buffvalue)
-				handlebuff(recv, buffvalue);
+			if (firstmask & stat)
+			{
+				handlebuff(recv, stat);
+			}
 		}
-		for (size_t i = 0; i < Buffstat::SECOND_BUFFS; i++)
+		for (Buff::Stat stat : Buff::SECOND_BUFFS)
 		{
-			Buffstat::Value buffvalue = Buffstat::secondbyid(i);
-			if (secondmask & buffvalue)
-				handlebuff(recv, buffvalue);
+			if (secondmask & stat)
+			{
+				handlebuff(recv, stat);
+			}
 		}
 
 		Stage::get().getplayer().recalcstats(false);
 	}
 
-	void ApplyBuffHandler::handlebuff(InPacket& recv, Buffstat::Value bs) const
+	void ApplyBuffHandler::handlebuff(InPacket& recv, Buff::Stat bs) const
 	{
 		int16_t value = recv.read_short();
 		int32_t skillid = recv.read_int();
 		int32_t duration = recv.read_int();
 
-		Buff buff(bs, value, skillid, duration);
-		Stage::get().getplayer().givebuff(buff);
+		Stage::get().getplayer().givebuff({ bs, value, skillid, duration });
 
-		UI::get().getelement(UIElement::BUFFLIST)
-			.reinterpret<UIBuffList>()
-			->addbuff(skillid, duration);
+		UI::get().with_element<UIBuffList>([&skillid, &duration](auto& bl) {
+			bl.add_buff(skillid, duration);
+		});
 	}
 
-	void CancelBuffHandler::handlebuff(InPacket&, Buffstat::Value bs) const
+	void CancelBuffHandler::handlebuff(InPacket&, Buff::Stat bs) const
 	{
 		Stage::get().getplayer().cancelbuff(bs);
 	}

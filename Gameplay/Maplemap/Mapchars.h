@@ -25,15 +25,31 @@
 
 namespace jrc
 {
-	class MapChars : public MapObjects
+	// A collection of remote controlled characters on a map.
+	class MapChars
 	{
 	public:
+		// Draw all characters on a layer.
+		void draw(int8_t layer, double viewx, double viewy, float alpha) const;
+		// Update all characters.
+		void update(const Physics& physics);
+
+		// Spawn a new character, if it has not been spawned yet.
 		void sendspawn(const CharSpawn& spawn);
+		// Remove a character.
 		void removechar(int32_t cid);
-		void movechar(int32_t cid, std::queue<Movement> movements);
-		void updatelook(int32_t cid, LookEntry look);
+		// Remove all characters.
+		void clear();
+
+		// Update a characters movement.
+		void movechar(int32_t cid, const std::vector<Movement>& movements);
+		// Update a characters look.
+		void updatelook(int32_t cid, const LookEntry& look);
 
 		Optional<OtherChar> getchar(int32_t cid);
+
+	private:
+		MapObjects chars;
 	};
 }
 

@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -15,75 +15,59 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "MapNpcs.h"
-
-#include "..\..\Net\Packets\NpcInteractionPackets.h"
+#include "BulletEffect.h"
 
 namespace jrc
 {
-	void MapNpcs::draw(int8_t layer, double viewx, double viewy, float alpha) const
-	{
-		npcs.draw(layer, viewx, viewy, alpha);
+	BulletEffect::BulletEffect(const Bullet& b, Point<int16_t> t, const DamageEffect& de)
+		: bullet(b), target(t), damageeffect(de) {
+
+		fired = false;
 	}
 
-	void MapNpcs::update(const Physics& physics)
+	void BulletEffect::draw(double viewx, double viewy, float alpha) const
 	{
-		npcs.update(physics);
-	}
-
-	void MapNpcs::sendspawn(const NpcSpawn& spawn, const Physics& physics)
-	{
-		int32_t oid = spawn.getoid();
-		Optional<Npc> npc = getnpc(oid);
-		if (npc)
+		if (fired)
 		{
-			npc->makeactive();
+			bullet.draw(viewx, viewy, alpha);
+		}
+	}
+
+	bool BulletEffect::update()
+	{
+		if (fired)
+		{
+			return bullet.update(target);
 		}
 		else
 		{
-			npcs.add(
-				spawn.instantiate(physics)
-			);
-		}
-	}
-
-	void MapNpcs::removenpc(int32_t oid)
-	{
-		getnpc(oid)
-			.ifpresent(&Npc::deactivate);
-	}
-
-	void MapNpcs::clear()
-	{
-		npcs.clear();
-	}
-
-	Cursor::State MapNpcs::sendmouse(bool pressed, Point<int16_t> position, Point<int16_t> viewpos)
-	{
-		for (auto& mmo : npcs)
-		{
-			Npc* npc = static_cast<Npc*>(mmo.second.get());
-			if (npc && npc->isactive() && npc->inrange(position, viewpos))
+			bool expired = damageeffect.update();
+			if (expired)
 			{
-				if (pressed)
-				{
-					// TODO: try finding dialogue first
-					TalkToNPCPacket(npc->getoid())
-						.dispatch();
-					return Cursor::IDLE;
-				}
-				else
-				{
-					return Cursor::CANCLICK;
-				}
+				fired = true;
+				return bullet.settarget(target);
+			}
+			else
+			{
+				return false;
 			}
 		}
-		return Cursor::IDLE;
 	}
 
-	Optional<Npc> MapNpcs::getnpc(int32_t oid)
+	bool BulletEffect::update(Point<int16_t> newtarget)
 	{
-		return npcs.get(oid)
-			.reinterpret<Npc>();
+		target = newtarget;
+
+		return update();
+	}
+
+	int32_t BulletEffect::get_target() const
+	{
+		return damageeffect.get_target();
+	}
+
+	const DamageEffect& BulletEffect::geteffect() const
+	{
+		return damageeffect;
 	}
 }

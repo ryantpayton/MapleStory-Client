@@ -26,6 +26,8 @@ namespace jrc
 		settings.emplace<ServerIP>();
 		settings.emplace<Fullscreen>();
 		settings.emplace<VSync>();
+		settings.emplace<FontPathNormal>();
+		settings.emplace<FontPathBold>();
 		settings.emplace<BGMVolume>();
 		settings.emplace<SFXVolume>();
 		settings.emplace<SaveLogin>();

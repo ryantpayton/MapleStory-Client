@@ -62,9 +62,7 @@ namespace jrc
 	}
 
 	Player::Player(const CharEntry& entry)
-		: Char(entry.cid, entry.getlook(), entry.stats.name) {
-
-		stats = entry.stats;
+		: Char(entry.cid, entry.getlook(), entry.stats.name), stats(entry.stats) {
 
 		attacking = false;
 		underwater = false;
@@ -98,9 +96,11 @@ namespace jrc
 
 	void Player::recalcstats(bool equipchanged)
 	{
-		stats.inittotalstats();
-
 		Weapon::Type weapontype = look.getequips().getweapontype();
+
+		stats.set_weapontype(weapontype);
+		stats.init_totalstats();
+
 		if (equipchanged)
 		{
 			inventory.recalcstats(weapontype);
@@ -108,17 +108,25 @@ namespace jrc
 
 		inventory.addtotalsto(stats);
 
-		for (auto& buff : buffs)
+		auto passive_skills = skillbook.collect_passives();
+		for (auto& passive : passive_skills)
 		{
-			buff.second.applyto(stats);
+			int32_t skill_id = passive.first;
+			int32_t skill_level = passive.second;
+
+			passive_buffs.apply_buff(stats, skill_id, skill_level);
 		}
 
+		for (auto& buff : buffs)
+		{
+			active_buffs.apply_buff(stats, buff.second.stat, buff.second.value);
+		}
 
-		stats.closetotalstats(weapontype);
+		stats.close_totalstats();
 
-		UI::get().getelement(UIElement::STATSINFO)
-			.reinterpret<UIStatsinfo>()
-			.ifpresent(&UIStatsinfo::updateall);
+		UI::get().with_element<UIStatsinfo>([](auto& si) {
+			si.updateall();
+		});
 	}
 
 	void Player::changecloth(int16_t slot)
@@ -181,20 +189,13 @@ namespace jrc
 		}
 
 		uint8_t stancebyte = flip ? state : state + 1;
-		auto newmove = Movement(phobj, stancebyte);
-		bool needupdate = lastmove.hasmoved(newmove) || movements.size() > 0;
+		Movement newmove(phobj, stancebyte);
+		bool needupdate = lastmove.hasmoved(newmove);
 		if (needupdate)
 		{
-			movements.push_back(newmove);
+			MovePlayerPacket({ newmove })
+				.dispatch();
 			lastmove = newmove;
-
-			if (movements.size() > 4)
-			{
-				MovePlayerPacket(movements)
-					.dispatch();
-
-				movements.clear();
-			}
 		}
 
 		return getlayer();
@@ -240,18 +241,18 @@ namespace jrc
 		return !attacking && !isclimbing() && !issitting() && look.getequips().hasweapon();
 	}
 
-	bool Player::canuse(const SpecialMove& move) const
+	SpecialMove::ForbidReason Player::canuse(const SpecialMove& move) const
 	{
-		if (state == PRONE)
-			return false;
+		if (move.isskill() && state == PRONE)
+			return SpecialMove::FBR_OTHER;
 
 		int32_t level = skillbook.get_level(move.getid());
 		Weapon::Type weapon = look.getequips().getweapontype();
-		uint16_t job = stats.getstat(Maplestat::JOB);
+		const CharJob& job = stats.get_job();
 		uint16_t hp = stats.getstat(Maplestat::HP);
 		uint16_t mp = stats.getstat(Maplestat::MP);
 		uint16_t bullets = inventory.getbulletcount();
-		return move.canuse(level, weapon, job, hp, mp, bullets) == SpecialMove::FBR_NONE;
+		return move.canuse(level, weapon, job, hp, mp, bullets);
 	}
 
 	Attack Player::prepareattack(bool skill) const
@@ -321,17 +322,17 @@ namespace jrc
 
 	void Player::givebuff(Buff buff)
 	{
-		buffs[buff.getstat()] = buff;
+		buffs[buff.stat] = buff;
 	}
 
-	void Player::cancelbuff(Buffstat::Value buffstat)
+	void Player::cancelbuff(Buff::Stat stat)
 	{
-		buffs.erase(buffstat);
+		buffs.erase(stat);
 	}
 
-	bool Player::hasbuff(Buffstat::Value buff) const
+	bool Player::hasbuff(Buff::Stat stat) const
 	{
-		return buffs.count(buff) > 0;
+		return buffs.count(stat) > 0;
 	}
 
 	void Player::changelevel(uint16_t level)
@@ -341,7 +342,7 @@ namespace jrc
 		{
 			showeffectbyid(LEVELUP);
 		}
-		stats.setstat(Maplestat::LEVEL, level);
+		stats.set_stat(Maplestat::LEVEL, level);
 	}
 
 	uint16_t Player::getlevel() const
@@ -357,7 +358,7 @@ namespace jrc
 	void Player::changejob(uint16_t jobid)
 	{
 		showeffectbyid(JOBCHANGE);
-		stats.setjob(jobid);
+		stats.change_job(jobid);
 	}
 
 	void Player::setseat(Optional<const Seat> seat)

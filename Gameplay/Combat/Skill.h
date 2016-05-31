@@ -46,23 +46,41 @@ namespace jrc
 			SLASH_BLAST = 1001005,
 
 			// Fighter
-			SWORD_MASTERY = 1100000,
+			SWORD_MASTERY_FIGHTER = 1100000,
 			AXE_MASTERY = 1100001,
-			SWORD_FA = 1100002,
+			SWORD_FA_FIGHTER = 1100002,
 			AXE_FA = 1100003,
-			SWORD_BOOSTER = 1101004,
+			SWORD_BOOSTER_FIGHTER = 1101004,
 			AXE_BOOSTER = 1101005,
 			RAGE = 1101006,
-			POWER_GUARD = 1101007,
+			POWER_GUARD_FIGHTER = 1101007,
 
 			// Crusader
+			IMPROVED_MP_RECOVERY_CRUSADER = 1110000,
+			SHIELD_MASTERY = 1110001,
 
 			// Hero
-			HERO_RUSH = 1121006,
+			ADVANCED_COMBO_ATTACK = 1120003,
+			ACHILLES_HERO = 1120004,
+			GUARDIAN_HERO = 1120005,
+			RUSH_HERO = 1121006,
 			BRANDISH = 1121008,
 
+			// Page
+			SWORD_MASTERY_PAGE = 1200000,
+			BW_MASTERY = 1200001,
+			SWORD_FA_PAGE = 1200002,
+			BW_FA = 1200003,
+			SWORD_BOOSTER_PAGE = 1201004,
+			BW_BOOSTER = 1201005,
+			THREATEN = 1201006,
+			POWER_GUARD_PAGE = 1201007,
+
 			// Paladin
-			PALADIN_RUSH = 1221007,
+			ACHILLES_PALADIN = 1220005,
+			GUARDIAN_PALADIN = 1220006,
+			ADVANCED_CHARGE = 1220010,
+			RUSH_PALADIN = 1221007,
 
 			// Spearman
 			SPEAR_MASTERY = 1300000,
@@ -83,7 +101,12 @@ namespace jrc
 			DRAGONS_ROAR = 1311006,
 
 			// Dark Knight
-			DK_RUSH = 1321003,
+			ACHILLES_DK = 1320005,
+			BERSERK = 1320006,
+			BEHOLDER_HEAL = 1320008,
+			BEHOLDER_BUFF = 1320009,
+			RUSH_DK = 1321003,
+			BEHOLDER = 1321007,
 
 			// Magician
 			IMPROVE_HP_RECOVERY = 2000000,
@@ -144,7 +167,8 @@ namespace jrc
 		void applystats(const Char& user, Attack& attack) const override;
 		bool isoffensive() const override;
 		int32_t getid() const override;
-		ForbidReason canuse(int32_t level, Weapon::Type weapon, uint16_t job, uint16_t hp, uint16_t mp, uint16_t bullets) const override;
+		ForbidReason canuse(int32_t level, Weapon::Type weapon,
+			const CharJob& job, uint16_t hp, uint16_t mp, uint16_t bullets) const override;
 
 	private:
 		std::unordered_map<int32_t, Level> levels;

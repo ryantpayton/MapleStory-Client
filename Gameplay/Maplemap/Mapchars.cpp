@@ -19,6 +19,16 @@
 
 namespace jrc
 {
+	void MapChars::draw(int8_t layer, double viewx, double viewy, float alpha) const
+	{
+		chars.draw(layer, viewx, viewy, alpha);
+	}
+
+	void MapChars::update(const Physics& physics)
+	{
+		chars.update(physics);
+	}
+
 	void MapChars::sendspawn(const CharSpawn& spawn)
 	{
 		int32_t cid = spawn.getcid();
@@ -29,17 +39,23 @@ namespace jrc
 		}
 		else
 		{
-			OtherChar* newchar = spawn.instantiate();
-			add(newchar);
+			chars.add(
+				spawn.instantiate()
+			);
 		}
 	}
 
 	void MapChars::removechar(int32_t cid)
 	{
-		remove(cid);
+		chars.remove(cid);
 	}
 
-	void MapChars::movechar(int32_t cid, std::queue<Movement> movements)
+	void MapChars::clear()
+	{
+		chars.clear();
+	}
+
+	void MapChars::movechar(int32_t cid, const std::vector<Movement>& movements)
 	{
 		Optional<OtherChar> otherchar = getchar(cid);
 		if (otherchar)
@@ -48,7 +64,7 @@ namespace jrc
 		}
 	}
 
-	void MapChars::updatelook(int32_t cid, LookEntry look)
+	void MapChars::updatelook(int32_t cid, const LookEntry& look)
 	{
 		Optional<OtherChar> otherchar = getchar(cid);
 		if (otherchar)
@@ -60,7 +76,7 @@ namespace jrc
 
 	Optional<OtherChar> MapChars::getchar(int32_t cid)
 	{
-		return get(cid)
+		return chars.get(cid)
 			.reinterpret<OtherChar>();
 	}
 }

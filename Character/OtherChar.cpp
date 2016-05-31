@@ -31,16 +31,28 @@ namespace jrc
 		lastmove.xpos = pos.x();
 		lastmove.ypos = pos.y();
 		lastmove.newstate = st;
+		timer = 0;
 
 		attacking = false;
 	}
 
 	int8_t OtherChar::update(const Physics& physics)
 	{
-		if (movements.size() > 0)
+		if (timer > 1)
 		{
-			lastmove = movements.front();
-			movements.pop();
+			timer--;
+		}
+		else if (timer == 1)
+		{
+			if (!movements.empty())
+			{
+				lastmove = movements.front();
+				movements.pop();
+			}
+			else
+			{
+				timer = 0;
+			}
 		}
 
 		if (!attacking)
@@ -49,9 +61,8 @@ namespace jrc
 			setstate(laststate);
 		}
 
-		phobj.hspeed = lastmove.xpos - phobj.x.get();
-		phobj.vspeed = lastmove.ypos - phobj.y.get();
-
+		phobj.hspeed = lastmove.xpos - phobj.crntx();
+		phobj.vspeed = lastmove.ypos - phobj.crnty();
 		phobj.move();
 
 		physics.getfht().updatefh(phobj);
@@ -65,9 +76,15 @@ namespace jrc
 		return getlayer();
 	}
 
-	void OtherChar::sendmovement(std::queue<Movement> newmoves)
+	void OtherChar::sendmovement(const std::vector<Movement>& newmoves)
 	{
-		movements = newmoves;
+		movements.push(newmoves.back());
+
+		if (timer == 0)
+		{
+			constexpr uint16_t DELAY = 50;
+			timer = DELAY;
+		}
 	}
 
 	void OtherChar::updateskill(int32_t skillid, uint8_t skilllevel)

@@ -20,6 +20,7 @@
 
 #include "..\Character\Maplestat.h"
 #include "..\Character\CharJob.h"
+#include "..\Util\EnumMap.h"
 
 #include <cstdint>
 #include <string>
@@ -32,21 +33,13 @@ namespace jrc
 	{
 		std::string name;
 		std::vector<int64_t> petids;
-		std::map<Maplestat::Value, uint16_t> stats;
+		EnumMap<Maplestat::Value, uint16_t> stats;
 		CharJob job;
 		int64_t exp;
 		int32_t mapid;
 		uint8_t portal;
 		std::pair<int32_t, int8_t> rank;
 		std::pair<int32_t, int8_t> jobrank;
-
-		uint16_t getstat(Maplestat::Value st) const
-		{
-			if (stats.count(st))
-				return stats.at(st);
-			else
-				return 0;
-		}
 	};
 
 	struct LookEntry

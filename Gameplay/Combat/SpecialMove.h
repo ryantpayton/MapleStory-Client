@@ -51,7 +51,8 @@ namespace jrc
 		virtual void applystats(const Char& user, Attack& attack) const = 0;
 		virtual bool isoffensive() const = 0;
 		virtual int32_t getid() const = 0;
-		virtual ForbidReason canuse(int32_t level, Weapon::Type weapon, uint16_t job, uint16_t hp, uint16_t mp, uint16_t bullets) const = 0;
+		virtual ForbidReason canuse(int32_t level, Weapon::Type weapon,
+			const CharJob& job, uint16_t hp, uint16_t mp, uint16_t bullets) const = 0;
 
 	protected:
 		std::unique_ptr<SkillAction> action;

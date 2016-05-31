@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -15,49 +15,46 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Charset.h"
-
-#include "..\..\Gameplay\Physics\PhysicsObject.h"
-#include "..\..\Util\Interpolated.h"
-#include "..\..\Util\Point.h"
+#include "DamageEffect.h"
 
 namespace jrc
 {
-	class DamageNumber
+	DamageEffect::DamageEffect(const SpecialMove& m, const AttackUser& u, 
+		const DamageNumber& n, bool tl, int32_t dm, int32_t t, uint16_t d)
+		: move(m), user(u), number(n), toleft(tl), damage(dm), target(t), delay(d) {}
+
+	void DamageEffect::apply(Mob& mob) const
 	{
-	public:
-		static const size_t NUM_TYPES = 3;
-		enum Type
+		move.applyhiteffects(user, mob);
+
+		mob.applydamage(damage, toleft);
+	}
+
+	bool DamageEffect::expired() const
+	{
+		return delay <= Constants::TIMESTEP;
+	}
+
+	bool DamageEffect::update()
+	{
+		if (delay <= Constants::TIMESTEP)
 		{
-			NORMAL,
-			CRITICAL,
-			TOPLAYER
-		};
+			return true;
+		}
+		else
+		{
+			delay -= Constants::TIMESTEP;
+			return false;
+		}
+	}
 
-		DamageNumber(Type type, int32_t damage, int16_t starty);
-		DamageNumber();
+	int32_t DamageEffect::get_target() const
+	{
+		return target;
+	}
 
-		void draw(double viewx, double viewy, float alpha) const;
-		void setx(int16_t headx);
-		bool update();
-
-		static int16_t rowheight(bool critical);
-		static void init();
-
-	private:
-		int16_t getadvance(char c, bool first) const;
-
-		Type type;
-		bool miss;
-		bool multiple;
-		int8_t firstnum;
-		std::string restnum;
-		int16_t shift;
-		MovingObject moveobj;
-		Linear<float> opacity;
-
-		static std::pair<Charset, Charset> charsets[NUM_TYPES];
-	};
+	DamageNumber DamageEffect::get_number() const
+	{
+		return number;
+	}
 }
-

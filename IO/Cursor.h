@@ -61,6 +61,9 @@ namespace jrc
 
 		State state;
 		Point<int16_t> position;
+		int32_t hide_counter;
+
+		static constexpr int32_t HIDE_TIME = 3'000;
 	};
 }
 

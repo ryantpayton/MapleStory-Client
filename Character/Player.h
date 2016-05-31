@@ -23,6 +23,8 @@
 #include "Telerock.h"
 #include "Monsterbook.h"
 #include "Buff.h"
+#include "ActiveBuffs.h"
+#include "PassiveBuffs.h"
 
 #include "Look\CharLook.h"
 #include "Inventory\Inventory.h"
@@ -68,7 +70,7 @@ namespace jrc
 		// Return wether the player can attack or not.
 		bool canattack() const;
 		// Return wether the player can use a skill or not.
-		bool canuse(const SpecialMove& move) const;
+		SpecialMove::ForbidReason canuse(const SpecialMove& move) const;
 		// Create an attack struct using the player's stats.
 		Attack prepareattack(bool skill) const;
 
@@ -78,9 +80,9 @@ namespace jrc
 		// Apply a buff to the player.
 		void givebuff(Buff buff);
 		// Cancel a buff.
-		void cancelbuff(Buffstat::Value buffstat);
+		void cancelbuff(Buff::Stat stat);
 		// Return wether the buff is active.
-		bool hasbuff(Buffstat::Value buffstat) const;
+		bool hasbuff(Buff::Stat stat) const;
 
 		// Change the player's level, display the levelup effect.
 		void changelevel(uint16_t level);
@@ -136,11 +138,12 @@ namespace jrc
 		Telerock telerock;
 		Monsterbook monsterbook;
 
-		std::map<Buffstat::Value, Buff> buffs;
+		std::unordered_map<Buff::Stat, Buff> buffs;
+		ActiveBuffs active_buffs;
+		PassiveBuffs passive_buffs;
 
 		std::map<Keyboard::Action, bool> keysdown;
 
-		std::vector<Movement> movements;
 		Movement lastmove;
 
 		Optional<const Ladder> ladder;

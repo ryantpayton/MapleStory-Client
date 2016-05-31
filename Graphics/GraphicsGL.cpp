@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "GraphicsGL.h"
 
+#include "..\Configuration.h"
 #include "..\Console.h"
 
 #include <algorithm>
@@ -116,14 +117,24 @@ namespace jrc
 
 		fontborder.sety(1);
 
-		addfont("arial.ttf", Text::A11L, 0, 11);
-		addfont("arial.ttf", Text::A11M, 0, 11);
-		addfont("arialbd.ttf", Text::A11B, 0, 11);
-		addfont("arial.ttf", Text::A12M, 0, 12);
-		addfont("arialbd.ttf", Text::A12B, 0, 12);
-		addfont("arial.ttf", Text::A13M, 0, 13);
-		addfont("arialbd.ttf", Text::A13B, 0, 13);
-		addfont("arial.ttf", Text::A18M, 0, 18);
+		const std::string FONT_NORMAL = Setting<FontPathNormal>().get().load();
+		const std::string FONT_BOLD = Setting<FontPathBold>().get().load();
+		if (FONT_NORMAL.empty() || FONT_BOLD.empty())
+		{
+			Console::get().print("Warning: A font path is empty, check your settings file.");
+		}
+
+		const char* FONT_NORMAL_STR = FONT_NORMAL.c_str();
+		const char* FONT_BOLD_STR = FONT_BOLD.c_str();
+
+		addfont(FONT_NORMAL_STR, Text::A11L, 0, 11);
+		addfont(FONT_NORMAL_STR, Text::A11M, 0, 11);
+		addfont(FONT_BOLD_STR, Text::A11B, 0, 11);
+		addfont(FONT_NORMAL_STR, Text::A12M, 0, 12);
+		addfont(FONT_BOLD_STR, Text::A12B, 0, 12);
+		addfont(FONT_NORMAL_STR, Text::A13M, 0, 13);
+		addfont(FONT_BOLD_STR, Text::A13B, 0, 13);
+		addfont(FONT_NORMAL_STR, Text::A18M, 0, 18);
 
 		fontymax += fontborder.y();
 

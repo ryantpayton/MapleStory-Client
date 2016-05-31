@@ -167,6 +167,18 @@ namespace jrc
 		VSync() : BoolEntry("VSync", "true") {}
 	};
 
+	// The normal font which will be used.
+	struct FontPathNormal : public Configuration::StringEntry
+	{
+		FontPathNormal() : StringEntry("FontPathNormal", "") {}
+	};
+
+	// The bold font which will be used.
+	struct FontPathBold : public Configuration::StringEntry
+	{
+		FontPathBold() : StringEntry("FontPathBold", "") {}
+	};
+
 	// Music Volume, a number from 0 to 100.
 	struct BGMVolume : public Configuration::ByteEntry
 	{

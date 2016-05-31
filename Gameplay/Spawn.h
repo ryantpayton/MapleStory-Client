@@ -26,6 +26,7 @@
 #include "..\Net\Login.h"
 
 #include <cstdint>
+#include <memory>
 
 namespace jrc
 {
@@ -63,10 +64,10 @@ namespace jrc
 			return NPC;
 		}
 
-		Npc* instantiate(const Physics& physics) const
+		std::unique_ptr<Npc> instantiate(const Physics& physics) const
 		{
 			auto spawnposition = physics.getgroundbelow(position);
-			return new Npc(id, oid, flip, fh, false, spawnposition);
+			return std::make_unique<Npc>(id, oid, flip, fh, false, spawnposition);
 		}
 
 	private:
@@ -99,9 +100,9 @@ namespace jrc
 			return MOB;
 		}
 
-		Mob* instantiate() const
+		std::unique_ptr<Mob> instantiate() const
 		{
-			return new Mob(oid, id, mode, stance, fh, newspawn, team, position);
+			return std::make_unique<Mob>(oid, id, mode, stance, fh, newspawn, team, position);
 		}
 
 	private:
@@ -142,14 +143,14 @@ namespace jrc
 			return DROP;
 		}
 
-		MesoDrop* instantiate(const Animation* icon) const
+		std::unique_ptr<MesoDrop> instantiate(const Animation* icon) const
 		{
-			return new MesoDrop(oid, owner, start, dest, droptype, mode, playerdrop, icon);
+			return std::make_unique<MesoDrop>(oid, owner, start, dest, droptype, mode, playerdrop, icon);
 		}
 
-		ItemDrop* instantiate(const Texture* icon) const
+		std::unique_ptr<ItemDrop> instantiate(const Texture* icon) const
 		{
-			return new ItemDrop(oid, owner, start, dest, droptype, mode, id, playerdrop, icon);
+			return std::make_unique<ItemDrop>(oid, owner, start, dest, droptype, mode, id, playerdrop, icon);
 		}
 
 	private:
@@ -168,7 +169,7 @@ namespace jrc
 	class CharSpawn : public Spawn
 	{
 	public:
-		CharSpawn(int32_t c, LookEntry lk, uint8_t l, int16_t j, const std::string& nm, int8_t st, Point<int16_t> p)
+		CharSpawn(int32_t c, const LookEntry& lk, uint8_t l, int16_t j, const std::string& nm, int8_t st, Point<int16_t> p)
 			: cid(c), look(lk), level(l), job(j), name(nm), stance(st), position(p) {}
 
 		int32_t getcid() const
@@ -181,9 +182,9 @@ namespace jrc
 			return CHARACTER;
 		}
 
-		OtherChar* instantiate() const
+		std::unique_ptr<OtherChar> instantiate() const
 		{
-			return new OtherChar(cid, look, level, job, name, stance, position);
+			return std::make_unique<OtherChar>(cid, look, level, job, name, stance, position);
 		}
 
 	private:

@@ -29,7 +29,7 @@ namespace jrc
 	Chatbar::Chatbar(Point<int16_t> pos)
 	{
 		position = pos;
-		dimension = Point<int16_t>(500, 60);
+		dimension = { 500, 60 };
 		chatopen = true;
 		chatrows = 4;
 		rowpos = 0;
@@ -96,14 +96,14 @@ namespace jrc
 			}
 		});
 
-		slider = std::make_unique<Slider>(
-			11, Range<int16_t>(0, CHATROWHEIGHT * chatrows - 14), -22, chatrows, 1, [&](bool up){
-			int16_t next = up ? 
-				rowpos - 1 : 
+		slider = {11, Range<int16_t>(0, CHATROWHEIGHT * chatrows - 14), -22, chatrows, 1, 
+			[&](bool up) {
+			int16_t next = up ?
+				rowpos - 1 :
 				rowpos + 1;
 			if (next >= 0 && next <= rowmax)
 				rowpos = next;
-		});
+		} };
 	}
 
 	Chatbar::~Chatbar() {}
@@ -117,8 +117,8 @@ namespace jrc
 
 		if (chatopen)
 		{
-			tapbartop.draw(Point<int16_t>(position.x() - 576, getchattop()));
-			chatbox.draw(Point<int16_t>(0, getchattop() + 2));
+			tapbartop.draw({ position.x() - 576, getchattop() });
+			chatbox.draw({ 0, getchattop() + 2 });
 
 			int16_t chatheight = CHATROWHEIGHT * chatrows;
 			int16_t yshift = -chatheight;
@@ -134,10 +134,10 @@ namespace jrc
 					yshift += CHATROWHEIGHT;
 					textheight--;
 				}
-				rowtexts.at(rowid).draw(Point<int16_t>(4, getchattop() - yshift - 1));
+				rowtexts.at(rowid).draw({ 4, getchattop() - yshift - 1 });
 			}
 
-			slider->draw(Point<int16_t>(position.x(), getchattop() + 5));
+			slider.draw({ position.x(), getchattop() + 5 });
 
 			chattargets[chattarget].draw(position + Point<int16_t>(0, 2));
 			chatcover.draw(position);
@@ -181,17 +181,18 @@ namespace jrc
 
 	bool Chatbar::isinrange(Point<int16_t> cursorpos) const
 	{
-		auto absp = Point<int16_t>(0, getchattop() - 16);
-		auto dim = Point<int16_t>(500, chatrows * CHATROWHEIGHT + CHATYOFFSET + 16);
-		return Rectangle<int16_t>(absp, absp + dim).contains(cursorpos);
+		Point<int16_t> absp(0, getchattop() - 16);
+		Point<int16_t> dim(500, chatrows * CHATROWHEIGHT + CHATYOFFSET + 16);
+		return Rectangle<int16_t>(absp, absp + dim)
+			.contains(cursorpos);
 	}
 
 	Cursor::State Chatbar::sendmouse(bool clicking, Point<int16_t> cursorpos)
 	{
-		if (slider && slider->isenabled())
+		if (slider.isenabled())
 		{
 			auto cursoroffset = cursorpos - Point<int16_t>(position.x(), getchattop() + 5);
-			Cursor::State sstate = slider->sendcursor(cursoroffset, clicking);
+			Cursor::State sstate = slider.sendcursor(cursoroffset, clicking);
 			if (sstate != Cursor::IDLE)
 			{
 				return sstate;
@@ -229,8 +230,8 @@ namespace jrc
 					ydelta += CHATROWHEIGHT;
 				}
 				chatbox.setheight(1 + chatrows * CHATROWHEIGHT);
-				slider->setrows(rowpos, chatrows, rowmax);
-				slider->setvertical(Range<int16_t>(0, CHATROWHEIGHT * chatrows - 14));
+				slider.setrows(rowpos, chatrows, rowmax);
+				slider.setvertical({ 0, CHATROWHEIGHT * chatrows - 14 });
 				return Cursor::CLICKING;
 			}
 			else
@@ -259,7 +260,7 @@ namespace jrc
 		rowmax++;
 		rowpos = rowmax;
 
-		slider->setrows(rowpos, chatrows, rowmax);
+		slider.setrows(rowpos, chatrows, rowmax);
 
 		Text::Color color;
 		switch (type)

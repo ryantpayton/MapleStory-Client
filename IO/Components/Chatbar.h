@@ -100,7 +100,7 @@ namespace jrc
 		int16_t chatrows;
 		int16_t rowpos;
 		int16_t rowmax;
-		std::unique_ptr<Slider> slider;
+		Slider slider;
 		bool dragchattop;
 	};
 }

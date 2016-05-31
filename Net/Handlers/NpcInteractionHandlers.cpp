@@ -36,9 +36,9 @@ namespace jrc
 		if (msgtype == 0 && recv.length() > 0)
 			style = recv.read_short();
 
-		UI::get().getelement(UIElement::NPCTALK)
-			.reinterpret<UINpcTalk>()
-			->settext(npcid, msgtype, style, speaker, text);
+		UI::get().with_element<UINpcTalk>([&](auto& nt) {
+			nt.settext(npcid, msgtype, style, speaker, text);
+		});
 		UI::get().enable();
 	}
 
@@ -46,8 +46,7 @@ namespace jrc
 	void OpenNpcShopHandler::handle(InPacket& recv) const
 	{
 		int32_t npcid = recv.read_int();
-		Optional<UIShop> oshop = UI::get().getelement(UIElement::SHOP)
-			.reinterpret<UIShop>();
+		Optional<UIShop> oshop = UI::get().get_element<UIShop>();
 
 		if (!oshop)
 			return;

@@ -145,13 +145,14 @@ namespace jrc
 		{
 			const StatsEntry& stats = Session::get().getlogin().getchar(selected).getstats();
 
-			int16_t lvx = levelset.draw(std::to_string(stats.getstat(Maplestat::LEVEL)), charinfopos + Point<int16_t>(23, -93));
+			std::string levelstr = std::to_string(stats.stats[Maplestat::LEVEL]);
+			int16_t lvx = levelset.draw(levelstr, charinfopos + Point<int16_t>(23, -93));
 			levelset.draw('l', charinfopos + Point<int16_t>(-7 - lvx / 2, -93));
 
 			namelabel.draw(charinfopos + Point<int16_t>(0, -85));
 			for (size_t i = 0; i < NUM_LABELS; i++)
 			{
-				auto labelpos = charinfopos + getlabelpos(i);
+				Point<int16_t> labelpos = charinfopos + getlabelpos(i);
 				infolabels[i].draw(labelpos);
 			}
 		}
@@ -281,13 +282,13 @@ namespace jrc
 		case JOBRANK:
 			return std::to_string(stats.jobrank.first);
 		case STR:
-			return std::to_string(stats.getstat(Maplestat::STR));
+			return std::to_string(stats.stats[Maplestat::STR]);
 		case DEX:
-			return std::to_string(stats.getstat(Maplestat::DEX));
+			return std::to_string(stats.stats[Maplestat::DEX]);
 		case INT:
-			return std::to_string(stats.getstat(Maplestat::INT));
+			return std::to_string(stats.stats[Maplestat::INT]);
 		case LUK:
-			return std::to_string(stats.getstat(Maplestat::LUK));
+			return std::to_string(stats.stats[Maplestat::LUK]);
 		default:
 			return "";
 		}

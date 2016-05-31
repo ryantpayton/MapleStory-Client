@@ -25,136 +25,133 @@ namespace jrc
 	class DrawArgument
 	{
 	public:
-		DrawArgument()
+		constexpr DrawArgument()
 			: DrawArgument(0, 0) {}
 
-		DrawArgument(int16_t x, int16_t y)
+		constexpr DrawArgument(int16_t x, int16_t y)
 			: DrawArgument(Point<int16_t>(x, y)) {}
 
-		DrawArgument(Point<int16_t> p)
+		constexpr DrawArgument(Point<int16_t> p)
 			: DrawArgument(p, 1.0f) {}
 
-		DrawArgument(Point<int16_t> p, float xs, float ys)
+		constexpr DrawArgument(Point<int16_t> p, float xs, float ys)
 			: DrawArgument(p, p, xs, ys, 1.0f) {}
 
-		DrawArgument(Point<int16_t> p, Point<int16_t> s)
+		constexpr DrawArgument(Point<int16_t> p, Point<int16_t> s)
 			: DrawArgument(p, p, s, 1.0f, 1.0f, 1.0f, 0.0f) {}
 
-		DrawArgument(Point<int16_t> p, bool flip)
+		constexpr DrawArgument(Point<int16_t> p, bool flip)
 			: DrawArgument(p, flip, 1.0f) {}
 
-		DrawArgument(float ang, Point<int16_t> p, float opc)
+		constexpr DrawArgument(float ang, Point<int16_t> p, float opc)
 			: DrawArgument(ang, p, false, opc) {}
 
-		DrawArgument(Point<int16_t> p, float opc)
+		constexpr DrawArgument(Point<int16_t> p, float opc)
 			: DrawArgument(p, false, opc) {}
 
-		DrawArgument(Point<int16_t> p, bool flip, float opc)
+		constexpr DrawArgument(Point<int16_t> p, bool flip, float opc)
 			: DrawArgument(p, p, flip ? -1.0f : 1.0f, 1.0f, opc) {}
 
-		DrawArgument(float ang, Point<int16_t> p, bool flip, float opc)
-			: DrawArgument(p, p, Point<int16_t>(), flip ? -1.0f : 1.0f, 1.0f, opc, ang) {}
+		constexpr DrawArgument(float ang, Point<int16_t> p, bool flip, float opc)
+			: DrawArgument(p, p, {}, flip ? -1.0f : 1.0f, 1.0f, opc, ang) {}
 
-		DrawArgument(Point<int16_t> p, bool flip, Point<int16_t> c)
+		constexpr DrawArgument(Point<int16_t> p, bool flip, Point<int16_t> c)
 			: DrawArgument(p, c, flip ? -1.0f : 1.0f, 1.0f, 1.0f) {}
 
-		DrawArgument(Point<int16_t> p, Point<int16_t> c,
+		constexpr DrawArgument(Point<int16_t> p, Point<int16_t> c,
 			float xs, float ys, float opc)
-			: DrawArgument(p, c, Point<int16_t>(), xs, ys, opc, 0.0f) {}
+			: DrawArgument(p, c, {}, xs, ys, opc, 0.0f) {}
 
-		DrawArgument(bool flip)
+		constexpr DrawArgument(bool flip)
 			: DrawArgument(flip ? -1.0f : 1.0f, 1.0f, 1.0f) {}
 
-		DrawArgument(float xs, float ys, float opc)
-			: DrawArgument(Point<int16_t>(), xs, ys, opc) {}
+		constexpr DrawArgument(float xs, float ys, float opc)
+			: DrawArgument({}, xs, ys, opc) {}
 
-		DrawArgument(Point<int16_t> p, float xs, float ys, float opc)
+		constexpr DrawArgument(Point<int16_t> p, float xs, float ys, float opc)
 			: DrawArgument(p, p, xs, ys, opc) {}
 
-		DrawArgument(Point<int16_t> p, Point<int16_t> c, 
-			Point<int16_t> s, float xs, float ys, float opc, float ang) {
+		constexpr DrawArgument(Point<int16_t> p, Point<int16_t> c,
+			Point<int16_t> s, float xs, float ys, float opc, float ang)
+			: pos(p), center(c), stretch(s), xscale(xs), yscale(ys), opacity(opc), angle(ang) {}
 
-			pos = p;
-			center = c;
-			stretch = s;
-			xscale = xs;
-			yscale = ys;
-			opacity = opc;
-			angle = ang;
-		}
-
-		~DrawArgument() {}
-
-		Point<int16_t> getpos() const
+		constexpr Point<int16_t> getpos() const
 		{ 
 			return pos; 
 		}
 
-		Point<int16_t> getcenter() const
+		constexpr Point<int16_t> getcenter() const
 		{
 			return center;
 		}
 
-		Point<int16_t> getstretch() const
+		constexpr Point<int16_t> getstretch() const
 		{
 			return stretch;
 		}
 
-		float getxscale() const 
+		constexpr float getxscale() const
 		{ 
 			return xscale; 
 		}
 
-		float getyscale() const 
+		constexpr float getyscale() const
 		{ 
 			return yscale; 
 		}
 
-		float getopacity() const 
+		constexpr float getopacity() const
 		{ 
 			return opacity; 
 		}
 
-		float getangle() const
+		constexpr float getangle() const
 		{
 			return angle;
 		}
 
-		DrawArgument operator + (Point<int16_t> argpos) const
+		constexpr DrawArgument operator + (Point<int16_t> argpos) const
 		{
-			auto psum = pos + argpos;
-			auto csum = center + argpos;
-			return DrawArgument(psum, csum, stretch, xscale, yscale, opacity, angle);
+			return{
+				pos + argpos, 
+				center + argpos, 
+				stretch, xscale, yscale, opacity, angle 
+			};
 		}
 
-		DrawArgument operator + (float argopc) const
+		constexpr DrawArgument operator + (float argopc) const
 		{
-			auto opcsum = opacity * argopc;
-			return DrawArgument(pos, center, stretch, xscale, yscale, opcsum, angle);
+			return{
+				pos, center, stretch, xscale, yscale,
+				opacity * argopc,
+				angle 
+			};
 		}
 
-		DrawArgument operator + (const DrawArgument& args) const
+		constexpr DrawArgument operator + (const DrawArgument& args) const
 		{
-			auto psum = pos + args.pos;
-			auto csum = center + args.center;
-			auto ssum = stretch + args.stretch;
-			auto xssum = xscale * args.xscale;
-			auto yssum = yscale * args.yscale;
-			auto opcsum = opacity * args.opacity;
-			auto anglesum = angle + args.angle;
-			return DrawArgument(psum, csum, ssum, xssum, yssum, opcsum, anglesum);
+			return{
+				pos + args.pos,
+				center + args.center,
+				stretch + args.stretch,
+				xscale * args.xscale,
+				yscale * args.yscale,
+				opacity * args.opacity,
+				angle + args.angle
+			};
 		}
 
-		DrawArgument operator - (const DrawArgument& args) const
+		constexpr DrawArgument operator - (const DrawArgument& args) const
 		{
-			auto pdiff = pos - args.pos;
-			auto cdiff = center - args.center;
-			auto sdiff = stretch - args.stretch;
-			auto xsdiff = xscale / args.xscale;
-			auto ysdiff = yscale / args.yscale;
-			auto opcdiff = opacity / args.opacity;
-			auto anglediff = angle / args.angle;
-			return DrawArgument(pdiff, cdiff, sdiff, xsdiff, ysdiff, opcdiff, anglediff);
+			return{
+				pos - args.pos,
+				center - args.center,
+				stretch - args.stretch,
+				xscale / args.xscale,
+				yscale / args.yscale,
+				opacity / args.opacity,
+				angle / args.angle
+			};
 		}
 
 	private:

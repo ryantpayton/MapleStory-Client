@@ -40,18 +40,15 @@ namespace jrc
 		}
 		else
 		{
-			icon = DataFactory::get().getitemdata(-buffid).geticon(true);
+			icon = DataFactory::get()
+				.getitemdata(-buffid)
+				.geticon(true);
 		}
 	}
 
-	BuffIcon::BuffIcon()
-		: cover(IconCover::BUFF, 0) {}
-
-	BuffIcon::~BuffIcon() {}
-
 	void BuffIcon::draw(Point<int16_t> position, float alpha) const
 	{
-		icon.draw(DrawArgument(position, opacity.get(alpha)));
+		icon.draw({ position, opacity.get(alpha) });
 		cover.draw(position + Point<int16_t>(1, -31), alpha);
 	}
 
@@ -66,10 +63,8 @@ namespace jrc
 			if (fadedout || fadedin)
 				opcstep = -opcstep;
 		}
-		else
-		{
-			cover.update();
-		}
+
+		cover.update();
 
 		duration -= Constants::TIMESTEP;
 		return duration < Constants::TIMESTEP;
@@ -78,7 +73,7 @@ namespace jrc
 
 	UIBuffList::UIBuffList() 
 	{
-		position = Point<int16_t>(750, 40);
+		position = { 750, 40 };
 		active = true;
 	}
 
@@ -94,17 +89,17 @@ namespace jrc
 
 	void UIBuffList::update()
 	{
-		std::vector<int32_t> expiredbuffs;
-		for (auto& icon : icons)
+		for (auto iter = icons.begin(); iter != icons.end();)
 		{
-			bool expired = icon.second.update();
+			bool expired = iter->second.update();
 			if (expired)
-				expiredbuffs.push_back(icon.first);
-		}
-
-		for (auto& exp : expiredbuffs)
-		{
-			icons.erase(exp);
+			{
+				iter = icons.erase(iter);
+			}
+			else
+			{
+				iter++;
+			}
 		}
 	}
 
@@ -113,8 +108,12 @@ namespace jrc
 		return UIElement::sendmouse(pressed, cursorposition);
 	}
 
-	void UIBuffList::addbuff(int32_t buffid, int32_t duration)
+	void UIBuffList::add_buff(int32_t buffid, int32_t duration)
 	{
-		icons[buffid] = BuffIcon(buffid, duration);
+		icons.emplace(
+			std::piecewise_construct,
+			std::forward_as_tuple(buffid),
+			std::forward_as_tuple(buffid, duration)
+		);
 	}
 }

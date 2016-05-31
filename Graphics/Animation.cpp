@@ -24,7 +24,7 @@
 
 namespace jrc
 {
-	Animation::Frame::Frame(nl::node src)
+	Frame::Frame(nl::node src)
 	{
 		texture = src;
 		bounds = src;
@@ -74,19 +74,59 @@ namespace jrc
 		}
 	}
 
-	Animation::Frame::Frame()
+	Frame::Frame()
 	{
 		delay = 0;
 		opacities = { 0, 0 };
 		scales = { 0, 0 };
 	}
 
-	float Animation::Frame::opcstep(uint16_t timestep) const
+	void Frame::draw(const DrawArgument& args) const
+	{
+		texture.draw(args);
+	}
+
+	uint8_t Frame::start_opacity() const
+	{
+		return opacities.first;
+	}
+
+	uint16_t Frame::start_scale() const
+	{
+		return scales.first;
+	}
+
+	uint16_t Frame::get_delay() const
+	{
+		return delay;
+	}
+
+	Point<int16_t> Frame::get_origin() const
+	{
+		return texture.getorigin();
+	}
+
+	Point<int16_t> Frame::get_dimensions() const
+	{
+		return texture.getdimensions();
+	}
+
+	Point<int16_t> Frame::get_head() const
+	{
+		return head;
+	}
+
+	Rectangle<int16_t> Frame::get_bounds() const
+	{
+		return bounds;
+	}
+
+	float Frame::opcstep(uint16_t timestep) const
 	{
 		return timestep * static_cast<float>(opacities.second - opacities.first) / delay;
 	}
 
-	float Animation::Frame::scalestep(uint16_t timestep) const
+	float Frame::scalestep(uint16_t timestep) const
 	{
 		return timestep * static_cast<float>(scales.second - scales.first) / delay;
 	}
@@ -142,9 +182,9 @@ namespace jrc
 	void Animation::reset()
 	{
 		frame.set(0);
-		opacity.set(frames[0].opacities.first);
-		xyscale.set(frames[0].scales.first);
-		delay = frames[0].delay;
+		opacity.set(frames[0].start_opacity());
+		xyscale.set(frames[0].start_scale());
+		delay = frames[0].get_delay();
 		framestep = 1;
 	}
 
@@ -158,12 +198,11 @@ namespace jrc
 		bool modifyscale = interscale != 1.0f;
 		if (modifyopc || modifyscale)
 		{
-			auto absargs = args + DrawArgument(interscale, interscale, interopc);
-			frames[interframe].texture.draw(absargs);
+			frames[interframe].draw(args + DrawArgument(interscale, interscale, interopc));
 		}
 		else
 		{
-			frames[interframe].texture.draw(args);
+			frames[interframe].draw(args);
 		}
 	}
 
@@ -174,7 +213,7 @@ namespace jrc
 
 	bool Animation::update(uint16_t timestep)
 	{
-		auto& framedata = frames[frame.get()];
+		const Frame& framedata = getframe();
 
 		opacity += framedata.opcstep(timestep);
 		if (opacity.last() < 0.0f)
@@ -234,12 +273,12 @@ namespace jrc
 			float threshold = static_cast<float>(delta) / timestep;
 			frame.next(nextframe, threshold);
 
-			delay = frames[nextframe].delay;
+			delay = frames[nextframe].get_delay();
 			if (delay >= delta)
 				delay -= delta;
 
-			opacity.set(frames[nextframe].opacities.first);
-			xyscale.set(frames[nextframe].scales.first);
+			opacity.set(frames[nextframe].start_opacity());
+			xyscale.set(frames[nextframe].start_scale());
 			return ended;
 		}
 		else
@@ -253,7 +292,7 @@ namespace jrc
 
 	uint16_t Animation::getdelay(int16_t frame_id) const
 	{
-		return frame_id < frames.size() ? frames[frame_id].delay : 0;
+		return frame_id < frames.size() ? frames[frame_id].get_delay() : 0;
 	}
 
 	uint16_t Animation::getdelayuntil(int16_t frame_id) const
@@ -264,32 +303,32 @@ namespace jrc
 			if (i >= frames.size())
 				break;
 
-			total += frames[frame_id].delay;
+			total += frames[frame_id].get_delay();
 		}
 		return total;
 	}
 
 	Point<int16_t> Animation::getorigin() const
 	{
-		return getframe().texture.getorigin();
+		return getframe().get_origin();
 	}
 
 	Point<int16_t> Animation::getdimensions() const
 	{
-		return getframe().texture.getdimensions();
+		return getframe().get_dimensions();
 	}
 
 	Point<int16_t> Animation::gethead() const
 	{ 
-		return getframe().head;
+		return getframe().get_head();
 	}
 
 	Rectangle<int16_t> Animation::getbounds() const
 	{
-		return getframe().bounds;
+		return getframe().get_bounds();
 	}
 
-	const Animation::Frame& Animation::getframe() const
+	const Frame& Animation::getframe() const
 	{
 		return frames[frame.get()];
 	}

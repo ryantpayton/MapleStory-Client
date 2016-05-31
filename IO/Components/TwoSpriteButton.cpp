@@ -28,14 +28,18 @@ namespace jrc
 	}
 
 	TwoSpriteButton::TwoSpriteButton(nl::node nsrc, nl::node ssrc)
-		: TwoSpriteButton(nsrc, ssrc, Point<int16_t>()) {}
+		: TwoSpriteButton(nsrc, ssrc, {}) {}
+
+	TwoSpriteButton::TwoSpriteButton()
+		: textures({}, {}) {}
 
 	void TwoSpriteButton::draw(Point<int16_t> parentpos) const
 	{
 		if (active)
 		{
 			bool selected = state == MOUSEOVER || state == PRESSED;
-			textures[selected].draw(position + parentpos);
+			textures[selected]
+				.draw(position + parentpos);
 		}
 	}
 
@@ -43,6 +47,7 @@ namespace jrc
 	{
 		bool selected = state == MOUSEOVER || state == PRESSED;
 		Point<int16_t> absp = parentpos + position - textures[selected].getorigin();
-		return Rectangle<int16_t>(absp, absp + textures[selected].getdimensions());
+		Point<int16_t> dim = textures[selected].getdimensions();
+		return{ absp, absp + dim };
 	}
 }

@@ -16,38 +16,35 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Icon.h"
+
 #include "Charset.h"
-#include "nlnx\nx.hpp"
+
+#include <nlnx\nx.hpp>
 
 namespace jrc
 {
 	Icon::Icon(std::unique_ptr<Type> t, Texture tx, int16_t c) 
-	{
-		type = std::move(t);
-		texture = tx;
-		showcount = c > -1;
-		count = c;
+		: type(std::move(t)), texture(tx), count(c) {
 
-		texture.shift(Point<int16_t>(0, 32));
+		texture.shift({ 0, 32 });
+		showcount = c > -1;
 		dragged = false;
 	}
 
 	Icon::Icon() 
-	{
-		dragged = false;
-		showcount = false;
-		count = 0;
-	}
+		: Icon(std::make_unique<NullType>(), {}, -1) {}
 
 	void Icon::draw(Point<int16_t> position) const
 	{
-		texture.draw(DrawArgument(position, dragged ? 0.5f : 1.0f));
+		float opacity = dragged ? 0.5f : 1.0f;
+		texture.draw({ position, opacity });
 
 		if (showcount)
 		{
-			static const Charset countset = Charset(nl::nx::ui["Basic.img"]["ItemNo"], Charset::LEFT);
+			static const Charset countset = { nl::nx::ui["Basic.img"]["ItemNo"], Charset::LEFT };
 			int16_t tempc = dragged ? (count - 1) : count;
-			countset.draw(std::to_string(tempc), position + Point<int16_t>(0, 20));
+			std::string countstr = std::to_string(tempc);
+			countset.draw(countstr, position + Point<int16_t>(0, 20));
 		}
 	}
 
@@ -55,7 +52,7 @@ namespace jrc
 	{
 		if (dragged)
 		{
-			texture.draw(DrawArgument(cursorpos - cursoroffset, 0.5f));
+			texture.draw({ cursorpos - cursoroffset, 0.5f });
 		}
 	}
 

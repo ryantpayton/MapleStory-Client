@@ -52,8 +52,8 @@ namespace jrc
 	bool Session::init()
 	{
 		std::string HOST = Setting<ServerIP>::get().load();
-		constexpr char* PORT = "8484";
-		return init(HOST.c_str(), PORT);
+		std::string PORT = "8484";
+		return init(HOST.c_str(), PORT.c_str());
 	}
 
 	void Session::reconnect(const char* address, const char* port)

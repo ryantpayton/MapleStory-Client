@@ -101,7 +101,7 @@ namespace jrc
 		for (auto tsit : totalstats)
 		{
 			Equipstat::Value es = tsit.first;
-			stats.addtotal(es, tsit.second);
+			stats.add_value(es, tsit.second);
 		}
 	}
 

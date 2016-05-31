@@ -24,6 +24,8 @@ namespace jrc
 {
 	Messages::Messages()
 	{
+		messages[NONE] = "";
+
 		// Cannot use a skill
 		messages[SKILL_WEAPONTYPE] = "You cannot use this skill with this weapon.";
 		messages[SKILL_HPCOST] = "You do not have enough hp to use this skill.";
@@ -51,16 +53,36 @@ namespace jrc
 
 	void InChatMessage::drop() const
 	{
-		UI::get().getelement(UIElement::STATUSBAR)
-			.reinterpret<UIStatusbar>()
-			->displaymessage(type, Chatbar::RED);
+		if (type == Messages::NONE)
+			return;
+
+		UI::get().with_element<UIStatusbar>([&](auto& sb) {
+			sb.displaymessage(type, Chatbar::RED);
+		});
 	}
 
 
-	NoBulletsMessage::NoBulletsMessage(Weapon::Type weapon)
-		: InChatMessage(messagebyweapon(weapon)) {}
+	ForbidSkillMessage::ForbidSkillMessage(SpecialMove::ForbidReason reason, Weapon::Type weapon)
+		: InChatMessage(message_by_reason(reason, weapon)) {}
 
-	Messages::Type NoBulletsMessage::messagebyweapon(Weapon::Type weapon)
+	Messages::Type ForbidSkillMessage::message_by_reason(SpecialMove::ForbidReason reason, Weapon::Type weapon)
+	{
+		switch (reason)
+		{
+		case SpecialMove::FBR_WEAPONTYPE:
+			return Messages::SKILL_WEAPONTYPE;
+		case SpecialMove::FBR_HPCOST:
+			return Messages::SKILL_HPCOST;
+		case SpecialMove::FBR_MPCOST:
+			return Messages::SKILL_MPCOST;
+		case SpecialMove::FBR_BULLETCOST:
+			return message_by_weapon(weapon);
+		default:
+			return Messages::NONE;
+		}
+	}
+
+	Messages::Type ForbidSkillMessage::message_by_weapon(Weapon::Type weapon)
 	{
 		switch (weapon)
 		{

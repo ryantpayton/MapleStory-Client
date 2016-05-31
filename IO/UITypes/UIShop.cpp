@@ -50,7 +50,7 @@ namespace jrc
 		nl::node sellen = src2["TabSell"]["enabled"];
 		nl::node selldis = src2["TabSell"]["disabled"];
 
-		auto stshift = Point<int16_t>(-43, -9);
+		constexpr Point<int16_t> stshift(-43, -9);
 		for (uint16_t i = EQUIP; i <= CASH; i++)
 		{
 			std::string tabnum = std::to_string(i - EQUIP);
@@ -59,14 +59,14 @@ namespace jrc
 
 		for (uint16_t i = BUY0; i <= BUY4; i++)
 		{
-			auto pos = Point<int16_t>(8, 116 + 42 * (i - BUY0));
-			auto dim = Point<int16_t>(200, 36);
+			Point<int16_t> pos(8, 116 + 42 * (i - BUY0));
+			Point<int16_t> dim(200, 36);
 			buttons[i] = std::make_unique<AreaButton>(pos, dim);
 		}
 		for (uint16_t i = SELL0; i <= SELL4; i++)
 		{
-			auto pos = Point<int16_t>(242, 116 + 42 * (i - SELL0));
-			auto dim = Point<int16_t>(200, 36);
+			Point<int16_t> pos(242, 116 + 42 * (i - SELL0));
+			Point<int16_t> dim(200, 36);
 			buttons[i] = std::make_unique<AreaButton>(pos, dim);
 		}
 
@@ -74,11 +74,11 @@ namespace jrc
 		impossible = src["ShopSpecial"]["impossible"];
 		meso = src["meso"];
 
-		mesolabel = Text(Text::A11M, Text::RIGHT, Text::LIGHTGREY);
+		mesolabel = { Text::A11M, Text::RIGHT, Text::LIGHTGREY };
 
-		buyslider = std::make_unique<Slider>(
-			11, Range<int16_t>(115, 308), 214, 5, 1, [&](bool upwards){
-
+		buyslider = {
+			11, { 115, 308 }, 214, 5, 1, 
+			[&](bool upwards) {
 			int16_t shift = upwards ? -1 : 1;
 			bool above = buystate.offset + shift >= 0;
 			bool below = buystate.offset + shift <= buystate.lastslot - 5;
@@ -86,10 +86,10 @@ namespace jrc
 			{
 				buystate.offset += shift;
 			}
-		});
-		sellslider = std::make_unique<Slider>(
-			11, Range<int16_t>(115, 308), 445, 5, 1, [&](bool upwards){
-
+		} };
+		sellslider = {
+			11, { 115, 308 }, 445, 5, 1, 
+			[&](bool upwards) {
 			int16_t shift = upwards ? -1 : 1;
 			bool above = sellstate.offset + shift >= 0;
 			bool below = sellstate.offset + shift <= sellstate.lastslot - 5;
@@ -97,19 +97,19 @@ namespace jrc
 			{
 				sellstate.offset += shift;
 			}
-		});
+		} };
 
 		active = false;
 		dimension = Texture(src["backgrnd"])
 			.getdimensions();
-		position = Point<int16_t>(400 - dimension.x() / 2, 240 - dimension.y() / 2);
+		position = { 400 - dimension.x() / 2, 240 - dimension.y() / 2 };
 	}
 
 	void UIShop::draw(float alpha) const
 	{
 		UIElement::draw(alpha);
 
-		npc.draw(DrawArgument(position + Point<int16_t>(64, 76), true));
+		npc.draw({ position + Point<int16_t>(64, 76), true });
 
 		Stage::get().getplayer().getlook()
 			.drawstanding(position + Point<int16_t>(294, 76), false);
@@ -119,8 +119,8 @@ namespace jrc
 		buystate.draw(position, selection);
 		sellstate.draw(position, selection);
 
-		buyslider->draw(position);
-		sellslider->draw(position);
+		buyslider.draw(position);
+		sellslider.draw(position);
 	}
 
 	void UIShop::update()
@@ -133,8 +133,8 @@ namespace jrc
 
 	void UIShop::buttonpressed(uint16_t buttonid)
 	{
-		static const auto buy = Range<uint16_t>(BUY0, BUY4);
-		static const auto sell = Range<uint16_t>(SELL0, SELL4);
+		constexpr Range<uint16_t> buy(BUY0, BUY4);
+		constexpr Range<uint16_t> sell(SELL0, SELL4);
 		if (buy.contains(buttonid))
 		{
 			int16_t selected = buttonid - BUY0;
@@ -183,28 +183,28 @@ namespace jrc
 			}
 		}
 
-		cleartooltip();
+		clear_tooltip();
 	}
 
 	Cursor::State UIShop::sendmouse(bool clicked, Point<int16_t> cursorpos)
 	{
 		Point<int16_t> cursoroffset = cursorpos - position;
-		if (buyslider && buyslider->isenabled())
+		if (buyslider.isenabled())
 		{
-			Cursor::State bstate = buyslider->sendcursor(cursoroffset, clicked);
+			Cursor::State bstate = buyslider.sendcursor(cursoroffset, clicked);
 			if (bstate != Cursor::IDLE)
 			{
-				cleartooltip();
+				clear_tooltip();
 				return bstate;
 			}
 		}
 		
-		if (sellslider && sellslider->isenabled())
+		if (sellslider.isenabled())
 		{
-			Cursor::State sstate = sellslider->sendcursor(cursoroffset, clicked);
+			Cursor::State sstate = sellslider.sendcursor(cursoroffset, clicked);
 			if (sstate != Cursor::IDLE)
 			{
-				cleartooltip();
+				clear_tooltip();
 				return sstate;
 			}
 		}
@@ -219,18 +219,18 @@ namespace jrc
 			else if (xoff > 241 && xoff < 443)
 				showitem(slot, false);
 			else
-				cleartooltip();
+				clear_tooltip();
 		}
 		else
 		{
-			cleartooltip();
+			clear_tooltip();
 		}
 		return UIElement::sendmouse(clicked, cursorpos);
 	}
 
-	void UIShop::cleartooltip()
+	void UIShop::clear_tooltip()
 	{
-		UI::get().cleartooltip(SHOP);
+		UI::get().clear_tooltip(SHOP);
 	}
 
 	void UIShop::showitem(int16_t slot, bool buy)
@@ -260,7 +260,7 @@ namespace jrc
 
 		sellstate.changetab(type, meso);
 
-		sellslider->setrows(5, sellstate.lastslot);
+		sellslider.setrows(5, sellstate.lastslot);
 	}
 
 	void UIShop::reset(int32_t npcid)
@@ -300,7 +300,7 @@ namespace jrc
 		auto buyitem = BuyItem(meso, id, price, pitch, time, chargeprice, buyable);
 		buystate.add(buyitem);
 
-		buyslider->setrows(5, buystate.lastslot);
+		buyslider.setrows(5, buystate.lastslot);
 	}
 
 	int16_t UIShop::slotbypos(int16_t y)
@@ -343,8 +343,8 @@ namespace jrc
 	UIShop::BuyItem::BuyItem(Texture cur, int32_t i, int32_t p, int32_t pt, int32_t t, int16_t cp, int16_t b)
 		: currency(cur), id(i), price(p), pitch(pt), time(t), chargeprice(cp), buyable(b) {
 
-		namelabel = Text(Text::A11M, Text::LEFT, Text::DARKGREY);
-		pricelabel = Text(Text::A11M, Text::LEFT, Text::DARKGREY);
+		namelabel = { Text::A11M, Text::LEFT, Text::DARKGREY };
+		pricelabel = { Text::A11M, Text::LEFT, Text::DARKGREY };
 
 		const ItemData& item = DataFactory::get().getitemdata(id);
 		if (item.isloaded())
@@ -386,8 +386,8 @@ namespace jrc
 		showcount = sc;
 		currency = cur;
 
-		namelabel = Text(Text::A11M, Text::LEFT, Text::DARKGREY);
-		pricelabel = Text(Text::A11M, Text::LEFT, Text::DARKGREY);
+		namelabel = { Text::A11M, Text::LEFT, Text::DARKGREY };
+		pricelabel = { Text::A11M, Text::LEFT, Text::DARKGREY };
 
 		std::string name = item.getidata().getname();
 		namelabel.settext(name);
@@ -403,7 +403,7 @@ namespace jrc
 		icon.draw(pos + Point<int16_t>(0, 32));
 		if (showcount)
 		{
-			static const Charset countset = Charset(nl::nx::ui["Basic.img"]["ItemNo"], Charset::LEFT);
+			static const Charset countset = { nl::nx::ui["Basic.img"]["ItemNo"], Charset::LEFT };
 			countset.draw(std::to_string(sellable), pos + Point<int16_t>(0, 20));
 		}
 		namelabel.draw(pos + Point<int16_t>(40, -1));
@@ -543,13 +543,16 @@ namespace jrc
 
 		items.clear();
 
-		int16_t slots = Stage::get().getplayer().getinvent().getslots(tab);
+		int16_t slots = Stage::get()
+			.getplayer()
+			.getinvent()
+			.getslots(tab);
 		for (int16_t i = 1; i <= slots; i++)
 		{
 			Optional<Item> item = Stage::get().getplayer().getinvent().getitem(tab, i);
 			if (item)
 			{
-				auto sellitem = SellItem(*item, i, tab != Inventory::EQUIP, meso);
+				SellItem sellitem(*item, i, tab != Inventory::EQUIP, meso);
 				items.push_back(sellitem);
 			}
 		}
@@ -565,7 +568,7 @@ namespace jrc
 			if (slot >= lastslot)
 				break;
 
-			auto itempos = Point<int16_t>(243, 116 + 42 * i);
+			Point<int16_t> itempos(243, 116 + 42 * i);
 			if (slot == selection)
 			{
 				selected.draw(parentpos + itempos + Point<int16_t>(35, -1));

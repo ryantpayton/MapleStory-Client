@@ -68,11 +68,16 @@ namespace jrc
 		float gethppercent() const;
 		float getmppercent() const;
 
+		static constexpr Point<int16_t> POSITION = { 512, 590 };
+		static constexpr Point<int16_t> DIMENSION = { 1366, 80 };
+
 		const CharStats& stats;
 
 		Messages messages;
+		EnumMap<Messages::Type, time_t> message_cooldowns;
+		static constexpr time_t MESSAGE_COOLDOWN = 1'000;
 
-		std::unique_ptr<Chatbar> chatbar;
+		Chatbar chatbar;
 		Gauge expbar;
 		Gauge hpbar;
 		Gauge mpbar;

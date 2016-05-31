@@ -20,33 +20,61 @@
 #include "Drop.h"
 
 #include "..\Spawn.h"
-
 #include "..\..\Graphics\Animation.h"
+
+#include <array>
 
 namespace jrc
 {
-	class MapDrops : public MapObjects
+	class MesoIcons
+	{
+	public:
+		enum Type
+		{
+			BRONZE, GOLD, BUNDLE, BAG,
+			LENGTH
+		};
+
+		void init();
+		void update();
+
+		const Animation* get(Type type) const;
+
+	private:
+		std::array<Animation, LENGTH> animations;
+	};
+
+
+	class MapDrops
 	{
 	public:
 		MapDrops();
 
-		void update(const Physics& physics) override;
+		// Draw all drops on a layer.
+		void draw(int8_t layer, double viewx, double viewy, float alpha) const;
+		// Update all drops.
+		void update(const Physics& physics);
 
+		// Spawn a new drop.
 		void sendspawn(const DropSpawn& spawn);
+		// Remove a drop.
 		void removedrop(int32_t oid, int8_t mode, const PhysicsObject* looter);
+		// Remove all drops.
+		void clear();
 
-		const Drop* findinrange(Point<int16_t> playerpos);
 		Optional<Drop> getdrop(int32_t oid);
 
+		// Find a drop which can be picked up at the specified position.
+		const Drop* findinrange(Point<int16_t> playerpos);
+
+
+		// Initialize animations of meso icons.
 		static void init();
 
 	private:
+		MapObjects drops;
 		bool lootenabled;
 
-		enum MesoType
-		{
-			BRONZE, GOLD, BUNDLE, BAG
-		};
-		static std::unordered_map<MesoType, Animation> mesoicons;
+		static MesoIcons meso_icons;
 	};
 }

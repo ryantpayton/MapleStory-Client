@@ -51,7 +51,7 @@ namespace jrc
 
 	private:
 		void showequip(int16_t slot);
-		void cleartooltip();
+		void clear_tooltip();
 
 		class EquipIcon : public Icon::Type
 		{

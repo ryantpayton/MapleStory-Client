@@ -27,30 +27,37 @@
 
 namespace jrc
 {
-	// Collection of mapobjects of a type. 
+	// A collection of generic mapobjects. 
 	class MapObjects
 	{
 	public:
-		virtual ~MapObjects() {}
-
 		// Draw all mapobjects that are on the specified layer.
-		virtual void draw(int8_t layer, double viewx, double viewy, float alpha) const;
+		void draw(int8_t layer, double viewx, double viewy, float alpha) const;
 		// Update all mapobjects of this type. Also updates layers eg. drawing order.
-		virtual void update(const Physics& physics);
+		void update(const Physics& physics);
 
-		// Removes all mapobjects of this type.
-		void clear();
-
-	protected:
 		// Adds a mapobject of this type.
-		void add(MapObject* mapobject);
+		void add(std::unique_ptr<MapObject> mapobject);
 		// Removes the mapobject with the given oid.
 		void remove(int32_t oid);
+		// Removes all mapobjects of this type.
+		void clear();
 		// Obtains a pointer to the mapobject with the given oid.
 		Optional<MapObject> get(int32_t oid);
 		// Obtains a const pointer to the mapobject with the given oid.
 		Optional<const MapObject> get(int32_t oid) const;
 
+		using underlying_t = typename std::unordered_map<int32_t, std::unique_ptr<MapObject>>;
+		// Return a begin iterator.
+		underlying_t::iterator begin();
+		// Return an end iterator.
+		underlying_t::iterator end();
+		// Return a begin iterator.
+		underlying_t::const_iterator begin() const;
+		// Return an end iterator.
+		underlying_t::const_iterator end() const;
+
+	private:
 		std::unordered_map<int32_t, std::unique_ptr<MapObject>> objects;
 		std::unordered_set<int32_t> layers[MapLayers::NUM_LAYERS];
 	};

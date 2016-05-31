@@ -65,7 +65,7 @@ namespace jrc
 		}
 		else
 		{
-			shift = charsets[type].second.getw('M') / 2;
+			shift = charsets[type][true].getw('M') / 2;
 			miss = true;
 		}
 
@@ -84,12 +84,12 @@ namespace jrc
 
 		if (miss)
 		{
-			charsets[type].second
+			charsets[type][true]
 				.draw('M', { position, interopc });
 		}
 		else
 		{
-			charsets[type].first
+			charsets[type][false]
 				.draw(firstnum, { position, interopc });
 
 			if (multiple)
@@ -101,7 +101,7 @@ namespace jrc
 				{
 					char c = restnum[i];
 					Point<int16_t> yshift = { 0, (i % 2) ? -2 : 2 };
-					charsets[type].second
+					charsets[type][true]
 						.draw(c, { position + yshift, interopc });
 
 					int16_t advance;
@@ -169,7 +169,9 @@ namespace jrc
 	bool DamageNumber::update()
 	{
 		moveobj.move();
-		opacity -= Constants::TIMESTEP * 0.0015f;
+
+		constexpr float FADE_STEP = Constants::TIMESTEP * 1.0f / FADE_TIME;
+		opacity -= FADE_STEP;
 		return opacity.last() <= 0.0f;
 	}
 
@@ -181,12 +183,13 @@ namespace jrc
 
 	void DamageNumber::init()
 	{
-		charsets[NORMAL].first = Charset(nl::nx::effect["BasicEff.img"]["NoRed1"], Charset::LEFT);
-		charsets[NORMAL].second = Charset(nl::nx::effect["BasicEff.img"]["NoRed0"], Charset::LEFT);
-		charsets[CRITICAL].first = Charset(nl::nx::effect["BasicEff.img"]["NoCri1"], Charset::LEFT);
-		charsets[CRITICAL].second = Charset(nl::nx::effect["BasicEff.img"]["NoCri0"], Charset::LEFT);
-		charsets[TOPLAYER].first = Charset(nl::nx::effect["BasicEff.img"]["NoViolet1"], Charset::LEFT);
-		charsets[TOPLAYER].second = Charset(nl::nx::effect["BasicEff.img"]["NoViolet0"], Charset::LEFT);
+		charsets[NORMAL].set(false, nl::nx::effect["BasicEff.img"]["NoRed1"], Charset::LEFT);
+		charsets[NORMAL].set(true, nl::nx::effect["BasicEff.img"]["NoRed0"], Charset::LEFT);
+		charsets[CRITICAL].set(false, nl::nx::effect["BasicEff.img"]["NoCri1"], Charset::LEFT);
+		charsets[CRITICAL].set(true, nl::nx::effect["BasicEff.img"]["NoCri0"], Charset::LEFT);
+		charsets[TOPLAYER].set(false, nl::nx::effect["BasicEff.img"]["NoViolet1"], Charset::LEFT);
+		charsets[TOPLAYER].set(true, nl::nx::effect["BasicEff.img"]["NoViolet0"], Charset::LEFT);
 	}
-	std::pair<Charset, Charset> DamageNumber::charsets[NUM_TYPES];
+
+	BoolPair<Charset> DamageNumber::charsets[NUM_TYPES];
 }

@@ -22,6 +22,7 @@
 #include "..\Gameplay\Movement.h"
 
 #include <queue>
+#include <vector>
 
 namespace jrc
 {
@@ -35,7 +36,7 @@ namespace jrc
 		// Update the character.
 		int8_t update(const Physics& physics) override;
 		// Add the movements which this character will go through next.
-		void sendmovement(std::queue<Movement> movements);
+		void sendmovement(const std::vector<Movement>& movements);
 		
 		// Update a skill level.
 		void updateskill(int32_t skillid, uint8_t skilllevel);
@@ -56,6 +57,7 @@ namespace jrc
 		int16_t job;
 		std::queue<Movement> movements;
 		Movement lastmove;
+		uint16_t timer;
 
 		std::unordered_map<int32_t, uint8_t> skilllevels;
 		uint8_t attackspeed;

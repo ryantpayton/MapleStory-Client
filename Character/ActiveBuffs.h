@@ -16,52 +16,71 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Element.h"
-#include "..\Components\IconCover.h"
-
-#include "..\..\Constants.h"
-#include "..\..\Graphics\Texture.h"
+#include "Buff.h"
+#include "CharStats.h"
 
 #include <unordered_map>
+#include <memory>
 
 namespace jrc
 {
-	class BuffIcon
+	// Interface for active buffs which are applied to character stats.
+	class ActiveBuff
 	{
 	public:
-		BuffIcon(int32_t buff, int32_t dur);
+		virtual ~ActiveBuff() {}
 
-		void draw(Point<int16_t> position, float alpha) const;
-		bool update();
-
-	private:
-		static const uint16_t FLASH_TIME = 3'000;
-
-		Texture icon;
-		IconCover cover;
-		int32_t buffid;
-		int32_t duration;
-		Linear<float> opacity;
-		float opcstep;
+		virtual void apply_to(CharStats& stats, int16_t value) const = 0;
 	};
 
 
-	class UIBuffList : public UIElement
+	template<Equipstat::Value STAT>
+	// Template for buffs which just add their value to a stat.
+	class SimpleStatBuff : public ActiveBuff
+	{
+		void apply_to(CharStats& stats, int16_t value) const override;
+	};
+
+
+	template<Equipstat::Value STAT>
+	// Template for buffs which apply an increase by percentage.
+	class PercentageStatBuff : public ActiveBuff
+	{
+		void apply_to(CharStats& stats, int16_t value) const override;
+	};
+
+
+	// Buff for MAPLEWARRIOR
+	class MapleWarriorBuff : public ActiveBuff
+	{
+		void apply_to(CharStats& stats, int16_t value) const override;
+	};
+
+
+	// Buff for STANCE
+	class StanceBuff : public ActiveBuff
+	{
+		void apply_to(CharStats& stats, int16_t value) const override;
+	};
+
+
+	// Buff for BOOSTER
+	class BoosterBuff : public ActiveBuff
+	{
+		void apply_to(CharStats& stats, int16_t value) const override;
+	};
+
+
+	class ActiveBuffs
 	{
 	public:
-		static constexpr Type TYPE = BUFFLIST;
-		static constexpr bool FOCUSED = false;
-		static constexpr bool TOGGLED = false;
+		// Register all buffs effects.
+		ActiveBuffs();
 
-		UIBuffList();
-
-		void draw(float inter) const override;
-		void update() override;
-		Cursor::State sendmouse(bool pressed, Point<int16_t> position) override;
-
-		void add_buff(int32_t buffid, int32_t duration);
+		// Return the buff effect associated with the buff stat.
+		void apply_buff(CharStats& stats, Buff::Stat stat, int16_t value) const;
 
 	private:
-		std::unordered_map<int32_t, BuffIcon> icons;
+		std::unordered_map<Buff::Stat, std::unique_ptr<ActiveBuff>> buffs;
 	};
 }

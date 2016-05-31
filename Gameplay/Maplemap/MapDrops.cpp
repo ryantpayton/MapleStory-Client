@@ -26,6 +26,30 @@
 
 namespace jrc
 {
+	void MesoIcons::init()
+	{
+		nl::node src = nl::nx::item["Special"]["0900.img"];
+
+		animations[BRONZE] = src["09000000"]["iconRaw"];
+		animations[GOLD] = src["09000001"]["iconRaw"];
+		animations[BUNDLE] = src["09000002"]["iconRaw"];
+		animations[BAG] = src["09000003"]["iconRaw"];
+	}
+
+	void MesoIcons::update()
+	{
+		for (Animation& animation : animations)
+		{
+			animation.update();
+		}
+	}
+
+	const Animation* MesoIcons::get(MesoIcons::Type type) const
+	{
+		return &animations[type];
+	}
+
+
 	MapDrops::MapDrops() 
 	{
 		lootenabled = false;
@@ -45,14 +69,11 @@ namespace jrc
 			bool meso = spawn.ismeso();
 			if (meso)
 			{
-				MesoType mesotype = (itemid > 999) ? BAG : (itemid > 99)
-					? BUNDLE : (itemid > 49) ? GOLD : BRONZE;
-				if (mesoicons.count(mesotype))
-				{
-					MesoDrop* newdrop = spawn.instantiate(&mesoicons[mesotype]);
-					add(newdrop);
-				}
-				
+				MesoIcons::Type mesotype = (itemid > 999) ? MesoIcons::BAG : (itemid > 99)
+					? MesoIcons::BUNDLE : (itemid > 49) ? MesoIcons::GOLD : MesoIcons::BRONZE;
+				drops.add(
+					spawn.instantiate(meso_icons.get(mesotype))
+				);
 			}
 			else
 			{
@@ -60,8 +81,9 @@ namespace jrc
 				if (itemdata.isloaded())
 				{
 					auto& icon = itemdata.geticon(true);
-					ItemDrop* newdrop = spawn.instantiate(&icon);
-					add(newdrop);
+					drops.add(
+						spawn.instantiate(&icon)
+					);
 				}
 			}
 		}
@@ -69,21 +91,27 @@ namespace jrc
 
 	void MapDrops::removedrop(int32_t oid, int8_t mode, const PhysicsObject* looter)
 	{
-		get(oid)
+		drops.get(oid)
 			.reinterpret<Drop>()
 			.ifpresent(&Drop::expire, mode, looter);
 	}
 
+	void MapDrops::clear()
+	{
+		drops.clear();
+	}
+
+	void MapDrops::draw(int8_t layer, double viewx, double viewy, float alpha) const
+	{
+		drops.draw(layer, viewx, viewy, alpha);
+	}
+
 	void MapDrops::update(const Physics& physics)
 	{
-		MapObjects::update(physics);
+		drops.update(physics);
+		meso_icons.update();
 
 		lootenabled = true;
-
-		for (auto& msani : mesoicons)
-		{
-			msani.second.update(Constants::TIMESTEP);
-		}
 	}
 
 	const Drop* MapDrops::findinrange(Point<int16_t> playerpos)
@@ -91,14 +119,13 @@ namespace jrc
 		if (!lootenabled)
 			return nullptr;
 
-		for (auto& mmo : objects)
+		for (auto& mmo : drops)
 		{
-			Optional<const Drop> drop = Optional<MapObject>(mmo.second.get())
-				.reinterpret<const Drop>();
+			const Drop* drop = static_cast<const Drop*>(mmo.second.get());
 			if (drop && drop->bounds().contains(playerpos))
 			{
 				lootenabled = false;
-				return drop.get();
+				return drop;
 			}
 		}
 		return nullptr;
@@ -106,19 +133,15 @@ namespace jrc
 
 	Optional<Drop> MapDrops::getdrop(int32_t oid)
 	{
-		return get(oid)
+		return drops.get(oid)
 			.reinterpret<Drop>();
 	}
 
 
 	void MapDrops::init()
 	{
-		nl::node src = nl::nx::item["Special"]["0900.img"];
-
-		mesoicons[BRONZE] = src["09000000"]["iconRaw"];
-		mesoicons[GOLD] = src["09000001"]["iconRaw"];
-		mesoicons[BUNDLE] = src["09000002"]["iconRaw"];
-		mesoicons[BAG] = src["09000003"]["iconRaw"];
+		meso_icons.init();
 	}
-	std::unordered_map<MapDrops::MesoType, Animation> MapDrops::mesoicons;
+
+	MesoIcons MapDrops::meso_icons;
 }

@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Button.h"
+#include "TwoSpriteButton.h"
 
 #include "..\Cursor.h"
 
@@ -32,6 +32,7 @@ namespace jrc
 	public:
 		Slider(int32_t type, Range<int16_t> vertical, int16_t x, 
 			int16_t unitrows, int16_t rowmax, std::function<void(bool upwards)> onmoved);
+		Slider();
 
 		bool isenabled() const;
 		void setenabled(bool enabled);
@@ -62,8 +63,8 @@ namespace jrc
 		Texture dnext;
 		Texture dprev;
 		Texture base;
-		std::unique_ptr<Button> next;
-		std::unique_ptr<Button> prev;
-		std::unique_ptr<Button> thumb;
+		TwoSpriteButton next;
+		TwoSpriteButton prev;
+		TwoSpriteButton thumb;
 	};
 }

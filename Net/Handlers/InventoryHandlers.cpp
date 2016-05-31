@@ -30,17 +30,17 @@ namespace jrc
 {
 	void GatherResultHandler::handle(InPacket&) const
 	{
-		UI::get().getelement(UIElement::ITEMINVENTORY)
-			.reinterpret<UIItemInventory>()
-			.ifpresent(&UIItemInventory::enablesort);
+		UI::get().with_element<UIItemInventory>([](auto& ii) {
+			ii.enablesort();
+		});
 	}
 
 
 	void SortResultHandler::handle(InPacket&) const
 	{
-		UI::get().getelement(UIElement::ITEMINVENTORY)
-			.reinterpret<UIItemInventory>()
-			.ifpresent(&UIItemInventory::enablegather);
+		UI::get().with_element<UIItemInventory>([](auto& ii) {
+			ii.enablegather();
+		});
 	}
 
 
@@ -100,12 +100,12 @@ namespace jrc
 				inventory.modify(mod.type, mod.pos, mod.mode, mod.arg, move);
 			}
 
-			UI::get().getelement(UIElement::SHOP)
-				.reinterpret<UIShop>()
-				.ifpresent(&UIShop::modify, mod.type);
+			UI::get().with_element<UIShop>([&mod](auto& s) {
+				s.modify(mod.type);
+			});
 
-			auto eqinvent = UI::get().getelement<UIEquipInventory>(UIElement::EQUIPINVENTORY);
-			auto itinvent = UI::get().getelement<UIItemInventory>(UIElement::ITEMINVENTORY);
+			auto eqinvent = UI::get().get_element<UIEquipInventory>();
+			auto itinvent = UI::get().get_element<UIItemInventory>();
 			switch (move)
 			{
 			case Inventory::MOVE_INTERNAL:

@@ -30,7 +30,7 @@
 namespace jrc
 {
 	UIStatusbar::UIStatusbar() 
-		: stats(Stage::get().getplayer().getstats()) {
+		: stats(Stage::get().getplayer().getstats()), chatbar(POSITION) {
 
 		nl::node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
 
@@ -80,10 +80,8 @@ namespace jrc
 		buttons[BT_EQUIPS] = std::make_unique<MapleButton>(mainbar["BtEquip"]);
 		buttons[BT_SKILL] = std::make_unique<MapleButton>(mainbar["BtSkill"]);
 
-		position = { 512, 590 };
-		dimension = { 1366, 80 };
-
-		chatbar = std::make_unique<Chatbar>(position);
+		position = POSITION;
+		dimension = DIMENSION;
 	}
 
 	void UIStatusbar::draw(float inter) const
@@ -121,14 +119,14 @@ namespace jrc
 		joblabel.draw(position + Point<int16_t>(-435, -21));
 		namelabel.draw(position + Point<int16_t>(-435, -36));
 
-		chatbar->draw(inter);
+		chatbar.draw(inter);
 	}
 
 	void UIStatusbar::update()
 	{
 		UIElement::update();
 
-		chatbar->update();
+		chatbar.update();
 
 		expbar.update(getexppercent());
 		hpbar.update(gethppercent());
@@ -136,6 +134,11 @@ namespace jrc
 
 		namelabel.settext(stats.getname());
 		joblabel.settext(stats.getjobname());
+
+		for (auto iter : message_cooldowns)
+		{
+			iter.second -= Constants::TIMESTEP;
+		}
 	}
 
 	void UIStatusbar::buttonpressed(uint16_t id)
@@ -161,36 +164,41 @@ namespace jrc
 
 	bool UIStatusbar::isinrange(Point<int16_t> cursorpos) const
 	{
-		auto bounds = Rectangle<int16_t>(
+		Rectangle<int16_t> bounds(
 			position - Point<int16_t>(512, 84),
 			position - Point<int16_t>(512, 84) + dimension
 			);
-		return bounds.contains(cursorpos) || chatbar->isinrange(cursorpos);
+		return bounds.contains(cursorpos) || chatbar.isinrange(cursorpos);
 	}
 
 	Cursor::State UIStatusbar::sendmouse(bool pressed, Point<int16_t> cursorpos)
 	{
-		if (chatbar->isinrange(cursorpos))
+		if (chatbar.isinrange(cursorpos))
 		{
 			UIElement::sendmouse(pressed, cursorpos);
-			return chatbar->sendmouse(pressed, cursorpos);
+			return chatbar.sendmouse(pressed, cursorpos);
 		}
 		else
 		{
-			chatbar->sendmouse(pressed, cursorpos);
+			chatbar.sendmouse(pressed, cursorpos);
 			return UIElement::sendmouse(pressed, cursorpos);
 		}
 	}
 
 	void UIStatusbar::sendchatline(const std::string& line, Chatbar::LineType type)
 	{
-		chatbar->sendline(line, type);
+		chatbar.sendline(line, type);
 	}
 
 	void UIStatusbar::displaymessage(Messages::Type line, Chatbar::LineType type)
 	{
+		if (message_cooldowns[line] > 0)
+			return;
+
 		std::string message = messages.stringfor(line);
-	    chatbar->sendline(message, type);
+	    chatbar.sendline(message, type);
+
+		message_cooldowns[line] = MESSAGE_COOLDOWN;
 	}
 
 	float UIStatusbar::getexppercent() const
@@ -198,7 +206,9 @@ namespace jrc
 		int64_t currentexp = stats.getexp();
 		int64_t expneeded = stats.getexpneeded();
 
-		return static_cast<float>(static_cast<double>(currentexp) / expneeded);
+		return static_cast<float>(
+			static_cast<double>(currentexp) / expneeded
+			);
 	}
 
 	float UIStatusbar::gethppercent() const

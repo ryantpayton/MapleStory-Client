@@ -150,7 +150,7 @@ namespace jrc
 	{
 		int32_t cid = recv.read_int();
 		recv.skip(4);
-		std::queue<Movement> movements = recv.readqueue<uint8_t, Movement>();
+		std::vector<Movement> movements = recv.readvector<uint8_t, Movement>();
 
 		Stage::get().getchars().movechar(cid, movements);
 	}

@@ -296,13 +296,13 @@ namespace jrc
 		return skillid;
 	}
 
-	SpecialMove::ForbidReason Skill::canuse(int32_t lv, Weapon::Type weapon, uint16_t job, uint16_t hp, uint16_t mp, uint16_t bullets) const
-	{
+	SpecialMove::ForbidReason Skill::canuse(int32_t lv, Weapon::Type weapon,
+		const CharJob& job, uint16_t hp, uint16_t mp, uint16_t bullets) const {
+
 		auto level = Optional<Level>::from(levels, lv);
 		if (level)
 		{
-			auto reqjob = static_cast<uint16_t>(skillid / 10000);
-			if (!CharJob(job).issubjob(reqjob))
+			if (job.can_use(skillid) == false)
 				return FBR_OTHER;
 
 			if (hp <= level->hpcost)

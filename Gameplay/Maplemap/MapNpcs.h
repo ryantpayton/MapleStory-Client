@@ -25,18 +25,28 @@
 
 namespace jrc
 {
-	class MapNpcs : public MapObjects
+	class MapNpcs
 	{
 	public:
+		// Draw all npcs on a layer.
+		void draw(int8_t layer, double viewx, double viewy, float alpha) const;
+		// Update all npcs.
+		void update(const Physics& physics);
+
 		// Spawn a npc on the ground.
 		void sendspawn(const NpcSpawn& spawn, const Physics& physics);
 		// Remove the npc with the specified oid;
 		void removenpc(int32_t oid);
+		// Remove all npcs.
+		void clear();
+
 		// Send mouse input to clickable npcs.
 		Cursor::State sendmouse(bool pressed, Point<int16_t> position, Point<int16_t> viewpos);
 
 	private:
 		Optional<Npc> getnpc(int32_t oid);
+
+		MapObjects npcs;
 	};
 }
 

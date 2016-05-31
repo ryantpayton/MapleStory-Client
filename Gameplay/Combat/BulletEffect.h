@@ -1,4 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+#pragma once
+#include "Bullet.h"
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015 Daniel Allendorf                                        //
 //                                                                          //
@@ -15,27 +17,26 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "BuffEffects.h"
+#include "DamageEffect.h"
 
 namespace jrc
 {
-	BuffEffects::BuffEffects()
+	class BulletEffect
 	{
-		buffeffects[Buffstat::MAPLE_WARRIOR] = std::make_unique<MapleWarriorEffect>();
-		buffeffects[Buffstat::STANCE] = std::make_unique<StanceEffect>();
-		buffeffects[Buffstat::BOOSTER] = std::make_unique<BoosterEffect>();
-		buffeffects[Buffstat::WATK] = std::make_unique<WATKEffect>();
-		buffeffects[Buffstat::WDEF] = std::make_unique<WDEFEffect>();
-		buffeffects[Buffstat::MATK] = std::make_unique<MATKEffect>();
-		buffeffects[Buffstat::MDEF] = std::make_unique<MDEFEffect>();
-		buffeffects[Buffstat::SPEED] = std::make_unique<SPEEDEffect>();
-		buffeffects[Buffstat::JUMP] = std::make_unique<JUMPEffect>();
-		buffeffects[Buffstat::HYPERBODYHP] = std::make_unique<HyperbodyHPEffect>();
-		buffeffects[Buffstat::HYPERBODYMP] = std::make_unique<HyperbodyMPEffect>();
-	}
+	public:
+		BulletEffect(const Bullet& bullet, Point<int16_t> target, const DamageEffect& damage_effect);
 
-	const BuffEffect* BuffEffects::bystat(Buffstat::Value stat) const
-	{
-		return buffeffects.count(stat) ? buffeffects.at(stat).get() : nullptr;
-	}
+		void draw(double viewx, double viewy, float alpha) const;
+		bool update();
+		bool update(Point<int16_t> newtarget);
+
+		int32_t get_target() const;
+		const DamageEffect& geteffect() const;
+
+	private:
+		Bullet bullet;
+		Point<int16_t> target;
+		DamageEffect damageeffect;
+		bool fired;
+	};
 }

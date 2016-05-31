@@ -28,6 +28,7 @@ namespace jrc
 		void applystats(const Char& user, Attack& attack) const override;
 		bool isoffensive() const override;
 		int32_t getid() const override;
-		ForbidReason canuse(int32_t level, Weapon::Type weapon, uint16_t job, uint16_t hp, uint16_t mp, uint16_t bullets) const override;
+		ForbidReason canuse(int32_t level, Weapon::Type weapon,
+			const CharJob& job, uint16_t hp, uint16_t mp, uint16_t bullets) const override;
 	};
 }
