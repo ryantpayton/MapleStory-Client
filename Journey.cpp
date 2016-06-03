@@ -18,6 +18,7 @@
 #include "Timer.h"
 #include "Configuration.h"
 #include "Constants.h"
+#include "Error.h"
 
 #include "Audio\Audio.h"
 #include "Character\Char.h"
@@ -39,29 +40,22 @@ void showerror(const char* error)
 	std::cout << error << std::endl;
 }
 
-// Error codes to be checked after initialisation.
-enum Error
-{
-	NONE,
-	CONNECTION,
-	NXFILES,
-	WINDOW,
-	AUDIO
-};
-
 Error init()
 {
-	if (!Session::get().init())
-		return CONNECTION;
+	if (Error error = Session::get().init())
+		return error;
 
-	if (!NxFiles::get().init())
-		return NXFILES;
+	if (Error error = NxFiles::get().init())
+		return error;
 
-	if (!Window::get().init())
-		return WINDOW;
+	if (Error error = Window::get().init())
+		return error;
 
-	if (!Sound::init() || !Music::init())
-		return AUDIO;
+	if (Error error = Sound::init())
+		return error;
+
+	if (Error error = Music::init())
+		return error;
 
 	Char::init();
 	DataFactory::get().init();
@@ -70,7 +64,7 @@ Error init()
 	MapDrops::init();
 	UI::get().init();
 
-	return NONE;
+	return Error::NONE;
 }
 
 void update()
@@ -134,39 +128,25 @@ int start()
 {
 	// Initialise and check for errors.
 	Error error = init();
-	if (error == NONE)
+	if (error)
+	{
+		const char* message = error.get_message();
+		bool can_retry = error.can_retry();
+
+		std::cout << "Error: " << message << std::endl;
+
+		std::string command;
+		std::cin >> command;
+		if (can_retry && command == "retry")
+		{
+			return start();
+		}
+	}
+	else
 	{
 		loop();
 
 		Sound::close();
-	}
-	else
-	{
-		// Display a critical error. These are errors that prevent the game from starting.
-		bool canretry = false;
-		switch (error)
-		{
-		case CONNECTION:
-			showerror("Error: The server seems to be offline. Please start the server and enter 'retry'.");
-			canretry = true;
-			break;
-		case NXFILES:
-			showerror("Error: Could not find valid game files.");
-			break;
-		case WINDOW:
-			showerror("Error: Could not initialize graphics.");
-			break;
-		case AUDIO:
-			showerror("Error: Could not initialize audio.");
-			break;
-		}
-
-		std::string command;
-		std::cin >> command;
-		if (canretry && command == "retry")
-		{
-			return start();
-		}
 	}
 	return error;
 }

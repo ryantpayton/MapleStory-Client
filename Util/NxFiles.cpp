@@ -33,20 +33,23 @@ namespace jrc
 		return f.good();
 	}
 
-	bool NxFiles::init()
+	Error NxFiles::init()
 	{
 		for (auto filename : filenames)
 		{
 			if (!exists(filename))
 			{
-				return false;
+				return Error::MISSING_FILE;
 			}
 		}
 
 		nl::nx::load_all();
 
 		nl::bitmap bmptest = nl::nx::ui["Login.img"]["WorldSelect"]["BtChannel"]["layer:bg"];
-		return bmptest.data() != nullptr;
+		if (!bmptest.data())
+			return Error::WRONG_UI_FILE;
+
+		return Error::NONE;
 	}
 
 #ifdef JOURNEY_USE_XXHASH

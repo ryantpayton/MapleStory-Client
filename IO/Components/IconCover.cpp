@@ -53,7 +53,10 @@ namespace jrc
 		if (interheight == 0)
 			return;
 
-		cover.draw(DrawArgument(position + Point<int16_t>(0, 30 - interheight), Point<int16_t>(30, interheight)));
+		cover.draw({
+			position + Point<int16_t>(0, 30 - interheight),
+			Point<int16_t>(30, interheight) }
+		);
 	}
 
 	void IconCover::update()

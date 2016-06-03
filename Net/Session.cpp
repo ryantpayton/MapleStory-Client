@@ -49,11 +49,15 @@ namespace jrc
 		return connected;
 	}
 
-	bool Session::init()
+	Error Session::init()
 	{
 		std::string HOST = Setting<ServerIP>::get().load();
 		std::string PORT = "8484";
-		return init(HOST.c_str(), PORT.c_str());
+
+		if (!init(HOST.c_str(), PORT.c_str()))
+			return Error::CONNECTION;
+
+		return Error::NONE;
 	}
 
 	void Session::reconnect(const char* address, const char* port)

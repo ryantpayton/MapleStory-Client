@@ -18,6 +18,7 @@
 #include "Window.h"
 #include "UI.h"
 
+#include "..\Console.h"
 #include "..\Constants.h"
 #include "..\Timer.h"
 #include "..\Configuration.h"
@@ -85,12 +86,12 @@ namespace jrc
 		UI::get().sendmouse(pos);
 	}
 
-	bool Window::init()
+	Error Window::init()
 	{
 		fullscreen = Setting<Fullscreen>::get().load();
 
 		if (!glfwInit())
-			return false;
+			return Error::GLFW;
 
 		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 		context = glfwCreateWindow(1, 1, "", nullptr, nullptr);
@@ -99,13 +100,13 @@ namespace jrc
 		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
 		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-		if (!GraphicsGL::get().init())
-			return false;
+		if (Error error = GraphicsGL::get().init())
+			return error;
 
 		return initwindow();
 	}
 
-	bool Window::initwindow()
+	Error Window::initwindow()
 	{
 		if (glwnd)
 			glfwDestroyWindow(glwnd);
@@ -119,7 +120,7 @@ namespace jrc
 			);
 
 		if (!glwnd)
-			return false;
+			return Error::WINDOW;
 
 		glfwMakeContextCurrent(glwnd);
 
@@ -138,7 +139,7 @@ namespace jrc
 
 		GraphicsGL::get().reinit();
 
-		return true;
+		return Error::NONE;
 	}
 
 	bool Window::notclosed() const

@@ -29,13 +29,13 @@ namespace jrc
 		locked = false;
 	}
 
-	bool GraphicsGL::init()
+	Error GraphicsGL::init()
 	{
 		if (glewInit())
-			return false;
+			return Error::GLEW;
 
 		if (FT_Init_FreeType(&ftlibrary))
-			return false;
+			return Error::FREETYPE;
 
 		GLint result = GL_FALSE;
 
@@ -60,7 +60,7 @@ namespace jrc
 		glCompileShader(vs);
 		glGetShaderiv(vs, GL_COMPILE_STATUS, &result);
 		if (!result)
-			return false;
+			return Error::VERTEX_SHADER;
 
 		GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
 		const char *fs_source =
@@ -84,7 +84,7 @@ namespace jrc
 		glCompileShader(fs);
 		glGetShaderiv(fs, GL_COMPILE_STATUS, &result);
 		if (!result)
-			return false;
+			return Error::FRAGMENT_SHADER;
 
 		program = glCreateProgram();
 		glAttachShader(program, vs);
@@ -92,7 +92,7 @@ namespace jrc
 		glLinkProgram(program);
 		glGetProgramiv(program, GL_LINK_STATUS, &result);
 		if (!result)
-			return false;
+			return Error::SHADER_PROGRAM;
 
 		attribute_coord = glGetAttribLocation(program, "coord");
 		attribute_color = glGetAttribLocation(program, "color");
@@ -103,7 +103,7 @@ namespace jrc
 		uniform_fontregion = glGetUniformLocation(program, "fontregion");
 		if (attribute_coord == -1 || attribute_color == -1 || uniform_texture == -1 
 			|| uniform_atlassize == -1 || uniform_yoffset == -1 || uniform_screensize == -1)
-			return false;
+			return Error::SHADER_VARS;
 
 		glGenBuffers(1, &vbo);
 
@@ -159,7 +159,7 @@ namespace jrc
 			}
 		});
 
-		return true;
+		return Error::NONE;
 	}
 
 	bool GraphicsGL::addfont(const char* name, Text::Font id, FT_UInt pixelw, FT_UInt pixelh)

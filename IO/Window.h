@@ -16,10 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "..\Error.h"
 #include "..\Util\Singleton.h"
 
-#include "GL\glew.h"
-#include "glfw3.h"
+#include <GL\glew.h>
+#include <glfw3.h>
 
 #include <string>
 #include <functional>
@@ -32,8 +33,9 @@ namespace jrc
 		Window();
 		~Window();
 
-		bool init();
-		bool initwindow();
+		Error init();
+		Error initwindow();
+
 		bool notclosed() const;
 		void update();
 		void begin() const;

@@ -19,6 +19,7 @@
 #include "EnumMap.h"
 #include "Singleton.h"
 
+#include "..\Error.h"
 #include "..\Journey.h"
 
 #include <cstdint>
@@ -33,7 +34,7 @@ namespace jrc
 	public:
 		// Makes sure that all game files exist. 
 		// When successfull also tests if the UI file contains valid images.
-		bool init();
+		Error init();
 
 #ifdef JOURNEY_USE_XXHASH
 		// Obtains a hash value for a file of game assets. Fast version.

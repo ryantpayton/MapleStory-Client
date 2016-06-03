@@ -16,62 +16,67 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "OutPacket.h"
-#include "Login.h"
-#include "Cryptography.h"
-#include "PacketSwitch.h"
-
-#include "..\Error.h"
-#include "..\Util\Singleton.h"
-
-#include "..\Journey.h"
-#ifdef JOURNEY_USE_ASIO
-#include "SocketAsio.h"
-#else
-#include "SocketWinsock.h"
-#endif
 
 namespace jrc
 {
-	class Session : public Singleton<Session>
+	// Error codes to be checked after initialisation.
+	class Error
 	{
 	public:
-		Session();
-		~Session();
+		enum Code
+		{
+			NONE,
+			CONNECTION,
+			MISSING_FILE,
+			WRONG_UI_FILE,
+			GLFW,
+			GLEW,
+			FREETYPE,
+			VERTEX_SHADER,
+			FRAGMENT_SHADER,
+			SHADER_PROGRAM,
+			SHADER_VARS,
+			WINDOW,
+			AUDIO,
+			LENGTH
+		};
 
-		// Connect to the server using the default values for adress and login port, return if successfull.
-		Error init();
-		// Closes the current connection and opens a new one.
-		void reconnect(const char* adress, const char* port);
-		// Mark the session as disconnected.
-		void disconnect();
-		// Check for incoming packets and handle them. Returns if the connection is still alive.
-		bool receive();
+		constexpr Error(Code c)
+			: code(c) {}
 
-		// Obtain a reference to the login information.
-		Login& getlogin();
+		constexpr operator bool() const
+		{
+			return code != NONE;
+		}
+
+		constexpr bool can_retry() const
+		{
+			return code == CONNECTION;
+		}
+
+		constexpr char* get_message() const
+		{
+			return messages[code];
+		}
 
 	private:
-		void dispatch(int8_t* bytes, size_t length);
-		friend void OutPacket::dispatch();
+		Code code;
 
-		void process(const int8_t* bytes, size_t available);
-		bool init(const char* host, const char* port);
-
-		PacketSwitch packetswitch;
-		Cryptography cryptography;
-		Login login;
-
-		int8_t buffer[MAX_PACKET_LENGTH];
-		size_t length;
-		size_t pos;
-		bool connected;
-
-#ifdef JOURNEY_USE_ASIO
-		SocketAsio socket;
-#else
-		SocketWinsock socket;
-#endif
+		static constexpr char* messages[LENGTH] =
+		{
+			"",
+			"The server seems to be offline. Please start the server and enter 'retry'.",
+			"Missing a game file.",
+			"UI.nx has wrong version.",
+			"Could not initialize glfw.",
+			"Could not initialize glew.",
+			"Could not initialize freetype.",
+			"Failed to create vertex shader.",
+			"Failed to create fragment shader.",
+			"Failed to create shader program.",
+			"Failed to locate shader variables.",
+			"Failed to create window.",
+			"Failed to initialize audio"
+		};
 	};
 }
-

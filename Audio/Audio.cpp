@@ -20,10 +20,10 @@
 #include "..\Configuration.h"
 
 #define WIN32_LEAN_AND_MEAN
-#include "bass.h"
+#include <bass.h>
 
-#include "nlnx\nx.hpp"
-#include "nlnx\audio.hpp"
+#include <nlnx\nx.hpp>
+#include <nlnx\audio.hpp>
 
 namespace jrc
 {
@@ -49,10 +49,10 @@ namespace jrc
 	}
 
 
-	bool Sound::init()
+	Error Sound::init()
 	{
 		if (!BASS_Init(1, 44100, 0, nullptr, 0))
-			return false;
+			return Error::AUDIO;
 
 		nl::node uisrc = nl::nx::sound["UI.img"];
 
@@ -70,7 +70,10 @@ namespace jrc
 		add_sound(Sound::LEVELUP, gamesrc["LevelUp"]);
 
 		uint8_t volume = Setting<SFXVolume>::get().load();
-		return set_sfxvolume(volume);
+		if (!set_sfxvolume(volume))
+			return Error::AUDIO;
+
+		return Error::NONE;
 	}
 
 	void Sound::close()
@@ -152,10 +155,13 @@ namespace jrc
 	}
 
 
-	bool Music::init()
+	Error Music::init()
 	{
 		uint8_t volume = Setting<BGMVolume>::get().load();
-		return set_bgmvolume(volume);
+		if (!set_bgmvolume(volume))
+			return Error::AUDIO;
+
+		return Error::NONE;
 	}
 
 	bool Music::set_bgmvolume(uint8_t vol)

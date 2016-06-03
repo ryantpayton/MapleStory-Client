@@ -19,6 +19,7 @@
 #include "Text.h"
 
 #include "..\Constants.h"
+#include "..\Error.h"
 #include "..\Util\QuadTree.h"
 #include "..\Util\Rectangle.h"
 #include "..\Util\Singleton.h"
@@ -42,7 +43,7 @@ namespace jrc
 		GraphicsGL();
 
 		// Initialise all resources.
-		bool init();
+		Error init();
 		// Re-initialise after changing screen modes.
 		void reinit();
 
