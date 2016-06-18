@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -30,17 +30,15 @@ namespace jrc
 {
 	void GatherResultHandler::handle(InPacket&) const
 	{
-		UI::get().with_element<UIItemInventory>([](auto& ii) {
-			ii.enablesort();
-		});
+		UI::get().get_element<UIItemInventory>()
+			.if_present(&UIItemInventory::enable_sort);
 	}
 
 
 	void SortResultHandler::handle(InPacket&) const
 	{
-		UI::get().with_element<UIItemInventory>([](auto& ii) {
-			ii.enablegather();
-		});
+		UI::get().get_element<UIItemInventory>()
+			.if_present(&UIItemInventory::enable_gather);
 	}
 
 
@@ -48,7 +46,7 @@ namespace jrc
 	{
 		recv.read_bool(); // 'updatetick'
 
-		Inventory& inventory = Stage::get().getplayer().getinvent();
+		Inventory& inventory = Stage::get().get_player().get_inventory();
 
 		struct Mod
 		{
@@ -71,11 +69,11 @@ namespace jrc
 			switch (mod.mode)
 			{
 			case 0:
-				ItemParser::parseitem(recv, mod.type, mod.pos, inventory);
+				ItemParser::parse_item(recv, mod.type, mod.pos, inventory);
 				break;
 			case 1:
 				mod.arg = recv.read_short();
-				if (inventory.changecount(mod.type, mod.pos, mod.arg))
+				if (inventory.change_count(mod.type, mod.pos, mod.arg))
 					mod.mode = 4;
 				break;
 			case 2:
@@ -100,9 +98,8 @@ namespace jrc
 				inventory.modify(mod.type, mod.pos, mod.mode, mod.arg, move);
 			}
 
-			UI::get().with_element<UIShop>([&mod](auto& s) {
-				s.modify(mod.type);
-			});
+			UI::get().get_element<UIShop>()
+				.if_present(&UIShop::modify, mod.type);
 
 			auto eqinvent = UI::get().get_element<UIEquipInventory>();
 			auto itinvent = UI::get().get_element<UIItemInventory>();
@@ -115,8 +112,8 @@ namespace jrc
 					if (eqinvent)
 						eqinvent->modify(mod.pos, mod.mode, mod.arg);
 
-					Stage::get().getplayer().changecloth(-mod.pos);
-					Stage::get().getplayer().changecloth(-mod.arg);
+					Stage::get().get_player().change_equip(-mod.pos);
+					Stage::get().get_player().change_equip(-mod.arg);
 					break;
 				case Inventory::EQUIP:
 				case Inventory::USE:
@@ -138,7 +135,7 @@ namespace jrc
 					if (itinvent)
 						itinvent->modify(Inventory::EQUIP, mod.arg, 0, 0);
 
-					Stage::get().getplayer().changecloth(-mod.pos);
+					Stage::get().get_player().change_equip(-mod.pos);
 				}
 				else if (mod.arg < 0)
 				{
@@ -148,13 +145,13 @@ namespace jrc
 					if (itinvent)
 						itinvent->modify(Inventory::EQUIP, mod.pos, 3, 0);
 
-					Stage::get().getplayer().changecloth(-mod.arg);
+					Stage::get().get_player().change_equip(-mod.arg);
 				}
 				break;
 			}
 		}
 
-		Stage::get().getplayer().recalcstats(true);
+		Stage::get().get_player().recalc_stats(true);
 		UI::get().enable();
 	}
 }

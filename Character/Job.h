@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,39 +17,58 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Look\Weapon.h"
+
+#include "..\Util\Range.h"
+
 #include <cstdint>
 #include <string>
 
 namespace jrc
 {
-	class CharJob
+	class Job
 	{
 	public:
-		enum Level
+		enum Level : uint16_t
 		{
-			JOB_BEGINNER,
-			JOB_FIRST,
-			JOB_SECOND,
-			JOB_THIRD,
-			JOB_FOURTHT
+			BEGINNER,
+			FIRST,
+			SECOND,
+			THIRD,
+			FOURTHT
 		};
 
-		CharJob(uint16_t id);
-		CharJob();
-		~CharJob();
+		static Level get_next_level(Level level)
+		{
+			switch (level)
+			{
+			case BEGINNER:
+				return FIRST;
+			case FIRST:
+				return SECOND;
+			case SECOND:
+				return THIRD;
+			default:
+				return FOURTHT;
+			}
+		}
 
-		void changejob(uint16_t id);
-		bool issubjob(uint16_t subid) const;
+		Job(uint16_t id);
+		Job();
+		~Job();
+
+		void change_job(uint16_t id);
+		bool is_sub_job(uint16_t subid) const;
 		bool can_use(int32_t skill_id) const;
-		uint16_t getid() const;
-		uint16_t getsubjob(Level level) const;
-		std::string getname() const;
-		Level getlevel() const;
-		Equipstat::Value primarystat(Weapon::Type weapontype) const;
-		Equipstat::Value secondarystat(Weapon::Type weapontype) const;
+		uint16_t get_id() const;
+		uint16_t get_subjob(Level level) const;
+		Level get_level() const;
+		const std::string& get_name() const;
+		Equipstat::Value get_primary(Weapon::Type weapontype) const;
+		Equipstat::Value get_secondary(Weapon::Type weapontype) const;
+		Range<int32_t> get_skillid_range(Level level) const;
 
 	private:
-		std::string getname(uint16_t id) const;
+		std::string get_name(uint16_t id) const;
 
 		std::string name;
 		uint16_t id;

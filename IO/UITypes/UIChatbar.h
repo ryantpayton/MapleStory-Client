@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,33 +16,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Button.h"
-#include "Textfield.h"
-#include "Slider.h"
-
 #include "..\UIElement.h"
-#include "..\Cursor.h"
 
-#include "..\..\Graphics\Texture.h"
+#include "..\Components\Slider.h"
+#include "..\Components\Textfield.h"
+
 #include "..\..\Graphics\Geometry.h"
+#include "..\..\Graphics\Texture.h"
 
 #include <vector>
 
 namespace jrc
 {
-	class Chatbar : public UIElement
+	class UIChatbar : public UIElement
 	{
 	public:
-		enum Buttons : uint16_t
-		{
-			BT_OPENCHAT,
-			BT_CLOSECHAT,
-			BT_SCROLLUP,
-			BT_SCROLLDOWN,
-			BT_CHATTARGETS
-		};
-
-		static const size_t NUM_TARGETS = 6;
 		enum ChatTarget
 		{
 			CHT_ALL,
@@ -50,7 +38,8 @@ namespace jrc
 			CHT_GUILD,
 			CHT_ALLIANCE,
 			CHT_PARTY,
-			CHT_SQUAD
+			CHT_SQUAD,
+			NUM_TARGETS
 		};
 
 		enum LineType
@@ -62,19 +51,31 @@ namespace jrc
 			YELLOW
 		};
 
-		Chatbar(Point<int16_t> position);
-		~Chatbar();
+		UIChatbar(Point<int16_t> position);
 
 		void draw(float inter) const override;
 		void update() override;
-		void buttonpressed(uint16_t buttonid) override;
-		bool isinrange(Point<int16_t> cursorpos) const override;
-		Cursor::State sendmouse(bool pressed, Point<int16_t> cursorpos) override;
 
-		void sendline(const std::string& line, LineType type);
+		bool is_in_range(Point<int16_t> cursorpos) const override;
+		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		Cursor::State send_cursor(bool pressed, Point<int16_t> cursorpos) override;
+
+		void send_line(const std::string& line, LineType type);
+
+	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
 		int16_t getchattop() const;
+
+		enum Buttons : uint16_t
+		{
+			BT_OPENCHAT,
+			BT_CLOSECHAT,
+			BT_SCROLLUP,
+			BT_SCROLLDOWN,
+			BT_CHATTARGETS
+		};
 
 		static constexpr int16_t CHATYOFFSET = 65;
 		static constexpr int16_t CHATROWHEIGHT = 16;

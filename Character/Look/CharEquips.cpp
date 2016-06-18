@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,66 +21,65 @@ namespace jrc
 {
 	CharEquips::CharEquips()
 	{
-		for (auto it = Equipslot::getit(); it.hasnext(); it.increment())
+		for (Equipslot::Value slot : Equipslot::values.keys())
 		{
-			Equipslot::Value slot = it.get();
 			equips[slot] = nullptr;
 		}
 	}
 
 	void CharEquips::draw(Equipslot::Value slot, Stance::Value stance, Clothing::Layer layer, uint8_t frame, const DrawArgument& args) const 
 	{
-		Optional<const Clothing> equip = getequip(slot);
+		Optional<const Clothing> equip = get_equip(slot);
 		if (equip)
 		{
 			equip->draw(stance, layer, frame, args);
 		}
 	}
 
-	void CharEquips::addequip(const Clothing& eq)
+	void CharEquips::add_equip(const Clothing& eq)
 	{
 		Equipslot::Value slot = eq.geteqslot();
 		equips[slot] = &eq;
 	}
 
-	void CharEquips::removeequip(Equipslot::Value slot)
+	void CharEquips::remove_equip(Equipslot::Value slot)
 	{
 		equips[slot] = nullptr;
 	}
 
-	bool CharEquips::isvisible(Equipslot::Value slot) const
+	bool CharEquips::is_visible(Equipslot::Value slot) const
 	{
-		return !getequip(slot)
+		return !get_equip(slot)
 			.maportrue(&Clothing::istransparent);
 	}
 
 	bool CharEquips::comparelayer(Equipslot::Value slot, Stance::Value stance, Clothing::Layer layer) const
 	{
-		return getequip(slot)
-			.maporfalse(&Clothing::islayer, stance, layer);
+		return get_equip(slot)
+			.maporfalse(&Clothing::contains_layer, stance, layer);
 	}
 
 	bool CharEquips::hasoverall() const
 	{
-		return getequip(Equipslot::TOP)
-			.mapordefault(&Clothing::getid, 0) / 10000 == 105;
+		return get_equip(Equipslot::TOP)
+			.mapordefault(&Clothing::get_id, 0) / 10000 == 105;
 	}
 
 	bool CharEquips::hasweapon() const
 	{
-		return getweapon()
+		return get_weapon()
 			.ispresent();
 	}
 
 	bool CharEquips::istwohanded() const
 	{
-		return getweapon()
+		return get_weapon()
 			.maporfalse(&Weapon::istwohanded);
 	}
 
 	CharEquips::CapType CharEquips::getcaptype() const
 	{
-		Optional<const Clothing> cap = getequip(Equipslot::CAP);
+		Optional<const Clothing> cap = get_equip(Equipslot::CAP);
 		if (cap)
 		{
 			std::string vslot = cap->getvslot();
@@ -99,26 +98,26 @@ namespace jrc
 		}
 	}
 
-	Weapon::Type CharEquips::getweapontype() const
+	Weapon::Type CharEquips::get_weapontype() const
 	{
-		return getweapon()
+		return get_weapon()
 			.mapordefault(&Weapon::gettype, Weapon::NONE);
 	}
 
-	std::string CharEquips::getequipname(Equipslot::Value slot) const
+	std::string CharEquips::get_equipname(Equipslot::Value slot) const
 	{
-		return getequip(slot)
-			.mapordefault(&Clothing::getname, std::string(""));
+		return get_equip(slot)
+			.mapordefault(&Clothing::get_name, std::string(""));
 	}
 
-	Optional<const Clothing> CharEquips::getequip(Equipslot::Value slot) const
+	Optional<const Clothing> CharEquips::get_equip(Equipslot::Value slot) const
 	{
 		return equips[slot];
 	}
 
-	Optional<const Weapon> CharEquips::getweapon() const
+	Optional<const Weapon> CharEquips::get_weapon() const
 	{
-		return getequip(Equipslot::WEAPON)
+		return get_equip(Equipslot::WEAPON)
 			.reinterpret<const Weapon>();
 	}
 }

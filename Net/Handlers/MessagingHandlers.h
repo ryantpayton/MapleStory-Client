@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -29,7 +29,7 @@ namespace jrc
 	public:
 		void handle(InPacket& recv) const override;
 	private:
-		void showstatus(Text::Color color, const std::string& message) const;
+		void show_status(Text::Color color, const std::string& message) const;
 	};
 
 

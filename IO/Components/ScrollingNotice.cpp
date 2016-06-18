@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2016 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -32,7 +32,7 @@ namespace jrc
 
 	void ScrollingNotice::setnotice(std::string n)
 	{
-		notice.settext(n);
+		notice.change_text(n);
 		xpos.set(800.0);
 		active = n.size() > 0;
 	}

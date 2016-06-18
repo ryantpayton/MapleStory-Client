@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,7 +17,6 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "..\OutPacket.h"
-#include "..\SendOpcodes.h"
 
 #include "..\..\Gameplay\Movement.h"
 
@@ -27,7 +26,7 @@ namespace jrc
 	class MovementPacket : public OutPacket
 	{
 	public:
-		MovementPacket(SendOpcode opc) : OutPacket(opc) {}
+		MovementPacket(OutPacket::Opcode opc) : OutPacket(opc) {}
 
 	protected:
 		void writemovement(const Movement& movement)

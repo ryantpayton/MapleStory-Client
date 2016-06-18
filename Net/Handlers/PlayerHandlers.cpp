@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,12 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "PlayerHandlers.h"
 
-#include "..\..\Timer.h"
 #include "..\..\Character\Buff.h"
 #include "..\..\Gameplay\Stage.h"
 #include "..\..\IO\UI.h"
 #include "..\..\IO\UITypes\UIBuffList.h"
 #include "..\..\IO\UITypes\UIStatsinfo.h"
+#include "..\..\IO\UITypes\UISkillbook.h"
 
 namespace jrc
 {
@@ -35,7 +35,7 @@ namespace jrc
 			uint8_t type = recv.read_byte();
 			int32_t action = recv.read_int();
 
-			UI::get().addkeymapping(i, type, action);
+			UI::get().add_keymapping(i, type, action);
 		}
 	}
 
@@ -57,62 +57,108 @@ namespace jrc
 	void ChangeStatsHandler::handle(InPacket& recv) const
 	{
 		recv.read_bool(); // 'itemreaction'
-
 		int32_t updatemask = recv.read_int();
 
-		Player& player = Stage::get().getplayer();
-
 		bool recalculate = false;
-		for (auto it = Maplestat::it(); it.hasnext(); it.increment())
+		for (auto iter : Maplestat::values)
 		{
-			Maplestat::Value stat = it.get();
-			if (Maplestat::compare(stat, updatemask))
+			if (updatemask & iter.second)
 			{
-				bool updatesingle = false;
-				switch (stat)
-				{
-				case Maplestat::SKIN:
-					player.changelook(stat, recv.read_short());
-					break;
-				case Maplestat::FACE:
-				case Maplestat::HAIR:
-					player.changelook(stat, recv.read_int());
-					break;
-				case Maplestat::LEVEL:
-					player.changelevel(recv.read_byte());
-					updatesingle = true;
-					break;
-				case Maplestat::JOB:
-					player.changejob(recv.read_short());
-					updatesingle = true;
-					break;
-				case Maplestat::EXP:
-					player.getstats().set_exp(recv.read_int());
-					break;
-				case Maplestat::MESO:
-					player.getinvent().setmeso(recv.read_int());
-					break;
-				default:
-					player.getstats().set_stat(stat, recv.read_short());
-					recalculate = true;
-					break;
-				}
-
-				if (updatesingle)
-				{
-					UI::get().with_element<UIStatsinfo>([&stat](auto& si) {
-						si.updatestat(stat);
-					});
-				}
+				recalculate |= handle_stat(iter.first, recv);
 			}
 		}
 
 		if (recalculate)
 		{
-			player.recalcstats(false);
+			Stage::get()
+				.get_player()
+				.recalc_stats(false);
 		}
 
 		UI::get().enable();
+	}
+
+	bool ChangeStatsHandler::handle_stat(Maplestat::Value stat, InPacket& recv) const
+	{
+		Player& player = Stage::get().get_player();
+
+		bool recalculate = false;
+
+		switch (stat)
+		{
+		case Maplestat::SKIN:
+			player.change_look(stat, recv.read_short());
+			break;
+		case Maplestat::FACE:
+		case Maplestat::HAIR:
+			player.change_look(stat, recv.read_int());
+			break;
+		case Maplestat::LEVEL:
+			player.change_level(recv.read_byte());
+			break;
+		case Maplestat::JOB:
+			player.change_job(recv.read_short());
+			break;
+		case Maplestat::EXP:
+			player.get_stats().set_exp(recv.read_int());
+			break;
+		case Maplestat::MESO:
+			player.get_inventory().set_meso(recv.read_int());
+			break;
+		default:
+			player.get_stats().set_stat(stat, recv.read_short());
+			recalculate = true;
+			break;
+		}
+
+		bool update_statsinfo = need_statsinfo_update(stat);
+		if (update_statsinfo && !recalculate)
+		{
+			UI::get().get_element<UIStatsinfo>()
+				.if_present(&UIStatsinfo::update_stat, stat);
+		}
+
+		bool update_skillbook = need_skillbook_update(stat);
+		if (update_skillbook)
+		{
+			int16_t value = player.get_stats().get_stat(stat);
+			UI::get().get_element<UISkillbook>()
+				.if_present(&UISkillbook::update_stat, stat, value);
+		}
+
+		return recalculate;
+	}
+
+	bool ChangeStatsHandler::need_statsinfo_update(Maplestat::Value stat) const
+	{
+		switch (stat)
+		{
+		case Maplestat::JOB:
+		case Maplestat::STR:
+		case Maplestat::DEX:
+		case Maplestat::INT:
+		case Maplestat::LUK:
+		case Maplestat::HP:
+		case Maplestat::MAXHP:
+		case Maplestat::MP:
+		case Maplestat::MAXMP:
+		case Maplestat::AP:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	bool ChangeStatsHandler::need_skillbook_update(Maplestat::Value stat) const
+	{
+		switch (stat)
+		{
+		case Maplestat::JOB:
+		case Maplestat::SP:
+			return true;
+		default:
+			return false;
+		}
 	}
 
 
@@ -124,7 +170,7 @@ namespace jrc
 		switch (secondmask)
 		{
 		case Buff::BATTLESHIP:
-			handlebuff(recv, Buff::BATTLESHIP);
+			handle_buff(recv, Buff::BATTLESHIP);
 			return;
 		}
 
@@ -132,46 +178,45 @@ namespace jrc
 		{
 			if (firstmask & stat)
 			{
-				handlebuff(recv, stat);
+				handle_buff(recv, stat);
 			}
 		}
 		for (Buff::Stat stat : Buff::SECOND_BUFFS)
 		{
 			if (secondmask & stat)
 			{
-				handlebuff(recv, stat);
+				handle_buff(recv, stat);
 			}
 		}
 
-		Stage::get().getplayer().recalcstats(false);
+		Stage::get().get_player().recalc_stats(false);
 	}
 
-	void ApplyBuffHandler::handlebuff(InPacket& recv, Buff::Stat bs) const
+	void ApplyBuffHandler::handle_buff(InPacket& recv, Buff::Stat bs) const
 	{
 		int16_t value = recv.read_short();
 		int32_t skillid = recv.read_int();
 		int32_t duration = recv.read_int();
 
-		Stage::get().getplayer().givebuff({ bs, value, skillid, duration });
+		Stage::get().get_player().give_buff({ bs, value, skillid, duration });
 
-		UI::get().with_element<UIBuffList>([&skillid, &duration](auto& bl) {
-			bl.add_buff(skillid, duration);
-		});
+		UI::get().get_element<UIBuffList>()
+			.if_present(&UIBuffList::add_buff, skillid, duration);
 	}
 
-	void CancelBuffHandler::handlebuff(InPacket&, Buff::Stat bs) const
+	void CancelBuffHandler::handle_buff(InPacket&, Buff::Stat bs) const
 	{
-		Stage::get().getplayer().cancelbuff(bs);
+		Stage::get().get_player().cancel_buff(bs);
 	}
 
 
 	void RecalculateStatsHandler::handle(InPacket&) const
 	{
-		Stage::get().getplayer().recalcstats(false);
+		Stage::get().get_player().recalc_stats(false);
 	}
 
 
-	void UpdateskillsHandler::handle(InPacket& recv) const
+	void UpdateSkillHandler::handle(InPacket& recv) const
 	{
 		recv.skip(3);
 
@@ -180,17 +225,20 @@ namespace jrc
 		int32_t masterlevel = recv.read_int();
 		int64_t expire = recv.read_long();
 
-		Stage::get().getplayer().getskills().set_skill(skillid, level, masterlevel, expire);
+		Stage::get().get_player()
+			.change_skill(skillid, level, masterlevel, expire);
+
+		UI::get().get_element<UISkillbook>()
+			.if_present(&UISkillbook::update_skills, skillid);
+		UI::get().enable();
 	}
 
 
 	void AddCooldownHandler::handle(InPacket& recv) const
 	{
-		int32_t skillid = recv.read_int();
-		int16_t time = recv.read_short();
+		int32_t skill_id = recv.read_int();
+		int16_t cooltime = recv.read_short();
 
-		int32_t seconds = Timer::get().seconds() + time;
-
-		Stage::get().getplayer().getskills().set_cd(skillid, seconds);
+		Stage::get().get_player().add_cooldown(skill_id, cooltime);
 	}
 }

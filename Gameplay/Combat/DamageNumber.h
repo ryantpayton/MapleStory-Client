@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -39,7 +39,7 @@ namespace jrc
 		DamageNumber();
 
 		void draw(double viewx, double viewy, float alpha) const;
-		void setx(int16_t headx);
+		void set_x(int16_t headx);
 		bool update();
 
 		static int16_t rowheight(bool critical);

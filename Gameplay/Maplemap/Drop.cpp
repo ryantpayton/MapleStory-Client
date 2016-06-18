@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                               //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -23,7 +23,7 @@ namespace jrc
 		int8_t type, int8_t mode, bool pldrp) : MapObject(id) {
 
 		owner = own;
-		setposition(start.x(), start.y() - 4);
+		set_position(start.x(), start.y() - 4);
 		dest = dst;
 		pickuptype = type;
 		playerdrop = pldrp;
@@ -44,7 +44,7 @@ namespace jrc
 			break;
 		case 2:
 			state = FLOATING;
-			basey = phobj.crnty();
+			basey = phobj.crnt_y();
 			phobj.type = PhysicsObject::FIXATED;
 			break;
 		case 3:
@@ -56,7 +56,7 @@ namespace jrc
 
 	int8_t Drop::update(const Physics& physics)
 	{
-		physics.moveobject(phobj);
+		physics.move_object(phobj);
 
 		if (state == DROPPED)
 		{
@@ -66,7 +66,7 @@ namespace jrc
 				phobj.type = PhysicsObject::FIXATED;
 				state = FLOATING;
 				angle.set(0.0f);
-				setposition(dest.x(), dest.y() - 4);
+				set_position(dest.x(), dest.y() - 4);
 			}
 			else
 			{
@@ -127,7 +127,7 @@ namespace jrc
 
 	Rectangle<int16_t> Drop::bounds() const
 	{ 
-		auto lt = getposition();
+		auto lt = get_position();
 		auto rb = lt + Point<int16_t>(32, 32);
 		return Rectangle<int16_t>(lt, rb); 
 	}

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -27,7 +27,6 @@ namespace jrc
 	class Text
 	{
 	public:
-		static const size_t NUM_FONTS = 8;
 		enum Font
 		{
 			A11L,
@@ -37,7 +36,8 @@ namespace jrc
 			A12B,
 			A13M,
 			A13B,
-			A18M
+			A18M,
+			NUM_FONTS
 		};
 
 		enum Alignment
@@ -47,7 +47,6 @@ namespace jrc
 			RIGHT
 		};
 
-		static const size_t NUM_COLORS = 12;
 		enum Color
 		{
 			BLACK,
@@ -61,7 +60,8 @@ namespace jrc
 			DARKGREY,
 			ORANGE,
 			MEDIUMBLUE,
-			VIOLET
+			VIOLET,
+			NUM_COLORS
 		};
 
 		enum Background
@@ -70,83 +70,76 @@ namespace jrc
 			NAMETAG
 		};
 
-		struct Layout
+		class Layout
 		{
-			struct Line
+		public:
+			struct Word
 			{
-				Point<int16_t> position;
 				size_t first;
 				size_t last;
+				Font font;
+				Color color;
 			};
 
-			Alignment alignment;
+			struct Line
+			{
+				std::vector<Word> words;
+				Point<int16_t> position;
+			};
 
+			Layout(const std::vector<Line>& lines, const std::vector<int16_t>& advances,
+				int16_t width, int16_t height, int16_t endx, int16_t endy);
+			Layout();
+
+			int16_t width() const;
+			int16_t height() const;
+			int16_t advance(size_t index) const;
+			Point<int16_t> get_dimensions() const;
+			Point<int16_t> get_endoffset() const;
+
+			using iterator = std::vector<Line>::const_iterator;
+			iterator begin() const;
+			iterator end() const;
+
+		private:
+			std::vector<Line> lines;
+			std::vector<int16_t> advances;
 			Point<int16_t> dimensions;
 			Point<int16_t> endoffset;
-			std::map<size_t, float> advances;
-
-			std::vector<Line> lines;
-			int16_t linecount;
-
-			Layout(Alignment a)
-			{
-				alignment = a;
-				linecount = 0;
-			}
-
-			Layout()
-			{
-				alignment = Text::LEFT;
-				linecount = 0;
-			}
-
-			void addline(int16_t ax, int16_t y, size_t first, size_t last)
-			{
-				int16_t x = 0;
-				switch (alignment)
-				{
-				case Text::CENTER:
-					x -= ax / 2;
-					break;
-				case Text::RIGHT:
-					x -= ax;
-					break;
-				}
-				Point<int16_t> position = Point<int16_t>(x, y);
-				Line line = {position, first, last};
-				lines.push_back(line);
-				linecount++;
-			}
 		};
 
-		Text(Font font, Alignment alignment, Color color, Background background, const std::string& text);
-		Text(Font font, Alignment alignment, Color color, const std::string& text);
-		Text(Font font, Alignment alignment, Color color);
+		Text(Font font, Alignment alignment, Color color, Background background, 
+			const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true);
+		Text(Font font, Alignment alignment, Color color, 
+			const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true);
 		Text();
 
 		void draw(Point<int16_t> position, float alpha) const;
 		void draw(Point<int16_t> position) const;
 
-		void settext(const std::string& text);
-		void settext(const std::string& text, uint16_t maxwidth);
-		void setcolor(Color color);
-		void setback(Background background);
+		void change_text(const std::string& text);
+		void change_color(Color color);
+		void set_background(Background background);
 
+		bool empty() const;
 		size_t length() const;
 		int16_t width() const;
 		int16_t height() const;
-		int16_t linecount() const;
 		uint16_t advance(size_t pos) const;
 		Point<int16_t> dimensions() const;
 		Point<int16_t> endoffset() const;
-		std::string gettext() const;
+		const std::string& get_text() const;
 
 	private:
+		void reset_layout();
+
 		Font font;
 		Alignment alignment;
 		Color color;
 		Background background;
 		Layout layout;
+		uint16_t maxwidth;
+		bool formatted;
 		std::string text;
 	};
 }

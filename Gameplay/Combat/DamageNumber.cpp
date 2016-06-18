@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -69,7 +69,7 @@ namespace jrc
 			miss = true;
 		}
 
-		moveobj.sety(starty);
+		moveobj.set_y(starty);
 		moveobj.vspeed = -0.25;
 		opacity.set(1.5f);
 	}
@@ -78,7 +78,7 @@ namespace jrc
 
 	void DamageNumber::draw(double viewx, double viewy, float alpha) const
 	{
-		Point<int16_t> absolute = moveobj.getabsolute(viewx, viewy, alpha);
+		Point<int16_t> absolute = moveobj.get_absolute(viewx, viewy, alpha);
 		Point<int16_t> position = absolute - Point<int16_t>(0, shift);
 		float interopc = opacity.get(alpha);
 
@@ -95,7 +95,7 @@ namespace jrc
 			if (multiple)
 			{
 				int16_t first_advance = getadvance(firstnum, true);
-				position.shiftx(first_advance);
+				position.shift_x(first_advance);
 
 				for (size_t i = 0; i < restnum.length(); i++)
 				{
@@ -117,7 +117,7 @@ namespace jrc
 						advance = getadvance(c, false);
 					}
 
-					position.shiftx(advance);
+					position.shift_x(advance);
 				}
 			}
 		}
@@ -161,9 +161,9 @@ namespace jrc
 		}
 	}
 
-	void DamageNumber::setx(int16_t headx)
+	void DamageNumber::set_x(int16_t headx)
 	{
-		moveobj.setx(headx);
+		moveobj.set_x(headx);
 	}
 
 	bool DamageNumber::update()

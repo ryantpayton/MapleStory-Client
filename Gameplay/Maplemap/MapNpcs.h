@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -34,14 +34,14 @@ namespace jrc
 		void update(const Physics& physics);
 
 		// Spawn a npc on the ground.
-		void sendspawn(const NpcSpawn& spawn, const Physics& physics);
+		void send_spawn(const NpcSpawn& spawn, const Physics& physics);
 		// Remove the npc with the specified oid;
-		void removenpc(int32_t oid);
+		void remove_npc(int32_t oid);
 		// Remove all npcs.
 		void clear();
 
 		// Send mouse input to clickable npcs.
-		Cursor::State sendmouse(bool pressed, Point<int16_t> position, Point<int16_t> viewpos);
+		Cursor::State send_cursor(bool pressed, Point<int16_t> position, Point<int16_t> viewpos);
 
 	private:
 		Optional<Npc> getnpc(int32_t oid);

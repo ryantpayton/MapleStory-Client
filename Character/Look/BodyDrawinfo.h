@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -70,12 +70,12 @@ namespace jrc
 			return delay;
 		}
 
-		Point<int16_t> getmove() const
+		Point<int16_t> get_move() const
 		{
 			return move;
 		}
 
-		Stance::Value getstance() const
+		Stance::Value get_stance() const
 		{
 			return stance;
 		}
@@ -97,13 +97,13 @@ namespace jrc
 		Point<int16_t> getbodypos(Stance::Value stance, uint8_t frame) const;
 		Point<int16_t> getarmpos(Stance::Value stance, uint8_t frame) const;
 		Point<int16_t> gethandpos(Stance::Value stance, uint8_t frame) const;
-		Point<int16_t> getheadpos(Stance::Value stance, uint8_t frame) const;
+		Point<int16_t> get_headpos(Stance::Value stance, uint8_t frame) const;
 		Point<int16_t> gethairpos(Stance::Value stance, uint8_t frame) const;
 		Point<int16_t> getfacepos(Stance::Value stance, uint8_t frame) const;
 		uint8_t nextframe(Stance::Value stance, uint8_t frame) const;
 		uint16_t getdelay(Stance::Value stance, uint8_t frame) const;
 
-		uint16_t getattackdelay(std::string action, size_t no) const;
+		uint16_t get_attackdelay(std::string action, size_t no) const;
 		uint8_t nextacframe(std::string action, uint8_t frame) const;
 		const BodyAction* getaction(std::string action, uint8_t frame) const;
 

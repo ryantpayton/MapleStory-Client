@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -44,14 +44,14 @@ namespace jrc
 				int32_t itemid = recv.read_int();
 				int32_t qty = recv.read_int();
 
-				const ItemData& idata = DataFactory::get().getitemdata(itemid);
-				if (!idata.isloaded())
+				const ItemData& idata = DataFactory::get().get_itemdata(itemid);
+				if (!idata.is_loaded())
 					return;
 
-				std::string name = idata.getname();
+				std::string name = idata.get_name();
 				std::string sign = (qty < 0) ? "-" : "+";
 
-				showstatus(Text::WHITE, "Gained an item: " + name + " (" + sign + std::to_string(qty) + ")");
+				show_status(Text::WHITE, "Gained an item: " + name + " (" + sign + std::to_string(qty) + ")");
 			}
 			else if (mode2 == 1)
 			{
@@ -60,7 +60,7 @@ namespace jrc
 				int32_t gain = recv.read_int();
 				std::string sign = (gain < 0) ? "-" : "+";
 
-				showstatus(Text::WHITE, "Received mesos (" + sign + std::to_string(gain) + ")");
+				show_status(Text::WHITE, "Received mesos (" + sign + std::to_string(gain) + ")");
 			}
 		}
 		else if (mode == 3)
@@ -84,9 +84,9 @@ namespace jrc
 			}
 			else
 			{
-				showstatus(white ? Text::WHITE : Text::YELLOW, message);
+				show_status(white ? Text::WHITE : Text::YELLOW, message);
 				if (bonus1 > 0)
-					showstatus(Text::YELLOW, "+ Bonus EXP (+" + std::to_string(bonus1) + ")");
+					show_status(Text::YELLOW, "+ Bonus EXP (+" + std::to_string(bonus1) + ")");
 			}
 		}
 		else if (mode == 4)
@@ -94,18 +94,18 @@ namespace jrc
 			int32_t gain = recv.read_int();
 			std::string sign = (gain < 0) ? "-" : "+";
 
-			showstatus(Text::WHITE, "Received fame (" + sign + std::to_string(gain) + ")");
+			show_status(Text::WHITE, "Received fame (" + sign + std::to_string(gain) + ")");
 		}
 		else if (mode == 5)
 		{
 		}
 	}
 
-	void ShowStatusInfoHandler::showstatus(Text::Color color, const std::string& message) const
+	void ShowStatusInfoHandler::show_status(Text::Color color, const std::string& message) const
 	{
 		UIStatusMessenger* messenger = UI::get().get_element<UIStatusMessenger>().get();
 		if (messenger)
-			messenger->showstatus(color, message);
+			messenger->show_status(color, message);
 	}
 
 
@@ -124,7 +124,7 @@ namespace jrc
 		}
 		else if (type == 4)
 		{
-			UI::get().setscrollingnotice(message);
+			UI::get().set_scrollnotice(message);
 		}
 		else if (type == 7)
 		{
@@ -143,7 +143,7 @@ namespace jrc
 			message = "[Notice] " + message;
 
 		UI::get().get_element<UIStatusbar>()
-			->sendchatline(message, Chatbar::YELLOW);
+			->send_chatline(message, UIChatbar::YELLOW);
 	}
 
 
@@ -154,16 +154,16 @@ namespace jrc
 		std::string message = recv.read_string();
 		int8_t type = recv.read_byte();
 
-		auto speaker = Stage::get().getcharacter(charid);
+		auto speaker = Stage::get().get_character(charid);
 		if (speaker)
 		{
-			message = speaker->getname() + ": " + message;
+			message = speaker->get_name() + ": " + message;
 			speaker->speak(message);
 		}
 
-		auto linetype = static_cast<Chatbar::LineType>(type);
+		auto linetype = static_cast<UIChatbar::LineType>(type);
 		UI::get().get_element<UIStatusbar>()
-			->sendchatline(message, linetype);
+			->send_chatline(message, linetype);
 	}
 
 
@@ -194,13 +194,13 @@ namespace jrc
 			}
 		}
 
-		Stage::get().getcharacter(cid)
-			.ifpresent(&Char::showeffectbyid, effect);
+		Stage::get().get_character(cid)
+			.if_present(&Char::show_effect_id, effect);
 
-		if (Stage::get().isplayer(cid))
+		if (Stage::get().is_player(cid))
 		{
 			UI::get().get_element<UIStatusbar>()
-				.ifpresent(&UIStatusbar::displaymessage, message, Chatbar::RED);
+				.if_present(&UIStatusbar::display_message, message, UIChatbar::RED);
 			UI::get().enable();
 		}
 	}
@@ -217,22 +217,24 @@ namespace jrc
 				int32_t itemid = recv.read_int();
 				int32_t qty = recv.read_int();
 
-				const ItemData& idata = DataFactory::get().getitemdata(itemid);
-				if (!idata.isloaded())
+				const ItemData& idata = DataFactory::get().get_itemdata(itemid);
+				if (!idata.is_loaded())
 					return;
 
-				std::string name = idata.getname();
+				std::string name = idata.get_name();
 				std::string sign = (qty < 0) ? "-" : "+";
 				std::string message = "Gained an item: " + name + " (" + sign + std::to_string(qty) + ")";
 
-				UI::get().with_element<UIStatusbar>([&message](auto& sb) { 
-					sb.sendchatline(message, Chatbar::BLUE);
-				});
+				auto statusbar = UI::get().get_element<UIStatusbar>();
+				if (statusbar)
+				{
+					statusbar->send_chatline(message, UIChatbar::BLUE);
+				}
 			}
 		}
 		else if (mode1 == 13) // card effect
 		{
-			Stage::get().getplayer().showeffectbyid(Char::MONSTER_CARD);
+			Stage::get().get_player().show_effect_id(Char::MONSTER_CARD);
 		}
 		else if (mode1 == 18) // intro effect
 		{
@@ -247,7 +249,7 @@ namespace jrc
 		{
 			int32_t skillid = recv.read_int();
 			// more bytes, but we don't need them
-			Stage::get().showplayerbuff(skillid);
+			Stage::get().show_player_buff(skillid);
 		}
 	}
 }

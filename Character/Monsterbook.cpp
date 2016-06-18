@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -26,12 +26,12 @@ namespace jrc
 
 	Monsterbook::~Monsterbook() {}
 
-	void Monsterbook::setcover(int32_t cov)
+	void Monsterbook::set_cover(int32_t cov)
 	{
 		cover = cov;
 	}
 
-	void Monsterbook::addcard(int16_t card, int8_t level)
+	void Monsterbook::add_card(int16_t card, int8_t level)
 	{
 		cards[card] = level;
 	}

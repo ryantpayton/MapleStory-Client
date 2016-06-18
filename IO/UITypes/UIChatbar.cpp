@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,18 +15,19 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Chatbar.h"
-#include "MapleButton.h"
+#include "UIChatbar.h"
 
 #include "..\UI.h"
 
+#include "..\Components\MapleButton.h"
+
 #include "..\..\Net\Packets\MessagingPackets.h"
 
-#include "nlnx\nx.hpp"
+#include <nlnx\nx.hpp>
 
 namespace jrc
 {
-	Chatbar::Chatbar(Point<int16_t> pos)
+	UIChatbar::UIChatbar(Point<int16_t> pos)
 	{
 		position = pos;
 		dimension = { 500, 60 };
@@ -44,8 +45,8 @@ namespace jrc
 		buttons[BT_SCROLLDOWN] = std::make_unique<MapleButton>(mainbar["scrollDown"]);
 		buttons[BT_CHATTARGETS] = std::make_unique<MapleButton>(mainbar["chatTarget"]["base"]);
 
-		buttons[chatopen ? BT_OPENCHAT : BT_CLOSECHAT]->setactive(false);
-		buttons[BT_CHATTARGETS]->setactive(chatopen);
+		buttons[chatopen ? BT_OPENCHAT : BT_CLOSECHAT]->set_active(false);
+		buttons[BT_CHATTARGETS]->set_active(chatopen);
 
 		chatspace[false] = mainbar["chatSpace"];
 		chatspace[true] = mainbar["chatEnter"];
@@ -67,8 +68,8 @@ namespace jrc
 		chatbox = { 502, 1 + chatrows * CHATROWHEIGHT, Geometry::BLACK, 0.6f };
 
 		chatfield = { Text::A11M, Text::LEFT, Text::BLACK, { { -435, -58 }, { -40, -35} }, 0 };
-		chatfield.setstate(chatopen ? Textfield::NORMAL : Textfield::DISABLED);
-		chatfield.setonreturn([&](std::string msg) {
+		chatfield.set_state(chatopen ? Textfield::NORMAL : Textfield::DISABLED);
+		chatfield.set_enter_callback([&](std::string msg) {
 
 			size_t last = msg.find_last_not_of(' ');
 			if (last != std::string::npos)
@@ -81,18 +82,18 @@ namespace jrc
 				lastpos = lastentered.size();
 			}
 		});
-		chatfield.setkey(Keyboard::UP, [&](){
+		chatfield.set_key_callback(Keyboard::UP, [&](){
 			if (lastpos > 0)
 			{
 				lastpos--;
-				chatfield.settext(lastentered[lastpos]);
+				chatfield.change_text(lastentered[lastpos]);
 			}
 		});
-		chatfield.setkey(Keyboard::DOWN, [&](){
+		chatfield.set_key_callback(Keyboard::DOWN, [&](){
 			if (lastentered.size() > 0 && lastpos < lastentered.size() - 1)
 			{
 				lastpos++;
-				chatfield.settext(lastentered[lastpos]);
+				chatfield.change_text(lastentered[lastpos]);
 			}
 		});
 
@@ -106,9 +107,7 @@ namespace jrc
 		} };
 	}
 
-	Chatbar::~Chatbar() {}
-
-	void Chatbar::draw(float inter) const
+	void UIChatbar::draw(float inter) const
 	{
 		chatspace[chatopen].draw(position);
 		chatenter.draw(position);
@@ -149,37 +148,36 @@ namespace jrc
 		}
 	}
 
-	void Chatbar::update()
+	void UIChatbar::update()
 	{
 		UIElement::update();
 
 		chatfield.update(position);
 	}
 
-	void Chatbar::buttonpressed(uint16_t id)
+	Button::State UIChatbar::button_pressed(uint16_t id)
 	{
 		switch (id)
 		{
 		case BT_OPENCHAT:
 			chatopen = true;
-			buttons[BT_OPENCHAT]->setactive(false);
-			buttons[BT_CLOSECHAT]->setactive(true);
-			buttons[BT_CHATTARGETS]->setactive(true);
-			chatfield.setstate(Textfield::NORMAL);
+			buttons[BT_OPENCHAT]->set_active(false);
+			buttons[BT_CLOSECHAT]->set_active(true);
+			buttons[BT_CHATTARGETS]->set_active(true);
+			chatfield.set_state(Textfield::NORMAL);
 			break;
 		case BT_CLOSECHAT:
 			chatopen = false;
-			buttons[BT_OPENCHAT]->setactive(true);
-			buttons[BT_CLOSECHAT]->setactive(false);
-			buttons[BT_CHATTARGETS]->setactive(false);
-			chatfield.setstate(Textfield::DISABLED);
+			buttons[BT_OPENCHAT]->set_active(true);
+			buttons[BT_CLOSECHAT]->set_active(false);
+			buttons[BT_CHATTARGETS]->set_active(false);
+			chatfield.set_state(Textfield::DISABLED);
 			break;
 		}
-
-		buttons[id]->setstate(Button::NORMAL);
+		return Button::NORMAL;
 	}
 
-	bool Chatbar::isinrange(Point<int16_t> cursorpos) const
+	bool UIChatbar::is_in_range(Point<int16_t> cursorpos) const
 	{
 		Point<int16_t> absp(0, getchattop() - 16);
 		Point<int16_t> dim(500, chatrows * CHATROWHEIGHT + CHATYOFFSET + 16);
@@ -187,21 +185,29 @@ namespace jrc
 			.contains(cursorpos);
 	}
 
-	Cursor::State Chatbar::sendmouse(bool clicking, Point<int16_t> cursorpos)
+	bool UIChatbar::remove_cursor(bool clicked, Point<int16_t> cursorpos)
+	{
+		if (slider.remove_cursor(clicked))
+			return true;
+
+		return UIElement::remove_cursor(clicked, cursorpos);
+	}
+
+	Cursor::State UIChatbar::send_cursor(bool clicking, Point<int16_t> cursorpos)
 	{
 		if (slider.isenabled())
 		{
 			auto cursoroffset = cursorpos - Point<int16_t>(position.x(), getchattop() + 5);
-			Cursor::State sstate = slider.sendcursor(cursoroffset, clicking);
+			Cursor::State sstate = slider.send_cursor(cursoroffset, clicking);
 			if (sstate != Cursor::IDLE)
 			{
 				return sstate;
 			}
 		}
 
-		if (chatfield.getstate() == Textfield::NORMAL)
+		if (chatfield.get_state() == Textfield::NORMAL)
 		{
-			Cursor::State tstate = chatfield.sendcursor(cursorpos, clicking);
+			Cursor::State tstate = chatfield.send_cursor(cursorpos, clicking);
 			if (tstate != Cursor::IDLE)
 			{
 				return tstate;
@@ -252,10 +258,10 @@ namespace jrc
 			}
 		}
 
-		return UIElement::sendmouse(clicking, cursorpos);
+		return UIElement::send_cursor(clicking, cursorpos);
 	}
 
-	void Chatbar::sendline(const std::string& line, LineType type)
+	void UIChatbar::send_line(const std::string& line, LineType type)
 	{
 		rowmax++;
 		rowpos = rowmax;
@@ -282,11 +288,11 @@ namespace jrc
 		rowtexts.emplace(
 			std::piecewise_construct,
 			std::forward_as_tuple(rowmax),
-			std::forward_as_tuple(Text::A12M, Text::LEFT, color)
-		).first->second.settext(line, 480);
+			std::forward_as_tuple(Text::A12M, Text::LEFT, color, line, 480)
+		);
 	}
 
-	int16_t Chatbar::getchattop() const
+	int16_t UIChatbar::getchattop() const
 	{
 		return position.y() - chatrows * CHATROWHEIGHT - CHATYOFFSET;
 	}

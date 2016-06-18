@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -55,7 +55,7 @@ namespace jrc
 
 		void setwidth(int16_t width);
 		void setheight(int16_t height);
-		void setcolor(Geometry::Color color);
+		void set_color(Geometry::Color color);
 		void setopacity(float opacity);
 
 		void draw(const DrawArgument& args) const;
@@ -63,6 +63,25 @@ namespace jrc
 	private:
 		int16_t width;
 		int16_t height;
+		Geometry::Color color;
+		float opacity;
+	};
+
+
+	class ColorLine : public Geometry
+	{
+	public:
+		ColorLine(int16_t width, Geometry::Color color, float opacity);
+		ColorLine();
+
+		void setwidth(int16_t width);
+		void set_color(Geometry::Color color);
+		void setopacity(float opacity);
+
+		void draw(const DrawArgument& args) const;
+
+	private:
+		int16_t width;
 		Geometry::Color color;
 		float opacity;
 	};

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -25,38 +25,96 @@ namespace jrc
 	class Rectangle
 	{
 	public:
-		Rectangle(nl::node src) { lt = src["lt"]; rb = src["rb"]; }
-		Rectangle(nl::node nlt, nl::node nrb) { lt = nlt; rb = nrb; }
-		Rectangle(T l, T r, T t, T b) { lt = Point<T>(l, t); rb = Point<T>(r, b); }
-		Rectangle(Point<T> v1, Point<T> v2) { lt = v1; rb = v2; }
-		Rectangle() { lt = Point<T>(); rb = Point<T>(); }
-		~Rectangle() {}
-		T width() const { return abs(lt.x() - rb.x()); }
-		T height() const { return abs(lt.y() - rb.y()); }
-		T l() const { return lt.x(); }
-		T t() const { return lt.y(); }
-		T r() const { return rb.x(); }
-		T b() const { return rb.y(); }
-		bool contains(Point<T> v) const { return !straight() && v.x() >= lt.x() && v.x() <= rb.x() && v.y() >= lt.y() && v.y() <= rb.y(); }
-		bool overlaps(Rectangle<T> ar) const
-		{
-			Range<T> rhor = Range<T>(lt.x(), rb.x());
-			Range<T> rver = Range<T>(lt.y(), rb.y());
-			Range<T> ahor = Range<T>(ar.getlt().x(), ar.getrb().x());
-			Range<T> aver = Range<T>(ar.getlt().y(), ar.getrb().y());
-			return rhor.overlaps(ahor) && rver.overlaps(aver);
+		Rectangle(nl::node nlt, nl::node nrb)
+			: lt(nlt), rb(nrb) {}
+
+		Rectangle(nl::node src)
+			: lt(src["lt"]), rb(src["rb"]) {}
+
+		constexpr Rectangle(Point<T> lt, Point<T> rb)
+			: lt(lt), rb(rb) {}
+
+		constexpr Rectangle(T l, T r, T t, T b)
+			: lt({ l, t }), rb({ r, b }) {}
+
+		constexpr Rectangle() {}
+
+		constexpr T width() const 
+		{ 
+			return std::abs(lt.x() - rb.x()); 
 		}
-		bool straight() const { return lt == rb; }
-		bool empty() const { return lt.straight() && rb.straight() && straight(); }
-		Point<T> getlt() const { return lt; }
-		Point<T> getrb() const { return rb; }
-		Range<T> gethor() const { return Range<T>(lt.x(), rb.x()); }
-		Range<T> getver() const { return Range<T>(lt.y(), rb.y()); }
-		void setlt(Point<T> l) { lt = l; }
-		void setrb(Point<T> r) { rb = r; }
-		void shift(Point<T> v) { lt = lt + v; rb = rb + v; }
-		void shiftlt(Point<T> l) { lt = lt + l; }
-		void shiftrb(Point<T> r) { rb = rb + r; }
+
+		constexpr T height() const 
+		{
+			return std::abs(lt.y() - rb.y()); 
+		}
+
+		constexpr T l() const
+		{ 
+			return lt.x(); 
+		}
+
+		constexpr T t() const 
+		{
+			return lt.y();
+		}
+
+		constexpr T r() const 
+		{
+			return rb.x(); 
+		}
+
+		constexpr T b() const 
+		{
+			return rb.y();
+		}
+
+		constexpr bool contains(const Point<T>& v) const
+		{
+			return !straight() && v.x() >= lt.x() && v.x() <= rb.x() && v.y() >= lt.y() && v.y() <= rb.y();
+		}
+
+		constexpr bool overlaps(const Rectangle<T>& ar) const
+		{
+			return Range<T>(lt.x(), rb.x()).overlaps(Range<T>(ar.lt.x(), ar.rb.x()))
+				&& Range<T>(lt.y(), rb.y()).overlaps(Range<T>(ar.lt.y(), ar.rb.y()));
+		}
+
+		constexpr bool straight() const 
+		{
+			return lt == rb; 
+		}
+
+		constexpr bool empty() const 
+		{
+			return lt.straight() && rb.straight() && straight();
+		}
+
+		constexpr const Point<T>& getlt() const
+		{
+			return lt;
+		}
+
+		constexpr const Point<T>& getrb() const 
+		{
+			return rb; 
+		}
+
+		constexpr Range<T> gethor() const 
+		{
+			return{ lt.x(), rb.x() };
+		}
+
+		constexpr Range<T> getver() const 
+		{
+			return{ lt.y(), rb.y() };
+		}
+
+		void shift(const Point<T>& v)
+		{
+			lt = lt + v; 
+			rb = rb + v; 
+		}
 
 	private:
 		Point<T> lt;

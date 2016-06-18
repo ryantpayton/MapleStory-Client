@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -28,16 +28,16 @@ namespace jrc
 		Physics();
 
 		// Move the specified object over the specified game-time.
-		void moveobject(PhysicsObject& tomove) const;
+		void move_object(PhysicsObject& tomove) const;
 		// Determine the point on the ground below the specified position.
-		Point<int16_t> getgroundbelow(Point<int16_t> position) const;
+		Point<int16_t> get_y_below(Point<int16_t> position) const;
 		// Return a reference to the collection of platforms.
-		const Footholdtree& getfht() const;
+		const Footholdtree& get_fht() const;
 
 	private:
-		void movenormal(PhysicsObject&) const;
-		void moveflying(PhysicsObject&) const;
-		void moveswimming(PhysicsObject&) const;
+		void move_normal(PhysicsObject&) const;
+		void move_flying(PhysicsObject&) const;
+		void move_swimming(PhysicsObject&) const;
 
 		Footholdtree fht;
 	};

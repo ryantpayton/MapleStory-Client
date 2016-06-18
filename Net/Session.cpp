@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -44,7 +44,7 @@ namespace jrc
 		if (connected)
 		{
 			// Read keys neccessary for communicating with the server.
-			cryptography = { socket.getbuffer() };
+			cryptography = { socket.get_buffer() };
 		}
 		return connected;
 	}
@@ -84,7 +84,7 @@ namespace jrc
 		if (pos == 0)
 		{
 			// Pos is 0, meaning this is the start of a new packet. Start by determining length.
-			length = cryptography.getlength(bytes);
+			length = cryptography.check_length(bytes);
 			// Reading the length means we processed the header. Move forward by the header length.
 			bytes = bytes + HEADER_LENGTH;
 			available -= HEADER_LENGTH;
@@ -132,7 +132,7 @@ namespace jrc
 		if (result >= MIN_PACKET_LENGTH || length > 0)
 		{
 			// Retrieve buffer from the socket and process it.
-			const int8_t* bytes = socket.getbuffer();
+			const int8_t* bytes = socket.get_buffer();
 			process(bytes, result);
 		}
 		// Return if the connection is still alive.
@@ -144,7 +144,7 @@ namespace jrc
 		if (connected)
 		{
 			int8_t header[HEADER_LENGTH];
-			cryptography.getheader(header, packet_length);
+			cryptography.create_header(header, packet_length);
 			cryptography.encrypt(packet_bytes, packet_length);
 
 			socket.dispatch(header, HEADER_LENGTH);
@@ -152,7 +152,7 @@ namespace jrc
 		}
 	}
 
-	Login& Session::getlogin()
+	Login& Session::get_login()
 	{
 		return login;
 	}

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -68,21 +68,21 @@ namespace jrc
 		// Update look and movements.
 		int8_t update(const Physics& physics) override;
 		// Return the current map layer, or 7 if on a ladder or rope.
-		int8_t getlayer() const override;
+		int8_t get_layer() const override;
 
 		// Return the character's level.
-		virtual uint16_t getlevel() const = 0;
+		virtual uint16_t get_level() const = 0;
 		// Return the character's level.
-		virtual int32_t getskilllevel(int32_t skillid) const = 0;
+		virtual int32_t get_skilllevel(int32_t skillid) const = 0;
 		// Return the character's attacking speed.
-		virtual float getattackspeed() const = 0;
+		virtual float get_attackspeed() const = 0;
 		// Return the delay until applying an attack.
-		uint16_t getattackdelay(size_t no, uint8_t speed) const;
+		uint16_t get_attackdelay(size_t no, uint8_t speed) const;
 
 		// Set if the character sprite is mirrored (true = facing left)
-		virtual void setflip(bool flipped);
+		virtual void set_direction(bool flipped);
 		// Change the character's state.
-		virtual void setstate(State newstate);
+		virtual void set_state(State newstate);
 		// Change the character's stance to an attack action.
 		void attack(const std::string& action);
 		// Change the character's stance to an attack stance.
@@ -91,20 +91,20 @@ namespace jrc
 		void attack(bool degenerate);
 
 		// Display an animation as an effect with the character.
-		void showeffect(Animation animation, int8_t z);
+		void show_effect(Animation animation, int8_t z);
 		// Display an animation as an effect ontop of the character.
-		void showeffectbyid(Effect toshow);
+		void show_effect_id(Effect toshow);
 		// Display a chat bubble with the specified line in it.
 		void speak(const std::string& line);
 		// Change a part of the character's look.
-		void changelook(Maplestat::Value stat, int32_t id);
+		void change_look(Maplestat::Value stat, int32_t id);
 		// Change the character's state by id.
-		void setstate(uint8_t statebyte);
+		void set_state(uint8_t statebyte);
 		// Change the character's face expression by id.
 		void sendface(int32_t expression);
 
 		// Add a pet with the specified stats.
-		void addpet(uint8_t index, int32_t iid, const std::string& name,
+		void add_pet(uint8_t index, int32_t iid, const std::string& name,
 			int32_t uniqueid, Point<int16_t> pos, uint8_t stance, int32_t fhid);
 		// Remove a pet with the specified index and reason.
 		void removepet(uint8_t index, bool hunger);
@@ -112,19 +112,19 @@ namespace jrc
 		// Return if the character is facing left.
 		bool getflip() const;
 		// Return the name of this character.
-		std::string getname() const;
+		std::string get_name() const;
 
 		// Return if the char is in the Char::SIT state.
-		bool issitting() const;
+		bool is_sitting() const;
 		// Return if the char is in the Char::LADDER or Char::ROPE state.
 		bool isclimbing() const;
 		// Return wether the character sprite uses stances for two-handed weapons.
 		bool istwohanded() const;
 
 		// Obtain a reference to this character's look.
-		CharLook& getlook();
+		CharLook& get_look();
 		// Obtain a const reference to this character's look.
-		const CharLook& getlook() const;
+		const CharLook& get_look() const;
 
 		// Initialize character effects.
 		static void init();
@@ -135,7 +135,7 @@ namespace jrc
 		// Update the character's animation with the given speed.
 		bool update(const Physics& physics, float speed);
 		// Get a speed modifier for the current stance.
-		float getstancespeed() const;
+		float get_stancespeed() const;
 
 		CharLook look;
 		ChatBalloon chatballoon;

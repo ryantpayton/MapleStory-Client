@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -32,7 +32,7 @@ namespace jrc
 {
 	UIItemInventory::UIItemInventory() : 
 		UIDragElement<PosINV>(Point<int16_t>(172, 20)), 
-		inventory(Stage::get().getplayer().getinvent()) {
+		inventory(Stage::get().get_player().get_inventory()) {
 
 		nl::node src = nl::nx::ui["UIWindow2.img"]["Item"];
 
@@ -69,17 +69,17 @@ namespace jrc
 		newtab = Inventory::NONE;
 		newslot = 0;
 
-		buttons[BT_SORT]->setactive(false);
-		buttons[buttonbytab(tab)]->setstate(Button::PRESSED);
+		buttons[BT_SORT]->set_active(false);
+		buttons[button_by_tab(tab)]->set_state(Button::PRESSED);
 
 		mesolabel = { Text::A11M, Text::RIGHT, Text::LIGHTGREY };
 
 		slider = {
-			11, { 50, 248 }, 152, 6, 1 + inventory.getslots(tab) / 4, 
+			11, { 50, 248 }, 152, 6, 1 + inventory.get_slots(tab) / 4, 
 			[&](bool upwards) {
 			int16_t shift = upwards ? -4 : 4;
 			bool above = slotrange.first + shift > 0;
-			bool below = slotrange.second + shift < inventory.getslots(tab) + 1 + 4;
+			bool below = slotrange.second + shift < inventory.get_slots(tab) + 1 + 4;
 			if (above && below)
 			{
 				slotrange.first += shift;
@@ -90,12 +90,12 @@ namespace jrc
 		dimension = { 172, 335 };
 		active = true;
 
-		loadicons();
+		load_icons();
 	}
 
-	void UIItemInventory::draw(float inter) const
+	void UIItemInventory::draw(float alpha) const
 	{
-		UIElement::draw(inter);
+		UIElement::draw(alpha);
 
 		slider.draw(position);
 
@@ -104,28 +104,28 @@ namespace jrc
 			int16_t slot = icon.first;
 			if (icon.second && slot >= slotrange.first && slot <= slotrange.second)
 			{
-				Point<int16_t> slotpos = getslotpos(slot);
+				Point<int16_t> slotpos = get_slotpos(slot);
 				icon.second->draw(position + slotpos);
 			}
 		}
 
-		int16_t bulletslot = inventory.getbulletslot();
-		if (tab == Inventory::USE && isvisible(bulletslot))
+		int16_t bulletslot = inventory.get_bulletslot();
+		if (tab == Inventory::USE && is_visible(bulletslot))
 		{
-			Point<int16_t> bulletslotpos = position + getslotpos(bulletslot);
+			Point<int16_t> bulletslotpos = position + get_slotpos(bulletslot);
 			projectile.draw({ bulletslotpos });
 		}
-		else if (newtab == tab && isvisible(newslot))
+		else if (newtab == tab && is_visible(newslot))
 		{
-			Point<int16_t> newslotpos = position + getslotpos(newslot);
-			newslotpos.shifty(1);
-			newitemslot.draw({ newslotpos }, inter);
+			Point<int16_t> newslotpos = position + get_slotpos(newslot);
+			newslotpos.shift_y(1);
+			newitemslot.draw({ newslotpos }, alpha);
 		}
 		
 		if (newtab != tab && newtab != Inventory::NONE)
 		{
-			Point<int16_t> newtabpos = position + gettabpos(newtab);
-			newitemtab.draw({ newtabpos }, inter);
+			Point<int16_t> newtabpos = position + get_tabpos(newtab);
+			newitemtab.draw({ newtabpos }, alpha);
 		}
 
 		Point<int16_t> mesopos = position + Point<int16_t>(124, 264);
@@ -139,15 +139,15 @@ namespace jrc
 		newitemtab.update(6);
 		newitemslot.update(6);
 
-		int64_t meso = Stage::get().getplayer().getinvent().getmeso();
+		int64_t meso = Stage::get().get_player().get_inventory().get_meso();
 		std::string mesostr = std::to_string(meso);
 		string_format::split_number(mesostr);
-		mesolabel.settext(mesostr);
+		mesolabel.change_text(mesostr);
 	}
 
-	void UIItemInventory::updateslot(int16_t slot)
+	void UIItemInventory::update_slot(int16_t slot)
 	{
-		Optional<Item> item = inventory.getitem(tab, slot);
+		Optional<Item> item = inventory.get_item(tab, slot);
 		if (item)
 		{
 			Optional<const Texture> texture = item
@@ -156,12 +156,12 @@ namespace jrc
 
 			if (texture)
 			{
-				int32_t itemid = item.map(&Item::getid);
+				int32_t itemid = item.map(&Item::get_id);
 				int16_t count = item.map(&Item::getcount);
 				if (tab == Inventory::EQUIP)
 					count = -1;
 
-				Equipslot::Value eqslot = inventory.findequipslot(itemid);
+				Equipslot::Value eqslot = inventory.find_equipslot(itemid);
 				icons[slot] = std::make_unique<Icon>(std::make_unique<ItemIcon>(tab, eqslot, slot), *texture, count);
 			}
 		}
@@ -171,18 +171,18 @@ namespace jrc
 		}
 	}
 
-	void UIItemInventory::loadicons()
+	void UIItemInventory::load_icons()
 	{
 		icons.clear();
 
-		uint8_t numslots = inventory.getslots(tab);
+		uint8_t numslots = inventory.get_slots(tab);
 		for (uint8_t i = 1; i < numslots; i++)
 		{
-			updateslot(i);
+			update_slot(i);
 		}
 	}
 
-	void UIItemInventory::buttonpressed(uint16_t buttonid)
+	Button::State UIItemInventory::button_pressed(uint16_t buttonid)
 	{
 		Inventory::Type oldtab = tab;
 		switch (buttonid)
@@ -215,28 +215,29 @@ namespace jrc
 			slotrange.first = 1;
 			slotrange.second = 24;
 
-			slider.setrows(6, 1 + inventory.getslots(tab) / 4);
+			slider.setrows(6, 1 + inventory.get_slots(tab) / 4);
 
-			loadicons();
+			buttons[button_by_tab(oldtab)]->set_state(Button::NORMAL);
 
-			buttons[buttonbytab(oldtab)]->setstate(Button::NORMAL);
-			enablegather();
+			load_icons();
+			enable_gather();
 		}
+		return Button::PRESSED;
 	}
 
 	void UIItemInventory::doubleclick(Point<int16_t> cursorpos)
 	{
-		int16_t slot = slotbypos(cursorpos - position);
-		if (icons.count(slot) && isvisible(slot))
+		int16_t slot = slot_by_position(cursorpos - position);
+		if (icons.count(slot) && is_visible(slot))
 		{
-			Optional<Item> item = inventory.getitem(tab, slot);
+			Optional<Item> item = inventory.get_item(tab, slot);
 			if (item)
 			{
-				int32_t itemid = item.map(&Item::getid);
+				int32_t itemid = item.map(&Item::get_id);
 				switch (tab)
 				{
 				case Inventory::EQUIP:
-					EquipItemPacket(slot, inventory.findequipslot(itemid)).dispatch();
+					EquipItemPacket(slot, inventory.find_equipslot(itemid)).dispatch();
 					break;
 				case Inventory::USE:
 					UseItemPacket(slot, itemid).dispatch();
@@ -246,17 +247,17 @@ namespace jrc
 		}
 	}
 
-	void UIItemInventory::sendicon(const Icon& icon, Point<int16_t> cursorpos)
+	void UIItemInventory::send_icon(const Icon& icon, Point<int16_t> cursorpos)
 	{
-		int16_t slot = slotbypos(cursorpos - position);
+		int16_t slot = slot_by_position(cursorpos - position);
 		if (slot > 0)
 		{
-			Optional<Item> item = inventory.getitem(tab, slot);
+			Optional<Item> item = inventory.get_item(tab, slot);
 			Equipslot::Value eqslot;
 			bool equip;
 			if (item && tab == Inventory::EQUIP)
 			{
-				eqslot = inventory.findequipslot(item.map(&Item::getid));
+				eqslot = inventory.find_equipslot(item.map(&Item::get_id));
 				equip = true;
 			}
 			else
@@ -264,13 +265,13 @@ namespace jrc
 				eqslot = Equipslot::NONE;
 				equip = false;
 			}
-			icon.droponitems(tab, eqslot, slot, equip);
+			icon.drop_on_items(tab, eqslot, slot, equip);
 		}
 	}
 
-	Cursor::State UIItemInventory::sendmouse(bool pressed, Point<int16_t> cursorpos)
+	Cursor::State UIItemInventory::send_cursor(bool pressed, Point<int16_t> cursorpos)
 	{
-		Cursor::State dstate = UIDragElement::sendmouse(pressed, cursorpos);
+		Cursor::State dstate = UIDragElement::send_cursor(pressed, cursorpos);
 		if (dragged)
 		{
 			clear_tooltip();
@@ -280,7 +281,7 @@ namespace jrc
 		Point<int16_t> cursor_relative = cursorpos - position;
 		if (slider.isenabled())
 		{
-			Cursor::State sstate = slider.sendcursor(cursor_relative, pressed);
+			Cursor::State sstate = slider.send_cursor(cursor_relative, pressed);
 			if (sstate != Cursor::IDLE)
 			{
 				clear_tooltip();
@@ -288,22 +289,22 @@ namespace jrc
 			}
 		}
 
-		int16_t slot = slotbypos(cursor_relative);
+		int16_t slot = slot_by_position(cursor_relative);
 		Optional<Icon> icon = geticon(slot);
-		if (icon && isvisible(slot))
+		if (icon && is_visible(slot))
 		{
-			Point<int16_t> slotpos = getslotpos(slot);
 			if (pressed)
 			{
-				icon->startdrag(cursor_relative - slotpos);
-				UI::get().dragicon(icon.get());
+				Point<int16_t> slotpos = get_slotpos(slot);
+				icon->start_drag(cursor_relative - slotpos);
+				UI::get().drag_icon(icon.get());
 
 				clear_tooltip();
 				return Cursor::GRABBING;
 			}
 			else
 			{
-				showitem(slot);
+				show_item(slot);
 				return Cursor::CANGRAB;
 			}
 		}
@@ -324,24 +325,24 @@ namespace jrc
 			switch (mode)
 			{
 			case Inventory::ADD:
-				updateslot(slot);
+				update_slot(slot);
 				newtab = type;
 				newslot = slot;
 				break;
 			case Inventory::CHANGECOUNT:
 			case Inventory::ADDCOUNT:
 				geticon(slot)
-					.ifpresent(&Icon::setcount, arg);
+					.if_present(&Icon::setcount, arg);
 				break;
 			case Inventory::SWAP:
 				if (arg != slot)
 				{
-					updateslot(slot);
-					updateslot(arg);
+					update_slot(slot);
+					update_slot(arg);
 				}
 				break;
 			case Inventory::REMOVE:
-				updateslot(slot);
+				update_slot(slot);
 				break;
 			}
 		}
@@ -365,57 +366,65 @@ namespace jrc
 		}
 	}
 
-	void UIItemInventory::enablesort()
+	void UIItemInventory::enable_sort()
 	{
-		buttons[BT_GATHER]->setactive(false);
-		buttons[BT_SORT]->setactive(true);
-		buttons[BT_SORT]->setstate(Button::NORMAL);
+		buttons[BT_GATHER]->set_active(false);
+		buttons[BT_SORT]->set_active(true);
+		buttons[BT_SORT]->set_state(Button::NORMAL);
 	}
 
-	void UIItemInventory::enablegather()
+	void UIItemInventory::enable_gather()
 	{
-		buttons[BT_SORT]->setactive(false);
-		buttons[BT_GATHER]->setactive(true);
-		buttons[BT_GATHER]->setstate(Button::NORMAL);
+		buttons[BT_SORT]->set_active(false);
+		buttons[BT_GATHER]->set_active(true);
+		buttons[BT_GATHER]->set_state(Button::NORMAL);
 	}
 
-	void UIItemInventory::togglehide()
+	void UIItemInventory::toggle_active()
 	{
 		clear_tooltip();
-		UIElement::togglehide();
+		UIElement::toggle_active();
 	}
 
-	void UIItemInventory::showitem(int16_t slot)
+	bool UIItemInventory::remove_cursor(bool clicked, Point<int16_t> cursorpos)
+	{
+		if (UIDragElement::remove_cursor(clicked, cursorpos))
+			return true;
+
+		return slider.remove_cursor(clicked);
+	}
+
+	void UIItemInventory::show_item(int16_t slot)
 	{
 		if (tab == Inventory::EQUIP)
 		{
-			Optional<Equip> equip = inventory.getequip(tab, slot);
-			UI::get().show_equip(ITEMINVENTORY, equip.get(), slot);
+			Optional<Equip> equip = inventory.get_equip(tab, slot);
+			UI::get().show_equip(TYPE, equip.get(), slot);
 		}
 		else
 		{
-			Optional<Item> item = inventory.getitem(tab, slot);
-			int32_t itemid = item.mapordefault(&Item::getid, 0);
-			UI::get().show_item(ITEMINVENTORY, itemid);
+			Optional<Item> item = inventory.get_item(tab, slot);
+			int32_t itemid = item.mapordefault(&Item::get_id, 0);
+			UI::get().show_item(TYPE, itemid);
 		}
 	}
 
 	void UIItemInventory::clear_tooltip()
 	{
-		UI::get().clear_tooltip(ITEMINVENTORY);
+		UI::get().clear_tooltip(TYPE);
 	}
 
-	bool UIItemInventory::isvisible(int16_t slot) const
+	bool UIItemInventory::is_visible(int16_t slot) const
 	{
-		return !isnotvisible(slot);
+		return !is_not_visible(slot);
 	}
 
-	bool UIItemInventory::isnotvisible(int16_t slot) const
+	bool UIItemInventory::is_not_visible(int16_t slot) const
 	{
 		return slot < slotrange.first || slot > slotrange.second;
 	}
 
-	int16_t UIItemInventory::slotbypos(Point<int16_t> cursorpos) const
+	int16_t UIItemInventory::slot_by_position(Point<int16_t> cursorpos) const
 	{
 		int16_t xoff = cursorpos.x() - 11;
 		int16_t yoff = cursorpos.y() - 51;
@@ -423,10 +432,10 @@ namespace jrc
 			return 0;
 
 		int16_t slot = slotrange.first + (xoff / 36) + 4 * (yoff / 35);
-		return isvisible(slot) ? slot : 0;
+		return is_visible(slot) ? slot : 0;
 	}
 
-	Point<int16_t> UIItemInventory::getslotpos(int16_t slot) const
+	Point<int16_t> UIItemInventory::get_slotpos(int16_t slot) const
 	{
 		int16_t absslot = slot - slotrange.first;
 		return Point<int16_t>(
@@ -435,7 +444,7 @@ namespace jrc
 			);
 	}
 
-	Point<int16_t> UIItemInventory::gettabpos(Inventory::Type tb) const
+	Point<int16_t> UIItemInventory::get_tabpos(Inventory::Type tb) const
 	{
 		switch (tb)
 		{
@@ -454,7 +463,7 @@ namespace jrc
 		}
 	}
 
-	uint16_t UIItemInventory::buttonbytab(Inventory::Type tb) const
+	uint16_t UIItemInventory::button_by_tab(Inventory::Type tb) const
 	{
 		switch (tb)
 		{
@@ -484,12 +493,12 @@ namespace jrc
 		source = s;
 	}
 
-	void UIItemInventory::ItemIcon::ondrop() const
+	void UIItemInventory::ItemIcon::drop_on_stage() const
 	{
 		MoveItemPacket(sourcetab, source, 0, 1).dispatch();
 	}
 
-	void UIItemInventory::ItemIcon::ondropequips(Equipslot::Value eqslot) const
+	void UIItemInventory::ItemIcon::drop_on_equips(Equipslot::Value eqslot) const
 	{
 		switch (sourcetab)
 		{
@@ -505,7 +514,7 @@ namespace jrc
 		}
 	}
 
-	void UIItemInventory::ItemIcon::ondropitems(Inventory::Type tab, Equipslot::Value, int16_t slot, bool) const
+	void UIItemInventory::ItemIcon::drop_on_items(Inventory::Type tab, Equipslot::Value, int16_t slot, bool) const
 	{
 		if (tab != sourcetab || slot == source)
 			return;

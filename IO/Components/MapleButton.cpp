@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -46,8 +46,8 @@ namespace jrc
 
 	Rectangle<int16_t> MapleButton::bounds(Point<int16_t> parentpos) const
 	{
-		auto lt = parentpos + position - textures[state].getorigin();
-		auto rb = lt + textures[state].getdimensions();
+		auto lt = parentpos + position - textures[state].get_origin();
+		auto rb = lt + textures[state].get_dimensions();
 		return Rectangle<int16_t>(lt, rb);
 	}
 }

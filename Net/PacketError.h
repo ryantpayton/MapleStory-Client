@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,7 +21,7 @@
 
 namespace jrc
 {
-	// Error that occurs if the number of bytes a packet has available is insufficient.
+	// Error which is thrown by packet handling functions.
 	class PacketError : public std::runtime_error
 	{
 	public:

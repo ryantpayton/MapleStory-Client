@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -35,25 +35,25 @@ namespace jrc
 
 	Physics::Physics() {}
 
-	void Physics::moveobject(PhysicsObject& phobj) const
+	void Physics::move_object(PhysicsObject& phobj) const
 	{
 		// Determine which platform the object is currently on.
-		fht.updatefh(phobj);
+		fht.update_fh(phobj);
 
 		// Use the appropriate physics for the terrain the object is on.
 		switch (phobj.type)
 		{
 		case PhysicsObject::NORMAL:
-			movenormal(phobj);
-			fht.limitmoves(phobj);
+			move_normal(phobj);
+			fht.limit_movement(phobj);
 			break;
 		case PhysicsObject::FLYING:
-			moveflying(phobj);
-			fht.limitmoves(phobj);
+			move_flying(phobj);
+			fht.limit_movement(phobj);
 			break;
 		case PhysicsObject::SWIMMING:
-			moveswimming(phobj);
-			fht.limitmoves(phobj);
+			move_swimming(phobj);
+			fht.limit_movement(phobj);
 			break;
 		case PhysicsObject::FIXATED:
 			break;
@@ -63,7 +63,7 @@ namespace jrc
 		phobj.move();
 	}
 
-	void Physics::movenormal(PhysicsObject& phobj) const
+	void Physics::move_normal(PhysicsObject& phobj) const
 	{
 		phobj.vacc = 0.0;
 		phobj.hacc = 0.0;
@@ -91,7 +91,7 @@ namespace jrc
 				phobj.hacc -= (FRICTION + SLOPEFACTOR * (1.0 + slopef * -inertia)) * inertia;
 			}
 		}
-		else if (phobj.flagnotset(PhysicsObject::NOGRAVITY))
+		else if (phobj.is_flag_not_set(PhysicsObject::NOGRAVITY))
 		{
 			phobj.vacc += GRAVFORCE;
 		}
@@ -102,7 +102,7 @@ namespace jrc
 		phobj.vspeed += phobj.vacc;
 	}
 
-	void Physics::moveflying(PhysicsObject& phobj) const
+	void Physics::move_flying(PhysicsObject& phobj) const
 	{
 		phobj.hacc = phobj.hforce;
 		phobj.vacc = phobj.vforce;
@@ -125,7 +125,7 @@ namespace jrc
 		}
 	}
 
-	void Physics::moveswimming(PhysicsObject& phobj) const
+	void Physics::move_swimming(PhysicsObject& phobj) const
 	{
 		phobj.hacc = phobj.hforce;
 		phobj.vacc = phobj.vforce;
@@ -135,7 +135,7 @@ namespace jrc
 		phobj.hacc -= SWIMFRICTION * phobj.hspeed;
 		phobj.vacc -= SWIMFRICTION * phobj.vspeed;
 
-		if (phobj.flagnotset(PhysicsObject::NOGRAVITY))
+		if (phobj.is_flag_not_set(PhysicsObject::NOGRAVITY))
 		{
 			phobj.vacc += SWIMGRAVFORCE;
 		}
@@ -153,13 +153,13 @@ namespace jrc
 		}
 	}
 
-	Point<int16_t> Physics::getgroundbelow(Point<int16_t> position) const
+	Point<int16_t> Physics::get_y_below(Point<int16_t> position) const
 	{
-		int16_t ground = fht.getgroundbelow(position);
+		int16_t ground = fht.get_y_below(position);
 		return Point<int16_t>(position.x(), ground - 1);
 	}
 
-	const Footholdtree& Physics::getfht() const
+	const Footholdtree& Physics::get_fht() const
 	{
 		return fht;
 	}

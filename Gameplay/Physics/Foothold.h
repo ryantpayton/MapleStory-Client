@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -30,13 +30,13 @@ namespace jrc
 		Foothold();
 
 		// Returns the foothold id aka the identifier in game data of this platform.
-		uint16_t getid() const { return id; }
+		uint16_t get_id() const { return id; }
 		// Returns the platform left to this.
 		uint16_t getprev() const { return prev; }
 		// Returns the platform right to this.
 		uint16_t getnext() const { return next; }
 		// Returns the platform's layer.
-		uint8_t getlayer() const { return layer; }
+		uint8_t get_layer() const { return layer; }
 		// Returns the horizontal component.
 		const Range<int16_t>& gethor() const { return horizontal; }
 		// Returns the vertical component.

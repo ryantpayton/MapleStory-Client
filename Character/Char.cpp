@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -29,19 +29,19 @@ namespace jrc
 
 	void Char::draw(double viewx, double viewy, float alpha) const
 	{
-		Point<int16_t> absp = phobj.getabsolute(viewx, viewy, alpha);
+		Point<int16_t> absp = phobj.get_absolute(viewx, viewy, alpha);
 
 		effects.drawbelow(absp, alpha);
 		look.draw(absp, alpha);
 
 		for (int32_t i = 0; i < 3; i++)
 		{
-			if (pets[i].getiid() > 0)
+			if (pets[i].get_itemid() > 0)
 				pets[i].draw(viewx, viewy, alpha);
 		}
 
 		namelabel.draw(absp);
-		chatballoon.draw(absp);
+		chatballoon.draw(absp - Point<int16_t>(0, 85));
 
 		effects.drawabove(absp, alpha);
 	}
@@ -53,22 +53,22 @@ namespace jrc
 
 		for (int32_t i = 0; i < 3; i++)
 		{
-			if (pets[i].getiid() > 0)
+			if (pets[i].get_itemid() > 0)
 			{
 				switch (state)
 				{
 				case LADDER:
 				case ROPE:
-					pets[i].setstance(PetLook::HANG);
+					pets[i].set_stance(PetLook::HANG);
 					break;
 				case SWIM:
-					pets[i].setstance(PetLook::FLY);
+					pets[i].set_stance(PetLook::FLY);
 					break;
 				default:
-					if (pets[i].getstance() == PetLook::HANG || pets[i].getstance() == PetLook::FLY)
-						pets[i].setstance(PetLook::STAND);
+					if (pets[i].get_stance() == PetLook::HANG || pets[i].get_stance() == PetLook::FLY)
+						pets[i].set_stance(PetLook::STAND);
 				}
-				pets[i].update(physics, getposition());
+				pets[i].update(physics, get_position());
 			}
 		}
 
@@ -80,10 +80,10 @@ namespace jrc
 		return look.update(stancespeed);
 	}
 
-	float Char::getstancespeed() const
+	float Char::get_stancespeed() const
 	{
 		if (attacking)
-			return getattackspeed();
+			return get_attackspeed();
 
 		switch (state)
 		{
@@ -97,9 +97,9 @@ namespace jrc
 		}
 	}
 
-	uint16_t Char::getattackdelay(size_t no, uint8_t speed) const
+	uint16_t Char::get_attackdelay(size_t no, uint8_t speed) const
 	{
-		uint16_t delay = look.getattackdelay(no);
+		uint16_t delay = look.get_attackdelay(no);
 		float fspeed = 1.7f - static_cast<float>(speed) / 10;
 		return static_cast<uint16_t>(delay / fspeed);
 	}
@@ -107,21 +107,21 @@ namespace jrc
 	int8_t Char::update(const Physics& physics)
 	{
 		update(physics, 1.0f);
-		return getlayer();
+		return get_layer();
 	}
 
-	int8_t Char::getlayer() const
+	int8_t Char::get_layer() const
 	{
 		return isclimbing() ? 7 : phobj.fhlayer;
 	}
 
-	void Char::showeffect(Animation toshow, int8_t z)
+	void Char::show_effect(Animation toshow, int8_t z)
 	{
-		float attackspeed = getattackspeed();
+		float attackspeed = get_attackspeed();
 		effects.add(toshow, flip, z, attackspeed);
 	}
 
-	void Char::showeffectbyid(Effect toshow)
+	void Char::show_effect_id(Effect toshow)
 	{
 		Animation effect = effectdata[toshow];
 		effects.add(effect);
@@ -129,10 +129,10 @@ namespace jrc
 
 	void Char::speak(const std::string& line)
 	{
-		chatballoon.settext(line);
+		chatballoon.change_text(line);
 	}
 
-	void Char::changelook(Maplestat::Value stat, int32_t id)
+	void Char::change_look(Maplestat::Value stat, int32_t id)
 	{
 		switch (stat)
 		{
@@ -148,20 +148,20 @@ namespace jrc
 		}
 	}
 
-	void Char::setstate(uint8_t statebyte)
+	void Char::set_state(uint8_t statebyte)
 	{
 		if (statebyte % 2 == 1)
 		{
-			setflip(false);
+			set_direction(false);
 			statebyte -= 1;
 		}
 		else
 		{
-			setflip(true);
+			set_direction(true);
 		}
 
 		Char::State newstate = byvalue(statebyte);
-		setstate(newstate);
+		set_state(newstate);
 	}
 
 	void Char::sendface(int32_t expid)
@@ -191,21 +191,21 @@ namespace jrc
 		attacking = true;
 	}
 
-	void Char::setflip(bool f)
+	void Char::set_direction(bool f)
 	{
 		flip = f;
-		look.setflip(f);
+		look.set_direction(f);
 	}
 
-	void Char::setstate(State st)
+	void Char::set_state(State st)
 	{
 		state = st;
 
 		Stance::Value stance = Stance::bystate(state);
-		look.setstance(stance);
+		look.set_stance(stance);
 	}
 
-	void Char::addpet(uint8_t index, int32_t iid, const std::string& name,
+	void Char::add_pet(uint8_t index, int32_t iid, const std::string& name,
 		int32_t uniqueid, Point<int16_t> pos, uint8_t stance, int32_t fhid) {
 
 		if (index > 2)
@@ -226,7 +226,7 @@ namespace jrc
 		}
 	}
 
-	bool Char::issitting() const
+	bool Char::is_sitting() const
 	{
 		return state == SIT;
 	}
@@ -238,7 +238,7 @@ namespace jrc
 
 	bool Char::istwohanded() const
 	{
-		return look.getequips().istwohanded();
+		return look.get_equips().istwohanded();
 	}
 
 	bool Char::getflip() const
@@ -246,17 +246,17 @@ namespace jrc
 		return flip;
 	}
 
-	std::string Char::getname() const
+	std::string Char::get_name() const
 	{
-		return namelabel.gettext();
+		return namelabel.get_text();
 	}
 
-	CharLook& Char::getlook()
+	CharLook& Char::get_look()
 	{
 		return look;
 	}
 
-	const CharLook& Char::getlook() const
+	const CharLook& Char::get_look() const
 	{
 		return look;
 	}

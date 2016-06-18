@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -88,23 +88,21 @@ namespace jrc
 
 		id = mid;
 		team = tm;
-		setposition(position);
-		setcontrol(mode);
+		set_position(position);
+		set_control(mode);
 		phobj.fhid = fh;
-		phobj.setflag(PhysicsObject::TURNATEDGES);
+		phobj.set_flag(PhysicsObject::TURNATEDGES);
 
 		hppercent = 0;
 		dying = false;
 		dead = false;
 		fading = false;
 		awaitdeath = false;
-		setstance(st);
+		set_stance(st);
 		flydirection = STRAIGHT;
 		counter = 0;
 
-		namelabel = Text(Text::A13M, Text::CENTER, Text::WHITE);
-		namelabel.setback(Text::NAMETAG);
-		namelabel.settext(name);
+		namelabel = { Text::A13M, Text::CENTER, Text::WHITE, Text::NAMETAG, name };
 
 		if (newspawn)
 		{
@@ -123,7 +121,7 @@ namespace jrc
 		}
 	}
 
-	void Mob::setstance(uint8_t stancebyte)
+	void Mob::set_stance(uint8_t stancebyte)
 	{
 		flip = (stancebyte % 2) == 0;
 		if (!flip)
@@ -132,10 +130,10 @@ namespace jrc
 		}
 		if (stancebyte < MOVE)
 			stancebyte = MOVE;
-		setstance(static_cast<Stance>(stancebyte));
+		set_stance(static_cast<Stance>(stancebyte));
 	}
 
-	void Mob::setstance(Stance newstance)
+	void Mob::set_stance(Stance newstance)
 	{
 		if (stance != newstance)
 		{
@@ -189,13 +187,13 @@ namespace jrc
 		{
 			if (!canfly)
 			{
-				if (phobj.flagnotset(PhysicsObject::TURNATEDGES))
+				if (phobj.is_flag_not_set(PhysicsObject::TURNATEDGES))
 				{
 					flip = !flip;
-					phobj.setflag(PhysicsObject::TURNATEDGES);
+					phobj.set_flag(PhysicsObject::TURNATEDGES);
 
 					if (stance == HIT)
-						setstance(STAND);
+						set_stance(STAND);
 				}
 			}
 
@@ -232,7 +230,7 @@ namespace jrc
 				break;
 			}
 
-			physics.moveobject(phobj);
+			physics.move_object(phobj);
 
 			if (control)
 			{
@@ -255,7 +253,7 @@ namespace jrc
 				if (next)
 				{
 					nextmove();
-					updatemovement();
+					update_movement();
 					counter = 0;
 				}
 			}
@@ -263,7 +261,7 @@ namespace jrc
 		else
 		{
 			phobj.normalize();
-			physics.getfht().updatefh(phobj);
+			physics.get_fht().update_fh(phobj);
 		}
 
 		return phobj.fhlayer;
@@ -277,28 +275,28 @@ namespace jrc
 			{
 			case HIT:
 			case STAND:
-				setstance(MOVE);
+				set_stance(MOVE);
 				flip = randomizer.nextbool();
 				break;
 			case MOVE:
 			case JUMP:
 				if (canjump && phobj.onground && randomizer.below(0.25f))
 				{
-					setstance(JUMP);
+					set_stance(JUMP);
 				}
 				else
 				{
 					switch (randomizer.nextint(2))
 					{
 					case 0:
-						setstance(STAND);
+						set_stance(STAND);
 						break;
 					case 1:
-						setstance(MOVE);
+						set_stance(MOVE);
 						flip = false;
 						break;
 					case 2:
-						setstance(MOVE);
+						set_stance(MOVE);
 						flip = true;
 						break;
 					}
@@ -313,24 +311,24 @@ namespace jrc
 		}
 		else
 		{
-			setstance(STAND);
+			set_stance(STAND);
 		}
 	}
 
-	void Mob::updatemovement()
+	void Mob::update_movement()
 	{
 		MoveMobPacket(
 			oid, 
 			1, 0, 0, 0, 0, 0, 0, 
-			getposition(),
+			get_position(),
 			Movement(phobj, valueof(stance, flip))
 			).dispatch();
 	}
 
 	void Mob::draw(double viewx, double viewy, float alpha) const
 	{
-		Point<int16_t> absp = phobj.getabsolute(viewx, viewy, alpha);
-		Point<int16_t> headpos = getheadpos(absp);
+		Point<int16_t> absp = phobj.get_absolute(viewx, viewy, alpha);
+		Point<int16_t> headpos = get_headpos(absp);
 
 		effects.drawbelow(absp, alpha);
 
@@ -354,31 +352,31 @@ namespace jrc
 		effects.drawabove(absp, alpha);
 	}
 
-	void Mob::setcontrol(int8_t mode)
+	void Mob::set_control(int8_t mode)
 	{
 		control = mode > 0;
 		aggro = mode == 2;
 	}
 
-	void Mob::sendmovement(Point<int16_t> start, const Movement& movement)
+	void Mob::send_movement(Point<int16_t> start, const Movement& movement)
 	{
 		if (control)
 			return;
 
-		setposition(start);
+		set_position(start);
 		lastmove = movement;
 
 		uint8_t laststance = lastmove.newstate;
-		setstance(laststance);
+		set_stance(laststance);
 
 		phobj.fhid = lastmove.fh;
 	}
 
-	Point<int16_t> Mob::getheadpos(Point<int16_t> position) const
+	Point<int16_t> Mob::get_headpos(Point<int16_t> position) const
 	{
-		Point<int16_t> head = animations.at(stance).gethead();
-		position.shiftx((flip && !noflip) ? -head.x() : head.x());
-		position.shifty(head.y());
+		Point<int16_t> head = animations.at(stance).get_head();
+		position.shift_x((flip && !noflip) ? -head.x() : head.x());
+		position.shift_y(head.y());
 		return position;
 	}
 
@@ -407,9 +405,9 @@ namespace jrc
 		{
 			int16_t delta = playerlevel - level;
 			if (delta > 9)
-				namelabel.setcolor(Text::YELLOW);
+				namelabel.change_color(Text::YELLOW);
 			else if (delta < -9)
-				namelabel.setcolor(Text::RED);
+				namelabel.change_color(Text::RED);
 		}
 		if (percent > 100)
 		{
@@ -423,7 +421,7 @@ namespace jrc
 		showhp.setfor(2000);
 	}
 
-	void Mob::showeffect(Animation animation, int8_t pos, int8_t z, bool f)
+	void Mob::show_effect(Animation animation, int8_t pos, int8_t z, bool f)
 	{
 		if (active)
 		{
@@ -505,7 +503,7 @@ namespace jrc
 			return randomdamage(mindamage, maxdamage, hitchance, critical);
 		});
 
-		updatemovement();
+		update_movement();
 		awaitdeath = false;
 
 		return result;
@@ -545,7 +543,7 @@ namespace jrc
 	std::vector<DamageNumber> Mob::placenumbers(std::vector<std::pair<int32_t, bool>> damagelines) const
 	{
 		std::vector<DamageNumber> numbers;
-		int16_t head = getheadpos(getposition()).y();
+		int16_t head = get_headpos(get_position()).y();
 		for (size_t i = 0; i < damagelines.size(); i++)
 		{
 			int32_t amount = damagelines[i].first;
@@ -559,7 +557,7 @@ namespace jrc
 		return numbers;
 	}
 
-	void Mob::applydamage(int32_t damage, bool toleft)
+	void Mob::apply_damage(int32_t damage, bool toleft)
 	{
 		hitsound.play();
 
@@ -571,16 +569,16 @@ namespace jrc
 		{
 			flip = toleft;
 			counter = 170;
-			setstance(HIT);
+			set_stance(HIT);
 
-			updatemovement();
+			update_movement();
 			awaitdeath = true;
 		}
 	}
 
 	void Mob::applydeath()
 	{
-		setstance(DIE);
+		set_stance(DIE);
 		diesound.play();
 		dying = true;
 	}
@@ -590,19 +588,19 @@ namespace jrc
 		return active && !dying;
 	}
 
-	bool Mob::isinrange(const Rectangle<int16_t>& range) const
+	bool Mob::is_in_range(const Rectangle<int16_t>& range) const
 	{
 		if (!active)
 			return false;
 
-		Rectangle<int16_t> bounds = animations.at(stance).getbounds();
-		bounds.shift(getposition());
+		Rectangle<int16_t> bounds = animations.at(stance).get_bounds();
+		bounds.shift(get_position());
 		return range.overlaps(bounds);
 	}
 
-	Point<int16_t> Mob::getheadpos() const
+	Point<int16_t> Mob::get_headpos() const
 	{
-		Point<int16_t> position = getposition();
-		return getheadpos(position);
+		Point<int16_t> position = get_position();
+		return get_headpos(position);
 	}
 }

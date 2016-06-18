@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -42,12 +42,12 @@ namespace jrc
 			y += vspeed;
 		}
 
-		void setx(double d)
+		void set_x(double d)
 		{
 			x.set(d);
 		}
 
-		void sety(double d)
+		void set_y(double d)
 		{
 			y.set(d);
 		}
@@ -97,56 +97,56 @@ namespace jrc
 			return hmobile() || vmobile();
 		}
 
-		double crntx() const
+		double crnt_x() const
 		{
 			return x.get();
 		}
 
-		double crnty() const
+		double crnt_y() const
 		{
 			return y.get();
 		}
 
-		double nextx() const
+		double next_x() const
 		{
 			return x + hspeed;
 		}
 
-		double nexty() const
+		double next_y() const
 		{
 			return y + vspeed;
 		}
 
-		int16_t getx() const
+		int16_t get_x() const
 		{
 			double rounded = std::round(x.get());
 			return static_cast<int16_t>(rounded);
 		}
 
-		int16_t gety() const
+		int16_t get_y() const
 		{
 			double rounded = std::round(y.get());
 			return static_cast<int16_t>(rounded);
 		}
 
-		int16_t lastx() const
+		int16_t get_last_x() const
 		{
 			double rounded = std::round(x.last());
 			return static_cast<int16_t>(rounded);
 		}
 
-		int16_t lasty() const
+		int16_t get_last_y() const
 		{
 			double rounded = std::round(y.last());
 			return static_cast<int16_t>(rounded);
 		}
 
-		Point<int16_t> getposition() const
+		Point<int16_t> get_position() const
 		{
-			return{ getx(), gety() };
+			return{ get_x(), get_y() };
 		}
 
-		int16_t getabsx(double viewx, float alpha) const
+		int16_t get_absolute_x(double viewx, float alpha) const
 		{
 			double interx = x.normalized() ? std::round(x.get()) : x.get(alpha);
 			return static_cast<int16_t>(
@@ -154,7 +154,7 @@ namespace jrc
 				);
 		}
 
-		int16_t getabsy(double viewy, float alpha) const
+		int16_t get_absolute_y(double viewy, float alpha) const
 		{
 			double intery = y.normalized() ? std::round(y.get()) : y.get(alpha);
 			return static_cast<int16_t>(
@@ -162,9 +162,9 @@ namespace jrc
 				);
 		}
 
-		Point<int16_t> getabsolute(double viewx, double viewy, float alpha) const
+		Point<int16_t> get_absolute(double viewx, double viewy, float alpha) const
 		{
-			return{ getabsx(viewx, alpha), getabsy(viewy, alpha) };
+			return{ get_absolute_x(viewx, alpha), get_absolute_y(viewy, alpha) };
 		}
 	};
 
@@ -202,28 +202,27 @@ namespace jrc
 		double hacc = 0.0;
 		double vacc = 0.0;
 
-		bool flagset(Flag f)
+		bool is_flag_set(Flag f)
 		{
 			return (flags & f) != 0;
 		}
 
-		bool flagnotset(Flag f)
+		bool is_flag_not_set(Flag f)
 		{
-			return !flagset(f);
+			return !is_flag_set(f);
 		}
 
-		void setflag(Flag f)
+		void set_flag(Flag f)
 		{
 			flags |= f;
 		}
 
-		void clearflag(Flag f)
+		void clear_flag(Flag f)
 		{
-			if (flagset(f))
-				flags ^= f;
+			flags &= ~f;
 		}
 
-		void clearflags()
+		void clear_flags()
 		{
 			flags = 0;
 		}

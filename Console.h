@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -29,6 +29,12 @@ namespace jrc
 	class Console : public Singleton<Console>
 	{
 	public:
+		void print(const char* func, const std::exception& ex)
+		{
+			const std::string delim = ", ";
+			print(func + delim + ex.what());
+		}
+
 		void print(const std::string& str)
 		{
 #ifdef JOURNEY_PRINT_WARNINGS

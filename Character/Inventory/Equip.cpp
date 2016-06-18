@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -57,12 +57,12 @@ namespace jrc
 			quality = EQQ_GOLD;
 	}
 
-	uint8_t Equip::getslots() const
+	uint8_t Equip::get_slots() const
 	{
 		return slots;
 	}
 
-	uint8_t Equip::getlevel() const
+	uint8_t Equip::get_level() const
 	{
 		return level;
 	}
@@ -72,7 +72,7 @@ namespace jrc
 		return itemlevel;
 	}
 
-	uint16_t Equip::getstat(Equipstat::Value type) const
+	uint16_t Equip::get_stat(Equipstat::Value type) const
 	{
 		return stats[type];
 	}

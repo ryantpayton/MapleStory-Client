@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -38,20 +38,20 @@ namespace jrc
 		CharEquips();
 
 		void draw(Equipslot::Value slot, Stance::Value stance, Clothing::Layer layer, uint8_t frame, const DrawArgument& args) const;
-		void addequip(const Clothing& cloth);
-		void removeequip(Equipslot::Value slot);
+		void add_equip(const Clothing& cloth);
+		void remove_equip(Equipslot::Value slot);
 
-		bool isvisible(Equipslot::Value slot) const;
+		bool is_visible(Equipslot::Value slot) const;
 		bool comparelayer(Equipslot::Value slot, Stance::Value stance, Clothing::Layer layer) const;
 		bool hasoverall() const;
 		bool hasweapon() const;
 		bool istwohanded() const;
 		CapType getcaptype() const;
-		Weapon::Type getweapontype() const;
-		std::string getequipname(Equipslot::Value slot) const;
+		Weapon::Type get_weapontype() const;
+		std::string get_equipname(Equipslot::Value slot) const;
 
-		Optional<const Clothing> getequip(Equipslot::Value slot) const;
-		Optional<const Weapon> getweapon() const;
+		Optional<const Clothing> get_equip(Equipslot::Value slot) const;
+		Optional<const Weapon> get_weapon() const;
 
 	private:
 		const Clothing* equips[Equipslot::LENGTH];

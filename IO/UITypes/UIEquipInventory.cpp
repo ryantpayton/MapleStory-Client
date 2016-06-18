@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -28,7 +28,7 @@
 namespace jrc
 {
 	UIEquipInventory::UIEquipInventory() :
-		UIDragElement<PosEQINV>(Point<int16_t>(184, 20)), inventory(Stage::get().getplayer().getinvent()) {
+		UIDragElement<PosEQINV>(Point<int16_t>(184, 20)), inventory(Stage::get().get_player().get_inventory()) {
 
 		iconpositions[1] = Point<int16_t>(43, 25);
 		iconpositions[2] = Point<int16_t>(43, 91);
@@ -63,20 +63,20 @@ namespace jrc
 
 		buttons[BT_TOGGLEPETS] = std::make_unique<MapleButton>(source["BtPet"]);
 
-		pettextures.emplace_back(petsource["backgrnd"]);
-		pettextures.emplace_back(petsource["backgrnd2"]);
-		pettextures.emplace_back(petsource["backgrnd3"]);
+		textures_pet.emplace_back(petsource["backgrnd"]);
+		textures_pet.emplace_back(petsource["backgrnd2"]);
+		textures_pet.emplace_back(petsource["backgrnd3"]);
 
-		loadicons();
+		load_icons();
 
-		dimension = Point<int16_t>(184, 290);
+		dimension = { 184, 290 };
 		active = true;
 		showpetequips = false;
 	}
 
-	void UIEquipInventory::draw(float inter) const
+	void UIEquipInventory::draw(float alpha) const
 	{
-		UIElement::draw(inter);
+		UIElement::draw(alpha);
 
 		for (auto& icit : icons)
 		{
@@ -87,26 +87,29 @@ namespace jrc
 
 		if (showpetequips)
 		{
-			for (auto& ptit : pettextures)
+			Point<int16_t> position_pet(position + Point<int16_t>(184, 0));
+			for (auto& texture : textures_pet)
 			{
-				Point<int16_t> petposition = position + Point<int16_t>(184, 0);
-				ptit.draw(petposition);
+				texture.draw(position_pet);
 			}
 		}
 	}
 
-	void UIEquipInventory::buttonpressed(uint16_t id)
+	Button::State UIEquipInventory::button_pressed(uint16_t id)
 	{
-		if (id == BT_TOGGLEPETS)
+		switch (id)
 		{
+		case BT_TOGGLEPETS:
 			showpetequips = !showpetequips;
-			buttons.at(id)->setstate(Button::NORMAL);
+			return Button::NORMAL;
+		default:
+			return Button::PRESSED;
 		}
 	}
 
-	void UIEquipInventory::updateslot(int16_t slot)
+	void UIEquipInventory::update_slot(int16_t slot)
 	{
-		Optional<const Texture> texture = inventory.getitem(Inventory::EQUIPPED, slot)
+		Optional<const Texture> texture = inventory.get_item(Inventory::EQUIPPED, slot)
 			.transform(&Item::getidata)
 			.transform(&ItemData::geticon, false);
 
@@ -126,41 +129,41 @@ namespace jrc
 		clear_tooltip();
 	}
 
-	void UIEquipInventory::loadicons()
+	void UIEquipInventory::load_icons()
 	{
 		icons.clear();
 
 		for (auto& icon : iconpositions)
 		{
 			int16_t slot = icon.first;
-			updateslot(slot);
+			update_slot(slot);
 		}
 	}
 
-	Cursor::State UIEquipInventory::sendmouse(bool pressed, Point<int16_t> cursorpos)
+	Cursor::State UIEquipInventory::send_cursor(bool pressed, Point<int16_t> cursorpos)
 	{
-		Cursor::State dstate = UIDragElement::sendmouse(pressed, cursorpos);
+		Cursor::State dstate = UIDragElement::send_cursor(pressed, cursorpos);
 		if (dragged)
 		{
 			clear_tooltip();
 			return dstate;
 		}
 
-		int16_t slot = slotbypos(cursorpos);
+		int16_t slot = slot_by_position(cursorpos);
 		Optional<Icon> icon = geticon(slot);
 		if (icon)
 		{
 			if (pressed)
 			{
-				icon->startdrag(cursorpos - position - iconpositions[slot]);
-				UI::get().dragicon(icon.get());
+				icon->start_drag(cursorpos - position - iconpositions[slot]);
+				UI::get().drag_icon(icon.get());
 
 				clear_tooltip();
 				return Cursor::GRABBING;
 			}
 			else
 			{
-				showequip(slot);
+				show_equip(slot);
 				return Cursor::CANGRAB;
 			}
 		}
@@ -173,10 +176,10 @@ namespace jrc
 
 	void UIEquipInventory::doubleclick(Point<int16_t> cursorpos)
 	{
-		int16_t slot = slotbypos(cursorpos);
+		int16_t slot = slot_by_position(cursorpos);
 		if (icons.count(slot))
 		{
-			int16_t freeslot = inventory.findslot(Inventory::EQUIP);
+			int16_t freeslot = inventory.find_free_slot(Inventory::EQUIP);
 			if (freeslot > 0)
 			{
 				UnequipItemPacket(slot, freeslot)
@@ -185,20 +188,20 @@ namespace jrc
 		}
 	}
 
-	void UIEquipInventory::sendicon(const Icon& icon, Point<int16_t> cursorpos)
+	void UIEquipInventory::send_icon(const Icon& icon, Point<int16_t> cursorpos)
 	{
-		int16_t slot = slotbypos(cursorpos);
+		int16_t slot = slot_by_position(cursorpos);
 		if (slot > 0)
 		{
 			Equipslot::Value eqslot = Equipslot::byvalue(slot);
-			icon.droponequips(eqslot);
+			icon.drop_on_equips(eqslot);
 		}
 	}
 
-	void UIEquipInventory::togglehide()
+	void UIEquipInventory::toggle_active()
 	{
 		clear_tooltip();
-		UIElement::togglehide();
+		UIElement::toggle_active();
 	}
 
 	void UIEquipInventory::modify(int16_t pos, int8_t mode, int16_t arg)
@@ -207,28 +210,28 @@ namespace jrc
 		{
 		case 0:
 		case 3:
-			updateslot(pos);
+			update_slot(pos);
 			break;
 		case 2:
-			updateslot(pos);
-			updateslot(arg);
+			update_slot(pos);
+			update_slot(arg);
 			break;
 		}
 	}
 
-	void UIEquipInventory::showequip(int16_t slot)
+	void UIEquipInventory::show_equip(int16_t slot)
 	{
-		Optional<Equip> equip = inventory.getequip(Inventory::EQUIPPED, slot);
+		Optional<Equip> equip = inventory.get_equip(Inventory::EQUIPPED, slot);
 		int16_t eqslot = -slot;
-		UI::get().show_equip(EQUIPINVENTORY, equip.get(), eqslot);
+		UI::get().show_equip(TYPE, equip.get(), eqslot);
 	}
 
 	void UIEquipInventory::clear_tooltip()
 	{
-		UI::get().clear_tooltip(EQUIPINVENTORY);
+		UI::get().clear_tooltip(TYPE);
 	}
 
-	int16_t UIEquipInventory::slotbypos(Point<int16_t> cursorpos) const
+	int16_t UIEquipInventory::slot_by_position(Point<int16_t> cursorpos) const
 	{
 		for (auto& icit : iconpositions)
 		{
@@ -256,12 +259,12 @@ namespace jrc
 		source = s;
 	}
 
-	void UIEquipInventory::EquipIcon::ondrop() const
+	void UIEquipInventory::EquipIcon::drop_on_stage() const
 	{
 		UnequipItemPacket(source, 0).dispatch();
 	}
 
-	void UIEquipInventory::EquipIcon::ondropitems(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const
+	void UIEquipInventory::EquipIcon::drop_on_items(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const
 	{
 		if (tab != Inventory::EQUIP)
 			return;

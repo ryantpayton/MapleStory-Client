@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -25,7 +25,7 @@ namespace jrc
 		for (auto& oid : layers[layer])
 		{
 			auto mmo = get(oid);
-			if (mmo && mmo->isactive())
+			if (mmo && mmo->is_active())
 			{
 				mmo->draw(viewx, viewy, alpha);
 			}
@@ -41,7 +41,7 @@ namespace jrc
 			MapObject* mmo = iter->second.get();
 			if (mmo)
 			{
-				int8_t oldlayer = mmo->getlayer();
+				int8_t oldlayer = mmo->get_layer();
 				int8_t newlayer = mmo->update(physics);
 				if (newlayer == -1)
 				{
@@ -83,8 +83,8 @@ namespace jrc
 	{
 		if (toadd)
 		{
-			int32_t oid = toadd->getoid();
-			int8_t layer = toadd->getlayer();
+			int32_t oid = toadd->get_oid();
+			int8_t layer = toadd->get_layer();
 			objects[oid] = std::move(toadd);
 			layers[layer].insert(oid);
 		}
@@ -95,7 +95,7 @@ namespace jrc
 		auto iter = objects.find(oid);
 		if (iter != objects.end() && iter->second)
 		{
-			int8_t layer = iter->second->getlayer();
+			int8_t layer = iter->second->get_layer();
 			objects.erase(iter);
 
 			layers[layer].erase(oid);

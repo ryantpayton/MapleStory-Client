@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -25,12 +25,13 @@
 #include "..\..\Net\Session.h"
 #include "..\..\Net\Packets\LoginPackets.h"
 
-#include "nlnx\nx.hpp"
+#include <nlnx\nx.hpp>
 
 namespace jrc
 {
 	UIWorldSelect::UIWorldSelect()
-	{
+		: UIElement({ 0, 0 }, { 800, 600 }) {
+
 		worldid = Setting<DefaultWorld>::get().load();
 		channelid = Setting<DefaultChannel>::get().load();
 
@@ -48,16 +49,16 @@ namespace jrc
 			Point<int16_t>(200, 170)
 			);
 
-		worldcount = Session::get().getlogin().getnumworlds();
+		worldcount = Session::get().get_login().getnumworlds();
 		if (worldcount > 0)
 		{
 			buttons[BT_WORLD0] = std::make_unique<MapleButton>(worlds["button:15"], Point<int16_t>(650, 20));
-			buttons[BT_WORLD0]->setstate(Button::PRESSED);
+			buttons[BT_WORLD0]->set_state(Button::PRESSED);
 
 			sprites.emplace_back(channels["layer:bg"], Point<int16_t>(200, 170));
 			sprites.emplace_back(channels["release"]["layer:15"], Point<int16_t>(200, 170));
 
-			uint8_t chcount = Session::get().getlogin().getworld(worldid).channelcount;
+			uint8_t chcount = Session::get().get_login().getworld(worldid).channelcount;
 			if (channelid >= chcount)
 				channelid = 0;
 
@@ -69,36 +70,42 @@ namespace jrc
 					Point<int16_t>(200, 170)
 					);
 			}
-			buttons[BT_CHANNEL0 + channelid]->setstate(Button::PRESSED);
+			buttons[BT_CHANNEL0 + channelid]->set_state(Button::PRESSED);
 		}
-
-		position = Point<int16_t>(0, 0);
-		dimension = Point<int16_t>(800, 600);
-		active = true;
 	}
 
-	void UIWorldSelect::buttonpressed(uint16_t id)
+	void UIWorldSelect::draw(float alpha) const
+	{
+		UIElement::draw(alpha);
+	}
+
+	Button::State UIWorldSelect::button_pressed(uint16_t id)
 	{
 		if (id == BT_ENTERWORLD)
 		{
 			UI::get().disable();
 
-			Session::get().getlogin()
-				.setworldid(worldid);
-			Session::get().getlogin()
-				.setchannelid(channelid);
+			Session::get().get_login()
+				.set_world(worldid);
+			Session::get().get_login()
+				.set_channel(channelid);
 
 			CharlistRequestPacket(worldid, channelid)
 				.dispatch();
+
+			return Button::PRESSED;
 		}
 		else if (id >= BT_WORLD0 && id < BT_CHANNEL0)
 		{
-			 
+			buttons[BT_WORLD0 + worldid]->set_state(Button::NORMAL);
+			worldid = static_cast<uint8_t>(id - BT_WORLD0);
+			return Button::PRESSED;
 		}
 		else
 		{
-			buttons[BT_CHANNEL0 + channelid]->setstate(Button::NORMAL);
+			buttons[BT_CHANNEL0 + channelid]->set_state(Button::NORMAL);
 			channelid = static_cast<uint8_t>(id - BT_CHANNEL0);
+			return Button::PRESSED;
 		}
 	}
 }

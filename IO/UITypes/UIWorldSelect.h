@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Element.h"
+#include "..\UIElement.h"
 
 namespace jrc
 {
@@ -27,6 +27,14 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
+		UIWorldSelect();
+
+		void draw(float alpha) const override;
+
+	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
+
+	private:
 		enum Buttons
 		{
 			BT_ENTERWORLD = 0,
@@ -34,10 +42,6 @@ namespace jrc
 			BT_CHANNEL0 = 17
 		};
 
-		UIWorldSelect();
-		void buttonpressed(uint16_t) override;
-
-	private:
 		size_t worldcount;
 		uint8_t worldid;
 		uint8_t channelid;

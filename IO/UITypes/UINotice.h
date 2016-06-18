@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2016 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -60,14 +60,14 @@ namespace jrc
 		void draw(float alpha) const override;
 
 	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
+
+	private:
 		enum Buttons : int16_t
 		{
 			YES, NO
 		};
 
-		void buttonpressed(uint16_t buttonid) override;
-
-	private:
 		std::function<void(bool yes)> yesnohandler;
 	};
 
@@ -80,18 +80,19 @@ namespace jrc
 
 		void draw(float alpha) const override;
 		void update() override;
-		Cursor::State sendmouse(bool pressed, Point<int16_t> cursorpos) override;
+
+		Cursor::State send_cursor(bool pressed, Point<int16_t> cursorpos) override;
 
 	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
+
+	private:
+		void handlestring(std::string numstr);
+
 		enum Buttons : int16_t
 		{
 			OK, CANCEL
 		};
-
-		void buttonpressed(uint16_t buttonid) override;
-
-	private:
-		void handlestring(std::string numstr);
 
 		std::function<void(int32_t number)> numhandler;
 		Textfield numfield;

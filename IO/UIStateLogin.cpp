@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -25,7 +25,7 @@ namespace jrc
 	{
 		focused = UIElement::NONE;
 
-		add(ElementTag<UILogin>());
+		add(Element<UILogin>());
 	}
 
 	void UIStateLogin::draw(float inter, Point<int16_t>) const
@@ -33,7 +33,7 @@ namespace jrc
 		for (auto& entry : elements)
 		{
 			UIElement* element = entry.second.get();
-			if (element && element->isactive())
+			if (element && element->is_active())
 				element->draw(inter);
 		}
 	}
@@ -43,23 +43,23 @@ namespace jrc
 		for (auto& entry : elements)
 		{
 			UIElement* element = entry.second.get();
-			if (element && element->isactive())
+			if (element && element->is_active())
 				element->update();
 		}
 	}
 
 	void UIStateLogin::doubleclick(Point<int16_t>) {}
 
-	void UIStateLogin::sendkey(Keyboard::Keytype, int32_t, bool) {}
+	void UIStateLogin::send_key(Keyboard::Keytype, int32_t, bool) {}
 
-	Cursor::State UIStateLogin::sendmouse(Cursor::State mst, Point<int16_t> pos)
+	Cursor::State UIStateLogin::send_cursor(Cursor::State mst, Point<int16_t> pos)
 	{
 		UIElement* focusedelement = get(focused);
 		if (focusedelement)
 		{
-			if (focusedelement->isactive())
+			if (focusedelement->is_active())
 			{
-				return focusedelement->sendmouse(mst == Cursor::CLICKING, pos);
+				return focusedelement->send_cursor(mst == Cursor::CLICKING, pos);
 			}
 			else
 			{
@@ -75,13 +75,13 @@ namespace jrc
 			for (auto& elit : elements)
 			{
 				UIElement* element = elit.second.get();
-				if (element && element->isactive())
+				if (element && element->is_active())
 				{
-					if (element->isinrange(pos))
+					if (element->is_in_range(pos))
 					{
 						if (front)
 						{
-							element->cursorleave(false, pos);
+							element->remove_cursor(false, pos);
 						}
 
 						front = element;
@@ -89,24 +89,26 @@ namespace jrc
 					}
 					else
 					{
-						element->cursorleave(false, pos);
+						element->remove_cursor(false, pos);
 					}
 				}
 			}
 
-			return front ? front->sendmouse(mst == Cursor::CLICKING, pos) : Cursor::IDLE;
+			return front ? front->send_cursor(mst == Cursor::CLICKING, pos) : Cursor::IDLE;
 		}
 	}
 
-	void UIStateLogin::dragicon(Icon*) {}
+	void UIStateLogin::drag_icon(Icon*) {}
 
-	void UIStateLogin::showequip(UIElement::Type, Equip*, int16_t) {}
+	void UIStateLogin::show_equip(UIElement::Type, Equip*, int16_t) {}
 
-	void UIStateLogin::showitem(UIElement::Type, int32_t) {}
+	void UIStateLogin::show_item(UIElement::Type, int32_t) {}
 
-	void UIStateLogin::cleartooltip(UIElement::Type) {}
+	void UIStateLogin::show_skill(UIElement::Type, int32_t, int32_t, int32_t, int64_t) {}
 
-	void UIStateLogin::add(const Element& element)
+	void UIStateLogin::clear_tooltip(UIElement::Type) {}
+
+	void UIStateLogin::add(const IElement& element)
 	{
 		UIElement::Type type = element.type();
 		bool isfocused = element.focused();
@@ -138,13 +140,13 @@ namespace jrc
 		return elements.count(type) ? elements.at(type).get() : nullptr;
 	}
 
-	UIElement* UIStateLogin::getfront(Point<int16_t> pos) const
+	UIElement* UIStateLogin::get_front(Point<int16_t> pos) const
 	{
 		UIElement* front = nullptr;
 		for (auto& entry : elements)
 		{
 			UIElement* element = entry.second.get();
-			if (element && element->isactive() && element->isinrange(pos))
+			if (element && element->is_active() && element->is_in_range(pos))
 				front = element;
 		}
 		return front;

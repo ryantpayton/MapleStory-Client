@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -28,7 +28,7 @@ namespace jrc
 	{
 		for (auto sub : src)
 		{
-			uint8_t portal_id = string_conversion::or_default<uint8_t>(sub.name(), -1);
+			int8_t portal_id = string_conversion::or_default<int8_t>(sub.name(), -1);
 			if (portal_id < 0)
 				continue;
 
@@ -95,7 +95,7 @@ namespace jrc
 		if (iter != portals_by_id.end())
 		{
 			constexpr Point<int16_t> ABOVE(0, 30);
-			return iter->second.getposition() - ABOVE;
+			return iter->second.get_position() - ABOVE;
 		}
 		else
 		{
@@ -116,7 +116,7 @@ namespace jrc
 		}
 	}
 
-	Portal::WarpInfo MapPortals::findportal(Point<int16_t> playerpos)
+	Portal::WarpInfo MapPortals::find_at(Point<int16_t> playerpos)
 	{
 		if (cooldown == 0)
 		{

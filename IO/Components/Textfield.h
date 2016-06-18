@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -44,24 +44,25 @@ namespace jrc
 
 		void draw(Point<int16_t> position) const;
 		void update(Point<int16_t> parentpos);
-		void sendkey(Keyboard::Keytype type, int32_t code, bool down);
-		void sendstring(std::string str);
+		void send_key(Keyboard::Keytype type, int32_t code, bool down);
+		void add_string(const std::string& str);
 
-		void setstate(State state);
-		void settext(std::string text);
-		void setcrypt(int8_t character);
+		void set_state(State state);
+		void change_text(const std::string& text);
+		void set_cryptchar(int8_t character);
 
-		void setonreturn(std::function<void(std::string)> onreturn);
-		void setkey(Keyboard::Action key, std::function<void(void)> action);
+		void set_enter_callback(std::function<void(std::string)> onreturn);
+		void set_key_callback(Keyboard::Action key, std::function<void(void)> action);
 
-		Cursor::State sendcursor(Point<int16_t> cursorpos, bool clicked);
+		Cursor::State send_cursor(Point<int16_t> cursorpos, bool clicked);
 
-		std::string gettext() const;
-		State getstate() const;
-		Rectangle<int16_t> getbounds() const;
+		bool empty() const;
+		State get_state() const;
+		Rectangle<int16_t> get_bounds() const;
+		const std::string& get_text() const;
 
 	private:
-		void modifytext(std::string);
+		void modifytext(const std::string&);
 		bool belowlimit() const;
 
 		Text textlabel;

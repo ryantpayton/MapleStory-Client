@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -40,18 +40,20 @@ namespace jrc
 		virtual void update() = 0;
 
 		virtual void doubleclick(Point<int16_t> pos) = 0;
-		virtual void sendkey(Keyboard::Keytype type, int32_t action, bool pressed) = 0;
-		virtual Cursor::State sendmouse(Cursor::State mst, Point<int16_t> pos) = 0;
+		virtual void send_key(Keyboard::Keytype type, int32_t action, bool pressed) = 0;
+		virtual Cursor::State send_cursor(Cursor::State mst, Point<int16_t> pos) = 0;
 
-		virtual void dragicon(Icon* icon) = 0;
-		virtual void showequip(UIElement::Type parent, Equip* equip, int16_t slot) = 0;
-		virtual void showitem(UIElement::Type parent, int32_t itemid) = 0;
-		virtual void cleartooltip(UIElement::Type parent) = 0;
+		virtual void drag_icon(Icon* icon) = 0;
+		virtual void show_equip(UIElement::Type parent, Equip* equip, int16_t slot) = 0;
+		virtual void show_item(UIElement::Type parent, int32_t itemid) = 0;
+		virtual void show_skill(UIElement::Type parent, int32_t skill_id,
+			int32_t level, int32_t masterlevel, int64_t expiration) = 0;
+		virtual void clear_tooltip(UIElement::Type parent) = 0;
 
-		virtual void add(const Element& element) = 0;
+		virtual void add(const IElement& element) = 0;
 		virtual void remove(UIElement::Type type) = 0;
 		virtual UIElement* get(UIElement::Type type) const = 0;
-		virtual UIElement* getfront(Point<int16_t> pos) const = 0;
+		virtual UIElement* get_front(Point<int16_t> pos) const = 0;
 	};
 
 	class UIStateNull : public UIState
@@ -59,15 +61,16 @@ namespace jrc
 		void draw(float, Point<int16_t>) const override { Console::get().print("Warning: UI was not initialized."); }
 		void update() override {}
 		void doubleclick(Point<int16_t>) override {}
-		void sendkey(Keyboard::Keytype, int32_t, bool) override {}
-		Cursor::State sendmouse(Cursor::State, Point<int16_t>) override { return Cursor::IDLE; }
-		void dragicon(Icon*) override {}
-		void showequip(UIElement::Type, Equip*, int16_t) override {}
-		void showitem(UIElement::Type, int32_t) override {}
-		void cleartooltip(UIElement::Type) override {}
-		void add(const Element&) override {}
+		void send_key(Keyboard::Keytype, int32_t, bool) override {}
+		Cursor::State send_cursor(Cursor::State, Point<int16_t>) override { return Cursor::IDLE; }
+		void drag_icon(Icon*) override {}
+		void show_equip(UIElement::Type, Equip*, int16_t) override {}
+		void show_item(UIElement::Type, int32_t) override {}
+		void show_skill(UIElement::Type, int32_t, int32_t, int32_t, int64_t) override {}
+		void clear_tooltip(UIElement::Type) override {}
+		void add(const IElement&) override {}
 		void remove(UIElement::Type) override {}
 		UIElement* get(UIElement::Type) const override { return nullptr; }
-		UIElement* getfront(Point<int16_t>) const override { return nullptr; }
+		UIElement* get_front(Point<int16_t>) const override { return nullptr; }
 	};
 }

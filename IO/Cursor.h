@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -51,10 +51,10 @@ namespace jrc
 
 		void draw(float alpha) const;
 		void update();
-		void setstate(State state);
-		void setposition(Point<int16_t> position);
-		State getstate() const;
-		Point<int16_t> getposition() const;
+		void set_state(State state);
+		void set_position(Point<int16_t> position);
+		State get_state() const;
+		Point<int16_t> get_position() const;
 
 	private:
 		EnumMap<State, Animation> animations;

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -57,12 +57,12 @@ namespace jrc
 		void draw(double viewx, double viewy, float alpha) const;
 		void update(const Physics& physics, Point<int16_t> charpos);
 
-		void setposition(int16_t xpos, int16_t ypos);
-		void setstance(Stance stance);
-		void setstance(uint8_t stancebyte);
+		void set_position(int16_t xpos, int16_t ypos);
+		void set_stance(Stance stance);
+		void set_stance(uint8_t stancebyte);
 
-		int32_t getiid() const;
-		Stance getstance() const;
+		int32_t get_itemid() const;
+		Stance get_stance() const;
 
 	private:
 		int32_t itemid;

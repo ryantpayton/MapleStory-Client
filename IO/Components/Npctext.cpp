@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -22,100 +22,8 @@
 
 namespace jrc
 {
-	Npctext::Npctext(std::string text, int16_t maxwidth)
+	Npctext::Npctext(std::string, int16_t)
 	{
-		std::vector<std::string> strings;
-		size_t pos = 0;
-		size_t split = text.find_first_of("\n", pos);
-		while (split != std::string::npos)
-		{
-			strings.push_back(text.substr(pos, split - pos));
-			pos = split + 1;
-			split = text.find_first_of("\n", pos);
-		}
-		strings.push_back(text.substr(pos));
-
-		Text::Font font = Text::A12M;
-		Text::Color color = Text::LIGHTGREY;
-		for (auto& str : strings)
-		{
-			size_t length = str.size();
-			size_t pos2 = 0;
-
-			while (pos2 < length)
-			{
-				size_t special = str.find_first_of('#', pos2);
-				if (special != std::string::npos)
-				{
-					if (special > pos2)
-					{
-						Text linetext = Text(font, Text::LEFT, color);
-						linetext.settext(str.substr(pos2, special - pos2), maxwidth - offset.x());
-						lines.push_back({ linetext, offset });
-						if (linetext.linecount() > 1) 
-							offset.setx(linetext.endoffset().x());
-						else
-							offset.shiftx(linetext.endoffset().x());
-						offset.shifty((linetext.linecount() - 1) * 15);
-					}
-
-					if (length > special + 1)
-					{
-						int8_t arg = str[special + 1];
-						switch (arg)
-						{
-						case 'n':
-							font = Text::A12M;
-							pos2 = special + 2;
-							break;
-						case 'e':
-							font = Text::A12B;
-							pos2 = special + 2;
-							break;
-						case 'k':
-							color = Text::LIGHTGREY;
-							pos2 = special + 2;
-							break;
-						case 'b':
-							color = Text::BLUE;
-							pos2 = special + 2;
-							break;
-						case 'r':
-							color = Text::RED;
-							pos2 = special + 2;
-							break;
-						case 'z':
-							pos = parsez(str, special);
-							break;
-						case 'v':
-							pos = parsev(str, special);
-							break;
-						case 'h':
-							pos = parseh(str, special);
-							break;
-						case 'L':
-							pos = parseL(str, special);
-							break;
-						default:
-							pos2 = special + 2;
-						}
-					}
-					else
-					{
-						str.erase(special);
-					}
-				}
-				else
-				{
-					Text linetext = Text(font, Text::LEFT, color);
-					linetext.settext(str.substr(pos2), maxwidth);
-					lines.push_back({ linetext, offset });
-					pos2 = length;
-					offset.setx(0);
-					offset.shifty(13 + 2);
-				}
-			}
-		}
 	}
 
 	Npctext::Npctext() {}
@@ -151,11 +59,11 @@ namespace jrc
 		{
 			try
 			{
-				const ItemData& idata = DataFactory::get().getitemdata(std::stoi(str.substr(pos + 2, next)));
-				if (idata.isloaded())
+				const ItemData& idata = DataFactory::get().get_itemdata(std::stoi(str.substr(pos + 2, next)));
+				if (idata.is_loaded())
 				{
-					str.replace(str.begin() + pos, str.begin() + next + 1, idata.getname());
-					return pos + idata.getname().length() + 1;
+					str.replace(str.begin() + pos, str.begin() + next + 1, idata.get_name());
+					return pos + idata.get_name().length() + 1;
 				}
 				else
 				{
@@ -188,7 +96,7 @@ namespace jrc
 				switch (type)
 				{
 				case 0:
-					insert = Stage::get().getplayer().getstats().getname();
+					insert = Stage::get().get_player().get_stats().get_name();
 					break;
 				default:
 					insert = "";
@@ -216,13 +124,13 @@ namespace jrc
 		{
 			try
 			{
-				const ItemData& idata = DataFactory::get().getitemdata(std::stoi(str.substr(pos + 2, next)));
-				if (idata.isloaded())
+				const ItemData& idata = DataFactory::get().get_itemdata(std::stoi(str.substr(pos + 2, next)));
+				if (idata.is_loaded())
 				{
 					Image image = { idata.geticon(false), offset };
 					image.texture.shift(Point<int16_t>(0, 32));
 					images.push_back(image);
-					offset.shiftx(32);
+					offset.shift_x(32);
 					str.replace(str.begin() + pos, str.begin() + next + 1, "");
 					return pos + 1;
 				}

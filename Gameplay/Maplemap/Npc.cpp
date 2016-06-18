@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -64,12 +64,8 @@ namespace jrc
 		name = strsrc["name"];
 		func = strsrc["func"];
 
-		namelabel = Text(Text::A13B, Text::CENTER, Text::YELLOW);
-		namelabel.settext(name);
-		namelabel.setback(Text::NAMETAG);
-		funclabel = Text(Text::A13B, Text::CENTER, Text::YELLOW);
-		funclabel.settext(func);
-		funclabel.setback(Text::NAMETAG);
+		namelabel = { Text::A13B, Text::CENTER, Text::YELLOW, Text::NAMETAG, name };
+		funclabel = { Text::A13B, Text::CENTER, Text::YELLOW, Text::NAMETAG, func };
 
 		npcid = id;
 		flip = !fl;
@@ -77,12 +73,12 @@ namespace jrc
 		stance = "stand";
 
 		phobj.fhid = f;
-		setposition(position);
+		set_position(position);
 	}
 
 	void Npc::draw(double viewx, double viewy, float alpha) const
 	{
-		Point<int16_t> absp = phobj.getabsolute(viewx, viewy, alpha);
+		Point<int16_t> absp = phobj.get_absolute(viewx, viewy, alpha);
 		if (animations.count(stance))
 		{
 			animations.at(stance).draw(DrawArgument(absp, flip), alpha);
@@ -99,7 +95,7 @@ namespace jrc
 		if (!active)
 			return phobj.fhlayer;
 
-		physics.moveobject(phobj);
+		physics.move_object(phobj);
 
 		if (animations.count(stance))
 		{
@@ -108,14 +104,14 @@ namespace jrc
 			{
 				size_t next_stance = random.nextint(states.size() - 1);
 				std::string new_stance = states[next_stance];
-				setstance(new_stance);
+				set_stance(new_stance);
 			}
 		}
 
 		return phobj.fhlayer;
 	}
 
-	void Npc::setstance(const std::string& st)
+	void Npc::set_stance(const std::string& st)
 	{
 		if (stance != st)
 		{
@@ -139,9 +135,9 @@ namespace jrc
 		if (!active)
 			return false;
 
-		Point<int16_t> absp = getposition() + viewpos;
+		Point<int16_t> absp = get_position() + viewpos;
 		Point<int16_t> dim = animations.count(stance) ?
-			animations.at(stance).getdimensions() :
+			animations.at(stance).get_dimensions() :
 			Point<int16_t>();
 
 		return Rectangle<int16_t>(

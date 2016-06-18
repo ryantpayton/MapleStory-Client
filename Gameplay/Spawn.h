@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -54,7 +54,7 @@ namespace jrc
 		NpcSpawn(int32_t o, int32_t i, Point<int16_t> p, bool fl, uint16_t f)
 			: oid(o), id(i), position(p), flip(fl), fh(f) {}
 
-		int32_t getoid() const
+		int32_t get_oid() const
 		{
 			return oid;
 		}
@@ -66,7 +66,7 @@ namespace jrc
 
 		std::unique_ptr<Npc> instantiate(const Physics& physics) const
 		{
-			auto spawnposition = physics.getgroundbelow(position);
+			auto spawnposition = physics.get_y_below(position);
 			return std::make_unique<Npc>(id, oid, flip, fh, false, spawnposition);
 		}
 
@@ -90,7 +90,7 @@ namespace jrc
 			return mode;
 		}
 
-		int32_t getoid() const
+		int32_t get_oid() const
 		{
 			return oid;
 		}
@@ -133,7 +133,7 @@ namespace jrc
 			return id;
 		}
 
-		int32_t getoid() const
+		int32_t get_oid() const
 		{
 			return oid;
 		}

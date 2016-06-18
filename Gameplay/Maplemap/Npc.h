@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -44,7 +44,7 @@ namespace jrc
 		int8_t update(const Physics& physics) override;
 
 		// Changes stance and resets animation.
-		void setstance(const std::string& stance);
+		void set_stance(const std::string& stance);
 
 		// Check wether this is a server-sided npc.
 		bool isscripted() const;

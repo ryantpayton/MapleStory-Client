@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                               //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,8 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "MapleFrame.h"
+
 #include "..\..\Graphics\Text.h"
-#include "..\..\Graphics\Texture.h"
 
 namespace jrc
 {
@@ -29,26 +30,17 @@ namespace jrc
 
 		void draw(Point<int16_t> position) const;
 		void update();
-		void settext(std::string text);
+
+		void change_text(const std::string& text);
 		void expire();
 
 	private:
+		// How long a line stays on screen. 4 seconds.
+		static constexpr int16_t DURATION = 4000;
+
+		MapleFrame frame;
 		Text textlabel;
 		Texture arrow;
-		Texture center;
-		Texture east;
-		Texture northeast;
-		Texture north;
-		Texture northwest;
-		Texture west;
-		Texture southwest;
-		Texture south;
-		Texture southeast;
-		int16_t xtile;
-		int16_t ytile;
-
-		int16_t width;
-		int16_t height;
 		int16_t duration;
 	};
 }

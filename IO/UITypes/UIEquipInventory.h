@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,10 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Element.h"
 #include "..\UIDragElement.h"
-#include "..\Components\Icon.h"
+
 #include "..\Components\EquipTooltip.h"
+#include "..\Components\Icon.h"
 
 #include "..\..\Character\Inventory\Inventory.h"
 
@@ -33,51 +33,51 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 
-		enum Buttons
-		{
-			BT_TOGGLEPETS
-		};
-
 		UIEquipInventory();
 
 		void draw(float inter) const override;
-		void buttonpressed(uint16_t buttonid) override;
-		void togglehide() override;
+
+		void toggle_active() override;
 		void doubleclick(Point<int16_t> position) override;
-		void sendicon(const Icon& icon, Point<int16_t> position) override;
-		Cursor::State sendmouse(bool pressed, Point<int16_t> position) override;
+		void send_icon(const Icon& icon, Point<int16_t> position) override;
+		Cursor::State send_cursor(bool pressed, Point<int16_t> position) override;
 
 		void modify(int16_t pos, int8_t mode, int16_t arg);
 
+	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
+
 	private:
-		void showequip(int16_t slot);
+		void show_equip(int16_t slot);
 		void clear_tooltip();
+		void load_icons();
+		void update_slot(int16_t slot);
+		int16_t slot_by_position(Point<int16_t> position) const;
+		Optional<Icon> geticon(int16_t slot) const;
 
 		class EquipIcon : public Icon::Type
 		{
 		public:
 			EquipIcon(int16_t source);
 
-			void ondrop() const override;
-			void ondropequips(Equipslot::Value) const override {}
-			void ondropitems(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const override;
+			void drop_on_stage() const override;
+			void drop_on_equips(Equipslot::Value) const override {}
+			void drop_on_items(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const override;
 
 		private:
 			int16_t source;
 		};
 
-		UIEquipInventory& operator = (const UIEquipInventory&) = delete;
-
-		void loadicons();
-		void updateslot(int16_t slot);
-		int16_t slotbypos(Point<int16_t> position) const;
-		Optional<Icon> geticon(int16_t slot) const;
+		enum Buttons
+		{
+			BT_TOGGLEPETS
+		};
 
 		const Inventory& inventory;
 
+		std::vector<Texture> textures_pet;
 		std::map<int16_t, Point<int16_t>> iconpositions;
 		std::map<int16_t, std::unique_ptr<Icon>> icons;
-		std::vector<Texture> pettextures;
 
 		bool showpetequips;
 	};

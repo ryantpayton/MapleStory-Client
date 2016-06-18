@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,7 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Element.h"
+#include "..\UIElement.h"
+
+#include "..\..\Graphics\Sprite.h"
+#include "..\..\Graphics\Texture.h"
 
 namespace jrc
 {
@@ -29,7 +32,12 @@ namespace jrc
 
 		UILoginwait();
 
-		void buttonpressed(uint16_t) override {}
+		void draw(float alpha) const override;
+		void update() override;
+
+	private:
+		Texture background;
+		Sprite circle;
 	};
 }
 

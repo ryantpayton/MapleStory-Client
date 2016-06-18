@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -25,9 +25,8 @@ namespace jrc
 	public:
 		Gauge(Texture front, Texture mid, Texture end, int16_t maximum, float percentage);
 		Gauge();
-		~Gauge();
 
-		void draw(Point<int16_t>) const;
+		void draw(const DrawArgument& args) const;
 		void update(float target);
 
 	private:

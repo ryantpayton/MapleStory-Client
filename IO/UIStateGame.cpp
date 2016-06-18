@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -26,6 +26,7 @@
 #include "UITypes\UIStatsinfo.h"
 #include "UITypes\UIItemInventory.h"
 #include "UITypes\UIEquipInventory.h"
+#include "UITypes\UISkillbook.h"
 
 #include "..\Gameplay\Stage.h"
 
@@ -36,11 +37,11 @@ namespace jrc
 		focused = UIElement::NONE;
 		tooltipparent = UIElement::NONE;
 
-		add(ElementTag<UIStatusMessenger>());
-		add(ElementTag<UIStatusbar>());
-		add(ElementTag<UIBuffList>());
-		add(ElementTag<UINpcTalk>());
-		add(ElementTag<UIShop>());
+		add(Element<UIStatusMessenger>());
+		add(Element<UIStatusbar>());
+		add(Element<UIBuffList>());
+		add(Element<UINpcTalk>());
+		add(Element<UIShop>());
 	}
 
 	void UIStateGame::draw(float inter, Point<int16_t> cursor) const
@@ -48,12 +49,12 @@ namespace jrc
 		for (auto& entry : elementorder)
 		{
 			UIElement* element = get(entry);
-			if (element && element->isactive())
+			if (element && element->is_active())
 				element->draw(inter);
 		}
 
-		draggedicon.ifpresent(&Icon::dragdraw, cursor);
-		tooltip.ifpresent(&Tooltip::draw, cursor);
+		draggedicon.if_present(&Icon::dragdraw, cursor);
+		tooltip.if_present(&Tooltip::draw, cursor);
 	}
 
 	void UIStateGame::update()
@@ -61,32 +62,32 @@ namespace jrc
 		for (auto& entry : elementorder)
 		{
 			UIElement* element = get(entry);
-			if (element && element->isactive())
+			if (element && element->is_active())
 				element->update();
 		}
 	}
 
-	void UIStateGame::dropicon(const Icon& icon, Point<int16_t> pos)
+	void UIStateGame::drop_icon(const Icon& icon, Point<int16_t> pos)
 	{
-		UIElement* front = getfront(pos);
+		UIElement* front = get_front(pos);
 		if (front)
 		{
-			front->sendicon(icon, pos);
+			front->send_icon(icon, pos);
 		}
 		else
 		{
-			icon.drop();
+			icon.drop_on_stage();
 		}
 	}
 
 	void UIStateGame::doubleclick(Point<int16_t> pos)
 	{
-		UIElement* front = getfront(pos);
+		UIElement* front = get_front(pos);
 		if (front)
 			front->doubleclick(pos);
 	}
 
-	void UIStateGame::sendkey(Keyboard::Keytype type, int32_t action, bool pressed)
+	void UIStateGame::send_key(Keyboard::Keytype type, int32_t action, bool pressed)
 	{
 		switch (type)
 		{
@@ -95,13 +96,16 @@ namespace jrc
 				switch (action)
 				{
 				case Keyboard::CHARSTATS:
-					add(ElementTag<UIStatsinfo>());
+					add(Element<UIStatsinfo>());
 					break;
 				case Keyboard::INVENTORY:
-					add(ElementTag<UIItemInventory>());
+					add(Element<UIItemInventory>());
 					break;
 				case Keyboard::EQUIPS:
-					add(ElementTag<UIEquipInventory>());
+					add(Element<UIEquipInventory>());
+					break;
+				case Keyboard::SKILLBOOK:
+					add(Element<UISkillbook>());
 					break;
 				}
 			break;
@@ -109,20 +113,20 @@ namespace jrc
 		case Keyboard::FACE:
 		case Keyboard::ITEM:
 		case Keyboard::SKILL:
-			Stage::get().sendkey(type, action, pressed);
+			Stage::get().send_key(type, action, pressed);
 			break;
 		}
 	}
 
-	Cursor::State UIStateGame::sendmouse(Cursor::State mst, Point<int16_t> pos)
+	Cursor::State UIStateGame::send_cursor(Cursor::State mst, Point<int16_t> pos)
 	{
 		if (draggedicon)
 		{
 			switch (mst)
 			{
 			case Cursor::IDLE:
-				dropicon(*draggedicon, pos);
-				draggedicon->resetdrag();
+				drop_icon(*draggedicon, pos);
+				draggedicon->reset();
 				draggedicon = Optional<Icon>();
 				return mst;
 			default:
@@ -135,9 +139,9 @@ namespace jrc
 			UIElement* focusedelement = get(focused);
 			if (focusedelement)
 			{
-				if (focusedelement->isactive())
+				if (focusedelement->is_active())
 				{
-					return focusedelement->sendmouse(clicked, pos);
+					return focusedelement->send_cursor(clicked, pos);
 				}
 				else
 				{
@@ -154,22 +158,22 @@ namespace jrc
 				{
 					UIElement* element = get(elit);
 					bool found = false;
-					if (element && element->isactive())
+					if (element && element->is_active())
 					{
-						if (element->isinrange(pos))
+						if (element->is_in_range(pos))
 						{
 							found = true;
 						}
 						else
 						{
-							found = element->cursorleave(clicked, pos);
+							found = element->remove_cursor(clicked, pos);
 						}
 
 						if (found)
 						{
 							if (front)
 							{
-								element->cursorleave(false, pos);
+								element->remove_cursor(false, pos);
 							}
 
 							front = element;
@@ -179,7 +183,7 @@ namespace jrc
 				}
 
 				if (fronttype != tooltipparent)
-					cleartooltip(tooltipparent);
+					clear_tooltip(tooltipparent);
 
 				if (front)
 				{
@@ -188,24 +192,24 @@ namespace jrc
 						elementorder.remove(fronttype);
 						elementorder.push_back(fronttype);
 					}
-					return front->sendmouse(clicked, pos);
+					return front->send_cursor(clicked, pos);
 				}
 				else
 				{
-					return Stage::get().sendmouse(clicked, pos);
+					return Stage::get().send_cursor(clicked, pos);
 				}
 			}
 		}
 	}
 
-	void UIStateGame::dragicon(Icon* drgic)
+	void UIStateGame::drag_icon(Icon* drgic)
 	{
 		draggedicon = drgic;
 	}
 
-	void UIStateGame::showequip(UIElement::Type parent, Equip* equip, int16_t slot)
+	void UIStateGame::show_equip(UIElement::Type parent, Equip* equip, int16_t slot)
 	{
-		eqtooltip.setequip(equip, slot);
+		eqtooltip.set_equip(equip, slot);
 
 		if (equip)
 		{
@@ -214,9 +218,9 @@ namespace jrc
 		}
 	}
 
-	void UIStateGame::showitem(UIElement::Type parent, int32_t itemid)
+	void UIStateGame::show_item(UIElement::Type parent, int32_t itemid)
 	{
-		ittooltip.setitem(itemid);
+		ittooltip.set_item(itemid);
 
 		if (itemid)
 		{
@@ -225,18 +229,30 @@ namespace jrc
 		}
 	}
 
-	void UIStateGame::cleartooltip(UIElement::Type parent)
+	void UIStateGame::show_skill(UIElement::Type parent, int32_t skill_id,
+		int32_t level, int32_t masterlevel, int64_t expiration) {
+
+		sktooltip.set_skill(skill_id, level, masterlevel, expiration);
+
+		if (skill_id)
+		{
+			tooltip = sktooltip;
+			tooltipparent = parent;
+		}
+	}
+
+	void UIStateGame::clear_tooltip(UIElement::Type parent)
 	{
 		if (parent == tooltipparent)
 		{
-			eqtooltip.setequip(nullptr, 0);
-			ittooltip.setitem(0);
+			eqtooltip.set_equip(nullptr, 0);
+			ittooltip.set_item(0);
 			tooltip = Optional<Tooltip>();
 			tooltipparent = UIElement::NONE;
 		}
 	}
 
-	void UIStateGame::add(const Element& element)
+	void UIStateGame::add(const IElement& element)
 	{
 		UIElement::Type type = element.type();
 		bool isfocused = element.focused();
@@ -248,7 +264,7 @@ namespace jrc
 			{
 				elementorder.remove(type);
 				elementorder.push_back(type);
-				elements[type]->togglehide();
+				elements[type]->toggle_active();
 				return;
 			}
 			else
@@ -269,7 +285,7 @@ namespace jrc
 		if (type == focused)
 			focused = UIElement::NONE; 
 		if (type == tooltipparent)
-			cleartooltip(tooltipparent);
+			clear_tooltip(tooltipparent);
 
 		elementorder.remove(type);
 
@@ -286,13 +302,13 @@ namespace jrc
 		return elements.count(type) ? elements.at(type).get() : nullptr;
 	}
 
-	UIElement* UIStateGame::getfront(Point<int16_t> pos) const
+	UIElement* UIStateGame::get_front(Point<int16_t> pos) const
 	{
 		UIElement* front = nullptr;
 		for (auto& entry : elementorder)
 		{
 			UIElement* element = get(entry);
-			if (element && element->isactive() && element->isinrange(pos))
+			if (element && element->is_active() && element->is_in_range(pos))
 				front = element;
 		}
 		return front;

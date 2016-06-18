@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2016 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -32,7 +32,10 @@ namespace jrc
 		std::string extend_id(int32_t id, size_t length)
 		{
 			std::string strid = std::to_string(id);
-			strid.insert(0, length - strid.size(), '0');
+			if (strid.size() < length)
+			{
+				strid.insert(0, length - strid.size(), '0');
+			}
 			return strid;
 		}
 	}

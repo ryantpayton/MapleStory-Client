@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2016 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -38,21 +38,22 @@ namespace jrc
 			FBR_HPCOST,
 			FBR_MPCOST,
 			FBR_BULLETCOST,
+			FBR_COOLDOWN,
 			FBR_OTHER
 		};
 
 		virtual ~SpecialMove() {}
 
-		void applyuseeffects(Char& user, Attack::Type type) const;
-		void applyhiteffects(const AttackUser& user, Mob& target) const;
+		void apply_useeffects(Char& user, Attack::Type type) const;
+		void apply_hiteffects(const AttackUser& user, Mob& target) const;
 		bool isskill() const;
-		Animation getbullet(const Char& user, int32_t bulletid) const;
+		Animation get_animation(const Char& user, int32_t bulletid) const;
 
 		virtual void applystats(const Char& user, Attack& attack) const = 0;
 		virtual bool isoffensive() const = 0;
-		virtual int32_t getid() const = 0;
-		virtual ForbidReason canuse(int32_t level, Weapon::Type weapon,
-			const CharJob& job, uint16_t hp, uint16_t mp, uint16_t bullets) const = 0;
+		virtual int32_t get_id() const = 0;
+		virtual ForbidReason can_use(int32_t level, Weapon::Type weapon,
+			const Job& job, uint16_t hp, uint16_t mp, uint16_t bullets) const = 0;
 
 	protected:
 		std::unique_ptr<SkillAction> action;

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -68,7 +68,7 @@ namespace jrc
 			void update(uint8_t stframe, uint16_t timestep);
 
 			uint8_t getfirstframe() const;
-			Rectangle<int16_t> getrange() const;
+			Rectangle<int16_t> get_range() const;
 
 		private:
 			Animation animation;
@@ -84,8 +84,8 @@ namespace jrc
 		uint8_t getspeed() const;
 		uint8_t getattack() const;
 		std::string getspeedstring() const;
-		uint8_t getattackdelay() const;
-		Rectangle<int16_t> getrange(Stance::Value stance) const;
+		uint8_t get_attackdelay() const;
+		Rectangle<int16_t> get_range(Stance::Value stance) const;
 		Type gettype() const;
 		Stance::Value getstand() const;
 		Stance::Value getwalk() const;
@@ -130,7 +130,7 @@ namespace jrc
 
 			Rectangle<int16_t> range(Stance::Value stance) const
 			{
-				return get(stance).getrange();
+				return get(stance).get_range();
 			}
 		};
 		AfterImageStances afterimage;

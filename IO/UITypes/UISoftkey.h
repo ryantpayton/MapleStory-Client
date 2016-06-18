@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,10 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Element.h"
+#include "..\UIElement.h"
 
 #include "..\..\Graphics\Text.h"
 #include "..\..\Util\Randomizer.h"
+
+#include <functional>
 
 namespace jrc
 {
@@ -27,9 +29,22 @@ namespace jrc
 	class UISoftkey : public UIElement
 	{
 	public:
+		using Callback = std::function<void(const std::string&)>;
+
 		static constexpr Type TYPE = SOFTKEYBOARD;
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
+
+		UISoftkey(Callback callback);
+
+		void draw(float alpha) const override;
+
+	protected:
+		Button::State button_pressed(uint16_t) override;
+
+	private:
+		void shufflekeys();
+		Point<int16_t> keypos(uint8_t) const;
 
 		enum Buttons
 		{
@@ -49,27 +64,11 @@ namespace jrc
 			BT_OK
 		};
 
-		enum SkType
-		{
-			REGISTER,
-			CHARSELECT,
-			CHARDEL,
-			MERCHANT
-		};
-
-		UISoftkey(SkType type);
-
-		void draw(float) const override;
-		void buttonpressed(uint16_t) override;
-
-	private:
-		void shufflekeys();
-		Point<int16_t> keypos(uint8_t) const;
-
+		static constexpr size_t MIN_SIZE = 6;
+		static constexpr size_t MAX_SIZE = 12;
 		static constexpr uint8_t NUM_KEYS = 10;
 
-		SkType type;
-
+		Callback callback;
 		Text entry;
 		Randomizer random;
 	};

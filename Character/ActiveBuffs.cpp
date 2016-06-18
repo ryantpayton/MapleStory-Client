@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -44,7 +44,7 @@ namespace jrc
 
 	void StanceBuff::apply_to(CharStats& stats, int16_t value) const
 	{
-		stats.setstance(static_cast<float>(value) / 100);
+		stats.set_stance(static_cast<float>(value) / 100);
 	}
 
 

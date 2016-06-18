@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,38 +15,30 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "..\..\Graphics\Text.h"
+#include "Maplestat.h"
 
-#include <vector>
+#include "..\Console.h"
+#include "..\Util\Misc.h"
 
 namespace jrc
 {
-	class Itemtext
+	Maplestat::Value Maplestat::byid(size_t id)
 	{
-	public:
-		Itemtext(std::string text, int16_t maxwidth);
-		Itemtext();
-		~Itemtext();
-
-		void draw(Point<int16_t> position) const;
-
-		int16_t getheight() const;
-
-	private:
-		struct Line
+		if (id >= LENGTH)
 		{
-			Text text;
-			Point<int16_t> offset;
+			Console::get()
+				.print("Invalid Maplestat id: " + std::to_string(id));
+		}
+		return static_cast<Value>(id);
+	}
 
-			Line(Text t, Point<int16_t> o)
-			{
-				text = t;
-				offset = o;
-			}
-		};
 
-		std::vector<Line> lines;
-		Point<int16_t> dimensions;
+	const EnumMap<Maplestat::Value, int32_t> Maplestat::values =
+	{
+		0x1, 0x2, 0x4, 0x10, 0x20,
+		0x40, 0x80, 0x100, 0x200,
+		0x400, 0x800, 0x1000, 0x2000,
+		0x4000, 0x8000, 0x10000,  0x20000, 0x40000,
+		0x180008, 0x200000
 	};
 }

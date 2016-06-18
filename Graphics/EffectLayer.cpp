@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -51,23 +51,23 @@ namespace jrc
 		}
 	}
 
-	void EffectLayer::add(Animation animation, DrawArgument args, int8_t z, float speed)
+	void EffectLayer::add(const Animation& animation, const DrawArgument& args, int8_t z, float speed)
 	{
 		effects[z].emplace_back(animation, args, speed);
 	}
 
-	void EffectLayer::add(Animation animation, DrawArgument args, int8_t z)
+	void EffectLayer::add(const Animation& animation, const DrawArgument& args, int8_t z)
 	{
 		add(animation, args, z, 1.0f);
 	}
 
-	void EffectLayer::add(Animation animation, DrawArgument args)
+	void EffectLayer::add(const Animation& animation, const DrawArgument& args)
 	{
 		add(animation, args, 0, 1.0f);
 	}
 
-	void EffectLayer::add(Animation animation)
+	void EffectLayer::add(const Animation& animation)
 	{
-		add(animation, DrawArgument(), 0, 1.0f);
+		add(animation, {}, 0, 1.0f);
 	}
 }

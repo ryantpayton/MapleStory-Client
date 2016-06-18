@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,6 +19,7 @@
 #include "..\PacketHandler.h"
 
 #include "..\..\Character\Buff.h"
+#include "..\..\Character\Maplestat.h"
 
 namespace jrc
 {
@@ -40,7 +41,13 @@ namespace jrc
 	// Opcode: CHANGE_STATS(31)
 	class ChangeStatsHandler : public PacketHandler
 	{
+	public:
 		void handle(InPacket& recv) const override;
+
+	private:
+		bool handle_stat(Maplestat::Value stat, InPacket& recv) const;
+		bool need_statsinfo_update(Maplestat::Value stat) const;
+		bool need_skillbook_update(Maplestat::Value stat) const;
 	};
 
 
@@ -51,7 +58,7 @@ namespace jrc
 		void handle(InPacket& recv) const override;
 
 	protected:
-		virtual void handlebuff(InPacket& recv, Buff::Stat stat) const = 0;
+		virtual void handle_buff(InPacket& recv, Buff::Stat stat) const = 0;
 	};
 
 
@@ -60,7 +67,7 @@ namespace jrc
 	class ApplyBuffHandler : public BuffHandler
 	{
 	protected:
-		void handlebuff(InPacket& recv, Buff::Stat stat) const override;
+		void handle_buff(InPacket& recv, Buff::Stat stat) const override;
 	};
 
 
@@ -69,7 +76,7 @@ namespace jrc
 	class CancelBuffHandler : public BuffHandler
 	{
 	protected:
-		void handlebuff(InPacket& recv, Buff::Stat stat) const override;
+		void handle_buff(InPacket& recv, Buff::Stat stat) const override;
 	};
 
 
@@ -82,8 +89,8 @@ namespace jrc
 
 
 	// Updates the player's skills with the client.
-	// Opcode: UPDATE_SKILLS(36)
-	class UpdateskillsHandler : public PacketHandler
+	// Opcode: UPDATE_SKILL(36)
+	class UpdateSkillHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};

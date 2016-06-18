@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -34,13 +34,13 @@ namespace jrc
 		virtual ~ItemData();
 
 		// Returns wether the item was loaded correctly. For the default item, this is 'false'.
-		bool isloaded() const;
+		bool is_loaded() const;
 		// Returns the item id.
-		int32_t getid() const;
+		int32_t get_id() const;
 		// Returns the item price.
 		int32_t getprice() const;
 		// Returns the item's name loaded from the String.nx file.
-		std::string getname() const;
+		std::string get_name() const;
 		// Returns the item's description loaded from the String.nx file.
 		std::string getdesc() const;
 		// Returns one of the item's icons. For each item there is a 'raw' icon and an icon with a drop shadow.

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -39,7 +39,7 @@ namespace jrc
 		void update(Point<int16_t> playerpos);
 		void draw(Point<int16_t> viewpos, float inter) const;
 
-		Portal::WarpInfo findportal(Point<int16_t> playerpos);
+		Portal::WarpInfo find_at(Point<int16_t> playerpos);
 
 		Point<int16_t> get_portal_by_id(uint8_t id) const;
 		Point<int16_t> get_portal_by_name(const std::string& name) const;

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -59,14 +59,14 @@ namespace jrc
 		}
 
 		template<typename T, typename ...Args>
-		void ifpresent(void (T::*action)(Args...) const, Args... args) const
+		void if_present(void (T::*action)(Args...) const, Args... args) const
 		{
 			if (ptr)
 				(ptr->*action)(args...);
 		}
 
 		template<typename T, typename ...Args>
-		void ifpresent(void (T::*action)(Args...), Args... args) const
+		void if_present(void (T::*action)(Args...), Args... args) const
 		{
 			if (ptr)
 				(ptr->*action)(args...);

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -32,16 +32,14 @@ namespace jrc
 
 	Gauge::Gauge() {}
 
-	Gauge::~Gauge() {}
-
-	void Gauge::draw(Point<int16_t> position) const
+	void Gauge::draw(const DrawArgument& args) const
 	{
 		int16_t length = static_cast<int16_t>(percentage * maximum);
 		if (length > 0)
 		{
-			barfront.draw(DrawArgument(position));
-			barmid.draw(DrawArgument(position + Point<int16_t>(1, 0), Point<int16_t>(length, 0)));
-			barend.draw(DrawArgument(position + Point<int16_t>(length + 1, 0)));
+			barfront.draw(args);
+			barmid.draw(args + DrawArgument({ 1, 0 }, { length, 0 }));
+			barend.draw(args + DrawArgument(length + 1, 0));
 		}
 	}
 

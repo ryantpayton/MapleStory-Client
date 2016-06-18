@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -57,22 +57,22 @@ namespace jrc
 
 	MapInfo::MapInfo() {}
 
-	bool MapInfo::isswimmap() const
+	bool MapInfo::is_underwater() const
 	{
 		return swim;
 	}
 
-	std::string MapInfo::getbgm() const
+	std::string MapInfo::get_bgm() const
 	{
 		return bgm;
 	}
 
-	Range<int16_t> MapInfo::getwalls() const
+	Range<int16_t> MapInfo::get_walls() const
 	{
 		return mapwalls;
 	}
 
-	Range<int16_t> MapInfo::getborders() const
+	Range<int16_t> MapInfo::get_borders() const
 	{
 		return mapborders;
 	}
@@ -114,7 +114,7 @@ namespace jrc
 		ladder = src["l"].get_bool();
 	}
 
-	bool Ladder::isladder() const
+	bool Ladder::is_ladder() const
 	{
 		return ladder;
 	}
@@ -135,7 +135,7 @@ namespace jrc
 		return dy > y2 || y + 5 < y1;
 	}
 
-	int16_t Ladder::getx() const
+	int16_t Ladder::get_x() const
 	{
 		return x;
 	}

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,15 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Element.h"
+#include "..\UIElement.h"
+
 #include "..\Components\Textfield.h"
 
 #include "..\..\Character\Look\CharLook.h"
 #include "..\..\Graphics\Texture.h"
 #include "..\..\Graphics\Text.h"
+#include "..\..\Util\BoolPair.h"
 #include "..\..\Util\Randomizer.h"
-
-#include <map>
 
 namespace jrc
 {
@@ -35,6 +35,21 @@ namespace jrc
 		static constexpr Type TYPE = CHARCREATION;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
+
+		UICharcreation();
+
+		void draw(float) const override;
+		void update() override;
+
+		Cursor::State send_cursor(bool, Point<int16_t>) override;
+
+		void send_naming_result(bool success);
+
+	protected:
+		Button::State button_pressed(uint16_t button_id) override;
+
+	private:
+		void randomize_look();
 
 		enum Buttons
 		{
@@ -60,35 +75,23 @@ namespace jrc
 			BT_CHARC_GEMDERR,
 		};
 
-		UICharcreation();
-
-		void draw(float) const override;
-		void update() override;
-		void buttonpressed(uint16_t) override;
-		Cursor::State sendmouse(bool, Point<int16_t>) override;
-
-		void nameresult(bool);
-
-	private:
-		void randomizelook();
-
+		std::vector<Sprite> sprites_lookboard;
 		Texture sky;
 		Texture cloud;
 		float cloudfx;
 		Texture nameboard;
 		Textfield namechar;
-		std::vector<Sprite> lookboard;
 		CharLook newchar;
 		Randomizer randomizer;
 
-		std::map<bool, std::vector<uint8_t>> skins;
-		std::map<bool, std::vector<uint8_t>> haircolors;
-		std::map<bool, std::vector<int32_t>> faces;
-		std::map<bool, std::vector<int32_t>> hairs;
-		std::map<bool, std::vector<int32_t>> tops;
-		std::map<bool, std::vector<int32_t>> bots;
-		std::map<bool, std::vector<int32_t>> shoes;
-		std::map<bool, std::vector<int32_t>> weapons;
+		BoolPair<std::vector<uint8_t>> skins;
+		BoolPair<std::vector<uint8_t>> haircolors;
+		BoolPair<std::vector<int32_t>> faces;
+		BoolPair<std::vector<int32_t>> hairs;
+		BoolPair<std::vector<int32_t>> tops;
+		BoolPair<std::vector<int32_t>> bots;
+		BoolPair<std::vector<int32_t>> shoes;
+		BoolPair<std::vector<int32_t>> weapons;
 
 		bool named;
 		bool female;

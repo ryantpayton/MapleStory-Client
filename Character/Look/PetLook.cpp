@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -30,12 +30,10 @@ namespace jrc
 		itemid = iid;
 		name = nm;
 		uniqueid = uqid;
-		setposition(pos.x(), pos.y());
-		setstance(st);
+		set_position(pos.x(), pos.y());
+		set_stance(st);
 
-		namelabel = Text(Text::A13M, Text::CENTER, Text::WHITE);
-		namelabel.settext(name);
-		namelabel.setback(Text::NAMETAG);
+		namelabel = { Text::A13M, Text::CENTER, Text::WHITE, Text::NAMETAG, name };
 
 		std::string strid = std::to_string(iid);
 
@@ -64,7 +62,7 @@ namespace jrc
 
 	void PetLook::draw(double viewx, double viewy, float alpha) const
 	{
-		Point<int16_t> absp = phobj.getabsolute(viewx, viewy, alpha);
+		Point<int16_t> absp = phobj.get_absolute(viewx, viewy, alpha);
 
 		animations[stance].draw(DrawArgument(absp, flip), alpha);
 		namelabel.draw(absp);
@@ -75,14 +73,14 @@ namespace jrc
 		static const double PETWALKFORCE = 0.35;
 		static const double PETFLYFORCE = 0.2;
 
-		Point<int16_t> curpos = phobj.getposition();
+		Point<int16_t> curpos = phobj.get_position();
 		switch (stance)
 		{
 		case STAND:
 		case MOVE:
 			if (curpos.distance(charpos) > 150)
 			{
-				setposition(charpos.x(), charpos.y());
+				set_position(charpos.x(), charpos.y());
 			}
 			else
 			{
@@ -90,31 +88,31 @@ namespace jrc
 				{
 					phobj.hforce = PETWALKFORCE;
 					flip = true;
-					setstance(MOVE);
+					set_stance(MOVE);
 				}
 				else if (charpos.x() - curpos.x() < -50)
 				{
 					phobj.hforce = -PETWALKFORCE;
 					flip = false;
-					setstance(MOVE);
+					set_stance(MOVE);
 				}
 				else
 				{
 					phobj.hforce = 0.0;
-					setstance(STAND);
+					set_stance(STAND);
 				}
 			}
 			phobj.type = PhysicsObject::NORMAL;
-			phobj.clearflag(PhysicsObject::NOGRAVITY);
+			phobj.clear_flag(PhysicsObject::NOGRAVITY);
 			break;
 		case HANG:
-			setposition(charpos.x(), charpos.y());
-			phobj.setflag(PhysicsObject::NOGRAVITY);
+			set_position(charpos.x(), charpos.y());
+			phobj.set_flag(PhysicsObject::NOGRAVITY);
 			break;
 		case FLY:
 			if ((charpos - curpos).length() > 250)
 			{
-				setposition(charpos.x(), charpos.y());
+				set_position(charpos.x(), charpos.y());
 			}
 			else
 			{
@@ -141,22 +139,22 @@ namespace jrc
 					phobj.vforce = 0.0f;
 			}
 			phobj.type = PhysicsObject::FLYING;
-			phobj.clearflag(PhysicsObject::NOGRAVITY);
+			phobj.clear_flag(PhysicsObject::NOGRAVITY);
 			break;
 		}
 
-		physics.moveobject(phobj);
+		physics.move_object(phobj);
 
 		animations[stance].update();
 	}
 
-	void PetLook::setposition(int16_t x, int16_t y)
+	void PetLook::set_position(int16_t x, int16_t y)
 	{
-		phobj.setx(x);
-		phobj.sety(y);
+		phobj.set_x(x);
+		phobj.set_y(y);
 	}
 
-	void PetLook::setstance(Stance st)
+	void PetLook::set_stance(Stance st)
 	{
 		if (stance != st)
 		{
@@ -165,18 +163,18 @@ namespace jrc
 		}
 	}
 
-	void PetLook::setstance(uint8_t stancebyte)
+	void PetLook::set_stance(uint8_t stancebyte)
 	{
 		flip = stancebyte % 2 == 1;
 		stance = stancebyvalue(stancebyte);
 	}
 
-	int32_t PetLook::getiid() const
+	int32_t PetLook::get_itemid() const
 	{
 		return itemid;
 	}
 
-	PetLook::Stance PetLook::getstance() const
+	PetLook::Stance PetLook::get_stance() const
 	{
 		return stance;
 	}

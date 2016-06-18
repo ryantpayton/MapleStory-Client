@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -38,7 +38,7 @@ namespace jrc
 		InPacket(const int8_t*, size_t);
 
 		// Check if there are more bytes available.
-		bool hasmore() const;
+		bool has_more() const;
 		// Return the remaining length in bytes.
 		size_t length() const;
 		// Skip a number of bytes (by increasing the offset).
@@ -56,7 +56,7 @@ namespace jrc
 		int64_t read_long() { return read<int64_t>(); }
 
 		// Read a point.
-		Point<int16_t> readpoint();
+		Point<int16_t> read_point();
 
 		// Read a string.
 		std::string read_string();

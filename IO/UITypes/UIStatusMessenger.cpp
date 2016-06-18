@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -55,7 +55,7 @@ namespace jrc
 		for (const StatusInfo& info : statusinfos)
 		{
 			info.draw(infopos, inter);
-			infopos.shifty(-16);
+			infopos.shift_y(-16);
 		}
 	}
 
@@ -67,7 +67,7 @@ namespace jrc
 		}
 	}
 
-	void UIStatusMessenger::showstatus(Text::Color color, const std::string& message)
+	void UIStatusMessenger::show_status(Text::Color color, const std::string& message)
 	{
 		statusinfos.push_front({ message, color });
 

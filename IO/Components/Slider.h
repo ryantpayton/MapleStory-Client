@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -41,7 +41,8 @@ namespace jrc
 		void setvertical(Range<int16_t> vertical);
 
 		void draw(Point<int16_t> position) const;
-		Cursor::State sendcursor(Point<int16_t> cursor, bool pressed);
+		bool remove_cursor(bool clicked);
+		Cursor::State send_cursor(Point<int16_t> cursor, bool pressed);
 
 	private:
 		Point<int16_t> getthumbpos() const;

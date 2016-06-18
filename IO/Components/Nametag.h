@@ -3,9 +3,8 @@
 #include "..\..\Graphics\Texture.h"
 #include "..\..\Util\BoolPair.h"
 
-#include "nlnx\node.hpp"
+#include <nlnx\node.hpp>
 
-#include <map>
 #include <vector>
 
 namespace jrc
@@ -16,7 +15,7 @@ namespace jrc
 		Nametag(nl::node src, Text::Font font, Text::Color color, std::string name);
 
 		void draw(Point<int16_t> position) const;
-		void setselected(bool selected);
+		void set_selected(bool selected);
 
 	private:
 		Text name;

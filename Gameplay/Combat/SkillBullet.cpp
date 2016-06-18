@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2016 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -25,8 +25,8 @@ namespace jrc
 	Animation RegularBullet::get(const Char&, int32_t bulletid) const
 	{
 		return DataFactory::get()
-			.getbulletdata(bulletid)
-			.getbullet();
+			.get_bulletdata(bulletid)
+			.get_animation();
 	}
 
 
@@ -54,7 +54,7 @@ namespace jrc
 
 	Animation BySkillLevelBullet::get(const Char& user, int32_t) const
 	{
-		int32_t level = user.getskilllevel(skillid);
+		int32_t level = user.get_skilllevel(skillid);
 		auto iter = bullets.find(level);
 		if (iter != bullets.end())
 		{

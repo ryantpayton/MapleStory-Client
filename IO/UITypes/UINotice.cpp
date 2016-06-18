@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2016 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -35,8 +35,7 @@ namespace jrc
 		bottom = src["s"];
 		bottombox = src["s_box"];
 
-		question = Text(Text::A11M, Text::CENTER, Text::DARKGREY);
-		question.settext(q, 200);
+		question = { Text::A11M, Text::CENTER, Text::DARKGREY, q, 200 };
 
 		height = question.height();
 		dimension = Point<int16_t>(top.width(), top.height() + height + bottom.height());
@@ -48,24 +47,24 @@ namespace jrc
 		Point<int16_t> start = position;
 
 		top.draw(start);
-		start.shifty(top.height());
+		start.shift_y(top.height());
 		centerbox.draw(start);
-		start.shifty(centerbox.height());
+		start.shift_y(centerbox.height());
 
 		Point<int16_t> textpos = start;
 		box.draw(DrawArgument(textpos, Point<int16_t>(0, height)));
-		start.shifty(box.height() * (height / box.height()));
+		start.shift_y(box.height() * (height / box.height()));
 		box.draw(start);
-		start.shifty(box.height());
+		start.shift_y(box.height());
 		question.draw(textpos + Point<int16_t>(130, -3));
 
 		if (textfield)
 		{
 			box2.draw(start);
-			start.shifty(box2.height());
+			start.shift_y(box2.height());
 		}
 		box.draw(start);
-		start.shifty(box.height());
+		start.shift_y(box.height());
 		bottombox.draw(start);
 	}
 
@@ -94,7 +93,7 @@ namespace jrc
 		UIElement::draw(alpha);
 	}
 
-	void UIYesNo::buttonpressed(uint16_t buttonid)
+	Button::State UIYesNo::button_pressed(uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -105,7 +104,10 @@ namespace jrc
 			yesnohandler(false);
 			break;
 		}
+
 		active = false;
+
+		return Button::PRESSED;
 	}
 
 
@@ -125,9 +127,9 @@ namespace jrc
 
 		Rectangle<int16_t> area(26, 232, belowtext, belowtext + 20);
 		numfield = Textfield(Text::A11M, Text::LEFT, Text::LIGHTGREY, area, 9);
-		numfield.setstate(Textfield::FOCUSED);
-		numfield.settext(std::to_string(de));
-		numfield.setonreturn([&](std::string numstr){
+		numfield.set_state(Textfield::FOCUSED);
+		numfield.change_text(std::to_string(de));
+		numfield.set_enter_callback([&](std::string numstr){
 			handlestring(numstr);
 		});
 	}
@@ -147,30 +149,31 @@ namespace jrc
 		numfield.update(position);
 	}
 
-	Cursor::State UIEnterNumber::sendmouse(bool clicked, Point<int16_t> cursorpos)
+	Cursor::State UIEnterNumber::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
-		if (numfield.getstate() == Textfield::NORMAL)
+		if (numfield.get_state() == Textfield::NORMAL)
 		{
-			Cursor::State nstate = numfield.sendcursor(cursorpos, clicked);
+			Cursor::State nstate = numfield.send_cursor(cursorpos, clicked);
 			if (nstate != Cursor::IDLE)
 			{
 				return nstate;
 			}
 		}
-		return UIElement::sendmouse(clicked, cursorpos);
+		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	void UIEnterNumber::buttonpressed(uint16_t buttonid)
+	Button::State UIEnterNumber::button_pressed(uint16_t buttonid)
 	{
-		if (buttonid == OK)
+		switch (buttonid)
 		{
-			std::string numstr = numfield.gettext();
-			handlestring(numstr);
+		case OK:
+			handlestring(numfield.get_text());
+			break;
 		}
-		else
-		{
-			active = false;
-		}
+
+		active = false;
+
+		return Button::PRESSED;
 	}
 
 	void UIEnterNumber::handlestring(std::string numstr)
@@ -190,6 +193,6 @@ namespace jrc
 			catch (const std::exception&) {}
 		}
 
-		buttons[OK]->setstate(Button::NORMAL);
+		buttons[OK]->set_state(Button::NORMAL);
 	}
 }

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -29,49 +29,49 @@ namespace jrc
 
 	void Camera::update(Point<int16_t> position)
 	{
-		double nextx = x.get();
-		double hdelta = Constants::VIEWWIDTH / 2 - position.x() - nextx;
+		double next_x = x.get();
+		double hdelta = Constants::VIEWWIDTH / 2 - position.x() - next_x;
 		if (std::abs(hdelta) >= 5.0)
 		{
-			nextx += hdelta * (12.0 / Constants::VIEWWIDTH);
+			next_x += hdelta * (12.0 / Constants::VIEWWIDTH);
 		}
 		
-		double nexty = y.get();
-		double vdelta = Constants::VIEWHEIGHT / 2 - position.y() - nexty;
+		double next_y = y.get();
+		double vdelta = Constants::VIEWHEIGHT / 2 - position.y() - next_y;
 		if (std::abs(vdelta) >= 5.0)
 		{
-			nexty += vdelta * (12.0 / Constants::VIEWHEIGHT);
+			next_y += vdelta * (12.0 / Constants::VIEWHEIGHT);
 		}
 
-		if (nextx > hbounds.first() || hbounds.length() < Constants::VIEWWIDTH)
+		if (next_x > hbounds.first() || hbounds.length() < Constants::VIEWWIDTH)
 		{
-			nextx = hbounds.first();
+			next_x = hbounds.first();
 		}
-		else if (nextx < hbounds.second() + Constants::VIEWWIDTH)
+		else if (next_x < hbounds.second() + Constants::VIEWWIDTH)
 		{
-			nextx = hbounds.second() + Constants::VIEWWIDTH;
-		}
-
-		if (nexty > vbounds.first() || vbounds.length() < Constants::VIEWHEIGHT)
-		{
-			nexty = vbounds.first();
-		}
-		else if (nexty < vbounds.second() + Constants::VIEWHEIGHT)
-		{
-			nexty = vbounds.second() + Constants::VIEWHEIGHT;
+			next_x = hbounds.second() + Constants::VIEWWIDTH;
 		}
 
-		x = nextx;
-		y = nexty;
+		if (next_y > vbounds.first() || vbounds.length() < Constants::VIEWHEIGHT)
+		{
+			next_y = vbounds.first();
+		}
+		else if (next_y < vbounds.second() + Constants::VIEWHEIGHT)
+		{
+			next_y = vbounds.second() + Constants::VIEWHEIGHT;
+		}
+
+		x = next_x;
+		y = next_y;
 	}
 
-	void Camera::setposition(Point<int16_t> position)
+	void Camera::set_position(Point<int16_t> position)
 	{
 		x.set(Constants::VIEWWIDTH / 2 - position.x());
 		y.set(Constants::VIEWHEIGHT / 2 - position.y());
 	}
 
-	void Camera::updateview(Range<int16_t> mapwalls, Range<int16_t> mapborders)
+	void Camera::set_view(Range<int16_t> mapwalls, Range<int16_t> mapborders)
 	{
 		hbounds = -mapwalls;
 		vbounds = -mapborders;

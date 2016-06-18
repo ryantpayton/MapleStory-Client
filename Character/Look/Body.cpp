@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -61,7 +61,7 @@ namespace jrc
 					if (headsfnode.size() > 0)
 					{
 						stances[stance][Layer::HEAD][frame] = headsfnode;
-						stances[stance][Layer::HEAD][frame].shift(drawinfo.getheadpos(stance, frame));
+						stances[stance][Layer::HEAD][frame].shift(drawinfo.get_headpos(stance, frame));
 					}
 				}
 
@@ -95,7 +95,7 @@ namespace jrc
 		frameit->second.draw(args);
 	}
 
-	std::string Body::getname() const
+	std::string Body::get_name() const
 	{
 		return name;
 	}

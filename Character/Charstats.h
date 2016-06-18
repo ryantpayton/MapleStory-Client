@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -47,33 +47,32 @@ namespace jrc
 		void change_job(uint16_t id);
 
 		bool isdamagebuffed() const;
-		int64_t getexpneeded() const;
-		uint16_t getstat(Maplestat::Value stat) const;
-		int32_t gettotal(Equipstat::Value stat) const;
-		int32_t getbuffdelta(Equipstat::Value stat) const;
-		Rectangle<int16_t> getrange() const;
+		uint16_t get_stat(Maplestat::Value stat) const;
+		int32_t get_total(Equipstat::Value stat) const;
+		int32_t get_buffdelta(Equipstat::Value stat) const;
+		Rectangle<int16_t> get_range() const;
 
-		int32_t getmapid() const;
-		uint8_t getportal() const;
-		int64_t getexp() const;
-		std::string getname() const;
-		std::string getjobname() const;
+		int32_t get_mapid() const;
+		uint8_t get_portal() const;
+		int64_t get_exp() const;
+		const std::string& get_name() const;
+		const std::string& get_jobname() const;
 		Weapon::Type get_weapontype() const;
-		float getmastery() const;
-		float getcritical() const;
-		float getmincrit() const { return mincrit; }
-		float getmaxcrit() const { return maxcrit; }
-		float getbossdmg() const { return bossdmg; }
-		float getignoredef() const { return ignoredef; }
-		void setstance(float st) { stance = st; }
-		float getstance() const { return stance; }
-		float getresist() const { return resiststatus; }
-		int32_t getmaxdamage() const { return maxdamage; }
-		int32_t getmindamage() const { return mindamage; }
+		float get_mastery() const;
+		float get_critical() const;
+		float get_mincrit() const { return mincrit; }
+		float get_maxcrit() const { return maxcrit; }
+		float get_bossdmg() const { return bossdmg; }
+		float get_ignoredef() const { return ignoredef; }
+		void set_stance(float st) { stance = st; }
+		float get_stance() const { return stance; }
+		float get_resistance() const { return resiststatus; }
+		int32_t get_maxdamage() const { return maxdamage; }
+		int32_t get_mindamage() const { return mindamage; }
 		uint16_t gethonor() const { return honor; }
 		void setattackspeed(int8_t as) { attackspeed = as; }
-		int8_t getattackspeed() const { return attackspeed; }
-		const CharJob& get_job() const;
+		int8_t get_attackspeed() const { return attackspeed; }
+		const Job& get_job() const;
 
 	private:
 		int32_t calculateaccuracy() const;
@@ -83,7 +82,7 @@ namespace jrc
 
 		std::string name;
 		std::vector<int64_t> petids;
-		CharJob job;
+		Job job;
 		int64_t exp;
 		int32_t mapid;
 		uint8_t portal;

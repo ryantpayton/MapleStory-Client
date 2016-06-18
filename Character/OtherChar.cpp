@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -26,7 +26,7 @@ namespace jrc
 
 		level = lvl;
 		job = jb;
-		setposition(pos);
+		set_position(pos);
 
 		lastmove.xpos = pos.x();
 		lastmove.ypos = pos.y();
@@ -58,25 +58,25 @@ namespace jrc
 		if (!attacking)
 		{
 			uint8_t laststate = lastmove.newstate;
-			setstate(laststate);
+			set_state(laststate);
 		}
 
-		phobj.hspeed = lastmove.xpos - phobj.crntx();
-		phobj.vspeed = lastmove.ypos - phobj.crnty();
+		phobj.hspeed = lastmove.xpos - phobj.crnt_x();
+		phobj.vspeed = lastmove.ypos - phobj.crnt_y();
 		phobj.move();
 
-		physics.getfht().updatefh(phobj);
+		physics.get_fht().update_fh(phobj);
 
-		bool aniend = Char::update(physics, getstancespeed());
+		bool aniend = Char::update(physics, get_stancespeed());
 		if (aniend && attacking)
 		{
 			attacking = false;
 		}
 
-		return getlayer();
+		return get_layer();
 	}
 
-	void OtherChar::sendmovement(const std::vector<Movement>& newmoves)
+	void OtherChar::send_movement(const std::vector<Movement>& newmoves)
 	{
 		movements.push(newmoves.back());
 
@@ -97,25 +97,25 @@ namespace jrc
 		attackspeed = as;
 	}
 
-	void OtherChar::updatelook(const LookEntry& newlook)
+	void OtherChar::update_look(const LookEntry& newlook)
 	{
 		look = newlook;
 
 		uint8_t laststate = lastmove.newstate;
-		setstate(laststate);
+		set_state(laststate);
 	}
 
-	uint16_t OtherChar::getlevel() const
+	uint16_t OtherChar::get_level() const
 	{
 		return level;
 	}
 
-	int32_t OtherChar::getskilllevel(int32_t skillid) const
+	int32_t OtherChar::get_skilllevel(int32_t skillid) const
 	{
 		return skilllevels.count(skillid) ? skilllevels.at(skillid) : 0;
 	}
 
-	float OtherChar::getattackspeed() const
+	float OtherChar::get_attackspeed() const
 	{
 		float delay = static_cast<float>(attackspeed);
 		return 1.7f - (delay / 10);

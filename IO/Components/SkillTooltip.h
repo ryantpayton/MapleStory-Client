@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,63 +16,38 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include <cstdint>
+#include "Tooltip.h"
+
+#include "MapleFrame.h"
+
+#include "..\..\Graphics\Geometry.h"
+#include "..\..\Graphics\Text.h"
 
 namespace jrc
 {
-	// Opcodes for OutPackets associated with version 83 of the game.
-	enum SendOpcode : int16_t
+	class SkillTooltip : public Tooltip
 	{
-		// Login
-		LOGIN = 1,
-		SERVERLIST_REREQUEST = 4,
-		CHARLIST_REQUEST = 5,
-		STATUS_REQUEST = 6,
-		ACCEPT_TOS = 7,
-		SET_GENDER = 8,
-		AFTER_LOGIN = 9,
-		REGISTER_PIN = 10,
-		SERVERLIST_REQUEST = 11,
-		SELECT_CHAR = 19,
-		PLAYER_LOGIN = 20,
-		NAME_CHAR = 21,
-		CREATE_CHAR = 22,
-		DELETE_CHAR = 23,
-		PONG = 24,
-		REGISTER_PIC = 29,
-		SELECT_CHAR_PIC = 30,
+	public:
+		SkillTooltip();
 
-		// Gameplay 1
-		CHANGEMAP = 38,
-		MOVE_PLAYER = 41,
-		CLOSE_ATTACK = 44,
-		RANGED_ATTACK = 45,
-		MAGIC_ATTACK = 46,
+		void draw(Point<int16_t> position) const override;
 
-		// Messaging
-		GENERAL_CHAT = 49,
+		void set_skill(int32_t id, int32_t level, int32_t masterlevel, int64_t expiration);
 
-		// Npc Interaction
-		TALK_TO_NPC = 58,
-		NPC_TALK_MORE = 60,
-		NPC_SHOP_ACTION = 61,
+	private:
+		int32_t skill_id;
+		int16_t height;
+		int16_t icon_offset;
+		int16_t level_offset;
+		Texture icon;
+		Texture required_icon;
 
-		// Inventory
-		GATHER_ITEMS = 69,
-		SORT_ITEMS = 70,
-		MOVE_ITEM = 71,
-		USE_ITEM = 72,
-		SCROLL_EQUIP = 86,
-		SPEND_AP = 87,
-
-		// Skill
-		USE_SKILL = 91,
-
-		// Gameplay 2
-		MOVE_MONSTER = 188,
-		PICKUP_ITEM = 202,
-
-		// Custom
-		HASH_CHECK = 30000
+		Text name;
+		Text desc;
+		Text leveldesc;
+		MapleFrame frame;
+		ColorLine line;
+		Texture base;
+		Texture cover;
 	};
 }

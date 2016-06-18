@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,11 +18,7 @@
 #pragma once
 #include "..\PacketHandler.h"
 
-#include "..\..\Character\Inventory\Inventory.h"
-#include "..\..\Character\Skillbook.h"
-#include "..\..\Character\Questlog.h"
-#include "..\..\Character\Monsterbook.h"
-#include "..\..\Character\Telerock.h"
+#include "..\..\Character\Player.h"
 
 namespace jrc
 {
@@ -32,19 +28,22 @@ namespace jrc
 	{
 	public:
 		void handle(InPacket& recv) const override;
+
 	private:
-		void change_map(InPacket& recv, int32_t) const;
+		void change_map(InPacket& recv, int32_t map_id) const;
 		void set_field(InPacket& recv) const;
-		void parse_inventory(InPacket& recv, Inventory& invent) const;
+
+		void parse_inventory(InPacket& recv, Inventory& inventory) const;
 		void parse_skillbook(InPacket& recv, Skillbook& skills) const;
+		void parse_cooldowns(InPacket& recv, Player& player) const;
 		void parse_questlog(InPacket& recv, Questlog& quests) const;
-		void parsering1(InPacket& recv) const;
-		void parsering2(InPacket& recv) const;
-		void parsering3(InPacket& recv) const;
-		void parseminigame(InPacket& recv) const;
-		void parsemonsterbook(InPacket& recv, Monsterbook& monsterbook) const;
-		void parsetelerock(InPacket& recv, Telerock& trock) const;
-		void parsenewyear(InPacket& recv) const;
-		void parseareainfo(InPacket& recv) const;
+		void parse_ring1(InPacket& recv) const;
+		void parse_ring2(InPacket& recv) const;
+		void parse_ring3(InPacket& recv) const;
+		void parse_minigame(InPacket& recv) const;
+		void parse_monsterbook(InPacket& recv, Monsterbook& monsterbook) const;
+		void parse_telerock(InPacket& recv, Telerock& telerock) const;
+		void parse_nyinfo(InPacket& recv) const;
+		void parse_areainfo(InPacket& recv) const;
 	};
 }

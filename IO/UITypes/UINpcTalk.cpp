@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -49,20 +49,20 @@ namespace jrc
 	{
 		Point<int16_t> drawpos = position;
 		top.draw(drawpos);
-		drawpos.shifty(top.height());
-		fill.draw(DrawArgument(drawpos, Point<int16_t>(0, vtile) * fill.height()));
-		drawpos.shifty(vtile * fill.height());
+		drawpos.shift_y(top.height());
+		fill.draw({ drawpos, Point<int16_t>(0, vtile) * fill.height() });
+		drawpos.shift_y(vtile * fill.height());
 		bottom.draw(drawpos);
 
 		UIElement::draw(inter);
 
-		speaker.draw(DrawArgument(position + Point<int16_t>(80, 100), true));
+		speaker.draw({ position + Point<int16_t>(80, 100), true });
 		nametag.draw(position + Point<int16_t>(25, 100));
 		name.draw(position + Point<int16_t>(80, 99));
-		npctext.draw(position + Point<int16_t>(156, 16 + ((vtile * fill.height() - npctext.getheight()) / 2)));
+		text.draw(position + Point<int16_t>(156, 16 + ((vtile * fill.height() - text.height()) / 2)));
 	}
 
-	void UINpcTalk::buttonpressed(uint16_t buttonid)
+	Button::State UINpcTalk::button_pressed(uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -71,11 +71,12 @@ namespace jrc
 			active = false;
 			break;
 		}
+		return Button::PRESSED;
 	}
 
-	void UINpcTalk::settext(int32_t npcid, int8_t msgtype, int16_t, int8_t speakerbyte, const std::string& text)
+	void UINpcTalk::change_text(int32_t npcid, int8_t msgtype, int16_t, int8_t speakerbyte, const std::string& tx)
 	{
-		npctext = Npctext(text, 320);
+		text = { Text::A12M, Text::LEFT, Text::DARKGREY, tx, 320 };
 
 		if (speakerbyte == 0)
 		{
@@ -83,13 +84,13 @@ namespace jrc
 			strid.insert(0, 7 - strid.size(), '0');
 			strid.append(".img");
 			speaker = nl::nx::npc[strid]["stand"]["0"];
-			name = Text(Text::A11M, Text::CENTER, Text::WHITE);
-			name.settext(nl::nx::string["Npc.img"][std::to_string(npcid)]["name"]);
+			std::string namestr = nl::nx::string["Npc.img"][std::to_string(npcid)]["name"];
+			name = { Text::A11M, Text::CENTER, Text::WHITE, namestr };
 		}
 		else
 		{
-			speaker = Texture();
-			name.settext("");
+			speaker = {};
+			name.change_text("");
 		}
 
 		vtile = 8;
@@ -97,22 +98,21 @@ namespace jrc
 
 		for (auto& button : buttons)
 		{
-			button.second->setactive(false);
-			button.second->setstate(Button::NORMAL);
+			button.second->set_active(false);
+			button.second->set_state(Button::NORMAL);
 		}
-		buttons[END]->setposition(Point<int16_t>(20, height + 48));
-		buttons[END]->setactive(true);
+		buttons[END]->set_position({ 20, height + 48 });
+		buttons[END]->set_active(true);
 		switch (msgtype)
 		{
 		case 0:
-			buttons[OK]->setposition(Point<int16_t>(220, height + 48));
-			buttons[OK]->setactive(true);
+			buttons[OK]->set_position({ 220, height + 48 });
+			buttons[OK]->set_active(true);
 			break;
 		}
 		type = msgtype;
 
-		position = Point<int16_t>(400 - top.width() / 2, 240 - height / 2);
-		dimension = Point<int16_t>(top.width(), height + 120);
-		active = true;
+		position = { 400 - top.width() / 2, 240 - height / 2 };
+		dimension = { top.width(), height + 120 };
 	}
 }

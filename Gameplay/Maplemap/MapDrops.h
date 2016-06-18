@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -56,13 +56,13 @@ namespace jrc
 		void update(const Physics& physics);
 
 		// Spawn a new drop.
-		void sendspawn(const DropSpawn& spawn);
+		void send_spawn(const DropSpawn& spawn);
 		// Remove a drop.
-		void removedrop(int32_t oid, int8_t mode, const PhysicsObject* looter);
+		void remove_drop(int32_t oid, int8_t mode, const PhysicsObject* looter);
 		// Remove all drops.
 		void clear();
 
-		Optional<Drop> getdrop(int32_t oid);
+		Optional<Drop> get_drop(int32_t oid);
 
 		// Find a drop which can be picked up at the specified position.
 		const Drop* findinrange(Point<int16_t> playerpos);

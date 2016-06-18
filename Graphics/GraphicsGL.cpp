@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -115,7 +115,7 @@ namespace jrc
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ATLASW, ATLASH, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
-		fontborder.sety(1);
+		fontborder.set_y(1);
 
 		const std::string FONT_NORMAL = Setting<FontPathNormal>().get().load();
 		const std::string FONT_BOLD = Setting<FontPathBold>().get().load();
@@ -190,15 +190,15 @@ namespace jrc
 
 		if (fontborder.x() + width > ATLASW)
 		{
-			fontborder.setx(0);
-			fontborder.sety(fontymax);
+			fontborder.set_x(0);
+			fontborder.set_y(fontymax);
 			fontymax = 0;
 		}
 
 		GLshort x = fontborder.x();
 		GLshort y = fontborder.y();
 
-		fontborder.shiftx(width);
+		fontborder.shift_x(width);
 		if (height > fontymax)
 			fontymax = height;
 
@@ -346,8 +346,8 @@ namespace jrc
 		{
 			if (border.x() + w > ATLASW)
 			{
-				border.setx(0);
-				border.shifty(yrange.second());
+				border.set_x(0);
+				border.shift_y(yrange.second());
 				if (border.y() + h > ATLASH)
 				{
 					clearinternal();
@@ -360,7 +360,7 @@ namespace jrc
 			x = border.x();
 			y = border.y();
 
-			border.shiftx(w);
+			border.shift_x(w);
 
 			if (h > yrange.second())
 			{
@@ -372,8 +372,7 @@ namespace jrc
 
 				wasted += x * (h - yrange.second());
 
-				yrange.setfirst(y + h);
-				yrange.setsecond(h);
+				yrange = { y + h, h };
 			}
 			else if (h < yrange.first() - y)
 			{
@@ -400,10 +399,10 @@ namespace jrc
 			).first->second;
 	}
 
-	void GraphicsGL::draw(const nl::bitmap& bmp, int16_t x, int16_t y, int16_t w, int16_t h, float alpha,
+	void GraphicsGL::draw(const nl::bitmap& bmp, int16_t x, int16_t y, int16_t w, int16_t h, float opacity,
 		float xscale, float yscale, int16_t centerx, int16_t centery, float angle) {
 
-		if (locked)
+		if (locked || opacity <= 0.0f)
 			return;
 
 		GLshort left = centerx + static_cast<GLshort>(xscale * (x - centerx));
@@ -411,128 +410,233 @@ namespace jrc
 		GLshort top = centery + static_cast<GLshort>(yscale * (y - centery));
 		GLshort bottom = centery + static_cast<GLshort>(yscale * (y + h - centery));
 
-		GLshort tl = left < right ? left : right;
-		GLshort tr = left > right ? left : right;
-		GLshort tt = (top < bottom ? top : bottom) + Constants::VIEWYOFFSET;
-		GLshort tb = (top > bottom ? top : bottom) + Constants::VIEWYOFFSET;
+		GLshort tl = std::min(left, right);
+		GLshort tr = std::max(left, right);
+		GLshort tt = std::min(top, bottom) + Constants::VIEWYOFFSET;
+		GLshort tb = std::max(top, bottom) + Constants::VIEWYOFFSET;
 		if (tr > 0 && tl < Constants::VIEWWIDTH && tb > 0 && tt < Constants::VIEWHEIGHT)
 		{
-			quads.emplace_back(left, right, top, bottom, getoffset(bmp), 1.0f, 1.0f, 1.0f, alpha, angle);
+			quads.emplace_back(left, right, top, bottom, getoffset(bmp), 1.0f, 1.0f, 1.0f, opacity, angle);
 		}
 	}
 
-	Text::Layout GraphicsGL::createlayout(const std::string& text, Text::Font id, Text::Alignment alignment, int16_t maxwidth)
-	{
-		auto builder = LayoutBuilder(fonts[id], alignment, maxwidth);
+	Text::Layout GraphicsGL::createlayout(const std::string& text, Text::Font id,
+		Text::Alignment alignment, int16_t maxwidth, bool formatted) {
+
+		size_t length = text.length();
+		if (length == 0)
+			return{};
+
+		LayoutBuilder builder(fonts[id], alignment, maxwidth, formatted);
 
 		const char* p_text = text.c_str();
-		size_t last = text.length();
-		if (last == 0)
-			return Text::Layout();
 
 		size_t first = 0;
 		size_t offset = 0;
-		while (offset < last)
+		while (offset < length)
 		{
-			size_t space = text.find(' ', offset + 1);
-			if (space == std::string::npos)
-				space = last;
+			size_t last = text.find_first_of(" \\#", offset + 1);
+			if (last == std::string::npos)
+				last = length;
 
-			first = builder.addword(p_text, first, offset, space);
-			offset = space;
+			first = builder.add(p_text, first, offset, last);
+			offset = last;
 		}
 
-		return builder.finish(first, offset, last);
+		return builder.finish(first, offset);
 	}
 
 
-	GraphicsGL::LayoutBuilder::LayoutBuilder(const Font& f, Text::Alignment a, int16_t mw)
-		: font(f), layout(a), maxwidth(mw) {
+	GraphicsGL::LayoutBuilder::LayoutBuilder(const Font& f, Text::Alignment a, int16_t mw, bool fm)
+		: font(f), alignment(a), maxwidth(mw), formatted(fm) {
 
-		advance = 0;
+		fontid = Text::NUM_FONTS;
+		color = Text::NUM_COLORS;
 		ax = 0;
 		ay = font.linespace();
+		width = 0;
+		endy = 0;
+		if (maxwidth == 0)
+		{
+			maxwidth = 800;
+		}
 	}
 
-	size_t GraphicsGL::LayoutBuilder::addword(const char* text, size_t prev, size_t first, size_t last)
+	size_t GraphicsGL::LayoutBuilder::add(const char* text, size_t prev, size_t first, size_t last)
 	{
 		if (first == last)
 			return prev;
 
-		int16_t width = 0;
-		for (size_t i = first; i < last; i++)
+		Text::Font last_font = fontid;
+		Text::Color last_color = color;
+		size_t skip = 0;
+		bool linebreak = false;
+		if (formatted)
 		{
-			char c = text[i];
-			width += font.chars[c].ax;
-
-			if (width > maxwidth)
+			switch (text[first])
 			{
-				if (last - first == 1)
+			case '\\':
+				if (first + 1 < last)
 				{
-					return last;
+					switch (text[first + 1])
+					{
+					case 'n':
+						linebreak = true;
+						break;
+					case 'r':
+						linebreak = ax > 0;
+						break;
+					}
+					skip++;
 				}
-				else
+				skip++;
+				break;
+			case '#':
+				if (first + 1 < last)
 				{
-					prev = addword(text, prev, first, i);
-					return addword(text, prev, i, last);
+					switch (text[first + 1])
+					{
+					case 'k':
+						color = Text::DARKGREY;
+						break;
+					case 'b':
+						color = Text::BLUE;
+						break;
+					case 'r':
+						color = Text::RED;
+						break;
+					case 'c':
+						color = Text::ORANGE;
+						break;
+					}
+					skip++;
+				}
+				skip++;
+				break;
+			}
+		}
+
+		int16_t wordwidth = 0;
+		if (!linebreak)
+		{
+			for (size_t i = first; i < last; i++)
+			{
+				char c = text[i];
+				wordwidth += font.chars[c].ax;
+
+				if (wordwidth > maxwidth)
+				{
+					if (last - first == 1)
+					{
+						return last;
+					}
+					else
+					{
+						prev = add(text, prev, first, i);
+						return add(text, prev, i, last);
+					}
 				}
 			}
 		}
 		
-		if (ax + width > maxwidth)
+		bool newword = skip > 0;
+		bool newline = linebreak || ax + wordwidth > maxwidth;
+		if (newword || newline)
 		{
-			layout.addline(ax, ay, prev, first);
+			add_word(prev, first, last_font, last_color);
+		}
+		if (newline)
+		{
+			add_line();
+
+			endy = ay;
 			ax = 0;
 			ay += font.linespace();
 		}
-		bool newline = ax == 0;
 
 		for (size_t pos = first; pos < last; pos++)
 		{
 			char c = text[pos];
 			const Font::Char& ch = font.chars[c];
 
-			layout.advances[pos] = ax;
+			advances.push_back(ax);
 
-			if (newline && c == ' ')
+			if (pos < first + skip || newline && c == ' ')
 				continue;
 
 			ax += ch.ax;
-			advance += ch.ax;
+
+			if (width < ax)
+			{
+				width = ax;
+			}
 		}
-		return newline ? first : prev;
+
+		if (newword || newline)
+		{
+			return first + skip;
+		}
+		else
+		{
+			return prev;
+		}
 	}
 
-	Text::Layout GraphicsGL::LayoutBuilder::finish(size_t first, size_t last, size_t length)
+	Text::Layout GraphicsGL::LayoutBuilder::finish(size_t first, size_t last)
 	{
-		layout.addline(ax, ay, first, last);
-		layout.advances[length] = advance;
-		layout.dimensions = Point<int16_t>(std::min(advance, maxwidth), layout.linecount * font.linespace());
-		layout.endoffset = Point<int16_t>(ax % maxwidth, (layout.linecount - 1) * font.linespace());
-		return layout;
+		add_word(first, last, fontid, color);
+		add_line();
+
+		advances.push_back(ax);
+		return{ lines, advances, width, ay, ax, endy };
+	}
+
+	void GraphicsGL::LayoutBuilder::add_word(size_t word_first,
+		size_t word_last, Text::Font word_font, Text::Color word_color) {
+
+		words.push_back({ word_first, word_last, word_font, word_color });
+	}
+
+	void GraphicsGL::LayoutBuilder::add_line()
+	{
+		int16_t line_x = 0;
+		int16_t line_y = ay;
+		switch (alignment)
+		{
+		case Text::CENTER:
+			line_x -= ax / 2;
+			break;
+		case Text::RIGHT:
+			line_x -= ax;
+			break;
+		}
+		lines.push_back({ words, { line_x, line_y } });
+		words.clear();
 	}
 
 
 	void GraphicsGL::drawtext(const std::string& text, const Text::Layout& layout, Text::Font id, Text::Color colorid,
 		Text::Background background, Point<int16_t> origin, float opacity) {
 
-		if (locked)
+		if (locked || text.empty() || opacity <= 0.0f)
 			return;
 
 		const Font& font = fonts[id];
 
 		GLshort x = origin.x();
 		GLshort y = origin.y();
+		GLshort w = layout.width();
+		GLshort h = layout.height();
 
 		switch (background)
 		{
 		case Text::NAMETAG:
-			for (auto& line : layout.lines)
+			for (const Text::Layout::Line& line : layout)
 			{
 				GLshort left = x + line.position.x() - 2;
-				GLshort right = left + layout.dimensions.x() + 3;
+				GLshort right = left + w + 3;
 				GLshort top = y + line.position.y() - font.linespace() + 5;
-				GLshort bottom = top + layout.dimensions.y() - 2;
+				GLshort bottom = top + h - 2;
 
 				quads.emplace_back(left, right, top, bottom, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f, 0.0f);
 				quads.emplace_back(left - 1, left, top + 1, bottom - 1, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f, 0.0f);
@@ -541,7 +645,7 @@ namespace jrc
 			break;
 		}
 
-		static const GLfloat colors[Text::NUM_COLORS][3] =
+		constexpr GLfloat colors[Text::NUM_COLORS][3] =
 		{
 			{ 0.0f, 0.0f, 0.0f }, // Black
 			{ 1.0f, 1.0f, 1.0f }, // White
@@ -556,34 +660,46 @@ namespace jrc
 			{ 0.0f, 0.75f, 1.0f }, // Mediumblue
 			{ 0.5f, 0.0f, 0.5f } // Violet
 		};
-		if (opacity < 0.0f)
-			opacity = 0.0f;
-		const GLfloat* color = colors[colorid];
 
-		for (auto& line : layout.lines)
+		for (const Text::Layout::Line& line : layout)
 		{
-			GLshort ax = line.position.x();
-			GLshort ay = line.position.y();
+			Point<int16_t> position = line.position;
 
-			for (size_t pos = line.first; pos < line.last; pos++)
+			for (const Text::Layout::Word& word : line.words)
 			{
-				const char c = text[pos];
-				const Font::Char& ch = font.chars[c];
+				GLshort ax = position.x() + layout.advance(word.first);
+				GLshort ay = position.y();
 
-				GLshort chx = x + ax + ch.bl;
-				GLshort chy = y + ay - ch.bt;
-				GLshort chw = ch.bw;
-				GLshort chh = ch.bh;
+				const GLfloat* color;
+				if (word.color < Text::NUM_COLORS)
+				{
+					color = colors[word.color];
+				}
+				else
+				{
+					color = colors[colorid];
+				}
 
-				if (ax == 0 && c == ' ')
-					continue;
+				for (size_t pos = word.first; pos < word.last; ++pos)
+				{
+					const char c = text[pos];
+					const Font::Char& ch = font.chars[c];
 
-				ax += ch.ax;
+					GLshort chx = x + ax + ch.bl;
+					GLshort chy = y + ay - ch.bt;
+					GLshort chw = ch.bw;
+					GLshort chh = ch.bh;
 
-				if (chw <= 0 || chh <= 0)
-					continue;
+					if (ax == 0 && c == ' ')
+						continue;
 
-				quads.emplace_back(chx, chx + chw, chy, chy + chh, ch.offset, color[0], color[1], color[2], opacity, 0.0f);
+					ax += ch.ax;
+
+					if (chw <= 0 || chh <= 0)
+						continue;
+
+					quads.emplace_back(chx, chx + chw, chy, chy + chh, ch.offset, color[0], color[1], color[2], opacity, 0.0f);
+				}
 			}
 		}
 	}

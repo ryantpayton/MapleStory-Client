@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -78,8 +78,8 @@ namespace jrc
 	bool BerserkBuff::is_applicable(CharStats& stats, nl::node level) const
 	{
 		float hp_percent = static_cast<float>(level["x"]) / 100;
-		int32_t hp_threshold = static_cast<int32_t>(stats.gettotal(Equipstat::HP) * hp_percent);
-		int32_t hp_current = stats.getstat(Maplestat::HP);
+		int32_t hp_threshold = static_cast<int32_t>(stats.get_total(Equipstat::HP) * hp_percent);
+		int32_t hp_current = stats.get_stat(Maplestat::HP);
 		return hp_current <= hp_threshold;
 	}
 

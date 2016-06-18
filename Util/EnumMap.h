@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2016 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -30,14 +30,14 @@ namespace jrc
 		template <typename...Args>
 		// Initialize with an initializer list.
 		EnumMap(Args&&... args)
-			: values{ { std::forward<Args>(args)... } } {
+			: m_values{ { std::forward<Args>(args)... } } {
 
 			static_assert(std::is_enum<K>::value,
 				"Template parameter 'K' for EnumMap must be an enum.");
 
 			for (size_t i = 0; i < LENGTH; i++)
 			{
-				keys[i] = static_cast<K>(i);
+				m_keys[i] = static_cast<K>(i);
 			}
 		}
 
@@ -45,24 +45,32 @@ namespace jrc
 		{
 			for (size_t i = 0; i < LENGTH; i++)
 			{
-				values[i] = V();
+				m_values[i] = V();
+			}
+		}
+
+		void erase(K key)
+		{
+			if (key >= 0 && key < LENGTH)
+			{
+				m_values[key] = V();
 			}
 		}
 
 		template <typename...Args>
 		void assign(K key, Args&&...args)
 		{
-			values[key] = V(std::forward<Args>(args)...);
+			m_values[key] = V(std::forward<Args>(args)...);
 		}
 
 		V& operator [](K key)
 		{
-			return values[key];
+			return m_values[key];
 		}
 
 		const V& operator[](K key) const
 		{
-			return values[key];
+			return m_values[key];
 		}
 
 		template <typename T>
@@ -140,41 +148,41 @@ namespace jrc
 
 		iterator begin()
 		{
-			return iterator(values.data(), 0);
+			return iterator(m_values.data(), 0);
 		}
 
 		iterator end()
 		{
-			return iterator(values.data(), LENGTH);
+			return iterator(m_values.data(), LENGTH);
 		}
 
 		const_iterator begin() const
 		{
-			return const_iterator(values.data(), 0);
+			return const_iterator(m_values.data(), 0);
 		}
 
 		const_iterator end() const
 		{
-			return const_iterator(values.data(), LENGTH);
+			return const_iterator(m_values.data(), LENGTH);
 		}
 
-		const std::array<K, LENGTH>& getkeys() const
+		const std::array<K, LENGTH>& keys() const
 		{
-			return keys;
+			return m_keys;
 		}
 
-		std::array<V, LENGTH>& getvalues()
+		std::array<V, LENGTH>& values()
 		{
-			return values;
+			return m_values;
 		}
 
-		const std::array<V, LENGTH>& getvalues() const
+		const std::array<V, LENGTH>& values() const
 		{
-			return values;
+			return m_values;
 		}
 
 	private:
-		std::array<K, LENGTH> keys;
-		std::array<V, LENGTH> values;
+		std::array<K, LENGTH> m_keys;
+		std::array<V, LENGTH> m_values;
 	};
 }

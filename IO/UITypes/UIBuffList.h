@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,7 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Element.h"
+#include "..\UIElement.h"
+
 #include "..\Components\IconCover.h"
 
 #include "..\..\Constants.h"
@@ -57,7 +58,7 @@ namespace jrc
 
 		void draw(float inter) const override;
 		void update() override;
-		Cursor::State sendmouse(bool pressed, Point<int16_t> position) override;
+		Cursor::State send_cursor(bool pressed, Point<int16_t> position) override;
 
 		void add_buff(int32_t buffid, int32_t duration);
 

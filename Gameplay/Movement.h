@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -41,7 +41,7 @@ namespace jrc
 			: Movement(_ABSOLUTE, 0, x, y, lx, ly, 0, s, d) {}
 
 		Movement(const PhysicsObject& phobj, uint8_t s)
-			: Movement(_ABSOLUTE, 0, phobj.getx(), phobj.gety(), phobj.lastx(), phobj.lasty(), phobj.fhid, s, 1) {}
+			: Movement(_ABSOLUTE, 0, phobj.get_x(), phobj.get_y(), phobj.get_last_x(), phobj.get_last_y(), phobj.fhid, s, 1) {}
 
 		Movement()
 			: Movement(NONE, 0, 0, 0, 0, 0) {}

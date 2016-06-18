@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,9 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "..\Cursor.h"
+
 #include "..\..\Util\Rectangle.h"
 
 #include <cstdint>
+#include <functional>
 
 namespace jrc
 {
@@ -26,13 +29,14 @@ namespace jrc
 	class Button
 	{
 	public:
-		static const size_t NUM_STATES = 4;
 		enum State
 		{
 			NORMAL,
 			DISABLED,
 			MOUSEOVER,
-			PRESSED
+			PRESSED,
+			IDENTITY,
+			NUM_STATES
 		};
 
 		virtual ~Button() {}
@@ -40,12 +44,12 @@ namespace jrc
 		virtual void draw(Point<int16_t> parentpos) const = 0;
 		virtual Rectangle<int16_t> bounds(Point<int16_t> parentpos) const = 0;
 
-		void setposition(Point<int16_t> position);
-		void setstate(State state);
-		void setactive(bool active);
+		void set_position(Point<int16_t> position);
+		void set_state(State state);
+		void set_active(bool active);
 
-		bool isactive() const;
-		State getstate() const;
+		bool is_active() const;
+		State get_state() const;
 
 	protected:
 		State state;

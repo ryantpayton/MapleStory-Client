@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -29,10 +29,10 @@ namespace jrc
 		chars.update(physics);
 	}
 
-	void MapChars::sendspawn(const CharSpawn& spawn)
+	void MapChars::send_spawn(const CharSpawn& spawn)
 	{
 		int32_t cid = spawn.getcid();
-		Optional<OtherChar> ochar = getchar(cid);
+		Optional<OtherChar> ochar = get_char(cid);
 		if (ochar)
 		{
 
@@ -45,7 +45,7 @@ namespace jrc
 		}
 	}
 
-	void MapChars::removechar(int32_t cid)
+	void MapChars::remove_char(int32_t cid)
 	{
 		chars.remove(cid);
 	}
@@ -55,26 +55,26 @@ namespace jrc
 		chars.clear();
 	}
 
-	void MapChars::movechar(int32_t cid, const std::vector<Movement>& movements)
+	void MapChars::send_movement(int32_t cid, const std::vector<Movement>& movements)
 	{
-		Optional<OtherChar> otherchar = getchar(cid);
+		Optional<OtherChar> otherchar = get_char(cid);
 		if (otherchar)
 		{
-			otherchar->sendmovement(movements);
+			otherchar->send_movement(movements);
 		}
 	}
 
-	void MapChars::updatelook(int32_t cid, const LookEntry& look)
+	void MapChars::update_look(int32_t cid, const LookEntry& look)
 	{
-		Optional<OtherChar> otherchar = getchar(cid);
+		Optional<OtherChar> otherchar = get_char(cid);
 		if (otherchar)
 		{
-			otherchar->updatelook(look);
+			otherchar->update_look(look);
 		}
 
 	}
 
-	Optional<OtherChar> MapChars::getchar(int32_t cid)
+	Optional<OtherChar> MapChars::get_char(int32_t cid)
 	{
 		return chars.get(cid)
 			.reinterpret<OtherChar>();

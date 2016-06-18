@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,7 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Element.h"
+#include "..\UIElement.h"
+
+#include "..\..\Graphics\Sprite.h"
+#include "..\..\Graphics\Texture.h"
 
 namespace jrc
 {
@@ -90,15 +93,21 @@ namespace jrc
 			FAMILY_AND_CASH_ITEMS_CONFIRM_DELETION
 		};
 
+		UILoginNotice(int8_t message);
+
+		void draw(float alpha) const override;
+
+	protected:
+		Button::State button_pressed(uint16_t id) override;
+
+	private:
 		enum Buttons
 		{
 			BT_OK
 		};
 
-		UILoginNotice(int8_t);
-		void buttonpressed(uint16_t) override;
-
-	private:
+		Texture background;
+		Sprite text;
 		bool saveid;
 	};
 }

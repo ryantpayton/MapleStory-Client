@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -22,31 +22,45 @@
 
 namespace jrc
 {
+	UIElement::UIElement(Point<int16_t> p, Point<int16_t> d, bool a)
+		: position(p), dimension(d), active(a) {}
+
+	UIElement::UIElement(Point<int16_t> p, Point<int16_t> d)
+		: UIElement(p, d, true) {}
+
 	UIElement::UIElement()
+		: UIElement({}, {}) {}
+
+	void UIElement::draw(float alpha) const
 	{
-		active = true;
+		draw_sprites(alpha);
+		draw_buttons(alpha);
 	}
 
-	UIElement::~UIElement() {}
-
-	void UIElement::draw(float inter) const
+	void UIElement::draw_sprites(float alpha) const
 	{
-		for (auto& sprit : sprites)
+		for (const Sprite& sprite : sprites)
 		{
-			sprit.draw(position, inter);
+			sprite.draw(position, alpha);
 		}
+	}
 
-		for (auto& btit : buttons)
+	void UIElement::draw_buttons(float) const
+	{
+		for (auto& iter : buttons)
 		{
-			btit.second->draw(position);
+			if (const Button* button = iter.second.get())
+			{
+				button->draw(position);
+			}
 		}
 	}
 
 	void UIElement::update()
 	{
-		for (auto& sprit : sprites)
+		for (auto& sprite : sprites)
 		{
-			sprit.update();
+			sprite.update();
 		}
 	}
 
@@ -60,66 +74,66 @@ namespace jrc
 		active = false; 
 	}
 
-	bool UIElement::isactive() const
+	bool UIElement::is_active() const
 	{ 
 		return active; 
 	}
 
-	void UIElement::togglehide() 
+	void UIElement::toggle_active() 
 	{ 
 		active = !active; 
 	}
 
-	void UIElement::buttonpressed(uint16_t) {}
+	Button::State UIElement::button_pressed(uint16_t) { return Button::DISABLED; }
 
-	void UIElement::sendicon(const Icon&, Point<int16_t>) {}
+	void UIElement::send_icon(const Icon&, Point<int16_t>) {}
 
 	void UIElement::doubleclick(Point<int16_t>) {}
 
-	bool UIElement::isinrange(Point<int16_t> cursorpos) const
+	bool UIElement::is_in_range(Point<int16_t> cursorpos) const
 	{
 		auto bounds = Rectangle<int16_t>(position, position + dimension);
 		return bounds.contains(cursorpos);
 	}
 
-	bool UIElement::cursorleave(bool, Point<int16_t>)
+	bool UIElement::remove_cursor(bool, Point<int16_t>)
 	{
 		for (auto& btit : buttons)
 		{
 			Button* button = btit.second.get();
-			switch (button->getstate())
+			switch (button->get_state())
 			{
 			case Button::MOUSEOVER:
-				button->setstate(Button::NORMAL);
+				button->set_state(Button::NORMAL);
 				break;
 			}
 		}
 		return false;
 	}
 
-	Cursor::State UIElement::sendmouse(bool down, Point<int16_t> pos)
+	Cursor::State UIElement::send_cursor(bool down, Point<int16_t> pos)
 	{
 		Cursor::State ret = down ? Cursor::CLICKING : Cursor::IDLE;
 
 		for (auto& btit : buttons)
 		{
-			if (btit.second->isactive() && btit.second->bounds(position).contains(pos))
+			if (btit.second->is_active() && btit.second->bounds(position).contains(pos))
 			{
-				if (btit.second->getstate() == Button::NORMAL)
+				if (btit.second->get_state() == Button::NORMAL)
 				{
 					Sound(Sound::BUTTONOVER).play();
 
-					btit.second->setstate(Button::MOUSEOVER);
+					btit.second->set_state(Button::MOUSEOVER);
 					ret = Cursor::CANCLICK;
 				}
-				else if (btit.second->getstate() == Button::MOUSEOVER)
+				else if (btit.second->get_state() == Button::MOUSEOVER)
 				{
 					if (down)
 					{
 						Sound(Sound::BUTTONCLICK).play();
 
-						btit.second->setstate(Button::PRESSED);
-						buttonpressed(btit.first);
+						btit.second->set_state(button_pressed(btit.first));
+
 						ret = Cursor::IDLE;
 					}
 					else
@@ -128,9 +142,9 @@ namespace jrc
 					}
 				}
 			}
-			else if (btit.second->getstate() == Button::MOUSEOVER)
+			else if (btit.second->get_state() == Button::MOUSEOVER)
 			{
-				btit.second->setstate(Button::NORMAL);
+				btit.second->set_state(Button::NORMAL);
 			}
 		}
 

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -23,12 +23,12 @@
 #include "..\..\Gameplay\Stage.h"
 #include "..\..\Net\Packets\PlayerPackets.h"
 
-#include "nlnx\nx.hpp"
+#include <nlnx\nx.hpp>
 
 namespace jrc
 {
 	UIStatsinfo::UIStatsinfo() :
-		UIDragElement<PosSTATS>(Point<int16_t>(212, 20)), stats(Stage::get().getplayer().getstats()) {
+		UIDragElement<PosSTATS>(Point<int16_t>(212, 20)), stats(Stage::get().get_player().get_stats()) {
 
 		nl::node src = nl::nx::ui["UIWindow4.img"]["Stat"]["main"];
 		nl::node detail = nl::nx::ui["UIWindow4.img"]["Stat"]["detail"];
@@ -37,15 +37,15 @@ namespace jrc
 		sprites.emplace_back(src["backgrnd2"]);
 		sprites.emplace_back(src["backgrnd3"]);
 
-		detailtextures.emplace_back(detail["backgrnd"]);
-		detailtextures.emplace_back(detail["backgrnd2"]);
-		detailtextures.emplace_back(detail["backgrnd3"]);
+		textures_detail.emplace_back(detail["backgrnd"]);
+		textures_detail.emplace_back(detail["backgrnd2"]);
+		textures_detail.emplace_back(detail["backgrnd3"]);
 
-		abilities["rare"] = detail["abilityTitle"]["rare"]["0"];
-		abilities["epic"] = detail["abilityTitle"]["epic"]["0"];
-		abilities["unique"] = detail["abilityTitle"]["unique"]["0"];
-		abilities["legendary"] = detail["abilityTitle"]["legendary"]["0"];
-		abilities["none"] = detail["abilityTitle"]["normal"]["0"];
+		abilities[RARE] = detail["abilityTitle"]["rare"]["0"];
+		abilities[EPIC] = detail["abilityTitle"]["epic"]["0"];
+		abilities[UNIQUE] = detail["abilityTitle"]["unique"]["0"];
+		abilities[LEGENDARY] = detail["abilityTitle"]["legendary"]["0"];
+		abilities[NONE] = detail["abilityTitle"]["normal"]["0"];
 
 		buttons[BT_HP] = std::make_unique<MapleButton>(src["BtHpUp"]);
 		buttons[BT_MP] = std::make_unique<MapleButton>(src["BtMpUp"]);
@@ -56,9 +56,9 @@ namespace jrc
 
 		buttons[BT_DETAILOPEN] = std::make_unique<MapleButton>(src["BtDetailOpen"]);
 		buttons[BT_DETAILCLOSE] = std::make_unique<MapleButton>(src["BtDetailClose"]);
-		buttons[BT_DETAILCLOSE]->setactive(false);
+		buttons[BT_DETAILCLOSE]->set_active(false);
 
-		updateap();
+		update_ap();
 
 		for (size_t i = 0; i < NUMLABELS; i++)
 		{
@@ -92,25 +92,26 @@ namespace jrc
 		statoffsets[JUMP] = Point<int16_t>(168, 235);
 		statoffsets[HONOR] = Point<int16_t>(73, 353);
 
-		updateall();
-		updatestat(Maplestat::JOB);
-		updatestat(Maplestat::FAME);
+		update_all_stats();
+		update_stat(Maplestat::JOB);
+		update_stat(Maplestat::FAME);
 
 		dimension = Point<int16_t>(212, 318);
 		showdetail = false;
 	}
 
-	void UIStatsinfo::draw(float inter) const
+	void UIStatsinfo::draw(float alpha) const
 	{
-		UIElement::draw(inter);
+		UIElement::draw(alpha);
 
 		if (showdetail)
 		{
-			for (auto& dtit : detailtextures)
+			Point<int16_t> detail_pos(position + Point<int16_t>(213, 0));
+			for (auto& texture : textures_detail)
 			{
-				dtit.draw(position + Point<int16_t>(213, 0));
+				texture.draw(detail_pos);
 			}
-			abilities.at("none").draw(position + Point<int16_t>(213, 0));
+			abilities[NONE].draw({ detail_pos });
 		}
 
 		size_t last = showdetail ? NUMLABELS : NUMNORMAL;
@@ -118,160 +119,159 @@ namespace jrc
 		{
 			Point<int16_t> labelpos = position + statoffsets[i];
 			if (i >= NUMNORMAL)
-				labelpos.shiftx(213);
+				labelpos.shift_x(213);
 
 			statlabels[i].draw(labelpos);
 		}
 	}
 
-	void UIStatsinfo::updateall()
+	void UIStatsinfo::update_all_stats()
 	{
-		updatesimple(AP, Maplestat::AP);
-		if (hasap ^ (stats.getstat(Maplestat::AP) > 0))
+		update_simple(AP, Maplestat::AP);
+		if (hasap ^ (stats.get_stat(Maplestat::AP) > 0))
 		{
-			updateap();
+			update_ap();
 		}
 
-		statlabels[NAME].settext(stats.getname());
-		statlabels[GUILD].settext("");
+		statlabels[NAME].change_text(stats.get_name());
+		statlabels[GUILD].change_text("");
 
-		statlabels[HP].settext(std::to_string(stats.getstat(Maplestat::HP)) + " / " + std::to_string(stats.gettotal(Equipstat::HP)));
-		statlabels[MP].settext(std::to_string(stats.getstat(Maplestat::MP)) + " / " + std::to_string(stats.gettotal(Equipstat::MP)));
+		statlabels[HP].change_text(std::to_string(stats.get_stat(Maplestat::HP)) + " / " + std::to_string(stats.get_total(Equipstat::HP)));
+		statlabels[MP].change_text(std::to_string(stats.get_stat(Maplestat::MP)) + " / " + std::to_string(stats.get_total(Equipstat::MP)));
 
-		updatebasevstotal(STR, Maplestat::STR, Equipstat::STR);
-		updatebasevstotal(DEX, Maplestat::DEX, Equipstat::DEX);
-		updatebasevstotal(INT, Maplestat::INT, Equipstat::INT);
-		updatebasevstotal(LUK, Maplestat::LUK, Equipstat::LUK);
+		update_basevstotal(STR, Maplestat::STR, Equipstat::STR);
+		update_basevstotal(DEX, Maplestat::DEX, Equipstat::DEX);
+		update_basevstotal(INT, Maplestat::INT, Equipstat::INT);
+		update_basevstotal(LUK, Maplestat::LUK, Equipstat::LUK);
 
-		statlabels[DAMAGE].settext(std::to_string(stats.getmindamage()) + " ~ " + std::to_string(stats.getmaxdamage()));
+		statlabels[DAMAGE].change_text(std::to_string(stats.get_mindamage()) + " ~ " + std::to_string(stats.get_maxdamage()));
 		if (stats.isdamagebuffed())
 		{
-			statlabels[DAMAGE].setcolor(Text::RED);
+			statlabels[DAMAGE].change_color(Text::RED);
 		}
 		else
 		{
-			statlabels[DAMAGE].setcolor(Text::LIGHTGREY);
+			statlabels[DAMAGE].change_color(Text::LIGHTGREY);
 		}
 
-		updatebuffed(ATTACK, Equipstat::WATK);
-		updatebuffed(WDEF, Equipstat::WDEF);
-		updatebuffed(MDEF, Equipstat::MDEF);
-		updatebuffed(ACCURACY, Equipstat::ACC);
-		updatebuffed(AVOID, Equipstat::AVOID);
+		update_buffed(ATTACK, Equipstat::WATK);
+		update_buffed(WDEF, Equipstat::WDEF);
+		update_buffed(MDEF, Equipstat::MDEF);
+		update_buffed(ACCURACY, Equipstat::ACC);
+		update_buffed(AVOID, Equipstat::AVOID);
 
-		statlabels[CRIT].settext(std::to_string(static_cast<int32_t>(stats.getcritical() * 100)) + "%");
-		statlabels[MINCRIT].settext(std::to_string(static_cast<int32_t>(stats.getmincrit() * 100)) + "%");
-		statlabels[MAXCRIT].settext(std::to_string(static_cast<int32_t>(stats.getmaxcrit() * 100)) + "%");
-		statlabels[BDM].settext(std::to_string(static_cast<int32_t>(stats.getbossdmg() * 100)) + "%");
-		statlabels[IGNOREDEF].settext(std::to_string(static_cast<int32_t>(stats.getignoredef() * 100)) + "%");
-		statlabels[RESIST].settext(std::to_string(static_cast<int32_t>(stats.getresist() * 100)) + "%");
-		statlabels[STANCE].settext(std::to_string(static_cast<int32_t>(stats.getstance() * 100)) + "%");
-		statlabels[SPEED].settext(std::to_string(stats.gettotal(Equipstat::SPEED)) + "%");
-		statlabels[JUMP].settext(std::to_string(stats.gettotal(Equipstat::JUMP)) + "%");
-		statlabels[HONOR].settext(std::to_string(stats.gethonor()));
+		statlabels[CRIT].change_text(std::to_string(static_cast<int32_t>(stats.get_critical() * 100)) + "%");
+		statlabels[MINCRIT].change_text(std::to_string(static_cast<int32_t>(stats.get_mincrit() * 100)) + "%");
+		statlabels[MAXCRIT].change_text(std::to_string(static_cast<int32_t>(stats.get_maxcrit() * 100)) + "%");
+		statlabels[BDM].change_text(std::to_string(static_cast<int32_t>(stats.get_bossdmg() * 100)) + "%");
+		statlabels[IGNOREDEF].change_text(std::to_string(static_cast<int32_t>(stats.get_ignoredef() * 100)) + "%");
+		statlabels[RESIST].change_text(std::to_string(static_cast<int32_t>(stats.get_resistance() * 100)) + "%");
+		statlabels[STANCE].change_text(std::to_string(static_cast<int32_t>(stats.get_stance() * 100)) + "%");
+		statlabels[SPEED].change_text(std::to_string(stats.get_total(Equipstat::SPEED)) + "%");
+		statlabels[JUMP].change_text(std::to_string(stats.get_total(Equipstat::JUMP)) + "%");
+		statlabels[HONOR].change_text(std::to_string(stats.gethonor()));
 	}
 
-	void UIStatsinfo::updatestat(Maplestat::Value stat)
+	void UIStatsinfo::update_stat(Maplestat::Value stat)
 	{
 		switch (stat)
 		{
 		case Maplestat::JOB:
-			statlabels[JOB].settext(stats.getjobname());
+			statlabels[JOB].change_text(stats.get_jobname());
 			break;
 		case Maplestat::FAME:
-			updatesimple(FAME, Maplestat::FAME);
+			update_simple(FAME, Maplestat::FAME);
 			break;
 		}
 	}
 
-	void UIStatsinfo::buttonpressed(uint16_t id)
+	Button::State UIStatsinfo::button_pressed(uint16_t id)
 	{
 		switch (id)
 		{
 		case BT_DETAILOPEN:
 			showdetail = true;
-			buttons[BT_DETAILOPEN]->setactive(false);
-			buttons[BT_DETAILCLOSE]->setactive(true);
+			buttons[BT_DETAILOPEN]->set_active(false);
+			buttons[BT_DETAILCLOSE]->set_active(true);
 			break;
 		case BT_DETAILCLOSE:
 			showdetail = false;
-			buttons[BT_DETAILCLOSE]->setactive(false);
-			buttons[BT_DETAILOPEN]->setactive(true);
+			buttons[BT_DETAILCLOSE]->set_active(false);
+			buttons[BT_DETAILOPEN]->set_active(true);
 			break;
 		case BT_HP:
-			sendappacket(Maplestat::HP);
+			send_apup(Maplestat::HP);
 			break;
 		case BT_MP:
-			sendappacket(Maplestat::MP);
+			send_apup(Maplestat::MP);
 			break;
 		case BT_STR:
-			sendappacket(Maplestat::STR);
+			send_apup(Maplestat::STR);
 			break;
 		case BT_DEX:
-			sendappacket(Maplestat::DEX);
+			send_apup(Maplestat::DEX);
 			break;
 		case BT_INT:
-			sendappacket(Maplestat::INT);
+			send_apup(Maplestat::INT);
 			break;
 		case BT_LUK:
-			sendappacket(Maplestat::LUK);
+			send_apup(Maplestat::LUK);
 			break;
 		}
-
-		buttons[id]->setstate(Button::NORMAL);
+		return Button::NORMAL;
 	}
 
-	void UIStatsinfo::sendappacket(Maplestat::Value stat) const
+	void UIStatsinfo::send_apup(Maplestat::Value stat) const
 	{
 		SpendApPacket(stat).dispatch();
 		UI::get().disable();
 	}
 
-	void UIStatsinfo::updateap()
+	void UIStatsinfo::update_ap()
 	{
 		Button::State newstate;
-		bool nowap = stats.getstat(Maplestat::AP) > 0;
+		bool nowap = stats.get_stat(Maplestat::AP) > 0;
 		if (nowap)
 		{
 			newstate = Button::NORMAL;
 
-			buttons[BT_HP]->setposition(Point<int16_t>(20, -36));
-			buttons[BT_MP]->setposition(Point<int16_t>(20, -18));
-			buttons[BT_STR]->setposition(Point<int16_t>(20, 51));
-			buttons[BT_DEX]->setposition(Point<int16_t>(20, 69));
-			buttons[BT_INT]->setposition(Point<int16_t>(20, 87));
-			buttons[BT_LUK]->setposition(Point<int16_t>(20, 105));
+			buttons[BT_HP]->set_position(Point<int16_t>(20, -36));
+			buttons[BT_MP]->set_position(Point<int16_t>(20, -18));
+			buttons[BT_STR]->set_position(Point<int16_t>(20, 51));
+			buttons[BT_DEX]->set_position(Point<int16_t>(20, 69));
+			buttons[BT_INT]->set_position(Point<int16_t>(20, 87));
+			buttons[BT_LUK]->set_position(Point<int16_t>(20, 105));
 		}
 		else
 		{
 			newstate = Button::DISABLED;
 
-			buttons[BT_HP]->setposition(Point<int16_t>(-48, 14));
-			buttons[BT_MP]->setposition(Point<int16_t>(-48, 32));
-			buttons[BT_STR]->setposition(Point<int16_t>(-48, 101));
-			buttons[BT_DEX]->setposition(Point<int16_t>(-48, 119));
-			buttons[BT_INT]->setposition(Point<int16_t>(-48, 137));
-			buttons[BT_LUK]->setposition(Point<int16_t>(-48, 155));
+			buttons[BT_HP]->set_position(Point<int16_t>(-48, 14));
+			buttons[BT_MP]->set_position(Point<int16_t>(-48, 32));
+			buttons[BT_STR]->set_position(Point<int16_t>(-48, 101));
+			buttons[BT_DEX]->set_position(Point<int16_t>(-48, 119));
+			buttons[BT_INT]->set_position(Point<int16_t>(-48, 137));
+			buttons[BT_LUK]->set_position(Point<int16_t>(-48, 155));
 		}
-		buttons[BT_HP]->setstate(newstate);
-		buttons[BT_MP]->setstate(newstate);
-		buttons[BT_STR]->setstate(newstate);
-		buttons[BT_DEX]->setstate(newstate);
-		buttons[BT_LUK]->setstate(newstate);
-		buttons[BT_INT]->setstate(newstate);
+		buttons[BT_HP]->set_state(newstate);
+		buttons[BT_MP]->set_state(newstate);
+		buttons[BT_STR]->set_state(newstate);
+		buttons[BT_DEX]->set_state(newstate);
+		buttons[BT_LUK]->set_state(newstate);
+		buttons[BT_INT]->set_state(newstate);
 
 		hasap = nowap;
 	}
 
-	void UIStatsinfo::updatesimple(StatLabel label, Maplestat::Value stat)
+	void UIStatsinfo::update_simple(StatLabel label, Maplestat::Value stat)
 	{
-		statlabels[label].settext(std::to_string(stats.getstat(stat)));
+		statlabels[label].change_text(std::to_string(stats.get_stat(stat)));
 	}
 
-	void UIStatsinfo::updatebasevstotal(StatLabel label, Maplestat::Value bstat, Equipstat::Value tstat)
+	void UIStatsinfo::update_basevstotal(StatLabel label, Maplestat::Value bstat, Equipstat::Value tstat)
 	{
-		int32_t base = stats.getstat(bstat);
-		int32_t total = stats.gettotal(tstat);
+		int32_t base = stats.get_stat(bstat);
+		int32_t total = stats.get_total(tstat);
 		int32_t delta = total - base;
 
 		std::string stattext = std::to_string(total);
@@ -288,13 +288,13 @@ namespace jrc
 			}
 			stattext += ")";
 		}
-		statlabels[label].settext(stattext);
+		statlabels[label].change_text(stattext);
 	}
 
-	void UIStatsinfo::updatebuffed(StatLabel label, Equipstat::Value stat)
+	void UIStatsinfo::update_buffed(StatLabel label, Equipstat::Value stat)
 	{
-		int32_t total = stats.gettotal(stat);
-		int32_t delta = stats.getbuffdelta(stat);
+		int32_t total = stats.get_total(stat);
+		int32_t delta = stats.get_buffdelta(stat);
 
 		std::string stattext = std::to_string(total);
 		if (delta)
@@ -304,16 +304,16 @@ namespace jrc
 			{
 				stattext += " + " + std::to_string(delta);
 
-				statlabels[label].setcolor(Text::RED);
+				statlabels[label].change_color(Text::RED);
 			}
 			else if (delta < 0)
 			{
 				stattext += " - " + std::to_string(-delta);
 
-				statlabels[label].setcolor(Text::BLUE);
+				statlabels[label].change_color(Text::BLUE);
 			}
 			stattext += ")";
 		}
-		statlabels[label].settext(stattext);
+		statlabels[label].change_text(stattext);
 	}
 }

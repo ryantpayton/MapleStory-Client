@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -57,7 +57,8 @@ namespace jrc
 			float a, float xs, float ys, int16_t cx, int16_t cy, float ang);
 
 		// Create a layout for the text with the parameters specified.
-		Text::Layout createlayout(const std::string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth);
+		Text::Layout createlayout(const std::string& text, Text::Font font,
+			Text::Alignment alignment, int16_t maxwidth, bool formatted);
 		// Draw a text with the given parameters.
 		void drawtext(const std::string& text, const Text::Layout& layout, Text::Font font,
 			Text::Color color, Text::Background back, Point<int16_t> origin, float opacity);
@@ -159,8 +160,9 @@ namespace jrc
 			static const size_t LENGTH = 4;
 			Vertex vertices[LENGTH];
 
-			Quad(GLshort l, GLshort r, GLshort t, GLshort b, const Offset& o, GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, GLfloat rot)
-			{
+			Quad(GLshort l, GLshort r, GLshort t, GLshort b, const Offset& o,
+				GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, GLfloat rot) {
+
 				vertices[0] = { l, t, o.l, o.t, cr, cg, cb, ca };
 				vertices[1] = { l, b, o.l, o.b, cr, cg, cb, ca };
 				vertices[2] = { r, b, o.r, o.b, cr, cg, cb, ca };
@@ -224,20 +226,31 @@ namespace jrc
 		class LayoutBuilder
 		{
 		public:
-			LayoutBuilder(const Font& font, Text::Alignment alignment, int16_t maxwidth);
+			LayoutBuilder(const Font& font, Text::Alignment alignment, int16_t maxwidth, bool formatted);
 
-			size_t addword(const char* text, size_t prev, size_t first, size_t last);
-			Text::Layout finish(size_t first, size_t last, size_t length);
+			size_t add(const char* text, size_t prev, size_t first, size_t last);
+			Text::Layout finish(size_t first, size_t last);
 
 		private:
-			LayoutBuilder& operator = (const LayoutBuilder&) = delete;
+			void add_word(size_t first, size_t last, Text::Font font, Text::Color color);
+			void add_line();
 
 			const Font& font;
-			Text::Layout layout;
+
+			Text::Alignment alignment;
+			Text::Font fontid;
+			Text::Color color;
 			int16_t maxwidth;
-			int16_t advance;
+			bool formatted;
+
 			int16_t ax;
 			int16_t ay;
+
+			std::vector<Text::Layout::Line> lines;
+			std::vector<Text::Layout::Word> words;
+			std::vector<int16_t> advances;
+			int16_t width;
+			int16_t endy;
 		};
 
 		static const GLshort ATLASW = 10000;

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -129,7 +129,7 @@ namespace jrc
 		}
 	}
 
-	uint8_t Weapon::getattackdelay() const
+	uint8_t Weapon::get_attackdelay() const
 	{
 		if (type == NONE)
 			return 0;
@@ -137,7 +137,7 @@ namespace jrc
 			return 50 - 25 / attackspeed;
 	}
 
-	Rectangle<int16_t> Weapon::getrange(Stance::Value stance) const
+	Rectangle<int16_t> Weapon::get_range(Stance::Value stance) const
 	{
 		return afterimage.range(stance);
 	}
@@ -217,7 +217,7 @@ namespace jrc
 		return firstframe;
 	}
 
-	Rectangle<int16_t> Weapon::AfterImage::getrange() const
+	Rectangle<int16_t> Weapon::AfterImage::get_range() const
 	{
 		return range;
 	}

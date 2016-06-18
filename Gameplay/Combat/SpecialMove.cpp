@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2016 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,7 +19,7 @@
 
 namespace jrc
 {
-	void SpecialMove::applyuseeffects(Char& target, Attack::Type type) const
+	void SpecialMove::apply_useeffects(Char& target, Attack::Type type) const
 	{
 		useeffect->apply(target);
 		action->apply(target, type);
@@ -27,7 +27,7 @@ namespace jrc
 		sound->play_use();
 	}
 
-	void SpecialMove::applyhiteffects(const AttackUser& user, Mob& target) const
+	void SpecialMove::apply_hiteffects(const AttackUser& user, Mob& target) const
 	{
 		hiteffect->apply(user, target);
 
@@ -36,10 +36,10 @@ namespace jrc
 
 	bool SpecialMove::isskill() const
 	{
-		return getid() > 0;
+		return get_id() > 0;
 	}
 
-	Animation SpecialMove::getbullet(const Char& user, int32_t bulletid) const
+	Animation SpecialMove::get_animation(const Char& user, int32_t bulletid) const
 	{
 		return bullet->get(user, bulletid);
 	}

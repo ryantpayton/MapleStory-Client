@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -209,20 +209,16 @@ namespace jrc
 
 	void Clothing::draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const
 	{
-		auto layerit = stances[stance].find(layer);
-		if (layerit == stances[stance].end())
-			return;
-
-		auto frameit = layerit->second.find(frame);
-		if (frameit == layerit->second.end())
+		auto frameit = stances[stance][layer].find(frame);
+		if (frameit == stances[stance][layer].end())
 			return;
 
 		frameit->second.draw(args);
 	}
 
-	bool Clothing::islayer(Stance::Value stance, Layer layer) const
+	bool Clothing::contains_layer(Stance::Value stance, Layer layer) const
 	{
-		return stances[stance].count(layer) > 0;
+		return !stances[stance][layer].empty();
 	}
 
 	bool Clothing::istransparent() const
@@ -237,18 +233,12 @@ namespace jrc
 
 	int16_t Clothing::getreqstat(Maplestat::Value stat) const
 	{
-		if (reqstats.count(stat))
-			return reqstats.at(stat);
-		else
-			return 0;
+		return reqstats[stat];
 	}
 
 	int16_t Clothing::getdefstat(Equipstat::Value stat) const
 	{
-		if (defstats.count(stat))
-			return defstats.at(stat);
-		else
-			return 0;
+		return defstats[stat];
 	}
 
 	std::string Clothing::gettype() const
@@ -264,5 +254,58 @@ namespace jrc
 	Equipslot::Value Clothing::geteqslot() const
 	{
 		return eqslot;
+	}
+
+
+	EnumIterator<Clothing::Layer> Clothing::layerit()
+	{
+		return{ CAPE, WEAPONOGLOVE };
+	}
+
+	Clothing::Layer Clothing::sublayer(Layer base, const std::string& name)
+	{
+		switch (base)
+		{
+		case WEAPON:
+			if (name == "weaponOverHand")
+				return Layer::WEAPONOHAND;
+			else if (name == "weaponOverGlove")
+				return Layer::WEAPONOGLOVE;
+			else if (name == "weaponOverBody")
+				return Layer::WEAPONOBODY;
+			else if (name == "weaponBelowArm")
+				return Layer::WEAPONBARM;
+			else if (name == "weaponBelowBody")
+				return Layer::WEAPONBBODY;
+			else if (name == "backWeaponOverShield")
+				return Layer::BACKWEAPON;
+			break;
+		case SHIELD:
+			if (name == "shieldOverHair")
+				return Layer::SHIELDOHAIR;
+			else if (name == "shieldBelowBody")
+				return Layer::SHIELDBBODY;
+			else if (name == "backShield")
+				return Layer::BACKSHIELD;
+			break;
+		case GLOVE:
+			if (name == "gloveWrist")
+				return Layer::WRIST;
+			else if (name == "gloveOverHair")
+				return Layer::GLOVEOHAIR;
+			else if (name == "gloveOverBody")
+				return Layer::GLOVEOBODY;
+			else if (name == "gloveWristOverHair")
+				return Layer::WRISTOHAIR;
+			else if (name == "gloveWristOverBody")
+				return Layer::WRISTOBODY;
+		case CAP:
+			if (name == "capOverHair")
+				return Layer::CAPOHAIR;
+			else if (name == "capBelowBody")
+				return Layer::CAPBBODY;
+			break;
+		}
+		return base;
 	}
 }

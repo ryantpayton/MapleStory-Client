@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -31,9 +31,9 @@ namespace jrc
 		npcs.update(physics);
 	}
 
-	void MapNpcs::sendspawn(const NpcSpawn& spawn, const Physics& physics)
+	void MapNpcs::send_spawn(const NpcSpawn& spawn, const Physics& physics)
 	{
-		int32_t oid = spawn.getoid();
+		int32_t oid = spawn.get_oid();
 		Optional<Npc> npc = getnpc(oid);
 		if (npc)
 		{
@@ -47,10 +47,10 @@ namespace jrc
 		}
 	}
 
-	void MapNpcs::removenpc(int32_t oid)
+	void MapNpcs::remove_npc(int32_t oid)
 	{
 		getnpc(oid)
-			.ifpresent(&Npc::deactivate);
+			.if_present(&Npc::deactivate);
 	}
 
 	void MapNpcs::clear()
@@ -58,17 +58,17 @@ namespace jrc
 		npcs.clear();
 	}
 
-	Cursor::State MapNpcs::sendmouse(bool pressed, Point<int16_t> position, Point<int16_t> viewpos)
+	Cursor::State MapNpcs::send_cursor(bool pressed, Point<int16_t> position, Point<int16_t> viewpos)
 	{
 		for (auto& mmo : npcs)
 		{
 			Npc* npc = static_cast<Npc*>(mmo.second.get());
-			if (npc && npc->isactive() && npc->inrange(position, viewpos))
+			if (npc && npc->is_active() && npc->inrange(position, viewpos))
 			{
 				if (pressed)
 				{
 					// TODO: try finding dialogue first
-					TalkToNPCPacket(npc->getoid())
+					TalkToNPCPacket(npc->get_oid())
 						.dispatch();
 					return Cursor::IDLE;
 				}

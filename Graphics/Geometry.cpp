@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -22,7 +22,10 @@ namespace jrc
 {
 	void Geometry::draw(int16_t x, int16_t y, int16_t w, int16_t h, Geometry::Color cid, float opacity) const
 	{
-		static const float colors[NUM_COLORS][3] =
+		if (w == 0 || h == 0 || opacity <= 0.0f)
+			return;
+
+		constexpr float colors[NUM_COLORS][3] =
 		{
 			{ 0.0f, 0.0f, 0.0f }, // Black
 			{ 1.0f, 1.0f, 1.0f }, // White
@@ -30,8 +33,6 @@ namespace jrc
 			{ 0.0f, 0.75f, 0.0f }, // Mob-hp-bar green
 			{ 0.0f, 0.5f, 0.0f } // Mob-hp-bar darkgreen
 		};
-		if (opacity < 0.0f)
-			opacity = 0.0f;
 		const float* color = colors[cid];
 
 		GraphicsGL::get().drawrectangle(x, y, w, h, color[0], color[1], color[2], opacity);
@@ -39,12 +40,7 @@ namespace jrc
 
 
 	ColorBox::ColorBox(int16_t w, int16_t h, Geometry::Color c, float o)
-	{
-		width = w;
-		height = h;
-		color = c;
-		opacity = o;
-	}
+		: width(w), height(h), color(c), opacity(o) {}
 
 	ColorBox::ColorBox()
 		: ColorBox(0, 0, Geometry::BLACK, 0.0f) {}
@@ -59,7 +55,7 @@ namespace jrc
 		height = h;
 	}
 
-	void ColorBox::setcolor(Geometry::Color c)
+	void ColorBox::set_color(Geometry::Color c)
 	{
 		color = c;
 	}
@@ -78,6 +74,43 @@ namespace jrc
 		int16_t absh = args.getstretch().y();
 		if (absh == 0)
 			absh = height;
+		absw = static_cast<int16_t>(absw * args.getxscale());
+		absh = static_cast<int16_t>(absh * args.getyscale());
+		float absopc = opacity * args.getopacity();
+		Geometry::draw(absp.x(), absp.y(), absw, absh, color, absopc);
+	}
+
+
+	ColorLine::ColorLine(int16_t w, Geometry::Color c, float o)
+		: width(w), color(c), opacity(o) {}
+
+	ColorLine::ColorLine()
+		: ColorLine(0, Geometry::BLACK, 0.0f) {}
+
+	void ColorLine::setwidth(int16_t w)
+	{
+		width = w;
+	}
+
+	void ColorLine::set_color(Geometry::Color c)
+	{
+		color = c;
+	}
+
+	void ColorLine::setopacity(float o)
+	{
+		opacity = o;
+	}
+
+	void ColorLine::draw(const DrawArgument& args) const
+	{
+		Point<int16_t> absp = args.getpos();
+		int16_t absw = args.getstretch().x();
+		if (absw == 0)
+			absw = width;
+		int16_t absh = args.getstretch().y();
+		if (absh == 0)
+			absh = 1;
 		absw = static_cast<int16_t>(absw * args.getxscale());
 		absh = static_cast<int16_t>(absh * args.getyscale());
 		float absopc = opacity * args.getopacity();

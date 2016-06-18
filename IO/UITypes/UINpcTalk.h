@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,8 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Element.h"
-#include "..\Components\Npctext.h"
+#include "..\UIElement.h"
 
 #include "..\..\Graphics\Text.h"
 #include "..\..\Graphics\Texture.h"
@@ -28,9 +27,19 @@ namespace jrc
 	{
 	public:
 		static constexpr Type TYPE = NPCTALK;
-		static constexpr bool FOCUSED = true;
+		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 
+		UINpcTalk();
+
+		void draw(float inter) const override;
+
+		void change_text(int32_t npcid, int8_t msgtype, int16_t style, int8_t speaker, const std::string& text);
+
+	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
+
+	private:
 		enum Buttons
 		{
 			OK,
@@ -41,19 +50,12 @@ namespace jrc
 			NO
 		};
 
-		UINpcTalk();
-
-		void draw(float inter) const override;
-		void buttonpressed(uint16_t buttonid) override;
-		void settext(int32_t npcid, int8_t msgtype, int16_t style, int8_t speaker, const std::string& text);
-
-	private:
 		Texture top;
 		Texture fill;
 		Texture bottom;
 		Texture nametag;
 
-		Npctext npctext;
+		Text text;
 		Texture speaker;
 		Text name;
 		int16_t height;

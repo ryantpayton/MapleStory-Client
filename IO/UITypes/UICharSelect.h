@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,11 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Element.h"
-#include "..\Components\Nametag.h"
+#include "..\UIElement.h"
+
 #include "..\Components\Charset.h"
+#include "..\Components\Nametag.h"
 
 #include "..\..\Character\Look\CharLook.h"
+#include "..\..\Graphics\Sprite.h"
 
 namespace jrc
 {
@@ -31,6 +33,23 @@ namespace jrc
 		static constexpr Type TYPE = CHARSELECT;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
+
+		UICharSelect();
+
+		void draw(float alpha) const override;
+		void update() override;
+
+		Button::State button_pressed(uint16_t id) override;
+		void remove_char(int32_t cid);
+
+	private:
+		void send_selection();
+		void send_deletion();
+		void update_selection();
+		void update_counts();
+		std::string get_label_string(size_t label) const;
+		Point<int16_t> get_label_pos(size_t label) const;
+		Point<int16_t> get_char_pos(size_t id) const;
 
 		enum Buttons
 		{
@@ -44,32 +63,28 @@ namespace jrc
 			BT_CHAR0
 		};
 
-		UICharSelect();
+		static constexpr uint8_t PAGESIZE = 8;
 
-		void draw(float) const override;
-		void update() override;
-		void buttonpressed(uint16_t) override;
-		void removechar(uint8_t id);
+		Login& login;
 
-	private:
-		void addchar(uint8_t id);
-		void selectchar();
-		void updateinfo();
-		std::string getstringfor(size_t label) const;
-		Point<int16_t> getlabelpos(size_t label) const;
-		Point<int16_t> getcharpos(size_t id) const;
+		Sprite emptyslot;
+		Charset levelset;
+		nl::node nametag;
 
 		Point<int16_t> selworldpos;
 		Point<int16_t> charinfopos;
 
-		bool haschars;
 		std::vector<CharLook> charlooks;
-		uint8_t charcount;
-		uint8_t charslots;
-		uint8_t selected;
-		uint8_t page;
 		std::vector<Nametag> nametags;
-		Charset levelset;
+		std::vector<int32_t> charids;
+
+		uint8_t charcount_absolute;
+		uint8_t charcount_relative;
+		uint8_t slots_absolute;
+		uint8_t slots_relative;
+		uint8_t selected_absolute;
+		uint8_t selected_relative;
+		uint8_t page;
 
 		struct OutlinedText
 		{
@@ -99,13 +114,13 @@ namespace jrc
 				inner.draw(parentpos);
 			}
 
-			void settext(const std::string& text)
+			void change_text(const std::string& text)
 			{
-				inner.settext(text);
-				l.settext(text);
-				r.settext(text);
-				t.settext(text);
-				b.settext(text);
+				inner.change_text(text);
+				l.change_text(text);
+				r.change_text(text);
+				t.change_text(text);
+				b.change_text(text);
 			}
 		};
 		OutlinedText namelabel;

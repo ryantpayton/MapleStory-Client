@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,29 +17,34 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Button.h"
 
+#include "..\..\Audio\Audio.h"
+
 namespace jrc
 {
-	void Button::setposition(Point<int16_t> pos) 
+	void Button::set_position(Point<int16_t> pos) 
 	{ 
 		position = pos; 
 	}
 
-	void Button::setstate(State s)
+	void Button::set_state(State s)
 	{
+		if (s == IDENTITY)
+			return;
+
 		state = s;
 	}
 
-	void Button::setactive(bool a) 
+	void Button::set_active(bool a) 
 	{ 
 		active = a; 
 	}
 
-	bool Button::isactive() const 
+	bool Button::is_active() const 
 	{ 
 		return active && state != DISABLED; 
 	}
 
-	Button::State Button::getstate() const 
+	Button::State Button::get_state() const 
 	{ 
 		return state; 
 	}

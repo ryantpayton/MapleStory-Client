@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,14 +16,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Element.h"
+#include "UIChatbar.h"
+
+#include "..\UIElement.h"
 #include "..\Messages.h"
-#include "..\Components\Chatbar.h"
+
 #include "..\Components\Charset.h"
 #include "..\Components\Gauge.h"
 #include "..\Components\Textfield.h"
 
 #include "..\..\Character\CharStats.h"
+#include "..\..\Character\Job.h"
 #include "..\..\Graphics\Animation.h"
 #include "..\..\Graphics\Text.h"
 
@@ -35,6 +38,26 @@ namespace jrc
 		static constexpr Type TYPE = STATUSBAR;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
+
+		UIStatusbar();
+
+		void draw(float alpha) const override;
+		void update() override;
+
+		bool is_in_range(Point<int16_t> cursorpos) const override;
+		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		Cursor::State send_cursor(bool pressed, Point<int16_t> cursorpos) override;
+
+		void send_chatline(const std::string& line, UIChatbar::LineType type);
+		void display_message(Messages::Type line, UIChatbar::LineType type);
+
+	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
+
+	private:
+		float getexppercent() const;
+		float gethppercent() const;
+		float getmppercent() const;
 
 		enum Buttons : uint16_t
 		{
@@ -52,32 +75,16 @@ namespace jrc
 			BT_SKILL
 		};
 
-		UIStatusbar();
-
-		void draw(float inter) const override;
-		void update() override;
-		void buttonpressed(uint16_t buttonid) override;
-		bool isinrange(Point<int16_t> cursorpos) const override;
-		Cursor::State sendmouse(bool pressed, Point<int16_t> cursorpos) override;
-
-		void sendchatline(const std::string& line, Chatbar::LineType type);
-		void displaymessage(Messages::Type line, Chatbar::LineType type);
-
-	private:
-		float getexppercent() const;
-		float gethppercent() const;
-		float getmppercent() const;
-
 		static constexpr Point<int16_t> POSITION = { 512, 590 };
 		static constexpr Point<int16_t> DIMENSION = { 1366, 80 };
+		static constexpr time_t MESSAGE_COOLDOWN = 1'000;
 
 		const CharStats& stats;
 
 		Messages messages;
 		EnumMap<Messages::Type, time_t> message_cooldowns;
-		static constexpr time_t MESSAGE_COOLDOWN = 1'000;
 
-		Chatbar chatbar;
+		UIChatbar chatbar;
 		Gauge expbar;
 		Gauge hpbar;
 		Gauge mpbar;

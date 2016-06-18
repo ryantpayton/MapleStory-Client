@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -31,17 +31,17 @@ namespace jrc
 		public:
 			virtual ~Type() {}
 
-			virtual void ondrop() const = 0;
-			virtual void ondropequips(Equipslot::Value eqslot) const = 0;
-			virtual void ondropitems(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const = 0;
+			virtual void drop_on_stage() const = 0;
+			virtual void drop_on_equips(Equipslot::Value eqslot) const = 0;
+			virtual void drop_on_items(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const = 0;
 		};
 
 
 		class NullType : public Type
 		{
-			void ondrop() const override {}
-			void ondropequips(Equipslot::Value) const override {}
-			void ondropitems(Inventory::Type, Equipslot::Value, int16_t, bool) const override {}
+			void drop_on_stage() const override {}
+			void drop_on_equips(Equipslot::Value) const override {}
+			void drop_on_items(Inventory::Type, Equipslot::Value, int16_t, bool) const override {}
 		};
 
 		Icon(std::unique_ptr<Type> type, Texture texture, int16_t count);
@@ -49,11 +49,11 @@ namespace jrc
 
 		void draw(Point<int16_t> position) const;
 		void dragdraw(Point<int16_t> cursorpos) const;
-		void drop() const;
-		void droponequips(Equipslot::Value eqslot) const;
-		void droponitems(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const;
-		void startdrag(Point<int16_t> offset);
-		void resetdrag();
+		void drop_on_stage() const;
+		void drop_on_equips(Equipslot::Value eqslot) const;
+		void drop_on_items(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const;
+		void start_drag(Point<int16_t> offset);
+		void reset();
 		void setcount(int16_t count);
 		int16_t getcount() const;
 

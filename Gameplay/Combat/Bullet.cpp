@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -23,21 +23,21 @@ namespace jrc
 	{
 		animation = a;
 
-		moveobj.setx(origin.x() + (toleft ? -30.0 : 30.0));
-		moveobj.sety(origin.y() - 26.0);
+		moveobj.set_x(origin.x() + (toleft ? -30.0 : 30.0));
+		moveobj.set_y(origin.y() - 26.0);
 	}
 
 	void Bullet::draw(double viewx, double viewy, float alpha) const
 	{
-		Point<int16_t> bulletpos = moveobj.getabsolute(viewx, viewy, alpha);
+		Point<int16_t> bulletpos = moveobj.get_absolute(viewx, viewy, alpha);
 		DrawArgument args(bulletpos, flip);
 		animation.draw(args, alpha);
 	}
 
 	bool Bullet::settarget(Point<int16_t> target)
 	{
-		double xdelta = target.x() - moveobj.crntx();
-		double ydelta = target.y() - moveobj.crnty();
+		double xdelta = target.x() - moveobj.crnt_x();
+		double ydelta = target.y() - moveobj.crnt_y();
 		if (std::abs(xdelta) < 10.0)
 			return true;
 
@@ -75,7 +75,7 @@ namespace jrc
 		animation.update();
 		moveobj.move();
 
-		int16_t xdelta = target.x() - moveobj.getx();
+		int16_t xdelta = target.x() - moveobj.get_x();
 		return moveobj.hspeed > 0.0 ? xdelta < 10 : xdelta > 10;
 	}
 }

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -103,12 +103,12 @@ namespace jrc
 
 	Point<int16_t> Frame::get_origin() const
 	{
-		return texture.getorigin();
+		return texture.get_origin();
 	}
 
 	Point<int16_t> Frame::get_dimensions() const
 	{
-		return texture.getdimensions();
+		return texture.get_dimensions();
 	}
 
 	Point<int16_t> Frame::get_head() const
@@ -308,22 +308,22 @@ namespace jrc
 		return total;
 	}
 
-	Point<int16_t> Animation::getorigin() const
+	Point<int16_t> Animation::get_origin() const
 	{
 		return getframe().get_origin();
 	}
 
-	Point<int16_t> Animation::getdimensions() const
+	Point<int16_t> Animation::get_dimensions() const
 	{
 		return getframe().get_dimensions();
 	}
 
-	Point<int16_t> Animation::gethead() const
+	Point<int16_t> Animation::get_head() const
 	{ 
 		return getframe().get_head();
 	}
 
-	Rectangle<int16_t> Animation::getbounds() const
+	Rectangle<int16_t> Animation::get_bounds() const
 	{
 		return getframe().get_bounds();
 	}

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -26,8 +26,8 @@
 #include "..\Net\Packets\AttackAndSkillPackets.h"
 #include "..\Util\Misc.h"
 
-#include "nlnx\nx.hpp"
-#include "nlnx\audio.hpp"
+#include <nlnx\nx.hpp>
+#include <nlnx\audio.hpp>
 
 namespace jrc
 {
@@ -71,19 +71,19 @@ namespace jrc
 		layers = MapLayers(src);
 		backgrounds = MapBackgrounds(src["back"]);
 		physics = Physics(src["foothold"]);
-		mapinfo = MapInfo(src, physics.getfht().getwalls(), physics.getfht().getborders());
+		mapinfo = MapInfo(src, physics.get_fht().get_walls(), physics.get_fht().get_borders());
 		portals = MapPortals(src["portal"], mapid);
 	}
 
 	void Stage::respawn()
 	{
-		Music(mapinfo.getbgm()).play();
+		Music(mapinfo.get_bgm()).play();
 
 		Point<int16_t> spawnpoint = portals.get_portal_by_id(portalid);
-		Point<int16_t> startpos = physics.getgroundbelow(spawnpoint);
-		player.respawn(startpos, mapinfo.isswimmap());
-		camera.setposition(startpos);
-		camera.updateview(mapinfo.getwalls(), mapinfo.getborders());
+		Point<int16_t> startpos = physics.get_y_below(spawnpoint);
+		player.respawn(startpos, mapinfo.is_underwater());
+		camera.set_position(startpos);
+		camera.set_view(mapinfo.get_walls(), mapinfo.get_borders());
 	}
 
 	void Stage::reload()
@@ -136,16 +136,16 @@ namespace jrc
 				switch (spawn->type())
 				{
 				case Spawn::NPC:
-					npcs.sendspawn(*spawn.reinterpret<const NpcSpawn>(), physics);
+					npcs.send_spawn(*spawn.reinterpret<const NpcSpawn>(), physics);
 					break;
 				case Spawn::MOB:
-					mobs.sendspawn(*spawn.reinterpret<const MobSpawn>());
+					mobs.send_spawn(*spawn.reinterpret<const MobSpawn>());
 					break;
 				case Spawn::DROP:
-					drops.sendspawn(*spawn.reinterpret<const DropSpawn>());
+					drops.send_spawn(*spawn.reinterpret<const DropSpawn>());
 					break;
 				case Spawn::CHARACTER:
-					chars.sendspawn(*spawn.reinterpret<const CharSpawn>());
+					chars.send_spawn(*spawn.reinterpret<const CharSpawn>());
 					break;
 				}
 			}
@@ -159,7 +159,7 @@ namespace jrc
 			if (apply)
 			{
 				int32_t cid = da.char_id;
-				Optional<OtherChar> ouser = chars.getchar(cid);
+				Optional<OtherChar> ouser = chars.get_char(cid);
 				if (ouser)
 				{
 					const AttackResult& attack = da.attack;
@@ -168,13 +168,13 @@ namespace jrc
 					user.updateskill(attack.skill, attack.level);
 					user.updateattack(attack.speed);
 
-					const SpecialMove& move = getmove(attack.skill);
-					move.applyuseeffects(user, attack.type);
+					const SpecialMove& move = get_move(attack.skill);
+					move.apply_useeffects(user, attack.type);
 
 					Stance::Value stance = Stance::byid(attack.stance);
 					user.attack(stance);
 
-					mobs.showresult(user, move, attack);
+					mobs.show_result(user, move, attack);
 				}
 				return true;
 			}
@@ -202,17 +202,17 @@ namespace jrc
 			chars.update(physics);
 			drops.update(physics);
 			player.update(physics);
-			portals.update(player.getposition());
-			camera.update(player.getposition());
+			portals.update(player.get_position());
+			camera.update(player.get_position());
 		}
 	}
 
-	void Stage::queuespawn(const Spawn* spawn)
+	void Stage::push_spawn(std::unique_ptr<const Spawn> spawn)
 	{
-		spawnqueue.emplace(spawn);
+		spawnqueue.push(std::move(spawn));
 	}
 
-	const SpecialMove& Stage::getmove(int32_t moveid)
+	const SpecialMove& Stage::get_move(int32_t moveid)
 	{
 		bool newmove = !specialmoves.count(moveid);
 		if (newmove)
@@ -222,19 +222,19 @@ namespace jrc
 		return *specialmoves[moveid];
 	}
 
-	void Stage::usemove(int32_t moveid)
+	void Stage::use_move(int32_t moveid)
 	{
-		if (!player.canattack())
+		if (!player.can_attack())
 			return;
 
-		const SpecialMove& move = getmove(moveid);
+		const SpecialMove& move = get_move(moveid);
 
-		SpecialMove::ForbidReason reason = player.canuse(move);
-		Weapon::Type weapontype = player.getstats().get_weapontype();
+		SpecialMove::ForbidReason reason = player.can_use(move);
+		Weapon::Type weapontype = player.get_stats().get_weapontype();
 		switch (reason)
 		{
 		case SpecialMove::FBR_NONE:
-			applymove(move);
+			apply_move(move);
 			break;
 		default:
 			ForbidSkillMessage(reason, weapontype).drop();
@@ -242,37 +242,37 @@ namespace jrc
 		}
 	}
 
-	void Stage::applymove(const SpecialMove& move)
+	void Stage::apply_move(const SpecialMove& move)
 	{
 		bool offensive = move.isoffensive();
 		if (offensive)
 		{
-			Attack attack = player.prepareattack(move.isskill());
+			Attack attack = player.prepare_attack(move.isskill());
 
-			move.applyuseeffects(player, attack.type);
+			move.apply_useeffects(player, attack.type);
 			move.applystats(player, attack);
 
-			AttackResult result = mobs.sendattack(attack);
-			mobs.showresult(player, move, result);
+			AttackResult result = mobs.send_attack(attack);
+			mobs.show_result(player, move, result);
 
-			applyusemovement(move);
-			applyresultmovement(move, result);
+			apply_use_movement(move);
+			apply_result_movement(move, result);
 
 			AttackPacket(result).dispatch();
 		}
 		else
 		{
-			move.applyuseeffects(player, Attack::MAGIC);
+			move.apply_useeffects(player, Attack::MAGIC);
 
-			int32_t moveid = move.getid();
-			int32_t level = player.getskills().get_level(moveid);
+			int32_t moveid = move.get_id();
+			int32_t level = player.get_skills().get_level(moveid);
 			UseSkillPacket(moveid, level).dispatch();
 		}
 	}
 
-	void Stage::applyusemovement(const SpecialMove& move)
+	void Stage::apply_use_movement(const SpecialMove& move)
 	{
-		switch (move.getid())
+		switch (move.get_id())
 		{
 		case Skill::FP_TELEPORT:
 		case Skill::IL_TELEPORT:
@@ -283,71 +283,71 @@ namespace jrc
 		}
 	}
 
-	void Stage::applyresultmovement(const SpecialMove& move, const AttackResult& result)
+	void Stage::apply_result_movement(const SpecialMove& move, const AttackResult& result)
 	{
-		switch (move.getid())
+		switch (move.get_id())
 		{
 		case Skill::RUSH_HERO:
 		case Skill::RUSH_PALADIN:
 		case Skill::RUSH_DK:
-			applyrush(result);
+			apply_rush(result);
 			break;
 		}
 	}
 
-	void Stage::applyrush(const AttackResult& result)
+	void Stage::apply_rush(const AttackResult& result)
 	{
 		if (result.mobcount == 0)
 			return;
 
 		int32_t oid = result.get_last_oid();
-		auto mob = mobs.getmob(oid);
+		auto mob = mobs.get_mob(oid);
 		if (mob)
 		{
-			int16_t targetx = mob->getposition().x();
+			int16_t targetx = mob->get_position().x();
 			player.rush(targetx);
 		}
 	}
 
-	void Stage::showattack(int32_t cid, const AttackResult& attack)
+	void Stage::show_attack(int32_t cid, const AttackResult& attack)
 	{
 		attackqueue.emplace_back(attack, cid);
 	}
 
-	void Stage::showbuff(int32_t cid, int32_t skillid, int8_t level)
+	void Stage::show_buff(int32_t cid, int32_t skillid, int8_t level)
 	{
-		Optional<OtherChar> ouser = chars.getchar(cid);
+		Optional<OtherChar> ouser = chars.get_char(cid);
 		if (ouser)
 		{
 			OtherChar& user = *ouser;
 			user.updateskill(skillid, level);
 
-			const SpecialMove& move = getmove(skillid);
-			move.applyuseeffects(user, Attack::MAGIC);
+			const SpecialMove& move = get_move(skillid);
+			move.apply_useeffects(user, Attack::MAGIC);
 		}
 	}
 
-	void Stage::showplayerbuff(int32_t skillid)
+	void Stage::show_player_buff(int32_t skillid)
 	{
-		const SpecialMove& move = getmove(skillid);
-		if (player.canuse(move))
+		const SpecialMove& move = get_move(skillid);
+		if (player.can_use(move))
 		{
-			move.applyuseeffects(player, Attack::MAGIC);
+			move.apply_useeffects(player, Attack::MAGIC);
 		}
 	}
 
-	void Stage::checkportals()
+	void Stage::check_portals()
 	{
-		if (player.isattacking())
+		if (player.is_attacking())
 			return;
 
-		Point<int16_t> playerpos = player.getposition();
-		Portal::WarpInfo warpinfo = portals.findportal(playerpos);
+		Point<int16_t> playerpos = player.get_position();
+		Portal::WarpInfo warpinfo = portals.find_at(playerpos);
 		if (warpinfo.mapid == mapid)
 		{
 			Point<int16_t> spawnpoint = portals.get_portal_by_name(warpinfo.portal);
-			Point<int16_t> startpos = physics.getgroundbelow(spawnpoint);
-			player.respawn(startpos, mapinfo.isswimmap());
+			Point<int16_t> startpos = physics.get_y_below(spawnpoint);
+			player.respawn(startpos, mapinfo.is_underwater());
 		}
 		else if (warpinfo.valid)
 		{
@@ -355,35 +355,35 @@ namespace jrc
 		}
 	}
 
-	void Stage::checkseats()
+	void Stage::check_seats()
 	{
-		if (player.issitting() || player.isattacking())
+		if (player.is_sitting() || player.is_attacking())
 			return;
 
-		Optional<const Seat> seat = mapinfo.findseat(player.getposition());
-		player.setseat(seat);
+		Optional<const Seat> seat = mapinfo.findseat(player.get_position());
+		player.set_seat(seat);
 	}
 
-	void Stage::checkladders(bool up)
+	void Stage::check_ladders(bool up)
 	{
-		if (player.isclimbing() || player.isattacking())
+		if (player.isclimbing() || player.is_attacking())
 			return;
 
-		Optional<const Ladder> ladder = mapinfo.findladder(player.getposition(), up);
-		player.setladder(ladder);
+		Optional<const Ladder> ladder = mapinfo.findladder(player.get_position(), up);
+		player.set_ladder(ladder);
 	}
 
-	void Stage::checkdrops()
+	void Stage::check_drops()
 	{
-		Point<int16_t> playerpos = player.getposition();
+		Point<int16_t> playerpos = player.get_position();
 		const Drop* drop = drops.findinrange(playerpos);
 		if (drop)
 		{
-			PickupItemPacket(drop->getoid(), drop->getposition()).dispatch();
+			PickupItemPacket(drop->get_oid(), drop->get_position()).dispatch();
 		}
 	}
 
-	void Stage::sendkey(Keyboard::Keytype type, int32_t action, bool down)
+	void Stage::send_key(Keyboard::Keytype type, int32_t action, bool down)
 	{
 		if (state != ACTIVE || !playable)
 			return;
@@ -396,107 +396,82 @@ namespace jrc
 				switch (action)
 				{
 				case Keyboard::UP:
-					checkladders(true);
-					checkportals();
+					check_ladders(true);
+					check_portals();
 					break;
 				case Keyboard::DOWN:
-					checkladders(false);
+					check_ladders(false);
 					break;
 				case Keyboard::SIT:
-					checkseats();
+					check_seats();
 					break;
 				case Keyboard::ATTACK:
-					usemove(0);
+					use_move(0);
 					break;
 				case Keyboard::PICKUP:
-					checkdrops();
+					check_drops();
 					break;
 				}
 			}
 
-			playable->sendaction(Keyboard::actionbyid(action), down);
+			playable->send_action(Keyboard::actionbyid(action), down);
 			break;
 		case Keyboard::SKILL:
-			usemove(action);
+			use_move(action);
 			break;
 		case Keyboard::ITEM:
-			player.useitem(action);
+			player.use_item(action);
 			break;
 		case Keyboard::FACE:
-			//player.sendface(action);
-			// for testing
-			switch (action)
-			{
-			case 100:
-				usemove(Skill::DRAGON_BUSTER);
-				break;
-			case 101:
-				usemove(Skill::HYPER_BODY);
-				break;
-			case 102:
-				usemove(Skill::SPEAR_BOOSTER);
-				break;
-			case 103:
-				usemove(Skill::SLASH_BLAST);
-				break;
-			case 104:
-				usemove(Skill::TRIPLE_THROW);
-				break;
-			case 105:
-				usemove(Skill::AVENGER);
-				break;
-			case 106:
-				usemove(Skill::RUSH_DK);
-				break;
-			}
+			player.sendface(action);
 			break;
 		}
 	}
 
-	Cursor::State Stage::sendmouse(bool pressed, Point<int16_t> position)
+	Cursor::State Stage::send_cursor(bool pressed, Point<int16_t> position)
 	{
-		return npcs.sendmouse(pressed, position, camera.position());
+		return npcs.send_cursor(pressed, position, camera.position());
 	}
 
-	bool Stage::isplayer(int32_t cid) const
+	bool Stage::is_player(int32_t cid) const
 	{
-		return cid == player.getoid();
+		return cid == player.get_oid();
 	}
 
-	MapNpcs& Stage::getnpcs()
+	MapNpcs& Stage::get_npcs()
 	{
 		return npcs;
 	}
 
-	MapChars& Stage::getchars()
+	MapChars& Stage::get_chars()
 	{
 		return chars;
 	}
 
-	MapMobs& Stage::getmobs()
+	MapMobs& Stage::get_mobs()
 	{
 		return mobs;
 	}
 
-	MapDrops& Stage::getdrops()
+	MapDrops& Stage::get_drops()
 	{
 		return drops;
 	}
 
-	Player& Stage::getplayer()
+	Player& Stage::get_player()
 	{
 		return player;
 	}
 
-	Optional<Char> Stage::getcharacter(int32_t cid)
+	Optional<Char> Stage::get_character(int32_t cid)
 	{
-		if (isplayer(cid))
+		if (is_player(cid))
 		{
 			return player;
 		}
 		else
 		{
-			return chars.getchar(cid).cast<Char>();
+			return chars.get_char(cid).cast<Char>();
 		}
 	}
 }

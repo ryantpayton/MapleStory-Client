@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -26,22 +26,16 @@ namespace jrc
 	class Skillbook
 	{
 	public:
-		void set_skill(int32_t skillid, int32_t level, int32_t masterlevel, int64_t expiration);
-		void set_cd(int32_t skillid, int32_t time);
-		bool is_cooling(int32_t skillid);
+		void set_skill(int32_t id, int32_t level, int32_t masterlevel, int64_t expiration);
 
-		bool has_skill(int32_t skillid) const;
-		int32_t get_level(int32_t skillid) const;
-		int32_t get_masterlevel(int32_t skillid) const;
+		bool has_skill(int32_t id) const;
+		int32_t get_level(int32_t id) const;
+		int32_t get_masterlevel(int32_t id) const;
+		int64_t get_expiration(int32_t id) const;
 
 		// Return id and level of all passive skills.
 		// An ordered map is used so that lower passive skills don't override higher ones.
 		std::map<int32_t, int32_t> collect_passives() const;
-
-		static constexpr bool is_passive(int32_t skill_id)
-		{
-			return (skill_id % 10000) < 1000;
-		}
 
 	private:
 		struct SkillEntry
@@ -52,7 +46,6 @@ namespace jrc
 		};
 
 		std::unordered_map<int32_t, SkillEntry> skillentries;
-		std::unordered_map<int32_t, int32_t> cooldowns;
 	};
 }
 

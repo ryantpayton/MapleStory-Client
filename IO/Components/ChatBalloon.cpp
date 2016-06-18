@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                               //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,14 +19,11 @@
 
 #include "..\..\Constants.h"
 
-#include "nlnx\nx.hpp"
-#include "nlnx\node.hpp"
+#include <nlnx\nx.hpp>
+#include <nlnx\node.hpp>
 
 namespace jrc
 {
-	// How long a line stays on screen. 4 seconds.
-	const int16_t DURATION = 4000;
-
 	ChatBalloon::ChatBalloon(int8_t type)
 	{
 		std::string typestr;
@@ -45,21 +42,11 @@ namespace jrc
 		}
 
 		nl::node src = nl::nx::ui["ChatBalloon.img"][typestr];
+
 		arrow = src["arrow"];
-		center = src["c"];
-		east = src["e"];
-		northeast = src["ne"];
-		north = src["n"];
-		northwest = src["nw"];
-		west = src["w"];
-		southwest = src["sw"];
-		south = src["s"];
-		southeast = src["se"];
+		frame = src;
 
-		textlabel = Text(Text::A11M, Text::CENTER, Text::BLACK);
-
-		xtile = north.getdimensions().x();
-		ytile = west.getdimensions().y();
+		textlabel = { Text::A11M, Text::CENTER, Text::BLACK, "", 80 };
 
 		duration = 0;
 	}
@@ -67,15 +54,9 @@ namespace jrc
 	ChatBalloon::ChatBalloon() 
 		: ChatBalloon(0) {}
 
-	void ChatBalloon::settext(std::string text)
+	void ChatBalloon::change_text(const std::string& text)
 	{
-		textlabel.settext(text, 80);
-
-		int16_t numhor = static_cast<int16_t>(textlabel.width() / xtile) + 2;
-		int16_t numver = static_cast<int16_t>(textlabel.height() / ytile);
-
-		width = numhor * xtile;
-		height = numver * ytile;
+		textlabel.change_text(text);
 
 		duration = DURATION;
 	}
@@ -85,43 +66,12 @@ namespace jrc
 		if (duration == 0)
 			return;
 
-		position.shifty(-85);
+		int16_t width = textlabel.width();
+		int16_t height = textlabel.height();
 
-		int16_t numhor = (width / xtile);
-		int16_t numver = (height / ytile);
-		int16_t left = position.x() - width / 2;
-		int16_t top = position.y() - height;
-
-		northwest.draw(Point<int16_t>(left, top));
-		southwest.draw(Point<int16_t>(left, top + height));
-
-		for (int8_t i = 0; i < numver; i++)
-		{
-			int16_t yshift = (ytile * i);
-			west.draw(Point<int16_t>(left, top + yshift));
-
-			for (int8_t j = 0; j < numhor; j++)
-			{
-				int16_t xshift = (xtile * j);
-				center.draw(Point<int16_t>(left + xshift, top + yshift));
-			}
-
-			east.draw(Point<int16_t>(left + width, top + yshift));
-		}
-
-		for (int8_t i = 0; i < numhor; i++)
-		{
-			int16_t xshift = (xtile * i);
-			north.draw(Point<int16_t>(left + xshift, top));
-			south.draw(Point<int16_t>(left + xshift, top + height));
-		}
-
-		northeast.draw(Point<int16_t>(left + width, top));
-		southeast.draw(Point<int16_t>(left + width, top + height));
-
+		frame.draw(position, width, height);
 		arrow.draw(position);
-
-		textlabel.draw(Point<int16_t>(position.x(), top - 4));
+		textlabel.draw(position - Point<int16_t>(0, height + 4));
 	}
 
 	void ChatBalloon::update()

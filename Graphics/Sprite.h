@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -25,10 +25,10 @@ namespace jrc
 	class Sprite
 	{
 	public:
-		Sprite(Animation animation, DrawArgument stateargs);
-		Sprite(nl::node src, DrawArgument stateargs);
+		Sprite(const Animation& animation, const DrawArgument& stateargs);
+		Sprite(nl::node src, const DrawArgument& stateargs);
 		Sprite(nl::node src);
-		~Sprite();
+		Sprite();
 
 		void draw(Point<int16_t> parentpos, float alpha) const;
 		bool update(uint16_t timestep);

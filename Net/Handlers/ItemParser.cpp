@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -22,7 +22,7 @@ namespace jrc
 	namespace ItemParser
 	{
 		// Parse a normal item from a packet.
-		void additem(InPacket& recv, Inventory::Type invtype, int16_t slot, int32_t id, Inventory& inventory)
+		void add_item(InPacket& recv, Inventory::Type invtype, int16_t slot, int32_t id, Inventory& inventory)
 		{
 			// Read all item stats.
 			bool cash = recv.read_bool();
@@ -38,11 +38,11 @@ namespace jrc
 				recv.skip(8);
 			}
 
-			inventory.additem(invtype, slot, id, cash, uniqueid, expire, count, owner, flag);
+			inventory.add_item(invtype, slot, id, cash, uniqueid, expire, count, owner, flag);
 		}
 
 		// Parse a pet from a packet.
-		void addpet(InPacket& recv, Inventory::Type invtype, int16_t slot, int32_t id, Inventory& inventory)
+		void add_pet(InPacket& recv, Inventory::Type invtype, int16_t slot, int32_t id, Inventory& inventory)
 		{
 			// Read all pet stats.
 			bool cash = recv.read_bool();
@@ -56,11 +56,11 @@ namespace jrc
 			// Some unused bytes.
 			recv.skip(18);
 
-			inventory.addpet(invtype, slot, id, cash, uniqueid, expire, petname, petlevel, closeness, fullness);
+			inventory.add_pet(invtype, slot, id, cash, uniqueid, expire, petname, petlevel, closeness, fullness);
 		}
 
 		// Parse an equip from a packet.
-		void addequip(InPacket& recv, Inventory::Type invtype, int16_t slot, int32_t id, Inventory& inventory)
+		void add_equip(InPacket& recv, Inventory::Type invtype, int16_t slot, int32_t id, Inventory& inventory)
 		{
 			// Read equip information.
 			bool cash = recv.read_bool();
@@ -75,7 +75,7 @@ namespace jrc
 
 			// Read equip stats.
 			EnumMap<Equipstat::Value, uint16_t> stats;
-			for (auto es : stats.getkeys())
+			for (auto es : stats.keys())
 			{
 				stats[es] = recv.read_short();
 			}
@@ -109,11 +109,11 @@ namespace jrc
 				slot = -slot;
 			}
 
-			inventory.addequip(invtype, slot, id, cash, uniqueid, expire, slots,
+			inventory.add_equip(invtype, slot, id, cash, uniqueid, expire, slots,
 				level, stats, owner, flag, itemlevel, itemexp, vicious);
 		}
 
-		void parseitem(InPacket& recv, Inventory::Type invtype, int16_t slot, Inventory& inventory)
+		void parse_item(InPacket& recv, Inventory::Type invtype, int16_t slot, Inventory& inventory)
 		{
 			// Read type and item id.
 			recv.read_byte(); // 'type' byte
@@ -122,17 +122,17 @@ namespace jrc
 			if (invtype == Inventory::EQUIP || invtype == Inventory::EQUIPPED)
 			{
 				// Parse an equip.
-				addequip(recv, invtype, slot, iid, inventory);
+				add_equip(recv, invtype, slot, iid, inventory);
 			}
 			else if (iid >= 5000000 && iid <= 5000102)
 			{
 				// Parse a pet.
-				addpet(recv, invtype, slot, iid, inventory);
+				add_pet(recv, invtype, slot, iid, inventory);
 			}
 			else
 			{
 				// Parse a normal item.
-				additem(recv, invtype, slot, iid, inventory);
+				add_item(recv, invtype, slot, iid, inventory);
 			}
 		}
 	}

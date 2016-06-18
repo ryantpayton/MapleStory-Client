@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UI.h"
+
 #include "UIStateLogin.h"
 #include "UIStateGame.h"
 #include "Window.h"
@@ -31,12 +32,12 @@ namespace jrc
 	void UI::init()
 	{
 		cursor.init();
-		changestate(LOGIN);
+		change_state(LOGIN);
 	}
 
 	void UI::draw(float alpha) const
 	{
-		state->draw(alpha, cursor.getposition());
+		state->draw(alpha, cursor.get_position());
 
 		scrollingnotice.draw(alpha);
 		cursor.draw(alpha);
@@ -60,7 +61,7 @@ namespace jrc
 		enabled = false;
 	}
 
-	void UI::changestate(State id)
+	void UI::change_state(State id)
 	{
 		switch (id)
 		{
@@ -73,24 +74,24 @@ namespace jrc
 		}
 	}
 
-	void UI::sendmouse(Point<int16_t> cursorpos, Cursor::State cursorstate)
+	void UI::send_cursor(Point<int16_t> cursorpos, Cursor::State cursorstate)
 	{
-		Cursor::State nextstate = state->sendmouse(cursorstate, cursorpos);
-		cursor.setstate(nextstate);
-		cursor.setposition(cursorpos);
+		Cursor::State nextstate = state->send_cursor(cursorstate, cursorpos);
+		cursor.set_state(nextstate);
+		cursor.set_position(cursorpos);
 	}
 
-	void UI::sendmouse(bool pressed)
+	void UI::send_cursor(bool pressed)
 	{
 		Cursor::State cursorstate = (pressed && enabled) ? 
 			Cursor::CLICKING : 
 			Cursor::IDLE;
-		Point<int16_t> cursorpos = cursor.getposition();
-		sendmouse(cursorpos, cursorstate);
+		Point<int16_t> cursorpos = cursor.get_position();
+		send_cursor(cursorpos, cursorstate);
 
 		if (focusedtextfield && pressed)
 		{
-			Cursor::State tstate = focusedtextfield->sendcursor(cursorpos, pressed);
+			Cursor::State tstate = focusedtextfield->send_cursor(cursorpos, pressed);
 			switch (tstate)
 			{
 			case Cursor::IDLE:
@@ -100,22 +101,22 @@ namespace jrc
 		}
 	}
 
-	void UI::sendmouse(Point<int16_t> pos)
+	void UI::send_cursor(Point<int16_t> pos)
 	{
-		sendmouse(pos, cursor.getstate());
+		send_cursor(pos, cursor.get_state());
 	}
 
 	void UI::doubleclick()
 	{
-		Point<int16_t> pos = cursor.getposition();
+		Point<int16_t> pos = cursor.get_position();
 		state->doubleclick(pos);
 	}
 
-	void UI::sendkey(int32_t keycode, bool pressed)
+	void UI::send_key(int32_t keycode, bool pressed)
 	{
 		if (focusedtextfield)
 		{
-			bool ctrl = keydown[keyboard.ctrlcode()];
+			bool ctrl = is_key_down[keyboard.ctrlcode()];
 			if (ctrl)
 			{
 				if (!pressed)
@@ -124,19 +125,19 @@ namespace jrc
 					switch (action)
 					{
 					case Keyboard::COPY:
-						Window::get().setclipboard(focusedtextfield->gettext());
+						Window::get().setclipboard(focusedtextfield->get_text());
 						break;
 					case Keyboard::PASTE:
-						focusedtextfield->sendstring(Window::get().getclipboard());
+						focusedtextfield->add_string(Window::get().getclipboard());
 						break;
 					}
 				}
 			}
 			else
 			{
-				bool shift = keydown[keyboard.shiftcode()];
+				bool shift = is_key_down[keyboard.shiftcode()];
 				Keyboard::Mapping mapping = keyboard.gettextmapping(keycode, shift);
-				focusedtextfield->sendkey(mapping.type, mapping.action, pressed);
+				focusedtextfield->send_key(mapping.type, mapping.action, pressed);
 			}
 		}
 		else
@@ -144,39 +145,39 @@ namespace jrc
 			Optional<const Keyboard::Mapping> mapping = keyboard.getmapping(keycode);
 			if (mapping)
 			{
-				state->sendkey(mapping->type, mapping->action, pressed);
+				state->send_key(mapping->type, mapping->action, pressed);
 			}
 		}
 
-		keydown[keycode] = pressed;
+		is_key_down[keycode] = pressed;
 	}
 
-	void UI::setscrollingnotice(const std::string& notice)
+	void UI::set_scrollnotice(const std::string& notice)
 	{
 		scrollingnotice.setnotice(notice);
 	}
 
-	void UI::focustextfield(Textfield* tofocus)
+	void UI::focus_textfield(Textfield* tofocus)
 	{
 		if (focusedtextfield)
 		{
-			focusedtextfield->setstate(Textfield::NORMAL);
+			focusedtextfield->set_state(Textfield::NORMAL);
 		}
 
 		focusedtextfield = tofocus;
 	}
 
-	void UI::dragicon(Icon* icon)
+	void UI::drag_icon(Icon* icon)
 	{
-		state->dragicon(icon);
+		state->drag_icon(icon);
 	}
 
-	void UI::addkeymapping(uint8_t no, uint8_t type, int32_t action)
+	void UI::add_keymapping(uint8_t no, uint8_t type, int32_t action)
 	{
 		keyboard.assign(no, type, action);
 	}
 
-	void UI::add(const Element& element)
+	void UI::add(const IElement& element)
 	{
 		focusedtextfield = Optional<Textfield>();
 		state->add(element);
@@ -190,16 +191,22 @@ namespace jrc
 
 	void UI::clear_tooltip(UIElement::Type type)
 	{
-		state->cleartooltip(type);
+		state->clear_tooltip(type);
 	}
 
 	void UI::show_equip(UIElement::Type parent, Equip* equip, int16_t slot)
 	{
-		state->showequip(parent, equip, slot);
+		state->show_equip(parent, equip, slot);
 	}
 
 	void UI::show_item(UIElement::Type parent, int32_t item_id)
 	{
-		state->showitem(parent, item_id);
+		state->show_item(parent, item_id);
+	}
+
+	void UI::show_skill(UIElement::Type parent, int32_t skill_id,
+		int32_t level, int32_t masterlevel, int64_t expiration) {
+
+		state->show_skill(parent, skill_id, level, masterlevel, expiration);
 	}
 }

@@ -6,7 +6,7 @@ namespace jrc
 	Nametag::Nametag(nl::node src, Text::Font f, Text::Color c, std::string n)
 	{
 		name = Text(f, Text::CENTER, c);
-		name.settext(n);
+		name.change_text(n);
 
 		textures[false].push_back(src["0"]["0"]);
 		textures[false].push_back(src["0"]["1"]);
@@ -32,7 +32,7 @@ namespace jrc
 		name.draw(position);
 	}
 
-	void Nametag::setselected(bool s)
+	void Nametag::set_selected(bool s)
 	{
 		selected = s;
 	}

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -24,11 +24,9 @@
 namespace jrc
 {
 	Textfield::Textfield(Text::Font font, Text::Alignment alignment, 
-		Text::Color color, Rectangle<int16_t> bnd, size_t lim) {
+		Text::Color color, Rectangle<int16_t> bnd, size_t lim) 
+		: textlabel(font, alignment, color, "", 0, false), marker(font, alignment, color, "|") {
 
-		textlabel = Text(font, alignment, color);
-		marker = Text(font, alignment, color);
-		marker.settext("|");
 		bounds = bnd;
 		limit = lim;
 		text = "";
@@ -77,7 +75,7 @@ namespace jrc
 		}
 	}
 
-	void Textfield::setstate(State st)
+	void Textfield::set_state(State st)
 	{
 		if (state != st)
 		{
@@ -87,22 +85,22 @@ namespace jrc
 
 			if (state == FOCUSED)
 			{
-				UI::get().focustextfield(this);
+				UI::get().focus_textfield(this);
 			}
 		}
 	}
 
-	void Textfield::setonreturn(std::function<void(std::string)> or)
+	void Textfield::set_enter_callback(std::function<void(std::string)> or)
 	{
 		onreturn = or;
 	}
 
-	void Textfield::setkey(Keyboard::Action key, std::function<void(void)> action)
+	void Textfield::set_key_callback(Keyboard::Action key, std::function<void(void)> action)
 	{
 		callbacks[key] = action;
 	}
 
-	void Textfield::sendkey(Keyboard::Keytype type, int32_t key, bool pressed)
+	void Textfield::send_key(Keyboard::Keytype type, int32_t key, bool pressed)
 	{
 		switch (type)
 		{
@@ -173,7 +171,7 @@ namespace jrc
 		}
 	}
 
-	void Textfield::sendstring(std::string str)
+	void Textfield::add_string(const std::string& str)
 	{
 		for (char c : str)
 		{
@@ -186,28 +184,28 @@ namespace jrc
 		}
 	}
 
-	void Textfield::modifytext(std::string t)
+	void Textfield::modifytext(const std::string& t)
 	{
 		if (crypt > 0)
 		{
 			std::string crypted;
 			crypted.insert(0, t.size(), crypt);
-			textlabel.settext(crypted, 0);
+			textlabel.change_text(crypted);
 		}
 		else
 		{
-			textlabel.settext(t, 0);
+			textlabel.change_text(t);
 		}
 
 		text = t;
 	}
 
-	Cursor::State Textfield::sendcursor(Point<int16_t> cursorpos, bool clicked)
+	Cursor::State Textfield::send_cursor(Point<int16_t> cursorpos, bool clicked)
 	{
 		if (state == DISABLED)
 			return Cursor::IDLE;
 
-		auto abs_bounds = getbounds();
+		auto abs_bounds = get_bounds();
 		if (abs_bounds.contains(cursorpos))
 		{
 			if (clicked)
@@ -215,7 +213,7 @@ namespace jrc
 				switch (state)
 				{
 				case NORMAL:
-					setstate(FOCUSED);
+					set_state(FOCUSED);
 					break;
 				}
 				return Cursor::CLICKING;
@@ -232,7 +230,7 @@ namespace jrc
 				switch (state)
 				{
 				case FOCUSED:
-					setstate(NORMAL);
+					set_state(NORMAL);
 					break;
 				}
 			}
@@ -240,13 +238,13 @@ namespace jrc
 		}
 	}
 
-	void Textfield::settext(std::string t)
+	void Textfield::change_text(const std::string& t)
 	{
 		modifytext(t);
 		markerpos = text.size();
 	}
 
-	void Textfield::setcrypt(int8_t c)
+	void Textfield::set_cryptchar(int8_t c)
 	{
 		crypt = c;
 	}
@@ -264,17 +262,22 @@ namespace jrc
 		}
 	}
 
-	std::string Textfield::gettext() const
+	const std::string& Textfield::get_text() const
 	{
 		return text;
 	}
 
-	Textfield::State Textfield::getstate() const
+	bool Textfield::empty() const
+	{
+		return text.empty();
+	}
+
+	Textfield::State Textfield::get_state() const
 	{
 		return state;
 	}
 
-	Rectangle<int16_t> Textfield::getbounds() const
+	Rectangle<int16_t> Textfield::get_bounds() const
 	{
 		return Rectangle<int16_t>(
 			bounds.getlt() + parentpos, 

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -35,7 +35,7 @@ namespace jrc
 			int32_t equipid = equip.second;
 			if (equipid > 0)
 			{
-				addequip(equipid);
+				add_equip(equipid);
 			}
 		}
 	}
@@ -59,7 +59,7 @@ namespace jrc
 		actionstr = "";
 		actframe = 0;
 
-		setstance(Stance::STAND1);
+		set_stance(Stance::STAND1);
 		stframe.set(0);
 		stelapsed = 0;
 
@@ -198,7 +198,7 @@ namespace jrc
 
 		Point<int16_t> absp = pos;
 		if (action)
-			absp.shift(action->getmove());
+			absp.shift(action->get_move());
 
 		draw(absp, flip, stance.get(alpha), expression.get(alpha), stframe.get(alpha), expframe.get(alpha));
 
@@ -207,7 +207,7 @@ namespace jrc
 
 	void CharLook::drawstanding(Point<int16_t> position, bool flipped) const
 	{
-		Stance::Value standing = equips.getweapon()
+		Stance::Value standing = equips.get_weapon()
 			.mapordefault(&Weapon::getstand, Stance::STAND1);
 
 		draw(position, flipped, standing, Expression::DEFAULT, 0, 0);
@@ -266,7 +266,7 @@ namespace jrc
 					action = DataFactory::get().getdrawinfo().getaction(actionstr, actframe);
 					
 					float threshold = static_cast<float>(delta) / timestep;
-					stance.next(action->getstance(), threshold);
+					stance.next(action->get_stance(), threshold);
 					stframe.next(action->getframe(), threshold);
 				}
 				else
@@ -274,7 +274,7 @@ namespace jrc
 					aniend = true;
 					action = nullptr;
 					actionstr = "";
-					setstance(Stance::STAND1);
+					set_stance(Stance::STAND1);
 				}
 			}
 			else
@@ -337,33 +337,33 @@ namespace jrc
 	void CharLook::updatetwohanded()
 	{
 		Stance::Value basestance = Stance::baseof(stance.get());
-		setstance(basestance);
+		set_stance(basestance);
 	}
 
-	void CharLook::addequip(int32_t eq)
+	void CharLook::add_equip(int32_t eq)
 	{
-		const Clothing& equip = DataFactory::get().getclothing(eq);
+		const Clothing& equip = DataFactory::get().get_equip(eq);
 		bool changestance = false;
 		if (equip.geteqslot() == Equipslot::WEAPON)
 		{
 			const Weapon& weapon = reinterpret_cast<const Weapon&>(equip);
 			changestance = weapon.istwohanded() != equips.istwohanded();
 		}
-		equips.addequip(equip);
+		equips.add_equip(equip);
 		if (changestance)
 			updatetwohanded();
 	}
 
-	void CharLook::removeequip(Equipslot::Value slot)
+	void CharLook::remove_equip(Equipslot::Value slot)
 	{
-		equips.removeequip(slot);
+		equips.remove_equip(slot);
 		if (slot == Equipslot::WEAPON)
 			updatetwohanded();
 	}
 
 	void CharLook::attack(bool degenerate)
 	{
-		Optional<const Weapon> weapon = equips.getweapon();
+		Optional<const Weapon> weapon = equips.get_weapon();
 		uint8_t attacktype = weapon.mapordefault(&Weapon::getattack, uint8_t(0));
 
 		Stance::Value newstance;
@@ -396,19 +396,19 @@ namespace jrc
 			setaction("handgun");
 			break;
 		default:
-			setstance(newstance);
+			set_stance(newstance);
 		}
 
-		afterimage = equips.getweapon()
+		afterimage = equips.get_weapon()
 			.map(&Weapon::getafterimage, newstance);
 	}
 
-	void CharLook::setstance(Stance::Value newstance)
+	void CharLook::set_stance(Stance::Value newstance)
 	{
 		if (action || newstance == Stance::NONE)
 			return;
 
-		Optional<const Weapon> weapon = equips.getweapon();
+		Optional<const Weapon> weapon = equips.get_weapon();
 		if (weapon)
 		{
 			switch (newstance)
@@ -506,12 +506,12 @@ namespace jrc
 		action = DataFactory::get().getdrawinfo().getaction(acstr, 0);
 		if (action)
 		{
-			stance.set(action->getstance());
+			stance.set(action->get_stance());
 			stframe.set(action->getframe());
 		}
 	}
 
-	void CharLook::setflip(bool f)
+	void CharLook::set_direction(bool f)
 	{
 		flip = f;
 	}
@@ -534,15 +534,15 @@ namespace jrc
 	CharLook::AttackLook CharLook::getattacklook() const
 	{
 		Stance::Value astance = action ? Stance::SHOT : stance.get();
-		Rectangle<int16_t> range = afterimage.getrange();
+		Rectangle<int16_t> range = afterimage.get_range();
 		return{ astance, range };
 	}
 
-	uint16_t CharLook::getattackdelay(size_t no) const
+	uint16_t CharLook::get_attackdelay(size_t no) const
 	{
 		if (action)
 		{
-			return DataFactory::get().getdrawinfo().getattackdelay(actionstr, no);
+			return DataFactory::get().getdrawinfo().get_attackdelay(actionstr, no);
 		}
 		else
 		{
@@ -571,7 +571,7 @@ namespace jrc
 		return face;
 	}
 
-	const CharEquips& CharLook::getequips() const
+	const CharEquips& CharLook::get_equips() const
 	{
 		return equips;
 	}

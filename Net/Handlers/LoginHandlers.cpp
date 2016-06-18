@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -44,10 +44,10 @@ namespace jrc
 			switch (reason)
 			{
 			case 2:
-				UI::get().add(ElementTag<UILoginNotice, int8_t>(16));
+				UI::get().add(Element<UILoginNotice, int8_t>(16));
 				break;
 			case 7:
-				UI::get().add(ElementTag<UILoginNotice, int8_t>(17));
+				UI::get().add(Element<UILoginNotice, int8_t>(17));
 				break;
 			case 23:
 				// The server sends a request to accept the terms of service. For convenience, just auto-accept.
@@ -58,7 +58,7 @@ namespace jrc
 				if (reason > 0)
 				{
 					auto reasonbyte = static_cast<int8_t>(reason - 1);
-					UI::get().add(ElementTag<UILoginNotice, int8_t>(reasonbyte));
+					UI::get().add(Element<UILoginNotice, int8_t>(reasonbyte));
 				}
 			}
 
@@ -67,13 +67,13 @@ namespace jrc
 		else
 		{
 			// Login successfull. The packet contains information on the account, so we initialise the account with it.
-			Session::get().getlogin().parseaccount(recv);
+			Session::get().get_login().parse_account(recv);
 
 			// Save the Login ID if the box for it on the login panel is checked.
 			bool savelogin = Setting<SaveLogin>::get().load();
 			if (savelogin)
 			{
-				std::string name = Session::get().getlogin().getaccount().name;
+				std::string name = Session::get().get_login().getaccount().name;
 				Setting<DefaultAccount>::get().save(name);
 			}
 
@@ -89,11 +89,11 @@ namespace jrc
 		UI::get().remove(UIElement::LOGIN);
 
 		// Parse all worlds.
-		Session::get().getlogin()
-			.parseworlds(recv);
+		Session::get().get_login()
+			.parse_worlds(recv);
 
 		// Add the world selection screen to the ui.
-		UI::get().add(ElementTag<UIWorldSelect>());
+		UI::get().add(Element<UIWorldSelect>());
 
 		UI::get().enable();
 	}
@@ -103,14 +103,14 @@ namespace jrc
 		recv.skip(1);
 
 		// Parse all characters.
-		Session::get().getlogin()
-			.parsecharlist(recv);
+		Session::get().get_login()
+			.parse_charlist(recv);
 
 		// Remove the world selection screen.
 		UI::get().remove(UIElement::WORLDSELECT);
 
 		// Add the character selection screen.
-		UI::get().add(ElementTag<UICharSelect>());
+		UI::get().add(Element<UICharSelect>());
 
 		UI::get().enable();
 	}
@@ -124,17 +124,15 @@ namespace jrc
 		if (used)
 		{
 			UI::get().add(
-				ElementTag<UILoginNotice, UILoginNotice::Message>(
+				Element<UILoginNotice, UILoginNotice::Message>(
 					UILoginNotice::NAME_IN_USE
 					)
 			);
 		}
 
-		// Notify character creation screen.
-		UI::get().with_element<UICharcreation>([&used](auto& cc) {
-			cc.nameresult(used);
-		});
-
+		// Notify the character creation screen.
+		UI::get().get_element<UICharcreation>()
+			.if_present(&UICharcreation::send_naming_result, used);
 		UI::get().enable();
 	}
 
@@ -143,14 +141,14 @@ namespace jrc
 		recv.skip(1);
 
 		// Parse info on the new character.
-		Session::get().getlogin()
-			.addcharentry(recv);
+		Session::get().get_login()
+			.add_charentry(recv);
 
 		// Remove the character creation ui.
 		UI::get().remove(UIElement::CHARCREATION);
 
 		// Readd the updated character selection.
-		UI::get().add(ElementTag<UICharSelect>());
+		UI::get().add(Element<UICharSelect>());
 
 		UI::get().enable();
 	}
@@ -158,21 +156,34 @@ namespace jrc
 	void DeleteCharResponseHandler::handle(InPacket& recv) const
 	{
 		// Read the character id and if deletion was successfull (pic was correct).
-		recv.read_int(); // charid
+		int32_t cid = recv.read_int();
+		uint8_t state = recv.read_byte();
 
-		bool success = recv.read_bool();
-
-		// Show the result to the user.
-		UILoginNotice::Message message;
-		if (success)
+		// Extract information from the state byte.
+		if (state)
 		{
-			message = UILoginNotice::CASH_ITEMS_CONFIRM_DELETION;
+			UILoginNotice::Message message;
+			switch (state)
+			{
+			case 10:
+				message = UILoginNotice::BIRTHDAY_INCORRECT;
+				break;
+			case 20:
+				message = UILoginNotice::SECOND_PASSWORD_INCORRECT;
+				break;
+			default:
+				message = UILoginNotice::UNKNOWN_ERROR;
+			}
+			UI::get().add(Element<UILoginNotice, int8_t>(message));
 		}
 		else
 		{
-			message = UILoginNotice::BIRTHDAY_INCORRECT;
+			Session::get().get_login().remove_char(cid);
+			UI::get().get_element<UICharSelect>()
+				.if_present(&UICharSelect::remove_char, cid);
 		}
-		UI::get().add(ElementTag<UILoginNotice, int8_t>(message));
+
+		UI::get().enable();
 	}
 
 	void ServerIPHandler::handle(InPacket& recv) const

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2016 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -27,8 +27,8 @@ namespace jrc
 
 		void applystats(const Char& user, Attack& attack) const override;
 		bool isoffensive() const override;
-		int32_t getid() const override;
-		ForbidReason canuse(int32_t level, Weapon::Type weapon,
-			const CharJob& job, uint16_t hp, uint16_t mp, uint16_t bullets) const override;
+		int32_t get_id() const override;
+		ForbidReason can_use(int32_t level, Weapon::Type weapon,
+			const Job& job, uint16_t hp, uint16_t mp, uint16_t bullets) const override;
 	};
 }

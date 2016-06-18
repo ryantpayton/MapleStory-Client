@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Footholdtree.h"
 
+#include "..\..\Console.h"
 #include "..\..\Graphics\GraphicsGL.h"
 
 namespace jrc
@@ -35,8 +36,9 @@ namespace jrc
 			{
 				layer = static_cast<uint8_t>(stoi(basef.name()));
 			}
-			catch (const std::exception&)
+			catch (const std::exception& ex)
 			{
+				Console::get().print(__func__, ex);
 				continue;
 			}
 
@@ -64,7 +66,7 @@ namespace jrc
 						topb = foothold.gett();
 					}
 
-					uint16_t id = foothold.getid();
+					uint16_t id = foothold.get_id();
 					footholds[id] = foothold;
 
 					if (!foothold.iswall())
@@ -101,57 +103,57 @@ namespace jrc
 
 	Footholdtree::Footholdtree() {}
 
-	void Footholdtree::limitmoves(PhysicsObject& phobj) const
+	void Footholdtree::limit_movement(PhysicsObject& phobj) const
 	{
 		if (phobj.hmobile())
 		{
-			double crntx = phobj.crntx();
-			double nextx = phobj.nextx();
+			double crnt_x = phobj.crnt_x();
+			double next_x = phobj.next_x();
 
 			bool left = phobj.hspeed < 0.0f;
-			double wall = getwall(phobj.fhid, left, phobj.nexty());
+			double wall = getwall(phobj.fhid, left, phobj.next_y());
 			bool collision = left ?
-				crntx >= wall && nextx <= wall :
-				crntx <= wall && nextx >= wall;
+				crnt_x >= wall && next_x <= wall :
+				crnt_x <= wall && next_x >= wall;
 
-			if (!collision && phobj.flagset(PhysicsObject::TURNATEDGES))
+			if (!collision && phobj.is_flag_set(PhysicsObject::TURNATEDGES))
 			{
-				wall = getedge(phobj.fhid, left);
+				wall = get_edge(phobj.fhid, left);
 				collision = left ?
-					crntx >= wall && nextx <= wall : 
-					crntx <= wall && nextx >= wall;
+					crnt_x >= wall && next_x <= wall : 
+					crnt_x <= wall && next_x >= wall;
 			}
 
 			if (collision)
 			{
 				phobj.limitx(wall);
-				phobj.clearflag(PhysicsObject::TURNATEDGES);
+				phobj.clear_flag(PhysicsObject::TURNATEDGES);
 			}
 		}
 
 		if (phobj.vmobile())
 		{
-			double crnty = phobj.crnty();
-			double nexty = phobj.nexty();
+			double crnt_y = phobj.crnt_y();
+			double next_y = phobj.next_y();
 
 			auto ground = Range<double>(
-				getfh(phobj.fhid).resolvex(phobj.crntx()),
-				getfh(phobj.fhid).resolvex(phobj.nextx())
+				get_fh(phobj.fhid).resolvex(phobj.crnt_x()),
+				get_fh(phobj.fhid).resolvex(phobj.next_x())
 				);
-			bool collision = crnty <= ground.first() && nexty >= ground.second();
+			bool collision = crnt_y <= ground.first() && next_y >= ground.second();
 			if (collision)
 			{
 				phobj.limity(ground.second());
 
-				limitmoves(phobj);
+				limit_movement(phobj);
 			}
 			else
 			{
-				if (nexty < borders.first())
+				if (next_y < borders.first())
 				{
 					phobj.limity(borders.first());
 				}
-				else if (nexty > borders.second())
+				else if (next_y > borders.second())
 				{
 					phobj.limity(borders.second());
 				}
@@ -159,16 +161,16 @@ namespace jrc
 		}
 	}
 
-	void Footholdtree::updatefh(PhysicsObject& phobj) const
+	void Footholdtree::update_fh(PhysicsObject& phobj) const
 	{
 		if (phobj.type == PhysicsObject::FIXATED && phobj.fhid > 0)
 			return;
 
-		const Foothold& curfh = getfh(phobj.fhid);
+		const Foothold& curfh = get_fh(phobj.fhid);
 		bool checkslope = false;
 
-		double x = phobj.crntx();
-		double y = phobj.crnty();
+		double x = phobj.crnt_x();
+		double y = phobj.crnt_y();
 		if (phobj.onground)
 		{
 			if (std::floor(x) > curfh.getr())
@@ -182,7 +184,7 @@ namespace jrc
 
 			if (phobj.fhid == 0)
 			{
-				phobj.fhid = getbelow(x, y);
+				phobj.fhid = get_fhid_below(x, y);
 			}
 			else
 			{
@@ -191,10 +193,10 @@ namespace jrc
 		}
 		else
 		{
-			phobj.fhid = getbelow(x, y);
+			phobj.fhid = get_fhid_below(x, y);
 		}
 
-		const Foothold& nextfh = getfh(phobj.fhid);
+		const Foothold& nextfh = get_fh(phobj.fhid);
 		phobj.fhslope = nextfh.getslope();
 
 		double ground = nextfh.resolvex(x);
@@ -225,12 +227,12 @@ namespace jrc
 
 		phobj.onground = phobj.y == ground;
 
-		if (phobj.enablejd || phobj.flagset(PhysicsObject::CHECKBELOW))
+		if (phobj.enablejd || phobj.is_flag_set(PhysicsObject::CHECKBELOW))
 		{
-			uint16_t belowid = getbelow(x, nextfh.resolvex(x) + 1.0);
+			uint16_t belowid = get_fhid_below(x, nextfh.resolvex(x) + 1.0);
 			if (belowid > 0)
 			{
-				double nextground = getfh(belowid).resolvex(x);
+				double nextground = get_fh(belowid).resolvex(x);
 				phobj.enablejd = (nextground - ground) < 600.0;
 				phobj.groundbelow = ground + 1.0;
 			}
@@ -239,16 +241,16 @@ namespace jrc
 				phobj.enablejd = false;
 			}
 
-			phobj.clearflag(PhysicsObject::CHECKBELOW);
+			phobj.clear_flag(PhysicsObject::CHECKBELOW);
 		}
 
 		if (phobj.fhlayer == 0 || phobj.onground)
 		{
-			phobj.fhlayer = nextfh.getlayer();
+			phobj.fhlayer = nextfh.get_layer();
 		}
 	}
 
-	const Foothold& Footholdtree::getfh(uint16_t fhid) const
+	const Foothold& Footholdtree::get_fh(uint16_t fhid) const
 	{
 		return footholds.count(fhid) ? footholds.at(fhid) : nullfh;
 	}
@@ -259,44 +261,44 @@ namespace jrc
 		auto vertical = Range<int16_t>(shorty - 50, shorty - 1);
 		if (left)
 		{
-			uint16_t previd = getfh(curid).getprev();
-			if (getfh(previd).iswall() && getfh(previd).getver().overlaps(vertical))
+			uint16_t previd = get_fh(curid).getprev();
+			if (get_fh(previd).iswall() && get_fh(previd).getver().overlaps(vertical))
 			{
-				return getfh(curid).getl();
+				return get_fh(curid).getl();
 			}
-			previd = getfh(previd).getprev();
-			if (getfh(previd).iswall() && getfh(previd).getver().overlaps(vertical))
+			previd = get_fh(previd).getprev();
+			if (get_fh(previd).iswall() && get_fh(previd).getver().overlaps(vertical))
 			{
-				return getfh(previd).getl();
+				return get_fh(previd).getl();
 			}
 			return walls.first();
 		}
 		else
 		{
-			uint16_t nextid = getfh(curid).getnext();
-			if (getfh(nextid).iswall() && getfh(nextid).getver().overlaps(vertical))
+			uint16_t nextid = get_fh(curid).getnext();
+			if (get_fh(nextid).iswall() && get_fh(nextid).getver().overlaps(vertical))
 			{
-				return getfh(curid).getr();
+				return get_fh(curid).getr();
 			}
-			nextid = getfh(nextid).getnext();
-			if (getfh(nextid).iswall() && getfh(nextid).getver().overlaps(vertical))
+			nextid = get_fh(nextid).getnext();
+			if (get_fh(nextid).iswall() && get_fh(nextid).getver().overlaps(vertical))
 			{
-				return getfh(nextid).getr();
+				return get_fh(nextid).getr();
 			}
 			return walls.second();
 		}
 	}
 
-	double Footholdtree::getedge(uint16_t curid, bool left) const
+	double Footholdtree::get_edge(uint16_t curid, bool left) const
 	{
-		const Foothold& fh = getfh(curid);
+		const Foothold& fh = get_fh(curid);
 		if (left)
 		{
 			uint16_t previd = fh.getprev();
 			if (!previd)
 				return fh.getl();
 
-			const Foothold& prev = getfh(previd);
+			const Foothold& prev = get_fh(previd);
 			previd = prev.getprev();
 			if (!previd)
 				return prev.getl();
@@ -309,7 +311,7 @@ namespace jrc
 			if (!nextid)
 				return fh.getr();
 
-			const Foothold& next = getfh(nextid);
+			const Foothold& next = get_fh(nextid);
 			nextid = next.getnext();
 			if (!nextid)
 				return next.getr();
@@ -318,7 +320,7 @@ namespace jrc
 		}
 	}
 
-	uint16_t Footholdtree::getbelow(double fx, double fy) const
+	uint16_t Footholdtree::get_fhid_below(double fx, double fy) const
 	{
 		uint16_t ret = 0;
 		int16_t x = static_cast<int16_t>(fx);
@@ -332,19 +334,19 @@ namespace jrc
 				if (comp >= ycomp && ycomp >= fy)
 				{
 					comp = ycomp;
-					ret = fh.getid();
+					ret = fh.get_id();
 				}
 			}
 		}
 		return ret;
 	}
 
-	int16_t Footholdtree::getgroundbelow(Point<int16_t> position) const
+	int16_t Footholdtree::get_y_below(Point<int16_t> position) const
 	{
-		uint16_t fhid = getbelow(position.x(), position.y());
+		uint16_t fhid = get_fhid_below(position.x(), position.y());
 		if (fhid > 0)
 		{
-			const Foothold& fh = getfh(fhid);
+			const Foothold& fh = get_fh(fhid);
 			return static_cast<int16_t>(fh.resolvex(position.x()));
 		}
 		else
@@ -353,12 +355,12 @@ namespace jrc
 		}
 	}
 
-	Range<int16_t> Footholdtree::getwalls() const
+	Range<int16_t> Footholdtree::get_walls() const
 	{
 		return walls;
 	}
 
-	Range<int16_t> Footholdtree::getborders() const
+	Range<int16_t> Footholdtree::get_borders() const
 	{
 		return borders;
 	}

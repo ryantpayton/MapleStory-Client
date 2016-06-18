@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -28,8 +28,8 @@ namespace jrc
 		BulletData(int32_t itemid);
 		BulletData();
 
-		int16_t getwatk() const;
-		Animation getbullet() const;
+		int16_t get_watk() const;
+		Animation get_animation() const;
 
 	private:
 		Animation bullet;

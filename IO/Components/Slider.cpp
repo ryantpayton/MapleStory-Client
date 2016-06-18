@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -47,7 +47,7 @@ namespace jrc
 		next = { esrc["next0"], esrc["next1"], end };
 		thumb = { esrc["thumb0"], esrc["thumb1"] };
 
-		buttonheight = dnext.getdimensions().y();
+		buttonheight = dnext.get_dimensions().y();
 
 		setrows(ur, rm);
 
@@ -92,8 +92,8 @@ namespace jrc
 		vertical = ver;
 		start = { x, vertical.first() };
 		end = { x, vertical.second() };
-		prev.setposition(start);
-		next.setposition(end);
+		prev.set_position(start);
+		next.set_position(end);
 		if (rowmax > 0)
 		{
 			rowheight = (vertical.length() - buttonheight * 2) / rowmax;
@@ -126,6 +126,21 @@ namespace jrc
 		}
 	}
 
+	bool Slider::remove_cursor(bool clicked)
+	{
+		if (scrolling)
+		{
+			return scrolling = clicked;
+		}
+		else
+		{
+			thumb.set_state(Button::NORMAL);
+			next.set_state(Button::NORMAL);
+			prev.set_state(Button::NORMAL);
+			return false;
+		}
+	}
+
 	Point<int16_t> Slider::getthumbpos() const
 	{
 		int16_t y = row < rowmax ?
@@ -134,7 +149,7 @@ namespace jrc
 		return{ x, y };
 	}
 
-	Cursor::State Slider::sendcursor(Point<int16_t> cursor, bool pressed)
+	Cursor::State Slider::send_cursor(Point<int16_t> cursor, bool pressed)
 	{
 		Point<int16_t> relative = cursor - start;
 		if (scrolling)
@@ -162,9 +177,9 @@ namespace jrc
 		}
 		else if (relative.x() < 0 || relative.y() < 0 || relative.x() > 8 || relative.y() > vertical.second())
 		{
-			thumb.setstate(Button::NORMAL);
-			next.setstate(Button::NORMAL);
-			prev.setstate(Button::NORMAL);
+			thumb.set_state(Button::NORMAL);
+			next.set_state(Button::NORMAL);
+			prev.set_state(Button::NORMAL);
 			return Cursor::IDLE;
 		}
 
@@ -174,18 +189,18 @@ namespace jrc
 			if (pressed)
 			{
 				scrolling = true;
-				thumb.setstate(Button::PRESSED);
+				thumb.set_state(Button::PRESSED);
 				return Cursor::CLICKING;
 			}
 			else
 			{
-				thumb.setstate(Button::MOUSEOVER);
+				thumb.set_state(Button::MOUSEOVER);
 				return Cursor::VSCROLL;
 			}
 		}
 		else
 		{
-			thumb.setstate(Button::NORMAL);
+			thumb.set_state(Button::NORMAL);
 		}
 
 		if (prev.bounds(Point<int16_t>()).contains(cursor))
@@ -198,18 +213,18 @@ namespace jrc
 					onmoved(true);
 				}
 
-				prev.setstate(Button::PRESSED);
+				prev.set_state(Button::PRESSED);
 				return Cursor::CLICKING;
 			}
 			else
 			{
-				prev.setstate(Button::MOUSEOVER);
+				prev.set_state(Button::MOUSEOVER);
 				return Cursor::CANCLICK;
 			}
 		}
 		else 
 		{
-			prev.setstate(Button::NORMAL);
+			prev.set_state(Button::NORMAL);
 		}
 
 		if (next.bounds(Point<int16_t>()).contains(cursor))
@@ -222,18 +237,18 @@ namespace jrc
 					onmoved(false);
 				}
 
-				next.setstate(Button::PRESSED);
+				next.set_state(Button::PRESSED);
 				return Cursor::CLICKING;
 			}
 			else
 			{
-				next.setstate(Button::MOUSEOVER);
+				next.set_state(Button::MOUSEOVER);
 				return Cursor::CANCLICK;
 			}
 		}
 		else
 		{
-			next.setstate(Button::NORMAL);
+			next.set_state(Button::NORMAL);
 		}
 
 		if (pressed)

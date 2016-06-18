@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -27,47 +27,47 @@ namespace jrc
 		virtual ~PlayerState(){}
 
 		// Actions taken when transitioning into the state.
-		virtual void onentry(Player& player) const = 0;
+		virtual void initialize(Player& player) const = 0;
 		// How to handle inputs while in the state.
-		virtual void sendaction(Player& player, Keyboard::Action action, bool pressed) const = 0;
+		virtual void send_action(Player& player, Keyboard::Action action, bool pressed) const = 0;
 		// Actions taken in the player's update method, before physics are applied.
 		virtual void update(Player& player) const = 0;
 		// Transition into a new state after physics have been applied.
-		virtual void nextstate(Player& player) const = 0;
+		virtual void update_state(Player& player) const = 0;
 
 	protected:
 		// Play the jumping sound.
-		void playjumpsound() const;
+		void play_jumpsound() const;
 	};
 
 	// The initial state, determines which state the player should be in.
 	class PlayerNullState : public PlayerState
 	{
 	public:
-		void onentry(Player&) const override {}
-		void sendaction(Player&, Keyboard::Action, bool) const override {}
+		void initialize(Player&) const override {}
+		void send_action(Player&, Keyboard::Action, bool) const override {}
 		void update(Player&) const override {}
 
-		void nextstate(Player& player) const override;
+		void update_state(Player& player) const override;
 	};
 
 	// The standing state.
 	class PlayerStandState : public PlayerState
 	{
 	public:
-		void onentry(Player& player) const override;
-		void sendaction(Player& player, Keyboard::Action ka, bool down) const override;
+		void initialize(Player& player) const override;
+		void send_action(Player& player, Keyboard::Action ka, bool down) const override;
 		void update(Player&) const override;
-		void nextstate(Player& player) const override;
+		void update_state(Player& player) const override;
 	};
 
 	// The walking state.
 	class PlayerWalkState : public PlayerState
 	{
-		void onentry(Player& player) const override;
-		void sendaction(Player& player, Keyboard::Action ka, bool down) const override;
+		void initialize(Player& player) const override;
+		void send_action(Player& player, Keyboard::Action ka, bool down) const override;
 		void update(Player& player) const override;
-		void nextstate(Player& player) const override;
+		void update_state(Player& player) const override;
 
 	private:
 		bool haswalkinput(const Player& player) const;
@@ -77,57 +77,57 @@ namespace jrc
 	class PlayerFallState : public PlayerState
 	{
 	public:
-		void onentry(Player& player) const override;
+		void initialize(Player& player) const override;
 
-		void sendaction(Player&, Keyboard::Action, bool) const override {}
+		void send_action(Player&, Keyboard::Action, bool) const override {}
 		void update(Player&) const override {}
 
-		void nextstate(Player& player) const override;
+		void update_state(Player& player) const override;
 	};
 
 	// The prone state (lying down).
 	class PlayerProneState : public PlayerState
 	{
 	public:
-		void onentry(Player&) const override {}
+		void initialize(Player&) const override {}
 
-		void sendaction(Player& player, Keyboard::Action ka, bool down) const override;
+		void send_action(Player& player, Keyboard::Action ka, bool down) const override;
 		void update(Player&) const override;
 
-		void nextstate(Player&) const override {}
+		void update_state(Player&) const override {}
 	};
 
 	// The sitting state.
 	class PlayerSitState : public PlayerState
 	{
 	public:
-		void onentry(Player&) const override {}
+		void initialize(Player&) const override {}
 
-		void sendaction(Player& player, Keyboard::Action ka, bool down) const override;
+		void send_action(Player& player, Keyboard::Action ka, bool down) const override;
 
 		void update(Player&) const override {}
-		void nextstate(Player&) const override {}
+		void update_state(Player&) const override {}
 	};
 
 	// The flying or swimming state.
 	class PlayerFlyState : public PlayerState
 	{
-		void onentry(Player& player) const override;
-		void sendaction(Player& player, Keyboard::Action ka, bool down) const override;
+		void initialize(Player& player) const override;
+		void send_action(Player& player, Keyboard::Action ka, bool down) const override;
 		void update(Player& player) const override;
-		void nextstate(Player& player) const override;
+		void update_state(Player& player) const override;
 	};
 
 	// The climbing state.
 	class PlayerClimbState : public PlayerState
 	{
 	public:
-		void onentry(Player& player) const override;
-		void sendaction(Player& player, Keyboard::Action ka, bool down) const override;
+		void initialize(Player& player) const override;
+		void send_action(Player& player, Keyboard::Action ka, bool down) const override;
 		void update(Player& player) const override;
-		void nextstate(Player& player) const override;
+		void update_state(Player& player) const override;
 
 	private:
-		void cancelladder(Player& player) const;
+		void cancel_ladder(Player& player) const;
 	};
 }

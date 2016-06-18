@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -54,7 +54,7 @@ namespace jrc
 #endif
 	}
 
-	void Cryptography::getheader(int8_t* buffer, size_t length) const
+	void Cryptography::create_header(int8_t* buffer, size_t length) const
 	{
 #ifdef JOURNEY_USE_CRYPTO
 		static const uint8_t MAPLEVERSION = 83;
@@ -75,7 +75,7 @@ namespace jrc
 #endif
 	}
 
-	size_t Cryptography::getlength(const int8_t* bytes) const
+	size_t Cryptography::check_length(const int8_t* bytes) const
 	{
 #ifdef JOURNEY_USE_CRYPTO
 		uint32_t headermask = 0;

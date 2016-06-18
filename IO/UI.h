@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -47,35 +47,40 @@ namespace jrc
 		void draw(float alpha) const;
 		void update();
 
-		void sendmouse(Point<int16_t> pos);
-		void sendmouse(bool pressed);
+		void send_cursor(Point<int16_t> pos);
+		void send_cursor(bool pressed);
 		void doubleclick();
-		void sendkey(int32_t keycode, bool pressed);
+		void send_key(int32_t keycode, bool pressed);
 
-		void setscrollingnotice(const std::string& notice);
-		void focustextfield(Textfield* textfield);
-		void dragicon(Icon* icon);
+		void set_scrollnotice(const std::string& notice);
+		void focus_textfield(Textfield* textfield);
+		void drag_icon(Icon* icon);
 
-		void addkeymapping(uint8_t no, uint8_t type, int32_t action);
+		void add_keymapping(uint8_t no, uint8_t type, int32_t action);
 		void enable();
 		void disable();
-		void changestate(State state);
+		void change_state(State state);
 
-		void add(const Element& element);
+		void add(const IElement& element);
 		void remove(UIElement::Type type);
 
 		void clear_tooltip(UIElement::Type type);
 		void show_equip(UIElement::Type parent, Equip* equip, int16_t slot);
 		void show_item(UIElement::Type parent, int32_t item_id);
+		void show_skill(UIElement::Type parent, int32_t skill_id, 
+			int32_t level, int32_t masterlevel, int64_t expiration);
 
-		template <class T>
-		void with_element(std::function<void(T&)> action);
+		template <class T, typename...Args>
+		void add_element(Args&&...args)
+		{
+			add(Element<T>(args...));
+		}
 
 		template <class T>
 		Optional<T> get_element();
 
 	private:
-		void sendmouse(Point<int16_t> cursorpos, Cursor::State cursorstate);
+		void send_cursor(Point<int16_t> cursorpos, Cursor::State cursorstate);
 
 		UIState::UPtr state;
 		Keyboard keyboard;
@@ -83,22 +88,10 @@ namespace jrc
 		ScrollingNotice scrollingnotice;
 
 		Optional<Textfield> focusedtextfield;
-		std::unordered_map<int32_t, bool> keydown;
+		std::unordered_map<int32_t, bool> is_key_down;
 
 		bool enabled;
 	};
-
-	template <class T>
-	void UI::with_element(std::function<void(T&)> action)
-	{
-		UIElement::Type type = T::TYPE;
-		UIElement* element = state->get(type);
-		if (element)
-		{
-			T* t = static_cast<T*>(element);
-			action(*t);
-		}
-	}
 
 	template <class T>
 	Optional<T> UI::get_element()

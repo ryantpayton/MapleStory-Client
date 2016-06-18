@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,7 +18,8 @@
 #pragma once
 #include "Tooltip.h"
 #include "Charset.h"
-#include "Itemtext.h"
+
+#include "..\..\Graphics\Text.h"
 
 namespace jrc
 {
@@ -27,8 +28,9 @@ namespace jrc
 	public:
 		ItemTooltip();
 
-		void setitem(int32_t itemid);
 		void draw(Point<int16_t> position) const override;
+
+		void set_item(int32_t itemid);
 
 	private:
 		int32_t itemid;
@@ -36,7 +38,7 @@ namespace jrc
 		Texture itemicon;
 
 		Text name;
-		Itemtext desc;
+		Text desc;
 		Texture top;
 		Texture mid;
 		Texture line;

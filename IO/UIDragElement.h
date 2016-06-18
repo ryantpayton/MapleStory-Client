@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -27,7 +27,7 @@ namespace jrc
 	class UIDragElement : public UIElement
 	{
 	public:
-		bool cursorleave(bool clicked, Point<int16_t> cursorpos) override
+		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override
 		{
 			if (dragged)
 			{
@@ -45,7 +45,7 @@ namespace jrc
 			return false;
 		}
 
-		Cursor::State sendmouse(bool clicked, Point<int16_t> cursorpos) override
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override
 		{
 			if (clicked)
 			{
@@ -69,7 +69,7 @@ namespace jrc
 					Setting<T>::get().save(position);
 				}
 			}
-			return UIElement::sendmouse(clicked, cursorpos);
+			return UIElement::send_cursor(clicked, cursorpos);
 		}
 
 	protected:

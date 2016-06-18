@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                               //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -53,19 +53,19 @@ namespace jrc
 		return facetypes[faceid];
 	}
 
-	const ItemData& DataFactory::getitemdata(int32_t itemid)
+	const ItemData& DataFactory::get_itemdata(int32_t itemid)
 	{
 		int32_t prefix = itemid / 1000000;
 		if (prefix == 1)
 		{
-			return getclothing(itemid);
+			return get_equip(itemid);
 		}
 		else
 		{
 			int32_t prefix2 = itemid / 10000;
 			if (prefix2 == 206)
 			{
-				return getbulletdata(itemid);
+				return get_bulletdata(itemid);
 			}
 			else
 			{
@@ -77,7 +77,7 @@ namespace jrc
 		}
 	}
 
-	const BulletData& DataFactory::getbulletdata(int32_t itemid)
+	const BulletData& DataFactory::get_bulletdata(int32_t itemid)
 	{
 		if (!bullets.count(itemid))
 			bullets[itemid] = BulletData(itemid);
@@ -85,12 +85,12 @@ namespace jrc
 		return bullets[itemid];
 	}
 
-	const Clothing& DataFactory::getclothing(int32_t itemid)
+	const Clothing& DataFactory::get_equip(int32_t itemid)
 	{
 		int32_t prefix = itemid / 10000;
 		if (prefix > 129 && prefix < 200)
 		{
-			return getweapon(itemid);
+			return get_weapon(itemid);
 		}
 		else
 		{
@@ -101,7 +101,7 @@ namespace jrc
 		}
 	}
 
-	const Weapon& DataFactory::getweapon(int32_t itemid)
+	const Weapon& DataFactory::get_weapon(int32_t itemid)
 	{
 		if (!weapons.count(itemid))
 			weapons[itemid] = Weapon(itemid, drawinfo);

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -42,22 +42,22 @@ namespace jrc
 		void sethair(int32_t hairid);
 		void setbody(int32_t skinid);
 		void setface(int32_t faceid);
-		void addequip(int32_t equipid);
-		void removeequip(Equipslot::Value slot);
+		void add_equip(int32_t equipid);
+		void remove_equip(Equipslot::Value slot);
 
 		void attack(bool degenerate);
 		void attack(Stance::Value stance);
-		void setstance(Stance::Value stance);
+		void set_stance(Stance::Value stance);
 		void setexpression(Expression::Value expression);
 		void setaction(const std::string& action);
-		void setflip(bool mirrored);
+		void set_direction(bool mirrored);
 
 		bool istwohanded(Stance::Value stance) const;
 
 		const Body* getbodytype() const;
 		const Hair* gethairstyle() const;
 		const Face* getfacetype() const;
-		const CharEquips& getequips() const;
+		const CharEquips& get_equips() const;
 
 		struct AttackLook
 		{
@@ -65,7 +65,7 @@ namespace jrc
 			Rectangle<int16_t> range;
 		};
 		AttackLook getattacklook() const;
-		uint16_t getattackdelay(size_t no) const;
+		uint16_t get_attackdelay(size_t no) const;
 
 	private:
 		void updatetwohanded();

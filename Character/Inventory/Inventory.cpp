@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -32,7 +32,7 @@ namespace jrc
 
 	Inventory::~Inventory() 
 	{
-		for (auto& sub : inventories.getvalues())
+		for (auto& sub : inventories.values())
 		{
 			for (auto& item : sub)
 			{
@@ -41,7 +41,7 @@ namespace jrc
 		}
 	}
 
-	void Inventory::recalcstats(Weapon::Type type)
+	void Inventory::recalc_stats(Weapon::Type type)
 	{
 		for (auto iter : totalstats)
 		{
@@ -51,7 +51,7 @@ namespace jrc
 				inventories[EQUIPPED].begin(), 
 				inventories[EQUIPPED].end(), 0,
 				[es](const auto& val, const auto& iter) {
-				return val + reinterpret_cast<Equip*>(iter.second)->getstat(es);
+				return val + reinterpret_cast<Equip*>(iter.second)->get_stat(es);
 			}));
 		}
 
@@ -78,7 +78,7 @@ namespace jrc
 			for (auto& use : inventories[USE])
 			{
 				Item* item = use.second;
-				if (item && item->getid() / 1000 == prefix && item->getcount() > 0)
+				if (item && item->get_id() / 1000 == prefix && item->getcount() > 0)
 				{
 					bulletslot = use.first;
 					break;
@@ -88,15 +88,15 @@ namespace jrc
 
 		if (bulletslot)
 		{
-			int16_t watkbonus = getitem(USE, bulletslot)
-				.transform(DataFactory::get(), &DataFactory::getbulletdata, &Item::getid)
-				.mapordefault(&BulletData::getwatk, int16_t(0));
+			int16_t watkbonus = get_item(USE, bulletslot)
+				.transform(DataFactory::get(), &DataFactory::get_bulletdata, &Item::get_id)
+				.mapordefault(&BulletData::get_watk, int16_t(0));
 
 			totalstats[Equipstat::WATK] += watkbonus;
 		}
 	}
 
-	void Inventory::addtotalsto(CharStats& stats) const
+	void Inventory::add_equipstats(CharStats& stats) const
 	{
 		for (auto tsit : totalstats)
 		{
@@ -105,24 +105,24 @@ namespace jrc
 		}
 	}
 
-	void Inventory::setmeso(int64_t m)
+	void Inventory::set_meso(int64_t m)
 	{
 		meso = m;
 	}
 
-	void Inventory::setslots(Type type, uint8_t sl)
+	void Inventory::set_slots(Type type, uint8_t sl)
 	{
 		slots[type] = sl;
 	}
 
-	void Inventory::additem(Type invtype, int16_t slot, int32_t iid, bool cash,
+	void Inventory::add_item(Type invtype, int16_t slot, int32_t iid, bool cash,
 		int64_t uniqueid, int64_t expire, uint16_t count, const std::string& owner, int16_t flag) {
 
 		if (slot >= slots[invtype])
 			return;
 
-		const ItemData& idata = DataFactory::get().getitemdata(iid);
-		if (idata.isloaded())
+		const ItemData& idata = DataFactory::get().get_itemdata(iid);
+		if (idata.is_loaded())
 		{
 			add(invtype, slot, new Item(
 				idata, iid, cash, uniqueid, expire, count, owner, flag)
@@ -130,14 +130,14 @@ namespace jrc
 		}
 	}
 
-	void Inventory::addpet(Type invtype, int16_t slot, int32_t iid, bool cash, int64_t uniqueid, 
+	void Inventory::add_pet(Type invtype, int16_t slot, int32_t iid, bool cash, int64_t uniqueid, 
 		int64_t expire, const std::string& name, int8_t level, int16_t closeness, int8_t fullness) {
 
 		if (slot >= slots[invtype])
 			return;
 
-		const ItemData& idata = DataFactory::get().getitemdata(iid);
-		if (idata.isloaded())
+		const ItemData& idata = DataFactory::get().get_itemdata(iid);
+		if (idata.is_loaded())
 		{
 			add(invtype, slot, new Pet(
 				idata, iid, cash, uniqueid, expire, name, level, closeness, fullness)
@@ -145,15 +145,15 @@ namespace jrc
 		}
 	}
 
-	void Inventory::addequip(Type invtype, int16_t slot, int32_t iid, bool cash, int64_t uniqueid, 
+	void Inventory::add_equip(Type invtype, int16_t slot, int32_t iid, bool cash, int64_t uniqueid, 
 		int64_t expire, uint8_t equipslots, uint8_t level, const EnumMap<Equipstat::Value, uint16_t>& stats,
 		const std::string& owner, int16_t flag, uint8_t ilevel, uint16_t iexp, int32_t vicious) {
 
 		if (slot >= slots[invtype])
 			return;
 
-		const ItemData& idata = DataFactory::get().getitemdata(iid);
-		if (idata.isloaded())
+		const ItemData& idata = DataFactory::get().get_itemdata(iid);
+		if (idata.is_loaded())
 		{
 			add(invtype, slot, new Equip(
 				idata, iid, cash, uniqueid, expire, equipslots, level, stats, owner, flag, ilevel, iexp, vicious)
@@ -197,9 +197,9 @@ namespace jrc
 			inventories[secondtype].erase(secondslot);
 	}
 
-	bool Inventory::changecount(Type type, int16_t slot, int16_t count)
+	bool Inventory::change_count(Type type, int16_t slot, int16_t count)
 	{
-		Optional<Item> item = getitem(type, slot);
+		Optional<Item> item = get_item(type, slot);
 		if (item)
 		{
 			int16_t cur = item->getcount();
@@ -224,7 +224,7 @@ namespace jrc
 		switch (mode)
 		{
 		case CHANGECOUNT:
-			changecount(type, slot, arg);
+			change_count(type, slot, arg);
 			break;
 		case SWAP:
 			switch (move)
@@ -246,65 +246,65 @@ namespace jrc
 		}
 	}
 
-	uint8_t Inventory::getslots(Type type) const
+	uint8_t Inventory::get_slots(Type type) const
 	{
 		return slots[type];
 	}
 
-	uint16_t Inventory::getstat(Equipstat::Value type) const
+	uint16_t Inventory::get_stat(Equipstat::Value type) const
 	{
 		return totalstats[type];
 	}
 
-	int64_t Inventory::getmeso() const
+	int64_t Inventory::get_meso() const
 	{
 		return meso;
 	}
 
-	bool Inventory::hasprojectile() const
+	bool Inventory::has_projectile() const
 	{
 		return bulletslot > 0;
 	}
 
-	bool Inventory::hasequipped(Equipslot::Value slot) const
+	bool Inventory::has_equipped(Equipslot::Value slot) const
 	{
-		int16_t value = Equipslot::valueof(slot);
+		int16_t value = Equipslot::values[slot];
 		return inventories[EQUIPPED].find(value) != inventories[EQUIPPED].end();
 	}
 
-	int16_t Inventory::getbulletslot() const
+	int16_t Inventory::get_bulletslot() const
 	{
 		return bulletslot;
 	}
 
-	uint16_t Inventory::getbulletcount() const
+	uint16_t Inventory::get_bulletcount() const
 	{
-		return getitem(Inventory::USE, bulletslot)
+		return get_item(Inventory::USE, bulletslot)
 			.map(&Item::getcount);
 	}
 
-	int32_t Inventory::getbulletid() const
+	int32_t Inventory::get_bulletid() const
 	{
-		return getitem(Inventory::USE, bulletslot)
-			.map(&Item::getid);
+		return get_item(Inventory::USE, bulletslot)
+			.map(&Item::get_id);
 	}
 
-	Equipslot::Value Inventory::findequipslot(int32_t itemid) const
+	Equipslot::Value Inventory::find_equipslot(int32_t itemid) const
 	{
-		const Clothing& cloth = DataFactory::get().getclothing(itemid);
-		if (!cloth.isloaded())
+		const Clothing& cloth = DataFactory::get().get_equip(itemid);
+		if (!cloth.is_loaded())
 			return Equipslot::NONE;
 
 		Equipslot::Value eqslot = cloth.geteqslot();
 		if (eqslot == Equipslot::RING)
 		{
-			if (!hasequipped(Equipslot::RING2))
+			if (!has_equipped(Equipslot::RING2))
 				return Equipslot::RING2;
 
-			if (!hasequipped(Equipslot::RING3))
+			if (!has_equipped(Equipslot::RING3))
 				return Equipslot::RING3;
 
-			if (!hasequipped(Equipslot::RING4))
+			if (!has_equipped(Equipslot::RING4))
 				return Equipslot::RING4;
 
 			return Equipslot::RING;
@@ -315,7 +315,7 @@ namespace jrc
 		}
 	}
 
-	int16_t Inventory::findslot(Type type) const
+	int16_t Inventory::find_free_slot(Type type) const
 	{
 		uint8_t numslots = slots[type];
 		for (uint8_t i = 1; i < numslots; i++)
@@ -326,18 +326,18 @@ namespace jrc
 		return 0;
 	}
 
-	int16_t Inventory::finditem(Type type, int32_t itemid) const
+	int16_t Inventory::find_item(Type type, int32_t itemid) const
 	{
 		for (auto& item : inventories[type])
 		{
-			int32_t id = item.second->getid();
+			int32_t id = item.second->get_id();
 			if (id == itemid)
 				return item.first;
 		}
 		return -1;
 	}
 
-	Optional<Item> Inventory::getitem(Type type, int16_t slot) const
+	Optional<Item> Inventory::get_item(Type type, int16_t slot) const
 	{
 		if (!inventories[type].count(slot))
 			return Optional<Item>();
@@ -345,12 +345,12 @@ namespace jrc
 		return inventories[type].at(slot);
 	}
 
-	Optional<Equip> Inventory::getequip(Type type, int16_t slot) const
+	Optional<Equip> Inventory::get_equip(Type type, int16_t slot) const
 	{
 		if (type != EQUIP && type != EQUIPPED)
 			return Optional<Equip>();
 
-		return getitem(type, slot)
+		return get_item(type, slot)
 			.reinterpret<Equip>();
 	}
 }

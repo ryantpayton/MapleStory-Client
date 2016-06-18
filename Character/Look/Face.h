@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -94,7 +94,7 @@ namespace jrc
 		void draw(Expression::Value expression, uint8_t frame, const DrawArgument& args) const;
 		uint8_t nextframe(Expression::Value expression, uint8_t frame) const;
 		int16_t getdelay(Expression::Value expression, uint8_t frame) const;
-		std::string getname() const;
+		std::string get_name() const;
 
 	private:
 		struct Frame

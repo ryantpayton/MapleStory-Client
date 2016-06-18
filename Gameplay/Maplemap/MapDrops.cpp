@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                               //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -55,10 +55,10 @@ namespace jrc
 		lootenabled = false;
 	}
 
-	void MapDrops::sendspawn(const DropSpawn& spawn)
+	void MapDrops::send_spawn(const DropSpawn& spawn)
 	{
-		int32_t oid = spawn.getoid();
-		Optional<Drop> drop = getdrop(oid);
+		int32_t oid = spawn.get_oid();
+		Optional<Drop> drop = get_drop(oid);
 		if (drop)
 		{
 			drop->makeactive();
@@ -77,8 +77,8 @@ namespace jrc
 			}
 			else
 			{
-				auto& itemdata = DataFactory::get().getitemdata(itemid);
-				if (itemdata.isloaded())
+				auto& itemdata = DataFactory::get().get_itemdata(itemid);
+				if (itemdata.is_loaded())
 				{
 					auto& icon = itemdata.geticon(true);
 					drops.add(
@@ -89,11 +89,11 @@ namespace jrc
 		}
 	}
 
-	void MapDrops::removedrop(int32_t oid, int8_t mode, const PhysicsObject* looter)
+	void MapDrops::remove_drop(int32_t oid, int8_t mode, const PhysicsObject* looter)
 	{
 		drops.get(oid)
 			.reinterpret<Drop>()
-			.ifpresent(&Drop::expire, mode, looter);
+			.if_present(&Drop::expire, mode, looter);
 	}
 
 	void MapDrops::clear()
@@ -131,7 +131,7 @@ namespace jrc
 		return nullptr;
 	}
 
-	Optional<Drop> MapDrops::getdrop(int32_t oid)
+	Optional<Drop> MapDrops::get_drop(int32_t oid)
 	{
 		return drops.get(oid)
 			.reinterpret<Drop>();

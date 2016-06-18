@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                               //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -37,10 +37,10 @@ namespace jrc
 		const Body& getbodytype(int32_t skin);
 		const Hair& gethairstyle(int32_t hairid);
 		const Face& getfacetype(int32_t faceid);
-		const ItemData& getitemdata(int32_t itemid);
-		const BulletData& getbulletdata(int32_t itemid);
-		const Clothing& getclothing(int32_t itemid);
-		const Weapon& getweapon(int32_t itemid);
+		const ItemData& get_itemdata(int32_t itemid);
+		const BulletData& get_bulletdata(int32_t itemid);
+		const Clothing& get_equip(int32_t itemid);
+		const Weapon& get_weapon(int32_t itemid);
 
 	private:
 		BodyDrawinfo drawinfo;

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -41,14 +41,11 @@ namespace jrc
 	class MovePlayerPacket : public MovementPacket
 	{
 	public:
-		MovePlayerPacket(const std::vector<Movement>& movements) : MovementPacket(MOVE_PLAYER)
+		MovePlayerPacket(const Movement& movement) : MovementPacket(MOVE_PLAYER)
 		{
 			skip(9);
-			writech(static_cast<int8_t>(movements.size()));
-			for (auto& mv : movements)
-			{
-				writemovement(mv);
-			}
+			writech(1);
+			writemovement(movement);
 		}
 	};
 

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -56,28 +56,28 @@ namespace jrc
 		}
 	}
 
-	void Icon::drop() const
+	void Icon::drop_on_stage() const
 	{
-		type->ondrop();
+		type->drop_on_stage();
 	}
 
-	void Icon::droponequips(Equipslot::Value eqslot) const
+	void Icon::drop_on_equips(Equipslot::Value eqslot) const
 	{
-		type->ondropequips(eqslot);
+		type->drop_on_equips(eqslot);
 	}
 
-	void Icon::droponitems(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const
+	void Icon::drop_on_items(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const
 	{
-		type->ondropitems(tab, eqslot, slot, equip);
+		type->drop_on_items(tab, eqslot, slot, equip);
 	}
 
-	void Icon::startdrag(Point<int16_t> offset)
+	void Icon::start_drag(Point<int16_t> offset)
 	{
 		cursoroffset = offset;
 		dragged = true;
 	}
 
-	void Icon::resetdrag()
+	void Icon::reset()
 	{
 		dragged = false;
 	}

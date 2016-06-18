@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -35,18 +35,18 @@ namespace jrc
 		void update(const Physics& physics);
 
 		// Spawn a new character, if it has not been spawned yet.
-		void sendspawn(const CharSpawn& spawn);
+		void send_spawn(const CharSpawn& spawn);
 		// Remove a character.
-		void removechar(int32_t cid);
+		void remove_char(int32_t cid);
 		// Remove all characters.
 		void clear();
 
 		// Update a characters movement.
-		void movechar(int32_t cid, const std::vector<Movement>& movements);
+		void send_movement(int32_t cid, const std::vector<Movement>& movements);
 		// Update a characters look.
-		void updatelook(int32_t cid, const LookEntry& look);
+		void update_look(int32_t cid, const LookEntry& look);
 
-		Optional<OtherChar> getchar(int32_t cid);
+		Optional<OtherChar> get_char(int32_t cid);
 
 	private:
 		MapObjects chars;

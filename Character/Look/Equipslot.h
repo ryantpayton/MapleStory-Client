@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,8 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\..\Console.h"
-#include "..\..\Util\Enum.h"
+#include "..\..\Util\EnumMap.h"
 
 #include <cstdint>
 
@@ -26,47 +25,17 @@ namespace jrc
 	class Equipslot
 	{
 	public:
-		static const size_t LENGTH = 21;
 		enum Value
 		{
 			NONE, CAP, FACEACC, EYEACC, EARRINGS, TOP, PANTS,
 			SHOES, GLOVES, CAPE, SHIELD, WEAPON, RING, RING2,
-			RING3, RING4, PENDANT, TAMEDMOB, SADDLE, MEDAL, BELT
+			RING3, RING4, PENDANT, TAMEDMOB, SADDLE, MEDAL, BELT,
+			LENGTH
 		};
 
-		static EnumIterator<Value> getit(Value s = CAP, Value l = BELT)
-		{
-			return EnumIterator<Value>(s, l);
-		}
+		static Value byid(size_t id);
+		static Value byvalue(int16_t v);
 
-		static Value byid(size_t id)
-		{
-			return static_cast<Value>(id);
-		}
-
-		static Value byvalue(int16_t v)
-		{
-			for (auto it = getit(); it.hasnext(); it.increment())
-			{
-				Value value = it.get();
-				if (valueof(value) == v)
-					return value;
-			}
-
-			Console::get().print("Unhandled equip slot value: " + std::to_string(v));
-
-			return NONE;
-		}
-
-		static int16_t valueof(Value value)
-		{
-			static int16_t values[LENGTH] =
-			{
-				0, 1, 2, 3, 4, 5, 6, 
-				7, 8, 9, 10, 11, 12, 13, 
-				15, 16, 17, 18, 19, 49, 50
-			};
-			return values[value];
-		}
+		static const EnumMap<Value, int16_t> values;
 	};
 }

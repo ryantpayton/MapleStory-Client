@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -68,7 +68,7 @@ namespace jrc
 		}
 
 		// Return a string representation of the point.
-		std::string tostring() const
+		std::string to_string() const
 		{
 			return "(" + std::to_string(a) + "," + std::to_string(b) + ")";
 		}
@@ -81,25 +81,25 @@ namespace jrc
 		}
 
 		// Set the x-coordinate.
-		void setx(T v)
+		void set_x(T v)
 		{
 			a = v;
 		}
 
 		// Set the y-coordinate.
-		void sety(T v)
+		void set_y(T v)
 		{
 			b = v;
 		}
 
 		// Shift the x-coordinate by the specified amount.
-		void shiftx(T v)
+		void shift_x(T v)
 		{
 			a += v;
 		}
 
 		// Shift the y-coordinate by the specified amount.
-		void shifty(T v)
+		void shift_y(T v)
 		{
 			b += v;
 		}

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                               //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -88,7 +88,7 @@ namespace jrc
 		invpos = 0;
 	}
 
-	void EquipTooltip::setequip(const Equip* equip, int16_t ivp)
+	void EquipTooltip::set_equip(const Equip* equip, int16_t ivp)
 	{
 		if (ivp == invpos)
 			return;
@@ -99,15 +99,15 @@ namespace jrc
 			return;
 
 		const Clothing& cloth = equip->getcloth();
-		const CharStats& stats = Stage::get().getplayer().getstats();
+		const CharStats& stats = Stage::get().get_player().get_stats();
 		
-		filllength = 500;
+		height = 500;
 
 		itemicon = cloth.geticon(true);
 
 		for (auto& ms : requirements)
 		{
-			canequip[ms] = stats.getstat(ms) >= cloth.getreqstat(ms);
+			canequip[ms] = stats.get_stat(ms) >= cloth.getreqstat(ms);
 			std::string reqstr = std::to_string(cloth.getreqstat(ms));
 			reqstr.insert(0, 3 - reqstr.size(), '0');
 			reqstatstrings[ms] = reqstr;
@@ -127,23 +127,23 @@ namespace jrc
 			break;
 		case 1:
 			okjobs.push_back(1);
-			canequip[Maplestat::JOB] = (stats.getstat(Maplestat::JOB) / 100 == 1) || (stats.getstat(Maplestat::JOB) / 100 >= 20);
+			canequip[Maplestat::JOB] = (stats.get_stat(Maplestat::JOB) / 100 == 1) || (stats.get_stat(Maplestat::JOB) / 100 >= 20);
 			break;
 		case 2:
 			okjobs.push_back(2);
-			canequip[Maplestat::JOB] = stats.getstat(Maplestat::JOB) / 100 == 2;
+			canequip[Maplestat::JOB] = stats.get_stat(Maplestat::JOB) / 100 == 2;
 			break;
 		case 4:
 			okjobs.push_back(3);
-			canequip[Maplestat::JOB] = stats.getstat(Maplestat::JOB) / 100 == 3;
+			canequip[Maplestat::JOB] = stats.get_stat(Maplestat::JOB) / 100 == 3;
 			break;
 		case 8:
 			okjobs.push_back(4);
-			canequip[Maplestat::JOB] = stats.getstat(Maplestat::JOB) / 100 == 4;
+			canequip[Maplestat::JOB] = stats.get_stat(Maplestat::JOB) / 100 == 4;
 			break;
 		case 16:
 			okjobs.push_back(5);
-			canequip[Maplestat::JOB] = stats.getstat(Maplestat::JOB) / 100 == 5;
+			canequip[Maplestat::JOB] = stats.get_stat(Maplestat::JOB) / 100 == 5;
 			break;
 		default:
 			canequip[Maplestat::JOB] = false;
@@ -154,26 +154,26 @@ namespace jrc
 		{
 		case Equip::POT_HIDDEN:
 			potflag = Text(Text::A11M, Text::CENTER, Text::RED);
-			potflag.settext("(Hidden Potential)");
+			potflag.change_text("(Hidden Potential)");
 			break;
 		case Equip::POT_RARE:
 			potflag = Text(Text::A11M, Text::CENTER, Text::WHITE);
-			potflag.settext("(Rare Item)");
+			potflag.change_text("(Rare Item)");
 			break;
 		case Equip::POT_EPIC:
 			potflag = Text(Text::A11M, Text::CENTER, Text::WHITE);
-			potflag.settext("(Epic Item)");
+			potflag.change_text("(Epic Item)");
 			break;
 		case Equip::POT_UNIQUE:
 			potflag = Text(Text::A11M, Text::CENTER, Text::WHITE);
-			potflag.settext("(Unique Item)");
+			potflag.change_text("(Unique Item)");
 			break;
 		case Equip::POT_LEGENDARY:
 			potflag = Text(Text::A11M, Text::CENTER, Text::WHITE);
-			potflag.settext("(Legendary Item)");
+			potflag.change_text("(Legendary Item)");
 			break;
 		default:
-			filllength -= 16;
+			height -= 16;
 		}
 
 		Text::Color namecolor;
@@ -198,22 +198,21 @@ namespace jrc
 			namecolor = Text::WHITE;
 		}
 
-		std::string namestr = cloth.getname();
-		if (equip->getlevel() > 0)
+		std::string namestr = cloth.get_name();
+		if (equip->get_level() > 0)
 		{
 			namestr.append(" (+");
-			namestr.append(std::to_string(equip->getlevel()));
+			namestr.append(std::to_string(equip->get_level()));
 			namestr.append(")");
 		}
-		name = { Text::A12B, Text::CENTER, namecolor };
-		name.settext(namestr, 400);
+		name = { Text::A12B, Text::CENTER, namecolor, namestr, 400 };
 
 		std::string desctext = cloth.getdesc();
 		hasdesc = desctext.size() > 0;
 		if (hasdesc)
 		{
-			desc = Itemtext(desctext, 250);
-			filllength += desc.getheight() + 10;
+			desc = { Text::A12M, Text::LEFT, Text::WHITE, desctext, 250 };
+			height += desc.height() + 10;
 		}
 
 		category = { Text::A11L, Text::LEFT, Text::WHITE, "CATEGORY: " + cloth.gettype() };
@@ -226,13 +225,13 @@ namespace jrc
 		}
 		else
 		{
-			filllength -= 18;
+			height -= 18;
 		}
 
-		hasslots = (equip->getslots() > 0) || (equip->getlevel() > 0);
+		hasslots = (equip->get_slots() > 0) || (equip->get_level() > 0);
 		if (hasslots)
 		{
-			slots = { Text::A11L, Text::LEFT, Text::WHITE, "UPGRADES AVAILABLE: " + std::to_string(equip->getslots()) };
+			slots = { Text::A11L, Text::LEFT, Text::WHITE, "UPGRADES AVAILABLE: " + std::to_string(equip->get_slots()) };
 
 			std::string vicious = std::to_string(equip->getvicious());
 			if (equip->getvicious() > 1)
@@ -241,16 +240,16 @@ namespace jrc
 		}
 		else
 		{
-			filllength -= 36;
+			height -= 36;
 		}
 
 		statlabels.clear();
 		for (Equipstat::Value es = Equipstat::STR; es <= Equipstat::JUMP; es = static_cast<Equipstat::Value>(es + 1))
 		{
-			if (equip->getstat(es) > 0)
+			if (equip->get_stat(es) > 0)
 			{
-				int16_t delta = equip->getstat(es) - cloth.getdefstat(es);
-				std::string statstr = std::to_string(equip->getstat(es));
+				int16_t delta = equip->get_stat(es) - cloth.getdefstat(es);
+				std::string statstr = std::to_string(equip->get_stat(es));
 				if (delta != 0)
 				{
 					statstr.append(" (");
@@ -261,7 +260,7 @@ namespace jrc
 			}
 			else
 			{
-				filllength -= 18;
+				height -= 18;
 			}
 		}
 	}
@@ -272,70 +271,75 @@ namespace jrc
 			return;
 
 		top.draw({ pos });
-		mid.draw({ pos + Point<int16_t>(0, 13), Point<int16_t>(0, filllength) });
-		bot.draw({ pos + Point<int16_t>(0, filllength + 13) });
+		mid.draw({ pos + Point<int16_t>(0, 13), Point<int16_t>(0, height) });
+		bot.draw({ pos + Point<int16_t>(0, height + 13) });
 
 		name.draw(pos + Point<int16_t>(130, 3));
 		if (prank != Equip::POT_NONE)
 		{
 			potflag.draw(pos + Point<int16_t>(130, 20));
-			pos.shifty(16);
+			pos.shift_y(16);
 		}
-		pos.shifty(26);
+		pos.shift_y(26);
 
 		line.draw({ pos });
 
 		base.draw(pos + Point<int16_t>(10, 10));
 		shade.draw(pos + Point<int16_t>(10, 10));
 		itemicon.draw({ pos + Point<int16_t>(20, 82), 2.0f, 2.0f });
-		potential.at(prank).draw(pos + Point<int16_t>(10, 10));
+		potential[prank].draw(pos + Point<int16_t>(10, 10));
 		cover.draw(pos + Point<int16_t>(10, 10));
 
-		pos.shifty(12);
+		pos.shift_y(12);
 
-		for (auto& ms : requirements)
+		for (Maplestat::Value ms : requirements)
 		{
-			Point<int16_t> reqpos = reqstatpositions.at(ms);
-			bool reqok = canequip.at(ms);
-			reqstattextures.at(ms).at(reqok).draw({ pos + reqpos });
-			reqset.at(reqok).draw(reqstatstrings.at(ms), 6, { pos + reqpos + Point<int16_t>(54, 0) });
+			Point<int16_t> reqpos = reqstatpositions[ms];
+			bool reqok = canequip[ms];
+			reqstattextures[ms][reqok].draw({ pos + reqpos });
+			reqset[reqok].draw(reqstatstrings[ms], 6, { pos + reqpos + Point<int16_t>(54, 0) });
 		}
 
-		pos.shifty(88);
+		pos.shift_y(88);
 
-		DrawArgument jobargs = { pos + Point<int16_t>(8, 0) };
-		jobsback.draw(jobargs);
+		Point<int16_t> job_position(pos + Point<int16_t>(8, 0));
+		jobsback.draw(job_position);
 		for (auto& jbit : okjobs)
 		{
-			jobs.at(canequip.at(Maplestat::JOB)).at(jbit).draw(jobargs);
+			jobs[canequip[Maplestat::JOB]]
+				.at(jbit)
+				.draw(job_position);
 		}
 
 		line.draw({ pos + Point<int16_t>(0, 30) });
 
-		pos.shifty(32);
+		pos.shift_y(32);
 
 		category.draw(pos + Point<int16_t>(10, 0));
 
-		pos.shifty(18);
+		pos.shift_y(18);
 
 		if (isweapon)
 		{
 			wepspeed.draw(pos + Point<int16_t>(10, 0));
-			pos.shifty(18);
+			pos.shift_y(18);
 		}
 
-		for (auto& stit : statlabels)
+		for (const Text& label : statlabels.values())
 		{
-			stit.second.draw(pos + Point<int16_t>(10, 0));
-			pos.shifty(18);
+			if (label.empty())
+				continue;
+
+			label.draw(pos + Point<int16_t>(10, 0));
+			pos.shift_y(18);
 		}
 
 		if (hasslots)
 		{
 			slots.draw(pos + Point<int16_t>(10, 0));
-			pos.shifty(18);
+			pos.shift_y(18);
 			hammers.draw(pos + Point<int16_t>(10, 0));
-			pos.shifty(18);
+			pos.shift_y(18);
 		}
 
 		if (hasdesc)

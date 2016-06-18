@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -111,26 +111,26 @@ namespace jrc
 		~Inventory();
 
 		// Recalculate sums of equip stats.
-		void recalcstats(Weapon::Type weapontype);
+		void recalc_stats(Weapon::Type weapontype);
 		// Add total stats to the character stats.
-		void addtotalsto(CharStats& stats) const;
+		void add_equipstats(CharStats& stats) const;
 		// Set the meso amount.
-		void setmeso(int64_t meso);
+		void set_meso(int64_t meso);
 		// Set the number of slots for a given inventory.
-		void setslots(Type type, uint8_t value);
+		void set_slots(Type type, uint8_t value);
 
 		// Add a general item.
-		void additem(
+		void add_item(
 			Type type, int16_t slot, int32_t itemid, bool cash,
 			int64_t uniqueid, int64_t expire, uint16_t coundt, const std::string& owner, int16_t flag
 			);
 		// Add a pet item.
-		void addpet(
+		void add_pet(
 			Type type, int16_t slot, int32_t itemid, bool cash, int64_t uniqueid,
 			int64_t expire, const std::string& name, int8_t level, int16_t closeness, int8_t fullness
 			);
 		// Add an equip item.
-		void addequip(
+		void add_equip(
 			Type type, int16_t slot, int32_t itemid, bool cash, int64_t uniqueid, 
 			int64_t expire, uint8_t slots, uint8_t level, const EnumMap<Equipstat::Value, uint16_t>& stats,
 			const std::string& owner, int16_t flag, uint8_t itemlevel, uint16_t itemexp, int32_t vicious
@@ -143,35 +143,35 @@ namespace jrc
 		// Modify the inventory with info from a packet.
 		void modify(Type type, int16_t pos, int8_t mode, int16_t arg, Movement movement);
 		// Change the quantity of an item.
-		bool changecount(Type type, int16_t slot, int16_t count);
+		bool change_count(Type type, int16_t slot, int16_t count);
 
 		// Check if the use inventory contains at least one projectile.
-		bool hasprojectile() const;
+		bool has_projectile() const;
 		// Return if an equip is equipped in the specfied slot.
-		bool hasequipped(Equipslot::Value slot) const;
+		bool has_equipped(Equipslot::Value slot) const;
 		// Return the currently active projectile slot.
-		int16_t getbulletslot() const;
+		int16_t get_bulletslot() const;
 		// Return the count of the currently active projectile.
-		uint16_t getbulletcount() const;
+		uint16_t get_bulletcount() const;
 		// Return the itemid of the currently active projectile.
-		int32_t getbulletid() const;
+		int32_t get_bulletid() const;
 		// Return the number of slots for the specified inventory.
-		uint8_t getslots(Type type) const;
+		uint8_t get_slots(Type type) const;
 		// Return a total stat.
-		uint16_t getstat(Equipstat::Value type) const;
+		uint16_t get_stat(Equipstat::Value type) const;
 		// Return the amount of meso.
-		int64_t getmeso() const;
+		int64_t get_meso() const;
 		// Find a free slot for the specified equip.
-		Equipslot::Value findequipslot(int32_t itemid) const;
+		Equipslot::Value find_equipslot(int32_t itemid) const;
 		// Find a free slot in the specfified inventory.
-		int16_t findslot(Type type) const;
+		int16_t find_free_slot(Type type) const;
 		// Return the first slot which contains the specified item.
-		int16_t finditem(Type type, int32_t itemid) const;
+		int16_t find_item(Type type, int32_t itemid) const;
 
 		// Obtain a pointer to the item at the specified type and slot.
-		Optional<Item> getitem(Type type, int16_t slot) const;
+		Optional<Item> get_item(Type type, int16_t slot) const;
 		// Obtain a pointer to the equip at the specified type and slot.
-		Optional<Equip> getequip(Type type, int16_t slot) const;
+		Optional<Equip> get_equip(Type type, int16_t slot) const;
 
 	private:
 		void add(Type type, int16_t slot, Item* toadd);

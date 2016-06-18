@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -111,7 +111,7 @@ namespace jrc
 		return handposmap[stance].count(frame) ? handposmap[stance].at(frame) : Point<int16_t>();
 	}
 
-	Point<int16_t> BodyDrawinfo::getheadpos(Stance::Value stance, uint8_t frame) const
+	Point<int16_t> BodyDrawinfo::get_headpos(Stance::Value stance, uint8_t frame) const
 	{
 		return headposmap[stance].count(frame) ? headposmap[stance].at(frame) : Point<int16_t>();
 	}
@@ -136,7 +136,7 @@ namespace jrc
 		return stancedelays[stance].count(frame) ? stancedelays[stance].at(frame) : 100;
 	}
 
-	uint16_t BodyDrawinfo::getattackdelay(std::string action, size_t no) const
+	uint16_t BodyDrawinfo::get_attackdelay(std::string action, size_t no) const
 	{
 		if (attackdelays.count(action))
 		{

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2016 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -33,6 +33,7 @@ namespace jrc
 		messages[SKILL_NOARROWS] = "You do not have enough arrows to use this attack.";
 		messages[SKILL_NOBULLETS] = "You do not have enough bullets to use this attack.";
 		messages[SKILL_NOSTARS] = "You do not have enough throwing stars to use this attack.";
+		messages[SKILL_COOLDOWN] = "You cannot use this skill as it is on cooldown.";
 
 		// Scrolling result
 		messages[SCROLL_SUCCESS] = "The scroll lights up and it's mysterious powers have been transferred to the item.";
@@ -56,9 +57,8 @@ namespace jrc
 		if (type == Messages::NONE)
 			return;
 
-		UI::get().with_element<UIStatusbar>([&](auto& sb) {
-			sb.displaymessage(type, Chatbar::RED);
-		});
+		UI::get().get_element<UIStatusbar>()
+			.if_present(&UIStatusbar::display_message, type, UIChatbar::RED);
 	}
 
 
@@ -75,6 +75,8 @@ namespace jrc
 			return Messages::SKILL_HPCOST;
 		case SpecialMove::FBR_MPCOST:
 			return Messages::SKILL_MPCOST;
+		case SpecialMove::FBR_COOLDOWN:
+			return Messages::SKILL_COOLDOWN;
 		case SpecialMove::FBR_BULLETCOST:
 			return message_by_weapon(weapon);
 		default:

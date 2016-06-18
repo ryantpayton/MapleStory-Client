@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -41,7 +41,7 @@ namespace jrc
 		else
 		{
 			icon = DataFactory::get()
-				.getitemdata(-buffid)
+				.get_itemdata(-buffid)
 				.geticon(true);
 		}
 	}
@@ -83,7 +83,7 @@ namespace jrc
 		for (auto& icon : icons)
 		{
 			icon.second.draw(icpos, alpha);
-			icpos.shiftx(-32);
+			icpos.shift_x(-32);
 		}
 	}
 
@@ -103,9 +103,9 @@ namespace jrc
 		}
 	}
 
-	Cursor::State UIBuffList::sendmouse(bool pressed, Point<int16_t> cursorposition)
+	Cursor::State UIBuffList::send_cursor(bool pressed, Point<int16_t> cursorposition)
 	{
-		return UIElement::sendmouse(pressed, cursorposition);
+		return UIElement::send_cursor(pressed, cursorposition);
 	}
 
 	void UIBuffList::add_buff(int32_t buffid, int32_t duration)

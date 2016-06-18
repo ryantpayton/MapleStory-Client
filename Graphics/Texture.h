@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -34,11 +34,11 @@ namespace jrc
 		void draw(const DrawArgument& args) const;
 		void shift(Point<int16_t> amount);
 
-		bool isloaded() const;
+		bool is_loaded() const;
 		int16_t width() const;
 		int16_t height() const;
-		Point<int16_t> getorigin() const;
-		Point<int16_t> getdimensions() const;
+		Point<int16_t> get_origin() const;
+		Point<int16_t> get_dimensions() const;
 
 	private:
 		nl::bitmap bitmap;

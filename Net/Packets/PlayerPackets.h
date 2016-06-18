@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,7 +17,6 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "..\OutPacket.h"
-#include "..\SendOpcodes.h"
 
 #include "..\..\Character\Maplestat.h"
 
@@ -30,8 +29,21 @@ namespace jrc
 	public:
 		SpendApPacket(Maplestat::Value stat) : OutPacket(SPEND_AP)
 		{
-			skip(4);
-			writeint(Maplestat::valueof(stat));
+			writetime();
+			writeint(Maplestat::values[stat]);
+		}
+	};
+
+
+	// Requests a skill level increase by spending sp.
+	// Opcode: SPEND_SP(90)
+	class SpendSpPacket : public OutPacket
+	{
+	public:
+		SpendSpPacket(int32_t skill_id) : OutPacket(SPEND_SP)
+		{
+			writetime();
+			writeint(skill_id);
 		}
 	};
 }

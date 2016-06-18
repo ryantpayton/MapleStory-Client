@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2016 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -36,10 +36,12 @@ namespace jrc
 		if (msgtype == 0 && recv.length() > 0)
 			style = recv.read_short();
 
-		UI::get().with_element<UINpcTalk>([&](auto& nt) {
-			nt.settext(npcid, msgtype, style, speaker, text);
-		});
+		UI::get().add(Element<UINpcTalk>());
 		UI::get().enable();
+
+		auto npctalk = UI::get().get_element<UINpcTalk>();
+		if (npctalk)
+			npctalk->change_text(npcid, msgtype, style, speaker, text);
 	}
 
 
@@ -70,7 +72,7 @@ namespace jrc
 			{
 				int16_t buyable = recv.read_short();
 
-				shop.additem(itemid, price, pitch, time, buyable);
+				shop.add_item(itemid, price, pitch, time, buyable);
 			}
 			else
 			{
@@ -79,7 +81,7 @@ namespace jrc
 				int16_t rechargeprice = recv.read_short();
 				int16_t slotmax = recv.read_short();
 
-				shop.addrechargable(itemid, price, pitch, time, rechargeprice, slotmax);
+				shop.add_rechargable(itemid, price, pitch, time, rechargeprice, slotmax);
 			}
 		}
 	}

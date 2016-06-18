@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -46,7 +46,7 @@ namespace jrc
 		bool open(const char* adress, const char* port);
 		bool close();
 		size_t receive(bool* connected);
-		const int8_t* getbuffer() const;
+		const int8_t* get_buffer() const;
 		bool dispatch(const int8_t* bytes, size_t length);
 
 	private:

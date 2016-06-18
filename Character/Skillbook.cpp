@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,41 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Skillbook.h"
 
-#include "..\Timer.h"
+#include "..\Data\SkillData.h"
 
-#include <algorithm>
+#include "..\Timer.h"
 
 namespace jrc
 {
 	void Skillbook::set_skill(int32_t id, int32_t level, int32_t mlevel, int64_t expire)
 	{
 		skillentries[id] = { level, mlevel, expire };
-	}
-
-	void Skillbook::set_cd(int32_t id, int32_t cd)
-	{
-		cooldowns[id] = cd;
-	}
-
-	bool Skillbook::is_cooling(int32_t id)
-	{
-		auto cditer = cooldowns.find(id);
-		if (cditer != cooldowns.end())
-		{
-			if (cditer->second <= Timer::get().seconds())
-			{
-				cooldowns.erase(cditer);
-				return false;
-			}
-			else
-			{
-				return true;
-			}
-		}
-		else
-		{
-			return false;
-		}
 	}
 
 	bool Skillbook::has_skill(int32_t id) const
@@ -61,12 +35,29 @@ namespace jrc
 
 	int32_t Skillbook::get_level(int32_t id) const
 	{
-		return has_skill(id) ? skillentries.at(id).level : 0;
+		auto iter = skillentries.find(id);
+		if (iter == skillentries.end())
+			return 0;
+
+		return iter->second.level;
 	}
 
 	int32_t Skillbook::get_masterlevel(int32_t id) const
 	{
-		return has_skill(id) ? skillentries.at(id).masterlevel : 0;
+		auto iter = skillentries.find(id);
+		if (iter == skillentries.end())
+			return 0;
+
+		return iter->second.masterlevel;
+	}
+
+	int64_t Skillbook::get_expiration(int32_t id) const
+	{
+		auto iter = skillentries.find(id);
+		if (iter == skillentries.end())
+			return 0;
+
+		return iter->second.expiration;
 	}
 
 	std::map<int32_t, int32_t> Skillbook::collect_passives() const
@@ -74,8 +65,7 @@ namespace jrc
 		std::map<int32_t, int32_t> passives;
 		for (auto& iter : skillentries)
 		{
-			bool passive = is_passive(iter.first);
-			if (passive)
+			if (SkillData::get(iter.first).is_passive())
 			{
 				passives.emplace(iter.first, iter.second.level);
 			}

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2016 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -34,10 +34,10 @@ namespace jrc
 		attack.skill = 0;
 		attack.mobcount = 1;
 		attack.hitcount = 1;
-		attack.stance = user.getlook().getattacklook().stance;
+		attack.stance = user.get_look().getattacklook().stance;
 		if (attack.type == Attack::CLOSE)
 		{
-			attack.range = user.getlook().getattacklook().range;
+			attack.range = user.get_look().getattacklook().range;
 		}
 	}
 
@@ -46,13 +46,13 @@ namespace jrc
 		return true;
 	}
 
-	int32_t RegularAttack::getid() const
+	int32_t RegularAttack::get_id() const
 	{
 		return 0;
 	}
 
-	SpecialMove::ForbidReason RegularAttack::canuse(int32_t, Weapon::Type weapon, 
-		const CharJob&, uint16_t, uint16_t, uint16_t bullets) const {
+	SpecialMove::ForbidReason RegularAttack::can_use(int32_t, Weapon::Type weapon, 
+		const Job&, uint16_t, uint16_t, uint16_t bullets) const {
 
 		switch (weapon)
 		{

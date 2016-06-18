@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -25,6 +25,7 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 
 namespace jrc
 {
@@ -53,34 +54,39 @@ namespace jrc
 			STATSINFO,
 			ITEMINVENTORY,
 			EQUIPINVENTORY,
+			SKILLBOOK
 		};
 
-		virtual ~UIElement();
+		virtual ~UIElement() {}
 
 		virtual void draw(float inter) const;
 		virtual void update();
 
 		void makeactive();
 		void deactivate();
-		bool isactive() const;
+		bool is_active() const;
 
-		virtual void togglehide();
-		virtual void buttonpressed(uint16_t buttonid);
-		virtual void sendicon(const Icon& icon, Point<int16_t> cursorpos);
+		virtual void toggle_active();
+		virtual Button::State button_pressed(uint16_t buttonid);
+		virtual void send_icon(const Icon& icon, Point<int16_t> cursorpos);
 
 		virtual void doubleclick(Point<int16_t> cursorpos);
-		virtual bool isinrange(Point<int16_t> cursorpos) const;
-		virtual bool cursorleave(bool clicked, Point<int16_t> cursorpos);
-		virtual Cursor::State sendmouse(bool clicked, Point<int16_t> cursorpos);
+		virtual bool is_in_range(Point<int16_t> cursorpos) const;
+		virtual bool remove_cursor(bool clicked, Point<int16_t> cursorpos);
+		virtual Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos);
 
 	protected:
+		UIElement(Point<int16_t> position, Point<int16_t> dimension, bool active);
+		UIElement(Point<int16_t> position, Point<int16_t> dimension);
 		UIElement();
 
-		Point<int16_t> dimension;
+		void draw_sprites(float alpha) const;
+		void draw_buttons(float alpha) const;
+
 		std::map<uint16_t, std::unique_ptr<Button>> buttons;
 		std::vector<Sprite> sprites;
-
 		Point<int16_t> position;
+		Point<int16_t> dimension;
 		bool active;
 	};
 }

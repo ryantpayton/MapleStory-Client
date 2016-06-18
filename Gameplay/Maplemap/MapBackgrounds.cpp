@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -35,8 +35,8 @@ namespace jrc
 		cy = src["cy"];
 		rx = src["rx"];
 		ry = src["ry"];
-		moveobj.setx(src["x"]);
-		moveobj.sety(src["y"]);
+		moveobj.set_x(src["x"]);
+		moveobj.set_y(src["y"]);
 
 		Type type = typebyid(src["type"]);
 		settype(type);
@@ -45,9 +45,9 @@ namespace jrc
 	void Background::settype(Type type)
 	{
 		if (cx == 0)
-			cx = animation.getdimensions().x();
+			cx = animation.get_dimensions().x();
 		if (cy == 0)
-			cy = animation.getdimensions().y();
+			cy = animation.get_dimensions().y();
 
 		htile = 1;
 		vtile = 1;
@@ -87,23 +87,23 @@ namespace jrc
 		double x;
 		if (moveobj.hmobile())
 		{
-			x = moveobj.getabsx(viewx, alpha);
+			x = moveobj.get_absolute_x(viewx, alpha);
 		}
 		else
 		{
-			double shiftx = rx * (WOFFSET - viewx) / 100 + WOFFSET;
-			x = moveobj.getabsx(shiftx, alpha);
+			double shift_x = rx * (WOFFSET - viewx) / 100 + WOFFSET;
+			x = moveobj.get_absolute_x(shift_x, alpha);
 		}
 
 		double y;
 		if (moveobj.vmobile())
 		{
-			y = moveobj.getabsy(viewy, alpha);
+			y = moveobj.get_absolute_y(viewy, alpha);
 		}
 		else
 		{
-			double shifty = ry * (HOFFSET - viewy) / 100 + HOFFSET;
-			y = moveobj.getabsy(shifty, alpha);
+			double shift_y = ry * (HOFFSET - viewy) / 100 + HOFFSET;
+			y = moveobj.get_absolute_y(shift_y, alpha);
 		}
 
 		if (htile > 1)

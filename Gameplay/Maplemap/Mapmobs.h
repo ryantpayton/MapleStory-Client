@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -39,30 +39,30 @@ namespace jrc
 		void update(const Physics& physics);
 
 		// Spawn a new mob.
-		void sendspawn(const MobSpawn& spawn);
+		void send_spawn(const MobSpawn& spawn);
 		// Kill a mob.
-		void killmob(int32_t oid, int8_t effect);
+		void kill_mob(int32_t oid, int8_t effect);
 		// Remove all mobs.
 		void clear();
 
 		// Update a mob's hp display.
-		void sendmobhp(int32_t oid, int8_t percent, uint16_t playerlevel);
+		void send_mobhp(int32_t oid, int8_t percent, uint16_t playerlevel);
 		// Update who a mob is controlled by.
-		void setcontrol(int32_t oid, bool control);
+		void set_control(int32_t oid, bool control);
 		// Update a mob's movements.
-		void movemob(int32_t oid, Point<int16_t> start, const Movement& movement);
+		void send_movement(int32_t oid, Point<int16_t> start, const Movement& movement);
 
 		// Calculate the results of an attack.
-		AttackResult sendattack(const Attack& attack);
+		AttackResult send_attack(const Attack& attack);
 		// Show the results of an attack.
-		void showresult(const Char& user, const SpecialMove& skill, const AttackResult& result);
+		void show_result(const Char& user, const SpecialMove& skill, const AttackResult& result);
 
-		Optional<Mob> getmob(int32_t oid);
-		Optional<const Mob> getmob(int32_t oid) const;
+		Optional<Mob> get_mob(int32_t oid);
+		Optional<const Mob> get_mob(int32_t oid) const;
 
 	private:
-		void applyeffect(const DamageEffect& effect);
-		std::vector<int32_t> findclosest(Rectangle<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const;
+		void apply_effect(const DamageEffect& effect);
+		std::vector<int32_t> find_closest(Rectangle<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const;
 
 		MapObjects mobs;
 		std::list<DamageNumber> damagenumbers;

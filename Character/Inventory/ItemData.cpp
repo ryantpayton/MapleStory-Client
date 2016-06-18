@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -109,12 +109,12 @@ namespace jrc
 		return category;
 	}
 
-	bool ItemData::isloaded() const
+	bool ItemData::is_loaded() const
 	{
 		return loaded;
 	}
 
-	int32_t ItemData::getid() const
+	int32_t ItemData::get_id() const
 	{
 		return itemid;
 	}
@@ -124,7 +124,7 @@ namespace jrc
 		return price;
 	}
 
-	std::string ItemData::getname() const
+	std::string ItemData::get_name() const
 	{
 		return name;
 	}

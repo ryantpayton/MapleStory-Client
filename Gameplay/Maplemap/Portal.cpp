@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -42,7 +42,7 @@ namespace jrc
 		animation->draw(position + viewpos, inter);
 	}
 
-	std::string Portal::getname() const
+	std::string Portal::get_name() const
 	{
 		return name;
 	}
@@ -52,7 +52,7 @@ namespace jrc
 		return type;
 	}
 
-	Point<int16_t> Portal::getposition() const
+	Point<int16_t> Portal::get_position() const
 	{
 		return position;
 	}

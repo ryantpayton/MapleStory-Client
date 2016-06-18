@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -55,6 +55,9 @@ namespace jrc
 
 		switch (state)
 		{
+		case CANCLICK:
+		case CANCLICK2:
+		case CANGRAB:
 		case CLICKING:
 		case GRABBING:
 			hide_counter = 0;
@@ -65,7 +68,7 @@ namespace jrc
 		}
 	}
 
-	void Cursor::setstate(State s)
+	void Cursor::set_state(State s)
 	{
 		if (state != s)
 		{
@@ -76,18 +79,18 @@ namespace jrc
 		}
 	}
 
-	void Cursor::setposition(Point<int16_t> pos)
+	void Cursor::set_position(Point<int16_t> pos)
 	{
 		position = pos;
 		hide_counter = 0;
 	}
 
-	Cursor::State Cursor::getstate() const
+	Cursor::State Cursor::get_state() const
 	{
 		return state;
 	}
 
-	Point<int16_t> Cursor::getposition() const
+	Point<int16_t> Cursor::get_position() const
 	{
 		return position;
 	}

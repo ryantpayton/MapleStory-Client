@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -80,51 +80,53 @@ namespace jrc
 		void update();
 
 		// Add a spawn to the spawn queue.
-		void queuespawn(const Spawn* spawn);
+		void push_spawn(std::unique_ptr<const Spawn> spawn);
 		// Show an attack.
-		void showattack(int32_t cid, const AttackResult& attack);
+		void show_attack(int32_t cid, const AttackResult& attack);
 		// Show a buff effect.
-		void showbuff(int32_t cid, int32_t skillid, int8_t level);
+		void show_buff(int32_t cid, int32_t skillid, int8_t level);
 		// Show a buff effect.
-		void showplayerbuff(int32_t skillid);
+		void show_player_buff(int32_t skillid);
+
+		// Make the player use a special move.
+		void use_move(int32_t moveid);
 
 		// Send key input to the stage.
-		void sendkey(Keyboard::Keytype keytype, int32_t keycode, bool pressed);
+		void send_key(Keyboard::Keytype keytype, int32_t keycode, bool pressed);
 		// Send mouse input to the stage.
-		Cursor::State sendmouse(bool pressed, Point<int16_t> position);
+		Cursor::State send_cursor(bool pressed, Point<int16_t> position);
 
 		// Check if the specified id is the player's id.
-		bool isplayer(int32_t cid) const;
+		bool is_player(int32_t cid) const;
 
 		// Returns a reference to the npcs on the current map.
-		MapNpcs& getnpcs();
+		MapNpcs& get_npcs();
 		// Returns a reference to the other characters on the current map.
-		MapChars& getchars();
+		MapChars& get_chars();
 		// Returns a reference to the mobs on the current map.
-		MapMobs& getmobs();
+		MapMobs& get_mobs();
 		// Returns a reference to the drops on the current map.
-		MapDrops& getdrops();
+		MapDrops& get_drops();
 		// Returns a reference to the Player.
-		Player& getplayer();
+		Player& get_player();
 
 		// Return a pointer to a character, possibly the player.
-		Optional<Char> getcharacter(int32_t cid);
+		Optional<Char> get_character(int32_t cid);
 
 	private:
 		void pollspawns();
 		void pollattacks();
 		void loadmap();
 		void respawn();
-		void checkportals();
-		void checkseats();
-		void checkladders(bool up);
-		void checkdrops();
-		void usemove(int32_t moveid);
-		void applymove(const SpecialMove& move);
-		void applyusemovement(const SpecialMove& move);
-		void applyresultmovement(const SpecialMove& move, const AttackResult& result);
-		void applyrush(const AttackResult& result);
-		const SpecialMove& getmove(int32_t moveid);
+		void check_portals();
+		void check_seats();
+		void check_ladders(bool up);
+		void check_drops();
+		void apply_move(const SpecialMove& move);
+		void apply_use_movement(const SpecialMove& move);
+		void apply_result_movement(const SpecialMove& move, const AttackResult& result);
+		void apply_rush(const AttackResult& result);
+		const SpecialMove& get_move(int32_t moveid);
 
 		enum State
 		{

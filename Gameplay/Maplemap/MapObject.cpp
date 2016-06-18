@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -27,21 +27,21 @@ namespace jrc
 
 	int8_t MapObject::update(const Physics& physics)
 	{
-		physics.moveobject(phobj);
+		physics.move_object(phobj);
 		return phobj.fhlayer;
 	}
 
-	void MapObject::setposition(int16_t x, int16_t y)
+	void MapObject::set_position(int16_t x, int16_t y)
 	{
-		phobj.setx(x);
-		phobj.sety(y);
+		phobj.set_x(x);
+		phobj.set_y(y);
 	}
 
-	void MapObject::setposition(Point<int16_t> position)
+	void MapObject::set_position(Point<int16_t> position)
 	{
 		int16_t x = position.x();
 		int16_t y = position.y();
-		setposition(x, y);
+		set_position(x, y);
 	}
 
 	void MapObject::makeactive()
@@ -54,27 +54,27 @@ namespace jrc
 		active = false;
 	}
 
-	bool MapObject::isactive() const
+	bool MapObject::is_active() const
 	{
 		return active;
 	}
 
-	int8_t MapObject::getlayer() const
+	int8_t MapObject::get_layer() const
 	{
 		return phobj.fhlayer;
 	}
 
-	int32_t MapObject::getoid() const
+	int32_t MapObject::get_oid() const
 	{
 		return oid;
 	}
 
-	Point<int16_t> MapObject::getposition() const
+	Point<int16_t> MapObject::get_position() const
 	{
-		return phobj.getposition();
+		return phobj.get_position();
 	}
 
-	PhysicsObject& MapObject::getphobj()
+	PhysicsObject& MapObject::get_phobj()
 	{
 		return phobj;
 	}

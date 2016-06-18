@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,16 +17,16 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Skill.h"
 
-#include "..\..\Data\DataFactory.h"
 #include "..\..\Util\Misc.h"
 
-#include "nlnx\node.hpp"
-#include "nlnx\nx.hpp"
+#include <nlnx\node.hpp>
+#include <nlnx\nx.hpp>
 
 namespace jrc
 {
 	Skill::Skill(int32_t id)
-	{
+		: data(SkillData::get(id)) {
+
 		skillid = id;
 
 		std::string strid;
@@ -40,68 +40,8 @@ namespace jrc
 		}
 		nl::node src = nl::nx::skill[strid.substr(0, 3) + ".img"]["skill"][strid];
 
-		int32_t reqw = src["weapon"];
-		reqweapon = Weapon::typebyvalue(100 + reqw);
-
-		element = src["elemAttr"];
-
-		/*
-		affected = src["affected"];
-
-		preparestance = src["prepare"]["action"];
-		preparetime = src["prepare"]["time"];*/
-
 		projectile = true;
 		overregular = false;
-		offensive = false;
-		passive = (skillid % 10000) / 1000 == 0;
-
-		for (nl::node sub : src["level"])
-		{
-			Level level;
-
-			bool hasdamage = sub["damage"].data_type() == nl::node::type::integer;
-			bool hasmad = sub["mad"].data_type() == nl::node::type::integer;
-			bool hasfixdamage = sub["fixdamage"].data_type() == nl::node::type::integer;
-
-			level.damage = sub["damage"];
-			level.damage /= 100;
-			level.matk = sub["mad"];
-
-			offensive = !passive && (hasdamage || hasmad || hasfixdamage);
-
-			if (offensive)
-			{
-				level.fixdamage = sub["fixdamage"];
-				level.mastery = sub["mastery"];
-				level.attackcount = sub["attackCount"];
-				if (level.attackcount == 0)
-					level.attackcount = 1;
-				level.bulletcount = sub["bulletCount"];
-				if (level.bulletcount == 0)
-					level.bulletcount = 1;
-				level.bulletcost = sub["bulletConsume"];
-				if (level.bulletcost == 0)
-					level.bulletcost = level.bulletcount;
-				level.mobcount = sub["mobCount"];
-				if (level.mobcount == 0)
-					level.mobcount = 1;
-			}
-			level.chance = sub["prop"];
-			if (level.chance <= 0.0f)
-				level.chance = 100.0f;
-			level.chance /= 100;
-			level.hpcost = sub["hpCon"];
-			level.mpcost = sub["mpCon"];
-			level.hrange = sub["range"];
-			if (level.hrange <= 0.0f)
-				level.hrange = 100.0f;
-			level.hrange /= 100;
-			level.range = sub;
-
-			int32_t lvlid = string_conversion::or_default<int32_t>(sub.name(), -1);
-			levels[lvlid] = level;
-		}
 
 		sound = std::make_unique<SingleSkillSound>(strid);
 
@@ -175,7 +115,7 @@ namespace jrc
 		{
 			action = std::make_unique<SingleAction>(src);
 		}
-		else if (offensive)
+		else if (data.is_offensive())
 		{
 			bool bylevel = src["level"]["1"]["action"].data_type() == nl::node::type::string;
 			if (bylevel)
@@ -214,50 +154,48 @@ namespace jrc
 	{
 		attack.skill = skillid;
 
-		int32_t lv = user.getskilllevel(skillid);
-		auto level = Optional<Level>::from(levels, lv);
-		if (level)
+		int32_t level = user.get_skilllevel(skillid);
+		const SkillData::Stats stats = data.get_stats(level);
+
+		if (stats.fixdamage)
 		{
-			if (level->fixdamage)
-			{
-				attack.fixdamage = level->fixdamage;
-				attack.damagetype = Attack::DMG_FIXED;
-			}
-			else if (level->matk)
-			{
-				attack.matk += level->matk;
-				attack.damagetype = Attack::DMG_MAGIC;
-			}
-			else
-			{
-				attack.mindamage *= level->damage;
-				attack.maxdamage *= level->damage;
-				attack.damagetype = Attack::DMG_WEAPON;
-			}
-			attack.critical += level->critical;
-			attack.ignoredef += level->ignoredef;
-			attack.mobcount = level->mobcount;
-			attack.hrange = level->hrange;
-
-			switch (attack.type)
-			{
-			case Attack::RANGED:
-				attack.hitcount = level->bulletcount;
-				break;
-			default:
-				attack.hitcount = level->attackcount;
-			}
-
-			if (!level->range.empty())
-				attack.range = level->range;
+			attack.fixdamage = stats.fixdamage;
+			attack.damagetype = Attack::DMG_FIXED;
 		}
+		else if (stats.matk)
+		{
+			attack.matk += stats.matk;
+			attack.damagetype = Attack::DMG_MAGIC;
+		}
+		else
+		{
+			attack.mindamage *= stats.damage;
+			attack.maxdamage *= stats.damage;
+			attack.damagetype = Attack::DMG_WEAPON;
+		}
+		attack.critical += stats.critical;
+		attack.ignoredef += stats.ignoredef;
+		attack.mobcount = stats.mobcount;
+		attack.hrange = stats.hrange;
+
+		switch (attack.type)
+		{
+		case Attack::RANGED:
+			attack.hitcount = stats.bulletcount;
+			break;
+		default:
+			attack.hitcount = stats.attackcount;
+		}
+
+		if (!stats.range.empty())
+			attack.range = stats.range;
 
 		if (projectile && !attack.bullet)
 		{
 			switch (skillid)
 			{
 			case THREE_SNAILS:
-				switch (lv)
+				switch (level)
 				{
 				case 1:
 					attack.bullet = 4000019;
@@ -277,7 +215,7 @@ namespace jrc
 
 		if (overregular)
 		{
-			CharLook::AttackLook attacklook = user.getlook().getattacklook();
+			CharLook::AttackLook attacklook = user.get_look().getattacklook();
 			attack.stance = attacklook.stance;
 			if (attack.type == Attack::CLOSE && !projectile)
 			{
@@ -288,46 +226,44 @@ namespace jrc
 
 	bool Skill::isoffensive() const
 	{
-		return offensive;
+		return data.is_offensive();
 	}
 
-	int32_t Skill::getid() const
+	int32_t Skill::get_id() const
 	{
 		return skillid;
 	}
 
-	SpecialMove::ForbidReason Skill::canuse(int32_t lv, Weapon::Type weapon,
-		const CharJob& job, uint16_t hp, uint16_t mp, uint16_t bullets) const {
+	SpecialMove::ForbidReason Skill::can_use(int32_t level, Weapon::Type weapon,
+		const Job& job, uint16_t hp, uint16_t mp, uint16_t bullets) const {
 
-		auto level = Optional<Level>::from(levels, lv);
-		if (level)
-		{
-			if (job.can_use(skillid) == false)
-				return FBR_OTHER;
-
-			if (hp <= level->hpcost)
-				return FBR_HPCOST;
-
-			if (mp < level->mpcost)
-				return FBR_MPCOST;
-
-			if (weapon != reqweapon && reqweapon != Weapon::NONE)
-				return FBR_WEAPONTYPE;
-
-			switch (weapon)
-			{
-			case Weapon::BOW:
-			case Weapon::CROSSBOW:
-			case Weapon::CLAW:
-			case Weapon::GUN:
-				return (bullets >= level->bulletcost) ? FBR_NONE : FBR_BULLETCOST;
-			default:
-				return FBR_NONE;
-			}
-		}
-		else
-		{
+		if (level <= 0 || level > data.get_masterlevel())
 			return FBR_OTHER;
+
+		if (job.can_use(skillid) == false)
+			return FBR_OTHER;
+
+		const SkillData::Stats stats = data.get_stats(level);
+
+		if (hp <= stats.hpcost)
+			return FBR_HPCOST;
+
+		if (mp < stats.mpcost)
+			return FBR_MPCOST;
+
+		Weapon::Type reqweapon = data.get_required_weapon();
+		if (weapon != reqweapon && reqweapon != Weapon::NONE)
+			return FBR_WEAPONTYPE;
+
+		switch (weapon)
+		{
+		case Weapon::BOW:
+		case Weapon::CROSSBOW:
+		case Weapon::CLAW:
+		case Weapon::GUN:
+			return (bullets >= stats.bulletcost) ? FBR_NONE : FBR_BULLETCOST;
+		default:
+			return FBR_NONE;
 		}
 	}
 }

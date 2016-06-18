@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -69,10 +69,10 @@ namespace jrc
 
 		uint16_t getdelay(int16_t frame) const;
 		uint16_t getdelayuntil(int16_t frame) const;
-		Point<int16_t> getorigin() const;
-		Point<int16_t> getdimensions() const;
-		Point<int16_t> gethead() const;
-		Rectangle<int16_t> getbounds() const;
+		Point<int16_t> get_origin() const;
+		Point<int16_t> get_dimensions() const;
+		Point<int16_t> get_head() const;
+		Rectangle<int16_t> get_bounds() const;
 
 	private:
 		const Frame& getframe() const;

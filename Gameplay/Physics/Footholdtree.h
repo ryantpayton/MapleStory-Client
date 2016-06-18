@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -33,21 +33,21 @@ namespace jrc
 		void draw(Point<int16_t> pos) const;
 
 		// Takes an accelerated PhysicsObject and limits its movement based on the platforms in this tree.
-		void limitmoves(PhysicsObject& touse) const;
+		void limit_movement(PhysicsObject& touse) const;
 		// Updates a PhysicsObject's fhid based on it's position.
-		void updatefh(PhysicsObject& touse) const;
+		void update_fh(PhysicsObject& touse) const;
 		// Determine the point on the ground below the specified position.
-		int16_t getgroundbelow(Point<int16_t> position) const;
+		int16_t get_y_below(Point<int16_t> position) const;
 		// Returns the leftmost and rightmost platform positions of the map.
-		Range<int16_t> getwalls() const;
+		Range<int16_t> get_walls() const;
 		// Returns the topmost and bottommost platform positions of the map.
-		Range<int16_t> getborders() const;
+		Range<int16_t> get_borders() const;
 
 	private:
-		uint16_t getbelow(double fx, double fy) const;
+		uint16_t get_fhid_below(double fx, double fy) const;
 		double getwall(uint16_t fhid, bool left, double fy) const;
-		double getedge(uint16_t fhid, bool left) const;
-		const Foothold& getfh(uint16_t fhid) const;
+		double get_edge(uint16_t fhid, bool left) const;
+		const Foothold& get_fh(uint16_t fhid) const;
 
 		std::unordered_map<uint16_t, Foothold> footholds;
 		std::unordered_multimap<int16_t, uint16_t> footholdsbyx;

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -75,9 +75,9 @@ namespace jrc
 		void update(Point<int16_t> playerpos);
 		void draw(Point<int16_t> viewpos, float alpha) const;
 
-		std::string getname() const;
+		std::string get_name() const;
 		Type gettype() const;
-		Point<int16_t> getposition() const;
+		Point<int16_t> get_position() const;
 		Rectangle<int16_t> bounds() const;
 
 		WarpInfo getwarpinfo() const;

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -33,7 +33,8 @@ namespace jrc
 			POT_RARE,
 			POT_EPIC,
 			POT_UNIQUE,
-			POT_LEGENDARY
+			POT_LEGENDARY,
+			LENGTH
 		};
 
 		enum Quality
@@ -49,10 +50,10 @@ namespace jrc
 		Equip(const ItemData&, int32_t, bool, int64_t, int64_t, uint8_t, uint8_t, 
 			const EnumMap<Equipstat::Value, uint16_t>&, const std::string&, int16_t, uint8_t, int16_t, int32_t);
 
-		uint8_t getslots() const;
-		uint8_t getlevel() const;
+		uint8_t get_slots() const;
+		uint8_t get_level() const;
 		uint8_t getitemlevel() const;
-		uint16_t getstat(Equipstat::Value type) const;
+		uint16_t get_stat(Equipstat::Value type) const;
 		int32_t getvicious() const;
 		Potential getpotrank() const;
 		Quality getquality() const;

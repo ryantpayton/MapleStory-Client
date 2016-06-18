@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -32,16 +32,16 @@ namespace jrc
 		void drawbelow(Point<int16_t> position, float alpha) const;
 		void drawabove(Point<int16_t> position, float alpha) const;
 		void update();
-		void add(Animation effect, DrawArgument args, int8_t z, float speed);
-		void add(Animation effect, DrawArgument args, int8_t z);
-		void add(Animation effect, DrawArgument args);
-		void add(Animation effect);
+		void add(const Animation& effect, const DrawArgument& args, int8_t z, float speed);
+		void add(const Animation& effect, const DrawArgument& args, int8_t z);
+		void add(const Animation& effect, const DrawArgument& args);
+		void add(const Animation& effect);
 
 	private:
 		class Effect
 		{
 		public:
-			Effect(Animation a, DrawArgument args, float s)
+			Effect(const Animation& a, const DrawArgument& args, float s)
 				: sprite(a, args), speed(s) {}
 
 			void draw(Point<int16_t> position, float alpha) const

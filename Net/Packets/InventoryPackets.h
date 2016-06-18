@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,7 +17,6 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "..\OutPacket.h"
-#include "..\SendOpcodes.h"
 
 #include "..\..\Character\Inventory\Inventory.h"
 
@@ -71,7 +70,7 @@ namespace jrc
 	{
 	public:
 		EquipItemPacket(int16_t src, Equipslot::Value dest) 
-			: MoveItemPacket(Inventory::EQUIP, src, -Equipslot::valueof(dest), 1) {}
+			: MoveItemPacket(Inventory::EQUIP, src, -Equipslot::values[dest], 1) {}
 	};
 
 
@@ -115,7 +114,7 @@ namespace jrc
 		{
 			writetime();
 			writesh(source);
-			writesh(-Equipslot::valueof(target));
+			writesh(-Equipslot::values[target]);
 			writesh(flags);
 		}
 

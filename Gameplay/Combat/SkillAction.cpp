@@ -1,4 +1,4 @@
-// Copyright © 2016 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,7 +19,7 @@ namespace jrc
 {
 	void RegularAction::apply(Char& target, Attack::Type atype) const
 	{
-		Weapon::Type weapontype = target.getlook().getequips().getweapontype();
+		Weapon::Type weapontype = target.get_look().get_equips().get_weapontype();
 		bool degenerate;
 		switch (weapontype)
 		{
@@ -76,7 +76,7 @@ namespace jrc
 
 	void ByLevelAction::apply(Char& target, Attack::Type) const
 	{
-		int32_t level = target.getskilllevel(skillid);
+		int32_t level = target.get_skilllevel(skillid);
 		auto iter = actions.find(level);
 		if (iter != actions.end())
 		{

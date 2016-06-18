@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,7 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "PacketSwitch.h"
-#include "RecvOpcodes.h"
 
 #include "Handlers\CommonHandlers.h"
 #include "Handlers\LoginHandlers.h"
@@ -32,97 +31,207 @@
 
 namespace jrc
 {
+	// Opcodes for InPacket handlers.
+	enum PacketSwitch::Opcode : int16_t
+	{
+		// Login 1
+		LOGIN_RESULT = 0,
+		SERVERLIST = 10,
+		CHARLIST = 11,
+		SERVER_IP = 12,
+		CHARNAME_RESPONSE = 13,
+		ADD_NEWCHAR_ENTRY = 14,
+		DELCHAR_RESPONSE = 15,
+		PING = 17,
+
+		// Player 1
+		APPLY_BUFF = 20,
+
+		// Login 2
+		SELECT_WORLD = 26,
+		RECOMMENDED_WORLDS = 27,
+
+		// Inventory 1
+		MODIFY_INVENTORY = 29,
+
+		// Player 2
+		CHANGE_STATS = 31,
+		GIVE_BUFF = 32,
+		CANCEL_BUFF = 33,
+		RECALCULATE_STATS = 35,
+		UPDATE_SKILL = 36,
+
+		// Messaging 1
+		SHOW_STATUS_INFO = 39,
+		MEMO_RESULT = 41,
+		ENABLE_REPORT = 47,
+
+		//Inventory 2
+		GATHER_RESULT = 52,
+		SORT_RESULT = 53,
+
+		// Player 3
+		UPDATE_GENDER = 58,
+		BUDDY_LIST = 63,
+		GUILD_OPERATION = 65,
+
+		// Messaging 2
+		SERVER_MESSAGE = 68,
+		WEEK_EVENT_MESSAGE = 77,
+
+		FIELD_SET_VARIABLE = 92,
+		FAMILY_PRIV_LIST = 100,
+		CANCEL_RENAME_BY_OTHER = 120,
+		SCRIPT_PROGRESS_MESSAGE = 122,
+		RECEIVE_POLICE = 123,
+		SKILL_MACROS = 124,
+		SET_FIELD = 125,
+		FIELD_EFFECT = 138,
+		CLOCK = 147,
+
+		// Mapobject
+		SPAWN_CHAR = 160,
+		REMOVE_CHAR = 161,
+
+		// Messaging
+		CHAT_RECEIVED = 162,
+		SCROLL_RESULT = 167,
+
+		// Mapobject
+		SPAWN_PET = 168,
+		CHAR_MOVED = 185,
+
+		// Attack
+		ATTACKED_CLOSE = 186,
+		ATTACKED_RANGED = 187,
+		ATTACKED_MAGIC = 188,
+
+		SHOW_ITEM_EFFECT = 194,
+		SHOW_CHAIR = 196,
+		UPDATE_CHARLOOK = 197,
+		SHOW_FOREIGN_EFFECT = 198,
+		SHOW_ITEM_GAIN_INCHAT = 206, // this is terribly named
+		LOCK_UI = 221,
+		TOGGLE_UI = 222,
+
+		// Player
+		ADD_COOLDOWN = 234,
+
+		// Mapobject
+		SPAWN_MOB = 236,
+		KILL_MOB = 237,
+		SPAWN_MOB_C = 238,
+		MOB_MOVED = 239,
+		MOVE_MOB_RESPONSE = 240,
+		SHOW_MOB_HP = 250,
+		SPAWN_NPC = 257,
+		SPAWN_NPC_C = 259,
+		MAKE_NPC_SCRIPTED = 263,
+		DROP_LOOT = 268,
+		REMOVE_LOOT = 269,
+		SPAWN_REACTOR = 279,
+		REMOVE_REACTOR = 280,
+
+		// NPC Interaction
+		NPC_DIALOGUE = 304,
+		OPEN_NPC_SHOP = 305,
+
+		KEYMAP = 335
+	};
+
 	PacketSwitch::PacketSwitch()
 	{
 		// Common handlers
-		handlers[PING] = std::make_unique<PingHandler>();
+		emplace<PING, PingHandler>();
 
 		// Login handlers
-		handlers[LOGIN_RESULT] = std::make_unique<LoginResultHandler>();
-		handlers[SERVERLIST] = std::make_unique<ServerlistHandler>();
-		handlers[CHARLIST] = std::make_unique<CharlistHandler>();
-		handlers[CHARNAME_RESPONSE] = std::make_unique<CharnameResponseHandler>();
-		handlers[ADD_NEWCHAR_ENTRY] = std::make_unique<AddNewCharEntryHandler>();
-		handlers[DELCHAR_RESPONSE] = std::make_unique<DeleteCharResponseHandler>();
-		handlers[SERVER_IP] = std::make_unique<ServerIPHandler>();
+		emplace<LOGIN_RESULT, LoginResultHandler>();
+		emplace<SERVERLIST, ServerlistHandler>();
+		emplace<CHARLIST, CharlistHandler>();
+		emplace<CHARNAME_RESPONSE, CharnameResponseHandler>();
+		emplace<ADD_NEWCHAR_ENTRY, AddNewCharEntryHandler>();
+		emplace<DELCHAR_RESPONSE, DeleteCharResponseHandler>();
+		emplace<SERVER_IP, ServerIPHandler>();
 
 		// 'Setfield' handlers
-		handlers[SET_FIELD] = std::make_unique<SetfieldHandler>();
+		emplace<SET_FIELD, SetfieldHandler>();
 
 		// MapObject handlers
-		handlers[SPAWN_NPC] = std::make_unique<SpawnNpcHandler>();
-		handlers[SPAWN_NPC_C] = std::make_unique<SpawnNpcControllerHandler>();
-		handlers[SPAWN_MOB] = std::make_unique<SpawnMobHandler>();
-		handlers[SPAWN_MOB_C] = std::make_unique<SpawnMobControllerHandler>();
-		handlers[MOB_MOVED] = std::make_unique<MobMovedHandler>();
-		handlers[SHOW_MOB_HP] = std::make_unique<ShowMobHpHandler>();
-		handlers[KILL_MOB] = std::make_unique<KillMobHandler>();
-		handlers[SPAWN_CHAR] = std::make_unique<SpawnCharHandler>();
-		handlers[CHAR_MOVED] = std::make_unique<CharMovedHandler>();
-		handlers[UPDATE_CHARLOOK] = std::make_unique<UpdateCharLookHandler>();
-		handlers[SHOW_FOREIGN_EFFECT] = std::make_unique<ShowForeignEffectHandler>();
-		handlers[REMOVE_CHAR] = std::make_unique<RemoveCharHandler>();
-		handlers[SPAWN_PET] = std::make_unique<SpawnPetHandler>();
-		handlers[DROP_LOOT] = std::make_unique<DropLootHandler>();
-		handlers[REMOVE_LOOT] = std::make_unique<RemoveLootHandler>();
+		emplace<SPAWN_NPC, SpawnNpcHandler>();
+		emplace<SPAWN_NPC_C, SpawnNpcControllerHandler>();
+		emplace<SPAWN_MOB, SpawnMobHandler>();
+		emplace<SPAWN_MOB_C, SpawnMobControllerHandler>();
+		emplace<MOB_MOVED, MobMovedHandler>();
+		emplace<SHOW_MOB_HP, ShowMobHpHandler>();
+		emplace<KILL_MOB, KillMobHandler>();
+		emplace<SPAWN_CHAR, SpawnCharHandler>();
+		emplace<CHAR_MOVED, CharMovedHandler>();
+		emplace<UPDATE_CHARLOOK, UpdateCharLookHandler>();
+		emplace<SHOW_FOREIGN_EFFECT, ShowForeignEffectHandler>();
+		emplace<REMOVE_CHAR, RemoveCharHandler>();
+		emplace<SPAWN_PET, SpawnPetHandler>();
+		emplace<DROP_LOOT, DropLootHandler>();
+		emplace<REMOVE_LOOT, RemoveLootHandler>();
 
 		// Attack handlers
-		handlers[ATTACKED_CLOSE] = std::make_unique<CloseAttackHandler>();
-		handlers[ATTACKED_RANGED] = std::make_unique<RangedAttackHandler>();
-		handlers[ATTACKED_MAGIC] = std::make_unique<MagicAttackHandler>();
+		emplace<ATTACKED_CLOSE, CloseAttackHandler>();
+		emplace<ATTACKED_RANGED, RangedAttackHandler>();
+		emplace<ATTACKED_MAGIC, MagicAttackHandler>();
 
 		// Player handlers
-		handlers[KEYMAP] = std::make_unique<KeymapHandler>();
-		handlers[SKILL_MACROS] = std::make_unique<SkillMacrosHandler>();
-		handlers[CHANGE_STATS] = std::make_unique<ChangeStatsHandler>();
-		handlers[GIVE_BUFF] = std::make_unique<ApplyBuffHandler>();
-		handlers[RECALCULATE_STATS] = std::make_unique<RecalculateStatsHandler>();
-		handlers[UPDATE_SKILLS] = std::make_unique<UpdateskillsHandler>();
-		handlers[ADD_COOLDOWN] = std::make_unique<AddCooldownHandler>();
+		emplace<KEYMAP, KeymapHandler>();
+		emplace<SKILL_MACROS, SkillMacrosHandler>();
+		emplace<CHANGE_STATS, ChangeStatsHandler>();
+		emplace<GIVE_BUFF, ApplyBuffHandler>();
+		emplace<CANCEL_BUFF, CancelBuffHandler>();
+		emplace<RECALCULATE_STATS, RecalculateStatsHandler>();
+		emplace<UPDATE_SKILL, UpdateSkillHandler>();
+		emplace<ADD_COOLDOWN, AddCooldownHandler>();
 
 		// Messaging handlers
-		handlers[SHOW_STATUS_INFO] = std::make_unique<ShowStatusInfoHandler>();
-		handlers[CHAT_RECEIVED] = std::make_unique<ChatReceivedHandler>();
-		handlers[SCROLL_RESULT] = std::make_unique<ScrollResultHandler>();
-		handlers[SERVER_MESSAGE] = std::make_unique<ServerMessageHandler>();
-		handlers[WEEK_EVENT_MESSAGE] = std::make_unique<WeekEventMessageHandler>();
-		handlers[SHOW_ITEM_GAIN_INCHAT] = std::make_unique<ShowItemGainInChatHandler>();
+		emplace<SHOW_STATUS_INFO, ShowStatusInfoHandler>();
+		emplace<CHAT_RECEIVED, ChatReceivedHandler>();
+		emplace<SCROLL_RESULT, ScrollResultHandler>();
+		emplace<SERVER_MESSAGE, ServerMessageHandler>();
+		emplace<WEEK_EVENT_MESSAGE, WeekEventMessageHandler>();
+		emplace<SHOW_ITEM_GAIN_INCHAT, ShowItemGainInChatHandler>();
 
 		// Inventory Handlers
-		handlers[MODIFY_INVENTORY] = std::make_unique<ModifyInventoryHandler>();
-		handlers[GATHER_RESULT] = std::make_unique<GatherResultHandler>();
-		handlers[SORT_RESULT] = std::make_unique<SortResultHandler>();
+		emplace<MODIFY_INVENTORY, ModifyInventoryHandler>();
+		emplace<GATHER_RESULT, GatherResultHandler>();
+		emplace<SORT_RESULT, SortResultHandler>();
 
 		// Npc Interaction Handlers
-		handlers[NPC_DIALOGUE] = std::make_unique<NpcDialogueHandler>();
-		handlers[OPEN_NPC_SHOP] = std::make_unique<OpenNpcShopHandler>();
+		emplace<NPC_DIALOGUE, NpcDialogueHandler>();
+		emplace<OPEN_NPC_SHOP, OpenNpcShopHandler>();
 
 		// Todo
-		handlers[MOVE_MOB_RESPONSE] = std::make_unique<NullHandler>();
-		handlers[MEMO_RESULT] = std::make_unique<NullHandler>();
-		handlers[ENABLE_REPORT] = std::make_unique<NullHandler>();
-		handlers[BUDDY_LIST] = std::make_unique<NullHandler>();
-		handlers[GUILD_OPERATION] = std::make_unique<NullHandler>();
-		handlers[FAMILY_PRIV_LIST] = std::make_unique<NullHandler>();
-		handlers[SCRIPT_PROGRESS_MESSAGE] = std::make_unique<NullHandler>();
-		handlers[RECEIVE_POLICE] = std::make_unique<NullHandler>();
-		handlers[MAKE_NPC_SCRIPTED] = std::make_unique<NullHandler>();
+		emplace<MOVE_MOB_RESPONSE, NullHandler>();
+		emplace<MEMO_RESULT, NullHandler>();
+		emplace<ENABLE_REPORT, NullHandler>();
+		emplace<BUDDY_LIST, NullHandler>();
+		emplace<GUILD_OPERATION, NullHandler>();
+		emplace<FAMILY_PRIV_LIST, NullHandler>();
+		emplace<SCRIPT_PROGRESS_MESSAGE, NullHandler>();
+		emplace<RECEIVE_POLICE, NullHandler>();
+		emplace<MAKE_NPC_SCRIPTED, NullHandler>();
 
 		// Ignored
-		handlers[SELECT_WORLD] = std::make_unique<NullHandler>();
-		handlers[RECOMMENDED_WORLDS] = std::make_unique<NullHandler>();
-		handlers[UPDATE_GENDER] = std::make_unique<NullHandler>();
+		emplace<SELECT_WORLD, NullHandler>();
+		emplace<RECOMMENDED_WORLDS, NullHandler>();
+		emplace<UPDATE_GENDER, NullHandler>();
 	}
 
 	void PacketSwitch::forward(int8_t* buffer, size_t length) const
 	{
+		// Wrap the bytes with a parser.
+		InPacket recv(buffer, length);
 		// Read the opcode to determine handler responsible.
-		InPacket recv = InPacket(buffer, length);
 		uint16_t opcode = recv.read_short();
+
 		if (opcode < NUM_HANDLERS)
 		{
-			const PacketHandler* handler = handlers[opcode].get();
-			if (handler)
+			if (const PacketHandler* handler = handlers[opcode].get())
 			{
 				// Handler ok. Packet is passed on.
 				try
@@ -132,14 +241,24 @@ namespace jrc
 				catch (const PacketError& err)
 				{
 					// Notice about an error.
-					Console::get().print("Packet Error: Opcode " + std::to_string(opcode) + ", " + std::string(err.what()));
+					warn(err.what(), opcode);
 				}
 			}
 			else
 			{
-				// Notice about unhandled packet.
-				Console::get().print("Received unhandled packet. Opcode: " + std::to_string(opcode));
+				// Warn about an unhandled packet.
+				warn(MSG_UNHANDLED, opcode);
 			}
 		}
+		else
+		{
+			// Warn about a packet with opcode out of bounds.
+			warn(MSG_OUTOFBOUNDS, opcode);
+		}
+	}
+
+	void PacketSwitch::warn(const std::string& message, size_t opcode) const
+	{
+		Console::get().print(message + ", Opcode: " + std::to_string(opcode));
 	}
 }

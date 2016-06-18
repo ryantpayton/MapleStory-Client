@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -24,6 +24,6 @@ namespace jrc
 {
 	namespace ItemParser
 	{
-		void parseitem(InPacket& recv, Inventory::Type invtype, int16_t slot, Inventory& inventory);
+		void parse_item(InPacket& recv, Inventory::Type invtype, int16_t slot, Inventory& inventory);
 	}
 }

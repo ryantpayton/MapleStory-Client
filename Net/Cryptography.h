@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -38,9 +38,9 @@ namespace jrc
 		// Decrypt a byte array with the given length and iv.
 		void decrypt(int8_t* bytes, size_t length);
 		// Generate a header for the specified length and key.
-		void getheader(int8_t* buffer, size_t length) const;
+		void create_header(int8_t* buffer, size_t length) const;
 		// Use the 4-byte header of a received packet to determine its length.
-		size_t getlength(const int8_t* header) const;
+		size_t check_length(const int8_t* header) const;
 
 	private:
 		// Add the maple custom encryption.

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,6 +18,7 @@
 #include "UILogin.h"
 #include "UILoginwait.h"
 
+#include "..\UI.h"
 #include "..\Components\MapleButton.h"
 
 #include "..\..\Configuration.h"
@@ -26,8 +27,8 @@
 #include "..\..\Net\Session.h"
 #include "..\..\Net\Packets\LoginPackets.h"
 
-#include "nlnx\nx.hpp"
-#include "nlnx\audio.hpp"
+#include <nlnx\nx.hpp>
+#include <nlnx\audio.hpp>
 
 namespace jrc
 {
@@ -66,32 +67,35 @@ namespace jrc
 		checkbox[true] = title["check"]["1"];
 
 		account = { Text::A13M, Text::LEFT, Text::WHITE,{ { 315, 249 },{ 465, 273 } }, 12 };
-		account.setkey(Keyboard::TAB, [&]{
-			account.setstate(Textfield::NORMAL);
-			password.setstate(Textfield::FOCUSED);
+		account.set_key_callback(Keyboard::TAB, [&]{
+			account.set_state(Textfield::NORMAL);
+			password.set_state(Textfield::FOCUSED);
+		});
+		account.set_enter_callback([&](std::string) {
+			login();
 		});
 		accountbg = title["ID"];
 
 		password = { Text::A13M, Text::LEFT, Text::WHITE, { {315, 275}, {465, 299} }, 12 };
-		password.setkey(Keyboard::TAB, [&]{
-			password.setstate(Textfield::NORMAL);
-			account.setstate(Textfield::FOCUSED);
+		password.set_key_callback(Keyboard::TAB, [&]{
+			password.set_state(Textfield::NORMAL);
+			account.set_state(Textfield::FOCUSED);
 		});
-		password.setonreturn([&](std::string msg){
+		password.set_enter_callback([&](std::string){
 			login();
 		});
+		password.set_cryptchar('*');
 		passwordbg = title["PW"];
-		password.setcrypt('*');
 
 		saveid = Setting<SaveLogin>::get().load();
 		if (saveid)
 		{
-			account.settext(Setting<DefaultAccount>::get().load());
-			password.setstate(Textfield::FOCUSED);
+			account.change_text(Setting<DefaultAccount>::get().load());
+			password.set_state(Textfield::FOCUSED);
 		}
 		else
 		{
-			account.setstate(Textfield::FOCUSED);
+			account.set_state(Textfield::FOCUSED);
 		}
 
 		position = { 0, 0 };
@@ -99,24 +103,25 @@ namespace jrc
 		active = true;
 	}
 
-	void UILogin::draw(float inter) const
+	void UILogin::draw(float alpha) const
 	{
-		UIElement::draw(inter);
+		UIElement::draw(alpha);
 
 		account.draw(position);
 		password.draw(position);
 
-		if (account.getstate() == Textfield::NORMAL && account.gettext().size() == 0)
+		if (account.get_state() == Textfield::NORMAL && account.empty())
 		{
-			accountbg.draw({ 310, 249 });
+			accountbg.draw({ position + Point<int16_t>(310, 249) });
 		}
 
-		if (password.getstate() == Textfield::NORMAL && password.gettext().size() == 0)
+		if (password.get_state() == Textfield::NORMAL && password.empty())
 		{
-			passwordbg.draw({ 310, 275 });
+			passwordbg.draw({ position + Point<int16_t>(310, 275) });
 		}
 
-		checkbox.at(saveid).draw(position + Point<int16_t>(313, 304));
+		checkbox[saveid]
+			.draw({ position + Point<int16_t>(313, 304) });
 	}
 
 	void UILogin::update()
@@ -127,55 +132,47 @@ namespace jrc
 		password.update(position);
 	}
 
-	void UILogin::buttonpressed(uint16_t id)
+	void UILogin::login()
+	{
+		UI::get().disable();
+		UI::get().add(Element<UILoginwait>());
+
+		account.set_state(Textfield::NORMAL);
+		password.set_state(Textfield::NORMAL);
+
+		LoginPacket(
+			account.get_text(), 
+			password.get_text()
+		).dispatch();
+	}
+
+	Button::State UILogin::button_pressed(uint16_t id)
 	{
 		switch (id)
 		{
 		case BT_LOGIN:
 			login();
-			return;
+			return Button::PRESSED;
 		case BT_QUIT:
 			Session::get().disconnect();
-			return;
+			return Button::PRESSED;
 		case BT_SAVEID:
 			saveid = !saveid;
 			Setting<SaveLogin>::get().save(saveid);
-			buttons[BT_SAVEID]->setstate(Button::MOUSEOVER);
-			return;
+			return Button::MOUSEOVER;
+		default:
+			return Button::PRESSED;
 		}
 	}
 
-	void UILogin::login()
+	Cursor::State UILogin::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
-		UI::get().add(ElementTag<UILoginwait>());
+		if (Cursor::State new_state = account.send_cursor(cursorpos, clicked))
+			return new_state;
 
-		account.setstate(Textfield::NORMAL);
-		password.setstate(Textfield::NORMAL);
+		if (Cursor::State new_state = password.send_cursor(cursorpos, clicked))
+			return new_state;
 
-		buttons[BT_LOGIN]->setstate(Button::MOUSEOVER);
-
-		LoginPacket(account.gettext(), password.gettext()).dispatch();
-	}
-
-	Cursor::State UILogin::sendmouse(bool clicked, Point<int16_t> cursorpos)
-	{
-		if (account.getstate() == Textfield::NORMAL)
-		{
-			Cursor::State astate = account.sendcursor(cursorpos, clicked);
-			if (astate != Cursor::IDLE)
-			{
-				return astate;
-			}
-		}
-
-		if (password.getstate() == Textfield::NORMAL)
-		{
-			Cursor::State pstate = password.sendcursor(cursorpos, clicked);
-			if (pstate != Cursor::IDLE)
-			{
-				return pstate;
-			}
-		}
-		return UIElement::sendmouse(clicked, cursorpos);
+		return UIElement::send_cursor(clicked, cursorpos);
 	}
 }

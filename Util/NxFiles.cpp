@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -56,7 +56,7 @@ namespace jrc
 	std::queue<std::string> NxFiles::gethashes(uint64_t seed)
 	{
 		std::queue<std::string> hashes;
-		for (auto& filename : filenames.getvalues())
+		for (auto& filename : filenames.values())
 		{
 			hashes.push(
 				HashUtility::getfilehash(filename, seed)

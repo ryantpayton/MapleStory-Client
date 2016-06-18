@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -26,6 +26,7 @@
 #include "..\..\Console.h"
 #include "..\..\Graphics\Texture.h"
 #include "..\..\Util\Enum.h"
+#include "..\..\Util\EnumMap.h"
 
 #include <vector>
 #include <map>
@@ -35,7 +36,6 @@ namespace jrc
 	class Clothing : public ItemData
 	{
 	public:
-		static const size_t NUM_LAYERS = 32;
 		enum Layer
 		{
 			CAPE, SHOES, PANTS, TOP, MAIL, MAILARM,
@@ -43,67 +43,16 @@ namespace jrc
 			CAP, CAPBBODY, CAPOHAIR,
 			GLOVE, WRIST, GLOVEOHAIR, WRISTOHAIR, GLOVEOBODY, WRISTOBODY,
 			SHIELD, BACKSHIELD, SHIELDBBODY, SHIELDOHAIR,
-			WEAPON, BACKWEAPON, WEAPONBARM, WEAPONBBODY, WEAPONOHAND, WEAPONOBODY, WEAPONOGLOVE
+			WEAPON, BACKWEAPON, WEAPONBARM, WEAPONBBODY, WEAPONOHAND, WEAPONOBODY, WEAPONOGLOVE,
+			NUM_LAYERS
 		};
-
-		static EnumIterator<Layer> layerit()
-		{
-			return EnumIterator<Layer>(CAPE, WEAPONOGLOVE);
-		}
-
-		static Layer sublayer(Layer base, std::string name)
-		{
-			switch (base)
-			{
-			case WEAPON:
-				if (name == "weaponOverHand")
-					return Layer::WEAPONOHAND;
-				else if (name == "weaponOverGlove")
-					return Layer::WEAPONOGLOVE;
-				else if (name == "weaponOverBody")
-					return Layer::WEAPONOBODY;
-				else if (name == "weaponBelowArm")
-					return Layer::WEAPONBARM;
-				else if (name == "weaponBelowBody")
-					return Layer::WEAPONBBODY;
-				else if (name == "backWeaponOverShield")
-					return Layer::BACKWEAPON;
-				break;
-			case SHIELD:
-				if (name == "shieldOverHair")
-					return Layer::SHIELDOHAIR;
-				else if (name == "shieldBelowBody")
-					return Layer::SHIELDBBODY;
-				else if (name == "backShield")
-					return Layer::BACKSHIELD;
-				break;
-			case GLOVE:
-				if (name == "gloveWrist")
-					return Layer::WRIST;
-				else if (name == "gloveOverHair")
-					return Layer::GLOVEOHAIR;
-				else if (name == "gloveOverBody")
-					return Layer::GLOVEOBODY;
-				else if (name == "gloveWristOverHair")
-					return Layer::WRISTOHAIR;
-				else if (name == "gloveWristOverBody")
-					return Layer::WRISTOBODY;
-			case CAP:
-				if (name == "capOverHair")
-					return Layer::CAPOHAIR;
-				else if (name == "capBelowBody")
-					return Layer::CAPBBODY;
-				break;
-			}
-			return base;
-		}
 
 		Clothing(int32_t equipid, const BodyDrawinfo& drawinfo);
 		Clothing();
 
 		void draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
 
-		bool islayer(Stance::Value stance, Layer layer) const;
+		bool contains_layer(Stance::Value stance, Layer layer) const;
 		bool istransparent() const;
 		bool isweapon() const;
 		int16_t getreqstat(Maplestat::Value stat) const;
@@ -113,6 +62,9 @@ namespace jrc
 		Equipslot::Value geteqslot() const;
 
 	private:
+		static EnumIterator<Layer> layerit();
+		static Layer sublayer(Layer base, const std::string& name);
+
 		struct Whole
 		{
 			std::vector<Texture> parts;
@@ -131,9 +83,9 @@ namespace jrc
 			}
 		};
 
-		std::unordered_map<Layer, std::unordered_map<uint8_t, Whole>> stances[Stance::LENGTH];
-		std::map<Maplestat::Value, int16_t> reqstats;
-		std::map<Equipstat::Value, int16_t> defstats;
+		EnumMap<Stance::Value, EnumMap<Layer, std::unordered_map<uint8_t, Whole>, NUM_LAYERS>> stances;
+		EnumMap<Maplestat::Value, int16_t> reqstats;
+		EnumMap<Equipstat::Value, int16_t> defstats;
 		std::string type;
 		std::string vslot;
 		int32_t price;

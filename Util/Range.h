@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -25,7 +25,7 @@ namespace jrc
 	{
 	public:
 		// Construct a range from the specified values.
-		constexpr Range(T first, T second)
+		constexpr Range(const T& first, const T& second)
 			: a(first), b(second) {}
 
 		// Construct a range of (0, 0).
@@ -74,12 +74,6 @@ namespace jrc
 			return (a + b) / 2;
 		}
 
-		// Return a string representation of the range.
-		/*std::string tostring() const
-		{
-			return "(" + std::to_string(a) + "," + std::to_string(b) + ")";
-		}*/
-
 		// Check if both values are equal.
 		constexpr bool empty() const
 		{
@@ -92,74 +86,55 @@ namespace jrc
 			return v >= a && v <= b;
 		}
 
+		// Check if the range contains another range.
+		constexpr bool contains(const Range<T>& v) const
+		{
+			return v.a >= a && v <= v.b;
+		}
+
 		// Check if the ranges overlap.
-		bool overlaps(Range<T> v) const
+		constexpr bool overlaps(const Range<T>& v) const
 		{
-			T c = v.first();
-			T d = v.second();
-			return (b >= c && a <= c) || (a <= d && b >= d) || (a >= c && b <= d) || (a <= c && b >= d);
-		}
-
-		// Set the first value.
-		void setfirst(T v)
-		{
-			a = v;
-		}
-
-		// Set the second value.
-		void setsecond(T v)
-		{
-			b = v;
-		}
-
-		// Shift the first value.
-		void shiftfirst(T v)
-		{
-			a += v;
-		}
-
-		// Shift the second value.
-		void shiftsecond(T v)
-		{
-			b += v;
+			return (b >= v.a && a <= v.a)
+				|| (a <= v.b && b >= v.b)
+				|| (a >= v.a && b <= v.b)
+				|| (a <= v.a && b >= v.b);
 		}
 
 		// Check wether the range is equivalent to another range.
-		bool operator == (Range<T> v) const
+		constexpr bool operator == (const Range<T>& v) const
 		{
-			return a == v.first() && b == v.second();
+			return a == v.a && b == v.b;
 		}
 
 		// Check wether the range is not equivalent to another range.
-		bool operator != (Range<T> v) const
+		constexpr bool operator != (const Range<T>& v) const
 		{
-			return a != v.first() || b != v.second();
+			return !(*this == v);
 		}
 
 		// Shift this range by the amounts defined by another range.
-		void operator += (Range<T> v)
+		constexpr Range<T> operator + (const Range<T>& v) const
 		{
-			a += v.x();
-			b += v.y();
+			return{ a + v.a, b + v.b };
 		}
 
 		// Shift this range by the negative amounts defined by another range.
-		void operator -= (Range<T> v)
+		constexpr Range<T> operator - (const Range<T>& v) const
 		{
-			a -= v.x();
-			b -= v.y();
+			return{ a - v.a, b - v.b };
 		}
 
 		// Return the negative of this range.
-		Range<T> operator - ()
+		constexpr Range<T> operator - () const
 		{
-			return Range<T>(-a, -b);
+			return{ -a, -b };
 		}
 
 		// Construct a symmetric range around mid.
-		static Range<T> symmetric(T mid, T tail)
+		static Range<T> symmetric(const T& mid, const T& tail)
 		{
-			return Range<T>(mid - tail, mid + tail);
+			return{ mid - tail, mid + tail };
 		}
 
 	private:

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -49,7 +49,7 @@ namespace jrc
 
 	void key_callback(GLFWwindow*, int key, int, int action, int)
 	{
-		UI::get().sendkey(key, action != GLFW_RELEASE);
+		UI::get().send_key(key, action != GLFW_RELEASE);
 	}
 
 	void mousekey_callback(GLFWwindow*, int button, int action, int)
@@ -60,10 +60,10 @@ namespace jrc
 			switch (action)
 			{
 			case GLFW_PRESS:
-				UI::get().sendmouse(true);
+				UI::get().send_cursor(true);
 				break;
 			case GLFW_RELEASE:
-				UI::get().sendmouse(false);
+				UI::get().send_cursor(false);
 				break;
 			}
 			break;
@@ -83,7 +83,7 @@ namespace jrc
 		int16_t x = static_cast<int16_t>(xpos);
 		int16_t y = static_cast<int16_t>(ypos);
 		Point<int16_t> pos = Point<int16_t>(x, y);
-		UI::get().sendmouse(pos);
+		UI::get().send_cursor(pos);
 	}
 
 	Error Window::init()

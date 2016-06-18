@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -80,7 +80,9 @@ namespace jrc
 
 		int32_t cid = recv.read_int();
 
-		const CharEntry& playerentry = Session::get().getlogin().getcharbyid(cid);
+		const CharEntry& playerentry = Session::get()
+			.get_login()
+			.find_char_by_id(cid);
 		if (playerentry.cid != cid)
 		{
 			Console::get().print("Nonexisting cid: " + std::to_string(cid));
@@ -88,9 +90,9 @@ namespace jrc
 
 		Stage::get().loadplayer(playerentry);
 
-		Session::get().getlogin().parsestats(recv);
+		Session::get().get_login().parse_stats(recv);
 
-		Player& player = Stage::get().getplayer();
+		Player& player = Stage::get().get_player();
 
 		recv.read_byte(); // 'buddycap'
 		if (recv.read_bool())
@@ -98,37 +100,39 @@ namespace jrc
 			recv.read_string(); // 'linkedname'
 		}
 
-		parse_inventory(recv, player.getinvent());
-		parse_skillbook(recv, player.getskills());
-		parse_questlog(recv, player.getquests());
-		parseminigame(recv);
-		parsering1(recv);
-		parsering2(recv);
-		parsering3(recv);
-		parsetelerock(recv, player.gettrock());
-		parsemonsterbook(recv, player.getmonsterbook());
-		parsenewyear(recv);
-		parseareainfo(recv);
+		parse_inventory(recv, player.get_inventory());
+		parse_skillbook(recv, player.get_skills());
+		parse_cooldowns(recv, player);
+		parse_questlog(recv, player.get_quests());
+		parse_minigame(recv);
+		parse_ring1(recv);
+		parse_ring2(recv);
+		parse_ring3(recv);
+		parse_telerock(recv, player.get_telerock());
+		parse_monsterbook(recv, player.get_monsterbook());
+		parse_nyinfo(recv);
+		parse_areainfo(recv);
 
-		recv.skip(10);
+		player.recalc_stats(true);
 
-		player.recalcstats(true);
+		uint8_t portalid = player.get_stats().get_portal();
+		int32_t mapid = player.get_stats().get_mapid();
 
-		stagetransition(player.getstats().getportal(), player.getstats().getmapid());
+		stagetransition(portalid, mapid);
 
 		Sound(Sound::GAMESTART).play();
 
-		UI::get().changestate(UI::GAME);
+		UI::get().change_state(UI::GAME);
 	}
 
 	void SetfieldHandler::parse_inventory(InPacket& recv, Inventory& invent) const
 	{
-		invent.setmeso(recv.read_int());
-		invent.setslots(Inventory::EQUIP, recv.read_byte());
-		invent.setslots(Inventory::USE, recv.read_byte());
-		invent.setslots(Inventory::SETUP, recv.read_byte());
-		invent.setslots(Inventory::ETC, recv.read_byte());
-		invent.setslots(Inventory::CASH, recv.read_byte());
+		invent.set_meso(recv.read_int());
+		invent.set_slots(Inventory::EQUIP, recv.read_byte());
+		invent.set_slots(Inventory::USE, recv.read_byte());
+		invent.set_slots(Inventory::SETUP, recv.read_byte());
+		invent.set_slots(Inventory::ETC, recv.read_byte());
+		invent.set_slots(Inventory::CASH, recv.read_byte());
 
 		recv.skip(8);
 
@@ -139,7 +143,7 @@ namespace jrc
 			while (pos != 0)
 			{
 				int16_t slot = (i == 1) ? -pos : pos;
-				ItemParser::parseitem(recv, inv, slot, invent);
+				ItemParser::parse_item(recv, inv, slot, invent);
 				pos = recv.read_short();
 			}
 		}
@@ -157,7 +161,7 @@ namespace jrc
 			int8_t pos = recv.read_byte();
 			while (pos != 0)
 			{
-				ItemParser::parseitem(recv, inv, pos, invent);
+				ItemParser::parse_item(recv, inv, pos, invent);
 				pos = recv.read_byte();
 			}
 		}
@@ -168,20 +172,25 @@ namespace jrc
 		int16_t size = recv.read_short();
 		for (int16_t i = 0; i < size; i++)
 		{
-			int32_t skillid = recv.read_int();
+			int32_t skill_id = recv.read_int();
 			int32_t level = recv.read_int();
 			int64_t expiration = recv.read_long();
-			bool fourthtjob = ((skillid % 100000) / 10000 == 2);
-			int32_t masterlevel = fourthtjob ? recv.read_int() : -1;
-			skills.set_skill(skillid, level, masterlevel, expiration);
+			bool fourthtjob = ((skill_id % 100000) / 10000 == 2);
+			int32_t masterlevel = fourthtjob ? recv.read_int() : 0;
+			skills.set_skill(skill_id, level, masterlevel, expiration);
 		}
 
-		size = recv.read_short();
+		
+	}
+
+	void SetfieldHandler::parse_cooldowns(InPacket& recv, Player& player) const
+	{
+		int16_t size = recv.read_short();
 		for (int16_t i = 0; i < size; i++)
 		{
-			int32_t skillid = recv.read_int();
-			int32_t cooldown = recv.read_short();
-			skills.set_cd(skillid, cooldown);
+			int32_t skill_id = recv.read_int();
+			int32_t cooltime = recv.read_short();
+			player.add_cooldown(skill_id, cooltime);
 		}
 	}
 
@@ -214,7 +223,7 @@ namespace jrc
 		}
 	}
 
-	void SetfieldHandler::parsering1(InPacket& recv) const
+	void SetfieldHandler::parse_ring1(InPacket& recv) const
 	{
 		int16_t rsize = recv.read_short();
 		for (int16_t i = 0; i < rsize; i++)
@@ -228,7 +237,7 @@ namespace jrc
 		}
 	}
 
-	void SetfieldHandler::parsering2(InPacket& recv) const
+	void SetfieldHandler::parse_ring2(InPacket& recv) const
 	{
 		int16_t rsize = recv.read_short();
 		for (int16_t i = 0; i < rsize; i++)
@@ -243,7 +252,7 @@ namespace jrc
 		}
 	}
 
-	void SetfieldHandler::parsering3(InPacket& recv) const
+	void SetfieldHandler::parse_ring3(InPacket& recv) const
 	{
 		int16_t rsize = recv.read_short();
 		for (int16_t i = 0; i < rsize; i++)
@@ -259,7 +268,7 @@ namespace jrc
 		}
 	}
 
-	void SetfieldHandler::parseminigame(InPacket& recv) const
+	void SetfieldHandler::parse_minigame(InPacket& recv) const
 	{
 		int16_t mgsize = recv.read_short();
 		for (int16_t i = 0; i < mgsize; i++)
@@ -267,9 +276,9 @@ namespace jrc
 		}
 	}
 
-	void SetfieldHandler::parsemonsterbook(InPacket& recv, Monsterbook& monsterbook) const
+	void SetfieldHandler::parse_monsterbook(InPacket& recv, Monsterbook& monsterbook) const
 	{
-		monsterbook.setcover(recv.read_int());
+		monsterbook.set_cover(recv.read_int());
 
 		recv.skip(1);
 
@@ -279,11 +288,11 @@ namespace jrc
 			int16_t cid = recv.read_short();
 			int8_t mblv = recv.read_byte();
 
-			monsterbook.addcard(cid, mblv);
+			monsterbook.add_card(cid, mblv);
 		}
 	}
 
-	void SetfieldHandler::parsetelerock(InPacket& recv, Telerock& trock) const
+	void SetfieldHandler::parse_telerock(InPacket& recv, Telerock& trock) const
 	{
 		for (size_t i = 0; i < 5; i++)
 		{
@@ -296,7 +305,7 @@ namespace jrc
 		}
 	}
 
-	void SetfieldHandler::parsenewyear(InPacket& recv) const
+	void SetfieldHandler::parse_nyinfo(InPacket& recv) const
 	{
 		int16_t nysize = recv.read_short();
 		for (int16_t i = 0; i < nysize; i++)
@@ -304,7 +313,7 @@ namespace jrc
 		}
 	}
 
-	void SetfieldHandler::parseareainfo(InPacket& recv) const
+	void SetfieldHandler::parse_areainfo(InPacket& recv) const
 	{
 		std::map<int16_t, std::string> areainfo;
 		int16_t arsize = recv.read_short();

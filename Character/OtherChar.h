@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -36,21 +36,21 @@ namespace jrc
 		// Update the character.
 		int8_t update(const Physics& physics) override;
 		// Add the movements which this character will go through next.
-		void sendmovement(const std::vector<Movement>& movements);
+		void send_movement(const std::vector<Movement>& movements);
 		
 		// Update a skill level.
 		void updateskill(int32_t skillid, uint8_t skilllevel);
 		// Update the attack speed.
 		void updateattack(uint8_t attackspeed);
 		// Update the character look.
-		void updatelook(const LookEntry& look);
+		void update_look(const LookEntry& look);
 
 		// Return the character's level.
-		uint16_t getlevel() const override;
+		uint16_t get_level() const override;
 		// Return the character's level of a skill.
-		int32_t getskilllevel(int32_t skillid) const override;
+		int32_t get_skilllevel(int32_t skillid) const override;
 		// Return the character's attacking speed.
-		float getattackspeed() const override;
+		float get_attackspeed() const override;
 
 	private:
 		uint16_t level;

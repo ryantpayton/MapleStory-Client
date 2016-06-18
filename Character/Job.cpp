@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -15,103 +15,103 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "CharJob.h"
+#include "Job.h"
 
 namespace jrc
 {
-	CharJob::CharJob(uint16_t i)
+	Job::Job(uint16_t i)
 	{
-		changejob(i);
+		change_job(i);
 	}
 
-	CharJob::CharJob()
+	Job::Job()
 	{
-		changejob(0);
+		change_job(0);
 	}
 
-	CharJob::~CharJob() {}
+	Job::~Job() {}
 
-	void CharJob::changejob(uint16_t i)
+	void Job::change_job(uint16_t i)
 	{
 		id = i;
-		name = getname(id);
+		name = get_name(id);
 
 		if (id == 0)
 		{
-			level = JOB_BEGINNER;
+			level = BEGINNER;
 		}
 		else if (id % 100 == 0)
 		{
-			level = JOB_FIRST;
+			level = FIRST;
 		}
 		else if (id % 10 == 0)
 		{
-			level = JOB_SECOND;
+			level = SECOND;
 		}
 		else if (id % 10 == 1)
 		{
-			level = JOB_THIRD;
+			level = THIRD;
 		}
 		else
 		{
-			level = JOB_FOURTHT;
+			level = FOURTHT;
 		}
 	}
 
-	bool CharJob::issubjob(uint16_t subid) const
+	bool Job::is_sub_job(uint16_t subid) const
 	{
-		for (int32_t lvit = JOB_BEGINNER; lvit <= JOB_FOURTHT; lvit++)
+		for (int32_t lvit = BEGINNER; lvit <= FOURTHT; lvit++)
 		{
 			Level lv = static_cast<Level>(lvit);
-			if (subid == getsubjob(lv))
+			if (subid == get_subjob(lv))
 				return true;
 		}
 		return false;
 	}
 
-	bool CharJob::can_use(int32_t skill_id) const
+	bool Job::can_use(int32_t skill_id) const
 	{
 		uint16_t required = static_cast<uint16_t>(skill_id / 10000);
-		return issubjob(required);
+		return is_sub_job(required);
 	}
 
-	uint16_t CharJob::getid() const
+	uint16_t Job::get_id() const
 	{
 		return id;
 	}
 
-	uint16_t CharJob::getsubjob(Level lv) const
+	uint16_t Job::get_subjob(Level lv) const
 	{
 		if (lv <= level)
 		{
 			switch (lv)
 			{
-			case JOB_BEGINNER:
+			case BEGINNER:
 				return 0;
-			case JOB_FIRST:
+			case FIRST:
 				return (id / 100) * 100;
-			case JOB_SECOND:
+			case SECOND:
 				return (id / 10) * 10;
-			case JOB_THIRD:
-				return (level == JOB_FOURTHT) ? id - 1 : id;
-			case JOB_FOURTHT:
+			case THIRD:
+				return (level == FOURTHT) ? id - 1 : id;
+			case FOURTHT:
 				return id;
 			}
 		}
 		return 0;
 	}
 
-	std::string CharJob::getname() const
+	const std::string& Job::get_name() const
 	{
 		return name;
 	}
 
-	CharJob::Level CharJob::getlevel() const
+	Job::Level Job::get_level() const
 	{
 		return level;
 	}
 
-	std::string CharJob::getname(uint16_t jid) const
+	std::string Job::get_name(uint16_t jid) const
 	{
 		switch (jid)
 		{
@@ -210,7 +210,7 @@ namespace jrc
 		}
 	}
 
-	Equipstat::Value CharJob::primarystat(Weapon::Type weapontype) const
+	Equipstat::Value Job::get_primary(Weapon::Type weapontype) const
 	{
 		switch (id / 100)
 		{
@@ -227,7 +227,7 @@ namespace jrc
 		}
 	}
 
-	Equipstat::Value CharJob::secondarystat(Weapon::Type weapontype) const
+	Equipstat::Value Job::get_secondary(Weapon::Type weapontype) const
 	{
 		switch (id / 100)
 		{
@@ -242,5 +242,16 @@ namespace jrc
 		default:
 			return Equipstat::DEX;
 		}
+	}
+
+	Range<int32_t> Job::get_skillid_range(Level l) const
+	{
+		uint16_t lower = get_subjob(l);
+		uint16_t upper = get_subjob(get_next_level(l));
+		if (l == FOURTHT)
+		{
+			upper += 1;
+		}
+		return{ lower * 10000, upper * 10000 };
 	}
 }

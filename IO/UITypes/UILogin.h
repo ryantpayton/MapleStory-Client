@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,9 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Element.h"
-#include "..\UI.h"
+#include "..\UIElement.h"
+
 #include "..\Components\Textfield.h"
+
+#include "..\..\Util\BoolPair.h"
 
 namespace jrc
 {
@@ -29,6 +31,19 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
+		UILogin();
+
+		void draw(float alpha) const override;
+		void update() override;
+
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursor_pos) override;
+
+	protected:
+		Button::State button_pressed(uint16_t id) override;
+
+	private:
+		void login();
+
 		enum Buttons
 		{
 			BT_LOGIN,
@@ -37,24 +52,16 @@ namespace jrc
 			BT_PASSLOST,
 			BT_IDLOST,
 			BT_SAVEID,
-			BT_QUIT
+			BT_QUIT,
+			NUM_BUTTONS
 		};
-
-		UILogin();
-
-		void draw(float) const override;
-		void update() override;
-		void buttonpressed(uint16_t) override;
-		Cursor::State sendmouse(bool, Point<int16_t>) override;
-
-	private:
-		void login();
 
 		Textfield account;
 		Textfield password;
 		Texture accountbg;
 		Texture passwordbg;
-		std::map<bool, Texture> checkbox;
+		BoolPair<Texture> checkbox;
+
 		bool saveid;
 	};
 }

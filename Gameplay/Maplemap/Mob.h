@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -76,9 +76,9 @@ namespace jrc
 
 		// Change this mob's control mode:
 		// 0 - no control, 1 - control, 2 - aggro
-		void setcontrol(int8_t mode);
+		void set_control(int8_t mode);
 		// Send movement to the mob.
-		void sendmovement(Point<int16_t> start, const Movement& movement);
+		void send_movement(Point<int16_t> start, const Movement& movement);
 		// Kill the mob with the appropriate type:
 		// 0 - make inactive 1 - death animation 2 - fade out
 		void kill(int8_t killtype);
@@ -86,21 +86,21 @@ namespace jrc
 		// Use the playerlevel to determine color of nametag.
 		void sendhp(int8_t percentage, uint16_t playerlevel);
 		// Show an effect at the mob's position.
-		void showeffect(Animation animation, int8_t pos, int8_t z, bool flip);
+		void show_effect(Animation animation, int8_t pos, int8_t z, bool flip);
 
 		// Calculate the damage to this mob with the spcecified attack.
 		std::vector<std::pair<int32_t, bool>> calculatedamage(const Attack& attack);
 		// Get a placement for damage numbers above the mob's head.
 		std::vector<DamageNumber> placenumbers(std::vector<std::pair<int32_t, bool>> damagelines) const;
 		// Apply damage to the mob.
-		void applydamage(int32_t damage, bool toleft);
+		void apply_damage(int32_t damage, bool toleft);
 
 		// Check if this mob collides with the specified rectangle.
-		bool isinrange(const Rectangle<int16_t>& range) const;
+		bool is_in_range(const Rectangle<int16_t>& range) const;
 		// Check if this mob is still alive.
 		bool isalive() const;
 		// Return the head position.
-		Point<int16_t> getheadpos() const;
+		Point<int16_t> get_headpos() const;
 
 	private:
 		static const size_t NUM_DIRECTIONS = 3;
@@ -122,15 +122,15 @@ namespace jrc
 		}
 
 		// Set the stance by byte value.
-		void setstance(uint8_t stancebyte);
+		void set_stance(uint8_t stancebyte);
 		// Set the stance by enum value.
-		void setstance(Stance newstance);
+		void set_stance(Stance newstance);
 		// Start the death animation.
 		void applydeath();
 		// Decide on the next state.
 		void nextmove();
 		// Send the current position and state to the server.
-		void updatemovement();
+		void update_movement();
 
 		// Calculate the hit chance.
 		float calchitchance(int16_t leveldelta, int32_t accuracy) const;
@@ -143,7 +143,7 @@ namespace jrc
 			double maxdamage, float hitchance, float critical) const;
 
 		// Return the current 'head' position.
-		Point<int16_t> getheadpos(Point<int16_t> position) const;
+		Point<int16_t> get_headpos(Point<int16_t> position) const;
 
 		std::map<Stance, Animation> animations;
 		std::string name;

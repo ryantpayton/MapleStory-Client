@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,9 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Login.h"
 
+#include <algorithm>
+
 namespace jrc
 {
-	void Login::parseaccount(InPacket& recv)
+	void Login::parse_account(InPacket& recv)
 	{
 		recv.read_short();
 		account.accid = recv.read_int();
@@ -37,7 +39,7 @@ namespace jrc
 		account.selected = 0;
 	}
 
-	void Login::parseworlds(InPacket& recv)
+	void Login::parse_worlds(InPacket& recv)
 	{
 		int8_t wid = recv.read_byte();
 		if (wid != -1)
@@ -63,29 +65,37 @@ namespace jrc
 		}
 	}
 
-	void Login::parsecharlist(InPacket& recv)
+	void Login::parse_charlist(InPacket& recv)
 	{
 		size_t numchars = recv.read_byte();
 		for (size_t i = 0; i < numchars; i++)
 		{
-			addcharentry(recv);
+			add_charentry(recv);
 		}
 
 		account.pic = recv.read_byte();
 		account.slots = static_cast<int8_t>(recv.read_int());
 	}
 
-	void Login::addcharentry(InPacket& recv)
+	void Login::add_charentry(InPacket& recv)
 	{
-		account.chars.push_back(parsecharentry(recv));
+		account.chars.push_back(parse_charentry(recv));
 	}
 
-	CharEntry Login::parsecharentry(InPacket& recv) const
+	void Login::remove_char(int32_t cid)
+	{
+		account.chars.erase(
+			std::remove_if(account.chars.begin(), account.chars.end(), 
+				[cid](const CharEntry& c) { return c.cid == cid; }
+		));
+	}
+
+	CharEntry Login::parse_charentry(InPacket& recv) const
 	{
 		CharEntry toparse;
 		toparse.cid = recv.read_int();
-		toparse.stats = parsestats(recv);
-		toparse.look = parselook(recv);
+		toparse.stats = parse_stats(recv);
+		toparse.look = parse_look(recv);
 
 		recv.read_bool(); // 'rankinfo' bool
 		if (recv.read_bool())
@@ -104,7 +114,7 @@ namespace jrc
 		return toparse;
 	}
 
-	LookEntry Login::parselook(InPacket& recv) const
+	LookEntry Login::parse_look(InPacket& recv) const
 	{
 		LookEntry look;
 
@@ -134,7 +144,7 @@ namespace jrc
 		return look;
 	}
 
-	StatsEntry Login::parsestats(InPacket& recv) const
+	StatsEntry Login::parse_stats(InPacket& recv) const
 	{
 		StatsEntry statsentry;
 
@@ -170,12 +180,12 @@ namespace jrc
 		statsentry.portal = recv.read_byte();
 		recv.skip(4); //timestamp
 
-		statsentry.job = CharJob(statsentry.stats[Maplestat::JOB]);
+		statsentry.job = Job(statsentry.stats[Maplestat::JOB]);
 
 		return statsentry;
 	}
 
-	const CharEntry& Login::getchar(size_t i) const
+	const CharEntry& Login::get_char_by_index(size_t i) const
 	{
 		if (i < account.chars.size())
 		{
@@ -187,7 +197,7 @@ namespace jrc
 		}
 	}
 
-	const CharEntry& Login::getcharbyid(int cid) const
+	const CharEntry& Login::find_char_by_id(int32_t cid) const
 	{
 		for (size_t i = 0; i < account.chars.size(); i++)
 		{

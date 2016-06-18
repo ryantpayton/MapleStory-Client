@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -44,10 +44,10 @@ namespace jrc
 	public:
 		Ladder(nl::node source);
 
-		bool isladder() const;
+		bool is_ladder() const;
 		bool inrange(Point<int16_t> position, bool upwards) const;
 		bool felloff(int16_t y, bool downwards) const;
-		int16_t getx() const;
+		int16_t get_x() const;
 
 	private:
 		int16_t x;
@@ -63,10 +63,10 @@ namespace jrc
 		MapInfo(nl::node src, Range<int16_t> walls, Range<int16_t> borders);
 		MapInfo();
 
-		bool isswimmap() const;
-		std::string getbgm() const;
-		Range<int16_t> getwalls() const;
-		Range<int16_t> getborders() const;
+		bool is_underwater() const;
+		std::string get_bgm() const;
+		Range<int16_t> get_walls() const;
+		Range<int16_t> get_borders() const;
 
 		// Find a setat the player's position.
 		Optional<const Seat> findseat(Point<int16_t> position) const;

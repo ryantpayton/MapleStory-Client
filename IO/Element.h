@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -23,10 +23,10 @@
 
 namespace jrc
 {
-	class Element
+	class IElement
 	{
 	public:
-		virtual ~Element() {}
+		virtual ~IElement() {}
 
 		// Return wether the element can only be created once.
 		// Such elements will have their visibility toggled when adding them again.
@@ -47,10 +47,10 @@ namespace jrc
 
 
 	template <typename T, typename...Args>
-	class ElementTag : public Element
+	class Element : public IElement
 	{
 	public:
-		ElementTag(Args...a)
+		Element(Args...a)
 		{
 			args = std::make_tuple(a...);
 		}
@@ -87,7 +87,7 @@ namespace jrc
 
 
 	template <typename T>
-	class ElementTag<T, typename std::enable_if<std::is_default_constructible<T>::value>::type> : public Element
+	class Element<T, typename std::enable_if<std::is_default_constructible<T>::value>::type> : public IElement
 	{
 	public:
 		constexpr bool unique() const override

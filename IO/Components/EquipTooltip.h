@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,11 +18,15 @@
 #pragma once
 #include "Tooltip.h"
 #include "Charset.h"
-#include "Itemtext.h"
 
 #include "..\..\Character\Look\Clothing.h"
 #include "..\..\Character\Look\Weapon.h"
 #include "..\..\Character\Inventory\Equip.h"
+
+#include "..\..\Graphics\Text.h"
+
+#include "..\..\Util\BoolPair.h"
+#include "..\..\Util\EnumMap.h"
 
 namespace jrc
 {
@@ -31,27 +35,27 @@ namespace jrc
 	public:
 		EquipTooltip();
 
-		void setequip(const Equip* equip, int16_t invpos);
+		void set_equip(const Equip* equip, int16_t invpos);
 		void draw(Point<int16_t> position) const override;
 
 	private:
 		int16_t invpos;
-		int16_t filllength;
+		int16_t height;
 		bool hasdesc;
 		bool hasslots;
 		bool isweapon;
-		std::map<Maplestat::Value, std::string> reqstatstrings;
+		EnumMap<Maplestat::Value, std::string> reqstatstrings;
 		Texture itemicon;
 
 		Text name;
-		Itemtext desc;
+		Text desc;
 		Text potflag;
 		Text flag;
 		Text category;
 		Text wepspeed;
 		Text slots;
 		Text hammers;
-		std::map<Equipstat::Value, Text> statlabels;
+		EnumMap<Equipstat::Value, Text> statlabels;
 
 		Texture top;
 		Texture mid;
@@ -59,20 +63,20 @@ namespace jrc
 		Texture bot;
 		Texture base;
 
-		std::map<Equip::Potential, Texture> potential;
+		EnumMap<Equip::Potential, Texture> potential;
 		Equip::Potential prank;
 
 		Texture cover;
 		Texture shade;
 
 		std::vector<Maplestat::Value> requirements;
-		std::map<Maplestat::Value, std::map<bool, Texture>> reqstattextures;
-		std::map<Maplestat::Value, bool> canequip;
-		std::map<Maplestat::Value, Point<int16_t>> reqstatpositions;
-		std::map<bool, Charset> reqset;
+		EnumMap<Maplestat::Value, BoolPair<Texture>> reqstattextures;
+		EnumMap<Maplestat::Value, bool> canequip;
+		EnumMap<Maplestat::Value, Point<int16_t>> reqstatpositions;
+		BoolPair<Charset> reqset;
 
 		Texture jobsback;
-		std::map<bool, std::map<uint8_t, Texture>> jobs;
+		BoolPair<std::map<uint8_t, Texture>> jobs;
 		std::vector<uint8_t> okjobs;
 	};
 }

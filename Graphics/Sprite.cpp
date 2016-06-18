@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,16 +19,16 @@
 
 namespace jrc
 {
-	Sprite::Sprite(Animation a, DrawArgument args)
+	Sprite::Sprite(const Animation& a, const DrawArgument& args)
 		: animation(a), stateargs(args) {}
 
-	Sprite::Sprite(nl::node src, DrawArgument args)
+	Sprite::Sprite(nl::node src, const DrawArgument& args)
 		: animation(src), stateargs(args) {}
 
 	Sprite::Sprite(nl::node src)
-		: Sprite(src, DrawArgument()) {}
+		: Sprite(src, {}) {}
 
-	Sprite::~Sprite() {}
+	Sprite::Sprite() {}
 
 	void Sprite::draw(Point<int16_t> parentpos, float alpha) const
 	{

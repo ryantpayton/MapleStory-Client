@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -37,21 +37,21 @@ namespace jrc
 		// Deactivates the object.
 		virtual void deactivate();
 		// Checks wether this object is active.
-		virtual bool isactive() const;
+		virtual bool is_active() const;
 		// Obtains the layer used to determine the drawing order on the map.
-		virtual int8_t getlayer() const;
+		virtual int8_t get_layer() const;
 
 		// Changes the objects position.
-		void setposition(int16_t x, int16_t y);
+		void set_position(int16_t x, int16_t y);
 		// Changes the objects position.
-		void setposition(Point<int16_t> position);
+		void set_position(Point<int16_t> position);
 
 		// Returns the object id unique to every object on one map.
-		int32_t getoid() const;
+		int32_t get_oid() const;
 		// Returns the current position.
-		Point<int16_t> getposition() const;
+		Point<int16_t> get_position() const;
 		// Return a reference to this object's physics.
-		PhysicsObject& getphobj();
+		PhysicsObject& get_phobj();
 
 	protected:
 		MapObject(int32_t oid);

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -46,8 +46,8 @@ namespace jrc
 	Rectangle<int16_t> TwoSpriteButton::bounds(Point<int16_t> parentpos) const
 	{
 		bool selected = state == MOUSEOVER || state == PRESSED;
-		Point<int16_t> absp = parentpos + position - textures[selected].getorigin();
-		Point<int16_t> dim = textures[selected].getdimensions();
+		Point<int16_t> absp = parentpos + position - textures[selected].get_origin();
+		Point<int16_t> dim = textures[selected].get_dimensions();
 		return{ absp, absp + dim };
 	}
 }

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015 Daniel Allendorf                                        //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,6 +20,7 @@
 
 #include "Components\EquipTooltip.h"
 #include "Components\ItemTooltip.h"
+#include "Components\SkillTooltip.h"
 
 #include "..\Util\Optional.h"
 
@@ -38,21 +39,23 @@ namespace jrc
 		void update() override;
 
 		void doubleclick(Point<int16_t> pos) override;
-		void sendkey(Keyboard::Keytype type, int32_t action, bool pressed) override;
-		Cursor::State sendmouse(Cursor::State mst, Point<int16_t> pos) override;
+		void send_key(Keyboard::Keytype type, int32_t action, bool pressed) override;
+		Cursor::State send_cursor(Cursor::State mst, Point<int16_t> pos) override;
 
-		void dragicon(Icon* icon) override;
-		void showequip(UIElement::Type parent, Equip* equip, int16_t slot) override;
-		void showitem(UIElement::Type parent, int32_t itemid) override;
-		void cleartooltip(UIElement::Type parent) override;
+		void drag_icon(Icon* icon) override;
+		void show_equip(UIElement::Type parent, Equip* equip, int16_t slot) override;
+		void show_item(UIElement::Type parent, int32_t itemid) override;
+		void show_skill(UIElement::Type parent, int32_t skill_id,
+			int32_t level, int32_t masterlevel, int64_t expiration) override;
+		void clear_tooltip(UIElement::Type parent) override;
 
-		void add(const Element& element) override;
+		void add(const IElement& element) override;
 		void remove(UIElement::Type type) override;
 		UIElement* get(UIElement::Type type) const override;
-		UIElement* getfront(Point<int16_t> pos) const override;
+		UIElement* get_front(Point<int16_t> pos) const override;
 
 	private:
-		void dropicon(const Icon& icon, Point<int16_t> pos);
+		void drop_icon(const Icon& icon, Point<int16_t> pos);
 
 		std::unordered_map<UIElement::Type, UIElement::UPtr> elements;
 		std::list<UIElement::Type> elementorder;
@@ -60,6 +63,7 @@ namespace jrc
 
 		EquipTooltip eqtooltip;
 		ItemTooltip ittooltip;
+		SkillTooltip sktooltip;
 		Optional<Tooltip> tooltip;
 		UIElement::Type tooltipparent;
 
