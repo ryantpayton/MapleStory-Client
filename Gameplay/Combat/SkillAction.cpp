@@ -15,6 +15,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SkillAction.h"
 
+#include "..\..\Util\Misc.h"
+
 namespace jrc
 {
 	void RegularAction::apply(Char& target, Attack::Type atype) const
@@ -56,7 +58,7 @@ namespace jrc
 
 	void TwoHAction::apply(Char& target, Attack::Type) const
 	{
-		bool twohanded = target.istwohanded();
+		bool twohanded = target.is_twohanded();
 		std::string action = actions[twohanded];
 
 		target.attack(action);

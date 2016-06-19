@@ -67,7 +67,7 @@ namespace jrc
 		
 		void draw(const DrawArgument& arguments, float inter) const;
 
-		uint16_t getdelay(int16_t frame) const;
+		uint16_t get_delay(int16_t frame) const;
 		uint16_t getdelayuntil(int16_t frame) const;
 		Point<int16_t> get_origin() const;
 		Point<int16_t> get_dimensions() const;
@@ -75,7 +75,7 @@ namespace jrc
 		Rectangle<int16_t> get_bounds() const;
 
 	private:
-		const Frame& getframe() const;
+		const Frame& get_frame() const;
 
 		std::vector<Frame> frames;
 		bool animated;

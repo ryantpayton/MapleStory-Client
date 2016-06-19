@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Mapinfo.h"
 
+#include "..\..\Constants.h"
+
 namespace jrc
 {
 	MapInfo::MapInfo(nl::node src, Range<int16_t> walls, Range<int16_t> borders)
@@ -24,8 +26,12 @@ namespace jrc
 		nl::node info = src["info"];
 		if (info["VRLeft"].data_type() == nl::node::type::integer)
 		{
-			mapwalls = Range<int16_t>(info["VRLeft"], info["VRRight"]);
-			mapborders = Range<int16_t>(info["VRTop"], info["VRBottom"]);
+			mapwalls = { info["VRLeft"], info["VRRight"] };
+			mapborders = { info["VRTop"], info["VRBottom"] };
+			mapborders = { 
+				mapborders.first() + Constants::VIEWYOFFSET,
+				mapborders.second() - Constants::VIEWYOFFSET 
+			};
 		}
 		else
 		{

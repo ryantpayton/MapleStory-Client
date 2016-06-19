@@ -75,7 +75,7 @@ namespace jrc
 		Point<int16_t> faceshift = DataFactory::get().getdrawinfo().getfacepos(interstance, interframe);
 		DrawArgument faceargs = DrawArgument(absp + faceshift, flipped, absp);
 
-		if (Stance::isclimbing(interstance))
+		if (Stance::is_climbing(interstance))
 		{
 			body->draw(interstance, Body::BODY, interframe, args);
 			equips.draw(Equipslot::GLOVES, interstance, Clothing::GLOVE, interframe, args);
@@ -120,7 +120,7 @@ namespace jrc
 			equips.draw(Equipslot::GLOVES, interstance, Clothing::GLOVEOBODY, interframe, args);
 			equips.draw(Equipslot::SHOES, interstance, Clothing::SHOES, interframe, args);
 
-			if (equips.hasoverall())
+			if (equips.has_overall())
 			{
 				equips.draw(Equipslot::TOP, interstance, Clothing::MAIL, interframe, args);
 			}
@@ -161,7 +161,7 @@ namespace jrc
 			}
 
 			equips.draw(Equipslot::WEAPON, interstance, Clothing::WEAPONBARM, interframe, args);
-			bool twohanded = istwohanded(interstance);
+			bool twohanded = is_twohanded(interstance);
 			if (twohanded)
 			{
 				equips.draw(Equipslot::TOP, interstance, Clothing::MAILARM, interframe, args);
@@ -201,8 +201,6 @@ namespace jrc
 			absp.shift(action->get_move());
 
 		draw(absp, flip, stance.get(alpha), expression.get(alpha), stframe.get(alpha), expframe.get(alpha));
-
-		afterimage.draw(stframe.get(alpha), DrawArgument(absp, flip), alpha);
 	}
 
 	void CharLook::drawstanding(Point<int16_t> position, bool flipped) const
@@ -215,8 +213,6 @@ namespace jrc
 
 	bool CharLook::update(uint16_t timestep)
 	{
-		afterimage.update(stframe.get(), timestep);
-
 		if (timestep == 0)
 		{
 			stance.normalize();
@@ -229,7 +225,7 @@ namespace jrc
 		bool aniend = false;
 		if (action == nullptr)
 		{
-			uint16_t delay = getdelay(stance.get(), stframe.get());
+			uint16_t delay = get_delay(stance.get(), stframe.get());
 			uint16_t delta = delay - stelapsed;
 			if (timestep >= delta)
 			{
@@ -254,20 +250,20 @@ namespace jrc
 		}
 		else
 		{
-			uint16_t delay = action->getdelay();
+			uint16_t delay = action->get_delay();
 			uint16_t delta = delay - stelapsed;
 			if (timestep >= delta)
 			{
 				stelapsed = timestep - delta;
 
-				actframe = DataFactory::get().getdrawinfo().nextacframe(actionstr, actframe);
+				actframe = DataFactory::get().getdrawinfo().next_actionframe(actionstr, actframe);
 				if (actframe > 0)
 				{
-					action = DataFactory::get().getdrawinfo().getaction(actionstr, actframe);
+					action = DataFactory::get().getdrawinfo().get_action(actionstr, actframe);
 					
 					float threshold = static_cast<float>(delta) / timestep;
 					stance.next(action->get_stance(), threshold);
-					stframe.next(action->getframe(), threshold);
+					stframe.next(action->get_frame(), threshold);
 				}
 				else
 				{
@@ -286,7 +282,7 @@ namespace jrc
 			}
 		}
 
-		uint16_t expdelay = face->getdelay(expression.get(), expframe.get());
+		uint16_t expdelay = face->get_delay(expression.get(), expframe.get());
 		uint16_t expdelta = expdelay - expelapsed;
 		if (timestep >= expdelta)
 		{
@@ -347,7 +343,7 @@ namespace jrc
 		if (equip.geteqslot() == Equipslot::WEAPON)
 		{
 			const Weapon& weapon = reinterpret_cast<const Weapon&>(equip);
-			changestance = weapon.istwohanded() != equips.istwohanded();
+			changestance = weapon.is_twohanded() != equips.is_twohanded();
 		}
 		equips.add_equip(equip);
 		if (changestance)
@@ -366,23 +362,19 @@ namespace jrc
 		Optional<const Weapon> weapon = equips.get_weapon();
 		uint8_t attacktype = weapon.mapordefault(&Weapon::getattack, uint8_t(0));
 
-		Stance::Value newstance;
 		if (attacktype == 9 && !degenerate)
 		{
-			setaction("handgun");
-			newstance = Stance::SHOT;
+			stance.set(Stance::SHOT);
+			set_action("handgun");
 		}
 		else
 		{
-			newstance = getattackstance(attacktype, degenerate);
-			stance.set(newstance);
+			stance.set(getattackstance(attacktype, degenerate));
 			stframe.set(0);
 			stelapsed = 0;
 		}
 
-		afterimage = weapon.map(&Weapon::getafterimage, newstance);
 		weapon.map(&Weapon::getusesound, degenerate).play();
-
 	}
 
 	void CharLook::attack(Stance::Value newstance)
@@ -393,14 +385,11 @@ namespace jrc
 		switch (newstance)
 		{
 		case Stance::SHOT:
-			setaction("handgun");
+			set_action("handgun");
 			break;
 		default:
 			set_stance(newstance);
 		}
-
-		afterimage = equips.get_weapon()
-			.map(&Weapon::getafterimage, newstance);
 	}
 
 	void CharLook::set_stance(Stance::Value newstance)
@@ -474,9 +463,9 @@ namespace jrc
 		}
 	}
 
-	uint16_t CharLook::getdelay(Stance::Value st, uint8_t fr) const
+	uint16_t CharLook::get_delay(Stance::Value st, uint8_t fr) const
 	{
-		return DataFactory::get().getdrawinfo().getdelay(st, fr);
+		return DataFactory::get().getdrawinfo().get_delay(st, fr);
 	}
 
 	uint8_t CharLook::getnextframe(Stance::Value st, uint8_t fr) const
@@ -495,19 +484,27 @@ namespace jrc
 		}
 	}
 
-	void CharLook::setaction(const std::string& acstr)
+	void CharLook::set_action(const std::string& acstr)
 	{
 		if (acstr == actionstr || acstr == "")
 			return;
 
-		actframe = 0;
-		stelapsed = 0;
-		actionstr = acstr;
-		action = DataFactory::get().getdrawinfo().getaction(acstr, 0);
-		if (action)
+		if (Stance::Value ac_stance = Stance::bystring(acstr))
 		{
-			stance.set(action->get_stance());
-			stframe.set(action->getframe());
+			set_stance(ac_stance);
+		}
+		else
+		{
+			action = DataFactory::get().getdrawinfo().get_action(acstr, 0);
+			if (action)
+			{
+				actframe = 0;
+				stelapsed = 0;
+				actionstr = acstr;
+
+				stance.set(action->get_stance());
+				stframe.set(action->get_frame());
+			}
 		}
 	}
 
@@ -516,7 +513,7 @@ namespace jrc
 		flip = f;
 	}
 
-	bool CharLook::istwohanded(Stance::Value st) const
+	bool CharLook::is_twohanded(Stance::Value st) const
 	{
 		switch (st)
 		{
@@ -527,33 +524,37 @@ namespace jrc
 		case Stance::WALK2:
 			return true;
 		default:
-			return equips.istwohanded();
+			return equips.is_twohanded();
 		}
 	}
 
-	CharLook::AttackLook CharLook::getattacklook() const
-	{
-		Stance::Value astance = action ? Stance::SHOT : stance.get();
-		Rectangle<int16_t> range = afterimage.get_range();
-		return{ astance, range };
-	}
-
-	uint16_t CharLook::get_attackdelay(size_t no) const
+	uint16_t CharLook::get_attackdelay(size_t no, uint8_t first_frame) const
 	{
 		if (action)
 		{
-			return DataFactory::get().getdrawinfo().get_attackdelay(actionstr, no);
+			return DataFactory::get()
+				.getdrawinfo()
+				.get_attackdelay(actionstr, no);
 		}
 		else
 		{
-			uint8_t firstframe = afterimage.getfirstframe();
 			uint16_t delay = 0;
-			for (uint8_t frame = 0; frame < firstframe; frame++)
+			for (uint8_t frame = 0; frame < first_frame; frame++)
 			{
-				delay += getdelay(stance.get(), frame);
+				delay += get_delay(stance.get(), frame);
 			}
 			return delay;
 		}
+	}
+
+	uint8_t CharLook::get_frame() const
+	{
+		return stframe.get();
+	}
+
+	Stance::Value CharLook::get_stance() const
+	{
+		return stance.get();
 	}
 
 	const Body* CharLook::getbodytype() const

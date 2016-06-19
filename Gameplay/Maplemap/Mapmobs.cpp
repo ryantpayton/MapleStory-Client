@@ -151,7 +151,7 @@ namespace jrc
 		AttackUser attackuser = { 
 			user.get_skilllevel(move.get_id()), 
 			user.get_level(), 
-			user.istwohanded(),
+			user.is_twohanded(),
 			!result.toleft
 		};
 		if (result.bullet)
@@ -181,7 +181,7 @@ namespace jrc
 							result.toleft,
 							line.second[i].first, 
 							oid, 
-							user.get_attackdelay(i, result.speed)
+							user.get_attackdelay(i)
 							);
 						bulleteffects.emplace_back(bullet, head, effect);
 						i++;
@@ -202,7 +202,7 @@ namespace jrc
 						false, 
 						0, 
 						0, 
-						user.get_attackdelay(i, result.speed)
+						user.get_attackdelay(i)
 						);
 					bulleteffects.emplace_back(bullet, target, effect);
 				}
@@ -228,7 +228,7 @@ namespace jrc
 							result.toleft,
 							line.second[i].first, 
 							oid, 
-							user.get_attackdelay(i, result.speed)
+							user.get_attackdelay(i)
 							);
 
 						i++;

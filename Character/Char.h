@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Look\Afterimage.h"
 #include "Look\CharLook.h"
 #include "Look\PetLook.h"
 
@@ -74,10 +75,15 @@ namespace jrc
 		virtual uint16_t get_level() const = 0;
 		// Return the character's level.
 		virtual int32_t get_skilllevel(int32_t skillid) const = 0;
-		// Return the character's attacking speed.
-		virtual float get_attackspeed() const = 0;
+		// Return the character's base attacking speed.
+		virtual int8_t get_base_attackspeed() const = 0;
+
+		// Return the attack speed as an integer.
+		int8_t get_integer_attackspeed() const;
+		// Return the attack speed as a multiplier.
+		float get_real_attackspeed() const;
 		// Return the delay until applying an attack.
-		uint16_t get_attackdelay(size_t no, uint8_t speed) const;
+		uint16_t get_attackdelay(size_t no) const;
 
 		// Set if the character sprite is mirrored (true = facing left)
 		virtual void set_direction(bool flipped);
@@ -89,6 +95,10 @@ namespace jrc
 		void attack(Stance::Value stance);
 		// Change the character's stance to it's regular attack.
 		void attack(bool degenerate);
+		// Set the afterimage for an attack.
+		void set_afterimage(int32_t skill_id);
+		// Return the current afterimage.
+		const Afterimage& get_afterimage() const;
 
 		// Display an animation as an effect with the character.
 		void show_effect(Animation animation, int8_t z);
@@ -101,13 +111,13 @@ namespace jrc
 		// Change the character's state by id.
 		void set_state(uint8_t statebyte);
 		// Change the character's face expression by id.
-		void sendface(int32_t expression);
+		void set_expression(int32_t expression);
 
 		// Add a pet with the specified stats.
 		void add_pet(uint8_t index, int32_t iid, const std::string& name,
 			int32_t uniqueid, Point<int16_t> pos, uint8_t stance, int32_t fhid);
 		// Remove a pet with the specified index and reason.
-		void removepet(uint8_t index, bool hunger);
+		void remove_pet(uint8_t index, bool hunger);
 
 		// Return if the character is facing left.
 		bool getflip() const;
@@ -117,9 +127,9 @@ namespace jrc
 		// Return if the char is in the Char::SIT state.
 		bool is_sitting() const;
 		// Return if the char is in the Char::LADDER or Char::ROPE state.
-		bool isclimbing() const;
+		bool is_climbing() const;
 		// Return wether the character sprite uses stances for two-handed weapons.
-		bool istwohanded() const;
+		bool is_twohanded() const;
 
 		// Obtain a reference to this character's look.
 		CharLook& get_look();
@@ -140,6 +150,7 @@ namespace jrc
 		CharLook look;
 		ChatBalloon chatballoon;
 		EffectLayer effects;
+		Afterimage afterimage;
 		Text namelabel;
 		PetLook pets[3];
 

@@ -26,57 +26,68 @@ namespace jrc
 	class Foothold
 	{
 	public:
-		Foothold(nl::node src, uint8_t layer);
+		Foothold(nl::node src, uint16_t id, uint8_t layer);
 		Foothold();
 
 		// Returns the foothold id aka the identifier in game data of this platform.
-		uint16_t get_id() const { return id; }
+		uint16_t id() const;
 		// Returns the platform left to this.
-		uint16_t getprev() const { return prev; }
+		uint16_t prev() const;
 		// Returns the platform right to this.
-		uint16_t getnext() const { return next; }
+		uint16_t next() const;
 		// Returns the platform's layer.
-		uint8_t get_layer() const { return layer; }
+		uint8_t layer() const;
 		// Returns the horizontal component.
-		const Range<int16_t>& gethor() const { return horizontal; }
+		const Range<int16_t>& horizontal() const;
 		// Returns the vertical component.
-		const Range<int16_t>& getver() const { return vertical; }
+		const Range<int16_t>& vertical() const;
+
 		// Return the left edge.
-		int16_t getl() const { return horizontal.smaller(); }
+		int16_t l() const;
 		// Return the right edge.
-		int16_t getr() const { return horizontal.greater(); }
+		int16_t r() const;
 		// Return the top edge.
-		int16_t gett() const { return vertical.smaller(); }
+		int16_t t() const;
 		// Return the bottom edge.
-		int16_t getb() const { return vertical.greater(); }
+		int16_t b() const;
+		// Return the first horizontal component.
+		int16_t x1() const;
+		// Return the second horizontal component.
+		int16_t x2() const;
+		// Return the first vertical component.
+		int16_t y1() const;
+		// Return the second vertical component.
+		int16_t y2() const;
 		// Return if the platform is a wall (x1 == x2).
-		bool iswall() const { return horizontal.empty(); }
+		bool is_wall() const;
 		// Return if the platform is a floor (y1 == y2).
-		bool isfloor() const { return vertical.empty(); }
+		bool is_floor() const;
 		// Return if this platform is a left edge.
-		bool isleftedge() const { return prev == 0; }
+		bool is_left_edge() const;
 		// Return if this platform is a right edge.
-		bool isrightedge() const { return next == 0; }
+		bool is_right_edge() const;
 		// Returns if a x-coordinate is above or below this platform.
-		bool hcontains(int16_t x) const { return horizontal.contains(x); }
+		bool hcontains(int16_t x) const;
 		// Returns if a y-coordinate is right or left of this platform.
-		bool vcontains(int16_t y) const { return vertical.contains(y); }
+		bool vcontains(int16_t y) const;
+		// Check wether this foothold blocks an object.
+		bool is_blocking(const Range<int16_t>& vertical) const;
 		// Returns the width.
-		int16_t gethdelta() const { return horizontal.delta(); }
+		int16_t hdelta() const;
 		// Returns the height.
-		int16_t getvdelta() const { return vertical.delta(); }
+		int16_t vdelta() const;
 		// Returns the slope as a ratio of vertical/horizontal.
-		double getslope() const;
-		// Returns a y-coordinate right above the given x-coordinate.
-		double resolvex(double x) const;
+		double slope() const;
+		// Returns a y-coordinate right below the given x-coordinate.
+		double ground_below(double x) const;
 
 	private:
-		uint16_t id;
-		uint16_t prev;
-		uint16_t next;
-		uint8_t layer;
-		Range<int16_t> horizontal;
-		Range<int16_t> vertical;
+		uint16_t m_id;
+		uint16_t m_prev;
+		uint16_t m_next;
+		uint8_t m_layer;
+		Range<int16_t> m_horizontal;
+		Range<int16_t> m_vertical;
 	};
 }
 

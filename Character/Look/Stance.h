@@ -29,7 +29,8 @@ namespace jrc
 	public:
 		enum Value : uint8_t
 		{
-			NONE, ALERT, DEAD, FLY, HEAL, JUMP, LADDER, PRONE, PRONESTAB,
+			NONE, 
+			ALERT, DEAD, FLY, HEAL, JUMP, LADDER, PRONE, PRONESTAB,
 			ROPE, SHOT, SHOOT1, SHOOT2, SHOOTF, SIT, STABO1, STABO2, STABOF,
 			STABT1, STABT2, STABTF, STAND1, STAND2, SWINGO1, SWINGO2,
 			SWINGO3, SWINGOF, SWINGP1, SWINGP2, SWINGPF, SWINGT1, SWINGT2,
@@ -95,7 +96,7 @@ namespace jrc
 			return stancenames[value];
 		}
 
-		static bool isclimbing(Value value)
+		static bool is_climbing(Value value)
 		{
 			return value == LADDER || value == ROPE;
 		}

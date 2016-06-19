@@ -213,7 +213,7 @@ namespace jrc
 
 	bool Animation::update(uint16_t timestep)
 	{
-		const Frame& framedata = getframe();
+		const Frame& framedata = get_frame();
 
 		opacity += framedata.opcstep(timestep);
 		if (opacity.last() < 0.0f)
@@ -290,7 +290,7 @@ namespace jrc
 		}
 	}
 
-	uint16_t Animation::getdelay(int16_t frame_id) const
+	uint16_t Animation::get_delay(int16_t frame_id) const
 	{
 		return frame_id < frames.size() ? frames[frame_id].get_delay() : 0;
 	}
@@ -310,25 +310,25 @@ namespace jrc
 
 	Point<int16_t> Animation::get_origin() const
 	{
-		return getframe().get_origin();
+		return get_frame().get_origin();
 	}
 
 	Point<int16_t> Animation::get_dimensions() const
 	{
-		return getframe().get_dimensions();
+		return get_frame().get_dimensions();
 	}
 
 	Point<int16_t> Animation::get_head() const
 	{ 
-		return getframe().get_head();
+		return get_frame().get_head();
 	}
 
 	Rectangle<int16_t> Animation::get_bounds() const
 	{
-		return getframe().get_bounds();
+		return get_frame().get_bounds();
 	}
 
-	const Frame& Animation::getframe() const
+	const Frame& Animation::get_frame() const
 	{
 		return frames[frame.get()];
 	}

@@ -43,10 +43,11 @@ namespace jrc
 
 		bool is_visible(Equipslot::Value slot) const;
 		bool comparelayer(Equipslot::Value slot, Stance::Value stance, Clothing::Layer layer) const;
-		bool hasoverall() const;
-		bool hasweapon() const;
-		bool istwohanded() const;
+		bool has_overall() const;
+		bool has_weapon() const;
+		bool is_twohanded() const;
 		CapType getcaptype() const;
+		uint8_t get_attackspeed() const;
 		Weapon::Type get_weapontype() const;
 		std::string get_equipname(Equipslot::Value slot) const;
 

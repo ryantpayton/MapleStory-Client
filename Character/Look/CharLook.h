@@ -49,29 +49,24 @@ namespace jrc
 		void attack(Stance::Value stance);
 		void set_stance(Stance::Value stance);
 		void setexpression(Expression::Value expression);
-		void setaction(const std::string& action);
+		void set_action(const std::string& action);
 		void set_direction(bool mirrored);
 
-		bool istwohanded(Stance::Value stance) const;
+		bool is_twohanded(Stance::Value stance) const;
+		uint16_t get_attackdelay(size_t no, uint8_t first_frame) const;
+		uint8_t get_frame() const;
+		Stance::Value get_stance() const;
 
 		const Body* getbodytype() const;
 		const Hair* gethairstyle() const;
 		const Face* getfacetype() const;
 		const CharEquips& get_equips() const;
 
-		struct AttackLook
-		{
-			Stance::Value stance;
-			Rectangle<int16_t> range;
-		};
-		AttackLook getattacklook() const;
-		uint16_t get_attackdelay(size_t no) const;
-
 	private:
 		void updatetwohanded();
 		void draw(Point<int16_t> position, bool flip, Stance::Value interstance, 
 			Expression::Value interexp, uint8_t interframe, uint8_t interfcframe) const;
-		uint16_t getdelay(Stance::Value stance, uint8_t frame) const;
+		uint16_t get_delay(Stance::Value stance, uint8_t frame) const;
 		uint8_t getnextframe(Stance::Value stance, uint8_t frame) const;
 		Stance::Value getattackstance(uint8_t attack, bool degenerate) const;
 
@@ -84,8 +79,6 @@ namespace jrc
 		uint16_t expelapsed;
 
 		bool flip;
-
-		Weapon::AfterImage afterimage;
 
 		const BodyAction* action;
 		std::string actionstr;

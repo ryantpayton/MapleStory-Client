@@ -23,6 +23,8 @@ namespace jrc
 	{
 		useeffect->apply(target);
 		action->apply(target, type);
+		
+		target.set_afterimage(get_id());
 
 		sound->play_use();
 	}
@@ -34,7 +36,7 @@ namespace jrc
 		sound->play_hit();
 	}
 
-	bool SpecialMove::isskill() const
+	bool SpecialMove::is_skill() const
 	{
 		return get_id() > 0;
 	}

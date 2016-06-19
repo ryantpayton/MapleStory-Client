@@ -199,14 +199,9 @@ namespace jrc
 		return get_layer();
 	}
 
-	float Player::get_attackspeed() const
+	int8_t Player::get_base_attackspeed() const
 	{
-		int8_t statsspeed = stats.get_attackspeed();
-		uint8_t weaponspeed = look.get_equips().get_weapon()
-			.mapordefault(&Weapon::getspeed, uint8_t(0));
-
-		float delay = static_cast<float>(weaponspeed + statsspeed);
-		return 1.7f - (delay / 10);
+		return stats.get_attackspeed();
 	}
 
 	void Player::set_direction(bool flipped)
@@ -236,12 +231,12 @@ namespace jrc
 
 	bool Player::can_attack() const
 	{
-		return !attacking && !isclimbing() && !is_sitting() && look.get_equips().hasweapon();
+		return !attacking && !is_climbing() && !is_sitting() && look.get_equips().has_weapon();
 	}
 
 	SpecialMove::ForbidReason Player::can_use(const SpecialMove& move) const
 	{
-		if (move.isskill() && state == PRONE)
+		if (move.is_skill() && state == PRONE)
 			return SpecialMove::FBR_OTHER;
 
 		if (has_cooldown(move.get_id()))
@@ -305,8 +300,7 @@ namespace jrc
 		attack.bullet = inventory.get_bulletid();
 		attack.origin = get_position();
 		attack.toleft = !flip;
-		attack.speed = stats.get_attackspeed() + look.get_equips().get_weapon()
-			.mapordefault(&Weapon::getspeed, uint8_t(0));
+		attack.speed = get_integer_attackspeed();
 
 		return attack;
 	}
@@ -315,7 +309,7 @@ namespace jrc
 	{
 		if (phobj.onground)
 		{
-			uint16_t delay = look.get_attackdelay(1);
+			uint16_t delay = get_attackdelay(1);
 			phobj.movexuntil(targetx, delay);
 			phobj.set_flag(PhysicsObject::TURNATEDGES);
 		}
@@ -355,7 +349,11 @@ namespace jrc
 
 	bool Player::has_cooldown(int32_t skill_id) const
 	{
-		return cooldowns.count(skill_id) > 0;
+		auto iter = cooldowns.find(skill_id);
+		if (iter == cooldowns.end())
+			return false;
+
+		return iter->second > 0;
 	}
 
 	void Player::change_level(uint16_t level)

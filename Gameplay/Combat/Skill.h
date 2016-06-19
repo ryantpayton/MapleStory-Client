@@ -101,6 +101,7 @@ namespace jrc
 		GUARDIAN_PALADIN = 1220006,
 		ADVANCED_CHARGE = 1220010,
 		RUSH_PALADIN = 1221007,
+		HEAVENS_HAMMER = 1221011,
 
 		// Spearman
 		SPEAR_MASTERY = 1300000,
@@ -138,6 +139,10 @@ namespace jrc
 
 		// F/P Mage
 		FP_TELEPORT = 2101002,
+
+		// F/P Archmage
+		BLAST = 2111002,
+		POISON_BREATH = 2111003,
 
 		// I/L Mage
 		IL_TELEPORT = 2201002,

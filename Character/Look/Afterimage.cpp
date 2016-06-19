@@ -15,69 +15,73 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "Clothing.h"
+#include "Afterimage.h"
 
-#include "..\..\Audio\Audio.h"
+#include "..\..\Util\Misc.h"
+
+#include <nlnx\nx.hpp>
 
 namespace jrc
 {
-	class Weapon : public Clothing
-	{
-	public:
-		enum Type
-		{
-			NONE = 0,
-			SWORD_1H = 130,
-			AXE_1H = 131,
-			MACE_1H = 132,
-			DAGGER = 133,
-			WAND = 137,
-			STAFF = 138,
-			SWORD_2H = 140,
-			AXE_2H = 141,
-			MACE_2H = 142,
-			SPEAR = 143,
-			POLEARM = 144,
-			BOW = 145,
-			CROSSBOW = 146,
-			CLAW = 147,
-			KNUCKLE = 148,
-			GUN = 149,
-			CASH = 170
-		};
+	Afterimage::Afterimage(int32_t skill_id, const std::string& name,
+		const std::string& stance_name, int16_t level) {
 
-		static Type typebyvalue(int32_t value)
+		nl::node src;
+		if (skill_id > 0)
 		{
-			if (value < 130 || (value > 133 && value < 137) || value == 139 || (value > 149 && value < 170) || value > 170)
-				return NONE;
-
-			return static_cast<Type>(value);
+			std::string strid = string_format::extend_id(skill_id, 7);
+			src = nl::nx::skill[strid.substr(0, 3) + ".img"]["skill"][strid]["afterimage"][name][stance_name];
+		}
+		
+		if (src.size() == 0)
+		{
+			src = nl::nx::character["Afterimage"][name + ".img"][level / 10][stance_name];
 		}
 
-		Weapon(int32_t, const BodyDrawinfo&);
-		Weapon();
+		range = src;
+		firstframe = 0;
+		displayed = false;
 
-		bool is_twohanded() const;
-		uint8_t getspeed() const;
-		uint8_t getattack() const;
-		std::string getspeedstring() const;
-		uint8_t get_attackdelay() const;
-		Type gettype() const;
-		Stance::Value getstand() const;
-		Stance::Value getwalk() const;
-		Sound getusesound(bool degenerate) const;
-		const std::string& get_afterimage() const;
+		for (nl::node sub : src)
+		{
+			uint8_t frame = string_conversion::or_default<uint8_t>(sub.name(), 255);
+			if (frame < 255)
+			{
+				animation = sub;
+				firstframe = frame;
+			}
+		}
+	}
 
-	private:
-		Type type;
-		bool twohanded;
-		Stance::Value walk;
-		Stance::Value stand;
-		uint8_t attackspeed;
-		uint8_t attack;
-		BoolPair<Sound> usesounds;
-		std::string afterimage;
-	};
+	Afterimage::Afterimage()
+	{
+		firstframe = 0;
+		displayed = true;
+	}
+
+	void Afterimage::draw(uint8_t stframe, const DrawArgument& args, float alpha) const
+	{
+		if (!displayed && stframe >= firstframe)
+		{
+			animation.draw(args, alpha);
+		}
+	}
+
+	void Afterimage::update(uint8_t stframe, uint16_t timestep)
+	{
+		if (!displayed && stframe >= firstframe)
+		{
+			displayed = animation.update(timestep);
+		}
+	}
+
+	uint8_t Afterimage::get_first_frame() const
+	{
+		return firstframe;
+	}
+
+	Rectangle<int16_t> Afterimage::get_range() const
+	{
+		return range;
+	}
 }
-

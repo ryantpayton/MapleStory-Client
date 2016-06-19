@@ -20,6 +20,7 @@
 
 #include "..\Net\Login.h"
 #include "..\Util\EnumMap.h"
+#include "..\Util\Rectangle.h"
 
 namespace jrc
 {
@@ -60,25 +61,25 @@ namespace jrc
 		Weapon::Type get_weapontype() const;
 		float get_mastery() const;
 		float get_critical() const;
-		float get_mincrit() const { return mincrit; }
-		float get_maxcrit() const { return maxcrit; }
-		float get_bossdmg() const { return bossdmg; }
-		float get_ignoredef() const { return ignoredef; }
-		void set_stance(float st) { stance = st; }
-		float get_stance() const { return stance; }
-		float get_resistance() const { return resiststatus; }
-		int32_t get_maxdamage() const { return maxdamage; }
-		int32_t get_mindamage() const { return mindamage; }
-		uint16_t gethonor() const { return honor; }
-		void setattackspeed(int8_t as) { attackspeed = as; }
-		int8_t get_attackspeed() const { return attackspeed; }
+		float get_mincrit() const;
+		float get_maxcrit() const;
+		float get_bossdmg() const;
+		float get_ignoredef() const;
+		void set_stance(float stance);
+		float get_stance() const;
+		float get_resistance() const;
+		int32_t get_maxdamage() const;
+		int32_t get_mindamage() const;
+		uint16_t get_honor() const;
+		void set_attackspeed(int8_t speed);
+		int8_t get_attackspeed() const;
 		const Job& get_job() const;
 
 	private:
 		int32_t calculateaccuracy() const;
-		int32_t getprimary() const;
-		int32_t getsecondary() const;
-		float getmultiplier() const;
+		int32_t get_primary_stat() const;
+		int32_t get_secondary_stat() const;
+		float get_multiplier() const;
 
 		std::string name;
 		std::vector<int64_t> petids;

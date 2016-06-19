@@ -45,7 +45,7 @@ namespace jrc
 
 	private:
 		uint16_t get_fhid_below(double fx, double fy) const;
-		double getwall(uint16_t fhid, bool left, double fy) const;
+		double get_wall(uint16_t fhid, bool left, double fy) const;
 		double get_edge(uint16_t fhid, bool left) const;
 		const Foothold& get_fh(uint16_t fhid) const;
 

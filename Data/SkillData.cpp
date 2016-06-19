@@ -17,7 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SkillData.h"
 
+#include "..\Gameplay\Combat\Skill.h"
 #include "..\Util\Misc.h"
+
+#include <unordered_set>
 
 #include <nlnx\nx.hpp>
 #include <nlnx\node.hpp>
@@ -78,11 +81,26 @@ namespace jrc
 		reqweapon = Weapon::typebyvalue(100 + (int32_t)src["weapon"]);
 		masterlevel = static_cast<int32_t>(stats.size());
 		passive = (id % 10000) / 1000 == 0;
-		bool hasdamage = levelsrc["1"]["damage"].data_type() == nl::node::type::integer;
-		bool hasmad = levelsrc["1"]["mad"].data_type() == nl::node::type::integer;
-		bool hasfixdamage = levelsrc["1"]["fixdamage"].data_type() == nl::node::type::integer;
-		offensive = !passive && (hasdamage || hasmad || hasfixdamage);
+		offensive = !passive && (src["hit"].size() > 0 || is_irregular_attack(id));
 		invisible = src["invisible"].get_bool();
+	}
+
+	bool SkillData::is_irregular_attack(int32_t id) const
+	{
+		static const std::unordered_set<int32_t> irregular_attack_skills =
+		{
+			// Beginner
+			Skill::THREE_SNAILS, 
+			// Fighter
+			Skill::RUSH_HERO, 
+			// Page
+			Skill::RUSH_PALADIN,
+			// Spearman
+			Skill::SACRIFICE, Skill::RUSH_DK,
+			// F/P Mage
+			Skill::BLAST, Skill::POISON_BREATH
+		};
+		return irregular_attack_skills.count(id) > 0;
 	}
 
 	bool SkillData::is_passive() const

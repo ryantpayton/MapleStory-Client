@@ -15,14 +15,15 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "Weapon.h"
-#include "nlnx\nx.hpp"
+
+#include <nlnx\nx.hpp>
 
 namespace jrc
 {
-	Weapon::Weapon(int32_t equipid, const BodyDrawinfo& drawinfo) : Clothing(equipid, drawinfo)
-	{
+	Weapon::Weapon(int32_t equipid, const BodyDrawinfo& drawinfo)
+		: Clothing(equipid, drawinfo) {
+
 		int32_t prefix = equipid / 10000;
 		type = typebyvalue(prefix);
 		twohanded = (prefix == STAFF) || (prefix >= SWORD_2H && prefix <= POLEARM) || (prefix == CROSSBOW);
@@ -71,15 +72,7 @@ namespace jrc
 			walk = twohanded ? Stance::WALK2 : Stance::WALK1;
 		}
 
-		std::string ainame = src["afterImage"];
-		int16_t lvprefix = getreqstat(Maplestat::LEVEL) / 10;
-		std::string prefixstr = std::to_string(lvprefix);
-		std::string fullname = ainame + prefixstr;
-		if (!afterimages.count(fullname))
-		{
-			afterimages[fullname] = nl::nx::character["Afterimage"][ainame + ".img"][prefixstr];
-		}
-		afterimage = afterimages.at(fullname);
+		afterimage = src["afterImage"];
 	}
 
 	Weapon::Weapon()
@@ -87,7 +80,7 @@ namespace jrc
 		type = NONE;
 	}
 
-	bool Weapon::istwohanded() const
+	bool Weapon::is_twohanded() const
 	{
 		return twohanded;
 	}
@@ -137,11 +130,6 @@ namespace jrc
 			return 50 - 25 / attackspeed;
 	}
 
-	Rectangle<int16_t> Weapon::get_range(Stance::Value stance) const
-	{
-		return afterimage.range(stance);
-	}
-
 	Weapon::Type Weapon::gettype() const
 	{
 		return type;
@@ -162,63 +150,8 @@ namespace jrc
 		return usesounds[degenerate];
 	}
 
-	Weapon::AfterImage Weapon::getafterimage(Stance::Value stance) const
+	const std::string& Weapon::get_afterimage() const
 	{
-		return afterimage.get(stance);
-	}
-
-	std::unordered_map<std::string, Weapon::AfterImageStances> Weapon::afterimages;
-
-
-	Weapon::AfterImage::AfterImage(nl::node src)
-	{
-		for (nl::node sub : src)
-		{
-			uint8_t frame = string_conversion::or_default<uint8_t>(sub.name(), 255);
-			if (frame < 255)
-			{
-				animation = sub;
-				firstframe = frame;
-			}
-		}
-
-		range = src;
-		displayed = false;
-	}
-
-	Weapon::AfterImage::AfterImage() 
-	{
-		firstframe = 0;
-		displayed = true;
-	}
-
-	void Weapon::AfterImage::draw(uint8_t stframe, const DrawArgument& args, float alpha) const
-	{
-		if (!displayed && stframe >= firstframe)
-		{
-			animation.draw(args, alpha);
-		}
-	}
-
-	void Weapon::AfterImage::update(uint8_t stframe, uint16_t timestep)
-	{
-		if (!displayed && stframe >= firstframe)
-		{
-			bool ended = animation.update(timestep);
-			if (ended)
-			{
-				displayed = true;
-			}
-		}
-	}
-
-	uint8_t Weapon::AfterImage::getfirstframe() const
-	{
-		return firstframe;
-	}
-
-	Rectangle<int16_t> Weapon::AfterImage::get_range() const
-	{
-		return range;
+		return afterimage;
 	}
 }

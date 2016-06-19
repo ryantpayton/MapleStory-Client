@@ -105,6 +105,11 @@ namespace jrc
 		set_state(laststate);
 	}
 
+	int8_t OtherChar::get_base_attackspeed() const
+	{
+		return attackspeed;
+	}
+
 	uint16_t OtherChar::get_level() const
 	{
 		return level;
@@ -112,12 +117,10 @@ namespace jrc
 
 	int32_t OtherChar::get_skilllevel(int32_t skillid) const
 	{
-		return skilllevels.count(skillid) ? skilllevels.at(skillid) : 0;
-	}
+		auto iter = skilllevels.find(skillid);
+		if (iter == skilllevels.end())
+			return 0;
 
-	float OtherChar::get_attackspeed() const
-	{
-		float delay = static_cast<float>(attackspeed);
-		return 1.7f - (delay / 10);
+		return iter->second;
 	}
 }

@@ -43,21 +43,29 @@ namespace jrc
 
 	void MapleFrame::draw(Point<int16_t> position, int16_t rwidth, int16_t rheight) const
 	{
-		int16_t width = (rwidth / xtile + 2) * xtile;
-		int16_t height = (rheight / ytile) * ytile;
-		int16_t numhor = width / xtile;
-		int16_t numver = height / ytile;
+		int16_t numhor = rwidth / xtile + 2;
+		int16_t numver = rheight / ytile;
+		int16_t width = numhor * xtile;
+		int16_t height = numver * ytile;
 		int16_t left = position.x() - width / 2;
 		int16_t top = position.y() - height;
+		int16_t right = left + width;
+		int16_t bottom = top + height;
 
 		northwest.draw({ left, top });
-		southwest.draw({ left, top + height });
-		west.draw({ { left, top }, { 0, ytile * numver } });
-		center.draw({ { left, top }, { xtile * numhor, ytile * numver } });
-		east.draw({ { left + width, top }, { 0, ytile * numver } });
-		north.draw({ { left, top }, { xtile * numhor, 0 } });
-		south.draw({ { left, top + height },{ xtile * numhor, 0 } });
-		northeast.draw({ left + width, top });
-		southeast.draw({ left + width, top + height });
+		southwest.draw({ left, bottom });
+		for (int16_t y = top; y < bottom; y += ytile)
+		{
+			west.draw({ left, y });
+			east.draw({ right, y });
+		}
+		center.draw({ { left, top }, { width, height } });
+		for (int16_t x = left; x < right; x += xtile)
+		{
+			north.draw({ x, top });
+			south.draw({ x, bottom });
+		}
+		northeast.draw({ right, top });
+		southeast.draw({ right, bottom });
 	}
 }

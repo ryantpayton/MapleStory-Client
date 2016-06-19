@@ -169,7 +169,7 @@ namespace jrc
 		statlabels[STANCE].change_text(std::to_string(static_cast<int32_t>(stats.get_stance() * 100)) + "%");
 		statlabels[SPEED].change_text(std::to_string(stats.get_total(Equipstat::SPEED)) + "%");
 		statlabels[JUMP].change_text(std::to_string(stats.get_total(Equipstat::JUMP)) + "%");
-		statlabels[HONOR].change_text(std::to_string(stats.gethonor()));
+		statlabels[HONOR].change_text(std::to_string(stats.get_honor()));
 	}
 
 	void UIStatsinfo::update_stat(Maplestat::Value stat)

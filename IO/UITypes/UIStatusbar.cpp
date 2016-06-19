@@ -87,9 +87,9 @@ namespace jrc
 	{
 		UIElement::draw(alpha);
 
-		expbar.draw({ position + Point<int16_t>(-261, -15), 0.8f });
-		hpbar.draw({ position + Point<int16_t>(-261, -31), 0.8f });
-		mpbar.draw({ position + Point<int16_t>(-90, -31), 0.8f });
+		expbar.draw(position + Point<int16_t>(-261, -15));
+		hpbar.draw(position + Point<int16_t>(-261, -31));
+		mpbar.draw(position + Point<int16_t>(-90, -31));
 
 		int16_t level = stats.get_stat(Maplestat::LEVEL);
 		int16_t hp = stats.get_stat(Maplestat::HP);

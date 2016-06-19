@@ -74,8 +74,8 @@ namespace jrc
 			set_total(stat, total);
 		}
 
-		int32_t primary = getprimary();
-		int32_t secondary = getsecondary();
+		int32_t primary = get_primary_stat();
+		int32_t secondary = get_secondary_stat();
 		int32_t attack = get_total(Equipstat::WATK);
 		float multiplier = damagepercent + static_cast<float>(attack) / 100;
 		maxdamage = static_cast<int32_t>((primary + secondary) * multiplier);
@@ -89,19 +89,19 @@ namespace jrc
 		return static_cast<int32_t>(totaldex * 0.8f + totalluk * 0.5f);
 	}
 
-	int32_t CharStats::getprimary() const
+	int32_t CharStats::get_primary_stat() const
 	{
 		Equipstat::Value primary = job.get_primary(weapontype);
-		return static_cast<int32_t>(getmultiplier() * get_total(primary));
+		return static_cast<int32_t>(get_multiplier() * get_total(primary));
 	}
 
-	int32_t CharStats::getsecondary() const
+	int32_t CharStats::get_secondary_stat() const
 	{
 		Equipstat::Value secondary = job.get_secondary(weapontype);
 		return get_total(secondary);
 	}
 
-	float CharStats::getmultiplier() const
+	float CharStats::get_multiplier() const
 	{
 		switch (weapontype)
 		{
@@ -208,7 +208,8 @@ namespace jrc
 
 	bool CharStats::isdamagebuffed() const
 	{
-		return get_buffdelta(Equipstat::WATK) > 0 || get_buffdelta(Equipstat::MAGIC) > 0;
+		return get_buffdelta(Equipstat::WATK) > 0
+			|| get_buffdelta(Equipstat::MAGIC) > 0;
 	}
 
 	uint16_t CharStats::get_stat(Maplestat::Value stat) const
@@ -269,6 +270,66 @@ namespace jrc
 	float CharStats::get_critical() const
 	{
 		return critical;
+	}
+
+	float CharStats::get_mincrit() const
+	{
+		return mincrit;
+	}
+
+	float CharStats::get_maxcrit() const
+	{
+		return maxcrit;
+	}
+
+	float CharStats::get_bossdmg() const
+	{
+		return bossdmg;
+	}
+
+	float CharStats::get_ignoredef() const
+	{
+		return ignoredef;
+	}
+
+	void CharStats::set_stance(float s)
+	{
+		stance = s;
+	}
+
+	float CharStats::get_stance() const
+	{
+		return stance;
+	}
+
+	float CharStats::get_resistance() const
+	{
+		return resiststatus;
+	}
+
+	int32_t CharStats::get_maxdamage() const
+	{
+		return maxdamage;
+	}
+
+	int32_t CharStats::get_mindamage() const
+	{
+		return mindamage;
+	}
+
+	uint16_t CharStats::get_honor() const
+	{
+		return honor;
+	}
+
+	void CharStats::set_attackspeed(int8_t as)
+	{
+		attackspeed = as;
+	}
+
+	int8_t CharStats::get_attackspeed() const
+	{
+		return attackspeed;
 	}
 
 	const Job& CharStats::get_job() const

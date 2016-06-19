@@ -20,6 +20,7 @@
 
 #include "..\Character\Look\Weapon.h"
 #include "..\Graphics\Texture.h"
+#include "..\Util\Rectangle.h"
 
 #include <array>
 #include <unordered_map>
@@ -97,6 +98,9 @@ namespace jrc
 	private:
 		friend Cache<SkillData>;
 		SkillData(int32_t id);
+		// Check wether the skill is an attack skill which lacks the 'hit' node.
+		// Unfortunately, this has to be hardcoded.
+		bool is_irregular_attack(int32_t id) const;
 
 		std::unordered_map<int32_t, Stats> stats;
 		std::string element;

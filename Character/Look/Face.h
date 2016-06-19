@@ -93,7 +93,7 @@ namespace jrc
 
 		void draw(Expression::Value expression, uint8_t frame, const DrawArgument& args) const;
 		uint8_t nextframe(Expression::Value expression, uint8_t frame) const;
-		int16_t getdelay(Expression::Value expression, uint8_t frame) const;
+		int16_t get_delay(Expression::Value expression, uint8_t frame) const;
 		std::string get_name() const;
 
 	private:

@@ -60,12 +60,12 @@ namespace jrc
 			return attackframe;
 		}
 
-		uint8_t getframe() const
+		uint8_t get_frame() const
 		{
 			return frame;
 		}
 
-		uint16_t getdelay() const
+		uint16_t get_delay() const
 		{
 			return delay;
 		}
@@ -101,22 +101,22 @@ namespace jrc
 		Point<int16_t> gethairpos(Stance::Value stance, uint8_t frame) const;
 		Point<int16_t> getfacepos(Stance::Value stance, uint8_t frame) const;
 		uint8_t nextframe(Stance::Value stance, uint8_t frame) const;
-		uint16_t getdelay(Stance::Value stance, uint8_t frame) const;
+		uint16_t get_delay(Stance::Value stance, uint8_t frame) const;
 
 		uint16_t get_attackdelay(std::string action, size_t no) const;
-		uint8_t nextacframe(std::string action, uint8_t frame) const;
-		const BodyAction* getaction(std::string action, uint8_t frame) const;
+		uint8_t next_actionframe(std::string action, uint8_t frame) const;
+		const BodyAction* get_action(std::string action, uint8_t frame) const;
 
 	private:
-		std::unordered_map<uint8_t, Point<int16_t>> bodyposmap[Stance::LENGTH];
-		std::unordered_map<uint8_t, Point<int16_t>> armposmap[Stance::LENGTH];
-		std::unordered_map<uint8_t, Point<int16_t>> handposmap[Stance::LENGTH];
-		std::unordered_map<uint8_t, Point<int16_t>> headposmap[Stance::LENGTH];
-		std::unordered_map<uint8_t, Point<int16_t>> hairposmap[Stance::LENGTH];
-		std::unordered_map<uint8_t, Point<int16_t>> faceposmap[Stance::LENGTH];
-		std::unordered_map<uint8_t, uint16_t> stancedelays[Stance::LENGTH];
+		std::unordered_map<uint8_t, Point<int16_t>> body_positions[Stance::LENGTH];
+		std::unordered_map<uint8_t, Point<int16_t>> arm_positions[Stance::LENGTH];
+		std::unordered_map<uint8_t, Point<int16_t>> hand_positions[Stance::LENGTH];
+		std::unordered_map<uint8_t, Point<int16_t>> head_positions[Stance::LENGTH];
+		std::unordered_map<uint8_t, Point<int16_t>> hair_positions[Stance::LENGTH];
+		std::unordered_map<uint8_t, Point<int16_t>> face_positions[Stance::LENGTH];
+		std::unordered_map<uint8_t, uint16_t> stance_delays[Stance::LENGTH];
 
-		std::unordered_map<std::string, std::unordered_map<uint8_t, BodyAction>> bodyactions;
-		std::unordered_map<std::string, std::vector<uint16_t>> attackdelays;
+		std::unordered_map<std::string, std::unordered_map<uint8_t, BodyAction>> body_actions;
+		std::unordered_map<std::string, std::vector<uint16_t>> attack_delays;
 	};
 }

@@ -34,10 +34,10 @@ namespace jrc
 		attack.skill = 0;
 		attack.mobcount = 1;
 		attack.hitcount = 1;
-		attack.stance = user.get_look().getattacklook().stance;
+		attack.stance = user.get_look().get_stance();
 		if (attack.type == Attack::CLOSE)
 		{
-			attack.range = user.get_look().getattacklook().range;
+			attack.range = user.get_afterimage().get_range();
 		}
 	}
 

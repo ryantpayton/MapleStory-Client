@@ -101,7 +101,7 @@ namespace jrc
 		// Return the character's level of a skill.
 		int32_t get_skilllevel(int32_t skillid) const override;
 		// Return the character's attacking speed.
-		float get_attackspeed() const override;
+		int8_t get_base_attackspeed() const override;
 
 		// Returns the current walking force, calculated from the total ES_SPEED stat.
 		float get_walkforce() const;

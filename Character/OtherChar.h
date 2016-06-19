@@ -45,12 +45,12 @@ namespace jrc
 		// Update the character look.
 		void update_look(const LookEntry& look);
 
+		// Return the character's attacking speed.
+		int8_t get_base_attackspeed() const override;
 		// Return the character's level.
 		uint16_t get_level() const override;
 		// Return the character's level of a skill.
 		int32_t get_skilllevel(int32_t skillid) const override;
-		// Return the character's attacking speed.
-		float get_attackspeed() const override;
 
 	private:
 		uint16_t level;

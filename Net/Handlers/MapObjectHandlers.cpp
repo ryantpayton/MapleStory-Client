@@ -143,7 +143,7 @@ namespace jrc
 		{
 			bool hunger = recv.read_bool();
 
-			character->removepet(petindex, hunger);
+			character->remove_pet(petindex, hunger);
 		}
 	}
 

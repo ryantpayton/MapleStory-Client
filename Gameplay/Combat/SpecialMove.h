@@ -46,7 +46,7 @@ namespace jrc
 
 		void apply_useeffects(Char& user, Attack::Type type) const;
 		void apply_hiteffects(const AttackUser& user, Mob& target) const;
-		bool isskill() const;
+		bool is_skill() const;
 		Animation get_animation(const Char& user, int32_t bulletid) const;
 
 		virtual void applystats(const Char& user, Attack& attack) const = 0;

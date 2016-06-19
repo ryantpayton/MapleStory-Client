@@ -42,13 +42,13 @@ namespace jrc
 				if (isaction)
 				{
 					BodyAction action = framenode;
-					bodyactions[ststr][frame] = action;
+					body_actions[ststr][frame] = action;
 
 					if (action.isattackframe())
 					{
-						attackdelays[ststr].push_back(attackdelay);
+						attack_delays[ststr].push_back(attackdelay);
 					}
-					attackdelay += action.getdelay();
+					attackdelay += action.get_delay();
 				}
 				else
 				{
@@ -56,7 +56,7 @@ namespace jrc
 					int16_t delay = framenode["delay"];
 					if (delay <= 0)
 						delay = 100;
-					stancedelays[stance][frame] = delay;
+					stance_delays[stance][frame] = delay;
 
 					std::unordered_map<Body::Layer, std::unordered_map<std::string, Point<int16_t>>> bodyshiftmap;
 					for (auto partnode : framenode)
@@ -80,14 +80,14 @@ namespace jrc
 						bodyshiftmap[Body::HEAD][mapnode.name()] = Point<int16_t>(mapnode);
 					}
 
-					bodyposmap[stance][frame] = bodyshiftmap[Body::BODY]["navel"];
-					armposmap[stance][frame] = bodyshiftmap.count(Body::ARM) ?
+					body_positions[stance][frame] = bodyshiftmap[Body::BODY]["navel"];
+					arm_positions[stance][frame] = bodyshiftmap.count(Body::ARM) ?
 						(bodyshiftmap[Body::ARM]["hand"] - bodyshiftmap[Body::ARM]["navel"]) :
 						(bodyshiftmap[Body::ARMOVERHAIR]["hand"] - bodyshiftmap[Body::ARMOVERHAIR]["navel"]);
-					handposmap[stance][frame] = bodyshiftmap[Body::LEFTHAND]["handMove"];
-					headposmap[stance][frame] = bodyshiftmap[Body::BODY]["neck"] - bodyshiftmap[Body::HEAD]["neck"];
-					faceposmap[stance][frame] = bodyshiftmap[Body::BODY]["neck"] - bodyshiftmap[Body::HEAD]["neck"] + bodyshiftmap[Body::HEAD]["brow"];
-					hairposmap[stance][frame] = bodyshiftmap[Body::HEAD]["brow"] - bodyshiftmap[Body::HEAD]["neck"] + bodyshiftmap[Body::BODY]["neck"];
+					hand_positions[stance][frame] = bodyshiftmap[Body::LEFTHAND]["handMove"];
+					head_positions[stance][frame] = bodyshiftmap[Body::BODY]["neck"] - bodyshiftmap[Body::HEAD]["neck"];
+					face_positions[stance][frame] = bodyshiftmap[Body::BODY]["neck"] - bodyshiftmap[Body::HEAD]["neck"] + bodyshiftmap[Body::HEAD]["brow"];
+					hair_positions[stance][frame] = bodyshiftmap[Body::HEAD]["brow"] - bodyshiftmap[Body::HEAD]["neck"] + bodyshiftmap[Body::BODY]["neck"];
 				}
 
 				frame++;
@@ -98,61 +98,99 @@ namespace jrc
 
 	Point<int16_t> BodyDrawinfo::getbodypos(Stance::Value stance, uint8_t frame) const
 	{
-		return bodyposmap[stance].count(frame) ? bodyposmap[stance].at(frame) : Point<int16_t>();
+		auto iter = body_positions[stance].find(frame);
+		if (iter == body_positions[stance].end())
+			return{};
+
+		return iter->second;
 	}
 
 	Point<int16_t> BodyDrawinfo::getarmpos(Stance::Value stance, uint8_t frame) const
 	{
-		return armposmap[stance].count(frame) ? armposmap[stance].at(frame) : Point<int16_t>();
+		auto iter = arm_positions[stance].find(frame);
+		if (iter == arm_positions[stance].end())
+			return{};
+
+		return iter->second;
 	}
 
 	Point<int16_t> BodyDrawinfo::gethandpos(Stance::Value stance, uint8_t frame) const
 	{
-		return handposmap[stance].count(frame) ? handposmap[stance].at(frame) : Point<int16_t>();
+		auto iter = hand_positions[stance].find(frame);
+		if (iter == hand_positions[stance].end())
+			return{};
+
+		return iter->second;
 	}
 
 	Point<int16_t> BodyDrawinfo::get_headpos(Stance::Value stance, uint8_t frame) const
 	{
-		return headposmap[stance].count(frame) ? headposmap[stance].at(frame) : Point<int16_t>();
+		auto iter = head_positions[stance].find(frame);
+		if (iter == head_positions[stance].end())
+			return{};
+
+		return iter->second;
 	}
 
 	Point<int16_t> BodyDrawinfo::gethairpos(Stance::Value stance, uint8_t frame) const
 	{
-		return hairposmap[stance].count(frame) ? hairposmap[stance].at(frame) : Point<int16_t>();
+		auto iter = hair_positions[stance].find(frame);
+		if (iter == hair_positions[stance].end())
+			return{};
+
+		return iter->second;
 	}
 
 	Point<int16_t> BodyDrawinfo::getfacepos(Stance::Value stance, uint8_t frame) const
 	{
-		return faceposmap[stance].count(frame) ? faceposmap[stance].at(frame) : Point<int16_t>();
+		auto iter = face_positions[stance].find(frame);
+		if (iter == face_positions[stance].end())
+			return{};
+
+		return iter->second;
 	}
 
 	uint8_t BodyDrawinfo::nextframe(Stance::Value stance, uint8_t frame) const
 	{
-		return stancedelays[stance].count(frame + 1) ? frame + 1 : 0;
+		bool has_next = stance_delays[stance].count(frame + 1) > 0;
+		if (has_next)
+		{
+			return frame + 1;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 
-	uint16_t BodyDrawinfo::getdelay(Stance::Value stance, uint8_t frame) const
+	uint16_t BodyDrawinfo::get_delay(Stance::Value stance, uint8_t frame) const
 	{
-		return stancedelays[stance].count(frame) ? stancedelays[stance].at(frame) : 100;
+		auto iter = stance_delays[stance].find(frame);
+		if (iter == stance_delays[stance].end())
+			return 100;
+
+		return iter->second;
 	}
 
 	uint16_t BodyDrawinfo::get_attackdelay(std::string action, size_t no) const
 	{
-		if (attackdelays.count(action))
+		auto action_iter = attack_delays.find(action);
+		if (action_iter != attack_delays.end())
 		{
-			if (no < attackdelays.at(action).size())
+			if (no < action_iter->second.size())
 			{
-				return attackdelays.at(action)[no];
+				return action_iter->second[no];
 			}
 		}
 		return 0;
 	}
 
-	uint8_t BodyDrawinfo::nextacframe(std::string action, uint8_t frame) const
+	uint8_t BodyDrawinfo::next_actionframe(std::string action, uint8_t frame) const
 	{
-		if (bodyactions.count(action))
+		auto action_iter = body_actions.find(action);
+		if (action_iter != body_actions.end())
 		{
-			if (frame < bodyactions.at(action).size() - 1)
+			if (action_iter->second.count(frame + 1))
 			{
 				return frame + 1;
 			}
@@ -160,13 +198,15 @@ namespace jrc
 		return 0;
 	}
 
-	const BodyAction* BodyDrawinfo::getaction(std::string stance, uint8_t frame) const
+	const BodyAction* BodyDrawinfo::get_action(std::string action, uint8_t frame) const
 	{
-		if (bodyactions.count(stance))
+		auto action_iter = body_actions.find(action);
+		if (action_iter != body_actions.end())
 		{
-			if (frame < bodyactions.at(stance).size())
+			auto frame_iter = action_iter->second.find(frame);
+			if (frame_iter != action_iter->second.end())
 			{
-				return &bodyactions.at(stance).at(frame);
+				return &(frame_iter->second);
 			}
 		}
 		return nullptr;

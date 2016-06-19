@@ -50,7 +50,7 @@ namespace jrc
 
 	void BoosterBuff::apply_to(CharStats& stats, int16_t value) const
 	{
-		stats.setattackspeed(static_cast<int8_t>(value));
+		stats.set_attackspeed(static_cast<int8_t>(value));
 	}
 
 

@@ -100,12 +100,12 @@ namespace jrc
 			return rb; 
 		}
 
-		constexpr Range<T> gethor() const 
+		constexpr Range<T> get_horizontal() const 
 		{
 			return{ lt.x(), rb.x() };
 		}
 
-		constexpr Range<T> getver() const 
+		constexpr Range<T> get_vertical() const 
 		{
 			return{ lt.y(), rb.y() };
 		}

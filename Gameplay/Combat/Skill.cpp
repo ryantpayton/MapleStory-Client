@@ -215,11 +215,10 @@ namespace jrc
 
 		if (overregular)
 		{
-			CharLook::AttackLook attacklook = user.get_look().getattacklook();
-			attack.stance = attacklook.stance;
+			attack.stance = user.get_look().get_stance();
 			if (attack.type == Attack::CLOSE && !projectile)
 			{
-				attack.range = attacklook.range;
+				attack.range = user.get_afterimage().get_range();
 			}
 		}
 	}

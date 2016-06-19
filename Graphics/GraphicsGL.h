@@ -253,8 +253,8 @@ namespace jrc
 			int16_t endy;
 		};
 
-		static const GLshort ATLASW = 10000;
-		static const GLshort ATLASH = 10000;
+		static const GLshort ATLASW = 8192;
+		static const GLshort ATLASH = 8192;
 		static const GLshort MINLOSIZE = 32;
 
 		bool locked;

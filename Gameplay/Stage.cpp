@@ -183,9 +183,6 @@ namespace jrc
 				return false;
 			}
 		});
-
-
-		
 	}
 
 	void Stage::update()
@@ -247,7 +244,7 @@ namespace jrc
 		bool offensive = move.isoffensive();
 		if (offensive)
 		{
-			Attack attack = player.prepare_attack(move.isskill());
+			Attack attack = player.prepare_attack(move.is_skill());
 
 			move.apply_useeffects(player, attack.type);
 			move.applystats(player, attack);
@@ -366,7 +363,7 @@ namespace jrc
 
 	void Stage::check_ladders(bool up)
 	{
-		if (player.isclimbing() || player.is_attacking())
+		if (player.is_climbing() || player.is_attacking())
 			return;
 
 		Optional<const Ladder> ladder = mapinfo.findladder(player.get_position(), up);
@@ -423,7 +420,7 @@ namespace jrc
 			player.use_item(action);
 			break;
 		case Keyboard::FACE:
-			player.sendface(action);
+			player.set_expression(action);
 			break;
 		}
 	}

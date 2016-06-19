@@ -66,7 +66,7 @@ namespace jrc
 		return expressions[exp].count(frame + 1) ? frame + 1 : 0;
 	}
 
-	int16_t Face::getdelay(Expression::Value exp, uint8_t frame) const
+	int16_t Face::get_delay(Expression::Value exp, uint8_t frame) const
 	{
 		auto delayit = expressions[exp].find(frame);
 		return delayit != expressions[exp].end() ? delayit->second.delay : 100;

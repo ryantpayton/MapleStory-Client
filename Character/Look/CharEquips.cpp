@@ -59,22 +59,22 @@ namespace jrc
 			.maporfalse(&Clothing::contains_layer, stance, layer);
 	}
 
-	bool CharEquips::hasoverall() const
+	bool CharEquips::has_overall() const
 	{
 		return get_equip(Equipslot::TOP)
 			.mapordefault(&Clothing::get_id, 0) / 10000 == 105;
 	}
 
-	bool CharEquips::hasweapon() const
+	bool CharEquips::has_weapon() const
 	{
 		return get_weapon()
 			.ispresent();
 	}
 
-	bool CharEquips::istwohanded() const
+	bool CharEquips::is_twohanded() const
 	{
 		return get_weapon()
-			.maporfalse(&Weapon::istwohanded);
+			.maporfalse(&Weapon::is_twohanded);
 	}
 
 	CharEquips::CapType CharEquips::getcaptype() const
@@ -96,6 +96,12 @@ namespace jrc
 		{
 			return NONE;
 		}
+	}
+
+	uint8_t CharEquips::get_attackspeed() const
+	{
+		return get_weapon()
+			.mapordefault(&Weapon::getspeed, uint8_t(0));
 	}
 
 	Weapon::Type CharEquips::get_weapontype() const

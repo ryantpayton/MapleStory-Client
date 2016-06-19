@@ -258,7 +258,7 @@ namespace jrc
 		else
 		{
 			uint16_t advance = textlabel.advance(text.size());
-			return (advance + 50) < bounds.gethor().length();
+			return (advance + 50) < bounds.get_horizontal().length();
 		}
 	}
 

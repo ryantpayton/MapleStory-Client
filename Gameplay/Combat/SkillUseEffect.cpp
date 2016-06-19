@@ -35,7 +35,7 @@ namespace jrc
 
 	void TwoHUseEffect::apply(Char& target) const
 	{
-		bool twohanded = target.istwohanded();
+		bool twohanded = target.is_twohanded();
 		effects[twohanded].apply(target);
 	}
 

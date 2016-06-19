@@ -18,6 +18,7 @@
 #include "Char.h"
 
 #include "..\Constants.h"
+#include "..\Util\Misc.h"
 
 #include <nlnx\nx.hpp>
 #include <nlnx\node.hpp>
@@ -33,6 +34,7 @@ namespace jrc
 
 		effects.drawbelow(absp, alpha);
 		look.draw(absp, alpha);
+		afterimage.draw(look.get_frame(), { absp, flip }, alpha);
 
 		for (int32_t i = 0; i < 3; i++)
 		{
@@ -77,13 +79,14 @@ namespace jrc
 		{
 			stancespeed = static_cast<uint16_t>(Constants::TIMESTEP * speed);
 		}
+		afterimage.update(look.get_frame(), stancespeed);
 		return look.update(stancespeed);
 	}
 
 	float Char::get_stancespeed() const
 	{
 		if (attacking)
-			return get_attackspeed();
+			return get_real_attackspeed();
 
 		switch (state)
 		{
@@ -97,10 +100,24 @@ namespace jrc
 		}
 	}
 
-	uint16_t Char::get_attackdelay(size_t no, uint8_t speed) const
+	int8_t Char::get_integer_attackspeed() const
 	{
-		uint16_t delay = look.get_attackdelay(no);
-		float fspeed = 1.7f - static_cast<float>(speed) / 10;
+		int8_t base_speed = get_base_attackspeed();
+		int8_t weapon_speed = look.get_equips().get_attackspeed();
+		return base_speed + weapon_speed;
+	}
+
+	float Char::get_real_attackspeed() const
+	{
+		int8_t speed = get_integer_attackspeed();
+		return 1.7f - static_cast<float>(speed) / 10;
+	}
+
+	uint16_t Char::get_attackdelay(size_t no) const
+	{
+		uint8_t first_frame = afterimage.get_first_frame();
+		uint16_t delay = look.get_attackdelay(no, first_frame);
+		float fspeed = get_real_attackspeed();
 		return static_cast<uint16_t>(delay / fspeed);
 	}
 
@@ -112,12 +129,12 @@ namespace jrc
 
 	int8_t Char::get_layer() const
 	{
-		return isclimbing() ? 7 : phobj.fhlayer;
+		return is_climbing() ? 7 : phobj.fhlayer;
 	}
 
 	void Char::show_effect(Animation toshow, int8_t z)
 	{
-		float attackspeed = get_attackspeed();
+		float attackspeed = get_real_attackspeed();
 		effects.add(toshow, flip, z, attackspeed);
 	}
 
@@ -164,7 +181,7 @@ namespace jrc
 		set_state(newstate);
 	}
 
-	void Char::sendface(int32_t expid)
+	void Char::set_expression(int32_t expid)
 	{
 		Expression::Value expression = Expression::byaction(expid);
 		look.setexpression(expression);
@@ -172,7 +189,7 @@ namespace jrc
 
 	void Char::attack(const std::string& action)
 	{
-		look.setaction(action);
+		look.set_action(action);
 
 		attacking = true;
 	}
@@ -189,6 +206,23 @@ namespace jrc
 		look.attack(degenerate);
 
 		attacking = true;
+	}
+
+	void Char::set_afterimage(int32_t skill_id)
+	{
+		auto weapon = look.get_equips().get_weapon();
+		if (!weapon)
+			return;
+
+		std::string stance_name = Stance::nameof(look.get_stance());
+		int16_t weapon_level = weapon->getreqstat(Maplestat::LEVEL);
+		const std::string& ai_name = weapon->get_afterimage();
+		afterimage = { skill_id, ai_name, stance_name, weapon_level };
+	}
+
+	const Afterimage& Char::get_afterimage() const
+	{
+		return afterimage;
 	}
 
 	void Char::set_direction(bool f)
@@ -214,7 +248,7 @@ namespace jrc
 		pets[index] = PetLook(iid, name, uniqueid, pos, stance, fhid);
 	}
 
-	void Char::removepet(uint8_t index, bool hunger)
+	void Char::remove_pet(uint8_t index, bool hunger)
 	{
 		if (index > 2)
 			return;
@@ -231,14 +265,14 @@ namespace jrc
 		return state == SIT;
 	}
 
-	bool Char::isclimbing() const
+	bool Char::is_climbing() const
 	{
 		return state == LADDER || state == ROPE;
 	}
 
-	bool Char::istwohanded() const
+	bool Char::is_twohanded() const
 	{
-		return look.get_equips().istwohanded();
+		return look.get_equips().is_twohanded();
 	}
 
 	bool Char::getflip() const
