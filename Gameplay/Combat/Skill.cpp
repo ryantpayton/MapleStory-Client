@@ -18,6 +18,7 @@
 #include "Skill.h"
 
 #include "../../Character/SkillId.h"
+#include "../../Data/SkillData.h"
 #include "../../Util/Misc.h"
 
 #include "nlnx/node.hpp"
@@ -26,9 +27,9 @@
 namespace jrc
 {
 	Skill::Skill(int32_t id)
-		: data(SkillData::get(id)) {
+		: skillid(id) {
 
-		skillid = id;
+		const SkillData& data = SkillData::get(skillid);
 
 		std::string strid;
 		if (skillid < 10000000)
@@ -176,7 +177,7 @@ namespace jrc
 		attack.skill = skillid;
 
 		int32_t level = user.get_skilllevel(skillid);
-		const SkillData::Stats stats = data.get_stats(level);
+		const SkillData::Stats stats = SkillData::get(skillid).get_stats(level);
 
 		if (stats.fixdamage)
 		{
@@ -258,7 +259,7 @@ namespace jrc
 
 	bool Skill::is_attack() const
 	{
-		return data.is_attack();
+		return SkillData::get(skillid).is_attack();
 	}
 
 	bool Skill::is_skill() const
@@ -274,13 +275,13 @@ namespace jrc
 	SpecialMove::ForbidReason Skill::can_use(int32_t level, Weapon::Type weapon,
 		const Job& job, uint16_t hp, uint16_t mp, uint16_t bullets) const {
 
-		if (level <= 0 || level > data.get_masterlevel())
+		if (level <= 0 || level > SkillData::get(skillid).get_masterlevel())
 			return FBR_OTHER;
 
 		if (job.can_use(skillid) == false)
 			return FBR_OTHER;
 
-		const SkillData::Stats stats = data.get_stats(level);
+		const SkillData::Stats stats = SkillData::get(skillid).get_stats(level);
 
 		if (hp <= stats.hpcost)
 			return FBR_HPCOST;
@@ -288,7 +289,7 @@ namespace jrc
 		if (mp < stats.mpcost)
 			return FBR_MPCOST;
 
-		Weapon::Type reqweapon = data.get_required_weapon();
+		Weapon::Type reqweapon = SkillData::get(skillid).get_required_weapon();
 		if (weapon != reqweapon && reqweapon != Weapon::NONE)
 			return FBR_WEAPONTYPE;
 

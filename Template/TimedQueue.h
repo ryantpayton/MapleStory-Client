@@ -36,15 +36,13 @@ namespace jrc
 
 		void push(int64_t delay, const T& t)
 		{
-			int64_t when = time + delay;
-			queue.emplace(when, t);
+			queue.emplace(time + delay, t);
 		}
 
 		template <typename...Args>
 		void emplace(int64_t delay, Args&&...args)
 		{
-			int64_t when = time + delay;
-			queue.emplace(when, args...);
+			queue.emplace(time + delay, std::move(args)...);
 		}
 
 		void update(int64_t timestep = Constants::TIMESTEP)
@@ -68,11 +66,11 @@ namespace jrc
 			int64_t when;
 
 			Timed(int64_t w, const T& v)
-				: when(w), value(v) {}
+				: when{ w }, value{ v } {}
 
 			template <typename...Args>
 			Timed(int64_t w, Args&&...args)
-				: when(w), value(std::forward<Args...>(args...)) {}
+				: when{ w }, value{ std::forward<Args>(args)... } {}
 		};
 
 		struct TimedComparator

@@ -24,9 +24,6 @@
 #include "SkillHitEffect.h"
 #include "SkillUseEffect.h"
 
-#include "../../Audio/Audio.h"
-#include "../../Data/SkillData.h"
-
 #include <memory>
 
 namespace jrc
@@ -51,8 +48,6 @@ namespace jrc
 			const Job& job, uint16_t hp, uint16_t mp, uint16_t bullets) const override;
 
 	private:
-		const SkillData& data;
-
 		std::unique_ptr<SkillAction> action;
 		std::unique_ptr<SkillBullet> bullet;
 		std::unique_ptr<SkillSound> sound;

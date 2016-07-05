@@ -159,7 +159,7 @@ namespace jrc
 				auto sub = src[std::to_string(fid)];
 				frames.push_back(sub);
 			}
-			if (frames.size() == 0)
+			if (frames.empty())
 				frames.push_back(Frame());
 		}
 

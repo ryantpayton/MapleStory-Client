@@ -252,13 +252,13 @@ namespace jrc
 							oid,
 							move.get_id()
 						};
-						bulleteffects.push(user.get_attackdelay(i), { effect, bullet, head });
+						bulleteffects.emplace(user.get_attackdelay(i), std::move(effect), bullet, head);
 						i++;
 					}
 				}
 			}
 
-			if (result.damagelines.size() == 0)
+			if (result.damagelines.empty())
 			{
 				int16_t xshift = result.toleft ? -400 : 400;
 				Point<int16_t> target = user.get_position() + Point<int16_t>(xshift, -26);
@@ -272,7 +272,7 @@ namespace jrc
 						0,
 						0
 					};
-					bulleteffects.push(user.get_attackdelay(i), { effect, bullet, target });
+					bulleteffects.emplace(user.get_attackdelay(i), std::move(effect), bullet, target);
 				}
 			}
 		}
@@ -288,16 +288,14 @@ namespace jrc
 					size_t i = 0;
 					for (auto& number : numbers)
 					{
-						damageeffects.push(
-							user.get_attackdelay(i),
-							{ 
-								attackuser,
-								number,
-								line.second[i].first,
-								result.toleft,
-								oid,
-								move.get_id()
-							}
+						damageeffects.emplace(
+							user.get_attackdelay(i), 
+							attackuser, 
+							number,
+							line.second[i].first,
+							result.toleft,
+							oid,
+							move.get_id()
 						);
 
 						i++;

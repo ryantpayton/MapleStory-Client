@@ -50,7 +50,7 @@ namespace jrc
 
 	void ByLevelHitEffect::apply(const AttackUser& user, Mob& target) const
 	{
-		if (effects.size() == 0)
+		if (effects.empty())
 			return;
 
 		auto iter = effects.begin();
@@ -76,7 +76,7 @@ namespace jrc
 
 	void ByLevelTwoHHitEffect::apply(const AttackUser& user, Mob& target) const
 	{
-		if (effects.size() == 0)
+		if (effects.empty())
 			return;
 
 		auto iter = effects.begin();

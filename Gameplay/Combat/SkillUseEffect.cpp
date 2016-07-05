@@ -73,7 +73,7 @@ namespace jrc
 
 	void ByLevelUseEffect::apply(Char& target) const
 	{
-		if (effects.size() == 0)
+		if (effects.empty())
 			return;
 
 		uint16_t level = target.get_level();

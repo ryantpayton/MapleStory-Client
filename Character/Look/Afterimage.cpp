@@ -33,7 +33,7 @@ namespace jrc
 			src = nl::nx::skill[strid.substr(0, 3) + ".img"]["skill"][strid]["afterimage"][name][stance_name];
 		}
 		
-		if (src.size() == 0)
+		if (!src)
 		{
 			src = nl::nx::character["Afterimage"][name + ".img"][level / 10][stance_name];
 		}
