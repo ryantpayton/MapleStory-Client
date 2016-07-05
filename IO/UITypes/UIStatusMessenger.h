@@ -16,10 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\UIElement.h"
+#include "../UIElement.h"
 
-#include "..\..\Graphics\Text.h"
-#include "..\..\Util\Interpolated.h"
+#include "../../Graphics/Text.h"
+#include "../../Template/Interpolated.h"
 
 #include <deque>
 

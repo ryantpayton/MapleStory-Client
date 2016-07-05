@@ -16,10 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Error.h"
-#include "..\Util\EnumMap.h"
+#include "../Error.h"
+#include "../Template/EnumMap.h"
 
-#include <nlnx\node.hpp>
+#include "nlnx/node.hpp"
 
 #include <unordered_map>
 #include <cstdint>

@@ -16,8 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\PacketHandler.h"
-#include "..\Session.h"
+#include "../PacketHandler.h"
 
 namespace jrc
 {
@@ -136,6 +135,22 @@ namespace jrc
 	// Remove an item from the stage.
 	// Opcode: REMOVE_LOOT(269)
 	class RemoveLootHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+
+	// Parse a ReactorSpawn and send it to the Stage spawn queue.
+	// Opcode: SPAWN_REACTOR(279)
+	class SpawnReactorHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+
+	// Remove a reactor from the stage.
+	// Opcode: REMOVE_REACTOR(280)
+	class RemoveReactorHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};

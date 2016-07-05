@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIElement.h"
 
-#include "..\Constants.h"
-#include "..\Audio\Audio.h"
+#include "../Constants.h"
+#include "../Audio/Audio.h"
 
 namespace jrc
 {

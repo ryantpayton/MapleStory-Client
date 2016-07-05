@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\..\Graphics\Texture.h"
+#include "../../Graphics/Texture.h"
 
 #include <unordered_map>
 
@@ -33,12 +33,11 @@ namespace jrc
 		};
 
 		Charset(nl::node source, Alignment alignment);
-		Charset(){}
-		~Charset();
+		Charset();
 
 		void draw(int8_t character, const DrawArgument& args) const;
-		int16_t draw(std::string text, const DrawArgument& args) const;
-		int16_t draw(std::string text, int16_t hspace, const DrawArgument& args) const;
+		int16_t draw(const std::string& text, const DrawArgument& args) const;
+		int16_t draw(const std::string& text, int16_t hspace, const DrawArgument& args) const;
 		int16_t getw(int8_t character) const;
 
 	private:

@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Util\Point.h"
+#include "DrawArgument.h"
 
 #include <cstdint>
 #include <map>
@@ -114,8 +114,7 @@ namespace jrc
 			const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true);
 		Text();
 
-		void draw(Point<int16_t> position, float alpha) const;
-		void draw(Point<int16_t> position) const;
+		void draw(const DrawArgument& args) const;
 
 		void change_text(const std::string& text);
 		void change_color(Color color);

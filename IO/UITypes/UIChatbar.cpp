@@ -17,13 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIChatbar.h"
 
-#include "..\UI.h"
+#include "../UI.h"
 
-#include "..\Components\MapleButton.h"
+#include "../Components/MapleButton.h"
 
-#include "..\..\Net\Packets\MessagingPackets.h"
+#include "../../Net/Packets/MessagingPackets.h"
 
-#include <nlnx\nx.hpp>
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
@@ -82,14 +82,14 @@ namespace jrc
 				lastpos = lastentered.size();
 			}
 		});
-		chatfield.set_key_callback(Keyboard::UP, [&](){
+		chatfield.set_key_callback(KeyAction::UP, [&](){
 			if (lastpos > 0)
 			{
 				lastpos--;
 				chatfield.change_text(lastentered[lastpos]);
 			}
 		});
-		chatfield.set_key_callback(Keyboard::DOWN, [&](){
+		chatfield.set_key_callback(KeyAction::DOWN, [&](){
 			if (lastentered.size() > 0 && lastpos < lastentered.size() - 1)
 			{
 				lastpos++;

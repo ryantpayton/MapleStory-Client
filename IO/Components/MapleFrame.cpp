@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MapleFrame.h"
 
-#include <nlnx\nx.hpp>
+#include "nlnx/nx.hpp"
 
 #include <algorithm>
 

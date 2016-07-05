@@ -19,14 +19,14 @@
 
 namespace jrc
 {
-	template <Equipstat::Value STAT>
+	template <Equipstat::Id STAT>
 	void SimpleStatBuff<STAT>::apply_to(CharStats& stats, int16_t value) const
 	{
 		stats.add_buff(STAT, value);
 	}
 
 
-	template <Equipstat::Value STAT>
+	template <Equipstat::Id STAT>
 	void PercentageStatBuff<STAT>::apply_to(CharStats& stats, int16_t value) const
 	{
 		stats.add_percent(STAT, static_cast<float>(value) / 100);
@@ -56,27 +56,22 @@ namespace jrc
 
 	ActiveBuffs::ActiveBuffs()
 	{
-		buffs[Buff::MAPLE_WARRIOR] = std::make_unique<MapleWarriorBuff>();
-		buffs[Buff::STANCE] = std::make_unique<StanceBuff>();
-		buffs[Buff::BOOSTER] = std::make_unique<BoosterBuff>();
-		buffs[Buff::WATK] = std::make_unique<SimpleStatBuff<Equipstat::WATK>>();
-		buffs[Buff::WDEF] = std::make_unique<SimpleStatBuff<Equipstat::WDEF>>();
-		buffs[Buff::MATK] = std::make_unique<SimpleStatBuff<Equipstat::MAGIC>>();
-		buffs[Buff::MDEF] = std::make_unique<SimpleStatBuff<Equipstat::MDEF>>();
-		buffs[Buff::SPEED] = std::make_unique<SimpleStatBuff<Equipstat::SPEED>>();
-		buffs[Buff::JUMP] = std::make_unique<SimpleStatBuff<Equipstat::JUMP>>();
-		buffs[Buff::HYPERBODYHP] = std::make_unique<PercentageStatBuff<Equipstat::HP>>();
-		buffs[Buff::HYPERBODYMP] = std::make_unique<PercentageStatBuff<Equipstat::MP>>();
+		buffs[Buffstat::MAPLE_WARRIOR] = std::make_unique<MapleWarriorBuff>();
+		buffs[Buffstat::STANCE] = std::make_unique<StanceBuff>();
+		buffs[Buffstat::BOOSTER] = std::make_unique<BoosterBuff>();
+		buffs[Buffstat::WATK] = std::make_unique<SimpleStatBuff<Equipstat::WATK>>();
+		buffs[Buffstat::WDEF] = std::make_unique<SimpleStatBuff<Equipstat::WDEF>>();
+		buffs[Buffstat::MATK] = std::make_unique<SimpleStatBuff<Equipstat::MAGIC>>();
+		buffs[Buffstat::MDEF] = std::make_unique<SimpleStatBuff<Equipstat::MDEF>>();
+		buffs[Buffstat::SPEED] = std::make_unique<SimpleStatBuff<Equipstat::SPEED>>();
+		buffs[Buffstat::JUMP] = std::make_unique<SimpleStatBuff<Equipstat::JUMP>>();
+		buffs[Buffstat::HYPERBODYHP] = std::make_unique<PercentageStatBuff<Equipstat::HP>>();
+		buffs[Buffstat::HYPERBODYMP] = std::make_unique<PercentageStatBuff<Equipstat::MP>>();
 	}
 
-	void ActiveBuffs::apply_buff(CharStats& stats, Buff::Stat stat, int16_t value) const
+	void ActiveBuffs::apply_buff(CharStats& stats, Buffstat::Id stat, int16_t value) const
 	{
-		auto iter = buffs.find(stat);
-		if (iter == buffs.end())
-			return;
-
-		const ActiveBuff* buff = iter->second.get();
-		if (buff)
+		if (auto& buff = buffs[stat])
 		{
 			buff->apply_to(stats, value);
 		}

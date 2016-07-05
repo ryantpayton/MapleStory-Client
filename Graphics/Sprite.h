@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Animation.h"
-#include "nlnx\node.hpp"
+#include "nlnx/node.hpp"
 
 namespace jrc
 {

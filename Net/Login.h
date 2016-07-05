@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -16,25 +16,41 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "InPacket.h"
-
-#include "..\Character\Maplestat.h"
-#include "..\Character\Job.h"
-#include "..\Util\EnumMap.h"
+#include "../Character/Maplestat.h"
+#include "../Template/EnumMap.h"
 
 #include <cstdint>
 #include <string>
-#include <map>
 #include <vector>
+#include <map>
 
 namespace jrc
 {
+	struct Account
+	{
+		std::string name;
+		int32_t accid;
+		bool female;
+		bool muted;
+		int16_t pin;
+		int8_t gmlevel;
+	};
+
+	struct World
+	{
+		std::string name;
+		std::string message;
+		std::vector<int32_t> chloads;
+		uint8_t channelcount;
+		uint8_t flag;
+		int8_t wid;
+	};
+
 	struct StatsEntry
 	{
 		std::string name;
 		std::vector<int64_t> petids;
-		EnumMap<Maplestat::Value, uint16_t> stats;
-		Job job;
+		EnumMap<Maplestat::Id, uint16_t> stats;
 		int64_t exp;
 		int32_t mapid;
 		uint8_t portal;
@@ -57,65 +73,6 @@ namespace jrc
 	{
 		StatsEntry stats;
 		LookEntry look;
-		int32_t cid = 0;
-
-		const StatsEntry& get_stats() const { return stats; }
-		const LookEntry& get_look() const { return look; }
-	};
-
-	struct Account
-	{
-		std::vector<CharEntry> chars;
-		std::string name = "";
-		int32_t accid = 0;
-		bool female = true;
-		bool muted = false;
-		int16_t pin = 0;
-		int8_t gmlevel = 0;
-		int8_t pic = 0;
-		int8_t slots = 0;
-		int8_t selected = 0;
-	};
-
-	struct World
-	{
-		uint8_t wid = 0;
-		std::string name = "";
-		int8_t flag = 0;
-		std::string message = "";
-		uint8_t channelcount = 0;
-		std::vector<int8_t> chloads;
-	};
-
-	class Login
-	{
-	public:
-		void parse_account(InPacket& recv);
-		void parse_worlds(InPacket& recv);
-		void parse_charlist(InPacket& recv);
-		void add_charentry(InPacket& recv);
-		void remove_char(int32_t cid);
-
-		CharEntry parse_charentry(InPacket& recv) const;
-		StatsEntry parse_stats(InPacket& recv) const;
-		LookEntry parse_look(InPacket& recv) const;
-
-		const CharEntry& get_char_by_index(size_t) const;
-		const CharEntry& find_char_by_id(int32_t) const;
-
-		void set_world(uint8_t w) { worldid = w; }
-		void set_channel(uint8_t c) { channelid = c; }
-		uint8_t get_world() const { return worldid; }
-		uint8_t get_channel() const { return channelid; }
-		size_t getnumworlds() const { return worlds.size(); }
-		const Account& getaccount() const { return account; }
-		const World& getworld(size_t w) const { return worlds[w]; }
-
-	private:
-		Account account;
-		CharEntry nullchar;
-		std::vector<World> worlds;
-		uint8_t worldid;
-		uint8_t channelid;
+		int32_t cid;
 	};
 }

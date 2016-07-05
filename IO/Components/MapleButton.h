@@ -18,7 +18,7 @@
 #pragma once
 #include "Button.h"
 
-#include "..\..\Graphics\Texture.h"
+#include "../../Graphics/Texture.h"
 
 namespace jrc
 {

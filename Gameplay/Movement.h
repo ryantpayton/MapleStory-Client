@@ -16,10 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Physics\PhysicsObject.h"
-
-#include "..\Constants.h"
-#include "..\Net\InPacket.h"
+#include "Physics/PhysicsObject.h"
 
 namespace jrc
 {
@@ -62,7 +59,4 @@ namespace jrc
 		uint8_t newstate;
 		int16_t duration;
 	};
-
-	template <>
-	Movement InPacket::read<Movement>();
 }

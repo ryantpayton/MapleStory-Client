@@ -16,15 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\UIElement.h"
+#include "../UIElement.h"
 
-#include "..\Components\Slider.h"
-#include "..\Components\Textfield.h"
+#include "../Components/Slider.h"
+#include "../Components/Textfield.h"
 
-#include "..\..\Graphics\Geometry.h"
-#include "..\..\Graphics\Texture.h"
+#include "../../Graphics/Geometry.h"
+#include "../../Graphics/Texture.h"
 
 #include <vector>
+#include <unordered_map>
 
 namespace jrc
 {

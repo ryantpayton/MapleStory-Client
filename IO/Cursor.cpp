@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Cursor.h"
 
-#include "..\Constants.h"
+#include "../Constants.h"
 
-#include <nlnx\nx.hpp>
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
@@ -40,7 +40,7 @@ namespace jrc
 
 	void Cursor::draw(float alpha) const
 	{
-		constexpr int32_t HIDE_AFTER = HIDE_TIME / Constants::TIMESTEP;
+		constexpr int64_t HIDE_AFTER = HIDE_TIME / Constants::TIMESTEP;
 
 		if (hide_counter < HIDE_AFTER)
 		{

@@ -18,17 +18,15 @@
 #pragma once
 #include "BodyDrawinfo.h"
 
-#include "..\..\Console.h"
-#include "..\..\Graphics\Texture.h"
-#include "..\..\Util\Enum.h"
-#include "..\..\Util\EnumMap.h"
+#include "../../Graphics/Texture.h"
+#include "../../Template/EnumMap.h"
 
 namespace jrc
 {
 	class Expression
 	{
 	public:
-		enum Value
+		enum Id
 		{
 			DEFAULT, BLINK, HIT, SMILE, TROUBLED, CRY, ANGRY,
 			BEWILDERED, STUNNED, BLAZE, BOWING, CHEERS, CHU, DAM,
@@ -37,51 +35,9 @@ namespace jrc
 			LENGTH
 		};
 
-		static constexpr char* names[LENGTH] = 
-		{
-			"default", "blink", "hit", "smile", "troubled", "cry", "angry",
-			"bewildered", "stunned", "blaze", "bowing", "cheers", "chu", "dam",
-			"despair", "glitter", "hot", "hum", "love", "oops", "pain", "shine",
-			"vomit", "wink"
-		};
+		static Id byaction(size_t action);
 
-		static EnumIterator<Value> getit(Value s = DEFAULT, Value l = WINK)
-		{
-			return EnumIterator<Value>(s, l);
-		}
-
-		static Value byaction(size_t action)
-		{
-			action -= 98;
-			if (action < LENGTH)
-				return static_cast<Value>(action);
-
-			Console::get().print("Unhandled expression id: " + action);
-			return DEFAULT;
-		}
-
-		static Value byid(size_t id)
-		{
-			if (id < LENGTH)
-				return static_cast<Value>(id);
-
-			Console::get().print("Unhandled expression id: " + id);
-			return DEFAULT;
-		}
-
-		static Value bystring(std::string name)
-		{
-			for (auto it = getit(); it.hasnext(); it.increment())
-			{
-				Value value = it.get();
-				if (names[value] == name)
-					return value;
-			}
-
-			Console::get().print("Unhandled expression: " + name);
-
-			return DEFAULT;
-		}
+		static const EnumMap<Id, std::string> names;
 	};
 
 
@@ -89,12 +45,12 @@ namespace jrc
 	{
 	public:
 		Face(int32_t faceid);
-		Face();
 
-		void draw(Expression::Value expression, uint8_t frame, const DrawArgument& args) const;
-		uint8_t nextframe(Expression::Value expression, uint8_t frame) const;
-		int16_t get_delay(Expression::Value expression, uint8_t frame) const;
-		std::string get_name() const;
+		void draw(Expression::Id expression, uint8_t frame, const DrawArgument& args) const;
+
+		uint8_t nextframe(Expression::Id expression, uint8_t frame) const;
+		int16_t get_delay(Expression::Id expression, uint8_t frame) const;
+		const std::string& get_name() const;
 
 	private:
 		struct Frame
@@ -115,7 +71,7 @@ namespace jrc
 			}
 		};
 
-		EnumMap<Expression::Value, std::unordered_map<uint8_t, Frame>> expressions;
+		std::unordered_map<uint8_t, Frame> expressions[Expression::LENGTH];
 		std::string name;
 	};
 }

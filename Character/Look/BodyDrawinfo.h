@@ -18,7 +18,7 @@
 #pragma once
 #include "Stance.h"
 
-#include "..\..\Util\Point.h"
+#include "../../Template/Point.h"
 
 #include <cstdint>
 #include <string>
@@ -34,7 +34,7 @@ namespace jrc
 	public:
 		BodyAction(nl::node src)
 		{
-			stance = Stance::bystring(src["action"]);
+			stance = Stance::by_string(src["action"]);
 			frame = src["frame"];
 			move = src["move"];
 
@@ -75,13 +75,13 @@ namespace jrc
 			return move;
 		}
 
-		Stance::Value get_stance() const
+		Stance::Id get_stance() const
 		{
 			return stance;
 		}
 
 	private:
-		Stance::Value stance;
+		Stance::Id stance;
 		uint8_t frame;
 		uint16_t delay;
 		Point<int16_t> move;
@@ -94,14 +94,14 @@ namespace jrc
 	public:
 		void init();
 
-		Point<int16_t> getbodypos(Stance::Value stance, uint8_t frame) const;
-		Point<int16_t> getarmpos(Stance::Value stance, uint8_t frame) const;
-		Point<int16_t> gethandpos(Stance::Value stance, uint8_t frame) const;
-		Point<int16_t> get_headpos(Stance::Value stance, uint8_t frame) const;
-		Point<int16_t> gethairpos(Stance::Value stance, uint8_t frame) const;
-		Point<int16_t> getfacepos(Stance::Value stance, uint8_t frame) const;
-		uint8_t nextframe(Stance::Value stance, uint8_t frame) const;
-		uint16_t get_delay(Stance::Value stance, uint8_t frame) const;
+		Point<int16_t> get_body_position(Stance::Id stance, uint8_t frame) const;
+		Point<int16_t> get_arm_position(Stance::Id stance, uint8_t frame) const;
+		Point<int16_t> get_hand_position(Stance::Id stance, uint8_t frame) const;
+		Point<int16_t> get_head_position(Stance::Id stance, uint8_t frame) const;
+		Point<int16_t> gethairpos(Stance::Id stance, uint8_t frame) const;
+		Point<int16_t> getfacepos(Stance::Id stance, uint8_t frame) const;
+		uint8_t nextframe(Stance::Id stance, uint8_t frame) const;
+		uint16_t get_delay(Stance::Id stance, uint8_t frame) const;
 
 		uint16_t get_attackdelay(std::string action, size_t no) const;
 		uint8_t next_actionframe(std::string action, uint8_t frame) const;

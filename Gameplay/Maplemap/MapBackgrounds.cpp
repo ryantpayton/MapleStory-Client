@@ -17,10 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MapBackgrounds.h"
 
-#include "..\..\Constants.h"
-#include "..\..\Graphics\GraphicsGL.h"
+#include "../../Constants.h"
+#include "../../Graphics/GraphicsGL.h"
 
-#include "nlnx\nx.hpp"
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {

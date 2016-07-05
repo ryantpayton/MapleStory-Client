@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "IconCover.h"
 
-#include "..\..\Constants.h"
+#include "../../Constants.h"
 
 namespace jrc
 {

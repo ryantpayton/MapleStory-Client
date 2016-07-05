@@ -15,13 +15,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SkillAction.h"
 
-#include "..\..\Util\Misc.h"
+#include "../../Util/Misc.h"
 
 namespace jrc
 {
 	void RegularAction::apply(Char& target, Attack::Type atype) const
 	{
-		Weapon::Type weapontype = target.get_look().get_equips().get_weapontype();
+		Weapon::Type weapontype = target.get_weapontype();
 		bool degenerate;
 		switch (weapontype)
 		{

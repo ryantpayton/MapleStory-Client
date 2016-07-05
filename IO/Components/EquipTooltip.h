@@ -17,16 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Tooltip.h"
+
 #include "Charset.h"
 
-#include "..\..\Character\Look\Clothing.h"
-#include "..\..\Character\Look\Weapon.h"
-#include "..\..\Character\Inventory\Equip.h"
-
-#include "..\..\Graphics\Text.h"
-
-#include "..\..\Util\BoolPair.h"
-#include "..\..\Util\EnumMap.h"
+#include "../../Character/Maplestat.h"
+#include "../../Character/Inventory/Equip.h"
+#include "../../Character/Inventory/Weapon.h"
+#include "../../Graphics/Text.h"
+#include "../../Template/BoolPair.h"
+#include "../../Template/EnumMap.h"
 
 namespace jrc
 {
@@ -35,7 +34,7 @@ namespace jrc
 	public:
 		EquipTooltip();
 
-		void set_equip(const Equip* equip, int16_t invpos);
+		void set_equip(Parent parent, int16_t invpos);
 		void draw(Point<int16_t> position) const override;
 
 	private:
@@ -43,8 +42,8 @@ namespace jrc
 		int16_t height;
 		bool hasdesc;
 		bool hasslots;
-		bool isweapon;
-		EnumMap<Maplestat::Value, std::string> reqstatstrings;
+		bool is_weapon;
+		EnumMap<Maplestat::Id, std::string> reqstatstrings;
 		Texture itemicon;
 
 		Text name;
@@ -55,7 +54,7 @@ namespace jrc
 		Text wepspeed;
 		Text slots;
 		Text hammers;
-		EnumMap<Equipstat::Value, Text> statlabels;
+		EnumMap<Equipstat::Id, Text> statlabels;
 
 		Texture top;
 		Texture mid;
@@ -69,10 +68,10 @@ namespace jrc
 		Texture cover;
 		Texture shade;
 
-		std::vector<Maplestat::Value> requirements;
-		EnumMap<Maplestat::Value, BoolPair<Texture>> reqstattextures;
-		EnumMap<Maplestat::Value, bool> canequip;
-		EnumMap<Maplestat::Value, Point<int16_t>> reqstatpositions;
+		std::vector<Maplestat::Id> requirements;
+		EnumMap<Maplestat::Id, BoolPair<Texture>> reqstattextures;
+		EnumMap<Maplestat::Id, bool> canequip;
+		EnumMap<Maplestat::Id, Point<int16_t>> reqstatpositions;
 		BoolPair<Charset> reqset;
 
 		Texture jobsback;

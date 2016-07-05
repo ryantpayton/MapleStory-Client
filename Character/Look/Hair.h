@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -18,61 +18,33 @@
 #pragma once
 #include "BodyDrawinfo.h"
 
-#include "..\..\Console.h"
-#include "..\..\Graphics\Texture.h"
-#include "..\..\Util\Enum.h"
+#include "../../Graphics/Texture.h"
 
 namespace jrc
 {
 	class Hair
 	{
 	public:
-		static const size_t NUM_LAYERS = 7;
 		enum Layer
 		{
 			NONE, DEFAULT, BELOWBODY, OVERHEAD,
-			SHADE, BACK, BELOWCAP
+			SHADE, BACK, BELOWCAP,
+			NUM_LAYERS
 		};
 
-		static EnumIterator<Layer> layerit()
-		{
-			return EnumIterator<Layer>(DEFAULT, BELOWCAP);
-		}
-
-		static Layer layerbystring(std::string name)
-		{
-			if (name == "backHairBelowCapWide" || name == "backHairBelowCapNarrow")
-				return BELOWCAP;
-
-			static std::string layernames[NUM_LAYERS] =
-			{
-				"", "hair", "hairBelowBody", "hairOverHead",
-				"hairShade", "backHair", "backHairBelowCap"
-			};
-
-			for (auto it = layerit(); it.hasnext(); it.increment())
-			{
-				Layer layer = it.get();
-				if (layernames[layer] == name)
-					return layer;
-			}
-
-			Console::get().print("Unhandled hair layer: " + name);
-
-			return NONE;
-		}
-
 		Hair(int32_t hairid, const BodyDrawinfo& drawinfo);
-		Hair();
 
-		void draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
-		std::string get_name() const;
-		std::string getcolor() const;
+		void draw(Stance::Id stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
+
+		const std::string& get_name() const;
+		const std::string& getcolor() const;
 
 	private:
-		std::unordered_map<Layer, std::unordered_map<uint8_t, Texture>> stances[Stance::LENGTH];
+		std::unordered_map<uint8_t, Texture> stances[Stance::LENGTH][Layer::NUM_LAYERS];
 		std::string name;
 		std::string color;
+
+		static const std::unordered_map<std::string, Layer> layers_by_name;
 	};
 }
 

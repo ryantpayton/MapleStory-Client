@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Console.h"
+#include "../Console.h"
 
 #include <cstdint>
 #include <string>

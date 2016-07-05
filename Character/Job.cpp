@@ -29,8 +29,6 @@ namespace jrc
 		change_job(0);
 	}
 
-	Job::~Job() {}
-
 	void Job::change_job(uint16_t i)
 	{
 		id = i;
@@ -210,7 +208,7 @@ namespace jrc
 		}
 	}
 
-	Equipstat::Value Job::get_primary(Weapon::Type weapontype) const
+	Equipstat::Id Job::get_primary(Weapon::Type weapontype) const
 	{
 		switch (id / 100)
 		{
@@ -227,7 +225,7 @@ namespace jrc
 		}
 	}
 
-	Equipstat::Value Job::get_secondary(Weapon::Type weapontype) const
+	Equipstat::Id Job::get_secondary(Weapon::Type weapontype) const
 	{
 		switch (id / 100)
 		{
@@ -242,16 +240,5 @@ namespace jrc
 		default:
 			return Equipstat::DEX;
 		}
-	}
-
-	Range<int32_t> Job::get_skillid_range(Level l) const
-	{
-		uint16_t lower = get_subjob(l);
-		uint16_t upper = get_subjob(get_next_level(l));
-		if (l == FOURTHT)
-		{
-			upper += 1;
-		}
-		return{ lower * 10000, upper * 10000 };
 	}
 }

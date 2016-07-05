@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -16,14 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Util\Enum.h"
+#include "../Template/Enumeration.h"
+
+#include <cstdint>
 
 namespace jrc
 {
-	class Equipstat
+	namespace Equipstat
 	{
-	public:
-		enum Value
+		enum Id
 		{
 			STR, DEX, INT, LUK, HP, MP,
 			WATK, MAGIC, WDEF, MDEF,
@@ -31,21 +32,10 @@ namespace jrc
 			LENGTH
 		};
 
-		static Value byid(size_t id)
-		{
-			return static_cast<Value>(id);
-		}
+		Id by_id(size_t id);
+		int32_t value_of(Id value);
 
-		static int32_t valueof(Value value)
-		{
-			return value;
-		}
-
-		static constexpr char* names[LENGTH] =
-		{
-			"STR", "DEX", "INT", "LUK", "MAX HP", "MAX MP",
-			"WEAPON ATT", "MAGIC ATT", "WEAPON DEFENSE", "MAGIC DEFENSE",
-			"ACCURACY", "AVOID", "HANDS", "SPEED", "JUMP"
-		};
+		constexpr Enumeration<Id> values;
+		extern const char* names[LENGTH];
 	};
 }

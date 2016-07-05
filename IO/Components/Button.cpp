@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Button.h"
 
-#include "..\..\Audio\Audio.h"
+#include "../../Audio/Audio.h"
 
 namespace jrc
 {

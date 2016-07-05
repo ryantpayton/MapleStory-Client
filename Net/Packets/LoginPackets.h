@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\OutPacket.h"
+#include "../OutPacket.h"
 
 namespace jrc
 {
@@ -27,7 +27,7 @@ namespace jrc
 	public:
 		TOSPacket() : OutPacket(ACCEPT_TOS)
 		{
-			writech(1);
+			write_byte(1);
 		}
 	};
 
@@ -38,8 +38,8 @@ namespace jrc
 	public:
 		LoginPacket(const std::string& acc, const std::string& pass) : OutPacket(LOGIN)
 		{
-			writestr(acc);
-			writestr(pass);
+			write_string(acc);
+			write_string(pass);
 		}
 	};
 
@@ -58,9 +58,9 @@ namespace jrc
 	public:
 		CharlistRequestPacket(uint8_t world, uint8_t channel) : OutPacket(CHARLIST_REQUEST)
 		{
-			writech(0);
-			writech(world);
-			writech(channel);
+			write_byte(0);
+			write_byte(world);
+			write_byte(channel);
 		}
 	};
 
@@ -71,7 +71,7 @@ namespace jrc
 	public:
 		PlayerLoginPacket(int32_t cid) : OutPacket(PLAYER_LOGIN)
 		{
-			writeint(cid);
+			write_int(cid);
 		}
 	};
 }

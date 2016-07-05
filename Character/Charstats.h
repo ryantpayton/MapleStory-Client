@@ -16,11 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Look\Weapon.h"
+#include "Equipstat.h"
+#include "Job.h"
+#include "Inventory/Weapon.h"
 
-#include "..\Net\Login.h"
-#include "..\Util\EnumMap.h"
-#include "..\Util\Rectangle.h"
+#include "../Net/Login.h"
+#include "../Template/EnumMap.h"
+#include "../Template/Rectangle.h"
 
 namespace jrc
 {
@@ -31,11 +33,11 @@ namespace jrc
 		CharStats();
 
 		void init_totalstats();
-		void set_stat(Maplestat::Value stat, uint16_t value);
-		void set_total(Equipstat::Value stat, int32_t value);
-		void add_buff(Equipstat::Value stat, int32_t value);
-		void add_value(Equipstat::Value stat, int32_t value);
-		void add_percent(Equipstat::Value stat, float percent);
+		void set_stat(Maplestat::Id stat, uint16_t value);
+		void set_total(Equipstat::Id stat, int32_t value);
+		void add_buff(Equipstat::Id stat, int32_t value);
+		void add_value(Equipstat::Id stat, int32_t value);
+		void add_percent(Equipstat::Id stat, float percent);
 		void close_totalstats();
 
 		void set_weapontype(Weapon::Type weapontype);
@@ -47,10 +49,12 @@ namespace jrc
 
 		void change_job(uint16_t id);
 
-		bool isdamagebuffed() const;
-		uint16_t get_stat(Maplestat::Value stat) const;
-		int32_t get_total(Equipstat::Value stat) const;
-		int32_t get_buffdelta(Equipstat::Value stat) const;
+		int32_t calculate_damage(int32_t mobatk) const;
+
+		bool is_damage_buffed() const;
+		uint16_t get_stat(Maplestat::Id stat) const;
+		int32_t get_total(Equipstat::Id stat) const;
+		int32_t get_buffdelta(Equipstat::Id stat) const;
 		Rectangle<int16_t> get_range() const;
 
 		int32_t get_mapid() const;
@@ -63,6 +67,7 @@ namespace jrc
 		float get_critical() const;
 		float get_mincrit() const;
 		float get_maxcrit() const;
+		float get_reducedamage() const;
 		float get_bossdmg() const;
 		float get_ignoredef() const;
 		void set_stance(float stance);
@@ -89,10 +94,10 @@ namespace jrc
 		uint8_t portal;
 		std::pair<int32_t, int8_t> rank;
 		std::pair<int32_t, int8_t> jobrank;
-		EnumMap<Maplestat::Value, uint16_t> basestats;
-		EnumMap<Equipstat::Value, int32_t> totalstats;
-		EnumMap<Equipstat::Value, int32_t> buffdeltas;
-		EnumMap<Equipstat::Value, float> percentages;
+		EnumMap<Maplestat::Id, uint16_t> basestats;
+		EnumMap<Equipstat::Id, int32_t> totalstats;
+		EnumMap<Equipstat::Id, int32_t> buffdeltas;
+		EnumMap<Equipstat::Id, float> percentages;
 		int32_t maxdamage;
 		int32_t mindamage;
 		uint16_t honor;

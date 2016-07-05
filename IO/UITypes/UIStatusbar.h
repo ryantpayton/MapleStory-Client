@@ -18,17 +18,18 @@
 #pragma once
 #include "UIChatbar.h"
 
-#include "..\UIElement.h"
-#include "..\Messages.h"
+#include "../UIElement.h"
+#include "../Messages.h"
 
-#include "..\Components\Charset.h"
-#include "..\Components\Gauge.h"
-#include "..\Components\Textfield.h"
+#include "../Components/Charset.h"
+#include "../Components/Gauge.h"
+#include "../Components/Textfield.h"
 
-#include "..\..\Character\CharStats.h"
-#include "..\..\Character\Job.h"
-#include "..\..\Graphics\Animation.h"
-#include "..\..\Graphics\Text.h"
+#include "../../Character/CharStats.h"
+#include "../../Character/Inventory/Inventory.h"
+#include "../../Character/Job.h"
+#include "../../Graphics/Animation.h"
+#include "../../Graphics/Text.h"
 
 namespace jrc
 {
@@ -39,7 +40,7 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 
-		UIStatusbar();
+		UIStatusbar(const CharStats& stats);
 
 		void draw(float alpha) const override;
 		void update() override;
@@ -81,7 +82,6 @@ namespace jrc
 
 		const CharStats& stats;
 
-		Messages messages;
 		EnumMap<Messages::Type, time_t> message_cooldowns;
 
 		UIChatbar chatbar;

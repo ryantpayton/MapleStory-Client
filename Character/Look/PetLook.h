@@ -16,11 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\..\Gameplay\Physics\Physics.h"
-#include "..\..\Graphics\Text.h"
-#include "..\..\Graphics\Animation.h"
-#include "..\..\Util\EnumMap.h"
-#include "..\..\Util\Point.h"
+#include "../../Gameplay/Physics/Physics.h"
+#include "../../Graphics/Text.h"
+#include "../../Graphics/Animation.h"
+#include "../../Template/EnumMap.h"
+#include "../../Template/Point.h"
 
 #include <cstdint>
 #include <string>

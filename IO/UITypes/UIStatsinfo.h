@@ -16,10 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\UIDragElement.h"
+#include "../UIDragElement.h"
 
-#include "..\..\Character\CharStats.h"
-#include "..\..\Graphics\Text.h"
+#include "../../Character/CharStats.h"
+#include "../../Graphics/Text.h"
 
 namespace jrc
 {
@@ -30,12 +30,12 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 
-		UIStatsinfo();
+		UIStatsinfo(const CharStats& stats);
 
 		void draw(float alpha) const override;
 
 		void update_all_stats();
-		void update_stat(Maplestat::Value stat);
+		void update_stat(Maplestat::Id stat);
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -57,10 +57,10 @@ namespace jrc
 		};
 
 		void update_ap();
-		void update_simple(StatLabel label, Maplestat::Value stat);
-		void update_basevstotal(StatLabel label, Maplestat::Value bstat, Equipstat::Value tstat);
-		void update_buffed(StatLabel label, Equipstat::Value stat);
-		void send_apup(Maplestat::Value stat) const;
+		void update_simple(StatLabel label, Maplestat::Id stat);
+		void update_basevstotal(StatLabel label, Maplestat::Id bstat, Equipstat::Id tstat);
+		void update_buffed(StatLabel label, Equipstat::Id stat);
+		void send_apup(Maplestat::Id stat) const;
 
 		enum Buttons
 		{

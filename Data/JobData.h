@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Cache.h"
+#include "../Template/Cache.h"
 
-#include "..\Graphics\Texture.h"
+#include "../Graphics/Texture.h"
 
 #include <vector>
 

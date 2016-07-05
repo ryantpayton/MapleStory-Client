@@ -18,9 +18,9 @@
 #pragma once
 #include "UILoginwait.h"
 
-#include "..\..\Graphics\Sprite.h"
+#include "../../Graphics/Sprite.h"
 
-#include <nlnx\nx.hpp>
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {

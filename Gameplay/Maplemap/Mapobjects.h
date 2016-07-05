@@ -16,11 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "MapLayers.h"
+#include "Layer.h"
 #include "MapObject.h"
 
-#include "..\..\Util\Optional.h"
+#include "../../Template/Optional.h"
 
+#include <array>
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
@@ -32,7 +33,7 @@ namespace jrc
 	{
 	public:
 		// Draw all mapobjects that are on the specified layer.
-		void draw(int8_t layer, double viewx, double viewy, float alpha) const;
+		void draw(Layer::Id layer, double viewx, double viewy, float alpha) const;
 		// Update all mapobjects of this type. Also updates layers eg. drawing order.
 		void update(const Physics& physics);
 
@@ -42,6 +43,9 @@ namespace jrc
 		void remove(int32_t oid);
 		// Removes all mapobjects of this type.
 		void clear();
+
+		// Check if a map object with the specified id exists on the map.
+		bool contains(int32_t oid) const;
 		// Obtains a pointer to the mapobject with the given oid.
 		Optional<MapObject> get(int32_t oid);
 		// Obtains a const pointer to the mapobject with the given oid.
@@ -59,7 +63,7 @@ namespace jrc
 
 	private:
 		std::unordered_map<int32_t, std::unique_ptr<MapObject>> objects;
-		std::unordered_set<int32_t> layers[MapLayers::NUM_LAYERS];
+		std::array<std::unordered_set<int32_t>, Layer::LENGTH> layers;
 	};
 }
 

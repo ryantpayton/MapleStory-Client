@@ -25,13 +25,13 @@ namespace jrc
 {
 	OutPacket::OutPacket(int16_t opcode)
 	{
-		writesh(opcode);
+		write_short(opcode);
 	}
 
 	void OutPacket::dispatch()
 	{
-		Session::get()
-			.dispatch(bytes.data(), bytes.size());
+		Session::get().
+			write(bytes.data(), bytes.size());
 	}
 
 	void OutPacket::skip(size_t count)
@@ -42,60 +42,60 @@ namespace jrc
 		}
 	}
 
-	void OutPacket::writech(int8_t ch)
+	void OutPacket::write_byte(int8_t ch)
 	{
 		bytes.push_back(ch);
 	}
 
-	void OutPacket::writesh(int16_t sh)
+	void OutPacket::write_short(int16_t sh)
 	{
 		for (size_t i = 0; i < 2; i++)
 		{
-			writech(static_cast<int8_t>(sh));
+			write_byte(static_cast<int8_t>(sh));
 			sh >>= 8;
 		}
 	}
 
-	void OutPacket::writeint(int32_t in)
+	void OutPacket::write_int(int32_t in)
 	{
 		for (size_t i = 0; i < 4; i++)
 		{
-			writech(static_cast<int8_t>(in));
+			write_byte(static_cast<int8_t>(in));
 			in >>= 8;
 		}
 	}
 
-	void OutPacket::writelg(int64_t lg)
+	void OutPacket::write_long(int64_t lg)
 	{
 		for (size_t i = 0; i < 8; i++)
 		{
-			writech(static_cast<int8_t>(lg));
+			write_byte(static_cast<int8_t>(lg));
 			lg >>= 8;
 		}
 	}
 
-	void OutPacket::writetime()
+	void OutPacket::write_time()
 	{
 		auto duration = std::chrono::steady_clock::now().time_since_epoch();
 		auto since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
 		auto timestamp = static_cast<int32_t>(since_epoch.count());
-		writeint(timestamp);
+		write_int(timestamp);
 	}
 
-	void OutPacket::writepoint(Point<int16_t> position)
+	void OutPacket::write_point(Point<int16_t> position)
 	{
-		writesh(position.x());
-		writesh(position.y());
+		write_short(position.x());
+		write_short(position.y());
 	}
 
-	void OutPacket::writestr(const std::string& str)
+	void OutPacket::write_string(const std::string& str)
 	{
 		int16_t length = static_cast<int16_t>(str.length());
-		writesh(length);
+		write_short(length);
 
 		for (int16_t i = 0; i < length; i++)
 		{
-			writech(str[i]);
+			write_byte(str[i]);
 		}
 	}
 }

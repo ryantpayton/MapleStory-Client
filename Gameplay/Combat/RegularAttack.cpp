@@ -19,16 +19,14 @@
 
 namespace jrc
 {
-	RegularAttack::RegularAttack()
+	void RegularAttack::apply_useeffects(Char&) const {}
+
+	void RegularAttack::apply_actions(Char& user, Attack::Type type) const
 	{
-		action = std::make_unique<RegularAction>();
-		bullet = std::make_unique<RegularBullet>();
-		sound = std::make_unique<NoSkillSound>();
-		useeffect = std::make_unique<NoUseEffect>();
-		hiteffect = std::make_unique<NoHitEffect>();
+		action.apply(user, type);
 	}
 
-	void RegularAttack::applystats(const Char& user, Attack& attack) const
+	void RegularAttack::apply_stats(const Char& user, Attack& attack) const
 	{
 		attack.damagetype = Attack::DMG_WEAPON;
 		attack.skill = 0;
@@ -41,9 +39,21 @@ namespace jrc
 		}
 	}
 
-	bool RegularAttack::isoffensive() const
+	void RegularAttack::apply_hiteffects(const AttackUser&, Mob&) const {}
+
+	Animation RegularAttack::get_bullet(const Char& user, int32_t bulletid) const
+	{
+		return bullet.get(user, bulletid);
+	}
+
+	bool RegularAttack::is_attack() const
 	{
 		return true;
+	}
+
+	bool RegularAttack::is_skill() const
+	{
+		return false;
 	}
 
 	int32_t RegularAttack::get_id() const

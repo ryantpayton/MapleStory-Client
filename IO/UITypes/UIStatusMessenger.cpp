@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIStatusMessenger.h"
 
-#include "..\..\Constants.h"
+#include "../../Constants.h"
 
 namespace jrc
 {
@@ -31,8 +31,8 @@ namespace jrc
 	void StatusInfo::draw(Point<int16_t> position, float alpha) const
 	{
 		float interopc = opacity.get(alpha);
-		shadow.draw(position + Point<int16_t>(1, 1), interopc);
-		text.draw(position, interopc);
+		shadow.draw({ position + Point<int16_t>(1, 1), interopc });
+		text.draw({ position, interopc });
 	}
 
 	bool StatusInfo::update()

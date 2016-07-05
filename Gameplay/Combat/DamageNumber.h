@@ -16,11 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Physics\PhysicsObject.h"
-#include "..\..\IO\Components\Charset.h"
-#include "..\..\Util\BoolPair.h"
-#include "..\..\Util\Interpolated.h"
-#include "..\..\Util\Point.h"
+#include "../Physics/PhysicsObject.h"
+#include "../../IO/Components/Charset.h"
+#include "../../Template/BoolPair.h"
+#include "../../Template/Interpolated.h"
+#include "../../Template/Point.h"
 
 namespace jrc
 {
@@ -35,7 +35,7 @@ namespace jrc
 			TOPLAYER
 		};
 
-		DamageNumber(Type type, int32_t damage, int16_t starty);
+		DamageNumber(Type type, int32_t damage, int16_t starty, int16_t x = 0);
 		DamageNumber();
 
 		void draw(double viewx, double viewy, float alpha) const;

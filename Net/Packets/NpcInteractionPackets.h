@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\OutPacket.h"
+#include "../OutPacket.h"
 
 namespace jrc
 {
@@ -27,7 +27,7 @@ namespace jrc
 	public:
 		TalkToNPCPacket(int32_t oid) : OutPacket(TALK_TO_NPC)
 		{
-			writeint(oid);
+			write_int(oid);
 		}
 	};
 
@@ -38,18 +38,18 @@ namespace jrc
 	public:
 		NpcTalkMorePacket(int8_t lastmsg, int8_t response) : OutPacket(NPC_TALK_MORE)
 		{
-			writech(lastmsg);
-			writech(response);
+			write_byte(lastmsg);
+			write_byte(response);
 		}
 
 		NpcTalkMorePacket(const std::string& response) : NpcTalkMorePacket(2, 1)
 		{
-			writestr(response);
+			write_string(response);
 		}
 
 		NpcTalkMorePacket(int32_t selection) : NpcTalkMorePacket(4, 1)
 		{
-			writeint(selection);
+			write_int(selection);
 		}
 	};
 
@@ -63,16 +63,16 @@ namespace jrc
 		NpcShopActionPacket(int16_t slot, int32_t itemid, int16_t qty, bool buy) 
 			: NpcShopActionPacket(buy ? BUY : SELL) {
 
-			writesh(slot);
-			writeint(itemid);
-			writesh(qty);
+			write_short(slot);
+			write_int(itemid);
+			write_short(qty);
 		}
 
 		// Requests that an item should be recharged at a npc shop.
 		NpcShopActionPacket(int16_t slot) 
 			: NpcShopActionPacket(RECHARGE) {
 
-			writesh(slot);
+			write_short(slot);
 		}
 
 		// Requests exiting from a npc shop.
@@ -87,7 +87,7 @@ namespace jrc
 
 		NpcShopActionPacket(Mode mode) : OutPacket(NPC_SHOP_ACTION)
 		{
-			writech(mode);
+			write_byte(mode);
 		}
 	};
 }

@@ -18,7 +18,7 @@
 #pragma once
 #include "NetConstants.h"
 
-#include "..\Journey.h"
+#include "../Journey.h"
 
 #include <cstdint>
 

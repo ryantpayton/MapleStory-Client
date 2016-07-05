@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Tile.h"
-#include "nlnx\nx.hpp"
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {

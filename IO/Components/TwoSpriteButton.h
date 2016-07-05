@@ -18,8 +18,8 @@
 #pragma once
 #include "Button.h"
 
-#include "..\..\Graphics\Texture.h"
-#include "..\..\Util\BoolPair.h"
+#include "../../Graphics/Texture.h"
+#include "../../Template/BoolPair.h"
 
 #include <map>
 

@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -16,14 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Item.h"
-
-#include "..\Look\Clothing.h"
-#include "..\..\Util\EnumMap.h"
+#include "EquipQuality.h"
 
 namespace jrc
 {
-	class Equip : public Item
+	class Equip
 	{
 	public:
 		enum Potential
@@ -37,40 +34,36 @@ namespace jrc
 			LENGTH
 		};
 
-		enum Quality
-		{
-			EQQ_GREY,
-			EQQ_WHITE,
-			EQQ_ORANGE,
-			EQQ_BLUE,
-			EQQ_VIOLET,
-			EQQ_GOLD
-		};
+		Equip(int32_t item_id, int64_t expiration, 
+			const std::string& owner, int16_t flags, uint8_t slots,
+			uint8_t level, const EnumMap<Equipstat::Id, uint16_t>& stats,
+			uint8_t itemlevel, int16_t itemexp, int32_t vicious);
 
-		Equip(const ItemData&, int32_t, bool, int64_t, int64_t, uint8_t, uint8_t, 
-			const EnumMap<Equipstat::Value, uint16_t>&, const std::string&, int16_t, uint8_t, int16_t, int32_t);
-
+		int32_t get_item_id() const;
+		int64_t get_expiration() const;
+		const std::string& get_owner() const;
+		int16_t get_flags() const;
 		uint8_t get_slots() const;
 		uint8_t get_level() const;
-		uint8_t getitemlevel() const;
-		uint16_t get_stat(Equipstat::Value type) const;
-		int32_t getvicious() const;
-		Potential getpotrank() const;
-		Quality getquality() const;
-
-		const Clothing& getcloth() const;
+		uint8_t get_itemlevel() const;
+		uint16_t get_stat(Equipstat::Id type) const;
+		int32_t get_vicious() const;
+		Potential get_potrank() const;
+		EquipQuality::Id get_quality() const;
 
 	private:
-		void checkquality();
-
-		EnumMap<Equipstat::Value, uint16_t> stats;
+		EnumMap<Equipstat::Id, uint16_t> stats;
+		int32_t item_id;
+		int64_t expiration;
+		std::string owner;
+		int16_t flags;
 		uint8_t slots;
 		uint8_t level;
 		uint8_t itemlevel;
 		int16_t itemexp;
 		int32_t vicious;
 		Potential potrank;
-		Quality quality;
+		EquipQuality::Id quality;
 	};
 }
 

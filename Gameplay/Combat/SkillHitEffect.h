@@ -18,9 +18,9 @@
 #pragma once
 #include "Attack.h"
 
-#include "..\Maplemap\Mob.h"
+#include "../Maplemap/Mob.h"
 
-#include "..\..\Util\BoolPair.h"
+#include "../../Template/BoolPair.h"
 
 namespace jrc
 {

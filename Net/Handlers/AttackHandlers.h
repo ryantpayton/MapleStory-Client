@@ -16,10 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\PacketHandler.h"
-#include "..\Session.h"
+#include "../PacketHandler.h"
 
-#include "..\..\Gameplay\Combat\Attack.h"
+#include "../../Gameplay/Combat/Attack.h"
 
 namespace jrc
 {

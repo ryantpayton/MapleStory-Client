@@ -18,12 +18,12 @@
 #include "Player.h"
 #include "PlayerStates.h"
 
-#include "..\Constants.h"
-#include "..\Data\DataFactory.h"
-#include "..\IO\UI.h"
-#include "..\IO\UITypes\UIStatsinfo.h"
-#include "..\Net\Packets\GameplayPackets.h"
-#include "..\Net\Packets\InventoryPackets.h"
+#include "../Constants.h"
+#include "../Data/WeaponData.h"
+#include "../IO/UI.h"
+#include "../IO/UITypes/UIStatsinfo.h"
+#include "../Net/Packets/GameplayPackets.h"
+#include "../Net/Packets/InventoryPackets.h"
 
 namespace jrc
 {
@@ -62,7 +62,7 @@ namespace jrc
 	}
 
 	Player::Player(const CharEntry& entry)
-		: Char(entry.cid, entry.get_look(), entry.stats.name), stats(entry.stats) {
+		: Char(entry.cid, entry.look, entry.stats.name), stats(entry.stats) {
 
 		attacking = false;
 		underwater = false;
@@ -84,7 +84,7 @@ namespace jrc
 		nullstate.update_state(*this);
 	}
 
-	void Player::send_action(Keyboard::Action action, bool down)
+	void Player::send_action(KeyAction::Id action, bool down)
 	{
 		const PlayerState* pst = get_state(state);
 		if (pst)
@@ -96,7 +96,7 @@ namespace jrc
 
 	void Player::recalc_stats(bool equipchanged)
 	{
-		Weapon::Type weapontype = look.get_equips().get_weapontype();
+		Weapon::Type weapontype = get_weapontype();
 
 		stats.set_weapontype(weapontype);
 		stats.init_totalstats();
@@ -106,7 +106,11 @@ namespace jrc
 			inventory.recalc_stats(weapontype);
 		}
 
-		inventory.add_equipstats(stats);
+		for (auto stat : Equipstat::values)
+		{
+			int32_t inventory_total = inventory.get_stat(stat);
+			stats.add_value(stat, inventory_total);
+		}
 
 		auto passive_skills = skillbook.collect_passives();
 		for (auto& passive : passive_skills)
@@ -117,49 +121,44 @@ namespace jrc
 			passive_buffs.apply_buff(stats, skill_id, skill_level);
 		}
 
-		for (auto& buff : buffs)
+		for (const Buff& buff : buffs.values())
 		{
-			active_buffs.apply_buff(stats, buff.second.stat, buff.second.value);
+			active_buffs.apply_buff(stats, buff.stat, buff.value);
 		}
 
 		stats.close_totalstats();
 
-		UI::get().get_element<UIStatsinfo>()
-			.if_present(&UIStatsinfo::update_all_stats);
+		if (auto statsinfo = UI::get().get_element<UIStatsinfo>())
+			statsinfo->update_all_stats();
 	}
 
 	void Player::change_equip(int16_t slot)
 	{
-		Optional<Equip> equip = inventory.get_equip(Inventory::EQUIPPED, slot);
-		if (equip)
+		if (int32_t itemid = inventory.get_item_id(InventoryType::EQUIPPED, slot))
 		{
-			int32_t itemid = equip.map(&Item::get_id);
 			look.add_equip(itemid);
 		}
 		else
 		{
-			Equipslot::Value value = Equipslot::byvalue(slot);
-			look.remove_equip(value);
+			look.remove_equip(Equipslot::by_id(slot));
 		}
 	}
 
 	void Player::use_item(int32_t itemid)
 	{
-		Inventory::Type type = Inventory::typebyid(itemid);
-		int16_t slot = inventory.find_item(type, itemid);
-
-		if (slot >= 0)
+		InventoryType::Id type = InventoryType::by_item_id(itemid);
+		if (int16_t slot = inventory.find_item(type, itemid))
 		{
 			switch (type)
 			{
-			case Inventory::USE:
+			case InventoryType::USE:
 				UseItemPacket(slot, itemid).dispatch();
 				break;
 			}
 		}
 	}
 
-	void Player::draw(uint8_t layer, double viewx, double viewy, float alpha) const
+	void Player::draw(Layer::Id layer, double viewx, double viewy, float alpha) const
 	{
 		if (layer == get_layer())
 		{
@@ -199,9 +198,17 @@ namespace jrc
 		return get_layer();
 	}
 
-	int8_t Player::get_base_attackspeed() const
+	int8_t Player::get_integer_attackspeed() const
 	{
-		return stats.get_attackspeed();
+		int32_t weapon_id = look.get_equips().get_weapon();
+		if (weapon_id <= 0)
+			return 0;
+
+		const WeaponData& weapon = WeaponData::get(weapon_id);
+
+		int8_t base_speed = stats.get_attackspeed();
+		int8_t weapon_speed = weapon.get_speed();
+		return base_speed + weapon_speed;
 	}
 
 	void Player::set_direction(bool flipped)
@@ -239,11 +246,14 @@ namespace jrc
 		if (move.is_skill() && state == PRONE)
 			return SpecialMove::FBR_OTHER;
 
+		if (move.is_attack() && (state == LADDER || state == ROPE))
+			return SpecialMove::FBR_OTHER;
+
 		if (has_cooldown(move.get_id()))
 			return SpecialMove::FBR_COOLDOWN;
 
 		int32_t level = skillbook.get_level(move.get_id());
-		Weapon::Type weapon = look.get_equips().get_weapontype();
+		Weapon::Type weapon = get_weapontype();
 		const Job& job = stats.get_job();
 		uint16_t hp = stats.get_stat(Maplestat::HP);
 		uint16_t mp = stats.get_stat(Maplestat::MP);
@@ -262,7 +272,7 @@ namespace jrc
 		}
 		else
 		{
-			Weapon::Type weapontype = look.get_equips().get_weapontype();
+			Weapon::Type weapontype = get_weapontype();
 			switch (weapontype)
 			{
 			case Weapon::BOW:
@@ -315,19 +325,50 @@ namespace jrc
 		}
 	}
 
+	bool Player::is_invincible() const
+	{
+		if (state == DIED)
+			return true;
+
+		if (has_buff(Buffstat::DARKSIGHT))
+			return true;
+
+		return Char::is_invincible();
+	}
+
+	MobAttackResult Player::damage(const MobAttack& attack)
+	{
+		int32_t damage = stats.calculate_damage(attack.watk);
+		show_damage(damage);
+
+		bool fromleft = attack.origin.x() > phobj.get_x();
+
+		bool missed = damage <= 0;
+		bool immovable = ladder || state == DIED;
+		bool knockback = !missed && !immovable;
+		if (knockback && randomizer.above(stats.get_stance()))
+		{
+			phobj.hspeed = fromleft ? -1.5 : 1.5;
+			phobj.vforce -= 3.5;
+		}
+
+		uint8_t direction = fromleft ? 0 : 1;
+		return{ attack, damage, direction };
+	}
+
 	void Player::give_buff(Buff buff)
 	{
 		buffs[buff.stat] = buff;
 	}
 
-	void Player::cancel_buff(Buff::Stat stat)
+	void Player::cancel_buff(Buffstat::Id stat)
 	{
-		buffs.erase(stat);
+		buffs[stat] = {};
 	}
 
-	bool Player::has_buff(Buff::Stat stat) const
+	bool Player::has_buff(Buffstat::Id stat) const
 	{
-		return buffs.count(stat) > 0;
+		return buffs[stat].value > 0;
 	}
 
 	void Player::change_skill(int32_t skill_id, int32_t skill_level,
@@ -361,7 +402,7 @@ namespace jrc
 		uint16_t oldlevel = get_level();
 		if (level > oldlevel)
 		{
-			show_effect_id(LEVELUP);
+			show_effect_id(CharEffect::LEVELUP);
 		}
 		stats.set_stat(Maplestat::LEVEL, level);
 	}
@@ -378,7 +419,7 @@ namespace jrc
 
 	void Player::change_job(uint16_t jobid)
 	{
-		show_effect_id(JOBCHANGE);
+		show_effect_id(CharEffect::JOBCHANGE);
 		stats.change_job(jobid);
 	}
 
@@ -413,7 +454,7 @@ namespace jrc
 
 	float Player::get_jumpforce() const
 	{
-		return 0.5f + 5.0f * static_cast<float>(stats.get_total(Equipstat::JUMP)) / 100;
+		return 1.0f + 3.5f * static_cast<float>(stats.get_total(Equipstat::JUMP)) / 100;
 	}
 
 	float Player::get_climbforce() const
@@ -431,7 +472,7 @@ namespace jrc
 		return underwater;
 	}
 
-	bool Player::is_key_down(Keyboard::Action action) const
+	bool Player::is_key_down(KeyAction::Id action) const
 	{
 		return keysdown.count(action) ? keysdown.at(action) : false;
 	}
@@ -441,7 +482,17 @@ namespace jrc
 		return stats;
 	}
 
+	const CharStats& Player::get_stats() const
+	{
+		return stats;
+	}
+
 	Inventory& Player::get_inventory()
+	{
+		return inventory;
+	}
+
+	const Inventory& Player::get_inventory() const
 	{
 		return inventory;
 	}

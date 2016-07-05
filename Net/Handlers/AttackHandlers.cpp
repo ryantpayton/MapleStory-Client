@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "AttackHandlers.h"
 
-#include "..\..\Gameplay\Combat\Skill.h"
-#include "..\..\Gameplay\Stage.h"
+#include "../../Character/SkillId.h"
+#include "../../Gameplay/Stage.h"
 
 #include <unordered_map>
 #include <vector>
@@ -39,6 +39,7 @@ namespace jrc
 
 		AttackResult attack;
 		attack.type = type;
+		attack.attacker = cid;
 
 		attack.level = recv.read_byte();
 		attack.skill = (attack.level > 0) ? recv.read_int() : 0;
@@ -60,7 +61,7 @@ namespace jrc
 
 			recv.skip(1);
 
-			uint8_t length = (attack.skill == Skill::MESO_EXPLOSION) ? recv.read_byte() : attack.hitcount;
+			uint8_t length = (attack.skill == SkillId::MESO_EXPLOSION) ? recv.read_byte() : attack.hitcount;
 			for (uint8_t j = 0; j < length; j++)
 			{
 				int32_t damage = recv.read_int();
@@ -70,6 +71,6 @@ namespace jrc
 			}
 		}
 
-		Stage::get().show_attack(cid, attack);
+		Stage::get().get_combat().push_attack(attack);
 	}
 }

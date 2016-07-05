@@ -24,8 +24,6 @@ namespace jrc
 		cover = 0;
 	}
 
-	Monsterbook::~Monsterbook() {}
-
 	void Monsterbook::set_cover(int32_t cov)
 	{
 		cover = cov;

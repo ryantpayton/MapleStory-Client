@@ -68,15 +68,10 @@ namespace jrc
 		background = b;
 	}
 
-	void Text::draw(Point<int16_t> pos) const
-	{
-		draw(pos, 1.0f);
-	}
-
-	void Text::draw(Point<int16_t> position, float opacity) const
+	void Text::draw(const DrawArgument& args) const
 	{
 		GraphicsGL::get()
-			.drawtext(text, layout, font, color, background, position, opacity);
+			.drawtext(args, text, layout, font, color, background);
 	}
 
 	uint16_t Text::advance(size_t pos) const

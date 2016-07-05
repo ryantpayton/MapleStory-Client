@@ -18,11 +18,11 @@
 #pragma once
 #include "MapObject.h"
 
-#include "..\Physics\PhysicsObject.h"
+#include "../Physics/PhysicsObject.h"
 
-#include "..\..\Graphics\Animation.h"
-#include "..\..\Graphics\Text.h"
-#include "..\..\Util\Randomizer.h"
+#include "../../Graphics/Animation.h"
+#include "../../Graphics/Text.h"
+#include "../../Util/Randomizer.h"
 
 #include <map>
 

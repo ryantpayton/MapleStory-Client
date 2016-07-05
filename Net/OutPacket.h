@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Util\Point.h"
+#include "../Template/Point.h"
 
 #include <cstdint>
 #include <string>
@@ -28,40 +28,39 @@ namespace jrc
 	class OutPacket
 	{
 	public:
-		enum Opcode;
+		enum Opcode : uint16_t;
 
 		// Construct a packet by writing its opcode.
 		OutPacket(int16_t opcode);
 
-		// Send the packet to the server.
 		void dispatch();
 
 	protected:
 		// Skip a number of bytes (filled with zeroes).
 		void skip(size_t count);
 		// Write a byte.
-		void writech(int8_t ch);
+		void write_byte(int8_t ch);
 		// Write a short.
-		void writesh(int16_t sh);
+		void write_short(int16_t sh);
 		// Write an int.
-		void writeint(int32_t in);
+		void write_int(int32_t in);
 		// Write a long.
-		void writelg(int64_t lg);
+		void write_long(int64_t lg);
 
 		// Write a point, one short for x and one for y.
-		void writepoint(Point<int16_t> point);
+		void write_point(Point<int16_t> point);
 		// Write a timestamp as an integer.
-		void writetime();
+		void write_time();
 		// Write a string. Writes the length as a short
 		// and then each individual character as a byte.
-		void writestr(const std::string& str);
+		void write_string(const std::string& str);
 
 	private:
 		std::vector<int8_t> bytes;
 	};
 
 	// Opcodes for OutPackets associated with version 83 of the game.
-	enum OutPacket::Opcode : int16_t
+	enum OutPacket::Opcode : uint16_t
 	{
 		// Login
 		LOGIN = 1,
@@ -88,6 +87,7 @@ namespace jrc
 		CLOSE_ATTACK = 44,
 		RANGED_ATTACK = 45,
 		MAGIC_ATTACK = 46,
+		TAKE_DAMAGE = 48,
 
 		// Messaging
 		GENERAL_CHAT = 49,
@@ -112,6 +112,7 @@ namespace jrc
 		USE_SKILL = 91,
 
 		// Gameplay 2
+		PARTY_OPERATION = 124,
 		MOVE_MONSTER = 188,
 		PICKUP_ITEM = 202,
 

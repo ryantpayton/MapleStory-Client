@@ -16,9 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\OutPacket.h"
-
-#include "..\..\Util\NxFiles.h"
+#include "../OutPacket.h"
 
 namespace jrc
 {
@@ -28,25 +26,5 @@ namespace jrc
 	{
 	public:
 		PongPacket() : OutPacket(PONG) {}
-	};
-
-
-	// Packet which sends the hash values of all game files to the server.
-	// Opcode: HASH_CHECK(30000)
-	class NxCheckPacket : public OutPacket
-	{
-	public:
-
-#ifdef JOURNEY_USE_XXHASH
-		NxCheckPacket(uint64_t seed) : OutPacket(HASH_CHECK)
-		{
-			auto hashes = NxFiles::get().gethashes(seed);
-			writech(static_cast<uint8_t>(hashes.size()));
-			for (; hashes.size() > 0; hashes.pop())
-			{
-				writestr(hashes.front());
-			}
-		}
-#endif
 	};
 }

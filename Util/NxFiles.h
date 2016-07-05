@@ -16,41 +16,27 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "EnumMap.h"
-#include "Singleton.h"
-
-#include "..\Error.h"
-#include "..\Journey.h"
+#include "../Error.h"
 
 #include <cstdint>
-#include <string>
-#include <queue>
 #include <array>
 
 namespace jrc
 {
-	class NxFiles : public Singleton<NxFiles>
+	namespace NxFiles
 	{
-	public:
-		// Makes sure that all game files exist. 
-		// When successfull also tests if the UI file contains valid images.
-		Error init();
-
-#ifdef JOURNEY_USE_XXHASH
-		// Obtains a hash value for a file of game assets. Fast version.
-		std::queue<std::string> gethashes(uint64_t seed);
-#endif
-
-	private:
-		static const size_t NUM_FILES = 14;
-		// Names of game files in alphabetical order.
-		std::array<const char*, NUM_FILES> filenames =
+		// Number of needed files.
+		constexpr uint8_t NUM_FILES = 14;
+		// Names of the needed game files.
+		constexpr std::array<const char*, NUM_FILES> filenames =
 		{
 			"Character.nx", "Effect.nx", "Etc.nx", "Item.nx", "Map.nx", "Mob.nx", "Npc.nx",
 			"Quest.nx", "Reactor.nx", "Skill.nx", "Sound.nx", "String.nx", "TamingMob.nx", "UI.nx"
 		};
 
-		bool exists(const char* filename);
+		// Initialize nlnx.
+		// When successfull also tests if the UI file contains valid images.
+		Error init();
 	};
 }
 

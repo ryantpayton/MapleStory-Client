@@ -31,29 +31,29 @@ namespace jrc
 		PacketSwitch();
 
 		// Forward a packet to the correct handler.
-		void forward(int8_t* buffer, size_t length) const;
+		void forward(const int8_t* bytes, size_t length) const;
 
 	private:
 		// Print a warning.
 		void warn(const std::string& message, size_t opcode) const;
 
 		// Opcodes for which handlers can be registered.
-		enum Opcode;
+		enum Opcode : uint16_t;
 
 		// Message when an unhandled packet is received.
-		static constexpr char* MSG_UNHANDLED = "Unhandled packet detected";
+		static constexpr const char* MSG_UNHANDLED = "Unhandled packet detected";
 		// Message when a packet with a larger opcode than the array size is received.
-		static constexpr char* MSG_OUTOFBOUNDS = "Large opcode detected";
+		static constexpr const char* MSG_OUTOFBOUNDS = "Large opcode detected";
 		// Message when a packet with a larger opcode than the array size is received.
-		static constexpr char* MSG_REREGISTER = "Handler was registered twice";
+		static constexpr const char* MSG_REREGISTER = "Handler was registered twice";
 		// Maximum number of handlers needed.
-		static constexpr size_t NUM_HANDLERS = 500;
+		static constexpr const size_t NUM_HANDLERS = 500;
 
 		std::unique_ptr<PacketHandler> handlers[NUM_HANDLERS];
 
 		// Register a handler for the specified opcode.
 		template <size_t O, typename T, typename...Args>
-		void emplace(Args...args)
+		void emplace(Args&&...args)
 		{
 			static_assert(O < NUM_HANDLERS,
 				"PacketSwitch::emplace - Opcode out of array bounds.");
@@ -64,7 +64,9 @@ namespace jrc
 			{
 				warn(MSG_REREGISTER, O);
 			}
-			handlers[O] = std::make_unique<T>(args...);
+			handlers[O] = std::make_unique<T>(
+				std::forward<Args>(args)...
+				);
 		}
 	};
 }

@@ -16,29 +16,30 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "InventoryHandlers.h"
-#include "ItemParser.h"
 
-#include "..\..\Character\Inventory\Inventory.h"
-#include "..\..\Gameplay\Stage.h"
-#include "..\..\IO\UI.h"
-#include "..\..\IO\Messages.h"
-#include "..\..\IO\UITypes\UIShop.h"
-#include "..\..\IO\UITypes\UIEquipInventory.h"
-#include "..\..\IO\UITypes\UIItemInventory.h"
+#include "Helpers/ItemParser.h"
+
+#include "../../Character/Inventory/Inventory.h"
+#include "../../Gameplay/Stage.h"
+#include "../../IO/UI.h"
+#include "../../IO/Messages.h"
+#include "../../IO/UITypes/UIShop.h"
+#include "../../IO/UITypes/UIEquipInventory.h"
+#include "../../IO/UITypes/UIItemInventory.h"
 
 namespace jrc
 {
 	void GatherResultHandler::handle(InPacket&) const
 	{
-		UI::get().get_element<UIItemInventory>()
-			.if_present(&UIItemInventory::enable_sort);
+		if (auto iteminventory = UI::get().get_element<UIItemInventory>())
+			iteminventory->enable_sort();
 	}
 
 
 	void SortResultHandler::handle(InPacket&) const
 	{
-		UI::get().get_element<UIItemInventory>()
-			.if_present(&UIItemInventory::enable_gather);
+		if (auto iteminventory = UI::get().get_element<UIItemInventory>())
+			iteminventory->enable_gather();
 	}
 
 
@@ -46,12 +47,14 @@ namespace jrc
 	{
 		recv.read_bool(); // 'updatetick'
 
-		Inventory& inventory = Stage::get().get_player().get_inventory();
+		Inventory& inventory = Stage::get()
+			.get_player()
+			.get_inventory();
 
 		struct Mod
 		{
 			int8_t mode;
-			Inventory::Type type;
+			InventoryType::Id type;
 			int16_t pos;
 			int16_t arg;
 		};
@@ -62,24 +65,32 @@ namespace jrc
 		{
 			Mod mod;
 			mod.mode = recv.read_byte();
-			mod.type = Inventory::typebyvalue(recv.read_byte());
+			mod.type = InventoryType::by_value(recv.read_byte());
 			mod.pos = recv.read_short();
 
 			mod.arg = 0;
 			switch (mod.mode)
 			{
-			case 0:
+			case Inventory::ADD:
 				ItemParser::parse_item(recv, mod.type, mod.pos, inventory);
 				break;
-			case 1:
-				mod.arg = recv.read_short();
-				if (inventory.change_count(mod.type, mod.pos, mod.arg))
-					mod.mode = 4;
+			case Inventory::CHANGECOUNT:
+				{
+					mod.arg = recv.read_short();
+
+					int16_t count_before = inventory.get_item_count(mod.type, mod.pos);
+					int16_t count_now = mod.arg;
+
+					inventory.modify(mod.type, mod.pos, mod.mode, mod.arg, Inventory::MOVE_NONE);
+
+					if (count_before < count_now)
+						mod.mode = Inventory::ADDCOUNT;
+				}
 				break;
-			case 2:
+			case Inventory::SWAP:
 				mod.arg = recv.read_short();
 				break;
-			case 3:
+			case Inventory::REMOVE:
 				inventory.modify(mod.type, mod.pos, mod.mode, mod.arg, Inventory::MOVE_INTERNAL);
 				break;
 			}
@@ -91,15 +102,15 @@ namespace jrc
 			Inventory::movementbyvalue(recv.read_byte()) :
 			Inventory::MOVE_INTERNAL;
 
-		for (Mod& mod : mods)
+		for (const Mod& mod : mods)
 		{
 			if (mod.mode == 2)
 			{
 				inventory.modify(mod.type, mod.pos, mod.mode, mod.arg, move);
 			}
 
-			UI::get().get_element<UIShop>()
-				.if_present(&UIShop::modify, mod.type);
+			if (auto shop = UI::get().get_element<UIShop>())
+				shop->modify(mod.type);
 
 			auto eqinvent = UI::get().get_element<UIEquipInventory>();
 			auto itinvent = UI::get().get_element<UIItemInventory>();
@@ -108,18 +119,18 @@ namespace jrc
 			case Inventory::MOVE_INTERNAL:
 				switch (mod.type)
 				{
-				case Inventory::EQUIPPED:
+				case InventoryType::EQUIPPED:
 					if (eqinvent)
 						eqinvent->modify(mod.pos, mod.mode, mod.arg);
 
 					Stage::get().get_player().change_equip(-mod.pos);
 					Stage::get().get_player().change_equip(-mod.arg);
 					break;
-				case Inventory::EQUIP:
-				case Inventory::USE:
-				case Inventory::SETUP:
-				case Inventory::ETC:
-				case Inventory::CASH:
+				case InventoryType::EQUIP:
+				case InventoryType::USE:
+				case InventoryType::SETUP:
+				case InventoryType::ETC:
+				case InventoryType::CASH:
 					if (itinvent)
 						itinvent->modify(mod.type, mod.pos, mod.mode, mod.arg);
 					break;
@@ -133,7 +144,7 @@ namespace jrc
 						eqinvent->modify(-mod.pos, 3, 0);
 
 					if (itinvent)
-						itinvent->modify(Inventory::EQUIP, mod.arg, 0, 0);
+						itinvent->modify(InventoryType::EQUIP, mod.arg, 0, 0);
 
 					Stage::get().get_player().change_equip(-mod.pos);
 				}
@@ -143,7 +154,7 @@ namespace jrc
 						eqinvent->modify(-mod.arg, 0, 0);
 
 					if (itinvent)
-						itinvent->modify(Inventory::EQUIP, mod.pos, 3, 0);
+						itinvent->modify(InventoryType::EQUIP, mod.pos, 3, 0);
 
 					Stage::get().get_player().change_equip(-mod.arg);
 				}

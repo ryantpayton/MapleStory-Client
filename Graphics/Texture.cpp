@@ -18,9 +18,9 @@
 #include "Texture.h"
 #include "GraphicsGL.h"
 
-#include "..\Configuration.h"
+#include "../Configuration.h"
 
-#include "nlnx\nx.hpp"
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
@@ -57,18 +57,8 @@ namespace jrc
 		if (id == 0)
 			return;
 
-		Point<int16_t> stretch = args.getstretch();
-		int16_t w = stretch.x();
-		if (w == 0)
-			w = dimensions.x();
-		int16_t h = stretch.y();
-		if (h == 0)
-			h = dimensions.y();
-
-		Point<int16_t> absp = args.getpos() - origin;
-
-		GraphicsGL::get().draw(bitmap, absp.x(), absp.y(), w, h, args.getopacity(), args.getxscale(),
-			args.getyscale(), args.getcenter().x(), args.getcenter().y(), args.getangle());
+		GraphicsGL::get()
+			.draw(bitmap, args.get_rectangle(origin, dimensions), args.get_color(), args.get_angle());
 	}
 
 	void Texture::shift(Point<int16_t> amount)
@@ -76,7 +66,7 @@ namespace jrc
 		origin -= amount;
 	}
 
-	bool Texture::is_loaded() const
+	bool Texture::is_valid() const
 	{
 		return bitmap.id() > 0;
 	}

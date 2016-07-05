@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "ScrollingNotice.h"
 
-#include "..\..\Constants.h"
+#include "../../Constants.h"
 
 namespace jrc
 {

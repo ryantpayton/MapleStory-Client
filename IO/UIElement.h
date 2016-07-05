@@ -18,10 +18,10 @@
 #pragma once
 #include "Cursor.h"
 
-#include "Components\Button.h"
-#include "Components\Icon.h"
+#include "Components/Button.h"
+#include "Components/Icon.h"
 
-#include "..\Graphics\Sprite.h"
+#include "../Graphics/Sprite.h"
 
 #include <map>
 #include <memory>
@@ -54,7 +54,8 @@ namespace jrc
 			STATSINFO,
 			ITEMINVENTORY,
 			EQUIPINVENTORY,
-			SKILLBOOK
+			SKILLBOOK,
+			NUM_TYPES
 		};
 
 		virtual ~UIElement() {}

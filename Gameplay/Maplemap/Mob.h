@@ -18,21 +18,20 @@
 #pragma once
 #include "Mapobject.h"
 
-#include "..\Combat\Attack.h"
-#include "..\Combat\Bullet.h"
-#include "..\Combat\DamageNumber.h"
-#include "..\Movement.h"
+#include "../Combat/Attack.h"
+#include "../Combat/Bullet.h"
+#include "../Combat/DamageNumber.h"
+#include "../Movement.h"
 
-#include "..\..\Audio\Audio.h"
-#include "..\..\Constants.h"
-#include "..\..\Graphics\Text.h"
-#include "..\..\Graphics\EffectLayer.h"
-#include "..\..\Graphics\Geometry.h"
-#include "..\..\Util\Rectangle.h"
-#include "..\..\Util\Enum.h"
-#include "..\..\Util\Interpolated.h"
-#include "..\..\Util\Randomizer.h"
-#include "..\..\Util\TimedBool.h"
+#include "../../Audio/Audio.h"
+#include "../../Constants.h"
+#include "../../Graphics/Text.h"
+#include "../../Graphics/EffectLayer.h"
+#include "../../Graphics/Geometry.h"
+#include "../../Template/Rectangle.h"
+#include "../../Template/Interpolated.h"
+#include "../../Util/Randomizer.h"
+#include "../../Util/TimedBool.h"
 
 namespace jrc
 {
@@ -59,7 +58,7 @@ namespace jrc
 			return stancenames[index];
 		}
 
-		static uint8_t valueof(Stance stance, bool flip)
+		static uint8_t value_of(Stance stance, bool flip)
 		{
 			return flip ? stance : stance + 1;
 		}
@@ -78,72 +77,63 @@ namespace jrc
 		// 0 - no control, 1 - control, 2 - aggro
 		void set_control(int8_t mode);
 		// Send movement to the mob.
-		void send_movement(Point<int16_t> start, const Movement& movement);
+		void send_movement(Point<int16_t> start, std::vector<Movement>&& movements);
 		// Kill the mob with the appropriate type:
 		// 0 - make inactive 1 - death animation 2 - fade out
 		void kill(int8_t killtype);
 		// Display the hp percentage above the mob.
 		// Use the playerlevel to determine color of nametag.
-		void sendhp(int8_t percentage, uint16_t playerlevel);
+		void show_hp(int8_t percentage, uint16_t playerlevel);
 		// Show an effect at the mob's position.
-		void show_effect(Animation animation, int8_t pos, int8_t z, bool flip);
+		void show_effect(const Animation& animation, int8_t pos, int8_t z, bool flip);
 
 		// Calculate the damage to this mob with the spcecified attack.
-		std::vector<std::pair<int32_t, bool>> calculatedamage(const Attack& attack);
-		// Get a placement for damage numbers above the mob's head.
-		std::vector<DamageNumber> placenumbers(std::vector<std::pair<int32_t, bool>> damagelines) const;
+		std::vector<std::pair<int32_t, bool>> calculate_damage(const Attack& attack);
 		// Apply damage to the mob.
 		void apply_damage(int32_t damage, bool toleft);
+
+		// Create a touch damage attack to the player.
+		MobAttack create_touch_attack() const;
 
 		// Check if this mob collides with the specified rectangle.
 		bool is_in_range(const Rectangle<int16_t>& range) const;
 		// Check if this mob is still alive.
-		bool isalive() const;
+		bool is_alive() const;
 		// Return the head position.
-		Point<int16_t> get_headpos() const;
+		Point<int16_t> get_head_position() const;
 
 	private:
-		static const size_t NUM_DIRECTIONS = 3;
 		enum FlyDirection
 		{
 			STRAIGHT,
 			UPWARDS,
-			DOWNWARDS
+			DOWNWARDS,
+			NUM_DIRECTIONS
 		};
-
-		static FlyDirection nextdirection(const Randomizer& randomizer)
-		{
-			static const FlyDirection directions[NUM_DIRECTIONS] =
-			{
-				STRAIGHT, UPWARDS, DOWNWARDS
-			};
-			size_t index = randomizer.nextint(NUM_DIRECTIONS - 1);
-			return directions[index];
-		}
 
 		// Set the stance by byte value.
 		void set_stance(uint8_t stancebyte);
 		// Set the stance by enum value.
 		void set_stance(Stance newstance);
 		// Start the death animation.
-		void applydeath();
+		void apply_death();
 		// Decide on the next state.
-		void nextmove();
+		void next_move();
 		// Send the current position and state to the server.
 		void update_movement();
 
 		// Calculate the hit chance.
-		float calchitchance(int16_t leveldelta, int32_t accuracy) const;
+		float calculate_hitchance(int16_t leveldelta, int32_t accuracy) const;
 		// Calculate the minimum damage.
-		double calcmindamage(int16_t leveldelta, double mindamage, bool magic) const;
+		double calculate_mindamage(int16_t leveldelta, double mindamage, bool magic) const;
 		// Calculate the maximum damage.
-		double calcmaxdamage(int16_t leveldelta, double maxdamage, bool magic) const;
+		double calculate_maxdamage(int16_t leveldelta, double maxdamage, bool magic) const;
 		// Calculate a random damage line based on the specified values.
-		std::pair<int32_t, bool> randomdamage(double mindamage,
+		std::pair<int32_t, bool> next_damage(double mindamage,
 			double maxdamage, float hitchance, float critical) const;
 
 		// Return the current 'head' position.
-		Point<int16_t> get_headpos(Point<int16_t> position) const;
+		Point<int16_t> get_head_position(Point<int16_t> position) const;
 
 		std::map<Stance, Animation> animations;
 		std::string name;
@@ -174,7 +164,7 @@ namespace jrc
 
 		TimedBool showhp;
 
-		Movement lastmove;
+		std::vector<Movement> movements;
 		uint16_t counter;
 
 		int32_t id;

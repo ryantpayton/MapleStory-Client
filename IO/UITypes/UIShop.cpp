@@ -18,24 +18,23 @@
 #include "UIShop.h"
 #include "UINotice.h"
 
-#include "..\UI.h"
-#include "..\Components\AreaButton.h"
-#include "..\Components\MapleButton.h"
-#include "..\Components\TwoSpriteButton.h"
+#include "../UI.h"
+#include "../Components/AreaButton.h"
+#include "../Components/Charset.h"
+#include "../Components/MapleButton.h"
+#include "../Components/TwoSpriteButton.h"
 
-#include "..\..\Character\Inventory\Inventory.h"
-#include "..\..\Data\DataFactory.h"
-#include "..\..\Gameplay\Stage.h"
-#include "..\..\Net\Packets\NpcInteractionPackets.h"
-#include "..\..\Util\Misc.h"
+#include "../../Data/ItemData.h"
+#include "../../Net/Packets/NpcInteractionPackets.h"
+#include "../../Util/Misc.h"
 
-#include "nlnx\nx.hpp"
-#include "nlnx\node.hpp"
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
-	UIShop::UIShop()
-	{
+	UIShop::UIShop(const CharLook& in_charlook, const Inventory& in_inventory)
+		: charlook(in_charlook), inventory(in_inventory) {
+
 		nl::node src = nl::nx::ui["UIWindow2.img"]["Shop"];
 		nl::node src2 = nl::nx::ui["UIWindow2.img"]["Shop2"];
 
@@ -43,9 +42,9 @@ namespace jrc
 		sprites.emplace_back(src["backgrnd2"]);
 		sprites.emplace_back(src["backgrnd3"]);
 
-		buttons[BUY_ITEM] =std::make_unique<MapleButton>(src["BtBuy"]);
-		buttons[SELL_ITEM] =std::make_unique<MapleButton>(src["BtSell"]);
-		buttons[EXIT] =std::make_unique<MapleButton>(src["BtExit"]);
+		buttons[BUY_ITEM] = std::make_unique<MapleButton>(src["BtBuy"]);
+		buttons[SELL_ITEM] = std::make_unique<MapleButton>(src["BtSell"]);
+		buttons[EXIT] = std::make_unique<MapleButton>(src["BtExit"]);
 
 		nl::node sellen = src2["TabSell"]["enabled"];
 		nl::node selldis = src2["TabSell"]["disabled"];
@@ -110,9 +109,7 @@ namespace jrc
 		UIElement::draw(alpha);
 
 		npc.draw({ position + Point<int16_t>(64, 76), true });
-
-		Stage::get().get_player().get_look()
-			.drawstanding(position + Point<int16_t>(294, 76), false);
+		charlook.draw(position + Point<int16_t>(294, 76), false, Stance::STAND1, Expression::DEFAULT);
 
 		mesolabel.draw(position + Point<int16_t>(450, 62));
 
@@ -125,7 +122,7 @@ namespace jrc
 
 	void UIShop::update()
 	{
-		int64_t num_mesos = Stage::get().get_player().get_inventory().get_meso();
+		int64_t num_mesos = inventory.get_meso();
 		std::string mesostr = std::to_string(num_mesos);
 		string_format::split_number(mesostr);
 		mesolabel.change_text(mesostr);
@@ -166,19 +163,19 @@ namespace jrc
 				NpcShopActionPacket().dispatch();
 				return Button::PRESSED;
 			case EQUIP:
-				changeselltab(Inventory::EQUIP);
+				changeselltab(InventoryType::EQUIP);
 				return Button::IDENTITY;
 			case USE:
-				changeselltab(Inventory::USE);
+				changeselltab(InventoryType::USE);
 				return Button::IDENTITY;
 			case ETC:
-				changeselltab(Inventory::ETC);
+				changeselltab(InventoryType::ETC);
 				return Button::IDENTITY;
 			case SETUP:
-				changeselltab(Inventory::SETUP);
+				changeselltab(InventoryType::SETUP);
 				return Button::IDENTITY;
 			case CASH:
-				changeselltab(Inventory::CASH);
+				changeselltab(InventoryType::CASH);
 				return Button::IDENTITY;
 			}
 		}
@@ -240,7 +237,7 @@ namespace jrc
 
 	void UIShop::clear_tooltip()
 	{
-		UI::get().clear_tooltip(TYPE);
+		UI::get().clear_tooltip(Tooltip::SHOP);
 	}
 
 	void UIShop::show_item(int16_t slot, bool buy)
@@ -255,7 +252,7 @@ namespace jrc
 		}
 	}
 
-	void UIShop::changeselltab(Inventory::Type type)
+	void UIShop::changeselltab(InventoryType::Id type)
 	{
 		uint16_t oldtab = tabbyinventory(sellstate.tab);
 		if (oldtab > 0)
@@ -268,7 +265,7 @@ namespace jrc
 			buttons[newtab]->set_state(Button::PRESSED);
 		}
 
-		sellstate.change_tab(type, meso);
+		sellstate.change_tab(inventory, type, meso);
 
 		sellslider.setrows(5, sellstate.lastslot);
 	}
@@ -287,12 +284,12 @@ namespace jrc
 		buystate.reset();
 		sellstate.reset();
 
-		changeselltab(Inventory::EQUIP);
+		changeselltab(InventoryType::EQUIP);
 
 		active = true;
 	}
 
-	void UIShop::modify(Inventory::Type type)
+	void UIShop::modify(InventoryType::Id type)
 	{
 		if (type == sellstate.tab)
 			changeselltab(type);
@@ -330,19 +327,19 @@ namespace jrc
 			return -1;
 	}
 
-	uint16_t UIShop::tabbyinventory(Inventory::Type type)
+	uint16_t UIShop::tabbyinventory(InventoryType::Id type)
 	{
 		switch (type)
 		{
-		case Inventory::EQUIP:
+		case InventoryType::EQUIP:
 			return EQUIP;
-		case Inventory::USE:
+		case InventoryType::USE:
 			return USE;
-		case Inventory::ETC:
+		case InventoryType::ETC:
 			return ETC;
-		case Inventory::SETUP:
+		case InventoryType::SETUP:
 			return SETUP;
-		case Inventory::CASH:
+		case InventoryType::CASH:
 			return CASH;
 		default:
 			return 0;
@@ -356,10 +353,10 @@ namespace jrc
 		namelabel = { Text::A11M, Text::LEFT, Text::DARKGREY };
 		pricelabel = { Text::A11M, Text::LEFT, Text::DARKGREY };
 
-		const ItemData& item = DataFactory::get().get_itemdata(id);
-		if (item.is_loaded())
+		const ItemData& item = ItemData::get(id);
+		if (item.is_valid())
 		{
-			icon = item.geticon(false);
+			icon = item.get_icon(false);
 			namelabel.change_text(item.get_name());
 		}
 
@@ -387,11 +384,13 @@ namespace jrc
 	}
 
 
-	UIShop::SellItem::SellItem(const Item& item, int16_t s, bool sc, Texture cur)
+	UIShop::SellItem::SellItem(int32_t item_id, int16_t count, int16_t s, bool sc, Texture cur)
 	{
-		icon = item.getidata().geticon(false);
-		id = item.get_id();
-		sellable = item.getcount();
+		const ItemData& idata = ItemData::get(item_id);
+
+		icon = idata.get_icon(false);
+		id = item_id;
+		sellable = count;
 		slot = s;
 		showcount = sc;
 		currency = cur;
@@ -399,10 +398,10 @@ namespace jrc
 		namelabel = { Text::A11M, Text::LEFT, Text::DARKGREY };
 		pricelabel = { Text::A11M, Text::LEFT, Text::DARKGREY };
 
-		std::string name = item.getidata().get_name();
+		std::string name = idata.get_name();
 		namelabel.change_text(name);
 
-		int32_t price = item.getidata().getprice();
+		int32_t price = idata.get_price();
 		std::string mesostr = std::to_string(price);
 		string_format::split_number(mesostr);
 		pricelabel.change_text(mesostr + " Mesos");
@@ -470,7 +469,7 @@ namespace jrc
 			return;
 
 		int32_t itemid = items[absslot].get_id();
-		UI::get().show_item(TYPE, itemid);
+		UI::get().show_item(Tooltip::SHOP, itemid);
 	}
 
 	void UIShop::BuyState::add(BuyItem item)
@@ -497,11 +496,7 @@ namespace jrc
 
 				NpcShopActionPacket(slot, itemid, shortqty, true).dispatch();
 			};
-			UI::get().add(
-				Element<UIEnterNumber, std::string, std::function<void(int32_t)>, int32_t, int32_t, int32_t>(
-					question, onenter, 1, buyable, 1
-					)
-			);
+			UI::get().emplace<UIEnterNumber>(question, onenter, 1, buyable, 1);
 		}
 		else if (buyable > 0)
 		{
@@ -512,11 +507,7 @@ namespace jrc
 					NpcShopActionPacket(slot, itemid, 1, true).dispatch();
 				}
 			};
-			UI::get().add(
-				Element<UIYesNo, std::string, std::function<void(bool)>>(
-					question, ondecide
-					)
-			);
+			UI::get().emplace<UIYesNo>(question, ondecide);
 		}
 	}
 
@@ -541,10 +532,10 @@ namespace jrc
 		offset = 0;
 		lastslot = 0;
 		selection = -1;
-		tab = Inventory::NONE;
+		tab = InventoryType::NONE;
 	}
 
-	void UIShop::SellState::change_tab(Inventory::Type newtab, Texture meso)
+	void UIShop::SellState::change_tab(const Inventory& inventory, InventoryType::Id newtab, Texture meso)
 	{
 		tab = newtab;
 
@@ -553,17 +544,13 @@ namespace jrc
 
 		items.clear();
 
-		int16_t slots = Stage::get()
-			.get_player()
-			.get_inventory()
-			.get_slots(tab);
+		int16_t slots = inventory.get_slotmax(tab);
 		for (int16_t i = 1; i <= slots; i++)
 		{
-			Optional<Item> item = Stage::get().get_player().get_inventory().get_item(tab, i);
-			if (item)
+			if (int32_t item_id = inventory.get_item_id(tab, i))
 			{
-				SellItem sellitem(*item, i, tab != Inventory::EQUIP, meso);
-				items.push_back(sellitem);
+				int16_t count = inventory.get_item_count(tab, i);
+				items.emplace_back(item_id, count, i, tab != InventoryType::EQUIP, meso);
 			}
 		}
 
@@ -593,18 +580,15 @@ namespace jrc
 		if (absslot < 0 || absslot >= lastslot)
 			return;
 
-		if (tab == Inventory::EQUIP)
+		if (tab == InventoryType::EQUIP)
 		{
 			int16_t realslot = items[absslot].get_slot();
-			Optional<Equip> equip = Stage::get().get_player()
-				.get_inventory()
-				.get_equip(Inventory::EQUIP, realslot);
-			UI::get().show_equip(TYPE, equip.get(), realslot);
+			UI::get().show_equip(Tooltip::SHOP, realslot);
 		}
 		else
 		{
 			int32_t itemid = items[absslot].get_id();
-			UI::get().show_item(TYPE, itemid);
+			UI::get().show_item(Tooltip::SHOP, itemid);
 		}
 	}
 
@@ -625,11 +609,7 @@ namespace jrc
 
 				NpcShopActionPacket(slot, itemid, shortqty, false).dispatch();
 			};
-			UI::get().add(
-				Element<UIEnterNumber, std::string, std::function<void(int32_t)>, int32_t, int32_t, int32_t>(
-					question, onenter, 1, sellable, 1
-					)
-			);
+			UI::get().emplace<UIEnterNumber>(question, onenter, 1, sellable, 1);
 		}
 		else if (sellable > 0)
 		{
@@ -640,11 +620,7 @@ namespace jrc
 					NpcShopActionPacket(slot, itemid, 1, false).dispatch();
 				}
 			};
-			UI::get().add(
-				Element<UIYesNo, std::string, std::function<void(bool)>>(
-					question, ondecide
-					)
-			);
+			UI::get().emplace<UIYesNo>(question, ondecide);
 		}
 	}
 

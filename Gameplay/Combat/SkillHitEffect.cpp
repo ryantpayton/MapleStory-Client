@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SkillHitEffect.h"
 
-#include "..\..\Util\Misc.h"
+#include "../../Util/Misc.h"
 
 namespace jrc
 {

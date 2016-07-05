@@ -18,7 +18,7 @@
 #pragma once
 #include "MapleFrame.h"
 
-#include "..\..\Graphics\Text.h"
+#include "../../Graphics/Text.h"
 
 namespace jrc
 {

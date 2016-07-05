@@ -17,15 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SkillBullet.h"
 
-#include "..\..\Data\DataFactory.h"
-#include "..\..\Util\Misc.h"
+#include "../../Data/BulletData.h"
+#include "../../Util/Misc.h"
 
 namespace jrc
 {
 	Animation RegularBullet::get(const Char&, int32_t bulletid) const
 	{
-		return DataFactory::get()
-			.get_bulletdata(bulletid)
+		return BulletData::get(bulletid)
 			.get_animation();
 	}
 
@@ -62,7 +61,7 @@ namespace jrc
 		}
 		else
 		{
-			return Animation();
+			return{};
 		}
 	}
 }

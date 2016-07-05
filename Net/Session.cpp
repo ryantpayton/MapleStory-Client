@@ -17,8 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Session.h"
 
-#include "..\Configuration.h"
-#include "..\Console.h"
+#include "PacketError.h"
+
+#include "../Configuration.h"
+#include "../Console.h"
 
 namespace jrc
 {
@@ -74,11 +76,6 @@ namespace jrc
 		}
 	}
 
-	void Session::disconnect()
-	{
-		connected = false;
-	}
-
 	void Session::process(const int8_t* bytes, size_t available)
 	{
 		if (pos == 0)
@@ -125,7 +122,20 @@ namespace jrc
 		}
 	}
 
-	bool Session::receive()
+	void Session::write(int8_t* packet_bytes, size_t packet_length)
+	{
+		if (!connected)
+			return;
+
+		int8_t header[HEADER_LENGTH];
+		cryptography.create_header(header, packet_length);
+		cryptography.encrypt(packet_bytes, packet_length);
+
+		socket.dispatch(header, HEADER_LENGTH);
+		socket.dispatch(packet_bytes, packet_length);
+	}
+
+	void Session::read()
 	{
 		// Check if a packet has arrived. Handle if data is sufficient: 4 bytes(header) + 2 bytes(opcode) = 6.
 		size_t result = socket.receive(&connected);
@@ -135,25 +145,10 @@ namespace jrc
 			const int8_t* bytes = socket.get_buffer();
 			process(bytes, result);
 		}
-		// Return if the connection is still alive.
+	}
+
+	bool Session::is_connected() const
+	{
 		return connected;
-	}
-
-	void Session::dispatch(int8_t* packet_bytes, size_t packet_length)
-	{
-		if (connected)
-		{
-			int8_t header[HEADER_LENGTH];
-			cryptography.create_header(header, packet_length);
-			cryptography.encrypt(packet_bytes, packet_length);
-
-			socket.dispatch(header, HEADER_LENGTH);
-			socket.dispatch(packet_bytes, packet_length);
-		}
-	}
-
-	Login& Session::get_login()
-	{
-		return login;
 	}
 }

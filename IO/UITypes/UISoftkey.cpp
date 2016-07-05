@@ -17,12 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UISoftKey.h"
 
-#include "..\Components\MapleButton.h"
+#include "../Components/MapleButton.h"
 
-#include "..\..\Net\Packets\SelectCharPackets.h"
+#include "../../Net/Packets/SelectCharPackets.h"
 
-#include <nlnx\nx.hpp>
-#include <nlnx\node.hpp>
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
@@ -149,7 +148,7 @@ namespace jrc
 		}
 		for (uint8_t i = 0; i < NUM_KEYS; i++)
 		{
-			size_t rand = random.nextint(reserve.size() - 1);
+			size_t rand = random.next_int(reserve.size());
 			Point<int16_t> pos = keypos(reserve[rand]);
 			buttons[BT_0 + i]->set_position(pos);
 			reserve.erase(reserve.begin() + rand);

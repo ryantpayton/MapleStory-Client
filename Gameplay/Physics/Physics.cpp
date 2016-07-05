@@ -20,7 +20,7 @@
 
 namespace jrc
 {
-	const double GRAVFORCE = 0.2;
+	const double GRAVFORCE = 0.14;
 	const double SWIMGRAVFORCE = 0.03;
 	const double FRICTION = 0.3;
 	const double SLOPEFACTOR = 0.1;

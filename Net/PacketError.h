@@ -29,6 +29,6 @@ namespace jrc
 			: std::runtime_error(PREFIX + msg) {}
 
 	private:
-		static constexpr char* PREFIX = "Packet Error: ";
+		static constexpr const char* PREFIX = "Packet Error: ";
 	};
 }

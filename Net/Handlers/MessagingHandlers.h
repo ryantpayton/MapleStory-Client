@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\PacketHandler.h"
+#include "../PacketHandler.h"
 
-#include "..\..\Graphics\Text.h"
+#include "../../Graphics/Text.h"
 
 namespace jrc
 {

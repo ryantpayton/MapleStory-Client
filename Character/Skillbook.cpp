@@ -17,9 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Skillbook.h"
 
-#include "..\Data\SkillData.h"
-
-#include "..\Timer.h"
+#include "../Data/SkillData.h"
 
 namespace jrc
 {

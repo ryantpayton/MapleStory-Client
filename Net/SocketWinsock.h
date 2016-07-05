@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Journey.h"
+#include "../Journey.h"
 #ifndef JOURNEY_USE_ASIO
 #include "NetConstants.h"
 #include <cstdlib>

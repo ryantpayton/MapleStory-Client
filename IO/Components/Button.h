@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Cursor.h"
+#include "../Cursor.h"
 
-#include "..\..\Util\Rectangle.h"
+#include "../../Template/Rectangle.h"
 
 #include <cstdint>
 #include <functional>

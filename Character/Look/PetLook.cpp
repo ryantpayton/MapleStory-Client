@@ -17,10 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "PetLook.h"
 
-#include "..\..\Constants.h"
+#include "../../Constants.h"
 
-#include "nlnx\nx.hpp"
-#include "nlnx\node.hpp"
+#include "nlnx/nx.hpp"
+#include "nlnx/node.hpp"
 
 namespace jrc
 {

@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Util\Point.h"
+#include "Color.h"
 
-#include <cstdint>
+#include "../Template/Rectangle.h"
 
 namespace jrc
 {
@@ -29,7 +29,7 @@ namespace jrc
 			: DrawArgument(0, 0) {}
 
 		constexpr DrawArgument(int16_t x, int16_t y)
-			: DrawArgument(Point<int16_t>(x, y)) {}
+			: DrawArgument(Point<int16_t>{x, y}) {}
 
 		constexpr DrawArgument(Point<int16_t> p)
 			: DrawArgument(p, 1.0f) {}
@@ -49,11 +49,8 @@ namespace jrc
 		constexpr DrawArgument(Point<int16_t> p, float opc)
 			: DrawArgument(p, false, opc) {}
 
-		constexpr DrawArgument(Point<int16_t> p, bool flip, float opc)
-			: DrawArgument(p, p, flip ? -1.0f : 1.0f, 1.0f, opc) {}
-
-		constexpr DrawArgument(float ang, Point<int16_t> p, bool flip, float opc)
-			: DrawArgument(p, p, {}, flip ? -1.0f : 1.0f, 1.0f, opc, ang) {}
+		constexpr DrawArgument(Point<int16_t> p, Color color)
+			: DrawArgument(p, p, {}, 1.0f, 1.0f, color, 0.0f) {}
 
 		constexpr DrawArgument(Point<int16_t> p, bool flip, Point<int16_t> c)
 			: DrawArgument(p, c, flip ? -1.0f : 1.0f, 1.0f, 1.0f) {}
@@ -71,18 +68,23 @@ namespace jrc
 		constexpr DrawArgument(Point<int16_t> p, float xs, float ys, float opc)
 			: DrawArgument(p, p, xs, ys, opc) {}
 
+		constexpr DrawArgument(Point<int16_t> p, bool flip, float opc)
+			: DrawArgument(p, p, flip ? -1.0f : 1.0f, 1.0f, opc) {}
+
+		constexpr DrawArgument(float ang, Point<int16_t> p, bool flip, float opc)
+			: DrawArgument(p, p, {}, flip ? -1.0f : 1.0f, 1.0f, opc, ang) {}
+
 		constexpr DrawArgument(Point<int16_t> p, Point<int16_t> c,
 			Point<int16_t> s, float xs, float ys, float opc, float ang)
-			: pos(p), center(c), stretch(s), xscale(xs), yscale(ys), opacity(opc), angle(ang) {}
+			: pos(p), center(c), stretch(s), xscale(xs), yscale(ys), color(1.0f, 1.0f, 1.0f, opc), angle(ang) {}
+
+		constexpr DrawArgument(Point<int16_t> p, Point<int16_t> c,
+			Point<int16_t> s, float xs, float ys, Color color, float ang)
+			: pos(p), center(c), stretch(s), xscale(xs), yscale(ys), color(color), angle(ang) {}
 
 		constexpr Point<int16_t> getpos() const
-		{ 
-			return pos; 
-		}
-
-		constexpr Point<int16_t> getcenter() const
 		{
-			return center;
+			return pos;
 		}
 
 		constexpr Point<int16_t> getstretch() const
@@ -90,22 +92,22 @@ namespace jrc
 			return stretch;
 		}
 
-		constexpr float getxscale() const
-		{ 
-			return xscale; 
+		constexpr float get_xscale() const
+		{
+			return xscale;
 		}
 
-		constexpr float getyscale() const
-		{ 
-			return yscale; 
+		constexpr float get_yscale() const
+		{
+			return yscale;
 		}
 
-		constexpr float getopacity() const
-		{ 
-			return opacity; 
+		constexpr const Color& get_color() const
+		{
+			return color;
 		}
 
-		constexpr float getangle() const
+		constexpr float get_angle() const
 		{
 			return angle;
 		}
@@ -113,9 +115,9 @@ namespace jrc
 		constexpr DrawArgument operator + (Point<int16_t> argpos) const
 		{
 			return{
-				pos + argpos, 
-				center + argpos, 
-				stretch, xscale, yscale, opacity, angle 
+				pos + argpos,
+				center + argpos,
+				stretch, xscale, yscale, color, angle
 			};
 		}
 
@@ -123,34 +125,60 @@ namespace jrc
 		{
 			return{
 				pos, center, stretch, xscale, yscale,
-				opacity * argopc,
-				angle 
+				color.a() * argopc,
+				angle
 			};
 		}
 
-		constexpr DrawArgument operator + (const DrawArgument& args) const
+		constexpr DrawArgument operator + (const DrawArgument& o) const
 		{
 			return{
-				pos + args.pos,
-				center + args.center,
-				stretch + args.stretch,
-				xscale * args.xscale,
-				yscale * args.yscale,
-				opacity * args.opacity,
-				angle + args.angle
+				pos + o.pos,
+				center + o.center,
+				stretch + o.stretch,
+				xscale * o.xscale,
+				yscale * o.yscale,
+				color * o.color,
+				angle + o.angle
 			};
 		}
 
-		constexpr DrawArgument operator - (const DrawArgument& args) const
+		constexpr DrawArgument operator - (const DrawArgument& o) const
 		{
 			return{
-				pos - args.pos,
-				center - args.center,
-				stretch - args.stretch,
-				xscale / args.xscale,
-				yscale / args.yscale,
-				opacity / args.opacity,
-				angle / args.angle
+				pos - o.pos,
+				center - o.center,
+				stretch - o.stretch,
+				xscale / o.xscale,
+				yscale / o.yscale,
+				color / o.color,
+				angle - o.angle
+			};
+		}
+
+		Rectangle<int16_t> get_rectangle(Point<int16_t> origin, Point<int16_t> dimensions) const
+		{
+			int16_t w = stretch.x();
+			if (w == 0)
+				w = dimensions.x();
+
+			int16_t h = stretch.y();
+			if (h == 0)
+				h = dimensions.y();
+
+			Point<int16_t> rlt = pos - center - origin;
+			int16_t rl = rlt.x();
+			int16_t rr = rlt.x() + w;
+			int16_t rt = rlt.y();
+			int16_t rb = rlt.y() + h;
+			int16_t cx = center.x();
+			int16_t cy = center.y();
+
+			return{
+				cx + static_cast<int16_t>(xscale * rl),
+				cx + static_cast<int16_t>(xscale * rr),
+				cy + static_cast<int16_t>(yscale * rt),
+				cy + static_cast<int16_t>(yscale * rb)
 			};
 		}
 
@@ -160,7 +188,7 @@ namespace jrc
 		Point<int16_t> stretch;
 		float xscale;
 		float yscale;
-		float opacity;
 		float angle;
+		Color color;
 	};
 }

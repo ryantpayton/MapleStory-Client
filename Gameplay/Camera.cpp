@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Camera.h"
 
-#include "..\Constants.h"
+#include "../Constants.h"
 
 namespace jrc
 {
@@ -84,14 +84,14 @@ namespace jrc
 		return{ shortx, shorty };
 	}
 
-	Point<int16_t> Camera::position(double alpha) const
+	Point<int16_t> Camera::position(float alpha) const
 	{
 		auto interx = static_cast<int16_t>(std::round(x.get(alpha)));
 		auto intery = static_cast<int16_t>(std::round(y.get(alpha)));
 		return{ interx, intery };
 	}
 
-	Point<double> Camera::realposition(double alpha) const
+	Point<double> Camera::realposition(float alpha) const
 	{
 		return{ x.get(alpha), y.get(alpha) };
 	}

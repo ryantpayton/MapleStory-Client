@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "OtherChar.h"
 
-#include "..\Constants.h"
+#include "../Constants.h"
 
 namespace jrc
 {
@@ -33,6 +33,7 @@ namespace jrc
 		lastmove.newstate = st;
 		timer = 0;
 
+		attackspeed = 6;
 		attacking = false;
 	}
 
@@ -87,12 +88,12 @@ namespace jrc
 		}
 	}
 
-	void OtherChar::updateskill(int32_t skillid, uint8_t skilllevel)
+	void OtherChar::update_skill(int32_t skillid, uint8_t skilllevel)
 	{
 		skilllevels[skillid] = skilllevel;
 	}
 
-	void OtherChar::updateattack(uint8_t as)
+	void OtherChar::update_speed(uint8_t as)
 	{
 		attackspeed = as;
 	}
@@ -105,7 +106,7 @@ namespace jrc
 		set_state(laststate);
 	}
 
-	int8_t OtherChar::get_base_attackspeed() const
+	int8_t OtherChar::get_integer_attackspeed() const
 	{
 		return attackspeed;
 	}

@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Textfield.h"
 
-#include "..\UI.h"
+#include "../UI.h"
 
-#include "..\..\Constants.h"
+#include "../../Constants.h"
 
 namespace jrc
 {
@@ -95,33 +95,33 @@ namespace jrc
 		onreturn = or;
 	}
 
-	void Textfield::set_key_callback(Keyboard::Action key, std::function<void(void)> action)
+	void Textfield::set_key_callback(KeyAction::Id key, std::function<void(void)> action)
 	{
 		callbacks[key] = action;
 	}
 
-	void Textfield::send_key(Keyboard::Keytype type, int32_t key, bool pressed)
+	void Textfield::send_key(KeyType::Id type, int32_t key, bool pressed)
 	{
 		switch (type)
 		{
-		case Keyboard::ACTION:
+		case KeyType::ACTION:
 			if (pressed)
 			{
 				switch (key)
 				{
-				case Keyboard::LEFT:
+				case KeyAction::LEFT:
 					if (markerpos > 0)
 					{
 						markerpos--;
 					}
 					break;
-				case Keyboard::RIGHT:
+				case KeyAction::RIGHT:
 					if (markerpos < text.size())
 					{
 						markerpos++;
 					}
 					break;
-				case Keyboard::BACK:
+				case KeyAction::BACK:
 					if (text.size() > 0 && markerpos > 0)
 					{
 						text.erase(markerpos - 1, 1);
@@ -129,7 +129,7 @@ namespace jrc
 						modifytext(text);
 					}
 					break;
-				case Keyboard::RETURN:
+				case KeyAction::RETURN:
 					if (onreturn && text.size() > 0)
 					{
 						onreturn(text);
@@ -138,7 +138,7 @@ namespace jrc
 						modifytext(text);
 					}
 					break;
-				case Keyboard::SPACE:
+				case KeyAction::SPACE:
 					if (markerpos > 0 && belowlimit())
 					{
 						text.insert(markerpos, 1, ' ');
@@ -155,8 +155,8 @@ namespace jrc
 				}
 			}
 			break;
-		case Keyboard::LETTER:
-		case Keyboard::NUMBER:
+		case KeyType::LETTER:
+		case KeyType::NUMBER:
 			if (!pressed)
 			{
 				int8_t c = static_cast<int8_t>(key);

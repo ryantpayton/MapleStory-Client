@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -19,42 +19,41 @@
 
 namespace jrc
 {
-	Equip::Equip(const ItemData& eqd, int32_t id, bool cs, int64_t uqi, int64_t exp, 
-		uint8_t sl, uint8_t lv, const EnumMap<Equipstat::Value, uint16_t>& st, const std::string& ow, 
-		int16_t fl, uint8_t ilv, int16_t iexp, int32_t vic) : Item(eqd, id, cs, uqi, exp, 1, ow, fl) {
-
-		slots = sl;
-		level = lv;
-		stats = st;
-		itemlevel = ilv;
-		itemexp = iexp;
-		vicious = vic;
+	Equip::Equip(int32_t item_id, int64_t expiration, const std::string& owner, int16_t flags, uint8_t slots,
+		uint8_t level, const EnumMap<Equipstat::Id, uint16_t>& stats, uint8_t itemlevel, int16_t itemexp, int32_t vicious) :
+		item_id(item_id),
+		expiration(expiration),
+		owner(owner),
+		flags(flags),
+		slots(slots),
+		level(level),
+		stats(stats),
+		itemlevel(itemlevel),
+		itemexp(itemexp), 
+		vicious(vicious) {
 
 		potrank = POT_NONE;
-		checkquality();
+		quality = EquipQuality::check_quality(item_id, level > 0, stats);
 	}
 
-	void Equip::checkquality()
+	int32_t Equip::get_item_id() const
 	{
-		int16_t totaldelta = 0;
-		const Clothing& cloth = getcloth();
-		for (auto iter : stats)
-		{
-			Equipstat::Value es = iter.first;
-			uint16_t stat = iter.second;
-			totaldelta += stat - cloth.getdefstat(es);
-		}
+		return item_id;
+	}
 
-		if (totaldelta < -4)
-			quality = EQQ_GREY;
-		else if (totaldelta < 7)
-			quality = (level > 0) ? (totaldelta > 0) ? EQQ_ORANGE : EQQ_GREY : EQQ_WHITE;
-		else if (totaldelta < 14)
-			quality = EQQ_BLUE;
-		else if (totaldelta < 21)
-			quality = EQQ_VIOLET;
-		else
-			quality = EQQ_GOLD;
+	int64_t Equip::get_expiration() const
+	{
+		return expiration;
+	}
+
+	const std::string& Equip::get_owner() const
+	{
+		return owner;
+	}
+
+	int16_t Equip::get_flags() const
+	{
+		return flags;
 	}
 
 	uint8_t Equip::get_slots() const
@@ -67,33 +66,28 @@ namespace jrc
 		return level;
 	}
 
-	uint8_t Equip::getitemlevel() const
+	uint8_t Equip::get_itemlevel() const
 	{
 		return itemlevel;
 	}
 
-	uint16_t Equip::get_stat(Equipstat::Value type) const
+	uint16_t Equip::get_stat(Equipstat::Id type) const
 	{
 		return stats[type];
 	}
 
-	int32_t Equip::getvicious() const
+	int32_t Equip::get_vicious() const
 	{
 		return vicious;
 	}
 
-	Equip::Potential Equip::getpotrank() const
+	Equip::Potential Equip::get_potrank() const
 	{
 		return potrank;
 	}
 
-	Equip::Quality Equip::getquality() const
+	EquipQuality::Id Equip::get_quality() const
 	{
 		return quality;
-	}
-
-	const Clothing& Equip::getcloth() const
-	{
-		return reinterpret_cast<const Clothing&>(idata);
 	}
 }

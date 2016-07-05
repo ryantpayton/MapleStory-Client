@@ -17,13 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Attack.h"
-#include "SkillAction.h"
-#include "SkillBullet.h"
-#include "SkillSound.h"
-#include "SkillHitEffect.h"
-#include "SkillUseEffect.h"
 
-#include <memory>
+#include "../Maplemap/Mob.h"
+
+#include "../../Character/Char.h"
+#include "../../Character/Job.h"
 
 namespace jrc
 {
@@ -44,22 +42,17 @@ namespace jrc
 
 		virtual ~SpecialMove() {}
 
-		void apply_useeffects(Char& user, Attack::Type type) const;
-		void apply_hiteffects(const AttackUser& user, Mob& target) const;
-		bool is_skill() const;
-		Animation get_animation(const Char& user, int32_t bulletid) const;
+		virtual void apply_useeffects(Char& user) const = 0;
+		virtual void apply_actions(Char& user, Attack::Type type) const = 0;
+		virtual void apply_stats(const Char& user, Attack& attack) const = 0;
+		virtual void apply_hiteffects(const AttackUser& user, Mob& target) const = 0;
+		virtual Animation get_bullet(const Char& user, int32_t bulletid) const = 0;
 
-		virtual void applystats(const Char& user, Attack& attack) const = 0;
-		virtual bool isoffensive() const = 0;
+		virtual bool is_attack() const = 0;
+		virtual bool is_skill() const = 0;
 		virtual int32_t get_id() const = 0;
+
 		virtual ForbidReason can_use(int32_t level, Weapon::Type weapon,
 			const Job& job, uint16_t hp, uint16_t mp, uint16_t bullets) const = 0;
-
-	protected:
-		std::unique_ptr<SkillAction> action;
-		std::unique_ptr<SkillBullet> bullet;
-		std::unique_ptr<SkillSound> sound;
-		std::unique_ptr<SkillUseEffect> useeffect;
-		std::unique_ptr<SkillHitEffect> hiteffect;
 	};
 }

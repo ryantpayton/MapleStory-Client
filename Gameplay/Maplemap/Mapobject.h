@@ -16,8 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Camera.h"
-#include "..\Physics\Physics.h"
+#include "../Camera.h"
+#include "../Physics/Physics.h"
 
 namespace jrc
 {
@@ -50,11 +50,9 @@ namespace jrc
 		int32_t get_oid() const;
 		// Returns the current position.
 		Point<int16_t> get_position() const;
-		// Return a reference to this object's physics.
-		PhysicsObject& get_phobj();
 
 	protected:
-		MapObject(int32_t oid);
+		MapObject(int32_t oid, Point<int16_t> position = {});
 
 		PhysicsObject phobj;
 		int32_t oid;

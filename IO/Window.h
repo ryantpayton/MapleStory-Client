@@ -16,10 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Error.h"
-#include "..\Util\Singleton.h"
+#include "../Error.h"
+#include "../Template/Singleton.h"
 
-#include <GL\glew.h>
+#include <GL/glew.h>
 #include <glfw3.h>
 
 #include <string>
@@ -36,12 +36,12 @@ namespace jrc
 		Error init();
 		Error initwindow();
 
-		bool notclosed() const;
+		bool not_closed() const;
 		void update();
 		void begin() const;
 		void end() const;
 		void fadeout(float step, std::function<void()> fadeprocedure);
-		void checkevents();
+		void check_events();
 
 		void setclipboard(const std::string& text) const;
 		std::string getclipboard() const;

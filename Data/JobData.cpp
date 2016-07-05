@@ -17,10 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "JobData.h"
 
-#include "..\Util\Misc.h"
+#include "../Util/Misc.h"
 
-#include <nlnx\nx.hpp>
-#include <nlnx\node.hpp>
+#include "nlnx/nx.hpp"
+#include "nlnx/node.hpp"
 
 namespace jrc
 {
@@ -58,7 +58,4 @@ namespace jrc
 	{
 		return icon;
 	}
-
-
-	std::unordered_map<int32_t, JobData> JobData::cache;
 }

@@ -16,10 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Element.h"
-#include "..\Components\Textfield.h"
+#include "../UIElement.h"
+#include "../Components/Textfield.h"
 
-#include "..\..\Graphics\Texture.h"
+#include "../../Graphics/Texture.h"
 
 #include <functional>
 

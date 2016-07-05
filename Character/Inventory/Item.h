@@ -16,35 +16,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "ItemData.h"
+#include <cstdint>
+#include <string>
 
 namespace jrc
 {
 	class Item
 	{
 	public:
-		Item(const ItemData&, int32_t, bool, int64_t, int64_t, int16_t, std::string, int16_t);
-
-		void setcount(int16_t count);
-
-		int16_t getcount() const;
-		int32_t get_id() const;
-
-		const ItemData& getidata() const;
-
-	protected:
-		const ItemData& idata;
-		int32_t iid;
-		bool cash;
-		int64_t uniqueid;
-		int64_t expire;
-		int16_t count;
-		std::string owner;
-		int16_t flag;
+		Item(int32_t itemid, int64_t expiration, const std::string& owner, int16_t flags);
 
 	private:
-		Item(const Item&) = delete;
-		Item& operator = (const Item&) = delete;
+		int32_t item_id;
+		int64_t expiration;
+		std::string owner;
+		int16_t flags;
 	};
 }
 

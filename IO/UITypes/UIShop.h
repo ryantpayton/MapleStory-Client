@@ -16,13 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\UIElement.h"
+#include "../UIElement.h"
 
-#include "..\Components\Slider.h"
+#include "../Components/Slider.h"
 
-#include "..\..\Character\Inventory\Inventory.h"
-#include "..\..\Graphics\Text.h"
-#include "..\..\Graphics\Texture.h"
+#include "../../Character/Inventory/Inventory.h"
+#include "../../Character/Look/CharLook.h"
+#include "../../Graphics/Text.h"
+#include "../../Graphics/Texture.h"
 
 namespace jrc
 {
@@ -33,7 +34,7 @@ namespace jrc
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = true;
 
-		UIShop();
+		UIShop(const CharLook& charlook, const Inventory& inventory);
 
 		void draw(float alpha) const override;
 		void update() override;
@@ -47,7 +48,7 @@ namespace jrc
 		void add_rechargable(int32_t id, int32_t price, int32_t pitch, 
 			int32_t time, int16_t chargeprice, int16_t buyable);
 
-		void modify(Inventory::Type type);
+		void modify(InventoryType::Id type);
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -55,9 +56,9 @@ namespace jrc
 	private:
 		void clear_tooltip();
 		void show_item(int16_t slot, bool sale);
-		void changeselltab(Inventory::Type tab);
+		void changeselltab(InventoryType::Id tab);
 		int16_t slot_by_position(int16_t y);
-		uint16_t tabbyinventory(Inventory::Type type);
+		uint16_t tabbyinventory(InventoryType::Id type);
 
 		enum Buttons : int16_t
 		{
@@ -74,6 +75,9 @@ namespace jrc
 			SELL0 = 13,
 			SELL4 = 17
 		};
+
+		const CharLook& charlook;
+		const Inventory& inventory;
 
 		Texture npc;
 		Texture selection;
@@ -110,7 +114,7 @@ namespace jrc
 		class SellItem
 		{
 		public:
-			SellItem(const Item& item, int16_t slot, bool showcount, Texture cur);
+			SellItem(int32_t item_id, int16_t count, int16_t slot, bool showcount, Texture cur);
 
 			void draw(Point<int16_t> position) const;
 
@@ -149,12 +153,12 @@ namespace jrc
 		{
 			std::vector<SellItem> items;
 			int16_t offset;
-			Inventory::Type tab;
+			InventoryType::Id tab;
 			int16_t lastslot;
 			int16_t selection;
 
 			void reset();
-			void change_tab(Inventory::Type type, Texture meso);
+			void change_tab(const Inventory& inventory, InventoryType::Id type, Texture meso);
 			void draw(Point<int16_t> position, const Texture& selected) const;
 			void show_item(int16_t slot);
 			void sell() const;

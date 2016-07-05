@@ -26,15 +26,18 @@
 #include "ActiveBuffs.h"
 #include "PassiveBuffs.h"
 
-#include "Look\CharLook.h"
-#include "Inventory\Inventory.h"
+#include "Look/CharLook.h"
+#include "Inventory/Inventory.h"
 
-#include "..\Gameplay\Playable.h"
-#include "..\Gameplay\Physics\Physics.h"
-#include "..\Gameplay\Movement.h"
-#include "..\Gameplay\Maplemap\MapInfo.h"
-#include "..\Gameplay\Combat\Attack.h"
-#include "..\Gameplay\Combat\Skill.h"
+#include "../Gameplay/Combat/Attack.h"
+#include "../Gameplay/Combat/Skill.h"
+#include "../Gameplay/Maplemap/Layer.h"
+#include "../Gameplay/Movement.h"
+#include "../Gameplay/Maplemap/MapInfo.h"
+#include "../Gameplay/Playable.h"
+#include "../Gameplay/Physics/Physics.h"
+
+#include "../Util/Randomizer.h"
 
 namespace jrc
 {
@@ -46,7 +49,7 @@ namespace jrc
 		Player();
 
 		// Draw the player.
-		void draw(uint8_t layer, double viewx, double viewy, float alpha) const;
+		void draw(Layer::Id layer, double viewx, double viewy, float alpha) const;
 		// Update the player's animation, physics and states.
 		int8_t update(const Physics& physics) override;
 		// Set flipped ignore if attacking.
@@ -57,7 +60,7 @@ namespace jrc
 		// Respawn the player at the given position.
 		void respawn(Point<int16_t> position, bool underwater);
 		// Sends a Keyaction to the player's state, to apply forces, change the state and other behaviour.
-		void send_action(Keyboard::Action action, bool pressed);
+		void send_action(KeyAction::Id action, bool pressed);
 		// Recalculates the total stats from base stats, inventories and skills.
 		void recalc_stats(bool equipchanged);
 		// Change the equipment at the specified slot and recalculate stats.
@@ -77,12 +80,17 @@ namespace jrc
 		// Execute a rush movement.
 		void rush(double targetx);
 
+		// Check wether the player is invincible.
+		bool is_invincible() const override;
+		// Handle an attack to the player.
+		MobAttackResult damage(const MobAttack& attack);
+
 		// Apply a buff to the player.
 		void give_buff(Buff buff);
 		// Cancel a buff.
-		void cancel_buff(Buff::Stat stat);
+		void cancel_buff(Buffstat::Id stat);
 		// Return wether the buff is active.
-		bool has_buff(Buff::Stat stat) const;
+		bool has_buff(Buffstat::Id stat) const;
 
 		// Change a skill.
 		void change_skill(int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration);
@@ -101,7 +109,7 @@ namespace jrc
 		// Return the character's level of a skill.
 		int32_t get_skilllevel(int32_t skillid) const override;
 		// Return the character's attacking speed.
-		int8_t get_base_attackspeed() const override;
+		int8_t get_integer_attackspeed() const override;
 
 		// Returns the current walking force, calculated from the total ES_SPEED stat.
 		float get_walkforce() const;
@@ -115,7 +123,7 @@ namespace jrc
 		// Return wether the player is underwater.
 		bool is_underwater() const;
 		// Returns if a Keyaction is currently active. 
-		bool is_key_down(Keyboard::Action action) const;
+		bool is_key_down(KeyAction::Id action) const;
 		// Return a pointer to the ladder the player is on.
 		Optional<const Ladder> get_ladder() const;
 
@@ -126,8 +134,12 @@ namespace jrc
 
 		// Obtain a reference to the player's stats.
 		CharStats& get_stats();
+		// Obtain a reference to the player's stats.
+		const CharStats& get_stats() const;
 		// Obtain a reference to the player's inventory.
 		Inventory& get_inventory();
+		// Obtain a reference to the player's inventory.
+		const Inventory& get_inventory() const;
 		// Obtain a reference to the player's skills.
 		Skillbook& get_skills();
 		// Obtain a reference to the player's questlog.
@@ -145,15 +157,17 @@ namespace jrc
 		Telerock telerock;
 		Monsterbook monsterbook;
 
-		std::unordered_map<Buff::Stat, Buff> buffs;
+		EnumMap<Buffstat::Id, Buff> buffs;
 		ActiveBuffs active_buffs;
 		PassiveBuffs passive_buffs;
 
 		std::unordered_map<int32_t, int32_t> cooldowns;
 
-		std::map<Keyboard::Action, bool> keysdown;
+		std::map<KeyAction::Id, bool> keysdown;
 
 		Movement lastmove;
+
+		Randomizer randomizer;
 
 		Optional<const Ladder> ladder;
 		bool underwater;

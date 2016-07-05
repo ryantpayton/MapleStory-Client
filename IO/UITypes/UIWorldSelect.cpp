@@ -17,60 +17,60 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIWorldSelect.h"
 
-#include "..\..\Configuration.h"
-#include "..\..\Graphics\Sprite.h"
-#include "..\..\IO\UI.h"
-#include "..\..\IO\Components\MapleButton.h"
-#include "..\..\IO\Components\TwoSpriteButton.h"
-#include "..\..\Net\Session.h"
-#include "..\..\Net\Packets\LoginPackets.h"
+#include "../../Configuration.h"
+#include "../../Graphics/Sprite.h"
+#include "../../IO/UI.h"
+#include "../../IO/Components/MapleButton.h"
+#include "../../IO/Components/TwoSpriteButton.h"
+#include "../../Net/Packets/LoginPackets.h"
 
-#include <nlnx\nx.hpp>
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
-	UIWorldSelect::UIWorldSelect()
+	UIWorldSelect::UIWorldSelect(std::vector<World> worlds, uint8_t worldcount)
 		: UIElement({ 0, 0 }, { 800, 600 }) {
 
 		worldid = Setting<DefaultWorld>::get().load();
 		channelid = Setting<DefaultChannel>::get().load();
 
 		nl::node back = nl::nx::map["Back"]["login.img"]["back"];
-		nl::node worlds = nl::nx::ui["Login.img"]["WorldSelect"]["BtWorld"]["release"];
-		nl::node channels = nl::nx::ui["Login.img"]["WorldSelect"]["BtChannel"];
+		nl::node worldsrc = nl::nx::ui["Login.img"]["WorldSelect"]["BtWorld"]["release"];
+		nl::node channelsrc = nl::nx::ui["Login.img"]["WorldSelect"]["BtChannel"];
 		nl::node frame = nl::nx::ui["Login.img"]["Common"]["frame"];
 
 		sprites.emplace_back(back["11"], Point<int16_t>(370, 300));
-		sprites.emplace_back(worlds["layer:bg"], Point<int16_t>(650, 45));
+		sprites.emplace_back(worldsrc["layer:bg"], Point<int16_t>(650, 45));
 		sprites.emplace_back(frame, Point<int16_t>(400, 290));
 
 		buttons[BT_ENTERWORLD] = std::make_unique<MapleButton>(
-			channels["button:GoWorld"], 
+			channelsrc["button:GoWorld"], 
 			Point<int16_t>(200, 170)
 			);
 
-		worldcount = Session::get().get_login().getnumworlds();
-		if (worldcount > 0)
+		if (worldcount <= 0)
+			return;
+
+		const World& world = worlds.front();
+
+		buttons[BT_WORLD0] = std::make_unique<MapleButton>(worldsrc["button:15"], Point<int16_t>(650, 20));
+		buttons[BT_WORLD0]->set_state(Button::PRESSED);
+
+		sprites.emplace_back(channelsrc["layer:bg"], Point<int16_t>(200, 170));
+		sprites.emplace_back(channelsrc["release"]["layer:15"], Point<int16_t>(200, 170));
+
+		if (channelid >= world.channelcount)
+			channelid = 0;
+
+		for (uint8_t i = 0; i < world.channelcount; ++i)
 		{
-			buttons[BT_WORLD0] = std::make_unique<MapleButton>(worlds["button:15"], Point<int16_t>(650, 20));
-			buttons[BT_WORLD0]->set_state(Button::PRESSED);
-
-			sprites.emplace_back(channels["layer:bg"], Point<int16_t>(200, 170));
-			sprites.emplace_back(channels["release"]["layer:15"], Point<int16_t>(200, 170));
-
-			uint8_t chcount = Session::get().get_login().getworld(worldid).channelcount;
-			if (channelid >= chcount)
-				channelid = 0;
-
-			for (uint8_t i = 0; i < chcount; i++)
-			{
-				nl::node chnode = channels["button:" + std::to_string(i)];
-				buttons[BT_CHANNEL0 + i] = std::make_unique<TwoSpriteButton>(
-					chnode["normal"]["0"], chnode["keyFocused"]["0"],
-					Point<int16_t>(200, 170)
-					);
-			}
-			buttons[BT_CHANNEL0 + channelid]->set_state(Button::PRESSED);
+			nl::node chnode = channelsrc["button:" + std::to_string(i)];
+			buttons[BT_CHANNEL0 + i] = std::make_unique<TwoSpriteButton>(
+				chnode["normal"]["0"], chnode["keyFocused"]["0"],
+				Point<int16_t>(200, 170)
+				);
+			if (i == channelid)
+				buttons[BT_CHANNEL0 + i]->set_state(Button::PRESSED);
 		}
 	}
 
@@ -79,16 +79,21 @@ namespace jrc
 		UIElement::draw(alpha);
 	}
 
+	uint8_t UIWorldSelect::get_world_id() const
+	{
+		return worldid;
+	}
+
+	uint8_t UIWorldSelect::get_channel_id() const
+	{
+		return channelid;
+	}
+
 	Button::State UIWorldSelect::button_pressed(uint16_t id)
 	{
 		if (id == BT_ENTERWORLD)
 		{
 			UI::get().disable();
-
-			Session::get().get_login()
-				.set_world(worldid);
-			Session::get().get_login()
-				.set_channel(channelid);
 
 			CharlistRequestPacket(worldid, channelid)
 				.dispatch();

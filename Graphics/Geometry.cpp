@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Geometry.h"
+
 #include "GraphicsGL.h"
 
 namespace jrc
@@ -74,9 +75,9 @@ namespace jrc
 		int16_t absh = args.getstretch().y();
 		if (absh == 0)
 			absh = height;
-		absw = static_cast<int16_t>(absw * args.getxscale());
-		absh = static_cast<int16_t>(absh * args.getyscale());
-		float absopc = opacity * args.getopacity();
+		absw = static_cast<int16_t>(absw * args.get_xscale());
+		absh = static_cast<int16_t>(absh * args.get_yscale());
+		float absopc = opacity * args.get_color().a();
 		Geometry::draw(absp.x(), absp.y(), absw, absh, color, absopc);
 	}
 
@@ -111,9 +112,9 @@ namespace jrc
 		int16_t absh = args.getstretch().y();
 		if (absh == 0)
 			absh = 1;
-		absw = static_cast<int16_t>(absw * args.getxscale());
-		absh = static_cast<int16_t>(absh * args.getyscale());
-		float absopc = opacity * args.getopacity();
+		absw = static_cast<int16_t>(absw * args.get_xscale());
+		absh = static_cast<int16_t>(absh * args.get_yscale());
+		float absopc = opacity * args.get_color().a();
 		Geometry::draw(absp.x(), absp.y(), absw, absh, color, absopc);
 	}
 

@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Constants.h"
+#include "../Constants.h"
 
 #include <cstdint>
 
@@ -29,6 +29,7 @@ namespace jrc
 		{
 			value = false;
 			delay = 0;
+			last = 0;
 		}
 
 		explicit operator bool() const
@@ -36,8 +37,9 @@ namespace jrc
 			return value;
 		}
 
-		void setfor(uint16_t millis)
+		void set_for(int64_t millis)
 		{
+			last = millis;
 			delay = millis;
 			value = true;
 		}
@@ -67,20 +69,27 @@ namespace jrc
 		{
 			value = b;
 			delay = 0;
+			last = 0;
 		}
 
-		bool operator == (bool b)
+		bool operator == (bool b) const
 		{
 			return value == b;
 		}
 
-		bool operator != (bool b)
+		bool operator != (bool b) const
 		{
 			return value != b;
 		}
 
+		float alpha() const
+		{
+			return 1.0f - static_cast<float>(static_cast<float>(delay) / last);
+		}
+
 	private:
-		uint16_t delay;
+		int64_t last;
+		int64_t delay;
 		bool value;
 	};
 }

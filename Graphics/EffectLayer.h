@@ -18,7 +18,7 @@
 #pragma once
 #include "Sprite.h"
 
-#include "..\Constants.h"
+#include "../Constants.h"
 
 #include <map>
 #include <list>

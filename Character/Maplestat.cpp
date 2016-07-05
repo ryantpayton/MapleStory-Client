@@ -17,23 +17,22 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Maplestat.h"
 
-#include "..\Console.h"
-#include "..\Util\Misc.h"
+#include "../Console.h"
+#include "../Util/Misc.h"
 
 namespace jrc
 {
-	Maplestat::Value Maplestat::byid(size_t id)
+	Maplestat::Id Maplestat::by_id(size_t id)
 	{
 		if (id >= LENGTH)
 		{
 			Console::get()
 				.print("Invalid Maplestat id: " + std::to_string(id));
 		}
-		return static_cast<Value>(id);
+		return static_cast<Id>(id);
 	}
 
-
-	const EnumMap<Maplestat::Value, int32_t> Maplestat::values =
+	const EnumMap<Maplestat::Id, int32_t> Maplestat::codes =
 	{
 		0x1, 0x2, 0x4, 0x10, 0x20,
 		0x40, 0x80, 0x100, 0x200,

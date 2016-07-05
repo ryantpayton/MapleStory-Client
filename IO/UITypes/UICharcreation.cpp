@@ -17,26 +17,21 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UICharcreation.h"
 
-#include "..\UI.h"
-#include "..\Components\MapleButton.h"
-#include "..\UITypes\UILoginNotice.h"
-#include "..\UITypes\UICharSelect.h"
+#include "../Components/MapleButton.h"
+#include "../UI.h"
+#include "../UITypes/UILoginNotice.h"
+#include "../UITypes/UICharSelect.h"
 
-#include "..\..\Constants.h"
-#include "..\..\Net\Session.h"
-#include "..\..\Net\Packets\CharCreationPackets.h"
+#include "../../Constants.h"
+#include "../../Data/ItemData.h"
+#include "../../Net/Packets/CharCreationPackets.h"
 
-#include "nlnx\nx.hpp"
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
 	UICharcreation::UICharcreation()
 	{
-		female = Session::get()
-			.get_login()
-			.getaccount()
-			.female;
-
 		nl::node src = nl::nx::ui["Login.img"];
 		nl::node bgsrc = nl::nx::map["Back"]["login.img"]["back"];
 		nl::node crsrc = src["NewChar"];
@@ -169,6 +164,7 @@ namespace jrc
 			}
 		}
 
+		female = false;
 		randomize_look();
 
 		newchar.set_direction(true);
@@ -181,32 +177,32 @@ namespace jrc
 
 	void UICharcreation::randomize_look()
 	{
-		hair = randomizer.nextint(0, hairs[female].size() - 1);
-		face = randomizer.nextint(0, faces[female].size() - 1);
-		skin = randomizer.nextint(0, skins[female].size() - 1);
-		haircolor = randomizer.nextint(0, haircolors[female].size() - 1);
-		top = randomizer.nextint(0, tops[female].size() - 1);
-		bot = randomizer.nextint(0, bots[female].size() - 1);
-		shoe = randomizer.nextint(0, shoes[female].size() - 1);
-		weapon = randomizer.nextint(0, weapons[female].size() - 1);
+		hair = randomizer.next_int(hairs[female].size());
+		face = randomizer.next_int(faces[female].size());
+		skin = randomizer.next_int(skins[female].size());
+		haircolor = randomizer.next_int(haircolors[female].size());
+		top = randomizer.next_int(tops[female].size());
+		bot = randomizer.next_int(bots[female].size());
+		shoe = randomizer.next_int(shoes[female].size());
+		weapon = randomizer.next_int(weapons[female].size());
 
-		newchar.setbody(skins[female][skin]);
-		newchar.setface(faces[female][face]);
-		newchar.sethair(hairs[female][hair] + haircolors[female][haircolor]);
+		newchar.set_body(skins[female][skin]);
+		newchar.set_face(faces[female][face]);
+		newchar.set_hair(hairs[female][hair] + haircolors[female][haircolor]);
 		newchar.add_equip(tops[female][top]);
 		newchar.add_equip(bots[female][bot]);
 		newchar.add_equip(shoes[female][shoe]);
 		newchar.add_equip(weapons[female][weapon]);
 
-		bodyname.change_text(newchar.getbodytype()->get_name());
-		facename.change_text(newchar.getfacetype()->get_name());
-		hairname.change_text(newchar.gethairstyle()->get_name());
-		haircname.change_text(newchar.gethairstyle()->getcolor());
+		bodyname.change_text(newchar.get_body()->get_name());
+		facename.change_text(newchar.get_face()->get_name());
+		hairname.change_text(newchar.get_hair()->get_name());
+		haircname.change_text(newchar.get_hair()->getcolor());
 
-		topname.change_text(newchar.get_equips().get_equipname(Equipslot::TOP));
-		botname.change_text(newchar.get_equips().get_equipname(Equipslot::PANTS));
-		shoename.change_text(newchar.get_equips().get_equipname(Equipslot::SHOES));
-		wepname.change_text(newchar.get_equips().get_equipname(Equipslot::WEAPON));
+		topname.change_text(get_equipname(Equipslot::TOP));
+		botname.change_text(get_equipname(Equipslot::PANTS));
+		shoename.change_text(get_equipname(Equipslot::SHOES));
+		wepname.change_text(get_equipname(Equipslot::WEAPON));
 		gendername.change_text(female ? "Female" : "Male");
 	}
 
@@ -244,7 +240,7 @@ namespace jrc
 				}
 				else
 				{
-					UI::get().add(Element<UILoginNotice, int8_t>(10));
+					UI::get().emplace<UILoginNotice>(UILoginNotice::ILLEGAL_NAME);
 					return Button::NORMAL;
 				}
 			}
@@ -274,13 +270,15 @@ namespace jrc
 				buttons[BT_CHARC_CANCEL]->set_state(Button::NORMAL);
 				namechar.set_state(Textfield::NORMAL);
 				named = false;
+				return Button::NORMAL;
 			}
 			else
 			{
 				active = false;
-				UI::get().add(Element<UICharSelect>());
+				if (auto charselect = UI::get().get_element<UICharSelect>())
+					charselect->makeactive();
+				return Button::PRESSED;
 			}
-			return Button::PRESSED;
 		}
 
 		if (id >= BT_CHARC_FACEL && id <= BT_CHARC_GEMDERR)
@@ -289,83 +287,83 @@ namespace jrc
 			{
 			case BT_CHARC_FACEL:
 				face = (face > 0) ? face - 1 : faces[female].size() - 1;
-				newchar.setface(faces[female][face]);
-				facename.change_text(newchar.getfacetype()->get_name());
+				newchar.set_face(faces[female][face]);
+				facename.change_text(newchar.get_face()->get_name());
 				break;
 			case BT_CHARC_FACER:
 				face = (face < faces[female].size() - 1) ? face + 1 : 0;
-				newchar.setface(faces[female][face]);
-				facename.change_text(newchar.getfacetype()->get_name());
+				newchar.set_face(faces[female][face]);
+				facename.change_text(newchar.get_face()->get_name());
 				break;
 			case BT_CHARC_HAIRL:
 				hair = (hair > 0) ? hair - 1 : hairs[female].size() - 1;
-				newchar.sethair(hairs[female][hair] + haircolors[female][haircolor]);
-				hairname.change_text(newchar.gethairstyle()->get_name());
+				newchar.set_hair(hairs[female][hair] + haircolors[female][haircolor]);
+				hairname.change_text(newchar.get_hair()->get_name());
 				break;
 			case BT_CHARC_HAIRR:
 				hair = (hair < hairs[female].size() - 1) ? hair + 1 : 0;
-				newchar.sethair(hairs[female][hair] + haircolors[female][haircolor]);
-				hairname.change_text(newchar.gethairstyle()->get_name());
+				newchar.set_hair(hairs[female][hair] + haircolors[female][haircolor]);
+				hairname.change_text(newchar.get_hair()->get_name());
 				break;
 			case BT_CHARC_HAIRCL:
 				haircolor = (haircolor > 0) ? haircolor - 1 : haircolors[female].size() - 1;
-				newchar.sethair(hairs[female][hair] + haircolors[female][haircolor]);
-				haircname.change_text(newchar.gethairstyle()->getcolor());
+				newchar.set_hair(hairs[female][hair] + haircolors[female][haircolor]);
+				haircname.change_text(newchar.get_hair()->getcolor());
 				break;
 			case BT_CHARC_HAIRCR:
 				haircolor = (haircolor < haircolors[female].size() - 1) ? haircolor + 1 : 0;
-				newchar.sethair(hairs[female][hair] + haircolors[female][haircolor]);
-				haircname.change_text(newchar.gethairstyle()->getcolor());
+				newchar.set_hair(hairs[female][hair] + haircolors[female][haircolor]);
+				haircname.change_text(newchar.get_hair()->getcolor());
 				break;
 			case BT_CHARC_SKINL:
 				skin = (skin > 0) ? skin - 1 : skins[female].size() - 1;
-				newchar.setbody(skins[female][skin]);
-				bodyname.change_text(newchar.getbodytype()->get_name());
+				newchar.set_body(skins[female][skin]);
+				bodyname.change_text(newchar.get_body()->get_name());
 				break;
 			case BT_CHARC_SKINR:
 				skin = (skin < skins[female].size() - 1) ? skin + 1 : 0;
-				newchar.setbody(skins[female][skin]);
-				bodyname.change_text(newchar.getbodytype()->get_name());
+				newchar.set_body(skins[female][skin]);
+				bodyname.change_text(newchar.get_body()->get_name());
 				break;
 			case BT_CHARC_TOPL:
 				top = (top > 0) ? top - 1 : tops[female].size() - 1;
 				newchar.add_equip(tops[female][top]);
-				topname.change_text(newchar.get_equips().get_equipname(Equipslot::TOP));
+				topname.change_text(get_equipname(Equipslot::TOP));
 				break;
 			case BT_CHARC_TOPR:
 				top = (top < tops[female].size() - 1) ? top + 1 : 0;
 				newchar.add_equip(tops[female][top]);
-				topname.change_text(newchar.get_equips().get_equipname(Equipslot::TOP));
+				topname.change_text(get_equipname(Equipslot::TOP));
 				break;
 			case BT_CHARC_BOTL:
 				bot = (bot > 0) ? bot - 1 : bots[female].size() - 1;
 				newchar.add_equip(bots[female][bot]);
-				botname.change_text(newchar.get_equips().get_equipname(Equipslot::PANTS));
+				botname.change_text(get_equipname(Equipslot::PANTS));
 				break;
 			case BT_CHARC_BOTR:
 				bot = (bot < bots[female].size() - 1) ? bot + 1 : 0;
 				newchar.add_equip(bots[female][bot]);
-				botname.change_text(newchar.get_equips().get_equipname(Equipslot::PANTS));
+				botname.change_text(get_equipname(Equipslot::PANTS));
 				break;
 			case BT_CHARC_SHOESL:
 				shoe = (shoe > 0) ? shoe - 1 : shoes[female].size() - 1;
 				newchar.add_equip(shoes[female][shoe]);
-				shoename.change_text(newchar.get_equips().get_equipname(Equipslot::SHOES));
+				shoename.change_text(get_equipname(Equipslot::SHOES));
 				break;
 			case BT_CHARC_SHOESR:
 				shoe = (shoe < shoes[female].size() - 1) ? shoe + 1 : 0;
 				newchar.add_equip(shoes[female][shoe]);
-				shoename.change_text(newchar.get_equips().get_equipname(Equipslot::SHOES));
+				shoename.change_text(get_equipname(Equipslot::SHOES));
 				break;
 			case BT_CHARC_WEPL:
 				weapon = (weapon > 0) ? weapon - 1 : weapons[female].size() - 1;
 				newchar.add_equip(weapons[female][weapon]);
-				wepname.change_text(newchar.get_equips().get_equipname(Equipslot::WEAPON));
+				wepname.change_text(get_equipname(Equipslot::WEAPON));
 				break;
 			case BT_CHARC_WEPR:
 				weapon = (weapon < weapons[female].size() - 1) ? weapon + 1 : 0;
 				newchar.add_equip(weapons[female][weapon]);
-				wepname.change_text(newchar.get_equips().get_equipname(Equipslot::WEAPON));
+				wepname.change_text(get_equipname(Equipslot::WEAPON));
 				break;
 			case BT_CHARC_GENDERL:
 			case BT_CHARC_GEMDERR:
@@ -485,5 +483,19 @@ namespace jrc
 		namechar.update(position);
 
 		cloudfx += 0.25f;
+	}
+
+	const std::string& UICharcreation::get_equipname(Equipslot::Id slot) const
+	{
+		if (int32_t item_id = newchar.get_equips().get_equip(slot))
+		{
+			return ItemData::get(item_id)
+				.get_name();
+		}
+		else
+		{
+			static const std::string& nullstr = "Missing name.";
+			return nullstr;
+		}
 	}
 }

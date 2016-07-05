@@ -16,11 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Keyboard.h"
+
 #include "glfw3.h"
 
 namespace jrc
 {
-	const int32_t Keytable[90] =
+	constexpr int32_t Keytable[90] =
 	{
 		0, 0, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, // number keys, up to key 0
 		0, 0, 0, 0, 'Q', 'W', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P', 0, 0, 0, //first letter row, up to key 28
@@ -32,15 +33,15 @@ namespace jrc
 
 	Keyboard::Keyboard()
 	{
-		keymap[GLFW_KEY_LEFT] = Mapping(ACTION, LEFT);
-		keymap[GLFW_KEY_RIGHT] = Mapping(ACTION, RIGHT);
-		keymap[GLFW_KEY_UP] = Mapping(ACTION, UP);
-		keymap[GLFW_KEY_DOWN] = Mapping(ACTION, DOWN);
+		keymap[GLFW_KEY_LEFT] = { KeyType::ACTION, KeyAction::LEFT };
+		keymap[GLFW_KEY_RIGHT] = { KeyType::ACTION, KeyAction::RIGHT };
+		keymap[GLFW_KEY_UP] = { KeyType::ACTION, KeyAction::UP };
+		keymap[GLFW_KEY_DOWN] = { KeyType::ACTION, KeyAction::DOWN };
 
-		textactions[GLFW_KEY_BACKSPACE] = BACK;
-		textactions[GLFW_KEY_ENTER] = RETURN;
-		textactions[GLFW_KEY_SPACE] = SPACE;
-		textactions[GLFW_KEY_TAB] = TAB;
+		textactions[GLFW_KEY_BACKSPACE] = KeyAction::BACK;
+		textactions[GLFW_KEY_ENTER] = KeyAction::RETURN;
+		textactions[GLFW_KEY_SPACE] = KeyAction::SPACE;
+		textactions[GLFW_KEY_TAB] = KeyAction::TAB;
 	}
 
 	int32_t Keyboard::shiftcode() const
@@ -53,32 +54,42 @@ namespace jrc
 		return GLFW_KEY_LEFT_CONTROL;
 	}
 
-	Keyboard::Action Keyboard::getctrlaction(int32_t keycode) const
+	KeyAction::Id Keyboard::get_ctrl_action(int32_t keycode) const
 	{
 		switch (keycode)
 		{
 		case GLFW_KEY_C:
-			return COPY;
+			return KeyAction::COPY;
 		case GLFW_KEY_V:
-			return PASTE;
+			return KeyAction::PASTE;
 		default:
-			return NOACTION;
+			return KeyAction::NOACTION;
 		}
 	}
 
-	Keyboard::Mapping Keyboard::gettextmapping(int32_t keycode, bool shift) const
+	void Keyboard::assign(uint8_t key, uint8_t tid, int32_t action)
+	{
+		if (KeyType::Id type = KeyType::typebyid(tid))
+		{
+			Mapping mapping{ type, action };
+			keymap[Keytable[key]] = mapping;
+			maplekeys[key] = mapping;
+		}
+	}
+
+	Keyboard::Mapping Keyboard::get_text_mapping(int32_t keycode, bool shift) const
 	{
 		if (textactions.count(keycode))
 		{
-			return Mapping(ACTION, textactions.at(keycode));
+			return{ KeyType::ACTION, textactions.at(keycode) };
 		}
 		else if (keycode > 47 && keycode < 65)
 		{
-			return Mapping(NUMBER, keycode - (shift ? 15 : 0));
+			return{ KeyType::NUMBER, keycode - (shift ? 15 : 0) };
 		}
 		else if (keycode > 64 && keycode < 91)
 		{
-			return Mapping(LETTER, keycode + (shift ? 0 : 32));
+			return{ KeyType::LETTER, keycode + (shift ? 0 : 32) };
 		}
 		else
 		{
@@ -90,24 +101,17 @@ namespace jrc
 			case GLFW_KEY_DOWN:
 				return keymap.at(keycode);
 			default:
-				return Mapping(NONE, 0);
+				return{ KeyType::NONE, 0 };
 			}
 		}
 	}
 
-	void Keyboard::assign(uint8_t key, uint8_t tid, int32_t action)
+	Keyboard::Mapping Keyboard::get_mapping(int32_t keycode) const
 	{
-		Keytype type = typebyid(tid);
-		if (type != NONE)
-		{
-			Mapping mapping = Mapping(type, action);
-			keymap[Keytable[key]] = mapping;
-			maplekeys[key] = mapping;
-		}
-	}
+		auto iter = keymap.find(keycode);
+		if (iter == keymap.end())
+			return{};
 
-	Optional<const Keyboard::Mapping> Keyboard::getmapping(int32_t keycode) const
-	{
-		return Optional<Keyboard>::from(keymap, keycode);
+		return iter->second;
 	}
 }

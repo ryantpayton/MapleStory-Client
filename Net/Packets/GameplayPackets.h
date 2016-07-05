@@ -27,11 +27,11 @@ namespace jrc
 	public:
 		ChangeMapPacket(bool died, int32_t targetid, const std::string& targetp, bool usewheel) : OutPacket(CHANGEMAP)
 		{
-			writech(died);
-			writeint(targetid);
-			writestr(targetp);
+			write_byte(died);
+			write_int(targetid);
+			write_string(targetp);
 			skip(1);
-			writesh(usewheel ? 1 : 0);
+			write_short(usewheel ? 1 : 0);
 		}
 	};
 
@@ -44,8 +44,97 @@ namespace jrc
 		MovePlayerPacket(const Movement& movement) : MovementPacket(MOVE_PLAYER)
 		{
 			skip(9);
-			writech(1);
+			write_byte(1);
 			writemovement(movement);
+		}
+	};
+
+
+	// Requests various party-related things.
+	// Opcode: PARTY_OPERATION(124)
+	class PartyOperationPacket : public OutPacket
+	{
+	public:
+		enum Operation : int8_t
+		{
+			CREATE = 1,
+			LEAVE = 2,
+			JOIN = 3,
+			INVITE = 4,
+			EXPEL = 5,
+			PASS_LEADER = 6
+		};
+
+	protected:
+		PartyOperationPacket(Operation op) : OutPacket(PARTY_OPERATION) 
+		{
+			write_byte(op);
+		}
+	};
+
+
+	// Creates a new party.
+	// Operation: CREATE(1)
+	class CreatePartyPacket : public PartyOperationPacket
+	{
+	public:
+		CreatePartyPacket() : PartyOperationPacket(CREATE) {}
+	};
+
+
+	// Leaves a party
+	// Operation: LEAVE(2)
+	class LeavePartyPacket : public PartyOperationPacket
+	{
+	public:
+		LeavePartyPacket() : PartyOperationPacket(LEAVE) {}
+	};
+
+
+	// Joins a party.
+	// Operation: JOIN(3)
+	class JoinPartyPacket : public PartyOperationPacket
+	{
+	public:
+		JoinPartyPacket(int32_t party_id) : PartyOperationPacket(JOIN) 
+		{
+			write_int(party_id);
+		}
+	};
+
+
+	// Invites a player to a party.
+	// Operation: INVITE(4)
+	class InviteToPartyPacket : public PartyOperationPacket
+	{
+	public:
+		InviteToPartyPacket(const std::string& name) : PartyOperationPacket(INVITE)
+		{
+			write_string(name);
+		}
+	};
+
+
+	// Expels someone from a party.
+	// Operation: EXPEL(5)
+	class ExpelFromPartyPacket : public PartyOperationPacket
+	{
+	public:
+		ExpelFromPartyPacket(int32_t cid) : PartyOperationPacket(EXPEL)
+		{
+			write_int(cid);
+		}
+	};
+
+
+	// Passes party leadership to another character.
+	// Operation: PASS_LEADER(6)
+	class ChangePartyLeaderPacket : public PartyOperationPacket
+	{
+	public:
+		ChangePartyLeaderPacket(int32_t cid) : PartyOperationPacket(PASS_LEADER)
+		{
+			write_int(cid);
 		}
 	};
 
@@ -59,20 +148,20 @@ namespace jrc
 			int8_t skill2, int8_t skill3, int8_t skill4, Point<int16_t> startpos,
 			const Movement& movement) : MovementPacket(MOVE_MONSTER) {
 
-			writeint(oid);
-			writesh(type);
-			writech(skillb);
-			writech(skill0);
-			writech(skill1);
-			writech(skill2);
-			writech(skill3);
-			writech(skill4);
+			write_int(oid);
+			write_short(type);
+			write_byte(skillb);
+			write_byte(skill0);
+			write_byte(skill1);
+			write_byte(skill2);
+			write_byte(skill3);
+			write_byte(skill4);
 
 			skip(13);
 
-			writepoint(startpos);
+			write_point(startpos);
 
-			writech(1);
+			write_byte(1);
 			writemovement(movement);
 		}
 	};
@@ -85,10 +174,10 @@ namespace jrc
 	public:
 		PickupItemPacket(int32_t oid, Point<int16_t> position) : OutPacket(PICKUP_ITEM)
 		{
-			writeint(0);
-			writech(0);
-			writepoint(position);
-			writeint(oid);
+			write_int(0);
+			write_byte(0);
+			write_point(position);
+			write_int(oid);
 		}
 	};
 }

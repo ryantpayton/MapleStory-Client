@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -17,13 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Mob.h"
 
-#include "..\Movement.h"
+#include "../Movement.h"
 
-#include "..\..\Constants.h"
-#include "..\..\Net\Packets\GameplayPackets.h"
-#include "..\..\Util\Misc.h"
+#include "../../Constants.h"
+#include "../../Net/Packets/GameplayPackets.h"
+#include "../../Util/Misc.h"
 
-#include "nlnx\nx.hpp"
+#include "nlnx/nx.hpp"
 
 #include <algorithm>
 #include <functional>
@@ -117,7 +117,7 @@ namespace jrc
 
 		if (control && stance == Stance::STAND)
 		{
-			nextmove();
+			next_move();
 		}
 	}
 
@@ -252,7 +252,7 @@ namespace jrc
 
 				if (next)
 				{
-					nextmove();
+					next_move();
 					update_movement();
 					counter = 0;
 				}
@@ -267,7 +267,7 @@ namespace jrc
 		return phobj.fhlayer;
 	}
 
-	void Mob::nextmove()
+	void Mob::next_move()
 	{
 		if (canmove)
 		{
@@ -276,7 +276,7 @@ namespace jrc
 			case HIT:
 			case STAND:
 				set_stance(MOVE);
-				flip = randomizer.nextbool();
+				flip = randomizer.next_bool();
 				break;
 			case MOVE:
 			case JUMP:
@@ -286,7 +286,7 @@ namespace jrc
 				}
 				else
 				{
-					switch (randomizer.nextint(2))
+					switch (randomizer.next_int(3))
 					{
 					case 0:
 						set_stance(STAND);
@@ -306,7 +306,7 @@ namespace jrc
 
 			if (stance == MOVE && canfly)
 			{
-				flydirection = nextdirection(randomizer);
+				flydirection = randomizer.next_enum(NUM_DIRECTIONS);
 			}
 		}
 		else
@@ -321,14 +321,14 @@ namespace jrc
 			oid, 
 			1, 0, 0, 0, 0, 0, 0, 
 			get_position(),
-			Movement(phobj, valueof(stance, flip))
+			Movement(phobj, value_of(stance, flip))
 			).dispatch();
 	}
 
 	void Mob::draw(double viewx, double viewy, float alpha) const
 	{
 		Point<int16_t> absp = phobj.get_absolute(viewx, viewy, alpha);
-		Point<int16_t> headpos = get_headpos(absp);
+		Point<int16_t> headpos = get_head_position(absp);
 
 		effects.drawbelow(absp, alpha);
 
@@ -358,13 +358,19 @@ namespace jrc
 		aggro = mode == 2;
 	}
 
-	void Mob::send_movement(Point<int16_t> start, const Movement& movement)
+	void Mob::send_movement(Point<int16_t> start, std::vector<Movement>&& in_movements)
 	{
 		if (control)
 			return;
 
 		set_position(start);
-		lastmove = movement;
+
+		movements = std::forward<decltype(in_movements)>(in_movements);
+
+		if (movements.empty())
+			return;
+
+		const Movement& lastmove = movements.front();
 
 		uint8_t laststance = lastmove.newstate;
 		set_stance(laststance);
@@ -372,7 +378,7 @@ namespace jrc
 		phobj.fhid = lastmove.fh;
 	}
 
-	Point<int16_t> Mob::get_headpos(Point<int16_t> position) const
+	Point<int16_t> Mob::get_head_position(Point<int16_t> position) const
 	{
 		Point<int16_t> head = animations.at(stance).get_head();
 		position.shift_x((flip && !noflip) ? -head.x() : head.x());
@@ -390,7 +396,9 @@ namespace jrc
 		case 1:
 			dying = true;
 			if (awaitdeath)
-				applydeath();
+			{
+				apply_death();
+			}
 			break;
 		case 2:
 			fading = true;
@@ -399,7 +407,7 @@ namespace jrc
 		}
 	}
 
-	void Mob::sendhp(int8_t percent, uint16_t playerlevel)
+	void Mob::show_hp(int8_t percent, uint16_t playerlevel)
 	{
 		if (hppercent == 0)
 		{
@@ -418,32 +426,33 @@ namespace jrc
 			percent = 0;
 		}
 		hppercent = percent;
-		showhp.setfor(2000);
+		showhp.set_for(2000);
 	}
 
-	void Mob::show_effect(Animation animation, int8_t pos, int8_t z, bool f)
+	void Mob::show_effect(const Animation& animation, int8_t pos, int8_t z, bool f)
 	{
-		if (active)
+		if (!active)
+			return;
+
+		Point<int16_t> shift;
+		switch (pos)
 		{
-			Point<int16_t> shift;
-			switch (pos)
-			{
-			case 0:
-				break;
-			case 1:
-				break;
-			case 2:
-				break;
-			case 3:
-				break;
-			case 4:
-				break;
-			}
-			effects.add(animation, DrawArgument(shift, f), z);
+		case 0:
+			shift = get_head_position({});
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		case 4:
+			break;
 		}
+		effects.add(animation, { shift, f }, z);
 	}
 
-	float Mob::calchitchance(int16_t leveldelta, int32_t player_accuracy) const
+	float Mob::calculate_hitchance(int16_t leveldelta, int32_t player_accuracy) const
 	{
 		float faccuracy = static_cast<float>(player_accuracy);
 		float hitchance = faccuracy / (((1.84f + 0.07f * leveldelta) * avoid) + 1.0f);
@@ -454,7 +463,7 @@ namespace jrc
 		return hitchance;
 	}
 
-	double Mob::calcmindamage(int16_t leveldelta, double damage, bool magic) const
+	double Mob::calculate_mindamage(int16_t leveldelta, double damage, bool magic) const
 	{
 		double mindamage = magic ?
 			damage - (1 + 0.01 * leveldelta) * mdef * 0.6 :
@@ -462,7 +471,7 @@ namespace jrc
 		return mindamage < 1.0 ? 1.0 : mindamage;
 	}
 
-	double Mob::calcmaxdamage(int16_t leveldelta, double damage, bool magic) const
+	double Mob::calculate_maxdamage(int16_t leveldelta, double damage, bool magic) const
 	{
 		double maxdamage = magic ?
 			damage - (1 + 0.01 * leveldelta) * mdef * 0.5 :
@@ -470,7 +479,7 @@ namespace jrc
 		return maxdamage < 1.0 ? 1.0 : maxdamage;
 	}
 
-	std::vector<std::pair<int32_t, bool>> Mob::calculatedamage(const Attack& attack)
+	std::vector<std::pair<int32_t, bool>> Mob::calculate_damage(const Attack& attack)
 	{
 		double mindamage;
 		double maxdamage;
@@ -485,9 +494,9 @@ namespace jrc
 		{
 		case Attack::DMG_WEAPON:
 		case Attack::DMG_MAGIC:
-			mindamage = calcmindamage(leveldelta, attack.mindamage, damagetype == Attack::DMG_MAGIC);
-			maxdamage = calcmaxdamage(leveldelta, attack.maxdamage, damagetype == Attack::DMG_MAGIC);
-			hitchance = calchitchance(leveldelta, attack.accuracy);
+			mindamage = calculate_mindamage(leveldelta, attack.mindamage, damagetype == Attack::DMG_MAGIC);
+			maxdamage = calculate_maxdamage(leveldelta, attack.maxdamage, damagetype == Attack::DMG_MAGIC);
+			hitchance = calculate_hitchance(leveldelta, attack.accuracy);
 			critical = attack.critical;
 			break;
 		case Attack::DMG_FIXED:
@@ -500,7 +509,7 @@ namespace jrc
 
 		std::vector<std::pair<int32_t, bool>> result(attack.hitcount);
 		std::generate(result.begin(), result.end(), [&](){
-			return randomdamage(mindamage, maxdamage, hitchance, critical);
+			return next_damage(mindamage, maxdamage, hitchance, critical);
 		});
 
 		update_movement();
@@ -509,52 +518,31 @@ namespace jrc
 		return result;
 	}
 
-	std::pair<int32_t, bool> Mob::randomdamage(double mindamage, double maxdamage, float hitchance, float critical) const
+	std::pair<int32_t, bool> Mob::next_damage(double mindamage, double maxdamage, float hitchance, float critical) const
 	{
 		bool hit = randomizer.below(hitchance);
-		if (hit)
+		if (!hit)
+			return{ 0, false };
+		
+		constexpr double DAMAGECAP = 999999.0;
+
+		double damage = randomizer.next_real(mindamage, maxdamage);
+		bool iscritical = randomizer.below(critical);
+		if (iscritical)
 		{
-			static const double DAMAGECAP = 999999.0;
-
-			auto damage = randomizer.nextreal<double>(mindamage, maxdamage);
-			bool iscritical = randomizer.below(critical);
-			if (iscritical)
-			{
-				damage *= 1.5;
-			}
-			if (damage < 1)
-			{
-				damage = 1;
-			}
-			else if (damage > DAMAGECAP)
-			{
-				damage = DAMAGECAP;
-			}
-
-			auto intdamage = static_cast<int32_t>(damage);
-			return std::make_pair(intdamage, iscritical);
+			damage *= 1.5;
 		}
-		else
+		if (damage < 1)
 		{
-			return std::make_pair(0, false);
+			damage = 1;
 		}
-	}
-
-	std::vector<DamageNumber> Mob::placenumbers(std::vector<std::pair<int32_t, bool>> damagelines) const
-	{
-		std::vector<DamageNumber> numbers;
-		int16_t head = get_headpos(get_position()).y();
-		for (size_t i = 0; i < damagelines.size(); i++)
+		else if (damage > DAMAGECAP)
 		{
-			int32_t amount = damagelines[i].first;
-			bool critical = damagelines[i].second;
-			auto type = critical ? DamageNumber::CRITICAL : DamageNumber::NORMAL;
-			auto number = DamageNumber(type, amount, head);
-			numbers.push_back(number);
-
-			head -= DamageNumber::rowheight(critical);
+			damage = DAMAGECAP;
 		}
-		return numbers;
+
+		auto intdamage = static_cast<int32_t>(damage);
+		return{ intdamage, iscritical };
 	}
 
 	void Mob::apply_damage(int32_t damage, bool toleft)
@@ -563,9 +551,9 @@ namespace jrc
 
 		if (dying && stance != DIE)
 		{
-			applydeath();
+			apply_death();
 		}
-		else if (control && isalive() && damage >= knockback)
+		else if (control && is_alive() && damage >= knockback)
 		{
 			flip = toleft;
 			counter = 170;
@@ -576,14 +564,25 @@ namespace jrc
 		}
 	}
 
-	void Mob::applydeath()
+	MobAttack Mob::create_touch_attack() const
+	{
+		if (!touchdamage)
+			return{};
+
+		int32_t minattack = static_cast<int32_t>(watk * 0.8f);
+		int32_t maxattack = watk;
+		int32_t attack = randomizer.next_int(minattack, maxattack);
+		return{ attack, get_position(), id, oid };
+	}
+
+	void Mob::apply_death()
 	{
 		set_stance(DIE);
 		diesound.play();
 		dying = true;
 	}
 
-	bool Mob::isalive() const
+	bool Mob::is_alive() const
 	{
 		return active && !dying;
 	}
@@ -598,9 +597,9 @@ namespace jrc
 		return range.overlaps(bounds);
 	}
 
-	Point<int16_t> Mob::get_headpos() const
+	Point<int16_t> Mob::get_head_position() const
 	{
 		Point<int16_t> position = get_position();
-		return get_headpos(position);
+		return get_head_position(position);
 	}
 }

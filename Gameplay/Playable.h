@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\IO\Keyboard.h"
+#include "../IO/KeyAction.h"
 
 namespace jrc
 {
@@ -27,7 +27,7 @@ namespace jrc
 		virtual ~Playable(){}
 
 		// Sends a keystate to the object.
-		virtual void send_action(Keyboard::Action action, bool pressed) = 0;
+		virtual void send_action(KeyAction::Id action, bool pressed) = 0;
 	};
 }
 

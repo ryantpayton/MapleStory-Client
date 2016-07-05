@@ -25,6 +25,7 @@ namespace jrc
 	{
 	public:
 		virtual ~PacketHandler() {}
-		virtual void handle(InPacket& tohandle) const = 0;
+
+		virtual void handle(InPacket& recv) const = 0;
 	};
 }

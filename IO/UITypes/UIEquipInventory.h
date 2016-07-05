@@ -16,12 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\UIDragElement.h"
+#include "../UIDragElement.h"
 
-#include "..\Components\EquipTooltip.h"
-#include "..\Components\Icon.h"
+#include "../Components/EquipTooltip.h"
+#include "../Components/Icon.h"
 
-#include "..\..\Character\Inventory\Inventory.h"
+#include "../../Character/Inventory/Inventory.h"
+#include "../../Template/EnumMap.h"
 
 namespace jrc
 {
@@ -33,7 +34,7 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 
-		UIEquipInventory();
+		UIEquipInventory(const Inventory& inventory);
 
 		void draw(float inter) const override;
 
@@ -48,12 +49,11 @@ namespace jrc
 		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
-		void show_equip(int16_t slot);
+		void show_equip(Equipslot::Id slot);
 		void clear_tooltip();
 		void load_icons();
-		void update_slot(int16_t slot);
-		int16_t slot_by_position(Point<int16_t> position) const;
-		Optional<Icon> geticon(int16_t slot) const;
+		void update_slot(Equipslot::Id slot);
+		Equipslot::Id slot_by_position(Point<int16_t> position) const;
 
 		class EquipIcon : public Icon::Type
 		{
@@ -61,8 +61,8 @@ namespace jrc
 			EquipIcon(int16_t source);
 
 			void drop_on_stage() const override;
-			void drop_on_equips(Equipslot::Value) const override {}
-			void drop_on_items(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const override;
+			void drop_on_equips(Equipslot::Id) const override {}
+			void drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const override;
 
 		private:
 			int16_t source;
@@ -76,8 +76,8 @@ namespace jrc
 		const Inventory& inventory;
 
 		std::vector<Texture> textures_pet;
-		std::map<int16_t, Point<int16_t>> iconpositions;
-		std::map<int16_t, std::unique_ptr<Icon>> icons;
+		EnumMap<Equipslot::Id, Point<int16_t>> iconpositions;
+		EnumMap<Equipslot::Id, std::unique_ptr<Icon>> icons;
 
 		bool showpetequips;
 	};

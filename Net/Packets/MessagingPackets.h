@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\OutPacket.h"
+#include "../OutPacket.h"
 
 namespace jrc
 {
@@ -27,8 +27,8 @@ namespace jrc
 	public:
 		GeneralChatPacket(const std::string& message, bool show) : OutPacket(GENERAL_CHAT)
 		{
-			writestr(message);
-			writech(show);
+			write_string(message);
+			write_byte(show);
 		}
 	};
 }

@@ -17,9 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MapObjectHandlers.h"
 
-#include "..\..\Audio\Audio.h"
-#include "..\..\Gameplay\Stage.h"
-#include "..\..\Gameplay\Spawn.h"
+#include "Helpers/LoginParser.h"
+#include "Helpers\MovementParser.h"
+
+#include "../../Audio/Audio.h"
+#include "../../Gameplay/Stage.h"
+#include "../../Gameplay/Spawn.h"
 
 namespace jrc
 {
@@ -53,7 +56,7 @@ namespace jrc
 		recv.skip(61);
 
 		int16_t job = recv.read_short();
-		LookEntry look = Session::get().get_login().parse_look(recv);
+		LookEntry look = LoginParser::parse_look(recv);
 
 		recv.read_int(); //count of 5110000 
 		recv.read_int(); // 'itemeffect'
@@ -98,9 +101,9 @@ namespace jrc
 		recv.skip(3);
 		recv.read_byte(); // team
 
-		Stage::get().push_spawn(
-			std::make_unique<CharSpawn>(cid, look, level, job, name, stance, position)
-		);
+		Stage::get().get_chars().spawn({ 
+			cid, look, level, job, name, stance, position 
+		});
 	}
 
 
@@ -108,7 +111,7 @@ namespace jrc
 	{
 		int32_t cid = recv.read_int();
 
-		Stage::get().get_chars().remove_char(cid);
+		Stage::get().get_chars().remove(cid);
 	}
 
 
@@ -152,7 +155,7 @@ namespace jrc
 	{
 		int32_t cid = recv.read_int();
 		recv.skip(4);
-		std::vector<Movement> movements = recv.readvector<uint8_t, Movement>();
+		std::vector<Movement> movements = MovementParser::parse_movements(recv);
 
 		Stage::get().get_chars().send_movement(cid, movements);
 	}
@@ -162,7 +165,7 @@ namespace jrc
 	{
 		int32_t cid = recv.read_int();
 		recv.read_byte();
-		LookEntry look = Session::get().get_login().parse_look(recv);
+		LookEntry look = LoginParser::parse_look(recv);
 
 		Stage::get().get_chars().update_look(cid, look);
 	}
@@ -178,16 +181,16 @@ namespace jrc
 		}
 		else if (effect == 13) // card effect
 		{
-			Stage::get().get_character(cid)
-				.if_present(&Char::show_effect_id, Char::MONSTER_CARD);
+			Stage::get()
+				.show_character_effect(cid, CharEffect::MONSTER_CARD);
 		}
-		else if (recv.has_more()) // skill
+		else if (recv.available()) // skill
 		{
 			int32_t skillid = recv.read_int();
 			recv.read_byte(); // 'direction'
 			// 9 more bytes after this
 
-			Stage::get().show_buff(cid, skillid, effect);
+			Stage::get().get_combat().show_buff(cid, skillid, effect);
 		}
 		else
 		{
@@ -226,9 +229,9 @@ namespace jrc
 
 		recv.skip(4);
 
-		Stage::get().push_spawn(
-			std::make_unique<MobSpawn>(oid, id, 0, stance, fh, effect == -2, team, position)
-		);
+		Stage::get().get_mobs().spawn({
+			oid, id, 0, stance, fh, effect == -2, team, position
+		});
 	}
 
 
@@ -237,7 +240,7 @@ namespace jrc
 		int32_t oid = recv.read_int();
 		int8_t animation = recv.read_byte();
 
-		Stage::get().get_mobs().kill_mob(oid, animation);
+		Stage::get().get_mobs().remove(oid, animation);
 	}
 
 
@@ -251,7 +254,7 @@ namespace jrc
 		}
 		else
 		{
-			if (recv.has_more())
+			if (recv.available())
 			{
 				recv.skip(1);
 
@@ -281,13 +284,13 @@ namespace jrc
 
 				recv.skip(4);
 
-				Stage::get().push_spawn(
-					std::make_unique<MobSpawn>(oid, id, mode, stance, fh, effect == -2, team, position)
-				);
+				Stage::get().get_mobs().spawn({
+					oid, id, mode, stance, fh, effect == -2, team, position
+				});
 			}
 			else
 			{
-				// remove monster invisibility, not used in moopledev or solaxia
+				// remove monster invisibility, not used in moopledev or solaxia (maybe in an event script?)
 			}
 		}
 	}
@@ -306,9 +309,9 @@ namespace jrc
 		recv.read_byte(); // skill 4
 
 		Point<int16_t> position = recv.read_point();
-		std::queue<Movement> movements = recv.readqueue<uint8_t, Movement>();
+		std::vector<Movement> movements = MovementParser::parse_movements(recv);
 
-		Stage::get().get_mobs().send_movement(oid, position, movements.front());
+		Stage::get().get_mobs().send_movement(oid, position, std::move(movements));
 	}
 
 
@@ -333,9 +336,9 @@ namespace jrc
 		recv.read_short(); // 'rx'
 		recv.read_short(); // 'ry'
 
-		Stage::get().push_spawn(
-			std::make_unique<NpcSpawn>(oid, id, position, flip, fh)
-		);
+		Stage::get().get_npcs().spawn({
+			oid, id, position, flip, fh
+		});
 	}
 
 
@@ -346,7 +349,7 @@ namespace jrc
 
 		if (mode == 0)
 		{
-			Stage::get().get_npcs().remove_npc(oid);
+			Stage::get().get_npcs().remove(oid);
 		}
 		else
 		{
@@ -359,9 +362,9 @@ namespace jrc
 			recv.read_short(); // 'ry'
 			recv.read_bool(); // 'minimap'
 
-			Stage::get().push_spawn(
-				std::make_unique<NpcSpawn>(oid, id, position, flip, fh)
-			);
+			Stage::get().get_npcs().spawn({
+				oid, id, position, flip, fh
+			});
 		}
 	}
 
@@ -396,9 +399,9 @@ namespace jrc
 		}
 		bool playerdrop = !recv.read_bool();
 
-		Stage::get().push_spawn(
-			std::make_unique<DropSpawn>(oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mode, playerdrop)
-		);
+		Stage::get().get_drops().spawn({
+			oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mode, playerdrop
+		});
 	}
 
 
@@ -415,14 +418,42 @@ namespace jrc
 			{
 				recv.read_byte(); // pet
 			}
-			else
+			else if (auto character = Stage::get().get_character(cid))
 			{
-				looter = Stage::get().get_character(cid)
-					.transform(&Char::get_phobj);
+				looter = character->get_phobj();
 			}
 
 			Sound(Sound::PICKUP).play();
 		}
-		Stage::get().get_drops().remove_drop(oid, mode, looter.get());
+
+		Stage::get().get_drops().remove(oid, mode, looter.get());
+	}
+
+
+	void SpawnReactorHandler::handle(InPacket& recv) const
+	{
+		int32_t oid = recv.read_int();
+		int32_t rid = recv.read_int();
+		int8_t state = recv.read_byte();
+		Point<int16_t> point = recv.read_point();
+
+		// Unused in Solaxia
+		// uint16_t fhid = recv.read_short();
+		// recv.read_byte()
+
+		Stage::get().get_reactors().spawn({
+			oid, rid, state, point
+		});
+	}
+
+
+	void RemoveReactorHandler::handle(InPacket& recv) const
+	{
+		int32_t oid = recv.read_int();
+		int8_t state = recv.read_byte();
+		Point<int16_t> point = recv.read_point();
+
+		Stage::get().get_reactors()
+			.remove(oid, state, point);
 	}
 }

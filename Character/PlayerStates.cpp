@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "PlayerStates.h"
 
-#include "..\Audio\Audio.h"
+#include "../Audio/Audio.h"
 
 namespace jrc
 {
@@ -34,17 +34,17 @@ namespace jrc
 		Char::State state;
 		if (player.get_phobj().onground)
 		{
-			if (player.is_key_down(Keyboard::LEFT))
+			if (player.is_key_down(KeyAction::LEFT))
 			{
 				state = Char::WALK;
 				player.set_direction(false);
 			}
-			else if (player.is_key_down(Keyboard::RIGHT))
+			else if (player.is_key_down(KeyAction::RIGHT))
 			{
 				state = Char::WALK;
 				player.set_direction(true);
 			}
-			else if (player.is_key_down(Keyboard::DOWN))
+			else if (player.is_key_down(KeyAction::DOWN))
 			{
 				state = Char::PRONE;
 			}
@@ -78,7 +78,7 @@ namespace jrc
 		player.get_phobj().type = PhysicsObject::NORMAL;
 	}
 
-	void PlayerStandState::send_action(Player& player, Keyboard::Action ka, bool down) const
+	void PlayerStandState::send_action(Player& player, KeyAction::Id ka, bool down) const
 	{
 		if (player.is_attacking())
 			return;
@@ -87,19 +87,19 @@ namespace jrc
 		{
 			switch (ka)
 			{
-			case Keyboard::LEFT:
+			case KeyAction::LEFT:
 				player.set_direction(false);
 				player.set_state(Char::WALK);
 				break;
-			case Keyboard::RIGHT:
+			case KeyAction::RIGHT:
 				player.set_direction(true);
 				player.set_state(Char::WALK);
 				break;
-			case Keyboard::JUMP:
+			case KeyAction::JUMP:
 				play_jumpsound();
 				player.get_phobj().vforce = -player.get_jumpforce();
 				break;
-			case Keyboard::DOWN:
+			case KeyAction::DOWN:
 				player.set_state(Char::PRONE);
 				break;
 			}
@@ -127,7 +127,7 @@ namespace jrc
 		player.get_phobj().type = PhysicsObject::NORMAL;
 	}
 
-	void PlayerWalkState::send_action(Player& player, Keyboard::Action ka, bool down) const
+	void PlayerWalkState::send_action(Player& player, KeyAction::Id ka, bool down) const
 	{
 		if (player.is_attacking())
 			return;
@@ -136,17 +136,17 @@ namespace jrc
 		{
 			switch (ka)
 			{
-			case Keyboard::LEFT:
+			case KeyAction::LEFT:
 				player.set_direction(false);
 				break;
-			case Keyboard::RIGHT:
+			case KeyAction::RIGHT:
 				player.set_direction(true);
 				break;
-			case Keyboard::JUMP:
+			case KeyAction::JUMP:
 				play_jumpsound();
 				player.get_phobj().vforce = -player.get_jumpforce();
 				break;
-			case Keyboard::DOWN:
+			case KeyAction::DOWN:
 				player.set_state(Char::PRONE);
 				break;
 			}
@@ -155,7 +155,7 @@ namespace jrc
 
 	bool PlayerWalkState::haswalkinput(const Player& player) const
 	{
-		return player.is_key_down(Keyboard::LEFT) || player.is_key_down(Keyboard::RIGHT);
+		return player.is_key_down(KeyAction::LEFT) || player.is_key_down(KeyAction::RIGHT);
 	}
 
 	void PlayerWalkState::update(Player& player) const
@@ -186,16 +186,49 @@ namespace jrc
 		player.get_phobj().type = PhysicsObject::NORMAL;
 	}
 
+	void PlayerFallState::send_action(Player& player, KeyAction::Id ka, bool down) const
+	{
+		if (down)
+		{
+			switch (ka)
+			{
+			case KeyAction::LEFT:
+				player.set_direction(false);
+				break;
+			case KeyAction::RIGHT:
+				player.set_direction(true);
+				break;
+			}
+		}
+	}
+
+	void PlayerFallState::update(Player& player) const
+	{
+		auto& hspeed = player.get_phobj().hspeed;
+		if (player.is_key_down(KeyAction::LEFT) && hspeed > 0.0)
+		{
+			hspeed -= 0.025;
+			if (hspeed < 0.0)
+				hspeed = 0.0;
+		}
+		else if (player.is_key_down(KeyAction::RIGHT) && hspeed < 0.0)
+		{
+			hspeed += 0.025;
+			if (hspeed > 0.0)
+				hspeed = 0.0;
+		}
+	}
+
 	void PlayerFallState::update_state(Player& player) const
 	{
 		if (player.get_phobj().onground)
 		{
-			if (player.is_key_down(Keyboard::LEFT))
+			if (player.is_key_down(KeyAction::LEFT))
 			{
 				player.set_direction(false);
 				player.set_state(Char::WALK);
 			}
-			else if (player.is_key_down(Keyboard::RIGHT))
+			else if (player.is_key_down(KeyAction::RIGHT))
 			{
 				player.set_direction(true);
 				player.set_state(Char::WALK);
@@ -213,14 +246,14 @@ namespace jrc
 
 
 	// Prone
-	void PlayerProneState::send_action(Player& player, Keyboard::Action ka, bool down) const
+	void PlayerProneState::send_action(Player& player, KeyAction::Id ka, bool down) const
 	{
 		if (down)
 		{
 			switch (ka)
 			{
-			case Keyboard::JUMP:
-				if (player.get_phobj().enablejd && player.is_key_down(Keyboard::DOWN))
+			case KeyAction::JUMP:
+				if (player.get_phobj().enablejd && player.is_key_down(KeyAction::DOWN))
 				{
 					play_jumpsound();
 					player.get_phobj().y = player.get_phobj().groundbelow;
@@ -238,7 +271,7 @@ namespace jrc
 		{
 			switch (ka)
 			{
-			case Keyboard::DOWN:
+			case KeyAction::DOWN:
 				player.set_state(Char::STAND);
 				break;
 			}
@@ -253,25 +286,25 @@ namespace jrc
 
 
 	// Sitting
-	void PlayerSitState::send_action(Player& player, Keyboard::Action ka, bool down) const
+	void PlayerSitState::send_action(Player& player, KeyAction::Id ka, bool down) const
 	{
 		if (down)
 		{
 			switch (ka)
 			{
-			case Keyboard::LEFT:
+			case KeyAction::LEFT:
 				player.set_direction(false);
 				player.set_state(Char::WALK);
 				break;
-			case Keyboard::RIGHT:
+			case KeyAction::RIGHT:
 				player.set_direction(true);
 				player.set_state(Char::WALK);
 				break;
-			case Keyboard::JUMP:
+			case KeyAction::JUMP:
 				play_jumpsound();
 				player.set_state(Char::STAND);
 				break;
-			case Keyboard::UP:
+			case KeyAction::UP:
 				player.set_state(Char::SWIM);
 				break;
 			}
@@ -285,16 +318,16 @@ namespace jrc
 		player.get_phobj().type = player.is_underwater() ? PhysicsObject::SWIMMING : PhysicsObject::FLYING;
 	}
 
-	void PlayerFlyState::send_action(Player& player, Keyboard::Action ka, bool down) const
+	void PlayerFlyState::send_action(Player& player, KeyAction::Id ka, bool down) const
 	{
 		if (down)
 		{
 			switch (ka)
 			{
-			case Keyboard::LEFT:
+			case KeyAction::LEFT:
 				player.set_direction(false);
 				break;
-			case Keyboard::RIGHT:
+			case KeyAction::RIGHT:
 				player.set_direction(true);
 				break;
 			}
@@ -306,14 +339,14 @@ namespace jrc
 		if (player.is_attacking())
 			return;
 
-		if (player.is_key_down(Keyboard::LEFT))
+		if (player.is_key_down(KeyAction::LEFT))
 			player.get_phobj().hforce = -player.get_flyforce();
-		else if (player.is_key_down(Keyboard::RIGHT))
+		else if (player.is_key_down(KeyAction::RIGHT))
 			player.get_phobj().hforce = player.get_flyforce();
 
-		if (player.is_key_down(Keyboard::UP))
+		if (player.is_key_down(KeyAction::UP))
 			player.get_phobj().vforce = -player.get_flyforce();
-		else if (player.is_key_down(Keyboard::DOWN))
+		else if (player.is_key_down(KeyAction::DOWN))
 			player.get_phobj().vforce = player.get_flyforce();
 	}
 
@@ -322,17 +355,17 @@ namespace jrc
 		if (player.get_phobj().onground && player.is_underwater())
 		{
 			Char::State state;
-			if (player.is_key_down(Keyboard::LEFT))
+			if (player.is_key_down(KeyAction::LEFT))
 			{
 				state = Char::WALK;
 				player.set_direction(false);
 			}
-			else if (player.is_key_down(Keyboard::RIGHT))
+			else if (player.is_key_down(KeyAction::RIGHT))
 			{
 				state = Char::WALK;
 				player.set_direction(true);
 			}
-			else if (player.is_key_down(Keyboard::DOWN))
+			else if (player.is_key_down(KeyAction::DOWN))
 			{
 				state = Char::PRONE;
 			}
@@ -351,14 +384,14 @@ namespace jrc
 		player.get_phobj().type = PhysicsObject::FIXATED;
 	}
 
-	void PlayerClimbState::send_action(Player& player, Keyboard::Action ka, bool down) const
+	void PlayerClimbState::send_action(Player& player, KeyAction::Id ka, bool down) const
 	{
 		if (down)
 		{
 			switch (ka)
 			{
-			case Keyboard::JUMP:
-				if (player.is_key_down(Keyboard::LEFT))
+			case KeyAction::JUMP:
+				if (player.is_key_down(KeyAction::LEFT))
 				{
 					play_jumpsound();
 					player.set_direction(false);
@@ -366,7 +399,7 @@ namespace jrc
 					player.get_phobj().vspeed = -player.get_jumpforce() / 1.5;
 					cancel_ladder(player);
 				}
-				else if (player.is_key_down(Keyboard::RIGHT))
+				else if (player.is_key_down(KeyAction::RIGHT))
 				{
 					play_jumpsound();
 					player.set_direction(true);
@@ -381,11 +414,11 @@ namespace jrc
 
 	void PlayerClimbState::update(Player& player) const
 	{
-		if (player.is_key_down(Keyboard::UP))
+		if (player.is_key_down(KeyAction::UP))
 		{
 			player.get_phobj().vspeed = -player.get_climbforce();
 		}
-		else if (player.is_key_down(Keyboard::DOWN))
+		else if (player.is_key_down(KeyAction::DOWN))
 		{
 			player.get_phobj().vspeed = player.get_climbforce();
 		}
@@ -398,10 +431,9 @@ namespace jrc
 	void PlayerClimbState::update_state(Player& player) const
 	{
 		int16_t y = player.get_phobj().get_y();
-		bool downwards = player.is_key_down(Keyboard::DOWN);
-		bool felloff = player.get_ladder()
-			.maporfalse(&Ladder::felloff, y, downwards);
-		if (felloff)
+		bool downwards = player.is_key_down(KeyAction::DOWN);
+		auto ladder = player.get_ladder();
+		if (ladder && ladder->felloff(y, downwards))
 		{
 			cancel_ladder(player);
 		}

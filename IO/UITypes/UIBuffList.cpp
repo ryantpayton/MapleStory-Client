@@ -17,10 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIBuffList.h"
 
-#include "..\..\Data\DataFactory.h"
-#include "..\..\Util\Misc.h"
+#include "../../Data/ItemData.h"
+#include "../../Util/Misc.h"
 
-#include "nlnx\nx.hpp"
+#include "nlnx/nx.hpp"
+#include "nlnx/node.hpp"
 
 namespace jrc
 {
@@ -40,9 +41,8 @@ namespace jrc
 		}
 		else
 		{
-			icon = DataFactory::get()
-				.get_itemdata(-buffid)
-				.geticon(true);
+			icon = ItemData::get(-buffid)
+				.get_icon(true);
 		}
 	}
 

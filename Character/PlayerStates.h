@@ -29,7 +29,7 @@ namespace jrc
 		// Actions taken when transitioning into the state.
 		virtual void initialize(Player& player) const = 0;
 		// How to handle inputs while in the state.
-		virtual void send_action(Player& player, Keyboard::Action action, bool pressed) const = 0;
+		virtual void send_action(Player& player, KeyAction::Id action, bool pressed) const = 0;
 		// Actions taken in the player's update method, before physics are applied.
 		virtual void update(Player& player) const = 0;
 		// Transition into a new state after physics have been applied.
@@ -45,7 +45,7 @@ namespace jrc
 	{
 	public:
 		void initialize(Player&) const override {}
-		void send_action(Player&, Keyboard::Action, bool) const override {}
+		void send_action(Player&, KeyAction::Id, bool) const override {}
 		void update(Player&) const override {}
 
 		void update_state(Player& player) const override;
@@ -56,7 +56,7 @@ namespace jrc
 	{
 	public:
 		void initialize(Player& player) const override;
-		void send_action(Player& player, Keyboard::Action ka, bool down) const override;
+		void send_action(Player& player, KeyAction::Id ka, bool down) const override;
 		void update(Player&) const override;
 		void update_state(Player& player) const override;
 	};
@@ -65,7 +65,7 @@ namespace jrc
 	class PlayerWalkState : public PlayerState
 	{
 		void initialize(Player& player) const override;
-		void send_action(Player& player, Keyboard::Action ka, bool down) const override;
+		void send_action(Player& player, KeyAction::Id ka, bool down) const override;
 		void update(Player& player) const override;
 		void update_state(Player& player) const override;
 
@@ -79,8 +79,8 @@ namespace jrc
 	public:
 		void initialize(Player& player) const override;
 
-		void send_action(Player&, Keyboard::Action, bool) const override {}
-		void update(Player&) const override {}
+		void send_action(Player& player, KeyAction::Id ka, bool down) const override;
+		void update(Player& player) const override;
 
 		void update_state(Player& player) const override;
 	};
@@ -91,7 +91,7 @@ namespace jrc
 	public:
 		void initialize(Player&) const override {}
 
-		void send_action(Player& player, Keyboard::Action ka, bool down) const override;
+		void send_action(Player& player, KeyAction::Id ka, bool down) const override;
 		void update(Player&) const override;
 
 		void update_state(Player&) const override {}
@@ -103,7 +103,7 @@ namespace jrc
 	public:
 		void initialize(Player&) const override {}
 
-		void send_action(Player& player, Keyboard::Action ka, bool down) const override;
+		void send_action(Player& player, KeyAction::Id ka, bool down) const override;
 
 		void update(Player&) const override {}
 		void update_state(Player&) const override {}
@@ -113,7 +113,7 @@ namespace jrc
 	class PlayerFlyState : public PlayerState
 	{
 		void initialize(Player& player) const override;
-		void send_action(Player& player, Keyboard::Action ka, bool down) const override;
+		void send_action(Player& player, KeyAction::Id ka, bool down) const override;
 		void update(Player& player) const override;
 		void update_state(Player& player) const override;
 	};
@@ -123,7 +123,7 @@ namespace jrc
 	{
 	public:
 		void initialize(Player& player) const override;
-		void send_action(Player& player, Keyboard::Action ka, bool down) const override;
+		void send_action(Player& player, KeyAction::Id ka, bool down) const override;
 		void update(Player& player) const override;
 		void update_state(Player& player) const override;
 

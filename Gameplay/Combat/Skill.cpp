@@ -17,10 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Skill.h"
 
-#include "..\..\Util\Misc.h"
+#include "../../Character/SkillId.h"
+#include "../../Util/Misc.h"
 
-#include <nlnx\node.hpp>
-#include <nlnx\nx.hpp>
+#include "nlnx/node.hpp"
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
@@ -69,7 +70,15 @@ namespace jrc
 			}
 			else
 			{
-				useeffect = std::make_unique<NoUseEffect>();
+				switch (skillid)
+				{
+				case SkillId::IRON_BODY:
+				case SkillId::MAGIC_ARMOR:
+					useeffect = std::make_unique<IronBodyUseEffect>();
+					break;
+				default:
+					useeffect = std::make_unique<NoUseEffect>();
+				}
 			}
 		}
 
@@ -115,7 +124,7 @@ namespace jrc
 		{
 			action = std::make_unique<SingleAction>(src);
 		}
-		else if (data.is_offensive())
+		else if (data.is_attack())
 		{
 			bool bylevel = src["level"]["1"]["action"].data_type() == nl::node::type::string;
 			if (bylevel)
@@ -150,7 +159,19 @@ namespace jrc
 		}
 	}
 
-	void Skill::applystats(const Char& user, Attack& attack) const
+	void Skill::apply_useeffects(Char& user) const
+	{
+		useeffect->apply(user);
+
+		sound->play_use();
+	}
+
+	void Skill::apply_actions(Char& user, Attack::Type type) const
+	{
+		action->apply(user, type);
+	}
+
+	void Skill::apply_stats(const Char& user, Attack& attack) const
 	{
 		attack.skill = skillid;
 
@@ -194,7 +215,7 @@ namespace jrc
 		{
 			switch (skillid)
 			{
-			case THREE_SNAILS:
+			case SkillId::THREE_SNAILS:
 				switch (level)
 				{
 				case 1:
@@ -223,9 +244,26 @@ namespace jrc
 		}
 	}
 
-	bool Skill::isoffensive() const
+	void Skill::apply_hiteffects(const AttackUser& user, Mob& target) const
 	{
-		return data.is_offensive();
+		hiteffect->apply(user, target);
+
+		sound->play_hit();
+	}
+
+	Animation Skill::get_bullet(const Char& user, int32_t bulletid) const
+	{
+		return bullet->get(user, bulletid);
+	}
+
+	bool Skill::is_attack() const
+	{
+		return data.is_attack();
+	}
+
+	bool Skill::is_skill() const
+	{
+		return true;
 	}
 
 	int32_t Skill::get_id() const

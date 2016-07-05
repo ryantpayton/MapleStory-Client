@@ -16,16 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Window.h"
+
 #include "UI.h"
 
-#include "..\Console.h"
-#include "..\Constants.h"
-#include "..\Timer.h"
-#include "..\Configuration.h"
-#include "..\Graphics\GraphicsGL.h"
-#include "..\Gameplay\Stage.h"
-
-#include <iostream>
+#include "../Console.h"
+#include "../Constants.h"
+#include "../Configuration.h"
+#include "../Graphics/GraphicsGL.h"
 
 namespace jrc
 {
@@ -42,9 +39,10 @@ namespace jrc
 		glfwTerminate();
 	}
 
-	void error_callback(int error, const char* description)
+	void error_callback(int no, const char* description)
 	{
-		std::cout << "Error no.:" << std::to_string(error) << " : " << description << std::endl;
+		Console::get()
+			.print("glfw error: " + std::string(description) + " (" + std::to_string(no) + ")");
 	}
 
 	void key_callback(GLFWwindow*, int key, int, int action, int)
@@ -142,7 +140,7 @@ namespace jrc
 		return Error::NONE;
 	}
 
-	bool Window::notclosed() const
+	bool Window::not_closed() const
 	{
 		return glfwWindowShouldClose(glwnd) == 0;
 	}
@@ -173,7 +171,7 @@ namespace jrc
 		}
 	}
 
-	void Window::checkevents()
+	void Window::check_events()
 	{
 		int32_t tabstate = glfwGetKey(glwnd, GLFW_KEY_F11);
 		if (tabstate == GLFW_PRESS)

@@ -16,14 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\UIElement.h"
-#include "..\UIDragElement.h"
+#include "../UIElement.h"
+#include "../UIDragElement.h"
 
-#include "..\Components\Slider.h"
+#include "../Components/Slider.h"
 
-#include "..\..\Character\Job.h"
-#include "..\..\Character\Skillbook.h"
-#include "..\..\Graphics\Text.h"
+#include "../../Character/CharStats.h"
+#include "../../Character/Skillbook.h"
+#include "../../Graphics/Text.h"
 
 #include <vector>
 
@@ -67,7 +67,7 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 
-		UISkillbook();
+		UISkillbook(const CharStats& stats, const Skillbook& skillbook);
 
 		void draw(float alpha) const override;
 
@@ -75,7 +75,7 @@ namespace jrc
 		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
 
-		void update_stat(Maplestat::Value stat, int16_t value);
+		void update_stat(Maplestat::Id stat, int16_t value);
 		void update_skills(int32_t skill_id);
 
 	protected:
@@ -117,6 +117,7 @@ namespace jrc
 		static constexpr Point<int16_t> ICON_OFFSET = { 2, 33 };
 		static constexpr Point<int16_t> LINE_OFFSET = { 2, 37 };
 
+		const CharStats& stats;
 		const Skillbook& skillbook;
 
 		Slider slider;

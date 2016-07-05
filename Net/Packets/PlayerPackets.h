@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\OutPacket.h"
+#include "../OutPacket.h"
 
-#include "..\..\Character\Maplestat.h"
+#include "../../Character/Maplestat.h"
 
 namespace jrc
 {
@@ -27,10 +27,10 @@ namespace jrc
 	class SpendApPacket : public OutPacket
 	{
 	public:
-		SpendApPacket(Maplestat::Value stat) : OutPacket(SPEND_AP)
+		SpendApPacket(Maplestat::Id stat) : OutPacket(SPEND_AP)
 		{
-			writetime();
-			writeint(Maplestat::values[stat]);
+			write_time();
+			write_int(Maplestat::codes[stat]);
 		}
 	};
 
@@ -42,8 +42,8 @@ namespace jrc
 	public:
 		SpendSpPacket(int32_t skill_id) : OutPacket(SPEND_SP)
 		{
-			writetime();
-			writeint(skill_id);
+			write_time();
+			write_int(skill_id);
 		}
 	};
 }

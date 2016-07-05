@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\OutPacket.h"
+#include "../OutPacket.h"
 
 namespace jrc
 {
@@ -27,7 +27,7 @@ namespace jrc
 	public:
 		NameCharPacket(const std::string& name) : OutPacket(NAME_CHAR)
 		{
-			writestr(name);
+			write_string(name);
 		}
 	};
 
@@ -40,17 +40,17 @@ namespace jrc
 			uint8_t hairc, uint8_t skin, int32_t top, int32_t bot, int32_t shoes,
 			int32_t weapon, bool female) : OutPacket(CREATE_CHAR) {
 
-			writestr(name);
-			writeint(job);
-			writeint(face);
-			writeint(hair);
-			writeint(hairc);
-			writeint(skin);
-			writeint(top);
-			writeint(bot);
-			writeint(shoes);
-			writeint(weapon);
-			writech(female);
+			write_string(name);
+			write_int(job);
+			write_int(face);
+			write_int(hair);
+			write_int(hairc);
+			write_int(skin);
+			write_int(top);
+			write_int(bot);
+			write_int(shoes);
+			write_int(weapon);
+			write_byte(female);
 		}
 	};
 }

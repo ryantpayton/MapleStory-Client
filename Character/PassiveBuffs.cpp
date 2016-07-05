@@ -17,11 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "PassiveBuffs.h"
 
-#include "..\Gameplay\Combat\Skill.h"
-#include "..\Util\Misc.h"
+#include "../Character/SkillId.h"
+#include "../Util/Misc.h"
 
-#include <nlnx\node.hpp>
-#include <nlnx\nx.hpp>
+#include "nlnx/node.hpp"
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
@@ -93,35 +93,35 @@ namespace jrc
 	PassiveBuffs::PassiveBuffs()
 	{
 		// Beginner
-		buffs[Skill::ANGEL_BLESSING] = std::make_unique<AngelBlessingBuff>();
+		buffs[SkillId::ANGEL_BLESSING] = std::make_unique<AngelBlessingBuff>();
 
 		// Fighter
-		buffs[Skill::SWORD_MASTERY_FIGHTER] = std::make_unique<WeaponMasteryBuff<Weapon::SWORD_1H, Weapon::SWORD_2H>>();
-		buffs[Skill::AXE_MASTERY] = std::make_unique<WeaponMasteryBuff<Weapon::AXE_1H, Weapon::AXE_2H>>();
+		buffs[SkillId::SWORD_MASTERY_FIGHTER] = std::make_unique<WeaponMasteryBuff<Weapon::SWORD_1H, Weapon::SWORD_2H>>();
+		buffs[SkillId::AXE_MASTERY] = std::make_unique<WeaponMasteryBuff<Weapon::AXE_1H, Weapon::AXE_2H>>();
 
 		// Crusader
 
 		// Hero
-		buffs[Skill::ACHILLES_HERO] = std::make_unique<AchillesBuff>();
+		buffs[SkillId::ACHILLES_HERO] = std::make_unique<AchillesBuff>();
 
 		// Page
-		buffs[Skill::SWORD_MASTERY_FIGHTER] = std::make_unique<WeaponMasteryBuff<Weapon::SWORD_1H, Weapon::SWORD_2H>>();
-		buffs[Skill::BW_MASTERY] = std::make_unique<WeaponMasteryBuff<Weapon::MACE_1H, Weapon::MACE_2H>>();
+		buffs[SkillId::SWORD_MASTERY_FIGHTER] = std::make_unique<WeaponMasteryBuff<Weapon::SWORD_1H, Weapon::SWORD_2H>>();
+		buffs[SkillId::BW_MASTERY] = std::make_unique<WeaponMasteryBuff<Weapon::MACE_1H, Weapon::MACE_2H>>();
 
 		// White Knight
 
 		// Paladin
-		buffs[Skill::ACHILLES_PALADIN] = std::make_unique<AchillesBuff>();
+		buffs[SkillId::ACHILLES_PALADIN] = std::make_unique<AchillesBuff>();
 
 		// Spearman
-		buffs[Skill::SPEAR_MASTERY] = std::make_unique<WeaponMasteryBuff<Weapon::SPEAR>>();
-		buffs[Skill::PA_MASTERY] = std::make_unique<WeaponMasteryBuff<Weapon::POLEARM>>();
+		buffs[SkillId::SPEAR_MASTERY] = std::make_unique<WeaponMasteryBuff<Weapon::SPEAR>>();
+		buffs[SkillId::PA_MASTERY] = std::make_unique<WeaponMasteryBuff<Weapon::POLEARM>>();
 
 		// Dragon Knight
 
 		// Dark Knight
-		buffs[Skill::ACHILLES_DK] = std::make_unique<AchillesBuff>();
-		buffs[Skill::BERSERK] = std::make_unique<BerserkBuff>();
+		buffs[SkillId::ACHILLES_DK] = std::make_unique<AchillesBuff>();
+		buffs[SkillId::BERSERK] = std::make_unique<BerserkBuff>();
 	}
 
 	void PassiveBuffs::apply_buff(CharStats& stats, int32_t skill_id, int32_t skill_level) const

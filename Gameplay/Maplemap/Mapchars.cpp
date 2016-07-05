@@ -19,33 +19,42 @@
 
 namespace jrc
 {
-	void MapChars::draw(int8_t layer, double viewx, double viewy, float alpha) const
+	void MapChars::draw(Layer::Id layer, double viewx, double viewy, float alpha) const
 	{
 		chars.draw(layer, viewx, viewy, alpha);
 	}
 
 	void MapChars::update(const Physics& physics)
 	{
+		for (; !spawns.empty(); spawns.pop())
+		{
+			const CharSpawn& spawn = spawns.front();
+
+			int32_t cid = spawn.get_cid();
+			Optional<OtherChar> ochar = get_char(cid);
+			if (ochar)
+			{
+
+			}
+			else
+			{
+				chars.add(
+					spawn.instantiate()
+				);
+			}
+		}
+
 		chars.update(physics);
 	}
 
-	void MapChars::send_spawn(const CharSpawn& spawn)
+	void MapChars::spawn(CharSpawn&& spawn)
 	{
-		int32_t cid = spawn.getcid();
-		Optional<OtherChar> ochar = get_char(cid);
-		if (ochar)
-		{
-
-		}
-		else
-		{
-			chars.add(
-				spawn.instantiate()
-			);
-		}
+		spawns.emplace(
+			std::move(spawn)
+		);
 	}
 
-	void MapChars::remove_char(int32_t cid)
+	void MapChars::remove(int32_t cid)
 	{
 		chars.remove(cid);
 	}
@@ -57,8 +66,7 @@ namespace jrc
 
 	void MapChars::send_movement(int32_t cid, const std::vector<Movement>& movements)
 	{
-		Optional<OtherChar> otherchar = get_char(cid);
-		if (otherchar)
+		if (Optional<OtherChar> otherchar = get_char(cid))
 		{
 			otherchar->send_movement(movements);
 		}
@@ -66,17 +74,14 @@ namespace jrc
 
 	void MapChars::update_look(int32_t cid, const LookEntry& look)
 	{
-		Optional<OtherChar> otherchar = get_char(cid);
-		if (otherchar)
+		if (Optional<OtherChar> otherchar = get_char(cid))
 		{
 			otherchar->update_look(look);
 		}
-
 	}
 
 	Optional<OtherChar> MapChars::get_char(int32_t cid)
 	{
-		return chars.get(cid)
-			.reinterpret<OtherChar>();
+		return chars.get(cid);
 	}
 }

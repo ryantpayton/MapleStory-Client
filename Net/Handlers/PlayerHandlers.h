@@ -16,10 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\PacketHandler.h"
+#include "../PacketHandler.h"
 
-#include "..\..\Character\Buff.h"
-#include "..\..\Character\Maplestat.h"
+#include "../../Character/Buff.h"
+#include "../../Character/Maplestat.h"
 
 namespace jrc
 {
@@ -45,9 +45,9 @@ namespace jrc
 		void handle(InPacket& recv) const override;
 
 	private:
-		bool handle_stat(Maplestat::Value stat, InPacket& recv) const;
-		bool need_statsinfo_update(Maplestat::Value stat) const;
-		bool need_skillbook_update(Maplestat::Value stat) const;
+		bool handle_stat(Maplestat::Id stat, InPacket& recv) const;
+		bool need_statsinfo_update(Maplestat::Id stat) const;
+		bool need_skillbook_update(Maplestat::Id stat) const;
 	};
 
 
@@ -58,7 +58,7 @@ namespace jrc
 		void handle(InPacket& recv) const override;
 
 	protected:
-		virtual void handle_buff(InPacket& recv, Buff::Stat stat) const = 0;
+		virtual void handle_buff(InPacket& recv, Buffstat::Id stat) const = 0;
 	};
 
 
@@ -67,7 +67,7 @@ namespace jrc
 	class ApplyBuffHandler : public BuffHandler
 	{
 	protected:
-		void handle_buff(InPacket& recv, Buff::Stat stat) const override;
+		void handle_buff(InPacket& recv, Buffstat::Id stat) const override;
 	};
 
 
@@ -76,7 +76,7 @@ namespace jrc
 	class CancelBuffHandler : public BuffHandler
 	{
 	protected:
-		void handle_buff(InPacket& recv, Buff::Stat stat) const override;
+		void handle_buff(InPacket& recv, Buffstat::Id stat) const override;
 	};
 
 

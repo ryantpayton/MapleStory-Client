@@ -18,8 +18,8 @@
 #pragma once
 #include "Texture.h"
 
-#include "..\Util\Interpolated.h"
-#include "..\Util\Rectangle.h"
+#include "../Template/Interpolated.h"
+#include "../Template/Rectangle.h"
 
 #include <vector>
 

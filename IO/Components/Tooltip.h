@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\..\Util\Point.h"
+#include "../../Template/Point.h"
 
 #include <cstdint>
 
@@ -27,6 +27,16 @@ namespace jrc
 	class Tooltip
 	{
 	public:
+		// Possible parent UIs for Tooltips.
+		enum Parent
+		{
+			NONE,
+			EQUIPINVENTORY,
+			ITEMINVENTORY,
+			SKILLBOOK,
+			SHOP
+		};
+
 		virtual ~Tooltip() {}
 
 		virtual void draw(Point<int16_t> cursorpos) const = 0;

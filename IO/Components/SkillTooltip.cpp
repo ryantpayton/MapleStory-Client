@@ -17,10 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SkillTooltip.h"
 
-#include "..\..\Data\SkillData.h"
+#include "../../Data/SkillData.h"
 
-#include <nlnx\nx.hpp>
-#include <nlnx\node.hpp>
+#include "nlnx/nx.hpp"
+#include "nlnx/node.hpp"
 
 namespace jrc
 {
@@ -36,8 +36,9 @@ namespace jrc
 		skill_id = 0;
 	}
 
-	void SkillTooltip::set_skill(int32_t id, int32_t level, int32_t mlevel, int64_t expiration)
-	{
+	void SkillTooltip::set_skill(int32_t id, int32_t level, 
+		int32_t mlevel, int64_t expiration) {
+
 		if (skill_id == id)
 			return;
 

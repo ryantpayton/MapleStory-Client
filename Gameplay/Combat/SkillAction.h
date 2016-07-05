@@ -18,7 +18,7 @@
 #pragma once
 #include "Attack.h"
 
-#include "..\..\Character\Char.h"
+#include "../../Character/Char.h"
 
 namespace jrc
 {

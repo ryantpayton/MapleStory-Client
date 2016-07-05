@@ -16,11 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Mapobjects.h"
-#include <vector>
 
 namespace jrc
 {
-	void MapObjects::draw(int8_t layer, double viewx, double viewy, float alpha) const
+	void MapObjects::draw(Layer::Id layer, double viewx, double viewy, float alpha) const
 	{
 		for (auto& oid : layers[layer])
 		{
@@ -37,9 +36,7 @@ namespace jrc
 		for (auto iter = objects.begin(); iter != objects.end();)
 		{
 			bool remove_mob = false;
-			int32_t oid = iter->first;
-			MapObject* mmo = iter->second.get();
-			if (mmo)
+			if (auto& mmo = iter->second)
 			{
 				int8_t oldlayer = mmo->get_layer();
 				int8_t newlayer = mmo->update(physics);
@@ -49,6 +46,7 @@ namespace jrc
 				}
 				else if (newlayer != oldlayer)
 				{
+					int32_t oid = iter->first;
 					layers[oldlayer].erase(oid);
 					layers[newlayer].insert(oid);
 				}
@@ -73,21 +71,23 @@ namespace jrc
 	{
 		objects.clear();
 
-		for (uint8_t i = 0; i < MapLayers::NUM_LAYERS; i++)
+		for (auto& layer : layers)
 		{
-			layers[i].clear();
+			layer.clear();
 		}
+	}
+
+	bool MapObjects::contains(int32_t oid) const
+	{
+		return objects.count(oid) > 0;
 	}
 
 	void MapObjects::add(std::unique_ptr<MapObject> toadd)
 	{
-		if (toadd)
-		{
-			int32_t oid = toadd->get_oid();
-			int8_t layer = toadd->get_layer();
-			objects[oid] = std::move(toadd);
-			layers[layer].insert(oid);
-		}
+		int32_t oid = toadd->get_oid();
+		int8_t layer = toadd->get_layer();
+		objects[oid] = std::move(toadd);
+		layers[layer].insert(oid);
 	}
 
 	void MapObjects::remove(int32_t oid)

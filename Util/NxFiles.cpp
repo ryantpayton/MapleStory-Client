@@ -16,53 +16,38 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "NxFiles.h"
-#include "HashUtility.h"
 
-#include "nlnx\nx.hpp"
-#include "nlnx\node.hpp"
-#include "nlnx\bitmap.hpp"
+#include "../Console.h"
 
-#include <string>
+#include "nlnx/nx.hpp"
+#include "nlnx/node.hpp"
+
 #include <fstream>
 
 namespace jrc
 {
-	bool NxFiles::exists(const char* filename)
-	{
-		std::ifstream f(filename);
-		return f.good();
-	}
-
 	Error NxFiles::init()
 	{
-		for (auto filename : filenames)
+		for (auto filename : NxFiles::filenames)
 		{
-			if (!exists(filename))
-			{
-				return Error::MISSING_FILE;
-			}
+			if (std::ifstream{ filename }.good() == false)
+				return{ Error::MISSING_FILE, filename };
 		}
 
-		nl::nx::load_all();
+		try 
+		{
+			nl::nx::load_all();
+		}
+		catch (const std::exception& ex)
+		{
+			static const std::string message = ex.what();
+			return{ Error::NLNX, message.c_str() };
+		}
 
-		nl::bitmap bmptest = nl::nx::ui["Login.img"]["WorldSelect"]["BtChannel"]["layer:bg"];
-		if (!bmptest.data())
+		constexpr const char* POSTCHAOS_BITMAP = "Login.img/WorldSelect/BtChannel/layer:bg";
+		if (nl::nx::ui.resolve(POSTCHAOS_BITMAP).data_type() != nl::node::type::bitmap)
 			return Error::WRONG_UI_FILE;
 
 		return Error::NONE;
 	}
-
-#ifdef JOURNEY_USE_XXHASH
-	std::queue<std::string> NxFiles::gethashes(uint64_t seed)
-	{
-		std::queue<std::string> hashes;
-		for (auto& filename : filenames.values())
-		{
-			hashes.push(
-				HashUtility::getfilehash(filename, seed)
-				);
-		}
-		return hashes;
-	}
-#endif
 }

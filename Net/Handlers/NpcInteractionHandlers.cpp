@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "NpcInteractionHandlers.h"
 
-#include "..\..\IO\UI.h"
-#include "..\..\IO\UITypes\UINpcTalk.h"
-#include "..\..\IO\UITypes\UIShop.h"
+#include "../../IO/UI.h"
+#include "../../IO/UITypes/UINpcTalk.h"
+#include "../../IO/UITypes/UIShop.h"
 
 namespace jrc
 {
@@ -36,11 +36,10 @@ namespace jrc
 		if (msgtype == 0 && recv.length() > 0)
 			style = recv.read_short();
 
-		UI::get().add(Element<UINpcTalk>());
+		UI::get().emplace<UINpcTalk>();
 		UI::get().enable();
 
-		auto npctalk = UI::get().get_element<UINpcTalk>();
-		if (npctalk)
+		if (auto npctalk = UI::get().get_element<UINpcTalk>())
 			npctalk->change_text(npcid, msgtype, style, speaker, text);
 	}
 
@@ -48,7 +47,7 @@ namespace jrc
 	void OpenNpcShopHandler::handle(InPacket& recv) const
 	{
 		int32_t npcid = recv.read_int();
-		Optional<UIShop> oshop = UI::get().get_element<UIShop>();
+		auto oshop = UI::get().get_element<UIShop>();
 
 		if (!oshop)
 			return;

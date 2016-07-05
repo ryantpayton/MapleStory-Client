@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\OutPacket.h"
+#include "../OutPacket.h"
 
-#include "..\..\Gameplay\Combat\Attack.h"
+#include "../../Gameplay/Combat/Attack.h"
 
 namespace jrc
 {
@@ -34,25 +34,25 @@ namespace jrc
 
 			skip(1);
 
-			writech((attack.mobcount << 4) | attack.hitcount);
-			writeint(attack.skill);
+			write_byte((attack.mobcount << 4) | attack.hitcount);
+			write_int(attack.skill);
 			if (attack.charge > 0)
-				writeint(attack.charge);
+				write_int(attack.charge);
 
 			skip(8);
 
-			writech(attack.display);
-			writech(attack.toleft);
-			writech(attack.stance);
+			write_byte(attack.display);
+			write_byte(attack.toleft);
+			write_byte(attack.stance);
 
 			skip(1);
 
-			writech(attack.speed);
+			write_byte(attack.speed);
 
 			if (attack.type == Attack::RANGED)
 			{
 				skip(1);
-				writech(attack.toleft);
+				write_byte(attack.toleft);
 				skip(7);
 				// skip(4); if hurricane, piercing arrow or rapidfire
 			}
@@ -63,13 +63,13 @@ namespace jrc
 
 			for (auto& damagetomob : attack.damagelines)
 			{
-				writeint(damagetomob.first);
+				write_int(damagetomob.first);
 
 				skip(14);
 
 				for (auto& singledamage : damagetomob.second)
 				{
-					writeint(singledamage.first);
+					write_int(singledamage.first);
 					// add critical here
 				}
 
@@ -94,6 +94,34 @@ namespace jrc
 	};
 
 
+	// Tells the server that the player took damage.
+	// Opcode: TAKE_DAMAGE(48)
+	class TakeDamagePacket : public OutPacket
+	{
+	public:
+		enum From : int8_t
+		{
+			TOUCH = -1
+		};
+
+		TakeDamagePacket(int8_t from, uint8_t element, int32_t damage,
+			int32_t mobid, int32_t oid, uint8_t direction) : OutPacket(TAKE_DAMAGE) {
+
+			write_time();
+			write_byte(from);
+			write_byte(element);
+			write_int(damage);
+			write_int(mobid);
+			write_int(oid);
+			write_byte(direction);
+		}
+
+		// From mob attack result.
+		TakeDamagePacket(const MobAttackResult& result, From from)
+			: TakeDamagePacket(from, 0, result.damage, result.mobid, result.oid, result.direction) {}
+	};
+
+
 	// Packet which notifies the server of a skill usage.
 	// Opcode: USE_SKILL(91)
 	class UseSkillPacket : public OutPacket
@@ -101,9 +129,9 @@ namespace jrc
 	public:
 		UseSkillPacket(int32_t skillid, int32_t level) : OutPacket(USE_SKILL)
 		{
-			writetime();
-			writeint(skillid);
-			writech(static_cast<uint8_t>(level));
+			write_time();
+			write_int(skillid);
+			write_byte(static_cast<uint8_t>(level));
 
 			// if monster magnet : some more bytes
 

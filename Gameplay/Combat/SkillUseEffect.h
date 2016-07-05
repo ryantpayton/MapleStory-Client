@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\..\Character\Char.h"
-#include "..\..\Graphics\Animation.h"
-#include "..\..\Util\BoolPair.h"
+#include "../../Character/Char.h"
+#include "../../Graphics/Animation.h"
+#include "../../Template/BoolPair.h"
 
 #include <unordered_map>
 #include <vector>
@@ -45,7 +45,7 @@ namespace jrc
 
 			void apply(Char& target) const
 			{
-				target.show_effect(animation, z);
+				target.show_attack_effect(animation, z);
 			}
 
 		private:
@@ -113,5 +113,13 @@ namespace jrc
 
 	private:
 		std::map<uint16_t, Effect> effects;
+	};
+
+
+	// Use effect for Iron Body.
+	class IronBodyUseEffect : public SkillUseEffect
+	{
+	public:
+		void apply(Char& target) const override;
 	};
 }

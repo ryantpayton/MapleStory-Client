@@ -18,15 +18,14 @@
 #pragma once
 #include "Cursor.h"
 #include "Keyboard.h"
-#include "Element.h"
 #include "UIState.h"
 
-#include "Components\Icon.h"
-#include "Components\Textfield.h"
-#include "Components\ScrollingNotice.h"
+#include "Components/Icon.h"
+#include "Components/Textfield.h"
+#include "Components/ScrollingNotice.h"
 
-#include "..\Util\Singleton.h"
-#include "..\Util\Optional.h"
+#include "../Template/Singleton.h"
+#include "../Template/Optional.h"
 
 #include <unordered_map>
 
@@ -47,42 +46,40 @@ namespace jrc
 		void draw(float alpha) const;
 		void update();
 
+		void enable();
+		void disable();
+		void change_state(State state);
+
+		void quit();
+		bool not_quitted() const;
+
 		void send_cursor(Point<int16_t> pos);
 		void send_cursor(bool pressed);
+		void send_cursor(Point<int16_t> cursorpos, Cursor::State cursorstate);
 		void doubleclick();
 		void send_key(int32_t keycode, bool pressed);
+		void send_menu(KeyAction::Id action);
 
 		void set_scrollnotice(const std::string& notice);
 		void focus_textfield(Textfield* textfield);
 		void drag_icon(Icon* icon);
 
 		void add_keymapping(uint8_t no, uint8_t type, int32_t action);
-		void enable();
-		void disable();
-		void change_state(State state);
 
-		void add(const IElement& element);
-		void remove(UIElement::Type type);
-
-		void clear_tooltip(UIElement::Type type);
-		void show_equip(UIElement::Type parent, Equip* equip, int16_t slot);
-		void show_item(UIElement::Type parent, int32_t item_id);
-		void show_skill(UIElement::Type parent, int32_t skill_id, 
+		void clear_tooltip(Tooltip::Parent parent);
+		void show_equip(Tooltip::Parent parent, int16_t slot);
+		void show_item(Tooltip::Parent parent, int32_t item_id);
+		void show_skill(Tooltip::Parent parent, int32_t skill_id,
 			int32_t level, int32_t masterlevel, int64_t expiration);
 
 		template <class T, typename...Args>
-		void add_element(Args&&...args)
-		{
-			add(Element<T>(args...));
-		}
-
+		Optional<T> emplace(Args&&...args);
 		template <class T>
 		Optional<T> get_element();
+		void remove(UIElement::Type type);
 
 	private:
-		void send_cursor(Point<int16_t> cursorpos, Cursor::State cursorstate);
-
-		UIState::UPtr state;
+		std::unique_ptr<UIState> state;
 		Keyboard keyboard;
 		Cursor cursor;
 		ScrollingNotice scrollingnotice;
@@ -91,7 +88,20 @@ namespace jrc
 		std::unordered_map<int32_t, bool> is_key_down;
 
 		bool enabled;
+		bool quitted;
 	};
+
+	template <class T, typename...Args>
+	Optional<T> UI::emplace(Args&&...args)
+	{
+		if (auto iter = state->pre_add(T::TYPE, T::TOGGLED, T::FOCUSED))
+		{
+			(*iter).second = std::make_unique<T>(
+				std::forward<Args>(args)...
+				);
+		}
+		return state->get(T::TYPE);
+	}
 
 	template <class T>
 	Optional<T> UI::get_element()

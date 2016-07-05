@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Char.h"
-#include "Look\CharLook.h"
+#include "Look/CharLook.h"
 
-#include "..\Gameplay\Movement.h"
+#include "../Gameplay/Movement.h"
 
 #include <queue>
 #include <vector>
@@ -39,14 +39,14 @@ namespace jrc
 		void send_movement(const std::vector<Movement>& movements);
 		
 		// Update a skill level.
-		void updateskill(int32_t skillid, uint8_t skilllevel);
+		void update_skill(int32_t skillid, uint8_t skilllevel);
 		// Update the attack speed.
-		void updateattack(uint8_t attackspeed);
+		void update_speed(uint8_t attackspeed);
 		// Update the character look.
 		void update_look(const LookEntry& look);
 
 		// Return the character's attacking speed.
-		int8_t get_base_attackspeed() const override;
+		int8_t get_integer_attackspeed() const override;
 		// Return the character's level.
 		uint16_t get_level() const override;
 		// Return the character's level of a skill.

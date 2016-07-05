@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\OutPacket.h"
+#include "../OutPacket.h"
 
 namespace jrc
 {
@@ -30,9 +30,9 @@ namespace jrc
 	public:
 		SelectCharPacket(int32_t cid) : OutPacket(SELECT_CHAR)
 		{
-			writeint(cid);
-			writestr(MACS);
-			writestr(HWID);
+			write_int(cid);
+			write_string(MACS);
+			write_string(HWID);
 		}
 	};
 
@@ -45,10 +45,10 @@ namespace jrc
 		{
 			skip(1);
 
-			writeint(cid);
-			writestr(MACS);
-			writestr(HWID);
-			writestr(pic);
+			write_int(cid);
+			write_string(MACS);
+			write_string(HWID);
+			write_string(pic);
 		}
 	};
 
@@ -59,10 +59,10 @@ namespace jrc
 	public:
 		SelectCharPicPacket(const std::string& pic, int32_t cid) : OutPacket(SELECT_CHAR_PIC)
 		{
-			writestr(pic);
-			writeint(cid);
-			writestr(MACS);
-			writestr(HWID);
+			write_string(pic);
+			write_int(cid);
+			write_string(MACS);
+			write_string(HWID);
 		}
 	};
 
@@ -74,8 +74,8 @@ namespace jrc
 	public:
 		DeleteCharPacket(const std::string& pic, int32_t cid) : OutPacket(DELETE_CHAR)
 		{
-			writestr(pic);
-			writeint(cid);
+			write_string(pic);
+			write_int(cid);
 		}
 	};
 }

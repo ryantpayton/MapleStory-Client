@@ -16,20 +16,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Item.h"
+#include <string>
+#include <cstdint>
 
 namespace jrc
 {
-	class Pet : public Item
+	class Pet
 	{
 	public:
-		Pet(const ItemData&, int32_t, bool, int64_t, int64_t, std::string, int8_t, int16_t, int8_t);
-		~Pet();
+		Pet(int32_t item_id, int64_t expiration, const std::string& name,
+			uint8_t level, uint16_t closeness, uint8_t fullness);
+
 	private:
+		int32_t item_id;
+		int64_t expiration;
 		std::string petname;
-		char petlevel;
-		short closeness;
-		char fullness;
+		uint8_t petlevel;
+		uint16_t closeness;
+		uint8_t fullness;
 	};
 }
 

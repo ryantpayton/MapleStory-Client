@@ -17,11 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Char.h"
 
-#include "..\Constants.h"
-#include "..\Util\Misc.h"
+#include "../Constants.h"
+#include "../Data/WeaponData.h"
+#include "../Util/Misc.h"
 
-#include <nlnx\nx.hpp>
-#include <nlnx\node.hpp>
+#include "nlnx/nx.hpp"
+#include "nlnx/node.hpp"
 
 namespace jrc
 {
@@ -33,44 +34,77 @@ namespace jrc
 		Point<int16_t> absp = phobj.get_absolute(viewx, viewy, alpha);
 
 		effects.drawbelow(absp, alpha);
-		look.draw(absp, alpha);
+
+		Color color;
+		if (invincible)
+		{
+			float phi = invincible.alpha() * 30;
+			float rgb = 0.9f - 0.5f * std::abs(std::sinf(phi));
+			color = { rgb, rgb, rgb, 1.0f };
+		}
+		else
+		{
+			color = Color::WHITE;
+		}
+		look.draw({ absp, color }, alpha);
+
 		afterimage.draw(look.get_frame(), { absp, flip }, alpha);
 
-		for (int32_t i = 0; i < 3; i++)
+		if (ironbody)
 		{
-			if (pets[i].get_itemid() > 0)
-				pets[i].draw(viewx, viewy, alpha);
+			float ibalpha = ironbody.alpha();
+			float scale = 1.0f + ibalpha;
+			float opacity = 1.0f - ibalpha;
+			look.draw({ absp, scale, scale, opacity }, alpha);
+		}
+
+		for (auto& pet : pets)
+		{
+			if (pet.get_itemid())
+			{
+				pet.draw(viewx, viewy, alpha);
+			}
 		}
 
 		namelabel.draw(absp);
 		chatballoon.draw(absp - Point<int16_t>(0, 85));
 
 		effects.drawabove(absp, alpha);
+
+		for (auto& number : damagenumbers)
+		{
+			number.draw(viewx, viewy, alpha);
+		}
 	}
 
 	bool Char::update(const Physics& physics, float speed)
 	{
+		damagenumbers.remove_if([](DamageNumber& number) {
+			return number.update();
+		});
 		effects.update();
 		chatballoon.update();
+		invincible.update();
+		ironbody.update();
 
-		for (int32_t i = 0; i < 3; i++)
+		for (auto& pet : pets)
 		{
-			if (pets[i].get_itemid() > 0)
+			if (pet.get_itemid())
 			{
 				switch (state)
 				{
 				case LADDER:
 				case ROPE:
-					pets[i].set_stance(PetLook::HANG);
+					pet.set_stance(PetLook::HANG);
 					break;
 				case SWIM:
-					pets[i].set_stance(PetLook::FLY);
+					pet.set_stance(PetLook::FLY);
 					break;
 				default:
-					if (pets[i].get_stance() == PetLook::HANG || pets[i].get_stance() == PetLook::FLY)
-						pets[i].set_stance(PetLook::STAND);
+					if (pet.get_stance() == PetLook::HANG || pet.get_stance() == PetLook::FLY)
+						pet.set_stance(PetLook::STAND);
 				}
-				pets[i].update(physics, get_position());
+				pet.update(physics, get_position());
 			}
 		}
 
@@ -91,20 +125,13 @@ namespace jrc
 		switch (state)
 		{
 		case WALK:
-			return static_cast<float>(std::abs(phobj.hspeed) / 1.25);
+			return static_cast<float>(std::abs(phobj.hspeed));
 		case LADDER:
 		case ROPE:
 			return static_cast<float>(std::abs(phobj.vspeed));
 		default:
 			return 1.0f;
 		}
-	}
-
-	int8_t Char::get_integer_attackspeed() const
-	{
-		int8_t base_speed = get_base_attackspeed();
-		int8_t weapon_speed = look.get_equips().get_attackspeed();
-		return base_speed + weapon_speed;
 	}
 
 	float Char::get_real_attackspeed() const
@@ -132,16 +159,32 @@ namespace jrc
 		return is_climbing() ? 7 : phobj.fhlayer;
 	}
 
-	void Char::show_effect(Animation toshow, int8_t z)
+	void Char::show_attack_effect(Animation toshow, int8_t z)
 	{
 		float attackspeed = get_real_attackspeed();
-		effects.add(toshow, flip, z, attackspeed);
+		effects.add(toshow, { flip }, z, attackspeed);
 	}
 
-	void Char::show_effect_id(Effect toshow)
+	void Char::show_effect_id(CharEffect::Id toshow)
 	{
-		Animation effect = effectdata[toshow];
-		effects.add(effect);
+		effects.add(
+			chareffects[toshow]
+		);
+	}
+
+	void Char::show_iron_body()
+	{
+		ironbody.set_for(500);
+	}
+
+	void Char::show_damage(int32_t damage)
+	{
+		int16_t start_y = phobj.get_y() - 60;
+		int16_t x = phobj.get_x() - 10;
+		damagenumbers.emplace_back(DamageNumber::TOPLAYER, damage, start_y, x);
+
+		look.set_alerted(5000);
+		invincible.set_for(2000);
 	}
 
 	void Char::speak(const std::string& line)
@@ -149,18 +192,18 @@ namespace jrc
 		chatballoon.change_text(line);
 	}
 
-	void Char::change_look(Maplestat::Value stat, int32_t id)
+	void Char::change_look(Maplestat::Id stat, int32_t id)
 	{
 		switch (stat)
 		{
 		case Maplestat::SKIN:
-			look.setbody(id);
+			look.set_body(id);
 			break;
 		case Maplestat::FACE:
-			look.setface(id);
+			look.set_face(id);
 			break;
 		case Maplestat::HAIR:
-			look.sethair(id);
+			look.set_hair(id);
 			break;
 		}
 	}
@@ -177,14 +220,14 @@ namespace jrc
 			set_direction(true);
 		}
 
-		Char::State newstate = byvalue(statebyte);
+		Char::State newstate = by_value(statebyte);
 		set_state(newstate);
 	}
 
 	void Char::set_expression(int32_t expid)
 	{
-		Expression::Value expression = Expression::byaction(expid);
-		look.setexpression(expression);
+		Expression::Id expression = Expression::byaction(expid);
+		look.set_expression(expression);
 	}
 
 	void Char::attack(const std::string& action)
@@ -192,13 +235,15 @@ namespace jrc
 		look.set_action(action);
 
 		attacking = true;
+		look.set_alerted(5000);
 	}
 
-	void Char::attack(Stance::Value stance)
+	void Char::attack(Stance::Id stance)
 	{
 		look.attack(stance);
 
 		attacking = true;
+		look.set_alerted(5000);
 	}
 
 	void Char::attack(bool degenerate)
@@ -206,17 +251,20 @@ namespace jrc
 		look.attack(degenerate);
 
 		attacking = true;
+		look.set_alerted(5000);
 	}
 
 	void Char::set_afterimage(int32_t skill_id)
 	{
-		auto weapon = look.get_equips().get_weapon();
-		if (!weapon)
+		int32_t weapon_id = look.get_equips().get_weapon();
+		if (weapon_id <= 0)
 			return;
 
-		std::string stance_name = Stance::nameof(look.get_stance());
-		int16_t weapon_level = weapon->getreqstat(Maplestat::LEVEL);
-		const std::string& ai_name = weapon->get_afterimage();
+		const WeaponData& weapon = WeaponData::get(weapon_id);
+
+		std::string stance_name = Stance::names[look.get_stance()];
+		int16_t weapon_level = weapon.get_equipdata().get_reqstat(Maplestat::LEVEL);
+		const std::string& ai_name = weapon.get_afterimage();
 		afterimage = { skill_id, ai_name, stance_name, weapon_level };
 	}
 
@@ -235,7 +283,7 @@ namespace jrc
 	{
 		state = st;
 
-		Stance::Value stance = Stance::bystate(state);
+		Stance::Id stance = Stance::by_state(state);
 		look.set_stance(stance);
 	}
 
@@ -260,6 +308,11 @@ namespace jrc
 		}
 	}
 
+	bool Char::is_invincible() const
+	{
+		return invincible == true;
+	}
+
 	bool Char::is_sitting() const
 	{
 		return state == SIT;
@@ -273,6 +326,16 @@ namespace jrc
 	bool Char::is_twohanded() const
 	{
 		return look.get_equips().is_twohanded();
+	}
+
+	Weapon::Type Char::get_weapontype() const
+	{
+		int32_t weapon_id = look.get_equips().get_weapon();
+		if (weapon_id <= 0)
+			return Weapon::NONE;
+
+		return WeaponData::get(weapon_id)
+			.get_type();
 	}
 
 	bool Char::getflip() const
@@ -295,15 +358,22 @@ namespace jrc
 		return look;
 	}
 
+	PhysicsObject& Char::get_phobj()
+	{
+		return phobj;
+	}
+
+
 	void Char::init()
 	{
-		nl::node src = nl::nx::effect["BasicEff.img"];
+		CharLook::init();
 
-		effectdata[LEVELUP] = src["LevelUp"];
-		effectdata[JOBCHANGE] = src["JobChanged"];
-		effectdata[SCROLL_SUCCESS] = src["Enchant"]["Success"];
-		effectdata[SCROLL_FAILURE] = src["Enchant"]["Failure"];
-		effectdata[MONSTER_CARD] = src["MonsterBook"]["cardGet"];
+		nl::node src = nl::nx::effect["BasicEff.img"];
+		for (auto iter : CharEffect::PATHS)
+		{
+			chareffects.emplace(iter.first, src.resolve(iter.second));
+		}
 	}
-	EnumMap<Char::Effect, Animation> Char::effectdata;
+
+	EnumMap<CharEffect::Id, Animation> Char::chareffects;
 }

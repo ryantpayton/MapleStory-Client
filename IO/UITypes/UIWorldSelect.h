@@ -16,7 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\UIElement.h"
+#include "../UIElement.h"
+
+#include "../../Net/Login.h"
 
 namespace jrc
 {
@@ -27,9 +29,12 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
-		UIWorldSelect();
+		UIWorldSelect(std::vector<World> worlds, uint8_t worldcount);
 
 		void draw(float alpha) const override;
+
+		uint8_t get_world_id() const;
+		uint8_t get_channel_id() const;
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -42,7 +47,6 @@ namespace jrc
 			BT_CHANNEL0 = 17
 		};
 
-		size_t worldcount;
 		uint8_t worldid;
 		uint8_t channelid;
 	};

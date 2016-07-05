@@ -16,35 +16,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Messages.h"
-#include "UI.h"
 
-#include "UITypes\UIStatusbar.h"
+#include "UI.h"
+#include "UITypes/UIStatusbar.h"
 
 namespace jrc
 {
-	Messages::Messages()
+	const EnumMap<Messages::Type, const char*> Messages::messages =
 	{
-		messages[NONE] = "";
-
-		// Cannot use a skill
-		messages[SKILL_WEAPONTYPE] = "You cannot use this skill with this weapon.";
-		messages[SKILL_HPCOST] = "You do not have enough hp to use this skill.";
-		messages[SKILL_MPCOST] = "You do not have enough mp to use this skill.";
-		messages[SKILL_NOARROWS] = "You do not have enough arrows to use this attack.";
-		messages[SKILL_NOBULLETS] = "You do not have enough bullets to use this attack.";
-		messages[SKILL_NOSTARS] = "You do not have enough throwing stars to use this attack.";
-		messages[SKILL_COOLDOWN] = "You cannot use this skill as it is on cooldown.";
-
-		// Scrolling result
-		messages[SCROLL_SUCCESS] = "The scroll lights up and it's mysterious powers have been transferred to the item.";
-		messages[SCROLL_FAILURE] = "The scroll lights up but the item remains as if nothing happened.";
-		messages[SCROLL_DESTROYED] = "The item has been destroyed due to the overwhelming power of the scroll.";
-	}
-
-	std::string Messages::stringfor(Type type)
-	{
-		return messages[type];
-	}
+		"",
+		"You cannot use this skill with this weapon.",
+		"You do not have enough hp to use this skill.",
+		"You do not have enough mp to use this skill.",
+		"You do not have enough arrows to use this attack.",
+		"You do not have enough bullets to use this attack.",
+		"You do not have enough throwing stars to use this attack.",
+		"You cannot use this skill as it is on cooldown.",
+		"The scroll lights up and it's mysterious powers have been transferred to the item.",
+		"The scroll lights up but the item remains as if nothing happened.",
+		"The item has been destroyed due to the overwhelming power of the scroll."
+	};
 
 
 	InChatMessage::InChatMessage(Messages::Type t)
@@ -57,8 +48,8 @@ namespace jrc
 		if (type == Messages::NONE)
 			return;
 
-		UI::get().get_element<UIStatusbar>()
-			.if_present(&UIStatusbar::display_message, type, UIChatbar::RED);
+		if (auto statusbar = UI::get().get_element<UIStatusbar>())
+			statusbar->display_message(type, UIChatbar::RED);
 	}
 
 

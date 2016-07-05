@@ -16,8 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\..\Graphics\Animation.h"
-#include "..\..\Util\Rectangle.h"
+#include "../../Graphics/Animation.h"
+#include "../../Template/Rectangle.h"
 
 #include <cstdint>
 #include <map>
@@ -54,18 +54,19 @@ namespace jrc
 		struct WarpInfo
 		{
 			int32_t mapid;
-			std::string portal;
+			std::string toname;
+			std::string name;
+			bool intramap;
 			bool valid;
 
-			WarpInfo(int32_t mid, std::string pt)
-			{
-				mapid = mid;
-				portal = pt;
+			WarpInfo(int32_t m, bool i, std::string tn, std::string n)
+				: mapid(m), intramap(i), toname(tn), name(n) {
+
 				valid = mapid < 999999999;
 			}
 
 			WarpInfo()
-				: WarpInfo(999999999, "") {}
+				: WarpInfo(999999999, false, {}, {}) {}
 		};
 
 		Portal(const Animation* animation, Type type, std::string name, bool intramap,
@@ -76,7 +77,7 @@ namespace jrc
 		void draw(Point<int16_t> viewpos, float alpha) const;
 
 		std::string get_name() const;
-		Type gettype() const;
+		Type get_type() const;
 		Point<int16_t> get_position() const;
 		Rectangle<int16_t> bounds() const;
 

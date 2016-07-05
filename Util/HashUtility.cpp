@@ -30,7 +30,7 @@ namespace jrc
 		// 128 MB.
 		const size_t CHUNK_SIZE = 134217728;
 
-		std::string getfilehash(const char* filename, uint64_t seed)
+		std::string get_filehash(const char* filename, uint64_t seed)
 		{
 			// Open file stream.
 			std::ifstream file(filename);

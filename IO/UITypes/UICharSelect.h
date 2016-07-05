@@ -16,13 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\UIElement.h"
+#include "../UIElement.h"
 
-#include "..\Components\Charset.h"
-#include "..\Components\Nametag.h"
+#include "../Components/Charset.h"
+#include "../Components/Nametag.h"
 
-#include "..\..\Character\Look\CharLook.h"
-#include "..\..\Graphics\Sprite.h"
+#include "../../Character/Look/CharLook.h"
+#include "../../Graphics/Sprite.h"
+#include "../../Net/Login.h"
 
 namespace jrc
 {
@@ -34,13 +35,17 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
-		UICharSelect();
+		UICharSelect(std::vector<CharEntry> characters,
+			uint8_t count, uint8_t slots, uint8_t channel_id, int8_t pic);
 
 		void draw(float alpha) const override;
 		void update() override;
-
 		Button::State button_pressed(uint16_t id) override;
+
+		void add_character(CharEntry&& character);
 		void remove_char(int32_t cid);
+
+		const CharEntry& get_character(int32_t cid);
 
 	private:
 		void send_selection();
@@ -65,8 +70,6 @@ namespace jrc
 
 		static constexpr uint8_t PAGESIZE = 8;
 
-		Login& login;
-
 		Sprite emptyslot;
 		Charset levelset;
 		nl::node nametag;
@@ -74,9 +77,10 @@ namespace jrc
 		Point<int16_t> selworldpos;
 		Point<int16_t> charinfopos;
 
+		std::vector<CharEntry> characters;
 		std::vector<CharLook> charlooks;
 		std::vector<Nametag> nametags;
-		std::vector<int32_t> charids;
+		int8_t require_pic;
 
 		uint8_t charcount_absolute;
 		uint8_t charcount_relative;

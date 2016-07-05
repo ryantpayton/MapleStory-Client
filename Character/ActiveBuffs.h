@@ -19,7 +19,6 @@
 #include "Buff.h"
 #include "CharStats.h"
 
-#include <unordered_map>
 #include <memory>
 
 namespace jrc
@@ -34,7 +33,7 @@ namespace jrc
 	};
 
 
-	template<Equipstat::Value STAT>
+	template<Equipstat::Id STAT>
 	// Template for buffs which just add their value to a stat.
 	class SimpleStatBuff : public ActiveBuff
 	{
@@ -42,7 +41,7 @@ namespace jrc
 	};
 
 
-	template<Equipstat::Value STAT>
+	template<Equipstat::Id STAT>
 	// Template for buffs which apply an increase by percentage.
 	class PercentageStatBuff : public ActiveBuff
 	{
@@ -78,9 +77,9 @@ namespace jrc
 		ActiveBuffs();
 
 		// Return the buff effect associated with the buff stat.
-		void apply_buff(CharStats& stats, Buff::Stat stat, int16_t value) const;
+		void apply_buff(CharStats& stats, Buffstat::Id stat, int16_t value) const;
 
 	private:
-		std::unordered_map<Buff::Stat, std::unique_ptr<ActiveBuff>> buffs;
+		EnumMap<Buffstat::Id, std::unique_ptr<ActiveBuff>> buffs;
 	};
 }

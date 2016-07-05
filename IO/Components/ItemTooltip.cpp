@@ -17,10 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "ItemTooltip.h"
 
-#include "..\..\Data\DataFactory.h"
+#include "../../Data/ItemData.h"
 
-#include "nlnx\nx.hpp"
-#include "nlnx\node.hpp"
+#include "nlnx/nx.hpp"
+#include "nlnx/node.hpp"
 
 namespace jrc
 {
@@ -39,26 +39,28 @@ namespace jrc
 		itemid = 0;
 	}
 
-	void ItemTooltip::set_item(int32_t iid)
+	bool ItemTooltip::set_item(int32_t iid)
 	{
 		if (itemid == iid)
-			return;
+			return false;
 
 		itemid = iid;
 
 		if (itemid == 0)
-			return;
+			return false;
 
-		const ItemData& idata = DataFactory::get().get_itemdata(itemid);
+		const ItemData& idata = ItemData::get(itemid);
 
-		itemicon = idata.geticon(false);
+		itemicon = idata.get_icon(false);
 		name = { Text::A12B, Text::CENTER, Text::WHITE, idata.get_name(), 240 };
-		desc = { Text::A12M, Text::LEFT, Text::WHITE, idata.getdesc(), 150 };
+		desc = { Text::A12M, Text::LEFT, Text::WHITE, idata.get_desc(), 150 };
 
 		filllength = 81 + name.height();
 		int16_t descdelta = desc.height() - 80;
 		if (descdelta > 0)
 			filllength += descdelta;
+
+		return true;
 	}
 
 	void ItemTooltip::draw(Point<int16_t> pos) const

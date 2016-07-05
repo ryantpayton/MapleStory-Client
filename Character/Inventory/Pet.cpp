@@ -19,12 +19,12 @@
 
 namespace jrc
 {
-	Pet::Pet(const ItemData& idt, int32_t id, bool cs, int64_t uqi, int64_t exp, std::string name,
-		int8_t level, int16_t cls, int8_t ful) : Item(idt, id, cs, uqi, exp, 1, "", 0) {
-
-		petname = name;
-		petlevel = level;
-		closeness = cls;
-		fullness = ful;
-	}
+	Pet::Pet(int32_t item_id, int64_t expiration, const std::string& petname,
+		uint8_t level, uint16_t closeness, uint8_t fullness) :
+		item_id(item_id),
+		expiration(expiration),
+		petname(petname),
+		petlevel(level), 
+		closeness(closeness), 
+		fullness(fullness) {}
 }

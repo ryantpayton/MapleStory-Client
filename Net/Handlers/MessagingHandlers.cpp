@@ -17,13 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MessagingHandlers.h"
 
-#include "..\..\Character\Char.h"
-#include "..\..\Data\DataFactory.h"
-#include "..\..\Gameplay\Stage.h"
-#include "..\..\IO\UI.h"
-#include "..\..\IO\Messages.h"
-#include "..\..\IO\UITypes\UIStatusMessenger.h"
-#include "..\..\IO\UITypes\UIStatusbar.h"
+#include "../../Character/Char.h"
+#include "../../Data/ItemData.h"
+#include "../../Gameplay/Stage.h"
+#include "../../IO/UI.h"
+#include "../../IO/Messages.h"
+#include "../../IO/UITypes/UIStatusMessenger.h"
+#include "../../IO/UITypes/UIStatusbar.h"
 
 namespace jrc
 {
@@ -44,8 +44,8 @@ namespace jrc
 				int32_t itemid = recv.read_int();
 				int32_t qty = recv.read_int();
 
-				const ItemData& idata = DataFactory::get().get_itemdata(itemid);
-				if (!idata.is_loaded())
+				const ItemData& idata = ItemData::get(itemid);
+				if (!idata.is_valid())
 					return;
 
 				std::string name = idata.get_name();
@@ -103,8 +103,7 @@ namespace jrc
 
 	void ShowStatusInfoHandler::show_status(Text::Color color, const std::string& message) const
 	{
-		UIStatusMessenger* messenger = UI::get().get_element<UIStatusMessenger>().get();
-		if (messenger)
+		if (auto messenger = UI::get().get_element<UIStatusMessenger>())
 			messenger->show_status(color, message);
 	}
 
@@ -112,7 +111,7 @@ namespace jrc
 	void ServerMessageHandler::handle(InPacket& recv) const
 	{
 		int8_t type = recv.read_byte();
-		bool servermessage = recv.inspectbool();
+		bool servermessage = recv.inspect_bool();
 		if (servermessage)
 			recv.skip(1);
 		std::string message = recv.read_string();
@@ -154,16 +153,15 @@ namespace jrc
 		std::string message = recv.read_string();
 		int8_t type = recv.read_byte();
 
-		auto speaker = Stage::get().get_character(charid);
-		if (speaker)
+		if (auto character = Stage::get().get_character(charid))
 		{
-			message = speaker->get_name() + ": " + message;
-			speaker->speak(message);
+			message = character->get_name() + ": " + message;
+			character->speak(message);
 		}
 
 		auto linetype = static_cast<UIChatbar::LineType>(type);
-		UI::get().get_element<UIStatusbar>()
-			->send_chatline(message, linetype);
+		if (auto statusbar = UI::get().get_element<UIStatusbar>())
+			statusbar->send_chatline(message, linetype);
 	}
 
 
@@ -174,16 +172,16 @@ namespace jrc
 		bool destroyed = recv.read_bool();
 		recv.read_short(); // legendary spirit if 1
 
-		Char::Effect effect;
+		CharEffect::Id effect;
 		Messages::Type message;
 		if (success)
 		{
-			effect = Char::SCROLL_SUCCESS;
+			effect = CharEffect::SCROLL_SUCCESS;
 			message = Messages::SCROLL_SUCCESS;
 		}
 		else
 		{
-			effect = Char::SCROLL_FAILURE;
+			effect = CharEffect::SCROLL_FAILURE;
 			if (destroyed)
 			{
 				message = Messages::SCROLL_DESTROYED;
@@ -194,13 +192,14 @@ namespace jrc
 			}
 		}
 
-		Stage::get().get_character(cid)
-			.if_present(&Char::show_effect_id, effect);
+		Stage::get()
+			.show_character_effect(cid, effect);
 
 		if (Stage::get().is_player(cid))
 		{
-			UI::get().get_element<UIStatusbar>()
-				.if_present(&UIStatusbar::display_message, message, UIChatbar::RED);
+			if (auto statusbar = UI::get().get_element<UIStatusbar>())
+				statusbar->display_message(message, UIChatbar::RED);
+
 			UI::get().enable();
 		}
 	}
@@ -217,24 +216,23 @@ namespace jrc
 				int32_t itemid = recv.read_int();
 				int32_t qty = recv.read_int();
 
-				const ItemData& idata = DataFactory::get().get_itemdata(itemid);
-				if (!idata.is_loaded())
+				const ItemData& idata = ItemData::get(itemid);
+				if (!idata.is_valid())
 					return;
 
 				std::string name = idata.get_name();
 				std::string sign = (qty < 0) ? "-" : "+";
 				std::string message = "Gained an item: " + name + " (" + sign + std::to_string(qty) + ")";
 
-				auto statusbar = UI::get().get_element<UIStatusbar>();
-				if (statusbar)
-				{
+				if (auto statusbar = UI::get().get_element<UIStatusbar>())
 					statusbar->send_chatline(message, UIChatbar::BLUE);
-				}
 			}
 		}
 		else if (mode1 == 13) // card effect
 		{
-			Stage::get().get_player().show_effect_id(Char::MONSTER_CARD);
+			Stage::get()
+				.get_player()
+				.show_effect_id(CharEffect::MONSTER_CARD);
 		}
 		else if (mode1 == 18) // intro effect
 		{
@@ -249,7 +247,7 @@ namespace jrc
 		{
 			int32_t skillid = recv.read_int();
 			// more bytes, but we don't need them
-			Stage::get().show_player_buff(skillid);
+			Stage::get().get_combat().show_player_buff(skillid);
 		}
 	}
 }

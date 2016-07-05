@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Afterimage.h"
 
-#include "..\..\Util\Misc.h"
+#include "../../Util/Misc.h"
 
-#include <nlnx\nx.hpp>
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {

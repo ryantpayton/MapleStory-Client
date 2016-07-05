@@ -17,10 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "EquipTooltip.h"
 
-#include "..\..\Gameplay\Stage.h"
+#include "../../Gameplay/Stage.h"
+#include "../../Data/EquipData.h"
+#include "../../Data/WeaponData.h"
 
-#include "nlnx\nx.hpp"
-#include "nlnx\node.hpp"
+#include "nlnx/nx.hpp"
+#include "nlnx/node.hpp"
 
 namespace jrc
 {
@@ -88,33 +90,55 @@ namespace jrc
 		invpos = 0;
 	}
 
-	void EquipTooltip::set_equip(const Equip* equip, int16_t ivp)
+	void EquipTooltip::set_equip(Parent parent, int16_t ivp)
 	{
 		if (ivp == invpos)
 			return;
 
 		invpos = ivp;
 
-		if (equip == nullptr)
+		const Player& player = Stage::get().get_player();
+
+		InventoryType::Id invtype;
+		switch (parent)
+		{
+		case ITEMINVENTORY:
+		case SHOP:
+			invtype = InventoryType::EQUIP;
+			break;
+		case EQUIPINVENTORY:
+			invtype = InventoryType::EQUIPPED;
+			break;
+		default:
+			invtype = InventoryType::NONE;
+		}
+
+		auto oequip = player.get_inventory().get_equip(invtype, ivp);
+		if (!oequip)
 			return;
 
-		const Clothing& cloth = equip->getcloth();
-		const CharStats& stats = Stage::get().get_player().get_stats();
+		const Equip& equip = *oequip;
+
+		int32_t item_id = equip.get_item_id();
+
+		const EquipData& equipdata = EquipData::get(item_id);
+		const ItemData& itemdata = equipdata.get_itemdata();
+		const CharStats& stats = player.get_stats();
 		
 		height = 500;
 
-		itemicon = cloth.geticon(true);
+		itemicon = itemdata.get_icon(true);
 
 		for (auto& ms : requirements)
 		{
-			canequip[ms] = stats.get_stat(ms) >= cloth.getreqstat(ms);
-			std::string reqstr = std::to_string(cloth.getreqstat(ms));
+			canequip[ms] = stats.get_stat(ms) >= equipdata.get_reqstat(ms);
+			std::string reqstr = std::to_string(equipdata.get_reqstat(ms));
 			reqstr.insert(0, 3 - reqstr.size(), '0');
 			reqstatstrings[ms] = reqstr;
 		}
 
 		okjobs.clear();
-		switch (cloth.getreqstat(Maplestat::JOB))
+		switch (equipdata.get_reqstat(Maplestat::JOB))
 		{
 		case 0:
 			okjobs.push_back(0);
@@ -149,7 +173,7 @@ namespace jrc
 			canequip[Maplestat::JOB] = false;
 		}
 
-		prank = equip->getpotrank();
+		prank = equip.get_potrank();
 		switch (prank)
 		{
 		case Equip::POT_HIDDEN:
@@ -177,37 +201,37 @@ namespace jrc
 		}
 
 		Text::Color namecolor;
-		switch (equip->getquality())
+		switch (equip.get_quality())
 		{
-		case Equip::EQQ_GREY:
+		case EquipQuality::GREY:
 			namecolor = Text::LIGHTGREY;
 			break;
-		case Equip::EQQ_ORANGE:
+		case EquipQuality::ORANGE:
 			namecolor = Text::ORANGE;
 			break;
-		case Equip::EQQ_BLUE:
+		case EquipQuality::BLUE:
 			namecolor = Text::MEDIUMBLUE;
 			break;
-		case Equip::EQQ_VIOLET:
+		case EquipQuality::VIOLET:
 			namecolor = Text::VIOLET;
 			break;
-		case Equip::EQQ_GOLD:
+		case EquipQuality::GOLD:
 			namecolor = Text::YELLOW;
 			break;
 		default:
 			namecolor = Text::WHITE;
 		}
 
-		std::string namestr = cloth.get_name();
-		if (equip->get_level() > 0)
+		std::string namestr = itemdata.get_name();
+		if (equip.get_level() > 0)
 		{
 			namestr.append(" (+");
-			namestr.append(std::to_string(equip->get_level()));
+			namestr.append(std::to_string(equip.get_level()));
 			namestr.append(")");
 		}
 		name = { Text::A12B, Text::CENTER, namecolor, namestr, 400 };
 
-		std::string desctext = cloth.getdesc();
+		std::string desctext = itemdata.get_desc();
 		hasdesc = desctext.size() > 0;
 		if (hasdesc)
 		{
@@ -215,12 +239,12 @@ namespace jrc
 			height += desc.height() + 10;
 		}
 
-		category = { Text::A11L, Text::LEFT, Text::WHITE, "CATEGORY: " + cloth.gettype() };
+		category = { Text::A11L, Text::LEFT, Text::WHITE, "CATEGORY: " + equipdata.get_type() };
 
-		isweapon = cloth.isweapon();
-		if (isweapon)
+		is_weapon = equipdata.is_weapon();
+		if (is_weapon)
 		{
-			const Weapon& weapon = reinterpret_cast<const Weapon&>(cloth);
+			const WeaponData& weapon = WeaponData::get(item_id);
 			wepspeed = { Text::A11L, Text::LEFT, Text::WHITE, "ATTACK SPEED: " + weapon.getspeedstring() };
 		}
 		else
@@ -228,13 +252,13 @@ namespace jrc
 			height -= 18;
 		}
 
-		hasslots = (equip->get_slots() > 0) || (equip->get_level() > 0);
+		hasslots = (equip.get_slots() > 0) || (equip.get_level() > 0);
 		if (hasslots)
 		{
-			slots = { Text::A11L, Text::LEFT, Text::WHITE, "UPGRADES AVAILABLE: " + std::to_string(equip->get_slots()) };
+			slots = { Text::A11L, Text::LEFT, Text::WHITE, "UPGRADES AVAILABLE: " + std::to_string(equip.get_slots()) };
 
-			std::string vicious = std::to_string(equip->getvicious());
-			if (equip->getvicious() > 1)
+			std::string vicious = std::to_string(equip.get_vicious());
+			if (equip.get_vicious() > 1)
 				vicious.append(" (MAX) ");
 			hammers = { Text::A11L, Text::LEFT, Text::WHITE, "VICIOUS HAMMERS USED: " + vicious };
 		}
@@ -244,12 +268,12 @@ namespace jrc
 		}
 
 		statlabels.clear();
-		for (Equipstat::Value es = Equipstat::STR; es <= Equipstat::JUMP; es = static_cast<Equipstat::Value>(es + 1))
+		for (Equipstat::Id es = Equipstat::STR; es <= Equipstat::JUMP; es = static_cast<Equipstat::Id>(es + 1))
 		{
-			if (equip->get_stat(es) > 0)
+			if (equip.get_stat(es) > 0)
 			{
-				int16_t delta = equip->get_stat(es) - cloth.getdefstat(es);
-				std::string statstr = std::to_string(equip->get_stat(es));
+				int16_t delta = equip.get_stat(es) - equipdata.get_defstat(es);
+				std::string statstr = std::to_string(equip.get_stat(es));
 				if (delta != 0)
 				{
 					statstr.append(" (");
@@ -292,7 +316,7 @@ namespace jrc
 
 		pos.shift_y(12);
 
-		for (Maplestat::Value ms : requirements)
+		for (Maplestat::Id ms : requirements)
 		{
 			Point<int16_t> reqpos = reqstatpositions[ms];
 			bool reqok = canequip[ms];
@@ -319,7 +343,7 @@ namespace jrc
 
 		pos.shift_y(18);
 
-		if (isweapon)
+		if (is_weapon)
 		{
 			wepspeed.draw(pos + Point<int16_t>(10, 0));
 			pos.shift_y(18);

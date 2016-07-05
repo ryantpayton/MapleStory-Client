@@ -17,10 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Mapportals.h"
 
-#include "..\..\Constants.h"
-#include "..\..\Util\Misc.h"
+#include "../../Constants.h"
+#include "../../Util/Misc.h"
 
-#include <nlnx\nx.hpp>
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
@@ -65,7 +65,7 @@ namespace jrc
 		for (auto& iter : portals_by_id)
 		{
 			Portal& portal = iter.second;
-			switch (portal.gettype())
+			switch (portal.get_type())
 			{
 			case Portal::HIDDEN:
 			case Portal::TOUCH:
@@ -116,7 +116,7 @@ namespace jrc
 		}
 	}
 
-	Portal::WarpInfo MapPortals::find_at(Point<int16_t> playerpos)
+	Portal::WarpInfo MapPortals::find_warp_at(Point<int16_t> playerpos)
 	{
 		if (cooldown == 0)
 		{

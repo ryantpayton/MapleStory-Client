@@ -1,9 +1,9 @@
 #pragma once
-#include "..\..\Graphics\Text.h"
-#include "..\..\Graphics\Texture.h"
-#include "..\..\Util\BoolPair.h"
+#include "../../Graphics/Text.h"
+#include "../../Graphics/Texture.h"
+#include "../../Template/BoolPair.h"
 
-#include <nlnx\node.hpp>
+#include "nlnx/node.hpp"
 
 #include <vector>
 

@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -19,24 +19,26 @@
 
 namespace jrc
 {
-	Charset::Charset(nl::node src, Alignment alg)
-	{
+	Charset::Charset(nl::node src, Alignment alignment)
+		: alignment(alignment) {
+
 		for (auto sub : src)
 		{
-			if (sub.data_type() == nl::node::type::bitmap)
+			std::string name = sub.name();
+			if (sub.data_type() != nl::node::type::bitmap || name.empty())
+				continue;
+
+			char c = *name.begin();
+			if (c == '\\')
 			{
-				int8_t c = sub.name()[0];
-				if (c == '\\')
-				{
-					c = '/';
-				}
-				chars[c] = sub;
+				c = '/';
 			}
+			chars.emplace(c, sub);
 		}
-		alignment = alg;
 	}
 
-	Charset::~Charset() {}
+	Charset::Charset()
+		: alignment(LEFT) {}
 
 	void Charset::draw(int8_t c, const DrawArgument& args) const
 	{
@@ -51,59 +53,60 @@ namespace jrc
 		return iter != chars.end() ? iter->second.width() : 0;
 	}
 
-	int16_t Charset::draw(std::string str, const DrawArgument& args) const
+	int16_t Charset::draw(const std::string& text, const DrawArgument& args) const
 	{
-		size_t length = str.size();
 		int16_t shift = 0;
 		int16_t total = 0;
 
 		switch (alignment)
 		{
 		case CENTER:
-			for (size_t i = 0; i < length; i++)
+			for (char c : text)
 			{
-				total += getw(str[i]);
+				total += getw(c);
 			}
 			shift -= total / 2;
 		case LEFT:
-			for (size_t i = 0; i < length; i++)
+			for (char c : text)
 			{
-				draw(str[i], DrawArgument(args.getpos() + Point<int16_t>(shift, 0), args.getopacity()));
-				shift += getw(str[i]);
+				draw(c, args + Point<int16_t>(shift, 0));
+				shift += getw(c);
 			}
 			break;
 		case RIGHT:
-			for (size_t i = length - 1; i >= 0 && i < length; i--)
+			for (auto iter = text.rbegin(); iter != text.rend(); ++iter)
 			{
-				shift += getw(str[i]);
-				draw(str[i], DrawArgument(args.getpos() - Point<int16_t>(shift, 0), args.getopacity()));
+				char c = *iter;
+				shift += getw(c);
+				draw(c, args - Point<int16_t>(shift, 0));
 			}
 			break;
 		}
 		return shift;
 	}
 
-	int16_t Charset::draw(std::string str, int16_t hspace, const DrawArgument& args) const
+	int16_t Charset::draw(const std::string& text, int16_t hspace, const DrawArgument& args) const
 	{
-		size_t length = str.size();
+		size_t length = text.size();
 		int16_t shift = 0;
 
 		switch (alignment)
 		{
 		case CENTER:
-			shift -= (hspace * static_cast<int16_t>(length)) / 2;
+			shift -= hspace * static_cast<int16_t>(length) / 2;
 		case LEFT:
-			for (size_t i = 0; i < length; i++)
+			for (char c : text)
 			{
-				draw(str[i], DrawArgument(args.getpos() + Point<int16_t>(shift, 0), args.getopacity()));
+				draw(c, args + Point<int16_t>(shift, 0));
 				shift += hspace;
 			}
 			break;
 		case RIGHT:
-			for (size_t i = length - 1; i >= 0 && i < length; i--)
+			for (auto iter = text.rbegin(); iter != text.rend(); ++iter)
 			{
+				char c = *iter;
 				shift += hspace;
-				draw(str[i], DrawArgument(args.getpos() - Point<int16_t>(shift, 0), args.getopacity()));
+				draw(c, args - Point<int16_t>(shift, 0));
 			}
 			break;
 		}

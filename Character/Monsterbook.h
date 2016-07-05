@@ -26,7 +26,7 @@ namespace jrc
 	{
 	public:
 		Monsterbook();
-		~Monsterbook();
+
 		void set_cover(int32_t);
 		void add_card(int16_t, int8_t);
 	private:

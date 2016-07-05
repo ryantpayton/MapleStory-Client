@@ -15,19 +15,11 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "Npctext.h"
 
-#include "..\..\Data\DataFactory.h"
-#include "..\..\Gameplay\Stage.h"
+// This will be moved into UINpcTalk.
+// Keeping it so I can copypaste some code later.
 
-namespace jrc
-{
-	Npctext::Npctext(std::string, int16_t)
-	{
-	}
-
-	Npctext::Npctext() {}
-
+/*
 	size_t Npctext::parseL(std::string& str, size_t pos)
 	{
 		size_t next = str.find_first_of('#', pos + 2);
@@ -59,8 +51,8 @@ namespace jrc
 		{
 			try
 			{
-				const ItemData& idata = DataFactory::get().get_itemdata(std::stoi(str.substr(pos + 2, next)));
-				if (idata.is_loaded())
+				const ItemData& idata = ItemData::get(std::stoi(str.substr(pos + 2, next)));
+				if (idata.is_valid())
 				{
 					str.replace(str.begin() + pos, str.begin() + next + 1, idata.get_name());
 					return pos + idata.get_name().length() + 1;
@@ -124,10 +116,9 @@ namespace jrc
 		{
 			try
 			{
-				const ItemData& idata = DataFactory::get().get_itemdata(std::stoi(str.substr(pos + 2, next)));
-				if (idata.is_loaded())
+				if (const ItemData& idata = ItemData::get(std::stoi(str.substr(pos + 2, next))))
 				{
-					Image image = { idata.geticon(false), offset };
+					Image image = { idata.get_icon(false), offset };
 					image.texture.shift(Point<int16_t>(0, 32));
 					images.push_back(image);
 					offset.shift_x(32);
@@ -172,4 +163,4 @@ namespace jrc
 	{
 		return offset.y();
 	}
-}
+*/

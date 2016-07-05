@@ -17,40 +17,51 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MapNpcs.h"
 
-#include "..\..\Net\Packets\NpcInteractionPackets.h"
+#include "Npc.h"
+
+#include "../../Net/Packets/NpcInteractionPackets.h"
 
 namespace jrc
 {
-	void MapNpcs::draw(int8_t layer, double viewx, double viewy, float alpha) const
+	void MapNpcs::draw(Layer::Id layer, double viewx, double viewy, float alpha) const
 	{
 		npcs.draw(layer, viewx, viewy, alpha);
 	}
 
 	void MapNpcs::update(const Physics& physics)
 	{
+		for (; !spawns.empty(); spawns.pop())
+		{
+			const NpcSpawn& spawn = spawns.front();
+
+			int32_t oid = spawn.get_oid();
+			Optional<MapObject> npc = npcs.get(oid);
+			if (npc)
+			{
+				npc->makeactive();
+			}
+			else
+			{
+				npcs.add(
+					spawn.instantiate(physics)
+				);
+			}
+		}
+
 		npcs.update(physics);
 	}
 
-	void MapNpcs::send_spawn(const NpcSpawn& spawn, const Physics& physics)
+	void MapNpcs::spawn(NpcSpawn&& spawn)
 	{
-		int32_t oid = spawn.get_oid();
-		Optional<Npc> npc = getnpc(oid);
-		if (npc)
-		{
-			npc->makeactive();
-		}
-		else
-		{
-			npcs.add(
-				spawn.instantiate(physics)
-			);
-		}
+		spawns.emplace(
+			std::move(spawn)
+		);
 	}
 
-	void MapNpcs::remove_npc(int32_t oid)
+	void MapNpcs::remove(int32_t oid)
 	{
-		getnpc(oid)
-			.if_present(&Npc::deactivate);
+		if (auto npc = npcs.get(oid))
+			npc->deactivate();
 	}
 
 	void MapNpcs::clear()
@@ -79,11 +90,5 @@ namespace jrc
 			}
 		}
 		return Cursor::IDLE;
-	}
-
-	Optional<Npc> MapNpcs::getnpc(int32_t oid)
-	{
-		return npcs.get(oid)
-			.reinterpret<Npc>();
 	}
 }

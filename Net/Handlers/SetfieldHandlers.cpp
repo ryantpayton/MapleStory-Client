@@ -16,27 +16,29 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "SetfieldHandlers.h"
-#include "ItemParser.h"
 
-#include "..\..\Configuration.h"
-#include "..\..\Console.h"
-#include "..\..\Constants.h"
-#include "..\..\Timer.h"
-#include "..\..\Audio\Audio.h"
-#include "..\..\Gameplay\Stage.h"
-#include "..\..\Graphics\GraphicsGL.h"
-#include "..\..\IO\UI.h"
-#include "..\..\IO\Window.h"
-#include "..\..\Net\Session.h"
+#include "Helpers/ItemParser.h"
+#include "Helpers/LoginParser.h"
+
+#include "../../Configuration.h"
+#include "../../Console.h"
+#include "../../Constants.h"
+#include "../../Timer.h"
+#include "../../Audio/Audio.h"
+#include "../../Gameplay/Stage.h"
+#include "../../Graphics/GraphicsGL.h"
+#include "../../IO/UI.h"
+#include "../../IO/UITypes/UICharSelect.h"
+#include "../../IO/Window.h"
 
 namespace jrc
 {
-	void stagetransition(uint8_t portalid, int32_t mapid)
+	void SetfieldHandler::transition(int32_t mapid, uint8_t portalid) const
 	{
 		float fadestep = 0.025f;
-		Window::get().fadeout(fadestep, [](){
+		Window::get().fadeout(fadestep, [mapid, portalid](){
 			GraphicsGL::get().clear();
-			Stage::get().reload();
+			Stage::get().load(mapid, portalid);
 			UI::get().enable();
 			Timer::get().start();
 			GraphicsGL::get().unlock();
@@ -45,8 +47,6 @@ namespace jrc
 		GraphicsGL::get().lock();
 		Stage::get().clear();
 		Timer::get().start();
-
-		Stage::get().setmap(portalid, mapid);
 	}
 
 	void SetfieldHandler::handle(InPacket& recv) const
@@ -71,7 +71,7 @@ namespace jrc
 		int32_t mapid = recv.read_int();
 		int8_t portalid = recv.read_byte();
 
-		stagetransition(portalid, mapid);
+		transition(mapid, portalid);
 	}
 
 	void SetfieldHandler::set_field(InPacket& recv) const
@@ -80,17 +80,16 @@ namespace jrc
 
 		int32_t cid = recv.read_int();
 
-		const CharEntry& playerentry = Session::get()
-			.get_login()
-			.find_char_by_id(cid);
-		if (playerentry.cid != cid)
-		{
-			Console::get().print("Nonexisting cid: " + std::to_string(cid));
-		}
+		auto charselect = UI::get().get_element<UICharSelect>();
+		if (!charselect)
+			return;
 
+		const CharEntry& playerentry = charselect->get_character(cid);
+		if (playerentry.cid != cid)
+			return;
 		Stage::get().loadplayer(playerentry);
 
-		Session::get().get_login().parse_stats(recv);
+		LoginParser::parse_stats(recv);
 
 		Player& player = Stage::get().get_player();
 
@@ -118,7 +117,7 @@ namespace jrc
 		uint8_t portalid = player.get_stats().get_portal();
 		int32_t mapid = player.get_stats().get_mapid();
 
-		stagetransition(portalid, mapid);
+		transition(mapid, portalid);
 
 		Sound(Sound::GAMESTART).play();
 
@@ -128,17 +127,17 @@ namespace jrc
 	void SetfieldHandler::parse_inventory(InPacket& recv, Inventory& invent) const
 	{
 		invent.set_meso(recv.read_int());
-		invent.set_slots(Inventory::EQUIP, recv.read_byte());
-		invent.set_slots(Inventory::USE, recv.read_byte());
-		invent.set_slots(Inventory::SETUP, recv.read_byte());
-		invent.set_slots(Inventory::ETC, recv.read_byte());
-		invent.set_slots(Inventory::CASH, recv.read_byte());
+		invent.set_slotmax(InventoryType::EQUIP, recv.read_byte());
+		invent.set_slotmax(InventoryType::USE, recv.read_byte());
+		invent.set_slotmax(InventoryType::SETUP, recv.read_byte());
+		invent.set_slotmax(InventoryType::ETC, recv.read_byte());
+		invent.set_slotmax(InventoryType::CASH, recv.read_byte());
 
 		recv.skip(8);
 
 		for (size_t i = 0; i < 3; i++)
 		{
-			Inventory::Type inv = (i == 0) ? Inventory::EQUIPPED : Inventory::EQUIP;
+			InventoryType::Id inv = (i == 0) ? InventoryType::EQUIPPED : InventoryType::EQUIP;
 			int16_t pos = recv.read_short();
 			while (pos != 0)
 			{
@@ -150,14 +149,14 @@ namespace jrc
 
 		recv.skip(2);
 
-		Inventory::Type toparse[4] =
+		InventoryType::Id toparse[4] =
 		{
-			Inventory::USE, Inventory::SETUP, Inventory::ETC, Inventory::CASH
+			InventoryType::USE, InventoryType::SETUP, InventoryType::ETC, InventoryType::CASH
 		};
 
 		for (size_t i = 0; i < 4; i++)
 		{
-			Inventory::Type inv = toparse[i];
+			InventoryType::Id inv = toparse[i];
 			int8_t pos = recv.read_byte();
 			while (pos != 0)
 			{

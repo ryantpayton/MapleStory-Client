@@ -18,8 +18,8 @@
 #pragma once
 #include "Npc.h"
 
-#include <nlnx\node.hpp>
-#include <nlnx\nx.hpp>
+#include "nlnx/node.hpp"
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
@@ -102,7 +102,7 @@ namespace jrc
 			bool aniend = animations.at(stance).update();
 			if (aniend && states.size() > 0)
 			{
-				size_t next_stance = random.nextint(states.size() - 1);
+				size_t next_stance = random.next_int(states.size());
 				std::string new_stance = states[next_stance];
 				set_stance(new_stance);
 			}

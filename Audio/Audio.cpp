@@ -17,13 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Audio.h"
 
-#include "..\Configuration.h"
+#include "../Configuration.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <bass.h>
 
-#include <nlnx\nx.hpp>
-#include <nlnx\audio.hpp>
+#include "nlnx/nx.hpp"
+#include "nlnx/audio.hpp"
 
 namespace jrc
 {

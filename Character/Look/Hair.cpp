@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -16,7 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Hair.h"
-#include "nlnx\nx.hpp"
+
+#include "../../Console.h"
+
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
@@ -24,68 +27,77 @@ namespace jrc
 	{
 		nl::node hairnode = nl::nx::character["Hair"]["000" + std::to_string(hairid) + ".img"];
 
-		for (auto it = Stance::getit(); it.hasnext(); it.increment())
+		for (auto stance_iter : Stance::names)
 		{
-			Stance::Value stance = it.get();
-			std::string stancename = Stance::nameof(stance);
+			Stance::Id stance = stance_iter.first;
+			const std::string& stancename = stance_iter.second;
+
 			nl::node stancenode = hairnode[stancename];
-			if (stancenode.size() == 0)
+			if (!stancenode)
 				continue;
 
-			uint8_t frame = 0;
-			nl::node framenode = stancenode[std::to_string(frame)];
-			while (framenode.size() > 0)
+			for (uint8_t frame = 0; nl::node framenode = stancenode[frame]; ++frame)
 			{
-				for (nl::node partnode : framenode)
+				for (nl::node layernode : framenode)
 				{
-					std::string part = partnode.name();
-					Layer layer = layerbystring(part);
+					std::string layername = layernode.name();
+					auto layer_iter = layers_by_name.find(layername);
+					if (layer_iter == layers_by_name.end())
+					{
+						Console::get()
+							.print("Warning: Unhandled hair layer (" + layername + ")");
+						continue;
+					}
+					Layer layer = layer_iter->second;
 
-					stances[stance][layer][frame] = partnode;
-					stances[stance][layer][frame].shift(drawinfo.gethairpos(stance, frame));
-					stances[stance][layer][frame].shift(-Point<int16_t>(partnode["map"]["brow"]));
+					Point<int16_t> brow = layernode["map"]["brow"];
+					Point<int16_t> shift = drawinfo.gethairpos(stance, frame) - brow;
+
+					stances[stance][layer]
+						.emplace(frame, layernode)
+						.first->second.shift(shift);
 				}
-
-				frame++;
-				framenode = stancenode[std::to_string(frame)];
 			}
 		}
 
 		name = nl::nx::string["Eqp.img"]["Eqp"]["Hair"][std::to_string(hairid)]["name"];
 
-		static constexpr char* haircolors[8] =
+		constexpr size_t NUM_COLORS = 8;
+		constexpr char* haircolors[NUM_COLORS] =
 		{
 			"Black", "Red", "Orange", "Blonde", "Green", "Blue", "Violet", "Brown"
 		};
-		color = (hairid % 10 < 8) ? haircolors[hairid % 10] : "";
+		size_t index = hairid % 10;
+		color = (index < NUM_COLORS) ? haircolors[index] : "";
 	}
 
-	Hair::Hair() 
+	void Hair::draw(Stance::Id stance, Layer layer, uint8_t frame, const DrawArgument& args) const
 	{
-		name = "";
-		color = "";
-	}
-
-	void Hair::draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const
-	{
-		auto layerit = stances[stance].find(layer);
-		if (layerit == stances[stance].end())
-			return;
-
-		auto frameit = layerit->second.find(frame);
-		if (frameit == layerit->second.end())
+		auto frameit = stances[stance][layer].find(frame);
+		if (frameit == stances[stance][layer].end())
 			return;
 
 		frameit->second.draw(args);
 	}
 
-	std::string Hair::get_name() const
+	const std::string& Hair::get_name() const
 	{ 
 		return name; 
 	}
 
-	std::string Hair::getcolor() const
+	const std::string& Hair::getcolor() const
 	{ 
 		return color; 
 	}
+
+
+	const std::unordered_map<std::string, Hair::Layer> Hair::layers_by_name =
+	{
+		{ "hair", Hair::DEFAULT },
+		{ "hairBelowBody", Hair::BELOWBODY },
+		{ "hairOverHead", Hair::OVERHEAD },
+		{ "hairShade", Hair::SHADE },
+		{ "backHair", Hair::BACK },
+		{ "backHairBelowCap", Hair::BELOWCAP }
+	};
 }

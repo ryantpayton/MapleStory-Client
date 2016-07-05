@@ -74,6 +74,16 @@ namespace jrc
 		}
 	}
 
+	void UI::quit()
+	{
+		quitted = true;
+	}
+
+	bool UI::not_quitted() const
+	{
+		return !quitted;
+	}
+
 	void UI::send_cursor(Point<int16_t> cursorpos, Cursor::State cursorstate)
 	{
 		Cursor::State nextstate = state->send_cursor(cursorstate, cursorpos);
@@ -95,7 +105,7 @@ namespace jrc
 			switch (tstate)
 			{
 			case Cursor::IDLE:
-				focusedtextfield = Optional<Textfield>();
+				focusedtextfield = {};
 				break;
 			}
 		}
@@ -121,13 +131,13 @@ namespace jrc
 			{
 				if (!pressed)
 				{
-					Keyboard::Action action = keyboard.getctrlaction(keycode);
+					KeyAction::Id action = keyboard.get_ctrl_action(keycode);
 					switch (action)
 					{
-					case Keyboard::COPY:
+					case KeyAction::COPY:
 						Window::get().setclipboard(focusedtextfield->get_text());
 						break;
-					case Keyboard::PASTE:
+					case KeyAction::PASTE:
 						focusedtextfield->add_string(Window::get().getclipboard());
 						break;
 					}
@@ -136,20 +146,25 @@ namespace jrc
 			else
 			{
 				bool shift = is_key_down[keyboard.shiftcode()];
-				Keyboard::Mapping mapping = keyboard.gettextmapping(keycode, shift);
+				Keyboard::Mapping mapping = keyboard.get_text_mapping(keycode, shift);
 				focusedtextfield->send_key(mapping.type, mapping.action, pressed);
 			}
 		}
 		else
 		{
-			Optional<const Keyboard::Mapping> mapping = keyboard.getmapping(keycode);
-			if (mapping)
+			Keyboard::Mapping mapping = keyboard.get_mapping(keycode);
+			if (mapping.type)
 			{
-				state->send_key(mapping->type, mapping->action, pressed);
+				state->send_key(mapping.type, mapping.action, pressed);
 			}
 		}
 
 		is_key_down[keycode] = pressed;
+	}
+
+	void UI::send_menu(KeyAction::Id action)
+	{
+		state->send_key(KeyType::MENU, action, true);
 	}
 
 	void UI::set_scrollnotice(const std::string& notice)
@@ -177,36 +192,30 @@ namespace jrc
 		keyboard.assign(no, type, action);
 	}
 
-	void UI::add(const IElement& element)
+	void UI::clear_tooltip(Tooltip::Parent parent)
 	{
-		focusedtextfield = Optional<Textfield>();
-		state->add(element);
+		state->clear_tooltip(parent);
 	}
 
-	void UI::remove(UIElement::Type type)
+	void UI::show_equip(Tooltip::Parent parent, int16_t slot)
 	{
-		focusedtextfield = Optional<Textfield>();
-		state->remove(type);
+		state->show_equip(parent, slot);
 	}
 
-	void UI::clear_tooltip(UIElement::Type type)
-	{
-		state->clear_tooltip(type);
-	}
-
-	void UI::show_equip(UIElement::Type parent, Equip* equip, int16_t slot)
-	{
-		state->show_equip(parent, equip, slot);
-	}
-
-	void UI::show_item(UIElement::Type parent, int32_t item_id)
+	void UI::show_item(Tooltip::Parent parent, int32_t item_id)
 	{
 		state->show_item(parent, item_id);
 	}
 
-	void UI::show_skill(UIElement::Type parent, int32_t skill_id,
+	void UI::show_skill(Tooltip::Parent parent, int32_t skill_id, 
 		int32_t level, int32_t masterlevel, int64_t expiration) {
 
 		state->show_skill(parent, skill_id, level, masterlevel, expiration);
+	}
+
+	void UI::remove(UIElement::Type type)
+	{
+		focusedtextfield = {};
+		state->remove(type);
 	}
 }

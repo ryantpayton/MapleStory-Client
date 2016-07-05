@@ -16,11 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Cursor.h"
-#include "..\Keyboard.h"
+#include "../Cursor.h"
+#include "../Keyboard.h"
 
-#include "..\..\Graphics\Text.h"
-#include "..\..\Util\Rectangle.h"
+#include "../../Graphics/Text.h"
+#include "../../Template/Rectangle.h"
 
 #include <map>
 #include <functional>
@@ -44,7 +44,7 @@ namespace jrc
 
 		void draw(Point<int16_t> position) const;
 		void update(Point<int16_t> parentpos);
-		void send_key(Keyboard::Keytype type, int32_t code, bool down);
+		void send_key(KeyType::Id type, int32_t code, bool down);
 		void add_string(const std::string& str);
 
 		void set_state(State state);
@@ -52,7 +52,7 @@ namespace jrc
 		void set_cryptchar(int8_t character);
 
 		void set_enter_callback(std::function<void(std::string)> onreturn);
-		void set_key_callback(Keyboard::Action key, std::function<void(void)> action);
+		void set_key_callback(KeyAction::Id key, std::function<void(void)> action);
 
 		Cursor::State send_cursor(Point<int16_t> cursorpos, bool clicked);
 

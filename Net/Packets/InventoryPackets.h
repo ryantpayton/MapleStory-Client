@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\OutPacket.h"
+#include "../OutPacket.h"
 
-#include "..\..\Character\Inventory\Inventory.h"
+#include "../../Character/Inventory/Inventory.h"
 
 namespace jrc
 {
@@ -27,10 +27,10 @@ namespace jrc
 	class GatherItemsPacket : public OutPacket
 	{
 	public:
-		GatherItemsPacket(Inventory::Type type) : OutPacket(GATHER_ITEMS)
+		GatherItemsPacket(InventoryType::Id type) : OutPacket(GATHER_ITEMS)
 		{
-			writetime();
-			writech(type);
+			write_time();
+			write_byte(type);
 		}
 	};
 
@@ -40,10 +40,10 @@ namespace jrc
 	class SortItemsPacket : public OutPacket
 	{
 	public:
-		SortItemsPacket(Inventory::Type type) : OutPacket(SORT_ITEMS)
+		SortItemsPacket(InventoryType::Id type) : OutPacket(SORT_ITEMS)
 		{
-			writetime();
-			writech(type);
+			write_time();
+			write_byte(type);
 		}
 	};
 
@@ -53,13 +53,14 @@ namespace jrc
 	class MoveItemPacket : public OutPacket
 	{
 	public:
-		MoveItemPacket(Inventory::Type type, int16_t slot, int16_t action, int16_t qty) : OutPacket(MOVE_ITEM)
-		{
-			writetime();
-			writech(type);
-			writesh(slot);
-			writesh(action);
-			writesh(qty);
+		MoveItemPacket(InventoryType::Id type, int16_t slot,
+			int16_t action, int16_t qty) : OutPacket(MOVE_ITEM) {
+
+			write_time();
+			write_byte(type);
+			write_short(slot);
+			write_short(action);
+			write_short(qty);
 		}
 	};
 
@@ -69,8 +70,8 @@ namespace jrc
 	class EquipItemPacket : public MoveItemPacket
 	{
 	public:
-		EquipItemPacket(int16_t src, Equipslot::Value dest) 
-			: MoveItemPacket(Inventory::EQUIP, src, -Equipslot::values[dest], 1) {}
+		EquipItemPacket(int16_t src, Equipslot::Id dest) 
+			: MoveItemPacket(InventoryType::EQUIP, src, -dest, 1) {}
 	};
 
 
@@ -80,7 +81,7 @@ namespace jrc
 	{
 	public:
 		UnequipItemPacket(int16_t src, int16_t dest) 
-			: MoveItemPacket(Inventory::EQUIPPED, -src, dest, 1) {}
+			: MoveItemPacket(InventoryType::EQUIPPED, -src, dest, 1) {}
 	};
 
 
@@ -91,9 +92,9 @@ namespace jrc
 	public:
 		UseItemPacket(int16_t slot, int32_t itemid) : OutPacket(USE_ITEM)
 		{
-			writetime();
-			writesh(slot);
-			writeint(itemid);
+			write_time();
+			write_short(slot);
+			write_int(itemid);
 		}
 	};
 
@@ -110,15 +111,15 @@ namespace jrc
 			WHITESCROLL = 0x02
 		};
 
-		ScrollEquipPacket(int16_t source, Equipslot::Value target, uint8_t flags) : OutPacket(SCROLL_EQUIP)
+		ScrollEquipPacket(int16_t source, Equipslot::Id target, uint8_t flags) : OutPacket(SCROLL_EQUIP)
 		{
-			writetime();
-			writesh(source);
-			writesh(-Equipslot::values[target]);
-			writesh(flags);
+			write_time();
+			write_short(source);
+			write_short(-target);
+			write_short(flags);
 		}
 
-		ScrollEquipPacket(int16_t source, Equipslot::Value target)
+		ScrollEquipPacket(int16_t source, Equipslot::Id target)
 			: ScrollEquipPacket(source, target, 0) {}
 	};
 }

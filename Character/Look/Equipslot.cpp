@@ -17,12 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Equipslot.h"
 
-#include "..\..\Console.h"
-#include "..\..\Util\Literals.h"
+#include "../../Console.h"
 
 namespace jrc
 {
-	Equipslot::Value Equipslot::byid(size_t id)
+	Equipslot::Id Equipslot::by_id(size_t id)
 	{
 		if (id >= LENGTH)
 		{
@@ -30,27 +29,6 @@ namespace jrc
 				.print("Invalid Equipslot id: " + std::to_string(id));
 			return NONE;
 		}
-		return static_cast<Value>(id);
+		return static_cast<Id>(id);
 	}
-
-	Equipslot::Value Equipslot::byvalue(int16_t v)
-	{
-		for (auto iter : values)
-		{
-			if (iter.second == v)
-				return iter.first;
-		}
-
-		Console::get()
-			.print("Invalid equip slot value: " + std::to_string(v));
-		return NONE;
-	}
-
-
-	const EnumMap<Equipslot::Value, int16_t> Equipslot::values =
-	{
-		0_s, 1_s, 2_s, 3_s, 4_s, 5_s, 6_s,
-		7_s, 8_s, 9_s, 10_s, 11_s, 12_s, 13_s,
-		15_s, 16_s, 17_s, 18_s, 19_s, 49_s, 50_s
-	};
 }

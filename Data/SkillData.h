@@ -16,12 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Cache.h"
+#include "../Character/Inventory/Weapon.h"
+#include "../Graphics/Texture.h"
+#include "../Template/Rectangle.h"
+#include "../Template/Cache.h"
 
-#include "..\Character\Look\Weapon.h"
-#include "..\Graphics\Texture.h"
-#include "..\Util\Rectangle.h"
-
+#include <string>
 #include <array>
 #include <unordered_map>
 
@@ -60,8 +60,16 @@ namespace jrc
 				hrange(hrange), range(range) {}
 		};
 
+		// Skill flags, unfortunately these just have to be hardcoded
+		enum Flags
+		{
+			NONE = 0x0000,
+			ATTACK = 0x0001,
+			RANGED = 0x0002
+		};
+
 		// Icon types
-		enum Type
+		enum Icon
 		{
 			NORMAL,
 			DISABLED,
@@ -72,7 +80,7 @@ namespace jrc
 		// Return wether the skill is passive.
 		bool is_passive() const;
 		// Return wether the skill is an attack skill.
-		bool is_offensive() const;
+		bool is_attack() const;
 		// Return wether this skill is invisible in the skill book ui.
 		bool is_invisible() const;
 		// Return the default masterlevel.
@@ -93,21 +101,23 @@ namespace jrc
 
 		// Return one of the skill icons.
 		// Cannot fail if type is a valid enum.
-		const Texture& get_icon(Type type) const;
+		const Texture& get_icon(Icon icon) const;
 
 	private:
+		// Allow the cache to use the constructor.
 		friend Cache<SkillData>;
+		// Load a skill from the game files.
 		SkillData(int32_t id);
-		// Check wether the skill is an attack skill which lacks the 'hit' node.
-		// Unfortunately, this has to be hardcoded.
-		bool is_irregular_attack(int32_t id) const;
+
+		// Get some hardcoded information.
+		int32_t flags_of(int32_t id) const;
 
 		std::unordered_map<int32_t, Stats> stats;
 		std::string element;
 		Weapon::Type reqweapon;
 		int32_t masterlevel;
+		int32_t flags;
 		bool passive;
-		bool offensive;
 		bool invisible;
 
 		std::string name;

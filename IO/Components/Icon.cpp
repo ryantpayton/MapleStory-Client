@@ -19,7 +19,7 @@
 
 #include "Charset.h"
 
-#include <nlnx\nx.hpp>
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
@@ -61,12 +61,12 @@ namespace jrc
 		type->drop_on_stage();
 	}
 
-	void Icon::drop_on_equips(Equipslot::Value eqslot) const
+	void Icon::drop_on_equips(Equipslot::Id eqslot) const
 	{
 		type->drop_on_equips(eqslot);
 	}
 
-	void Icon::drop_on_items(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const
+	void Icon::drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const
 	{
 		type->drop_on_items(tab, eqslot, slot, equip);
 	}
@@ -82,12 +82,12 @@ namespace jrc
 		dragged = false;
 	}
 
-	void Icon::setcount(int16_t c)
+	void Icon::set_count(int16_t c)
 	{
 		count = c;
 	}
 
-	int16_t Icon::getcount() const
+	int16_t Icon::get_count() const
 	{
 		return count;
 	}

@@ -22,10 +22,11 @@
 namespace jrc
 {
 	CharStats::CharStats(const StatsEntry& s)
-		: name(s.name), petids(s.petids), job(s.job),
+		: name(s.name), petids(s.petids),
 		exp(s.exp), mapid(s.mapid), portal(s.portal),
 		rank(s.rank), jobrank(s.jobrank), basestats(s.stats) {
 
+		job = basestats[Maplestat::JOB];
 		init_totalstats();
 	}
 
@@ -60,6 +61,7 @@ namespace jrc
 		ignoredef = 0.0f;
 		stance = 0.0f;
 		resiststatus = 0.0f;
+		reducedamage = 0.0f;
 	}
 
 	void CharStats::close_totalstats()
@@ -68,7 +70,7 @@ namespace jrc
 
 		for (auto iter : percentages)
 		{
-			Equipstat::Value stat = iter.first;
+			Equipstat::Id stat = iter.first;
 			int32_t total = totalstats[stat];
 			total += static_cast<int32_t>(total * iter.second);
 			set_total(stat, total);
@@ -91,13 +93,13 @@ namespace jrc
 
 	int32_t CharStats::get_primary_stat() const
 	{
-		Equipstat::Value primary = job.get_primary(weapontype);
+		Equipstat::Id primary = job.get_primary(weapontype);
 		return static_cast<int32_t>(get_multiplier() * get_total(primary));
 	}
 
 	int32_t CharStats::get_secondary_stat() const
 	{
-		Equipstat::Value secondary = job.get_secondary(weapontype);
+		Equipstat::Id secondary = job.get_secondary(weapontype);
 		return get_total(secondary);
 	}
 
@@ -133,12 +135,12 @@ namespace jrc
 		}
 	}
 
-	void CharStats::set_stat(Maplestat::Value stat, uint16_t value)
+	void CharStats::set_stat(Maplestat::Id stat, uint16_t value)
 	{
 		basestats[stat] = value;
 	}
 
-	void CharStats::set_total(Equipstat::Value stat, int32_t value)
+	void CharStats::set_total(Equipstat::Id stat, int32_t value)
 	{
 		auto iter = EQSTAT_CAPS.find(stat);
 		if (iter != EQSTAT_CAPS.end())
@@ -152,20 +154,20 @@ namespace jrc
 		totalstats[stat] = value;
 	}
 
-	void CharStats::add_buff(Equipstat::Value stat, int32_t value)
+	void CharStats::add_buff(Equipstat::Id stat, int32_t value)
 	{
 		int32_t current = get_total(stat);
 		set_total(stat, current + value);
 		buffdeltas[stat] += value;
 	}
 
-	void CharStats::add_value(Equipstat::Value stat, int32_t value)
+	void CharStats::add_value(Equipstat::Id stat, int32_t value)
 	{
 		int32_t current = get_total(stat);
 		set_total(stat, current + value);
 	}
 
-	void CharStats::add_percent(Equipstat::Value stat, float percent)
+	void CharStats::add_percent(Equipstat::Id stat, float percent)
 	{
 		percentages[stat] += percent;
 	}
@@ -206,23 +208,30 @@ namespace jrc
 		job.change_job(id);
 	}
 
-	bool CharStats::isdamagebuffed() const
+	int32_t CharStats::calculate_damage(int32_t mobatk) const
+	{
+		// random stuff, need to find the actual formula somewhere
+		int32_t reduceatk = mobatk / 2 + mobatk / get_total(Equipstat::WDEF);
+		return reduceatk - static_cast<int32_t>(reduceatk * reducedamage);
+	}
+
+	bool CharStats::is_damage_buffed() const
 	{
 		return get_buffdelta(Equipstat::WATK) > 0
 			|| get_buffdelta(Equipstat::MAGIC) > 0;
 	}
 
-	uint16_t CharStats::get_stat(Maplestat::Value stat) const
+	uint16_t CharStats::get_stat(Maplestat::Id stat) const
 	{
 		return basestats[stat];
 	}
 
-	int32_t CharStats::get_total(Equipstat::Value stat) const
+	int32_t CharStats::get_total(Equipstat::Id stat) const
 	{
 		return totalstats[stat];
 	}
 
-	int32_t CharStats::get_buffdelta(Equipstat::Value stat) const
+	int32_t CharStats::get_buffdelta(Equipstat::Id stat) const
 	{
 		return buffdeltas[stat];
 	}
@@ -280,6 +289,11 @@ namespace jrc
 	float CharStats::get_maxcrit() const
 	{
 		return maxcrit;
+	}
+
+	float CharStats::get_reducedamage() const
+	{
+		return reducedamage;
 	}
 
 	float CharStats::get_bossdmg() const

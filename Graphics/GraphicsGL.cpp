@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "GraphicsGL.h"
 
-#include "..\Configuration.h"
-#include "..\Console.h"
+#include "../Configuration.h"
+#include "../Console.h"
 
 #include <algorithm>
 
@@ -399,25 +399,19 @@ namespace jrc
 			).first->second;
 	}
 
-	void GraphicsGL::draw(const nl::bitmap& bmp, int16_t x, int16_t y, int16_t w, int16_t h, float opacity,
-		float xscale, float yscale, int16_t centerx, int16_t centery, float angle) {
+	void GraphicsGL::draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect,
+		const Color& color, float angle) {
 
-		if (locked || opacity <= 0.0f)
+		if (locked)
 			return;
 
-		GLshort left = centerx + static_cast<GLshort>(xscale * (x - centerx));
-		GLshort right = centerx + static_cast<GLshort>(xscale * (x + w - centerx));
-		GLshort top = centery + static_cast<GLshort>(yscale * (y - centery));
-		GLshort bottom = centery + static_cast<GLshort>(yscale * (y + h - centery));
+		if (color.invisible())
+			return;
 
-		GLshort tl = std::min(left, right);
-		GLshort tr = std::max(left, right);
-		GLshort tt = std::min(top, bottom) + Constants::VIEWYOFFSET;
-		GLshort tb = std::max(top, bottom) + Constants::VIEWYOFFSET;
-		if (tr > 0 && tl < Constants::VIEWWIDTH && tb > 0 && tt < Constants::VIEWHEIGHT)
-		{
-			quads.emplace_back(left, right, top, bottom, getoffset(bmp), 1.0f, 1.0f, 1.0f, opacity, angle);
-		}
+		if (!rect.overlaps(SCREEN))
+			return;
+
+		quads.emplace_back(rect.l(), rect.r(), rect.t(), rect.b(), getoffset(bmp), color, angle);
 	}
 
 	Text::Layout GraphicsGL::createlayout(const std::string& text, Text::Font id,
@@ -615,16 +609,21 @@ namespace jrc
 	}
 
 
-	void GraphicsGL::drawtext(const std::string& text, const Text::Layout& layout, Text::Font id, Text::Color colorid,
-		Text::Background background, Point<int16_t> origin, float opacity) {
+	void GraphicsGL::drawtext(const DrawArgument& args, const std::string& text,
+		const Text::Layout& layout, Text::Font id, Text::Color colorid, Text::Background background) {
 
-		if (locked || text.empty() || opacity <= 0.0f)
+		if (locked)
+			return;
+
+		const Color& color = args.get_color();
+
+		if (text.empty() || color.invisible())
 			return;
 
 		const Font& font = fonts[id];
 
-		GLshort x = origin.x();
-		GLshort y = origin.y();
+		GLshort x = args.getpos().x();
+		GLshort y = args.getpos().y();
 		GLshort w = layout.width();
 		GLshort h = layout.height();
 
@@ -637,10 +636,11 @@ namespace jrc
 				GLshort right = left + w + 3;
 				GLshort top = y + line.position.y() - font.linespace() + 5;
 				GLshort bottom = top + h - 2;
+				Color ntcolor{ 0.0f, 0.0f, 0.0f, 0.6f };
 
-				quads.emplace_back(left, right, top, bottom, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f, 0.0f);
-				quads.emplace_back(left - 1, left, top + 1, bottom - 1, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f, 0.0f);
-				quads.emplace_back(right, right + 1, top + 1, bottom - 1, nulloffset, 0.0f, 0.0f, 0.0f, 0.6f, 0.0f);
+				quads.emplace_back(left, right, top, bottom, nulloffset, ntcolor, 0.0f);
+				quads.emplace_back(left - 1, left, top + 1, bottom - 1, nulloffset, ntcolor, 0.0f);
+				quads.emplace_back(right, right + 1, top + 1, bottom - 1, nulloffset, ntcolor, 0.0f);
 			}
 			break;
 		}
@@ -670,15 +670,16 @@ namespace jrc
 				GLshort ax = position.x() + layout.advance(word.first);
 				GLshort ay = position.y();
 
-				const GLfloat* color;
+				const GLfloat* wordcolor;
 				if (word.color < Text::NUM_COLORS)
 				{
-					color = colors[word.color];
+					wordcolor = colors[word.color];
 				}
 				else
 				{
-					color = colors[colorid];
+					wordcolor = colors[colorid];
 				}
+				Color abscolor = color * Color{ wordcolor[0], wordcolor[1], wordcolor[2], 1.0f };
 
 				for (size_t pos = word.first; pos < word.last; ++pos)
 				{
@@ -698,7 +699,7 @@ namespace jrc
 					if (chw <= 0 || chh <= 0)
 						continue;
 
-					quads.emplace_back(chx, chx + chw, chy, chy + chh, ch.offset, color[0], color[1], color[2], opacity, 0.0f);
+					quads.emplace_back(chx, chx + chw, chy, chy + chh, ch.offset, abscolor, 0.0f);
 				}
 			}
 		}
@@ -709,7 +710,7 @@ namespace jrc
 		if (locked)
 			return;
 
-		quads.emplace_back(x, x + w, y, y + h, nulloffset, r, g, b, a, 0.0f);
+		quads.emplace_back(x, x + w, y, y + h, nulloffset, Color{ r, g, b, a }, 0.0f);
 	}
 
 	void GraphicsGL::drawscreenfill(float r, float g, float b, float a)
@@ -732,13 +733,10 @@ namespace jrc
 		bool coverscene = opacity != 1.0f;
 		if (coverscene)
 		{
-			int16_t left = 0;
-			int16_t right = left + Constants::VIEWWIDTH;
-			int16_t top = -Constants::VIEWYOFFSET;
-			int16_t bottom = top + Constants::VIEWHEIGHT;
 			float complement = 1.0f - opacity;
+			Color color{ 0.0f, 0.0f, 0.0f, complement };
 
-			quads.emplace_back(left, right, top, bottom, nulloffset, 0.0f, 0.0f, 0.0f, complement, 0.0f);
+			quads.emplace_back(SCREEN.l(), SCREEN.r(), SCREEN.t(), SCREEN.b(), nulloffset, color, 0.0f);
 		}
 
 		glClearColor(1.0, 1.0, 1.0, 1.0);

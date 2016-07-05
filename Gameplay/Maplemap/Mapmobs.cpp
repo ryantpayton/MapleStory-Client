@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -17,93 +17,90 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "MapMobs.h"
 
-#include "..\..\Constants.h"
+#include "Mob.h"
 
-#include <map>
 #include <algorithm>
+#include <iostream>
+#include <map>
 
 namespace jrc
 {
-	void MapMobs::draw(int8_t layer, double viewx, double viewy, float alpha) const
+	void MapMobs::draw(Layer::Id layer, double viewx, double viewy, float alpha) const
 	{
 		mobs.draw(layer, viewx, viewy, alpha);
-
-		switch (layer)
-		{
-		case 7:
-			for (auto& be : bulleteffects)
-			{
-				be.draw(viewx, viewy, alpha);
-			}
-			for (auto& dn : damagenumbers)
-			{
-				dn.draw(viewx, viewy, alpha);
-			}
-			break;
-		}
 	}
 
 	void MapMobs::update(const Physics& physics)
 	{
-		damageeffects.remove_if([&](DamageEffect& effect){
-			bool apply = effect.update();
-			if (apply)
-			{
-				apply_effect(effect);
-			}
-			return apply;
-		});
+		for (; !spawns.empty(); spawns.pop())
+		{
+			const MobSpawn& spawn = spawns.front();
 
-		bulleteffects.remove_if([&](BulletEffect& mb){
-			Optional<Mob> mob = get_mob(mb.get_target());
-			if (mob)
+			if (Optional<Mob> mob = mobs.get(spawn.get_oid()))
 			{
-				Point<int16_t> target = mob->get_headpos();
-				bool apply = mb.update(target);
-				if (apply)
+				int8_t mode = spawn.get_mode();
+				if (mode > 0)
 				{
-					apply_effect(mb.get_effect());
+					mob->set_control(mode);
 				}
-				return apply;
+				mob->makeactive();
 			}
 			else
 			{
-				return mb.update();
+				mobs.add(
+					spawn.instantiate()
+				);
 			}
-		});
-
-		damagenumbers.remove_if([](DamageNumber& dn){
-			return dn.update();
-		});
+		}
 
 		mobs.update(physics);
 	}
 
-	void MapMobs::send_spawn(const MobSpawn& spawn)
+	void MapMobs::spawn(MobSpawn&& spawn)
 	{
-		Optional<Mob> mob = get_mob(spawn.get_oid());
-		if (mob)
-		{
-			int8_t mode = spawn.getmode();
-			if (mode > 0)
-				mob->set_control(mode);
+		spawns.emplace(
+			std::move(spawn)
+		);
+	}
 
-			mob->makeactive();
-		}
-		else
+	void MapMobs::remove(int32_t oid, int8_t animation)
+	{
+		if (Optional<Mob> mob = mobs.get(oid))
 		{
-			mobs.add(
-				spawn.instantiate()
-			);
+			mob->kill(animation);
 		}
 	}
 
-	void MapMobs::send_movement(int32_t oid, Point<int16_t> start, const Movement& movement)
+	void MapMobs::clear()
 	{
-		Optional<Mob> mob = get_mob(oid);
-		if (mob)
+		mobs.clear();
+	}
+
+	void MapMobs::set_control(int32_t oid, bool control)
+	{
+		int8_t mode = control ? 1 : 0;
+		if (Optional<Mob> mob = mobs.get(oid))
 		{
-			mob->send_movement(start, movement);
+			mob->set_control(mode);
+		}
+	}
+
+	void MapMobs::send_mobhp(int32_t oid, int8_t percent, uint16_t playerlevel)
+	{
+		if (Optional<Mob> mob = mobs.get(oid))
+		{
+			mob->show_hp(percent, playerlevel);
+		}
+	}
+
+	void MapMobs::send_movement(int32_t oid, Point<int16_t> start, std::vector<Movement>&& movements)
+	{
+		if (Optional<Mob> mob = mobs.get(oid))
+		{
+			mob->send_movement(
+				start, 
+				std::move(movements)
+			);
 		}
 	}
 
@@ -114,21 +111,21 @@ namespace jrc
 		int16_t hrange = static_cast<int16_t>(range.l() * attack.hrange);
 		if (attack.toleft)
 		{
-			range = Rectangle<int16_t>(
+			range = {
 				origin.x() + hrange,
 				origin.x() + range.r(),
 				origin.y() + range.t(),
 				origin.y() + range.b()
-				);
+			};
 		}
 		else
 		{
-			range = Rectangle<int16_t>(
+			range = {
 				origin.x() - range.r(),
 				origin.x() - hrange,
 				origin.y() + range.t(),
 				origin.y() + range.b()
-				);
+			};
 		}
 
 		uint8_t mobcount = attack.mobcount;
@@ -136,132 +133,47 @@ namespace jrc
 		std::vector<int32_t> targets = find_closest(range, origin, mobcount);
 		for (auto& target : targets)
 		{
-			Optional<Mob> mob = get_mob(target);
-			if (mob)
+			if (Optional<Mob> mob = mobs.get(target))
 			{
-				result.damagelines[target] = mob->calculatedamage(attack);
+				result.damagelines[target] = mob->calculate_damage(attack);
 				result.mobcount++;
+
+				if (result.mobcount == 1)
+				{
+					result.first_oid = target;
+				}
+				if (result.mobcount == mobcount)
+				{
+					result.last_oid = target;
+				}
 			}
 		}
 		return result;
 	}
 
-	void MapMobs::show_result(const Char& user, const SpecialMove& move, const AttackResult& result)
-	{
-		AttackUser attackuser = { 
-			user.get_skilllevel(move.get_id()), 
-			user.get_level(), 
-			user.is_twohanded(),
-			!result.toleft
-		};
-		if (result.bullet)
+	void MapMobs::apply_damage(int32_t oid, int32_t damage, bool toleft,
+		const AttackUser& user, const SpecialMove& move) {
+
+		if (Optional<Mob> mob = mobs.get(oid))
 		{
-			auto bullet = Bullet(
-				move.get_animation(user, result.bullet), 
-				user.get_position(),
-				result.toleft
-				);
+			mob->apply_damage(damage, toleft);
 
-			for (auto& line : result.damagelines)
-			{
-				int32_t oid = line.first;
-				Optional<Mob> mob = get_mob(oid);
-				if (mob)
-				{
-					std::vector<DamageNumber> numbers = mob->placenumbers(line.second);
-					Point<int16_t> head = mob->get_headpos();
-
-					size_t i = 0;
-					for (auto& number : numbers)
-					{
-						auto effect = DamageEffect(
-							move, 
-							attackuser,
-							number, 
-							result.toleft,
-							line.second[i].first, 
-							oid, 
-							user.get_attackdelay(i)
-							);
-						bulleteffects.emplace_back(bullet, head, effect);
-						i++;
-					}
-				}
-			}
-
-			if (result.damagelines.size() == 0)
-			{
-				int16_t xshift = result.toleft ? -400 : 400;
-				Point<int16_t> target = user.get_position() + Point<int16_t>(xshift, -26);
-				for (uint8_t i = 0; i < result.hitcount; i++)
-				{
-					auto effect = DamageEffect(
-						move, 
-						attackuser,
-						DamageNumber(), 
-						false, 
-						0, 
-						0, 
-						user.get_attackdelay(i)
-						);
-					bulleteffects.emplace_back(bullet, target, effect);
-				}
-			}
-		}
-		else
-		{
-			for (auto& line : result.damagelines)
-			{
-				int32_t oid = line.first;
-				Optional<Mob> mob = get_mob(oid);
-				if (mob)
-				{
-					std::vector<DamageNumber> numbers = mob->placenumbers(line.second);
-
-					size_t i = 0;
-					for (auto& number : numbers)
-					{
-						damageeffects.emplace_back(
-							move, 
-							attackuser,
-							number, 
-							result.toleft,
-							line.second[i].first, 
-							oid, 
-							user.get_attackdelay(i)
-							);
-
-						i++;
-					}
-				}
-			}
+			// maybe move this into the method above too?
+			move.apply_hiteffects(user, *mob);
 		}
 	}
 
-	void MapMobs::apply_effect(const DamageEffect& effect)
-	{
-		Optional<Mob> mob = get_mob(effect.get_target());
-		if (mob)
-		{
-			effect.apply(*mob);
+	std::vector<int32_t> MapMobs::find_closest(Rectangle<int16_t> range,
+		Point<int16_t> origin, uint8_t mobcount) const {
 
-			DamageNumber number = effect.get_number();
-			Point<int16_t> head = mob->get_headpos();
-			number.set_x(head.x());
-			damagenumbers.push_back(number);
-		}
-	}
-
-	std::vector<int32_t> MapMobs::find_closest(Rectangle<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const
-	{
-		std::multimap<int16_t, int32_t> distances;
+		std::multimap<uint16_t, int32_t> distances;
 		for (auto& mmo : mobs)
 		{
 			const Mob* mob = static_cast<const Mob*>(mmo.second.get());
-			if (mob && mob->isalive() && mob->is_in_range(range))
+			if (mob && mob->is_alive() && mob->is_in_range(range))
 			{
 				int32_t oid = mob->get_oid();
-				int16_t distance = mob->get_position().distance(origin);
+				uint16_t distance = mob->get_position().distance(origin);
 				distances.emplace(distance, oid);
 			}
 		}
@@ -277,39 +189,64 @@ namespace jrc
 		return targets;
 	}
 
-	void MapMobs::kill_mob(int32_t oid, int8_t animation)
+	bool MapMobs::contains(int32_t oid) const
 	{
-		get_mob(oid)
-			.if_present(&Mob::kill, animation);
+		return mobs.contains(oid);
 	}
 
-	void MapMobs::send_mobhp(int32_t oid, int8_t percent, uint16_t playerlevel)
+	int32_t MapMobs::find_colliding(const MovingObject& moveobj) const
 	{
-		get_mob(oid)
-			.if_present(&Mob::sendhp, percent, playerlevel);
+		Range<int16_t> horizontal{ moveobj.get_last_x(), moveobj.get_x() };
+		Range<int16_t> vertical{ moveobj.get_last_y(), moveobj.get_y() };
+		Rectangle<int16_t> player_rect{ 
+			horizontal.smaller(),
+			horizontal.greater(),
+			vertical.smaller() - 50,
+			vertical.greater()
+		};
+
+		auto iter = std::find_if(mobs.begin(), mobs.end(), [&player_rect](auto& mmo){
+			Optional<Mob> mob = mmo.second.get();
+			return mob && mob->is_alive() && mob->is_in_range(player_rect);
+		});
+		if (iter == mobs.end())
+			return 0;
+		return iter->second->get_oid();
 	}
 
-	void MapMobs::set_control(int32_t oid, bool control)
+	MobAttack MapMobs::create_attack(int32_t oid) const
 	{
-		int8_t mode = control ? 1 : 0;
-		get_mob(oid)
-			.if_present(&Mob::set_control, mode);
+		if (Optional<const Mob> mob = mobs.get(oid))
+		{
+			return mob->create_touch_attack();
+		}
+		else
+		{
+			return{};
+		}
 	}
 
-	void MapMobs::clear()
+	Point<int16_t> MapMobs::get_mob_position(int32_t oid) const
 	{
-		mobs.clear();
+		if (auto mob = mobs.get(oid))
+		{
+			return mob->get_position();
+		}
+		else
+		{
+			return{};
+		}
 	}
 
-	Optional<Mob> MapMobs::get_mob(int32_t oid)
+	Point<int16_t> MapMobs::get_mob_head_position(int32_t oid) const
 	{
-		return mobs.get(oid)
-			.reinterpret<Mob>();
-	}
-
-	Optional<const Mob> MapMobs::get_mob(int32_t oid) const
-	{
-		return mobs.get(oid)
-			.reinterpret<const Mob>();
+		if (Optional<const Mob> mob = mobs.get(oid))
+		{
+			return mob->get_head_position();
+		}
+		else
+		{
+			return{};
+		}
 	}
 }

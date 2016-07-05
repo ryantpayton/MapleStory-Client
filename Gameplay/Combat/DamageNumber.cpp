@@ -17,14 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "DamageNumber.h"
 
-#include "..\..\Constants.h"
+#include "../../Constants.h"
 
-#include <nlnx\nx.hpp>
-#include <nlnx\node.hpp>
+#include "nlnx/nx.hpp"
+#include "nlnx/node.hpp"
 
 namespace jrc
 {
-	DamageNumber::DamageNumber(Type t, int32_t damage, int16_t starty)
+	DamageNumber::DamageNumber(Type t, int32_t damage, int16_t starty, int16_t x)
 	{
 		type = t;
 
@@ -69,6 +69,7 @@ namespace jrc
 			miss = true;
 		}
 
+		moveobj.set_x(x);
 		moveobj.set_y(starty);
 		moveobj.vspeed = -0.25;
 		opacity.set(1.5f);

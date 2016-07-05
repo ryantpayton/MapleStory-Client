@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -16,15 +16,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Look\Afterimage.h"
-#include "Look\CharLook.h"
-#include "Look\PetLook.h"
+#include "CharEffect.h"
+#include "Inventory/Weapon.h"
+#include "Look/Afterimage.h"
+#include "Look/CharLook.h"
+#include "Look/PetLook.h"
 
-#include "..\Gameplay\Maplemap\Mapobject.h"
-#include "..\Graphics\EffectLayer.h"
-#include "..\IO\Components\ChatBalloon.h"
-#include "..\Util\EnumMap.h"
-#include "..\Util\Rectangle.h"
+#include "../Gameplay/Combat/DamageNumber.h"
+#include "../Gameplay/Maplemap/Mapobject.h"
+#include "../Graphics/EffectLayer.h"
+#include "../IO/Components/ChatBalloon.h"
+#include "../Template/EnumMap.h"
+#include "../Template/Rectangle.h"
+#include "../Util/TimedBool.h"
 
 namespace jrc
 {
@@ -48,21 +52,10 @@ namespace jrc
 			SIT = 20
 		};
 
-		static State byvalue(int8_t value)
+		static State by_value(int8_t value)
 		{
 			return static_cast<State>(value);
 		}
-
-		// Character effects from Effect.wz
-		enum Effect
-		{
-			LEVELUP,
-			JOBCHANGE,
-			SCROLL_SUCCESS,
-			SCROLL_FAILURE,
-			MONSTER_CARD,
-			LENGTH
-		};
 
 		// Draw look, nametag, effects and chat bubble.
 		void draw(double viewx, double viewy, float alpha) const override;
@@ -71,15 +64,15 @@ namespace jrc
 		// Return the current map layer, or 7 if on a ladder or rope.
 		int8_t get_layer() const override;
 
+		// Check wether the character is invincible.
+		virtual bool is_invincible() const;
 		// Return the character's level.
 		virtual uint16_t get_level() const = 0;
 		// Return the character's level.
 		virtual int32_t get_skilllevel(int32_t skillid) const = 0;
 		// Return the character's base attacking speed.
-		virtual int8_t get_base_attackspeed() const = 0;
+		virtual int8_t get_integer_attackspeed() const = 0;
 
-		// Return the attack speed as an integer.
-		int8_t get_integer_attackspeed() const;
 		// Return the attack speed as a multiplier.
 		float get_real_attackspeed() const;
 		// Return the delay until applying an attack.
@@ -92,7 +85,7 @@ namespace jrc
 		// Change the character's stance to an attack action.
 		void attack(const std::string& action);
 		// Change the character's stance to an attack stance.
-		void attack(Stance::Value stance);
+		void attack(Stance::Id stance);
 		// Change the character's stance to it's regular attack.
 		void attack(bool degenerate);
 		// Set the afterimage for an attack.
@@ -101,13 +94,17 @@ namespace jrc
 		const Afterimage& get_afterimage() const;
 
 		// Display an animation as an effect with the character.
-		void show_effect(Animation animation, int8_t z);
+		void show_attack_effect(Animation animation, int8_t z);
 		// Display an animation as an effect ontop of the character.
-		void show_effect_id(Effect toshow);
+		void show_effect_id(CharEffect::Id toshow);
+		// Display the iron body skill animation.
+		void show_iron_body();
+		// Display damage over the characters head.
+		void show_damage(int32_t damage);
 		// Display a chat bubble with the specified line in it.
 		void speak(const std::string& line);
 		// Change a part of the character's look.
-		void change_look(Maplestat::Value stat, int32_t id);
+		void change_look(Maplestat::Id stat, int32_t id);
 		// Change the character's state by id.
 		void set_state(uint8_t statebyte);
 		// Change the character's face expression by id.
@@ -130,11 +127,15 @@ namespace jrc
 		bool is_climbing() const;
 		// Return wether the character sprite uses stances for two-handed weapons.
 		bool is_twohanded() const;
+		// Return the type of the currently equipped weapon.
+		Weapon::Type get_weapontype() const;
 
 		// Obtain a reference to this character's look.
 		CharLook& get_look();
 		// Obtain a const reference to this character's look.
 		const CharLook& get_look() const;
+		// Return a reference to this characters's physics.
+		PhysicsObject& get_phobj();
 
 		// Initialize character effects.
 		static void init();
@@ -148,10 +149,6 @@ namespace jrc
 		float get_stancespeed() const;
 
 		CharLook look;
-		ChatBalloon chatballoon;
-		EffectLayer effects;
-		Afterimage afterimage;
-		Text namelabel;
 		PetLook pets[3];
 
 		State state;
@@ -159,6 +156,14 @@ namespace jrc
 		bool flip;
 
 	private:
-		static EnumMap<Effect, Animation> effectdata;
+		Text namelabel;
+		ChatBalloon chatballoon;
+		EffectLayer effects;
+		Afterimage afterimage;
+		TimedBool invincible;
+		TimedBool ironbody;
+		std::list<DamageNumber> damagenumbers;
+
+		static EnumMap<CharEffect::Id, Animation> chareffects;
 	};
 }

@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Util\Interpolated.h"
-#include "..\Util\Point.h"
-#include "..\Util\Range.h"
+#include "../Template/Interpolated.h"
+#include "../Template/Point.h"
+#include "../Template/Range.h"
 
 #include <cstdint>
 
@@ -40,9 +40,9 @@ namespace jrc
 		// Return the current position.
 		Point<int16_t> position() const;
 		// Return the interpolated position.
-		Point<int16_t> position(double alpha) const;
+		Point<int16_t> position(float alpha) const;
 		// Return the interpolated position.
-		Point<double> realposition(double alpha) const;
+		Point<double> realposition(float alpha) const;
 
 	private:
 		// Movement variables.

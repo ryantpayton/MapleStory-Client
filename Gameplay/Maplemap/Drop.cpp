@@ -113,7 +113,7 @@ namespace jrc
 			state = PICKEDUP;
 			break;
 		case 1:
-			MapObject::deactivate();
+			deactivate();
 			break;
 		case 2:
 			angle.set(0.0f);

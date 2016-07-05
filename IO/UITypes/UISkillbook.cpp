@@ -17,19 +17,18 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UISkillbook.h"
 
-#include "..\Components\MapleButton.h"
-#include "..\Components\TwoSpriteButton.h"
+#include "../Components/MapleButton.h"
+#include "../Components/TwoSpriteButton.h"
 
-#include "..\..\Data\JobData.h"
-#include "..\..\Data\SkillData.h"
-#include "..\..\Gameplay\Stage.h"
-#include "..\..\Gameplay\Combat\Skill.h"
-#include "..\..\Net\Packets\PlayerPackets.h"
-#include "..\..\IO\UI.h"
-#include "..\..\Util\Misc.h"
+#include "../../Character/SkillId.h"
+#include "../../Data/JobData.h"
+#include "../../Data/SkillData.h"
+#include "../../Gameplay/Stage.h"
+#include "../../Net/Packets/PlayerPackets.h"
+#include "../../IO/UI.h"
+#include "../../Util/Misc.h"
 
-#include <nlnx\nx.hpp>
-#include <nlnx\audio.hpp>
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
@@ -75,9 +74,8 @@ namespace jrc
 			break;
 		}
 
-		Point<int16_t> argspos = args.getpos();
-		name.draw(argspos + Point<int16_t>(38, -34));
-		level.draw(argspos + Point<int16_t>(38, -16));
+		name.draw(args + Point<int16_t>(38, -34));
+		level.draw(args + Point<int16_t>(38, -16));
 	}
 
 	Cursor::State SkillIcon::send_cursor(Point<int16_t> cursorpos, bool clicked)
@@ -134,8 +132,8 @@ namespace jrc
 		return id;
 	}
 
-	UISkillbook::UISkillbook()
-		: UIDragElement({ 174, 20 }), skillbook(Stage::get().get_player().get_skills()) {
+	UISkillbook::UISkillbook(const CharStats& in_stats, const Skillbook& in_skillbook)
+		: UIDragElement({ 174, 20 }), stats(in_stats), skillbook(in_skillbook) {
 
 		nl::node main = nl::nx::ui["UIWindow2.img"]["Skill"]["main"];
 
@@ -177,12 +175,8 @@ namespace jrc
 			}
 		} };
 
-		change_job(
-			Stage::get().get_player().get_stats().get_stat(Maplestat::JOB)
-		);
-		change_sp(
-			Stage::get().get_player().get_stats().get_stat(Maplestat::SP)
-		);
+		change_job(stats.get_stat(Maplestat::JOB));
+		change_sp(stats.get_stat(Maplestat::SP));
 
 		dimension = { 174, 299 };
 	}
@@ -254,8 +248,7 @@ namespace jrc
 			int32_t skill_level = skillbook.get_level(skill_id);
 			if (skill_level > 0)
 			{
-				Stage::get()
-					.use_move(skill_id);
+				Stage::get().get_combat().use_move(skill_id);
 			}
 		}
 	}
@@ -320,7 +313,7 @@ namespace jrc
 		return Cursor::IDLE;
 	}
 
-	void UISkillbook::update_stat(Maplestat::Value stat, int16_t value)
+	void UISkillbook::update_stat(Maplestat::Id stat, int16_t value)
 	{
 		switch (stat)
 		{
@@ -422,13 +415,13 @@ namespace jrc
 		int64_t expiration = skillbook.get_expiration(id);
 
 		UI::get()
-			.show_skill(TYPE, skill_id, level, masterlevel, expiration);
+			.show_skill(Tooltip::SKILLBOOK, skill_id, level, masterlevel, expiration);
 	}
 
 	void UISkillbook::clear_tooltip()
 	{
 		UI::get()
-			.clear_tooltip(TYPE);
+			.clear_tooltip(Tooltip::SKILLBOOK);
 	}
 
 	bool UISkillbook::can_raise(int32_t skill_id) const
@@ -447,7 +440,7 @@ namespace jrc
 
 		switch (skill_id)
 		{
-		case Skill::ANGEL_BLESSING:
+		case SkillId::ANGEL_BLESSING:
 			return false;
 		default:
 			return true;

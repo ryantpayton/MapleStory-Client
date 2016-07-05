@@ -16,9 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Look\Weapon.h"
-
-#include "..\Util\Range.h"
+#include "Equipstat.h"
+#include "Inventory/Weapon.h"
 
 #include <cstdint>
 #include <string>
@@ -54,7 +53,6 @@ namespace jrc
 
 		Job(uint16_t id);
 		Job();
-		~Job();
 
 		void change_job(uint16_t id);
 		bool is_sub_job(uint16_t subid) const;
@@ -63,9 +61,8 @@ namespace jrc
 		uint16_t get_subjob(Level level) const;
 		Level get_level() const;
 		const std::string& get_name() const;
-		Equipstat::Value get_primary(Weapon::Type weapontype) const;
-		Equipstat::Value get_secondary(Weapon::Type weapontype) const;
-		Range<int32_t> get_skillid_range(Level level) const;
+		Equipstat::Id get_primary(Weapon::Type weapontype) const;
+		Equipstat::Id get_secondary(Weapon::Type weapontype) const;
 
 	private:
 		std::string get_name(uint16_t id) const;

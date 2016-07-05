@@ -17,22 +17,22 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "PacketSwitch.h"
 
-#include "Handlers\CommonHandlers.h"
-#include "Handlers\LoginHandlers.h"
-#include "Handlers\SetfieldHandlers.h"
-#include "Handlers\PlayerHandlers.h"
-#include "Handlers\AttackHandlers.h"
-#include "Handlers\MapobjectHandlers.h"
-#include "Handlers\InventoryHandlers.h"
-#include "Handlers\MessagingHandlers.h"
-#include "Handlers\NpcInteractionHandlers.h"
+#include "Handlers/CommonHandlers.h"
+#include "Handlers/LoginHandlers.h"
+#include "Handlers/SetfieldHandlers.h"
+#include "Handlers/PlayerHandlers.h"
+#include "Handlers/AttackHandlers.h"
+#include "Handlers/MapobjectHandlers.h"
+#include "Handlers/InventoryHandlers.h"
+#include "Handlers/MessagingHandlers.h"
+#include "Handlers/NpcInteractionHandlers.h"
 
-#include "..\Console.h"
+#include "../Console.h"
 
 namespace jrc
 {
-	// Opcodes for InPacket handlers.
-	enum PacketSwitch::Opcode : int16_t
+	// Opcodes for InPackets.
+	enum PacketSwitch::Opcode : uint16_t
 	{
 		// Login 1
 		LOGIN_RESULT = 0,
@@ -157,6 +157,12 @@ namespace jrc
 		emplace<SET_FIELD, SetfieldHandler>();
 
 		// MapObject handlers
+		emplace<SPAWN_CHAR, SpawnCharHandler>();
+		emplace<CHAR_MOVED, CharMovedHandler>();
+		emplace<UPDATE_CHARLOOK, UpdateCharLookHandler>();
+		emplace<SHOW_FOREIGN_EFFECT, ShowForeignEffectHandler>();
+		emplace<REMOVE_CHAR, RemoveCharHandler>();
+		emplace<SPAWN_PET, SpawnPetHandler>();
 		emplace<SPAWN_NPC, SpawnNpcHandler>();
 		emplace<SPAWN_NPC_C, SpawnNpcControllerHandler>();
 		emplace<SPAWN_MOB, SpawnMobHandler>();
@@ -164,14 +170,10 @@ namespace jrc
 		emplace<MOB_MOVED, MobMovedHandler>();
 		emplace<SHOW_MOB_HP, ShowMobHpHandler>();
 		emplace<KILL_MOB, KillMobHandler>();
-		emplace<SPAWN_CHAR, SpawnCharHandler>();
-		emplace<CHAR_MOVED, CharMovedHandler>();
-		emplace<UPDATE_CHARLOOK, UpdateCharLookHandler>();
-		emplace<SHOW_FOREIGN_EFFECT, ShowForeignEffectHandler>();
-		emplace<REMOVE_CHAR, RemoveCharHandler>();
-		emplace<SPAWN_PET, SpawnPetHandler>();
 		emplace<DROP_LOOT, DropLootHandler>();
 		emplace<REMOVE_LOOT, RemoveLootHandler>();
+		emplace<SPAWN_REACTOR, SpawnReactorHandler>();
+		emplace<REMOVE_REACTOR, RemoveReactorHandler>();
 
 		// Attack handlers
 		emplace<ATTACKED_CLOSE, CloseAttackHandler>();
@@ -222,16 +224,16 @@ namespace jrc
 		emplace<UPDATE_GENDER, NullHandler>();
 	}
 
-	void PacketSwitch::forward(int8_t* buffer, size_t length) const
+	void PacketSwitch::forward(const int8_t* bytes, size_t length) const
 	{
 		// Wrap the bytes with a parser.
-		InPacket recv(buffer, length);
+		InPacket recv = { bytes, length };
 		// Read the opcode to determine handler responsible.
 		uint16_t opcode = recv.read_short();
 
 		if (opcode < NUM_HANDLERS)
 		{
-			if (const PacketHandler* handler = handlers[opcode].get())
+			if (auto& handler = handlers[opcode])
 			{
 				// Handler ok. Packet is passed on.
 				try

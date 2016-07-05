@@ -15,36 +15,56 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "Face.h"
-#include "nlnx\nx.hpp"
+
+#include "../../Console.h"
+
+#include "nlnx/nx.hpp"
+#include "nlnx/node.hpp"
 
 namespace jrc
 {
+	Expression::Id Expression::byaction(size_t action)
+	{
+		action -= 98;
+		if (action < LENGTH)
+			return static_cast<Id>(action);
+
+		Console::get().print("Unhandled expression id: " + std::to_string(action));
+		return DEFAULT;
+	}
+
+	const EnumMap<Expression::Id, std::string> Expression::names =
+	{
+		"default", "blink", "hit", "smile", "troubled", "cry", "angry",
+		"bewildered", "stunned", "blaze", "bowing", "cheers", "chu", "dam",
+		"despair", "glitter", "hot", "hum", "love", "oops", "pain", "shine",
+		"vomit", "wink"
+	};
+
+
 	Face::Face(int32_t faceid)
 	{
-		nl::node facenode = nl::nx::character["Face"]["000" + std::to_string(faceid) + ".img"];
+		std::string strid = "000" + std::to_string(faceid);
+		nl::node facenode = nl::nx::character["Face"][strid + ".img"];
 
-		for (auto iter : expressions)
+		for (auto iter : Expression::names)
 		{
-			Expression::Value exp = iter.first;
+			Expression::Id exp = iter.first;
 			if (exp == Expression::DEFAULT)
 			{
-				iter.second.emplace(0, facenode["default"]);
+				expressions[Expression::DEFAULT]
+					.emplace(0, facenode["default"]);
 			}
 			else
 			{
-				std::string expname = Expression::names[exp];
+				const std::string& expname = iter.second;
 				nl::node expnode = facenode[expname];
 
-				uint8_t frame = 0;
-				nl::node framenode = expnode[std::to_string(frame)];
-				while (framenode.size() > 0)
+				for (uint8_t frame = 0; nl::node framenode = expnode[frame]; ++frame)
 				{
-					iter.second.emplace(frame, framenode);
-
-					frame++;
-					framenode = expnode[std::to_string(frame)];
+					expressions[exp]
+						.emplace(frame, framenode);
 				}
 			}
 		}
@@ -52,27 +72,25 @@ namespace jrc
 		name = nl::nx::string["Eqp.img"]["Eqp"]["Face"][std::to_string(faceid)]["name"];
 	}
 
-	Face::Face() {}
-
-	void Face::draw(Expression::Value expression, uint8_t frame, const DrawArgument& args) const
+	void Face::draw(Expression::Id expression, uint8_t frame, const DrawArgument& args) const
 	{
 		auto frameit = expressions[expression].find(frame);
 		if (frameit != expressions[expression].end())
 			frameit->second.texture.draw(args);
 	}
 
-	uint8_t Face::nextframe(Expression::Value exp, uint8_t frame) const
+	uint8_t Face::nextframe(Expression::Id exp, uint8_t frame) const
 	{
 		return expressions[exp].count(frame + 1) ? frame + 1 : 0;
 	}
 
-	int16_t Face::get_delay(Expression::Value exp, uint8_t frame) const
+	int16_t Face::get_delay(Expression::Id exp, uint8_t frame) const
 	{
 		auto delayit = expressions[exp].find(frame);
 		return delayit != expressions[exp].end() ? delayit->second.delay : 100;
 	}
 
-	std::string Face::get_name() const
+	const std::string& Face::get_name() const
 	{
 		return name;
 	}

@@ -16,17 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Character\Look\Weapon.h"
-#include "..\Gameplay\Combat\SpecialMove.h"
-#include "..\Util\EnumMap.h"
+#include "../Character/Inventory/Weapon.h"
+#include "../Gameplay/Combat/SpecialMove.h"
+#include "../Template/EnumMap.h"
 
 #include <string>
 
 namespace jrc
 {
-	class Messages
+	namespace Messages
 	{
-	public:
 		enum Type
 		{
 			NONE,
@@ -46,12 +45,7 @@ namespace jrc
 			LENGTH
 		};
 
-		Messages();
-
-		std::string stringfor(Type type);
-
-	private:
-		EnumMap<Type, std::string> messages;
+		extern const EnumMap<Type, const char*> messages;
 	};
 
 

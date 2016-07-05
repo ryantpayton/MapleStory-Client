@@ -16,29 +16,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\PacketHandler.h"
-#include "..\Packets\CommonPackets.h"
+#include "../PacketHandler.h"
 
 namespace jrc
 {
-	class NxCheckRequestHandler : public PacketHandler
-	{
-#ifdef JOURNEY_USE_XXHASH
-		void handle(InPacket& recv) const override
-		{
-			uint64_t seed = recv.read_long();
-			NxCheckPacket(seed)
-				.dispatch();
-		}
-#endif
-	};
-
 	class PingHandler : public PacketHandler
 	{
-		void handle(InPacket&) const override
-		{
-			PongPacket().dispatch();
-		}
+		void handle(InPacket& recv) const override;
 	};
 
 	class NullHandler : public PacketHandler

@@ -16,18 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\..\Console.h"
-#include "..\..\Util\Enum.h"
+#include "../../Template/EnumMap.h"
 
 #include <cstdint>
 #include <string>
 
 namespace jrc
 {
-	class Stance
+	namespace Stance
 	{
-	public:
-		enum Value : uint8_t
+		enum Id : uint8_t
 		{
 			NONE, 
 			ALERT, DEAD, FLY, HEAL, JUMP, LADDER, PRONE, PRONESTAB,
@@ -38,93 +36,14 @@ namespace jrc
 			LENGTH
 		};
 
-		static EnumIterator<Value> getit()
-		{
-			return EnumIterator<Value>(ALERT, WALK2);
-		}
+		Id by_state(int8_t state);
+		Id by_id(uint8_t id);
+		Id by_string(const std::string& name);
 
-		static Value bystate(int8_t state)
-		{
-			int8_t index = (state / 2) - 1;
-			if (index < 0 || index > 10)
-				return WALK1;
+		bool is_climbing(Id value);
+		Id baseof(Id value);
+		Id secondof(Id value);
 
-			static const Value statevalues[10] =
-			{
-				WALK1, STAND1, JUMP, ALERT,
-				PRONE, FLY, LADDER, ROPE,
-				DEAD, SIT
-			};
-			return statevalues[index];
-		}
-
-		static Value byid(uint8_t id)
-		{
-			for (auto it = getit(); it.hasnext(); it.increment())
-			{
-				Stance::Value value = it.get();
-				if (id == value)
-					return value;
-			}
-			return NONE;
-		}
-
-		static Value bystring(std::string name)
-		{
-			for (auto it = getit(); it.hasnext(); it.increment())
-			{
-				Value value = it.get();
-				if (nameof(value) == name)
-					return value;
-			}
-
-			Console::get().print("Unhandled stance: " + name);
-
-			return NONE;
-		}
-
-		static std::string nameof(Value value)
-		{
-			static const std::string stancenames[LENGTH] =
-			{
-				"", "alert", "dead", "fly", "heal", "jump", "ladder", "prone", "proneStab",
-				"rope", "shot", "shoot1", "shoot2", "shootF", "sit", "stabO1", "stabO2", "stabOF",
-				"stabT1", "stabT2", "stabTF", "stand1", "stand2", "swingO1", "swingO2",
-				"swingO3", "swingOF", "swingP1", "swingP2", "swingPF", "swingT1", "swingT2",
-				"swingT3", "swingTF", "walk1", "walk2"
-			};
-			return stancenames[value];
-		}
-
-		static bool is_climbing(Value value)
-		{
-			return value == LADDER || value == ROPE;
-		}
-
-		static Value baseof(Value value)
-		{
-			switch (value)
-			{
-			case STAND2:
-				return STAND1;
-			case WALK2:
-				return WALK1;
-			default:
-				return value;
-			}
-		}
-
-		static Value secondof(Value value)
-		{
-			switch (value)
-			{
-			case STAND1:
-				return STAND2;
-			case WALK1:
-				return WALK2;
-			default:
-				return value;
-			}
-		}
+		extern const EnumMap<Id, std::string> names;
 	};
 }

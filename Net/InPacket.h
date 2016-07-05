@@ -18,14 +18,9 @@
 #pragma once
 #include "PacketError.h"
 
-#include "..\Util\Point.h"
+#include "../Template/Point.h"
 
 #include <cstdint>
-#include <functional>
-#include <unordered_map>
-#include <vector>
-#include <queue>
-#include <array>
 
 namespace jrc
 {
@@ -35,25 +30,25 @@ namespace jrc
 	{
 	public:
 		// Construct a packet from an array of bytes.
-		InPacket(const int8_t*, size_t);
+		InPacket(const int8_t* bytes, size_t length);
 
 		// Check if there are more bytes available.
-		bool has_more() const;
+		bool available() const;
 		// Return the remaining length in bytes.
 		size_t length() const;
 		// Skip a number of bytes (by increasing the offset).
 		void skip(size_t count);
 
 		// Read a byte and check if it is 1.
-		bool read_bool() { return read<bool>(); }
+		bool read_bool();
 		// Read a byte.
-		int8_t read_byte() { return read<int8_t>(); }
+		int8_t read_byte();
 		// Read a short.
-		int16_t read_short() { return read<int16_t>(); }
+		int16_t read_short();
 		// Read a int.
-		int32_t read_int() { return read<int32_t>(); }
+		int32_t read_int();
 		// Read a long.
-		int64_t read_long() { return read<int64_t>(); }
+		int64_t read_long();
 
 		// Read a point.
 		Point<int16_t> read_point();
@@ -63,116 +58,21 @@ namespace jrc
 		// Read a fixed-length string.
 		std::string read_padded_string(uint16_t length);
 
-		// Inspect a byte and check if it is 1.
-		bool inspectbool() { return inspect<int8_t>() == 1; }
-		// Inspect a byte.
-		int8_t inspectbyte() { return inspect<int8_t>(); }
-		// Inspect a short.
-		int16_t inspectshort() { return inspect<int16_t>(); }
-		// Inspect an int.
-		int32_t inspectint() { return inspect<int32_t>(); }
-		// Inspect a long.
-		int64_t inspectlong() { return inspect<int64_t>(); }
-
-		template <typename T>
-		T read();
-
-		template <>
-		// Read a string. The size is specified by a short at the current position.
-		std::string read<std::string>()
-		{
-			auto length = read<uint16_t>();
-			return read_padded_string(length);
-		}
-
-		template <typename T1, typename T2>
-		// Read a pair.
-		std::pair<T1, T2> read()
-		{
-			auto first = read<T1>();
-			auto second = read<T2>();
-			return std::make_pair(first, second);
-		}
-
-		template<typename S, typename T>
-		// Read a vector of type T. The length is read as a variable of type S.
-		std::queue<T> readqueue()
-		{
-			std::queue<T> values;
-			auto size = read<S>();
-			for (S i = 0; i < size; i++)
-			{
-				auto value = read<T>();
-				values.push(value);
-			}
-			return values;
-		}
-
-		template<typename S, typename T>
-		// Read a vector of type T. The length is read as a variable of type S.
-		std::vector<T> readvector()
-		{
-			std::vector<T> values;
-			auto size = read<S>();
-			for (S i = 0; i < size; i++)
-			{
-				auto value = read<T>();
-				values.push_back(value);
-			}
-			return values;
-		}
-
-		template<typename K, typename V>
-		// Read an unordered_map.
-		std::unordered_map<K, V> readmap()
-		{
-			std::unordered_map<K, V> result;
-			auto size = read<int16_t>();
-			for (int16_t i = 0; i < size; i++)
-			{
-				auto key = read<K>();
-				auto value = read<V>();
-				result[key] = value;
-			}
-			return result;
-		}
+		// Inspect a byte and check if it is 1. Does not advance the buffer position.
+		bool inspect_bool();
+		// Inspect a byte. Does not advance the buffer position.
+		int8_t inspect_byte();
+		// Inspect a short. Does not advance the buffer position.
+		int16_t inspect_short();
+		// Inspect an int. Does not advance the buffer position.
+		int32_t inspect_int();
+		// Inspect a long. Does not advance the buffer position.
+		int64_t inspect_long();
 
 	private:
-		template <>
-		// Read a byte and check if it is 1.
-		bool read<bool>() { return readnumber<int8_t>() == 1; }
-
-		template <>
-		// Read a byte.
-		int8_t read<int8_t>() { return readnumber<int8_t>(); }
-		template <>
-		// Read an unsigned byte.
-		uint8_t read<uint8_t>() { return readnumber<int8_t>(); }
-
-		template <>
-		// Read a short.
-		int16_t read<int16_t>() { return readnumber<int16_t>(); }
-		template <>
-		// Read an unsigned short.
-		uint16_t read<uint16_t>() { return readnumber<uint16_t>(); }
-
-		template <>
-		// Read an int.
-		int32_t read<int32_t>() { return readnumber<int32_t>(); }
-		template <>
-		// Read an unsigned int.
-		uint32_t read<uint32_t>() { return readnumber<uint32_t>(); }
-
-		template <>
-		// Read a long.
-		int64_t read<int64_t>() { return readnumber<int64_t>(); }
-		template <>
-		// Read an unsigned long.
-		uint64_t read<uint64_t>() { return readnumber<uint64_t>(); }
-
 		template <typename T>
 		// Read a number and advance the buffer position.
-		T readnumber()
+		T read()
 		{
 			size_t count = sizeof(T) / sizeof(int8_t);
 			T all = 0;
@@ -186,7 +86,7 @@ namespace jrc
 			return static_cast<T>(all);
 		}
 
-		template <class T>
+		template <typename T>
 		// Read without advancing the buffer position.
 		T inspect()
 		{

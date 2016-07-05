@@ -16,28 +16,30 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UICharSelect.h"
+
 #include "UISoftkey.h"
 #include "UICharcreation.h"
 
-#include "..\UI.h"
-#include "..\Components\MapleButton.h"
-#include "..\Components\AreaButton.h"
+#include "../UI.h"
+#include "../Components/MapleButton.h"
+#include "../Components/AreaButton.h"
 
-#include "..\..\Constants.h"
-#include "..\..\Configuration.h"
-#include "..\..\Audio\Audio.h"
-#include "..\..\Net\Session.h"
-#include "..\..\Net\Packets\SelectCharPackets.h"
+#include "../../Constants.h"
+#include "../../Configuration.h"
+#include "../../Audio/Audio.h"
+#include "../../Character/Job.h"
+#include "../../Net/Packets/SelectCharPackets.h"
 
-#include <nlnx\nx.hpp>
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
-	UICharSelect::UICharSelect()
-		: login(Session::get().get_login()) {
-
-		charcount_absolute = static_cast<uint8_t>(login.getaccount().chars.size());
-		slots_absolute = static_cast<uint8_t>(login.getaccount().slots);
+	UICharSelect::UICharSelect(std::vector<CharEntry> cs,
+		uint8_t c, uint8_t s, uint8_t channel_id, int8_t p) :
+		characters(cs),
+		charcount_absolute(c),
+		slots_absolute(s),
+		require_pic(p) {
 
 		selected_absolute = Setting<DefaultCharacter>::get().load();
 		selected_relative = selected_absolute % PAGESIZE;
@@ -64,7 +66,7 @@ namespace jrc
 		sprites.emplace_back(common["selectWorld"], selworldpos);
 		sprites.emplace_back(charselect["selectedWorld"]["icon"]["15"], selworldpos);
 		sprites.emplace_back(charselect["selectedWorld"]["name"]["15"], selworldpos);
-		sprites.emplace_back(charselect["selectedWorld"]["ch"][login.get_channel()], selworldpos);
+		sprites.emplace_back(charselect["selectedWorld"]["ch"][channel_id], selworldpos);
 
 		emptyslot = charselect["buyCharacter"]; 
 		nametag = charselect["nameTag"];
@@ -91,13 +93,10 @@ namespace jrc
 			infolabels[i] = { Text::A11M, Text::RIGHT };
 		}
 
-		for (uint8_t i = 0; i < charcount_absolute; i++)
+		for (auto& entry : characters)
 		{
-			const CharEntry& entry = login.get_char_by_index(i);
-
-			charlooks.emplace_back(entry.get_look());
-			charids.emplace_back(entry.cid);
-			nametags.emplace_back(nametag, Text::A13M, Text::WHITE, entry.get_stats().name);
+			charlooks.emplace_back(entry.look);
+			nametags.emplace_back(nametag, Text::A13M, Text::WHITE, entry.stats.name);
 		}
 
 		update_counts();
@@ -122,8 +121,7 @@ namespace jrc
 
 		if (selected_relative < charcount_relative)
 		{
-			const StatsEntry& stats = login.get_char_by_index(selected_relative)
-				.get_stats();
+			const StatsEntry& stats = characters[selected_relative].stats;
 
 			std::string levelstr = std::to_string(stats.stats[Maplestat::LEVEL]);
 			int16_t lvx = levelset.draw(levelstr, charinfopos + Point<int16_t>(23, -93));
@@ -176,11 +174,11 @@ namespace jrc
 			{
 			case BT_SELECTCHAR:
 				send_selection();
-				return Button::PRESSED;
+				return Button::NORMAL;
 			case BT_CREATECHAR:
 				active = false;
-				UI::get().add(Element<UICharcreation>());
-				return Button::PRESSED;
+				UI::get().emplace<UICharcreation>();
+				return Button::NORMAL;
 			case BT_DELETECHAR:
 				send_deletion();
 				return Button::PRESSED;
@@ -209,12 +207,7 @@ namespace jrc
 		nametags[selected_absolute].set_selected(true);
 
 		buttons[BT_CHAR0 + selected_relative]->set_state(Button::PRESSED);
-		namelabel.change_text(
-			Session::get()
-			.get_login()
-			.get_char_by_index(selected_relative)
-			.get_stats().name
-		);
+		namelabel.change_text(characters[selected_relative].stats.name);
 
 		for (size_t i = 0; i < NUM_LABELS; i++)
 		{
@@ -315,22 +308,20 @@ namespace jrc
 		}
 
 		Setting<DefaultCharacter>::get().save(selected_absolute);
-		int32_t cid = login.get_char_by_index(selected_absolute).cid;
-		switch (login.getaccount().pic)
+		int32_t cid = characters[selected_absolute].cid;
+		switch (require_pic)
 		{
 		case 0:
-			UI::get().add(Element<UISoftkey, UISoftkey::Callback>(
-				[cid](const std::string& pic) {
+			UI::get().emplace<UISoftkey>([cid](const std::string& pic) {
 				UI::get().disable();
 				RegisterPicPacket(cid, pic).dispatch();
-			}));
+			});
 			break;
 		case 1:
-			UI::get().add(Element<UISoftkey, UISoftkey::Callback>(
-				[cid](const std::string& pic) {
+			UI::get().emplace<UISoftkey>([cid](const std::string& pic) {
 				UI::get().disable();
 				SelectCharPicPacket(pic, cid).dispatch();
-			}));
+			});
 			break;
 		case 2:
 			UI::get().disable();
@@ -348,46 +339,71 @@ namespace jrc
 			return;
 		}
 
-		int32_t cid = login.get_char_by_index(selected_absolute).cid;
-		UI::get().add(Element<UISoftkey, UISoftkey::Callback>(
-			[cid](const std::string& pic) {
+		int32_t cid = characters[selected_absolute].cid;
+		UI::get().emplace<UISoftkey>([cid](const std::string& pic) {
 			UI::get().disable();
 			DeleteCharPacket(pic, cid).dispatch();
-		}));
+		});
+	}
+
+	void UICharSelect::add_character(CharEntry&& character)
+	{
+		characters.emplace_back(std::forward<CharEntry>(character));
+		charlooks.emplace_back(character.look);
+		nametags.emplace_back(nametag, Text::A13M, Text::WHITE, character.stats.name);
+		charcount_absolute++;
+		charcount_relative++;
+
+		update_counts();
+		update_selection();
 	}
 
 	void UICharSelect::remove_char(int32_t cid)
 	{
-		if (charids.size() < charcount_absolute)
+		size_t index = 0;
+		for (auto& character : characters)
+		{
+			if (character.cid == cid)
+				break;
+
+			index++;
+		}
+
+		if (index == characters.size())
 			return;
 
-		for (uint8_t i = 0; i < charcount_absolute; i++)
-		{
-			if (charids[i] == cid)
-			{
-				charlooks.erase(charlooks.begin() + i);
-				charids.erase(charids.begin() + i);
-				nametags.erase(nametags.begin() + i);
+		characters.erase(characters.begin() + index);
+		charlooks.erase(charlooks.begin() + index);
+		nametags.erase(nametags.begin() + index);
 
-				charcount_absolute--;
-				charcount_relative--;
-				update_counts();
-				update_selection();
-				break;
-			}
+		charcount_absolute--;
+		charcount_relative--;
+		update_counts();
+		update_selection();
+	}
+
+	const CharEntry& UICharSelect::get_character(int32_t cid)
+	{
+		for (auto& character : characters)
+		{
+			if (character.cid == cid)
+				return character;
 		}
+
+		Console::get()
+			.print(__func__, "Warning: Invalid cid (" + std::to_string(cid) + ")");
+
+		static const CharEntry null_entry{ {}, {}, 0 };
+		return null_entry;
 	}
 
 	std::string UICharSelect::get_label_string(size_t label) const
 	{
-		const StatsEntry& stats = Session::get()
-			.get_login()
-			.get_char_by_index(selected_relative)
-			.get_stats();
+		const StatsEntry& stats = characters[selected_relative].stats;
 		switch (label)
 		{
 		case JOB:
-			return stats.job.get_name();
+			return Job(stats.stats[Maplestat::JOB]).get_name();
 		case WORLDRANK:
 			return std::to_string(stats.rank.first);
 		case JOBRANK:

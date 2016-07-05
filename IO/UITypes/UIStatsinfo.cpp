@@ -17,18 +17,17 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIStatsinfo.h"
 
-#include "..\UI.h"
-#include "..\Components\MapleButton.h"
+#include "../UI.h"
+#include "../Components/MapleButton.h"
 
-#include "..\..\Gameplay\Stage.h"
-#include "..\..\Net\Packets\PlayerPackets.h"
+#include "../../Net/Packets/PlayerPackets.h"
 
-#include <nlnx\nx.hpp>
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
-	UIStatsinfo::UIStatsinfo() :
-		UIDragElement<PosSTATS>(Point<int16_t>(212, 20)), stats(Stage::get().get_player().get_stats()) {
+	UIStatsinfo::UIStatsinfo(const CharStats& st) :
+		UIDragElement<PosSTATS>(Point<int16_t>(212, 20)), stats(st) {
 
 		nl::node src = nl::nx::ui["UIWindow4.img"]["Stat"]["main"];
 		nl::node detail = nl::nx::ui["UIWindow4.img"]["Stat"]["detail"];
@@ -145,7 +144,7 @@ namespace jrc
 		update_basevstotal(LUK, Maplestat::LUK, Equipstat::LUK);
 
 		statlabels[DAMAGE].change_text(std::to_string(stats.get_mindamage()) + " ~ " + std::to_string(stats.get_maxdamage()));
-		if (stats.isdamagebuffed())
+		if (stats.is_damage_buffed())
 		{
 			statlabels[DAMAGE].change_color(Text::RED);
 		}
@@ -172,7 +171,7 @@ namespace jrc
 		statlabels[HONOR].change_text(std::to_string(stats.get_honor()));
 	}
 
-	void UIStatsinfo::update_stat(Maplestat::Value stat)
+	void UIStatsinfo::update_stat(Maplestat::Id stat)
 	{
 		switch (stat)
 		{
@@ -221,7 +220,7 @@ namespace jrc
 		return Button::NORMAL;
 	}
 
-	void UIStatsinfo::send_apup(Maplestat::Value stat) const
+	void UIStatsinfo::send_apup(Maplestat::Id stat) const
 	{
 		SpendApPacket(stat).dispatch();
 		UI::get().disable();
@@ -263,12 +262,12 @@ namespace jrc
 		hasap = nowap;
 	}
 
-	void UIStatsinfo::update_simple(StatLabel label, Maplestat::Value stat)
+	void UIStatsinfo::update_simple(StatLabel label, Maplestat::Id stat)
 	{
 		statlabels[label].change_text(std::to_string(stats.get_stat(stat)));
 	}
 
-	void UIStatsinfo::update_basevstotal(StatLabel label, Maplestat::Value bstat, Equipstat::Value tstat)
+	void UIStatsinfo::update_basevstotal(StatLabel label, Maplestat::Id bstat, Equipstat::Id tstat)
 	{
 		int32_t base = stats.get_stat(bstat);
 		int32_t total = stats.get_total(tstat);
@@ -291,7 +290,7 @@ namespace jrc
 		statlabels[label].change_text(stattext);
 	}
 
-	void UIStatsinfo::update_buffed(StatLabel label, Equipstat::Value stat)
+	void UIStatsinfo::update_buffed(StatLabel label, Equipstat::Id stat)
 	{
 		int32_t total = stats.get_total(stat);
 		int32_t delta = stats.get_buffdelta(stat);

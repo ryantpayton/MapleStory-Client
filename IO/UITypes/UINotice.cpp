@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UINotice.h"
 
-#include "..\Components\MapleButton.h"
+#include "../Components/MapleButton.h"
 
-#include "nlnx\nx.hpp"
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {

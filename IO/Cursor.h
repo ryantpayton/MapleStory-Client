@@ -16,8 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Graphics\Animation.h"
-#include "..\Util\EnumMap.h"
+#include "../Graphics/Animation.h"
+#include "../Template/EnumMap.h"
 
 namespace jrc
 {
@@ -63,7 +63,7 @@ namespace jrc
 		Point<int16_t> position;
 		int32_t hide_counter;
 
-		static constexpr int32_t HIDE_TIME = 3'000;
+		static constexpr int64_t HIDE_TIME = 15'000;
 	};
 }
 

@@ -18,9 +18,9 @@
 #pragma once
 #include "TwoSpriteButton.h"
 
-#include "..\Cursor.h"
+#include "../Cursor.h"
 
-#include "..\..\Graphics\Texture.h"
+#include "../../Graphics/Texture.h"
 
 #include <functional>
 #include <memory>

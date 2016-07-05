@@ -16,8 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\..\Character\Inventory\Inventory.h"
-#include "..\..\Graphics\Texture.h"
+#include "../../Character/Inventory/Inventory.h"
+#include "../../Graphics/Texture.h"
 
 #include <memory>
 
@@ -32,16 +32,16 @@ namespace jrc
 			virtual ~Type() {}
 
 			virtual void drop_on_stage() const = 0;
-			virtual void drop_on_equips(Equipslot::Value eqslot) const = 0;
-			virtual void drop_on_items(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const = 0;
+			virtual void drop_on_equips(Equipslot::Id eqslot) const = 0;
+			virtual void drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const = 0;
 		};
 
 
 		class NullType : public Type
 		{
 			void drop_on_stage() const override {}
-			void drop_on_equips(Equipslot::Value) const override {}
-			void drop_on_items(Inventory::Type, Equipslot::Value, int16_t, bool) const override {}
+			void drop_on_equips(Equipslot::Id) const override {}
+			void drop_on_items(InventoryType::Id, Equipslot::Id, int16_t, bool) const override {}
 		};
 
 		Icon(std::unique_ptr<Type> type, Texture texture, int16_t count);
@@ -50,12 +50,12 @@ namespace jrc
 		void draw(Point<int16_t> position) const;
 		void dragdraw(Point<int16_t> cursorpos) const;
 		void drop_on_stage() const;
-		void drop_on_equips(Equipslot::Value eqslot) const;
-		void drop_on_items(Inventory::Type tab, Equipslot::Value eqslot, int16_t slot, bool equip) const;
+		void drop_on_equips(Equipslot::Id eqslot) const;
+		void drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const;
 		void start_drag(Point<int16_t> offset);
 		void reset();
-		void setcount(int16_t count);
-		int16_t getcount() const;
+		void set_count(int16_t count);
+		int16_t get_count() const;
 
 	private:
 		std::unique_ptr<Type> type;

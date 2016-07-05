@@ -27,6 +27,7 @@ namespace jrc
 		{
 			NONE,
 			CONNECTION,
+			NLNX,
 			MISSING_FILE,
 			WRONG_UI_FILE,
 			GLFW,
@@ -42,7 +43,10 @@ namespace jrc
 		};
 
 		constexpr Error(Code c)
-			: code(c) {}
+			: Error(c, "") {}
+
+		constexpr Error(Code c, const char* args)
+			: code(c), args(args) {}
 
 		constexpr operator bool() const
 		{
@@ -51,22 +55,29 @@ namespace jrc
 
 		constexpr bool can_retry() const
 		{
-			return code == CONNECTION;
+			return code == CONNECTION || code == MISSING_FILE;
 		}
 
-		constexpr char* get_message() const
+		constexpr const char* get_message() const
 		{
 			return messages[code];
 		}
 
+		constexpr const char* get_args() const
+		{
+			return args;
+		}
+
 	private:
 		Code code;
+		const char* args;
 
-		static constexpr char* messages[LENGTH] =
+		static constexpr const char* messages[LENGTH] =
 		{
 			"",
 			"The server seems to be offline. Please start the server and enter 'retry'.",
-			"Missing a game file.",
+			"Could not initialize nlnx. Message: ",
+			"Missing a game file: ",
 			"UI.nx has wrong version.",
 			"Could not initialize glfw.",
 			"Could not initialize glew.",

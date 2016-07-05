@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Journey.h"
+#include "../Journey.h"
 
 #ifdef JOURNEY_USE_XXHASH
 #include <cstdint>
@@ -28,7 +28,7 @@ namespace jrc
 	namespace HashUtility
 	{
 		// Calculate file hash using the fast xxhash algorithm.
-		std::string getfilehash(const char* filename, uint64_t seed);
+		std::string get_filehash(const char* filename, uint64_t seed);
 	}
 }
 #endif

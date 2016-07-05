@@ -17,12 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "PlayerHandlers.h"
 
-#include "..\..\Character\Buff.h"
-#include "..\..\Gameplay\Stage.h"
-#include "..\..\IO\UI.h"
-#include "..\..\IO\UITypes\UIBuffList.h"
-#include "..\..\IO\UITypes\UIStatsinfo.h"
-#include "..\..\IO\UITypes\UISkillbook.h"
+#include "../../Character/Buff.h"
+#include "../../Gameplay/Stage.h"
+#include "../../IO/UI.h"
+#include "../../IO/UITypes/UIBuffList.h"
+#include "../../IO/UITypes/UIStatsinfo.h"
+#include "../../IO/UITypes/UISkillbook.h"
 
 namespace jrc
 {
@@ -60,7 +60,7 @@ namespace jrc
 		int32_t updatemask = recv.read_int();
 
 		bool recalculate = false;
-		for (auto iter : Maplestat::values)
+		for (auto iter : Maplestat::codes)
 		{
 			if (updatemask & iter.second)
 			{
@@ -78,7 +78,7 @@ namespace jrc
 		UI::get().enable();
 	}
 
-	bool ChangeStatsHandler::handle_stat(Maplestat::Value stat, InPacket& recv) const
+	bool ChangeStatsHandler::handle_stat(Maplestat::Id stat, InPacket& recv) const
 	{
 		Player& player = Stage::get().get_player();
 
@@ -114,22 +114,22 @@ namespace jrc
 		bool update_statsinfo = need_statsinfo_update(stat);
 		if (update_statsinfo && !recalculate)
 		{
-			UI::get().get_element<UIStatsinfo>()
-				.if_present(&UIStatsinfo::update_stat, stat);
+			if (auto statsinfo = UI::get().get_element<UIStatsinfo>())
+				statsinfo->update_stat(stat);
 		}
 
 		bool update_skillbook = need_skillbook_update(stat);
 		if (update_skillbook)
 		{
 			int16_t value = player.get_stats().get_stat(stat);
-			UI::get().get_element<UISkillbook>()
-				.if_present(&UISkillbook::update_stat, stat, value);
+			if (auto skillbook = UI::get().get_element<UISkillbook>())
+				skillbook->update_stat(stat, value);
 		}
 
 		return recalculate;
 	}
 
-	bool ChangeStatsHandler::need_statsinfo_update(Maplestat::Value stat) const
+	bool ChangeStatsHandler::need_statsinfo_update(Maplestat::Id stat) const
 	{
 		switch (stat)
 		{
@@ -149,7 +149,7 @@ namespace jrc
 		}
 	}
 
-	bool ChangeStatsHandler::need_skillbook_update(Maplestat::Value stat) const
+	bool ChangeStatsHandler::need_skillbook_update(Maplestat::Id stat) const
 	{
 		switch (stat)
 		{
@@ -164,35 +164,35 @@ namespace jrc
 
 	void BuffHandler::handle(InPacket& recv) const
 	{
-		int64_t firstmask = recv.read_long();
-		int64_t secondmask = recv.read_long();
+		uint64_t firstmask = recv.read_long();
+		uint64_t secondmask = recv.read_long();
 
 		switch (secondmask)
 		{
-		case Buff::BATTLESHIP:
-			handle_buff(recv, Buff::BATTLESHIP);
+		case Buffstat::BATTLESHIP:
+			handle_buff(recv, Buffstat::BATTLESHIP);
 			return;
 		}
 
-		for (Buff::Stat stat : Buff::FIRST_BUFFS)
+		for (auto& iter : Buffstat::first_codes)
 		{
-			if (firstmask & stat)
+			if (firstmask & iter.second)
 			{
-				handle_buff(recv, stat);
+				handle_buff(recv, iter.first);
 			}
 		}
-		for (Buff::Stat stat : Buff::SECOND_BUFFS)
+		for (auto& iter : Buffstat::second_codes)
 		{
-			if (secondmask & stat)
+			if (secondmask & iter.second)
 			{
-				handle_buff(recv, stat);
+				handle_buff(recv, iter.first);
 			}
 		}
 
 		Stage::get().get_player().recalc_stats(false);
 	}
 
-	void ApplyBuffHandler::handle_buff(InPacket& recv, Buff::Stat bs) const
+	void ApplyBuffHandler::handle_buff(InPacket& recv, Buffstat::Id bs) const
 	{
 		int16_t value = recv.read_short();
 		int32_t skillid = recv.read_int();
@@ -200,11 +200,11 @@ namespace jrc
 
 		Stage::get().get_player().give_buff({ bs, value, skillid, duration });
 
-		UI::get().get_element<UIBuffList>()
-			.if_present(&UIBuffList::add_buff, skillid, duration);
+		if (auto bufflist = UI::get().get_element<UIBuffList>())
+			bufflist->add_buff(skillid, duration);
 	}
 
-	void CancelBuffHandler::handle_buff(InPacket&, Buff::Stat bs) const
+	void CancelBuffHandler::handle_buff(InPacket&, Buffstat::Id bs) const
 	{
 		Stage::get().get_player().cancel_buff(bs);
 	}
@@ -228,8 +228,9 @@ namespace jrc
 		Stage::get().get_player()
 			.change_skill(skillid, level, masterlevel, expire);
 
-		UI::get().get_element<UISkillbook>()
-			.if_present(&UISkillbook::update_skills, skillid);
+		if (auto skillbook = UI::get().get_element<UISkillbook>())
+			skillbook->update_skills(skillid);
+
 		UI::get().enable();
 	}
 

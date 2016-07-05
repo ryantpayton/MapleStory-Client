@@ -17,12 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UINpcTalk.h"
 
-#include "..\Components\MapleButton.h"
+#include "../Components/MapleButton.h"
 
-#include "..\..\Net\Packets\NpcInteractionPackets.h"
+#include "../../Net/Packets/NpcInteractionPackets.h"
 
-#include "nlnx\nx.hpp"
-#include "nlnx\node.hpp"
+#include "nlnx/nx.hpp"
+#include "nlnx/node.hpp"
 
 namespace jrc
 {

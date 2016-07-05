@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Mapinfo.h"
 
-#include "..\..\Constants.h"
+#include "../../Constants.h"
 
 namespace jrc
 {
@@ -85,12 +85,22 @@ namespace jrc
 
 	Optional<const Seat> MapInfo::findseat(Point<int16_t> position) const
 	{
-		return Optional<Seat>::findfirst(seats, &Seat::inrange, position);
+		for (auto& seat : seats)
+		{
+			if (seat.inrange(position))
+				return seat;
+		}
+		return nullptr;
 	}
 
 	Optional<const Ladder> MapInfo::findladder(Point<int16_t> position, bool upwards) const
 	{
-		return Optional<Ladder>::findfirst(ladders, &Ladder::inrange, position, upwards);
+		for (auto& ladder : ladders)
+		{
+			if (ladder.inrange(position, upwards))
+				return ladder;
+		}
+		return nullptr;
 	}
 
 

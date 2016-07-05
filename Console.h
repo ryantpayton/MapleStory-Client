@@ -18,7 +18,7 @@
 #pragma once
 #include "Journey.h"
 
-#include "Util\Singleton.h"
+#include "Template/Singleton.h"
 
 #include <unordered_set>
 #include <string>
@@ -26,29 +26,44 @@
 
 namespace jrc
 {
+#ifndef JOURNEY_PRINT_WARNINGS
+
 	class Console : public Singleton<Console>
 	{
 	public:
+		void print(const char*, const std::string&) {}
+		void print(const char*, const std::exception&) {}
+		void print(const std::string&) {}
+	};
+
+#else
+
+	class Console : public Singleton<Console>
+	{
+	public:
+		void print(const char* func, const std::string& msg)
+		{
+			static const std::string delim = ", ";
+			print(func + delim + msg);
+		}
+
 		void print(const char* func, const std::exception& ex)
 		{
-			const std::string delim = ", ";
-			print(func + delim + ex.what());
+			print(func, { ex.what() });
 		}
 
 		void print(const std::string& str)
 		{
-#ifdef JOURNEY_PRINT_WARNINGS
-
 			if (!printed.count(str))
 			{
 				std::cout << str << std::endl;
 				printed.insert(str);
 			}
-
-#endif
 		}
 
 	private:
 		std::unordered_set<std::string> printed;
 	};
+
+#endif
 }

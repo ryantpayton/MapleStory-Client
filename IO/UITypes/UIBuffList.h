@@ -16,12 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\UIElement.h"
+#include "../UIElement.h"
 
-#include "..\Components\IconCover.h"
+#include "../Components/IconCover.h"
 
-#include "..\..\Constants.h"
-#include "..\..\Graphics\Texture.h"
+#include "../../Constants.h"
+#include "../../Graphics/Texture.h"
 
 #include <unordered_map>
 

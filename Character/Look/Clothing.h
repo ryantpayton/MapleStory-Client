@@ -19,81 +19,63 @@
 #include "BodyDrawinfo.h"
 #include "Equipslot.h"
 
-#include "..\Equipstat.h"
-#include "..\Maplestat.h"
-#include "..\Inventory\ItemData.h"
+#include "../../Graphics/Texture.h"
+#include "../../Template/EnumMap.h"
 
-#include "..\..\Console.h"
-#include "..\..\Graphics\Texture.h"
-#include "..\..\Util\Enum.h"
-#include "..\..\Util\EnumMap.h"
-
-#include <vector>
-#include <map>
+#include <unordered_map>
 
 namespace jrc
 {
-	class Clothing : public ItemData
+	class Clothing
 	{
 	public:
 		enum Layer
 		{
 			CAPE, SHOES, PANTS, TOP, MAIL, MAILARM,
 			EARRINGS, FACEACC, EYEACC, PENDANT, BELT, MEDAL, RING, 
-			CAP, CAPBBODY, CAPOHAIR,
-			GLOVE, WRIST, GLOVEOHAIR, WRISTOHAIR, GLOVEOBODY, WRISTOBODY,
-			SHIELD, BACKSHIELD, SHIELDBBODY, SHIELDOHAIR,
-			WEAPON, BACKWEAPON, WEAPONBARM, WEAPONBBODY, WEAPONOHAND, WEAPONOBODY, WEAPONOGLOVE,
+			CAP, CAP_BELOW_BODY, CAP_OVER_HAIR,
+			GLOVE, WRIST, GLOVE_OVER_HAIR, WRIST_OVER_HAIR, GLOVE_OVER_BODY, WRIST_OVER_BODY,
+			SHIELD, BACKSHIELD, SHIELD_BELOW_BODY, SHIELD_OVER_HAIR,
+			WEAPON, BACKWEAPON, WEAPON_BELOW_ARM, WEAPON_BELOW_BODY,
+			WEAPON_OVER_HAND, WEAPON_OVER_BODY, WEAPON_OVER_GLOVE,
 			NUM_LAYERS
 		};
 
-		Clothing(int32_t equipid, const BodyDrawinfo& drawinfo);
-		Clothing();
+		// Construct a new equip.
+		Clothing(int32_t itemid, const BodyDrawinfo& drawinfo);
 
-		void draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
+		// Draw the equip.
+		void draw(Stance::Id stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
+		// Check if a part of the equip lies on the specified layer while in the specified stance.
+		bool contains_layer(Stance::Id stance, Layer layer) const;
 
-		bool contains_layer(Stance::Value stance, Layer layer) const;
-		bool istransparent() const;
-		bool isweapon() const;
-		int16_t getreqstat(Maplestat::Value stat) const;
-		int16_t getdefstat(Equipstat::Value stat) const;
-		std::string gettype() const;
-		std::string getvslot() const;
-		Equipslot::Value geteqslot() const;
+		// Return wether the equip is invisble.
+		bool is_transparent() const;
+		// Return wether this equip uses twohanded stances.
+		bool is_twohanded() const;
+		// Return the item id.
+		int32_t get_id() const;
+		// Return the equip slot for this cloth.
+		Equipslot::Id get_eqslot() const;
+		// Return the standing stance to use while equipped.
+		Stance::Id get_stand() const;
+		// Return the walking stance to use while equipped.
+		Stance::Id get_walk() const;
+		// Return the vslot, used to distinguish some layering types.
+		const std::string& get_vslot() const;
 
 	private:
-		static EnumIterator<Layer> layerit();
-		static Layer sublayer(Layer base, const std::string& name);
-
-		struct Whole
-		{
-			std::vector<Texture> parts;
-
-			void add(Texture part)
-			{
-				parts.push_back(part);
-			}
-
-			void draw(const DrawArgument& args) const
-			{
-				for (auto& part : parts)
-				{
-					part.draw(args);
-				}
-			}
-		};
-
-		EnumMap<Stance::Value, EnumMap<Layer, std::unordered_map<uint8_t, Whole>, NUM_LAYERS>> stances;
-		EnumMap<Maplestat::Value, int16_t> reqstats;
-		EnumMap<Equipstat::Value, int16_t> defstats;
-		std::string type;
+		EnumMap<Stance::Id, EnumMap<Layer, std::unordered_multimap<uint8_t, Texture>, NUM_LAYERS>> stances;
+		int32_t itemid;
+		Equipslot::Id eqslot;
+		Stance::Id walk;
+		Stance::Id stand;
 		std::string vslot;
-		int32_t price;
-		Equipslot::Value eqslot;
-		uint8_t slots;
-		bool cash;
-		bool tradeblock;
+		bool twohanded;
 		bool transparent;
+
+
+		static const std::unordered_map<std::string, Layer> sublayernames;
 	};
 }
 

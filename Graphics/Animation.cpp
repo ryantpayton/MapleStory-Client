@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "Animation.h"
 
-#include "..\Constants.h"
-#include "..\Util\Misc.h"
+#include "../Constants.h"
+#include "../Util/Misc.h"
 
 #include <set>
 

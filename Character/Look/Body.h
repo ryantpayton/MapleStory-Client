@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -18,59 +18,37 @@
 #pragma once
 #include "BodyDrawinfo.h"
 
-#include "..\..\Console.h"
-#include "..\..\Graphics\Texture.h"
-#include "..\..\Util\Enum.h"
+#include "../../Graphics/Texture.h"
 
 namespace jrc
 {
 	class Body
 	{
 	public:
-		static const size_t NUM_LAYERS = 8;
 		enum Layer
 		{
-			NONE, BODY, ARM, ARMOVERHAIR,
-			LEFTHAND, RIGHTHAND, HANDOVER, HEAD
+			NONE, 
+			BODY, ARM, ARM_BELOW_HEAD, ARM_BELOW_HEAD_OVER_MAIL,
+			ARM_OVER_HAIR, ARM_OVER_HAIR_BELOW_WEAPON,
+			HAND_BELOW_WEAPON, HAND_OVER_HAIR, HAND_OVER_WEAPON, HEAD,
+			NUM_LAYERS
 		};
 
-		static EnumIterator<Layer> layerit(Layer s = BODY, Layer l = HEAD)
-		{
-			return EnumIterator<Layer>(s, l);
-		}
-
-		static Layer layerbystring(std::string name)
-		{
-			if (name == "backBody")
-				return BODY;
-
-			static std::string layernames[NUM_LAYERS] =
-			{
-				"", "body", "arm", "armOverHair",
-				"handBelowWeapon", "handOverHair", "handOverWeapon", "head"
-			};
-
-			for (auto it = layerit(); it.hasnext(); it.increment())
-			{
-				Layer layer = it.get();
-				if (layernames[layer] == name)
-					return layer;
-			}
-
-			Console::get().print("Unhandled body layer: " + name);
-
-			return NONE;
-		}
-
 		Body(int32_t skin, const BodyDrawinfo& drawinfo);
-		Body();
 
-		void draw(Stance::Value stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
-		std::string get_name() const;
+		void draw(Stance::Id stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
+
+		const std::string& get_name() const;
+
+
+		static Layer layer_by_name(const std::string& name);
 
 	private:
-		std::unordered_map<Layer, std::unordered_map<uint8_t, Texture>> stances[Stance::LENGTH];
+		std::unordered_map<uint8_t, Texture> stances[Stance::LENGTH][Layer::NUM_LAYERS];
 		std::string name;
+
+
+		static const std::unordered_map<std::string, Layer> layers_by_name;
 	};
 }
 

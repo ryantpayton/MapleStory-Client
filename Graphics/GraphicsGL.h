@@ -16,17 +16,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "DrawArgument.h"
 #include "Text.h"
 
-#include "..\Constants.h"
-#include "..\Error.h"
-#include "..\Util\QuadTree.h"
-#include "..\Util\Rectangle.h"
-#include "..\Util\Singleton.h"
+#include "../Constants.h"
+#include "../Error.h"
+#include "../Util/QuadTree.h"
+#include "../Template/Rectangle.h"
+#include "../Template/Singleton.h"
 
-#include "nlnx\bitmap.hpp"
+#include "nlnx/bitmap.hpp"
 
-#include "GL\glew.h"
+#include "GL/glew.h"
 
 #include "ft2build.h"
 #include FT_FREETYPE_H
@@ -53,15 +54,15 @@ namespace jrc
 		// Add a bitmap to the available resources.
 		void addbitmap(const nl::bitmap& bmp);
 		// Draw the bitmap with the given parameters.
-		void draw(const nl::bitmap& bmp, int16_t x, int16_t y, int16_t tx, int16_t ty,
-			float a, float xs, float ys, int16_t cx, int16_t cy, float ang);
+		void draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect,
+			const Color& color, float angle);
 
 		// Create a layout for the text with the parameters specified.
 		Text::Layout createlayout(const std::string& text, Text::Font font,
 			Text::Alignment alignment, int16_t maxwidth, bool formatted);
 		// Draw a text with the given parameters.
-		void drawtext(const std::string& text, const Text::Layout& layout, Text::Font font,
-			Text::Color color, Text::Background back, Point<int16_t> origin, float opacity);
+		void drawtext(const DrawArgument& args, const std::string& text, const Text::Layout& layout, Text::Font font,
+			Text::Color color, Text::Background back);
 
 		// Draw a rectangle filled with the specified color.
 		void drawrectangle(int16_t x, int16_t y, int16_t w, int16_t h, float r, float g, float b, float a);
@@ -151,22 +152,19 @@ namespace jrc
 				GLshort s;
 				GLshort t;
 
-				GLfloat r;
-				GLfloat g;
-				GLfloat b;
-				GLfloat a;
+				Color c;
 			};
 
 			static const size_t LENGTH = 4;
 			Vertex vertices[LENGTH];
 
 			Quad(GLshort l, GLshort r, GLshort t, GLshort b, const Offset& o,
-				GLfloat cr, GLfloat cg, GLfloat cb, GLfloat ca, GLfloat rot) {
+				const Color& color, GLfloat rot) {
 
-				vertices[0] = { l, t, o.l, o.t, cr, cg, cb, ca };
-				vertices[1] = { l, b, o.l, o.b, cr, cg, cb, ca };
-				vertices[2] = { r, b, o.r, o.b, cr, cg, cb, ca };
-				vertices[3] = { r, t, o.r, o.t, cr, cg, cb, ca };
+				vertices[0] = { l, t, o.l, o.t, color };
+				vertices[1] = { l, b, o.l, o.b, color };
+				vertices[2] = { r, b, o.r, o.b, color };
+				vertices[3] = { r, t, o.r, o.t, color };
 
 				if (rot != 0.0f)
 				{
@@ -251,6 +249,13 @@ namespace jrc
 			std::vector<int16_t> advances;
 			int16_t width;
 			int16_t endy;
+		};
+
+		static constexpr Rectangle<int16_t> SCREEN = {
+			0,
+			Constants::VIEWWIDTH,
+			-Constants::VIEWYOFFSET,
+			-Constants::VIEWYOFFSET + Constants::VIEWHEIGHT
 		};
 
 		static const GLshort ATLASW = 8192;

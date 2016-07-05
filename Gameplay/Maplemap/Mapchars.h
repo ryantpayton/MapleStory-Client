@@ -18,10 +18,12 @@
 #pragma once
 #include "MapObjects.h"
 
-#include "..\Movement.h"
-#include "..\Spawn.h"
+#include "../Movement.h"
+#include "../Spawn.h"
 
-#include "..\..\Character\OtherChar.h"
+#include "../../Character/OtherChar.h"
+
+#include <queue>
 
 namespace jrc
 {
@@ -30,14 +32,14 @@ namespace jrc
 	{
 	public:
 		// Draw all characters on a layer.
-		void draw(int8_t layer, double viewx, double viewy, float alpha) const;
+		void draw(Layer::Id layer, double viewx, double viewy, float alpha) const;
 		// Update all characters.
 		void update(const Physics& physics);
 
 		// Spawn a new character, if it has not been spawned yet.
-		void send_spawn(const CharSpawn& spawn);
+		void spawn(CharSpawn&& spawn);
 		// Remove a character.
-		void remove_char(int32_t cid);
+		void remove(int32_t cid);
 		// Remove all characters.
 		void clear();
 
@@ -50,6 +52,8 @@ namespace jrc
 
 	private:
 		MapObjects chars;
+
+		std::queue<CharSpawn> spawns;
 	};
 }
 

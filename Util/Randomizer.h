@@ -21,72 +21,72 @@
 
 namespace jrc
 {
-	// Small class which can be used to generate random numbers.
-	// Classes that need this functionality should have a member variable of this class.
+	// Can be used to generate random numbers.
 	class Randomizer
 	{
 	public:
-		bool nextbool() const
+		bool next_bool() const
 		{
-			return nextint<int32_t>(1) == 1;
+			return next_int(2) == 1;
 		}
 
 		bool below(float percent) const
 		{
-			return nextreal<float>(1.0f) < percent;
+			return next_real(1.0f) < percent;
+		}
+
+		bool above(float percent) const
+		{
+			return next_real(1.0f) > percent;
 		}
 
 		template <class T>
-		T nextreal(T high) const
+		T next_real(T to) const
 		{
-			return nextreal<T>(0, high);
+			return next_real<T>(0, to);
 		}
 
 		template <class T>
-		T nextreal(T low, T high) const
+		T next_real(T from, T to) const
 		{
-			std::uniform_real_distribution<T> range(low, high);
-			return chance(range);
-		}
+			if (from >= to)
+				return from;
 
-		size_t nextint(size_t high) const
-		{
-			return nextint<size_t>(high);
-		}
-
-		size_t nextint(size_t low, size_t high) const
-		{
-			return nextint<size_t>(low, high);
-		}
-
-		template <class T>
-		T nextint(T high) const
-		{
-			return nextint<T>(0, high);
-		}
-
-		template <class T>
-		T nextint(T low, T high) const
-		{
-			std::uniform_int_distribution<T> range(low, high);
-			return chance(range);
-		}
-
-	private:
-		template <class T>
-		T chance(std::uniform_int_distribution<T> range) const
-		{
+			std::uniform_real_distribution<T> range(from, to);
 			std::random_device rd;
-			std::default_random_engine engine = std::default_random_engine(rd());
+			std::default_random_engine engine{ rd() };
 			return range(engine);
 		}
 
 		template <class T>
-		T chance(std::uniform_real_distribution<T> range) const
+		T next_int(T to) const
 		{
+			return next_int<T>(0, to);
+		}
+
+		template <class T>
+		T next_int(T from, T to) const
+		{
+			if (from >= to)
+				return from;
+
+			std::uniform_int_distribution<T> range(from, to - 1);
 			std::random_device rd;
-			std::default_random_engine engine = std::default_random_engine(rd());
+			std::default_random_engine engine{ rd() };
 			return range(engine);
+		}
+
+		template <class E>
+		E next_enum(E to = E::LENGTH) const
+		{
+			return next_enum(E(), to);
+		}
+
+		template <class E>
+		E next_enum(E from, E to) const
+		{
+			auto next_underlying = next_int<std::underlying_type<E>::type>(from, to);
+			return static_cast<E>(next_underlying);
 		}
 	};
 }

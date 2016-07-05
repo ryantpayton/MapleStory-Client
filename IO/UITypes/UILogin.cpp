@@ -18,17 +18,15 @@
 #include "UILogin.h"
 #include "UILoginwait.h"
 
-#include "..\UI.h"
-#include "..\Components\MapleButton.h"
+#include "../UI.h"
+#include "../Components/MapleButton.h"
 
-#include "..\..\Configuration.h"
-#include "..\..\Audio\Audio.h"
-#include "..\..\Graphics\Sprite.h"
-#include "..\..\Net\Session.h"
-#include "..\..\Net\Packets\LoginPackets.h"
+#include "../../Configuration.h"
+#include "../../Audio/Audio.h"
+#include "../../Graphics/Sprite.h"
+#include "../../Net/Packets/LoginPackets.h"
 
-#include <nlnx\nx.hpp>
-#include <nlnx\audio.hpp>
+#include "nlnx/nx.hpp"
 
 namespace jrc
 {
@@ -67,7 +65,7 @@ namespace jrc
 		checkbox[true] = title["check"]["1"];
 
 		account = { Text::A13M, Text::LEFT, Text::WHITE,{ { 315, 249 },{ 465, 273 } }, 12 };
-		account.set_key_callback(Keyboard::TAB, [&]{
+		account.set_key_callback(KeyAction::TAB, [&]{
 			account.set_state(Textfield::NORMAL);
 			password.set_state(Textfield::FOCUSED);
 		});
@@ -77,7 +75,7 @@ namespace jrc
 		accountbg = title["ID"];
 
 		password = { Text::A13M, Text::LEFT, Text::WHITE, { {315, 275}, {465, 299} }, 12 };
-		password.set_key_callback(Keyboard::TAB, [&]{
+		password.set_key_callback(KeyAction::TAB, [&]{
 			password.set_state(Textfield::NORMAL);
 			account.set_state(Textfield::FOCUSED);
 		});
@@ -135,7 +133,7 @@ namespace jrc
 	void UILogin::login()
 	{
 		UI::get().disable();
-		UI::get().add(Element<UILoginwait>());
+		UI::get().emplace<UILoginwait>();
 
 		account.set_state(Textfield::NORMAL);
 		password.set_state(Textfield::NORMAL);
@@ -152,9 +150,9 @@ namespace jrc
 		{
 		case BT_LOGIN:
 			login();
-			return Button::PRESSED;
+			return Button::NORMAL;
 		case BT_QUIT:
-			Session::get().disconnect();
+			UI::get().quit();
 			return Button::PRESSED;
 		case BT_SAVEID:
 			saveid = !saveid;

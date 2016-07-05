@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\..\Util\Rectangle.h"
+#include "../../Template/Rectangle.h"
 
 #include <cstdint>
 #include <vector>
@@ -66,6 +66,42 @@ namespace jrc
 	};
 
 
+	struct MobAttack
+	{
+		Attack::Type type = Attack::CLOSE;
+		int32_t watk = 0;
+		int32_t matk = 0;
+		int32_t mobid = 0;
+		int32_t oid = 0;
+		Point<int16_t> origin;
+		bool valid = false;
+
+		// Create a mob attack for touch damage.
+		MobAttack(int32_t watk, Point<int16_t> origin, int32_t mobid, int32_t oid)
+			: type(Attack::CLOSE), watk(watk), origin(origin), mobid(mobid), oid(oid), valid(true) {}
+
+		MobAttack()
+			: valid(false) {}
+
+		explicit operator bool() const
+		{
+			return valid;
+		}
+	};
+
+
+	struct MobAttackResult
+	{
+		int32_t damage;
+		int32_t mobid;
+		int32_t oid;
+		uint8_t direction;
+
+		MobAttackResult(const MobAttack& attack, int32_t damage, uint8_t direction)
+			: damage(damage), direction(direction), mobid(attack.mobid), oid(attack.oid) {}
+	};
+
+
 	struct AttackResult
 	{
 		AttackResult(const Attack& attack)
@@ -82,6 +118,7 @@ namespace jrc
 		AttackResult() {}
 
 		Attack::Type type;
+		int32_t attacker = 0;
 		uint8_t mobcount = 0;
 		uint8_t hitcount = 1;
 		int32_t skill = 0;
@@ -93,17 +130,8 @@ namespace jrc
 		uint8_t speed = 0;
 		bool toleft = false;
 		std::unordered_map<int32_t, std::vector<std::pair<int32_t, bool>>> damagelines;
-
-		int32_t get_first_oid() const
-		{
-			auto begin = damagelines.begin();
-			return begin != damagelines.end() ? begin->first : 0;
-		}
-
-		int32_t get_last_oid() const
-		{
-			return damagelines.size() > 0 ? (--damagelines.end())->first : 0;
-		}
+		int32_t first_oid;
+		int32_t last_oid;
 	};
 
 	struct AttackUser

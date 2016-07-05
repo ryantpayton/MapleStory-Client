@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -19,35 +19,6 @@
 
 namespace jrc
 {
-	Item::Item(const ItemData& idt, int32_t id, bool cs, int64_t uqi, 
-		int64_t exp, int16_t ct, std::string ow, int16_t fl) : idata(idt) {
-
-		iid = id;
-		cash = cs;
-		uniqueid = uqi;
-		expire = exp;
-		count = ct;
-		owner = ow;
-		flag = fl;
-	}
-
-	void Item::setcount(int16_t c)
-	{
-		count = c;
-	}
-
-	int16_t Item::getcount() const
-	{
-		return count;
-	}
-
-	int32_t Item::get_id() const
-	{
-		return iid;
-	}
-
-	const ItemData& Item::getidata() const
-	{
-		return idata;
-	}
+	Item::Item(int32_t item_id, int64_t expiration, const std::string& owner, int16_t flags)
+		: item_id(item_id), expiration(expiration), owner(owner), flags(flags) {}
 }

@@ -16,16 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\Util\EnumMap.h"
+#include "../Template/EnumMap.h"
 
 #include <cstdint>
 
 namespace jrc
 {
-	class Maplestat
+	namespace Maplestat
 	{
-	public:
-		enum Value
+		enum Id
 		{
 			SKIN, FACE, HAIR, LEVEL, JOB,
 			STR, DEX, INT, LUK,
@@ -35,8 +34,8 @@ namespace jrc
 			LENGTH
 		};
 
-		static Value byid(size_t id);
+		Id by_id(size_t id);
 
-		static const EnumMap<Value, int32_t> values;
+		extern const EnumMap<Id, int32_t> codes;
 	};
 }

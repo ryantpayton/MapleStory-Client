@@ -19,9 +19,10 @@
 
 namespace jrc
 {
-	MapObject::MapObject(int32_t o)
-	{
-		oid = o;
+	MapObject::MapObject(int32_t o, Point<int16_t> p)
+		: oid(o) {
+
+		set_position(p);
 		active = true;
 	}
 
@@ -72,10 +73,5 @@ namespace jrc
 	Point<int16_t> MapObject::get_position() const
 	{
 		return phobj.get_position();
-	}
-
-	PhysicsObject& MapObject::get_phobj()
-	{
-		return phobj;
 	}
 }

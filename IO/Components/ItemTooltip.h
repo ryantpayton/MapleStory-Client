@@ -19,7 +19,7 @@
 #include "Tooltip.h"
 #include "Charset.h"
 
-#include "..\..\Graphics\Text.h"
+#include "../../Graphics/Text.h"
 
 namespace jrc
 {
@@ -30,7 +30,7 @@ namespace jrc
 
 		void draw(Point<int16_t> position) const override;
 
-		void set_item(int32_t itemid);
+		bool set_item(int32_t itemid);
 
 	private:
 		int32_t itemid;

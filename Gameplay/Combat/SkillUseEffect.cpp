@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SkillUseEffect.h"
 
-#include "..\..\Util\Misc.h"
+#include "../../Util/Misc.h"
 
 namespace jrc
 {
@@ -83,5 +83,10 @@ namespace jrc
 			iter--;
 
 		iter->second.apply(target);
+	}
+
+	void IronBodyUseEffect::apply(Char& target) const
+	{
+		target.show_iron_body();
 	}
 }

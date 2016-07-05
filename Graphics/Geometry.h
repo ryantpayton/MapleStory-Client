@@ -18,7 +18,7 @@
 #pragma once
 #include "DrawArgument.h"
 
-#include "..\Util\Point.h"
+#include "../Template/Point.h"
 
 #include <cstdint>
 

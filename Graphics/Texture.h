@@ -18,8 +18,8 @@
 #pragma once
 #include "DrawArgument.h"
 
-#include "nlnx\node.hpp"
-#include "nlnx\bitmap.hpp"
+#include "nlnx/node.hpp"
+#include "nlnx/bitmap.hpp"
 
 namespace jrc
 {
@@ -34,7 +34,7 @@ namespace jrc
 		void draw(const DrawArgument& args) const;
 		void shift(Point<int16_t> amount);
 
-		bool is_loaded() const;
+		bool is_valid() const;
 		int16_t width() const;
 		int16_t height() const;
 		Point<int16_t> get_origin() const;

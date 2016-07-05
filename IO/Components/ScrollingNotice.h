@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\..\Graphics\Geometry.h"
-#include "..\..\Graphics\Text.h"
-#include "..\..\Util\Interpolated.h"
+#include "../../Graphics/Geometry.h"
+#include "../../Graphics/Text.h"
+#include "../../Template/Interpolated.h"
 
 namespace jrc
 {

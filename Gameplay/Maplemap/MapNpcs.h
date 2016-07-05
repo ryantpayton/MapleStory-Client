@@ -17,11 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "MapObjects.h"
-#include "Npc.h"
 
-#include "..\Spawn.h"
+#include "../Spawn.h"
 
-#include "..\..\IO\Cursor.h"
+#include "../../IO/Cursor.h"
+
+#include <queue>
 
 namespace jrc
 {
@@ -29,14 +30,14 @@ namespace jrc
 	{
 	public:
 		// Draw all npcs on a layer.
-		void draw(int8_t layer, double viewx, double viewy, float alpha) const;
+		void draw(Layer::Id layer, double viewx, double viewy, float alpha) const;
 		// Update all npcs.
 		void update(const Physics& physics);
 
-		// Spawn a npc on the ground.
-		void send_spawn(const NpcSpawn& spawn, const Physics& physics);
+		// Add an npc to the spawn queue.
+		void spawn(NpcSpawn&& spawn);
 		// Remove the npc with the specified oid;
-		void remove_npc(int32_t oid);
+		void remove(int32_t oid);
 		// Remove all npcs.
 		void clear();
 
@@ -44,9 +45,9 @@ namespace jrc
 		Cursor::State send_cursor(bool pressed, Point<int16_t> position, Point<int16_t> viewpos);
 
 	private:
-		Optional<Npc> getnpc(int32_t oid);
-
 		MapObjects npcs;
+
+		std::queue<NpcSpawn> spawns;
 	};
 }
 

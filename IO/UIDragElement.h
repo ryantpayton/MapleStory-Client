@@ -18,7 +18,7 @@
 #pragma once
 #include "UIElement.h"
 
-#include "..\Configuration.h"
+#include "../Configuration.h"
 
 namespace jrc
 {

@@ -26,7 +26,7 @@ namespace jrc
 		pos = 0;
 	}
 
-	bool InPacket::has_more() const
+	bool InPacket::available() const
 	{
 		return length() > 0;
 	}
@@ -44,6 +44,44 @@ namespace jrc
 		pos += count;
 	}
 
+	bool InPacket::read_bool() 
+	{ 
+		return read_byte() == 1; 
+	}
+
+	int8_t InPacket::read_byte() 
+	{ 
+		return read<int8_t>(); 
+	}
+
+	int16_t InPacket::read_short() 
+	{ 
+		return read<int16_t>(); 
+	}
+
+	int32_t InPacket::read_int() 
+	{ 
+		return read<int32_t>(); 
+	}
+
+	int64_t InPacket::read_long() 
+	{ 
+		return read<int64_t>(); 
+	}
+
+	Point<int16_t> InPacket::read_point()
+	{
+		auto x = read<int16_t>();
+		auto y = read<int16_t>();
+		return{ x, y };
+	}
+
+	std::string InPacket::read_string()
+	{
+		auto length = read<uint16_t>();
+		return read_padded_string(length);
+	}
+
 	std::string InPacket::read_padded_string(uint16_t count)
 	{
 		std::string ret;
@@ -58,15 +96,28 @@ namespace jrc
 		return ret;
 	}
 
-	std::string InPacket::read_string()
-	{
-		return read<std::string>();
+	bool InPacket::inspect_bool()
+	{ 
+		return inspect_byte() == 1; 
 	}
 
-	Point<int16_t> InPacket::read_point()
-	{
-		auto x = read<int16_t>();
-		auto y = read<int16_t>();
-		return Point<int16_t>(x, y);
+	int8_t InPacket::inspect_byte()
+	{ 
+		return inspect<int8_t>(); 
+	}
+
+	int16_t InPacket::inspect_short()
+	{ 
+		return inspect<int16_t>(); 
+	}
+
+	int32_t InPacket::inspect_int()
+	{ 
+		return inspect<int32_t>(); 
+	}
+
+	int64_t InPacket::inspect_long()
+	{ 
+		return inspect<int64_t>(); 
 	}
 }

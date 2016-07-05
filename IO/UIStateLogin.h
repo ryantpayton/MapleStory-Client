@@ -18,7 +18,8 @@
 #pragma once
 #include "UIState.h"
 
-#include <unordered_map>
+#include "../Template/EnumMap.h"
+
 #include <memory>
 
 namespace jrc
@@ -32,23 +33,26 @@ namespace jrc
 		void update() override;
 
 		void doubleclick(Point<int16_t> pos) override;
-		void send_key(Keyboard::Keytype type, int32_t action, bool pressed) override;
+		void send_key(KeyType::Id type, int32_t action, bool pressed) override;
 		Cursor::State send_cursor(Cursor::State mst, Point<int16_t> pos) override;
 
 		void drag_icon(Icon* icon) override;
-		void show_equip(UIElement::Type parent, Equip* equip, int16_t slot) override;
-		void show_item(UIElement::Type parent, int32_t itemid) override;
-		void show_skill(UIElement::Type parent, int32_t skill_id,
+		void clear_tooltip(Tooltip::Parent parent) override;
+		void show_equip(Tooltip::Parent parent, int16_t slot) override;
+		void show_item(Tooltip::Parent parent, int32_t itemid) override;
+		void show_skill(Tooltip::Parent parent, int32_t skill_id,
 			int32_t level, int32_t masterlevel, int64_t expiration) override;
-		void clear_tooltip(UIElement::Type parent) override;
 
-		void add(const IElement& element) override;
+		Iterator pre_add(UIElement::Type type, bool toggled, bool focused) override;
 		void remove(UIElement::Type type) override;
-		UIElement* get(UIElement::Type type) const override;
-		UIElement* get_front(Point<int16_t> pos) const override;
+		UIElement* get(UIElement::Type type) override;
+		UIElement* get_front(Point<int16_t> pos) override;
 
 	private:
-		std::unordered_map<UIElement::Type, UIElement::UPtr> elements;
+		template <class T, typename...Args>
+		void emplace(Args&&...args);
+
+		EnumMap<UIElement::Type, UIElement::UPtr, UIElement::NUM_TYPES> elements;
 		UIElement::Type focused;
 	};
 }

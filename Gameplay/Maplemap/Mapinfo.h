@@ -16,11 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\..\Util\Point.h"
-#include "..\..\Util\Range.h"
-#include "..\..\Util\Optional.h"
+#include "../../Template/Point.h"
+#include "../../Template/Range.h"
+#include "../../Template/Optional.h"
 
-#include <nlnx\node.hpp>
+#include "nlnx/node.hpp"
 
 #include <vector>
 

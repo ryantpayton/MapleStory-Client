@@ -16,15 +16,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "..\UIElement.h"
+#include "../UIElement.h"
 
-#include "..\Components\Textfield.h"
+#include "../Components/Textfield.h"
 
-#include "..\..\Character\Look\CharLook.h"
-#include "..\..\Graphics\Texture.h"
-#include "..\..\Graphics\Text.h"
-#include "..\..\Util\BoolPair.h"
-#include "..\..\Util\Randomizer.h"
+#include "../../Character/Look/CharLook.h"
+#include "../../Graphics/Texture.h"
+#include "../../Graphics/Text.h"
+#include "../../Template/BoolPair.h"
+#include "../../Util/Randomizer.h"
 
 namespace jrc
 {
@@ -50,6 +50,7 @@ namespace jrc
 
 	private:
 		void randomize_look();
+		const std::string& get_equipname(Equipslot::Id slot) const;
 
 		enum Buttons
 		{

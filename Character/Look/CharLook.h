@@ -16,14 +16,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "BodyDrawinfo.h"
 #include "Body.h"
 #include "Hair.h"
 #include "Face.h"
 #include "CharEquips.h"
 
-#include "..\..\Net\Login.h"
-#include "..\..\Util\Interpolated.h"
-#include "..\..\Util\Randomizer.h"
+#include "../../Net/Login.h"
+#include "../../Template/Interpolated.h"
+#include "../../Util/Randomizer.h"
+#include "../../Util/TimedBool.h"
 
 namespace jrc
 {
@@ -32,49 +34,53 @@ namespace jrc
 	public:
 		CharLook(const LookEntry& entry);
 		CharLook();
-		~CharLook();
 
 		void reset();
-		void draw(Point<int16_t> pos, float inter) const;
-		void drawstanding(Point<int16_t> pos, bool flip) const;
+		void draw(const DrawArgument& args, float alpha) const;
+		void draw(Point<int16_t> pos, bool flip,
+			Stance::Id stance, Expression::Id expression) const;
 		bool update(uint16_t timestep);
 
-		void sethair(int32_t hairid);
-		void setbody(int32_t skinid);
-		void setface(int32_t faceid);
+		void set_hair(int32_t hairid);
+		void set_body(int32_t skinid);
+		void set_face(int32_t faceid);
 		void add_equip(int32_t equipid);
-		void remove_equip(Equipslot::Value slot);
+		void remove_equip(Equipslot::Id slot);
 
 		void attack(bool degenerate);
-		void attack(Stance::Value stance);
-		void set_stance(Stance::Value stance);
-		void setexpression(Expression::Value expression);
+		void attack(Stance::Id stance);
+		void set_stance(Stance::Id stance);
+		void set_expression(Expression::Id expression);
 		void set_action(const std::string& action);
 		void set_direction(bool mirrored);
+		void set_alerted(int64_t millis);
 
-		bool is_twohanded(Stance::Value stance) const;
+		bool is_twohanded(Stance::Id stance) const;
 		uint16_t get_attackdelay(size_t no, uint8_t first_frame) const;
 		uint8_t get_frame() const;
-		Stance::Value get_stance() const;
+		Stance::Id get_stance() const;
 
-		const Body* getbodytype() const;
-		const Hair* gethairstyle() const;
-		const Face* getfacetype() const;
+		const Body* get_body() const;
+		const Hair* get_hair() const;
+		const Face* get_face() const;
 		const CharEquips& get_equips() const;
+
+		// Initialize drawinfo.
+		static void init();
 
 	private:
 		void updatetwohanded();
-		void draw(Point<int16_t> position, bool flip, Stance::Value interstance, 
-			Expression::Value interexp, uint8_t interframe, uint8_t interfcframe) const;
-		uint16_t get_delay(Stance::Value stance, uint8_t frame) const;
-		uint8_t getnextframe(Stance::Value stance, uint8_t frame) const;
-		Stance::Value getattackstance(uint8_t attack, bool degenerate) const;
+		void draw(const DrawArgument& args, Stance::Id interstance, 
+			Expression::Id interexp, uint8_t interframe, uint8_t interfcframe) const;
+		uint16_t get_delay(Stance::Id stance, uint8_t frame) const;
+		uint8_t getnextframe(Stance::Id stance, uint8_t frame) const;
+		Stance::Id getattackstance(uint8_t attack, bool degenerate) const;
 
-		Nominal<Stance::Value> stance;
+		Nominal<Stance::Id> stance;
 		Nominal<uint8_t> stframe;
 		uint16_t stelapsed;
 
-		Nominal<Expression::Value> expression;
+		Nominal<Expression::Id> expression;
 		Nominal<uint8_t> expframe;
 		uint16_t expelapsed;
 
@@ -90,6 +96,13 @@ namespace jrc
 		CharEquips equips;
 
 		Randomizer randomizer;
+		TimedBool alerted;
+
+
+		static BodyDrawinfo drawinfo;
+		static std::unordered_map<int32_t, Hair> hairstyles;
+		static std::unordered_map<int32_t, Face> facetypes;
+		static std::unordered_map<int32_t, Body> bodytypes;
 	};
 }
 

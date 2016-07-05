@@ -16,59 +16,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Maplemap\MapObject.h"
-#include "Maplemap\Npc.h"
-#include "Maplemap\Mob.h"
-#include "Maplemap\ItemDrop.h"
-#include "Maplemap\MesoDrop.h"
+#include "Maplemap/MapObject.h"
 
-#include "..\Character\OtherChar.h"
-#include "..\Net\Login.h"
+#include "../Graphics/Animation.h"
+#include "../Net/Login.h"
 
 #include <cstdint>
 #include <memory>
 
 namespace jrc
 {
-	class Spawn
+	class NpcSpawn
 	{
 	public:
-		enum Type
-		{
-			NPC,
-			MOB,
-			REACTOR,
-			DROP,
-			CHARACTER
-		};
+		NpcSpawn(int32_t oid, int32_t npcid,
+			Point<int16_t> position, bool mirrored, uint16_t fh);
 
-		virtual ~Spawn() {}
-
-		virtual Type type() const = 0;
-	};
-
-
-	class NpcSpawn : public Spawn
-	{
-	public:
-		NpcSpawn(int32_t o, int32_t i, Point<int16_t> p, bool fl, uint16_t f)
-			: oid(o), id(i), position(p), flip(fl), fh(f) {}
-
-		int32_t get_oid() const
-		{
-			return oid;
-		}
-
-		Type type() const override
-		{
-			return NPC;
-		}
-
-		std::unique_ptr<Npc> instantiate(const Physics& physics) const
-		{
-			auto spawnposition = physics.get_y_below(position);
-			return std::make_unique<Npc>(id, oid, flip, fh, false, spawnposition);
-		}
+		int32_t get_oid() const;
+		std::unique_ptr<MapObject> instantiate(const Physics& physics) const;
 
 	private:
 		int32_t oid;
@@ -79,31 +44,15 @@ namespace jrc
 	};
 
 
-	class MobSpawn : public Spawn
+	class MobSpawn
 	{
 	public:
-		MobSpawn(int32_t o, int32_t i, int8_t m, int8_t st, uint16_t f, bool ns, int8_t t, Point<int16_t> p)
-			: oid(o), id(i), mode(m), stance(st), fh(f), newspawn(ns), team(t), position(p) {}
+		MobSpawn(int32_t oid, int32_t id, int8_t mode, int8_t stance,
+			uint16_t fh, bool newspawn, int8_t team, Point<int16_t> position);
 
-		int8_t getmode() const
-		{
-			return mode;
-		}
-
-		int32_t get_oid() const
-		{
-			return oid;
-		}
-
-		Type type() const override
-		{
-			return MOB;
-		}
-
-		std::unique_ptr<Mob> instantiate() const
-		{
-			return std::make_unique<Mob>(oid, id, mode, stance, fh, newspawn, team, position);
-		}
+		int8_t get_mode() const;
+		int32_t get_oid() const;
+		std::unique_ptr<MapObject> instantiate() const;
 
 	private:
 		int32_t oid;
@@ -117,41 +66,34 @@ namespace jrc
 	};
 
 
-	class DropSpawn : public Spawn
+	class ReactorSpawn
 	{
 	public:
-		DropSpawn(int32_t o, int32_t i, bool ms, int32_t ow, Point<int16_t> p, Point<int16_t> d, int8_t t, int8_t m, bool pd)
-			: oid(o), id(i), meso(ms), owner(ow), start(p), dest(d), droptype(t), mode(m), playerdrop(pd) {}
+		ReactorSpawn(int32_t oid, int32_t rid, int8_t state, Point<int16_t> position);
 
-		bool ismeso() const
-		{
-			return meso;
-		}
+		int32_t get_oid() const;
+		std::unique_ptr<MapObject> instantiate(const Physics& physics) const;
 
-		int32_t getitemid() const
-		{
-			return id;
-		}
+	private:
+		int32_t oid;
+		int32_t rid;
+		int8_t state;
+		Point<int16_t> position;
+	};
 
-		int32_t get_oid() const
-		{
-			return oid;
-		}
 
-		Type type() const override
-		{
-			return DROP;
-		}
+	class DropSpawn
+	{
+	public:
+		DropSpawn(int32_t oid, int32_t id, bool meso, int32_t owner,
+			Point<int16_t> position, Point<int16_t> destination,
+			int8_t droptype, int8_t mode, bool playerdrop);
 
-		std::unique_ptr<MesoDrop> instantiate(const Animation* icon) const
-		{
-			return std::make_unique<MesoDrop>(oid, owner, start, dest, droptype, mode, playerdrop, icon);
-		}
-
-		std::unique_ptr<ItemDrop> instantiate(const Texture* icon) const
-		{
-			return std::make_unique<ItemDrop>(oid, owner, start, dest, droptype, mode, id, playerdrop, icon);
-		}
+		bool is_meso() const;
+		int32_t get_itemid() const;
+		int32_t get_oid() const;
+		std::unique_ptr<MapObject> instantiate(const Animation& icon) const;
+		std::unique_ptr<MapObject> instantiate(const Texture& icon) const;
 
 	private:
 		int32_t oid;
@@ -166,26 +108,14 @@ namespace jrc
 	};
 
 
-	class CharSpawn : public Spawn
+	class CharSpawn
 	{
 	public:
-		CharSpawn(int32_t c, const LookEntry& lk, uint8_t l, int16_t j, const std::string& nm, int8_t st, Point<int16_t> p)
-			: cid(c), look(lk), level(l), job(j), name(nm), stance(st), position(p) {}
+		CharSpawn(int32_t cid, const LookEntry& look, uint8_t level, int16_t job,
+			const std::string& name, int8_t stance, Point<int16_t> position);
 
-		int32_t getcid() const
-		{
-			return cid;
-		}
-
-		Type type() const override
-		{
-			return CHARACTER;
-		}
-
-		std::unique_ptr<OtherChar> instantiate() const
-		{
-			return std::make_unique<OtherChar>(cid, look, level, job, name, stance, position);
-		}
+		int32_t get_cid() const;
+		std::unique_ptr<MapObject> instantiate() const;
 
 	private:
 		int32_t cid;

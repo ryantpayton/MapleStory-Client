@@ -17,13 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SkillData.h"
 
-#include "..\Gameplay\Combat\Skill.h"
-#include "..\Util\Misc.h"
+#include "../Character/SkillId.h"
+#include "../Util/Misc.h"
 
 #include <unordered_set>
 
-#include <nlnx\nx.hpp>
-#include <nlnx\node.hpp>
+#include "nlnx/nx.hpp"
+#include "nlnx/node.hpp"
 
 namespace jrc
 {
@@ -78,29 +78,72 @@ namespace jrc
 		}
 
 		element = src["elemAttr"];
-		reqweapon = Weapon::typebyvalue(100 + (int32_t)src["weapon"]);
+		reqweapon = Weapon::by_value(100 + (int32_t)src["weapon"]);
 		masterlevel = static_cast<int32_t>(stats.size());
 		passive = (id % 10000) / 1000 == 0;
-		offensive = !passive && (src["hit"].size() > 0 || is_irregular_attack(id));
+		flags = flags_of(id);
 		invisible = src["invisible"].get_bool();
 	}
 
-	bool SkillData::is_irregular_attack(int32_t id) const
+	int32_t SkillData::flags_of(int32_t id) const
 	{
-		static const std::unordered_set<int32_t> irregular_attack_skills =
+		static const std::unordered_map<int32_t, int32_t> skill_flags =
 		{
 			// Beginner
-			Skill::THREE_SNAILS, 
+			{ SkillId::THREE_SNAILS, ATTACK },
+			// Warrior
+			{ SkillId::POWER_STRIKE, ATTACK },
+			{ SkillId::SLASH_BLAST, ATTACK },
 			// Fighter
-			Skill::RUSH_HERO, 
 			// Page
-			Skill::RUSH_PALADIN,
+			// Crusader
+			{ SkillId::SWORD_PANIC, ATTACK },
+			{ SkillId::AXE_PANIC, ATTACK },
+			{ SkillId::SWORD_COMA, ATTACK },
+			{ SkillId::AXE_COMA, ATTACK },
+			// Hero
+			{ SkillId::RUSH_HERO, ATTACK },
+			{ SkillId::BRANDISH, ATTACK },
+			// Page
+			// White Knight
+			{ SkillId::CHARGE, ATTACK },
+			// Paladin
+			{ SkillId::RUSH_PALADIN, ATTACK },
+			{ SkillId::BLAST, ATTACK },
+			{ SkillId::HEAVENS_HAMMER, ATTACK },
 			// Spearman
-			Skill::SACRIFICE, Skill::RUSH_DK,
+			// Dragon Knight
+			{ SkillId::DRAGON_BUSTER, ATTACK },
+			{ SkillId::DRAGON_FURY, ATTACK },
+			{ SkillId::PA_BUSTER, ATTACK },
+			{ SkillId::PA_FURY, ATTACK },
+			{ SkillId::SACRIFICE, ATTACK },
+			{ SkillId::DRAGONS_ROAR, ATTACK },
+			// Dark Knight
+			{ SkillId::RUSH_DK, ATTACK },
+			// Mage
+			{ SkillId::ENERGY_BOLT, ATTACK | RANGED },
+			{ SkillId::MAGIC_CLAW, ATTACK | RANGED },
 			// F/P Mage
-			Skill::BLAST, Skill::POISON_BREATH
+			{ SkillId::SLOW_FP, ATTACK },
+			{ SkillId::FIRE_ARROW, ATTACK | RANGED },
+			{ SkillId::POISON_BREATH, ATTACK | RANGED },
+			// F/P ArchMage
+			{ SkillId::EXPLOSION, ATTACK },
+			{ SkillId::POISON_BREATH, ATTACK },
+			{ SkillId::SEAL_FP, ATTACK },
+			{ SkillId::ELEMENT_COMPOSITION_FP, ATTACK | RANGED },
+			//
+			{ SkillId::FIRE_DEMON, ATTACK },
+			{ SkillId::PARALYZE, ATTACK | RANGED },
+			{ SkillId::METEOR_SHOWER, ATTACK }
 		};
-		return irregular_attack_skills.count(id) > 0;
+
+		auto iter = skill_flags.find(id);
+		if (iter == skill_flags.end())
+			return NONE;
+
+		return iter->second;
 	}
 
 	bool SkillData::is_passive() const
@@ -108,9 +151,9 @@ namespace jrc
 		return passive;
 	}
 
-	bool SkillData::is_offensive() const
+	bool SkillData::is_attack() const
 	{
-		return offensive;
+		return !passive && (flags & ATTACK);
 	}
 
 	bool SkillData::is_invisible() const
@@ -133,8 +176,8 @@ namespace jrc
 		auto iter = stats.find(level);
 		if (iter == stats.end())
 		{
-			static constexpr Stats null_stats(0.0f, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, {});
+			static constexpr Stats null_stats{ 0.0f, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, {} };
 			return null_stats;
 		}
 		return iter->second;
@@ -164,11 +207,8 @@ namespace jrc
 		}
 	}
 
-	const Texture& SkillData::get_icon(Type type) const
+	const Texture& SkillData::get_icon(Icon icon) const
 	{
-		return icons[type];
+		return icons[icon];
 	}
-
-
-	std::unordered_map<int32_t, SkillData> SkillData::cache;
 }

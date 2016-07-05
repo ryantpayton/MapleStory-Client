@@ -17,37 +17,38 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "LoginHandlers.h"
 
-#include "..\Session.h"
-#include "..\Packets\LoginPackets.h"
+#include "Helpers/LoginParser.h"
 
-#include "..\..\Configuration.h"
-#include "..\..\IO\UI.h"
-#include "..\..\IO\UITypes\UILogin.h"
-#include "..\..\IO\UITypes\UILoginNotice.h"
-#include "..\..\IO\UITypes\UIWorldSelect.h"
-#include "..\..\IO\UITypes\UICharSelect.h"
-#include "..\..\IO\UITypes\UICharcreation.h"
+#include "../Session.h"
+#include "../Packets/LoginPackets.h"
+
+#include "../../Configuration.h"
+#include "../../IO/UI.h"
+#include "../../IO/UITypes/UILogin.h"
+#include "../../IO/UITypes/UILoginNotice.h"
+#include "../../IO/UITypes/UIWorldSelect.h"
+#include "../../IO/UITypes/UICharSelect.h"
+#include "../../IO/UITypes/UICharcreation.h"
 
 namespace jrc
 {
 	void LoginResultHandler::handle(InPacket& recv) const
 	{
-		// Remove login information.
+		// Remove previous UIs.
 		UI::get().remove(UIElement::LOGINNOTICE);
 		UI::get().remove(UIElement::LOGINWAIT);
 
 		// The packet should contain a 'reason' integer which can signify various things.
-		int32_t reason = recv.read_int();
-		if (reason != 0)
+		if (int32_t reason = recv.read_int())
 		{
 			// Login unsuccessfull. The LoginNotice displayed will contain the specific information.
 			switch (reason)
 			{
 			case 2:
-				UI::get().add(Element<UILoginNotice, int8_t>(16));
+				UI::get().emplace<UILoginNotice>(16);
 				break;
 			case 7:
-				UI::get().add(Element<UILoginNotice, int8_t>(17));
+				UI::get().emplace<UILoginNotice>(17);
 				break;
 			case 23:
 				// The server sends a request to accept the terms of service. For convenience, just auto-accept.
@@ -58,7 +59,7 @@ namespace jrc
 				if (reason > 0)
 				{
 					auto reasonbyte = static_cast<int8_t>(reason - 1);
-					UI::get().add(Element<UILoginNotice, int8_t>(reasonbyte));
+					UI::get().emplace<UILoginNotice>(reasonbyte);
 				}
 			}
 
@@ -67,53 +68,75 @@ namespace jrc
 		else
 		{
 			// Login successfull. The packet contains information on the account, so we initialise the account with it.
-			Session::get().get_login().parse_account(recv);
+			Account account = LoginParser::parse_account(recv);
 
 			// Save the Login ID if the box for it on the login panel is checked.
-			bool savelogin = Setting<SaveLogin>::get().load();
-			if (savelogin)
+			if (Setting<SaveLogin>::get().load())
 			{
-				std::string name = Session::get().get_login().getaccount().name;
-				Setting<DefaultAccount>::get().save(name);
+				Setting<DefaultAccount>::get().save(account.name);
 			}
 
 			// Request the list of worlds and channels online.
-			ServerRequestPacket()
-				.dispatch();
+			ServerRequestPacket().dispatch();
 		}
 	}
 
+
 	void ServerlistHandler::handle(InPacket& recv) const
 	{
-		// Remove the Login UI.
-		UI::get().remove(UIElement::LOGIN);
-
 		// Parse all worlds.
-		Session::get().get_login()
-			.parse_worlds(recv);
+		std::vector<World> worlds;
+		uint8_t worldcount = 0;
+		while (recv.available())
+		{
+			World world = LoginParser::parse_world(recv);
+			if (world.wid != -1)
+			{
+				worlds.emplace_back(std::move(world));
+				worldcount++;
+			}
+			else
+			{
+				// "End of serverlist" packet.
+				return;
+			}
+		}
+
+		// Remove previous UIs.
+		UI::get().remove(UIElement::LOGIN);
+		UI::get().remove(UIElement::CHARSELECT);
 
 		// Add the world selection screen to the ui.
-		UI::get().add(Element<UIWorldSelect>());
-
+		UI::get().emplace<UIWorldSelect>(worlds, worldcount);
 		UI::get().enable();
 	}
+
 
 	void CharlistHandler::handle(InPacket& recv) const
 	{
-		recv.skip(1);
+		uint8_t channel_id = recv.read_byte();
 
 		// Parse all characters.
-		Session::get().get_login()
-			.parse_charlist(recv);
+		std::vector<CharEntry> characters;
+		uint8_t charcount = recv.read_byte();
+		for (uint8_t i = 0; i < charcount; ++i)
+		{
+			characters.emplace_back(
+				LoginParser::parse_charentry(recv)
+			);
+		}
+		int8_t pic = recv.read_byte();
+		uint8_t slots = (uint8_t)recv.read_int();
 
-		// Remove the world selection screen.
+		// Remove previous UIs.
 		UI::get().remove(UIElement::WORLDSELECT);
+		UI::get().remove(UIElement::CHARCREATION);
 
 		// Add the character selection screen.
-		UI::get().add(Element<UICharSelect>());
-
+		UI::get().emplace<UICharSelect>(characters, charcount, slots, channel_id, pic);
 		UI::get().enable();
 	}
+
 
 	void CharnameResponseHandler::handle(InPacket& recv) const
 	{
@@ -123,35 +146,37 @@ namespace jrc
 
 		if (used)
 		{
-			UI::get().add(
-				Element<UILoginNotice, UILoginNotice::Message>(
-					UILoginNotice::NAME_IN_USE
-					)
-			);
+			UI::get().emplace<UILoginNotice>(UILoginNotice::NAME_IN_USE);
 		}
 
 		// Notify the character creation screen.
-		UI::get().get_element<UICharcreation>()
-			.if_present(&UICharcreation::send_naming_result, used);
+		if (auto charcreation = UI::get().get_element<UICharcreation>())
+			charcreation->send_naming_result(used);
+
 		UI::get().enable();
 	}
+
 
 	void AddNewCharEntryHandler::handle(InPacket& recv) const
 	{
 		recv.skip(1);
 
 		// Parse info on the new character.
-		Session::get().get_login()
-			.add_charentry(recv);
+		CharEntry character = LoginParser::parse_charentry(recv);
 
 		// Remove the character creation ui.
 		UI::get().remove(UIElement::CHARCREATION);
 
 		// Readd the updated character selection.
-		UI::get().add(Element<UICharSelect>());
+		if (auto charselect = UI::get().get_element<UICharSelect>())
+		{
+			charselect->add_character(std::move(character));
+			charselect->makeactive();
+		}
 
 		UI::get().enable();
 	}
+
 
 	void DeleteCharResponseHandler::handle(InPacket& recv) const
 	{
@@ -174,17 +199,18 @@ namespace jrc
 			default:
 				message = UILoginNotice::UNKNOWN_ERROR;
 			}
-			UI::get().add(Element<UILoginNotice, int8_t>(message));
+
+			UI::get().emplace<UILoginNotice>(message);
 		}
 		else
 		{
-			Session::get().get_login().remove_char(cid);
-			UI::get().get_element<UICharSelect>()
-				.if_present(&UICharSelect::remove_char, cid);
+			if (auto charselect = UI::get().get_element<UICharSelect>())
+				charselect->remove_char(cid);
 		}
 
 		UI::get().enable();
 	}
+
 
 	void ServerIPHandler::handle(InPacket& recv) const
 	{
