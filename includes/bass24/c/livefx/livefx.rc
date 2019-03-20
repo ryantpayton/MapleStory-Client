@@ -1,0 +1,21 @@
+#include "windows.h"
+
+1000 DIALOG DISCARDABLE  200, 100, 220, 31
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "BASS full-duplex test with effects"
+FONT 8, "MS Sans Serif"
+BEGIN
+    COMBOBOX        10,5,5,65,72,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",11,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | 
+                    WS_TABSTOP,5,20,65,10
+    CTEXT           "latency",-1,80,2,40,8
+    CTEXT           "",15,80,12,40,13,SS_CENTERIMAGE | SS_SUNKEN
+    CONTROL         "Chorus",20,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,130,5,
+                    38,10
+    CONTROL         "Gargle",21,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    130,18,38,10
+    CONTROL         "Reverb",22,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,175,5,
+                    39,10
+    CONTROL         "Flanger",23,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,175,
+                    18,39,10
+END
