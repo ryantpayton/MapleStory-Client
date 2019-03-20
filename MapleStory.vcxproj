@@ -106,6 +106,12 @@
       <AdditionalLibraryDirectories>$(ProjectDir)includes\bass24\c\x64;$(ProjectDir)includes\glfw-3.2.1.bin.WIN64\lib-vc2015;$(ProjectDir)includes\freetype\win64;$(ProjectDir)includes\glew-2.1.0\lib\Release\x64;$(ProjectDir)includes\nlnx\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>NoLifeNx.lib;glew32.lib;freetype.lib;glfw3.lib;bass.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /y /d  "$(ProjectDir)includes\glew-2.1.0\bin\Release\x64\glew32.dll" "$(OutDir)"
+copy /y /d  "$(ProjectDir)includes\freetype\win64\freetype.dll" "$(OutDir)"
+copy /y /d  "$(ProjectDir)includes\bass24\x64\bass.dll" "$(OutDir)"
+copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.1.8.2.dll" "$(OutDir)liblz4.dll"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="audio\Audio.cpp" />
