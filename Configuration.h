@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright ï¿½ 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -170,13 +170,13 @@ namespace jrc
 	// The normal font which will be used.
 	struct FontPathNormal : public Configuration::StringEntry
 	{
-		FontPathNormal() : StringEntry("FontPathNormal", "") {}
+		FontPathNormal() : StringEntry("FontPathNormal", "fonts/Roboto/Roboto-Regular.ttf") {}
 	};
 
 	// The bold font which will be used.
 	struct FontPathBold : public Configuration::StringEntry
 	{
-		FontPathBold() : StringEntry("FontPathBold", "") {}
+		FontPathBold() : StringEntry("FontPathBold", "fonts/Roboto/Roboto-Bold.ttf") {}
 	};
 
 	// Music Volume, a number from 0 to 100.
