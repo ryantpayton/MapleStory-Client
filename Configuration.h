@@ -41,6 +41,10 @@ namespace jrc
 		void load();
 		// Save the current settings. 
 		void save() const;
+		// Get private member SHOW_FPS
+		bool get_show_fps() const;
+		// Get private member TITLE
+		std::string get_title() const;
 
 		// Base class for an entry in the settings file.
 		class Entry
@@ -146,6 +150,8 @@ namespace jrc
 		friend struct Setting;
 
 		const char* FILENAME = "Settings";
+		const char* TITLE = "MapleStory";
+		const bool SHOW_FPS = false;
 		TypeMap<Entry> settings;
 	};
 
@@ -153,6 +159,12 @@ namespace jrc
 	struct ServerIP : public Configuration::StringEntry
 	{
 		ServerIP() : StringEntry("ServerIP", "127.0.0.1") {}
+	};
+
+	// Port which the client will connect to.
+	struct ServerPort : public Configuration::StringEntry
+	{
+		ServerPort() : StringEntry("ServerPort", "8484") {}
 	};
 
 	// Wether to start in fullscreen mode.

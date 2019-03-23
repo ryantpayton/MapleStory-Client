@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright ï¿½ 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -24,6 +24,7 @@ namespace jrc
 	Configuration::Configuration()
 	{
 		settings.emplace<ServerIP>();
+		settings.emplace<ServerPort>();
 		settings.emplace<Fullscreen>();
 		settings.emplace<VSync>();
 		settings.emplace<FontPathNormal>();
@@ -131,5 +132,15 @@ namespace jrc
 		auto x = string_conversion::or_zero<int16_t>(xstr);
 		auto y = string_conversion::or_zero<int16_t>(ystr);
 		return{ x, y };
+	}
+
+	bool Configuration::get_show_fps() const
+	{
+		return SHOW_FPS;
+	}
+
+	std::string Configuration::get_title() const
+	{
+		return TITLE;
 	}
 }

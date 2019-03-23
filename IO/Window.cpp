@@ -112,7 +112,7 @@ namespace jrc
 		glwnd = glfwCreateWindow(
 			Constants::VIEWWIDTH,
 			Constants::VIEWHEIGHT,
-			"Journey",
+			Configuration::get().get_title().c_str(),
 			fullscreen ? glfwGetPrimaryMonitor() : nullptr,
 			context
 			);

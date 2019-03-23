@@ -45,10 +45,13 @@ namespace jrc
 			switch (reason)
 			{
 			case 2:
-				UI::get().emplace<UILoginNotice>(16);
+				UI::get().emplace<UILoginNotice>(UILoginNotice::Message::BLOCKED_ID);
 				break;
 			case 7:
-				UI::get().emplace<UILoginNotice>(17);
+				UI::get().emplace<UILoginNotice>(UILoginNotice::Message::ALREADY_LOGGED_IN);
+				break;
+			case 13:
+				UI::get().emplace<UILoginNotice>(UILoginNotice::Message::UNABLE_TO_LOGIN_WITH_IP);
 				break;
 			case 23:
 				// The server sends a request to accept the terms of service. For convenience, just auto-accept.

@@ -203,6 +203,10 @@ namespace jrc
 		case 2111:
 		case 2112:
 			return "Aran";
+		case 900:
+			return "GM";
+		case 910:
+			return "SuperGM";
 		default:
 			return "";
 		}

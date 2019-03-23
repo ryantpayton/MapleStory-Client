@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright ï¿½ 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -44,14 +44,14 @@ namespace jrc
 		sprites.emplace_back(title["signboard"], Point<int16_t>(410, 300));
 		sprites.emplace_back(common["frame"], Point<int16_t>(400, 290));
 
-		// I prefer the title without this.
-		/*auto effectpos = Point<int16_t>(420, -50);
-		node effect = title["effect"];
-		for (node sub : effect)
+		auto effectpos = Point<int16_t>(420, -50);
+		nl::node effect = title["effect"];
+
+		for (nl::node sub : effect)
 		{
 			auto sprite = Sprite(sub, DrawArgument(effectpos, true, 0.5f));
 			sprites.push_back(sprite);
-		}*/
+		}
 
 		buttons[BT_LOGIN] = std::make_unique<MapleButton>(title["BtLogin"], Point<int16_t>(475, 248));
 		buttons[BT_REGISTER] = std::make_unique<MapleButton>(title["BtNew"], Point<int16_t>(309, 320));
