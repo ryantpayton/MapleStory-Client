@@ -55,6 +55,11 @@ namespace jrc
 		// and then each individual character as a byte.
 		void write_string(const std::string& str);
 
+		// Write the MACS and then write the HWID of the computer
+		void write_hardware_info();
+		// Function to convert hexadecimal to decimal
+		int hex_to_dec(std::string hexVal);
+
 	private:
 		std::vector<int8_t> bytes;
 	};

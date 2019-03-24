@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright � 2015-2016 Daniel Allendorf                                   //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -45,6 +45,16 @@ namespace jrc
 		bool get_show_fps() const;
 		// Get private member TITLE
 		std::string get_title() const;
+		// Set the MACS
+		void set_macs(char* macs);
+		// Set the HWID
+		void set_hwid(char* hwid, char* volumeSerialNumber);
+		// Get the MACS
+		std::string get_macs();
+		// Get the HWID
+		std::string get_hwid();
+		// Get the Hard Drive Volume Serial Number
+		std::string get_vol_serial_num();
 
 		// Base class for an entry in the settings file.
 		class Entry
@@ -152,6 +162,9 @@ namespace jrc
 		const char* FILENAME = "Settings";
 		const char* TITLE = "MapleStory";
 		const bool SHOW_FPS = false;
+		std::string MACS;
+		std::string HWID;
+		std::string VolumeSerialNumber;
 		TypeMap<Entry> settings;
 	};
 

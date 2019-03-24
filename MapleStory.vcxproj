@@ -260,6 +260,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="net\handlers\NpcInteractionHandlers.cpp" />
     <ClCompile Include="net\handlers\PlayerHandlers.cpp" />
     <ClCompile Include="net\handlers\SetfieldHandlers.cpp" />
+    <ClCompile Include="Net\Handlers\TestingHandlers.cpp" />
     <ClCompile Include="net\InPacket.cpp" />
     <ClCompile Include="net\OutPacket.cpp" />
     <ClCompile Include="net\PacketSwitch.cpp" />
@@ -433,6 +434,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="net\handlers\NpcInteractionHandlers.h" />
     <ClInclude Include="net\handlers\PlayerHandlers.h" />
     <ClInclude Include="net\handlers\SetfieldHandlers.h" />
+    <ClInclude Include="Net\Handlers\TestingHandlers.h" />
     <ClInclude Include="net\InPacket.h" />
     <ClInclude Include="net\Login.h" />
     <ClInclude Include="net\NetConstants.h" />
@@ -468,6 +470,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="template\TimedQueue.h" />
     <ClInclude Include="template\TypeMap.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="Util\HardwareInfo.h" />
     <ClInclude Include="util\HashUtility.h" />
     <ClInclude Include="util\Lerp.h" />
     <ClInclude Include="util\Misc.h" />

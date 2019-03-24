@@ -28,6 +28,7 @@
 #include "IO/Window.h"
 #include "Net/Session.h"
 #include "Util/NxFiles.h"
+#include "Util/HardwareInfo.h"
 
 #include <iostream>
 
@@ -155,6 +156,7 @@ namespace jrc
 
 int main()
 {
+	jrc::HardwareInfo();
 	jrc::start();
 	return 0;
 }

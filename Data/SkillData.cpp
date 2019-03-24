@@ -31,7 +31,8 @@ namespace jrc
 	{
 		// Locate sources
 		std::string strid = string_format::extend_id(id, 7);
-		nl::node src = nl::nx::skill[strid.substr(0, 3) + ".img"]["skill"][strid];
+		std::string jobid = strid.substr(0, 3);
+		nl::node src = nl::nx::skill[jobid + ".img"]["skill"][strid];
 		nl::node strsrc = nl::nx::string["Skill.img"][strid];
 
 
@@ -78,7 +79,12 @@ namespace jrc
 		}
 
 		element = src["elemAttr"];
-		reqweapon = Weapon::by_value(100 + (int32_t)src["weapon"]);
+
+		if (jobid == "900" || jobid == "910")
+			reqweapon = Weapon::NONE;
+		else
+			reqweapon = Weapon::by_value(100 + (int32_t)src["weapon"]);
+
 		masterlevel = static_cast<int32_t>(stats.size());
 		passive = (id % 10000) / 1000 == 0;
 		flags = flags_of(id);

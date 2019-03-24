@@ -20,9 +20,6 @@
 
 namespace jrc
 {
-	constexpr char* MACS = "68-5D-43-F8-B8-6C, 7A-79-19-8B-31-3F";
-	constexpr char* HWID = "685D43F8_B86C7A79";
-
 	// Tell the server which character was picked.
 	// Opcode: SELECT_CHAR(19)
 	class SelectCharPacket : public OutPacket
@@ -31,8 +28,7 @@ namespace jrc
 		SelectCharPacket(int32_t cid) : OutPacket(SELECT_CHAR)
 		{
 			write_int(cid);
-			write_string(MACS);
-			write_string(HWID);
+			write_hardware_info();
 		}
 	};
 
@@ -46,8 +42,7 @@ namespace jrc
 			skip(1);
 
 			write_int(cid);
-			write_string(MACS);
-			write_string(HWID);
+			write_hardware_info();
 			write_string(pic);
 		}
 	};
@@ -61,8 +56,7 @@ namespace jrc
 		{
 			write_string(pic);
 			write_int(cid);
-			write_string(MACS);
-			write_string(HWID);
+			write_hardware_info();
 		}
 	};
 

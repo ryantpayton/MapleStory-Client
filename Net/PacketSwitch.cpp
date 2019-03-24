@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright ï¿½ 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -26,6 +26,7 @@
 #include "Handlers/InventoryHandlers.h"
 #include "Handlers/MessagingHandlers.h"
 #include "Handlers/NpcInteractionHandlers.h"
+#include "Handlers/TestingHandlers.h"
 
 #include "../Console.h"
 
@@ -50,6 +51,7 @@ namespace jrc
 		// Login 2
 		SELECT_WORLD = 26,
 		RECOMMENDED_WORLDS = 27,
+		CHECK_SPW_RESULT = 28,
 
 		// Inventory 1
 		MODIFY_INVENTORY = 29,
@@ -87,6 +89,8 @@ namespace jrc
 		SKILL_MACROS = 124,
 		SET_FIELD = 125,
 		FIELD_EFFECT = 138,
+		FIELD_OBSTACLE_ONOFF_LIST = 140,
+		ADMIN_RESULT = 144,
 		CLOCK = 147,
 
 		// Mapobject
@@ -106,11 +110,15 @@ namespace jrc
 		ATTACKED_RANGED = 187,
 		ATTACKED_MAGIC = 188,
 
+		FACIAL_EXPRESSION = 193,
 		SHOW_ITEM_EFFECT = 194,
 		SHOW_CHAIR = 196,
 		UPDATE_CHARLOOK = 197,
 		SHOW_FOREIGN_EFFECT = 198,
+		GIVE_FOREIGN_BUFF = 199,
+		CANCEL_FOREIGN_BUFF = 200,
 		SHOW_ITEM_GAIN_INCHAT = 206, // this is terribly named
+		UPDATE_QUEST_INFO = 211,
 		LOCK_UI = 221,
 		TOGGLE_UI = 222,
 
@@ -135,12 +143,32 @@ namespace jrc
 		// NPC Interaction
 		NPC_DIALOGUE = 304,
 		OPEN_NPC_SHOP = 305,
-
-		KEYMAP = 335
+		CONFIRM_SHOP_TRANSACTION = 306,
+		PLAYER_INTERACTION = 314,
+		KEYMAP = 335,
+		AUTO_HP_POT = 336,
+		AUTO_MP_POT = 337
 	};
 
 	PacketSwitch::PacketSwitch()
 	{
+		// New handlers for testing only
+		// Once these are handled properly, they need moved to a proper file
+		emplace<CHECK_SPW_RESULT, CheckSpwResultHandler>();
+		emplace<FIELD_EFFECT, FieldEffectHandler>();
+		emplace<FIELD_OBSTACLE_ONOFF_LIST, FieldObstacleOnOffListHandler>();
+		emplace<ADMIN_RESULT, AdminResultHandler>();
+		emplace<FACIAL_EXPRESSION, FacialExpressionHandler>();
+		emplace<GIVE_FOREIGN_BUFF, GiveForeignBuffHandler>();
+		emplace<CANCEL_FOREIGN_BUFF, CancelForeignBuffHandler>();
+		emplace<UPDATE_QUEST_INFO, UpdateQuestInfoHandler>();
+		emplace<LOCK_UI, LockUiHandler>();
+		emplace<TOGGLE_UI, ToggleUiHandler>();
+		emplace<CONFIRM_SHOP_TRANSACTION, ConfirmShopTransactionHandler>();
+		emplace<PLAYER_INTERACTION, PlayerInteractionHandler>();
+		emplace<AUTO_HP_POT, AutoHpPotHandler>();
+		emplace<AUTO_MP_POT, AutoMpPotHandler>();
+
 		// Common handlers
 		emplace<PING, PingHandler>();
 

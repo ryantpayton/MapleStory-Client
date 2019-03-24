@@ -19,6 +19,8 @@
 
 #include "Session.h"
 
+#include "../Configuration.h"
+
 #include <chrono>
 
 namespace jrc
@@ -97,5 +99,37 @@ namespace jrc
 		{
 			write_byte(str[i]);
 		}
+	}
+
+	void OutPacket::write_hardware_info()
+	{
+		std::string macs = Configuration::get().get_macs().c_str();
+		std::string hwid = Configuration::get().get_hwid().c_str();
+
+		write_string(macs);
+		write_string(hwid);
+	}
+
+	int OutPacket::hex_to_dec(std::string hexVal)
+	{
+		int len = strlen(hexVal.c_str());
+		int base = 1;
+		int dec_val = 0;
+
+		for (int i = len - 1; i >= 0; i--)
+		{
+			if (hexVal[i] >= '0' && hexVal[i] <= '9')
+			{
+				dec_val += (hexVal[i] - 48)*base;
+				base = base * 16;
+			}
+			else if (hexVal[i] >= 'A' && hexVal[i] <= 'F')
+			{
+				dec_val += (hexVal[i] - 55)*base;
+				base = base * 16;
+			}
+		}
+
+		return dec_val;
 	}
 }

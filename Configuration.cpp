@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright � 2015-2016 Daniel Allendorf                                   //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -67,7 +67,7 @@ namespace jrc
 					rawsettings.emplace(
 						line.substr(0, split - 1),
 						line.substr(split + 2)
-						);
+					);
 				}
 			}
 		}
@@ -124,10 +124,10 @@ namespace jrc
 	{
 		std::string xstr = value
 			.substr(1, value
-			.find(",") - 1);
+				.find(",") - 1);
 		std::string ystr = value
 			.substr(value
-			.find(",") + 1, value.find(")") - value.find(",") - 1);
+				.find(",") + 1, value.find(")") - value.find(",") - 1);
 
 		auto x = string_conversion::or_zero<int16_t>(xstr);
 		auto y = string_conversion::or_zero<int16_t>(ystr);
@@ -142,5 +142,47 @@ namespace jrc
 	std::string Configuration::get_title() const
 	{
 		return TITLE;
+	}
+
+	void Configuration::set_macs(char* macs)
+	{
+		MACS = macs;
+	}
+
+	void Configuration::set_hwid(char* hwid, char* volumeSerialNumber)
+	{
+		VolumeSerialNumber = volumeSerialNumber;
+
+		std::string newHWID;
+
+		newHWID.append(hwid);
+		newHWID.append("_");
+
+		std::string part1 = VolumeSerialNumber.substr(0, 2);
+		std::string part2 = VolumeSerialNumber.substr(2, 2);
+		std::string part3 = VolumeSerialNumber.substr(4, 2);
+		std::string part4 = VolumeSerialNumber.substr(6, 2);
+
+		newHWID.append(part4);
+		newHWID.append(part3);
+		newHWID.append(part2);
+		newHWID.append(part1);
+
+		HWID = newHWID;
+	}
+
+	std::string Configuration::get_macs()
+	{
+		return MACS;
+	}
+
+	std::string Configuration::get_hwid()
+	{
+		return HWID;
+	}
+
+	std::string Configuration::get_vol_serial_num()
+	{
+		return VolumeSerialNumber;
 	}
 }

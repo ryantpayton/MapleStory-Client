@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -153,7 +153,7 @@ namespace jrc
 			UI::get().send_menu(KeyAction::SKILLBOOK);
 			return Button::NORMAL;
 		}
-		return Button::PRESSED;
+		return Button::NORMAL;
 	}
 
 	bool UIStatusbar::is_in_range(Point<int16_t> cursorpos) const

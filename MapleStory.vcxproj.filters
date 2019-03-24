@@ -480,6 +480,9 @@
     <ClCompile Include="util\NxFiles.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Net\Handlers\TestingHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Configuration.h">
@@ -1092,6 +1095,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="util\TimedBool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\TestingHandlers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\HardwareInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

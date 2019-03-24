@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "../OutPacket.h"
+#include "../Configuration.h"
 
 namespace jrc
 {
@@ -38,8 +39,25 @@ namespace jrc
 	public:
 		LoginPacket(const std::string& acc, const std::string& pass) : OutPacket(LOGIN)
 		{
+			std::string volumeSerialNumber = Configuration::get().get_vol_serial_num();
+
+			std::string part1 = volumeSerialNumber.substr(0, 2);
+			std::string part2 = volumeSerialNumber.substr(2, 2);
+			std::string part3 = volumeSerialNumber.substr(4, 2);
+			std::string part4 = volumeSerialNumber.substr(6, 2);
+
+			const int32_t h = hex_to_dec(part4);
+			const int32_t w = hex_to_dec(part3);
+			const int32_t i = hex_to_dec(part2);
+			const int32_t d = hex_to_dec(part1);
+
 			write_string(acc);
 			write_string(pass);
+			skip(6);
+			write_byte(h);
+			write_byte(w);
+			write_byte(i);
+			write_byte(d);
 		}
 	};
 
