@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,7 +18,7 @@
 #pragma once
 #include "../UIElement.h"
 
-#include "../../Graphics/Text.h"
+#include "../Components/Textfield.h"
 #include "../../Util/Randomizer.h"
 
 #include <functional>
@@ -69,8 +69,7 @@ namespace jrc
 		static constexpr uint8_t NUM_KEYS = 10;
 
 		Callback callback;
-		Text entry;
+		Textfield entry;
 		Randomizer random;
 	};
 }
-

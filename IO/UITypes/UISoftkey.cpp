@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -54,7 +54,8 @@ namespace jrc
 
 		buttons[BT_OK]->set_state(Button::DISABLED);
 
-		entry = { Text::A11M, Text::LEFT, Text::BLACK };
+		entry = { Text::A11M, Text::LEFT, Text::BLACK, {{ 0, 0 }, { 150, 24 }}, MAX_SIZE };
+		entry.set_cryptchar('*');
 
 		shufflekeys();
 

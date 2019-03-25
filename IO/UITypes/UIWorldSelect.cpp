@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -44,7 +44,7 @@ namespace jrc
 		sprites.emplace_back(frame, Point<int16_t>(400, 290));
 
 		buttons[BT_ENTERWORLD] = std::make_unique<MapleButton>(
-			channelsrc["button:GoWorld"], 
+			channelsrc["button:GoWorld"],
 			Point<int16_t>(200, 170)
 			);
 
@@ -52,12 +52,14 @@ namespace jrc
 			return;
 
 		const World& world = worlds.front();
+		const int8_t wid = world.wid;
+		const std::string swid = std::to_string(world.wid);
 
-		buttons[BT_WORLD0] = std::make_unique<MapleButton>(worldsrc["button:15"], Point<int16_t>(650, 20));
+		buttons[BT_WORLD0] = std::make_unique<MapleButton>(worldsrc["button:" + swid], Point<int16_t>(650, 20));
 		buttons[BT_WORLD0]->set_state(Button::PRESSED);
 
 		sprites.emplace_back(channelsrc["layer:bg"], Point<int16_t>(200, 170));
-		sprites.emplace_back(channelsrc["release"]["layer:15"], Point<int16_t>(200, 170));
+		sprites.emplace_back(channelsrc["release"]["layer:" + swid], Point<int16_t>(200, 170));
 
 		if (channelid >= world.channelcount)
 			channelid = 0;

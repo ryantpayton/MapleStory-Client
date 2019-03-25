@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -43,8 +43,11 @@ namespace jrc
 
 		void assign(uint8_t key, uint8_t type, int32_t action);
 
-		int32_t shiftcode() const;
-		int32_t ctrlcode() const;
+		int32_t leftshiftcode() const;
+		int32_t rightshiftcode() const;
+		int32_t capslockcode() const;
+		int32_t leftctrlcode() const;
+		int32_t rightctrlcode() const;
 		KeyAction::Id get_ctrl_action(int32_t keycode) const;
 		Mapping get_mapping(int32_t keycode) const;
 		Mapping get_text_mapping(int32_t keycode, bool shift) const;

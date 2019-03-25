@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -93,8 +93,8 @@ namespace jrc
 
 	void UI::send_cursor(bool pressed)
 	{
-		Cursor::State cursorstate = (pressed && enabled) ? 
-			Cursor::CLICKING : 
+		Cursor::State cursorstate = (pressed && enabled) ?
+			Cursor::CLICKING :
 			Cursor::IDLE;
 		Point<int16_t> cursorpos = cursor.get_position();
 		send_cursor(cursorpos, cursorstate);
@@ -124,14 +124,19 @@ namespace jrc
 
 	void UI::send_key(int32_t keycode, bool pressed)
 	{
+		if (is_key_down[keyboard.capslockcode()])
+			caps_lock_enabled = !caps_lock_enabled;
+
 		if (focusedtextfield)
 		{
-			bool ctrl = is_key_down[keyboard.ctrlcode()];
+			bool ctrl = is_key_down[keyboard.leftctrlcode()] || is_key_down[keyboard.rightctrlcode()];
+
 			if (ctrl)
 			{
 				if (!pressed)
 				{
 					KeyAction::Id action = keyboard.get_ctrl_action(keycode);
+
 					switch (action)
 					{
 					case KeyAction::COPY:
@@ -145,7 +150,7 @@ namespace jrc
 			}
 			else
 			{
-				bool shift = is_key_down[keyboard.shiftcode()];
+				bool shift = is_key_down[keyboard.leftshiftcode()] || is_key_down[keyboard.rightshiftcode()] || caps_lock_enabled;
 				Keyboard::Mapping mapping = keyboard.get_text_mapping(keycode, shift);
 				focusedtextfield->send_key(mapping.type, mapping.action, pressed);
 			}
@@ -153,10 +158,9 @@ namespace jrc
 		else
 		{
 			Keyboard::Mapping mapping = keyboard.get_mapping(keycode);
+
 			if (mapping.type)
-			{
 				state->send_key(mapping.type, mapping.action, pressed);
-			}
 		}
 
 		is_key_down[keycode] = pressed;
@@ -207,7 +211,7 @@ namespace jrc
 		state->show_item(parent, item_id);
 	}
 
-	void UI::show_skill(Tooltip::Parent parent, int32_t skill_id, 
+	void UI::show_skill(Tooltip::Parent parent, int32_t skill_id,
 		int32_t level, int32_t masterlevel, int64_t expiration) {
 
 		state->show_skill(parent, skill_id, level, masterlevel, expiration);

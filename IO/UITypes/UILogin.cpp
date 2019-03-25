@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -25,6 +25,7 @@
 #include "../../Audio/Audio.h"
 #include "../../Graphics/Sprite.h"
 #include "../../Net/Packets/LoginPackets.h"
+#include "../../IO/UITypes/UILoginNotice.h"
 
 #include "nlnx/nx.hpp"
 
@@ -65,7 +66,7 @@ namespace jrc
 		checkbox[true] = title["check"]["1"];
 
 		account = { Text::A13M, Text::LEFT, Text::WHITE,{ { 315, 249 },{ 465, 273 } }, 12 };
-		account.set_key_callback(KeyAction::TAB, [&]{
+		account.set_key_callback(KeyAction::TAB, [&] {
 			account.set_state(Textfield::NORMAL);
 			password.set_state(Textfield::FOCUSED);
 		});
@@ -75,11 +76,11 @@ namespace jrc
 		accountbg = title["ID"];
 
 		password = { Text::A13M, Text::LEFT, Text::WHITE, { {315, 275}, {465, 299} }, 12 };
-		password.set_key_callback(KeyAction::TAB, [&]{
+		password.set_key_callback(KeyAction::TAB, [&] {
 			password.set_state(Textfield::NORMAL);
 			account.set_state(Textfield::FOCUSED);
 		});
-		password.set_enter_callback([&](std::string){
+		password.set_enter_callback([&](std::string) {
 			login();
 		});
 		password.set_cryptchar('*');
@@ -132,6 +133,18 @@ namespace jrc
 
 	void UILogin::login()
 	{
+		if (account.get_text() == "") {
+			UI::get().emplace<UILoginNotice>(UILoginNotice::Message::NOT_REGISTERED);
+			UI::get().enable();
+			return;
+		}
+
+		if (password.get_text().length() <= 4) {
+			UI::get().emplace<UILoginNotice>(UILoginNotice::Message::WRONG_PASSWORD);
+			UI::get().enable();
+			return;
+		}
+
 		UI::get().disable();
 		UI::get().emplace<UILoginwait>();
 
@@ -139,7 +152,7 @@ namespace jrc
 		password.set_state(Textfield::NORMAL);
 
 		LoginPacket(
-			account.get_text(), 
+			account.get_text(),
 			password.get_text()
 		).dispatch();
 	}
@@ -159,7 +172,7 @@ namespace jrc
 			Setting<SaveLogin>::get().save(saveid);
 			return Button::MOUSEOVER;
 		default:
-			return Button::PRESSED;
+			return Button::NORMAL;
 		}
 	}
 
