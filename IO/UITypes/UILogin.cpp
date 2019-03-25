@@ -36,14 +36,18 @@ namespace jrc
 		Music("BgmUI.img/Title")
 			.play();
 
+		nl::node map = nl::nx::map["Back"]["login.img"];
+		nl::node obj = nl::nx::map["Obj"]["login.img"];
+		nl::node back = map["back"];
 		nl::node title = nl::nx::ui["Login.img"]["Title"];
 		nl::node common = nl::nx::ui["Login.img"]["Common"];
 
-		sprites.emplace_back(title["11"], Point<int16_t>(410, 300));
-		sprites.emplace_back(title["35"], Point<int16_t>(410, 260));
-		sprites.emplace_back(title["Logo"], Point<int16_t>(410, 130));
+		sprites.emplace_back(back["11"], Point<int16_t>(410, 300)); // From v159
+		sprites.emplace_back(back["35"], Point<int16_t>(410, 260)); // From v159
+		sprites.emplace_back(map["ani"]["16"], Point<int16_t>(410, 130)); // From v159
 		sprites.emplace_back(title["signboard"], Point<int16_t>(410, 300));
 		sprites.emplace_back(common["frame"], Point<int16_t>(400, 290));
+		sprites.emplace_back(obj["Common"]["frame"]["1"]["0"], Point<int16_t>(730, 4)); // TODO: Where is the current one?
 
 		auto effectpos = Point<int16_t>(420, -50);
 		nl::node effect = title["effect"];

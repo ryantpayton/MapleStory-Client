@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -45,30 +45,39 @@ namespace jrc
 		selected_relative = selected_absolute % PAGESIZE;
 		page = selected_absolute / PAGESIZE;
 
-		nl::node title = nl::nx::ui["Login.img"]["Title"];
-		nl::node common = nl::nx::ui["Login.img"]["Common"];
-		nl::node charselect = nl::nx::ui["Login.img"]["CharSelect"];
+		nl::node map = nl::nx::map["Back"]["login.img"];
+		nl::node obj = nl::nx::map["Obj"]["login.img"];
+		nl::node login = nl::nx::ui["Login.img"];
+		nl::node title = login["Title"]["worldsel"]; // TODO: This is missing, what is this for?
+		nl::node common = login["Common"];
+		nl::node charselect = login["CharSelect"];
+		nl::node selectedWorld = charselect["selectedWorld"];
 
-		sprites.emplace_back(title["worldsel"]);
+		sprites.emplace_back(title);
+		sprites.emplace_back(map["back"]["13"], Point<int16_t>(370, 300)); // From v159
 		sprites.emplace_back(common["frame"], Point<int16_t>(400, 290));
+		sprites.emplace_back(obj["Common"]["frame"]["1"]["0"], Point<int16_t>(730, 4)); // TODO: Where is the current one?
+		sprites.emplace_back(charselect["guide"], Point<int16_t>(300, 50));
+		sprites.emplace_back(charselect["page"][std::to_string(page)], Point<int16_t>(300, 70));
+		sprites.emplace_back(common["step"]["2"], Point<int16_t>(40, -10));
 
 		// Post BB
-		/*selworldpos = Point<int16_t>(578, 42);
+		selworldpos = Point<int16_t>(578, 42);
 		charinfopos = Point<int16_t>(662, 355);
-		buttons[BT_ARBEIT] = std::make_unique<MapleButton>(charsel["arbeit"], Point<int16_t>(580, 115)));
-		buttons[BT_CARDS] = std::make_unique<MapleButton>(charsel["characterCard"], Point<int16_t>(665, 115)));*/
+		buttons[BT_ARBEIT] = std::make_unique<MapleButton>(charselect["arbeit"], Point<int16_t>(580, 115));
+		buttons[BT_CARDS] = std::make_unique<MapleButton>(charselect["characterCard"], Point<int16_t>(665, 115));
 
 		// Pre BB
-		charinfopos = Point<int16_t>(662, 305);
-		selworldpos = Point<int16_t>(578, 112);
+		/*charinfopos = Point<int16_t>(662, 305);
+		selworldpos = Point<int16_t>(578, 112);*/
 
 		sprites.emplace_back(charselect["charInfo"], charinfopos);
 		sprites.emplace_back(common["selectWorld"], selworldpos);
-		sprites.emplace_back(charselect["selectedWorld"]["icon"]["15"], selworldpos);
-		sprites.emplace_back(charselect["selectedWorld"]["name"]["15"], selworldpos);
-		sprites.emplace_back(charselect["selectedWorld"]["ch"][channel_id], selworldpos);
+		sprites.emplace_back(selectedWorld["icon"]["1"], selworldpos); // TODO: Send world through packet
+		sprites.emplace_back(selectedWorld["name"]["1"], selworldpos); // TODO: Send world through packet
+		sprites.emplace_back(selectedWorld["ch"][channel_id], selworldpos);
 
-		emptyslot = charselect["buyCharacter"]; 
+		emptyslot = charselect["buyCharacter"];
 		nametag = charselect["nameTag"];
 
 		buttons[BT_SELECTCHAR] = std::make_unique<MapleButton>(charselect["BtSelect"], charinfopos + Point<int16_t>(-76, 72));
@@ -76,6 +85,7 @@ namespace jrc
 		buttons[BT_DELETECHAR] = std::make_unique<MapleButton>(charselect["BtDelete"], Point<int16_t>(320, 495));
 		buttons[BT_PAGELEFT] = std::make_unique<MapleButton>(charselect["pageL"], Point<int16_t>(100, 490));
 		buttons[BT_PAGERIGHT] = std::make_unique<MapleButton>(charselect["pageR"], Point<int16_t>(490, 490));
+		buttons[BT_CHANGEPIC] = std::make_unique<MapleButton>(common["BtChangePIC"], Point<int16_t>(0, 45));
 
 		for (uint8_t i = 0; i < PAGESIZE; i++)
 		{
@@ -193,7 +203,7 @@ namespace jrc
 				update_selection();
 				return Button::IDENTITY;
 			default:
-				return Button::PRESSED;
+				return Button::NORMAL;
 			}
 		}
 	}
@@ -202,7 +212,7 @@ namespace jrc
 	{
 		if (selected_relative >= charcount_relative)
 			return;
-		
+
 		charlooks[selected_absolute].set_stance(Stance::WALK1);
 		nametags[selected_absolute].set_selected(true);
 

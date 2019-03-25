@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -63,6 +63,7 @@ namespace jrc
 			BT_SELECTCHAR,
 			BT_ARBEIT,
 			BT_CARDS,
+			BT_CHANGEPIC,
 			BT_PAGELEFT,
 			BT_PAGERIGHT,
 			BT_CHAR0
@@ -138,4 +139,3 @@ namespace jrc
 		OutlinedText infolabels[NUM_LABELS];
 	};
 }
-

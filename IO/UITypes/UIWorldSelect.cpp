@@ -34,18 +34,38 @@ namespace jrc
 		worldid = Setting<DefaultWorld>::get().load();
 		channelid = Setting<DefaultChannel>::get().load();
 
-		nl::node back = nl::nx::map["Back"]["login.img"]["back"];
-		nl::node worldsrc = nl::nx::ui["Login.img"]["WorldSelect"]["BtWorld"]["release"];
-		nl::node channelsrc = nl::nx::ui["Login.img"]["WorldSelect"]["BtChannel"];
-		nl::node frame = nl::nx::ui["Login.img"]["Common"]["frame"];
+		nl::node obj = nl::nx::map["Obj"]["login.img"];
+		nl::node login = nl::nx::ui["Login.img"];
+		nl::node worldselect = login["WorldSelect"];
+		nl::node worldsrc = worldselect["BtWorld"]["release"];
+		nl::node channelsrc = worldselect["BtChannel"];
+		nl::node common = login["Common"];
 
-		sprites.emplace_back(back["11"], Point<int16_t>(370, 300));
-		sprites.emplace_back(worldsrc["layer:bg"], Point<int16_t>(650, 45));
-		sprites.emplace_back(frame, Point<int16_t>(400, 290));
+		sprites.emplace_back(obj["WorldSelect"]["20141217"]["0"], Point<int16_t>(370, 300)); // From v159
+		sprites.emplace_back(common["frame"], Point<int16_t>(400, 290));
+		sprites.emplace_back(obj["Common"]["frame"]["1"]["0"], Point<int16_t>(730, 4)); // TODO: Where is the current one?
+		sprites.emplace_back(worldsrc["layer:bg"], Point<int16_t>(651, 29));
+		sprites.emplace_back(common["step"]["1"], Point<int16_t>(40, -10));
 
 		buttons[BT_ENTERWORLD] = std::make_unique<MapleButton>(
 			channelsrc["button:GoWorld"],
 			Point<int16_t>(200, 170)
+			);
+
+		buttons[BT_VIEWRECOMMENDED] = std::make_unique<MapleButton>(
+			worldselect["BtViewChoice"],
+			Point<int16_t>(0, 43)
+			);
+
+		// TODO: Find image for Change Location
+		/*buttons[BT_CHANGELOCATION] = std::make_unique<MapleButton>(
+			worldselect["BtViewChoice"],
+			Point<int16_t>(0, 0)
+			);*/
+
+		buttons[BT_QUITGAME] = std::make_unique<MapleButton>(
+			common["BtExit"],
+			Point<int16_t>(0, 536)
 			);
 
 		if (worldcount <= 0)
@@ -102,17 +122,21 @@ namespace jrc
 
 			return Button::PRESSED;
 		}
-		else if (id >= BT_WORLD0 && id < BT_CHANNEL0)
+		else if (id >= BT_WORLD0 && id <= BT_WORLD43)
 		{
 			buttons[BT_WORLD0 + worldid]->set_state(Button::NORMAL);
 			worldid = static_cast<uint8_t>(id - BT_WORLD0);
 			return Button::PRESSED;
 		}
-		else
+		else if (id >= BT_CHANNEL0 && id <= BT_CHANNEL19)
 		{
 			buttons[BT_CHANNEL0 + channelid]->set_state(Button::NORMAL);
 			channelid = static_cast<uint8_t>(id - BT_CHANNEL0);
 			return Button::PRESSED;
+		}
+		else // Unhandled
+		{
+			return Button::NORMAL;
 		}
 	}
 }
