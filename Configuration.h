@@ -270,6 +270,12 @@ namespace jrc
 		PosSKILL() : PointEntry("PosSKILL", "(50,150)") {}
 	};
 
+	// The default position of the skill inventory.
+	struct Chatopen : public Configuration::BoolEntry
+	{
+		Chatopen() : BoolEntry("Chatopen", "false") {}
+	};
+
 	template <typename T>
 	// Can be used to access settings.
 	struct Setting

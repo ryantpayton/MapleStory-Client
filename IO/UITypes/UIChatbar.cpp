@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -22,6 +22,7 @@
 #include "../Components/MapleButton.h"
 
 #include "../../Net/Packets/MessagingPackets.h"
+#include "../../Configuration.h"
 
 #include "nlnx/nx.hpp"
 
@@ -31,11 +32,12 @@ namespace jrc
 	{
 		position = pos;
 		dimension = { 500, 60 };
-		chatopen = true;
+		chatopen = Setting<Chatopen>::get().load();;
 		chatrows = 4;
 		rowpos = 0;
 		rowmax = -1;
 		lastpos = 0;
+		chattarget = CHT_ALL;
 
 		nl::node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
 
@@ -82,14 +84,14 @@ namespace jrc
 				lastpos = lastentered.size();
 			}
 		});
-		chatfield.set_key_callback(KeyAction::UP, [&](){
+		chatfield.set_key_callback(KeyAction::UP, [&]() {
 			if (lastpos > 0)
 			{
 				lastpos--;
 				chatfield.change_text(lastentered[lastpos]);
 			}
 		});
-		chatfield.set_key_callback(KeyAction::DOWN, [&](){
+		chatfield.set_key_callback(KeyAction::DOWN, [&]() {
 			if (lastentered.size() > 0 && lastpos < lastentered.size() - 1)
 			{
 				lastpos++;
@@ -97,7 +99,7 @@ namespace jrc
 			}
 		});
 
-		slider = {11, Range<int16_t>(0, CHATROWHEIGHT * chatrows - 14), -22, chatrows, 1, 
+		slider = { 11, Range<int16_t>(0, CHATROWHEIGHT * chatrows - 14), -22, chatrows, 1,
 			[&](bool up) {
 			int16_t next = up ?
 				rowpos - 1 :
@@ -174,6 +176,9 @@ namespace jrc
 			chatfield.set_state(Textfield::DISABLED);
 			break;
 		}
+
+		Setting<Chatopen>::get().save(chatopen);
+
 		return Button::NORMAL;
 	}
 
@@ -213,9 +218,9 @@ namespace jrc
 				return tstate;
 			}
 		}
-		
+
 		auto chattop = Rectangle<int16_t>(
-			0,  502, 
+			0, 502,
 			getchattop(),
 			getchattop() + 6
 			);

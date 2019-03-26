@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -134,6 +134,7 @@ namespace jrc
 
 	UISkillbook::UISkillbook(const CharStats& in_stats, const Skillbook& in_skillbook)
 		: UIDragElement({ 174, 20 }), stats(in_stats), skillbook(in_skillbook) {
+		tab = 0;
 
 		nl::node main = nl::nx::ui["UIWindow2.img"]["Skill"]["main"];
 
