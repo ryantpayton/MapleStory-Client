@@ -69,8 +69,7 @@ namespace jrc
 		void clear_tooltip(Tooltip::Parent parent);
 		void show_equip(Tooltip::Parent parent, int16_t slot);
 		void show_item(Tooltip::Parent parent, int32_t item_id);
-		void show_skill(Tooltip::Parent parent, int32_t skill_id,
-			int32_t level, int32_t masterlevel, int64_t expiration);
+		void show_skill(Tooltip::Parent parent, int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration);
 
 		template <class T, typename...Args>
 		Optional<T> emplace(Args&&...args);

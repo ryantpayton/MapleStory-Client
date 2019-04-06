@@ -226,6 +226,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="io\UIElement.cpp" />
     <ClCompile Include="io\UIStateGame.cpp" />
     <ClCompile Include="io\UIStateLogin.cpp" />
+    <ClCompile Include="IO\UITypes\UIClassCreation.cpp" />
     <ClCompile Include="io\uitypes\UIBuffList.cpp" />
     <ClCompile Include="io\uitypes\UICharcreation.cpp" />
     <ClCompile Include="io\uitypes\UICharSelect.cpp" />
@@ -400,6 +401,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="io\UIState.h" />
     <ClInclude Include="io\UIStateGame.h" />
     <ClInclude Include="io\UIStateLogin.h" />
+    <ClInclude Include="IO\UITypes\UIClassCreation.h" />
     <ClInclude Include="io\uitypes\UIBuffList.h" />
     <ClInclude Include="io\uitypes\UICharcreation.h" />
     <ClInclude Include="io\uitypes\UICharSelect.h" />

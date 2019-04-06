@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -101,13 +101,13 @@ namespace jrc
 		uniform_screensize = glGetUniformLocation(program, "screensize");
 		uniform_yoffset = glGetUniformLocation(program, "yoffset");
 		uniform_fontregion = glGetUniformLocation(program, "fontregion");
-		if (attribute_coord == -1 || attribute_color == -1 || uniform_texture == -1 
+		if (attribute_coord == -1 || attribute_color == -1 || uniform_texture == -1
 			|| uniform_atlassize == -1 || uniform_yoffset == -1 || uniform_screensize == -1)
 			return Error::SHADER_VARS;
 
 		glGenBuffers(1, &vbo);
 
-		glGenTextures(1, &atlas); 
+		glGenTextures(1, &atlas);
 		glBindTexture(GL_TEXTURE_2D, atlas);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -127,18 +127,18 @@ namespace jrc
 		const char* FONT_NORMAL_STR = FONT_NORMAL.c_str();
 		const char* FONT_BOLD_STR = FONT_BOLD.c_str();
 
-		addfont(FONT_NORMAL_STR, Text::A11L, 0, 11);
 		addfont(FONT_NORMAL_STR, Text::A11M, 0, 11);
 		addfont(FONT_BOLD_STR, Text::A11B, 0, 11);
 		addfont(FONT_NORMAL_STR, Text::A12M, 0, 12);
 		addfont(FONT_BOLD_STR, Text::A12B, 0, 12);
 		addfont(FONT_NORMAL_STR, Text::A13M, 0, 13);
 		addfont(FONT_BOLD_STR, Text::A13B, 0, 13);
+		addfont(FONT_BOLD_STR, Text::A15B, 0, 15);
 		addfont(FONT_NORMAL_STR, Text::A18M, 0, 18);
 
 		fontymax += fontborder.y();
 
-		leftovers = QuadTree<size_t, Leftover>([](const Leftover& first, const Leftover& second){
+		leftovers = QuadTree<size_t, Leftover>([](const Leftover& first, const Leftover& second) {
 			bool wcomp = first.width() >= second.width();
 			bool hcomp = first.height() >= second.height();
 			if (wcomp && hcomp)
@@ -157,7 +157,7 @@ namespace jrc
 			{
 				return QuadTree<size_t, Leftover>::LEFT;
 			}
-		});
+			});
 
 		return Error::NONE;
 	}
@@ -218,7 +218,7 @@ namespace jrc
 			GLshort w = static_cast<GLshort>(g->bitmap.width);
 			GLshort h = static_cast<GLshort>(g->bitmap.rows);
 
-			glTexSubImage2D(GL_TEXTURE_2D, 0, ox, oy, w, h, 
+			glTexSubImage2D(GL_TEXTURE_2D, 0, ox, oy, w, h,
 				GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
 
 			Offset offset = Offset(ox, oy, w, h);
@@ -296,9 +296,9 @@ namespace jrc
 			return nulloffset;
 
 		auto value = Leftover(x, y, w, h);
-		size_t lid = leftovers.findnode(value, [](const Leftover& val, const Leftover& leaf){
+		size_t lid = leftovers.findnode(value, [](const Leftover& val, const Leftover& leaf) {
 			return val.width() <= leaf.width() && val.height() <= leaf.height();
-		});
+			});
 
 		if (lid > 0)
 		{
@@ -393,10 +393,10 @@ namespace jrc
 
 		glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_BGRA, GL_UNSIGNED_BYTE, bmp.data());
 		return offsets.emplace(
-			std::piecewise_construct, 
-			std::forward_as_tuple(id), 
+			std::piecewise_construct,
+			std::forward_as_tuple(id),
 			std::forward_as_tuple(x, y, w, h)
-			).first->second;
+		).first->second;
 	}
 
 	void GraphicsGL::draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect,
@@ -532,7 +532,7 @@ namespace jrc
 				}
 			}
 		}
-		
+
 		bool newword = skip > 0;
 		bool newline = linebreak || ax + wordwidth > maxwidth;
 		if (newword || newline)
@@ -654,11 +654,15 @@ namespace jrc
 			{ 1.0f, 0.0f, 0.0f }, // Red
 			{ 0.8f, 0.3f, 0.3f }, // DarkRed
 			{ 0.5f, 0.25f, 0.0f }, // Brown
+			{ 0.34f, 0.2f, 0.07f }, // DarkBrown
 			{ 0.5f, 0.5f, 0.5f }, // Lightgrey
 			{ 0.25f, 0.25f, 0.25f }, // Darkgrey
 			{ 1.0f, 0.5f, 0.0f }, // Orange
 			{ 0.0f, 0.75f, 1.0f }, // Mediumblue
-			{ 0.5f, 0.0f, 0.5f } // Violet
+			{ 0.5f, 0.0f, 0.5f }, // Violet
+			{ 0.47f, 0.4f, 0.27f }, // Gold
+			{ 0.74f, 0.74f, 0.67f }, // Steel
+			{ 0.6f, 0.6f, 0.54f } // Dark Steel
 		};
 
 		for (const Text::Layout::Line& line : layout)

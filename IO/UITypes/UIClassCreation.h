@@ -20,17 +20,19 @@
 
 #include "../Components/Textfield.h"
 
+#include "../../Character/Look/CharLook.h"
+#include "../../Template/BoolPair.h"
+
 namespace jrc
 {
-	// Character creation screen.
-	class UICharcreation : public UIElement
+	class UIClassCreation : public UIElement
 	{
 	public:
-		static constexpr Type TYPE = CHARCREATION;
+		static constexpr Type TYPE = CLASSCREATION;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
-		UICharcreation();
+		UIClassCreation(uint16_t job);
 
 		void draw(float) const override;
 		void update() override;
@@ -38,37 +40,88 @@ namespace jrc
 		Cursor::State send_cursor(bool, Point<int16_t>) override;
 
 		void send_naming_result(bool success);
-		void change_class(uint8_t id);
 
 	protected:
 		Button::State button_pressed(uint16_t button_id) override;
 
 	private:
+		void back();
+		void randomize_look();
+		const std::string& get_equipname(Equipslot::Id slot) const;
+
 		enum Buttons
 		{
 			BT_BACK,
-			BT_CREATE,
-			BT_PAGE_L,
-			BT_PAGE_R,
-			BT_CLASS_SEL0,
-			BT_CLASS_SEL1,
-			BT_CLASS_SEL2,
-			BT_CLASS_SEL3,
-			BT_CLASS_SEL4
+			BT_CHARC_OK,
+			BT_CHARC_CANCEL,
+			BT_CHARC_FACEL,
+			BT_CHARC_FACER,
+			BT_CHARC_HAIRL,
+			BT_CHARC_HAIRR,
+			BT_CHARC_HAIRCL,
+			BT_CHARC_HAIRCR,
+			BT_CHARC_SKINL,
+			BT_CHARC_SKINR,
+			BT_CHARC_TOPL,
+			BT_CHARC_TOPR,
+			BT_CHARC_BOTL,
+			BT_CHARC_BOTR,
+			BT_CHARC_SHOESL,
+			BT_CHARC_SHOESR,
+			BT_CHARC_WEPL,
+			BT_CHARC_WEPR,
+			BT_CHARC_GENDER_M,
+			BT_CHARC_GEMDER_F
 		};
 
-		enum Classes
+		enum GenderButtons
 		{
-			EXPLORERS = 1,
-			CYGNUS,
-			ARAN,
-			EVAN,
-			DUAL_BLADE = 8
+			GENDER_BACKGROUND,
+			GENDER_HEAD,
+			GENDER_TOP,
+			GENDER_MID,
+			GENDER_BOTTOM
 		};
 
+		std::vector<Sprite> sprites_lookboard;
+		std::vector<Sprite> sprites_gender_select;
+		Texture sky;
+		Texture cloud;
+		float cloudfx;
+		Texture nameboard;
+		Textfield namechar;
+		CharLook newchar;
+		Randomizer randomizer;
+
+		BoolPair<std::vector<uint8_t>> skins;
+		BoolPair<std::vector<uint8_t>> haircolors;
+		BoolPair<std::vector<int32_t>> faces;
+		BoolPair<std::vector<int32_t>> hairs;
+		BoolPair<std::vector<int32_t>> tops;
+		BoolPair<std::vector<int32_t>> bots;
+		BoolPair<std::vector<int32_t>> shoes;
+		BoolPair<std::vector<int32_t>> weapons;
+
+		bool named;
+		bool female;
+		size_t skin;
+		size_t haircolor;
+		size_t face;
+		size_t hair;
+		size_t top;
+		size_t bot;
+		size_t shoe;
+		size_t weapon;
+		Text facename;
+		Text hairname;
+		Text haircname;
+		Text bodyname;
+		Text topname;
+		Text botname;
+		Text shoename;
+		Text wepname;
+		Text gendername;
 		Text version;
-		nl::node raceSelect;
-		std::map<int8_t, Classes> classMap;
-		int8_t activeClass;
+		uint16_t cjob;
 	};
 }

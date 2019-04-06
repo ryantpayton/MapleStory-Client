@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -75,9 +75,7 @@ namespace jrc
 
 			// Save the Login ID if the box for it on the login panel is checked.
 			if (Setting<SaveLogin>::get().load())
-			{
 				Setting<DefaultAccount>::get().save(account.name);
-			}
 
 			// Request the list of worlds and channels online.
 			ServerRequestPacket().dispatch();
@@ -87,31 +85,34 @@ namespace jrc
 
 	void ServerlistHandler::handle(InPacket& recv) const
 	{
+		auto worldselect = UI::get().get_element<UIWorldSelect>();
+
+		if (!worldselect)
+			worldselect = UI::get().emplace<UIWorldSelect>();
+
 		// Parse all worlds.
-		std::vector<World> worlds;
-		uint8_t worldcount = 0;
 		while (recv.available())
 		{
 			World world = LoginParser::parse_world(recv);
+
 			if (world.wid != -1)
 			{
-				worlds.emplace_back(std::move(world));
-				worldcount++;
+				worldselect->add_world(world);
 			}
 			else
 			{
+				// Remove previous UIs.
+				UI::get().remove(UIElement::LOGIN);
+				UI::get().remove(UIElement::CHARSELECT);
+
+				// Add the world selection screen to the ui.
+				worldselect->draw_world();
+				UI::get().enable();
+
 				// "End of serverlist" packet.
 				return;
 			}
 		}
-
-		// Remove previous UIs.
-		UI::get().remove(UIElement::LOGIN);
-		UI::get().remove(UIElement::CHARSELECT);
-
-		// Add the world selection screen to the ui.
-		UI::get().emplace<UIWorldSelect>(worlds, worldcount);
-		UI::get().enable();
 	}
 
 
@@ -122,21 +123,21 @@ namespace jrc
 		// Parse all characters.
 		std::vector<CharEntry> characters;
 		uint8_t charcount = recv.read_byte();
+
 		for (uint8_t i = 0; i < charcount; ++i)
-		{
-			characters.emplace_back(
-				LoginParser::parse_charentry(recv)
-			);
-		}
+			characters.emplace_back(LoginParser::parse_charentry(recv));
+
 		int8_t pic = recv.read_byte();
 		uint8_t slots = (uint8_t)recv.read_int();
 
 		// Remove previous UIs.
-		UI::get().remove(UIElement::WORLDSELECT);
 		UI::get().remove(UIElement::CHARCREATION);
 
 		// Add the character selection screen.
-		UI::get().emplace<UICharSelect>(characters, charcount, slots, channel_id, pic);
+		if (auto worldselect = UI::get().get_element<UIWorldSelect>())
+			worldselect->deactivate();
+
+		UI::get().emplace<UICharSelect>(characters, charcount, slots, pic);
 		UI::get().enable();
 	}
 
@@ -148,9 +149,7 @@ namespace jrc
 		bool used = recv.read_bool();
 
 		if (used)
-		{
 			UI::get().emplace<UILoginNotice>(UILoginNotice::NAME_IN_USE);
-		}
 
 		// Notify the character creation screen.
 		if (auto charcreation = UI::get().get_element<UICharcreation>())
@@ -191,6 +190,7 @@ namespace jrc
 		if (state)
 		{
 			UILoginNotice::Message message;
+
 			switch (state)
 			{
 			case 10:
@@ -221,14 +221,14 @@ namespace jrc
 
 		// Read the ipv4 adress in a string.
 		std::string addrstr;
+
 		for (int i = 0; i < 4; i++)
 		{
 			uint8_t num = static_cast<uint8_t>(recv.read_byte());
 			addrstr.append(std::to_string(num));
+
 			if (i < 3)
-			{
 				addrstr.push_back('.');
-			}
 		}
 
 		// Read the port adress in a string.

@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -65,23 +65,23 @@ namespace jrc
 	}
 
 	void UIElement::makeactive()
-	{ 
-		active = true; 
+	{
+		active = true;
 	}
 
 	void UIElement::deactivate()
-	{ 
-		active = false; 
+	{
+		active = false;
 	}
 
 	bool UIElement::is_active() const
-	{ 
-		return active; 
+	{
+		return active;
 	}
 
-	void UIElement::toggle_active() 
-	{ 
-		active = !active; 
+	void UIElement::toggle_active()
+	{
+		active = !active;
 	}
 
 	Button::State UIElement::button_pressed(uint16_t) { return Button::DISABLED; }
@@ -150,4 +150,6 @@ namespace jrc
 
 		return ret;
 	}
+
+	void UIElement::send_key(int32_t, bool) {}
 }

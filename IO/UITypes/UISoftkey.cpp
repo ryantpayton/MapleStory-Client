@@ -18,6 +18,7 @@
 #include "UISoftKey.h"
 
 #include "../Components/MapleButton.h"
+#include "../Components/TwoSpriteButton.h"
 
 #include "../../Net/Packets/SelectCharPackets.h"
 
@@ -25,19 +26,21 @@
 
 namespace jrc
 {
-	UISoftkey::UISoftkey(Callback c)
-		: callback(c) {
-
+	UISoftkey::UISoftkey(Callback c) : callback(c) {
 		nl::node src = nl::nx::ui["Login.img"]["Common"]["SoftKey"];
 
-		sprites.emplace_back(src["backgrnd"]);
+		sprites.emplace_back(src["backgrnd"], Point<int16_t>(-1, 0));
 		sprites.emplace_back(src["backgrnd2"]);
 		sprites.emplace_back(src["backgrnd3"]);
 
+		buttons[BT_TAB_0] = std::make_unique<TwoSpriteButton>(src["Tab"]["normal"]["0"], src["Tab"]["selected"]["0"], Point<int16_t>(-1, 0));
+		buttons[BT_TAB_1] = std::make_unique<TwoSpriteButton>(src["Tab"]["normal"]["1"], src["Tab"]["selected"]["1"], Point<int16_t>(-1, 0));
+		buttons[BT_TAB_2] = std::make_unique<TwoSpriteButton>(src["Tab"]["normal"]["2"], src["Tab"]["selected"]["1"], Point<int16_t>(-1, 0));
+
 		buttons[BT_NEXT] = std::make_unique<MapleButton>(src["BtNext"]);
 		buttons[BT_BACK] = std::make_unique<MapleButton>(src["BtDel"]);
-		buttons[BT_OK] = std::make_unique<MapleButton>(src["BtOK"], Point<int16_t>(72, 235));
-		buttons[BT_CANCEL] = std::make_unique<MapleButton>(src["BtCancel"], Point<int16_t>(13, 235));
+		buttons[BT_OK] = std::make_unique<MapleButton>(src["BtOK"], Point<int16_t>(14, 235));
+		buttons[BT_CANCEL] = std::make_unique<MapleButton>(src["BtCancel"], Point<int16_t>(72, 235));
 
 		nl::node keys = src["BtNum"];
 
@@ -52,14 +55,17 @@ namespace jrc
 		buttons[BT_8] = std::make_unique<MapleButton>(keys["8"]);
 		buttons[BT_9] = std::make_unique<MapleButton>(keys["9"]);
 
+		buttons[BT_TAB_0]->set_state(Button::PRESSED);
+		buttons[BT_TAB_1]->set_state(Button::DISABLED);
+		buttons[BT_TAB_2]->set_state(Button::DISABLED);
 		buttons[BT_OK]->set_state(Button::DISABLED);
 
-		entry = { Text::A11M, Text::LEFT, Text::BLACK, {{ 0, 0 }, { 150, 24 }}, MAX_SIZE };
+		entry = { Text::A11M, Text::LEFT, Text::LIGHTGREY, {{ -3, -4 }, { 150, 24 }}, MAX_SIZE };
 		entry.set_cryptchar('*');
 
 		shufflekeys();
 
-		position = { 330, 160 };
+		position = { 330, 150 };
 		dimension = { 140, 280 };
 		active = true;
 	}
@@ -88,17 +94,14 @@ namespace jrc
 		case BT_8:
 		case BT_9:
 			if (entered.size() <= MAX_SIZE)
-			{
 				entered.append(std::to_string(id));
-				shufflekeys();
-			}
+
 			buttons[id]->set_state(Button::NORMAL);
 			break;
 		case BT_BACK:
 			if (entered.size() > 0)
-			{
 				entered.pop_back();
-			}
+
 			buttons[id]->set_state(Button::NORMAL);
 			break;
 		case BT_CANCEL:
@@ -110,6 +113,12 @@ namespace jrc
 				callback(entered);
 				active = false;
 			}
+
+			break;
+		case BT_TAB_0:
+		case BT_TAB_1:
+		case BT_TAB_2:
+			buttons[id]->set_state(Button::PRESSED);
 			break;
 		}
 
@@ -123,15 +132,13 @@ namespace jrc
 			break;
 		case MAX_SIZE - 1:
 			for (uint8_t i = 0; i < NUM_KEYS; i++)
-			{
 				buttons[i]->set_state(Button::NORMAL);
-			}
+
 			break;
 		case MAX_SIZE:
 			for (uint8_t i = 0; i < NUM_KEYS; i++)
-			{
 				buttons[i]->set_state(Button::DISABLED);
-			}
+
 			break;
 		}
 
@@ -143,10 +150,10 @@ namespace jrc
 	void UISoftkey::shufflekeys()
 	{
 		std::vector<uint8_t> reserve;
+
 		for (uint8_t i = 0; i < NUM_KEYS; i++)
-		{
 			reserve.push_back(i);
-		}
+
 		for (uint8_t i = 0; i < NUM_KEYS; i++)
 		{
 			size_t rand = random.next_int(reserve.size());

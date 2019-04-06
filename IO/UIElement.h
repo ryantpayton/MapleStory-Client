@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -40,11 +40,12 @@ namespace jrc
 			NONE,
 			LOGIN,
 			LOGINWAIT,
-			LOGINNOTICE,
 			WORLDSELECT,
 			CHARSELECT,
 			CHARCREATION,
+			CLASSCREATION,
 			SOFTKEYBOARD,
+			LOGINNOTICE,
 			STATUSMESSENGER,
 			STATUSBAR,
 			BUFFLIST,
@@ -75,6 +76,7 @@ namespace jrc
 		virtual bool is_in_range(Point<int16_t> cursorpos) const;
 		virtual bool remove_cursor(bool clicked, Point<int16_t> cursorpos);
 		virtual Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos);
+		virtual void send_key(int32_t keycode, bool pressed);
 
 	protected:
 		UIElement(Point<int16_t> position, Point<int16_t> dimension, bool active);

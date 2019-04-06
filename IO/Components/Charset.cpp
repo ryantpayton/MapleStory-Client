@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -63,9 +63,14 @@ namespace jrc
 		case CENTER:
 			for (char c : text)
 			{
-				total += getw(c);
+				int16_t width = getw(c);
+
+				draw(c, args + Point<int16_t>(shift, 0));
+				shift += width + 2;
+				total += width;
 			}
 			shift -= total / 2;
+			break;
 		case LEFT:
 			for (char c : text)
 			{

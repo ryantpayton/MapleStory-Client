@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -84,7 +84,8 @@ namespace jrc
 			PASTE = 69,
 			NOACTION = 70,
 			FACE1 = 100,
-			FACE7 = 106
+			FACE7 = 106,
+			ESCAPE
 		};
 
 		inline Id actionbyid(int32_t id)

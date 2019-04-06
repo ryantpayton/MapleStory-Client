@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -23,6 +23,62 @@
 
 namespace jrc
 {
+	class UIClassConfirm : public UIElement
+	{
+	public:
+		static constexpr Type TYPE = LOGINNOTICE;
+		static constexpr bool FOCUSED = true;
+		static constexpr bool TOGGLED = false;
+
+		UIClassConfirm(bool unavailable, uint16_t race, int8_t classMap);
+
+		void draw(float alpha) const override;
+
+		void create_class();
+
+	protected:
+		Button::State button_pressed(uint16_t id) override;
+		void send_key(int32_t keycode, bool pressed) override;
+
+	private:
+		enum Buttons
+		{
+			BT_OK,
+			BT_CANCEL
+		};
+
+		Texture background;
+		Sprite text;
+		bool unavailable;
+		uint16_t race;
+	};
+
+	class UIQuitConfirm : public UIElement
+	{
+	public:
+		static constexpr Type TYPE = LOGINNOTICE;
+		static constexpr bool FOCUSED = true;
+		static constexpr bool TOGGLED = false;
+
+		UIQuitConfirm();
+
+		void draw(float alpha) const override;
+
+	protected:
+		Button::State button_pressed(uint16_t id) override;
+		void send_key(int32_t keycode, bool pressed) override;
+
+	private:
+		enum Buttons
+		{
+			BT_OK,
+			BT_CANCEL
+		};
+
+		Texture background;
+		Sprite text;
+	};
+
 	class UILoginNotice : public UIElement
 	{
 	public:
@@ -162,6 +218,7 @@ namespace jrc
 
 	protected:
 		Button::State button_pressed(uint16_t id) override;
+		void send_key(int32_t keycode, bool pressed) override;
 
 	private:
 		enum Buttons

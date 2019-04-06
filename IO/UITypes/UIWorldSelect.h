@@ -18,6 +18,8 @@
 #pragma once
 #include "../UIElement.h"
 
+#include "../Components/Textfield.h"
+
 #include "../../Net/Login.h"
 
 namespace jrc
@@ -29,9 +31,13 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
-		UIWorldSelect(std::vector<World> worlds, uint8_t worldcount);
+		UIWorldSelect();
 
 		void draw(float alpha) const override;
+
+		void draw_world();
+		void add_world(World world);
+		void change_world(World selectedWorld, bool init);
 
 		uint8_t get_world_id() const;
 		uint8_t get_channel_id() const;
@@ -93,11 +99,21 @@ namespace jrc
 			BT_CHANNEL19,		// Channel 20
 			BT_ENTERWORLD,
 			BT_VIEWRECOMMENDED,
-			BT_CHANGELOCATION,
+			BT_VIEWRECOMMENDED_SELECT,
+			BT_VIEWRECOMMENDED_CANCEL,
+			BT_CHANGEREGION,
 			BT_QUITGAME
 		};
 
+		Text version;
 		uint8_t worldid;
 		uint8_t channelid;
+		std::vector<World> worlds;
+		uint8_t worldcount = 0;
+		nl::node worldsrc;
+		nl::node channelsrc;
+		nl::node worldselect;
+
+		Point<int16_t> channelsrc_pos;
 	};
 }

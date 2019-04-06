@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -239,13 +239,13 @@ namespace jrc
 			height += desc.height() + 10;
 		}
 
-		category = { Text::A11L, Text::LEFT, Text::WHITE, "CATEGORY: " + equipdata.get_type() };
+		category = { Text::A11M, Text::LEFT, Text::WHITE, "CATEGORY: " + equipdata.get_type() };
 
 		is_weapon = equipdata.is_weapon();
 		if (is_weapon)
 		{
 			const WeaponData& weapon = WeaponData::get(item_id);
-			wepspeed = { Text::A11L, Text::LEFT, Text::WHITE, "ATTACK SPEED: " + weapon.getspeedstring() };
+			wepspeed = { Text::A11M, Text::LEFT, Text::WHITE, "ATTACK SPEED: " + weapon.getspeedstring() };
 		}
 		else
 		{
@@ -255,12 +255,12 @@ namespace jrc
 		hasslots = (equip.get_slots() > 0) || (equip.get_level() > 0);
 		if (hasslots)
 		{
-			slots = { Text::A11L, Text::LEFT, Text::WHITE, "UPGRADES AVAILABLE: " + std::to_string(equip.get_slots()) };
+			slots = { Text::A11M, Text::LEFT, Text::WHITE, "UPGRADES AVAILABLE: " + std::to_string(equip.get_slots()) };
 
 			std::string vicious = std::to_string(equip.get_vicious());
 			if (equip.get_vicious() > 1)
 				vicious.append(" (MAX) ");
-			hammers = { Text::A11L, Text::LEFT, Text::WHITE, "VICIOUS HAMMERS USED: " + vicious };
+			hammers = { Text::A11M, Text::LEFT, Text::WHITE, "VICIOUS HAMMERS USED: " + vicious };
 		}
 		else
 		{
@@ -280,7 +280,7 @@ namespace jrc
 					statstr.append((delta < 0) ? "-" : "+");
 					statstr.append(std::to_string(abs(delta)) + ")");
 				}
-				statlabels[es] = { Text::A11L, Text::LEFT, Text::WHITE, Equipstat::names[es] + std::string(": ") + statstr };
+				statlabels[es] = { Text::A11M, Text::LEFT, Text::WHITE, Equipstat::names[es] + std::string(": ") + statstr };
 			}
 			else
 			{

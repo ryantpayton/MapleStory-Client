@@ -35,8 +35,7 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
-		UICharSelect(std::vector<CharEntry> characters,
-			uint8_t count, uint8_t slots, uint8_t channel_id, int8_t pic);
+		UICharSelect(std::vector<CharEntry> characters, uint8_t count, uint8_t slots, int8_t pic);
 
 		void draw(float alpha) const override;
 		void update() override;
@@ -61,22 +60,26 @@ namespace jrc
 			BT_CREATECHAR,
 			BT_DELETECHAR,
 			BT_SELECTCHAR,
-			BT_ARBEIT,
-			BT_CARDS,
 			BT_CHANGEPIC,
+			BT_RESETPIC,
+			BT_CHANGELOC,
 			BT_PAGELEFT,
 			BT_PAGERIGHT,
+			BT_BACK,
 			BT_CHAR0
 		};
 
 		static constexpr uint8_t PAGESIZE = 8;
 
-		Sprite emptyslot;
+		Text version;
+		nl::node pages;
+		nl::node charselect;
+		Point<int16_t> pages_pos;
+		uint8_t pages_start;
+		uint8_t num_width;
+		uint8_t pages_y;
 		Charset levelset;
 		nl::node nametag;
-
-		Point<int16_t> selworldpos;
-		Point<int16_t> charinfopos;
 
 		std::vector<CharEntry> characters;
 		std::vector<CharLook> charlooks;
@@ -90,6 +93,7 @@ namespace jrc
 		uint8_t selected_absolute;
 		uint8_t selected_relative;
 		uint8_t page;
+		uint8_t total_pages;
 
 		struct OutlinedText
 		{
@@ -99,13 +103,13 @@ namespace jrc
 			Text t;
 			Text b;
 
-			OutlinedText(Text::Font font, Text::Alignment alignment)
+			OutlinedText(Text::Font font, Text::Alignment alignment, Text::Color innerColor, Text::Color outerColor)
 			{
-				inner = Text(font, alignment, Text::WHITE);
-				l = Text(font, alignment, Text::DARKGREY);
-				r = Text(font, alignment, Text::DARKGREY);
-				t = Text(font, alignment, Text::DARKGREY);
-				b = Text(font, alignment, Text::DARKGREY);
+				inner = Text(font, alignment, innerColor);
+				l = Text(font, alignment, outerColor);
+				r = Text(font, alignment, outerColor);
+				t = Text(font, alignment, outerColor);
+				b = Text(font, alignment, outerColor);
 			}
 
 			OutlinedText() {}
@@ -128,14 +132,17 @@ namespace jrc
 				b.change_text(text);
 			}
 		};
-		OutlinedText namelabel;
 
-		static const size_t NUM_LABELS = 7;
+		OutlinedText namelabel;
+		OutlinedText charSlot;
+
+		static const size_t NUM_LABELS = 5;
+
 		enum InfoLabel
 		{
-			JOB, WORLDRANK, JOBRANK,
-			STR, DEX, INT, LUK
+			JOB, STR, DEX, INT, LUK
 		};
+
 		OutlinedText infolabels[NUM_LABELS];
 	};
 }

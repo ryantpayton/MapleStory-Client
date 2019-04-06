@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,7 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UILoginNotice.h"
+#include "UIClassCreation.h"
+#include "UICharcreation.h"
 
+#include "../UI.h"
 #include "../Components/MapleButton.h"
 
 #include "../../Graphics/Sprite.h"
@@ -29,13 +32,13 @@ namespace jrc
 	{
 		nl::node notice = nl::nx::ui["Login.img"]["Notice"];
 
-		int8_t back = (id == 16) ? 1 : 0;
+		int8_t back = (id == BLOCKED_ID || id == INCORRECT_PIC) ? 1 : 0;
 		background = notice["backgrnd"][back];
 		text = { notice["text"][id], { 17, 13 } };
 
-		buttons[BT_OK] = std::make_unique<MapleButton>(notice["BtYes"], Point<int16_t>(100, 100));
+		buttons[BT_OK] = std::make_unique<MapleButton>(notice["BtYes"], Point<int16_t>(100, 106));
 
-		position = { 292, 200 };
+		position = { 275, 199 };
 		dimension = { 362, 219 };
 		active = true;
 	}
@@ -44,13 +47,138 @@ namespace jrc
 	{
 		background.draw(position);
 		text.draw(position, alpha);
-		
+
 		UIElement::draw(alpha);
 	}
 
-	Button::State UILoginNotice::button_pressed(uint16_t)
+	Button::State UILoginNotice::button_pressed(uint16_t id)
 	{
 		active = false;
 		return Button::PRESSED;
+	}
+
+	void UILoginNotice::send_key(int32_t keycode, bool pressed)
+	{
+		if (pressed)
+			if (keycode == KeyAction::ESCAPE || keycode == KeyAction::RETURN)
+				active = false;
+	}
+
+	UIQuitConfirm::UIQuitConfirm()
+	{
+		nl::node notice = nl::nx::ui["Login.img"]["Notice"];
+
+		background = notice["backgrnd"]["0"];
+		text = { notice["text"][UILoginNotice::Message::CONFIRM_EXIT], { 17, 13 } };
+
+		buttons[BT_OK] = std::make_unique<MapleButton>(notice["BtYes"], Point<int16_t>(70, 106));
+		buttons[BT_CANCEL] = std::make_unique<MapleButton>(notice["BtNo"], Point<int16_t>(130, 106));
+
+		position = { 275, 199 };
+		dimension = { 362, 219 };
+		active = true;
+	}
+
+	void UIQuitConfirm::draw(float alpha) const
+	{
+		background.draw(position);
+		text.draw(position, alpha);
+
+		UIElement::draw(alpha);
+	}
+
+	Button::State UIQuitConfirm::button_pressed(uint16_t id)
+	{
+		if (id == BT_OK)
+			UI::get().quit();
+
+		active = false;
+		return Button::PRESSED;
+	}
+
+	void UIQuitConfirm::send_key(int32_t keycode, bool pressed)
+	{
+		if (pressed)
+		{
+			if (keycode == KeyAction::ESCAPE)
+			{
+				active = false;
+			}
+			else if (keycode == KeyAction::RETURN)
+			{
+				UI::get().quit();
+				active = false;
+			}
+		}
+	}
+
+	UIClassConfirm::UIClassConfirm(bool u, uint16_t r, int8_t classMap) : unavailable(u), race(r)
+	{
+		nl::node notice = nl::nx::ui["Login.img"]["RaceSelect_new"];
+		nl::node type = unavailable ? notice["deny"] : notice["confirm"];
+
+		background = type["backgrnd"];
+
+		if (!unavailable)
+			text = { type["race"][classMap], { 17, 13 } };
+
+		if (unavailable)
+		{
+			buttons[BT_OK] = std::make_unique<MapleButton>(type["BtOK"], Point<int16_t>(100, 100));
+		}
+		else
+		{
+			buttons[BT_OK] = std::make_unique<MapleButton>(type["BtOK"], Point<int16_t>(62, 107));
+			buttons[BT_CANCEL] = std::make_unique<MapleButton>(type["BtCancel"], Point<int16_t>(62, 107));
+		}
+
+		position = { 286, 179 };
+		dimension = { 362, 219 };
+		active = true;
+	}
+
+	void UIClassConfirm::draw(float alpha) const
+	{
+		background.draw(position);
+
+		if (!unavailable)
+			text.draw(position + Point<int16_t>(72, -3), alpha);
+
+		UIElement::draw(alpha);
+	}
+
+	Button::State UIClassConfirm::button_pressed(uint16_t id)
+	{
+		if (!unavailable && id == BT_OK)
+			create_class();
+
+		active = false;
+		return Button::PRESSED;
+	}
+
+	void UIClassConfirm::send_key(int32_t keycode, bool pressed)
+	{
+		if (pressed)
+		{
+			if (keycode == KeyAction::ESCAPE)
+			{
+				active = false;
+			}
+			else if (keycode == KeyAction::RETURN)
+			{
+				if (!unavailable)
+					create_class();
+
+				active = false;
+			}
+		}
+	}
+
+	void UIClassConfirm::create_class()
+	{
+		if (auto charcreation = UI::get().get_element<UICharcreation>())
+			charcreation->deactivate();
+
+		UI::get().emplace<UIClassCreation>(race);
 	}
 }

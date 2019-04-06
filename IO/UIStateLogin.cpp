@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -50,7 +50,21 @@ namespace jrc
 
 	void UIStateLogin::doubleclick(Point<int16_t>) {}
 
-	void UIStateLogin::send_key(KeyType::Id, int32_t, bool) {}
+	void UIStateLogin::send_key(KeyType::Id type, int32_t action, bool pressed)
+	{
+		if (UIElement* focusedelement = get(focused))
+		{
+			if (focusedelement->is_active())
+			{
+				return focusedelement->send_key(action, pressed);
+			}
+			else
+			{
+				focused = UIElement::NONE;
+				return;
+			}
+		}
+	}
 
 	Cursor::State UIStateLogin::send_cursor(Cursor::State mst, Point<int16_t> pos)
 	{
@@ -97,7 +111,7 @@ namespace jrc
 			{
 				return front->send_cursor(mst == Cursor::CLICKING, pos);
 			}
-			else 
+			else
 			{
 				return Cursor::IDLE;
 			}

@@ -44,8 +44,8 @@ namespace jrc
 		std::string namestr = data.get_name();
 		std::string levelstr = std::to_string(lv);
 
-		name = { Text::A11L, Text::LEFT, Text::DARKGREY, namestr };
-		level = { Text::A11L, Text::LEFT, Text::DARKGREY, levelstr };
+		name = { Text::A11M, Text::LEFT, Text::DARKGREY, namestr };
+		level = { Text::A11M, Text::LEFT, Text::DARKGREY, levelstr };
 		state = NORMAL;
 
 		constexpr uint16_t MAX_NAME_WIDTH = 96;
