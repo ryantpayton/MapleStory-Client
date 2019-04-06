@@ -28,7 +28,7 @@
 #include "../../IO/UITypes/UILoginNotice.h"
 #include "../../IO/UITypes/UIWorldSelect.h"
 #include "../../IO/UITypes/UICharSelect.h"
-#include "../../IO/UITypes/UICharcreation.h"
+#include "../../IO/UITypes/UICharCreation.h"
 
 namespace jrc
 {
@@ -152,7 +152,7 @@ namespace jrc
 			UI::get().emplace<UILoginNotice>(UILoginNotice::NAME_IN_USE);
 
 		// Notify the character creation screen.
-		if (auto charcreation = UI::get().get_element<UICharcreation>())
+		if (auto charcreation = UI::get().get_element<UICharCreation>())
 			charcreation->send_naming_result(used);
 
 		UI::get().enable();

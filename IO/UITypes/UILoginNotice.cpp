@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UILoginNotice.h"
 #include "UIClassCreation.h"
-#include "UICharcreation.h"
+#include "UICharCreation.h"
 
 #include "../UI.h"
 #include "../Components/MapleButton.h"
@@ -176,7 +176,7 @@ namespace jrc
 
 	void UIClassConfirm::create_class()
 	{
-		if (auto charcreation = UI::get().get_element<UICharcreation>())
+		if (auto charcreation = UI::get().get_element<UICharCreation>())
 			charcreation->deactivate();
 
 		UI::get().emplace<UIClassCreation>(race);

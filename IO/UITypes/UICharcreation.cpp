@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "UICharcreation.h"
+#include "UICharCreation.h"
 #include "UIClassCreation.h"
 
 #include "../Components/MapleButton.h"
@@ -27,7 +27,7 @@
 
 namespace jrc
 {
-	UICharcreation::UICharcreation()
+	UICharCreation::UICharCreation()
 	{
 		version = { Text::Font::A11M, Text::Alignment::LEFT, Text::Color::DARKSTEEL, "Ver. 203.3" };
 
@@ -70,7 +70,7 @@ namespace jrc
 		active = true;
 	}
 
-	Button::State UICharcreation::button_pressed(uint16_t id)
+	Button::State UICharCreation::button_pressed(uint16_t id)
 	{
 		switch (id)
 		{
@@ -121,18 +121,18 @@ namespace jrc
 		}
 	}
 
-	Cursor::State UICharcreation::send_cursor(bool clicked, Point<int16_t> cursorpos)
+	Cursor::State UICharCreation::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	void UICharcreation::send_naming_result(bool used)
+	void UICharCreation::send_naming_result(bool used)
 	{
 		if (auto arancreation = UI::get().get_element<UIClassCreation>())
 			arancreation->send_naming_result(used);
 	}
 
-	void UICharcreation::change_class(uint8_t id)
+	void UICharCreation::change_class(uint8_t id)
 	{
 		int8_t classIndex = classMap.at(id);
 		std::string classId = std::to_string(classIndex);
@@ -151,14 +151,14 @@ namespace jrc
 		activeClass = classIndex;
 	}
 
-	void UICharcreation::draw(float alpha) const
+	void UICharCreation::draw(float alpha) const
 	{
 		UIElement::draw(alpha);
 
 		version.draw(position + Point<int16_t>(707, -9));
 	}
 
-	void UICharcreation::update()
+	void UICharCreation::update()
 	{
 		UIElement::update();
 	}

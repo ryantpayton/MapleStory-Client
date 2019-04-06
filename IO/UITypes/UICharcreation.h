@@ -23,14 +23,14 @@
 namespace jrc
 {
 	// Character creation screen.
-	class UICharcreation : public UIElement
+	class UICharCreation : public UIElement
 	{
 	public:
 		static constexpr Type TYPE = CHARCREATION;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
-		UICharcreation();
+		UICharCreation();
 
 		void draw(float) const override;
 		void update() override;

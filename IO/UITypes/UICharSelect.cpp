@@ -18,7 +18,7 @@
 #include "UICharSelect.h"
 
 #include "UISoftkey.h"
-#include "UICharcreation.h"
+#include "UICharCreation.h"
 #include "UIWorldSelect.h"
 
 #include "../UI.h"
@@ -276,7 +276,7 @@ namespace jrc
 				return Button::NORMAL;
 			case BT_CREATECHAR:
 				active = false;
-				UI::get().emplace<UICharcreation>();
+				UI::get().emplace<UICharCreation>();
 				return Button::NORMAL;
 			case BT_DELETECHAR:
 				send_deletion();

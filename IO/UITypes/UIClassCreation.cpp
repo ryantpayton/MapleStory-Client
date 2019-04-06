@@ -533,7 +533,7 @@ namespace jrc
 	{
 		active = false;
 
-		if (auto charcreation = UI::get().get_element<UICharcreation>())
+		if (auto charcreation = UI::get().get_element<UICharCreation>())
 			charcreation->makeactive();
 	}
 

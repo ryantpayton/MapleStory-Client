@@ -360,7 +360,7 @@
     <ClCompile Include="io\uitypes\UIBuffList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\uitypes\UICharcreation.cpp">
+    <ClCompile Include="io\uitypes\UICharCreation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="io\uitypes\UICharSelect.cpp">
@@ -884,7 +884,7 @@
     <ClInclude Include="io\uitypes\UIBuffList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="io\uitypes\UICharcreation.h">
+    <ClInclude Include="io\uitypes\UICharCreation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="io\uitypes\UICharSelect.h">
