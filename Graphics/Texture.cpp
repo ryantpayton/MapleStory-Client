@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -38,10 +38,30 @@ namespace jrc
 				}
 				src = srcfile.resolve(link.substr(link.find('/') + 1));
 			}
+			else
+			{
+				link = src["_inlink"];
+
+				if (link != "")
+				{
+					nl::node srcfile = src;
+
+					while (srcfile != srcfile.root())
+						srcfile = srcfile.root();
+
+					for (auto t = srcfile.begin(); t != srcfile.end(); ++t)
+					{
+						src = t.resolve(link);
+
+						if (src.data_type() != nl::node::type::none)
+							break;
+					}
+				}
+			}
 
 			bitmap = src;
 			origin = src["origin"];
-			dimensions = Point<int16_t>(bitmap.width(),  bitmap.height());
+			dimensions = Point<int16_t>(bitmap.width(), bitmap.height());
 
 			GraphicsGL::get().addbitmap(bitmap);
 		}

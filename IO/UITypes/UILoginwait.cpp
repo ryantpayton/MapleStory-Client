@@ -18,6 +18,8 @@
 #pragma once
 #include "UILoginwait.h"
 
+#include "../Components/MapleButton.h"
+
 #include "../../Graphics/Sprite.h"
 
 #include "nlnx/nx.hpp"
@@ -31,7 +33,9 @@ namespace jrc
 		background = src["backgrnd"];
 		circle = { src["circle"], { 125, 72 } };
 
-		position = { 275, 199 };
+		buttons[BT_CANCEL] = std::make_unique<MapleButton>(src["BtCancel"], Point<int16_t>(101, 106));
+
+		position = { 276, 219 };
 		dimension = { 282, 144 };
 		active = true;
 	}
@@ -39,11 +43,19 @@ namespace jrc
 	void UILoginwait::draw(float alpha) const
 	{
 		background.draw({ position });
-		circle.draw(position, alpha);
+		circle.draw(position + Point<int16_t>(2, -2), alpha);
+
+		UIElement::draw(alpha);
 	}
 
 	void UILoginwait::update()
 	{
 		circle.update();
+	}
+
+	Button::State UILoginwait::button_pressed(uint16_t id)
+	{
+		active = false;
+		return Button::PRESSED;
 	}
 }

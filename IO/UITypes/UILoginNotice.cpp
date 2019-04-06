@@ -124,12 +124,12 @@ namespace jrc
 
 		if (unavailable)
 		{
-			buttons[BT_OK] = std::make_unique<MapleButton>(type["BtOK"], Point<int16_t>(100, 100));
+			buttons[BT_OK] = std::make_unique<MapleButton>(type["BtOK"], Point<int16_t>(100, 105));
 		}
 		else
 		{
 			buttons[BT_OK] = std::make_unique<MapleButton>(type["BtOK"], Point<int16_t>(62, 107));
-			buttons[BT_CANCEL] = std::make_unique<MapleButton>(type["BtCancel"], Point<int16_t>(62, 107));
+			buttons[BT_CANCEL] = std::make_unique<MapleButton>(type["BtCancel"], Point<int16_t>(137, 107));
 		}
 
 		position = { 286, 179 };
