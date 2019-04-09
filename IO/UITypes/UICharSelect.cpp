@@ -282,12 +282,18 @@ namespace jrc
 				send_deletion();
 				return Button::NORMAL;
 			case BT_PAGERIGHT:
-				page++;
+				if (page < total_pages - 1)
+					page++;
+				else
+					page = 0;
+
 				update_counts();
 				update_selection();
 				return Button::IDENTITY;
 			case BT_PAGELEFT:
-				page--;
+				if (page > 0)
+					page--;
+
 				update_counts();
 				update_selection();
 				return Button::IDENTITY;
@@ -321,16 +327,6 @@ namespace jrc
 
 	void UICharSelect::update_counts()
 	{
-		if (page > 0)
-			buttons[BT_PAGELEFT]->set_state(Button::NORMAL);
-		else
-			buttons[BT_PAGELEFT]->set_state(Button::DISABLED);
-
-		if (page < total_pages - 1)
-			buttons[BT_PAGERIGHT]->set_state(Button::NORMAL);
-		else
-			buttons[BT_PAGERIGHT]->set_state(Button::DISABLED);
-
 		charcount_relative = charcount_absolute;
 
 		if (charcount_relative > (page + 1) * PAGESIZE)

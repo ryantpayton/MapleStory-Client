@@ -32,9 +32,7 @@
 
 namespace jrc
 {
-	SkillIcon::SkillIcon(int32_t i, int32_t lv) :
-		id(i) {
-
+	SkillIcon::SkillIcon(int32_t i, int32_t lv) : id(i) {
 		const SkillData& data = SkillData::get(id);
 
 		normal = data.get_icon(SkillData::NORMAL);
@@ -50,6 +48,7 @@ namespace jrc
 
 		constexpr uint16_t MAX_NAME_WIDTH = 96;
 		size_t overhang = 3;
+
 		while (name.width() > MAX_NAME_WIDTH)
 		{
 			namestr.replace(namestr.end() - overhang, namestr.end(), "...");
@@ -82,6 +81,7 @@ namespace jrc
 	{
 		constexpr Rectangle<int16_t> bounds(0, 32, 0, 32);
 		bool inrange = bounds.contains(cursorpos);
+
 		switch (state)
 		{
 		case NORMAL:
@@ -132,8 +132,7 @@ namespace jrc
 		return id;
 	}
 
-	UISkillbook::UISkillbook(const CharStats& in_stats, const Skillbook& in_skillbook)
-		: UIDragElement({ 174, 20 }), stats(in_stats), skillbook(in_skillbook) {
+	UISkillbook::UISkillbook(const CharStats& in_stats, const Skillbook& in_skillbook) : UIDragElement({ 174, 20 }), stats(in_stats), skillbook(in_skillbook) {
 		tab = 0;
 
 		nl::node main = nl::nx::ui["UIWindow2.img"]["Skill"]["main"];
@@ -154,7 +153,8 @@ namespace jrc
 			uint16_t tabid = i - BT_TAB0;
 			buttons[i] = std::make_unique<TwoSpriteButton>(tabd[tabid], tabe[tabid]);
 		}
-		for (uint16_t i = BT_SPUP0; i <= BT_SPUP3; ++i)
+
+		for (uint16_t i = BT_SPUP0; i <= BT_SPUP7; ++i)
 		{
 			uint16_t spupid = i - BT_SPUP0;
 			Point<int16_t> spup_position = SKILL_OFFSET + Point<int16_t>(124, 20 + spupid * ROW_HEIGHT);
@@ -165,16 +165,15 @@ namespace jrc
 		splabel = { Text::A11M, Text::RIGHT, Text::LIGHTGREY };
 
 		slider = {
-			11, { 92, 236 }, 154, ROWS, 1,
-			[&](bool upwards) {
-			int16_t shift = upwards ? -1 : 1;
-			bool above = offset + shift >= 0;
-			bool below = offset + 4 + shift <= skillcount;
-			if (above && below)
-			{
-				change_offset(offset + shift);
+			11, { 92, 236 }, 204, ROWS, 1, [&](bool upwards) {
+				int16_t shift = upwards ? -1 : 1;
+				bool above = offset + shift >= 0;
+				bool below = offset + 4 + shift <= skillcount;
+
+				if (above && below)
+					change_offset(offset + shift);
 			}
-		} };
+		};
 
 		change_job(stats.get_stat(Maplestat::JOB));
 		change_sp(stats.get_stat(Maplestat::SP));
@@ -191,24 +190,24 @@ namespace jrc
 		splabel.draw(position + Point<int16_t>(162, 254));
 
 		auto begin = icons.begin();
+
 		if (icons.size() > offset)
-		{
 			begin = begin + offset;
-		}
+
 		auto end = icons.end();
+
 		if (icons.size() > ROWS + offset)
-		{
 			end = begin + ROWS;
-		}
+
 		Point<int16_t> skill_position = position + SKILL_OFFSET;
+
 		for (auto iter = begin; iter != end; ++iter)
 		{
 			skille.draw(skill_position);
 			iter->draw(skill_position + ICON_OFFSET);
+
 			if (iter != end - 1)
-			{
 				line.draw(skill_position + LINE_OFFSET);
-			}
 
 			skill_position.shift_y(ROW_HEIGHT);
 		}
@@ -233,6 +232,10 @@ namespace jrc
 		case BT_SPUP1:
 		case BT_SPUP2:
 		case BT_SPUP3:
+		case BT_SPUP4:
+		case BT_SPUP5:
+		case BT_SPUP6:
+		case BT_SPUP7:
 			send_spup(id - BT_SPUP0 + offset);
 			return Button::PRESSED;
 		default:
@@ -243,14 +246,14 @@ namespace jrc
 	void UISkillbook::doubleclick(Point<int16_t> cursorpos)
 	{
 		const SkillIcon* icon = icon_by_position(cursorpos - position);
+
 		if (icon)
 		{
 			int32_t skill_id = icon->get_id();
 			int32_t skill_level = skillbook.get_level(skill_id);
+
 			if (skill_level > 0)
-			{
 				Stage::get().get_combat().use_move(skill_id);
-			}
 		}
 	}
 
@@ -265,32 +268,34 @@ namespace jrc
 	Cursor::State UISkillbook::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
 		Cursor::State dstate = UIDragElement::send_cursor(clicked, cursorpos);
+
 		if (dragged)
-		{
 			return dstate;
-		}
 
 		Point<int16_t> cursor_relative = cursorpos - position;
+
 		if (slider.isenabled())
 		{
 			if (Cursor::State new_state = slider.send_cursor(cursor_relative, clicked))
 			{
 				clear_tooltip();
+
 				return new_state;
 			}
 		}
 
 		auto begin = icons.begin();
+
 		if (icons.size() > offset)
-		{
 			begin = begin + offset;
-		}
+
 		auto end = icons.end();
+
 		if (icons.size() > ROWS + offset)
-		{
 			end = begin + ROWS;
-		}
+
 		Point<int16_t> skill_position = position + SKILL_OFFSET;
+
 		for (auto iter = begin; iter != end; ++iter)
 		{
 			if (Cursor::State state = iter->send_cursor(cursorpos - skill_position, clicked))
@@ -304,6 +309,7 @@ namespace jrc
 					show_skill(iter->get_id());
 					break;
 				}
+
 				return state;
 			}
 
@@ -311,6 +317,7 @@ namespace jrc
 		}
 
 		clear_tooltip();
+
 		return Cursor::IDLE;
 	}
 
@@ -330,9 +337,7 @@ namespace jrc
 	void UISkillbook::update_skills(int32_t skill_id)
 	{
 		if (skill_id / 10000 == job.get_id())
-		{
 			change_tab(tab);
-		}
 	}
 
 	void UISkillbook::change_job(uint16_t id)
@@ -340,10 +345,9 @@ namespace jrc
 		job.change_job(id);
 
 		Job::Level level = job.get_level();
+
 		for (uint16_t i = 0; i <= Job::FOURTHT; i++)
-		{
 			buttons[BT_TAB0 + i]->set_active(i <= level);
-		}
 
 		change_tab(level - Job::BEGINNER);
 	}
@@ -352,7 +356,6 @@ namespace jrc
 	{
 		sp = s;
 		splabel.change_text(std::to_string(sp));
-
 		change_offset(offset);
 	}
 
@@ -379,6 +382,7 @@ namespace jrc
 			int32_t masterlevel = skillbook.get_masterlevel(skill_id);
 
 			bool invisible = SkillData::get(skill_id).is_invisible();
+
 			if (invisible && masterlevel == 0)
 				continue;
 
@@ -399,6 +403,7 @@ namespace jrc
 			uint16_t index = BT_SPUP0 + i;
 			uint16_t row = offset + i;
 			buttons[index]->set_active(row < skillcount);
+
 			if (row < icons.size())
 			{
 				int32_t skill_id = icons[row].get_id();
@@ -415,14 +420,12 @@ namespace jrc
 		int32_t masterlevel = skillbook.get_masterlevel(id);
 		int64_t expiration = skillbook.get_expiration(id);
 
-		UI::get()
-			.show_skill(Tooltip::SKILLBOOK, skill_id, level, masterlevel, expiration);
+		UI::get().show_skill(Tooltip::SKILLBOOK, skill_id, level, masterlevel, expiration);
 	}
 
 	void UISkillbook::clear_tooltip()
 	{
-		UI::get()
-			.clear_tooltip(Tooltip::SKILLBOOK);
+		UI::get().clear_tooltip(Tooltip::SKILLBOOK);
 	}
 
 	bool UISkillbook::can_raise(int32_t skill_id) const
@@ -432,10 +435,10 @@ namespace jrc
 
 		int32_t level = skillbook.get_level(skill_id);
 		int32_t masterlevel = skillbook.get_masterlevel(skill_id);
+
 		if (masterlevel == 0)
-		{
 			masterlevel = SkillData::get(skill_id).get_masterlevel();
-		}
+
 		if (level >= masterlevel)
 			return false;
 
@@ -479,18 +482,22 @@ namespace jrc
 	SkillIcon* UISkillbook::icon_by_position(Point<int16_t> cursorpos)
 	{
 		int16_t x = cursorpos.x();
+
 		if (x < SKILL_OFFSET.x() || x > 148)
 			return nullptr;
 
 		int16_t y = cursorpos.y();
+
 		if (y < SKILL_OFFSET.y())
 			return nullptr;
 
 		uint16_t row = (y - SKILL_OFFSET.y()) / ROW_HEIGHT;
+
 		if (row < 0 || row >= ROWS)
 			return nullptr;
 
 		uint16_t absrow = offset + row;
+
 		if (icons.size() <= absrow)
 			return nullptr;
 

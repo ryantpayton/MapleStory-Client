@@ -16,9 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UIElement.h"
+#include "UI.h"
 
 #include "../Constants.h"
 #include "../Audio/Audio.h"
+#include "../IO/UITypes/UISoftkey.h"
 
 namespace jrc
 {
@@ -151,5 +153,11 @@ namespace jrc
 		return ret;
 	}
 
-	void UIElement::send_key(int32_t, bool) {}
+	void UIElement::send_key(int32_t action, bool pressed)
+	{
+		if (pressed && action == KeyAction::ESCAPE)
+			if (auto softkey = UI::get().get_element<UISoftkey>())
+				if (softkey->is_active())
+					softkey->deactivate();
+	}
 }

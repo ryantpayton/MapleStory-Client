@@ -32,7 +32,7 @@ namespace jrc
 	{
 		nl::node notice = nl::nx::ui["Login.img"]["Notice"];
 
-		int8_t back = (id == BLOCKED_ID || id == INCORRECT_PIC) ? 1 : 0;
+		int8_t back = (id == BLOCKED_ID || id == INCORRECT_PIC || id == NAME_IN_USE || id == ILLEGAL_NAME) ? 1 : 0;
 		background = notice["backgrnd"][back];
 		text = { notice["text"][id], { 17, 13 } };
 
@@ -180,5 +180,42 @@ namespace jrc
 			charcreation->deactivate();
 
 		UI::get().emplace<UIClassCreation>(race);
+	}
+
+	UIKeyConfirm::UIKeyConfirm(uint8_t type)
+	{
+		nl::node notice = nl::nx::ui["Login.img"]["UIWindow2.img"]["KeyConfig"]["KeyType"]["alert"];
+
+		background = (type == 0) ? notice["default"] : notice["alternate"];
+
+		buttons[BT_OK] = std::make_unique<MapleButton>(notice["btOk"], Point<int16_t>(100, 105));
+
+		position = { 286, 179 };
+		dimension = { 362, 219 };
+		active = true;
+	}
+
+	void UIKeyConfirm::draw(float alpha) const
+	{
+		background.draw(position);
+
+		UIElement::draw(alpha);
+	}
+
+	Button::State UIKeyConfirm::button_pressed(uint16_t id)
+	{
+		active = false;
+		return Button::PRESSED;
+	}
+
+	void UIKeyConfirm::send_key(int32_t keycode, bool pressed)
+	{
+		if (pressed)
+		{
+			if (keycode == KeyAction::RETURN)
+			{
+				active = false;
+			}
+		}
 	}
 }

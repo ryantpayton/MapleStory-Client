@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright ï¿½ 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,13 +21,7 @@
 
 namespace jrc
 {
-	Slider::Slider(int32_t type, Range<int16_t> ver, int16_t xp, 
-		int16_t ur, int16_t rm, std::function<void(bool)> om) {
-
-		vertical = ver;
-		x = xp;
-		onmoved = om;
-
+	Slider::Slider(int32_t type, Range<int16_t> ver, int16_t xp, int16_t ur, int16_t rm, std::function<void(bool)> om) : vertical(ver), x(xp), onmoved(om) {
 		start = { x, vertical.first() };
 		end = { x, vertical.second() };
 
@@ -55,8 +49,7 @@ namespace jrc
 		scrolling = false;
 	}
 
-	Slider::Slider()
-		: Slider(0, {}, 0, 0, 0, {}) {}
+	Slider::Slider() : Slider(0, {}, 0, 0, 0, {}) {}
 
 	bool Slider::isenabled() const
 	{
@@ -71,14 +64,12 @@ namespace jrc
 	void Slider::setrows(int16_t nr, int16_t ur, int16_t rm)
 	{
 		rowmax = rm - ur;
+
 		if (rowmax > 0)
-		{
 			rowheight = (vertical.length() - buttonheight * 2) / rowmax;
-		}
 		else
-		{
 			rowheight = 0;
-		}
+
 		row = nr;
 	}
 
@@ -94,14 +85,11 @@ namespace jrc
 		end = { x, vertical.second() };
 		prev.set_position(start);
 		next.set_position(end);
+
 		if (rowmax > 0)
-		{
 			rowheight = (vertical.length() - buttonheight * 2) / rowmax;
-		}
 		else
-		{
 			rowheight = 0;
-		}
 	}
 
 	void Slider::draw(Point<int16_t> position) const
@@ -111,10 +99,10 @@ namespace jrc
 		if (enabled)
 		{
 			base.draw({ position + start, fill });
+
 			if (rowheight > 0)
-			{
 				thumb.draw({ position + getthumbpos() });
-			}
+
 			prev.draw({ position });
 			next.draw({ position });
 		}
@@ -137,6 +125,7 @@ namespace jrc
 			thumb.set_state(Button::NORMAL);
 			next.set_state(Button::NORMAL);
 			prev.set_state(Button::NORMAL);
+
 			return false;
 		}
 	}
@@ -146,18 +135,21 @@ namespace jrc
 		int16_t y = row < rowmax ?
 			vertical.first() + row * rowheight + buttonheight
 			: vertical.second() - buttonheight * 2 - 2;
+
 		return{ x, y };
 	}
 
 	Cursor::State Slider::send_cursor(Point<int16_t> cursor, bool pressed)
 	{
 		Point<int16_t> relative = cursor - start;
+
 		if (scrolling)
 		{
 			if (pressed)
 			{
 				int16_t thumby = row * rowheight + buttonheight * 2;
 				int16_t delta = relative.y() - thumby;
+
 				if (delta > rowheight / 2 && row < rowmax)
 				{
 					row++;
@@ -168,6 +160,7 @@ namespace jrc
 					row--;
 					onmoved(true);
 				}
+
 				return Cursor::CLICKING;
 			}
 			else
@@ -180,21 +173,25 @@ namespace jrc
 			thumb.set_state(Button::NORMAL);
 			next.set_state(Button::NORMAL);
 			prev.set_state(Button::NORMAL);
+
 			return Cursor::IDLE;
 		}
 
 		Point<int16_t> thumbpos = getthumbpos();
+
 		if (thumb.bounds(thumbpos).contains(cursor))
 		{
 			if (pressed)
 			{
 				scrolling = true;
 				thumb.set_state(Button::PRESSED);
+
 				return Cursor::CLICKING;
 			}
 			else
 			{
 				thumb.set_state(Button::MOUSEOVER);
+
 				return Cursor::VSCROLL;
 			}
 		}
@@ -214,15 +211,17 @@ namespace jrc
 				}
 
 				prev.set_state(Button::PRESSED);
+
 				return Cursor::CLICKING;
 			}
 			else
 			{
 				prev.set_state(Button::MOUSEOVER);
+
 				return Cursor::CANCLICK;
 			}
 		}
-		else 
+		else
 		{
 			prev.set_state(Button::NORMAL);
 		}
@@ -238,11 +237,13 @@ namespace jrc
 				}
 
 				next.set_state(Button::PRESSED);
+
 				return Cursor::CLICKING;
 			}
 			else
 			{
 				next.set_state(Button::MOUSEOVER);
+
 				return Cursor::CANCLICK;
 			}
 		}
@@ -251,26 +252,33 @@ namespace jrc
 			next.set_state(Button::NORMAL);
 		}
 
-		if (pressed)
+		if (cursor.y() < vertical.second())
 		{
-			auto yoffset = static_cast<double>(relative.y() - buttonheight * 2);
-			auto cursorrow = static_cast<int16_t>(std::round(yoffset / rowheight));
-			if (cursorrow < 0)
-				cursorrow = 0;
-			else if (cursorrow > rowmax)
-				cursorrow = rowmax;
-			int16_t delta = row - cursorrow;
-			while (delta > 0)
+			if (pressed)
 			{
-				delta--;
-				onmoved(true);
+				auto yoffset = static_cast<double>(relative.y() - buttonheight * 2);
+				auto cursorrow = static_cast<int16_t>(std::round(yoffset / rowheight));
+
+				if (cursorrow < 0)
+					cursorrow = 0;
+				else if (cursorrow > rowmax)
+					cursorrow = rowmax;
+
+				int16_t delta = row - cursorrow;
+
+				while (delta > 0)
+				{
+					delta--;
+					onmoved(true);
+				}
+				while (delta < 0)
+				{
+					delta++;
+					onmoved(false);
+				}
+
+				row = cursorrow;
 			}
-			while (delta < 0)
-			{
-				delta++;
-				onmoved(false);
-			}
-			row = cursorrow;
 		}
 
 		return Cursor::IDLE;

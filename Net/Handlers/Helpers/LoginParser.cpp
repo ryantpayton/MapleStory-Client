@@ -106,7 +106,7 @@ namespace jrc
 			statsentry.petids.push_back(recv.read_long());
 		}
 
-		statsentry.stats[Maplestat::LEVEL] = recv.read_byte();
+		statsentry.stats[Maplestat::LEVEL] = recv.read_short();
 		statsentry.stats[Maplestat::JOB] = recv.read_short();
 		statsentry.stats[Maplestat::STR] = recv.read_short();
 		statsentry.stats[Maplestat::DEX] = recv.read_short();

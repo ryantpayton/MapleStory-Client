@@ -44,6 +44,7 @@ namespace jrc
 		void toggle_active() override;
 		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		Cursor::State send_cursor(bool pressed, Point<int16_t> position) override;
+		void send_key(int32_t keycode, bool pressed) override;
 
 		void modify(InventoryType::Id type, int16_t pos, int8_t mode, int16_t arg);
 		void enable_sort();
@@ -63,7 +64,7 @@ namespace jrc
 		uint16_t button_by_tab(InventoryType::Id tab) const;
 		Point<int16_t> get_slotpos(int16_t slot) const;
 		Point<int16_t> get_tabpos(InventoryType::Id tab) const;
-	    Icon* get_icon(int16_t slot);
+		Icon* get_icon(int16_t slot);
 
 		class ItemIcon : public Icon::Type
 		{
@@ -82,6 +83,7 @@ namespace jrc
 
 		enum Buttons
 		{
+			BT_CLOSE,
 			BT_TAB_EQUIP,
 			BT_TAB_USE,
 			BT_TAB_ETC,
@@ -95,7 +97,9 @@ namespace jrc
 			BT_ITEMPOT,
 			BT_UPGRADE,
 			BT_MAGNIFY,
-			BT_BITCASE
+			BT_EXTRACT,
+			BT_DISASSEMBLE,
+			BT_TOAD
 		};
 
 		const Inventory& inventory;
@@ -104,6 +108,7 @@ namespace jrc
 		Animation newitemtab;
 		Texture projectile;
 		Text mesolabel;
+		Text maplepointslabel;
 		Slider slider;
 
 		std::map<int16_t, std::unique_ptr<Icon>> icons;

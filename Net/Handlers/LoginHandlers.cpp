@@ -166,15 +166,9 @@ namespace jrc
 		// Parse info on the new character.
 		CharEntry character = LoginParser::parse_charentry(recv);
 
-		// Remove the character creation ui.
-		UI::get().remove(UIElement::CHARCREATION);
-
-		// Readd the updated character selection.
+		// Read the updated character selection.
 		if (auto charselect = UI::get().get_element<UICharSelect>())
-		{
 			charselect->add_character(std::move(character));
-			charselect->makeactive();
-		}
 
 		UI::get().enable();
 	}

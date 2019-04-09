@@ -21,6 +21,11 @@
 #include "UIStateGame.h"
 #include "Window.h"
 
+#include "../IO/UITypes/UIStatsinfo.h"
+#include "../IO/UITypes/UIItemInventory.h"
+#include "../IO/UITypes/UIEquipInventory.h"
+#include "../IO/UITypes/UISkillbook.h"
+
 namespace jrc
 {
 	UI::UI()
@@ -160,7 +165,40 @@ namespace jrc
 			Keyboard::Mapping mapping = keyboard.get_mapping(keycode);
 
 			if (mapping.type)
-				state->send_key(mapping.type, mapping.action, pressed);
+			{
+				if (pressed && (keycode == GLFW_KEY_ESCAPE || keycode == GLFW_KEY_TAB))
+				{
+					auto statsinfo = UI::get().get_element<UIStatsinfo>();
+					auto iteminventory = UI::get().get_element<UIItemInventory>();
+					auto equipinventory = UI::get().get_element<UIEquipInventory>();
+					auto skillbook = UI::get().get_element<UISkillbook>();
+
+					if (statsinfo && statsinfo->is_active())
+					{
+						statsinfo->deactivate();
+					}
+					else if (iteminventory && iteminventory->is_active())
+					{
+						iteminventory->send_key(mapping.action, pressed);
+					}
+					else if (equipinventory && equipinventory->is_active())
+					{
+						equipinventory->deactivate();
+					}
+					else if (skillbook && skillbook->is_active())
+					{
+						skillbook->deactivate();
+					}
+					else
+					{
+						state->send_key(mapping.type, mapping.action, pressed);
+					}
+				}
+				else
+				{
+					state->send_key(mapping.type, mapping.action, pressed);
+				}
+			}
 		}
 
 		is_key_down[keycode] = pressed;

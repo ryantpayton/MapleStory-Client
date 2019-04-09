@@ -238,6 +238,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="io\uitypes\UILoginwait.cpp" />
     <ClCompile Include="io\uitypes\UINotice.cpp" />
     <ClCompile Include="io\uitypes\UINpcTalk.cpp" />
+    <ClCompile Include="IO\UITypes\UIQuestLog.cpp" />
     <ClCompile Include="io\uitypes\UIShop.cpp" />
     <ClCompile Include="io\uitypes\UISkillbook.cpp" />
     <ClCompile Include="io\uitypes\UISoftkey.cpp" />
@@ -413,6 +414,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="io\uitypes\UILoginwait.h" />
     <ClInclude Include="io\uitypes\UINotice.h" />
     <ClInclude Include="io\uitypes\UINpcTalk.h" />
+    <ClInclude Include="IO\UITypes\UIQuestLog.h" />
     <ClInclude Include="io\uitypes\UIShop.h" />
     <ClInclude Include="io\uitypes\UISkillbook.h" />
     <ClInclude Include="io\uitypes\UISoftkey.h" />

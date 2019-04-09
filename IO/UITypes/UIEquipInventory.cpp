@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -27,9 +27,8 @@
 
 namespace jrc
 {
-	UIEquipInventory::UIEquipInventory(const Inventory& invent) :
-		UIDragElement<PosEQINV>(Point<int16_t>(184, 20)), inventory(invent) {
-
+	UIEquipInventory::UIEquipInventory(const Inventory& invent) : UIDragElement<PosEQINV>(Point<int16_t>(184, 20)), inventory(invent)
+	{
 		iconpositions[Equipslot::CAP] = Point<int16_t>(43, 25);
 		iconpositions[Equipslot::FACEACC] = Point<int16_t>(43, 91);
 		iconpositions[Equipslot::EYEACC] = Point<int16_t>(43, 68);
@@ -112,8 +111,8 @@ namespace jrc
 		{
 			const Texture& texture = ItemData::get(item_id).get_icon(false);
 			icons[slot] = std::make_unique<Icon>(
-				std::make_unique<EquipIcon>(slot), 
-				texture, 
+				std::make_unique<EquipIcon>(slot),
+				texture,
 				-1
 				);
 		}

@@ -29,13 +29,14 @@ namespace jrc
 		if (src.data_type() == nl::node::type::bitmap)
 		{
 			std::string link = src["source"];
+
 			if (link != "")
 			{
 				nl::node srcfile = src;
+
 				while (srcfile != srcfile.root())
-				{
 					srcfile = srcfile.root();
-				}
+
 				src = srcfile.resolve(link.substr(link.find('/') + 1));
 			}
 			else
@@ -55,6 +56,20 @@ namespace jrc
 
 						if (src.data_type() != nl::node::type::none)
 							break;
+					}
+				}
+				else
+				{
+					link = src["_outlink"];
+
+					if (link != "")
+					{
+						nl::node srcfile = src;
+
+						while (srcfile != srcfile.root())
+							srcfile = srcfile.root();
+
+						src = srcfile.resolve(link.substr(link.find('/') + 1));
 					}
 				}
 			}

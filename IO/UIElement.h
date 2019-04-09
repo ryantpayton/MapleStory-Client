@@ -56,6 +56,7 @@ namespace jrc
 			ITEMINVENTORY,
 			EQUIPINVENTORY,
 			SKILLBOOK,
+			QUESTLOG,
 			NUM_TYPES
 		};
 

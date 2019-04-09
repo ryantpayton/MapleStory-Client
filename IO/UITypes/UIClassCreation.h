@@ -71,7 +71,9 @@ namespace jrc
 			BT_CHARC_WEPL,
 			BT_CHARC_WEPR,
 			BT_CHARC_GENDER_M,
-			BT_CHARC_GEMDER_F
+			BT_CHARC_GEMDER_F,
+			BT_KEY_TYPE_A,
+			BT_KEY_TYPE_B
 		};
 
 		enum GenderButtons
@@ -85,6 +87,7 @@ namespace jrc
 
 		std::vector<Sprite> sprites_lookboard;
 		std::vector<Sprite> sprites_gender_select;
+		std::vector<Sprite> sprites_keytype;
 		Texture sky;
 		Texture cloud;
 		float cloudfx;
@@ -102,6 +105,8 @@ namespace jrc
 		BoolPair<std::vector<int32_t>> shoes;
 		BoolPair<std::vector<int32_t>> weapons;
 
+		bool gender;
+		bool charSet;
 		bool named;
 		bool female;
 		size_t skin;

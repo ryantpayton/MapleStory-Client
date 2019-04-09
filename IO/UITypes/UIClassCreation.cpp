@@ -32,6 +32,8 @@ namespace jrc
 {
 	UIClassCreation::UIClassCreation(uint16_t job) : cjob(job)
 	{
+		gender = false;
+		charSet = false;
 		named = false;
 
 		version = { Text::Font::A11M, Text::Alignment::LEFT, Text::Color::DARKSTEEL, "Ver. 203.3" };
@@ -40,6 +42,7 @@ namespace jrc
 		nl::node common = login["Common"];
 		nl::node customizeChar = login["CustomizeChar"];
 		nl::node bgsrc = nl::nx::map["Back"]["login.img"]["back"];
+		nl::node keyConfig = nl::nx::ui["UIWindow2.img"]["KeyConfig"]["KeyType"];
 		nl::node crsrc;
 
 		sky = bgsrc["2"];
@@ -55,12 +58,24 @@ namespace jrc
 
 			sprites.emplace_back(bgsrc["33"], Point<int16_t>(256, 289)); // From v203.3
 			sprites.emplace_back(bgsrc["34"], Point<int16_t>(587, 147)); // From v203.3
-			sprites.emplace_back(board["genderTop"], Point<int16_t>(491, 158));
-			sprites.emplace_back(board["boardMid"], Point<int16_t>(491, 210)); // TODO: Repeat y value down
-			sprites.emplace_back(board["boardBottom"], Point<int16_t>(491, 303));
+			sprites_gender_select.emplace_back(board["genderTop"], Point<int16_t>(491, 158));
+			sprites_gender_select.emplace_back(board["boardMid"], Point<int16_t>(491, 210)); // TODO: Repeat y value down
+			sprites_gender_select.emplace_back(board["boardBottom"], Point<int16_t>(491, 303));
+
+			sprites_lookboard.emplace_back(crsrc["charSet"], Point<int16_t>(473, 93));
+
+			std::map<uint8_t, uint8_t> charSettings = { {0,0}, {1,1}, {2,3}, {3,4}, {4,5}, {5,6}, {6,7} };
+
+			for (int i = 0; i <= 6; i++)
+				sprites_lookboard.emplace_back(crsrc["avatarSel"][charSettings[i]]["normal"], Point<int16_t>(504, 177 + (i * 18)));
 
 			buttons[BT_CHARC_GENDER_M] = std::make_unique<MapleButton>(genderSelect["male"], Point<int16_t>(439, 96));
 			buttons[BT_CHARC_GEMDER_F] = std::make_unique<MapleButton>(genderSelect["female"], Point<int16_t>(437, 96));
+
+			buttons[BT_CHARC_SKINL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(562, 177 + (2 * 18)));
+			buttons[BT_CHARC_SKINR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(699, 177 + (2 * 18)));
+			buttons[BT_CHARC_SKINL]->set_active(false);
+			buttons[BT_CHARC_SKINR]->set_active(false);
 
 			buttons[BT_CHARC_OK] = std::make_unique<MapleButton>(crsrc["BtYes"], Point<int16_t>(520, 387));
 			buttons[BT_CHARC_CANCEL] = std::make_unique<MapleButton>(crsrc["BtNo"], Point<int16_t>(594, 387));
@@ -114,17 +129,6 @@ namespace jrc
 
 		nameboard = crsrc["charName"];
 
-		sprites_lookboard.emplace_back(crsrc["charSet"], Point<int16_t>(450, 115));
-		sprites_lookboard.emplace_back(crsrc["avatarSel"]["0"]["normal"], Point<int16_t>(461, 217));
-		sprites_lookboard.emplace_back(crsrc["avatarSel"]["1"]["normal"], Point<int16_t>(461, 236));
-		sprites_lookboard.emplace_back(crsrc["avatarSel"]["2"]["normal"], Point<int16_t>(461, 255));
-		sprites_lookboard.emplace_back(crsrc["avatarSel"]["3"]["normal"], Point<int16_t>(461, 274));
-		sprites_lookboard.emplace_back(crsrc["avatarSel"]["4"]["normal"], Point<int16_t>(461, 293));
-		sprites_lookboard.emplace_back(crsrc["avatarSel"]["5"]["normal"], Point<int16_t>(461, 312));
-		sprites_lookboard.emplace_back(crsrc["avatarSel"]["6"]["normal"], Point<int16_t>(461, 331));
-		sprites_lookboard.emplace_back(crsrc["avatarSel"]["7"]["normal"], Point<int16_t>(461, 350));
-		sprites_lookboard.emplace_back(crsrc["avatarSel"]["8"]["normal"], Point<int16_t>(461, 369));
-
 		buttons[BT_BACK] = std::make_unique<MapleButton>(login["Common"]["BtStart"], Point<int16_t>(0, 505));
 
 		buttons[BT_CHARC_FACEL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 216));
@@ -133,8 +137,6 @@ namespace jrc
 		buttons[BT_CHARC_HAIRR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 235));
 		buttons[BT_CHARC_HAIRCL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 254));
 		buttons[BT_CHARC_HAIRCR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 254));
-		buttons[BT_CHARC_SKINL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 273));
-		buttons[BT_CHARC_SKINR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 273));
 		buttons[BT_CHARC_TOPL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 292));
 		buttons[BT_CHARC_TOPR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 292));
 		buttons[BT_CHARC_BOTL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 311));
@@ -143,8 +145,11 @@ namespace jrc
 		buttons[BT_CHARC_SHOESR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 330));
 		buttons[BT_CHARC_WEPL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 349));
 		buttons[BT_CHARC_WEPR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 348));
-		/*buttons[BT_CHARC_GENDERL] = std::make_unique<MapleButton>(crsrc["BtLeft"], Point<int16_t>(521, 368));
-		buttons[BT_CHARC_GEMDERR] = std::make_unique<MapleButton>(crsrc["BtRight"], Point<int16_t>(645, 368));*/
+
+		sprites_keytype.emplace_back(keyConfig["backgrnd"], Point<int16_t>(181, 135));
+
+		buttons[BT_KEY_TYPE_A] = std::make_unique<MapleButton>(keyConfig["btTypeA"], Point<int16_t>(181, 135));
+		buttons[BT_KEY_TYPE_B] = std::make_unique<MapleButton>(keyConfig["btTypeB"], Point<int16_t>(182, 136));
 
 		buttons[BT_CHARC_FACEL]->set_active(false);
 		buttons[BT_CHARC_FACER]->set_active(false);
@@ -152,8 +157,6 @@ namespace jrc
 		buttons[BT_CHARC_HAIRR]->set_active(false);
 		buttons[BT_CHARC_HAIRCL]->set_active(false);
 		buttons[BT_CHARC_HAIRCR]->set_active(false);
-		buttons[BT_CHARC_SKINL]->set_active(false);
-		buttons[BT_CHARC_SKINR]->set_active(false);
 		buttons[BT_CHARC_TOPL]->set_active(false);
 		buttons[BT_CHARC_TOPR]->set_active(false);
 		buttons[BT_CHARC_BOTL]->set_active(false);
@@ -162,11 +165,12 @@ namespace jrc
 		buttons[BT_CHARC_SHOESR]->set_active(false);
 		buttons[BT_CHARC_WEPL]->set_active(false);
 		buttons[BT_CHARC_WEPR]->set_active(false);
-		/*buttons[BT_CHARC_GENDERL]->set_active(false);
-		buttons[BT_CHARC_GEMDERR]->set_active(false);*/
 
-		namechar = { Text::A13M, Text::LEFT, Text::WHITE, { { 490, 219 }, { 630, 243 } }, 12 };
-		namechar.set_state(Textfield::FOCUSED);
+		buttons[BT_KEY_TYPE_A]->set_active(false);
+		buttons[BT_KEY_TYPE_B]->set_active(false);
+
+		namechar = { Text::A13M, Text::LEFT, Text::WHITE, { { 524, 186 }, { 630, 243 } }, 12 };
+		namechar.set_state(Textfield::DISABLED);
 
 		facename = { Text::A11M, Text::CENTER, Text::BLACK };
 		hairname = { Text::A11M, Text::CENTER, Text::BLACK };
@@ -179,10 +183,12 @@ namespace jrc
 		gendername = { Text::A11M, Text::CENTER, Text::BLACK };
 
 		nl::node mkinfo = nl::nx::etc["MakeCharInfo.img"]["Info"];
+
 		for (int32_t i = 0; i < 2; i++)
 		{
 			bool f;
 			nl::node mk_n;
+
 			if (i == 0)
 			{
 				f = true;
@@ -197,9 +203,11 @@ namespace jrc
 			for (auto subnode : mk_n)
 			{
 				int num = stoi(subnode.name());
+
 				for (auto idnode : subnode)
 				{
 					int value = idnode;
+
 					switch (num)
 					{
 					case 0:
@@ -257,52 +265,106 @@ namespace jrc
 		cloud.draw(Point<int16_t>(cloudx, 300));
 		cloud.draw(Point<int16_t>(cloudx + cloud.width(), 300));
 
-		/*if (!named)
+		if (!gender)
 		{
-			nameboard.draw(Point<int16_t>(455, 115));
-			namechar.draw(position);
+			for (auto& sprite : sprites_gender_select)
+				sprite.draw(position, alpha);
+
+			UIElement::draw(alpha);
+
+			newchar.draw({ 394, 329 }, alpha);
 		}
 		else
 		{
-			for (auto& sprite : sprites_lookboard)
+			if (!charSet)
 			{
-				sprite.draw(position, alpha);
-			}
-		}*/
+				UIElement::draw_sprites(alpha);
 
-		UIElement::draw(alpha);
+				for (auto& sprite : sprites_lookboard)
+					sprite.draw(position, alpha);
+
+				facename.draw(Point<int16_t>(643, 173 + (0 * 18)));
+				hairname.draw(Point<int16_t>(643, 173 + (1 * 18)));
+				//haircname.draw(Point<int16_t>(643, 173 + (2 * 18)));
+				bodyname.draw(Point<int16_t>(643, 173 + (2 * 18)));
+				topname.draw(Point<int16_t>(643, 173 + (3 * 18)));
+				botname.draw(Point<int16_t>(643, 173 + (4 * 18)));
+				shoename.draw(Point<int16_t>(643, 173 + (5 * 18)));
+				wepname.draw(Point<int16_t>(643, 173 + (6 * 18)));
+				//gendername.draw(Point<int16_t>(643, 173 + (8 * 18)));
+
+				newchar.draw({ 394, 329 }, alpha);
+
+				UIElement::draw_buttons(alpha);
+			}
+			else
+			{
+				if (!named)
+				{
+					UIElement::draw_sprites(alpha);
+
+					nameboard.draw(Point<int16_t>(489, 96));
+					namechar.draw(position);
+					newchar.draw({ 394, 329 }, alpha);
+
+					UIElement::draw_buttons(alpha);
+				}
+				else
+				{
+					UIElement::draw_sprites(alpha);
+
+					nameboard.draw(Point<int16_t>(489, 96));
+
+					UIElement::draw_buttons(alpha);
+
+					for (auto& sprite : sprites_keytype)
+						sprite.draw(position, alpha);
+
+					buttons.at(BT_KEY_TYPE_A)->draw(position);
+					buttons.at(BT_KEY_TYPE_B)->draw(position);
+				}
+			}
+		}
 
 		version.draw(position + Point<int16_t>(707, -9));
-		newchar.draw({ 394, 329 }, alpha);
-
-		if (named)
-		{
-			facename.draw(Point<int16_t>(591, 214));
-			hairname.draw(Point<int16_t>(591, 233));
-			haircname.draw(Point<int16_t>(591, 252));
-			bodyname.draw(Point<int16_t>(591, 271));
-			topname.draw(Point<int16_t>(591, 290));
-			botname.draw(Point<int16_t>(591, 309));
-			shoename.draw(Point<int16_t>(591, 328));
-			wepname.draw(Point<int16_t>(591, 347));
-			gendername.draw(Point<int16_t>(591, 366));
-		}
 	}
 
 	void UIClassCreation::update()
 	{
-		UIElement::update();
-
-		if (named)
+		if (!gender)
 		{
-			for (auto& sprite : sprites_lookboard)
-			{
+			for (auto& sprite : sprites_gender_select)
 				sprite.update();
+
+			newchar.update(Constants::TIMESTEP);
+		}
+		else
+		{
+			if (!charSet)
+			{
+				for (auto& sprite : sprites_lookboard)
+					sprite.update();
+
+				newchar.update(Constants::TIMESTEP);
+			}
+			else
+			{
+				if (!named)
+				{
+					namechar.update(position);
+					newchar.update(Constants::TIMESTEP);
+				}
+				else
+				{
+					for (auto& sprite : sprites_keytype)
+						sprite.update();
+
+					namechar.set_state(Textfield::State::DISABLED);
+				}
 			}
 		}
 
-		newchar.update(Constants::TIMESTEP);
-		namechar.update(position);
+		UIElement::update();
 
 		cloudfx += 0.25f;
 	}
@@ -319,36 +381,25 @@ namespace jrc
 	{
 		if (!named)
 		{
-			if (nameused)
-			{
-				namechar.change_text("");
-			}
-			else
+			if (!nameused)
 			{
 				named = true;
-
-				buttons[BT_CHARC_OK]->set_position(Point<int16_t>(486, 445));
-				buttons[BT_CHARC_CANCEL]->set_position(Point<int16_t>(560, 445));
-				buttons[BT_CHARC_FACEL]->set_active(true);
-				buttons[BT_CHARC_FACER]->set_active(true);
-				buttons[BT_CHARC_HAIRL]->set_active(true);
-				buttons[BT_CHARC_HAIRR]->set_active(true);
-				buttons[BT_CHARC_HAIRCL]->set_active(true);
-				buttons[BT_CHARC_HAIRCR]->set_active(true);
-				buttons[BT_CHARC_SKINL]->set_active(true);
-				buttons[BT_CHARC_SKINR]->set_active(true);
-				buttons[BT_CHARC_TOPL]->set_active(true);
-				buttons[BT_CHARC_TOPR]->set_active(true);
-				buttons[BT_CHARC_BOTL]->set_active(true);
-				buttons[BT_CHARC_BOTR]->set_active(true);
-				buttons[BT_CHARC_SHOESL]->set_active(true);
-				buttons[BT_CHARC_SHOESR]->set_active(true);
-				buttons[BT_CHARC_WEPL]->set_active(true);
-				buttons[BT_CHARC_WEPR]->set_active(true);
-				/*buttons[BT_CHARC_GENDERL]->set_active(true);
-				buttons[BT_CHARC_GEMDERR]->set_active(true);*/
-
 				namechar.set_state(Textfield::DISABLED);
+
+				buttons[BT_KEY_TYPE_A]->set_active(true);
+				buttons[BT_KEY_TYPE_B]->set_active(true);
+
+				std::string cname = namechar.get_text();
+				int32_t cface = faces[female][face];
+				int32_t chair = hairs[female][hair];
+				uint8_t chairc = haircolors[female][haircolor];
+				uint8_t cskin = skins[female][skin];
+				int32_t ctop = tops[female][top];
+				int32_t cbot = bots[female][bot];
+				int32_t cshoe = shoes[female][shoe];
+				int32_t cwep = weapons[female][weapon];
+
+				CreateCharPacket(cname, cjob, cface, chair, chairc, cskin, ctop, cbot, cshoe, cwep, female).dispatch();
 			}
 
 			buttons[BT_CHARC_OK]->set_state(Button::NORMAL);
@@ -360,75 +411,119 @@ namespace jrc
 		switch (id)
 		{
 		case BT_CHARC_OK:
-			if (named)
+			if (!gender)
 			{
-				std::string cname = namechar.get_text();
-				//uint16_t cjob = 1;
-				int32_t cface = faces[female][face];
-				int32_t chair = hairs[female][hair];
-				uint8_t chairc = haircolors[female][haircolor];
-				uint8_t cskin = skins[female][skin];
-				int32_t ctop = tops[female][top];
-				int32_t cbot = bots[female][bot];
-				int32_t cshoe = shoes[female][shoe];
-				int32_t cwep = weapons[female][weapon];
-				CreateCharPacket(cname, cjob, cface, chair, chairc, cskin, ctop, cbot, cshoe, cwep, female).dispatch();
-				return Button::PRESSED;
+				gender = true;
+
+				buttons[BT_CHARC_GENDER_M]->set_active(false);
+				buttons[BT_CHARC_GEMDER_F]->set_active(false);
+
+				buttons[BT_CHARC_SKINL]->set_active(true);
+				buttons[BT_CHARC_SKINR]->set_active(true);
+
+				buttons[BT_CHARC_OK]->set_position(Point<int16_t>(533, 358));
+				buttons[BT_CHARC_CANCEL]->set_position(Point<int16_t>(607, 358));
+
+				return Button::State::NORMAL;
 			}
 			else
 			{
-				std::string name = namechar.get_text();
-				if (name.size() >= 4)
+				if (!charSet)
 				{
-					namechar.set_state(Textfield::NORMAL);
+					charSet = true;
 
-					UI::get().disable();
-					UI::get().focus_textfield(nullptr);
-					NameCharPacket(name).dispatch();
-					return Button::PRESSED;
+					buttons[BT_CHARC_SKINL]->set_active(false);
+					buttons[BT_CHARC_SKINR]->set_active(false);
+
+					buttons[BT_CHARC_OK]->set_position(Point<int16_t>(523, 233));
+					buttons[BT_CHARC_CANCEL]->set_position(Point<int16_t>(597, 233));
+
+					namechar.set_state(Textfield::State::FOCUSED);
+
+					return Button::State::NORMAL;
 				}
 				else
 				{
-					UI::get().emplace<UILoginNotice>(UILoginNotice::ILLEGAL_NAME);
-					return Button::NORMAL;
+					if (!named)
+					{
+						std::string name = namechar.get_text();
+
+						if (name.size() <= 0)
+						{
+							return Button::NORMAL;
+						}
+						else if (name.size() >= 4)
+						{
+							namechar.set_state(Textfield::NORMAL);
+
+							UI::get().disable();
+							UI::get().focus_textfield(nullptr);
+
+							NameCharPacket(name).dispatch();
+
+							return Button::PRESSED;
+						}
+						else
+						{
+							UI::get().emplace<UILoginNotice>(UILoginNotice::ILLEGAL_NAME);
+
+							return Button::NORMAL;
+						}
+					}
+					else
+					{
+						return Button::NORMAL;
+					}
 				}
 			}
 		case BT_BACK:
 			back();
 			return Button::State::PRESSED;
 		case BT_CHARC_CANCEL:
-			if (named)
+			if (charSet)
 			{
-				buttons[BT_CHARC_OK]->set_position({ 482, 292 });
-				buttons[BT_CHARC_CANCEL]->set_position({ 555, 292 });
-				buttons[BT_CHARC_FACEL]->set_active(false);
-				buttons[BT_CHARC_FACER]->set_active(false);
-				buttons[BT_CHARC_HAIRL]->set_active(false);
-				buttons[BT_CHARC_HAIRR]->set_active(false);
-				buttons[BT_CHARC_HAIRCL]->set_active(false);
-				buttons[BT_CHARC_HAIRCR]->set_active(false);
-				buttons[BT_CHARC_SKINL]->set_active(false);
-				buttons[BT_CHARC_SKINR]->set_active(false);
-				buttons[BT_CHARC_TOPL]->set_active(false);
-				buttons[BT_CHARC_TOPR]->set_active(false);
-				buttons[BT_CHARC_BOTL]->set_active(false);
-				buttons[BT_CHARC_BOTR]->set_active(false);
-				buttons[BT_CHARC_SHOESL]->set_active(false);
-				buttons[BT_CHARC_SHOESR]->set_active(false);
-				buttons[BT_CHARC_WEPL]->set_active(false);
-				buttons[BT_CHARC_WEPR]->set_active(false);
-				/*buttons[BT_CHARC_GENDERL]->set_active(false);
-				buttons[BT_CHARC_GEMDERR]->set_active(false);*/
-				buttons[BT_CHARC_CANCEL]->set_state(Button::NORMAL);
-				namechar.set_state(Textfield::NORMAL);
-				named = false;
-				return Button::NORMAL;
+				charSet = false;
+
+				buttons[BT_CHARC_SKINL]->set_active(true);
+				buttons[BT_CHARC_SKINR]->set_active(true);
+
+				buttons[BT_CHARC_OK]->set_position(Point<int16_t>(533, 358));
+				buttons[BT_CHARC_CANCEL]->set_position(Point<int16_t>(607, 358));
+
+				namechar.set_state(Textfield::State::DISABLED);
+
+				return Button::State::NORMAL;
 			}
 			else
 			{
-				back();
-				return Button::State::PRESSED;
+				if (gender)
+				{
+					gender = false;
+
+					buttons[BT_CHARC_GENDER_M]->set_active(true);
+					buttons[BT_CHARC_GEMDER_F]->set_active(true);
+
+					buttons[BT_CHARC_SKINL]->set_active(false);
+					buttons[BT_CHARC_SKINR]->set_active(false);
+
+					buttons[BT_CHARC_OK]->set_position(Point<int16_t>(520, 387));
+					buttons[BT_CHARC_CANCEL]->set_position(Point<int16_t>(594, 387));
+
+					return Button::State::NORMAL;
+				}
+				else
+				{
+					back();
+					return Button::State::PRESSED;
+				}
 			}
+		case BT_KEY_TYPE_A:
+		case BT_KEY_TYPE_B:
+			uint8_t type = (id == BT_KEY_TYPE_A) ? 0 : 1;
+
+			UI::get().emplace<UIKeyConfirm>(type);
+
+			return Button::State::PRESSED;
 		}
 
 		if (id >= BT_CHARC_FACEL && id <= BT_CHARC_GEMDER_F)
@@ -516,12 +611,20 @@ namespace jrc
 				wepname.change_text(get_equipname(Equipslot::WEAPON));
 				break;
 			case BT_CHARC_GENDER_M:
-				female = false;
-				randomize_look();
+				if (female)
+				{
+					female = false;
+					randomize_look();
+				}
+
 				break;
 			case BT_CHARC_GEMDER_F:
-				female = true;
-				randomize_look();
+				if (!female)
+				{
+					female = true;
+					randomize_look();
+				}
+
 				break;
 			}
 			return Button::MOUSEOVER;

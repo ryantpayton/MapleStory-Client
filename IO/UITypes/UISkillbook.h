@@ -108,10 +108,14 @@ namespace jrc
 			BT_SPUP0,
 			BT_SPUP1,
 			BT_SPUP2,
-			BT_SPUP3
+			BT_SPUP3,
+			BT_SPUP4,
+			BT_SPUP5,
+			BT_SPUP6,
+			BT_SPUP7
 		};
 
-		static constexpr int16_t ROWS = 4;
+		static constexpr int16_t ROWS = 6;
 		static constexpr int16_t ROW_HEIGHT = 40;
 		static constexpr Point<int16_t> SKILL_OFFSET = { 11, 93 };
 		static constexpr Point<int16_t> ICON_OFFSET = { 2, 33 };

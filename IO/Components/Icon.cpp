@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -23,16 +23,14 @@
 
 namespace jrc
 {
-	Icon::Icon(std::unique_ptr<Type> t, Texture tx, int16_t c) 
-		: type(std::move(t)), texture(tx), count(c) {
-
+	Icon::Icon(std::unique_ptr<Type> t, Texture tx, int16_t c) : type(std::move(t)), texture(tx), count(c)
+	{
 		texture.shift({ 0, 32 });
 		showcount = c > -1;
 		dragged = false;
 	}
 
-	Icon::Icon() 
-		: Icon(std::make_unique<NullType>(), {}, -1) {}
+	Icon::Icon() : Icon(std::make_unique<NullType>(), {}, -1) {}
 
 	void Icon::draw(Point<int16_t> position) const
 	{
@@ -42,9 +40,7 @@ namespace jrc
 		if (showcount)
 		{
 			static const Charset countset = { nl::nx::ui["Basic.img"]["ItemNo"], Charset::LEFT };
-			int16_t tempc = dragged ? (count - 1) : count;
-			std::string countstr = std::to_string(tempc);
-			countset.draw(countstr, position + Point<int16_t>(0, 20));
+			countset.draw(std::to_string(count), position + Point<int16_t>(0, 20));
 		}
 	}
 

@@ -27,6 +27,7 @@
 #include "UITypes/UIItemInventory.h"
 #include "UITypes/UIEquipInventory.h"
 #include "UITypes/UISkillbook.h"
+#include "UITypes/UIQuestLog.h"
 
 #include "../Gameplay/Stage.h"
 
@@ -124,6 +125,10 @@ namespace jrc
 						Stage::get().get_player().get_skills()
 						);
 					break;
+				case KeyAction::QUESTLOG:
+					emplace<UIQuestLog>(
+						Stage::get().get_player().get_quests()
+						);
 				}
 			}
 			break;

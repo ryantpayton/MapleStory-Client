@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -16,55 +16,45 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "TwoSpriteButton.h"
+#include "../UIElement.h"
+#include "../UIDragElement.h"
 
-#include "../Cursor.h"
-
-#include "../../Graphics/Texture.h"
-
-#include <functional>
-#include <memory>
+#include "../Character/Questlog.h"
 
 namespace jrc
 {
-	class Slider
+	class UIQuestLog : public UIDragElement<PosINV>
 	{
 	public:
-		Slider(int32_t type, Range<int16_t> vertical, int16_t x, int16_t unitrows, int16_t rowmax, std::function<void(bool upwards)> onmoved);
-		Slider();
+		static constexpr Type TYPE = QUESTLOG;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = true;
 
-		bool isenabled() const;
-		void setenabled(bool enabled);
-		void setrows(int16_t newrow, int16_t unitrows, int16_t rowmax);
-		void setrows(int16_t unitrows, int16_t rowmax);
-		void setvertical(Range<int16_t> vertical);
+		UIQuestLog(const Questlog& questLog);
 
-		void draw(Point<int16_t> position) const;
-		bool remove_cursor(bool clicked);
-		Cursor::State send_cursor(Point<int16_t> cursor, bool pressed);
+		void draw(float inter) const override;
+		void update() override;
+
+	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
-		Point<int16_t> getthumbpos() const;
+		void change_tab(uint8_t tabid);
 
-		std::function<void(bool upwards)> onmoved;
+		enum Buttons
+		{
+			BT_TAB_AVAILABLE,
+			BT_TAB_IN_PROGRESS,
+			BT_TAB_COMPLETED,
+			BT_CLOSE,
+			BT_SEARCH,
+			BT_ALL_LEVEL,
+			BT_ALL_LOCATION
+		};
 
-		Range<int16_t> vertical;
-		Point<int16_t> start;
-		Point<int16_t> end;
-		int16_t buttonheight;
-		int16_t rowheight;
-		int16_t x;
-		int16_t row;
-		int16_t rowmax;
-		bool scrolling;
-		bool enabled;
+		const Questlog& questlog;
 
-		Texture dbase;
-		Texture dnext;
-		Texture dprev;
-		Texture base;
-		TwoSpriteButton next;
-		TwoSpriteButton prev;
-		TwoSpriteButton thumb;
+		uint16_t tab;
+		std::vector<Sprite> sprites_notice;
 	};
 }

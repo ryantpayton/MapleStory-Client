@@ -77,6 +77,7 @@ namespace jrc
 		keymap[GLFW_KEY_DOWN] = { KeyType::ACTION, KeyAction::DOWN };
 		keymap[GLFW_KEY_ESCAPE] = { KeyType::ACTION, KeyAction::ESCAPE };
 		keymap[GLFW_KEY_ENTER] = { KeyType::ACTION, KeyAction::RETURN };
+		keymap[GLFW_KEY_TAB] = { KeyType::ACTION, KeyAction::TAB };
 
 		textactions[GLFW_KEY_BACKSPACE] = KeyAction::BACK;
 		textactions[GLFW_KEY_ENTER] = KeyAction::RETURN;
