@@ -151,11 +151,8 @@ namespace jrc
 		update_counts();
 		update_selection();
 
-		int8_t actual_selected = selected_absolute + 1;
-		std::string charSlotText = (actual_selected < 10 ? "0" : "") + std::to_string(actual_selected) + "/" + (slots_absolute < 10 ? "0" : "") + std::to_string(slots_absolute);
-
 		charSlot = { Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, Text::Color::DARKBROWN };
-		charSlot.change_text(charSlotText);
+		charSlot.change_text(get_slot_text());
 
 		position = { 0, 0 };
 		dimension = { 800, 600 };
@@ -164,7 +161,7 @@ namespace jrc
 
 	void UICharSelect::draw(float alpha) const
 	{
-		UIElement::draw(alpha);
+		UIElement::draw_sprites(alpha);
 
 		version.draw(position + Point<int16_t>(707, -9));
 		charSlot.draw(position + Point<int16_t>(700, 100));
@@ -192,8 +189,9 @@ namespace jrc
 			if (i < charcount_relative)
 			{
 				Point<int16_t> charpos = get_char_pos(i);
+				uint8_t index = i + page * PAGESIZE;
 
-				uint16_t job = characters[i].stats.stats[Maplestat::JOB];
+				uint16_t job = characters[index].stats.stats[Maplestat::JOB];
 				auto adventure = Sprite(charselect["adventure"], DrawArgument(flip));
 				auto aran = Sprite(charselect["aran"], DrawArgument(flip));
 				auto knight = Sprite(charselect["knight"], DrawArgument(flip));
@@ -208,7 +206,6 @@ namespace jrc
 					std::cout << "Job sign unhandled for job (" << job << ")" << std::endl;
 
 				DrawArgument chararg = DrawArgument(charpos, flip);
-				uint8_t index = i + page * PAGESIZE;
 
 				charlooks[index].draw(chararg, alpha);
 				nametags[index].draw(charpos);
@@ -226,11 +223,11 @@ namespace jrc
 			}
 		}
 
-		if (selected_relative < charcount_relative)
+		if (selected_absolute < charcount_absolute)
 		{
 			int8_t lvy = -115;
 			Point<int16_t> charinfopos = Point<int16_t>(665, 355);
-			const StatsEntry& stats = characters[selected_relative].stats;
+			const StatsEntry& stats = characters[selected_absolute].stats;
 
 			std::string levelstr = std::to_string(stats.stats[Maplestat::LEVEL]);
 			int16_t lvx = levelset.draw(levelstr, charinfopos + Point<int16_t>(12, lvy));
@@ -244,6 +241,8 @@ namespace jrc
 				infolabels[i].draw(labelpos);
 			}
 		}
+
+		UIElement::draw_buttons(alpha);
 	}
 
 	void UICharSelect::update()
@@ -258,8 +257,13 @@ namespace jrc
 	{
 		if (bid >= BT_CHAR0)
 		{
-			nametags[selected_absolute].set_selected(false);
-			charlooks[selected_absolute].set_stance(Stance::STAND1);
+			uint8_t index = selected_absolute;
+
+			if (selected_absolute >= charcount_absolute)
+				index -= 1;
+
+			nametags[index].set_selected(false);
+			charlooks[index].set_stance(Stance::STAND1);
 			buttons[BT_CHAR0 + selected_relative]->set_state(Button::NORMAL);
 
 			selected_relative = static_cast<uint8_t>(bid - BT_CHAR0);
@@ -282,6 +286,18 @@ namespace jrc
 				send_deletion();
 				return Button::NORMAL;
 			case BT_PAGERIGHT:
+				for (int i = 0; i < PAGESIZE; i++) {
+					int index = i + page * PAGESIZE;
+
+					if (index < charcount_absolute)
+					{
+						nametags[index].set_selected(false);
+						charlooks[index].set_stance(Stance::STAND1);
+					}
+
+					buttons[BT_CHAR0 + i]->set_state(Button::NORMAL);
+				}
+
 				if (page < total_pages - 1)
 					page++;
 				else
@@ -291,6 +307,18 @@ namespace jrc
 				update_selection();
 				return Button::IDENTITY;
 			case BT_PAGELEFT:
+				for (int i = 0; i < PAGESIZE; i++) {
+					int index = i + page * PAGESIZE;
+
+					if (index < charcount_absolute)
+					{
+						nametags[index].set_selected(false);
+						charlooks[index].set_stance(Stance::STAND1);
+					}
+
+					buttons[BT_CHAR0 + i]->set_state(Button::NORMAL);
+				}
+
 				if (page > 0)
 					page--;
 
@@ -315,11 +343,15 @@ namespace jrc
 		if (selected_relative >= charcount_relative)
 			return;
 
+		if (selected_absolute >= charcount_absolute)
+			return;
+
 		charlooks[selected_absolute].set_stance(Stance::WALK1);
 		nametags[selected_absolute].set_selected(true);
 
 		buttons[BT_CHAR0 + selected_relative]->set_state(Button::PRESSED);
-		namelabel.change_text(characters[selected_relative].stats.name);
+		namelabel.change_text(characters[selected_absolute].stats.name);
+		charSlot.change_text(get_slot_text());
 
 		for (size_t i = 0; i < NUM_LABELS; i++)
 			infolabels[i].change_text(get_label_string(i));
@@ -336,9 +368,7 @@ namespace jrc
 		else
 			charcount_relative -= page * PAGESIZE;
 
-		if (selected_absolute >= charcount_absolute)
-			selected_absolute = 0;
-
+		selected_absolute = selected_relative + page * PAGESIZE;
 		selected_relative = selected_absolute % PAGESIZE;
 
 		if (selected_relative >= charcount_relative)
@@ -349,7 +379,7 @@ namespace jrc
 		if (slots_relative > PAGESIZE)
 			slots_relative = PAGESIZE;
 
-		if (charcount_relative < slots_relative)
+		if (charcount_absolute < slots_absolute)
 			buttons[BT_CREATECHAR]->set_state(Button::NORMAL);
 		else
 			buttons[BT_CREATECHAR]->set_state(Button::DISABLED);
@@ -489,7 +519,7 @@ namespace jrc
 
 	std::string UICharSelect::get_label_string(size_t label) const
 	{
-		const StatsEntry& stats = characters[selected_relative].stats;
+		const StatsEntry& stats = characters[selected_absolute].stats;
 
 		switch (label)
 		{
@@ -533,5 +563,13 @@ namespace jrc
 		int16_t y = 224 + (200 * (i > 3));
 
 		return{ x, y };
+	}
+
+	std::string UICharSelect::get_slot_text() const
+	{
+		int8_t actual_selected = selected_absolute + 1;
+		std::string charSlotText = (actual_selected < 10 ? "0" : "") + std::to_string(actual_selected) + "/" + (slots_absolute < 10 ? "0" : "") + std::to_string(slots_absolute);
+
+		return charSlotText;
 	}
 }

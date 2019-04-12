@@ -26,13 +26,15 @@ namespace jrc
 	class UIKeyConfirm : public UIElement
 	{
 	public:
-		static constexpr Type TYPE = LOGINNOTICE;
+		static constexpr Type TYPE = LOGINNOTICE_CONFIRM;
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
 
 		UIKeyConfirm(uint8_t type);
 
 		void draw(float alpha) const override;
+
+		void confirm_action();
 
 	protected:
 		Button::State button_pressed(uint16_t id) override;
@@ -42,6 +44,30 @@ namespace jrc
 		enum Buttons
 		{
 			BT_OK
+		};
+
+		Texture background;
+	};
+
+	class UIKeySelect : public UIElement
+	{
+	public:
+		static constexpr Type TYPE = LOGINNOTICE;
+		static constexpr bool FOCUSED = true;
+		static constexpr bool TOGGLED = false;
+
+		UIKeySelect();
+
+		void draw(float alpha) const override;
+
+	protected:
+		Button::State button_pressed(uint16_t id) override;
+
+	private:
+		enum Buttons
+		{
+			BT_KEY_TYPE_A,
+			BT_KEY_TYPE_B
 		};
 
 		Texture background;

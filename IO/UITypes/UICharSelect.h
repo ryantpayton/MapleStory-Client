@@ -54,6 +54,7 @@ namespace jrc
 		std::string get_label_string(size_t label) const;
 		Point<int16_t> get_label_pos(size_t label) const;
 		Point<int16_t> get_char_pos(size_t id) const;
+		std::string get_slot_text() const;
 
 		enum Buttons
 		{

@@ -49,6 +49,13 @@ namespace jrc
 		void randomize_look();
 		const std::string& get_equipname(Equipslot::Id slot) const;
 
+		enum Classes
+		{
+			CYGNUS,
+			EXPLORERS,
+			ARAN
+		};
+
 		enum Buttons
 		{
 			BT_BACK,
@@ -58,8 +65,6 @@ namespace jrc
 			BT_CHARC_FACER,
 			BT_CHARC_HAIRL,
 			BT_CHARC_HAIRR,
-			BT_CHARC_HAIRCL,
-			BT_CHARC_HAIRCR,
 			BT_CHARC_SKINL,
 			BT_CHARC_SKINR,
 			BT_CHARC_TOPL,
@@ -72,8 +77,14 @@ namespace jrc
 			BT_CHARC_WEPR,
 			BT_CHARC_GENDER_M,
 			BT_CHARC_GEMDER_F,
-			BT_KEY_TYPE_A,
-			BT_KEY_TYPE_B
+			BT_CHARC_HAIRC0,
+			BT_CHARC_HAIRC1,
+			BT_CHARC_HAIRC2,
+			BT_CHARC_HAIRC3,
+			BT_CHARC_HAIRC4,
+			BT_CHARC_HAIRC5,
+			BT_CHARC_HAIRC6,
+			BT_CHARC_HAIRC7
 		};
 
 		enum GenderButtons

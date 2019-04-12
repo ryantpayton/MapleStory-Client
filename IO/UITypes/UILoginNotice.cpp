@@ -18,6 +18,7 @@
 #include "UILoginNotice.h"
 #include "UIClassCreation.h"
 #include "UICharCreation.h"
+#include "UICharSelect.h"
 
 #include "../UI.h"
 #include "../Components/MapleButton.h"
@@ -182,15 +183,50 @@ namespace jrc
 		UI::get().emplace<UIClassCreation>(race);
 	}
 
+	UIKeySelect::UIKeySelect()
+	{
+		nl::node keyType = nl::nx::ui["UIWindow2.img"]["KeyConfig"]["KeyType"];
+
+		background = keyType["backgrnd"];
+
+		buttons[BT_KEY_TYPE_A] = std::make_unique<MapleButton>(keyType["btTypeA"]);
+		buttons[BT_KEY_TYPE_B] = std::make_unique<MapleButton>(keyType["btTypeB"], Point<int16_t>(1, 1));
+
+		position = { 181, 135 };
+		dimension = { 362, 219 };
+		active = true;
+	}
+
+	void UIKeySelect::draw(float alpha) const
+	{
+		background.draw(position);
+
+		UIElement::draw(alpha);
+	}
+
+	Button::State UIKeySelect::button_pressed(uint16_t id)
+	{
+		uint8_t type = (id == BT_KEY_TYPE_A) ? 0 : 1;
+
+		if (id == BT_KEY_TYPE_A)
+			buttons[BT_KEY_TYPE_B]->set_state(Button::State::DISABLED);
+		else
+			buttons[BT_KEY_TYPE_A]->set_state(Button::State::DISABLED);
+
+		UI::get().emplace<UIKeyConfirm>(type);
+
+		return Button::State::DISABLED;
+	}
+
 	UIKeyConfirm::UIKeyConfirm(uint8_t type)
 	{
-		nl::node notice = nl::nx::ui["Login.img"]["UIWindow2.img"]["KeyConfig"]["KeyType"]["alert"];
+		nl::node notice = nl::nx::ui["UIWindow2.img"]["KeyConfig"]["KeyType"]["alert"];
 
 		background = (type == 0) ? notice["default"] : notice["alternate"];
 
-		buttons[BT_OK] = std::make_unique<MapleButton>(notice["btOk"], Point<int16_t>(100, 105));
+		buttons[BT_OK] = std::make_unique<MapleButton>(notice["btOk"]);
 
-		position = { 286, 179 };
+		position = { 276, 219 };
 		dimension = { 362, 219 };
 		active = true;
 	}
@@ -202,20 +238,29 @@ namespace jrc
 		UIElement::draw(alpha);
 	}
 
-	Button::State UIKeyConfirm::button_pressed(uint16_t id)
+	void UIKeyConfirm::confirm_action()
 	{
 		active = false;
-		return Button::PRESSED;
+
+		UI::get().remove(UIElement::Type::LOGINNOTICE_CONFIRM);
+		UI::get().remove(UIElement::Type::LOGINNOTICE);
+		UI::get().remove(UIElement::Type::CLASSCREATION);
+		UI::get().remove(UIElement::Type::CHARCREATION);
+
+		if (auto charselect = UI::get().get_element<UICharSelect>())
+			charselect->makeactive();
+	}
+
+	Button::State UIKeyConfirm::button_pressed(uint16_t id)
+	{
+		confirm_action();
+
+		return Button::State::NORMAL;
 	}
 
 	void UIKeyConfirm::send_key(int32_t keycode, bool pressed)
 	{
-		if (pressed)
-		{
-			if (keycode == KeyAction::RETURN)
-			{
-				active = false;
-			}
-		}
+		if (pressed && keycode == KeyAction::RETURN)
+			confirm_action();
 	}
 }
