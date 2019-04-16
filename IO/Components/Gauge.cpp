@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -35,6 +35,7 @@ namespace jrc
 	void Gauge::draw(const DrawArgument& args) const
 	{
 		int16_t length = static_cast<int16_t>(percentage * maximum);
+
 		if (length > 0)
 		{
 			barfront.draw(args);
@@ -54,6 +55,7 @@ namespace jrc
 		if (percentage != target)
 		{
 			percentage += step;
+
 			if (step < 0.0f)
 			{
 				if (target - percentage >= step)

@@ -245,6 +245,8 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="io\uitypes\UIStatsinfo.cpp" />
     <ClCompile Include="io\uitypes\UIStatusbar.cpp" />
     <ClCompile Include="io\uitypes\UIStatusMessenger.cpp" />
+    <ClCompile Include="IO\UITypes\UIUserList.cpp" />
+    <ClCompile Include="IO\UITypes\UIWorldMap.cpp" />
     <ClCompile Include="io\uitypes\UIWorldSelect.cpp" />
     <ClCompile Include="io\Window.cpp" />
     <ClCompile Include="Journey.cpp" />
@@ -421,6 +423,8 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="io\uitypes\UIStatsinfo.h" />
     <ClInclude Include="io\uitypes\UIStatusbar.h" />
     <ClInclude Include="io\uitypes\UIStatusMessenger.h" />
+    <ClInclude Include="IO\UITypes\UIUserList.h" />
+    <ClInclude Include="IO\UITypes\UIWorldMap.h" />
     <ClInclude Include="io\uitypes\UIWorldSelect.h" />
     <ClInclude Include="io\Window.h" />
     <ClInclude Include="Journey.h" />

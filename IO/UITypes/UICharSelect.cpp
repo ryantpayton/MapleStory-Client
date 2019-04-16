@@ -35,7 +35,8 @@
 
 namespace jrc
 {
-	UICharSelect::UICharSelect(std::vector<CharEntry> cs, uint8_t charcount, uint8_t slots, int8_t pic) : characters(cs), charcount_absolute(charcount), slots_absolute(slots), require_pic(pic) {
+	UICharSelect::UICharSelect(std::vector<CharEntry> cs, uint8_t charcount, uint8_t slots, int8_t pic) : characters(cs), charcount_absolute(charcount), slots_absolute(slots), require_pic(pic)
+	{
 		version = { Text::Font::A11M, Text::Alignment::LEFT, Text::Color::DARKSTEEL, "Ver. 203.3" };
 
 		uint8_t world_id = 0;

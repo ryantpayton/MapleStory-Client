@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -28,6 +28,7 @@ namespace jrc
 	class TwoSpriteButton : public Button
 	{
 	public:
+		TwoSpriteButton(nl::node nsrc, nl::node ssrc, Point<int16_t> npos, Point<int16_t> spos);
 		TwoSpriteButton(nl::node nsrc, nl::node ssrc, Point<int16_t> position);
 		TwoSpriteButton(nl::node nsrc, nl::node ssrc);
 		TwoSpriteButton();
@@ -37,6 +38,7 @@ namespace jrc
 
 	private:
 		BoolPair<Texture> textures;
+		Point<int16_t> npos;
+		Point<int16_t> spos;
 	};
 }
-

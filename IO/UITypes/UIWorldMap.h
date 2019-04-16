@@ -16,70 +16,48 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "../UIElement.h"
 #include "../UIDragElement.h"
 
-#include "../Components/EquipTooltip.h"
-#include "../Components/Icon.h"
-
-#include "../../Character/Inventory/Inventory.h"
-#include "../../Template/EnumMap.h"
+#include "../Character/Questlog.h"
+#include "../Components/Textfield.h"
 
 namespace jrc
 {
-	// The Equip inventory.
-	class UIEquipInventory : public UIDragElement<PosEQINV>
+	class UIWorldMap : public UIDragElement<PosMAP>
 	{
 	public:
-		static constexpr Type TYPE = EQUIPINVENTORY;
+		static constexpr Type TYPE = WORLDMAP;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 
-		UIEquipInventory(const Inventory& inventory);
+		UIWorldMap();
 
 		void draw(float inter) const override;
+		void update() override;
 
-		void toggle_active() override;
-		void doubleclick(Point<int16_t> position) override;
-		void send_icon(const Icon& icon, Point<int16_t> position) override;
-		Cursor::State send_cursor(bool pressed, Point<int16_t> position) override;
 		void send_key(int32_t keycode, bool pressed) override;
-
-		void modify(int16_t pos, int8_t mode, int16_t arg);
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursor_pos) override;
 
 	private:
-		void show_equip(Equipslot::Id slot);
-		void clear_tooltip();
-		void load_icons();
-		void update_slot(Equipslot::Id slot);
-		Equipslot::Id slot_by_position(Point<int16_t> position) const;
-
-		class EquipIcon : public Icon::Type
-		{
-		public:
-			EquipIcon(int16_t source);
-
-			void drop_on_stage() const override;
-			void drop_on_equips(Equipslot::Id) const override {}
-			void drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const override;
-
-		private:
-			int16_t source;
-		};
+		void close_search();
 
 		enum Buttons
 		{
-			BT_TOGGLEPETS
+			BT_CLOSE,
+			BT_SEARCH,
+			BT_AUTOFLY,
+			BT_NAVIREG,
+			BT_ALLSEARCH,
+			BT_SEARCH_CLOSE
 		};
 
-		const Inventory& inventory;
-
-		std::vector<Texture> textures_pet;
-		EnumMap<Equipslot::Id, Point<int16_t>> iconpositions;
-		EnumMap<Equipslot::Id, std::unique_ptr<Icon>> icons;
-
-		bool showpetequips;
+		bool search;
+		Sprite search_background;
+		Sprite search_notice;
+		Textfield search_text;
 	};
 }

@@ -19,12 +19,13 @@
 
 #include "../IO/Components/MapleButton.h"
 #include "../IO/Components/TwoSpriteButton.h"
+#include "../IO/KeyAction.h"
 
 #include "nlnx/nx.hpp"
 
 namespace jrc
 {
-	UIQuestLog::UIQuestLog(const Questlog& ql) : UIDragElement<PosINV>(Point<int16_t>(172, 20)), questlog(ql)
+	UIQuestLog::UIQuestLog(const Questlog& ql) : UIDragElement<PosQUEST>(Point<int16_t>(172, 20)), questlog(ql)
 	{
 		tab = 0;
 
@@ -61,11 +62,32 @@ namespace jrc
 	void UIQuestLog::draw(float alpha) const
 	{
 		UIElement::draw(alpha);
+
+		sprites_notice[tab].draw(position, alpha);
 	}
 
 	void UIQuestLog::update()
 	{
 		UIElement::update();
+	}
+
+	void UIQuestLog::send_key(int32_t keycode, bool pressed)
+	{
+		if (keycode == KeyAction::ESCAPE)
+		{
+			active = false;
+		}
+		else if (keycode == KeyAction::TAB)
+		{
+			uint16_t new_tab = tab;
+
+			if (new_tab < BT_TAB_COMPLETED)
+				new_tab++;
+			else
+				new_tab = BT_TAB_AVAILABLE;
+
+			change_tab(new_tab);
+		}
 	}
 
 	Button::State UIQuestLog::button_pressed(uint16_t buttonid)
@@ -89,8 +111,6 @@ namespace jrc
 	{
 		uint8_t oldtab = tab;
 		tab = tabid;
-
-		sprites_notice[tab].draw(Point<int16_t>(0, 0), 1);
 
 		if (oldtab != tab)
 			buttons[BT_TAB_AVAILABLE + oldtab]->set_state(Button::State::NORMAL);

@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright � 2015-2016 Daniel Allendorf                                   //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -152,23 +152,6 @@ namespace jrc
 
 	PacketSwitch::PacketSwitch()
 	{
-		// New handlers for testing only
-		// Once these are handled properly, they need moved to a proper file
-		emplace<CHECK_SPW_RESULT, CheckSpwResultHandler>();
-		emplace<FIELD_EFFECT, FieldEffectHandler>();
-		emplace<FIELD_OBSTACLE_ONOFF_LIST, FieldObstacleOnOffListHandler>();
-		emplace<ADMIN_RESULT, AdminResultHandler>();
-		emplace<FACIAL_EXPRESSION, FacialExpressionHandler>();
-		emplace<GIVE_FOREIGN_BUFF, GiveForeignBuffHandler>();
-		emplace<CANCEL_FOREIGN_BUFF, CancelForeignBuffHandler>();
-		emplace<UPDATE_QUEST_INFO, UpdateQuestInfoHandler>();
-		emplace<LOCK_UI, LockUiHandler>();
-		emplace<TOGGLE_UI, ToggleUiHandler>();
-		emplace<CONFIRM_SHOP_TRANSACTION, ConfirmShopTransactionHandler>();
-		emplace<PLAYER_INTERACTION, PlayerInteractionHandler>();
-		emplace<AUTO_HP_POT, AutoHpPotHandler>();
-		emplace<AUTO_MP_POT, AutoMpPotHandler>();
-
 		// Common handlers
 		emplace<PING, PingHandler>();
 
@@ -235,7 +218,7 @@ namespace jrc
 		emplace<NPC_DIALOGUE, NpcDialogueHandler>();
 		emplace<OPEN_NPC_SHOP, OpenNpcShopHandler>();
 
-		// Todo
+		// TODO: Handle packets below correctly
 		emplace<MOVE_MOB_RESPONSE, NullHandler>();
 		emplace<MEMO_RESULT, NullHandler>();
 		emplace<ENABLE_REPORT, NullHandler>();
@@ -250,6 +233,23 @@ namespace jrc
 		emplace<SELECT_WORLD, NullHandler>();
 		emplace<RECOMMENDED_WORLDS, NullHandler>();
 		emplace<UPDATE_GENDER, NullHandler>();
+
+		// New handlers for testing only
+		// Once these are handled properly, they need moved to a proper file
+		emplace<CHECK_SPW_RESULT, CheckSpwResultHandler>();
+		emplace<FIELD_EFFECT, FieldEffectHandler>();
+		emplace<FIELD_OBSTACLE_ONOFF_LIST, FieldObstacleOnOffListHandler>();
+		emplace<ADMIN_RESULT, AdminResultHandler>();
+		emplace<FACIAL_EXPRESSION, FacialExpressionHandler>();
+		emplace<GIVE_FOREIGN_BUFF, GiveForeignBuffHandler>();
+		emplace<CANCEL_FOREIGN_BUFF, CancelForeignBuffHandler>();
+		emplace<UPDATE_QUEST_INFO, UpdateQuestInfoHandler>();
+		emplace<LOCK_UI, LockUiHandler>();
+		emplace<TOGGLE_UI, ToggleUiHandler>();
+		emplace<CONFIRM_SHOP_TRANSACTION, ConfirmShopTransactionHandler>();
+		emplace<PLAYER_INTERACTION, PlayerInteractionHandler>();
+		emplace<AUTO_HP_POT, AutoHpPotHandler>();
+		emplace<AUTO_MP_POT, AutoMpPotHandler>();
 	}
 
 	void PacketSwitch::forward(const int8_t* bytes, size_t length) const

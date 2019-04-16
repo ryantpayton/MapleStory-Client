@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -28,6 +28,8 @@
 #include "UITypes/UIEquipInventory.h"
 #include "UITypes/UISkillbook.h"
 #include "UITypes/UIQuestLog.h"
+#include "UITypes/UIWorldMap.h"
+#include "UITypes/UIUserList.h"
 
 #include "../Gameplay/Stage.h"
 
@@ -104,9 +106,9 @@ namespace jrc
 			{
 				switch (action)
 				{
-				case KeyAction::CHARSTATS:
-					emplace<UIStatsinfo>(
-						Stage::get().get_player().get_stats()
+				case KeyAction::EQUIPS:
+					emplace<UIEquipInventory>(
+						Stage::get().get_player().get_inventory()
 						);
 					break;
 				case KeyAction::INVENTORY:
@@ -114,9 +116,9 @@ namespace jrc
 						Stage::get().get_player().get_inventory()
 						);
 					break;
-				case KeyAction::EQUIPS:
-					emplace<UIEquipInventory>(
-						Stage::get().get_player().get_inventory()
+				case KeyAction::CHARSTATS:
+					emplace<UIStatsinfo>(
+						Stage::get().get_player().get_stats()
 						);
 					break;
 				case KeyAction::SKILLBOOK:
@@ -125,10 +127,68 @@ namespace jrc
 						Stage::get().get_player().get_skills()
 						);
 					break;
+				case KeyAction::BUDDYLIST:
+				case KeyAction::PARTY:
+				case KeyAction::PARTYSEARCH:
+				{
+					auto userlist = UI::get().get_element<UIUserList>();
+					auto tab = (action == KeyAction::BUDDYLIST) ? UIUserList::Tab::FRIEND : UIUserList::Tab::PARTY;
+
+					if (!userlist)
+					{
+						UI::get().emplace<UIUserList>(tab);
+					}
+					else
+					{
+						auto cur_tab = userlist->get_tab();
+						auto is_active = userlist->is_active();
+
+						if (cur_tab == tab)
+						{
+							if (is_active)
+								userlist->deactivate();
+							else
+								userlist->makeactive();
+						}
+						else
+						{
+							if (!is_active)
+								userlist->makeactive();
+
+							userlist->change_tab(tab);
+						}
+					}
+				}
+				break;
+				case KeyAction::WORLDMAP:
+					emplace<UIWorldMap>();
+					break;
+				case KeyAction::MESSAGE:
+					break;
+				case KeyAction::MINIMAP:
+					break;
 				case KeyAction::QUESTLOG:
 					emplace<UIQuestLog>(
 						Stage::get().get_player().get_quests()
 						);
+					break;
+				case KeyAction::WHISPER:
+					break;
+				case KeyAction::MAINMENU:
+					break;
+				case KeyAction::TOGGLEQS:
+					break;
+				case KeyAction::GUILD:
+					break;
+				case KeyAction::HELPER:
+					break;
+				case KeyAction::FAMILY:
+					break;
+				case KeyAction::GMSMEDALS:
+					break;
+				default:
+					std::cout << "Action (" << action << ") not handled!" << std::endl;
+					break;
 				}
 			}
 			break;

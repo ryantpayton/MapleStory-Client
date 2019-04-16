@@ -270,6 +270,24 @@ namespace jrc
 		PosSKILL() : PointEntry("PosSKILL", "(50,150)") {}
 	};
 
+	// The default position of the quest log.
+	struct PosQUEST : public Configuration::PointEntry
+	{
+		PosQUEST() : PointEntry("PosQUEST", "(300,150)") {}
+	};
+
+	// The default position of the world map.
+	struct PosMAP : public Configuration::PointEntry
+	{
+		PosMAP() : PointEntry("PosMAP", "(100,25)") {}
+	};
+
+	// The default position of the party.
+	struct PosUSERLIST : public Configuration::PointEntry
+	{
+		PosUSERLIST() : PointEntry("PosUSERLIST", "(104, 94)") {}
+	};
+
 	// The default position of the skill inventory.
 	struct Chatopen : public Configuration::BoolEntry
 	{

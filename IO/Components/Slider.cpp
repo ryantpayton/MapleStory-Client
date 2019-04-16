@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright � 2015-2016 Daniel Allendorf                                   //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,11 +21,16 @@
 
 namespace jrc
 {
-	Slider::Slider(int32_t type, Range<int16_t> ver, int16_t xp, int16_t ur, int16_t rm, std::function<void(bool)> om) : vertical(ver), x(xp), onmoved(om) {
+	Slider::Slider(int32_t t, Range<int16_t> ver, int16_t xp, int16_t ur, int16_t rm, std::function<void(bool)> om) : type(t), vertical(ver), x(xp), onmoved(om) {
 		start = { x, vertical.first() };
 		end = { x, vertical.second() };
 
-		nl::node src = nl::nx::ui["Basic.img"]["VScr" + std::to_string(type)];
+		std::string VScr = "VScr";
+
+		if (type != Type::BLUE)
+			VScr += std::to_string(type);
+
+		nl::node src = nl::nx::ui["Basic.img"][VScr];
 
 		nl::node dsrc = src["disabled"];
 
@@ -37,8 +42,17 @@ namespace jrc
 
 		base = esrc["base"];
 
-		prev = { esrc["prev0"], esrc["prev1"], start };
-		next = { esrc["next0"], esrc["next1"], end };
+		if (type == Type::DEFAULT)
+		{
+			prev = { esrc["prev0"], esrc["prev1"], start + Point<int16_t>(5, 6), start };
+			next = { esrc["next0"], esrc["next1"], end + Point<int16_t>(5, 6), end };
+		}
+		else
+		{
+			prev = { esrc["prev0"], esrc["prev1"], start };
+			next = { esrc["next0"], esrc["next1"], end };
+		}
+
 		thumb = { esrc["thumb0"], esrc["thumb1"] };
 
 		buttonheight = dnext.get_dimensions().y();

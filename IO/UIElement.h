@@ -58,6 +58,8 @@ namespace jrc
 			EQUIPINVENTORY,
 			SKILLBOOK,
 			QUESTLOG,
+			WORLDMAP,
+			USERLIST,
 			NUM_TYPES
 		};
 

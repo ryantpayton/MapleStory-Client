@@ -662,7 +662,9 @@ namespace jrc
 			{ 0.5f, 0.0f, 0.5f }, // Violet
 			{ 0.47f, 0.4f, 0.27f }, // Gold
 			{ 0.74f, 0.74f, 0.67f }, // Steel
-			{ 0.6f, 0.6f, 0.54f } // Dark Steel
+			{ 0.6f, 0.6f, 0.54f }, // Dark Steel
+			{ 0.2f, 0.2f, 0.27f }, // Slate
+			{ 0.94f, 0.94f, 0.94f } // Silver
 		};
 
 		for (const Text::Layout::Line& line : layout)

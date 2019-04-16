@@ -23,10 +23,8 @@
 
 namespace jrc
 {
-	Textfield::Textfield(Text::Font font, Text::Alignment alignment,
-		Text::Color color, Rectangle<int16_t> bnd, size_t lim)
-		: textlabel(font, alignment, color, "", 0, false), marker(font, alignment, color, "|") {
-
+	Textfield::Textfield(Text::Font font, Text::Alignment alignment, Text::Color color, Rectangle<int16_t> bnd, size_t lim) : textlabel(font, alignment, color, "", 0, false), marker(font, alignment, color, "|")
+	{
 		bounds = bnd;
 		limit = lim;
 		text = "";
@@ -48,10 +46,9 @@ namespace jrc
 			return;
 
 		Point<int16_t> absp = bounds.getlt() + parent;
+
 		if (text.size() > 0)
-		{
 			textlabel.draw(absp);
-		}
 
 		if (state == FOCUSED && showmarker)
 		{
@@ -66,8 +63,8 @@ namespace jrc
 			return;
 
 		parentpos = parent;
-
 		elapsed += Constants::TIMESTEP;
+
 		if (elapsed > 256)
 		{
 			showmarker = !showmarker;
@@ -84,9 +81,7 @@ namespace jrc
 			showmarker = true;
 
 			if (state == FOCUSED)
-			{
 				UI::get().focus_textfield(this);
-			}
 		}
 	}
 
@@ -111,15 +106,13 @@ namespace jrc
 				{
 				case KeyAction::LEFT:
 					if (markerpos > 0)
-					{
 						markerpos--;
-					}
+
 					break;
 				case KeyAction::RIGHT:
 					if (markerpos < text.size())
-					{
 						markerpos++;
-					}
+
 					break;
 				case KeyAction::BACK:
 					if (text.size() > 0 && markerpos > 0)
@@ -128,6 +121,7 @@ namespace jrc
 						markerpos--;
 						modifytext(text);
 					}
+
 					break;
 				case KeyAction::RETURN:
 					if (onreturn && text.size() > 0)
@@ -137,6 +131,7 @@ namespace jrc
 						markerpos = 0;
 						modifytext(text);
 					}
+
 					break;
 				case KeyAction::SPACE:
 					if (markerpos > 0 && belowlimit())
@@ -145,20 +140,22 @@ namespace jrc
 						markerpos++;
 						modifytext(text);
 					}
+
 					break;
 				default:
 					if (callbacks.count(key))
-					{
 						callbacks.at(key)();
-					}
+
 					break;
 				}
 			}
+
 			break;
 		case KeyType::TEXT:
 			if (!pressed)
 			{
 				int8_t c = static_cast<int8_t>(key);
+
 				if (belowlimit())
 				{
 					text.insert(markerpos, 1, c);
@@ -166,6 +163,7 @@ namespace jrc
 					modifytext(text);
 				}
 			}
+
 			break;
 		}
 	}
@@ -205,6 +203,7 @@ namespace jrc
 			return Cursor::IDLE;
 
 		auto abs_bounds = get_bounds();
+
 		if (abs_bounds.contains(cursorpos))
 		{
 			if (clicked)
@@ -215,6 +214,7 @@ namespace jrc
 					set_state(FOCUSED);
 					break;
 				}
+
 				return Cursor::CLICKING;
 			}
 			else
@@ -233,6 +233,7 @@ namespace jrc
 					break;
 				}
 			}
+
 			return Cursor::IDLE;
 		}
 	}

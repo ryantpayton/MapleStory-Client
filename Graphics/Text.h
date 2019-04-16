@@ -65,6 +65,8 @@ namespace jrc
 			GOLD,
 			STEEL,
 			DARKSTEEL,
+			SLATE,
+			SILVER,
 			NUM_COLORS
 		};
 
@@ -112,9 +114,9 @@ namespace jrc
 			Point<int16_t> endoffset;
 		};
 
-		Text(Font font, Alignment alignment, Color color, Background background, 
+		Text(Font font, Alignment alignment, Color color, Background background,
 			const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true);
-		Text(Font font, Alignment alignment, Color color, 
+		Text(Font font, Alignment alignment, Color color,
 			const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true);
 		Text();
 

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright � 2015-2016 Daniel Allendorf                                   //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -80,7 +80,7 @@ namespace jrc
 		maplepointslabel = { Text::A11M, Text::RIGHT, Text::BLACK };
 
 		slider = {
-			9, { 50, 245 }, 152, 6, 1 + inventory.get_slotmax(tab) / 4, [&](bool upwards) {
+			Slider::Type::DEFAULT, { 50, 245 }, 152, 6, 1 + inventory.get_slotmax(tab) / 4, [&](bool upwards) {
 				int16_t shift = upwards ? -4 : 4;
 				bool above = slotrange.first + shift > 0;
 				bool below = slotrange.second + shift < inventory.get_slotmax(tab) + 1 + 4;
@@ -197,7 +197,7 @@ namespace jrc
 		{
 		case BT_CLOSE:
 			active = false;
-			return Button::State::PRESSED;
+			return Button::State::NORMAL;
 		case BT_TAB_EQUIP:
 			tab = InventoryType::EQUIP;
 			break;

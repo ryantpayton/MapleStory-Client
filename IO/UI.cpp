@@ -25,6 +25,9 @@
 #include "../IO/UITypes/UIItemInventory.h"
 #include "../IO/UITypes/UIEquipInventory.h"
 #include "../IO/UITypes/UISkillbook.h"
+#include "../IO/UITypes/UIQuestLog.h"
+#include "../IO/UITypes/UIWorldMap.h"
+#include "../IO/UITypes/UIUserList.h"
 
 namespace jrc
 {
@@ -172,27 +175,26 @@ namespace jrc
 					auto iteminventory = UI::get().get_element<UIItemInventory>();
 					auto equipinventory = UI::get().get_element<UIEquipInventory>();
 					auto skillbook = UI::get().get_element<UISkillbook>();
+					auto questlog = UI::get().get_element<UIQuestLog>();
+					auto worldmap = UI::get().get_element<UIWorldMap>();
+					auto userlist = UI::get().get_element<UIUserList>();
 
 					if (statsinfo && statsinfo->is_active())
-					{
-						statsinfo->deactivate();
-					}
+						statsinfo->send_key(mapping.action, pressed);
 					else if (iteminventory && iteminventory->is_active())
-					{
 						iteminventory->send_key(mapping.action, pressed);
-					}
 					else if (equipinventory && equipinventory->is_active())
-					{
-						equipinventory->deactivate();
-					}
+						equipinventory->send_key(mapping.action, pressed);
 					else if (skillbook && skillbook->is_active())
-					{
-						skillbook->deactivate();
-					}
+						skillbook->send_key(mapping.action, pressed);
+					else if (questlog && questlog->is_active())
+						questlog->send_key(mapping.action, pressed);
+					else if (worldmap && worldmap->is_active())
+						worldmap->send_key(mapping.action, pressed);
+					else if (userlist && userlist->is_active())
+						userlist->send_key(mapping.action, pressed);
 					else
-					{
 						state->send_key(mapping.type, mapping.action, pressed);
-					}
 				}
 				else
 				{

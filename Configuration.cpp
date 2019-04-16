@@ -40,6 +40,9 @@ namespace jrc
 		settings.emplace<PosEQINV>();
 		settings.emplace<PosINV>();
 		settings.emplace<PosSKILL>();
+		settings.emplace<PosQUEST>();
+		settings.emplace<PosMAP>();
+		settings.emplace<PosUSERLIST>();
 		settings.emplace<Chatopen>();
 
 		load();

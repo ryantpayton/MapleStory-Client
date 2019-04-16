@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -43,6 +43,36 @@ namespace jrc
 		bool remove_cursor(bool clicked);
 		Cursor::State send_cursor(Point<int16_t> cursor, bool pressed);
 
+		enum Type
+		{
+			BLUE,
+			BROWN = 2,
+			ICE,
+			BLUE2,
+			BLUE3,
+			GOLD,
+			GOLD2,
+			BROWN2,
+			DEFAULT,
+			GOLD3,
+			DEFAULT2,
+			BROWN3,
+			BROWN4,
+			RED,
+			THIN,
+			THIN2,
+			THIN3,
+			THIN4,
+			THIN5,
+			ICE2,
+			DEFAULT3 = 100,
+			THIN6,
+			ARROW,
+			THIN7,
+			ICE3,
+			THIN8
+		};
+
 	private:
 		Point<int16_t> getthumbpos() const;
 
@@ -51,6 +81,7 @@ namespace jrc
 		Range<int16_t> vertical;
 		Point<int16_t> start;
 		Point<int16_t> end;
+		int16_t type;
 		int16_t buttonheight;
 		int16_t rowheight;
 		int16_t x;

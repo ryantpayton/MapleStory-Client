@@ -165,7 +165,7 @@ namespace jrc
 		splabel = { Text::A11M, Text::RIGHT, Text::LIGHTGREY };
 
 		slider = {
-			11, { 92, 236 }, 204, ROWS, 1, [&](bool upwards) {
+			Slider::Type::DEFAULT, { 92, 236 }, 204, ROWS, 1, [&](bool upwards) {
 				int16_t shift = upwards ? -1 : 1;
 				bool above = offset + shift >= 0;
 				bool below = offset + 4 + shift <= skillcount;
@@ -319,6 +319,27 @@ namespace jrc
 		clear_tooltip();
 
 		return Cursor::IDLE;
+	}
+
+	void UISkillbook::send_key(int32_t keycode, bool pressed)
+	{
+		if (keycode == KeyAction::ESCAPE)
+		{
+			active = false;
+		}
+		else if (keycode == KeyAction::TAB)
+		{
+			Job::Level level = job.get_level();
+			uint16_t id = tab + 1;
+			uint16_t new_tab = tab + BT_TAB0;
+
+			if (new_tab < BT_TAB4 && id <= level)
+				new_tab++;
+			else
+				new_tab = BT_TAB0;
+
+			change_tab(new_tab - BT_TAB0);
+		}
 	}
 
 	void UISkillbook::update_stat(Maplestat::Id stat, int16_t value)

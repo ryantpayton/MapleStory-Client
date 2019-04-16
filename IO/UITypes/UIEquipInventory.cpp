@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -165,6 +165,12 @@ namespace jrc
 			clear_tooltip();
 			return Cursor::IDLE;
 		}
+	}
+
+	void UIEquipInventory::send_key(int32_t keycode, bool pressed)
+	{
+		if (keycode == KeyAction::ESCAPE)
+			active = false;
 	}
 
 	void UIEquipInventory::doubleclick(Point<int16_t> cursorpos)
