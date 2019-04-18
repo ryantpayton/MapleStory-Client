@@ -16,9 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "Messages.h"
-
 #include "UI.h"
-#include "UITypes/UIStatusbar.h"
+
+#include "UITypes/UIChatbar.h"
 
 namespace jrc
 {
@@ -48,8 +48,8 @@ namespace jrc
 		if (type == Messages::NONE)
 			return;
 
-		if (auto statusbar = UI::get().get_element<UIStatusbar>())
-			statusbar->display_message(type, UIChatbar::RED);
+		if (auto chatbar = UI::get().get_element<UIChatbar>())
+			chatbar->display_message(type, UIChatbar::RED);
 	}
 
 

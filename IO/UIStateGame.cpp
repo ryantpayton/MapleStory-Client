@@ -20,6 +20,7 @@
 
 #include "UITypes/UIStatusMessenger.h"
 #include "UITypes/UIStatusbar.h"
+#include "UITypes/UIChatbar.h"
 #include "UITypes/UIBuffList.h"
 #include "UITypes/UINpcTalk.h"
 #include "UITypes/UIShop.h"
@@ -46,6 +47,7 @@ namespace jrc
 
 		emplace<UIStatusMessenger>();
 		emplace<UIStatusbar>(stats);
+		emplace<UIChatbar>();
 		emplace<UIBuffList>();
 		emplace<UINpcTalk>();
 		emplace<UIShop>(look, inventory);
@@ -172,15 +174,31 @@ namespace jrc
 						Stage::get().get_player().get_quests()
 						);
 					break;
+				case KeyAction::CHATALL:
+					break;
 				case KeyAction::WHISPER:
+					break;
+				case KeyAction::CHATPT:
+					break;
+				case KeyAction::CHATBUDDY:
 					break;
 				case KeyAction::MAINMENU:
 					break;
 				case KeyAction::TOGGLEQS:
 					break;
+				case KeyAction::CHATWINDOW:
+					break;
 				case KeyAction::GUILD:
 					break;
+				case KeyAction::CHATGUILD:
+					break;
 				case KeyAction::HELPER:
+					break;
+				case KeyAction::CHATSPOUSE:
+					break;
+				case KeyAction::MONSTERBOOK:
+					break;
+				case KeyAction::CHATALLIANCE:
 					break;
 				case KeyAction::FAMILY:
 					break;
@@ -372,7 +390,7 @@ namespace jrc
 	void UIStateGame::remove(UIElement::Type type)
 	{
 		if (type == focused)
-			focused = UIElement::NONE; 
+			focused = UIElement::NONE;
 		if (type == tooltipparent)
 			clear_tooltip(tooltipparent);
 

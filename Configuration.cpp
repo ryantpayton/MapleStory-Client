@@ -43,6 +43,7 @@ namespace jrc
 		settings.emplace<PosQUEST>();
 		settings.emplace<PosMAP>();
 		settings.emplace<PosUSERLIST>();
+		settings.emplace<PosCHAT>();
 		settings.emplace<Chatopen>();
 
 		load();

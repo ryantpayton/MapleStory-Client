@@ -67,6 +67,7 @@ namespace jrc
 			DARKSTEEL,
 			SLATE,
 			SILVER,
+			LIGHTERGREY,
 			NUM_COLORS
 		};
 

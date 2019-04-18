@@ -664,7 +664,8 @@ namespace jrc
 			{ 0.74f, 0.74f, 0.67f }, // Steel
 			{ 0.6f, 0.6f, 0.54f }, // Dark Steel
 			{ 0.2f, 0.2f, 0.27f }, // Slate
-			{ 0.94f, 0.94f, 0.94f } // Silver
+			{ 0.94f, 0.94f, 0.94f }, // Silver
+			{ 0.6f, 0.6f, 0.6f } // Lightergrey
 		};
 
 		for (const Text::Layout::Line& line : layout)

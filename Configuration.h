@@ -288,6 +288,12 @@ namespace jrc
 		PosUSERLIST() : PointEntry("PosUSERLIST", "(104, 94)") {}
 	};
 
+	// The default position of the chatbar.
+	struct PosCHAT : public Configuration::PointEntry
+	{
+		PosCHAT() : PointEntry("PosCHAT", "(0, 562)") {}
+	};
+
 	// The default position of the skill inventory.
 	struct Chatopen : public Configuration::BoolEntry
 	{

@@ -23,7 +23,7 @@
 #include "../../IO/UI.h"
 #include "../../IO/Messages.h"
 #include "../../IO/UITypes/UIStatusMessenger.h"
-#include "../../IO/UITypes/UIStatusbar.h"
+#include "../../IO/UITypes/UIChatbar.h"
 
 namespace jrc
 {
@@ -141,7 +141,7 @@ namespace jrc
 		if (message.substr(0, MAPLETIP.length()).compare("[MapleTip]"))
 			message = "[Notice] " + message;
 
-		UI::get().get_element<UIStatusbar>()
+		UI::get().get_element<UIChatbar>()
 			->send_chatline(message, UIChatbar::YELLOW);
 	}
 
@@ -160,8 +160,8 @@ namespace jrc
 		}
 
 		auto linetype = static_cast<UIChatbar::LineType>(type);
-		if (auto statusbar = UI::get().get_element<UIStatusbar>())
-			statusbar->send_chatline(message, linetype);
+		if (auto chatbar = UI::get().get_element<UIChatbar>())
+			chatbar->send_chatline(message, linetype);
 	}
 
 
@@ -197,8 +197,8 @@ namespace jrc
 
 		if (Stage::get().is_player(cid))
 		{
-			if (auto statusbar = UI::get().get_element<UIStatusbar>())
-				statusbar->display_message(message, UIChatbar::RED);
+			if (auto chatbar = UI::get().get_element<UIChatbar>())
+				chatbar->display_message(message, UIChatbar::RED);
 
 			UI::get().enable();
 		}
@@ -224,8 +224,8 @@ namespace jrc
 				std::string sign = (qty < 0) ? "-" : "+";
 				std::string message = "Gained an item: " + name + " (" + sign + std::to_string(qty) + ")";
 
-				if (auto statusbar = UI::get().get_element<UIStatusbar>())
-					statusbar->send_chatline(message, UIChatbar::BLUE);
+				if (auto chatbar = UI::get().get_element<UIChatbar>())
+					chatbar->send_chatline(message, UIChatbar::BLUE);
 			}
 		}
 		else if (mode1 == 13) // card effect

@@ -90,7 +90,7 @@ namespace jrc
 		Point<int16_t> cursoroffset;
 
 	private:
-		bool indragrange(Point<int16_t> cursorpos) const
+		virtual bool indragrange(Point<int16_t> cursorpos) const
 		{
 			auto bounds = Rectangle<int16_t>(position, position + dragarea);
 			return bounds.contains(cursorpos);
