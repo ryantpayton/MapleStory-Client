@@ -23,6 +23,7 @@
 
 #include "../../Character/Look/CharLook.h"
 #include "../../Graphics/Sprite.h"
+#include "../../Graphics/OutlinedText.h"
 #include "../../Net/Login.h"
 
 namespace jrc
@@ -95,44 +96,6 @@ namespace jrc
 		uint8_t selected_relative;
 		uint8_t page;
 		uint8_t total_pages;
-
-		struct OutlinedText
-		{
-			Text inner;
-			Text l;
-			Text r;
-			Text t;
-			Text b;
-
-			OutlinedText(Text::Font font, Text::Alignment alignment, Text::Color innerColor, Text::Color outerColor)
-			{
-				inner = Text(font, alignment, innerColor);
-				l = Text(font, alignment, outerColor);
-				r = Text(font, alignment, outerColor);
-				t = Text(font, alignment, outerColor);
-				b = Text(font, alignment, outerColor);
-			}
-
-			OutlinedText() {}
-
-			void draw(Point<int16_t> parentpos) const
-			{
-				l.draw(parentpos + Point<int16_t>(-1, 0));
-				r.draw(parentpos + Point<int16_t>(1, 0));
-				t.draw(parentpos + Point<int16_t>(0, -1));
-				b.draw(parentpos + Point<int16_t>(0, 1));
-				inner.draw(parentpos);
-			}
-
-			void change_text(const std::string& text)
-			{
-				inner.change_text(text);
-				l.change_text(text);
-				r.change_text(text);
-				t.change_text(text);
-				b.change_text(text);
-			}
-		};
 
 		OutlinedText namelabel;
 		OutlinedText charSlot;

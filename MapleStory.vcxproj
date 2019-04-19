@@ -372,6 +372,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="graphics\EffectLayer.h" />
     <ClInclude Include="graphics\Geometry.h" />
     <ClInclude Include="graphics\GraphicsGL.h" />
+    <ClInclude Include="Graphics\OutlinedText.h" />
     <ClInclude Include="graphics\Sprite.h" />
     <ClInclude Include="graphics\Text.h" />
     <ClInclude Include="graphics\Texture.h" />

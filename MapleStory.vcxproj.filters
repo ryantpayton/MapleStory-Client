@@ -1127,5 +1127,8 @@
     <ClInclude Include="IO\UITypes\UIUserList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Graphics\OutlinedText.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
