@@ -16,10 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "UIChatbar.h"
-
 #include "../UIElement.h"
-#include "../Messages.h"
 
 #include "../Components/Charset.h"
 #include "../Components/Gauge.h"
@@ -30,6 +27,7 @@
 #include "../../Character/Job.h"
 #include "../../Graphics/Animation.h"
 #include "../../Graphics/Text.h"
+#include "../../Graphics/OutlinedText.h"
 
 namespace jrc
 {
@@ -46,11 +44,8 @@ namespace jrc
 		void update() override;
 
 		bool is_in_range(Point<int16_t> cursorpos) const override;
-		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
-		Cursor::State send_cursor(bool pressed, Point<int16_t> cursorpos) override;
 
-		void send_chatline(const std::string& line, UIChatbar::LineType type);
-		void display_message(Messages::Type line, UIChatbar::LineType type);
+		void toggle_qs();
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -62,37 +57,32 @@ namespace jrc
 
 		enum Buttons : uint16_t
 		{
-			BT_WHISPER,
-			BT_CALLGM,
 			BT_CASHSHOP,
-			BT_TRADE,
 			BT_MENU,
 			BT_OPTIONS,
 			BT_CHARACTER,
-			BT_STATS,
-			BT_QUEST,
-			BT_INVENTORY,
-			BT_EQUIPS,
-			BT_SKILL
+			BT_COMMUNITY,
+			BT_EVENT,
+			BT_FOLD_QS,
+			BT_EXTEND_QS
 		};
-
-		static constexpr Point<int16_t> POSITION = { 512, 590 };
-		static constexpr Point<int16_t> DIMENSION = { 1366, 80 };
-		static constexpr time_t MESSAGE_COOLDOWN = 1'000;
 
 		const CharStats& stats;
 
-		EnumMap<Messages::Type, time_t> message_cooldowns;
-
-		UIChatbar chatbar;
 		Gauge expbar;
 		Gauge hpbar;
 		Gauge mpbar;
 		Charset statset;
+		Charset hpmpset;
 		Charset levelset;
-		Text namelabel;
-		Text joblabel;
-		Animation hpanimation;
-		Animation mpanimation;
+		Texture quickslot[2];
+		OutlinedText namelabel;
+		std::vector<Sprite> hpmp_sprites;
+
+		Point<int16_t> exp_pos;
+		Point<int16_t> hpmp_pos;
+		Point<int16_t> quickslot_pos;
+
+		bool quickslot_active;
 	};
 }

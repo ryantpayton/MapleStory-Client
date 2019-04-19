@@ -75,7 +75,7 @@ namespace jrc
 			for (char c : text)
 			{
 				draw(c, args + Point<int16_t>(shift, 0));
-				shift += getw(c);
+				shift += getw(c) + 1;
 			}
 			break;
 		case RIGHT:

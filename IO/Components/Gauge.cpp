@@ -19,14 +19,18 @@
 
 namespace jrc
 {
-	Gauge::Gauge(Texture front, Texture mid, Texture end, int16_t max, float percent)
+	Gauge::Gauge(Texture front, int16_t max, float percent) : barfront(front), maximum(max), percentage(percent)
 	{
-		barfront = front;
-		barmid = mid;
-		barend = end;
-		maximum = max;
-		percentage = percent;
+		target = percentage;
+	}
 
+	Gauge::Gauge(Texture front, Texture mid, int16_t max, float percent) : barfront(front), barmid(mid), maximum(max), percentage(percent)
+	{
+		target = percentage;
+	}
+
+	Gauge::Gauge(Texture front, Texture mid, Texture end, int16_t max, float percent) : barfront(front), barmid(mid), barend(end), maximum(max), percentage(percent)
+	{
 		target = percentage;
 	}
 
@@ -38,9 +42,9 @@ namespace jrc
 
 		if (length > 0)
 		{
-			barfront.draw(args);
-			barmid.draw(args + DrawArgument({ 1, 0 }, { length, 0 }));
-			barend.draw(args + DrawArgument(length + 1, 0));
+			barfront.draw(args + DrawArgument(Point<int16_t>(0, 0), Point<int16_t>(length, 0)));
+			barmid.draw(args);
+			barend.draw(args + Point<int16_t>(length + 8, 20));
 		}
 	}
 

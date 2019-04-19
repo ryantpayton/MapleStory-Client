@@ -54,9 +54,9 @@ namespace jrc
 		buttons[BT_HELP] = std::make_unique<MapleButton>(input["button:help"], Point<int16_t>(386, -8));
 
 		buttons[chatopen ? BT_OPENCHAT : BT_CLOSECHAT]->set_active(false);
-		buttons[BT_CHAT]->set_active(false);
-		buttons[BT_LINK]->set_active(false);
-		buttons[BT_HELP]->set_active(false);
+		buttons[BT_CHAT]->set_active(chatopen ? true : false);
+		buttons[BT_LINK]->set_active(chatopen ? true : false);
+		buttons[BT_HELP]->set_active(chatopen ? true : false);
 
 		chattab_x = 6;
 		chattab_y = chattop_y;
@@ -65,22 +65,22 @@ namespace jrc
 		for (size_t i = 0; i < NUM_CHATTAB; i++)
 		{
 			buttons[BT_TAB_0 + i] = std::make_unique<MapleButton>(view["tab"], Point<int16_t>(chattab_x + (i * chattab_span), chattab_y));
-			buttons[BT_TAB_0 + i]->set_active(false);
+			buttons[BT_TAB_0 + i]->set_active(chatopen ? true : false);
 			chattab_text[CHT_ALL + i] = Text(Text::Font::A12M, Text::Alignment::CENTER, Text::Color::LIGHTERGREY, ChatTabText[i]);
 		}
 
 		chattab_text[CHT_ALL].change_color(Text::Color::WHITE);
 
 		buttons[BT_TAB_0 + NUM_CHATTAB] = std::make_unique<MapleButton>(view["btAddTab"], Point<int16_t>(chattab_x + (NUM_CHATTAB * chattab_span), chattab_y));
-		buttons[BT_TAB_0 + NUM_CHATTAB]->set_active(false);
+		buttons[BT_TAB_0 + NUM_CHATTAB]->set_active(chatopen ? true : false);
 
 		buttons[BT_CHAT_TARGET] = std::make_unique<MapleButton>(chatTarget["all"], Point<int16_t>(5, -8));
-		buttons[BT_CHAT_TARGET]->set_active(false);
+		buttons[BT_CHAT_TARGET]->set_active(chatopen ? true : false);
 
 		chatenter = input["layer:chatEnter"];
 		chatcover = input["layer:backgrnd"];
 
-		chatfield = Textfield(Text::A11M, Text::LEFT, Text::WHITE, Rectangle<int16_t>(Point<int16_t>(65, -7), Point<int16_t>(330, 8)), 0);
+		chatfield = Textfield(Text::A11M, Text::LEFT, Text::WHITE, Rectangle<int16_t>(Point<int16_t>(62, -9), Point<int16_t>(330, 8)), 0);
 		chatfield.set_state(chatopen ? Textfield::State::NORMAL : Textfield::State::DISABLED);
 
 		chatfield.set_enter_callback(
@@ -130,6 +130,9 @@ namespace jrc
 
 		dimension = Point<int16_t>(410, DIMENSION_Y);
 		active = true;
+
+		if (chatopen)
+			dimension.shift_y(getchatbarheight());
 	}
 
 	void UIChatbar::draw(float inter) const
@@ -143,7 +146,7 @@ namespace jrc
 			chatspace[0].draw(position + Point<int16_t>(0, chattop));
 
 			if (chatrows > 1)
-			chatspace[1].draw(DrawArgument(position + Point<int16_t>(0, -28), Point<int16_t>(0, 28 + chattop)));
+				chatspace[1].draw(DrawArgument(position + Point<int16_t>(0, -28), Point<int16_t>(0, 28 + chattop)));
 
 			chatspace[2].draw(position + Point<int16_t>(0, -28));
 			chatspace[3].draw(position + Point<int16_t>(0, -15 + chattop));
@@ -207,6 +210,8 @@ namespace jrc
 		for (auto iter : message_cooldowns)
 			iter.second -= Constants::TIMESTEP;
 	}
+
+	void UIChatbar::send_key(int32_t keycode, bool pressed) {}
 
 	bool UIChatbar::is_in_range(Point<int16_t> cursorpos) const
 	{
@@ -286,7 +291,7 @@ namespace jrc
 			}
 			else
 			{
-				return Cursor::CHATBARCANCLICK;
+				return Cursor::CHATBARVDRAG;
 			}
 		}
 

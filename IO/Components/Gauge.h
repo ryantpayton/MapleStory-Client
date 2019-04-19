@@ -23,6 +23,8 @@ namespace jrc
 	class Gauge
 	{
 	public:
+		Gauge(Texture front, int16_t max, float percent);
+		Gauge(Texture front, Texture mid, int16_t max, float percent);
 		Gauge(Texture front, Texture mid, Texture end, int16_t maximum, float percentage);
 		Gauge();
 

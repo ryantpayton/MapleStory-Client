@@ -28,6 +28,7 @@
 #include "../IO/UITypes/UIQuestLog.h"
 #include "../IO/UITypes/UIWorldMap.h"
 #include "../IO/UITypes/UIUserList.h"
+#include "../IO/UITypes/UIChatbar.h"
 
 namespace jrc
 {
@@ -195,6 +196,11 @@ namespace jrc
 						userlist->send_key(mapping.action, pressed);
 					else
 						state->send_key(mapping.type, mapping.action, pressed);
+				}
+				else if (pressed && (keycode == GLFW_KEY_ENTER || keycode == GLFW_KEY_KP_ENTER))
+				{
+					if (auto chatbar = UI::get().get_element<UIChatbar>())
+						chatbar->send_key(mapping.action, pressed);
 				}
 				else
 				{

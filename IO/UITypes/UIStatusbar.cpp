@@ -17,7 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIStatusbar.h"
 
-#include "../UI.h"
+#include "../Configuration.h"
+
 #include "../Components/MapleButton.h"
 
 #include "../../Character/ExpTable.h"
@@ -26,65 +27,76 @@
 
 namespace jrc
 {
-	UIStatusbar::UIStatusbar(const CharStats& st)
-		: UIElement(POSITION, DIMENSION), chatbar(POSITION), stats(st) {
+	UIStatusbar::UIStatusbar(const CharStats& st) : stats(st)
+	{
+		nl::node mainBar = nl::nx::ui["StatusBar3.img"]["mainBar"];
+		nl::node status = mainBar["status800"];
+		nl::node EXPBar = mainBar["EXPBar"];
+		nl::node menu = mainBar["menu"];
+		nl::node quickSlot = mainBar["quickSlot"];
 
-		nl::node mainbar = nl::nx::ui["StatusBar2.img"]["mainBar"];
+		exp_pos = Point<int16_t>(0, 87);
 
-		sprites.emplace_back(mainbar["backgrnd"]);
-		sprites.emplace_back(mainbar["gaugeBackgrd"]);
-		sprites.emplace_back(mainbar["notice"]);
-		sprites.emplace_back(mainbar["lvBacktrnd"]);
-		sprites.emplace_back(mainbar["lvCover"]);
+		sprites.emplace_back(EXPBar["backgrnd"], DrawArgument(Point<int16_t>(0, 86), Point<int16_t>(800, 0)));
+		sprites.emplace_back(EXPBar["800"]["layer:back"], exp_pos);
 
-		expbar = { 
-			mainbar.resolve("gauge/exp/0"), 
-			mainbar.resolve("gauge/exp/1"),
-			mainbar.resolve("gauge/exp/2"), 
+		expbar = Gauge(
+			EXPBar.resolve("800/layer:gauge"),
+			EXPBar.resolve("800/layer:cover"),
+			EXPBar.resolve("layer:effect"),
 			308, 0.0f
-		};
-		hpbar = {
-			mainbar.resolve("gauge/hp/0"),
-			mainbar.resolve("gauge/hp/1"),
-			mainbar.resolve("gauge/hp/2"),
-			137, 0.0f
-		};
-		mpbar = {
-			mainbar.resolve("gauge/mp/0"),
-			mainbar.resolve("gauge/mp/1"),
-			mainbar.resolve("gauge/mp/2"),
-			137, 0.0f
-		};
+		);
 
-		statset = { mainbar["gauge"]["number"], Charset::RIGHT };
-		levelset = { mainbar["lvNumber"], Charset::LEFT };
+		hpmp_pos = Point<int16_t>(412, 40);
 
-		joblabel = { Text::A11M, Text::LEFT, Text::YELLOW };
-		namelabel = { Text::A13M, Text::LEFT, Text::WHITE };
+		hpmp_sprites.emplace_back(status["backgrnd"], hpmp_pos - Point<int16_t>(1, 0));
+		hpmp_sprites.emplace_back(status["layer:cover"], hpmp_pos - Point<int16_t>(1, 0));
+		hpmp_sprites.emplace_back(status["layer:Lv"], hpmp_pos);
 
-		buttons[BT_WHISPER] = std::make_unique<MapleButton>(mainbar["BtChat"]);
-		buttons[BT_CALLGM] = std::make_unique<MapleButton>(mainbar["BtClaim"]);
+		hpbar = Gauge(status.resolve("gauge/hp/layer:0"), 139, 0.0f);
+		mpbar = Gauge(status.resolve("gauge/mp/layer:0"), 139, 0.0f);
 
-		buttons[BT_CASHSHOP] = std::make_unique<MapleButton>(mainbar["BtCashShop"]);
-		buttons[BT_TRADE] = std::make_unique<MapleButton>(mainbar["BtMTS"]);
-		buttons[BT_MENU] = std::make_unique<MapleButton>(mainbar["BtMenu"]);
-		buttons[BT_OPTIONS] = std::make_unique<MapleButton>(mainbar["BtSystem"]);
+		statset = Charset(EXPBar["number"], Charset::Alignment::RIGHT);
+		hpmpset = Charset(status["gauge"]["number"], Charset::Alignment::RIGHT);
+		levelset = Charset(status["lvNumber"], Charset::Alignment::LEFT);
 
-		buttons[BT_CHARACTER] = std::make_unique<MapleButton>(mainbar["BtCharacter"]);
-		buttons[BT_STATS] = std::make_unique<MapleButton>(mainbar["BtStat"]);
-		buttons[BT_QUEST] = std::make_unique<MapleButton>(mainbar["BtQuest"]);
-		buttons[BT_INVENTORY] = std::make_unique<MapleButton>(mainbar["BtInven"]);
-		buttons[BT_EQUIPS] = std::make_unique<MapleButton>(mainbar["BtEquip"]);
-		buttons[BT_SKILL] = std::make_unique<MapleButton>(mainbar["BtSkill"]);
+		namelabel = OutlinedText(Text::Font::A13M, Text::Alignment::LEFT, Text::Color::SILVER, Text::Color::SLATE);
+
+		quickslot_pos = Point<int16_t>(579, 0);
+
+		quickslot[0] = quickSlot["backgrnd"];
+		quickslot[1] = quickSlot["layer:cover"];
+
+		auto buttonPos = Point<int16_t>(591, 73);
+
+		buttons[BT_CASHSHOP] = std::make_unique<MapleButton>(menu["button:CashShop"], buttonPos);
+		buttons[BT_MENU] = std::make_unique<MapleButton>(menu["button:Menu"], buttonPos);
+		buttons[BT_OPTIONS] = std::make_unique<MapleButton>(menu["button:Setting"], buttonPos);
+		buttons[BT_CHARACTER] = std::make_unique<MapleButton>(menu["button:Character"], buttonPos);
+		buttons[BT_COMMUNITY] = std::make_unique<MapleButton>(menu["button:Community"], buttonPos);
+		buttons[BT_EVENT] = std::make_unique<MapleButton>(menu["button:Event"], buttonPos);
+
+		buttons[BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot["button:Fold800"], Point<int16_t>(579, 0));
+		buttons[BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot["button:Extend800"], Point<int16_t>(791, 0));
+		buttons[BT_EXTEND_QS]->set_active(false);
+
+		quickslot_active = true;
+		position = Point<int16_t>(0, 470);
+		dimension = Point<int16_t>(390, 130);
 	}
 
 	void UIStatusbar::draw(float alpha) const
 	{
 		UIElement::draw(alpha);
 
-		expbar.draw(position + Point<int16_t>(-261, -15));
-		hpbar.draw(position + Point<int16_t>(-261, -31));
-		mpbar.draw(position + Point<int16_t>(-90, -31));
+		hpmp_sprites[0].draw(position, alpha);
+
+		expbar.draw(position + exp_pos);
+		hpbar.draw(position + hpmp_pos);
+		mpbar.draw(position + hpmp_pos);
+
+		hpmp_sprites[1].draw(position, alpha);
+		hpmp_sprites[2].draw(position, alpha);
 
 		int16_t level = stats.get_stat(Maplestat::LEVEL);
 		int16_t hp = stats.get_stat(Maplestat::HP);
@@ -94,122 +106,93 @@ namespace jrc
 		int64_t exp = stats.get_exp();
 
 		std::string expstring = std::to_string(100 * getexppercent());
+
 		statset.draw(
 			std::to_string(exp) + "[" + expstring.substr(0, expstring.find('.') + 3) + "%]",
-			position + Point<int16_t>(47, -13)
-			);
-		statset.draw(
+			position + Point<int16_t>(427, 111)
+		);
+
+		hpmpset.draw(
 			"[" + std::to_string(hp) + "/" + std::to_string(maxhp) + "]",
-			position + Point<int16_t>(-124, -29)
-			);
-		statset.draw(
+			position + Point<int16_t>(530, 70)
+		);
+
+		hpmpset.draw(
 			"[" + std::to_string(mp) + "/" + std::to_string(maxmp) + "]",
-			position + Point<int16_t>(47, -29)
-			);
+			position + Point<int16_t>(528, 86)
+		);
+
 		levelset.draw(
 			std::to_string(level),
-			position + Point<int16_t>(-480, -24)
-			);
+			position + Point<int16_t>(461, 48)
+		);
 
-		joblabel.draw(position + Point<int16_t>(-435, -21));
-		namelabel.draw(position + Point<int16_t>(-435, -36));
+		namelabel.draw(position + Point<int16_t>(487, 40));
 
-		chatbar.draw(alpha);
+		if (quickslot_active)
+		{
+			quickslot[0].draw(position + quickslot_pos);
+			quickslot[1].draw(position + quickslot_pos);
+		}
 	}
 
 	void UIStatusbar::update()
 	{
 		UIElement::update();
 
-		chatbar.update();
+		for each (auto sprite in hpmp_sprites)
+			sprite.update();
 
 		expbar.update(getexppercent());
 		hpbar.update(gethppercent());
 		mpbar.update(getmppercent());
 
 		namelabel.change_text(stats.get_name());
-		joblabel.change_text(stats.get_jobname());
-
-		for (auto iter : message_cooldowns)
-		{
-			iter.second -= Constants::TIMESTEP;
-		}
 	}
 
 	Button::State UIStatusbar::button_pressed(uint16_t id)
 	{
 		switch (id)
 		{
-		case BT_STATS:
-			UI::get().send_menu(KeyAction::CHARSTATS);
+		case BT_FOLD_QS:
+			quickslot_active = false;
+			buttons[BT_FOLD_QS]->set_active(false);
+			buttons[BT_EXTEND_QS]->set_active(true);
 			return Button::NORMAL;
-		case BT_INVENTORY:
-			UI::get().send_menu(KeyAction::INVENTORY);
-			return Button::NORMAL;
-		case BT_EQUIPS:
-			UI::get().send_menu(KeyAction::EQUIPS);
-			return Button::NORMAL;
-		case BT_SKILL:
-			UI::get().send_menu(KeyAction::SKILLBOOK);
+		case BT_EXTEND_QS:
+			quickslot_active = true;
+			buttons[BT_FOLD_QS]->set_active(true);
+			buttons[BT_EXTEND_QS]->set_active(false);
 			return Button::NORMAL;
 		}
+
 		return Button::NORMAL;
 	}
 
 	bool UIStatusbar::is_in_range(Point<int16_t> cursorpos) const
 	{
-		Rectangle<int16_t> bounds(
-			position - Point<int16_t>(512, 84),
-			position - Point<int16_t>(512, 84) + dimension
-			);
-		return bounds.contains(cursorpos) || chatbar.is_in_range(cursorpos);
+		auto pos = Point<int16_t>(410, position.y());
+		auto bounds = Rectangle<int16_t>(pos, pos + dimension);
+
+		return bounds.contains(cursorpos);
 	}
 
-	bool UIStatusbar::remove_cursor(bool clicked, Point<int16_t> cursorpos)
+	void UIStatusbar::toggle_qs()
 	{
-		if (chatbar.remove_cursor(clicked, cursorpos))
-			return true;
-
-		return UIElement::remove_cursor(clicked, cursorpos);
-	}
-
-	Cursor::State UIStatusbar::send_cursor(bool pressed, Point<int16_t> cursorpos)
-	{
-		if (chatbar.is_in_range(cursorpos))
-		{
-			UIElement::send_cursor(pressed, cursorpos);
-			return chatbar.send_cursor(pressed, cursorpos);
-		}
-		else
-		{
-			chatbar.send_cursor(pressed, cursorpos);
-			return UIElement::send_cursor(pressed, cursorpos);
-		}
-	}
-
-	void UIStatusbar::send_chatline(const std::string& line, UIChatbar::LineType type)
-	{
-		chatbar.send_line(line, type);
-	}
-
-	void UIStatusbar::display_message(Messages::Type line, UIChatbar::LineType type)
-	{
-		if (message_cooldowns[line] > 0)
-			return;
-
-		std::string message{ Messages::messages[line] };
-	    chatbar.send_line(message, type);
-
-		message_cooldowns[line] = MESSAGE_COOLDOWN;
+		quickslot_active = !quickslot_active;
+		buttons[BT_FOLD_QS]->set_active(quickslot_active);
+		buttons[BT_EXTEND_QS]->set_active(!quickslot_active);
 	}
 
 	float UIStatusbar::getexppercent() const
 	{
 		int16_t level = stats.get_stat(Maplestat::LEVEL);
+
 		if (level >= ExpTable::LEVELCAP)
 			return 0.0f;
 
 		int64_t exp = stats.get_exp();
+
 		return static_cast<float>(
 			static_cast<double>(exp) / ExpTable::values[level]
 			);

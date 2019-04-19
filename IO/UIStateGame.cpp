@@ -185,6 +185,9 @@ namespace jrc
 				case KeyAction::MAINMENU:
 					break;
 				case KeyAction::TOGGLEQS:
+					if (auto statusbar = UI::get().get_element<UIStatusbar>())
+						statusbar->toggle_qs();
+
 					break;
 				case KeyAction::CHATWINDOW:
 					break;
