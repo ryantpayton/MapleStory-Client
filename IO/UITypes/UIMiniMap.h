@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright Â© 2015-2016 Daniel Allendorf                                   //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,43 +16,66 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "UIState.h"
+#include "../UIDragElement.h"
 
-#include "../Template/EnumMap.h"
-
-#include <memory>
+#include "../Graphics/Text.h"
 
 namespace jrc
 {
-	class UIStateLogin : public UIState
+	class UIMiniMap : public UIDragElement<PosMINIMAP>
 	{
 	public:
-		UIStateLogin();
+		static constexpr Type TYPE = MINIMAP;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = true;
 
-		void draw(float inter, Point<int16_t> cursor) const override;
+		UIMiniMap();
+
+		void draw(float alpha) const override;
 		void update() override;
 
-		void doubleclick(Point<int16_t> pos) override;
-		void rightclick(Point<int16_t> pos) override;
-		void send_key(KeyType::Id type, int32_t action, bool pressed) override;
-		Cursor::State send_cursor(Cursor::State mst, Point<int16_t> pos) override;
-
-		void drag_icon(Icon* icon) override;
-		void clear_tooltip(Tooltip::Parent parent) override;
-		void show_equip(Tooltip::Parent parent, int16_t slot) override;
-		void show_item(Tooltip::Parent parent, int32_t itemid) override;
-		void show_skill(Tooltip::Parent parent, int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration) override;
-
-		Iterator pre_add(UIElement::Type type, bool toggled, bool focused) override;
-		void remove(UIElement::Type type) override;
-		UIElement* get(UIElement::Type type) override;
-		UIElement* get_front(Point<int16_t> pos) override;
+		void send_key(int32_t keycode, bool pressed) override;
 
 	private:
-		template <class T, typename...Args>
-		void emplace(Args&&...args);
+		static constexpr int16_t center_start_x = 64;
 
-		EnumMap<UIElement::Type, UIElement::UPtr, UIElement::NUM_TYPES> elements;
-		UIElement::Type focused;
+		std::string get_current_region();
+		std::string get_current_town();
+		void toggle_buttons();
+
+		enum Buttons
+		{
+			BT_MAP,
+			BT_MAX,
+			BT_MIN,
+			BT_NPC,
+			BT_SMALL
+		};
+
+		enum Type
+		{
+			MIN,
+			NORMAL,
+			MAX
+		};
+
+		int8_t type;
+		int16_t combined_text_width;
+		Point<int16_t> bt_map_pos;
+		Point<int16_t> bt_max_pos;
+		Point<int16_t> bt_min_pos;
+		int16_t bt_min_width;
+		int16_t bt_max_width;
+		int16_t bt_max_origin;
+		int16_t bt_map_width;
+		int16_t final_pos;
+		Animation min_left;
+		Animation min_center;
+		Animation min_right;
+		std::vector<Sprite> normal_sprites;
+		std::vector<Sprite> max_sprites;
+		Text combined_text;
+		Text region_text;
+		Text town_text;
 	};
 }

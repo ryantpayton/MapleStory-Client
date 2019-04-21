@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -43,6 +43,8 @@ namespace jrc
 
 		virtual void draw(Point<int16_t> parentpos) const = 0;
 		virtual Rectangle<int16_t> bounds(Point<int16_t> parentpos) const = 0;
+		virtual int16_t width() const = 0;
+		virtual Point<int16_t> origin() const = 0;
 
 		void set_position(Point<int16_t> position);
 		void set_state(State state);
@@ -57,4 +59,3 @@ namespace jrc
 		bool active;
 	};
 }
-

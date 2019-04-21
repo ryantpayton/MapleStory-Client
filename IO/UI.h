@@ -56,12 +56,15 @@ namespace jrc
 		void send_cursor(Point<int16_t> pos);
 		void send_cursor(bool pressed);
 		void send_cursor(Point<int16_t> cursorpos, Cursor::State cursorstate);
+		void send_focus(int focused);
+		void rightclick();
 		void doubleclick();
 		void send_key(int32_t keycode, bool pressed);
 		void send_menu(KeyAction::Id action);
 
 		void set_scrollnotice(const std::string& notice);
 		void focus_textfield(Textfield* textfield);
+		void remove_textfield();
 		void drag_icon(Icon* icon);
 
 		void add_keymapping(uint8_t no, uint8_t type, int32_t action);

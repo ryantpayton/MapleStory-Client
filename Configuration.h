@@ -300,6 +300,12 @@ namespace jrc
 		Chatopen() : BoolEntry("Chatopen", "false") {}
 	};
 
+	// The default position of the mini map.
+	struct PosMINIMAP : public Configuration::PointEntry
+	{
+		PosMINIMAP() : PointEntry("PosMINIMAP", "(0, 0)") {}
+	};
+
 	template <typename T>
 	// Can be used to access settings.
 	struct Setting

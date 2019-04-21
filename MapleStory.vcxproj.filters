@@ -495,6 +495,9 @@
     <ClCompile Include="IO\UITypes\UIUserList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IO\UITypes\UIMiniMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Configuration.h">
@@ -1128,6 +1131,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\OutlinedText.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIMiniMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

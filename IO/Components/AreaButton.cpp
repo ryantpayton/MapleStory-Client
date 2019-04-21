@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -30,6 +30,17 @@ namespace jrc
 	Rectangle<int16_t> AreaButton::bounds(Point<int16_t> parentpos) const
 	{
 		Point<int16_t> absp = position + parentpos;
+
 		return Rectangle<int16_t>(absp, absp + dimension);
+	}
+
+	int16_t AreaButton::width() const
+	{
+		return dimension.x();
+	}
+
+	Point<int16_t> AreaButton::origin() const
+	{
+		return { 0, 0 };
 	}
 }

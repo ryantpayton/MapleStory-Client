@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -39,6 +39,7 @@ namespace jrc
 		virtual void update() = 0;
 
 		virtual void doubleclick(Point<int16_t> pos) = 0;
+		virtual void rightclick(Point<int16_t> pos) = 0;
 		virtual void send_key(KeyType::Id type, int32_t action, bool pressed) = 0;
 		virtual Cursor::State send_cursor(Cursor::State mst, Point<int16_t> pos) = 0;
 
@@ -46,8 +47,7 @@ namespace jrc
 		virtual void clear_tooltip(Tooltip::Parent parent) = 0;
 		virtual void show_equip(Tooltip::Parent parent, int16_t slot) = 0;
 		virtual void show_item(Tooltip::Parent parent, int32_t itemid) = 0;
-		virtual void show_skill(Tooltip::Parent parent, int32_t skill_id,
-			int32_t level, int32_t masterlevel, int64_t expiration) = 0;
+		virtual void show_skill(Tooltip::Parent parent, int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration) = 0;
 
 		virtual Iterator pre_add(UIElement::Type type, bool toggled, bool focused) = 0;
 		virtual void remove(UIElement::Type type) = 0;
@@ -60,6 +60,7 @@ namespace jrc
 		void draw(float, Point<int16_t>) const override {}
 		void update() override {}
 		void doubleclick(Point<int16_t>) override {}
+		void rightclick(Point<int16_t>) override {}
 		void send_key(KeyType::Id, int32_t, bool) override {}
 		Cursor::State send_cursor(Cursor::State, Point<int16_t>) override { return Cursor::IDLE; }
 		void drag_icon(Icon*) override {}

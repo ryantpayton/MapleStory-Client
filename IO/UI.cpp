@@ -29,6 +29,7 @@
 #include "../IO/UITypes/UIWorldMap.h"
 #include "../IO/UITypes/UIUserList.h"
 #include "../IO/UITypes/UIChatbar.h"
+#include "../IO/UITypes/UIMiniMap.h"
 
 namespace jrc
 {
@@ -100,17 +101,31 @@ namespace jrc
 		cursor.set_position(cursorpos);
 	}
 
+	void UI::send_focus(int focused)
+	{
+		if (focused)
+		{
+			// The window gained input focus
+			uint8_t volume = Setting<SFXVolume>::get().load();
+			Sound::set_sfxvolume(volume);
+		}
+		else
+		{
+			// The window lost input focus
+			Sound::set_sfxvolume(0);
+		}
+	}
+
 	void UI::send_cursor(bool pressed)
 	{
-		Cursor::State cursorstate = (pressed && enabled) ?
-			Cursor::CLICKING :
-			Cursor::IDLE;
+		Cursor::State cursorstate = (pressed && enabled) ? Cursor::CLICKING : Cursor::IDLE;
 		Point<int16_t> cursorpos = cursor.get_position();
 		send_cursor(cursorpos, cursorstate);
 
 		if (focusedtextfield && pressed)
 		{
 			Cursor::State tstate = focusedtextfield->send_cursor(cursorpos, pressed);
+
 			switch (tstate)
 			{
 			case Cursor::IDLE:
@@ -123,6 +138,12 @@ namespace jrc
 	void UI::send_cursor(Point<int16_t> pos)
 	{
 		send_cursor(pos, cursor.get_state());
+	}
+
+	void UI::rightclick()
+	{
+		Point<int16_t> pos = cursor.get_position();
+		state->rightclick(pos);
 	}
 
 	void UI::doubleclick()
@@ -170,6 +191,8 @@ namespace jrc
 
 			if (mapping.type)
 			{
+				auto chatbar = UI::get().get_element<UIChatbar>();
+
 				if (pressed && (keycode == GLFW_KEY_ESCAPE || keycode == GLFW_KEY_TAB))
 				{
 					auto statsinfo = UI::get().get_element<UIStatsinfo>();
@@ -194,13 +217,20 @@ namespace jrc
 						worldmap->send_key(mapping.action, pressed);
 					else if (userlist && userlist->is_active())
 						userlist->send_key(mapping.action, pressed);
+					else if (chatbar)
+						chatbar->send_key(mapping.action, pressed);
 					else
 						state->send_key(mapping.type, mapping.action, pressed);
 				}
 				else if (pressed && (keycode == GLFW_KEY_ENTER || keycode == GLFW_KEY_KP_ENTER))
 				{
-					if (auto chatbar = UI::get().get_element<UIChatbar>())
+					if (chatbar)
 						chatbar->send_key(mapping.action, pressed);
+				}
+				else if (pressed && keycode == GLFW_KEY_M)
+				{
+					if (auto ninimap = UI::get().get_element<UIMiniMap>())
+						ninimap->send_key(mapping.action, pressed);
 				}
 				else
 				{
@@ -230,6 +260,11 @@ namespace jrc
 		}
 
 		focusedtextfield = tofocus;
+	}
+
+	void UI::remove_textfield()
+	{
+		focusedtextfield = {};
 	}
 
 	void UI::drag_icon(Icon* icon)

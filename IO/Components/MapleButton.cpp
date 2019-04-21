@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -30,24 +30,30 @@ namespace jrc
 		active = true;
 	}
 
-	MapleButton::MapleButton(nl::node src, int16_t x, int16_t y)
-		: MapleButton(src, Point<int16_t>(x, y)) {}
-
-	MapleButton::MapleButton(nl::node src)
-		: MapleButton(src, Point<int16_t>()) {}
+	MapleButton::MapleButton(nl::node src, int16_t x, int16_t y) : MapleButton(src, Point<int16_t>(x, y)) {}
+	MapleButton::MapleButton(nl::node src) : MapleButton(src, Point<int16_t>()) {}
 
 	void MapleButton::draw(Point<int16_t> parentpos) const
 	{
 		if (active)
-		{
 			textures[state].draw(position + parentpos);
-		}
 	}
 
 	Rectangle<int16_t> MapleButton::bounds(Point<int16_t> parentpos) const
 	{
 		auto lt = parentpos + position - textures[state].get_origin();
 		auto rb = lt + textures[state].get_dimensions();
+
 		return Rectangle<int16_t>(lt, rb);
+	}
+
+	int16_t MapleButton::width() const
+	{
+		return textures[state].width();
+	}
+
+	Point<int16_t> MapleButton::origin() const
+	{
+		return textures[state].get_origin();
 	}
 }

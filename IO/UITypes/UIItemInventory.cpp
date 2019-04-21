@@ -29,7 +29,8 @@
 
 namespace jrc
 {
-	UIItemInventory::UIItemInventory(const Inventory& invent) : UIDragElement<PosINV>(Point<int16_t>(172, 20)), inventory(invent) {
+	UIItemInventory::UIItemInventory(const Inventory& invent) : UIDragElement<PosINV>(Point<int16_t>(172, 20)), inventory(invent)
+	{
 		nl::node close = nl::nx::ui["Basic.img"]["BtClose"];
 		nl::node src = nl::nx::ui["UIWindow2.img"]["Item"];
 
@@ -300,6 +301,7 @@ namespace jrc
 		if (dragged)
 		{
 			clear_tooltip();
+
 			return dstate;
 		}
 
@@ -343,7 +345,7 @@ namespace jrc
 		{
 			clear_tooltip();
 
-			return Cursor::IDLE;
+			return Cursor::CANGRAB;
 		}
 	}
 
@@ -512,6 +514,7 @@ namespace jrc
 			return 0;
 
 		int16_t slot = slotrange.first + (xoff / 36) + 4 * (yoff / 35);
+
 		return is_visible(slot) ? slot : 0;
 	}
 

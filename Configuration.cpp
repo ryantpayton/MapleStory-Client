@@ -45,6 +45,7 @@ namespace jrc
 		settings.emplace<PosUSERLIST>();
 		settings.emplace<PosCHAT>();
 		settings.emplace<Chatopen>();
+		settings.emplace<PosMINIMAP>();
 
 		load();
 	}

@@ -53,6 +53,10 @@ namespace jrc
 
 		void send_chatline(const std::string& line, LineType type);
 		void display_message(Messages::Type line, UIChatbar::LineType type);
+		void toggle_chat();
+		void toggle_chat(bool chat_open);
+		void toggle_chatfield();
+		void toggle_chatfield(bool chatfield_open);
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -109,6 +113,8 @@ namespace jrc
 		};
 
 		bool chatopen;
+		bool chatopen_persist;
+		bool chatfieldopen;
 		Texture chatspace[4];
 		Texture chatenter;
 		Texture chatcover;

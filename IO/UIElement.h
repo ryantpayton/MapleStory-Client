@@ -61,6 +61,7 @@ namespace jrc
 			QUESTLOG,
 			WORLDMAP,
 			USERLIST,
+			MINIMAP,
 			NUM_TYPES
 		};
 
@@ -78,6 +79,7 @@ namespace jrc
 		virtual void send_icon(const Icon& icon, Point<int16_t> cursorpos);
 
 		virtual void doubleclick(Point<int16_t> cursorpos);
+		virtual void rightclick(Point<int16_t> cursorpos);
 		virtual bool is_in_range(Point<int16_t> cursorpos) const;
 		virtual bool remove_cursor(bool clicked, Point<int16_t> cursorpos);
 		virtual Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos);

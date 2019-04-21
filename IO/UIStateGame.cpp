@@ -21,6 +21,7 @@
 #include "UITypes/UIStatusMessenger.h"
 #include "UITypes/UIStatusbar.h"
 #include "UITypes/UIChatbar.h"
+#include "UITypes/UIMiniMap.h"
 #include "UITypes/UIBuffList.h"
 #include "UITypes/UINpcTalk.h"
 #include "UITypes/UIShop.h"
@@ -48,6 +49,7 @@ namespace jrc
 		emplace<UIStatusMessenger>();
 		emplace<UIStatusbar>(stats);
 		emplace<UIChatbar>();
+		emplace<UIMiniMap>();
 		emplace<UIBuffList>();
 		emplace<UINpcTalk>();
 		emplace<UIShop>(look, inventory);
@@ -58,6 +60,7 @@ namespace jrc
 		for (auto& type : elementorder)
 		{
 			auto& element = elements[type];
+
 			if (element && element->is_active())
 				element->draw(inter);
 		}
@@ -74,6 +77,7 @@ namespace jrc
 		for (auto& type : elementorder)
 		{
 			auto& element = elements[type];
+
 			if (element && element->is_active())
 				element->update();
 		}
@@ -82,21 +86,21 @@ namespace jrc
 	void UIStateGame::drop_icon(const Icon& icon, Point<int16_t> pos)
 	{
 		if (UIElement* front = get_front(pos))
-		{
 			front->send_icon(icon, pos);
-		}
 		else
-		{
 			icon.drop_on_stage();
-		}
 	}
 
 	void UIStateGame::doubleclick(Point<int16_t> pos)
 	{
 		if (UIElement* front = get_front(pos))
-		{
 			front->doubleclick(pos);
-		}
+	}
+
+	void UIStateGame::rightclick(Point<int16_t> pos)
+	{
+		if (UIElement* front = get_front(pos))
+			front->rightclick(pos);
 	}
 
 	void UIStateGame::send_key(KeyType::Id type, int32_t action, bool pressed)
@@ -190,6 +194,9 @@ namespace jrc
 
 					break;
 				case KeyAction::CHATWINDOW:
+					if (auto chatbar = UI::get().get_element<UIChatbar>())
+						chatbar->toggle_chat();
+
 					break;
 				case KeyAction::GUILD:
 					break;
@@ -232,6 +239,7 @@ namespace jrc
 				drop_icon(*draggedicon, pos);
 				draggedicon->reset();
 				draggedicon = {};
+
 				return mst;
 			default:
 				return Cursor::GRABBING;
@@ -240,6 +248,7 @@ namespace jrc
 		else
 		{
 			bool clicked = mst == Cursor::CLICKING;
+
 			if (UIElement* focusedelement = get(focused))
 			{
 				if (focusedelement->is_active())
@@ -249,6 +258,7 @@ namespace jrc
 				else
 				{
 					focused = UIElement::NONE;
+
 					return mst;
 				}
 			}
@@ -261,23 +271,18 @@ namespace jrc
 				{
 					auto& element = elements[type];
 					bool found = false;
+
 					if (element && element->is_active())
 					{
 						if (element->is_in_range(pos))
-						{
 							found = true;
-						}
 						else
-						{
 							found = element->remove_cursor(clicked, pos);
-						}
 
 						if (found)
 						{
 							if (front)
-							{
 								element->remove_cursor(false, pos);
-							}
 
 							front = element.get();
 							fronttype = type;
@@ -295,6 +300,7 @@ namespace jrc
 						elementorder.remove(fronttype);
 						elementorder.push_back(fronttype);
 					}
+
 					return front->send_cursor(clicked, pos);
 				}
 				else
@@ -343,9 +349,8 @@ namespace jrc
 		}
 	}
 
-	void UIStateGame::show_skill(Tooltip::Parent parent, int32_t skill_id,
-		int32_t level, int32_t masterlevel, int64_t expiration) {
-
+	void UIStateGame::show_skill(Tooltip::Parent parent, int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration)
+	{
 		sktooltip.set_skill(skill_id, level, masterlevel, expiration);
 
 		if (skill_id)
@@ -369,11 +374,13 @@ namespace jrc
 	UIState::Iterator UIStateGame::pre_add(UIElement::Type type, bool is_toggled, bool is_focused)
 	{
 		auto& element = elements[type];
+
 		if (element && is_toggled)
 		{
 			elementorder.remove(type);
 			elementorder.push_back(type);
 			element->toggle_active();
+
 			return elements.end();
 		}
 		else
@@ -382,9 +389,7 @@ namespace jrc
 			elementorder.push_back(type);
 
 			if (is_focused)
-			{
 				focused = type;
-			}
 
 			return elements.find(type);
 		}
@@ -394,6 +399,7 @@ namespace jrc
 	{
 		if (type == focused)
 			focused = UIElement::NONE;
+
 		if (type == tooltipparent)
 			clear_tooltip(tooltipparent);
 
@@ -415,12 +421,15 @@ namespace jrc
 	{
 		auto begin = elementorder.rbegin();
 		auto end = elementorder.rend();
+
 		for (auto iter = begin; iter != end; ++iter)
 		{
 			auto& element = elements[*iter];
+
 			if (element && element->is_active() && element->is_in_range(pos))
 				return element.get();
 		}
+
 		return nullptr;
 	}
 }

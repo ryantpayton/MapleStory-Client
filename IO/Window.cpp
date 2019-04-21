@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -41,8 +41,7 @@ namespace jrc
 
 	void error_callback(int no, const char* description)
 	{
-		Console::get()
-			.print("glfw error: " + std::string(description) + " (" + std::to_string(no) + ")");
+		Console::get().print("glfw error: " + std::string(description) + " (" + std::to_string(no) + ")");
 	}
 
 	void key_callback(GLFWwindow*, int key, int, int action, int)
@@ -69,7 +68,7 @@ namespace jrc
 			switch (action)
 			{
 			case GLFW_PRESS:
-				UI::get().doubleclick();
+				UI::get().rightclick();
 				break;
 			}
 			break;
@@ -82,6 +81,11 @@ namespace jrc
 		int16_t y = static_cast<int16_t>(ypos);
 		Point<int16_t> pos = Point<int16_t>(x, y);
 		UI::get().send_cursor(pos);
+	}
+
+	void focus_callback(GLFWwindow*, int focused)
+	{
+		UI::get().send_focus(focused);
 	}
 
 	Error Window::init()
@@ -115,7 +119,7 @@ namespace jrc
 			Configuration::get().get_title().c_str(),
 			fullscreen ? glfwGetPrimaryMonitor() : nullptr,
 			context
-			);
+		);
 
 		if (!glwnd)
 			return Error::WINDOW;
@@ -134,6 +138,7 @@ namespace jrc
 		glfwSetKeyCallback(glwnd, key_callback);
 		glfwSetMouseButtonCallback(glwnd, mousekey_callback);
 		glfwSetCursorPosCallback(glwnd, cursor_callback);
+		glfwSetWindowFocusCallback(glwnd, focus_callback);
 
 		GraphicsGL::get().reinit();
 
@@ -174,11 +179,13 @@ namespace jrc
 	void Window::check_events()
 	{
 		int32_t tabstate = glfwGetKey(glwnd, GLFW_KEY_F11);
+
 		if (tabstate == GLFW_PRESS)
 		{
 			fullscreen = !fullscreen;
 			initwindow();
 		}
+
 		glfwPollEvents();
 	}
 
@@ -207,6 +214,7 @@ namespace jrc
 	std::string Window::getclipboard() const
 	{
 		const char* text = glfwGetClipboardString(glwnd);
+
 		return text ? text : "";
 	}
 }

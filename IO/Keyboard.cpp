@@ -82,9 +82,13 @@ namespace jrc
 
 		textactions[GLFW_KEY_BACKSPACE] = KeyAction::BACK;
 		textactions[GLFW_KEY_ENTER] = KeyAction::RETURN;
+		textactions[GLFW_KEY_KP_ENTER] = KeyAction::RETURN;
 		textactions[GLFW_KEY_SPACE] = KeyAction::SPACE;
 		textactions[GLFW_KEY_TAB] = KeyAction::TAB;
-		//textactions[GLFW_KEY_ESCAPE] = KeyAction::ESC;
+		textactions[GLFW_KEY_ESCAPE] = KeyAction::ESCAPE;
+		textactions[GLFW_KEY_HOME] = KeyAction::HOME;
+		textactions[GLFW_KEY_END] = KeyAction::END;
+		textactions[GLFW_KEY_DELETE] = KeyAction::DELETE;
 	}
 
 	int32_t Keyboard::leftshiftcode() const

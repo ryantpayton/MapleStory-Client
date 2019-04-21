@@ -33,6 +33,7 @@ namespace jrc
 		for (auto iter : elements)
 		{
 			UIElement* element = iter.second.get();
+
 			if (element && element->is_active())
 				element->draw(inter);
 		}
@@ -43,12 +44,14 @@ namespace jrc
 		for (auto iter : elements)
 		{
 			UIElement* element = iter.second.get();
+
 			if (element && element->is_active())
 				element->update();
 		}
 	}
 
 	void UIStateLogin::doubleclick(Point<int16_t>) {}
+	void UIStateLogin::rightclick(Point<int16_t>) {}
 
 	void UIStateLogin::send_key(KeyType::Id type, int32_t action, bool pressed)
 	{
@@ -61,6 +64,7 @@ namespace jrc
 			else
 			{
 				focused = UIElement::NONE;
+
 				return;
 			}
 		}
@@ -77,6 +81,7 @@ namespace jrc
 			else
 			{
 				focused = UIElement::NONE;
+
 				return mst;
 			}
 		}
@@ -88,14 +93,13 @@ namespace jrc
 			for (auto iter : elements)
 			{
 				auto& element = iter.second;
+
 				if (element && element->is_active())
 				{
 					if (element->is_in_range(pos))
 					{
 						if (front)
-						{
 							element->remove_cursor(false, pos);
-						}
 
 						front = element.get();
 						fronttype = iter.first;
@@ -108,24 +112,16 @@ namespace jrc
 			}
 
 			if (front)
-			{
 				return front->send_cursor(mst == Cursor::CLICKING, pos);
-			}
 			else
-			{
 				return Cursor::IDLE;
-			}
 		}
 	}
 
 	void UIStateLogin::drag_icon(Icon*) {}
-
 	void UIStateLogin::clear_tooltip(Tooltip::Parent) {}
-
 	void UIStateLogin::show_equip(Tooltip::Parent, int16_t) {}
-
 	void UIStateLogin::show_item(Tooltip::Parent, int32_t) {}
-
 	void UIStateLogin::show_skill(Tooltip::Parent, int32_t, int32_t, int32_t, int64_t) {}
 
 	template <class T, typename...Args>
@@ -170,12 +166,15 @@ namespace jrc
 	{
 		auto begin = elements.values().rbegin();
 		auto end = elements.values().rend();
+
 		for (auto iter = begin; iter != end; ++iter)
 		{
 			auto& element = *iter;
+
 			if (element && element->is_active() && element->is_in_range(pos))
 				return element.get();
 		}
+
 		return nullptr;
 	}
 }

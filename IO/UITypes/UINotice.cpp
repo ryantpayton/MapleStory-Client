@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -63,6 +63,7 @@ namespace jrc
 			box2.draw(start);
 			start.shift_y(box2.height());
 		}
+
 		box.draw(start);
 		start.shift_y(box.height());
 		bottombox.draw(start);
@@ -73,10 +74,8 @@ namespace jrc
 		return top.height() + centerbox.height() + box.height() * (1 + height / box.height());
 	}
 
-
-	UIYesNo::UIYesNo(std::string q, std::function<void(bool)> yh)
-		: UINotice(q) {
-
+	UIYesNo::UIYesNo(std::string q, std::function<void(bool)> yh) : UINotice(q)
+	{
 		yesnohandler = yh;
 
 		int16_t belowtext = UINotice::box2offset();
@@ -110,10 +109,8 @@ namespace jrc
 		return Button::PRESSED;
 	}
 
-
-	UIEnterNumber::UIEnterNumber(std::string q, std::function<void(int32_t)> nh, int32_t mi, int32_t ma, int32_t de)
-		: UINotice(q) {
-
+	UIEnterNumber::UIEnterNumber(std::string q, std::function<void(int32_t)> nh, int32_t mi, int32_t ma, int32_t de) : UINotice(q)
+	{
 		numhandler = nh;
 		min = mi;
 		max = ma;
@@ -126,12 +123,17 @@ namespace jrc
 		buttons[CANCEL] = std::make_unique<MapleButton>(src["BtCancel4"], 132, belowtext + 21);
 
 		Rectangle<int16_t> area(26, 232, belowtext, belowtext + 20);
+
 		numfield = Textfield(Text::A11M, Text::LEFT, Text::LIGHTGREY, area, 9);
 		numfield.set_state(Textfield::FOCUSED);
 		numfield.change_text(std::to_string(de));
-		numfield.set_enter_callback([&](std::string numstr){
-			handlestring(numstr);
-		});
+
+		numfield.set_enter_callback(
+			[&](std::string numstr)
+			{
+				if (numstr.size() > 0)
+					handlestring(numstr);
+			});
 	}
 
 	void UIEnterNumber::draw(float alpha) const
@@ -154,11 +156,11 @@ namespace jrc
 		if (numfield.get_state() == Textfield::NORMAL)
 		{
 			Cursor::State nstate = numfield.send_cursor(cursorpos, clicked);
+
 			if (nstate != Cursor::IDLE)
-			{
 				return nstate;
-			}
 		}
+
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
@@ -181,16 +183,21 @@ namespace jrc
 		if (numstr.size() > 0)
 		{
 			int32_t num;
+
 			try
 			{
 				num = std::stoi(numstr);
+
 				if (num >= min && num <= max)
 				{
 					numhandler(num);
 					active = false;
 				}
 			}
-			catch (const std::exception&) {}
+			catch (const std::exception&)
+			{
+				// TODO: Blank try-catch
+			}
 		}
 
 		buttons[OK]->set_state(Button::NORMAL);

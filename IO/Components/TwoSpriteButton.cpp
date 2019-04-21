@@ -60,4 +60,18 @@ namespace jrc
 
 		return{ absp, absp + dim };
 	}
+
+	int16_t TwoSpriteButton::width() const
+	{
+		bool selected = state == MOUSEOVER || state == PRESSED;
+
+		return textures[selected].width();
+	}
+
+	Point<int16_t> TwoSpriteButton::origin() const
+	{
+		bool selected = state == MOUSEOVER || state == PRESSED;
+
+		return textures[selected].get_origin();
+	}
 }

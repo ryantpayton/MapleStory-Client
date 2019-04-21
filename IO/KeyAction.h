@@ -85,7 +85,10 @@ namespace jrc
 			NOACTION = 70,
 			FACE1 = 100,
 			FACE7 = 106,
-			ESCAPE
+			ESCAPE,
+			HOME,
+			END,
+			DELETE
 		};
 
 		inline Id actionbyid(int32_t id)

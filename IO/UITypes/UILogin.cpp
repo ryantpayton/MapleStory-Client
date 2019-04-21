@@ -77,8 +77,9 @@ namespace jrc
 
 		account.set_enter_callback
 		(
-			[&](std::string)
+			[&](std::string msg)
 			{
+				if (msg.size() > 0)
 				login();
 			}
 		);
@@ -98,8 +99,9 @@ namespace jrc
 
 		password.set_enter_callback
 		(
-			[&](std::string)
+			[&](std::string msg)
 			{
+				if (msg.size() > 0)
 				login();
 			}
 		);

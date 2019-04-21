@@ -24,14 +24,9 @@
 
 namespace jrc
 {
-	UIElement::UIElement(Point<int16_t> p, Point<int16_t> d, bool a)
-		: position(p), dimension(d), active(a) {}
-
-	UIElement::UIElement(Point<int16_t> p, Point<int16_t> d)
-		: UIElement(p, d, true) {}
-
-	UIElement::UIElement()
-		: UIElement({}, {}) {}
+	UIElement::UIElement(Point<int16_t> p, Point<int16_t> d, bool a) : position(p), dimension(d), active(a) {}
+	UIElement::UIElement(Point<int16_t> p, Point<int16_t> d) : UIElement(p, d, true) {}
+	UIElement::UIElement() : UIElement({}, {}) {}
 
 	void UIElement::draw(float alpha) const
 	{
@@ -42,28 +37,20 @@ namespace jrc
 	void UIElement::draw_sprites(float alpha) const
 	{
 		for (const Sprite& sprite : sprites)
-		{
 			sprite.draw(position, alpha);
-		}
 	}
 
 	void UIElement::draw_buttons(float) const
 	{
 		for (auto& iter : buttons)
-		{
 			if (const Button* button = iter.second.get())
-			{
 				button->draw(position);
-			}
-		}
 	}
 
 	void UIElement::update()
 	{
 		for (auto& sprite : sprites)
-		{
 			sprite.update();
-		}
 	}
 
 	void UIElement::makeactive()
@@ -87,14 +74,15 @@ namespace jrc
 	}
 
 	Button::State UIElement::button_pressed(uint16_t) { return Button::DISABLED; }
-
 	void UIElement::send_icon(const Icon&, Point<int16_t>) {}
 
 	void UIElement::doubleclick(Point<int16_t>) {}
+	void UIElement::rightclick(Point<int16_t>) {}
 
 	bool UIElement::is_in_range(Point<int16_t> cursorpos) const
 	{
 		auto bounds = Rectangle<int16_t>(position, position + dimension);
+
 		return bounds.contains(cursorpos);
 	}
 
@@ -103,6 +91,7 @@ namespace jrc
 		for (auto& btit : buttons)
 		{
 			Button* button = btit.second.get();
+
 			switch (button->get_state())
 			{
 			case Button::MOUSEOVER:
@@ -110,6 +99,7 @@ namespace jrc
 				break;
 			}
 		}
+
 		return false;
 	}
 

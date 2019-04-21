@@ -35,6 +35,8 @@ namespace jrc
 
 		void draw(Point<int16_t> position) const;
 		Rectangle<int16_t> bounds(Point<int16_t> position) const;
+		int16_t width() const;
+		Point<int16_t> origin() const;
 
 	private:
 		BoolPair<Texture> textures;

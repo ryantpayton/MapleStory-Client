@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -32,9 +32,10 @@ namespace jrc
 
 		void draw(Point<int16_t> position) const;
 		Rectangle<int16_t> bounds(Point<int16_t> parentpos) const;
+		int16_t width() const;
+		Point<int16_t> origin() const;
 
 	private:
 		Texture textures[NUM_STATES];
 	};
 }
-

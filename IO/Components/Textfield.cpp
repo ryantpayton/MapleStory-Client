@@ -77,8 +77,16 @@ namespace jrc
 		if (state != st)
 		{
 			state = st;
+
+			if (state != DISABLED)
+			{
 			elapsed = 0;
 			showmarker = true;
+			}
+			else
+			{
+				UI::get().remove_textfield();
+			}
 
 			if (state == FOCUSED)
 				UI::get().focus_textfield(this);
@@ -124,7 +132,7 @@ namespace jrc
 
 					break;
 				case KeyAction::RETURN:
-					if (onreturn && text.size() > 0)
+					if (onreturn)
 					{
 						onreturn(text);
 						text = "";
@@ -138,6 +146,20 @@ namespace jrc
 					{
 						text.insert(markerpos, 1, ' ');
 						markerpos++;
+						modifytext(text);
+					}
+
+					break;
+				case KeyAction::HOME:
+					markerpos = 0;
+					break;
+				case KeyAction::END:
+					markerpos = text.size();
+					break;
+				case KeyAction::DELETE:
+					if (text.size() > 0 && markerpos < text.size())
+					{
+						text.erase(markerpos, 1);
 						modifytext(text);
 					}
 
@@ -258,6 +280,7 @@ namespace jrc
 		else
 		{
 			uint16_t advance = textlabel.advance(text.size());
+
 			return (advance + 50) < bounds.get_horizontal().length();
 		}
 	}
