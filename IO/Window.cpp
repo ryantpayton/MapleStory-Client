@@ -32,6 +32,8 @@ namespace jrc
 		glwnd = nullptr;
 		opacity = 1.0f;
 		opcstep = 0.0f;
+		width = Constants::Constants::get().get_viewwidth();
+		height = Constants::Constants::get().get_viewheight();
 	}
 
 	Window::~Window()
@@ -114,8 +116,8 @@ namespace jrc
 			glfwDestroyWindow(glwnd);
 
 		glwnd = glfwCreateWindow(
-			Constants::VIEWWIDTH,
-			Constants::VIEWHEIGHT,
+			width,
+			height,
 			Configuration::get().get_title().c_str(),
 			fullscreen ? glfwGetPrimaryMonitor() : nullptr,
 			context
@@ -129,7 +131,7 @@ namespace jrc
 		bool vsync = Setting<VSync>::get().load();
 		glfwSwapInterval(vsync ? 1 : 0);
 
-		glViewport(0, 0, Constants::VIEWWIDTH, Constants::VIEWHEIGHT);
+		glViewport(0, 0, width, height);
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 
@@ -179,10 +181,19 @@ namespace jrc
 	void Window::check_events()
 	{
 		int32_t tabstate = glfwGetKey(glwnd, GLFW_KEY_F11);
+		int32_t new_width = Constants::Constants::get().get_viewwidth();
+		int32_t new_height = Constants::Constants::get().get_viewheight();
 
 		if (tabstate == GLFW_PRESS)
 		{
 			fullscreen = !fullscreen;
+			initwindow();
+		}
+		else if (width != new_width || height != new_height)
+		{
+			width = new_width;
+			height = new_height;
+
 			initwindow();
 		}
 

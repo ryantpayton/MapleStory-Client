@@ -18,6 +18,7 @@
 #include "UIStatusbar.h"
 
 #include "../Configuration.h"
+#include "../Constants.h"
 
 #include "../Components/MapleButton.h"
 
@@ -29,25 +30,42 @@ namespace jrc
 {
 	UIStatusbar::UIStatusbar(const CharStats& st) : stats(st)
 	{
+		int16_t width = Constants::Constants::get().get_viewwidth();
+
+		std::string stat = "status";
+
+		if (width == 800)
+			stat += "800";
+
 		nl::node mainBar = nl::nx::ui["StatusBar3.img"]["mainBar"];
-		nl::node status = mainBar["status800"];
+		nl::node status = mainBar[stat];
 		nl::node EXPBar = mainBar["EXPBar"];
+		nl::node EXPBarRes = EXPBar[width];
 		nl::node menu = mainBar["menu"];
 		nl::node quickSlot = mainBar["quickSlot"];
 
 		exp_pos = Point<int16_t>(0, 87);
 
-		sprites.emplace_back(EXPBar["backgrnd"], DrawArgument(Point<int16_t>(0, 86), Point<int16_t>(800, 0)));
-		sprites.emplace_back(EXPBar["800"]["layer:back"], exp_pos);
+		sprites.emplace_back(EXPBar["backgrnd"], DrawArgument(Point<int16_t>(0, 86), Point<int16_t>(width, 0)));
+		sprites.emplace_back(EXPBarRes["layer:back"], exp_pos);
 
 		expbar = Gauge(
-			EXPBar.resolve("800/layer:gauge"),
-			EXPBar.resolve("800/layer:cover"),
+			EXPBarRes.resolve("layer:gauge"),
+			EXPBarRes.resolve("layer:cover"),
 			EXPBar.resolve("layer:effect"),
 			308, 0.0f
 		);
 
-		hpmp_pos = Point<int16_t>(412, 40);
+		if (width == 800)
+		{
+			hpmp_pos = Point<int16_t>(412, 40);
+			statset_pos = Point<int16_t>(427, 111);
+		}
+		else
+		{
+			hpmp_pos = Point<int16_t>(416, 40);
+			statset_pos = Point<int16_t>(539, 111);
+		}
 
 		hpmp_sprites.emplace_back(status["backgrnd"], hpmp_pos - Point<int16_t>(1, 0));
 		hpmp_sprites.emplace_back(status["layer:cover"], hpmp_pos - Point<int16_t>(1, 0));
@@ -76,12 +94,21 @@ namespace jrc
 		buttons[BT_COMMUNITY] = std::make_unique<MapleButton>(menu["button:Community"], buttonPos);
 		buttons[BT_EVENT] = std::make_unique<MapleButton>(menu["button:Event"], buttonPos);
 
-		buttons[BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot["button:Fold800"], Point<int16_t>(579, 0));
-		buttons[BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot["button:Extend800"], Point<int16_t>(791, 0));
+		std::string fold = "button:Fold";
+		std::string extend = "button:Extend";
+
+		if (width == 800)
+		{
+			fold += "800";
+			extend += "800";
+		}
+
+		buttons[BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], Point<int16_t>(579, 0));
+		buttons[BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(791, 0));
 		buttons[BT_EXTEND_QS]->set_active(false);
 
 		quickslot_active = true;
-		position = Point<int16_t>(0, 470);
+		position = (width == 800) ? Point<int16_t>(0, 470) : Point<int16_t>(0, 638);
 		dimension = Point<int16_t>(390, 130);
 	}
 
@@ -109,7 +136,7 @@ namespace jrc
 
 		statset.draw(
 			std::to_string(exp) + "[" + expstring.substr(0, expstring.find('.') + 3) + "%]",
-			position + Point<int16_t>(427, 111)
+			position + statset_pos
 		);
 
 		hpmpset.draw(

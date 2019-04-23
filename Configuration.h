@@ -186,6 +186,18 @@ namespace jrc
 		Fullscreen() : BoolEntry("Fullscreen", "false") {}
 	};
 
+	// The width of the screen
+	struct Width : public Configuration::ShortEntry
+	{
+		Width() : ShortEntry("Width", "1024") {}
+	};
+
+	// The height of the screen
+	struct Height : public Configuration::ShortEntry
+	{
+		Height() : ShortEntry("Height", "768") {}
+	};
+
 	// Wether to use vsync.
 	struct VSync : public Configuration::BoolEntry
 	{

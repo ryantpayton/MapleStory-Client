@@ -27,6 +27,10 @@ namespace jrc
 	GraphicsGL::GraphicsGL()
 	{
 		locked = false;
+
+		VWIDTH = Constants::Constants::get().get_viewwidth();
+		VHEIGHT = Constants::Constants::get().get_viewheight();
+		SCREEN = Rectangle<int16_t>(0, VWIDTH, -Constants::VIEWYOFFSET, -Constants::VIEWYOFFSET + VHEIGHT);
 	}
 
 	Error GraphicsGL::init()
@@ -38,8 +42,8 @@ namespace jrc
 			return Error::FREETYPE;
 
 		GLint result = GL_FALSE;
-
 		GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+
 		const char *vs_source =
 			"#version 120\n"
 			"attribute vec4 coord;"
@@ -56,13 +60,16 @@ namespace jrc
 			"	texpos = coord.zw;"
 			"	colormod = color;"
 			"}";
+
 		glShaderSource(vs, 1, &vs_source, NULL);
 		glCompileShader(vs);
 		glGetShaderiv(vs, GL_COMPILE_STATUS, &result);
+
 		if (!result)
 			return Error::VERTEX_SHADER;
 
 		GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+
 		const char *fs_source =
 			"#version 120\n"
 			"varying vec2 texpos;"
@@ -80,17 +87,21 @@ namespace jrc
 			"		gl_FragColor = texture2D(texture, texpos / atlassize) * colormod;"
 			"	}"
 			"}";
+
 		glShaderSource(fs, 1, &fs_source, NULL);
 		glCompileShader(fs);
 		glGetShaderiv(fs, GL_COMPILE_STATUS, &result);
+
 		if (!result)
 			return Error::FRAGMENT_SHADER;
 
 		program = glCreateProgram();
+
 		glAttachShader(program, vs);
 		glAttachShader(program, fs);
 		glLinkProgram(program);
 		glGetProgramiv(program, GL_LINK_STATUS, &result);
+
 		if (!result)
 			return Error::SHADER_PROGRAM;
 
@@ -101,8 +112,8 @@ namespace jrc
 		uniform_screensize = glGetUniformLocation(program, "screensize");
 		uniform_yoffset = glGetUniformLocation(program, "yoffset");
 		uniform_fontregion = glGetUniformLocation(program, "fontregion");
-		if (attribute_coord == -1 || attribute_color == -1 || uniform_texture == -1
-			|| uniform_atlassize == -1 || uniform_yoffset == -1 || uniform_screensize == -1)
+
+		if (attribute_coord == -1 || attribute_color == -1 || uniform_texture == -1 || uniform_atlassize == -1 || uniform_yoffset == -1 || uniform_screensize == -1)
 			return Error::SHADER_VARS;
 
 		glGenBuffers(1, &vbo);
@@ -112,17 +123,15 @@ namespace jrc
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ATLASW, ATLASH, 0,
-			GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ATLASW, ATLASH, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
 		fontborder.set_y(1);
 
 		const std::string FONT_NORMAL = Setting<FontPathNormal>().get().load();
 		const std::string FONT_BOLD = Setting<FontPathBold>().get().load();
+
 		if (FONT_NORMAL.empty() || FONT_BOLD.empty())
-		{
 			Console::get().print("Warning: A font path is empty, check your settings file.");
-		}
 
 		const char* FONT_NORMAL_STR = FONT_NORMAL.c_str();
 		const char* FONT_BOLD_STR = FONT_BOLD.c_str();
@@ -138,26 +147,22 @@ namespace jrc
 
 		fontymax += fontborder.y();
 
-		leftovers = QuadTree<size_t, Leftover>([](const Leftover& first, const Leftover& second) {
-			bool wcomp = first.width() >= second.width();
-			bool hcomp = first.height() >= second.height();
-			if (wcomp && hcomp)
+		leftovers = QuadTree<size_t, Leftover>(
+			[](const Leftover& first, const Leftover& second)
 			{
-				return QuadTree<size_t, Leftover>::RIGHT;
+				bool wcomp = first.width() >= second.width();
+				bool hcomp = first.height() >= second.height();
+
+				if (wcomp && hcomp)
+					return QuadTree<size_t, Leftover>::RIGHT;
+				else if (wcomp)
+					return QuadTree<size_t, Leftover>::DOWN;
+				else if (hcomp)
+					return QuadTree<size_t, Leftover>::UP;
+				else
+					return QuadTree<size_t, Leftover>::LEFT;
 			}
-			else if (wcomp)
-			{
-				return QuadTree<size_t, Leftover>::DOWN;
-			}
-			else if (hcomp)
-			{
-				return QuadTree<size_t, Leftover>::UP;
-			}
-			else
-			{
-				return QuadTree<size_t, Leftover>::LEFT;
-			}
-			});
+		);
 
 		return Error::NONE;
 	}
@@ -165,6 +170,7 @@ namespace jrc
 	bool GraphicsGL::addfont(const char* name, Text::Font id, FT_UInt pixelw, FT_UInt pixelh)
 	{
 		FT_Face face;
+
 		if (FT_New_Face(ftlibrary, name, 0, &face))
 			return false;
 
@@ -175,6 +181,7 @@ namespace jrc
 
 		GLshort width = 0;
 		GLshort height = 0;
+
 		for (uint8_t c = 32; c < 128; c++)
 		{
 			if (FT_Load_Char(face, c, FT_LOAD_RENDER))
@@ -184,6 +191,7 @@ namespace jrc
 			GLshort h = static_cast<GLshort>(g->bitmap.rows);
 
 			width += w;
+
 			if (h > height)
 				height = h;
 		}
@@ -199,6 +207,7 @@ namespace jrc
 		GLshort y = fontborder.y();
 
 		fontborder.shift_x(width);
+
 		if (height > fontymax)
 			fontymax = height;
 
@@ -206,6 +215,7 @@ namespace jrc
 
 		GLshort ox = x;
 		GLshort oy = y;
+
 		for (uint8_t c = 32; c < 128; c++)
 		{
 			if (FT_Load_Char(face, c, FT_LOAD_RENDER))
@@ -218,8 +228,7 @@ namespace jrc
 			GLshort w = static_cast<GLshort>(g->bitmap.width);
 			GLshort h = static_cast<GLshort>(g->bitmap.rows);
 
-			glTexSubImage2D(GL_TEXTURE_2D, 0, ox, oy, w, h,
-				GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, ox, oy, w, h, GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
 
 			Offset offset = Offset(ox, oy, w, h);
 			fonts[id].chars[c] = { ax, ay, w, h, l, t, offset };
@@ -232,12 +241,22 @@ namespace jrc
 
 	void GraphicsGL::reinit()
 	{
+		int32_t new_width = Constants::Constants::get().get_viewwidth();
+		int32_t new_height = Constants::Constants::get().get_viewheight();
+
+		if (VWIDTH != new_width || VHEIGHT != new_height)
+		{
+			VWIDTH = new_width;
+			VHEIGHT = new_height;
+			SCREEN = Rectangle<int16_t>(0, VWIDTH, -Constants::VIEWYOFFSET, -Constants::VIEWYOFFSET + VHEIGHT);
+		}
+
 		glUseProgram(program);
 
 		glUniform1i(uniform_yoffset, Constants::VIEWYOFFSET);
 		glUniform1i(uniform_fontregion, fontymax);
 		glUniform2f(uniform_atlassize, ATLASW, ATLASH);
-		glUniform2f(uniform_screensize, Constants::VIEWWIDTH, Constants::VIEWHEIGHT);
+		glUniform2f(uniform_screensize, VWIDTH, VHEIGHT);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glVertexAttribPointer(attribute_coord, 4, GL_SHORT, GL_FALSE, sizeof(Quad::Vertex), 0);
@@ -269,10 +288,9 @@ namespace jrc
 	{
 		size_t used = ATLASW * border.y() + border.x() * yrange.second();
 		double usedpercent = static_cast<double>(used) / (ATLASW * ATLASH);
+
 		if (usedpercent > 80.0)
-		{
 			clearinternal();
-		}
 	}
 
 	void GraphicsGL::addbitmap(const nl::bitmap& bmp)
@@ -284,6 +302,7 @@ namespace jrc
 	{
 		size_t id = bmp.id();
 		auto offiter = offsets.find(id);
+
 		if (offiter != offsets.end())
 			return offiter->second;
 
@@ -296,9 +315,14 @@ namespace jrc
 			return nulloffset;
 
 		auto value = Leftover(x, y, w, h);
-		size_t lid = leftovers.findnode(value, [](const Leftover& val, const Leftover& leaf) {
-			return val.width() <= leaf.width() && val.height() <= leaf.height();
-			});
+
+		size_t lid = leftovers.findnode(
+			value,
+			[](const Leftover& val, const Leftover& leaf)
+			{
+				return val.width() <= leaf.width() && val.height() <= leaf.height();
+			}
+		);
 
 		if (lid > 0)
 		{
@@ -348,15 +372,13 @@ namespace jrc
 			{
 				border.set_x(0);
 				border.shift_y(yrange.second());
+
 				if (border.y() + h > ATLASH)
-				{
 					clearinternal();
-				}
 				else
-				{
 					yrange = Range<GLshort>();
-				}
 			}
+
 			x = border.x();
 			y = border.y();
 
@@ -386,12 +408,13 @@ namespace jrc
 			}
 		}
 
-		/*size_t used = ATLASW * border.y() + border.x() * yrange.second();
-		double usedpercent = static_cast<double>(used) / (ATLASW * ATLASH);
-		double wastedpercent = static_cast<double>(wasted) / used;
-		Console::get().print("Used: " + std::to_string(usedpercent) + ", wasted: " + std::to_string(wastedpercent));*/
+		//size_t used = ATLASW * border.y() + border.x() * yrange.second();
+		//double usedpercent = static_cast<double>(used) / (ATLASW * ATLASH);
+		//double wastedpercent = static_cast<double>(wasted) / used;
+		//Console::get().print("Used: " + std::to_string(usedpercent) + ", wasted: " + std::to_string(wastedpercent));
 
 		glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_BGRA, GL_UNSIGNED_BYTE, bmp.data());
+
 		return offsets.emplace(
 			std::piecewise_construct,
 			std::forward_as_tuple(id),
@@ -399,9 +422,8 @@ namespace jrc
 		).first->second;
 	}
 
-	void GraphicsGL::draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect,
-		const Color& color, float angle) {
-
+	void GraphicsGL::draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect, const Color& color, float angle)
+	{
 		if (locked)
 			return;
 
@@ -414,10 +436,10 @@ namespace jrc
 		quads.emplace_back(rect.l(), rect.r(), rect.t(), rect.b(), getoffset(bmp), color, angle);
 	}
 
-	Text::Layout GraphicsGL::createlayout(const std::string& text, Text::Font id,
-		Text::Alignment alignment, int16_t maxwidth, bool formatted) {
-
+	Text::Layout GraphicsGL::createlayout(const std::string& text, Text::Font id, Text::Alignment alignment, int16_t maxwidth, bool formatted)
+	{
 		size_t length = text.length();
+
 		if (length == 0)
 			return{};
 
@@ -427,9 +449,11 @@ namespace jrc
 
 		size_t first = 0;
 		size_t offset = 0;
+
 		while (offset < length)
 		{
 			size_t last = text.find_first_of(" \\#", offset + 1);
+
 			if (last == std::string::npos)
 				last = length;
 
@@ -440,20 +464,17 @@ namespace jrc
 		return builder.finish(first, offset);
 	}
 
-
-	GraphicsGL::LayoutBuilder::LayoutBuilder(const Font& f, Text::Alignment a, int16_t mw, bool fm)
-		: font(f), alignment(a), maxwidth(mw), formatted(fm) {
-
+	GraphicsGL::LayoutBuilder::LayoutBuilder(const Font& f, Text::Alignment a, int16_t mw, bool fm) : font(f), alignment(a), maxwidth(mw), formatted(fm)
+	{
 		fontid = Text::NUM_FONTS;
 		color = Text::NUM_COLORS;
 		ax = 0;
 		ay = font.linespace();
 		width = 0;
 		endy = 0;
+
 		if (maxwidth == 0)
-		{
 			maxwidth = 800;
-		}
 	}
 
 	size_t GraphicsGL::LayoutBuilder::add(const char* text, size_t prev, size_t first, size_t last)
@@ -465,6 +486,7 @@ namespace jrc
 		Text::Color last_color = color;
 		size_t skip = 0;
 		bool linebreak = false;
+
 		if (formatted)
 		{
 			switch (text[first])
@@ -481,8 +503,10 @@ namespace jrc
 						linebreak = ax > 0;
 						break;
 					}
+
 					skip++;
 				}
+
 				skip++;
 				break;
 			case '#':
@@ -503,14 +527,17 @@ namespace jrc
 						color = Text::ORANGE;
 						break;
 					}
+
 					skip++;
 				}
+
 				skip++;
 				break;
 			}
 		}
 
 		int16_t wordwidth = 0;
+
 		if (!linebreak)
 		{
 			for (size_t i = first; i < last; i++)
@@ -535,10 +562,10 @@ namespace jrc
 
 		bool newword = skip > 0;
 		bool newline = linebreak || ax + wordwidth > maxwidth;
+
 		if (newword || newline)
-		{
 			add_word(prev, first, last_font, last_color);
-		}
+
 		if (newline)
 		{
 			add_line();
@@ -561,19 +588,13 @@ namespace jrc
 			ax += ch.ax;
 
 			if (width < ax)
-			{
 				width = ax;
-			}
 		}
 
 		if (newword || newline)
-		{
 			return first + skip;
-		}
 		else
-		{
 			return prev;
-		}
 	}
 
 	Text::Layout GraphicsGL::LayoutBuilder::finish(size_t first, size_t last)
@@ -582,12 +603,12 @@ namespace jrc
 		add_line();
 
 		advances.push_back(ax);
+
 		return{ lines, advances, width, ay, ax, endy };
 	}
 
-	void GraphicsGL::LayoutBuilder::add_word(size_t word_first,
-		size_t word_last, Text::Font word_font, Text::Color word_color) {
-
+	void GraphicsGL::LayoutBuilder::add_word(size_t word_first, size_t word_last, Text::Font word_font, Text::Color word_color)
+	{
 		words.push_back({ word_first, word_last, word_font, word_color });
 	}
 
@@ -595,6 +616,7 @@ namespace jrc
 	{
 		int16_t line_x = 0;
 		int16_t line_y = ay;
+
 		switch (alignment)
 		{
 		case Text::CENTER:
@@ -604,14 +626,13 @@ namespace jrc
 			line_x -= ax;
 			break;
 		}
+
 		lines.push_back({ words, { line_x, line_y } });
 		words.clear();
 	}
 
-
-	void GraphicsGL::drawtext(const DrawArgument& args, const std::string& text,
-		const Text::Layout& layout, Text::Font id, Text::Color colorid, Text::Background background) {
-
+	void GraphicsGL::drawtext(const DrawArgument& args, const std::string& text, const Text::Layout& layout, Text::Font id, Text::Color colorid, Text::Background background)
+	{
 		if (locked)
 			return;
 
@@ -642,6 +663,7 @@ namespace jrc
 				quads.emplace_back(left - 1, left, top + 1, bottom - 1, nulloffset, ntcolor, 0.0f);
 				quads.emplace_back(right, right + 1, top + 1, bottom - 1, nulloffset, ntcolor, 0.0f);
 			}
+
 			break;
 		}
 
@@ -678,14 +700,12 @@ namespace jrc
 				GLshort ay = position.y();
 
 				const GLfloat* wordcolor;
+
 				if (word.color < Text::NUM_COLORS)
-				{
 					wordcolor = colors[word.color];
-				}
 				else
-				{
 					wordcolor = colors[colorid];
-				}
+
 				Color abscolor = color * Color{ wordcolor[0], wordcolor[1], wordcolor[2], 1.0f };
 
 				for (size_t pos = word.first; pos < word.last; ++pos)
@@ -722,7 +742,7 @@ namespace jrc
 
 	void GraphicsGL::drawscreenfill(float r, float g, float b, float a)
 	{
-		drawrectangle(0, -Constants::VIEWYOFFSET, Constants::VIEWWIDTH, Constants::VIEWHEIGHT, r, g, b, a);
+		drawrectangle(0, -Constants::VIEWYOFFSET, VWIDTH, VHEIGHT, r, g, b, a);
 	}
 
 	void GraphicsGL::lock()
@@ -738,6 +758,7 @@ namespace jrc
 	void GraphicsGL::flush(float opacity)
 	{
 		bool coverscene = opacity != 1.0f;
+
 		if (coverscene)
 		{
 			float complement = 1.0f - opacity;
@@ -751,10 +772,12 @@ namespace jrc
 
 		GLsizei csize = static_cast<GLsizei>(quads.size() * sizeof(Quad));
 		GLsizei fsize = static_cast<GLsizei>(quads.size() * Quad::LENGTH);
+
 		glEnableVertexAttribArray(attribute_coord);
 		glEnableVertexAttribArray(attribute_color);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, csize, quads.data(), GL_STREAM_DRAW);
+
 		glDrawArrays(GL_QUADS, 0, fsize);
 
 		glDisableVertexAttribArray(attribute_coord);
@@ -762,16 +785,12 @@ namespace jrc
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		if (coverscene)
-		{
 			quads.pop_back();
-		}
 	}
 
 	void GraphicsGL::clearscene()
 	{
 		if (!locked)
-		{
 			quads.clear();
-		}
 	}
 }

@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -60,8 +60,10 @@ namespace jrc
 
 		void settype(Type type);
 
-		static const int16_t WOFFSET = Constants::VIEWWIDTH / 2;
-		static const int16_t HOFFSET = Constants::VIEWHEIGHT / 2 - Constants::VIEWYOFFSET;
+		int16_t VWIDTH;
+		int16_t VHEIGHT;
+		int16_t WOFFSET;
+		int16_t HOFFSET;
 
 		Animation animation;
 		bool animated;

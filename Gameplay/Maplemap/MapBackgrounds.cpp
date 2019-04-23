@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -26,6 +26,11 @@ namespace jrc
 {
 	Background::Background(nl::node src)
 	{
+		VWIDTH = Constants::Constants::get().get_viewwidth();
+		VHEIGHT = Constants::Constants::get().get_viewheight();
+		WOFFSET = VWIDTH / 2;
+		HOFFSET = VHEIGHT - Constants::VIEWYOFFSET;
+
 		nl::node backsrc = nl::nx::map["Back"];
 		animated = src["ani"].get_bool();
 		animation = backsrc[src["bS"] + ".img"][animated ? "ani" : "back"][src["no"]];
@@ -55,17 +60,17 @@ namespace jrc
 		{
 		case HTILED:
 		case HMOVEA:
-			htile = Constants::VIEWWIDTH / cx + 3;
+			htile = VWIDTH / cx + 3;
 			break;
 		case VTILED:
 		case VMOVEA:
-			vtile = Constants::VIEWHEIGHT / cy + 3;
+			vtile = VHEIGHT / cy + 3;
 			break;
 		case TILED:
 		case HMOVEB:
 		case VMOVEB:
-			htile = Constants::VIEWWIDTH / cx + 3;
-			vtile = Constants::VIEWHEIGHT / cy + 3;
+			htile = VWIDTH / cx + 3;
+			vtile = VHEIGHT / cy + 3;
 			break;
 		}
 

@@ -81,6 +81,7 @@ namespace jrc
 
 		Point<int16_t> exp_pos;
 		Point<int16_t> hpmp_pos;
+		Point<int16_t> statset_pos;
 		Point<int16_t> quickslot_pos;
 
 		bool quickslot_active;

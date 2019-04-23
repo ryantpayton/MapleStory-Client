@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -35,7 +35,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace jrc 
+namespace jrc
 {
 	// Graphics engine which uses OpenGL.
 	class GraphicsGL : public Singleton<GraphicsGL>
@@ -54,15 +54,12 @@ namespace jrc
 		// Add a bitmap to the available resources.
 		void addbitmap(const nl::bitmap& bmp);
 		// Draw the bitmap with the given parameters.
-		void draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect,
-			const Color& color, float angle);
+		void draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect, const Color& color, float angle);
 
 		// Create a layout for the text with the parameters specified.
-		Text::Layout createlayout(const std::string& text, Text::Font font,
-			Text::Alignment alignment, int16_t maxwidth, bool formatted);
+		Text::Layout createlayout(const std::string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth, bool formatted);
 		// Draw a text with the given parameters.
-		void drawtext(const DrawArgument& args, const std::string& text, const Text::Layout& layout, Text::Font font,
-			Text::Color color, Text::Background back);
+		void drawtext(const DrawArgument& args, const std::string& text, const Text::Layout& layout, Text::Font font, Text::Color color, Text::Background back);
 
 		// Draw a rectangle filled with the specified color.
 		void drawrectangle(int16_t x, int16_t y, int16_t w, int16_t h, float r, float g, float b, float a);
@@ -82,7 +79,7 @@ namespace jrc
 	private:
 		void clearinternal();
 		bool addfont(const char* name, Text::Font id, FT_UInt width, FT_UInt height);
-		
+
 		struct Offset
 		{
 			GLshort l;
@@ -94,11 +91,11 @@ namespace jrc
 			{
 				l = x;
 				r = x + w;
-				t = y ;
+				t = y;
 				b = y + h;
 			}
 
-			Offset() 
+			Offset()
 			{
 				l = 0;
 				r = 0;
@@ -106,6 +103,7 @@ namespace jrc
 				b = 0;
 			}
 		};
+
 		// Add a bitmap to the available resources.
 		const Offset& getoffset(const nl::bitmap& bmp);
 
@@ -132,14 +130,14 @@ namespace jrc
 				b = 0;
 			}
 
-			GLshort width() const 
-			{ 
-				return r - l; 
+			GLshort width() const
+			{
+				return r - l;
 			}
 
-			GLshort height() const 
-			{ 
-				return b - t; 
+			GLshort height() const
+			{
+				return b - t;
 			}
 		};
 
@@ -209,7 +207,7 @@ namespace jrc
 				height = h;
 			}
 
-			Font() 
+			Font()
 			{
 				width = 0;
 				height = 0;
@@ -251,12 +249,9 @@ namespace jrc
 			int16_t endy;
 		};
 
-		static constexpr Rectangle<int16_t> SCREEN = {
-			0,
-			Constants::VIEWWIDTH,
-			-Constants::VIEWYOFFSET,
-			-Constants::VIEWYOFFSET + Constants::VIEWHEIGHT
-		};
+		int16_t VWIDTH;
+		int16_t VHEIGHT;
+		Rectangle<int16_t> SCREEN;
 
 		static const GLshort ATLASW = 8192;
 		static const GLshort ATLASH = 8192;
@@ -292,4 +287,3 @@ namespace jrc
 		GLshort fontymax;
 	};
 }
-
