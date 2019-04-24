@@ -50,11 +50,13 @@ namespace jrc
 		sprites.emplace_back(EXPBar["backgrnd"], DrawArgument(Point<int16_t>(0, 87), Point<int16_t>(VWIDTH, 0)));
 		sprites.emplace_back(EXPBarRes["layer:back"], exp_pos);
 
+		int16_t exp_max = VWIDTH - 15;
+
 		expbar = Gauge(
 			EXPBarRes.resolve("layer:gauge"),
 			EXPBarRes.resolve("layer:cover"),
 			EXPBar.resolve("layer:effect"),
-			308, 0.0f
+			exp_max, 0.0f
 		);
 
 		int16_t pos_adj = 0;
