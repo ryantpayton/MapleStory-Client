@@ -1,8 +1,9 @@
-# JourneyClient
-JourneyClient is a custom, made-from-scratch game client.
+# HeavenClient
+HeavenClient is a custom, made-from-scratch game client.
 
 # Supported versions
 The client is currently compatible with version 83 servers.
+The client has only been tested with [HeavenMS](https://github.com/ronancpl/HeavenMS).
 For the UI file, a v154+ version should be used.
 
 # Configuration
@@ -10,6 +11,8 @@ The build can be configured by editing the Journey.h file. The following options
 - JOURNEY_USE_CRYPTO: Use cryptography when communicating for the server.
 - JOURNEY_USE_XXHASH : Use xxhash for file check (additional dependency)
 - JOURNEY_USE_ASIO: Use Asio for networking (additional dependency)
+
+Also, default settings can be configured in Configuration.h
 
 # Dependencies
 - Nx library:
