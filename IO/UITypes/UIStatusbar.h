@@ -46,6 +46,7 @@ namespace jrc
 		bool is_in_range(Point<int16_t> cursorpos) const override;
 
 		void toggle_qs();
+		void toggle_qs(bool quick_slot_active);
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -81,9 +82,14 @@ namespace jrc
 
 		Point<int16_t> exp_pos;
 		Point<int16_t> hpmp_pos;
+		Point<int16_t> hpset_pos;
+		Point<int16_t> mpset_pos;
 		Point<int16_t> statset_pos;
+		Point<int16_t> levelset_pos;
+		Point<int16_t> namelabel_pos;
 		Point<int16_t> quickslot_pos;
 
 		bool quickslot_active;
+		int16_t VWIDTH;
 	};
 }

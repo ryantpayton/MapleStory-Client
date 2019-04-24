@@ -194,6 +194,9 @@ namespace jrc
 			width = new_width;
 			height = new_height;
 
+			if (width == 1920)
+				fullscreen = true;
+
 			initwindow();
 		}
 
