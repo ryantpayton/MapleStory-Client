@@ -21,7 +21,9 @@
 #include "UICharSelect.h"
 
 #include "../UI.h"
+
 #include "../Components/MapleButton.h"
+#include "../Audio/Audio.h"
 
 #include "../../Graphics/Sprite.h"
 
@@ -146,6 +148,37 @@ namespace jrc
 			text.draw(position + Point<int16_t>(72, -3), alpha);
 
 		UIElement::draw(alpha);
+	}
+
+	Cursor::State UIClassConfirm::send_cursor(bool down, Point<int16_t> pos)
+	{
+		for (auto& btit : buttons)
+		{
+			if (btit.second->is_active() && btit.second->bounds(position).contains(pos))
+			{
+				if (btit.second->get_state() == Button::NORMAL)
+				{
+					Sound(Sound::BUTTONOVER).play();
+
+					btit.second->set_state(Button::MOUSEOVER);
+				}
+				else if (btit.second->get_state() == Button::MOUSEOVER)
+				{
+					if (down)
+					{
+						Sound(Sound::BUTTONCLICK).play();
+
+						btit.second->set_state(button_pressed(btit.first));
+					}
+				}
+			}
+			else if (btit.second->get_state() == Button::MOUSEOVER)
+			{
+				btit.second->set_state(Button::NORMAL);
+			}
+		}
+
+		return Cursor::State::LEAF;
 	}
 
 	Button::State UIClassConfirm::button_pressed(uint16_t id)

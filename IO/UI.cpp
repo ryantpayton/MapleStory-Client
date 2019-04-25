@@ -30,6 +30,7 @@
 #include "../IO/UITypes/UIUserList.h"
 #include "../IO/UITypes/UIChatbar.h"
 #include "../IO/UITypes/UIMiniMap.h"
+#include "../IO/UITypes/UIStatusbar.h"
 
 namespace jrc
 {
@@ -108,11 +109,13 @@ namespace jrc
 			// The window gained input focus
 			uint8_t volume = Setting<SFXVolume>::get().load();
 			Sound::set_sfxvolume(volume);
+			Music::set_bgmvolume(volume);
 		}
 		else
 		{
 			// The window lost input focus
 			Sound::set_sfxvolume(0);
+			Music::set_bgmvolume(0);
 		}
 	}
 
@@ -202,6 +205,7 @@ namespace jrc
 					auto questlog = UI::get().get_element<UIQuestLog>();
 					auto worldmap = UI::get().get_element<UIWorldMap>();
 					auto userlist = UI::get().get_element<UIUserList>();
+					auto statusbar = UI::get().get_element<UIStatusbar>();
 
 					if (statsinfo && statsinfo->is_active())
 						statsinfo->send_key(mapping.action, pressed);
@@ -217,6 +221,8 @@ namespace jrc
 						worldmap->send_key(mapping.action, pressed);
 					else if (userlist && userlist->is_active())
 						userlist->send_key(mapping.action, pressed);
+					else if (statusbar)
+						statusbar->send_key(mapping.action, pressed);
 					else if (chatbar)
 						chatbar->send_key(mapping.action, pressed);
 					else

@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -48,7 +48,6 @@ namespace jrc
 			play(id);
 	}
 
-
 	Error Sound::init()
 	{
 		if (!BASS_Init(1, 44100, 0, nullptr, 0))
@@ -59,6 +58,8 @@ namespace jrc
 		add_sound(Sound::BUTTONCLICK, uisrc["BtMouseClick"]);
 		add_sound(Sound::BUTTONOVER, uisrc["BtMouseOver"]);
 		add_sound(Sound::SELECTCHAR, uisrc["CharSelect"]);
+		add_sound(Sound::MENUDOWN, uisrc["MenuDown"]);
+		add_sound(Sound::MENUUP, uisrc["MenuUp"]);
 
 		nl::node gamesrc = nl::nx::sound["Game.img"];
 
@@ -70,6 +71,7 @@ namespace jrc
 		add_sound(Sound::LEVELUP, gamesrc["LevelUp"]);
 
 		uint8_t volume = Setting<SFXVolume>::get().load();
+
 		if (!set_sfxvolume(volume))
 			return Error::AUDIO;
 
@@ -100,11 +102,13 @@ namespace jrc
 		nl::audio ad = src;
 
 		auto data = reinterpret_cast<const void*>(ad.data());
+
 		if (data)
 		{
 			size_t id = ad.id();
 
 			samples[id] = BASS_SampleLoad(true, data, 82, (DWORD)ad.length(), 4, BASS_SAMPLE_OVER_POS);
+
 			return id;
 		}
 		else
@@ -116,14 +120,13 @@ namespace jrc
 	void Sound::add_sound(Name name, nl::node src)
 	{
 		size_t id = add_sound(src);
+
 		if (id)
-		{
 			soundids[name] = id;
-		}
 	}
+
 	std::unordered_map<size_t, uint64_t> Sound::samples;
 	EnumMap<Sound::Name, size_t> Sound::soundids;
-
 
 	Music::Music(std::string p)
 	{
@@ -140,6 +143,7 @@ namespace jrc
 
 		nl::audio ad = nl::nx::sound.resolve(path);
 		auto data = reinterpret_cast<const void*>(ad.data());
+
 		if (data)
 		{
 			if (stream)
@@ -147,6 +151,7 @@ namespace jrc
 				BASS_ChannelStop(stream);
 				BASS_StreamFree(stream);
 			}
+
 			stream = BASS_StreamCreateFile(true, data, 82, ad.length(), BASS_SAMPLE_FLOAT | BASS_SAMPLE_LOOP);
 			BASS_ChannelPlay(stream, true);
 
@@ -154,10 +159,10 @@ namespace jrc
 		}
 	}
 
-
 	Error Music::init()
 	{
 		uint8_t volume = Setting<BGMVolume>::get().load();
+
 		if (!set_bgmvolume(volume))
 			return Error::AUDIO;
 

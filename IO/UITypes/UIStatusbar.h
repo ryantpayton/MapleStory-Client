@@ -38,15 +38,34 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 
+		enum MenuType
+		{
+			MENU,
+			SETTING,
+			COMMUNITY,
+			CHARACTER,
+			EVENT
+		};
+
 		UIStatusbar(const CharStats& stats);
 
 		void draw(float alpha) const override;
 		void update() override;
+		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 
+		void send_key(int32_t keycode, bool pressed) override;
 		bool is_in_range(Point<int16_t> cursorpos) const override;
 
 		void toggle_qs();
 		void toggle_qs(bool quick_slot_active);
+
+		void toggle_menu();
+		void toggle_setting();
+		void toggle_community();
+		void toggle_character();
+		void toggle_event();
+		void remove_menus();
+		void remove_active_menu(MenuType type);
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -65,7 +84,34 @@ namespace jrc
 			BT_COMMUNITY,
 			BT_EVENT,
 			BT_FOLD_QS,
-			BT_EXTEND_QS
+			BT_EXTEND_QS,
+			BT_MENU_ACHIEVEMENT,
+			BT_MENU_AUCTION,
+			BT_MENU_BATTLE,
+			BT_MENU_CLAIM,
+			BT_MENU_FISHING,
+			BT_MENU_HELP,
+			BT_MENU_MEDAL,
+			BT_MENU_MONSTER_COLLECTION,
+			BT_MENU_MONSTER_LIFE,
+			BT_MENU_QUEST,
+			BT_MENU_UNION,
+			BT_SETTING_CHANNEL,
+			BT_SETTING_QUIT,
+			BT_SETTING_JOYPAD,
+			BT_SETTING_KEYS,
+			BT_SETTING_OPTION,
+			BT_COMMUNITY_BOSS,
+			BT_COMMUNITY_FRIENDS,
+			BT_COMMUNITY_GUILD,
+			BT_COMMUNITY_MAPLECHAT,
+			BT_CHARACTER_INFO,
+			BT_CHARACTER_EQUIP,
+			BT_CHARACTER_ITEM,
+			BT_CHARACTER_SKILL,
+			BT_CHARACTER_STAT,
+			BT_EVENT_DAILY,
+			BT_EVENT_SCHEDULE
 		};
 
 		const CharStats& stats;
@@ -77,6 +123,8 @@ namespace jrc
 		Charset hpmpset;
 		Charset levelset;
 		Texture quickslot[2];
+		Texture menutitle[5];
+		Texture menubackground[3];
 		OutlinedText namelabel;
 		std::vector<Sprite> hpmp_sprites;
 
@@ -88,8 +136,19 @@ namespace jrc
 		Point<int16_t> levelset_pos;
 		Point<int16_t> namelabel_pos;
 		Point<int16_t> quickslot_pos;
+		Point<int16_t> menu_pos;
+		Point<int16_t> setting_pos;
+		Point<int16_t> community_pos;
+		Point<int16_t> character_pos;
+		Point<int16_t> event_pos;
 
 		bool quickslot_active;
 		int16_t VWIDTH;
+
+		bool menu_active;
+		bool setting_active;
+		bool community_active;
+		bool character_active;
+		bool event_active;
 	};
 }

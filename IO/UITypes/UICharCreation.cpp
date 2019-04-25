@@ -18,10 +18,12 @@
 #include "UICharCreation.h"
 #include "UIClassCreation.h"
 
-#include "../Components/MapleButton.h"
 #include "../UI.h"
+
+#include "../Components/MapleButton.h"
 #include "../UITypes/UILoginNotice.h"
 #include "../UITypes/UICharSelect.h"
+#include "../Audio/Audio.h"
 
 #include "nlnx/nx.hpp"
 
@@ -121,9 +123,35 @@ namespace jrc
 		}
 	}
 
-	Cursor::State UICharCreation::send_cursor(bool clicked, Point<int16_t> cursorpos)
+	Cursor::State UICharCreation::send_cursor(bool down, Point<int16_t> pos)
 	{
-		return UIElement::send_cursor(clicked, cursorpos);
+		for (auto& btit : buttons)
+		{
+			if (btit.second->is_active() && btit.second->bounds(position).contains(pos))
+			{
+				if (btit.second->get_state() == Button::NORMAL)
+				{
+					Sound(Sound::BUTTONOVER).play();
+
+					btit.second->set_state(Button::MOUSEOVER);
+				}
+				else if (btit.second->get_state() == Button::MOUSEOVER)
+				{
+					if (down)
+					{
+						Sound(Sound::BUTTONCLICK).play();
+
+						btit.second->set_state(button_pressed(btit.first));
+					}
+				}
+			}
+			else if (btit.second->get_state() == Button::MOUSEOVER)
+			{
+				btit.second->set_state(Button::NORMAL);
+			}
+		}
+
+		return Cursor::State::LEAF;
 	}
 
 	void UICharCreation::send_naming_result(bool used)

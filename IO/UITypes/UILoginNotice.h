@@ -84,6 +84,8 @@ namespace jrc
 
 		void draw(float alpha) const override;
 
+		Cursor::State send_cursor(bool down, Point<int16_t> pos) override;
+
 		void create_class();
 
 	protected:
