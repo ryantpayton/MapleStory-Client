@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -31,30 +31,30 @@ namespace jrc
 		pos = 0;
 	}
 
-	Session::~Session() 
+	Session::~Session()
 	{
 		if (connected)
-		{
 			socket.close();
-		}
 	}
 
 	bool Session::init(const char* host, const char* port)
 	{
 		// Connect to the server.
 		connected = socket.open(host, port);
+
 		if (connected)
 		{
 			// Read keys neccessary for communicating with the server.
 			cryptography = { socket.get_buffer() };
 		}
+
 		return connected;
 	}
 
 	Error Session::init()
 	{
 		std::string HOST = Setting<ServerIP>::get().load();
-		std::string PORT = Setting<ServerPort>::get().load();;
+		std::string PORT = Setting<ServerPort>::get().load();
 
 		if (!init(HOST.c_str(), PORT.c_str()))
 			return Error::CONNECTION;
@@ -66,14 +66,11 @@ namespace jrc
 	{
 		// Close the current connection and open a new one.
 		bool success = socket.close();
+
 		if (success)
-		{
 			init(address, port);
-		}
 		else
-		{
 			connected = false;
-		}
 	}
 
 	void Session::process(const int8_t* bytes, size_t available)
@@ -89,6 +86,7 @@ namespace jrc
 
 		// Determine how much we can write. Write data into the buffer.
 		size_t towrite = length - pos;
+
 		if (towrite > available)
 			towrite = available;
 
@@ -100,7 +98,7 @@ namespace jrc
 		{
 			cryptography.decrypt(buffer, length);
 
-			try 
+			try
 			{
 				packetswitch.forward(buffer, length);
 			}
@@ -114,6 +112,7 @@ namespace jrc
 
 			// Check if there is more available.
 			size_t remaining = available - towrite;
+
 			if (remaining >= MIN_PACKET_LENGTH)
 			{
 				// More packets are available, so we start over.
@@ -139,6 +138,7 @@ namespace jrc
 	{
 		// Check if a packet has arrived. Handle if data is sufficient: 4 bytes(header) + 2 bytes(opcode) = 6.
 		size_t result = socket.receive(&connected);
+
 		if (result >= MIN_PACKET_LENGTH || length > 0)
 		{
 			// Retrieve buffer from the socket and process it.

@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -35,6 +35,13 @@ namespace jrc
 		}
 	};
 
+	// Requests the server to set map transition complete
+	// Opcode: PLAYER_MAP_TRANSFER(207)
+	class PlayerMapTransferPacket : public OutPacket
+	{
+	public:
+		PlayerMapTransferPacket() : OutPacket(PLAYER_MAP_TRANSFER) {}
+	};
 
 	// Updates the player's position with the server.
 	// Opcode: MOVE_PLAYER(41)
@@ -48,7 +55,6 @@ namespace jrc
 			writemovement(movement);
 		}
 	};
-
 
 	// Requests various party-related things.
 	// Opcode: PARTY_OPERATION(124)
@@ -66,12 +72,11 @@ namespace jrc
 		};
 
 	protected:
-		PartyOperationPacket(Operation op) : OutPacket(PARTY_OPERATION) 
+		PartyOperationPacket(Operation op) : OutPacket(PARTY_OPERATION)
 		{
 			write_byte(op);
 		}
 	};
-
 
 	// Creates a new party.
 	// Operation: CREATE(1)
@@ -81,7 +86,6 @@ namespace jrc
 		CreatePartyPacket() : PartyOperationPacket(CREATE) {}
 	};
 
-
 	// Leaves a party
 	// Operation: LEAVE(2)
 	class LeavePartyPacket : public PartyOperationPacket
@@ -90,18 +94,16 @@ namespace jrc
 		LeavePartyPacket() : PartyOperationPacket(LEAVE) {}
 	};
 
-
 	// Joins a party.
 	// Operation: JOIN(3)
 	class JoinPartyPacket : public PartyOperationPacket
 	{
 	public:
-		JoinPartyPacket(int32_t party_id) : PartyOperationPacket(JOIN) 
+		JoinPartyPacket(int32_t party_id) : PartyOperationPacket(JOIN)
 		{
 			write_int(party_id);
 		}
 	};
-
 
 	// Invites a player to a party.
 	// Operation: INVITE(4)
@@ -114,7 +116,6 @@ namespace jrc
 		}
 	};
 
-
 	// Expels someone from a party.
 	// Operation: EXPEL(5)
 	class ExpelFromPartyPacket : public PartyOperationPacket
@@ -125,7 +126,6 @@ namespace jrc
 			write_int(cid);
 		}
 	};
-
 
 	// Passes party leadership to another character.
 	// Operation: PASS_LEADER(6)
@@ -138,16 +138,13 @@ namespace jrc
 		}
 	};
 
-
 	// Updates a mob's position with the server.
 	// Opcode: MOVE_MONSTER(188)
 	class MoveMobPacket : public MovementPacket
 	{
 	public:
-		MoveMobPacket(int32_t oid, int16_t type, int8_t skillb, int8_t skill0, int8_t skill1,
-			int8_t skill2, int8_t skill3, int8_t skill4, Point<int16_t> startpos,
-			const Movement& movement) : MovementPacket(MOVE_MONSTER) {
-
+		MoveMobPacket(int32_t oid, int16_t type, int8_t skillb, int8_t skill0, int8_t skill1, int8_t skill2, int8_t skill3, int8_t skill4, Point<int16_t> startpos, const Movement& movement) : MovementPacket(MOVE_MONSTER)
+		{
 			write_int(oid);
 			write_short(type);
 			write_byte(skillb);
@@ -165,7 +162,6 @@ namespace jrc
 			writemovement(movement);
 		}
 	};
-
 
 	// Requests picking up an item.
 	// Opcode: PICKUP_ITEM(202)

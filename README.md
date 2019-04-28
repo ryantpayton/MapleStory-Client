@@ -50,4 +50,4 @@ The default settings can be configured by editing the **Configuration.h** file. 
 [Asio](http://think-async.com/) (optional)
 
 # Binaries
-The latest build (24.04.2019) can be found here: [HeavenClient.zip](https://drive.google.com/open?id=1v3b3BF_OKi1AWsKfehuPM2H0mtRi6Al_)
+The latest build (28.04.2019) can be found here: [HeavenClient.zip](https://drive.google.com/open?id=1FLH1Axsg2Xt0TUq5cJIubwiACaRSL6Vw)

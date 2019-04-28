@@ -36,6 +36,8 @@ namespace jrc
 
 		void send_key(int32_t keycode, bool pressed) override;
 
+		void update_buttons();
+
 	private:
 		static constexpr int16_t center_start_x = 64;
 

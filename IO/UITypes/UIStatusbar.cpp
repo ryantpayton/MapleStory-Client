@@ -17,14 +17,21 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIStatusbar.h"
 
+#include "../../Character/ExpTable.h"
+
 #include "../Configuration.h"
 #include "../Constants.h"
 #include "../UI.h"
+#include "../Window.h"
+#include "../Timer.h"
 
 #include "../Components/MapleButton.h"
 #include "../Audio/Audio.h"
+#include "../Graphics/GraphicsGL.h"
+#include "../Gameplay/Stage.h"
+#include "../Net/Session.h"
 
-#include "../../Character/ExpTable.h"
+#include "../Net/Packets/LoginPackets.h"
 
 #include "nlnx/nx.hpp"
 
@@ -32,7 +39,7 @@ namespace jrc
 {
 	UIStatusbar::UIStatusbar(const CharStats& st) : stats(st)
 	{
-		quickslot_active = true;
+		quickslot_active = false;
 		VWIDTH = Constants::Constants::get().get_viewwidth();
 
 		menu_active = false;
@@ -288,17 +295,40 @@ namespace jrc
 #pragma endregion
 
 		if (VWIDTH == 800)
+		{
 			position = Point<int16_t>(0, 470);
+			position_x = 410;
+			position_y = position.y();
+			dimension = Point<int16_t>(VWIDTH - position_x, 130);
+		}
 		else if (VWIDTH == 1024)
+		{
 			position = Point<int16_t>(0, 638);
+			position_x = 410;
+			position_y = position.y() + 42;
+			dimension = Point<int16_t>(VWIDTH - position_x, 65);
+		}
 		else if (VWIDTH == 1280)
+		{
 			position = Point<int16_t>(0, 590);
+			position_x = 500;
+			position_y = position.y() + 42;
+			dimension = Point<int16_t>(VWIDTH - position_x, 65);
+		}
 		else if (VWIDTH == 1366)
+		{
 			position = Point<int16_t>(0, 638);
+			position_x = 585;
+			position_y = position.y() + 42;
+			dimension = Point<int16_t>(VWIDTH - position_x, 65);
+		}
 		else if (VWIDTH == 1920)
+		{
 			position = Point<int16_t>(0, 950);
-
-		dimension = Point<int16_t>(390, 130);
+			position_x = 860;
+			position_y = position.y() + 40;
+			dimension = Point<int16_t>(VWIDTH - position_x, 70);
+		}
 	}
 
 	void UIStatusbar::draw(float alpha) const
@@ -497,7 +527,12 @@ namespace jrc
 		case BT_MENU_QUEST:
 		case BT_MENU_UNION:
 		case BT_SETTING_CHANNEL:
+			remove_menus();
+			break;
 		case BT_SETTING_QUIT:
+			remove_menus();
+			transition();
+			break;
 		case BT_SETTING_JOYPAD:
 		case BT_SETTING_KEYS:
 		case BT_SETTING_OPTION:
@@ -535,7 +570,7 @@ namespace jrc
 
 	bool UIStatusbar::is_in_range(Point<int16_t> cursorpos) const
 	{
-		auto pos = Point<int16_t>(410, position.y());
+		auto pos = Point<int16_t>(position_x, position_y);
 		auto bounds = Rectangle<int16_t>(pos, pos + dimension);
 
 		return bounds.contains(cursorpos);
@@ -715,6 +750,32 @@ namespace jrc
 			toggle_character();
 		else if (event_active && type != MenuType::EVENT)
 			toggle_event();
+	}
+
+	void UIStatusbar::transition() const
+	{
+		Constants::Constants::get().set_viewwidth(800);
+		Constants::Constants::get().set_viewheight(600);
+
+		float fadestep = 0.025f;
+
+		Window::get().fadeout(fadestep, []() {
+			GraphicsGL::get().clear();
+			UI::get().change_state(UI::State::LOGIN);
+
+			std::string HOST = Setting<ServerIP>::get().load();
+			std::string PORT = Setting<ServerPort>::get().load();
+
+			Session::get().reconnect(HOST.c_str(), PORT.c_str());
+
+			UI::get().enable();
+			Timer::get().start();
+			GraphicsGL::get().unlock();
+			});
+
+		GraphicsGL::get().lock();
+		Stage::get().clear();
+		Timer::get().start();
 	}
 
 	float UIStatusbar::getexppercent() const

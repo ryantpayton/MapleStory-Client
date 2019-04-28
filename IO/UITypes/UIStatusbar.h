@@ -66,6 +66,7 @@ namespace jrc
 		void toggle_event();
 		void remove_menus();
 		void remove_active_menu(MenuType type);
+		void transition() const;
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -141,6 +142,8 @@ namespace jrc
 		Point<int16_t> community_pos;
 		Point<int16_t> character_pos;
 		Point<int16_t> event_pos;
+		int16_t position_x;
+		int16_t position_y;
 
 		bool quickslot_active;
 		int16_t VWIDTH;

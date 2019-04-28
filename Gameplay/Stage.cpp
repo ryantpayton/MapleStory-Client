@@ -177,6 +177,7 @@ namespace jrc
 		}
 		else if (warpinfo.valid)
 		{
+			PlayerMapTransferPacket().dispatch();
 			ChangeMapPacket(false, warpinfo.mapid, warpinfo.name, false).dispatch();
 		}
 	}

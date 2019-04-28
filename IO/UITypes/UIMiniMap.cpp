@@ -25,7 +25,7 @@ namespace jrc
 {
 	UIMiniMap::UIMiniMap() : UIDragElement<PosMINIMAP>(Point<int16_t>(50, 50))
 	{
-		type = Type::MAX;
+		type = Type::MIN;
 		bool simpleMode = false;
 
 		std::string node = simpleMode ? "MiniMapSimpleMode" : "MiniMap";
@@ -118,6 +118,7 @@ namespace jrc
 		region_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Text::Color::WHITE, region);
 		town_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Text::Color::WHITE, town);
 
+		update_buttons();
 		toggle_buttons();
 	}
 
@@ -152,12 +153,7 @@ namespace jrc
 
 	void UIMiniMap::update()
 	{
-		// Add one pixel for a space to the right of each button
-		bt_min_width = buttons[BT_MIN]->width() + 1;
-		bt_max_width = buttons[BT_MAX]->width() + 1;
-		bt_max_origin = buttons[BT_MAX]->origin().x();
-		bt_map_width = buttons[BT_MAP]->width() + 1;
-		combined_text_width = combined_text.width() / 2;
+		update_buttons();
 
 		if (type == Type::MIN)
 		{
@@ -187,6 +183,16 @@ namespace jrc
 			type = Type::MIN;
 
 		toggle_buttons();
+	}
+
+	void UIMiniMap::update_buttons()
+	{
+		// Add one pixel for a space to the right of each button
+		bt_min_width = buttons[BT_MIN]->width() + 1;
+		bt_max_width = buttons[BT_MAX]->width() + 1;
+		bt_max_origin = buttons[BT_MAX]->origin().x();
+		bt_map_width = buttons[BT_MAP]->width() + 1;
+		combined_text_width = combined_text.width() / 2;
 	}
 
 	std::string UIMiniMap::get_current_region()
