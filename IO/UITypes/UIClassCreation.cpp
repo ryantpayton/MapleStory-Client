@@ -36,7 +36,7 @@ namespace jrc
 		charSet = false;
 		named = false;
 
-		version = { Text::Font::A11M, Text::Alignment::LEFT, Text::Color::DARKSTEEL, "Ver. 203.3" };
+		version = { Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. 203.3" };
 
 		nl::node login = nl::nx::ui["Login.img"];
 		nl::node common = login["Common"];
@@ -287,12 +287,8 @@ namespace jrc
 	void UIClassCreation::draw(float alpha) const
 	{
 		for (int16_t i = 0; i < 2; i++)
-		{
 			for (int16_t k = 0; k < 800; k += sky.width())
-			{
 				sky.draw(Point<int16_t>(k, (400 * i) - 100));
-			}
-		}
 
 		int16_t cloudx = static_cast<int16_t>(cloudfx) % 800;
 		cloud.draw(Point<int16_t>(cloudx - cloud.width(), 300));
@@ -761,6 +757,7 @@ namespace jrc
 				else
 				{
 					back();
+
 					return Button::State::PRESSED;
 				}
 			}
@@ -870,8 +867,10 @@ namespace jrc
 
 				break;
 			}
+
 			return Button::MOUSEOVER;
 		}
+
 		return Button::PRESSED;
 	}
 
@@ -918,12 +917,12 @@ namespace jrc
 	{
 		if (int32_t item_id = newchar.get_equips().get_equip(slot))
 		{
-			return ItemData::get(item_id)
-				.get_name();
+			return ItemData::get(item_id).get_name();
 		}
 		else
 		{
 			static const std::string& nullstr = "Missing name.";
+
 			return nullstr;
 		}
 	}

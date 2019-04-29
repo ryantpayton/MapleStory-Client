@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,16 +16,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "CharStats.h"
-
 #include "StatCaps.h"
 
 namespace jrc
 {
-	CharStats::CharStats(const StatsEntry& s)
-		: name(s.name), petids(s.petids),
-		exp(s.exp), mapid(s.mapid), portal(s.portal),
-		rank(s.rank), jobrank(s.jobrank), basestats(s.stats) {
-
+	CharStats::CharStats(const StatsEntry& s) : name(s.name), petids(s.petids), exp(s.exp), mapid(s.mapid), portal(s.portal), rank(s.rank), jobrank(s.jobrank), basestats(s.stats)
+	{
 		job = basestats[Maplestat::JOB];
 		init_totalstats();
 	}
@@ -88,18 +84,21 @@ namespace jrc
 	{
 		int32_t totaldex = get_total(Equipstat::DEX);
 		int32_t totalluk = get_total(Equipstat::LUK);
+
 		return static_cast<int32_t>(totaldex * 0.8f + totalluk * 0.5f);
 	}
 
 	int32_t CharStats::get_primary_stat() const
 	{
 		Equipstat::Id primary = job.get_primary(weapontype);
+
 		return static_cast<int32_t>(get_multiplier() * get_total(primary));
 	}
 
 	int32_t CharStats::get_secondary_stat() const
 	{
 		Equipstat::Id secondary = job.get_secondary(weapontype);
+
 		return get_total(secondary);
 	}
 
@@ -143,6 +142,7 @@ namespace jrc
 	void CharStats::set_total(Equipstat::Id stat, int32_t value)
 	{
 		auto iter = EQSTAT_CAPS.find(stat);
+
 		if (iter != EQSTAT_CAPS.end())
 		{
 			int32_t cap_value = iter->second;
@@ -210,15 +210,15 @@ namespace jrc
 
 	int32_t CharStats::calculate_damage(int32_t mobatk) const
 	{
-		// random stuff, need to find the actual formula somewhere
+		// TODO: Random stuff, need to find the actual formula somewhere
 		int32_t reduceatk = mobatk / 2 + mobatk / get_total(Equipstat::WDEF);
+
 		return reduceatk - static_cast<int32_t>(reduceatk * reducedamage);
 	}
 
 	bool CharStats::is_damage_buffed() const
 	{
-		return get_buffdelta(Equipstat::WATK) > 0
-			|| get_buffdelta(Equipstat::MAGIC) > 0;
+		return get_buffdelta(Equipstat::WATK) > 0 || get_buffdelta(Equipstat::MAGIC) > 0;
 	}
 
 	uint16_t CharStats::get_stat(Maplestat::Id stat) const
@@ -239,6 +239,11 @@ namespace jrc
 	Rectangle<int16_t> CharStats::get_range() const
 	{
 		return Rectangle<int16_t>(-projectilerange, -5, -50, 50);
+	}
+
+	void CharStats::set_mapid(int32_t id)
+	{
+		mapid = id;
 	}
 
 	int32_t CharStats::get_mapid() const

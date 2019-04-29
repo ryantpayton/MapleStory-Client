@@ -22,7 +22,7 @@ namespace jrc
 {
 	Nametag::Nametag(nl::node src, Text::Font f, std::string n)
 	{
-		name = Text(f, Text::CENTER, Text::Color::STEEL);
+		name = Text(f, Text::CENTER, Text::Color::EAGLE);
 		name.change_text(n);
 
 		textures[false].push_back(src["0"]["0"]);
@@ -58,6 +58,6 @@ namespace jrc
 		if (s)
 			name.change_color(Text::Color::WHITE);
 		else
-			name.change_color(Text::Color::STEEL);
+			name.change_color(Text::Color::EAGLE);
 	}
 }

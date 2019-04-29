@@ -37,7 +37,7 @@ namespace jrc
 {
 	UICharSelect::UICharSelect(std::vector<CharEntry> cs, uint8_t charcount, uint8_t slots, int8_t pic) : characters(cs), charcount_absolute(charcount), slots_absolute(slots), require_pic(pic)
 	{
-		version = { Text::Font::A11M, Text::Alignment::LEFT, Text::Color::DARKSTEEL, "Ver. 203.3" };
+		version = { Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. 203.3" };
 
 		uint8_t world_id = 0;
 		uint8_t channel_id = 0;
@@ -138,10 +138,10 @@ namespace jrc
 		}
 
 		levelset = { charselect["lv"], Charset::CENTER };
-		namelabel = { Text::A15B, Text::CENTER, Text::WHITE, Text::GOLD };
+		namelabel = { Text::A15B, Text::CENTER, Text::WHITE, Text::TOBACCOBROWN };
 
 		for (size_t i = 0; i < NUM_LABELS; i++)
-			infolabels[i] = { Text::A11M, Text::RIGHT, Text::WHITE, Text::GOLD };
+			infolabels[i] = { Text::A11M, Text::RIGHT, Text::WHITE, Text::TOBACCOBROWN };
 
 		for (auto& entry : characters)
 		{
@@ -152,7 +152,7 @@ namespace jrc
 		update_counts();
 		update_selection();
 
-		charSlot = { Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, Text::Color::DARKBROWN };
+		charSlot = { Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, Text::Color::JAMBALAYA };
 		charSlot.change_text(get_slot_text());
 
 		position = { 0, 0 };

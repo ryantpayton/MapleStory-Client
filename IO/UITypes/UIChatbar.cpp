@@ -68,7 +68,7 @@ namespace jrc
 		{
 			buttons[BT_TAB_0 + i] = std::make_unique<MapleButton>(view["tab"], Point<int16_t>(chattab_x + (i * chattab_span), chattab_y));
 			buttons[BT_TAB_0 + i]->set_active(chatopen ? true : false);
-			chattab_text[CHT_ALL + i] = Text(Text::Font::A12M, Text::Alignment::CENTER, Text::Color::LIGHTERGREY, ChatTabText[i]);
+			chattab_text[CHT_ALL + i] = Text(Text::Font::A12M, Text::Alignment::CENTER, Text::Color::DUSTYGRAY, ChatTabText[i]);
 		}
 
 		chattab_text[CHT_ALL].change_color(Text::Color::WHITE);
@@ -508,7 +508,7 @@ namespace jrc
 			for (size_t i = 0; i < NUM_CHATTAB; i++)
 			{
 				buttons[BT_TAB_0 + i]->set_state(Button::State::NORMAL);
-				chattab_text[CHT_ALL + i].change_color(Text::Color::LIGHTERGREY);
+				chattab_text[CHT_ALL + i].change_color(Text::Color::DUSTYGRAY);
 			}
 
 			chattab_text[buttonid - BT_TAB_0].change_color(Text::Color::WHITE);

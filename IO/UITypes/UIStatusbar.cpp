@@ -30,6 +30,12 @@
 #include "../Graphics/GraphicsGL.h"
 #include "../Gameplay/Stage.h"
 #include "../Net/Session.h"
+#include "../UITypes/UIQuestLog.h"
+#include "../UITypes/UIUserList.h"
+#include "../UITypes/UIStatsinfo.h"
+#include "../UITypes/UISkillbook.h"
+#include "../UITypes/UIEquipInventory.h"
+#include "../UITypes/UIItemInventory.h"
 
 #include "../Net/Packets/LoginPackets.h"
 
@@ -174,7 +180,7 @@ namespace jrc
 		hpmpset = Charset(status["gauge"]["number"], Charset::Alignment::RIGHT);
 		levelset = Charset(status["lvNumber"], Charset::Alignment::LEFT);
 
-		namelabel = OutlinedText(Text::Font::A13M, Text::Alignment::LEFT, Text::Color::SILVER, Text::Color::SLATE);
+		namelabel = OutlinedText(Text::Font::A13M, Text::Alignment::LEFT, Text::Color::GALLERY, Text::Color::TUNA);
 
 		quickslot[0] = quickSlot["backgrnd"];
 		quickslot[1] = quickSlot["layer:cover"];
@@ -284,7 +290,7 @@ namespace jrc
 		buttons[BT_EVENT_DAILY] = std::make_unique<MapleButton>(submenu["event"]["button:dailyGift"], event_pos);
 		buttons[BT_EVENT_SCHEDULE] = std::make_unique<MapleButton>(submenu["event"]["button:schedule"], event_pos);
 
-		for (size_t i = BT_MENU_ACHIEVEMENT; i <= BT_EVENT_SCHEDULE; i++)
+		for (size_t i = BT_MENU_QUEST; i <= BT_EVENT_DAILY; i++)
 			buttons[i]->set_active(false);
 
 		menutitle[0] = submenu["title"]["character"];
@@ -461,8 +467,8 @@ namespace jrc
 
 		menutitle[menutitle_index].draw(position + pos + pos_adj);
 
-		for (size_t i = BT_MENU_ACHIEVEMENT; i <= BT_EVENT_SCHEDULE; i++)
-			buttons.at(i)->draw(position + pos_adj);
+		for (size_t i = BT_MENU_QUEST; i <= BT_EVENT_DAILY; i++)
+			buttons.at(i)->draw(position);
 #pragma endregion
 	}
 
@@ -478,6 +484,38 @@ namespace jrc
 		mpbar.update(getmppercent());
 
 		namelabel.change_text(stats.get_name());
+
+		Point<int16_t> pos_adj = Point<int16_t>(0, 0);
+
+		if (quickslot_active)
+		{
+			if (VWIDTH == 800)
+				pos_adj += Point<int16_t>(0, -73);
+			else
+				pos_adj += Point<int16_t>(0, -31);
+		}
+
+		for (size_t i = BT_MENU_QUEST; i <= BT_MENU_CLAIM; i++)
+		{
+			Point<int16_t> menu_adj = Point<int16_t>(0, 0);
+
+			if (i == BT_MENU_FISHING)
+				menu_adj = Point<int16_t>(3, 1);
+
+			buttons[i]->set_position(menu_pos + menu_adj + pos_adj);
+		}
+
+		for (size_t i = BT_SETTING_CHANNEL; i <= BT_SETTING_QUIT; i++)
+			buttons[i]->set_position(setting_pos + pos_adj);
+
+		for (size_t i = BT_COMMUNITY_FRIENDS; i <= BT_COMMUNITY_MAPLECHAT; i++)
+			buttons[i]->set_position(community_pos + pos_adj);
+
+		for (size_t i = BT_CHARACTER_INFO; i <= BT_CHARACTER_ITEM; i++)
+			buttons[i]->set_position(character_pos + pos_adj);
+
+		for (size_t i = BT_EVENT_SCHEDULE; i <= BT_EVENT_DAILY; i++)
+			buttons[i]->set_position(event_pos + pos_adj);
 	}
 
 	bool UIStatusbar::remove_cursor(bool clicked, Point<int16_t> cursorpos)
@@ -515,38 +553,103 @@ namespace jrc
 		case BT_EXTEND_QS:
 			toggle_qs(true);
 			break;
-		case BT_MENU_ACHIEVEMENT:
+		case BT_MENU_QUEST:
+			UI::get().emplace<UIQuestLog>(
+				Stage::get().get_player().get_quests()
+				);
+
+			remove_menus();
+			break;
+		case BT_MENU_MEDAL:
+		case BT_MENU_UNION:
+		case BT_MENU_MONSTER_COLLECTION:
 		case BT_MENU_AUCTION:
+		case BT_MENU_MONSTER_LIFE:
 		case BT_MENU_BATTLE:
-		case BT_MENU_CLAIM:
+		case BT_MENU_ACHIEVEMENT:
 		case BT_MENU_FISHING:
 		case BT_MENU_HELP:
-		case BT_MENU_MEDAL:
-		case BT_MENU_MONSTER_COLLECTION:
-		case BT_MENU_MONSTER_LIFE:
-		case BT_MENU_QUEST:
-		case BT_MENU_UNION:
+		case BT_MENU_CLAIM:
 		case BT_SETTING_CHANNEL:
+		case BT_SETTING_OPTION:
+		case BT_SETTING_KEYS:
+		case BT_SETTING_JOYPAD:
 			remove_menus();
 			break;
 		case BT_SETTING_QUIT:
 			remove_menus();
 			transition();
 			break;
-		case BT_SETTING_JOYPAD:
-		case BT_SETTING_KEYS:
-		case BT_SETTING_OPTION:
-		case BT_COMMUNITY_BOSS:
 		case BT_COMMUNITY_FRIENDS:
+		case BT_COMMUNITY_BOSS:
+		{
+			auto userlist = UI::get().get_element<UIUserList>();
+			auto tab = (id == BT_COMMUNITY_FRIENDS) ? UIUserList::Tab::FRIEND : UIUserList::Tab::PARTY;
+
+			if (!userlist)
+			{
+				UI::get().emplace<UIUserList>(tab);
+			}
+			else
+			{
+				auto cur_tab = userlist->get_tab();
+				auto is_active = userlist->is_active();
+
+				if (cur_tab == tab)
+				{
+					if (is_active)
+						userlist->deactivate();
+					else
+						userlist->makeactive();
+				}
+				else
+				{
+					if (!is_active)
+						userlist->makeactive();
+
+					userlist->change_tab(tab);
+				}
+			}
+
+			remove_menus();
+		}
+		break;
 		case BT_COMMUNITY_GUILD:
 		case BT_COMMUNITY_MAPLECHAT:
 		case BT_CHARACTER_INFO:
-		case BT_CHARACTER_EQUIP:
-		case BT_CHARACTER_ITEM:
-		case BT_CHARACTER_SKILL:
+			remove_menus();
+			break;
 		case BT_CHARACTER_STAT:
-		case BT_EVENT_DAILY:
+			UI::get().emplace<UIStatsinfo>(
+				Stage::get().get_player().get_stats()
+				);
+
+			remove_menus();
+			break;
+		case BT_CHARACTER_SKILL:
+			UI::get().emplace<UISkillbook>(
+				Stage::get().get_player().get_stats(),
+				Stage::get().get_player().get_skills()
+				);
+
+			remove_menus();
+			break;
+		case BT_CHARACTER_EQUIP:
+			UI::get().emplace<UIEquipInventory>(
+				Stage::get().get_player().get_inventory()
+				);
+
+			remove_menus();
+			break;
+		case BT_CHARACTER_ITEM:
+			UI::get().emplace<UIItemInventory>(
+				Stage::get().get_player().get_inventory()
+				);
+
+			remove_menus();
+			break;
 		case BT_EVENT_SCHEDULE:
+		case BT_EVENT_DAILY:
 			remove_menus();
 			break;
 		}
@@ -565,13 +668,139 @@ namespace jrc
 				else
 					remove_menus();
 			}
+			else if (keycode == KeyAction::RETURN)
+			{
+				for (size_t i = BT_MENU_QUEST; i <= BT_EVENT_DAILY; i++)
+				{
+					if (buttons[i]->get_state() == Button::State::MOUSEOVER)
+						button_pressed(i);
+				}
+			}
+			else if (keycode == KeyAction::UP || keycode == KeyAction::DOWN)
+			{
+				uint16_t min_id, max_id;
+
+				if (menu_active)
+				{
+					min_id = BT_MENU_QUEST;
+					max_id = BT_MENU_CLAIM;
+				}
+				else if (setting_active)
+				{
+					min_id = BT_SETTING_CHANNEL;
+					max_id = BT_SETTING_QUIT;
+				}
+				else if (community_active)
+				{
+					min_id = BT_COMMUNITY_FRIENDS;
+					max_id = BT_COMMUNITY_MAPLECHAT;
+				}
+				else if (character_active)
+				{
+					min_id = BT_CHARACTER_INFO;
+					max_id = BT_CHARACTER_ITEM;
+				}
+				else if (event_active)
+				{
+					min_id = BT_EVENT_SCHEDULE;
+					max_id = BT_EVENT_DAILY;
+				}
+
+				uint16_t id = min_id;
+
+				for (size_t i = min_id; i <= max_id; i++)
+				{
+					if (buttons[i]->get_state() != Button::State::NORMAL)
+					{
+						id = i;
+
+						buttons[i]->set_state(Button::State::NORMAL);
+						break;
+					}
+				}
+
+				if (keycode == KeyAction::DOWN)
+				{
+					if (id < max_id)
+						id++;
+					else
+						id = min_id;
+				}
+				else if (keycode == KeyAction::UP)
+				{
+					if (id > min_id)
+						id--;
+					else
+						id = max_id;
+				}
+
+				buttons[id]->set_state(Button::State::MOUSEOVER);
+			}
 		}
 	}
 
 	bool UIStatusbar::is_in_range(Point<int16_t> cursorpos) const
 	{
-		auto pos = Point<int16_t>(position_x, position_y);
-		auto bounds = Rectangle<int16_t>(pos, pos + dimension);
+		Point<int16_t> pos;
+		Rectangle<int16_t> bounds;
+
+		if (!character_active && !community_active && !event_active && !menu_active && !setting_active)
+		{
+			pos = Point<int16_t>(position_x, position_y);
+			bounds = Rectangle<int16_t>(pos, pos + dimension);
+		}
+		else
+		{
+			Point<int16_t> pos_adj = Point<int16_t>(0, 0);
+
+			if (quickslot_active)
+			{
+				if (VWIDTH == 800)
+					pos_adj += Point<int16_t>(0, -73);
+				else
+					pos_adj += Point<int16_t>(0, -31);
+			}
+
+			uint8_t button_count;
+			int16_t pos_y_adj;
+
+			if (character_active)
+			{
+				pos = character_pos;
+				button_count = 5;
+				pos_y_adj = 248;
+			}
+			else if (community_active)
+			{
+				pos = community_pos;
+				button_count = 4;
+				pos_y_adj = 301;
+			}
+			else if (event_active)
+			{
+				pos = event_pos;
+				button_count = 2;
+				pos_y_adj = 417;
+			}
+			else if (menu_active)
+			{
+				pos = menu_pos;
+				button_count = 11;
+				pos_y_adj = -90;
+			}
+			else if (setting_active)
+			{
+				pos = setting_pos;
+				button_count = 5;
+				pos_y_adj = 248;
+			}
+
+			pos = Point<int16_t>(pos.x(), std::abs(pos.y()) + pos_y_adj) + pos_adj;
+
+			uint16_t end_y = std::floor(28.2 * button_count);
+
+			bounds = Rectangle<int16_t>(pos, pos + Point<int16_t>(113, end_y + 35));
+		}
 
 		return bounds.contains(cursorpos);
 	}
@@ -740,6 +969,9 @@ namespace jrc
 
 	void UIStatusbar::remove_active_menu(MenuType type)
 	{
+		for (size_t i = BT_MENU_QUEST; i <= BT_EVENT_DAILY; i++)
+			buttons[i]->set_state(Button::State::NORMAL);
+
 		if (menu_active && type != MenuType::MENU)
 			toggle_menu();
 		else if (setting_active && type != MenuType::SETTING)
@@ -776,6 +1008,11 @@ namespace jrc
 		GraphicsGL::get().lock();
 		Stage::get().clear();
 		Timer::get().start();
+	}
+
+	bool UIStatusbar::is_menu_active()
+	{
+		return menu_active || setting_active || community_active || character_active || event_active;
 	}
 
 	float UIStatusbar::getexppercent() const

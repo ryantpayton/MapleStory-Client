@@ -31,7 +31,7 @@ namespace jrc
 {
 	UICharCreation::UICharCreation()
 	{
-		version = { Text::Font::A11M, Text::Alignment::LEFT, Text::Color::DARKSTEEL, "Ver. 203.3" };
+		version = { Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. 203.3" };
 
 		nl::node login = nl::nx::ui["Login.img"];
 		raceSelect = login["RaceSelect_new"];

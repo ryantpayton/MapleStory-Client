@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,6 +19,7 @@
 #include "../UIDragElement.h"
 
 #include "../Graphics/Text.h"
+#include "../Character/Charstats.h"
 
 namespace jrc
 {
@@ -29,21 +30,20 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 
-		UIMiniMap();
+		UIMiniMap(const CharStats& stats);
 
 		void draw(float alpha) const override;
 		void update() override;
 
 		void send_key(int32_t keycode, bool pressed) override;
 
-		void update_buttons();
-
 	private:
 		static constexpr int16_t center_start_x = 64;
+		const CharStats& stats;
 
-		std::string get_current_region();
-		std::string get_current_town();
+		void update_buttons();
 		void toggle_buttons();
+		void update_text();
 
 		enum Buttons
 		{
@@ -61,6 +61,7 @@ namespace jrc
 			MAX
 		};
 
+		int32_t mapid;
 		int8_t type;
 		int16_t combined_text_width;
 		Point<int16_t> bt_map_pos;

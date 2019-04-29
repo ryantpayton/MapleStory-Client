@@ -56,18 +56,19 @@ namespace jrc
 			RED,
 			DARKRED,
 			BROWN,
-			DARKBROWN,
+			JAMBALAYA,
 			LIGHTGREY,
 			DARKGREY,
 			ORANGE,
 			MEDIUMBLUE,
 			VIOLET,
-			GOLD,
-			STEEL,
-			DARKSTEEL,
-			SLATE,
-			SILVER,
-			LIGHTERGREY,
+			TOBACCOBROWN,
+			EAGLE,
+			LEMONGRASS,
+			TUNA,
+			GALLERY,
+			DUSTYGRAY,
+			EMPEROR,
 			NUM_COLORS
 		};
 
@@ -94,8 +95,7 @@ namespace jrc
 				Point<int16_t> position;
 			};
 
-			Layout(const std::vector<Line>& lines, const std::vector<int16_t>& advances,
-				int16_t width, int16_t height, int16_t endx, int16_t endy);
+			Layout(const std::vector<Line>& lines, const std::vector<int16_t>& advances, int16_t width, int16_t height, int16_t endx, int16_t endy);
 			Layout();
 
 			int16_t width() const;
@@ -115,10 +115,8 @@ namespace jrc
 			Point<int16_t> endoffset;
 		};
 
-		Text(Font font, Alignment alignment, Color color, Background background,
-			const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true);
-		Text(Font font, Alignment alignment, Color color,
-			const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true);
+		Text(Font font, Alignment alignment, Color color, Background background, const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true);
+		Text(Font font, Alignment alignment, Color color, const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true);
 		Text();
 
 		void draw(const DrawArgument& args) const;

@@ -29,7 +29,6 @@
 #include "../IO/UITypes/UIWorldMap.h"
 #include "../IO/UITypes/UIUserList.h"
 #include "../IO/UITypes/UIChatbar.h"
-#include "../IO/UITypes/UIMiniMap.h"
 #include "../IO/UITypes/UIStatusbar.h"
 
 namespace jrc
@@ -195,6 +194,7 @@ namespace jrc
 			if (mapping.type)
 			{
 				auto chatbar = UI::get().get_element<UIChatbar>();
+				auto statusbar = UI::get().get_element<UIStatusbar>();
 
 				if (pressed && (keycode == GLFW_KEY_ESCAPE || keycode == GLFW_KEY_TAB))
 				{
@@ -205,7 +205,6 @@ namespace jrc
 					auto questlog = UI::get().get_element<UIQuestLog>();
 					auto worldmap = UI::get().get_element<UIWorldMap>();
 					auto userlist = UI::get().get_element<UIUserList>();
-					auto statusbar = UI::get().get_element<UIStatusbar>();
 
 					if (statsinfo && statsinfo->is_active())
 						statsinfo->send_key(mapping.action, pressed);
@@ -230,13 +229,20 @@ namespace jrc
 				}
 				else if (pressed && (keycode == GLFW_KEY_ENTER || keycode == GLFW_KEY_KP_ENTER))
 				{
-					if (chatbar)
+					if (statusbar && statusbar->is_menu_active())
+						statusbar->send_key(mapping.action, pressed);
+					else if (chatbar)
 						chatbar->send_key(mapping.action, pressed);
 				}
-				else if (pressed && keycode == GLFW_KEY_M)
+				else if (pressed && (keycode == GLFW_KEY_UP || keycode == GLFW_KEY_DOWN || keycode == GLFW_KEY_LEFT || keycode == GLFW_KEY_RIGHT))
 				{
-					if (auto ninimap = UI::get().get_element<UIMiniMap>())
-						ninimap->send_key(mapping.action, pressed);
+					if (statusbar)
+					{
+						if (statusbar->is_menu_active())
+							statusbar->send_key(mapping.action, pressed);
+						else
+							state->send_key(mapping.type, mapping.action, pressed);
+					}
 				}
 				else
 				{

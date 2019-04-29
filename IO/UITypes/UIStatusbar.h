@@ -57,16 +57,8 @@ namespace jrc
 		bool is_in_range(Point<int16_t> cursorpos) const override;
 
 		void toggle_qs();
-		void toggle_qs(bool quick_slot_active);
-
 		void toggle_menu();
-		void toggle_setting();
-		void toggle_community();
-		void toggle_character();
-		void toggle_event();
-		void remove_menus();
-		void remove_active_menu(MenuType type);
-		void transition() const;
+		bool is_menu_active();
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -75,6 +67,15 @@ namespace jrc
 		float getexppercent() const;
 		float gethppercent() const;
 		float getmppercent() const;
+
+		void toggle_qs(bool quick_slot_active);
+		void toggle_setting();
+		void toggle_community();
+		void toggle_character();
+		void toggle_event();
+		void remove_menus();
+		void remove_active_menu(MenuType type);
+		void transition() const;
 
 		enum Buttons : uint16_t
 		{
@@ -86,33 +87,33 @@ namespace jrc
 			BT_EVENT,
 			BT_FOLD_QS,
 			BT_EXTEND_QS,
-			BT_MENU_ACHIEVEMENT,
+			BT_MENU_QUEST,
+			BT_MENU_MEDAL,
+			BT_MENU_UNION,
+			BT_MENU_MONSTER_COLLECTION,
 			BT_MENU_AUCTION,
+			BT_MENU_MONSTER_LIFE,
 			BT_MENU_BATTLE,
-			BT_MENU_CLAIM,
+			BT_MENU_ACHIEVEMENT,
 			BT_MENU_FISHING,
 			BT_MENU_HELP,
-			BT_MENU_MEDAL,
-			BT_MENU_MONSTER_COLLECTION,
-			BT_MENU_MONSTER_LIFE,
-			BT_MENU_QUEST,
-			BT_MENU_UNION,
+			BT_MENU_CLAIM,
 			BT_SETTING_CHANNEL,
-			BT_SETTING_QUIT,
-			BT_SETTING_JOYPAD,
-			BT_SETTING_KEYS,
 			BT_SETTING_OPTION,
-			BT_COMMUNITY_BOSS,
+			BT_SETTING_KEYS,
+			BT_SETTING_JOYPAD,
+			BT_SETTING_QUIT,
 			BT_COMMUNITY_FRIENDS,
+			BT_COMMUNITY_BOSS,
 			BT_COMMUNITY_GUILD,
 			BT_COMMUNITY_MAPLECHAT,
 			BT_CHARACTER_INFO,
+			BT_CHARACTER_STAT,
+			BT_CHARACTER_SKILL,
 			BT_CHARACTER_EQUIP,
 			BT_CHARACTER_ITEM,
-			BT_CHARACTER_SKILL,
-			BT_CHARACTER_STAT,
-			BT_EVENT_DAILY,
-			BT_EVENT_SCHEDULE
+			BT_EVENT_SCHEDULE,
+			BT_EVENT_DAILY
 		};
 
 		const CharStats& stats;

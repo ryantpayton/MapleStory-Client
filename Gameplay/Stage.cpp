@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,9 +20,10 @@
 #include "../Audio/Audio.h"
 #include "../Character/SkillId.h"
 #include "../IO/Messages.h"
+#include "../Util/Misc.h"
+
 #include "../Net/Packets/GameplayPackets.h"
 #include "../Net/Packets/AttackAndSkillPackets.h"
-#include "../Util/Misc.h"
 
 #include "nlnx/nx.hpp"
 
@@ -30,9 +31,8 @@
 
 namespace jrc
 {
-	Stage::Stage()
-		: combat(player, chars, mobs) {
-
+	Stage::Stage() : combat(player, chars, mobs)
+	{
 		state = INACTIVE;
 	}
 
@@ -109,6 +109,7 @@ namespace jrc
 		double viewy = viewrpos.y();
 
 		backgrounds.drawbackgrounds(viewx, viewy, alpha);
+
 		for (auto id : Layer::IDs)
 		{
 			tilesobjs.draw(id, viewpos, alpha);
@@ -119,6 +120,7 @@ namespace jrc
 			player.draw(id, viewx, viewy, alpha);
 			drops.draw(id, viewx, viewy, alpha);
 		}
+
 		combat.draw(viewx, viewy, alpha);
 		portals.draw(viewpos, alpha);
 		backgrounds.drawforegrounds(viewx, viewy, alpha);
@@ -169,16 +171,22 @@ namespace jrc
 
 		Point<int16_t> playerpos = player.get_position();
 		Portal::WarpInfo warpinfo = portals.find_warp_at(playerpos);
+
 		if (warpinfo.intramap)
 		{
 			Point<int16_t> spawnpoint = portals.get_portal_by_name(warpinfo.toname);
 			Point<int16_t> startpos = physics.get_y_below(spawnpoint);
+
 			player.respawn(startpos, mapinfo.is_underwater());
 		}
 		else if (warpinfo.valid)
 		{
 			PlayerMapTransferPacket().dispatch();
 			ChangeMapPacket(false, warpinfo.mapid, warpinfo.name, false).dispatch();
+
+			CharStats& stats = Stage::get().get_player().get_stats();
+
+			stats.set_mapid(warpinfo.mapid);
 		}
 	}
 
@@ -204,10 +212,9 @@ namespace jrc
 	{
 		Point<int16_t> playerpos = player.get_position();
 		MapDrops::Loot loot = drops.find_loot_at(playerpos);
+
 		if (loot.first)
-		{
 			PickupItemPacket(loot.first, loot.second).dispatch();
-		}
 	}
 
 	void Stage::send_key(KeyType::Id type, int32_t action, bool down)
@@ -303,12 +310,8 @@ namespace jrc
 	Optional<Char> Stage::get_character(int32_t cid)
 	{
 		if (is_player(cid))
-		{
 			return player;
-		}
 		else
-		{
 			return chars.get_char(cid);
-		}
 	}
 }

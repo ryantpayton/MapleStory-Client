@@ -49,7 +49,7 @@ namespace jrc
 		emplace<UIStatusMessenger>();
 		emplace<UIStatusbar>(stats);
 		emplace<UIChatbar>();
-		emplace<UIMiniMap>();
+		emplace<UIMiniMap>(stats);
 		emplace<UIBuffList>();
 		emplace<UINpcTalk>();
 		emplace<UIShop>(look, inventory);
@@ -172,6 +172,9 @@ namespace jrc
 				case KeyAction::MESSAGE:
 					break;
 				case KeyAction::MINIMAP:
+					if (auto minimap = UI::get().get_element<UIMiniMap>())
+						minimap->send_key(action, pressed);
+
 					break;
 				case KeyAction::QUESTLOG:
 					emplace<UIQuestLog>(

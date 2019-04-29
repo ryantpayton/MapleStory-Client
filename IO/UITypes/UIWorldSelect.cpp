@@ -31,7 +31,7 @@ namespace jrc
 {
 	UIWorldSelect::UIWorldSelect() : UIElement({ 0, 0 }, { 800, 600 })
 	{
-		version = { Text::Font::A11M, Text::Alignment::LEFT, Text::Color::DARKSTEEL, "Ver. 203.3" };
+		version = { Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. 203.3" };
 
 		channelsrc_pos = Point<int16_t>(203, 154);
 

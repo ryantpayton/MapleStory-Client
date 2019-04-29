@@ -676,18 +676,19 @@ namespace jrc
 			{ 1.0f, 0.0f, 0.0f }, // Red
 			{ 0.8f, 0.3f, 0.3f }, // DarkRed
 			{ 0.5f, 0.25f, 0.0f }, // Brown
-			{ 0.34f, 0.2f, 0.07f }, // DarkBrown
+			{ 0.34f, 0.2f, 0.07f }, // Jambalaya
 			{ 0.5f, 0.5f, 0.5f }, // Lightgrey
 			{ 0.25f, 0.25f, 0.25f }, // Darkgrey
 			{ 1.0f, 0.5f, 0.0f }, // Orange
 			{ 0.0f, 0.75f, 1.0f }, // Mediumblue
 			{ 0.5f, 0.0f, 0.5f }, // Violet
-			{ 0.47f, 0.4f, 0.27f }, // Gold
-			{ 0.74f, 0.74f, 0.67f }, // Steel
-			{ 0.6f, 0.6f, 0.54f }, // Dark Steel
-			{ 0.2f, 0.2f, 0.27f }, // Slate
-			{ 0.94f, 0.94f, 0.94f }, // Silver
-			{ 0.6f, 0.6f, 0.6f } // Lightergrey
+			{ 0.47f, 0.4f, 0.27f }, // Tobacco Brown
+			{ 0.74f, 0.74f, 0.67f }, // Eagle
+			{ 0.6f, 0.6f, 0.54f }, // Lemon Grass
+			{ 0.2f, 0.2f, 0.27f }, // Tuna
+			{ 0.94f, 0.94f, 0.94f }, // Gallery
+			{ 0.6f, 0.6f, 0.6f }, // Dusty Gray
+			{ 0.34f, 0.34f, 0.34f } // Emperor
 		};
 
 		for (const Text::Layout::Line& line : layout)

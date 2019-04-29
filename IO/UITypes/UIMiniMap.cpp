@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -23,7 +23,7 @@
 
 namespace jrc
 {
-	UIMiniMap::UIMiniMap() : UIDragElement<PosMINIMAP>(Point<int16_t>(50, 50))
+	UIMiniMap::UIMiniMap(const CharStats& st) : UIDragElement<PosMINIMAP>(Point<int16_t>(50, 50)), stats(st)
 	{
 		type = Type::MIN;
 		bool simpleMode = false;
@@ -64,11 +64,7 @@ namespace jrc
 		min_center = Min[Center];
 		min_right = Min[Right];
 
-		std::string region = get_current_region();
-		std::string town = get_current_town();
-		std::string combined = region + ": " + town;
-
-		combined_text = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, combined);
+		combined_text = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE);
 
 		std::string DownCenter = simpleMode ? "DownCenter" : "s";
 		std::string DownLeft = simpleMode ? "DownLeft" : "sw";
@@ -115,11 +111,8 @@ namespace jrc
 		max_sprites.emplace_back(Max[UpLeft], ul_pos);
 		max_sprites.emplace_back(Max[UpRight], ur_pos);
 
-		region_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Text::Color::WHITE, region);
-		town_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Text::Color::WHITE, town);
-
-		update_buttons();
-		toggle_buttons();
+		region_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Text::Color::WHITE);
+		town_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Text::Color::WHITE);
 	}
 
 	void UIMiniMap::draw(float alpha) const
@@ -153,7 +146,15 @@ namespace jrc
 
 	void UIMiniMap::update()
 	{
-		update_buttons();
+		int32_t mid = stats.get_mapid();
+
+		if (mid != mapid)
+		{
+			mapid = mid;
+			update_text();
+			update_buttons();
+			toggle_buttons();
+		}
 
 		if (type == Type::MIN)
 		{
@@ -195,16 +196,6 @@ namespace jrc
 		combined_text_width = combined_text.width() / 2;
 	}
 
-	std::string UIMiniMap::get_current_region()
-	{
-		return "Henesys";
-	}
-
-	std::string UIMiniMap::get_current_town()
-	{
-		return "Henesys Market";
-	}
-
 	void UIMiniMap::toggle_buttons()
 	{
 		if (type == Type::MIN)
@@ -239,6 +230,29 @@ namespace jrc
 			buttons[BT_MIN]->set_position(bt_min_pos);
 			buttons[BT_MAX]->set_position(bt_max_pos);
 			buttons[BT_MAP]->set_position(bt_map_pos);
+		}
+	}
+
+	void UIMiniMap::update_text()
+	{
+		nl::node Map = nl::nx::string["Map.img"];
+		nl::node foundMap;
+
+		for (auto t = Map.begin(); t != Map.end(); ++t)
+		{
+			foundMap = t.resolve(std::to_string(mapid));
+
+			if (foundMap.size() > 0)
+			{
+				std::string mapName = foundMap["mapName"];
+				std::string streetName = foundMap["streetName"];
+				std::string combined = mapName + ": " + streetName;
+
+				combined_text.change_text(combined);
+				region_text.change_text(mapName);
+				town_text.change_text(streetName);
+				break;
+			}
 		}
 	}
 }

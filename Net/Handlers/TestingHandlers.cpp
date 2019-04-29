@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -51,14 +51,16 @@ namespace jrc
 		//EnumMap<std::string, int> envList;
 		int envListSize = recv.read_int();
 
-		for (int i = 0; i < envListSize; i++) {
+		for (int i = 0; i < envListSize; i++)
+		{
 			std::string envMoveKey = recv.read_string();
 			int envMoveVal = recv.read_int();
 
 			//envList.add?
 		}
 
-		std::cout << "[FieldObstacleOnOffListHandler]: envListSize: " << envListSize << std::endl;//<< " envList: " << envList << std::endl;
+		if (envListSize > 0)
+			std::cout << "[FieldObstacleOnOffListHandler]: envListSize: " << envListSize << std::endl;//<< " envList: " << envList << std::endl;
 	}
 
 	void AdminResultHandler::handle(InPacket& recv) const
@@ -75,7 +77,8 @@ namespace jrc
 				// TODO: Hide GM?
 			}
 		}
-		else {
+		else
+		{
 			std::cout << "[AdminResultHandler]: Unhandled Admin Result! Type: " << type << " Mode: " << mode << std::endl;
 		}
 	}
@@ -94,9 +97,8 @@ namespace jrc
 	{
 		std::string message;
 
-		while (recv.available()) {
+		while (recv.available())
 			message += recv.read_byte();
-		}
 
 		std::cout << "[GiveForeignBuffHandler]: " << message << std::endl;
 	}
@@ -105,9 +107,8 @@ namespace jrc
 	{
 		std::string message;
 
-		while (recv.available()) {
+		while (recv.available())
 			message += recv.read_byte();
-		}
 
 		std::cout << "[CancelForeignBuffHandler]: " << message << std::endl;
 	}
@@ -116,9 +117,8 @@ namespace jrc
 	{
 		std::string message;
 
-		while (recv.available()) {
+		while (recv.available())
 			message += recv.read_byte();
-		}
 
 		std::cout << "[UpdateQuestInfoHandler]: " << message << std::endl;
 	}
@@ -127,7 +127,8 @@ namespace jrc
 	{
 		int lockUi = recv.read_byte();
 
-		if (lockUi) {
+		if (lockUi)
+		{
 			// TODO: Lock UI?
 		}
 
@@ -138,7 +139,8 @@ namespace jrc
 	{
 		int disableUi = recv.read_byte();
 
-		if (disableUi) {
+		if (disableUi)
+		{
 			// TODO: Disable UI?
 		}
 

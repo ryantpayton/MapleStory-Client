@@ -35,7 +35,7 @@ namespace jrc
 	{
 		Music("BgmUI.img/Title").play();
 
-		version = { Text::Font::A11M, Text::Alignment::LEFT, Text::Color::DARKSTEEL, "Ver. 203.3" };
+		version = { Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. 203.3" };
 
 		nl::node map = nl::nx::map["Back"]["login.img"];
 		nl::node obj = nl::nx::map["Obj"]["login.img"];

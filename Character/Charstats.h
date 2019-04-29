@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,6 +18,7 @@
 #pragma once
 #include "Equipstat.h"
 #include "Job.h"
+
 #include "Inventory/Weapon.h"
 
 #include "../Net/Login.h"
@@ -57,6 +58,7 @@ namespace jrc
 		int32_t get_buffdelta(Equipstat::Id stat) const;
 		Rectangle<int16_t> get_range() const;
 
+		void set_mapid(int32_t id);
 		int32_t get_mapid() const;
 		uint8_t get_portal() const;
 		int64_t get_exp() const;
@@ -116,4 +118,3 @@ namespace jrc
 		float reducedamage;
 	};
 }
-
