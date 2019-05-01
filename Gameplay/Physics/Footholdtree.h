@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -30,8 +30,6 @@ namespace jrc
 		Footholdtree(nl::node source);
 		Footholdtree();
 
-		void draw(Point<int16_t> pos) const;
-
 		// Takes an accelerated PhysicsObject and limits its movement based on the platforms in this tree.
 		void limit_movement(PhysicsObject& touse) const;
 		// Updates a PhysicsObject's fhid based on it's position.
@@ -57,4 +55,3 @@ namespace jrc
 		Range<int16_t> borders;
 	};
 }
-

@@ -69,6 +69,7 @@ namespace jrc
 			GALLERY,
 			DUSTYGRAY,
 			EMPEROR,
+			MINESHAFT,
 			NUM_COLORS
 		};
 

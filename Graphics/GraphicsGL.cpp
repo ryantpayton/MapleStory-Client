@@ -617,6 +617,9 @@ namespace jrc
 		int16_t line_x = 0;
 		int16_t line_y = ay;
 
+		if (lines.size() > 0)
+			line_y -= 3;
+
 		switch (alignment)
 		{
 		case Text::CENTER:
@@ -688,7 +691,8 @@ namespace jrc
 			{ 0.2f, 0.2f, 0.27f }, // Tuna
 			{ 0.94f, 0.94f, 0.94f }, // Gallery
 			{ 0.6f, 0.6f, 0.6f }, // Dusty Gray
-			{ 0.34f, 0.34f, 0.34f } // Emperor
+			{ 0.34f, 0.34f, 0.34f }, // Emperor
+			{ 0.2f, 0.2f, 0.2f } // Mine Shaft
 		};
 
 		for (const Text::Layout::Line& line : layout)

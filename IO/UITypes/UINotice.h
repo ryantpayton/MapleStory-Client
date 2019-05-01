@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "../UIElement.h"
+
 #include "../Components/Textfield.h"
 
 #include "../../Graphics/Texture.h"
@@ -32,8 +33,16 @@ namespace jrc
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
 
+		enum NoticeType
+		{
+			YESNO,
+			ENTERNUMBER,
+			OK,
+			OKSMALL
+		};
+
 	protected:
-		UINotice(std::string question);
+		UINotice(std::string question, NoticeType type);
 
 		void draw(bool textfield) const;
 
@@ -50,7 +59,6 @@ namespace jrc
 		Text question;
 		int16_t height;
 	};
-
 
 	class UIYesNo : public UINotice
 	{
@@ -71,11 +79,10 @@ namespace jrc
 		std::function<void(bool yes)> yesnohandler;
 	};
 
-
 	class UIEnterNumber : public UINotice
 	{
 	public:
-		UIEnterNumber(std::string question, std::function<void(int32_t number)> numhandler, int32_t min, int32_t max, int32_t def);
+		UIEnterNumber(std::string question, std::function<void(int32_t number)> numhandler, int32_t max, int32_t quantity);
 
 		void draw(float alpha) const override;
 		void update() override;
@@ -95,7 +102,25 @@ namespace jrc
 
 		std::function<void(int32_t number)> numhandler;
 		Textfield numfield;
-		int32_t min;
 		int32_t max;
+	};
+
+	class UIOk : public UINotice
+	{
+	public:
+		UIOk(std::string message, std::function<void()> okhandler, NoticeType type);
+
+		void draw(float alpha) const override;
+
+	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
+
+	private:
+		enum Buttons : int16_t
+		{
+			OK
+		};
+
+		std::function<void()> okhandler;
 	};
 }

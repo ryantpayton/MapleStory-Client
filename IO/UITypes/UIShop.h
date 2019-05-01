@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,10 +20,11 @@
 
 #include "../Components/Slider.h"
 
-#include "../../Character/Inventory/Inventory.h"
-#include "../../Character/Look/CharLook.h"
 #include "../../Graphics/Text.h"
 #include "../../Graphics/Texture.h"
+
+#include "../../Character/Look/CharLook.h"
+#include "../../Character/Inventory/Inventory.h"
 
 namespace jrc
 {
@@ -43,10 +44,8 @@ namespace jrc
 		Cursor::State send_cursor(bool clicked, Point<int16_t> position) override;
 
 		void reset(int32_t npcid);
-		void add_item(int32_t id, int32_t price, 
-			int32_t pitch, int32_t time, int16_t buyable);
-		void add_rechargable(int32_t id, int32_t price, int32_t pitch, 
-			int32_t time, int16_t chargeprice, int16_t buyable);
+		void add_item(int32_t id, int32_t price, int32_t pitch, int32_t time, int16_t buyable);
+		void add_rechargable(int32_t id, int32_t price, int32_t pitch, int32_t time, int16_t chargeprice, int16_t buyable);
 
 		void modify(InventoryType::Id type);
 
@@ -62,26 +61,26 @@ namespace jrc
 
 		enum Buttons : int16_t
 		{
-			BUY_ITEM = 0,
-			SELL_ITEM = 1,
-			EXIT = 2,
-			EQUIP = 3,
-			USE = 4,
-			ETC = 5,
-			SETUP = 6,
-			CASH = 7,
-			BUY0 = 8,
-			BUY4 = 12,
-			SELL0 = 13,
-			SELL4 = 17
+			BUY_ITEM,
+			SELL_ITEM,
+			EXIT,
+			EQUIP,
+			USE,
+			ETC,
+			SETUP,
+			CASH,
+			BUY0,
+			BUY9 = 17,
+			SELL0,
+			SELL9 = 22
 		};
 
 		const CharLook& charlook;
 		const Inventory& inventory;
 
 		Texture npc;
-		Texture selection;
-		Texture impossible;
+		Texture buy_selection;
+		Texture sell_selection;
 		Texture meso;
 		Text mesolabel;
 
@@ -124,7 +123,6 @@ namespace jrc
 
 		private:
 			Texture icon;
-			Texture currency;
 			int32_t id;
 			int16_t slot;
 			int16_t sellable;
@@ -147,6 +145,7 @@ namespace jrc
 			void buy() const;
 			void select(int16_t selected);
 		};
+
 		BuyState buystate;
 
 		struct SellState
@@ -164,6 +163,7 @@ namespace jrc
 			void sell() const;
 			void select(int16_t selected);
 		};
+
 		SellState sellstate;
 	};
 }

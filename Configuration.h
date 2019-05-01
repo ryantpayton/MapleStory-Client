@@ -261,7 +261,7 @@ namespace jrc
 	// The default position of the character stats inventory.
 	struct PosSTATS : public Configuration::PointEntry
 	{
-		PosSTATS() : PointEntry("PosSTATS", "(100,150)") {}
+		PosSTATS() : PointEntry("PosSTATS", "(72,62)") {}
 	};
 
 	// The default position of the equip inventory.

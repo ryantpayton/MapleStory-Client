@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -24,17 +24,26 @@ namespace jrc
 		Account account;
 
 		recv.skip(2);
+
 		account.accid = recv.read_int();
 		account.female = recv.read_bool();
-		recv.read_bool(); //is admin
+
+		recv.read_bool(); // is admin
+
 		account.gmlevel = recv.read_byte();
+
 		recv.skip(1);
+
 		account.name = recv.read_string();
+
 		recv.skip(1);
+
 		account.muted = recv.read_bool();
-		recv.read_long(); //muted until
-		recv.read_long(); //creation date
+
+		recv.read_long(); // muted until
+		recv.read_long(); // creation date
 		recv.skip(4);
+
 		account.pin = recv.read_short();
 
 		return account;
@@ -43,6 +52,7 @@ namespace jrc
 	World LoginParser::parse_world(InPacket& recv)
 	{
 		int8_t wid = recv.read_byte();
+
 		if (wid == -1)
 			return{ {}, {}, {}, 0, 0, wid };
 
@@ -54,10 +64,13 @@ namespace jrc
 
 		std::vector<int32_t> chloads;
 		uint8_t channelcount = recv.read_byte();
+
 		for (uint8_t i = 0; i < channelcount; ++i)
 		{
 			recv.read_string(); // channel name
+
 			chloads.push_back(recv.read_int());
+
 			recv.skip(1);
 			recv.skip(2);
 		}
@@ -74,6 +87,7 @@ namespace jrc
 		LookEntry look = parse_look(recv);
 
 		recv.read_bool(); // 'rankinfo' bool
+
 		if (recv.read_bool())
 		{
 			int32_t currank = recv.read_int();
@@ -96,15 +110,13 @@ namespace jrc
 
 		statsentry.name = recv.read_padded_string(13);
 
-		recv.read_bool(); //gender
-		recv.read_byte(); //skin
-		recv.read_int(); //face
-		recv.read_int(); //hair
+		recv.read_bool();	// gender
+		recv.read_byte();	// skin
+		recv.read_int();	// face
+		recv.read_int();	// hair
 
 		for (size_t i = 0; i < 3; i++)
-		{
 			statsentry.petids.push_back(recv.read_long());
-		}
 
 		statsentry.stats[Maplestat::LEVEL] = recv.read_short();
 		statsentry.stats[Maplestat::JOB] = recv.read_short();
@@ -121,10 +133,12 @@ namespace jrc
 		statsentry.exp = recv.read_int();
 		statsentry.stats[Maplestat::FAME] = recv.read_short();
 
-		recv.skip(4); //gachaexp
+		recv.skip(4); // gachaexp
+
 		statsentry.mapid = recv.read_int();
 		statsentry.portal = recv.read_byte();
-		recv.skip(4); //timestamp
+
+		recv.skip(4); // timestamp
 
 		return statsentry;
 	}
@@ -136,10 +150,13 @@ namespace jrc
 		look.female = recv.read_bool();
 		look.skin = recv.read_byte();
 		look.faceid = recv.read_int();
-		recv.read_bool(); //megaphone
+
+		recv.read_bool(); // megaphone
+
 		look.hairid = recv.read_int();
 
 		uint8_t eqslot = recv.read_byte();
+
 		while (eqslot != 0xFF)
 		{
 			look.equips[eqslot] = recv.read_int();
@@ -147,17 +164,17 @@ namespace jrc
 		}
 
 		uint8_t mskeqslot = recv.read_byte();
+
 		while (mskeqslot != 0xFF)
 		{
 			look.maskedequips[mskeqslot] = recv.read_int();
 			mskeqslot = recv.read_byte();
 		}
+
 		look.maskedequips[-111] = recv.read_int();
 
 		for (uint8_t i = 0; i < 3; i++)
-		{
 			look.petids.push_back(recv.read_int());
-		}
 
 		return look;
 	}

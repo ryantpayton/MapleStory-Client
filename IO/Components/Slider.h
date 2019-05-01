@@ -70,7 +70,8 @@ namespace jrc
 			ARROW,
 			THIN7,
 			ICE3,
-			THIN8
+			THIN8,
+			CHATBAR
 		};
 
 	private:

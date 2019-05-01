@@ -25,33 +25,36 @@ namespace jrc
 		start = { x, vertical.first() };
 		end = { x, vertical.second() };
 
-		std::string VScr = "VScr";
+		nl::node src;
+		std::string base_str = "base";
 
-		if (type != Type::BLUE)
-			VScr += std::to_string(type);
+		if (type == Type::CHATBAR)
+		{
+			src = nl::nx::ui["StatusBar3.img"]["chat"]["common"]["scroll"];
+			base_str += "_c";
+		}
+		else
+		{
+			std::string VScr = "VScr";
 
-		nl::node src = nl::nx::ui["Basic.img"][VScr];
+			if (type != Type::BLUE)
+				VScr += std::to_string(type);
+
+			src = nl::nx::ui["Basic.img"][VScr];
+		}
 
 		nl::node dsrc = src["disabled"];
 
-		dbase = dsrc["base"];
+		dbase = dsrc[base_str];
 		dnext = dsrc["next"];
 		dprev = dsrc["prev"];
 
 		nl::node esrc = src["enabled"];
 
-		base = esrc["base"];
+		base = esrc[base_str];
 
-		if (type == Type::DEFAULT)
-		{
-			prev = { esrc["prev0"], esrc["prev1"], start + Point<int16_t>(5, 6), start };
-			next = { esrc["next0"], esrc["next1"], end + Point<int16_t>(5, 6), end };
-		}
-		else
-		{
-			prev = { esrc["prev0"], esrc["prev1"], start };
-			next = { esrc["next0"], esrc["next1"], end };
-		}
+		prev = { esrc["prev0"], esrc["prev1"], start };
+		next = { esrc["next0"], esrc["next1"], end };
 
 		thumb = { esrc["thumb0"], esrc["thumb1"] };
 

@@ -51,7 +51,7 @@ namespace jrc
 		std::string Right = simpleMode ? "Right" : "e";
 
 		bt_map_pos = Point<int16_t>(237, -6);
-		bt_max_pos = Point<int16_t>(19, -10);
+		bt_max_pos = Point<int16_t>(209, -6);
 		bt_min_pos = Point<int16_t>(195, -6);
 
 		buttons[BT_MAP] = std::make_unique<MapleButton>(MiniMap["BtMap"], bt_map_pos);
@@ -191,7 +191,6 @@ namespace jrc
 		// Add one pixel for a space to the right of each button
 		bt_min_width = buttons[BT_MIN]->width() + 1;
 		bt_max_width = buttons[BT_MAX]->width() + 1;
-		bt_max_origin = buttons[BT_MAX]->origin().x();
 		bt_map_width = buttons[BT_MAP]->width() + 1;
 		combined_text_width = combined_text.width() / 2;
 	}
@@ -206,18 +205,21 @@ namespace jrc
 			buttons[BT_NPC]->set_active(false);
 			buttons[BT_SMALL]->set_active(false);
 
-			int16_t bt_min_x = position.x() + combined_text_width + center_start_x + bt_min_width + 4;
+			buttons[BT_MIN]->set_state(Button::State::DISABLED);
+			buttons[BT_MAX]->set_state(Button::State::NORMAL);
+
+			int16_t bt_min_x = position.x() + combined_text_width + center_start_x + bt_min_width + bt_max_width + bt_map_width;
 			final_pos = bt_min_x + bt_min_width - 2;
 
-			buttons[BT_MIN]->set_position(Point<int16_t>(bt_min_x, -6));
+			buttons[BT_MIN]->set_position(Point<int16_t>(bt_min_x, bt_min_pos.y()));
 
-			int16_t bt_max_x = bt_min_x + bt_max_width - std::abs(bt_max_origin);
+			int16_t bt_max_x = bt_min_x + bt_max_width;
 
-			buttons[BT_MAX]->set_position(Point<int16_t>(bt_max_x, -10));
+			buttons[BT_MAX]->set_position(Point<int16_t>(bt_max_x, bt_max_pos.y()));
 
-			int16_t bt_map_x = bt_min_x + bt_max_width * 2;
+			int16_t bt_map_x = bt_max_x + bt_max_width;
 
-			buttons[BT_MAP]->set_position(Point<int16_t>(bt_map_x, -6));
+			buttons[BT_MAP]->set_position(Point<int16_t>(bt_map_x, bt_map_pos.y()));
 		}
 		else
 		{
@@ -226,6 +228,13 @@ namespace jrc
 			buttons[BT_MIN]->set_active(true);
 			buttons[BT_NPC]->set_active(true);
 			buttons[BT_SMALL]->set_active(true);
+
+			buttons[BT_MIN]->set_state(Button::State::NORMAL);
+
+			if (type == Type::MAX)
+				buttons[BT_MAX]->set_state(Button::State::DISABLED);
+			else
+				buttons[BT_MAX]->set_state(Button::State::NORMAL);
 
 			buttons[BT_MIN]->set_position(bt_min_pos);
 			buttons[BT_MAX]->set_position(bt_max_pos);

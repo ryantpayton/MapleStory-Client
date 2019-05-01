@@ -69,7 +69,6 @@ namespace jrc
 		Point<int16_t> bt_min_pos;
 		int16_t bt_min_width;
 		int16_t bt_max_width;
-		int16_t bt_max_origin;
 		int16_t bt_map_width;
 		int16_t final_pos;
 		Animation min_left;
