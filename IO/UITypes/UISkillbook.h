@@ -38,9 +38,6 @@ namespace jrc
 
 		Cursor::State send_cursor(Point<int16_t> cursorpos, bool clicked);
 
-		int32_t get_id() const;
-
-	private:
 		enum State
 		{
 			NORMAL,
@@ -48,12 +45,19 @@ namespace jrc
 			MOUSEOVER
 		};
 
+		void set_state(State state);
+
+		int32_t get_id() const;
+		int32_t get_level() const;
+
+	private:
 		Texture normal;
 		Texture disabled;
 		Texture mouseover;
 		Text name;
 		Text level;
 		int32_t id;
+		int32_t lv;
 
 		State state;
 		bool enabled;
@@ -71,6 +75,7 @@ namespace jrc
 
 		void draw(float alpha) const override;
 
+		void toggle_active() override;
 		void doubleclick(Point<int16_t> cursorpos) override;
 		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
@@ -85,6 +90,7 @@ namespace jrc
 	private:
 		void change_job(uint16_t id);
 		void change_sp(int16_t value);
+		void change_beginner_sp();
 		void change_tab(uint16_t new_tab);
 		void change_offset(uint16_t new_offset);
 
@@ -97,10 +103,17 @@ namespace jrc
 		Job::Level joblevel_by_tab(uint16_t tab) const;
 		SkillIcon* icon_by_position(Point<int16_t> cursorpos);
 
-		enum Buttons
+		void close();
+		int16_t calculate_remaining_beginner_sp();
+		bool check_required(int32_t id) const;
+
+		enum Buttons : uint16_t
 		{
-			BT_GUILD,
+			BT_CLOSE,
 			BT_HYPER,
+			BT_GUILD,
+			BT_MOUNT,
+			BT_MACRO,
 			BT_TAB0,
 			BT_TAB1,
 			BT_TAB2,
@@ -113,14 +126,19 @@ namespace jrc
 			BT_SPUP4,
 			BT_SPUP5,
 			BT_SPUP6,
-			BT_SPUP7
+			BT_SPUP7,
+			BT_SPUP8,
+			BT_SPUP9,
+			BT_SPUP10,
+			BT_SPUP11
 		};
 
-		static constexpr int16_t ROWS = 6;
+		static constexpr int16_t ROWS = 12;
 		static constexpr int16_t ROW_HEIGHT = 40;
-		static constexpr Point<int16_t> SKILL_OFFSET = { 11, 93 };
-		static constexpr Point<int16_t> ICON_OFFSET = { 2, 33 };
-		static constexpr Point<int16_t> LINE_OFFSET = { 2, 37 };
+		static constexpr int16_t ROW_WIDTH = 143;
+		static constexpr Point<int16_t> SKILL_OFFSET = Point<int16_t>(11, 93);
+		static constexpr Point<int16_t> ICON_OFFSET = Point<int16_t>(2, 34);
+		static constexpr Point<int16_t> LINE_OFFSET = Point<int16_t>(0, 37);
 
 		const CharStats& stats;
 		const Skillbook& skillbook;
@@ -128,6 +146,7 @@ namespace jrc
 		Slider slider;
 		Texture skille;
 		Texture skilld;
+		Texture skillb;
 		Texture line;
 		Texture bookicon;
 		Text booktext;
@@ -135,11 +154,13 @@ namespace jrc
 
 		Job job;
 		int16_t sp;
+		int16_t beginner_sp;
 
 		uint16_t tab;
 		uint16_t skillcount;
 		uint16_t offset;
-		
+
 		std::vector<SkillIcon> icons;
+		bool grabbing;
 	};
 }

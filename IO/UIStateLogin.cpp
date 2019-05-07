@@ -118,6 +118,7 @@ namespace jrc
 		}
 	}
 
+	void UIStateLogin::send_scroll(double) {}
 	void UIStateLogin::drag_icon(Icon*) {}
 	void UIStateLogin::clear_tooltip(Tooltip::Parent) {}
 	void UIStateLogin::show_equip(Tooltip::Parent, int16_t) {}

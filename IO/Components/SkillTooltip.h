@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -32,8 +32,7 @@ namespace jrc
 
 		void draw(Point<int16_t> position) const override;
 
-		void set_skill(int32_t id, int32_t level,
-			int32_t masterlevel, int64_t expiration);
+		void set_skill(int32_t id, int32_t level, int32_t masterlevel, int64_t expiration);
 
 	private:
 		int32_t skill_id;

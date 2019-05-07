@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -29,13 +29,13 @@ namespace jrc
 		bulletslot = 0;
 		meso = 0;
 		running_uid = 0;
-		slotmaxima[InventoryType::EQUIPPED] = Equipslot::LENGTH;
+		slotmaxima[InventoryType::Id::EQUIPPED] = Equipslot::Id::LENGTH;
 	}
 
 	void Inventory::recalc_stats(Weapon::Type type)
 	{
 		totalstats.clear();
-		for (auto& iter : inventories[InventoryType::EQUIPPED])
+		for (auto& iter : inventories[InventoryType::Id::EQUIPPED])
 		{
 			auto equip_iter = equips.find(iter.second.unique_id);
 			if (equip_iter != equips.end())
@@ -51,16 +51,16 @@ namespace jrc
 		int32_t prefix;
 		switch (type)
 		{
-		case Weapon::BOW:
+		case Weapon::Type::BOW:
 			prefix = 2060;
 			break;
-		case Weapon::CROSSBOW:
+		case Weapon::Type::CROSSBOW:
 			prefix = 2061;
 			break;
-		case Weapon::CLAW:
+		case Weapon::Type::CLAW:
 			prefix = 2070;
 			break;
-		case Weapon::GUN:
+		case Weapon::Type::GUN:
 			prefix = 2330;
 			break;
 		default:
@@ -70,7 +70,7 @@ namespace jrc
 		bulletslot = 0;
 		if (prefix)
 		{
-			for (auto& iter : inventories[InventoryType::USE])
+			for (auto& iter : inventories[InventoryType::Id::USE])
 			{
 				const Slot& slot = iter.second;
 				if (slot.count && slot.item_id / 1000 == prefix)
@@ -83,7 +83,7 @@ namespace jrc
 
 		if (int32_t bulletid = get_bulletid())
 		{
-			totalstats[Equipstat::WATK] += BulletData::get(bulletid)
+			totalstats[Equipstat::Id::WATK] += BulletData::get(bulletid)
 				.get_watk();
 		}
 	}
@@ -140,11 +140,11 @@ namespace jrc
 
 		switch (type)
 		{
-		case InventoryType::EQUIPPED:
-		case InventoryType::EQUIP:
+		case InventoryType::Id::EQUIPPED:
+		case InventoryType::Id::EQUIP:
 			equips.erase(unique_id);
 			break;
-		case InventoryType::CASH:
+		case InventoryType::Id::CASH:
 			items.erase(unique_id);
 			pets.erase(unique_id);
 			break;
@@ -154,7 +154,7 @@ namespace jrc
 		}
 	}
 
-	void Inventory::swap(InventoryType::Id firsttype, int16_t firstslot, InventoryType::Id secondtype, int16_t secondslot) 
+	void Inventory::swap(InventoryType::Id firsttype, int16_t firstslot, InventoryType::Id secondtype, int16_t secondslot)
 	{
 		Slot first = std::move(inventories[firsttype][firstslot]);
 		inventories[firsttype][firstslot] = std::move(inventories[secondtype][secondslot]);
@@ -185,30 +185,30 @@ namespace jrc
 		if (slot < 0)
 		{
 			slot = -slot;
-			type = InventoryType::EQUIPPED;
+			type = InventoryType::Id::EQUIPPED;
 		}
 		arg = (arg < 0) ? -arg : arg;
 
 		switch (mode)
 		{
-		case CHANGECOUNT:
+		case Modification::CHANGECOUNT:
 			change_count(type, slot, arg);
 			break;
-		case SWAP:
+		case Modification::SWAP:
 			switch (move)
 			{
-			case MOVE_INTERNAL:
+			case Movement::MOVE_INTERNAL:
 				swap(type, slot, type, arg);
 				break;
-			case MOVE_UNEQUIP:
-				swap(InventoryType::EQUIPPED, slot, InventoryType::EQUIP, arg);
+			case Movement::MOVE_UNEQUIP:
+				swap(InventoryType::Id::EQUIPPED, slot, InventoryType::Id::EQUIP, arg);
 				break;
-			case MOVE_EQUIP:
-				swap(InventoryType::EQUIP, slot, InventoryType::EQUIPPED, arg);
+			case Movement::MOVE_EQUIP:
+				swap(InventoryType::Id::EQUIP, slot, InventoryType::Id::EQUIPPED, arg);
 				break;
 			}
 			break;
-		case REMOVE:
+		case Modification::REMOVE:
 			remove(type, slot);
 			break;
 		}
@@ -236,7 +236,7 @@ namespace jrc
 
 	bool Inventory::has_equipped(Equipslot::Id slot) const
 	{
-		return inventories[InventoryType::EQUIPPED].count(slot) > 0;
+		return inventories[InventoryType::Id::EQUIPPED].count(slot) > 0;
 	}
 
 	int16_t Inventory::get_bulletslot() const
@@ -246,33 +246,33 @@ namespace jrc
 
 	uint16_t Inventory::get_bulletcount() const
 	{
-		return get_item_count(InventoryType::USE, bulletslot);
+		return get_item_count(InventoryType::Id::USE, bulletslot);
 	}
 
 	int32_t Inventory::get_bulletid() const
 	{
-		return get_item_id(InventoryType::USE, bulletslot);
+		return get_item_id(InventoryType::Id::USE, bulletslot);
 	}
 
 	Equipslot::Id Inventory::find_equipslot(int32_t itemid) const
 	{
 		const EquipData& cloth = EquipData::get(itemid);
 		if (!cloth.is_valid())
-			return Equipslot::NONE;
+			return Equipslot::Id::NONE;
 
 		Equipslot::Id eqslot = cloth.get_eqslot();
-		if (eqslot == Equipslot::RING)
+		if (eqslot == Equipslot::Id::RING)
 		{
-			if (!has_equipped(Equipslot::RING2))
-				return Equipslot::RING2;
+			if (!has_equipped(Equipslot::Id::RING2))
+				return Equipslot::Id::RING2;
 
-			if (!has_equipped(Equipslot::RING3))
-				return Equipslot::RING3;
+			if (!has_equipped(Equipslot::Id::RING3))
+				return Equipslot::Id::RING3;
 
-			if (!has_equipped(Equipslot::RING4))
-				return Equipslot::RING4;
+			if (!has_equipped(Equipslot::Id::RING4))
+				return Equipslot::Id::RING4;
 
-			return Equipslot::RING;
+			return Equipslot::Id::RING;
 		}
 		else
 		{
@@ -331,7 +331,7 @@ namespace jrc
 
 	Optional<const Equip> Inventory::get_equip(InventoryType::Id type, int16_t slot) const
 	{
-		if (type != InventoryType::EQUIPPED && type != InventoryType::EQUIP)
+		if (type != InventoryType::Id::EQUIPPED && type != InventoryType::Id::EQUIP)
 			return{};
 
 		auto slot_iter = inventories[type].find(slot);

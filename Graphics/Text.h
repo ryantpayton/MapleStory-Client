@@ -70,6 +70,8 @@ namespace jrc
 			DUSTYGRAY,
 			EMPEROR,
 			MINESHAFT,
+			HALFANDHALF,
+			ENDEAVOUR,
 			NUM_COLORS
 		};
 

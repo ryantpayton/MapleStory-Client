@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -37,6 +37,9 @@ namespace jrc
 		// An ordered map is used so that lower passive skills don't override higher ones.
 		std::map<int32_t, int32_t> collect_passives() const;
 
+		// Return id and level of all required skills.
+		std::unordered_map<int32_t, int32_t> Skillbook::collect_required(int32_t id) const;
+
 	private:
 		struct SkillEntry
 		{
@@ -48,4 +51,3 @@ namespace jrc
 		std::unordered_map<int32_t, SkillEntry> skillentries;
 	};
 }
-

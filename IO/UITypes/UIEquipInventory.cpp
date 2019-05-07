@@ -170,7 +170,11 @@ namespace jrc
 	void UIEquipInventory::send_key(int32_t keycode, bool pressed)
 	{
 		if (keycode == KeyAction::ESCAPE)
+		{
+			clear_tooltip();
+
 			active = false;
+		}
 	}
 
 	void UIEquipInventory::doubleclick(Point<int16_t> cursorpos)

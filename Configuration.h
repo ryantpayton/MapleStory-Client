@@ -45,16 +45,20 @@ namespace jrc
 		bool get_show_fps() const;
 		// Get private member TITLE
 		std::string get_title() const;
-		// Set the MACS
+		// Set private member MACS
 		void set_macs(char* macs);
-		// Set the HWID
+		// Set private member HWID
 		void set_hwid(char* hwid, char* volumeSerialNumber);
-		// Get the MACS
+		// Get private member MACS
 		std::string get_macs();
-		// Get the HWID
+		// Get private member HWID
 		std::string get_hwid();
 		// Get the Hard Drive Volume Serial Number
 		std::string get_vol_serial_num();
+		// Get the shop's "Right-click to sell item" boolean
+		bool get_rightclicksell();
+		// Set the shop's "Right-click to sell item" boolean
+		void set_rightclicksell(bool value);
 
 		// Base class for an entry in the settings file.
 		class Entry
@@ -162,13 +166,14 @@ namespace jrc
 		const char* FILENAME = "Settings";
 		const char* TITLE = "MapleStory";
 		const bool SHOW_FPS = false;
+		bool rightclicksell = false;
 		std::string MACS;
 		std::string HWID;
 		std::string VolumeSerialNumber;
 		TypeMap<Entry> settings;
 	};
 
-	// IP Adress which the client will connect to.
+	// IP Address which the client will connect to.
 	struct ServerIP : public Configuration::StringEntry
 	{
 		ServerIP() : StringEntry("ServerIP", "127.0.0.1") {}
@@ -180,7 +185,7 @@ namespace jrc
 		ServerPort() : StringEntry("ServerPort", "8484") {}
 	};
 
-	// Wether to start in fullscreen mode.
+	// Whether to start in fullscreen mode.
 	struct Fullscreen : public Configuration::BoolEntry
 	{
 		Fullscreen() : BoolEntry("Fullscreen", "false") {}
@@ -198,7 +203,7 @@ namespace jrc
 		Height() : ShortEntry("Height", "600") {}
 	};
 
-	// Wether to use vsync.
+	// Whether to use vsync.
 	struct VSync : public Configuration::BoolEntry
 	{
 		VSync() : BoolEntry("VSync", "true") {}
@@ -228,7 +233,7 @@ namespace jrc
 		SFXVolume() : ByteEntry("SFXVolume", "50") {}
 	};
 
-	// Wether to save the last used account name.
+	// Whether to save the last used account name.
 	struct SaveLogin : public Configuration::BoolEntry
 	{
 		SaveLogin() : BoolEntry("SaveLogin", "false") {}
@@ -258,13 +263,19 @@ namespace jrc
 		DefaultCharacter() : ByteEntry("Character", "0") {}
 	};
 
+	// Whether to show the chatbar.
+	struct Chatopen : public Configuration::BoolEntry
+	{
+		Chatopen() : BoolEntry("Chatopen", "false") {}
+	};
+
 	// The default position of the character stats inventory.
 	struct PosSTATS : public Configuration::PointEntry
 	{
 		PosSTATS() : PointEntry("PosSTATS", "(72,62)") {}
 	};
 
-	// The default position of the equip inventory.
+	// The default position of the equipment inventory.
 	struct PosEQINV : public Configuration::PointEntry
 	{
 		PosEQINV() : PointEntry("PosEQINV", "(250,150)") {}
@@ -279,7 +290,7 @@ namespace jrc
 	// The default position of the skill inventory.
 	struct PosSKILL : public Configuration::PointEntry
 	{
-		PosSKILL() : PointEntry("PosSKILL", "(50,150)") {}
+		PosSKILL() : PointEntry("PosSKILL", "(96,86)") {}
 	};
 
 	// The default position of the quest log.
@@ -294,7 +305,7 @@ namespace jrc
 		PosMAP() : PointEntry("PosMAP", "(100,25)") {}
 	};
 
-	// The default position of the party.
+	// The default position of the userlist features.
 	struct PosUSERLIST : public Configuration::PointEntry
 	{
 		PosUSERLIST() : PointEntry("PosUSERLIST", "(104, 94)") {}
@@ -306,16 +317,46 @@ namespace jrc
 		PosCHAT() : PointEntry("PosCHAT", "(0, 562)") {}
 	};
 
-	// The default position of the skill inventory.
-	struct Chatopen : public Configuration::BoolEntry
-	{
-		Chatopen() : BoolEntry("Chatopen", "false") {}
-	};
-
 	// The default position of the mini map.
 	struct PosMINIMAP : public Configuration::PointEntry
 	{
 		PosMINIMAP() : PointEntry("PosMINIMAP", "(0, 0)") {}
+	};
+
+	// The default position of shops.
+	struct PosSHOP : public Configuration::PointEntry
+	{
+		PosSHOP() : PointEntry("PosSHOP", "(146, 38)") {}
+	};
+
+	// The default position of the notice windows.
+	struct PosNOTICE : public Configuration::PointEntry
+	{
+		PosNOTICE() : PointEntry("PosNOTICE", "(400, 275)") {}
+	};
+
+	// The default position of the maple chat.
+	struct PosMAPLECHAT : public Configuration::PointEntry
+	{
+		PosMAPLECHAT() : PointEntry("PosMAPLECHAT", "(50, 200)") {}
+	};
+
+	// The default position of the channel change.
+	struct PosCHANNEL : public Configuration::PointEntry
+	{
+		PosCHANNEL() : PointEntry("PosCHANNEL", "(215, 90)") {}
+	};
+
+	// The default position of the joypad.
+	struct PosJOYPAD : public Configuration::PointEntry
+	{
+		PosJOYPAD() : PointEntry("PosJOYPAD", "(312, 124)") {}
+	};
+
+	// The default position of the event list.
+	struct PosEVENT : public Configuration::PointEntry
+	{
+		PosEVENT() : PointEntry("PosEVENT", "(99, 90)") {}
 	};
 
 	template <typename T>

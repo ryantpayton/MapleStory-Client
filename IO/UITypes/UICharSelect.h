@@ -23,7 +23,7 @@
 
 #include "../../Character/Look/CharLook.h"
 #include "../../Graphics/Sprite.h"
-#include "../../Graphics/OutlinedText.h"
+#include "../../Graphics/SpecialText.h"
 #include "../../Net/Login.h"
 
 namespace jrc

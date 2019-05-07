@@ -68,7 +68,7 @@ namespace jrc
 		buttons[BT_DETAILOPEN] = std::make_unique<MapleButton>(main["BtDetailOpen"]);
 		buttons[BT_DETAILCLOSE] = std::make_unique<MapleButton>(main["BtDetailClose"]);
 		buttons[BT_ABILITY] = std::make_unique<MapleButton>(detail["BtAbility"], Point<int16_t>(212, 0));
-		buttons[BT_DETAIL_DETAILCLOSE] = std::make_unique<MapleButton>(detail["BtHpUp"], Point<int16_t>(162, 300));
+		buttons[BT_DETAIL_DETAILCLOSE] = std::make_unique<MapleButton>(detail["BtHpUp"], Point<int16_t>(212, 0));
 
 		buttons[BT_HYPERSTATOPEN]->set_active(false);
 		buttons[BT_DETAILCLOSE]->set_active(false);
@@ -125,8 +125,8 @@ namespace jrc
 		statoffsets[HONOR] = Point<int16_t>(73, 283);
 
 		update_all_stats();
-		update_stat(Maplestat::JOB);
-		update_stat(Maplestat::FAME);
+		update_stat(Maplestat::Id::JOB);
+		update_stat(Maplestat::Id::FAME);
 
 		dimension = Point<int16_t>(212, 318);
 		showdetail = false;
@@ -188,20 +188,20 @@ namespace jrc
 
 	void UIStatsinfo::update_all_stats()
 	{
-		update_simple(AP, Maplestat::AP);
+		update_simple(AP, Maplestat::Id::AP);
 
-		if (hasap ^ (stats.get_stat(Maplestat::AP) > 0))
+		if (hasap ^ (stats.get_stat(Maplestat::Id::AP) > 0))
 			update_ap();
 
-		statlabels[NAME].change_text(stats.get_name());
-		statlabels[GUILD].change_text("-");
-		statlabels[HP].change_text(std::to_string(stats.get_stat(Maplestat::HP)) + " / " + std::to_string(stats.get_total(Equipstat::HP)));
-		statlabels[MP].change_text(std::to_string(stats.get_stat(Maplestat::MP)) + " / " + std::to_string(stats.get_total(Equipstat::MP)));
+		statlabels[StatLabel::NAME].change_text(stats.get_name());
+		statlabels[StatLabel::GUILD].change_text("-");
+		statlabels[StatLabel::HP].change_text(std::to_string(stats.get_stat(Maplestat::Id::HP)) + " / " + std::to_string(stats.get_total(Equipstat::Id::HP)));
+		statlabels[StatLabel::MP].change_text(std::to_string(stats.get_stat(Maplestat::Id::MP)) + " / " + std::to_string(stats.get_total(Equipstat::Id::MP)));
 
-		update_basevstotal(STR, Maplestat::STR, Equipstat::STR);
-		update_basevstotal(DEX, Maplestat::DEX, Equipstat::DEX);
-		update_basevstotal(INT, Maplestat::INT, Equipstat::INT);
-		update_basevstotal(LUK, Maplestat::LUK, Equipstat::LUK);
+		update_basevstotal(StatLabel::STR, Maplestat::Id::STR, Equipstat::Id::STR);
+		update_basevstotal(StatLabel::DEX, Maplestat::Id::DEX, Equipstat::Id::DEX);
+		update_basevstotal(StatLabel::INT, Maplestat::Id::INT, Equipstat::Id::INT);
+		update_basevstotal(StatLabel::LUK, Maplestat::Id::LUK, Equipstat::Id::LUK);
 
 		statlabels[DAMAGE].change_text(std::to_string(stats.get_mindamage()) + " ~ " + std::to_string(stats.get_maxdamage()));
 
@@ -210,30 +210,30 @@ namespace jrc
 		else
 			statlabels[DAMAGE].change_color(Text::Color::EMPEROR);
 
-		statlabels[DAMAGE_DETAILED].change_text(std::to_string(stats.get_mindamage()) + " ~ " + std::to_string(stats.get_maxdamage()));
-		statlabels[DAMAGE_BONUS].change_text("0%");
-		statlabels[BOSS_DAMAGE].change_text(std::to_string(static_cast<int32_t>(stats.get_bossdmg() * 100)) + "%");
-		statlabels[FINAL_DAMAGE].change_text("0%");
-		statlabels[IGNORE_DEFENSE].change_text(std::to_string(static_cast<int32_t>(stats.get_ignoredef())) + "%");
-		statlabels[CRITICAL_RATE].change_text(std::to_string(static_cast<int32_t>(stats.get_critical() * 100)) + "%");
-		statlabels[CRITICAL_DAMAGE].change_text("0.00%");
-		statlabels[STATUS_RESISTANCE].change_text(std::to_string(static_cast<int32_t>(stats.get_resistance())));
-		statlabels[KNOCKBACK_RESISTANCE].change_text("0%");
-		update_buffed(DEFENSE, Equipstat::WDEF);
-		statlabels[SPEED].change_text(std::to_string(stats.get_total(Equipstat::SPEED)) + "%");
-		statlabels[JUMP].change_text(std::to_string(stats.get_total(Equipstat::JUMP)) + "%");
-		statlabels[HONOR].change_text(std::to_string(stats.get_honor()));
+		statlabels[StatLabel::DAMAGE_DETAILED].change_text(std::to_string(stats.get_mindamage()) + " ~ " + std::to_string(stats.get_maxdamage()));
+		statlabels[StatLabel::DAMAGE_BONUS].change_text("0%");
+		statlabels[StatLabel::BOSS_DAMAGE].change_text(std::to_string(static_cast<int32_t>(stats.get_bossdmg() * 100)) + "%");
+		statlabels[StatLabel::FINAL_DAMAGE].change_text("0%");
+		statlabels[StatLabel::IGNORE_DEFENSE].change_text(std::to_string(static_cast<int32_t>(stats.get_ignoredef())) + "%");
+		statlabels[StatLabel::CRITICAL_RATE].change_text(std::to_string(static_cast<int32_t>(stats.get_critical() * 100)) + "%");
+		statlabels[StatLabel::CRITICAL_DAMAGE].change_text("0.00%");
+		statlabels[StatLabel::STATUS_RESISTANCE].change_text(std::to_string(static_cast<int32_t>(stats.get_resistance())));
+		statlabels[StatLabel::KNOCKBACK_RESISTANCE].change_text("0%");
+		update_buffed(StatLabel::DEFENSE, Equipstat::Id::WDEF);
+		statlabels[StatLabel::SPEED].change_text(std::to_string(stats.get_total(Equipstat::Id::SPEED)) + "%");
+		statlabels[StatLabel::JUMP].change_text(std::to_string(stats.get_total(Equipstat::Id::JUMP)) + "%");
+		statlabels[StatLabel::HONOR].change_text(std::to_string(stats.get_honor()));
 	}
 
 	void UIStatsinfo::update_stat(Maplestat::Id stat)
 	{
 		switch (stat)
 		{
-		case Maplestat::JOB:
+		case Maplestat::Id::JOB:
 			statlabels[JOB].change_text(stats.get_jobname());
 			break;
-		case Maplestat::FAME:
-			update_simple(FAME, Maplestat::FAME);
+		case Maplestat::Id::FAME:
+			update_simple(FAME, Maplestat::Id::FAME);
 			break;
 		}
 	}
@@ -263,22 +263,22 @@ namespace jrc
 			buttons[BT_DETAIL_DETAILCLOSE]->set_active(false);
 			break;
 		case BT_HP:
-			send_apup(Maplestat::HP);
+			send_apup(Maplestat::Id::HP);
 			break;
 		case BT_MP:
-			send_apup(Maplestat::MP);
+			send_apup(Maplestat::Id::MP);
 			break;
 		case BT_STR:
-			send_apup(Maplestat::STR);
+			send_apup(Maplestat::Id::STR);
 			break;
 		case BT_DEX:
-			send_apup(Maplestat::DEX);
+			send_apup(Maplestat::Id::DEX);
 			break;
 		case BT_INT:
-			send_apup(Maplestat::INT);
+			send_apup(Maplestat::Id::INT);
 			break;
 		case BT_LUK:
-			send_apup(Maplestat::LUK);
+			send_apup(Maplestat::Id::LUK);
 			break;
 		case BT_HYPERSTATCLOSE:
 			int16_t level = 0;
@@ -303,7 +303,7 @@ namespace jrc
 
 	void UIStatsinfo::update_ap()
 	{
-		bool nowap = stats.get_stat(Maplestat::AP) > 0;
+		bool nowap = stats.get_stat(Maplestat::Id::AP) > 0;
 		Button::State newstate = nowap ? Button::State::NORMAL : Button::State::DISABLED;
 
 		for (int i = BT_HP; i <= BT_AUTO; i++)

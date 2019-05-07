@@ -42,6 +42,7 @@ namespace jrc
 		virtual void rightclick(Point<int16_t> pos) = 0;
 		virtual void send_key(KeyType::Id type, int32_t action, bool pressed) = 0;
 		virtual Cursor::State send_cursor(Cursor::State mst, Point<int16_t> pos) = 0;
+		virtual void send_scroll(double yoffset) = 0;
 
 		virtual void drag_icon(Icon* icon) = 0;
 		virtual void clear_tooltip(Tooltip::Parent parent) = 0;
@@ -63,6 +64,7 @@ namespace jrc
 		void rightclick(Point<int16_t>) override {}
 		void send_key(KeyType::Id, int32_t, bool) override {}
 		Cursor::State send_cursor(Cursor::State, Point<int16_t>) override { return Cursor::IDLE; }
+		void send_scroll(double yoffset) override {}
 		void drag_icon(Icon*) override {}
 		void clear_tooltip(Tooltip::Parent) override {}
 		void show_equip(Tooltip::Parent, int16_t) override {}

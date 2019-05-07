@@ -70,7 +70,16 @@ namespace jrc
 
 	void UIElement::toggle_active()
 	{
-		active = !active;
+		if (active)
+		{
+			Sound(Sound::MENUDOWN).play();
+			active = false;
+		}
+		else
+		{
+			Sound(Sound::MENUUP).play();
+			active = true;
+		}
 	}
 
 	Button::State UIElement::button_pressed(uint16_t) { return Button::DISABLED; }
@@ -142,6 +151,8 @@ namespace jrc
 
 		return ret;
 	}
+
+	void UIElement::send_scroll(double) {}
 
 	void UIElement::send_key(int32_t action, bool pressed)
 	{

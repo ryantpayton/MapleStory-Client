@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -35,8 +35,8 @@ namespace jrc
 		void expire();
 
 	private:
-		// How long a line stays on screen. 4 seconds.
-		static constexpr int16_t DURATION = 4000;
+		// How long a line stays on screen
+		static constexpr int16_t DURATION = 4000; // 4 seconds
 
 		MapleFrame frame;
 		Text textlabel;
@@ -44,4 +44,3 @@ namespace jrc
 		int16_t duration;
 	};
 }
-

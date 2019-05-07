@@ -30,6 +30,11 @@
 #include "../IO/UITypes/UIUserList.h"
 #include "../IO/UITypes/UIChatbar.h"
 #include "../IO/UITypes/UIStatusbar.h"
+#include "../IO/UITypes/UINotice.h"
+#include "../IO/UITypes/UIShop.h"
+#include "../IO/UITypes/UIChannel.h"
+#include "../IO/UITypes/UIJoypad.h"
+#include "../IO/UITypes/UIEvent.h"
 
 namespace jrc
 {
@@ -118,6 +123,11 @@ namespace jrc
 		}
 	}
 
+	void UI::send_scroll(double yoffset)
+	{
+		state->send_scroll(yoffset);
+	}
+
 	void UI::send_cursor(bool pressed)
 	{
 		Cursor::State cursorstate = (pressed && enabled) ? Cursor::CLICKING : Cursor::IDLE;
@@ -195,6 +205,9 @@ namespace jrc
 			{
 				auto chatbar = UI::get().get_element<UIChatbar>();
 				auto statusbar = UI::get().get_element<UIStatusbar>();
+				auto notice = UI::get().get_element<UINotice>();
+				auto channel = UI::get().get_element<UIChannel>();
+				auto joypad = UI::get().get_element<UIJoypad>();
 
 				if (pressed && (keycode == GLFW_KEY_ESCAPE || keycode == GLFW_KEY_TAB))
 				{
@@ -205,8 +218,20 @@ namespace jrc
 					auto questlog = UI::get().get_element<UIQuestLog>();
 					auto worldmap = UI::get().get_element<UIWorldMap>();
 					auto userlist = UI::get().get_element<UIUserList>();
+					auto shop = UI::get().get_element<UIShop>();
+					auto eventlist = UI::get().get_element<UIEvent>();
 
-					if (statsinfo && statsinfo->is_active())
+					if (joypad && joypad->is_active())
+						joypad->send_key(mapping.action, pressed);
+					else if (eventlist && eventlist->is_active())
+						eventlist->send_key(mapping.action, pressed);
+					else if (channel && channel->is_active())
+						channel->send_key(mapping.action, pressed);
+					else if (notice && notice->is_active())
+						notice->send_key(mapping.action, pressed);
+					else if (shop && shop->is_active())
+						shop->send_key(mapping.action, pressed);
+					else if (statsinfo && statsinfo->is_active())
 						statsinfo->send_key(mapping.action, pressed);
 					else if (iteminventory && iteminventory->is_active())
 						iteminventory->send_key(mapping.action, pressed);
@@ -229,14 +254,24 @@ namespace jrc
 				}
 				else if (pressed && (keycode == GLFW_KEY_ENTER || keycode == GLFW_KEY_KP_ENTER))
 				{
-					if (statusbar && statusbar->is_menu_active())
+					if (joypad && joypad->is_active())
+						joypad->send_key(mapping.action, pressed);
+					else if (channel && channel->is_active())
+						channel->send_key(mapping.action, pressed);
+					else if (notice && notice->is_active())
+						notice->send_key(mapping.action, pressed);
+					else if (statusbar && statusbar->is_menu_active())
 						statusbar->send_key(mapping.action, pressed);
 					else if (chatbar)
 						chatbar->send_key(mapping.action, pressed);
 				}
 				else if (pressed && (keycode == GLFW_KEY_UP || keycode == GLFW_KEY_DOWN || keycode == GLFW_KEY_LEFT || keycode == GLFW_KEY_RIGHT))
 				{
-					if (statusbar)
+					if (channel && channel->is_active())
+					{
+						channel->send_key(mapping.action, pressed);
+					}
+					else if (statusbar)
 					{
 						if (statusbar->is_menu_active())
 							statusbar->send_key(mapping.action, pressed);

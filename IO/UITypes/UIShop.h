@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../UIElement.h"
+#include "../UIDragElement.h"
 
 #include "../Components/Slider.h"
 
@@ -28,7 +28,7 @@
 
 namespace jrc
 {
-	class UIShop : public UIElement
+	class UIShop : public UIDragElement<PosSHOP>
 	{
 	public:
 		static constexpr Type TYPE = SHOP;
@@ -42,6 +42,9 @@ namespace jrc
 
 		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> position) override;
+		void send_scroll(double yoffset) override;
+		void rightclick(Point<int16_t> cursorpos) override;
+		void send_key(int32_t keycode, bool pressed) override;
 
 		void reset(int32_t npcid);
 		void add_item(int32_t id, int32_t price, int32_t pitch, int32_t time, int16_t buyable);
@@ -58,21 +61,39 @@ namespace jrc
 		void changeselltab(InventoryType::Id tab);
 		int16_t slot_by_position(int16_t y);
 		uint16_t tabbyinventory(InventoryType::Id type);
+		void exit_shop();
 
 		enum Buttons : int16_t
 		{
 			BUY_ITEM,
 			SELL_ITEM,
 			EXIT,
+			CHECKBOX,
+			OVERALL,
 			EQUIP,
 			USE,
 			ETC,
 			SETUP,
 			CASH,
 			BUY0,
-			BUY9 = 17,
+			BUY1,
+			BUY2,
+			BUY3,
+			BUY4,
+			BUY5,
+			BUY6,
+			BUY7,
+			BUY8,
 			SELL0,
-			SELL9 = 22
+			SELL1,
+			SELL2,
+			SELL3,
+			SELL4,
+			SELL5,
+			SELL6,
+			SELL7,
+			SELL8,
+			NUM_BUTTONS
 		};
 
 		const CharLook& charlook;
@@ -86,6 +107,17 @@ namespace jrc
 
 		Slider buyslider;
 		Slider sellslider;
+
+		int16_t buy_x;
+		int16_t buy_width;
+		int16_t sell_x;
+		int16_t sell_width;
+
+		BoolPair<Texture> checkBox;
+
+		bool rightclicksell;
+
+		Point<int16_t> lastcursorpos;
 
 		class BuyItem
 		{
@@ -160,7 +192,7 @@ namespace jrc
 			void change_tab(const Inventory& inventory, InventoryType::Id type, Texture meso);
 			void draw(Point<int16_t> position, const Texture& selected) const;
 			void show_item(int16_t slot);
-			void sell() const;
+			void sell(bool skip_confirmation) const;
 			void select(int16_t selected);
 		};
 

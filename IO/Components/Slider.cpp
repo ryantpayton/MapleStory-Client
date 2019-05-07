@@ -178,7 +178,7 @@ namespace jrc
 					onmoved(true);
 				}
 
-				return Cursor::CLICKING;
+				return Cursor::VSCROLLIDLE;
 			}
 			else
 			{
@@ -203,11 +203,11 @@ namespace jrc
 				scrolling = true;
 				thumb.set_state(Button::PRESSED);
 
-				return Cursor::CLICKING;
+				return Cursor::VSCROLLIDLE;
 			}
 			else
 			{
-				thumb.set_state(Button::MOUSEOVER);
+				thumb.set_state(Button::NORMAL);
 
 				return Cursor::VSCROLL;
 			}
@@ -229,13 +229,13 @@ namespace jrc
 
 				prev.set_state(Button::PRESSED);
 
-				return Cursor::CLICKING;
+				return Cursor::VSCROLLIDLE;
 			}
 			else
 			{
 				prev.set_state(Button::MOUSEOVER);
 
-				return Cursor::CANCLICK;
+				return Cursor::VSCROLL;
 			}
 		}
 		else
@@ -255,13 +255,13 @@ namespace jrc
 
 				next.set_state(Button::PRESSED);
 
-				return Cursor::CLICKING;
+				return Cursor::VSCROLLIDLE;
 			}
 			else
 			{
 				next.set_state(Button::MOUSEOVER);
 
-				return Cursor::CANCLICK;
+				return Cursor::VSCROLL;
 			}
 		}
 		else
@@ -283,21 +283,42 @@ namespace jrc
 
 				int16_t delta = row - cursorrow;
 
-				while (delta > 0)
+				for (size_t i = 0; i < 2; i++)
 				{
-					delta--;
-					onmoved(true);
-				}
-				while (delta < 0)
-				{
-					delta++;
-					onmoved(false);
+					if (delta > 0)
+					{
+						row--;
+						delta--;
+						onmoved(true);
+					}
+
+					if (delta < 0)
+					{
+						row++;
+						delta++;
+						onmoved(false);
+					}
 				}
 
-				row = cursorrow;
+				return Cursor::VSCROLLIDLE;
 			}
 		}
 
-		return Cursor::IDLE;
+		return Cursor::VSCROLL;
+	}
+
+	void Slider::send_scroll(double yoffset)
+	{
+		if (yoffset < 0 && row < rowmax)
+		{
+			row++;
+			onmoved(false);
+		}
+
+		if (yoffset > 0 && row > 0)
+		{
+			row--;
+			onmoved(true);
+		}
 	}
 }

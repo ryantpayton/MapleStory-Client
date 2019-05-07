@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -31,8 +31,8 @@ namespace jrc
 
 	const char* Equipstat::names[LENGTH] =
 	{
-		"STR", "DEX", "INT", "LUK", "MAX HP", "MAX MP",
-		"WEAPON ATT", "MAGIC ATT", "WEAPON DEFENSE", "MAGIC DEFENSE",
-		"ACCURACY", "AVOID", "HANDS", "SPEED", "JUMP"
+		"STR", "DEX", "INT", "LUK", "MaxHP", "MaxMP","Attack Power", "Magic Attack", "Defense",
+		"MAGIC DEFENSE","ACCURACY", "AVOID", "HANDS", // TODO: Does curret GMS use these anymore?
+		"Speed", "Jump"
 	};
 }

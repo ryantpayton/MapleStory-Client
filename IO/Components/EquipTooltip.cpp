@@ -26,71 +26,84 @@
 
 namespace jrc
 {
-	EquipTooltip::EquipTooltip() 
+	EquipTooltip::EquipTooltip()
 	{
-		nl::node itemtt = nl::nx::ui["UIToolTip.img"]["Item"];
+		nl::node Item = nl::nx::ui["UIToolTip.img"]["Item"];
+		nl::node Frame = Item["Frame"];
+		nl::node ItemIcon = Item["ItemIcon"];
+		nl::node Equip = Item["Equip"];
+		nl::node EquipCan = Equip["Can"];
+		nl::node EquipCannot = Equip["Cannot"];
 
-		top = itemtt["Frame"]["top"];
-		mid = itemtt["Frame"]["line"];
-		line = itemtt["Frame"]["dotline"];
-		bot = itemtt["Frame"]["bottom"];
-		base = itemtt["ItemIcon"]["base"];
-		cover = itemtt["ItemIcon"]["cover"];
-		shade = itemtt["ItemIcon"]["shade"];
+		top = Frame["top"];
+		mid = Frame["line"];
+		line = Frame["dotline"];
+		bot = Frame["bottom"];
+		base = ItemIcon["base"];
+		cover = Frame["cover"];
+		itemcover = ItemIcon["cover"];
+		type[true] = ItemIcon["new"];
+		type[false] = ItemIcon["old"];
 
-		potential[Equip::POT_NONE] = {};
-		potential[Equip::POT_HIDDEN] = itemtt["ItemIcon"]["0"];
-		potential[Equip::POT_RARE] = itemtt["ItemIcon"]["1"];
-		potential[Equip::POT_EPIC] = itemtt["ItemIcon"]["2"];
-		potential[Equip::POT_UNIQUE] = itemtt["ItemIcon"]["3"];
-		potential[Equip::POT_LEGENDARY] = itemtt["ItemIcon"]["4"];
+		potential[Equip::Potential::POT_NONE] = {};
+		potential[Equip::Potential::POT_HIDDEN] = ItemIcon["0"];
+		potential[Equip::Potential::POT_RARE] = ItemIcon["1"];
+		potential[Equip::Potential::POT_EPIC] = ItemIcon["2"];
+		potential[Equip::Potential::POT_UNIQUE] = ItemIcon["3"];
+		potential[Equip::Potential::POT_LEGENDARY] = ItemIcon["4"];
 
-		requirements.push_back(Maplestat::LEVEL);
-		requirements.push_back(Maplestat::STR);
-		requirements.push_back(Maplestat::DEX);
-		requirements.push_back(Maplestat::INT);
-		requirements.push_back(Maplestat::LUK);
+		requirements.push_back(Maplestat::Id::LEVEL);
+		requirements.push_back(Maplestat::Id::STR);
+		requirements.push_back(Maplestat::Id::DEX);
+		requirements.push_back(Maplestat::Id::INT);
+		requirements.push_back(Maplestat::Id::LUK);
 
-		reqstattextures[Maplestat::LEVEL][false] = itemtt["Equip"]["Cannot"]["reqLEV"];
-		reqstattextures[Maplestat::LEVEL][true] = itemtt["Equip"]["Can"]["reqLEV"];
-		reqstattextures[Maplestat::FAME][false] = itemtt["Equip"]["Cannot"]["reqPOP"];
-		reqstattextures[Maplestat::FAME][true] = itemtt["Equip"]["Can"]["reqPOP"];
-		reqstattextures[Maplestat::STR][false] = itemtt["Equip"]["Cannot"]["reqSTR"];
-		reqstattextures[Maplestat::STR][true] = itemtt["Equip"]["Can"]["reqSTR"];
-		reqstattextures[Maplestat::DEX][false] = itemtt["Equip"]["Cannot"]["reqDEX"];
-		reqstattextures[Maplestat::DEX][true] = itemtt["Equip"]["Can"]["reqDEX"];
-		reqstattextures[Maplestat::INT][false] = itemtt["Equip"]["Cannot"]["reqINT"];
-		reqstattextures[Maplestat::INT][true] = itemtt["Equip"]["Can"]["reqINT"];
-		reqstattextures[Maplestat::LUK][false] = itemtt["Equip"]["Cannot"]["reqLUK"];
-		reqstattextures[Maplestat::LUK][true] = itemtt["Equip"]["Can"]["reqLUK"];
+		reqstattextures[Maplestat::Id::LEVEL][false] = EquipCannot["reqLEV"];
+		reqstattextures[Maplestat::Id::LEVEL][true] = EquipCan["reqLEV"];
+		reqstattextures[Maplestat::Id::FAME][false] = EquipCannot["reqPOP"];
+		reqstattextures[Maplestat::Id::FAME][true] = EquipCan["reqPOP"];
+		reqstattextures[Maplestat::Id::STR][false] = EquipCannot["reqSTR"];
+		reqstattextures[Maplestat::Id::STR][true] = EquipCan["reqSTR"];
+		reqstattextures[Maplestat::Id::DEX][false] = EquipCannot["reqDEX"];
+		reqstattextures[Maplestat::Id::DEX][true] = EquipCan["reqDEX"];
+		reqstattextures[Maplestat::Id::INT][false] = EquipCannot["reqINT"];
+		reqstattextures[Maplestat::Id::INT][true] = EquipCan["reqINT"];
+		reqstattextures[Maplestat::Id::LUK][false] = EquipCannot["reqLUK"];
+		reqstattextures[Maplestat::Id::LUK][true] = EquipCan["reqLUK"];
 
-		reqstatpositions[Maplestat::LEVEL] = { 98, 48 };
-		reqstatpositions[Maplestat::STR] = { 98, 64 };
-		reqstatpositions[Maplestat::DEX] = { 98, 72 };
-		reqstatpositions[Maplestat::INT] = { 173, 64 };
-		reqstatpositions[Maplestat::LUK] = { 173, 72 };
+		reqstatpositions[Maplestat::Id::LEVEL] = Point<int16_t>(97, 47);
+		reqstatpositions[Maplestat::Id::STR] = Point<int16_t>(97, 62);
+		reqstatpositions[Maplestat::Id::LUK] = Point<int16_t>(177, 62);
+		reqstatpositions[Maplestat::Id::DEX] = Point<int16_t>(97, 71);
+		reqstatpositions[Maplestat::Id::INT] = Point<int16_t>(177, 71);
 
-		reqset[false] = { itemtt["Equip"]["Cannot"], Charset::LEFT };
-		reqset[true] = { itemtt["Equip"]["Can"], Charset::LEFT };
+		reqset[false] = Charset(EquipCannot, Charset::Alignment::LEFT);
+		reqset[true] = Charset(EquipCan, Charset::Alignment::LEFT);
 
-		jobsback = itemtt["Equip"]["Job"]["normal"];
-		jobs[false][0] = itemtt["Equip"]["Job"]["disable"]["0"];
-		jobs[false][1] = itemtt["Equip"]["Job"]["disable"]["1"];
-		jobs[false][2] = itemtt["Equip"]["Job"]["disable"]["2"];
-		jobs[false][3] = itemtt["Equip"]["Job"]["disable"]["3"];
-		jobs[false][4] = itemtt["Equip"]["Job"]["disable"]["4"];
-		jobs[false][5] = itemtt["Equip"]["Job"]["disable"]["5"];
-		jobs[true][0] = itemtt["Equip"]["Job"]["enable"]["0"];
-		jobs[true][1] = itemtt["Equip"]["Job"]["enable"]["1"];
-		jobs[true][2] = itemtt["Equip"]["Job"]["enable"]["2"];
-		jobs[true][3] = itemtt["Equip"]["Job"]["enable"]["3"];
-		jobs[true][4] = itemtt["Equip"]["Job"]["enable"]["4"];
-		jobs[true][5] = itemtt["Equip"]["Job"]["enable"]["5"];
+		lvset[false] = Charset(EquipCannot, Charset::Alignment::LEFT);
+		lvset[true] = Charset(Equip["YellowNumber"], Charset::Alignment::LEFT);
+
+		atkincset[false] = Charset(Equip["Summary"]["decline"], Charset::Alignment::RIGHT);
+		atkincset[true] = Charset(Equip["Summary"]["incline"], Charset::Alignment::RIGHT);
+
+		jobsback = Equip["Job"]["normal"];
+		jobs[false][0] = Equip["Job"]["disable"]["0"];
+		jobs[false][1] = Equip["Job"]["disable"]["1"];
+		jobs[false][2] = Equip["Job"]["disable"]["2"];
+		jobs[false][3] = Equip["Job"]["disable"]["3"];
+		jobs[false][4] = Equip["Job"]["disable"]["4"];
+		jobs[false][5] = Equip["Job"]["disable"]["5"];
+		jobs[true][0] = Equip["Job"]["enable"]["0"];
+		jobs[true][1] = Equip["Job"]["enable"]["1"];
+		jobs[true][2] = Equip["Job"]["enable"]["2"];
+		jobs[true][3] = Equip["Job"]["enable"]["3"];
+		jobs[true][4] = Equip["Job"]["enable"]["4"];
+		jobs[true][5] = Equip["Job"]["enable"]["5"];
 
 		invpos = 0;
 	}
 
-	void EquipTooltip::set_equip(Parent parent, int16_t ivp)
+	void EquipTooltip::set_equip(Tooltip::Parent parent, int16_t ivp)
 	{
 		if (ivp == invpos)
 			return;
@@ -100,20 +113,22 @@ namespace jrc
 		const Player& player = Stage::get().get_player();
 
 		InventoryType::Id invtype;
+
 		switch (parent)
 		{
-		case ITEMINVENTORY:
-		case SHOP:
-			invtype = InventoryType::EQUIP;
+		case Tooltip::Parent::ITEMINVENTORY:
+		case Tooltip::Parent::SHOP:
+			invtype = InventoryType::Id::EQUIP;
 			break;
-		case EQUIPINVENTORY:
-			invtype = InventoryType::EQUIPPED;
+		case Tooltip::Parent::EQUIPINVENTORY:
+			invtype = InventoryType::Id::EQUIPPED;
 			break;
 		default:
-			invtype = InventoryType::NONE;
+			invtype = InventoryType::Id::NONE;
 		}
 
 		auto oequip = player.get_inventory().get_equip(invtype, ivp);
+
 		if (!oequip)
 			return;
 
@@ -124,21 +139,25 @@ namespace jrc
 		const EquipData& equipdata = EquipData::get(item_id);
 		const ItemData& itemdata = equipdata.get_itemdata();
 		const CharStats& stats = player.get_stats();
-		
-		height = 500;
 
-		itemicon = itemdata.get_icon(true);
+		height = 540;
+
+		itemicon = itemdata.get_icon(false);
 
 		for (auto& ms : requirements)
 		{
 			canequip[ms] = stats.get_stat(ms) >= equipdata.get_reqstat(ms);
 			std::string reqstr = std::to_string(equipdata.get_reqstat(ms));
-			reqstr.insert(0, 3 - reqstr.size(), '0');
+
+			if (ms != Maplestat::Id::LEVEL)
+				reqstr.insert(0, 3 - reqstr.size(), '0');
+
 			reqstatstrings[ms] = reqstr;
 		}
 
 		okjobs.clear();
-		switch (equipdata.get_reqstat(Maplestat::JOB))
+
+		switch (equipdata.get_reqstat(Maplestat::Id::JOB))
 		{
 		case 0:
 			okjobs.push_back(0);
@@ -147,105 +166,115 @@ namespace jrc
 			okjobs.push_back(3);
 			okjobs.push_back(4);
 			okjobs.push_back(5);
-			canequip[Maplestat::JOB] = true;
+			canequip[Maplestat::Id::JOB] = true;
 			break;
 		case 1:
 			okjobs.push_back(1);
-			canequip[Maplestat::JOB] = (stats.get_stat(Maplestat::JOB) / 100 == 1) || (stats.get_stat(Maplestat::JOB) / 100 >= 20);
+			canequip[Maplestat::Id::JOB] = (stats.get_stat(Maplestat::Id::JOB) / 100 == 1) || (stats.get_stat(Maplestat::Id::JOB) / 100 >= 20);
 			break;
 		case 2:
 			okjobs.push_back(2);
-			canequip[Maplestat::JOB] = stats.get_stat(Maplestat::JOB) / 100 == 2;
+			canequip[Maplestat::Id::JOB] = stats.get_stat(Maplestat::Id::JOB) / 100 == 2;
 			break;
 		case 4:
 			okjobs.push_back(3);
-			canequip[Maplestat::JOB] = stats.get_stat(Maplestat::JOB) / 100 == 3;
+			canequip[Maplestat::Id::JOB] = stats.get_stat(Maplestat::Id::JOB) / 100 == 3;
 			break;
 		case 8:
 			okjobs.push_back(4);
-			canequip[Maplestat::JOB] = stats.get_stat(Maplestat::JOB) / 100 == 4;
+			canequip[Maplestat::Id::JOB] = stats.get_stat(Maplestat::Id::JOB) / 100 == 4;
 			break;
 		case 16:
 			okjobs.push_back(5);
-			canequip[Maplestat::JOB] = stats.get_stat(Maplestat::JOB) / 100 == 5;
+			canequip[Maplestat::Id::JOB] = stats.get_stat(Maplestat::Id::JOB) / 100 == 5;
 			break;
 		default:
-			canequip[Maplestat::JOB] = false;
+			canequip[Maplestat::Id::JOB] = false;
+			break;
 		}
 
 		prank = equip.get_potrank();
+
 		switch (prank)
 		{
-		case Equip::POT_HIDDEN:
-			potflag = Text(Text::A11M, Text::CENTER, Text::RED);
+		case Equip::Potential::POT_HIDDEN:
+			potflag = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::RED);
 			potflag.change_text("(Hidden Potential)");
 			break;
-		case Equip::POT_RARE:
-			potflag = Text(Text::A11M, Text::CENTER, Text::WHITE);
+		case Equip::Potential::POT_RARE:
+			potflag = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::WHITE);
 			potflag.change_text("(Rare Item)");
 			break;
-		case Equip::POT_EPIC:
-			potflag = Text(Text::A11M, Text::CENTER, Text::WHITE);
+		case Equip::Potential::POT_EPIC:
+			potflag = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::WHITE);
 			potflag.change_text("(Epic Item)");
 			break;
-		case Equip::POT_UNIQUE:
-			potflag = Text(Text::A11M, Text::CENTER, Text::WHITE);
+		case Equip::Potential::POT_UNIQUE:
+			potflag = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::WHITE);
 			potflag.change_text("(Unique Item)");
 			break;
-		case Equip::POT_LEGENDARY:
-			potflag = Text(Text::A11M, Text::CENTER, Text::WHITE);
+		case Equip::Potential::POT_LEGENDARY:
+			potflag = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::WHITE);
 			potflag.change_text("(Legendary Item)");
 			break;
 		default:
 			height -= 16;
+			break;
 		}
 
 		Text::Color namecolor;
+
 		switch (equip.get_quality())
 		{
-		case EquipQuality::GREY:
-			namecolor = Text::LIGHTGREY;
+		case EquipQuality::Id::GREY:
+			namecolor = Text::Color::LIGHTGREY;
 			break;
-		case EquipQuality::ORANGE:
-			namecolor = Text::ORANGE;
+		case EquipQuality::Id::ORANGE:
+			namecolor = Text::Color::ORANGE;
 			break;
-		case EquipQuality::BLUE:
-			namecolor = Text::MEDIUMBLUE;
+		case EquipQuality::Id::BLUE:
+			namecolor = Text::Color::MEDIUMBLUE;
 			break;
-		case EquipQuality::VIOLET:
-			namecolor = Text::VIOLET;
+		case EquipQuality::Id::VIOLET:
+			namecolor = Text::Color::VIOLET;
 			break;
-		case EquipQuality::GOLD:
-			namecolor = Text::YELLOW;
+		case EquipQuality::Id::GOLD:
+			namecolor = Text::Color::YELLOW;
 			break;
 		default:
-			namecolor = Text::WHITE;
+			namecolor = Text::Color::WHITE;
+			break;
 		}
 
 		std::string namestr = itemdata.get_name();
+
 		if (equip.get_level() > 0)
 		{
 			namestr.append(" (+");
 			namestr.append(std::to_string(equip.get_level()));
 			namestr.append(")");
 		}
-		name = { Text::A12B, Text::CENTER, namecolor, namestr, 400 };
+
+		name = Text(Text::Font::A12B, Text::Alignment::LEFT, namecolor, namestr, 400);
+		atkinc = Text(Text::Font::A11M, Text::Alignment::RIGHT, Text::Color::DUSTYGRAY, "ATT INCREASE");
 
 		std::string desctext = itemdata.get_desc();
 		hasdesc = desctext.size() > 0;
+
 		if (hasdesc)
 		{
-			desc = { Text::A12M, Text::LEFT, Text::WHITE, desctext, 250 };
+			desc = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, desctext, 250);
 			height += desc.height() + 10;
 		}
 
-		category = { Text::A11M, Text::LEFT, Text::WHITE, "CATEGORY: " + equipdata.get_type() };
+		category = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::WHITE, "Type: " + equipdata.get_type());
 
 		is_weapon = equipdata.is_weapon();
+
 		if (is_weapon)
 		{
 			const WeaponData& weapon = WeaponData::get(item_id);
-			wepspeed = { Text::A11M, Text::LEFT, Text::WHITE, "ATTACK SPEED: " + weapon.getspeedstring() };
+			wepspeed = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::WHITE, "Attack Speed: " + weapon.getspeedstring());
 		}
 		else
 		{
@@ -253,14 +282,17 @@ namespace jrc
 		}
 
 		hasslots = (equip.get_slots() > 0) || (equip.get_level() > 0);
+
 		if (hasslots)
 		{
-			slots = { Text::A11M, Text::LEFT, Text::WHITE, "UPGRADES AVAILABLE: " + std::to_string(equip.get_slots()) };
+			slots = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::WHITE, "Remaining Enhancements: " + std::to_string(equip.get_slots()));
 
 			std::string vicious = std::to_string(equip.get_vicious());
+
 			if (equip.get_vicious() > 1)
 				vicious.append(" (MAX) ");
-			hammers = { Text::A11M, Text::LEFT, Text::WHITE, "VICIOUS HAMMERS USED: " + vicious };
+
+			hammers = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::WHITE, "Hammers Applied: " + vicious);
 		}
 		else
 		{
@@ -268,19 +300,22 @@ namespace jrc
 		}
 
 		statlabels.clear();
-		for (Equipstat::Id es = Equipstat::STR; es <= Equipstat::JUMP; es = static_cast<Equipstat::Id>(es + 1))
+
+		for (Equipstat::Id es = Equipstat::Id::STR; es <= Equipstat::Id::JUMP; es = static_cast<Equipstat::Id>(es + 1))
 		{
 			if (equip.get_stat(es) > 0)
 			{
 				int16_t delta = equip.get_stat(es) - equipdata.get_defstat(es);
 				std::string statstr = std::to_string(equip.get_stat(es));
+
 				if (delta != 0)
 				{
 					statstr.append(" (");
 					statstr.append((delta < 0) ? "-" : "+");
 					statstr.append(std::to_string(abs(delta)) + ")");
 				}
-				statlabels[es] = { Text::A11M, Text::LEFT, Text::WHITE, Equipstat::names[es] + std::string(": ") + statstr };
+
+				statlabels[es] = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::WHITE, Equipstat::names[es] + std::string(": ") + statstr);
 			}
 			else
 			{
@@ -294,25 +329,72 @@ namespace jrc
 		if (invpos == 0)
 			return;
 
-		top.draw({ pos });
-		mid.draw({ pos + Point<int16_t>(0, 13), Point<int16_t>(0, height) });
-		bot.draw({ pos + Point<int16_t>(0, height + 13) });
+		int16_t max_width = Constants::Constants::get().get_viewwidth();
+		int16_t max_height = Constants::Constants::get().get_viewheight();
+		int16_t cur_width = pos.x() + top.width();
+		int16_t cur_height = pos.y() + height + 36;
 
-		name.draw(pos + Point<int16_t>(130, 3));
-		if (prank != Equip::POT_NONE)
+		int16_t adj_x = cur_width - max_width;
+		int16_t adj_y = cur_height - max_height;
+
+		if (adj_x > 0)
+			pos.shift_x(adj_x * -1);
+
+		if (adj_y > 0)
+			pos.shift_y(adj_y * -1);
+
+		top.draw(pos);
+		mid.draw(DrawArgument(pos + Point<int16_t>(0, 13), Point<int16_t>(0, height)));
+		bot.draw(pos + Point<int16_t>(0, height + 13));
+		cover.draw(pos);
+
+		name.draw(pos + Point<int16_t>(17, 7));
+
+		if (prank != Equip::Potential::POT_NONE)
 		{
 			potflag.draw(pos + Point<int16_t>(130, 20));
 			pos.shift_y(16);
 		}
-		pos.shift_y(26);
 
-		line.draw({ pos });
+		pos.shift_y(44);
 
-		base.draw(pos + Point<int16_t>(10, 10));
-		shade.draw(pos + Point<int16_t>(10, 10));
-		itemicon.draw({ pos + Point<int16_t>(20, 82), 2.0f, 2.0f });
-		potential[prank].draw(pos + Point<int16_t>(10, 10));
-		cover.draw(pos + Point<int16_t>(10, 10));
+		line.draw(pos);
+
+		atkinc.draw(pos + Point<int16_t>(248, 4));
+		base.draw(pos + Point<int16_t>(12, 10));
+		type[false].draw(pos + Point<int16_t>(12, 10));
+		itemicon.draw(DrawArgument(pos + Point<int16_t>(18, 82), 2.0f, 2.0f));
+		potential[prank].draw(pos + Point<int16_t>(12, 10));
+		itemcover.draw(pos + Point<int16_t>(12, 10));
+
+		int16_t atkincnum = 0;
+		std::string atkincstr = std::to_string(atkincnum);
+		bool atkinc_pos = true;
+
+		if (canequip[Maplestat::Id::JOB])
+		{
+			if (atkincnum < 0)
+			{
+				atkincstr = "m" + atkincstr;
+				atkinc_pos = false;
+			}
+			else if (atkincnum > 0)
+			{
+				atkincstr = "p" + atkincstr;
+				atkinc_pos = true;
+			}
+			else
+			{
+				atkinc_pos = true;
+			}
+		}
+		else
+		{
+			atkincstr = "m";
+			atkinc_pos = false;
+		}
+
+		atkincset[atkinc_pos].draw(atkincstr, 11, pos + Point<int16_t>(239, 26));
 
 		pos.shift_y(12);
 
@@ -320,33 +402,37 @@ namespace jrc
 		{
 			Point<int16_t> reqpos = reqstatpositions[ms];
 			bool reqok = canequip[ms];
-			reqstattextures[ms][reqok].draw({ pos + reqpos });
-			reqset[reqok].draw(reqstatstrings[ms], 6, { pos + reqpos + Point<int16_t>(54, 0) });
+			reqstattextures[ms][reqok].draw(pos + reqpos);
+
+			if (ms != Maplestat::Id::LEVEL)
+				reqset[reqok].draw(reqstatstrings[ms], 6, pos + reqpos + Point<int16_t>(54, 0));
+			else
+				lvset[reqok].draw(reqstatstrings[ms], 6, pos + reqpos + Point<int16_t>(54, 0));
 		}
 
 		pos.shift_y(88);
 
-		Point<int16_t> job_position(pos + Point<int16_t>(8, 0));
+		Point<int16_t> job_position(pos + Point<int16_t>(10, 14));
 		jobsback.draw(job_position);
+
 		for (auto& jbit : okjobs)
-		{
-			jobs[canequip[Maplestat::JOB]]
-				.at(jbit)
-				.draw(job_position);
-		}
+			jobs[canequip[Maplestat::Id::JOB]].at(jbit).draw(job_position);
 
-		line.draw({ pos + Point<int16_t>(0, 30) });
+		line.draw(pos + Point<int16_t>(0, 47));
 
-		pos.shift_y(32);
+		pos.shift_y(49);
 
-		category.draw(pos + Point<int16_t>(10, 0));
+		int16_t stat_x = 13;
+		int16_t stat_y = 15;
 
-		pos.shift_y(18);
+		category.draw(pos + Point<int16_t>(stat_x, 0));
+
+		pos.shift_y(stat_y);
 
 		if (is_weapon)
 		{
-			wepspeed.draw(pos + Point<int16_t>(10, 0));
-			pos.shift_y(18);
+			wepspeed.draw(pos + Point<int16_t>(stat_x, 0));
+			pos.shift_y(stat_y);
 		}
 
 		for (const Text& label : statlabels.values())
@@ -354,22 +440,23 @@ namespace jrc
 			if (label.empty())
 				continue;
 
-			label.draw(pos + Point<int16_t>(10, 0));
-			pos.shift_y(18);
+			label.draw(pos + Point<int16_t>(stat_x, 0));
+			pos.shift_y(stat_y);
 		}
 
 		if (hasslots)
 		{
-			slots.draw(pos + Point<int16_t>(10, 0));
-			pos.shift_y(18);
-			hammers.draw(pos + Point<int16_t>(10, 0));
-			pos.shift_y(18);
+			slots.draw(pos + Point<int16_t>(stat_x, 0));
+			pos.shift_y(stat_y);
+			hammers.draw(pos + Point<int16_t>(stat_x, 0));
+			pos.shift_y(stat_y);
 		}
 
 		if (hasdesc)
 		{
-			line.draw({ pos + Point<int16_t>(0, 5) });
-			desc.draw({ pos + Point<int16_t>(10, 6) });
+			pos.shift_y(-4);
+			line.draw(pos);
+			desc.draw(pos + Point<int16_t>(9, 8));
 		}
 	}
 }

@@ -24,6 +24,7 @@
 #include "../Components/Charset.h"
 #include "../Components/MapleButton.h"
 #include "../Components/TwoSpriteButton.h"
+#include "../Audio/Audio.h"
 
 #include "../../Data/ItemData.h"
 #include "../../Util/Misc.h"
@@ -34,11 +35,16 @@
 
 namespace jrc
 {
-	UIShop::UIShop(const CharLook& in_charlook, const Inventory& in_inventory) : charlook(in_charlook), inventory(in_inventory)
+	UIShop::UIShop(const CharLook& in_charlook, const Inventory& in_inventory) : UIDragElement<PosSHOP>(Point<int16_t>()), charlook(in_charlook), inventory(in_inventory)
 	{
 		nl::node src = nl::nx::ui["UIWindow2.img"]["Shop2"];
 
-		sprites.emplace_back(src["backgrnd"]);
+		nl::node background = src["backgrnd"];
+		Texture bg = background;
+
+		auto bg_dimensions = bg.get_dimensions();
+
+		sprites.emplace_back(background);
 		sprites.emplace_back(src["backgrnd2"]);
 		sprites.emplace_back(src["backgrnd3"]);
 		sprites.emplace_back(src["backgrnd4"]);
@@ -47,10 +53,25 @@ namespace jrc
 		buttons[SELL_ITEM] = std::make_unique<MapleButton>(src["BtSell"]);
 		buttons[EXIT] = std::make_unique<MapleButton>(src["BtExit"]);
 
-		nl::node sellen = src["TabSell"]["enabled"];
-		nl::node selldis = src["TabSell"]["disabled"];
+		Texture cben = src["checkBox"][0];
+		Texture cbdis = src["checkBox"][1];
+
+		Point<int16_t> cb_origin = cben.get_origin();
+		int16_t cb_x = cb_origin.x();
+		int16_t cb_y = cb_origin.y();
+
+		checkBox[0] = cbdis;
+		checkBox[1] = cben;
+
+		buttons[CHECKBOX] = std::make_unique<AreaButton>(Point<int16_t>(std::abs(cb_x), std::abs(cb_y)), cben.get_dimensions());
+
 		nl::node buyen = src["TabBuy"]["enabled"];
 		nl::node buydis = src["TabBuy"]["disabled"];
+
+		buttons[OVERALL] = std::make_unique<TwoSpriteButton>(buydis[0], buyen[0]);
+
+		nl::node sellen = src["TabSell"]["enabled"];
+		nl::node selldis = src["TabSell"]["disabled"];
 
 		for (uint16_t i = EQUIP; i <= CASH; i++)
 		{
@@ -58,17 +79,26 @@ namespace jrc
 			buttons[i] = std::make_unique<TwoSpriteButton>(selldis[tabnum], sellen[tabnum]);
 		}
 
-		for (uint16_t i = BUY0; i <= BUY9; i++)
+		int16_t item_y = 124;
+		int16_t item_height = 36;
+
+		buy_x = 8;
+		buy_width = 257;
+
+		for (uint16_t i = BUY0; i <= BUY8; i++)
 		{
-			Point<int16_t> pos(8, 116 + 42 * (i - BUY0));
-			Point<int16_t> dim(200, 36);
+			Point<int16_t> pos(buy_x, item_y + 42 * (i - BUY0));
+			Point<int16_t> dim(buy_width, item_height);
 			buttons[i] = std::make_unique<AreaButton>(pos, dim);
 		}
 
-		for (uint16_t i = SELL0; i <= SELL9; i++)
+		sell_x = 284;
+		sell_width = 200;
+
+		for (uint16_t i = SELL0; i <= SELL8; i++)
 		{
-			Point<int16_t> pos(242, 116 + 42 * (i - SELL0));
-			Point<int16_t> dim(200, 36);
+			Point<int16_t> pos(sell_x, item_y + 42 * (i - SELL0));
+			Point<int16_t> dim(sell_width, item_height);
 			buttons[i] = std::make_unique<AreaButton>(pos, dim);
 		}
 
@@ -105,8 +135,8 @@ namespace jrc
 		);
 
 		active = false;
-		dimension = Texture(src["backgrnd"]).get_dimensions();
-		position = Point<int16_t>(400 - dimension.x() / 2, 290 - dimension.y() / 2);
+		dimension = bg_dimensions;
+		dragarea = Point<int16_t>(bg_dimensions.x(), 10);
 	}
 
 	void UIShop::draw(float alpha) const
@@ -123,6 +153,8 @@ namespace jrc
 
 		buyslider.draw(position);
 		sellslider.draw(position);
+
+		checkBox[rightclicksell].draw(position);
 	}
 
 	void UIShop::update()
@@ -137,13 +169,14 @@ namespace jrc
 	{
 		clear_tooltip();
 
-		constexpr Range<uint16_t> buy(BUY0, BUY9);
-		constexpr Range<uint16_t> sell(SELL0, SELL9);
+		constexpr Range<uint16_t> buy(BUY0, BUY8);
+		constexpr Range<uint16_t> sell(SELL0, SELL8);
 
 		if (buy.contains(buttonid))
 		{
 			int16_t selected = buttonid - BUY0;
 			buystate.select(selected);
+			sellstate.selection = -1;
 
 			return Button::State::NORMAL;
 		}
@@ -151,6 +184,7 @@ namespace jrc
 		{
 			int16_t selected = buttonid - SELL0;
 			sellstate.select(selected);
+			buystate.selection = -1;
 
 			return Button::State::NORMAL;
 		}
@@ -163,32 +197,36 @@ namespace jrc
 
 				return Button::State::NORMAL;
 			case SELL_ITEM:
-				sellstate.sell();
+				sellstate.sell(false);
 
 				return Button::State::NORMAL;
 			case EXIT:
-				active = false;
-				NpcShopActionPacket().dispatch();
+				exit_shop();
 
 				return Button::State::PRESSED;
+			case CHECKBOX:
+				rightclicksell = !rightclicksell;
+				Configuration::get().set_rightclicksell(rightclicksell);
+
+				return Button::State::NORMAL;
 			case EQUIP:
-				changeselltab(InventoryType::EQUIP);
+				changeselltab(InventoryType::Id::EQUIP);
 
 				return Button::State::IDENTITY;
 			case USE:
-				changeselltab(InventoryType::USE);
+				changeselltab(InventoryType::Id::USE);
 
 				return Button::State::IDENTITY;
 			case ETC:
-				changeselltab(InventoryType::ETC);
+				changeselltab(InventoryType::Id::ETC);
 
 				return Button::State::IDENTITY;
 			case SETUP:
-				changeselltab(InventoryType::SETUP);
+				changeselltab(InventoryType::Id::SETUP);
 
 				return Button::State::IDENTITY;
 			case CASH:
-				changeselltab(InventoryType::CASH);
+				changeselltab(InventoryType::Id::CASH);
 
 				return Button::State::IDENTITY;
 			}
@@ -211,12 +249,13 @@ namespace jrc
 	Cursor::State UIShop::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
 		Point<int16_t> cursoroffset = cursorpos - position;
+		lastcursorpos = cursoroffset;
 
 		if (buyslider.isenabled())
 		{
 			Cursor::State bstate = buyslider.send_cursor(cursoroffset, clicked);
 
-			if (bstate != Cursor::IDLE)
+			if (bstate != Cursor::State::IDLE)
 			{
 				clear_tooltip();
 
@@ -228,7 +267,7 @@ namespace jrc
 		{
 			Cursor::State sstate = sellslider.send_cursor(cursoroffset, clicked);
 
-			if (sstate != Cursor::IDLE)
+			if (sstate != Cursor::State::IDLE)
 			{
 				clear_tooltip();
 
@@ -240,11 +279,11 @@ namespace jrc
 		int16_t yoff = cursoroffset.y();
 		int16_t slot = slot_by_position(yoff);
 
-		if (slot >= 0 && slot <= 4)
+		if (slot >= 0 && slot <= 8)
 		{
-			if (xoff > 7 && xoff < 209)
+			if (xoff >= buy_x && xoff <= buy_width)
 				show_item(slot, true);
-			else if (xoff > 241 && xoff < 443)
+			else if (xoff >= sell_x && xoff <= sell_x + sell_width)
 				show_item(slot, false);
 			else
 				clear_tooltip();
@@ -254,12 +293,131 @@ namespace jrc
 			clear_tooltip();
 		}
 
-		return UIElement::send_cursor(clicked, cursorpos);
+		Cursor::State ret = clicked ? Cursor::CLICKING : Cursor::IDLE;
+
+		for (size_t i = 0; i < NUM_BUTTONS; i++)
+		{
+			if (buttons[i]->is_active() && buttons[i]->bounds(position).contains(cursorpos))
+			{
+				if (buttons[i]->get_state() == Button::NORMAL)
+				{
+					if (i >= BUY_ITEM && i <= EXIT)
+					{
+						Sound(Sound::BUTTONOVER).play();
+
+						buttons[i]->set_state(Button::MOUSEOVER);
+						ret = Cursor::CANCLICK;
+					}
+					else
+					{
+						buttons[i]->set_state(Button::MOUSEOVER);
+						ret = Cursor::IDLE;
+					}
+				}
+				else if (buttons[i]->get_state() == Button::MOUSEOVER)
+				{
+					if (clicked)
+					{
+						if (i >= BUY_ITEM && i <= CASH)
+						{
+							if (i >= OVERALL && i <= CASH)
+							{
+								Sound(Sound::TAB).play();
+							}
+							else
+							{
+								if (i != CHECKBOX)
+									Sound(Sound::BUTTONCLICK).play();
+							}
+
+							buttons[i]->set_state(button_pressed(i));
+
+							ret = Cursor::IDLE;
+						}
+						else
+						{
+							buttons[i]->set_state(button_pressed(i));
+
+							ret = Cursor::IDLE;
+						}
+					}
+					else
+					{
+						if (i >= BUY_ITEM && i <= EXIT)
+							ret = Cursor::CANCLICK;
+						else
+							ret = Cursor::IDLE;
+					}
+				}
+				else if (buttons[i]->get_state() == Button::PRESSED)
+				{
+					if (clicked)
+					{
+						if (i >= OVERALL && i <= CASH)
+						{
+							Sound(Sound::TAB).play();
+
+							ret = Cursor::IDLE;
+						}
+					}
+				}
+			}
+			else if (buttons[i]->get_state() == Button::MOUSEOVER)
+			{
+				buttons[i]->set_state(Button::NORMAL);
+			}
+		}
+
+		return ret;
+	}
+
+	void UIShop::send_scroll(double yoffset)
+	{
+		int16_t xoff = lastcursorpos.x();
+		int16_t slider_width = 10;
+
+		if (buyslider.isenabled())
+			if (xoff >= buy_x && xoff <= buy_width + slider_width)
+				buyslider.send_scroll(yoffset);
+
+		if (sellslider.isenabled())
+			if (xoff >= sell_x && xoff <= sell_x + sell_width + slider_width)
+				sellslider.send_scroll(yoffset);
+	}
+
+	void UIShop::rightclick(Point<int16_t> cursorpos)
+	{
+		if (rightclicksell)
+		{
+			Point<int16_t> cursoroffset = cursorpos - position;
+
+			int16_t xoff = cursoroffset.x();
+			int16_t yoff = cursoroffset.y();
+			int16_t slot = slot_by_position(yoff);
+
+			if (slot >= 0 && slot <= 8)
+			{
+				if (xoff >= sell_x && xoff <= sell_x + sell_width)
+				{
+					clear_tooltip();
+
+					sellstate.selection = slot;
+					sellstate.sell(true);
+					buystate.selection = -1;
+				}
+			}
+		}
+	}
+
+	void UIShop::send_key(int32_t keycode, bool pressed)
+	{
+		if (pressed && keycode == KeyAction::ESCAPE)
+			exit_shop();
 	}
 
 	void UIShop::clear_tooltip()
 	{
-		UI::get().clear_tooltip(Tooltip::SHOP);
+		UI::get().clear_tooltip(Tooltip::Parent::SHOP);
 	}
 
 	void UIShop::show_item(int16_t slot, bool buy)
@@ -275,16 +433,24 @@ namespace jrc
 		uint16_t oldtab = tabbyinventory(sellstate.tab);
 
 		if (oldtab > 0)
-			buttons[oldtab]->set_state(Button::NORMAL);
+			buttons[oldtab]->set_state(Button::State::NORMAL);
 
 		uint16_t newtab = tabbyinventory(type);
 
 		if (newtab > 0)
-			buttons[newtab]->set_state(Button::PRESSED);
+			buttons[newtab]->set_state(Button::State::PRESSED);
 
 		sellstate.change_tab(inventory, type, meso);
 
 		sellslider.setrows(5, sellstate.lastslot);
+
+		for (size_t i = SELL0; i < SELL8; i++)
+		{
+			if (i - SELL0 < sellstate.lastslot)
+				buttons[i]->set_state(Button::State::NORMAL);
+			else
+				buttons[i]->set_state(Button::State::DISABLED);
+		}
 	}
 
 	void UIShop::reset(int32_t npcid)
@@ -293,16 +459,18 @@ namespace jrc
 		npc = nl::nx::npc[strid + ".img"]["stand"]["0"];
 
 		for (auto& button : buttons)
-			button.second->set_state(Button::NORMAL);
+			button.second->set_state(Button::State::NORMAL);
 
-		buttons[EQUIP]->set_state(Button::PRESSED);
+		buttons[OVERALL]->set_state(Button::State::PRESSED);
+		buttons[EQUIP]->set_state(Button::State::PRESSED);
 
 		buystate.reset();
 		sellstate.reset();
 
-		changeselltab(InventoryType::EQUIP);
+		changeselltab(InventoryType::Id::EQUIP);
 
 		active = true;
+		rightclicksell = Configuration::get().get_rightclicksell();
 	}
 
 	void UIShop::modify(InventoryType::Id type)
@@ -326,7 +494,7 @@ namespace jrc
 
 	int16_t UIShop::slot_by_position(int16_t y)
 	{
-		int16_t yoff = y - 115;
+		int16_t yoff = y - 123;
 
 		if (yoff > 0 && yoff < 38)
 			return 0;
@@ -338,6 +506,14 @@ namespace jrc
 			return 3;
 		else if (yoff > 168 && yoff < 206)
 			return 4;
+		else if (yoff > 210 && yoff < 248)
+			return 5;
+		else if (yoff > 252 && yoff < 290)
+			return 6;
+		else if (yoff > 294 && yoff < 332)
+			return 7;
+		else if (yoff > 336 && yoff < 374)
+			return 8;
 		else
 			return -1;
 	}
@@ -346,19 +522,27 @@ namespace jrc
 	{
 		switch (type)
 		{
-		case InventoryType::EQUIP:
+		case InventoryType::Id::EQUIP:
 			return EQUIP;
-		case InventoryType::USE:
+		case InventoryType::Id::USE:
 			return USE;
-		case InventoryType::ETC:
+		case InventoryType::Id::ETC:
 			return ETC;
-		case InventoryType::SETUP:
+		case InventoryType::Id::SETUP:
 			return SETUP;
-		case InventoryType::CASH:
+		case InventoryType::Id::CASH:
 			return CASH;
 		default:
 			return 0;
 		}
+	}
+
+	void UIShop::exit_shop()
+	{
+		clear_tooltip();
+
+		active = false;
+		NpcShopActionPacket().dispatch();
 	}
 
 	UIShop::BuyItem::BuyItem(Texture cur, int32_t i, int32_t p, int32_t pt, int32_t t, int16_t cp, int16_t b) : currency(cur), id(i), price(p), pitch(pt), time(t), chargeprice(cp), buyable(b)
@@ -411,6 +595,10 @@ namespace jrc
 		pricelabel = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::MINESHAFT);
 
 		std::string name = idata.get_name();
+
+		if (name.length() >= 28)
+			name = name.substr(0, 28) + "..";
+
 		namelabel.change_text(name);
 
 		int32_t price = idata.get_price();
@@ -483,7 +671,7 @@ namespace jrc
 			return;
 
 		int32_t itemid = items[absslot].get_id();
-		UI::get().show_item(Tooltip::SHOP, itemid);
+		UI::get().show_item(Tooltip::Parent::SHOP, itemid);
 	}
 
 	void UIShop::BuyState::add(BuyItem item)
@@ -547,7 +735,7 @@ namespace jrc
 		offset = 0;
 		lastslot = 0;
 		selection = -1;
-		tab = InventoryType::NONE;
+		tab = InventoryType::Id::NONE;
 	}
 
 	void UIShop::SellState::change_tab(const Inventory& inventory, InventoryType::Id newtab, Texture meso)
@@ -555,7 +743,6 @@ namespace jrc
 		tab = newtab;
 
 		offset = 0;
-		selection = -1;
 
 		items.clear();
 
@@ -566,7 +753,7 @@ namespace jrc
 			if (int32_t item_id = inventory.get_item_id(tab, i))
 			{
 				int16_t count = inventory.get_item_count(tab, i);
-				items.emplace_back(item_id, count, i, tab != InventoryType::EQUIP, meso);
+				items.emplace_back(item_id, count, i, tab != InventoryType::Id::EQUIP, meso);
 			}
 		}
 
@@ -575,7 +762,7 @@ namespace jrc
 
 	void UIShop::SellState::draw(Point<int16_t> parentpos, const Texture& selected) const
 	{
-		for (int16_t i = 0; i < 5; i++)
+		for (int16_t i = 0; i <= 8; i++)
 		{
 			int16_t slot = i + offset;
 
@@ -598,19 +785,19 @@ namespace jrc
 		if (absslot < 0 || absslot >= lastslot)
 			return;
 
-		if (tab == InventoryType::EQUIP)
+		if (tab == InventoryType::Id::EQUIP)
 		{
 			int16_t realslot = items[absslot].get_slot();
-			UI::get().show_equip(Tooltip::SHOP, realslot);
+			UI::get().show_equip(Tooltip::Parent::SHOP, realslot);
 		}
 		else
 		{
 			int32_t itemid = items[absslot].get_id();
-			UI::get().show_item(Tooltip::SHOP, itemid);
+			UI::get().show_item(Tooltip::Parent::SHOP, itemid);
 		}
 	}
 
-	void UIShop::SellState::sell() const
+	void UIShop::SellState::sell(bool skip_confirmation) const
 	{
 		if (selection < 0 || selection >= lastslot)
 			return;
@@ -635,6 +822,12 @@ namespace jrc
 		}
 		else if (sellable > 0)
 		{
+			if (skip_confirmation)
+			{
+				NpcShopActionPacket(slot, itemid, 1, false).dispatch();
+				return;
+			}
+
 			constexpr char* question = "Are you sure you want to sell it?";
 
 			auto ondecide = [itemid, slot](bool yes)
@@ -652,7 +845,7 @@ namespace jrc
 		int16_t slot = selected + offset;
 
 		if (slot == selection)
-			sell();
+			sell(false);
 		else
 			selection = slot;
 	}

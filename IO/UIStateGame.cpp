@@ -29,6 +29,7 @@
 #include "UITypes/UIItemInventory.h"
 #include "UITypes/UIEquipInventory.h"
 #include "UITypes/UISkillbook.h"
+#include "UITypes/UIChat.h"
 #include "UITypes/UIQuestLog.h"
 #include "UITypes/UIWorldMap.h"
 #include "UITypes/UIUserList.h"
@@ -66,7 +67,7 @@ namespace jrc
 		}
 
 		if (tooltip)
-			tooltip->draw(cursor);
+			tooltip->draw(cursor + Point<int16_t>(0, 22));
 
 		if (draggedicon)
 			draggedicon->dragdraw(cursor);
@@ -170,6 +171,7 @@ namespace jrc
 					emplace<UIWorldMap>();
 					break;
 				case KeyAction::MESSAGE:
+					emplace<UIChat>();
 					break;
 				case KeyAction::MINIMAP:
 					if (auto minimap = UI::get().get_element<UIMiniMap>())
@@ -253,7 +255,7 @@ namespace jrc
 		}
 		else
 		{
-			bool clicked = mst == Cursor::CLICKING;
+			bool clicked = mst == Cursor::CLICKING || mst == Cursor::VSCROLLIDLE;
 
 			if (UIElement* focusedelement = get(focused))
 			{
@@ -314,6 +316,17 @@ namespace jrc
 					return Stage::get().send_cursor(clicked, pos);
 				}
 			}
+		}
+	}
+
+	void UIStateGame::send_scroll(double yoffset)
+	{
+		for (auto& type : elementorder)
+		{
+			auto& element = elements[type];
+
+			if (element && element->is_active())
+				element->send_scroll(yoffset);
 		}
 	}
 

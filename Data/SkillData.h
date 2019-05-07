@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -50,14 +50,9 @@ namespace jrc
 			float hrange;
 			Rectangle<int16_t> range;
 
-			constexpr Stats(float damage, int32_t matk, int32_t fixdamage, int32_t mastery,
-				uint8_t attackcount, uint8_t mobcount, uint8_t bulletcount, int16_t bulletcost,
-				int32_t hpcost, int32_t mpcost, float chance, float critical, float ignoredef,
-				float hrange, Rectangle<int16_t> range) :
-				damage(damage), matk(matk), fixdamage(fixdamage), mastery(mastery),
-				attackcount(attackcount), mobcount(mobcount), bulletcount(bulletcount), bulletcost(bulletcost),
-				hpcost(hpcost), mpcost(mpcost), chance(chance), critical(critical), ignoredef(ignoredef),
-				hrange(hrange), range(range) {}
+			constexpr Stats(
+				float damage, int32_t matk, int32_t fixdamage, int32_t mastery, uint8_t attackcount, uint8_t mobcount, uint8_t bulletcount, int16_t bulletcost, int32_t hpcost, int32_t mpcost, float chance, float critical, float ignoredef, float hrange, Rectangle<int16_t> range)
+				: damage(damage), matk(matk), fixdamage(fixdamage), mastery(mastery), attackcount(attackcount), mobcount(mobcount), bulletcount(bulletcount), bulletcost(bulletcost), hpcost(hpcost), mpcost(mpcost), chance(chance), critical(critical), ignoredef(ignoredef), hrange(hrange), range(range) {}
 		};
 
 		// Skill flags, unfortunately these just have to be hardcoded
@@ -103,6 +98,9 @@ namespace jrc
 		// Cannot fail if type is a valid enum.
 		const Texture& get_icon(Icon icon) const;
 
+		// Return id and level of all required skills.
+		const std::unordered_map<int32_t, int32_t>& get_reqskills() const;
+
 	private:
 		// Allow the cache to use the constructor.
 		friend Cache<SkillData>;
@@ -123,6 +121,7 @@ namespace jrc
 		std::string name;
 		std::string desc;
 		std::unordered_map<int32_t, std::string> levels;
+		std::unordered_map<int32_t, int32_t> reqskills;
 
 		std::array<Texture, NUM_ICONS> icons;
 	};

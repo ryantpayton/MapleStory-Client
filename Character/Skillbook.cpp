@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -34,6 +34,7 @@ namespace jrc
 	int32_t Skillbook::get_level(int32_t id) const
 	{
 		auto iter = skillentries.find(id);
+
 		if (iter == skillentries.end())
 			return 0;
 
@@ -43,6 +44,7 @@ namespace jrc
 	int32_t Skillbook::get_masterlevel(int32_t id) const
 	{
 		auto iter = skillentries.find(id);
+
 		if (iter == skillentries.end())
 			return 0;
 
@@ -52,6 +54,7 @@ namespace jrc
 	int64_t Skillbook::get_expiration(int32_t id) const
 	{
 		auto iter = skillentries.find(id);
+
 		if (iter == skillentries.end())
 			return 0;
 
@@ -61,13 +64,21 @@ namespace jrc
 	std::map<int32_t, int32_t> Skillbook::collect_passives() const
 	{
 		std::map<int32_t, int32_t> passives;
+
 		for (auto& iter : skillentries)
-		{
 			if (SkillData::get(iter.first).is_passive())
-			{
 				passives.emplace(iter.first, iter.second.level);
-			}
-		}
+
 		return passives;
+	}
+
+	std::unordered_map<int32_t, int32_t> Skillbook::collect_required(int32_t id) const
+	{
+		auto iter = skillentries.find(id);
+
+		if (iter == skillentries.end())
+			return {};
+
+		return SkillData::get(iter->first).get_reqskills();
 	}
 }

@@ -25,7 +25,7 @@
 
 namespace jrc
 {
-	UINotice::UINotice(std::string q, NoticeType type)
+	UINotice::UINotice(std::string message, NoticeType t) : UIDragElement<PosNOTICE>(Point<int16_t>()), type(t)
 	{
 		nl::node src = nl::nx::ui["Basic.img"]["Notice6"];
 
@@ -37,17 +37,15 @@ namespace jrc
 		bottom = src["s"];
 		bottombox = src["s_box"];
 
-		int16_t pos_y = 0;
-
 		if (type == NoticeType::YESNO)
 		{
-			pos_y = 267;
-			question = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::WHITE, q, 200);
+			position.shift_y(-8);
+			question = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::WHITE, message, 200);
 		}
 		else if (type == NoticeType::ENTERNUMBER)
 		{
-			pos_y = 259;
-			question = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, q, 200);
+			position.shift_y(-16);
+			question = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, message, 200);
 		}
 		else if (type == NoticeType::OK || type == NoticeType::OKSMALL)
 		{
@@ -57,16 +55,14 @@ namespace jrc
 				maxwidth = top.width() - 6;
 
 			if (type == NoticeType::OK)
-				pos_y = 267;
-			else
-				pos_y = 275;
+				position.shift_y(-8);
 
-			question = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::WHITE, q, maxwidth);
+			question = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::WHITE, message, maxwidth);
 		}
 
 		height = question.height();
 		dimension = Point<int16_t>(top.width(), top.height() + height + bottom.height());
-		position = Point<int16_t>(400 - dimension.x() / 2, pos_y - dimension.y() / 2);
+		position = Point<int16_t>(position.x() - dimension.x() / 2, position.y() - dimension.y() / 2);
 	}
 
 	void UINotice::draw(bool textfield) const
@@ -104,12 +100,25 @@ namespace jrc
 		bottombox.draw(start);
 	}
 
-	int16_t UINotice::box2offset() const
+	void UINotice::send_key(int32_t keycode, bool pressed)
 	{
-		return top.height() + centerbox.height() + box.height() * (1 + height / box.height());
+		if (pressed && (keycode == KeyAction::RETURN || keycode == KeyAction::ESCAPE))
+		{
+			if (type == NoticeType::OK || type == NoticeType::OKSMALL)
+				UI::get().get_element<UIOk>()->send_key(keycode, pressed);
+			else if (type == NoticeType::YESNO)
+				UI::get().get_element<UIYesNo>()->send_key(keycode, pressed);
+			else if (type == NoticeType::ENTERNUMBER)
+				UI::get().get_element<UIEnterNumber>()->send_key(keycode, pressed);
+		}
 	}
 
-	UIYesNo::UIYesNo(std::string q, std::function<void(bool)> yh) : UINotice(q, NoticeType::YESNO)
+	int16_t UINotice::box2offset() const
+	{
+		return top.height() + centerbox.height() + box.height() + 16;
+	}
+
+	UIYesNo::UIYesNo(std::string message, std::function<void(bool)> yh) : UINotice(message, NoticeType::YESNO)
 	{
 		yesnohandler = yh;
 
@@ -125,6 +134,20 @@ namespace jrc
 	{
 		UINotice::draw(false);
 		UIElement::draw(alpha);
+	}
+
+	void UIYesNo::send_key(int32_t keycode, bool pressed)
+	{
+		if (keycode == KeyAction::RETURN)
+		{
+			yesnohandler(true);
+			active = false;
+		}
+		else if (keycode == KeyAction::ESCAPE)
+		{
+			yesnohandler(false);
+			active = false;
+		}
 	}
 
 	Button::State UIYesNo::button_pressed(uint16_t buttonid)
@@ -144,7 +167,7 @@ namespace jrc
 		return Button::State::PRESSED;
 	}
 
-	UIEnterNumber::UIEnterNumber(std::string q, std::function<void(int32_t)> nh, int32_t m, int32_t quantity) : UINotice(q, NoticeType::ENTERNUMBER)
+	UIEnterNumber::UIEnterNumber(std::string message, std::function<void(int32_t)> nh, int32_t m, int32_t quantity) : UINotice(message, NoticeType::ENTERNUMBER)
 	{
 		numhandler = nh;
 		max = m;
@@ -157,13 +180,21 @@ namespace jrc
 		buttons[OK] = std::make_unique<MapleButton>(src["BtOK4"], 156, pos_y);
 		buttons[CANCEL] = std::make_unique<MapleButton>(src["BtCancel4"], 198, pos_y);
 
-		numfield = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LIGHTGREY, Rectangle<int16_t>(24, 232, belowtext, belowtext + 20), 9);
+		numfield = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LIGHTGREY, Rectangle<int16_t>(24, 232, belowtext, belowtext + 20), 10);
 		numfield.change_text(std::to_string(quantity));
 
 		numfield.set_enter_callback(
 			[&](std::string numstr)
 			{
 				handlestring(numstr);
+			}
+		);
+
+		numfield.set_key_callback(
+			KeyAction::Id::ESCAPE,
+			[&]()
+			{
+				active = false;
 			}
 		);
 
@@ -196,6 +227,19 @@ namespace jrc
 		}
 
 		return UIElement::send_cursor(clicked, cursorpos);
+	}
+
+	void UIEnterNumber::send_key(int32_t keycode, bool pressed)
+	{
+		if (keycode == KeyAction::RETURN)
+		{
+			handlestring(numfield.get_text());
+			active = false;
+		}
+		else if (keycode == KeyAction::ESCAPE)
+		{
+			active = false;
+		}
 	}
 
 	Button::State UIEnterNumber::button_pressed(uint16_t buttonid)
@@ -269,6 +313,19 @@ namespace jrc
 	{
 		UINotice::draw(false);
 		UIElement::draw(alpha);
+	}
+
+	void UIOk::send_key(int32_t keycode, bool pressed)
+	{
+		if (keycode == KeyAction::RETURN)
+		{
+			okhandler();
+			active = false;
+		}
+		else if (keycode == KeyAction::ESCAPE)
+		{
+			active = false;
+		}
 	}
 
 	Button::State UIOk::button_pressed(uint16_t buttonid)

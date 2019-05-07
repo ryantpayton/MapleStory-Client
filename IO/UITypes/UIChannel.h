@@ -16,44 +16,50 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "UIState.h"
+#include "../UIDragElement.h"
 
-#include "../Template/EnumMap.h"
-
-#include <memory>
+#include "../Template/BoolPair.h"
 
 namespace jrc
 {
-	class UIStateLogin : public UIState
+	class UIChannel : public UIDragElement<PosCHANNEL>
 	{
 	public:
-		UIStateLogin();
+		static constexpr Type TYPE = CHANNEL;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = true;
 
-		void draw(float inter, Point<int16_t> cursor) const override;
+		UIChannel();
+
+		void draw(float inter) const override;
 		void update() override;
 
-		void doubleclick(Point<int16_t> pos) override;
-		void rightclick(Point<int16_t> pos) override;
-		void send_key(KeyType::Id type, int32_t action, bool pressed) override;
-		Cursor::State send_cursor(Cursor::State mst, Point<int16_t> pos) override;
-		void send_scroll(double yoffset) override;
+		void send_key(int32_t keycode, bool pressed) override;
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
 
-		void drag_icon(Icon* icon) override;
-		void clear_tooltip(Tooltip::Parent parent) override;
-		void show_equip(Tooltip::Parent parent, int16_t slot) override;
-		void show_item(Tooltip::Parent parent, int32_t itemid) override;
-		void show_skill(Tooltip::Parent parent, int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration) override;
-
-		Iterator pre_add(UIElement::Type type, bool toggled, bool focused) override;
-		void remove(UIElement::Type type) override;
-		UIElement* get(UIElement::Type type) override;
-		UIElement* get_front(Point<int16_t> pos) override;
+	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
-		template <class T, typename...Args>
-		void emplace(Args&&...args);
+		void cancel();
+		void change_channel();
+		void update_selected_channel_position();
 
-		EnumMap<UIElement::Type, UIElement::UPtr, UIElement::NUM_TYPES> elements;
-		UIElement::Type focused;
+		enum Buttons : uint16_t
+		{
+			CANCEL,
+			CHANGE,
+			CH
+		};
+
+		uint8_t current_channel;
+		uint8_t selected_channel;
+		uint8_t channel_count;
+		BoolPair<Texture> channel;
+		std::vector<Sprite> ch;
+		int16_t current_channel_x;
+		int16_t current_channel_y;
+		int16_t selected_channel_x;
+		int16_t selected_channel_y;
 	};
 }

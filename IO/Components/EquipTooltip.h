@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -34,7 +34,7 @@ namespace jrc
 	public:
 		EquipTooltip();
 
-		void set_equip(Parent parent, int16_t invpos);
+		void set_equip(Tooltip::Parent parent, int16_t invpos);
 		void draw(Point<int16_t> position) const override;
 
 	private:
@@ -54,6 +54,7 @@ namespace jrc
 		Text wepspeed;
 		Text slots;
 		Text hammers;
+		Text atkinc;
 		EnumMap<Equipstat::Id, Text> statlabels;
 
 		Texture top;
@@ -66,13 +67,16 @@ namespace jrc
 		Equip::Potential prank;
 
 		Texture cover;
-		Texture shade;
+		Texture itemcover;
+		BoolPair<Texture> type;
 
 		std::vector<Maplestat::Id> requirements;
 		EnumMap<Maplestat::Id, BoolPair<Texture>> reqstattextures;
 		EnumMap<Maplestat::Id, bool> canequip;
 		EnumMap<Maplestat::Id, Point<int16_t>> reqstatpositions;
 		BoolPair<Charset> reqset;
+		BoolPair<Charset> lvset;
+		BoolPair<Charset> atkincset;
 
 		Texture jobsback;
 		BoolPair<std::map<uint8_t, Texture>> jobs;

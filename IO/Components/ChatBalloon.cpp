@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -27,6 +27,7 @@ namespace jrc
 	ChatBalloon::ChatBalloon(int8_t type)
 	{
 		std::string typestr;
+
 		if (type < 0)
 		{
 			switch (type)
@@ -46,13 +47,12 @@ namespace jrc
 		arrow = src["arrow"];
 		frame = src;
 
-		textlabel = { Text::A11M, Text::CENTER, Text::BLACK, "", 80 };
+		textlabel = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK, "", 80);
 
 		duration = 0;
 	}
 
-	ChatBalloon::ChatBalloon() 
-		: ChatBalloon(0) {}
+	ChatBalloon::ChatBalloon() : ChatBalloon(0) {}
 
 	void ChatBalloon::change_text(const std::string& text)
 	{
@@ -77,6 +77,7 @@ namespace jrc
 	void ChatBalloon::update()
 	{
 		duration -= Constants::TIMESTEP;
+
 		if (duration < 0)
 			duration = 0;
 	}

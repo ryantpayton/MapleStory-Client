@@ -15,61 +15,73 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "MapleFrame.h"
+#pragma once
 
-#include "nlnx/nx.hpp"
-
-#include <algorithm>
+#include "Text.h"
 
 namespace jrc
 {
-	MapleFrame::MapleFrame(nl::node src)
+	struct OutlinedText
 	{
-		center = src["c"];
-		east = src["e"];
-		northeast = src["ne"];
-		north = src["n"];
-		northwest = src["nw"];
-		west = src["w"];
-		southwest = src["sw"];
-		south = src["s"];
-		southeast = src["se"];
+		Text inner;
+		Text l;
+		Text r;
+		Text t;
+		Text b;
 
-		xtile = std::max<int16_t>(north.width(), 1);
-		ytile = std::max<int16_t>(west.height(), 1);
-	}
-
-	MapleFrame::MapleFrame() {}
-
-	void MapleFrame::draw(Point<int16_t> position, int16_t rwidth, int16_t rheight) const
-	{
-		int16_t numhor = rwidth / xtile + 2;
-		int16_t numver = rheight / ytile;
-		int16_t width = numhor * xtile;
-		int16_t height = numver * ytile;
-		int16_t left = position.x() - width / 2;
-		int16_t top = position.y() - height;
-		int16_t right = left + width;
-		int16_t bottom = top + height;
-
-		northwest.draw(DrawArgument(left, top));
-		southwest.draw(DrawArgument(left, bottom));
-
-		for (int16_t y = top; y < bottom; y += ytile)
+		OutlinedText(Text::Font font, Text::Alignment alignment, Text::Color innerColor, Text::Color outerColor)
 		{
-			west.draw(DrawArgument(left, y));
-			east.draw(DrawArgument(right, y));
+			inner = Text(font, alignment, innerColor);
+			l = Text(font, alignment, outerColor);
+			r = Text(font, alignment, outerColor);
+			t = Text(font, alignment, outerColor);
+			b = Text(font, alignment, outerColor);
 		}
 
-		center.draw(DrawArgument(Point<int16_t>(left, top), Point<int16_t>(width, height)));
+		OutlinedText() {}
 
-		for (int16_t x = left; x < right; x += xtile)
+		void draw(Point<int16_t> parentpos) const
 		{
-			north.draw(DrawArgument(x, top));
-			south.draw(DrawArgument(x, bottom));
+			l.draw(parentpos + Point<int16_t>(-1, 0));
+			r.draw(parentpos + Point<int16_t>(1, 0));
+			t.draw(parentpos + Point<int16_t>(0, -1));
+			b.draw(parentpos + Point<int16_t>(0, 1));
+			inner.draw(parentpos);
 		}
 
-		northeast.draw(DrawArgument(right, top));
-		southeast.draw(DrawArgument(right, bottom));
-	}
+		void change_text(const std::string& text)
+		{
+			inner.change_text(text);
+			l.change_text(text);
+			r.change_text(text);
+			t.change_text(text);
+			b.change_text(text);
+		}
+	};
+
+	struct ShadowText
+	{
+		Text top;
+		Text shadow;
+
+		ShadowText(Text::Font font, Text::Alignment alignment, Text::Color topColor, Text::Color shadowColor)
+		{
+			top = Text(font, alignment, topColor);
+			shadow = Text(font, alignment, shadowColor);
+		}
+
+		ShadowText() {}
+
+		void draw(Point<int16_t> parentpos) const
+		{
+			shadow.draw(parentpos + Point<int16_t>(1, 1));
+			top.draw(parentpos);
+		}
+
+		void change_text(const std::string& text)
+		{
+			top.change_text(text);
+			shadow.change_text(text);
+		}
+	};
 }

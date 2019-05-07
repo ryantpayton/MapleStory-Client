@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../UIElement.h"
+#include "../UIDragElement.h"
 
 #include "../Components/Textfield.h"
 
@@ -26,7 +26,7 @@
 
 namespace jrc
 {
-	class UINotice : public UIElement
+	class UINotice : public UIDragElement<PosNOTICE>
 	{
 	public:
 		static constexpr Type TYPE = NOTICE;
@@ -41,8 +41,10 @@ namespace jrc
 			OKSMALL
 		};
 
+		void send_key(int32_t keycode, bool pressed);
+
 	protected:
-		UINotice(std::string question, NoticeType type);
+		UINotice(std::string message, NoticeType type);
 
 		void draw(bool textfield) const;
 
@@ -58,14 +60,17 @@ namespace jrc
 		Texture bottombox;
 		Text question;
 		int16_t height;
+		NoticeType type;
 	};
 
 	class UIYesNo : public UINotice
 	{
 	public:
-		UIYesNo(std::string question, std::function<void(bool yes)> yesnohandler);
+		UIYesNo(std::string message, std::function<void(bool yes)> yesnohandler);
 
 		void draw(float alpha) const override;
+
+		void send_key(int32_t keycode, bool pressed) override;
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -82,12 +87,13 @@ namespace jrc
 	class UIEnterNumber : public UINotice
 	{
 	public:
-		UIEnterNumber(std::string question, std::function<void(int32_t number)> numhandler, int32_t max, int32_t quantity);
+		UIEnterNumber(std::string message, std::function<void(int32_t number)> numhandler, int32_t max, int32_t quantity);
 
 		void draw(float alpha) const override;
 		void update() override;
 
 		Cursor::State send_cursor(bool pressed, Point<int16_t> cursorpos) override;
+		void send_key(int32_t keycode, bool pressed) override;
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -111,6 +117,8 @@ namespace jrc
 		UIOk(std::string message, std::function<void()> okhandler, NoticeType type);
 
 		void draw(float alpha) const override;
+
+		void send_key(int32_t keycode, bool pressed) override;
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;

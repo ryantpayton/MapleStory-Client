@@ -62,6 +62,10 @@ namespace jrc
 			WORLDMAP,
 			USERLIST,
 			MINIMAP,
+			CHANNEL,
+			CHAT,
+			JOYPAD,
+			EVENT,
 			NUM_TYPES
 		};
 
@@ -83,6 +87,7 @@ namespace jrc
 		virtual bool is_in_range(Point<int16_t> cursorpos) const;
 		virtual bool remove_cursor(bool clicked, Point<int16_t> cursorpos);
 		virtual Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos);
+		virtual void send_scroll(double yoffset);
 		virtual void send_key(int32_t keycode, bool pressed);
 
 	protected:

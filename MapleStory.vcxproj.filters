@@ -498,6 +498,18 @@
     <ClCompile Include="IO\UITypes\UIMiniMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IO\UITypes\UIChat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIChannel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIJoypad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIEvent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Configuration.h">
@@ -1130,10 +1142,22 @@
     <ClInclude Include="IO\UITypes\UIUserList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\OutlinedText.h">
+    <ClInclude Include="IO\UITypes\UIMiniMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IO\UITypes\UIMiniMap.h">
+    <ClInclude Include="IO\UITypes\UIChat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIChannel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIJoypad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\SpecialText.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

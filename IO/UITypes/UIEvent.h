@@ -16,44 +16,58 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "UIState.h"
+#include "../UIDragElement.h"
 
-#include "../Template/EnumMap.h"
-
-#include <memory>
+#include "../Components/Slider.h"
+#include "../Template/BoolPair.h"
+#include "../Graphics/Text.h"
+#include "../Graphics/SpecialText.h"
 
 namespace jrc
 {
-	class UIStateLogin : public UIState
+	class UIEvent : public UIDragElement<PosEVENT>
 	{
 	public:
-		UIStateLogin();
+		static constexpr Type TYPE = EVENT;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = true;
 
-		void draw(float inter, Point<int16_t> cursor) const override;
+		UIEvent();
+
+		void draw(float inter) const override;
 		void update() override;
 
-		void doubleclick(Point<int16_t> pos) override;
-		void rightclick(Point<int16_t> pos) override;
-		void send_key(KeyType::Id type, int32_t action, bool pressed) override;
-		Cursor::State send_cursor(Cursor::State mst, Point<int16_t> pos) override;
-		void send_scroll(double yoffset) override;
+		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		void send_key(int32_t keycode, bool pressed) override;
 
-		void drag_icon(Icon* icon) override;
-		void clear_tooltip(Tooltip::Parent parent) override;
-		void show_equip(Tooltip::Parent parent, int16_t slot) override;
-		void show_item(Tooltip::Parent parent, int32_t itemid) override;
-		void show_skill(Tooltip::Parent parent, int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration) override;
-
-		Iterator pre_add(UIElement::Type type, bool toggled, bool focused) override;
-		void remove(UIElement::Type type) override;
-		UIElement* get(UIElement::Type type) override;
-		UIElement* get_front(Point<int16_t> pos) override;
+	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
-		template <class T, typename...Args>
-		void emplace(Args&&...args);
+		void clear_tooltip();
+		void close();
+		std::string get_event_title(uint8_t id);
+		std::string get_event_date(uint8_t id);
+		int16_t row_by_position(int16_t y);
+		int16_t col_by_position(int16_t x);
+		void show_item(int16_t row, int16_t col);
 
-		EnumMap<UIElement::Type, UIElement::UPtr, UIElement::NUM_TYPES> elements;
-		UIElement::Type focused;
+		enum Buttons : uint16_t
+		{
+			CLOSE
+		};
+
+		int16_t offset;
+		int16_t event_count;
+		ShadowText event_title[3];
+		Text event_date[3];
+		Slider slider;
+		Texture item_reward;
+		Texture text_reward;
+		Texture next;
+		Texture label_on;
+		Texture label_next;
+		std::vector<BoolPair<bool>> events;
 	};
 }

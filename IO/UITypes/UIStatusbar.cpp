@@ -36,6 +36,9 @@
 #include "../UITypes/UISkillbook.h"
 #include "../UITypes/UIEquipInventory.h"
 #include "../UITypes/UIItemInventory.h"
+#include "../UITypes/UIChannel.h"
+#include "../UITypes/UIJoypad.h"
+#include "../UITypes/UIEvent.h"
 
 #include "../Net/Packets/LoginPackets.h"
 
@@ -276,7 +279,7 @@ namespace jrc
 		buttons[BT_SETTING_KEYS] = std::make_unique<MapleButton>(submenu["setting"]["button:keySetting"], setting_pos);
 		buttons[BT_SETTING_OPTION] = std::make_unique<MapleButton>(submenu["setting"]["button:option"], setting_pos);
 
-		buttons[BT_COMMUNITY_BOSS] = std::make_unique<MapleButton>(submenu["community"]["button:bossParty"], community_pos);
+		buttons[BT_COMMUNITY_PARTY] = std::make_unique<MapleButton>(submenu["community"]["button:bossParty"], community_pos);
 		buttons[BT_COMMUNITY_FRIENDS] = std::make_unique<MapleButton>(submenu["community"]["button:friends"], community_pos);
 		buttons[BT_COMMUNITY_GUILD] = std::make_unique<MapleButton>(submenu["community"]["button:guild"], community_pos);
 		buttons[BT_COMMUNITY_MAPLECHAT] = std::make_unique<MapleButton>(submenu["community"]["button:mapleChat"], community_pos);
@@ -353,11 +356,11 @@ namespace jrc
 		hpmp_sprites[1].draw(position, alpha);
 		hpmp_sprites[2].draw(position, alpha);
 
-		int16_t level = stats.get_stat(Maplestat::LEVEL);
-		int16_t hp = stats.get_stat(Maplestat::HP);
-		int16_t mp = stats.get_stat(Maplestat::MP);
-		int32_t maxhp = stats.get_total(Equipstat::HP);
-		int32_t maxmp = stats.get_total(Equipstat::MP);
+		int16_t level = stats.get_stat(Maplestat::Id::LEVEL);
+		int16_t hp = stats.get_stat(Maplestat::Id::HP);
+		int16_t mp = stats.get_stat(Maplestat::Id::MP);
+		int32_t maxhp = stats.get_total(Equipstat::Id::HP);
+		int32_t maxmp = stats.get_total(Equipstat::Id::MP);
 		int64_t exp = stats.get_exp();
 
 		std::string expstring = std::to_string(100 * getexppercent());
@@ -523,7 +526,7 @@ namespace jrc
 		if (clicked && !is_in_range(cursorpos))
 			remove_menus();
 
-		return UIElement::remove_cursor(clicked, cursorpos);
+		return false;
 	}
 
 	Button::State UIStatusbar::button_pressed(uint16_t id)
@@ -570,10 +573,20 @@ namespace jrc
 		case BT_MENU_FISHING:
 		case BT_MENU_HELP:
 		case BT_MENU_CLAIM:
+			remove_menus();
+			break;
 		case BT_SETTING_CHANNEL:
+			UI::get().emplace<UIChannel>();
+
+			remove_menus();
+			break;
 		case BT_SETTING_OPTION:
 		case BT_SETTING_KEYS:
+			remove_menus();
+			break;
 		case BT_SETTING_JOYPAD:
+			UI::get().emplace<UIJoypad>();
+
 			remove_menus();
 			break;
 		case BT_SETTING_QUIT:
@@ -581,7 +594,7 @@ namespace jrc
 			transition();
 			break;
 		case BT_COMMUNITY_FRIENDS:
-		case BT_COMMUNITY_BOSS:
+		case BT_COMMUNITY_PARTY:
 		{
 			auto userlist = UI::get().get_element<UIUserList>();
 			auto tab = (id == BT_COMMUNITY_FRIENDS) ? UIUserList::Tab::FRIEND : UIUserList::Tab::PARTY;
@@ -649,6 +662,10 @@ namespace jrc
 			remove_menus();
 			break;
 		case BT_EVENT_SCHEDULE:
+			UI::get().emplace<UIEvent>();
+
+			remove_menus();
+			break;
 		case BT_EVENT_DAILY:
 			remove_menus();
 			break;
@@ -851,13 +868,9 @@ namespace jrc
 
 		if (menu_active)
 		{
-			Sound(Sound::MENUUP).play();
-
 			buttons[BT_MENU_QUEST]->set_state(Button::State::MOUSEOVER);
-		}
-		else
-		{
-			Sound(Sound::MENUDOWN).play();
+
+			Sound(Sound::DLGNOTICE).play();
 		}
 	}
 
@@ -875,13 +888,9 @@ namespace jrc
 
 		if (setting_active)
 		{
-			Sound(Sound::MENUUP).play();
-
 			buttons[BT_SETTING_CHANNEL]->set_state(Button::State::MOUSEOVER);
-		}
-		else
-		{
-			Sound(Sound::MENUDOWN).play();
+
+			Sound(Sound::DLGNOTICE).play();
 		}
 	}
 
@@ -891,20 +900,16 @@ namespace jrc
 
 		community_active = !community_active;
 
-		buttons[BT_COMMUNITY_BOSS]->set_active(community_active);
+		buttons[BT_COMMUNITY_PARTY]->set_active(community_active);
 		buttons[BT_COMMUNITY_FRIENDS]->set_active(community_active);
 		buttons[BT_COMMUNITY_GUILD]->set_active(community_active);
 		buttons[BT_COMMUNITY_MAPLECHAT]->set_active(community_active);
 
 		if (community_active)
 		{
-			Sound(Sound::MENUUP).play();
-
 			buttons[BT_COMMUNITY_FRIENDS]->set_state(Button::State::MOUSEOVER);
-		}
-		else
-		{
-			Sound(Sound::MENUDOWN).play();
+
+			Sound(Sound::DLGNOTICE).play();
 		}
 	}
 
@@ -922,13 +927,9 @@ namespace jrc
 
 		if (character_active)
 		{
-			Sound(Sound::MENUUP).play();
-
 			buttons[BT_CHARACTER_INFO]->set_state(Button::State::MOUSEOVER);
-		}
-		else
-		{
-			Sound(Sound::MENUDOWN).play();
+
+			Sound(Sound::DLGNOTICE).play();
 		}
 	}
 
@@ -943,13 +944,9 @@ namespace jrc
 
 		if (event_active)
 		{
-			Sound(Sound::MENUUP).play();
-
 			buttons[BT_EVENT_SCHEDULE]->set_state(Button::State::MOUSEOVER);
-		}
-		else
-		{
-			Sound(Sound::MENUDOWN).play();
+
+			Sound(Sound::DLGNOTICE).play();
 		}
 	}
 
@@ -1032,7 +1029,7 @@ namespace jrc
 	float UIStatusbar::gethppercent() const
 	{
 		int16_t hp = stats.get_stat(Maplestat::HP);
-		int32_t maxhp = stats.get_total(Equipstat::HP);
+		int32_t maxhp = stats.get_total(Equipstat::Id::HP);
 
 		return static_cast<float>(hp) / maxhp;
 	}
@@ -1040,7 +1037,7 @@ namespace jrc
 	float UIStatusbar::getmppercent() const
 	{
 		int16_t mp = stats.get_stat(Maplestat::MP);
-		int32_t maxmp = stats.get_total(Equipstat::MP);
+		int32_t maxmp = stats.get_total(Equipstat::Id::MP);
 
 		return static_cast<float>(mp) / maxmp;
 	}

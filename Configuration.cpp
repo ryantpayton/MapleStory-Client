@@ -38,6 +38,7 @@ namespace jrc
 		settings.emplace<DefaultWorld>();
 		settings.emplace<DefaultChannel>();
 		settings.emplace<DefaultCharacter>();
+		settings.emplace<Chatopen>();
 		settings.emplace<PosSTATS>();
 		settings.emplace<PosEQINV>();
 		settings.emplace<PosINV>();
@@ -46,8 +47,13 @@ namespace jrc
 		settings.emplace<PosMAP>();
 		settings.emplace<PosUSERLIST>();
 		settings.emplace<PosCHAT>();
-		settings.emplace<Chatopen>();
 		settings.emplace<PosMINIMAP>();
+		settings.emplace<PosSHOP>();
+		settings.emplace<PosNOTICE>();
+		settings.emplace<PosMAPLECHAT>();
+		settings.emplace<PosCHANNEL>();
+		settings.emplace<PosJOYPAD>();
+		settings.emplace<PosEVENT>();
 
 		load();
 	}
@@ -192,5 +198,15 @@ namespace jrc
 	std::string Configuration::get_vol_serial_num()
 	{
 		return VolumeSerialNumber;
+	}
+
+	bool Configuration::get_rightclicksell()
+	{
+		return rightclicksell;
+	}
+
+	void Configuration::set_rightclicksell(bool value)
+	{
+		rightclicksell = value;
 	}
 }

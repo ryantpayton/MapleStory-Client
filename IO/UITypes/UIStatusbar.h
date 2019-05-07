@@ -27,7 +27,7 @@
 #include "../../Character/Job.h"
 #include "../../Graphics/Animation.h"
 #include "../../Graphics/Text.h"
-#include "../../Graphics/OutlinedText.h"
+#include "../../Graphics/SpecialText.h"
 
 namespace jrc
 {
@@ -104,7 +104,7 @@ namespace jrc
 			BT_SETTING_JOYPAD,
 			BT_SETTING_QUIT,
 			BT_COMMUNITY_FRIENDS,
-			BT_COMMUNITY_BOSS,
+			BT_COMMUNITY_PARTY,
 			BT_COMMUNITY_GUILD,
 			BT_COMMUNITY_MAPLECHAT,
 			BT_CHARACTER_INFO,

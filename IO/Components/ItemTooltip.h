@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -19,6 +19,9 @@
 #include "Tooltip.h"
 #include "Charset.h"
 
+#include "../Template/BoolPair.h"
+#include "../Components/MapleFrame.h"
+
 #include "../../Graphics/Text.h"
 
 namespace jrc
@@ -34,17 +37,16 @@ namespace jrc
 
 	private:
 		int32_t itemid;
-		int16_t filllength;
+		int16_t fillwidth;
+		int16_t fillheight;
 		Texture itemicon;
 
 		Text name;
 		Text desc;
-		Texture top;
-		Texture mid;
-		Texture line;
-		Texture bot;
-		Texture base;
+		MapleFrame frame;
 		Texture cover;
-		Texture shade;
+		Texture base;
+		Texture itemcover;
+		BoolPair<Texture> type;
 	};
 }

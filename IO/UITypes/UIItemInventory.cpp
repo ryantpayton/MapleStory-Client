@@ -353,10 +353,14 @@ namespace jrc
 	{
 		if (keycode == KeyAction::ESCAPE)
 		{
+			clear_tooltip();
+
 			active = false;
 		}
 		else if (keycode == KeyAction::TAB)
 		{
+			clear_tooltip();
+
 			InventoryType::Id oldtab = tab;
 
 			switch (oldtab)

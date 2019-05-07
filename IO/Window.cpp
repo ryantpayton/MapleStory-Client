@@ -90,6 +90,11 @@ namespace jrc
 		UI::get().send_focus(focused);
 	}
 
+	void scroll_callback(GLFWwindow*, double xoffset, double yoffset)
+	{
+		UI::get().send_scroll(yoffset);
+	}
+
 	Error Window::init()
 	{
 		fullscreen = Setting<Fullscreen>::get().load();
@@ -141,6 +146,7 @@ namespace jrc
 		glfwSetMouseButtonCallback(glwnd, mousekey_callback);
 		glfwSetCursorPosCallback(glwnd, cursor_callback);
 		glfwSetWindowFocusCallback(glwnd, focus_callback);
+		glfwSetScrollCallback(glwnd, scroll_callback);
 
 		GraphicsGL::get().reinit();
 
