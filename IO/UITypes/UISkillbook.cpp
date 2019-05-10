@@ -78,61 +78,6 @@ namespace jrc
 		level.draw(args + Point<int16_t>(38, -19));
 	}
 
-	Cursor::State SkillIcon::send_cursor(Point<int16_t> cursorpos, bool clicked)
-	{
-		constexpr Rectangle<int16_t> bounds(0, 32, 0, 32);
-		bool inrange = bounds.contains(cursorpos);
-
-		switch (state)
-		{
-		case State::NORMAL:
-		case State::DISABLED:
-			if (inrange)
-			{
-				if (clicked)
-				{
-					state = State::MOUSEOVER;
-
-					return Cursor::State::GRABBING;
-				}
-				else
-				{
-					state = State::MOUSEOVER;
-
-					return Cursor::State::CANGRAB;
-				}
-			}
-			else
-			{
-				return Cursor::State::IDLE;
-			}
-		case State::MOUSEOVER:
-			if (inrange)
-			{
-				if (clicked)
-				{
-					state = State::MOUSEOVER;
-
-					return Cursor::State::GRABBING;
-				}
-				else
-				{
-					state = State::MOUSEOVER;
-
-					return Cursor::State::CANGRAB;
-				}
-			}
-			else
-			{
-				state = State::NORMAL;
-
-				return Cursor::State::IDLE;
-			}
-		default:
-			return Cursor::State::IDLE;
-		}
-	}
-
 	void SkillIcon::set_state(State s)
 	{
 		state = s;

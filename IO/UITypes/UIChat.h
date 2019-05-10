@@ -18,6 +18,9 @@
 #pragma once
 #include "../UIDragElement.h"
 
+#include "../Components/Charset.h"
+#include "../Graphics/Text.h"
+
 namespace jrc
 {
 	class UIChat : public UIDragElement<PosMAPLECHAT>
@@ -28,5 +31,67 @@ namespace jrc
 		static constexpr bool TOGGLED = true;
 
 		UIChat();
+
+		void draw(float inter) const override;
+		void update() override;
+
+		void send_key(int32_t keycode, bool pressed) override;
+
+	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
+
+	private:
+		void close();
+
+		enum Buttons : uint16_t
+		{
+			CLOSE,
+			CHAT_DUO,
+			CHAT_FRIEND,
+			CHAT_RANDOM
+		};
+
+		bool show_weekly;
+		Point<int16_t> rank_shift;
+		Point<int16_t> name_shift;
+		Point<int16_t> origin_left;
+		Point<int16_t> origin_right;
+		Charset charset;
+		Text name_left;
+		Text name_right;
+	};
+
+	class UIRank : public UIDragElement<PosMAPLECHAT>
+	{
+	public:
+		static constexpr Type TYPE = CHATRANK;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = true;
+
+		UIRank();
+
+		void draw(float inter) const override;
+		void update() override;
+
+		void send_key(int32_t keycode, bool pressed) override;
+
+	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
+
+	private:
+		void close();
+
+		enum Buttons : uint16_t
+		{
+			CLOSE
+		};
+
+		Point<int16_t> rank_shift;
+		Point<int16_t> name_shift;
+		Point<int16_t> origin_left;
+		Point<int16_t> origin_right;
+		Charset charset;
+		Text name_left;
+		Text name_right;
 	};
 }

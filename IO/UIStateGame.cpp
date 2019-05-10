@@ -113,33 +113,33 @@ namespace jrc
 			{
 				switch (action)
 				{
-				case KeyAction::EQUIPS:
+				case KeyAction::EQUIPMENT:
 					emplace<UIEquipInventory>(
 						Stage::get().get_player().get_inventory()
 						);
 					break;
-				case KeyAction::INVENTORY:
+				case KeyAction::ITEMS:
 					emplace<UIItemInventory>(
 						Stage::get().get_player().get_inventory()
 						);
 					break;
-				case KeyAction::CHARSTATS:
+				case KeyAction::STATS:
 					emplace<UIStatsinfo>(
 						Stage::get().get_player().get_stats()
 						);
 					break;
-				case KeyAction::SKILLBOOK:
+				case KeyAction::SKILLS:
 					emplace<UISkillbook>(
 						Stage::get().get_player().get_stats(),
 						Stage::get().get_player().get_skills()
 						);
 					break;
-				case KeyAction::BUDDYLIST:
+				case KeyAction::FRIENDS:
 				case KeyAction::PARTY:
-				case KeyAction::PARTYSEARCH:
+				case KeyAction::BOSSPARTY:
 				{
 					auto userlist = UI::get().get_element<UIUserList>();
-					auto tab = (action == KeyAction::BUDDYLIST) ? UIUserList::Tab::FRIEND : UIUserList::Tab::PARTY;
+					auto tab = (action == KeyAction::FRIENDS) ? UIUserList::Tab::FRIEND : UIUserList::Tab::PARTY;
 
 					if (!userlist)
 					{
@@ -170,9 +170,16 @@ namespace jrc
 				case KeyAction::WORLDMAP:
 					emplace<UIWorldMap>();
 					break;
-				case KeyAction::MESSAGE:
-					emplace<UIChat>();
-					break;
+				case KeyAction::MAPLECHAT:
+				{
+					auto chat = UI::get().get_element<UIChat>();
+
+					if (!chat)
+						emplace<UIChat>();
+					else if (chat && !chat->is_active())
+						chat->makeactive();
+				}
+				break;
 				case KeyAction::MINIMAP:
 					if (auto minimap = UI::get().get_element<UIMiniMap>())
 						minimap->send_key(action, pressed);
@@ -183,44 +190,20 @@ namespace jrc
 						Stage::get().get_player().get_quests()
 						);
 					break;
-				case KeyAction::CHATALL:
-					break;
-				case KeyAction::WHISPER:
-					break;
-				case KeyAction::CHATPT:
-					break;
-				case KeyAction::CHATBUDDY:
-					break;
-				case KeyAction::MAINMENU:
+				case KeyAction::MENU:
 					if (auto statusbar = UI::get().get_element<UIStatusbar>())
 						statusbar->toggle_menu();
 
 					break;
-				case KeyAction::TOGGLEQS:
+				case KeyAction::QUICKSLOTS:
 					if (auto statusbar = UI::get().get_element<UIStatusbar>())
 						statusbar->toggle_qs();
 
 					break;
-				case KeyAction::CHATWINDOW:
+				case KeyAction::TOGGLECHAT:
 					if (auto chatbar = UI::get().get_element<UIChatbar>())
 						chatbar->toggle_chat();
 
-					break;
-				case KeyAction::GUILD:
-					break;
-				case KeyAction::CHATGUILD:
-					break;
-				case KeyAction::HELPER:
-					break;
-				case KeyAction::CHATSPOUSE:
-					break;
-				case KeyAction::MONSTERBOOK:
-					break;
-				case KeyAction::CHATALLIANCE:
-					break;
-				case KeyAction::FAMILY:
-					break;
-				case KeyAction::GMSMEDALS:
 					break;
 				default:
 					std::cout << "Action (" << action << ") not handled!" << std::endl;
@@ -243,7 +226,7 @@ namespace jrc
 		{
 			switch (mst)
 			{
-			case Cursor::IDLE:
+			case Cursor::CLICKING:
 				drop_icon(*draggedicon, pos);
 				draggedicon->reset();
 				draggedicon = {};

@@ -36,8 +36,6 @@ namespace jrc
 
 		void draw(const DrawArgument& args) const;
 
-		Cursor::State send_cursor(Point<int16_t> cursorpos, bool clicked);
-
 		enum State
 		{
 			NORMAL,

@@ -54,6 +54,7 @@ namespace jrc
 		settings.emplace<PosCHANNEL>();
 		settings.emplace<PosJOYPAD>();
 		settings.emplace<PosEVENT>();
+		settings.emplace<PosKEYCONFIG>();
 
 		load();
 	}
@@ -208,5 +209,15 @@ namespace jrc
 	void Configuration::set_rightclicksell(bool value)
 	{
 		rightclicksell = value;
+	}
+
+	bool Configuration::get_show_weekly()
+	{
+		return show_weekly;
+	}
+
+	void Configuration::set_show_weekly(bool value)
+	{
+		show_weekly = value;
 	}
 }

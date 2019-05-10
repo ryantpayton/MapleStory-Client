@@ -16,39 +16,66 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Tooltip.h"
+#include "../UIDragElement.h"
+#include "../KeyAction.h"
+#include "../KeyConfig.h"
 
-#include "MapleFrame.h"
-
-#include "../../Graphics/Geometry.h"
-#include "../../Graphics/Text.h"
+#include "../Template/EnumMap.h"
 
 namespace jrc
 {
-	class SkillTooltip : public Tooltip
+	class UIKeyConfig : public UIDragElement<PosKEYCONFIG>
 	{
 	public:
-		SkillTooltip();
+		static constexpr Type TYPE = KEYCONFIG;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = true;
 
-		void draw(Point<int16_t> position) const override;
+		UIKeyConfig();
 
-		void set_skill(int32_t id, int32_t level, int32_t masterlevel, int64_t expiration);
+		void draw(float inter) const override;
+		void update() override;
+
+		void send_key(int32_t keycode, bool pressed) override;
+
+	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
-		int32_t skill_id;
-		int16_t height;
-		int16_t width;
-		int16_t icon_offset;
-		int16_t level_offset;
-		Texture icon;
-		Texture required_icon;
+		void close();
+		void load_keys_pos();
+		void load_icons_pos();
+		void load_keys();
+		void load_icons();
 
-		Text name;
-		Text desc;
-		Text leveldesc;
-		MapleFrame frame;
-		ColorLine line;
-		ColorBox box;
-		Texture cover;
+		enum Buttons : uint16_t
+		{
+			CLOSE,
+			CANCEL,
+			DEFAULT,
+			DELETE,
+			KEYSETTING,
+			OK
+		};
+
+		class KeyIcon : public Icon::Type
+		{
+		public:
+			KeyIcon(KeyAction::Id keyId);
+
+			void drop_on_stage() const override {};
+			void drop_on_equips(Equipslot::Id) const override {};
+			void drop_on_items(InventoryType::Id, Equipslot::Id, int16_t, bool) const override {};
+		};
+
+		nl::node icon;
+		EnumMap<KeyAction::Id, std::unique_ptr<Icon>> icons;
+		EnumMap<KeyAction::Id, Point<int16_t>> icons_pos;
+
+		nl::node key;
+		EnumMap<KeyConfig::Key, Texture> keys;
+		EnumMap<KeyConfig::Key, Point<int16_t>> keys_pos;
+
+		EnumMap<KeyConfig::Key, KeyAction::Id> icon_map;
 	};
 }

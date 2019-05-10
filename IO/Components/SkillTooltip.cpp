@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SkillTooltip.h"
 
+#include "../Constants.h"
+
 #include "../../Data/SkillData.h"
 
 #include "nlnx/nx.hpp"
@@ -24,13 +26,12 @@
 
 namespace jrc
 {
-	SkillTooltip::SkillTooltip() : line(318, Geometry::Color::WHITE, 1.0f)
+	SkillTooltip::SkillTooltip()
 	{
-		nl::node itemtt = nl::nx::ui["UIToolTip.img"]["Item"];
+		nl::node Frame = nl::nx::ui["UIToolTip.img"]["Item"]["Frame2"];
 
-		frame = itemtt["Frame2"];
-		base = itemtt["ItemIcon"]["base"];
-		cover = itemtt["ItemIcon"]["cover"];
+		frame = Frame;
+		cover = Frame["cover"];
 
 		skill_id = 0;
 	}
@@ -106,9 +107,6 @@ namespace jrc
 			}
 		}
 
-		if (data.is_passive())
-			descstr += "\\r#cPassive Skill#";
-
 		std::string levelstr;
 		bool current = level > 0;
 		bool next = level < masterlevel;
@@ -124,12 +122,20 @@ namespace jrc
 
 		icon = data.get_icon(SkillData::Icon::NORMAL);
 		name = Text(Text::Font::A12B, Text::Alignment::LEFT, Text::Color::WHITE, data.get_name(), 320);
-		desc = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, descstr, 230);
-		leveldesc = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, levelstr, 330);
+		desc = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, descstr, 210);
+		leveldesc = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, levelstr, 290);
 
-		icon_offset = 4 + name.height();
-		level_offset = std::max<int16_t>(desc.height(), 92) + 16;
+		int16_t desc_height = desc.height() + 11;
+
+		icon_offset = name.height();
+		level_offset = std::max<int16_t>(desc_height, 85);
 		height = icon_offset + level_offset + leveldesc.height();
+
+		int16_t icon_width = (icon.get_dimensions().x() * 2) + 4;
+		width = 292;
+
+		line = ColorLine(width + 16, Geometry::Color::WHITE, 1.0f);
+		box = ColorBox(icon_width, icon_width, Geometry::Color::WHITE, 0.65f);
 	}
 
 	void SkillTooltip::draw(Point<int16_t> pos) const
@@ -137,20 +143,33 @@ namespace jrc
 		if (skill_id == 0)
 			return;
 
-		frame.draw(pos + Point<int16_t>(176, height + 16), 320, height);
-		name.draw(pos + Point<int16_t>(16, 8));
+		int16_t max_width = Constants::Constants::get().get_viewwidth();
+		int16_t max_height = Constants::Constants::get().get_viewheight();
+		int16_t cur_width = pos.x() + width + 45;
+		int16_t cur_height = pos.y() + height + 35;
+
+		int16_t adj_x = cur_width - max_width;
+		int16_t adj_y = cur_height - max_height;
+
+		if (adj_x > 0)
+			pos.shift_x(adj_x * -1);
+
+		if (adj_y > 0)
+			pos.shift_y(adj_y * -1);
+
+		frame.draw(pos + Point<int16_t>(176, height + 11), width, height - 1);
+		name.draw(pos + Point<int16_t>(33, 3));
+		cover.draw(pos + Point<int16_t>(16, -1));
 
 		pos.shift_y(icon_offset);
 
-		base.draw(DrawArgument(pos + Point<int16_t>(12, 16)));
-		icon.draw(DrawArgument(pos + Point<int16_t>(22, 90), 2.0f, 2.0f));
-		cover.draw(DrawArgument(pos + Point<int16_t>(12, 16)));
-
-		desc.draw(pos + Point<int16_t>(102, 12));
+		box.draw(DrawArgument(pos + Point<int16_t>(26, 21)));
+		icon.draw(DrawArgument(pos + Point<int16_t>(28, 87), 2.0f, 2.0f));
+		desc.draw(pos + Point<int16_t>(102, 15));
 
 		pos.shift_y(level_offset);
 
-		line.draw(pos + Point<int16_t>(14, 4));
-		leveldesc.draw(pos + Point<int16_t>(12, 12));
+		line.draw(pos + Point<int16_t>(22, 10));
+		leveldesc.draw(pos + Point<int16_t>(25, 11));
 	}
 }

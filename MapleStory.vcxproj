@@ -237,6 +237,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="IO\UITypes\UIEvent.cpp" />
     <ClCompile Include="io\uitypes\UIItemInventory.cpp" />
     <ClCompile Include="IO\UITypes\UIJoypad.cpp" />
+    <ClCompile Include="IO\UITypes\UIKeyConfig.cpp" />
     <ClCompile Include="io\uitypes\UILogin.cpp" />
     <ClCompile Include="io\uitypes\UILoginNotice.cpp" />
     <ClCompile Include="io\uitypes\UILoginwait.cpp" />
@@ -402,6 +403,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="io\Cursor.h" />
     <ClInclude Include="io\KeyAction.h" />
     <ClInclude Include="io\Keyboard.h" />
+    <ClInclude Include="IO\KeyConfig.h" />
     <ClInclude Include="io\KeyType.h" />
     <ClInclude Include="io\Messages.h" />
     <ClInclude Include="io\UI.h" />
@@ -421,6 +423,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="IO\UITypes\UIEvent.h" />
     <ClInclude Include="io\uitypes\UIItemInventory.h" />
     <ClInclude Include="IO\UITypes\UIJoypad.h" />
+    <ClInclude Include="IO\UITypes\UIKeyConfig.h" />
     <ClInclude Include="io\uitypes\UILogin.h" />
     <ClInclude Include="io\uitypes\UILoginNotice.h" />
     <ClInclude Include="io\uitypes\UILoginwait.h" />

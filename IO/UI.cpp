@@ -35,6 +35,8 @@
 #include "../IO/UITypes/UIChannel.h"
 #include "../IO/UITypes/UIJoypad.h"
 #include "../IO/UITypes/UIEvent.h"
+#include "../IO/UITypes/UIChat.h"
+#include "../IO/UITypes/UIKeyConfig.h"
 
 namespace jrc
 {
@@ -220,8 +222,17 @@ namespace jrc
 					auto userlist = UI::get().get_element<UIUserList>();
 					auto shop = UI::get().get_element<UIShop>();
 					auto eventlist = UI::get().get_element<UIEvent>();
+					auto chat = UI::get().get_element<UIChat>();
+					auto chatrank = UI::get().get_element<UIRank>();
+					auto keyconfig = UI::get().get_element<UIKeyConfig>();
 
-					if (joypad && joypad->is_active())
+					if (keyconfig && keyconfig->is_active())
+						keyconfig->send_key(mapping.action, pressed);
+					else if (chatrank && chatrank->is_active())
+						chatrank->send_key(mapping.action, pressed);
+					else if (chat && chat->is_active())
+						chat->send_key(mapping.action, pressed);
+					else if (joypad && joypad->is_active())
 						joypad->send_key(mapping.action, pressed);
 					else if (eventlist && eventlist->is_active())
 						eventlist->send_key(mapping.action, pressed);

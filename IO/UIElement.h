@@ -64,8 +64,10 @@ namespace jrc
 			MINIMAP,
 			CHANNEL,
 			CHAT,
+			CHATRANK,
 			JOYPAD,
 			EVENT,
+			KEYCONFIG,
 			NUM_TYPES
 		};
 

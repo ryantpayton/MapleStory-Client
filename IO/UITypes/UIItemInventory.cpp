@@ -321,31 +321,39 @@ namespace jrc
 
 		int16_t slot = slot_by_position(cursor_relative);
 		Icon* icon = get_icon(slot);
+		bool is_icon = icon && is_visible(slot);
 
-		if (icon && is_visible(slot))
+		if (is_icon && icon->get_drag())
 		{
-			if (pressed)
-			{
-				Point<int16_t> slotpos = get_slotpos(slot);
-				icon->start_drag(cursor_relative - slotpos);
-				UI::get().drag_icon(icon);
-
-				clear_tooltip();
-
-				return Cursor::GRABBING;
-			}
-			else
-			{
-				show_item(slot);
-
-				return Cursor::CANGRAB;
-			}
+			return Cursor::State::GRABBING;
 		}
 		else
 		{
-			clear_tooltip();
+			if (is_icon)
+			{
+				if (pressed)
+				{
+					Point<int16_t> slotpos = get_slotpos(slot);
+					icon->start_drag(cursor_relative - slotpos);
+					UI::get().drag_icon(icon);
 
-			return Cursor::CANGRAB;
+					clear_tooltip();
+
+					return Cursor::State::GRABBING;
+				}
+				else
+				{
+					show_item(slot);
+
+					return Cursor::State::CANGRAB;
+				}
+			}
+			else
+			{
+				clear_tooltip();
+
+				return Cursor::State::CANGRAB;
+			}
 		}
 	}
 
@@ -577,7 +585,6 @@ namespace jrc
 		else
 			return nullptr;
 	}
-
 
 	UIItemInventory::ItemIcon::ItemIcon(InventoryType::Id st, Equipslot::Id eqs, int16_t s)
 	{

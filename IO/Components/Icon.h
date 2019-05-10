@@ -55,6 +55,7 @@ namespace jrc
 		void reset();
 		void set_count(int16_t count);
 		int16_t get_count() const;
+		bool get_drag();
 
 	private:
 		std::unique_ptr<Type> type;

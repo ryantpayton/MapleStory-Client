@@ -16,39 +16,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Tooltip.h"
-
-#include "MapleFrame.h"
-
-#include "../../Graphics/Geometry.h"
-#include "../../Graphics/Text.h"
+#include <cstdint>
 
 namespace jrc
 {
-	class SkillTooltip : public Tooltip
+	namespace KeyConfig
 	{
-	public:
-		SkillTooltip();
+		enum Key : uint8_t
+		{
+			ESC, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, SLK,
+			TILDA, NUM1, NUM2, NUM3, NUM4, NUM5, NUM6, NUM7, NUM8, NUM9, NUM0, MINUS, EQUAL, INS, HM, PUP,
+			Q, W, E, R, T, Y, U, I, O, P, BRACKETL, BRACKETR, BACKSLASH, DEL, END, PDN,
+			A, S, D, F, G, H, J, K, L, SEMICOLON, SINGLEQUOTE,
+			SHIFTL, Z, X, C, V, B, N, M, COMMA, PERIOD, SHIFTR,
+			CTRLL, ALTL, SPACE, ALTR, CTRLR,
+			LENGTH
+		};
 
-		void draw(Point<int16_t> position) const override;
-
-		void set_skill(int32_t id, int32_t level, int32_t masterlevel, int64_t expiration);
-
-	private:
-		int32_t skill_id;
-		int16_t height;
-		int16_t width;
-		int16_t icon_offset;
-		int16_t level_offset;
-		Texture icon;
-		Texture required_icon;
-
-		Text name;
-		Text desc;
-		Text leveldesc;
-		MapleFrame frame;
-		ColorLine line;
-		ColorBox box;
-		Texture cover;
-	};
+		inline Key actionbyid(int32_t id)
+		{
+			return static_cast<Key>(id);
+		}
+	}
 }

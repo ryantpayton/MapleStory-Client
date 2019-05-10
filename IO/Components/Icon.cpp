@@ -87,4 +87,9 @@ namespace jrc
 	{
 		return count;
 	}
+
+	bool Icon::get_drag()
+	{
+		return dragged;
+	}
 }

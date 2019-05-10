@@ -71,24 +71,24 @@ namespace jrc
 
 	Keyboard::Keyboard()
 	{
-		keymap[GLFW_KEY_LEFT] = { KeyType::ACTION, KeyAction::LEFT };
-		keymap[GLFW_KEY_RIGHT] = { KeyType::ACTION, KeyAction::RIGHT };
-		keymap[GLFW_KEY_UP] = { KeyType::ACTION, KeyAction::UP };
-		keymap[GLFW_KEY_DOWN] = { KeyType::ACTION, KeyAction::DOWN };
-		keymap[GLFW_KEY_ESCAPE] = { KeyType::ACTION, KeyAction::ESCAPE };
-		keymap[GLFW_KEY_ENTER] = { KeyType::ACTION, KeyAction::RETURN };
-		keymap[GLFW_KEY_KP_ENTER] = { KeyType::ACTION, KeyAction::RETURN };
-		keymap[GLFW_KEY_TAB] = { KeyType::ACTION, KeyAction::TAB };
+		keymap[GLFW_KEY_LEFT] = { KeyType::ACTION, KeyAction::Id::LEFT };
+		keymap[GLFW_KEY_RIGHT] = { KeyType::ACTION, KeyAction::Id::RIGHT };
+		keymap[GLFW_KEY_UP] = { KeyType::ACTION, KeyAction::Id::UP };
+		keymap[GLFW_KEY_DOWN] = { KeyType::ACTION, KeyAction::Id::DOWN };
+		keymap[GLFW_KEY_ESCAPE] = { KeyType::ACTION, KeyAction::Id::ESCAPE };
+		keymap[GLFW_KEY_ENTER] = { KeyType::ACTION, KeyAction::Id::RETURN };
+		keymap[GLFW_KEY_KP_ENTER] = { KeyType::ACTION, KeyAction::Id::RETURN };
+		keymap[GLFW_KEY_TAB] = { KeyType::ACTION, KeyAction::Id::TAB };
 
-		textactions[GLFW_KEY_BACKSPACE] = KeyAction::BACK;
-		textactions[GLFW_KEY_ENTER] = KeyAction::RETURN;
-		textactions[GLFW_KEY_KP_ENTER] = KeyAction::RETURN;
-		textactions[GLFW_KEY_SPACE] = KeyAction::SPACE;
-		textactions[GLFW_KEY_TAB] = KeyAction::TAB;
-		textactions[GLFW_KEY_ESCAPE] = KeyAction::ESCAPE;
-		textactions[GLFW_KEY_HOME] = KeyAction::HOME;
-		textactions[GLFW_KEY_END] = KeyAction::END;
-		textactions[GLFW_KEY_DELETE] = KeyAction::DELETE;
+		textactions[GLFW_KEY_BACKSPACE] = KeyAction::Id::BACK;
+		textactions[GLFW_KEY_ENTER] = KeyAction::Id::RETURN;
+		textactions[GLFW_KEY_KP_ENTER] = KeyAction::Id::RETURN;
+		textactions[GLFW_KEY_SPACE] = KeyAction::Id::SPACE;
+		textactions[GLFW_KEY_TAB] = KeyAction::Id::TAB;
+		textactions[GLFW_KEY_ESCAPE] = KeyAction::Id::ESCAPE;
+		textactions[GLFW_KEY_HOME] = KeyAction::Id::HOME;
+		textactions[GLFW_KEY_END] = KeyAction::Id::END;
+		textactions[GLFW_KEY_DELETE] = KeyAction::Id::DELETE;
 	}
 
 	int32_t Keyboard::leftshiftcode() const
@@ -121,13 +121,13 @@ namespace jrc
 		switch (keycode)
 		{
 		case GLFW_KEY_C:
-			return KeyAction::COPY;
+			return KeyAction::Id::COPY;
 		case GLFW_KEY_V:
-			return KeyAction::PASTE;
+			return KeyAction::Id::PASTE;
 			/*case GLFW_KEY_A:
-				return KeyAction::SELECTALL;*/
+				return KeyAction::Id::SELECTALL;*/
 		default:
-			return KeyAction::NOACTION;
+			return KeyAction::Id::LENGTH;
 		}
 	}
 
@@ -135,7 +135,8 @@ namespace jrc
 	{
 		if (KeyType::Id type = KeyType::typebyid(tid))
 		{
-			Mapping mapping{ type, action };
+			Mapping mapping = Mapping(type, action);
+
 			keymap[Keytable[key]] = mapping;
 			maplekeys[key] = mapping;
 		}
@@ -145,21 +146,21 @@ namespace jrc
 	{
 		if (textactions.count(keycode))
 		{
-			return{ KeyType::ACTION, textactions.at(keycode) };
+			return { KeyType::Id::ACTION, textactions.at(keycode) };
 		}
 		else if (keycode == 39 || (keycode >= 44 && keycode <= 57) || keycode == 59 || keycode == 61 || (keycode >= 91 && keycode <= 93) || keycode == 96)
 		{
 			if (!shift)
-				return{ KeyType::TEXT, keycode };
+				return { KeyType::Id::TEXT, keycode };
 			else
-				return{ KeyType::TEXT, Specialtable[keycode - 1] };
+				return { KeyType::Id::TEXT, Specialtable[keycode - 1] };
 		}
 		else if (keycode >= 33 && keycode <= 126)
 		{
 			if (shift)
-				return{ KeyType::TEXT, keycode };
+				return { KeyType::Id::TEXT, keycode };
 			else
-				return{ KeyType::TEXT, Shifttable[keycode - 1] };
+				return { KeyType::Id::TEXT, Shifttable[keycode - 1] };
 		}
 		else
 		{
@@ -171,7 +172,7 @@ namespace jrc
 			case GLFW_KEY_DOWN:
 				return keymap.at(keycode);
 			default:
-				return{ KeyType::NONE, 0 };
+				return { KeyType::Id::NONE, 0 };
 			}
 		}
 	}
@@ -179,8 +180,9 @@ namespace jrc
 	Keyboard::Mapping Keyboard::get_mapping(int32_t keycode) const
 	{
 		auto iter = keymap.find(keycode);
+
 		if (iter == keymap.end())
-			return{};
+			return {};
 
 		return iter->second;
 	}

@@ -39,6 +39,7 @@
 #include "../UITypes/UIChannel.h"
 #include "../UITypes/UIJoypad.h"
 #include "../UITypes/UIEvent.h"
+#include "../UITypes/UIKeyConfig.h"
 
 #include "../Net/Packets/LoginPackets.h"
 
@@ -581,7 +582,11 @@ namespace jrc
 			remove_menus();
 			break;
 		case BT_SETTING_OPTION:
+			remove_menus();
+			break;
 		case BT_SETTING_KEYS:
+			UI::get().emplace<UIKeyConfig>();
+
 			remove_menus();
 			break;
 		case BT_SETTING_JOYPAD:

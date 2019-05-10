@@ -17,7 +17,178 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIChat.h"
 
+#include "../UI.h"
+
+#include "../Components/MapleButton.h"
+
+#include <nlnx/nx.hpp>
+
 namespace jrc
 {
-	UIChat::UIChat() : UIDragElement<PosMAPLECHAT>(Point<int16_t>()) {}
+	UIChat::UIChat() : UIDragElement<PosMAPLECHAT>(Point<int16_t>())
+	{
+		show_weekly = Configuration::get().get_show_weekly();
+
+		nl::node socialChatEnter = nl::nx::ui["UIWindow2.img"]["socialChatEnter"];
+
+		nl::node backgrnd = socialChatEnter["backgrnd"];
+		nl::node backgrnd4 = socialChatEnter["backgrnd4"];
+		nl::node backgrnd5 = socialChatEnter["backgrnd5"];
+
+		rank_shift = Point<int16_t>(86, 130);
+		name_shift = Point<int16_t>(50, 5);
+
+		origin_left = Texture(backgrnd4).get_origin();
+		origin_right = Texture(backgrnd5).get_origin();
+
+		origin_left = Point<int16_t>(std::abs(origin_left.x()), std::abs(origin_left.y()));
+		origin_right = Point<int16_t>(std::abs(origin_right.x()), std::abs(origin_right.y()));
+
+		sprites.emplace_back(socialChatEnter["ribbon"]);
+		sprites.emplace_back(backgrnd);
+		sprites.emplace_back(socialChatEnter["backgrnd2"]);
+		sprites.emplace_back(socialChatEnter["backgrnd3"]);
+		sprites.emplace_back(backgrnd4);
+		sprites.emplace_back(backgrnd5);
+
+		buttons[Buttons::CLOSE] = std::make_unique<MapleButton>(socialChatEnter["btX"]);
+		buttons[Buttons::CHAT_DUO] = std::make_unique<MapleButton>(socialChatEnter["duoChat"]);
+		buttons[Buttons::CHAT_FRIEND] = std::make_unique<MapleButton>(socialChatEnter["groupChatFrd"]);
+		buttons[Buttons::CHAT_RANDOM] = std::make_unique<MapleButton>(socialChatEnter["groupChatRnd"]);
+
+		charset = Charset(socialChatEnter["number"], Charset::Alignment::RIGHT);
+
+		name_left = Text(Text::Font::A12B, Text::Alignment::CENTER, Text::Color::WHITE);
+		name_right = Text(Text::Font::A12B, Text::Alignment::CENTER, Text::Color::WHITE);
+
+		dimension = Texture(backgrnd).get_dimensions();
+
+		if (show_weekly)
+			UI::get().emplace<UIRank>();
+	}
+
+	void UIChat::draw(float inter) const
+	{
+		UIElement::draw(inter);
+
+		charset.draw("0", position + origin_left + rank_shift);
+		charset.draw("0", position + origin_right + rank_shift);
+
+		name_left.draw(position + origin_left + name_shift);
+		name_right.draw(position + origin_right + name_shift);
+	}
+
+	void UIChat::update()
+	{
+		UIElement::update();
+	}
+
+	void UIChat::send_key(int32_t keycode, bool pressed)
+	{
+		if (keycode == KeyAction::Id::ESCAPE)
+			close();
+	}
+
+	Button::State UIChat::button_pressed(uint16_t buttonid)
+	{
+		switch (buttonid)
+		{
+		case Buttons::CLOSE:
+			close();
+			break;
+		case Buttons::CHAT_DUO:
+			break;
+		case Buttons::CHAT_FRIEND:
+			break;
+		case Buttons::CHAT_RANDOM:
+			break;
+		default:
+			break;
+		}
+
+		return Button::State::NORMAL;
+	}
+
+	void UIChat::close()
+	{
+		active = false;
+	}
+
+	UIRank::UIRank() : UIDragElement<PosMAPLECHAT>(Point<int16_t>())
+	{
+		Configuration::get().set_show_weekly(false);
+
+		nl::node socialRank = nl::nx::ui["UIWindow2.img"]["socialRank"];
+
+		nl::node backgrnd = socialRank["backgrnd"];
+		nl::node backgrnd4 = socialRank["backgrnd4"];
+		nl::node backgrnd5 = socialRank["backgrnd5"];
+
+		rank_shift = Point<int16_t>(86, 130);
+		name_shift = Point<int16_t>(52, 4);
+
+		origin_left = Texture(backgrnd4).get_origin();
+		origin_right = Texture(backgrnd5).get_origin();
+
+		origin_left = Point<int16_t>(std::abs(origin_left.x()) - 1, std::abs(origin_left.y()));
+		origin_right = Point<int16_t>(std::abs(origin_right.x()), std::abs(origin_right.y()));
+
+		sprites.emplace_back(socialRank["ribbon"]);
+		sprites.emplace_back(backgrnd);
+		sprites.emplace_back(socialRank["backgrnd2"]);
+		sprites.emplace_back(socialRank["backgrnd3"]);
+		sprites.emplace_back(backgrnd4);
+		sprites.emplace_back(backgrnd5);
+
+		buttons[Buttons::CLOSE] = std::make_unique<MapleButton>(socialRank["btX"]);
+
+		charset = Charset(socialRank["number"], Charset::Alignment::RIGHT);
+
+		name_left = Text(Text::Font::A12B, Text::Alignment::CENTER, Text::Color::WHITE);
+		name_right = Text(Text::Font::A12B, Text::Alignment::CENTER, Text::Color::WHITE);
+
+		dimension = Texture(backgrnd).get_dimensions();
+		position = position + Point<int16_t>(211, 124);
+	}
+
+	void UIRank::draw(float inter) const
+	{
+		UIElement::draw(inter);
+
+		charset.draw("0", position + origin_left + rank_shift);
+		charset.draw("0", position + origin_right + rank_shift);
+
+		name_left.draw(position + origin_left + name_shift);
+		name_right.draw(position + origin_right + name_shift);
+	}
+
+	void UIRank::update()
+	{
+		UIElement::update();
+	}
+
+	void UIRank::send_key(int32_t keycode, bool pressed)
+	{
+		if (keycode == KeyAction::Id::ESCAPE)
+			close();
+	}
+
+	Button::State UIRank::button_pressed(uint16_t buttonid)
+	{
+		switch (buttonid)
+		{
+		case Buttons::CLOSE:
+			close();
+			break;
+		default:
+			break;
+		}
+
+		return Button::State::NORMAL;
+	}
+
+	void UIRank::close()
+	{
+		active = false;
+	}
 }

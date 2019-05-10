@@ -59,6 +59,10 @@ namespace jrc
 		bool get_rightclicksell();
 		// Set the shop's "Right-click to sell item" boolean
 		void set_rightclicksell(bool value);
+		// Whether to show the weekly maple star in Maple Chat
+		bool get_show_weekly();
+		// Set whether to show the weekly maple star in Maple Chat
+		void set_show_weekly(bool value);
 
 		// Base class for an entry in the settings file.
 		class Entry
@@ -167,6 +171,7 @@ namespace jrc
 		const char* TITLE = "MapleStory";
 		const bool SHOW_FPS = false;
 		bool rightclicksell = false;
+		bool show_weekly = true;
 		std::string MACS;
 		std::string HWID;
 		std::string VolumeSerialNumber;
@@ -338,7 +343,7 @@ namespace jrc
 	// The default position of the maple chat.
 	struct PosMAPLECHAT : public Configuration::PointEntry
 	{
-		PosMAPLECHAT() : PointEntry("PosMAPLECHAT", "(50, 200)") {}
+		PosMAPLECHAT() : PointEntry("PosMAPLECHAT", "(50, 36)") {}
 	};
 
 	// The default position of the channel change.
@@ -357,6 +362,12 @@ namespace jrc
 	struct PosEVENT : public Configuration::PointEntry
 	{
 		PosEVENT() : PointEntry("PosEVENT", "(99, 90)") {}
+	};
+
+	// The default position of the key bindings.
+	struct PosKEYCONFIG : public Configuration::PointEntry
+	{
+		PosKEYCONFIG() : PointEntry("PosKEYCONFIG", "(65, 40)") {}
 	};
 
 	template <typename T>
