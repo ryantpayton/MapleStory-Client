@@ -41,6 +41,7 @@ namespace jrc
 			START,
 			LOGIN,
 			WORLDSELECT,
+			REGION,
 			CHARSELECT,
 			LOGINWAIT,
 			CHARCREATION,

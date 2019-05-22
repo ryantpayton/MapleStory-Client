@@ -317,6 +317,8 @@ namespace jrc
 		}
 	}
 
+	void UIStateGame::send_close() {}
+
 	void UIStateGame::drag_icon(Icon* drgic)
 	{
 		draggedicon = drgic;
@@ -328,6 +330,7 @@ namespace jrc
 		{
 			eqtooltip.set_equip(Tooltip::NONE, 0);
 			ittooltip.set_item(0);
+			tetooltip.set_text("");
 			tooltip = {};
 			tooltipparent = Tooltip::NONE;
 		}
@@ -362,6 +365,17 @@ namespace jrc
 		if (skill_id)
 		{
 			tooltip = sktooltip;
+			tooltipparent = parent;
+		}
+	}
+
+	void UIStateGame::show_text(Tooltip::Parent parent, std::string text)
+	{
+		tetooltip.set_text(text);
+
+		if (!text.empty())
+		{
+			tooltip = tetooltip;
 			tooltipparent = parent;
 		}
 	}

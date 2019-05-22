@@ -16,31 +16,40 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../../Template/Point.h"
+#include "../UIElement.h"
 
-#include <cstdint>
+#include "../Components/TextTooltip.h"
 
 namespace jrc
 {
-	// Interface for tooltips, information windows about something
-	// the mouse cursor is pointed at.
-	class Tooltip
+	class UIRegion : public UIElement
 	{
 	public:
-		// Possible parent UIs for Tooltips.
-		enum Parent
+		static constexpr Type TYPE = REGION;
+		static constexpr bool FOCUSED = false;
+		static constexpr bool TOGGLED = false;
+
+		UIRegion();
+
+		void draw(float inter) const override;
+		void update() override;
+
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
+
+	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
+
+	private:
+		void clear_tooltip();
+
+		enum Buttons : uint16_t
 		{
-			NONE,
-			EQUIPINVENTORY,
-			ITEMINVENTORY,
-			SKILLBOOK,
-			SHOP,
-			EVENT,
-			TEXT
+			NA,
+			EU,
+			EXIT
 		};
 
-		virtual ~Tooltip() {}
-
-		virtual void draw(Point<int16_t> cursorpos) const = 0;
+		Rectangle<int16_t> na_rect;
+		Rectangle<int16_t> eu_rect;
 	};
 }

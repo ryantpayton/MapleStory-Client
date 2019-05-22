@@ -57,16 +57,13 @@ namespace jrc
 
 		world_dimensions = Texture(selectWorld).get_dimensions();
 
-		if (auto worldselect = UI::get().get_element<UIWorldSelect>())
-		{
-			uint8_t world_id = worldselect->get_world_id();
-			uint8_t channel_id = worldselect->get_channel_id();
+		uint8_t world_id = Configuration::get().get_worldid();
+		uint8_t channel_id = Configuration::get().get_channelid();
 
 			world_sprites.emplace_back(selectWorld, worldpos);
 			world_sprites.emplace_back(selectedWorld["icon"][world_id], worldpos - Point<int16_t>(14, -1));
 			world_sprites.emplace_back(selectedWorld["name"][world_id], worldpos - Point<int16_t>(8, 1));
 			world_sprites.emplace_back(selectedWorld["ch"][channel_id], worldpos - Point<int16_t>(0, 1));
-		}
 
 		nl::node map = nl::nx::map["Back"]["login.img"];
 		nl::node ani = map["ani"];

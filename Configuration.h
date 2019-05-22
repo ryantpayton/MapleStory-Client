@@ -77,6 +77,14 @@ namespace jrc
 		bool get_start_shown();
 		// Set whether to show the start screen
 		void set_start_shown(bool value);
+		// Get the character's selected world
+		uint8_t get_worldid();
+		// Set the character's selected world
+		void set_worldid(uint8_t id);
+		// Get the character's selected channel
+		uint8_t get_channelid();
+		// Set the character's selected channel
+		void set_channelid(uint8_t id);
 
 		// Base class for an entry in the settings file.
 		class Entry
@@ -195,6 +203,8 @@ namespace jrc
 		std::string MACS;
 		std::string HWID;
 		std::string VolumeSerialNumber;
+		uint8_t worldid;
+		uint8_t channelid;
 		TypeMap<Entry> settings;
 	};
 

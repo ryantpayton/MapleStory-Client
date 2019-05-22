@@ -43,9 +43,6 @@ namespace jrc
 		void change_world(World selectedWorld);
 		void remove_selected();
 
-		uint8_t get_world_id() const;
-		uint8_t get_channel_id() const;
-
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
 
@@ -53,6 +50,7 @@ namespace jrc
 		void enter_world();
 		void toggle_recommended(bool active);
 		void clear_selected_world();
+		uint16_t get_next_world(uint16_t id, bool upward);
 
 		enum Buttons : uint16_t
 		{
@@ -103,6 +101,28 @@ namespace jrc
 			BT_VIEWRECOMMENDED_NEXT,
 			BT_CHANGEREGION,
 			BT_QUITGAME
+		};
+
+		enum Worlds : uint16_t
+		{
+			SCANIA,
+			BERA,
+			BROA,
+			WINDIA,
+			KHAINI,
+			BELLOCAN,
+			MARDIA,
+			KRADIA,
+			YELLONDE,
+			DEMETHOS,
+			GALICIA,
+			ELNIDO,
+			ZENITH,
+			ARCANIA,
+			CHAOS,
+			NOVA,
+			RENEGADES,
+			REBOOT
 		};
 
 		Text version;

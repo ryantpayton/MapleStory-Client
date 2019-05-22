@@ -18,6 +18,7 @@
 #include "UIWorldSelect.h"
 #include "UILoginNotice.h"
 #include "UILoginwait.h"
+#include "UIRegion.h"
 
 #include "../UI.h"
 
@@ -28,6 +29,8 @@
 #include "../Net/Packets/LoginPackets.h"
 
 #include "nlnx/nx.hpp"
+
+#include <ctime>
 
 namespace jrc
 {
@@ -58,14 +61,16 @@ namespace jrc
 		nl::node channelsrc = worldselect["BtChannel"];
 		nl::node common = login["Common"];
 
-		int background = rand() % 1;
+		std::srand(std::time(NULL)); // Generate a new seed
+
+		int background = rand() % 2;
 
 		if (background == 0)
 			sprites.emplace_back(obj["WorldSelect"]["RetroWorld"]["0"], Point<int16_t>(370, 300)); // From v203.3
 		else if (background == 1)
 			sprites.emplace_back(obj["WorldSelect"]["SavageT"]["0"], Point<int16_t>(370, 300)); // From v203.3
 		else
-			sprites.emplace_back(obj["WorldSelect"]["default"]["0"], Point<int16_t>(370, 300)); // From v203.3
+			sprites.emplace_back(obj["WorldSelect"]["default"]["0"], Point<int16_t>(399, 290)); // From v203.3
 
 		sprites.emplace_back(common["frame"], Point<int16_t>(399, 289));
 		sprites.emplace_back(common["step"]["1"], Point<int16_t>(40, -10));
@@ -82,6 +87,8 @@ namespace jrc
 		buttons[Buttons::BT_VIEWRECOMMENDED_CANCEL]->set_active(false);
 		buttons[Buttons::BT_VIEWRECOMMENDED_PREV]->set_active(false);
 		buttons[Buttons::BT_VIEWRECOMMENDED_NEXT]->set_active(false);
+
+		buttons[Buttons::BT_VIEWRECOMMENDED]->set_state(Button::State::DISABLED);
 
 		recommended_textures.emplace_back(worldselect["alert"]["backgrd"]);
 
@@ -235,15 +242,18 @@ namespace jrc
 				uint8_t COLUMNS = 5;
 				uint8_t columns = std::min(channel_total, COLUMNS);
 
-				uint8_t rows = std::floor((channel_total - 1) / COLUMNS);
+				uint8_t rows = std::floor((channel_total - 1) / COLUMNS) + 1;
 
-				div_t div = std::div(selected_channel - 1, columns);
+				div_t div = std::div(selected_channel, columns);
 				auto current_col = div.rem;
-				auto current_row = div.quot;
+				//auto current_row = div.quot;
 
 				if (keycode == KeyAction::Id::UP)
 				{
-					auto next_channel = (selected_channel - COLUMNS <= 0 ? (selected_channel - COLUMNS) + rows * COLUMNS : selected_channel - COLUMNS);
+					auto next_channel = (selected_channel - COLUMNS < 0 ? (selected_channel - COLUMNS) + rows * COLUMNS : selected_channel - COLUMNS);
+
+					if (next_channel == channelid)
+						return;
 
 					if (next_channel > channel_total)
 						button_pressed(next_channel - COLUMNS + Buttons::BT_CHANNEL0);
@@ -252,7 +262,10 @@ namespace jrc
 				}
 				else if (keycode == KeyAction::Id::DOWN)
 				{
-					auto next_channel = (selected_channel + COLUMNS > channel_total ? current_col : selected_channel + COLUMNS);
+					auto next_channel = (selected_channel + COLUMNS >= channel_total ? current_col : selected_channel + COLUMNS);
+
+					if (next_channel == channelid)
+						return;
 
 					if (next_channel > channel_total)
 						button_pressed(next_channel + COLUMNS + Buttons::BT_CHANNEL0);
@@ -280,6 +293,7 @@ namespace jrc
 				else if (keycode == KeyAction::Id::ESCAPE)
 				{
 					world_selected = false;
+
 					clear_selected_world();
 				}
 				else if (keycode == KeyAction::Id::RETURN)
@@ -297,25 +311,24 @@ namespace jrc
 				auto selected_world = worldid;
 				auto world_count = worldcount - 1;
 
-				if (keycode == KeyAction::Id::LEFT || keycode == KeyAction::Id::UP)
+				if (keycode == KeyAction::Id::LEFT || keycode == KeyAction::Id::RIGHT || keycode == KeyAction::Id::UP || keycode == KeyAction::Id::DOWN || keycode == KeyAction::Id::TAB)
 				{
-					if (selected_world > 0)
-						selected_world--;
-					else
-						selected_world = world_count;
+					bool world_found = false;
+					bool forward = keycode == KeyAction::Id::LEFT || keycode == KeyAction::Id::UP;
 
-					buttons[Buttons::BT_WORLD0 + worldid]->set_state(Button::State::NORMAL);
+					while (!world_found)
+					{
+						selected_world = get_next_world(selected_world, forward);
 
-					worldid = static_cast<uint8_t>(selected_world);
-
-					buttons[Buttons::BT_WORLD0 + worldid]->set_state(Button::State::PRESSED);
-				}
-				else if (keycode == KeyAction::Id::RIGHT || keycode == KeyAction::Id::DOWN || keycode == KeyAction::Id::TAB)
+						for (auto world : worlds)
 				{
-					if (selected_world < world_count)
-						selected_world++;
-					else
-						selected_world = 0;
+							if (world.wid == selected_world)
+							{
+								world_found = true;
+								break;
+							}
+						}
+					}
 
 					buttons[Buttons::BT_WORLD0 + worldid]->set_state(Button::State::NORMAL);
 
@@ -337,12 +350,32 @@ namespace jrc
 					auto quitconfirm = UI::get().get_element<UIQuitConfirm>();
 
 					if (quitconfirm && quitconfirm->is_active())
+					{
 						return UI::get().send_key(keycode, pressed);
+					}
 					else
+					{
+						bool found = false;
+
+						for (size_t i = Buttons::BT_WORLD0; i < Buttons::BT_CHANNEL0; i++)
+						{
+							auto state = buttons[Buttons::BT_WORLD0 + i]->get_state();
+
+							if (state == Button::State::PRESSED)
+							{
+								found = true;
+								break;
+							}
+						}
+
+						if (found)
 						button_pressed(selected_world + Buttons::BT_WORLD0);
+						else
+							buttons[Buttons::BT_WORLD0 + selected_world]->set_state(Button::State::PRESSED);
 				}
 			}
 		}
+	}
 	}
 
 	void UIWorldSelect::draw_world()
@@ -372,6 +405,8 @@ namespace jrc
 	{
 		recommended_worlds.emplace_back(std::move(world));
 		recommended_worldcount++;
+
+		buttons[Buttons::BT_VIEWRECOMMENDED]->set_state(Button::State::NORMAL);
 	}
 
 	void UIWorldSelect::change_world(World selectedWorld)
@@ -398,16 +433,6 @@ namespace jrc
 		world_selected = false;
 		clear_selected_world();
 		draw_chatballoon = false;
-	}
-
-	uint8_t UIWorldSelect::get_world_id() const
-	{
-		return worldid;
-	}
-
-	uint8_t UIWorldSelect::get_channel_id() const
-	{
-		return channelid;
 	}
 
 	Button::State UIWorldSelect::button_pressed(uint16_t id)
@@ -467,7 +492,6 @@ namespace jrc
 
 			return Button::State::NORMAL;
 		}
-
 		else if (id == Buttons::BT_VIEWRECOMMENDED_NEXT)
 		{
 			if (recommended_worldid < recommended_worldcount - 1)
@@ -476,6 +500,14 @@ namespace jrc
 				recommended_worldid = 0;
 
 			recommended_message.change_text(recommended_worlds[recommended_worldid].message);
+
+			return Button::State::NORMAL;
+		}
+		else if (id == Buttons::BT_CHANGEREGION)
+		{
+			UI::get().emplace<UIRegion>();
+
+			deactivate();
 
 			return Button::State::NORMAL;
 		}
@@ -519,6 +551,9 @@ namespace jrc
 
 	void UIWorldSelect::enter_world()
 	{
+		Configuration::get().set_worldid(worldid);
+		Configuration::get().set_channelid(channelid);
+
 		UI::get().emplace<UILoginwait>();
 		auto loginwait = UI::get().get_element<UILoginwait>();
 
@@ -560,9 +595,58 @@ namespace jrc
 
 	void UIWorldSelect::clear_selected_world()
 	{
+		channelid = 0;
+
+		for (size_t i = Buttons::BT_CHANNEL0; i < Buttons::BT_ENTERWORLD; i++)
+			buttons[i]->set_state(Button::State::NORMAL);
+
+		buttons[Buttons::BT_CHANNEL0]->set_state(Button::State::PRESSED);
+
 		for (size_t i = 0; i < Buttons::BT_ENTERWORLD - Buttons::BT_CHANNEL0; i++)
 			buttons[Buttons::BT_CHANNEL0 + i]->set_active(false);
 
 		buttons[Buttons::BT_ENTERWORLD]->set_active(false);
+	}
+
+	uint16_t UIWorldSelect::get_next_world(uint16_t id, bool upward)
+	{
+		if (id == Worlds::SCANIA)
+			return (upward) ? Worlds::WINDIA : Worlds::REBOOT;
+		else if (id == Worlds::BERA)
+			return (upward) ? Worlds::NOVA : Worlds::BROA;
+		else if (id == Worlds::BROA)
+			return (upward) ? Worlds::BERA : Worlds::KHAINI;
+		else if (id == Worlds::WINDIA)
+			return (upward) ? Worlds::KHAINI : Worlds::SCANIA;
+		else if (id == Worlds::KHAINI)
+			return (upward) ? Worlds::BROA : Worlds::WINDIA;
+		else if (id == Worlds::BELLOCAN)
+			return (upward) ? Worlds::YELLONDE : Worlds::CHAOS;
+		else if (id == Worlds::MARDIA)
+			return (upward) ? Worlds::DEMETHOS : Worlds::YELLONDE;
+		else if (id == Worlds::KRADIA)
+			return (upward) ? Worlds::CHAOS : Worlds::NOVA;
+		else if (id == Worlds::YELLONDE)
+			return (upward) ? Worlds::MARDIA : Worlds::BELLOCAN;
+		else if (id == Worlds::DEMETHOS)
+			return (upward) ? Worlds::ELNIDO : Worlds::MARDIA;
+		else if (id == Worlds::GALICIA)
+			return (upward) ? Worlds::REBOOT : Worlds::RENEGADES;
+		else if (id == Worlds::ELNIDO)
+			return (upward) ? Worlds::ZENITH : Worlds::DEMETHOS;
+		else if (id == Worlds::ZENITH)
+			return (upward) ? Worlds::ARCANIA : Worlds::ELNIDO;
+		else if (id == Worlds::ARCANIA)
+			return (upward) ? Worlds::RENEGADES : Worlds::ZENITH;
+		else if (id == Worlds::CHAOS)
+			return (upward) ? Worlds::BELLOCAN : Worlds::KRADIA;
+		else if (id == Worlds::NOVA)
+			return (upward) ? Worlds::KRADIA : Worlds::BERA;
+		else if (id == Worlds::RENEGADES)
+			return (upward) ? Worlds::GALICIA : Worlds::ARCANIA;
+		else if (id == Worlds::REBOOT)
+			return (upward) ? Worlds::SCANIA : Worlds::GALICIA;
+		else
+			return Worlds::SCANIA;
 	}
 }

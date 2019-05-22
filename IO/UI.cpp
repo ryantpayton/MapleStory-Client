@@ -132,6 +132,11 @@ namespace jrc
 		state->send_scroll(yoffset);
 	}
 
+	void UI::send_close()
+	{
+		state->send_close();
+	}
+
 	void UI::send_cursor(bool pressed)
 	{
 		Cursor::State cursorstate = (pressed && enabled) ? Cursor::CLICKING : Cursor::IDLE;
@@ -382,6 +387,11 @@ namespace jrc
 		int32_t level, int32_t masterlevel, int64_t expiration) {
 
 		state->show_skill(parent, skill_id, level, masterlevel, expiration);
+	}
+
+	void UI::show_text(Tooltip::Parent parent, std::string text)
+	{
+		state->show_text(parent, text);
 	}
 
 	Keyboard UI::get_keyboard()

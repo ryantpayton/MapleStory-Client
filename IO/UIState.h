@@ -43,12 +43,14 @@ namespace jrc
 		virtual void send_key(KeyType::Id type, int32_t action, bool pressed) = 0;
 		virtual Cursor::State send_cursor(Cursor::State mst, Point<int16_t> pos) = 0;
 		virtual void send_scroll(double yoffset) = 0;
+		virtual void send_close() = 0;
 
 		virtual void drag_icon(Icon* icon) = 0;
 		virtual void clear_tooltip(Tooltip::Parent parent) = 0;
 		virtual void show_equip(Tooltip::Parent parent, int16_t slot) = 0;
 		virtual void show_item(Tooltip::Parent parent, int32_t itemid) = 0;
 		virtual void show_skill(Tooltip::Parent parent, int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration) = 0;
+		virtual void show_text(Tooltip::Parent parent, std::string text) = 0;
 
 		virtual Iterator pre_add(UIElement::Type type, bool toggled, bool focused) = 0;
 		virtual void remove(UIElement::Type type) = 0;
@@ -66,11 +68,13 @@ namespace jrc
 		void send_key(KeyType::Id, int32_t, bool) override {}
 		Cursor::State send_cursor(Cursor::State, Point<int16_t>) override { return Cursor::IDLE; }
 		void send_scroll(double yoffset) override {}
+		void send_close() override {}
 		void drag_icon(Icon*) override {}
 		void clear_tooltip(Tooltip::Parent) override {}
 		void show_equip(Tooltip::Parent, int16_t) override {}
 		void show_item(Tooltip::Parent, int32_t) override {}
 		void show_skill(Tooltip::Parent, int32_t, int32_t, int32_t, int64_t) override {}
+		void show_text(Tooltip::Parent, std::string) override {}
 		Iterator pre_add(UIElement::Type, bool, bool) override { return{ nullptr, UIElement::NUM_TYPES }; }
 		void remove(UIElement::Type) override {}
 		UIElement* get(UIElement::Type) override { return nullptr; }

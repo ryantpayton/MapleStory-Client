@@ -21,6 +21,7 @@
 #include "Components/EquipTooltip.h"
 #include "Components/ItemTooltip.h"
 #include "Components/SkillTooltip.h"
+#include "Components/TextTooltip.h"
 
 #include "../Template/EnumMap.h"
 #include "../Template/Optional.h"
@@ -43,12 +44,14 @@ namespace jrc
 		void send_key(KeyType::Id type, int32_t action, bool pressed) override;
 		Cursor::State send_cursor(Cursor::State mst, Point<int16_t> pos) override;
 		void send_scroll(double yoffset) override;
+		void send_close() override;
 
 		void drag_icon(Icon* icon) override;
 		void clear_tooltip(Tooltip::Parent parent) override;
 		void show_equip(Tooltip::Parent parent, int16_t slot) override;
 		void show_item(Tooltip::Parent parent, int32_t itemid) override;
 		void show_skill(Tooltip::Parent parent, int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration) override;
+		void show_text(Tooltip::Parent parent, std::string text) override;
 
 		Iterator pre_add(UIElement::Type type, bool toggled, bool focused);
 		void remove(UIElement::Type type) override;
@@ -68,6 +71,7 @@ namespace jrc
 		EquipTooltip eqtooltip;
 		ItemTooltip ittooltip;
 		SkillTooltip sktooltip;
+		TextTooltip tetooltip;
 		Optional<Tooltip> tooltip;
 		Tooltip::Parent tooltipparent;
 

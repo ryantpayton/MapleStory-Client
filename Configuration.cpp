@@ -255,4 +255,24 @@ namespace jrc
 	{
 		start_shown = value;
 	}
+
+	uint8_t Configuration::get_worldid()
+	{
+		return worldid;
+	}
+
+	void Configuration::set_worldid(uint8_t id)
+	{
+		worldid = id;
+	}
+
+	uint8_t Configuration::get_channelid()
+	{
+		return channelid;
+	}
+
+	void Configuration::set_channelid(uint8_t id)
+	{
+		channelid = id;
+	}
 }

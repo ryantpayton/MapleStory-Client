@@ -19,6 +19,8 @@
 
 #include "UITypes/UILogin.h"
 #include "UITypes/UILogo.h"
+#include "UITypes/UILoginNotice.h"
+#include "UITypes/UIRegion.h"
 
 #include "../Configuration.h"
 
@@ -35,7 +37,7 @@ namespace jrc
 			emplace<UILogin>();
 	}
 
-	void UIStateLogin::draw(float inter, Point<int16_t>) const
+	void UIStateLogin::draw(float inter, Point<int16_t> cursor) const
 	{
 		for (auto iter : elements)
 		{
@@ -44,6 +46,9 @@ namespace jrc
 			if (element && element->is_active())
 				element->draw(inter);
 		}
+
+		if (tooltip)
+			tooltip->draw(cursor + Point<int16_t>(0, 22));
 	}
 
 	void UIStateLogin::update()
@@ -126,11 +131,45 @@ namespace jrc
 	}
 
 	void UIStateLogin::send_scroll(double) {}
+
+	void UIStateLogin::send_close()
+	{
+		auto logo = UI::get().get_element<UILogo>();
+		auto login = UI::get().get_element<UILogin>();
+		auto region = UI::get().get_element<UIRegion>();
+
+		if (logo && logo->is_active() || login && login->is_active() || region && region->is_active())
+			UI::get().quit();
+		else
+			UI::get().emplace<UIQuitConfirm>();
+	}
+
 	void UIStateLogin::drag_icon(Icon*) {}
-	void UIStateLogin::clear_tooltip(Tooltip::Parent) {}
+
+	void UIStateLogin::clear_tooltip(Tooltip::Parent parent)
+	{
+		if (parent == tooltipparent)
+		{
+			tetooltip.set_text("");
+			tooltip = {};
+			tooltipparent = Tooltip::Parent::NONE;
+		}
+	}
+
 	void UIStateLogin::show_equip(Tooltip::Parent, int16_t) {}
 	void UIStateLogin::show_item(Tooltip::Parent, int32_t) {}
 	void UIStateLogin::show_skill(Tooltip::Parent, int32_t, int32_t, int32_t, int64_t) {}
+
+	void UIStateLogin::show_text(Tooltip::Parent parent, std::string text)
+	{
+		tetooltip.set_text(text);
+
+		if (!text.empty())
+		{
+			tooltip = tetooltip;
+			tooltipparent = parent;
+		}
+	}
 
 	template <class T, typename...Args>
 	void UIStateLogin::emplace(Args&&...args)

@@ -58,6 +58,7 @@ namespace jrc
 		void send_cursor(Point<int16_t> cursorpos, Cursor::State cursorstate);
 		void send_focus(int focused);
 		void send_scroll(double yoffset);
+		void send_close();
 		void rightclick();
 		void doubleclick();
 		void send_key(int32_t keycode, bool pressed);
@@ -74,6 +75,7 @@ namespace jrc
 		void show_equip(Tooltip::Parent parent, int16_t slot);
 		void show_item(Tooltip::Parent parent, int32_t item_id);
 		void show_skill(Tooltip::Parent parent, int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration);
+		void show_text(Tooltip::Parent parent, std::string text);
 
 		Keyboard get_keyboard();
 
