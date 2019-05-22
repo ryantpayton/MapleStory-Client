@@ -45,8 +45,10 @@ namespace jrc
 		int32_t capslockcode() const;
 		int32_t leftctrlcode() const;
 		int32_t rightctrlcode() const;
+		int32_t get_maplekey(KeyAction::Id action) const;
 		KeyAction::Id get_ctrl_action(int32_t keycode) const;
 		Mapping get_mapping(int32_t keycode) const;
+		Mapping get_maple_mapping(int32_t keycode) const;
 		Mapping get_text_mapping(int32_t keycode, bool shift) const;
 
 	private:

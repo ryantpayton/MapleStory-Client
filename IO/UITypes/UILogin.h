@@ -43,6 +43,7 @@ namespace jrc
 
 	private:
 		void login();
+		void open_url(uint16_t id);
 
 		enum Buttons
 		{

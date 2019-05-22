@@ -19,43 +19,57 @@
 #include "UILoginwait.h"
 
 #include "../Components/MapleButton.h"
-
-#include "../../Graphics/Sprite.h"
+#include "../Net/Session.h"
 
 #include "nlnx/nx.hpp"
 
 namespace jrc
 {
-	UILoginwait::UILoginwait()
+	UILoginwait::UILoginwait(std::function<void()> okhandler) : okhandler(okhandler)
 	{
-		nl::node src = nl::nx::ui["Login.img"]["Notice"]["Loading"];
+		nl::node Loading = nl::nx::ui["Login.img"]["Notice"]["Loading"];
+		nl::node backgrnd = Loading["backgrnd"];
 
-		background = src["backgrnd"];
-		circle = { src["circle"], { 125, 72 } };
+		sprites.emplace_back(backgrnd);
+		sprites.emplace_back(Loading["circle"], Point<int16_t>(127, 70));
 
-		buttons[BT_CANCEL] = std::make_unique<MapleButton>(src["BtCancel"], Point<int16_t>(101, 106));
+		buttons[Buttons::CANCEL] = std::make_unique<MapleButton>(Loading["BtCancel"], Point<int16_t>(101, 106));
 
-		position = { 276, 219 };
-		dimension = { 282, 144 };
+		position = Point<int16_t>(276, 219);
+		dimension = Texture(backgrnd).get_dimensions();
 		active = true;
 	}
 
+	UILoginwait::UILoginwait() : UILoginwait([]() {}) {}
+
 	void UILoginwait::draw(float alpha) const
 	{
-		background.draw({ position });
-		circle.draw(position + Point<int16_t>(2, -2), alpha);
-
 		UIElement::draw(alpha);
 	}
 
 	void UILoginwait::update()
 	{
-		circle.update();
+		UIElement::update();
+	}
+
+	void UILoginwait::close()
+	{
+		active = false;
+
+		okhandler();
+	}
+
+	std::function<void()> UILoginwait::get_handler()
+	{
+		return okhandler;
 	}
 
 	Button::State UILoginwait::button_pressed(uint16_t id)
 	{
-		active = false;
-		return Button::PRESSED;
+		Session::get().reconnect();
+
+		close();
+
+		return Button::State::NORMAL;
 	}
 }

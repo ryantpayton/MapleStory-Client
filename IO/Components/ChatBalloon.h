@@ -43,4 +43,29 @@ namespace jrc
 		Texture arrow;
 		int16_t duration;
 	};
+
+	class ChatBalloonHorizontal
+	{
+	public:
+		ChatBalloonHorizontal();
+
+		void draw(Point<int16_t> position) const;
+
+		void change_text(const std::string& text);
+
+	private:
+		Text textlabel;
+		Texture arrow;
+		Texture center;
+		Texture east;
+		Texture northeast;
+		Texture north;
+		Texture northwest;
+		Texture west;
+		Texture southwest;
+		Texture south;
+		Texture southeast;
+		int16_t xtile;
+		int16_t ytile;
+	};
 }

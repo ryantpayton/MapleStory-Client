@@ -359,51 +359,54 @@ namespace jrc
 
 	void UIItemInventory::send_key(int32_t keycode, bool pressed)
 	{
-		if (keycode == KeyAction::ESCAPE)
+		if (pressed)
 		{
-			clear_tooltip();
-
-			active = false;
-		}
-		else if (keycode == KeyAction::TAB)
-		{
-			clear_tooltip();
-
-			InventoryType::Id oldtab = tab;
-
-			switch (oldtab)
+			if (keycode == KeyAction::ESCAPE)
 			{
-			case InventoryType::EQUIP:
-				tab = InventoryType::USE;
-				break;
-			case InventoryType::USE:
-				tab = InventoryType::ETC;
-				break;
-			case InventoryType::ETC:
-				tab = InventoryType::SETUP;
-				break;
-			case InventoryType::SETUP:
-				tab = InventoryType::CASH;
-				break;
-			case InventoryType::CASH:
-				tab = InventoryType::EQUIP;
-				break;
-			}
+				clear_tooltip();
 
-			if (tab != oldtab)
+				active = false;
+			}
+			else if (keycode == KeyAction::TAB)
 			{
-				slotrange.first = 1;
-				slotrange.second = 24;
+				clear_tooltip();
 
-				slider.setrows(6, 1 + inventory.get_slotmax(tab) / 4);
+				InventoryType::Id oldtab = tab;
 
-				buttons[button_by_tab(oldtab)]->set_state(Button::NORMAL);
+				switch (oldtab)
+				{
+				case InventoryType::EQUIP:
+					tab = InventoryType::USE;
+					break;
+				case InventoryType::USE:
+					tab = InventoryType::ETC;
+					break;
+				case InventoryType::ETC:
+					tab = InventoryType::SETUP;
+					break;
+				case InventoryType::SETUP:
+					tab = InventoryType::CASH;
+					break;
+				case InventoryType::CASH:
+					tab = InventoryType::EQUIP;
+					break;
+				}
 
-				load_icons();
-				enable_gather();
+				if (tab != oldtab)
+				{
+					slotrange.first = 1;
+					slotrange.second = 24;
+
+					slider.setrows(6, 1 + inventory.get_slotmax(tab) / 4);
+
+					buttons[button_by_tab(oldtab)]->set_state(Button::NORMAL);
+
+					load_icons();
+					enable_gather();
+				}
+
+				buttons[button_by_tab(tab)]->set_state(Button::PRESSED);
 			}
-
-			buttons[button_by_tab(tab)]->set_state(Button::PRESSED);
 		}
 	}
 

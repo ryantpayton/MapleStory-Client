@@ -24,12 +24,30 @@ namespace jrc
 	{
 		enum Key : uint8_t
 		{
-			ESC, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, SLK,
-			TILDA, NUM1, NUM2, NUM3, NUM4, NUM5, NUM6, NUM7, NUM8, NUM9, NUM0, MINUS, EQUAL, INS, HM, PUP,
-			Q, W, E, R, T, Y, U, I, O, P, BRACKETL, BRACKETR, BACKSLASH, DEL, END, PDN,
-			A, S, D, F, G, H, J, K, L, SEMICOLON, SINGLEQUOTE,
-			SHIFTL, Z, X, C, V, B, N, M, COMMA, PERIOD, SHIFTR,
-			CTRLL, ALTL, SPACE, ALTR, CTRLR,
+			NUM0 = 2,
+			NUM1, NUM2, NUM3, NUM4, NUM5, NUM6, NUM7, NUM8, NUM9, MINUS, EQUAL,
+			Q = 16,
+			W, E, R, T, Y, U, I, O, P, LEFT_BRACKET, RIGHT_BRACKET,
+			LEFT_CONTROL = 29,
+			A, S, D, F, G, H, J, K, L, SEMICOLON, APOSTROPHE, GRAVE_ACCENT, LEFT_SHIFT, BACKSLASH, Z, X, C, V, B, N, M, COMMA, PERIOD,
+			LEFT_ALT = 56,
+			SPACE,
+			F1 = 59,
+			F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, HOME,
+			PAGE_UP = 73,
+			END = 79,
+			PAGE_DOWN = 81,
+			INSERT,
+			DELETE,
+			// TODO: F11/F12 are set twice!
+			//F11 = 87,
+			//F12,
+			// TOOD: These key are never assigned!
+			ESCAPE,
+			SCROLL_LOCK,
+			RIGHT_SHIFT,
+			RIGHT_ALT,
+			RIGHT_CONTROL,
 			LENGTH
 		};
 

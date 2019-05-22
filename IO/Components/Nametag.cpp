@@ -22,7 +22,7 @@ namespace jrc
 {
 	Nametag::Nametag(nl::node src, Text::Font f, std::string n)
 	{
-		name = Text(f, Text::CENTER, Text::Color::EAGLE);
+		name = OutlinedText(f, Text::Alignment::CENTER, Text::Color::EAGLE, Text::Color::JAMBALAYA);
 		name.change_text(n);
 
 		textures[false].push_back(src["0"]["0"]);

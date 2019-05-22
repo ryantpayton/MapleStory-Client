@@ -147,6 +147,14 @@ namespace jrc
 		}
 	}
 
+	void Session::reconnect()
+	{
+		std::string HOST = Setting<ServerIP>::get().load();
+		std::string PORT = Setting<ServerPort>::get().load();
+
+		reconnect(HOST.c_str(), PORT.c_str());
+	}
+
 	bool Session::is_connected() const
 	{
 		return connected;

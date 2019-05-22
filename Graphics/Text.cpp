@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -20,27 +20,20 @@
 
 namespace jrc
 {
-	Text::Text(Font f, Alignment a, Color c, Background b,
-		const std::string& t, uint16_t mw, bool fm)
-		: font(f), alignment(a), color(c), background(b), maxwidth(mw), formatted(fm) {
-
+	Text::Text(Font f, Alignment a, Color c, Background b, const std::string& t, uint16_t mw, bool fm, int16_t la) : font(f), alignment(a), color(c), background(b), maxwidth(mw), formatted(fm), line_adj(la)
+	{
 		change_text(t);
 	}
 
-	Text::Text(Font f, Alignment a, Color c,
-		const std::string& t, uint16_t mw, bool fm)
-		: Text(f, a, c, NONE, t, mw, fm) {}
-
-	Text::Text()
-		: Text(A11M, LEFT, BLACK) {}
+	Text::Text(Font f, Alignment a, Color c, const std::string& t, uint16_t mw, bool fm, int16_t la) : Text(f, a, c, Background::NONE, t, mw, fm, la) {}
+	Text::Text() : Text(Font::A11M, Alignment::LEFT, Color::BLACK) {}
 
 	void Text::reset_layout()
 	{
 		if (text.empty())
 			return;
 
-		layout = GraphicsGL::get()
-			.createlayout(text, font, alignment, maxwidth, formatted);
+		layout = GraphicsGL::get().createlayout(text, font, alignment, maxwidth, formatted, line_adj);
 	}
 
 	void Text::change_text(const std::string& t)
@@ -70,8 +63,7 @@ namespace jrc
 
 	void Text::draw(const DrawArgument& args) const
 	{
-		GraphicsGL::get()
-			.drawtext(args, text, layout, font, color, background);
+		GraphicsGL::get().drawtext(args, text, layout, font, color, background);
 	}
 
 	uint16_t Text::advance(size_t pos) const
@@ -114,13 +106,8 @@ namespace jrc
 		return text;
 	}
 
-
-	Text::Layout::Layout(const std::vector<Line>& l, const std::vector<int16_t>& a,
-		int16_t w, int16_t h, int16_t ex, int16_t ey)
-		: lines(l), advances(a), dimensions(w, h), endoffset(ex, ey) {}
-
-	Text::Layout::Layout()
-		: Layout({}, {}, 0, 0, 0, 0) {}
+	Text::Layout::Layout(const std::vector<Line>& l, const std::vector<int16_t>& a, int16_t w, int16_t h, int16_t ex, int16_t ey) : lines(l), advances(a), dimensions(w, h), endoffset(ex, ey) {}
+	Text::Layout::Layout() : Layout({}, {}, 0, 0, 0, 0) {}
 
 	int16_t Text::Layout::width() const
 	{

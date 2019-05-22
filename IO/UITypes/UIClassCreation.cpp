@@ -18,13 +18,15 @@
 #pragma once
 #include "UIClassCreation.h"
 #include "UICharCreation.h"
+#include "UILoginNotice.h"
+#include "UICharSelect.h"
+
+#include "../UI.h"
+#include "../Configuration.h"
 
 #include "../Components/MapleButton.h"
-#include "../UI.h"
-#include "../UITypes/UILoginNotice.h"
-
-#include "../../Data/ItemData.h"
-#include "../../Net/Packets/CharCreationPackets.h"
+#include "../Data/ItemData.h"
+#include "../Net/Packets/CharCreationPackets.h"
 
 #include "nlnx/nx.hpp"
 
@@ -36,7 +38,8 @@ namespace jrc
 		charSet = false;
 		named = false;
 
-		version = { Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. 203.3" };
+		std::string version_text = Configuration::get().get_version();
+		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. " + version_text);
 
 		nl::node login = nl::nx::ui["Login.img"];
 		nl::node common = login["Common"];
@@ -508,7 +511,18 @@ namespace jrc
 
 				CreateCharPacket(cname, cjob, cface, chair, chairc, cskin, ctop, cbot, cshoe, cwep, female).dispatch();
 
-				UI::get().emplace<UIKeySelect>();
+				auto onok = [&](bool alternate)
+				{
+					UI::get().remove(UIElement::Type::LOGINNOTICE_CONFIRM);
+					UI::get().remove(UIElement::Type::LOGINNOTICE);
+					UI::get().remove(UIElement::Type::CLASSCREATION);
+					UI::get().remove(UIElement::Type::CHARCREATION);
+
+					if (auto charselect = UI::get().get_element<UICharSelect>())
+						charselect->makeactive();
+				};
+
+				UI::get().emplace<UIKeySelect>(onok, true);
 			}
 			else
 			{
@@ -633,7 +647,6 @@ namespace jrc
 						{
 							namechar.set_state(Textfield::NORMAL);
 
-							UI::get().disable();
 							UI::get().focus_textfield(nullptr);
 
 							NameCharPacket(name).dispatch();

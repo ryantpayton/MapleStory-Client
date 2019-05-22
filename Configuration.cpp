@@ -159,6 +159,31 @@ namespace jrc
 		return TITLE;
 	}
 
+	std::string Configuration::get_version() const
+	{
+		return VERSION;
+	}
+
+	std::string Configuration::get_joinlink() const
+	{
+		return JOINLINK;
+	}
+
+	std::string Configuration::get_website() const
+	{
+		return WEBSITE;
+	}
+
+	std::string Configuration::get_findid() const
+	{
+		return FINDID;
+	}
+
+	std::string Configuration::get_findpass() const
+	{
+		return FINDPASS;
+	}
+
 	void Configuration::set_macs(char* macs)
 	{
 		MACS = macs;
@@ -219,5 +244,15 @@ namespace jrc
 	void Configuration::set_show_weekly(bool value)
 	{
 		show_weekly = value;
+	}
+
+	bool Configuration::get_start_shown()
+	{
+		return start_shown;
+	}
+
+	void Configuration::set_start_shown(bool value)
+	{
+		start_shown = value;
 	}
 }

@@ -436,14 +436,14 @@ namespace jrc
 		quads.emplace_back(rect.l(), rect.r(), rect.t(), rect.b(), getoffset(bmp), color, angle);
 	}
 
-	Text::Layout GraphicsGL::createlayout(const std::string& text, Text::Font id, Text::Alignment alignment, int16_t maxwidth, bool formatted)
+	Text::Layout GraphicsGL::createlayout(const std::string& text, Text::Font id, Text::Alignment alignment, int16_t maxwidth, bool formatted, int16_t line_adj)
 	{
 		size_t length = text.length();
 
 		if (length == 0)
 			return{};
 
-		LayoutBuilder builder(fonts[id], alignment, maxwidth, formatted);
+		LayoutBuilder builder(fonts[id], alignment, maxwidth, formatted, line_adj);
 
 		const char* p_text = text.c_str();
 
@@ -464,7 +464,7 @@ namespace jrc
 		return builder.finish(first, offset);
 	}
 
-	GraphicsGL::LayoutBuilder::LayoutBuilder(const Font& f, Text::Alignment a, int16_t mw, bool fm) : font(f), alignment(a), maxwidth(mw), formatted(fm)
+	GraphicsGL::LayoutBuilder::LayoutBuilder(const Font& f, Text::Alignment a, int16_t mw, bool fm, int16_t la) : font(f), alignment(a), maxwidth(mw), formatted(fm), line_adj(la)
 	{
 		fontid = Text::NUM_FONTS;
 		color = Text::NUM_COLORS;
@@ -573,6 +573,9 @@ namespace jrc
 			endy = ay;
 			ax = 0;
 			ay += font.linespace();
+
+			if (lines.size() > 0)
+				ay -= line_adj;
 		}
 
 		for (size_t pos = first; pos < last; pos++)
@@ -616,9 +619,6 @@ namespace jrc
 	{
 		int16_t line_x = 0;
 		int16_t line_y = ay;
-
-		if (lines.size() > 0)
-			line_y -= 2;
 
 		switch (alignment)
 		{
@@ -694,7 +694,10 @@ namespace jrc
 			{ 0.34f, 0.34f, 0.34f }, // Emperor
 			{ 0.2f, 0.2f, 0.2f }, // Mine Shaft
 			{ 1.0f, 1.0f, 0.87f }, // Half and Half
-			{ 0.0f, 0.4f, 0.67f } // Endeavour
+			{ 0.0f, 0.4f, 0.67f }, // Endeavour
+			{ 0.3f, 0.2f, 0.1f }, // Brown Derby
+			{ 0.94f, 0.95f, 0.95f }, // Porcelain
+			{ 0.34f, 0.27f, 0.14f } // Irish Coffee
 		};
 
 		for (const Text::Layout::Line& line : layout)

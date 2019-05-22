@@ -17,12 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UICharCreation.h"
 #include "UIClassCreation.h"
+#include "UILoginNotice.h"
+#include "UICharSelect.h"
 
 #include "../UI.h"
+#include "../Configuration.h"
 
 #include "../Components/MapleButton.h"
-#include "../UITypes/UILoginNotice.h"
-#include "../UITypes/UICharSelect.h"
 #include "../Audio/Audio.h"
 
 #include "nlnx/nx.hpp"
@@ -31,7 +32,8 @@ namespace jrc
 {
 	UICharCreation::UICharCreation()
 	{
-		version = { Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. 203.3" };
+		std::string version_text = Configuration::get().get_version();
+		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. " + version_text);
 
 		nl::node login = nl::nx::ui["Login.img"];
 		raceSelect = login["RaceSelect_new"];

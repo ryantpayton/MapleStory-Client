@@ -33,6 +33,7 @@
 #include "UITypes/UIQuestLog.h"
 #include "UITypes/UIWorldMap.h"
 #include "UITypes/UIUserList.h"
+#include "UITypes/UIKeyConfig.h"
 
 #include "../Gameplay/Stage.h"
 
@@ -204,6 +205,9 @@ namespace jrc
 					if (auto chatbar = UI::get().get_element<UIChatbar>())
 						chatbar->toggle_chat();
 
+					break;
+				case KeyAction::KEYBINDINGS:
+					emplace<UIKeyConfig>();
 					break;
 				default:
 					std::cout << "Action (" << action << ") not handled!" << std::endl;
@@ -417,6 +421,25 @@ namespace jrc
 	UIElement* UIStateGame::get(UIElement::Type type)
 	{
 		return elements[type].get();
+	}
+
+	UIElement* UIStateGame::get_front(std::list<UIElement::Type> types)
+	{
+		auto begin = elementorder.rbegin();
+		auto end = elementorder.rend();
+
+		for (auto iter = begin; iter != end; ++iter)
+		{
+			if (std::find(types.begin(), types.end(), *iter) != types.end())
+			{
+				auto& element = elements[*iter];
+
+				if (element && element->is_active())
+					return element.get();
+			}
+		}
+
+		return nullptr;
 	}
 
 	UIElement* UIStateGame::get_front(Point<int16_t> pos)

@@ -64,6 +64,7 @@ namespace jrc
 			void drop_on_stage() const override;
 			void drop_on_equips(Equipslot::Id) const override {}
 			void drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const override;
+			void drop_on_bindings(Point<int16_t>, bool) const override {}
 
 		private:
 			int16_t source;

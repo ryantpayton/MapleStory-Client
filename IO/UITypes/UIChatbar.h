@@ -57,6 +57,7 @@ namespace jrc
 		void toggle_chat(bool chat_open);
 		void toggle_chatfield();
 		void toggle_chatfield(bool chatfield_open);
+		bool is_chatopen();
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;

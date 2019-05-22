@@ -38,10 +38,11 @@ namespace jrc
 		enum Type
 		{
 			NONE,
+			START,
 			LOGIN,
-			LOGINWAIT,
 			WORLDSELECT,
 			CHARSELECT,
+			LOGINWAIT,
 			CHARCREATION,
 			CLASSCREATION,
 			SOFTKEYBOARD,

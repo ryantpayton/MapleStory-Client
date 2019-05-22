@@ -491,6 +491,11 @@ namespace jrc
 		}
 	}
 
+	bool UIChatbar::is_chatopen()
+	{
+		return chatopen;
+	}
+
 	Button::State UIChatbar::button_pressed(uint16_t buttonid)
 	{
 		switch (buttonid)

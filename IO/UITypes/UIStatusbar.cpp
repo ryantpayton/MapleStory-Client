@@ -995,12 +995,9 @@ namespace jrc
 
 		Window::get().fadeout(fadestep, []() {
 			GraphicsGL::get().clear();
+
 			UI::get().change_state(UI::State::LOGIN);
-
-			std::string HOST = Setting<ServerIP>::get().load();
-			std::string PORT = Setting<ServerPort>::get().load();
-
-			Session::get().reconnect(HOST.c_str(), PORT.c_str());
+			Session::get().reconnect();
 
 			UI::get().enable();
 			Timer::get().start();

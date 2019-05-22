@@ -158,6 +158,7 @@ namespace jrc
 		// Login handlers
 		emplace<LOGIN_RESULT, LoginResultHandler>();
 		emplace<SERVERLIST, ServerlistHandler>();
+		emplace<RECOMMENDED_WORLDS, RecommendedWorldsHandler>();
 		emplace<CHARLIST, CharlistHandler>();
 		emplace<CHARNAME_RESPONSE, CharnameResponseHandler>();
 		emplace<ADD_NEWCHAR_ENTRY, AddNewCharEntryHandler>();
@@ -231,7 +232,6 @@ namespace jrc
 
 		// Ignored
 		emplace<SELECT_WORLD, NullHandler>();
-		emplace<RECOMMENDED_WORLDS, NullHandler>();
 		emplace<UPDATE_GENDER, NullHandler>();
 
 		// New handlers for testing only

@@ -18,9 +18,6 @@
 #pragma once
 #include "../UIElement.h"
 
-#include "../../Graphics/Sprite.h"
-#include "../../Graphics/Texture.h"
-
 namespace jrc
 {
 	class UIKeyConfirm : public UIElement
@@ -30,23 +27,26 @@ namespace jrc
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
 
-		UIKeyConfirm(uint8_t type);
+		UIKeyConfirm(bool alternate, std::function<void()> oh, bool login);
 
 		void draw(float alpha) const override;
 
-		void confirm_action();
+		void send_key(int32_t keycode, bool pressed) override;
 
 	protected:
 		Button::State button_pressed(uint16_t id) override;
-		void send_key(int32_t keycode, bool pressed) override;
 
 	private:
+		void confirm();
+
 		enum Buttons
 		{
 			BT_OK
 		};
 
 		Texture background;
+		std::function<void()> okhandler;
+		bool login;
 	};
 
 	class UIKeySelect : public UIElement
@@ -56,9 +56,11 @@ namespace jrc
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
 
-		UIKeySelect();
+		UIKeySelect(std::function<void(bool)> okhandler, bool login);
 
 		void draw(float alpha) const override;
+
+		void send_key(int32_t keycode, bool pressed) override;
 
 	protected:
 		Button::State button_pressed(uint16_t id) override;
@@ -71,6 +73,8 @@ namespace jrc
 		};
 
 		Texture background;
+		std::function<void(bool)> okhandler;
+		bool login;
 	};
 
 	class UIClassConfirm : public UIElement
@@ -85,12 +89,12 @@ namespace jrc
 		void draw(float alpha) const override;
 
 		Cursor::State send_cursor(bool down, Point<int16_t> pos) override;
+		void send_key(int32_t keycode, bool pressed) override;
 
 		void create_class();
 
 	protected:
 		Button::State button_pressed(uint16_t id) override;
-		void send_key(int32_t keycode, bool pressed) override;
 
 	private:
 		enum Buttons
@@ -116,9 +120,10 @@ namespace jrc
 
 		void draw(float alpha) const override;
 
+		void send_key(int32_t keycode, bool pressed) override;
+
 	protected:
 		Button::State button_pressed(uint16_t id) override;
-		void send_key(int32_t keycode, bool pressed) override;
 
 	private:
 		enum Buttons
@@ -138,7 +143,7 @@ namespace jrc
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
 
-		enum Message : int16_t
+		enum Message : uint16_t
 		{
 			VULGAR_NAME,
 			DELETE_CHAR_ENTER_BIRTHDAY,
@@ -264,22 +269,25 @@ namespace jrc
 			JAPANESE2
 		};
 
-		UILoginNotice(int8_t message);
+		UILoginNotice(uint16_t message, std::function<void()> okhandler);
+		UILoginNotice(uint16_t message);
 
 		void draw(float alpha) const override;
 
-	protected:
-		Button::State button_pressed(uint16_t id) override;
 		void send_key(int32_t keycode, bool pressed) override;
 
+		void close();
+
+	protected:
+		Button::State button_pressed(uint16_t id) override;
+
 	private:
-		enum Buttons
+		enum Buttons : uint16_t
 		{
-			BT_OK
+			YES
 		};
 
-		Texture background;
-		Sprite text;
 		bool saveid;
+		std::function<void()> okhandler;
 	};
 }

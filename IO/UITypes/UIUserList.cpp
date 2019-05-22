@@ -248,20 +248,23 @@ namespace jrc
 
 	void UIUserList::send_key(int32_t keycode, bool pressed)
 	{
-		if (keycode == KeyAction::ESCAPE)
+		if (pressed)
 		{
-			active = false;
-		}
-		else if (keycode == KeyAction::TAB)
-		{
-			uint16_t new_tab = tab;
+			if (keycode == KeyAction::ESCAPE)
+			{
+				active = false;
+			}
+			else if (keycode == KeyAction::TAB)
+			{
+				uint16_t new_tab = tab;
 
-			if (new_tab < BT_TAB_BLACKLIST)
-				new_tab++;
-			else
-				new_tab = BT_TAB_FRIEND;
+				if (new_tab < BT_TAB_BLACKLIST)
+					new_tab++;
+				else
+					new_tab = BT_TAB_FRIEND;
 
-			change_tab(new_tab);
+				change_tab(new_tab);
+			}
 		}
 	}
 

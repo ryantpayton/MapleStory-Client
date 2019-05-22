@@ -36,10 +36,13 @@ namespace jrc
 			// UI
 			BUTTONCLICK,
 			BUTTONOVER,
+			CHARSELECT,
 			DLGNOTICE,
 			MENUDOWN,
 			MENUUP,
+			SCROLLUP,
 			TAB,
+			WORLDSELECT,
 
 			// Login
 			SELECTCHAR,
@@ -82,6 +85,7 @@ namespace jrc
 		Music(std::string path);
 
 		void play() const;
+		void play_once() const;
 
 		static Error init();
 		static bool set_bgmvolume(uint8_t volume);

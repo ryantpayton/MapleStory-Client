@@ -57,6 +57,16 @@ namespace jrc
 			t.change_text(text);
 			b.change_text(text);
 		}
+
+		void change_color(Text::Color color)
+		{
+			inner.change_color(color);
+		}
+
+		int16_t width() const
+		{
+			return inner.width();
+		}
 	};
 
 	struct ShadowText
@@ -82,6 +92,16 @@ namespace jrc
 		{
 			top.change_text(text);
 			shadow.change_text(text);
+		}
+
+		void change_color(Text::Color color)
+		{
+			top.change_color(color);
+		}
+
+		int16_t width() const
+		{
+			return top.width();
 		}
 	};
 }

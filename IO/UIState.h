@@ -53,6 +53,7 @@ namespace jrc
 		virtual Iterator pre_add(UIElement::Type type, bool toggled, bool focused) = 0;
 		virtual void remove(UIElement::Type type) = 0;
 		virtual UIElement* get(UIElement::Type type) = 0;
+		virtual UIElement* get_front(std::list<UIElement::Type> types) = 0;
 		virtual UIElement* get_front(Point<int16_t> pos) = 0;
 	};
 
@@ -73,6 +74,7 @@ namespace jrc
 		Iterator pre_add(UIElement::Type, bool, bool) override { return{ nullptr, UIElement::NUM_TYPES }; }
 		void remove(UIElement::Type) override {}
 		UIElement* get(UIElement::Type) override { return nullptr; }
+		UIElement* get_front(std::list<UIElement::Type>) override { return nullptr; }
 		UIElement* get_front(Point<int16_t>) override { return nullptr; }
 	};
 }

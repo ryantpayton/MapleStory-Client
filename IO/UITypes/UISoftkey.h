@@ -19,7 +19,7 @@
 #include "../UIElement.h"
 
 #include "../Components/Textfield.h"
-#include "../../Util/Randomizer.h"
+#include "../Util/Randomizer.h"
 
 #include <functional>
 
@@ -38,6 +38,8 @@ namespace jrc
 		UISoftkey(Callback callback);
 
 		void draw(float alpha) const override;
+
+		void send_key(int32_t keycode, bool pressed) override;
 
 	protected:
 		Button::State button_pressed(uint16_t) override;

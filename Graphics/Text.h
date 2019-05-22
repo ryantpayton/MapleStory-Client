@@ -72,6 +72,9 @@ namespace jrc
 			MINESHAFT,
 			HALFANDHALF,
 			ENDEAVOUR,
+			BROWNDERBY,
+			PORCELAIN,
+			IRISHCOFFEE,
 			NUM_COLORS
 		};
 
@@ -118,8 +121,8 @@ namespace jrc
 			Point<int16_t> endoffset;
 		};
 
-		Text(Font font, Alignment alignment, Color color, Background background, const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true);
-		Text(Font font, Alignment alignment, Color color, const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true);
+		Text(Font font, Alignment alignment, Color color, Background background, const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true, int16_t line_adj = 0);
+		Text(Font font, Alignment alignment, Color color, const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true, int16_t line_adj = 0);
 		Text();
 
 		void draw(const DrawArgument& args) const;
@@ -148,5 +151,6 @@ namespace jrc
 		uint16_t maxwidth;
 		bool formatted;
 		std::string text;
+		int16_t line_adj;
 	};
 }

@@ -45,6 +45,16 @@ namespace jrc
 		bool get_show_fps() const;
 		// Get private member TITLE
 		std::string get_title() const;
+		// Get private member VERSION
+		std::string get_version() const;
+		// Get private member JOINLINK
+		std::string get_joinlink() const;
+		// Get private member WEBSITE
+		std::string get_website() const;
+		// Get private member FINDID
+		std::string get_findid() const;
+		// Get private member FINDPASS
+		std::string get_findpass() const;
 		// Set private member MACS
 		void set_macs(char* macs);
 		// Set private member HWID
@@ -63,6 +73,10 @@ namespace jrc
 		bool get_show_weekly();
 		// Set whether to show the weekly maple star in Maple Chat
 		void set_show_weekly(bool value);
+		// Whether to show the start screen
+		bool get_start_shown();
+		// Set whether to show the start screen
+		void set_start_shown(bool value);
 
 		// Base class for an entry in the settings file.
 		class Entry
@@ -169,9 +183,15 @@ namespace jrc
 
 		const char* FILENAME = "Settings";
 		const char* TITLE = "MapleStory";
+		const char* VERSION = "204.1";
+		const char* JOINLINK = "https://www.nexon.com/account/en/create";
+		const char* WEBSITE = "http://maplestory.nexon.net/";
+		const char* FINDID = "https://www.nexon.com/account/en/login";
+		const char* FINDPASS = "https://www.nexon.com/account/en/reset-password";
 		const bool SHOW_FPS = false;
 		bool rightclicksell = false;
 		bool show_weekly = true;
+		bool start_shown = false;
 		std::string MACS;
 		std::string HWID;
 		std::string VolumeSerialNumber;

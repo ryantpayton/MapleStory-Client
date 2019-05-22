@@ -248,6 +248,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="io\uitypes\UIShop.cpp" />
     <ClCompile Include="io\uitypes\UISkillbook.cpp" />
     <ClCompile Include="io\uitypes\UISoftkey.cpp" />
+    <ClCompile Include="IO\UITypes\UILogo.cpp" />
     <ClCompile Include="io\uitypes\UIStatsinfo.cpp" />
     <ClCompile Include="io\uitypes\UIStatusbar.cpp" />
     <ClCompile Include="io\uitypes\UIStatusMessenger.cpp" />
@@ -434,6 +435,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="io\uitypes\UIShop.h" />
     <ClInclude Include="io\uitypes\UISkillbook.h" />
     <ClInclude Include="io\uitypes\UISoftkey.h" />
+    <ClInclude Include="IO\UITypes\UILogo.h" />
     <ClInclude Include="io\uitypes\UIStatsinfo.h" />
     <ClInclude Include="io\uitypes\UIStatusbar.h" />
     <ClInclude Include="io\uitypes\UIStatusMessenger.h" />
@@ -479,6 +481,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="net\Session.h" />
     <ClInclude Include="net\SocketAsio.h" />
     <ClInclude Include="net\SocketWinsock.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="template\BoolPair.h" />
     <ClInclude Include="template\Cache.h" />
     <ClInclude Include="template\Enumeration.h" />
@@ -500,6 +503,12 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="util\QuadTree.h" />
     <ClInclude Include="util\Randomizer.h" />
     <ClInclude Include="util\TimedBool.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MapleStory.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

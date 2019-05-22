@@ -20,7 +20,7 @@
 #include "../Components/MapleButton.h"
 #include "../Components/TwoSpriteButton.h"
 
-#include "../../Net/Packets/SelectCharPackets.h"
+#include "../Net/Packets/SelectCharPackets.h"
 
 #include "nlnx/nx.hpp"
 
@@ -75,6 +75,12 @@ namespace jrc
 		UIElement::draw(alpha);
 
 		entry.draw(position + Point<int16_t>(15, 43));
+	}
+
+	void UISoftkey::send_key(int32_t keycode, bool pressed)
+	{
+		if (pressed && keycode == KeyAction::Id::ESCAPE)
+			deactivate();
 	}
 
 	Button::State UISoftkey::button_pressed(uint16_t id)
@@ -165,7 +171,7 @@ namespace jrc
 
 	Point<int16_t> UISoftkey::keypos(uint8_t num) const
 	{
-		return{
+		return {
 			12 + (num % 3) * 39,
 			94 + (num / 3) * 35
 		};

@@ -87,7 +87,7 @@ namespace jrc
 
 		const CharEntry& playerentry = charselect->get_character(cid);
 
-		if (playerentry.cid != cid)
+		if (playerentry.id != cid)
 			return;
 
 		Stage::get().loadplayer(playerentry);

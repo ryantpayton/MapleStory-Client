@@ -57,7 +57,7 @@ namespace jrc
 		void draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect, const Color& color, float angle);
 
 		// Create a layout for the text with the parameters specified.
-		Text::Layout createlayout(const std::string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth, bool formatted);
+		Text::Layout createlayout(const std::string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth, bool formatted, int16_t line_adj);
 		// Draw a text with the given parameters.
 		void drawtext(const DrawArgument& args, const std::string& text, const Text::Layout& layout, Text::Font font, Text::Color color, Text::Background back);
 
@@ -156,9 +156,8 @@ namespace jrc
 			static const size_t LENGTH = 4;
 			Vertex vertices[LENGTH];
 
-			Quad(GLshort l, GLshort r, GLshort t, GLshort b, const Offset& o,
-				const Color& color, GLfloat rot) {
-
+			Quad(GLshort l, GLshort r, GLshort t, GLshort b, const Offset& o, const Color& color, GLfloat rot)
+			{
 				vertices[0] = { l, t, o.l, o.t, color };
 				vertices[1] = { l, b, o.l, o.b, color };
 				vertices[2] = { r, b, o.r, o.b, color };
@@ -222,7 +221,7 @@ namespace jrc
 		class LayoutBuilder
 		{
 		public:
-			LayoutBuilder(const Font& font, Text::Alignment alignment, int16_t maxwidth, bool formatted);
+			LayoutBuilder(const Font& font, Text::Alignment alignment, int16_t maxwidth, bool formatted, int16_t line_adj);
 
 			size_t add(const char* text, size_t prev, size_t first, size_t last);
 			Text::Layout finish(size_t first, size_t last);
@@ -247,6 +246,7 @@ namespace jrc
 			std::vector<int16_t> advances;
 			int16_t width;
 			int16_t endy;
+			int16_t line_adj;
 		};
 
 		int16_t VWIDTH;
@@ -282,7 +282,7 @@ namespace jrc
 		Range<GLshort> yrange;
 
 		FT_Library ftlibrary;
-		Font fonts[Text::NUM_FONTS];
+		Font fonts[Text::Font::NUM_FONTS];
 		Point<GLshort> fontborder;
 		GLshort fontymax;
 	};

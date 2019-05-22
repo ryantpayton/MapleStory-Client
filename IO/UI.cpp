@@ -113,9 +113,11 @@ namespace jrc
 		if (focused)
 		{
 			// The window gained input focus
-			uint8_t volume = Setting<SFXVolume>::get().load();
-			Sound::set_sfxvolume(volume);
-			Music::set_bgmvolume(volume);
+			uint8_t sfxvolume = Setting<SFXVolume>::get().load();
+			Sound::set_sfxvolume(sfxvolume);
+
+			uint8_t bgmvolume = Setting<BGMVolume>::get().load();
+			Music::set_bgmvolume(bgmvolume);
 		}
 		else
 		{
@@ -205,94 +207,120 @@ namespace jrc
 
 			if (mapping.type)
 			{
-				auto chatbar = UI::get().get_element<UIChatbar>();
+				bool sent = false;
+				std::list<UIElement::Type> types;
+
+				bool escape = keycode == GLFW_KEY_ESCAPE;
+				bool tab = keycode == GLFW_KEY_TAB;
+				bool enter = keycode == GLFW_KEY_ENTER || keycode == GLFW_KEY_KP_ENTER;
+				bool up_down = keycode == GLFW_KEY_UP || keycode == GLFW_KEY_DOWN;
+				bool left_right = keycode == GLFW_KEY_LEFT || keycode == GLFW_KEY_RIGHT;
+				bool arrows = up_down || left_right;
+
 				auto statusbar = UI::get().get_element<UIStatusbar>();
-				auto notice = UI::get().get_element<UINotice>();
-				auto channel = UI::get().get_element<UIChannel>();
-				auto joypad = UI::get().get_element<UIJoypad>();
 
-				if (pressed && (keycode == GLFW_KEY_ESCAPE || keycode == GLFW_KEY_TAB))
+				if (escape && statusbar && statusbar->is_menu_active())
 				{
-					auto statsinfo = UI::get().get_element<UIStatsinfo>();
-					auto iteminventory = UI::get().get_element<UIItemInventory>();
-					auto equipinventory = UI::get().get_element<UIEquipInventory>();
-					auto skillbook = UI::get().get_element<UISkillbook>();
-					auto questlog = UI::get().get_element<UIQuestLog>();
-					auto worldmap = UI::get().get_element<UIWorldMap>();
-					auto userlist = UI::get().get_element<UIUserList>();
-					auto shop = UI::get().get_element<UIShop>();
-					auto eventlist = UI::get().get_element<UIEvent>();
-					auto chat = UI::get().get_element<UIChat>();
-					auto chatrank = UI::get().get_element<UIRank>();
-					auto keyconfig = UI::get().get_element<UIKeyConfig>();
-
-					if (keyconfig && keyconfig->is_active())
-						keyconfig->send_key(mapping.action, pressed);
-					else if (chatrank && chatrank->is_active())
-						chatrank->send_key(mapping.action, pressed);
-					else if (chat && chat->is_active())
-						chat->send_key(mapping.action, pressed);
-					else if (joypad && joypad->is_active())
-						joypad->send_key(mapping.action, pressed);
-					else if (eventlist && eventlist->is_active())
-						eventlist->send_key(mapping.action, pressed);
-					else if (channel && channel->is_active())
-						channel->send_key(mapping.action, pressed);
-					else if (notice && notice->is_active())
-						notice->send_key(mapping.action, pressed);
-					else if (shop && shop->is_active())
-						shop->send_key(mapping.action, pressed);
-					else if (statsinfo && statsinfo->is_active())
-						statsinfo->send_key(mapping.action, pressed);
-					else if (iteminventory && iteminventory->is_active())
-						iteminventory->send_key(mapping.action, pressed);
-					else if (equipinventory && equipinventory->is_active())
-						equipinventory->send_key(mapping.action, pressed);
-					else if (skillbook && skillbook->is_active())
-						skillbook->send_key(mapping.action, pressed);
-					else if (questlog && questlog->is_active())
-						questlog->send_key(mapping.action, pressed);
-					else if (worldmap && worldmap->is_active())
-						worldmap->send_key(mapping.action, pressed);
-					else if (userlist && userlist->is_active())
-						userlist->send_key(mapping.action, pressed);
-					else if (statusbar)
-						statusbar->send_key(mapping.action, pressed);
-					else if (chatbar)
-						chatbar->send_key(mapping.action, pressed);
-					else
-						state->send_key(mapping.type, mapping.action, pressed);
+					statusbar->send_key(mapping.action, pressed);
+					sent = true;
 				}
-				else if (pressed && (keycode == GLFW_KEY_ENTER || keycode == GLFW_KEY_KP_ENTER))
+				else
 				{
-					if (joypad && joypad->is_active())
-						joypad->send_key(mapping.action, pressed);
-					else if (channel && channel->is_active())
-						channel->send_key(mapping.action, pressed);
-					else if (notice && notice->is_active())
-						notice->send_key(mapping.action, pressed);
-					else if (statusbar && statusbar->is_menu_active())
-						statusbar->send_key(mapping.action, pressed);
-					else if (chatbar)
-						chatbar->send_key(mapping.action, pressed);
-				}
-				else if (pressed && (keycode == GLFW_KEY_UP || keycode == GLFW_KEY_DOWN || keycode == GLFW_KEY_LEFT || keycode == GLFW_KEY_RIGHT))
-				{
-					if (channel && channel->is_active())
+					// All
+					if (escape || tab || enter || arrows)
 					{
-						channel->send_key(mapping.action, pressed);
+						// Login
+						types.emplace_back(UIElement::Type::WORLDSELECT);
+						types.emplace_back(UIElement::Type::CHARSELECT);
+
+						// Game
+						types.emplace_back(UIElement::Type::CHANNEL); // No tab
 					}
-					else if (statusbar)
+
+					if (escape)
 					{
-						if (statusbar->is_menu_active())
+						// Login
+						types.emplace_back(UIElement::Type::LOGINNOTICE);
+
+						// Game
+						types.emplace_back(UIElement::Type::NOTICE);
+						types.emplace_back(UIElement::Type::KEYCONFIG);
+						types.emplace_back(UIElement::Type::CHATRANK);
+						types.emplace_back(UIElement::Type::CHAT);
+						types.emplace_back(UIElement::Type::JOYPAD);
+						types.emplace_back(UIElement::Type::EVENT);
+						types.emplace_back(UIElement::Type::SHOP);
+						types.emplace_back(UIElement::Type::STATSINFO);
+						types.emplace_back(UIElement::Type::ITEMINVENTORY);
+						types.emplace_back(UIElement::Type::EQUIPINVENTORY);
+						types.emplace_back(UIElement::Type::SKILLBOOK);
+						types.emplace_back(UIElement::Type::QUESTLOG);
+						types.emplace_back(UIElement::Type::WORLDMAP);
+						types.emplace_back(UIElement::Type::USERLIST);
+					}
+					else if (enter)
+					{
+						// Login
+						types.emplace_back(UIElement::Type::LOGINNOTICE);
+
+						// Game
+						types.emplace_back(UIElement::Type::NOTICE);
+						types.emplace_back(UIElement::Type::JOYPAD);
+					}
+					else if (tab)
+					{
+						// Game
+						types.emplace_back(UIElement::Type::ITEMINVENTORY);
+						types.emplace_back(UIElement::Type::SKILLBOOK);
+						types.emplace_back(UIElement::Type::QUESTLOG);
+						types.emplace_back(UIElement::Type::USERLIST);
+					}
+
+					if (types.size() > 0)
+					{
+						auto element = state->get_front(types);
+
+						if (element && element != nullptr)
+						{
+							element->send_key(mapping.action, pressed);
+							sent = true;
+						}
+					}
+				}
+
+				if (!sent)
+				{
+					auto chatbar = UI::get().get_element<UIChatbar>();
+
+					if (escape)
+					{
+						if (chatbar && chatbar->is_chatopen())
+							chatbar->send_key(mapping.action, pressed);
+						else if (statusbar)
 							statusbar->send_key(mapping.action, pressed);
 						else
 							state->send_key(mapping.type, mapping.action, pressed);
 					}
-				}
-				else
-				{
-					state->send_key(mapping.type, mapping.action, pressed);
+					else if (enter)
+					{
+						if (statusbar && statusbar->is_menu_active())
+							statusbar->send_key(mapping.action, pressed);
+						else if (chatbar)
+							chatbar->send_key(mapping.action, pressed);
+						else
+							state->send_key(mapping.type, mapping.action, pressed);
+					}
+					else if (up_down)
+					{
+						if (statusbar && statusbar->is_menu_active())
+							statusbar->send_key(mapping.action, pressed);
+						else
+							state->send_key(mapping.type, mapping.action, pressed);
+					}
+					else
+					{
+						state->send_key(mapping.type, mapping.action, pressed);
+					}
 				}
 			}
 		}
@@ -354,6 +382,11 @@ namespace jrc
 		int32_t level, int32_t masterlevel, int64_t expiration) {
 
 		state->show_skill(parent, skill_id, level, masterlevel, expiration);
+	}
+
+	Keyboard UI::get_keyboard()
+	{
+		return keyboard;
 	}
 
 	void UI::remove(UIElement::Type type)

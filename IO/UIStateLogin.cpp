@@ -18,14 +18,21 @@
 #include "UIStateLogin.h"
 
 #include "UITypes/UILogin.h"
+#include "UITypes/UILogo.h"
+
+#include "../Configuration.h"
 
 namespace jrc
 {
 	UIStateLogin::UIStateLogin()
 	{
 		focused = UIElement::NONE;
+		bool start_shown = Configuration::get().get_start_shown();
 
-		emplace<UILogin>();
+		if (!start_shown)
+			emplace<UILogo>();
+		else
+			emplace<UILogin>();
 	}
 
 	void UIStateLogin::draw(float inter, Point<int16_t>) const
@@ -161,6 +168,22 @@ namespace jrc
 	UIElement* UIStateLogin::get(UIElement::Type type)
 	{
 		return elements[type].get();
+	}
+
+	UIElement* UIStateLogin::get_front(std::list<UIElement::Type> types)
+	{
+		auto begin = types.rbegin();
+		auto end = types.rend();
+
+		for (auto iter = begin; iter != end; ++iter)
+		{
+			auto& element = elements[*iter];
+
+			if (element && element->is_active())
+				return element.get();
+		}
+
+		return nullptr;
 	}
 
 	UIElement* UIStateLogin::get_front(Point<int16_t> pos)

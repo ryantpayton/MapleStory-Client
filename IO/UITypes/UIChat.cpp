@@ -85,7 +85,7 @@ namespace jrc
 
 	void UIChat::send_key(int32_t keycode, bool pressed)
 	{
-		if (keycode == KeyAction::Id::ESCAPE)
+		if (pressed && keycode == KeyAction::Id::ESCAPE)
 			close();
 	}
 
@@ -169,7 +169,7 @@ namespace jrc
 
 	void UIRank::send_key(int32_t keycode, bool pressed)
 	{
-		if (keycode == KeyAction::Id::ESCAPE)
+		if (pressed && keycode == KeyAction::Id::ESCAPE)
 			close();
 	}
 

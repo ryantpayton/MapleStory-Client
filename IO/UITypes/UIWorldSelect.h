@@ -18,9 +18,8 @@
 #pragma once
 #include "../UIElement.h"
 
-#include "../Components/Textfield.h"
-
-#include "../../Net/Login.h"
+#include "../Components/ChatBalloon.h"
+#include "../Net/Login.h"
 
 namespace jrc
 {
@@ -35,9 +34,14 @@ namespace jrc
 
 		void draw(float alpha) const override;
 
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		void send_key(int32_t keycode, bool pressed) override;
+
 		void draw_world();
 		void add_world(World world);
-		void change_world(World selectedWorld, bool init);
+		void add_recommended_world(RecommendedWorld world);
+		void change_world(World selectedWorld);
+		void remove_selected();
 
 		uint8_t get_world_id() const;
 		uint8_t get_channel_id() const;
@@ -46,38 +50,31 @@ namespace jrc
 		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
-		enum Buttons
+		void enter_world();
+		void toggle_recommended(bool active);
+		void clear_selected_world();
+
+		enum Buttons : uint16_t
 		{
-			BT_WORLD0,			// Scania
-			BT_WORLD1,			// Bera
-			BT_WORLD2,			// Broa
-			BT_WORLD3,			// Windia
-			BT_WORLD4,			// Khaini
-			BT_WORLD5,			// Bellocan
-			BT_WORLD6,			// Mardia
-			BT_WORLD7,			// Kradia
-			BT_WORLD8,			// Yellonde
-			BT_WORLD9,			// Demethos
-			BT_WORLD10,			// Galicia
-			BT_WORLD11,			// El Nido (East Coast)
-			BT_WORLD12,			// Zenith
-			BT_WORLD13,			// Arcania
-			BT_WORLD14,			// Chaos
-			BT_WORLD15,			// Nova
-			BT_WORLD16,			// Renegades
-			BT_WORLD17,			// Azwan
-			BT_WORLD18,			// Croa
-			BT_WORLD19,			// Judis
-			BT_WORLD20,			// Kastia
-			BT_WORLD21,			// Aster
-			BT_WORLD22,			// Cosmo
-			BT_WORLD23,			// Androa
-			BT_WORLD35 = 35,	// Legends
-			BT_WORLD36,			// Elf
-			BT_WORLD39 = 39,	// Tempest
-			BT_WORLD40,			// Phanteon
-			BT_WORLD43 = 43,	// RED
-			BT_CHANNEL0,		// Channel 1
+			BT_WORLD0,	// Scania
+			BT_WORLD1,	// Bera
+			BT_WORLD2,	// Broa
+			BT_WORLD3,	// Windia
+			BT_WORLD4,	// Khaini
+			BT_WORLD5,	// Bellocan
+			BT_WORLD6,	// Mardia
+			BT_WORLD7,	// Kradia
+			BT_WORLD8,	// Yellonde
+			BT_WORLD9,	// Demethos
+			BT_WORLD10,	// Galicia
+			BT_WORLD11,	// El Nido (East Coast)
+			BT_WORLD12,	// Zenith
+			BT_WORLD13,	// Arcania
+			BT_WORLD14,	// Chaos
+			BT_WORLD15,	// Nova
+			BT_WORLD16,	// Renegades
+			BT_WORLD17,	// Reboot
+			BT_CHANNEL0,
 			BT_CHANNEL1,
 			BT_CHANNEL2,
 			BT_CHANNEL3,
@@ -96,24 +93,40 @@ namespace jrc
 			BT_CHANNEL16,
 			BT_CHANNEL17,
 			BT_CHANNEL18,
-			BT_CHANNEL19,		// Channel 20
+			BT_CHANNEL19,
 			BT_ENTERWORLD,
+			BT_VIEWALL,
 			BT_VIEWRECOMMENDED,
 			BT_VIEWRECOMMENDED_SELECT,
 			BT_VIEWRECOMMENDED_CANCEL,
+			BT_VIEWRECOMMENDED_PREV,
+			BT_VIEWRECOMMENDED_NEXT,
 			BT_CHANGEREGION,
 			BT_QUITGAME
 		};
 
 		Text version;
-		uint8_t worldid;
-		uint8_t channelid;
-		std::vector<World> worlds;
-		uint8_t worldcount = 0;
-		nl::node worldsrc;
-		nl::node channelsrc;
-		nl::node worldselect;
-
+		Text recommended_message;
+		Texture worlds_background;
+		Texture channels_background;
+		Point<int16_t> worldsrc_pos;
 		Point<int16_t> channelsrc_pos;
+		ChatBalloonHorizontal chatballoon;
+
+		uint8_t worldid;
+		uint8_t recommended_worldid;
+		uint8_t channelid;
+		uint8_t worldcount;
+		uint8_t recommended_worldcount;
+
+		std::vector<World> worlds;
+		std::vector<RecommendedWorld> recommended_worlds;
+		std::vector<Texture> world_textures;
+		std::vector<Texture> recommended_world_textures;
+		std::vector<Texture> recommended_textures;
+
+		bool world_selected;
+		bool show_recommended;
+		bool draw_chatballoon;
 	};
 }

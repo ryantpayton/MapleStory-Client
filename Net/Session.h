@@ -44,6 +44,8 @@ namespace jrc
 		void write(int8_t* bytes, size_t length);
 		// Check for incoming packets and handle them.
 		void read();
+		// Closes the current connection and opens a new one with default connection settings.
+		void reconnect();
 		// Closes the current connection and opens a new one.
 		void reconnect(const char* adress, const char* port);
 		// Check if the connection is alive.

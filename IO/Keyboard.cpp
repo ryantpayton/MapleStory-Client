@@ -25,17 +25,96 @@ namespace jrc
 {
 	constexpr int32_t Keytable[90] =
 	{
-		// Number keys, up to key 0
-		0, GLFW_KEY_GRAVE_ACCENT, GLFW_KEY_0, GLFW_KEY_1, GLFW_KEY_2, GLFW_KEY_3, GLFW_KEY_4, GLFW_KEY_5, GLFW_KEY_6, GLFW_KEY_7, GLFW_KEY_8, GLFW_KEY_9, GLFW_KEY_MINUS, GLFW_KEY_EQUAL,	// 14
-		// First letter row, up to key 28
-		0, 0, 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', GLFW_KEY_LEFT_BRACKET, GLFW_KEY_RIGHT_BRACKET, GLFW_KEY_BACKSLASH,															// 39
-		// Second row, up to 41
-		GLFW_KEY_LEFT_CONTROL, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', GLFW_KEY_SEMICOLON, GLFW_KEY_APOSTROPHE, 0,																		// 42
-		// Third row, up to 58
-		GLFW_KEY_LEFT_SHIFT, 0, 'Z', 'X', 'C', 'V', 'B', 'N', 'M', GLFW_KEY_COMMA, GLFW_KEY_PERIOD, GLFW_KEY_SLASH, 0, 0, GLFW_KEY_LEFT_ALT, GLFW_KEY_SPACE, 0,								// 59
-		// Up to 70
-		GLFW_KEY_F1, GLFW_KEY_F2, GLFW_KEY_F3, GLFW_KEY_F4, GLFW_KEY_F5, GLFW_KEY_F6, GLFW_KEY_F7, GLFW_KEY_F8, GLFW_KEY_F9, GLFW_KEY_F10, GLFW_KEY_F11, GLFW_KEY_F12,						// 71
-		GLFW_KEY_HOME, 0, GLFW_KEY_PAGE_UP, 0, 0, 0, 0, 0, GLFW_KEY_END, 0, GLFW_KEY_PAGE_DOWN, GLFW_KEY_INSERT, GLFW_KEY_DELETE, 0, 0, 0, 0, 0, 0											// 90
+		0,
+		0,
+		GLFW_KEY_0,
+		GLFW_KEY_1,
+		GLFW_KEY_2,
+		GLFW_KEY_3,
+		GLFW_KEY_4,
+		GLFW_KEY_5,
+		GLFW_KEY_6,
+		GLFW_KEY_7,
+		GLFW_KEY_8,
+		GLFW_KEY_9,
+		GLFW_KEY_MINUS,
+		GLFW_KEY_EQUAL,
+		0,
+		0,
+		GLFW_KEY_Q,
+		GLFW_KEY_W,
+		GLFW_KEY_E,
+		GLFW_KEY_R,
+		GLFW_KEY_T,
+		GLFW_KEY_Y,
+		GLFW_KEY_U,
+		GLFW_KEY_I,
+		GLFW_KEY_O,
+		GLFW_KEY_P,
+		GLFW_KEY_LEFT_BRACKET,
+		GLFW_KEY_RIGHT_BRACKET,
+		0,
+		GLFW_KEY_LEFT_CONTROL,
+		GLFW_KEY_A,
+		GLFW_KEY_S,
+		GLFW_KEY_D,
+		GLFW_KEY_F,
+		GLFW_KEY_G,
+		GLFW_KEY_H,
+		GLFW_KEY_J,
+		GLFW_KEY_K,
+		GLFW_KEY_L,
+		GLFW_KEY_SEMICOLON,
+		GLFW_KEY_APOSTROPHE,
+		GLFW_KEY_GRAVE_ACCENT,
+		GLFW_KEY_LEFT_SHIFT,
+		GLFW_KEY_BACKSLASH,
+		GLFW_KEY_Z,
+		GLFW_KEY_X,
+		GLFW_KEY_C,
+		GLFW_KEY_V,
+		GLFW_KEY_B,
+		GLFW_KEY_N,
+		GLFW_KEY_M,
+		GLFW_KEY_COMMA,
+		GLFW_KEY_PERIOD,
+		0,
+		0,
+		0,
+		GLFW_KEY_LEFT_ALT,
+		GLFW_KEY_SPACE,
+		0,
+		GLFW_KEY_F1,
+		GLFW_KEY_F2,
+		GLFW_KEY_F3,
+		GLFW_KEY_F4,
+		GLFW_KEY_F5,
+		GLFW_KEY_F6,
+		GLFW_KEY_F7,
+		GLFW_KEY_F8,
+		GLFW_KEY_F9,
+		GLFW_KEY_F10,
+		GLFW_KEY_F11,
+		GLFW_KEY_F12,
+		GLFW_KEY_HOME,
+		0,
+		GLFW_KEY_PAGE_UP,
+		0,
+		0,
+		0,
+		0,
+		0,
+		GLFW_KEY_END,
+		0,
+		GLFW_KEY_PAGE_DOWN,
+		GLFW_KEY_INSERT,
+		GLFW_KEY_DELETE,
+		0,
+		0,
+		0,
+		GLFW_KEY_F11,
+		GLFW_KEY_F12,
+		0
 	};
 
 	constexpr int32_t Shifttable[126] =
@@ -116,6 +195,19 @@ namespace jrc
 		return GLFW_KEY_LEFT_CONTROL;
 	}
 
+	int32_t Keyboard::get_maplekey(KeyAction::Id action) const
+	{
+		for (auto map : maplekeys)
+		{
+			Keyboard::Mapping m = map.second;
+
+			if (m.action == action)
+				return map.first;
+		}
+
+		return -1;
+	}
+
 	KeyAction::Id Keyboard::get_ctrl_action(int32_t keycode) const
 	{
 		switch (keycode)
@@ -182,6 +274,16 @@ namespace jrc
 		auto iter = keymap.find(keycode);
 
 		if (iter == keymap.end())
+			return {};
+
+		return iter->second;
+	}
+
+	Keyboard::Mapping Keyboard::get_maple_mapping(int32_t keycode) const
+	{
+		auto iter = maplekeys.find(keycode);
+
+		if (iter == maplekeys.end())
 			return {};
 
 		return iter->second;

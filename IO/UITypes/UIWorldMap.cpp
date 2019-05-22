@@ -85,7 +85,7 @@ namespace jrc
 
 	void UIWorldMap::send_key(int32_t keycode, bool pressed)
 	{
-		if (keycode == KeyAction::ESCAPE)
+		if (pressed && keycode == KeyAction::ESCAPE)
 			active = false;
 	}
 

@@ -169,7 +169,7 @@ namespace jrc
 
 	void UIEquipInventory::send_key(int32_t keycode, bool pressed)
 	{
-		if (keycode == KeyAction::ESCAPE)
+		if (pressed && keycode == KeyAction::ESCAPE)
 		{
 			clear_tooltip();
 

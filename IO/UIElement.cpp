@@ -153,12 +153,5 @@ namespace jrc
 	}
 
 	void UIElement::send_scroll(double) {}
-
-	void UIElement::send_key(int32_t action, bool pressed)
-	{
-		if (pressed && action == KeyAction::ESCAPE)
-			if (auto softkey = UI::get().get_element<UISoftkey>())
-				if (softkey->is_active())
-					softkey->deactivate();
-	}
+	void UIElement::send_key(int32_t, bool) {}
 }

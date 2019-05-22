@@ -16,35 +16,31 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../UIElement.h"
+#include "../UI.h"
 
 namespace jrc
 {
-	class UILoginwait : public UIElement
+	class UILogo : public UIElement
 	{
 	public:
-		static constexpr Type TYPE = LOGINWAIT;
-		static constexpr bool FOCUSED = true;
+		static constexpr Type TYPE = START;
+		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
-		UILoginwait();
-		UILoginwait(std::function<void()> okhandler);
+		UILogo();
 
-		void draw(float alpha) const override;
+		void draw(float inter) const override;
 		void update() override;
 
-		void close();
-		std::function<void()> get_handler();
-
-	protected:
-		Button::State button_pressed(uint16_t id) override;
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
 
 	private:
-		enum Buttons : uint16_t
-		{
-			CANCEL
-		};
+		Animation Nexon;
+		Animation Wizet;
+		Texture WizetEnd;
 
-		std::function<void()> okhandler;
+		bool nexon_ended;
+		bool wizet_ended;
+		bool user_clicked;
 	};
 }

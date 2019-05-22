@@ -15,85 +15,90 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "UIElement.h"
+#include "UILogo.h"
+#include "UILogin.h"
 
 #include "../Configuration.h"
 
+#include "../Audio/Audio.h"
+
+#include <nlnx/nx.hpp>
+
 namespace jrc
 {
-	template <typename T>
-	// Base class for UI Windows which can be moved with the mouse cursor.
-	class UIDragElement : public UIElement
+	UILogo::UILogo()
 	{
-	public:
-		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override
+		Music("BgmUI.img/NxLogo").play_once();
+
+		nexon_ended = false;
+		wizet_ended = false;
+		user_clicked = false;
+
+		nl::node Logo = nl::nx::ui["Logo.img"];
+
+		Nexon = Logo["Nexon"];
+		Wizet = Logo["Wizet"];
+		WizetEnd = Logo["Wizet"]["40"];
+
+		position = Point<int16_t>(0, 0);
+		dimension = Point<int16_t>(800, 600);
+	}
+
+	void UILogo::draw(float inter) const
+	{
+		UIElement::draw(inter);
+
+		if (!user_clicked)
 		{
-			if (dragged)
+			if (!nexon_ended)
 			{
-				if (clicked)
-				{
-					position = cursorpos - cursoroffset;
-
-					return true;
-				}
-				else
-				{
-					dragged = false;
-
-					Setting<T>::get().save(position);
-				}
-			}
-
-			return false;
-		}
-
-		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override
-		{
-			if (clicked)
-			{
-				if (dragged)
-				{
-					position = cursorpos - cursoroffset;
-
-					return Cursor::CLICKING;
-				}
-				else if (indragrange(cursorpos))
-				{
-					cursoroffset = cursorpos - position;
-					dragged = true;
-
-					return UIElement::send_cursor(clicked, cursorpos);
-				}
+				Nexon.draw(position + Point<int16_t>(440, 350), inter);
 			}
 			else
 			{
-				if (dragged)
-				{
-					dragged = false;
-
-					Setting<T>::get().save(position);
-				}
+				if (!wizet_ended)
+					Wizet.draw(position + Point<int16_t>(263, 185), inter);
+				else
+					WizetEnd.draw(position + Point<int16_t>(263, 185));
 			}
-
-			return UIElement::send_cursor(clicked, cursorpos);
 		}
-
-	protected:
-		UIDragElement(Point<int16_t> d) : dragarea(d)
+		else
 		{
-			position = Setting<T>::get().load();
+			WizetEnd.draw(position + Point<int16_t>(263, 185));
 		}
+	}
 
-		bool dragged = false;
-		Point<int16_t> dragarea;
-		Point<int16_t> cursoroffset;
+	void UILogo::update()
+	{
+		UIElement::update();
 
-	private:
-		virtual bool indragrange(Point<int16_t> cursorpos) const
+		if (!nexon_ended)
 		{
-			auto bounds = Rectangle<int16_t>(position, position + dragarea);
-			return bounds.contains(cursorpos);
+			nexon_ended = Nexon.update();
 		}
-	};
+		else
+		{
+			if (!wizet_ended)
+			{
+				wizet_ended = Wizet.update();
+			}
+			else
+			{
+				Configuration::get().set_start_shown(true);
+
+				UI::get().remove(UIElement::Type::START);
+				UI::get().emplace<UILogin>();
+			}
+		}
+	}
+
+	Cursor::State UILogo::send_cursor(bool clicked, Point<int16_t> cursorpos)
+	{
+		Cursor::State ret = clicked ? Cursor::State::CLICKING : Cursor::State::IDLE;
+
+		if (clicked && !user_clicked)
+			user_clicked = true;
+
+		return ret;
+	}
 }

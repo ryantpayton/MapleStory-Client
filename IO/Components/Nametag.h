@@ -16,13 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../../Graphics/Text.h"
-#include "../../Graphics/Texture.h"
-#include "../../Template/BoolPair.h"
+#include "../Graphics/Texture.h"
+#include "../Template/BoolPair.h"
+#include "../Graphics/SpecialText.h"
 
 #include "nlnx/node.hpp"
-
-#include <vector>
 
 namespace jrc
 {
@@ -35,7 +33,7 @@ namespace jrc
 		void set_selected(bool selected);
 
 	private:
-		Text name;
+		OutlinedText name;
 		BoolPair<std::vector<Texture>> textures;
 		bool selected;
 	};

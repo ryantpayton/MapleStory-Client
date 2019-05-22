@@ -57,11 +57,14 @@ namespace jrc
 
 		add_sound(Sound::BUTTONCLICK, uisrc["BtMouseClick"]);
 		add_sound(Sound::BUTTONOVER, uisrc["BtMouseOver"]);
+		add_sound(Sound::CHARSELECT, uisrc["CharSelect"]);
 		add_sound(Sound::DLGNOTICE, uisrc["DlgNotice"]);
 		add_sound(Sound::SELECTCHAR, uisrc["CharSelect"]);
 		add_sound(Sound::MENUDOWN, uisrc["MenuDown"]);
 		add_sound(Sound::MENUUP, uisrc["MenuUp"]);
+		add_sound(Sound::SCROLLUP, uisrc["ScrollUp"]);
 		add_sound(Sound::TAB, uisrc["Tab"]);
+		add_sound(Sound::WORLDSELECT, uisrc["WorldSelect"]);
 
 		nl::node gamesrc = nl::nx::sound["Game.img"];
 
@@ -87,7 +90,7 @@ namespace jrc
 
 	bool Sound::set_sfxvolume(uint8_t vol)
 	{
-		return BASS_SetConfig(BASS_CONFIG_GVOL_STREAM, vol * 100) == TRUE;
+		return BASS_SetConfig(BASS_CONFIG_GVOL_SAMPLE, vol * 100) == TRUE;
 	}
 
 	void Sound::play(size_t id)
@@ -161,6 +164,32 @@ namespace jrc
 		}
 	}
 
+	void Music::play_once() const
+	{
+		static HSTREAM stream = 0;
+		static std::string bgmpath = "";
+
+		if (path == bgmpath)
+			return;
+
+		nl::audio ad = nl::nx::sound.resolve(path);
+		auto data = reinterpret_cast<const void*>(ad.data());
+
+		if (data)
+		{
+			if (stream)
+			{
+				BASS_ChannelStop(stream);
+				BASS_StreamFree(stream);
+			}
+
+			stream = BASS_StreamCreateFile(true, data, 82, ad.length(), BASS_SAMPLE_FLOAT);
+			BASS_ChannelPlay(stream, true);
+
+			bgmpath = path;
+		}
+	}
+
 	Error Music::init()
 	{
 		uint8_t volume = Setting<BGMVolume>::get().load();
@@ -173,6 +202,6 @@ namespace jrc
 
 	bool Music::set_bgmvolume(uint8_t vol)
 	{
-		return BASS_SetConfig(BASS_CONFIG_GVOL_SAMPLE, vol * 100) == TRUE;
+		return BASS_SetConfig(BASS_CONFIG_GVOL_STREAM, vol * 100) == TRUE;
 	}
 }

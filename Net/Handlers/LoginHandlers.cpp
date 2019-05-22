@@ -29,59 +29,67 @@
 #include "../../IO/UITypes/UIWorldSelect.h"
 #include "../../IO/UITypes/UICharSelect.h"
 #include "../../IO/UITypes/UICharCreation.h"
+#include "../../IO/UITypes/UILoginwait.h"
 
 namespace jrc
 {
 	void LoginResultHandler::handle(InPacket& recv) const
 	{
-		// Remove previous UIs.
-		UI::get().remove(UIElement::LOGINNOTICE);
-		UI::get().remove(UIElement::LOGINWAIT);
+		auto loginwait = UI::get().get_element<UILoginwait>();
 
-		// The packet should contain a 'reason' integer which can signify various things.
-		if (int32_t reason = recv.read_int())
+		if (loginwait && loginwait->is_active())
 		{
-			// Login unsuccessfull. The LoginNotice displayed will contain the specific information.
-			switch (reason)
+			// Remove previous UIs.
+			UI::get().remove(UIElement::LOGINNOTICE);
+			UI::get().remove(UIElement::LOGINWAIT);
+
+			std::function<void()> okhandler = loginwait->get_handler();
+
+			// The packet should contain a 'reason' integer which can signify various things.
+			if (int32_t reason = recv.read_int())
 			{
-			case 2:
-				UI::get().emplace<UILoginNotice>(UILoginNotice::Message::BLOCKED_ID);
-				break;
-			case 7:
-				UI::get().emplace<UILoginNotice>(UILoginNotice::Message::ALREADY_LOGGED_IN);
-				break;
-			case 13:
-				UI::get().emplace<UILoginNotice>(UILoginNotice::Message::UNABLE_TO_LOGIN_WITH_IP);
-				break;
-			case 23:
-				// The server sends a request to accept the terms of service. For convenience, just auto-accept.
-				TOSPacket().dispatch();
-				break;
-			default:
-				// Other reasons.
-				if (reason > 0)
+				// Login unsuccessfull. The LoginNotice displayed will contain the specific information.
+				switch (reason)
 				{
-					auto reasonbyte = static_cast<int8_t>(reason - 1);
-					UI::get().emplace<UILoginNotice>(reasonbyte);
+				case 2:
+					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::BLOCKED_ID, okhandler);
+					break;
+				case 7:
+					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::ALREADY_LOGGED_IN, okhandler);
+					break;
+				case 13:
+					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::UNABLE_TO_LOGIN_WITH_IP, okhandler);
+					break;
+				case 23:
+					UI::get().emplace<UILoginwait>();
+
+					// The server sends a request to accept the terms of service.
+					TOSPacket().dispatch(); // TODO: Implement TOS
+					break;
+				default:
+					// Other reasons.
+					if (reason > 0)
+					{
+						auto reasonbyte = static_cast<int8_t>(reason - 1);
+
+						UI::get().emplace<UILoginNotice>(reasonbyte, okhandler);
+					}
 				}
 			}
+			else
+			{
+				// Login successfull. The packet contains information on the account, so we initialise the account with it.
+				Account account = LoginParser::parse_account(recv);
 
-			UI::get().enable();
-		}
-		else
-		{
-			// Login successfull. The packet contains information on the account, so we initialise the account with it.
-			Account account = LoginParser::parse_account(recv);
+				// Save the Login ID if the box for it on the login panel is checked.
+				if (Setting<SaveLogin>::get().load())
+					Setting<DefaultAccount>::get().save(account.name);
 
-			// Save the Login ID if the box for it on the login panel is checked.
-			if (Setting<SaveLogin>::get().load())
-				Setting<DefaultAccount>::get().save(account.name);
-
-			// Request the list of worlds and channels online.
-			ServerRequestPacket().dispatch();
+				// Request the list of worlds and channels online.
+				ServerRequestPacket().dispatch();
+			}
 		}
 	}
-
 
 	void ServerlistHandler::handle(InPacket& recv) const
 	{
@@ -103,11 +111,9 @@ namespace jrc
 			{
 				// Remove previous UIs.
 				UI::get().remove(UIElement::LOGIN);
-				UI::get().remove(UIElement::CHARSELECT);
 
 				// Add the world selection screen to the ui.
 				worldselect->draw_world();
-				UI::get().enable();
 
 				// "End of serverlist" packet.
 				return;
@@ -115,32 +121,52 @@ namespace jrc
 		}
 	}
 
+	void RecommendedWorldsHandler::handle(InPacket & recv) const
+	{
+		if (auto worldselect = UI::get().get_element<UIWorldSelect>())
+		{
+			int16_t count = recv.read_byte();
+
+			for (size_t i = 0; i < count; i++)
+			{
+				RecommendedWorld world = LoginParser::parse_recommended_world(recv);
+
+				if (world.wid != -1 && !world.message.empty())
+					worldselect->add_recommended_world(world);
+			}
+		}
+	}
 
 	void CharlistHandler::handle(InPacket& recv) const
 	{
-		uint8_t channel_id = recv.read_byte();
+		auto loginwait = UI::get().get_element<UILoginwait>();
 
-		// Parse all characters.
-		std::vector<CharEntry> characters;
-		uint8_t charcount = recv.read_byte();
+		if (loginwait && loginwait->is_active())
+		{
+			uint8_t channel_id = recv.read_byte();
 
-		for (uint8_t i = 0; i < charcount; ++i)
-			characters.emplace_back(LoginParser::parse_charentry(recv));
+			// Parse all characters.
+			std::vector<CharEntry> characters;
+			int8_t charcount = recv.read_byte();
 
-		int8_t pic = recv.read_byte();
-		uint8_t slots = (uint8_t)recv.read_int();
+			for (uint8_t i = 0; i < charcount; ++i)
+				characters.emplace_back(LoginParser::parse_charentry(recv));
 
-		// Remove previous UIs.
-		UI::get().remove(UIElement::CHARCREATION);
+			int8_t pic = recv.read_byte();
+			int32_t slots = recv.read_int();
 
-		// Add the character selection screen.
-		if (auto worldselect = UI::get().get_element<UIWorldSelect>())
-			worldselect->deactivate();
+			// Remove previous UIs.
+			UI::get().remove(UIElement::LOGINNOTICE);
+			UI::get().remove(UIElement::LOGINWAIT);
 
-		UI::get().emplace<UICharSelect>(characters, charcount, slots, pic);
-		UI::get().enable();
+			// Remove the world selection screen.
+			if (auto worldselect = UI::get().get_element<UIWorldSelect>())
+				worldselect->remove_selected();
+
+			// Add the character selection screen.
+			UI::get().emplace<UICharSelect>(characters, charcount, slots, pic);
+		}
 	}
-
 
 	void CharnameResponseHandler::handle(InPacket& recv) const
 	{
@@ -154,10 +180,7 @@ namespace jrc
 		// Notify the character creation screen.
 		if (auto charcreation = UI::get().get_element<UICharCreation>())
 			charcreation->send_naming_result(used);
-
-		UI::get().enable();
 	}
-
 
 	void AddNewCharEntryHandler::handle(InPacket& recv) const
 	{
@@ -169,10 +192,7 @@ namespace jrc
 		// Read the updated character selection.
 		if (auto charselect = UI::get().get_element<UICharSelect>())
 			charselect->add_character(std::move(character));
-
-		UI::get().enable();
 	}
-
 
 	void DeleteCharResponseHandler::handle(InPacket& recv) const
 	{
@@ -191,7 +211,7 @@ namespace jrc
 				message = UILoginNotice::BIRTHDAY_INCORRECT;
 				break;
 			case 20:
-				message = UILoginNotice::SECOND_PASSWORD_INCORRECT;
+				message = UILoginNotice::INCORRECT_PIC;
 				break;
 			default:
 				message = UILoginNotice::UNKNOWN_ERROR;
@@ -202,12 +222,9 @@ namespace jrc
 		else
 		{
 			if (auto charselect = UI::get().get_element<UICharSelect>())
-				charselect->remove_char(cid);
+				charselect->remove_character(cid);
 		}
-
-		UI::get().enable();
 	}
-
 
 	void ServerIPHandler::handle(InPacket& recv) const
 	{

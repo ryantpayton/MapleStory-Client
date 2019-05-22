@@ -62,7 +62,7 @@ namespace jrc
 	}
 
 	Player::Player(const CharEntry& entry)
-		: Char(entry.cid, entry.look, entry.stats.name), stats(entry.stats) {
+		: Char(entry.id, entry.look, entry.stats.name), stats(entry.stats) {
 
 		attacking = false;
 		underwater = false;

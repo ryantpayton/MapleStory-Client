@@ -367,24 +367,27 @@ namespace jrc
 
 	void UISkillbook::send_key(int32_t keycode, bool pressed)
 	{
-		if (keycode == KeyAction::Id::ESCAPE)
+		if (pressed)
 		{
-			close();
-		}
-		else if (keycode == KeyAction::Id::TAB)
-		{
-			clear_tooltip();
+			if (keycode == KeyAction::Id::ESCAPE)
+			{
+				close();
+			}
+			else if (keycode == KeyAction::Id::TAB)
+			{
+				clear_tooltip();
 
-			Job::Level level = job.get_level();
-			uint16_t id = tab + 1;
-			uint16_t new_tab = tab + Buttons::BT_TAB0;
+				Job::Level level = job.get_level();
+				uint16_t id = tab + 1;
+				uint16_t new_tab = tab + Buttons::BT_TAB0;
 
-			if (new_tab < Buttons::BT_TAB4 && id <= level)
-				new_tab++;
-			else
-				new_tab = Buttons::BT_TAB0;
+				if (new_tab < Buttons::BT_TAB4 && id <= level)
+					new_tab++;
+				else
+					new_tab = Buttons::BT_TAB0;
 
-			change_tab(new_tab - Buttons::BT_TAB0);
+				change_tab(new_tab - Buttons::BT_TAB0);
+			}
 		}
 	}
 

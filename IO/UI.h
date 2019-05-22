@@ -75,6 +75,8 @@ namespace jrc
 		void show_item(Tooltip::Parent parent, int32_t item_id);
 		void show_skill(Tooltip::Parent parent, int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration);
 
+		Keyboard get_keyboard();
+
 		template <class T, typename...Args>
 		Optional<T> emplace(Args&&...args);
 		template <class T>

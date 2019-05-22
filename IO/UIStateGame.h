@@ -53,6 +53,7 @@ namespace jrc
 		Iterator pre_add(UIElement::Type type, bool toggled, bool focused);
 		void remove(UIElement::Type type) override;
 		UIElement* get(UIElement::Type type) override;
+		UIElement* get_front(std::list<UIElement::Type> types) override;
 		UIElement* get_front(Point<int16_t> pos) override;
 
 	private:
