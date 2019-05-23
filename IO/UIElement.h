@@ -40,6 +40,7 @@ namespace jrc
 			NONE,
 			START,
 			LOGIN,
+			TOS,
 			WORLDSELECT,
 			REGION,
 			CHARSELECT,

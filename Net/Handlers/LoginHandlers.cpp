@@ -20,16 +20,18 @@
 #include "Helpers/LoginParser.h"
 
 #include "../Session.h"
-#include "../Packets/LoginPackets.h"
+#include "../Configuration.h"
 
-#include "../../Configuration.h"
-#include "../../IO/UI.h"
-#include "../../IO/UITypes/UILogin.h"
-#include "../../IO/UITypes/UILoginNotice.h"
-#include "../../IO/UITypes/UIWorldSelect.h"
-#include "../../IO/UITypes/UICharSelect.h"
-#include "../../IO/UITypes/UICharCreation.h"
-#include "../../IO/UITypes/UILoginwait.h"
+#include "../Packets/LoginPackets.h"
+#include "../IO/UI.h"
+
+#include "../IO/UITypes/UILogin.h"
+#include "../IO/UITypes/UILoginNotice.h"
+#include "../IO/UITypes/UIWorldSelect.h"
+#include "../IO/UITypes/UICharSelect.h"
+#include "../IO/UITypes/UICharCreation.h"
+#include "../IO/UITypes/UILoginwait.h"
+#include "../IO/UITypes/UITermsOfService.h"
 
 namespace jrc
 {
@@ -61,10 +63,8 @@ namespace jrc
 					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::UNABLE_TO_LOGIN_WITH_IP, okhandler);
 					break;
 				case 23:
-					UI::get().emplace<UILoginwait>();
-
 					// The server sends a request to accept the terms of service.
-					TOSPacket().dispatch(); // TODO: Implement TOS
+					UI::get().emplace<UITermsOfService>(okhandler);
 					break;
 				default:
 					// Other reasons.
