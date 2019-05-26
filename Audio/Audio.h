@@ -40,6 +40,7 @@ namespace jrc
 			DLGNOTICE,
 			MENUDOWN,
 			MENUUP,
+			RACESELECT,
 			SCROLLUP,
 			TAB,
 			WORLDSELECT,

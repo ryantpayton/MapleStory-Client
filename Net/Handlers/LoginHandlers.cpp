@@ -29,7 +29,7 @@
 #include "../IO/UITypes/UILoginNotice.h"
 #include "../IO/UITypes/UIWorldSelect.h"
 #include "../IO/UITypes/UICharSelect.h"
-#include "../IO/UITypes/UICharCreation.h"
+#include "../IO/UITypes/UIClassCreation.h"
 #include "../IO/UITypes/UILoginwait.h"
 #include "../IO/UITypes/UITermsOfService.h"
 
@@ -55,6 +55,9 @@ namespace jrc
 				{
 				case 2:
 					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::BLOCKED_ID, okhandler);
+					break;
+				case 5:
+					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::NOT_REGISTERED, okhandler);
 					break;
 				case 7:
 					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::ALREADY_LOGGED_IN, okhandler);
@@ -178,8 +181,8 @@ namespace jrc
 			UI::get().emplace<UILoginNotice>(UILoginNotice::NAME_IN_USE);
 
 		// Notify the character creation screen.
-		if (auto charcreation = UI::get().get_element<UICharCreation>())
-			charcreation->send_naming_result(used);
+		if (auto classcreation = UI::get().get_element<UIClassCreation>())
+			classcreation->send_naming_result(used);
 	}
 
 	void AddNewCharEntryHandler::handle(InPacket& recv) const

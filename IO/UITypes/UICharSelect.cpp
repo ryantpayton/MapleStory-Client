@@ -34,26 +34,49 @@
 
 namespace jrc
 {
-	UICharSelect::UICharSelect(std::vector<CharEntry> c, int8_t characters_count, int32_t s, int8_t pic) : characters(c), characters_count(characters_count), slots(s), pic(pic)
+	UICharSelect::UICharSelect(std::vector<CharEntry> c, int8_t characters_count, int32_t s, int8_t rp) : characters(c), characters_count(characters_count), slots(s), require_pic(rp)
 	{
+		burning_character = true;
+
 		std::string version_text = Configuration::get().get_version();
 		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. " + version_text);
 
 		pagepos = Point<int16_t>(247, 452);
 		worldpos = Point<int16_t>(586, 36);
 		charinfopos = Point<int16_t>(671, 329);
+		Point<int16_t> character_sel_pos = Point<int16_t>(601, 383);
+		Point<int16_t> character_new_pos = Point<int16_t>(200, 485);
+		Point<int16_t> character_del_pos = Point<int16_t>(316, 485);
 
 		selected_character = Setting<DefaultCharacter>::get().load();
 		selected_page = selected_character / PAGESIZE;
 		page_count = std::ceil((double)slots / (double)PAGESIZE);
 
-		nl::node login = nl::nx::ui["Login.img"];
-		nl::node common = login["Common"];
-		nl::node charselect = login["CharSelect"];
+		tab = nl::nx::ui["Basic.img"]["Cursor"]["18"]["0"];
 
-		nl::node selectWorld = common["selectWorld"];
-		nl::node selectedWorld = charselect["selectedWorld"];
-		nl::node pageNew = charselect["pageNew"];
+		tab_index = 0;
+		tab_active = false;
+		tab_move = false;
+
+		Point<int16_t> tab_adj = Point<int16_t>(86, 5);
+
+		tab_pos[0] = character_sel_pos + tab_adj;
+		tab_pos[1] = character_new_pos + tab_adj;
+		tab_pos[2] = character_del_pos + tab_adj;
+
+		tab_move_pos = 0;
+
+		tab_map[0] = Buttons::CHARACTER_SELECT;
+		tab_map[1] = Buttons::CHARACTER_NEW;
+		tab_map[2] = Buttons::CHARACTER_DELETE;
+
+		nl::node Login = nl::nx::ui["Login.img"];
+		nl::node Common = Login["Common"];
+		nl::node CharSelect = Login["CharSelect"];
+
+		nl::node selectWorld = Common["selectWorld"];
+		nl::node selectedWorld = CharSelect["selectedWorld"];
+		nl::node pageNew = CharSelect["pageNew"];
 
 		world_dimensions = Texture(selectWorld).get_dimensions();
 
@@ -72,35 +95,40 @@ namespace jrc
 		sprites.emplace_back(ani["17"], Point<int16_t>(151, 273)); // From v167
 		sprites.emplace_back(ani["18"], Point<int16_t>(365, 242)); // From v167
 		sprites.emplace_back(ani["19"], Point<int16_t>(191, 198)); // From v167
-		sprites.emplace_back(common["frame"], Point<int16_t>(399, 289));
-		sprites.emplace_back(common["step"]["2"], Point<int16_t>(40, -10));
-		sprites.emplace_back(pageNew["base"]["0"], pagepos);
+		sprites.emplace_back(Common["frame"], Point<int16_t>(399, 289));
+		sprites.emplace_back(Common["step"]["2"], Point<int16_t>(40, -10));
 
-		charinfo = charselect["charInfo"];
-		charslot = charselect["charSlot"]["0"];
+		nl::node Burning = Common["Burning"];
+
+		burning_notice = Burning["BurningNotice"];
+		burning_count = Text(Text::Font::A12B, Text::Alignment::LEFT, Text::Color::WHITE, "1");
+
+		charinfo = CharSelect["charInfo"];
+		charslot = CharSelect["charSlot"]["0"];
+		pagebase = pageNew["base"]["0"];
 		pagenumber = Charset(pageNew["number"], Charset::Alignment::LEFT);
 		pagenumberpos = pageNew["numberpos"];
 
-		signpost[0] = charselect["adventure"]["0"];
-		signpost[1] = charselect["knight"]["0"];
-		signpost[2] = charselect["aran"]["0"];
+		signpost[0] = CharSelect["adventure"]["0"];
+		signpost[1] = CharSelect["knight"]["0"];
+		signpost[2] = CharSelect["aran"]["0"];
 
-		nametag = charselect["nameTag"];
+		nametag = CharSelect["nameTag"];
 
-		buttons[Buttons::CHARACTER_SELECT] = std::make_unique<MapleButton>(charselect["BtSelect"], Point<int16_t>(601, 383));
-		buttons[Buttons::CHARACTER_NEW] = std::make_unique<MapleButton>(charselect["BtNew"], Point<int16_t>(200, 485));
-		buttons[Buttons::CHARACTER_DELETE] = std::make_unique<MapleButton>(charselect["BtDelete"], Point<int16_t>(316, 485));
-		buttons[Buttons::PAGELEFT] = std::make_unique<MapleButton>(charselect["pageL"], Point<int16_t>(98, 481));
-		buttons[Buttons::PAGERIGHT] = std::make_unique<MapleButton>(charselect["pageR"], Point<int16_t>(485, 481));
-		buttons[Buttons::CHANGEPIC] = std::make_unique<MapleButton>(common["BtChangePIC"], Point<int16_t>(0, 35));
-		buttons[Buttons::RESETPIC] = std::make_unique<MapleButton>(login["WorldSelect"]["BtResetPIC"], Point<int16_t>(0, 75));
-		buttons[Buttons::EDITCHARLIST] = std::make_unique<MapleButton>(charselect["EditCharList"]["BtCharacter"], Point<int16_t>(1, 115));
-		buttons[Buttons::BACK] = std::make_unique<MapleButton>(common["BtStart"], Point<int16_t>(0, 505));
+		buttons[Buttons::CHARACTER_SELECT] = std::make_unique<MapleButton>(CharSelect["BtSelect"], character_sel_pos);
+		buttons[Buttons::CHARACTER_NEW] = std::make_unique<MapleButton>(CharSelect["BtNew"], character_new_pos);
+		buttons[Buttons::CHARACTER_DELETE] = std::make_unique<MapleButton>(CharSelect["BtDelete"], character_del_pos);
+		buttons[Buttons::PAGELEFT] = std::make_unique<MapleButton>(CharSelect["pageL"], Point<int16_t>(98, 481));
+		buttons[Buttons::PAGERIGHT] = std::make_unique<MapleButton>(CharSelect["pageR"], Point<int16_t>(485, 481));
+		buttons[Buttons::CHANGEPIC] = std::make_unique<MapleButton>(Common["BtChangePIC"], Point<int16_t>(0, 35));
+		buttons[Buttons::RESETPIC] = std::make_unique<MapleButton>(Login["WorldSelect"]["BtResetPIC"], Point<int16_t>(0, 75));
+		buttons[Buttons::EDITCHARLIST] = std::make_unique<MapleButton>(CharSelect["EditCharList"]["BtCharacter"], Point<int16_t>(1, 115));
+		buttons[Buttons::BACK] = std::make_unique<MapleButton>(Common["BtStart"], Point<int16_t>(0, 505));
 
 		for (size_t i = 0; i < PAGESIZE; i++)
 			buttons[Buttons::CHARACTER_SLOT0 + i] = std::make_unique<AreaButton>(get_character_slot_pos(i, 105, 144), Point<int16_t>(50, 80));
 
-		levelset = Charset(charselect["lv"], Charset::Alignment::CENTER);
+		levelset = Charset(CharSelect["lv"], Charset::Alignment::CENTER);
 		namelabel = OutlinedText(Text::Font::A15B, Text::Alignment::CENTER, Text::Color::WHITE, Text::Color::IRISHCOFFEE);
 
 		for (size_t i = 0; i < InfoLabel::NUM_LABELS; i++)
@@ -112,11 +140,11 @@ namespace jrc
 			nametags.emplace_back(nametag, Text::Font::A13M, entry.stats.name);
 		}
 
-		emptyslot_effect = charselect["character"]["0"];
-		emptyslot = charselect["character"]["1"]["0"];
+		emptyslot_effect = CharSelect["character"]["0"];
+		emptyslot = CharSelect["character"]["1"]["0"];
 
-		selectedslot_effect[0] = charselect["effect"][0];
-		selectedslot_effect[1] = charselect["effect"][1];
+		selectedslot_effect[0] = CharSelect["effect"][0];
+		selectedslot_effect[1] = CharSelect["effect"][1];
 
 		chatslotlabel = OutlinedText(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::PORCELAIN, Text::Color::BROWNDERBY);
 		chatslotlabel.change_text(get_slot_text());
@@ -144,11 +172,6 @@ namespace jrc
 
 		std::string total = pad_number_with_leading_zero(page_count);
 		std::string current = pad_number_with_leading_zero(selected_page + 1);
-
-		pagenumber.draw(current.substr(0, 1), position + pagepos + Point<int16_t>(pagenumberpos[0]));
-		pagenumber.draw(current.substr(1, 1), position + pagepos + Point<int16_t>(pagenumberpos[1]));
-		pagenumber.draw(total.substr(0, 1), position + pagepos + Point<int16_t>(pagenumberpos[2]));
-		pagenumber.draw(total.substr(1, 1), position + pagepos + Point<int16_t>(pagenumberpos[3]));
 
 		std::list<int8_t> fliplist = { 2, 3, 6, 7 };
 
@@ -217,6 +240,21 @@ namespace jrc
 		}
 
 		UIElement::draw_buttons(inter);
+
+		if (tab_active)
+			tab.draw(position + tab_pos[tab_index] + Point<int16_t>(0, tab_move_pos));
+
+		if (burning_character)
+		{
+			burning_notice.draw(position + Point<int16_t>(190, 492), inter);
+			burning_count.draw(position + Point<int16_t>(149, 454));
+		}
+
+		pagebase.draw(position + pagepos);
+		pagenumber.draw(current.substr(0, 1), position + pagepos + Point<int16_t>(pagenumberpos[0]));
+		pagenumber.draw(current.substr(1, 1), position + pagepos + Point<int16_t>(pagenumberpos[1]));
+		pagenumber.draw(total.substr(0, 1), position + pagepos + Point<int16_t>(pagenumberpos[2]));
+		pagenumber.draw(total.substr(1, 1), position + pagepos + Point<int16_t>(pagenumberpos[3]));
 			}
 
 	void UICharSelect::update()
@@ -244,6 +282,15 @@ namespace jrc
 					}
 				}
 
+		if (tab_move && tab_move_pos < 4)
+			tab_move_pos += 1;
+
+		if (tab_move && tab_move_pos == 4)
+			tab_move = false;
+
+		if (!tab_move && tab_move_pos > 0)
+			tab_move_pos -= 1;
+
 		for (auto& charlook : charlooks)
 			charlook.update(Constants::TIMESTEP);
 
@@ -251,6 +298,9 @@ namespace jrc
 			effect.update();
 
 		emptyslot_effect.update();
+
+		if (burning_character)
+			burning_notice.update();
 					}
 
 	Cursor::State UICharSelect::send_cursor(bool clicked, Point<int16_t> cursorpos)
@@ -270,7 +320,44 @@ namespace jrc
 			}
 		}
 
-		return UIElement::send_cursor(clicked, cursorpos);
+		Cursor::State ret = clicked ? Cursor::State::CLICKING : Cursor::State::IDLE;
+
+		for (auto& btit : buttons)
+		{
+			if (btit.second->is_active() && btit.second->bounds(position).contains(cursorpos))
+			{
+				if (btit.second->get_state() == Button::State::NORMAL)
+				{
+					Sound(Sound::Name::BUTTONOVER).play();
+
+					btit.second->set_state(Button::State::MOUSEOVER);
+					ret = Cursor::State::CANCLICK;
+				}
+				else if (btit.second->get_state() == Button::State::MOUSEOVER)
+				{
+					if (clicked)
+					{
+						Sound(Sound::Name::BUTTONCLICK).play();
+
+						btit.second->set_state(button_pressed(btit.first));
+
+						ret = Cursor::State::IDLE;
+					}
+					else
+					{
+						if (!tab_active || btit.first != tab_map[tab_index])
+							ret = Cursor::State::CANCLICK;
+					}
+				}
+			}
+			else if (btit.second->get_state() == Button::State::MOUSEOVER)
+			{
+				if (!tab_active || btit.first != tab_map[tab_index])
+					btit.second->set_state(Button::State::NORMAL);
+			}
+		}
+
+		return ret;
 	}
 
 	void UICharSelect::send_key(int32_t keycode, bool pressed)
@@ -295,16 +382,65 @@ namespace jrc
 			}
 			else if (keycode == KeyAction::Id::TAB)
 			{
-				// toggle leaf cursor for menus
-				// 0 - Start
-				// 1 - Create
-				// 2 - Delete
-				// 3 - Clear
+				uint8_t prev_tab = tab_index;
+
+				if (!tab_active)
+				{
+					tab_active = true;
+
+					if (!buttons[Buttons::CHARACTER_SELECT]->is_active())
+						tab_index++;
+				}
+				else
+				{
+					tab_index++;
+
+					if (tab_index > 2)
+					{
+						tab_active = false;
+						tab_index = 0;
+					}
+				}
+
+				tab_move = true;
+				tab_move_pos = 0;
+
+				auto &prev_btn = buttons[tab_map[prev_tab]];
+				auto prev_state = prev_btn->get_state();
+
+				if (prev_state != Button::State::DISABLED)
+					prev_btn->set_state(Button::State::NORMAL);
+
+				auto &btn = buttons[tab_map[tab_index]];
+				auto state = btn->get_state();
+
+				if (state != Button::State::DISABLED)
+					btn->set_state(Button::State::MOUSEOVER);
 			}
 			else if (keycode == KeyAction::Id::ESCAPE)
 			{
-				// back();
+				button_pressed(Buttons::BACK);
 			}
+			else if (keycode == KeyAction::Id::RETURN)
+			{
+				if (tab_active)
+				{
+					uint16_t btn_index = tab_map[tab_index];
+
+					auto &btn = buttons[btn_index];
+					auto state = btn->get_state();
+
+					if (state != Button::State::DISABLED)
+					{
+						button_pressed(btn_index);
+
+						tab_index = 0;
+						tab_active = false;
+						tab_move = false;
+						tab_move_pos = 0;
+			}
+		}
+	}
 		}
 	}
 
@@ -387,7 +523,7 @@ namespace jrc
 			Setting<DefaultCharacter>::get().save(selected_character);
 			int32_t id = characters[selected_character].id;
 
-			switch (pic)
+			switch (require_pic)
 		{
 		case 0:
 				UI::get().emplace<UISoftkey>(
@@ -416,6 +552,8 @@ namespace jrc
 	}
 		break;
 		case Buttons::CHARACTER_NEW:
+			Sound(Sound::Name::SCROLLUP).play();
+
 			deactivate();
 
 			UI::get().emplace<UICharCreation>();
@@ -424,12 +562,31 @@ namespace jrc
 	{
 			int32_t id = characters[selected_character].id;
 
+			switch (require_pic)
+			{
+			case 0:
+				UI::get().emplace<UISoftkey>(
+					[id](const std::string& pic)
+					{
+						RegisterPicPacket(id, pic).dispatch();
+					}
+				);
+
+				break;
+			case 1:
 			UI::get().emplace<UISoftkey>(
 				[id](const std::string& pic)
 		{
 					DeleteCharPacket(pic, id).dispatch();
 		}
 			);
+
+				break;
+			case 2:
+				DeleteCharPacket(0, id).dispatch();
+
+				break;
+			}
 		}
 		break;
 		case Buttons::PAGELEFT:

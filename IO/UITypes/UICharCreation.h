@@ -19,6 +19,7 @@
 #include "../UIElement.h"
 
 #include "../Components/Textfield.h"
+#include "../Template/BoolPair.h"
 
 namespace jrc
 {
@@ -32,43 +33,94 @@ namespace jrc
 
 		UICharCreation();
 
-		void draw(float) const override;
+		void draw(float inter) const override;
 		void update() override;
 
-		Cursor::State send_cursor(bool down, Point<int16_t> pos) override;
-
-		void send_naming_result(bool success);
-		void change_class(uint8_t id);
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		void send_key(int32_t keycode, bool pressed) override;
 
 	protected:
-		Button::State button_pressed(uint16_t button_id) override;
+		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
-		enum Buttons
+		void select_class(uint8_t index);
+		void show_charselect();
+		Point<int16_t> get_class_pos(size_t index) const;
+
+		static constexpr uint8_t INDEX_COUNT = 5;
+		static constexpr uint8_t CLASS_COUNT = 26;
+
+		enum Buttons : uint16_t
 		{
-			BT_BACK,
-			BT_CREATE,
-			BT_PAGE_L,
-			BT_PAGE_R,
-			BT_CLASS_SEL0,
-			BT_CLASS_SEL1,
-			BT_CLASS_SEL2,
-			BT_CLASS_SEL3,
-			BT_CLASS_SEL4
+			BACK,
+			MAKE,
+			LEFT,
+			RIGHT,
+			CLASS0,
+			CLASS1,
+			CLASS2,
+			CLASS3,
+			CLASS4
 		};
 
-		enum Classes
+		enum Classes : uint8_t
 		{
-			EXPLORERS = 1,
-			CYGNUS,
+			RESISTANCE,
+			EXPLORER,
+			CYGNUSKNIGHTS,
 			ARAN,
 			EVAN,
-			DUAL_BLADE = 8
+			MERCEDES,
+			DEMON,
+			PHANTOM,
+			DUALBLADE,
+			MIHILE,
+			LUMINOUS,
+			KAISER,
+			ANGELICBUSTER,
+			CANNONEER,
+			XENON,
+			ZERO,
+			SHADE,
+			JETT,
+			HAYATO,
+			KANNA,
+			CHASE,
+			PINKBEAN,
+			KINESIS,
+			CADENA,
+			ILLIUM,
+			ARK,
 		};
 
 		Text version;
-		nl::node raceSelect;
-		std::map<int8_t, Classes> classMap;
-		int8_t activeClass;
+		Point<int16_t> screen_adj;
+		Point<int16_t> pos;
+		Point<int16_t> posZero;
+		nl::node order;
+		nl::node hotlist;
+		nl::node newlist;
+		nl::node bgm;
+		Sprite hotlabel;
+		Sprite hotlabelZero;
+		Sprite newlabel;
+		Sprite hotbtn;
+		Sprite newbtn;
+		uint8_t class_index[INDEX_COUNT];
+		bool mouseover[INDEX_COUNT];
+		uint8_t selected_class;
+		uint8_t index_shift;
+		uint16_t selected_index;
+		bool class_isdisabled[CLASS_COUNT];
+		BoolPair<Texture> class_disabled[CLASS_COUNT];
+		BoolPair<Texture> class_normal[CLASS_COUNT];
+		Texture class_background[CLASS_COUNT];
+		Texture class_details[CLASS_COUNT];
+		Texture class_title[CLASS_COUNT];
+		Texture back;
+		Texture backZero;
+		Sprite back_ani;
+		Texture class_details_background;
+		Texture class_details_backgroundZero;
 	};
 }

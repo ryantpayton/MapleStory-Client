@@ -33,7 +33,7 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
-		UICharSelect(std::vector<CharEntry> characters, int8_t characters_count, int32_t slots, int8_t pic);
+		UICharSelect(std::vector<CharEntry> characters, int8_t characters_count, int32_t slots, int8_t require_pic);
 
 		void draw(float inter) const override;
 		void update() override;
@@ -78,7 +78,7 @@ namespace jrc
 		std::vector<CharEntry> characters;
 		int8_t characters_count;
 		int32_t slots;
-		int8_t pic;
+		int8_t require_pic;
 		Text version;
 		Point<int16_t> pagepos;
 		Point<int16_t> worldpos;
@@ -86,10 +86,20 @@ namespace jrc
 		uint8_t selected_character;
 		uint8_t selected_page;
 		uint8_t page_count;
+		Texture tab;
+		uint8_t tab_index;
+		bool tab_active;
+		bool tab_move;
+		Point<int16_t> tab_pos[3];
+		int16_t tab_move_pos;
+		std::map<uint8_t, uint16_t> tab_map;
 		Point<int16_t> world_dimensions;
+		Animation burning_notice;
+		Text burning_count;
 		std::vector<Sprite> world_sprites;
 		Texture charinfo;
 		Texture charslot;
+		Texture pagebase;
 		Charset pagenumber;
 		nl::node pagenumberpos;
 		Texture signpost[3];
@@ -105,6 +115,7 @@ namespace jrc
 		int16_t timestamp;
 		uint16_t charslot_y;
 		bool show_timestamp;
+		bool burning_character;
 
 		enum InfoLabel : uint8_t
 		{

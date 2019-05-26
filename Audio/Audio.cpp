@@ -51,36 +51,37 @@ namespace jrc
 	Error Sound::init()
 	{
 		if (!BASS_Init(1, 44100, 0, nullptr, 0))
-			return Error::AUDIO;
+			return Error::Code::AUDIO;
 
 		nl::node uisrc = nl::nx::sound["UI.img"];
 
-		add_sound(Sound::BUTTONCLICK, uisrc["BtMouseClick"]);
-		add_sound(Sound::BUTTONOVER, uisrc["BtMouseOver"]);
-		add_sound(Sound::CHARSELECT, uisrc["CharSelect"]);
-		add_sound(Sound::DLGNOTICE, uisrc["DlgNotice"]);
-		add_sound(Sound::SELECTCHAR, uisrc["CharSelect"]);
-		add_sound(Sound::MENUDOWN, uisrc["MenuDown"]);
-		add_sound(Sound::MENUUP, uisrc["MenuUp"]);
-		add_sound(Sound::SCROLLUP, uisrc["ScrollUp"]);
-		add_sound(Sound::TAB, uisrc["Tab"]);
-		add_sound(Sound::WORLDSELECT, uisrc["WorldSelect"]);
+		add_sound(Sound::Name::BUTTONCLICK, uisrc["BtMouseClick"]);
+		add_sound(Sound::Name::BUTTONOVER, uisrc["BtMouseOver"]);
+		add_sound(Sound::Name::CHARSELECT, uisrc["CharSelect"]);
+		add_sound(Sound::Name::DLGNOTICE, uisrc["DlgNotice"]);
+		add_sound(Sound::Name::SELECTCHAR, uisrc["CharSelect"]);
+		add_sound(Sound::Name::MENUDOWN, uisrc["MenuDown"]);
+		add_sound(Sound::Name::MENUUP, uisrc["MenuUp"]);
+		add_sound(Sound::Name::RACESELECT, uisrc["RaceSelect"]);
+		add_sound(Sound::Name::SCROLLUP, uisrc["ScrollUp"]);
+		add_sound(Sound::Name::TAB, uisrc["Tab"]);
+		add_sound(Sound::Name::WORLDSELECT, uisrc["WorldSelect"]);
 
 		nl::node gamesrc = nl::nx::sound["Game.img"];
 
-		add_sound(Sound::GAMESTART, gamesrc["GameIn"]);
-		add_sound(Sound::JUMP, gamesrc["Jump"]);
-		add_sound(Sound::DROP, gamesrc["DropItem"]);
-		add_sound(Sound::PICKUP, gamesrc["PickUpItem"]);
-		add_sound(Sound::PORTAL, gamesrc["Portal"]);
-		add_sound(Sound::LEVELUP, gamesrc["LevelUp"]);
+		add_sound(Sound::Name::GAMESTART, gamesrc["GameIn"]);
+		add_sound(Sound::Name::JUMP, gamesrc["Jump"]);
+		add_sound(Sound::Name::DROP, gamesrc["DropItem"]);
+		add_sound(Sound::Name::PICKUP, gamesrc["PickUpItem"]);
+		add_sound(Sound::Name::PORTAL, gamesrc["Portal"]);
+		add_sound(Sound::Name::LEVELUP, gamesrc["LevelUp"]);
 
 		uint8_t volume = Setting<SFXVolume>::get().load();
 
 		if (!set_sfxvolume(volume))
-			return Error::AUDIO;
+			return Error::Code::AUDIO;
 
-		return Error::NONE;
+		return Error::Code::NONE;
 	}
 
 	void Sound::close()
@@ -195,9 +196,9 @@ namespace jrc
 		uint8_t volume = Setting<BGMVolume>::get().load();
 
 		if (!set_bgmvolume(volume))
-			return Error::AUDIO;
+			return Error::Code::AUDIO;
 
-		return Error::NONE;
+		return Error::Code::NONE;
 	}
 
 	bool Music::set_bgmvolume(uint8_t vol)

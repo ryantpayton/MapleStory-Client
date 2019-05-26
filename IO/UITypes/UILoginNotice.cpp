@@ -16,8 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UILoginNotice.h"
-#include "UIClassCreation.h"
-#include "UICharCreation.h"
 
 #include "../UI.h"
 
@@ -132,66 +130,144 @@ namespace jrc
 		return Button::PRESSED;
 	}
 
-	UIClassConfirm::UIClassConfirm(bool u, uint16_t r, int8_t classMap) : unavailable(u), race(r)
+	UIClassConfirm::UIClassConfirm(uint8_t selected_class, bool unavailable, std::function<void()> okhandler) : okhandler(okhandler)
 	{
-		nl::node notice = nl::nx::ui["Login.img"]["RaceSelect_new"];
-		nl::node type = unavailable ? notice["deny"] : notice["confirm"];
+		nl::node RaceSelect = nl::nx::ui["Login.img"]["RaceSelect_new"];
+		nl::node type = unavailable ? RaceSelect["deny"] : RaceSelect["confirm"];
+		nl::node backgrnd = type["backgrnd"];
+		nl::node race = type["race"][selected_class];
 
-		background = type["backgrnd"];
+		Point<int16_t> race_pos = Point<int16_t>(0, 0);
 
-		if (!unavailable)
-			text = { type["race"][classMap], { 17, 13 } };
+		// TODO: Calculate position based on width of race?
+		switch (selected_class)
+		{
+		case Classes::RESISTANCE:
+			race_pos = Point<int16_t>(57, 10);
+			break;
+		case Classes::EXPLORER:
+			race_pos = Point<int16_t>(71, 10);
+			break;
+		case Classes::CYGNUSKNIGHTS:
+			race_pos = Point<int16_t>(32, 10);
+			break;
+		case Classes::ARAN:
+			race_pos = Point<int16_t>(95, 10);
+			break;
+		case Classes::EVAN:
+			race_pos = Point<int16_t>(93, 10);
+			break;
+		case Classes::MERCEDES:
+			race_pos = Point<int16_t>(65, 10);
+			break;
+		case Classes::DEMON:
+			race_pos = Point<int16_t>(85, 10);
+			break;
+		case Classes::PHANTOM:
+			race_pos = Point<int16_t>(71, 10);
+			break;
+		case Classes::DUALBLADE:
+			race_pos = Point<int16_t>(54, 10);
+			break;
+		case Classes::MIHILE:
+			race_pos = Point<int16_t>(85, 10);
+			break;
+		case Classes::LUMINOUS:
+			race_pos = Point<int16_t>(66, 10);
+			break;
+		case Classes::KAISER:
+			race_pos = Point<int16_t>(87, 10);
+			break;
+		case Classes::ANGELICBUSTER:
+			race_pos = Point<int16_t>(41, 10);
+			break;
+		case Classes::CANNONEER:
+			race_pos = Point<int16_t>(57, 10);
+			break;
+		case Classes::XENON:
+			race_pos = Point<int16_t>(88, 10);
+			break;
+		case Classes::ZERO:
+			break;
+		case Classes::SHADE:
+			race_pos = Point<int16_t>(86, 10);
+			break;
+		case Classes::JETT:
+			race_pos = Point<int16_t>(101, 10);
+			break;
+		case Classes::HAYATO:
+			race_pos = Point<int16_t>(81, 10);
+			break;
+		case Classes::KANNA:
+			race_pos = Point<int16_t>(86, 10);
+			break;
+		case Classes::CHASE:
+			break;
+		case Classes::PINKBEAN:
+			break;
+		case Classes::KINESIS:
+			race_pos = Point<int16_t>(84, 10);
+			break;
+		case Classes::CADENA:
+			race_pos = Point<int16_t>(77, 10);
+			break;
+		case Classes::ILLIUM:
+			race_pos = Point<int16_t>(92, 10);
+			break;
+		case Classes::ARK:
+			race_pos = Point<int16_t>(100, 10);
+			break;
+		default:
+			break;
+		}
+
+		sprites.emplace_back(backgrnd);
+		sprites.emplace_back(race, race_pos + (Point<int16_t>)race["origin"]);
 
 		if (unavailable)
 		{
-			buttons[BT_OK] = std::make_unique<MapleButton>(type["BtOK"], Point<int16_t>(100, 105));
+			buttons[Buttons::OK] = std::make_unique<MapleButton>(type["BtOK"]);
 		}
 		else
 		{
-			buttons[BT_OK] = std::make_unique<MapleButton>(type["BtOK"], Point<int16_t>(62, 107));
-			buttons[BT_CANCEL] = std::make_unique<MapleButton>(type["BtCancel"], Point<int16_t>(137, 107));
+			buttons[Buttons::OK] = std::make_unique<MapleButton>(type["BtOK"], Point<int16_t>(62, 107));
+			buttons[Buttons::CANCEL] = std::make_unique<MapleButton>(type["BtCancel"], Point<int16_t>(137, 107));
 		}
 
-		position = { 286, 179 };
-		dimension = { 362, 219 };
-		active = true;
+		position = Point<int16_t>(286, 179);
+		dimension = Texture(backgrnd).get_dimensions();
 	}
 
-	void UIClassConfirm::draw(float alpha) const
+	void UIClassConfirm::draw(float inter) const
 	{
-		background.draw(position);
-
-		if (!unavailable)
-			text.draw(position + Point<int16_t>(72, -3), alpha);
-
-		UIElement::draw(alpha);
+		UIElement::draw(inter);
 	}
 
-	Cursor::State UIClassConfirm::send_cursor(bool down, Point<int16_t> pos)
+	Cursor::State UIClassConfirm::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
 		for (auto& btit : buttons)
 		{
-			if (btit.second->is_active() && btit.second->bounds(position).contains(pos))
+			if (btit.second->is_active() && btit.second->bounds(position).contains(cursorpos))
 			{
-				if (btit.second->get_state() == Button::NORMAL)
+				if (btit.second->get_state() == Button::State::NORMAL)
 				{
-					Sound(Sound::BUTTONOVER).play();
+					Sound(Sound::Name::BUTTONOVER).play();
 
-					btit.second->set_state(Button::MOUSEOVER);
+					btit.second->set_state(Button::State::MOUSEOVER);
 				}
-				else if (btit.second->get_state() == Button::MOUSEOVER)
+				else if (btit.second->get_state() == Button::State::MOUSEOVER)
 				{
-					if (down)
+					if (clicked)
 					{
-						Sound(Sound::BUTTONCLICK).play();
+						Sound(Sound::Name::BUTTONCLICK).play();
 
 						btit.second->set_state(button_pressed(btit.first));
 					}
 				}
 			}
-			else if (btit.second->get_state() == Button::MOUSEOVER)
+			else if (btit.second->get_state() == Button::State::MOUSEOVER)
 			{
-				btit.second->set_state(Button::NORMAL);
+				btit.second->set_state(Button::State::NORMAL);
 			}
 		}
 
@@ -202,35 +278,21 @@ namespace jrc
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::ESCAPE)
-			{
-				active = false;
-			}
-			else if (keycode == KeyAction::RETURN)
-			{
-				if (!unavailable)
-					create_class();
-
-				active = false;
-			}
+			if (keycode == KeyAction::Id::ESCAPE)
+				deactivate();
+			else if (keycode == KeyAction::Id::RETURN)
+				button_pressed(Buttons::OK);
 		}
 	}
 
-	Button::State UIClassConfirm::button_pressed(uint16_t id)
+	Button::State UIClassConfirm::button_pressed(uint16_t buttonid)
 	{
-		if (!unavailable && id == BT_OK)
-			create_class();
+		deactivate();
 
-		active = false;
-		return Button::PRESSED;
-	}
+		if (buttonid == Buttons::OK)
+			okhandler();
 
-	void UIClassConfirm::create_class()
-	{
-		if (auto charcreation = UI::get().get_element<UICharCreation>())
-			charcreation->deactivate();
-
-		UI::get().emplace<UIClassCreation>(race);
+		return Button::State::NORMAL;
 	}
 
 	UIKeySelect::UIKeySelect(std::function<void(bool)> oh, bool l) : okhandler(oh), login(l)

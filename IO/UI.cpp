@@ -237,6 +237,8 @@ namespace jrc
 						// Login
 						types.emplace_back(UIElement::Type::WORLDSELECT);
 						types.emplace_back(UIElement::Type::CHARSELECT);
+						types.emplace_back(UIElement::Type::CHARCREATION); // No tab
+						types.emplace_back(UIElement::Type::LOGINNOTICE); // No tab (No arrows, but shouldn't send else where)
 
 						// Game
 						types.emplace_back(UIElement::Type::CHANNEL); // No tab
@@ -244,9 +246,6 @@ namespace jrc
 
 					if (escape)
 					{
-						// Login
-						types.emplace_back(UIElement::Type::LOGINNOTICE);
-
 						// Game
 						types.emplace_back(UIElement::Type::NOTICE);
 						types.emplace_back(UIElement::Type::KEYCONFIG);
@@ -265,9 +264,6 @@ namespace jrc
 					}
 					else if (enter)
 					{
-						// Login
-						types.emplace_back(UIElement::Type::LOGINNOTICE);
-
 						// Game
 						types.emplace_back(UIElement::Type::NOTICE);
 						types.emplace_back(UIElement::Type::JOYPAD);

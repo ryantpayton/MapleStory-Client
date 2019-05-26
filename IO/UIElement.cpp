@@ -72,17 +72,17 @@ namespace jrc
 	{
 		if (active)
 		{
-			Sound(Sound::MENUDOWN).play();
+			Sound(Sound::Name::MENUDOWN).play();
 			active = false;
 		}
 		else
 		{
-			Sound(Sound::MENUUP).play();
+			Sound(Sound::Name::MENUUP).play();
 			active = true;
 		}
 	}
 
-	Button::State UIElement::button_pressed(uint16_t) { return Button::DISABLED; }
+	Button::State UIElement::button_pressed(uint16_t) { return Button::State::DISABLED; }
 	void UIElement::send_icon(const Icon&, Point<int16_t>) {}
 
 	void UIElement::doubleclick(Point<int16_t>) {}
@@ -103,8 +103,8 @@ namespace jrc
 
 			switch (button->get_state())
 			{
-			case Button::MOUSEOVER:
-				button->set_state(Button::NORMAL);
+			case Button::State::MOUSEOVER:
+				button->set_state(Button::State::NORMAL);
 				break;
 			}
 		}
@@ -114,38 +114,38 @@ namespace jrc
 
 	Cursor::State UIElement::send_cursor(bool down, Point<int16_t> pos)
 	{
-		Cursor::State ret = down ? Cursor::CLICKING : Cursor::IDLE;
+		Cursor::State ret = down ? Cursor::State::CLICKING : Cursor::State::IDLE;
 
 		for (auto& btit : buttons)
 		{
 			if (btit.second->is_active() && btit.second->bounds(position).contains(pos))
 			{
-				if (btit.second->get_state() == Button::NORMAL)
+				if (btit.second->get_state() == Button::State::NORMAL)
 				{
-					Sound(Sound::BUTTONOVER).play();
+					Sound(Sound::Name::BUTTONOVER).play();
 
-					btit.second->set_state(Button::MOUSEOVER);
-					ret = Cursor::CANCLICK;
+					btit.second->set_state(Button::State::MOUSEOVER);
+					ret = Cursor::State::CANCLICK;
 				}
-				else if (btit.second->get_state() == Button::MOUSEOVER)
+				else if (btit.second->get_state() == Button::State::MOUSEOVER)
 				{
 					if (down)
 					{
-						Sound(Sound::BUTTONCLICK).play();
+						Sound(Sound::Name::BUTTONCLICK).play();
 
 						btit.second->set_state(button_pressed(btit.first));
 
-						ret = Cursor::IDLE;
+						ret = Cursor::State::IDLE;
 					}
 					else
 					{
-						ret = Cursor::CANCLICK;
+						ret = Cursor::State::CANCLICK;
 					}
 				}
 			}
-			else if (btit.second->get_state() == Button::MOUSEOVER)
+			else if (btit.second->get_state() == Button::State::MOUSEOVER)
 			{
-				btit.second->set_state(Button::NORMAL);
+				btit.second->set_state(Button::State::NORMAL);
 			}
 		}
 
