@@ -34,17 +34,16 @@ namespace jrc
 		void send_key(int32_t keycode, bool pressed) override;
 
 	protected:
-		Button::State button_pressed(uint16_t id) override;
+		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
 		void confirm();
 
 		enum Buttons
 		{
-			BT_OK
+			OK
 		};
 
-		Texture background;
 		std::function<void()> okhandler;
 		bool login;
 	};
@@ -63,16 +62,15 @@ namespace jrc
 		void send_key(int32_t keycode, bool pressed) override;
 
 	protected:
-		Button::State button_pressed(uint16_t id) override;
+		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
 		enum Buttons
 		{
-			BT_KEY_TYPE_A,
-			BT_KEY_TYPE_B
+			TYPEA,
+			TYPEB
 		};
 
-		Texture background;
 		std::function<void(bool)> okhandler;
 		bool login;
 	};
@@ -88,6 +86,7 @@ namespace jrc
 
 		void draw(float inter) const override;
 
+		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		void send_key(int32_t keycode, bool pressed) override;
 
@@ -148,7 +147,7 @@ namespace jrc
 		void send_key(int32_t keycode, bool pressed) override;
 
 	protected:
-		Button::State button_pressed(uint16_t id) override;
+		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
 		enum Buttons
@@ -294,6 +293,7 @@ namespace jrc
 			JAPANESE2
 		};
 
+		UILoginNotice(uint16_t message, std::function<void()> okhandler, std::function<void()> cancelhandler);
 		UILoginNotice(uint16_t message, std::function<void()> okhandler);
 		UILoginNotice(uint16_t message);
 
@@ -304,15 +304,18 @@ namespace jrc
 		void close();
 
 	protected:
-		Button::State button_pressed(uint16_t id) override;
+		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
 		enum Buttons : uint16_t
 		{
-			YES
+			YES,
+			NO
 		};
 
 		bool saveid;
+		bool multiple;
 		std::function<void()> okhandler;
+		std::function<void()> cancelhandler;
 	};
 }

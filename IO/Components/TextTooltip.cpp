@@ -34,8 +34,6 @@ namespace jrc
 		cover = Frame["cover"];
 
 		text = "";
-
-		fillwidth = 340;
 	}
 
 	void TextTooltip::draw(Point<int16_t> pos) const
@@ -43,6 +41,7 @@ namespace jrc
 		if (text_label.empty())
 			return;
 
+		int16_t fillwidth = text_label.width();
 		int16_t fillheight = text_label.height();
 
 		int16_t max_width = Constants::Constants::get().get_viewwidth();
@@ -59,9 +58,13 @@ namespace jrc
 		if (adj_y > 0)
 			pos.shift_y(adj_y * -1);
 
-		frame.draw(pos + Point<int16_t>(190, 7), fillwidth - 28, fillheight - 18);
-		cover.draw(pos + Point<int16_t>(20, -22));
-		text_label.draw(pos + Point<int16_t>(25, -20));
+		frame.draw(pos + Point<int16_t>(fillwidth / 2 + 2, fillheight - 7), fillwidth - 14, fillheight - 18);
+		cover.draw(pos + Point<int16_t>(-5, -2));
+
+		if (fillheight > 18)
+			text_label.draw(pos);
+		else
+			text_label.draw(pos + Point<int16_t>(-1, -3));
 	}
 
 	bool TextTooltip::set_text(std::string t)
@@ -74,7 +77,7 @@ namespace jrc
 		if (text.empty())
 			return false;
 
-		text_label = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, text, fillwidth, true, 2);
+		text_label = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, text, 340, true, 2);
 
 		return true;
 	}

@@ -26,17 +26,19 @@
 
 namespace jrc
 {
-	UILoginNotice::UILoginNotice(uint16_t message, std::function<void()> okhandler) : okhandler(okhandler)
+	UILoginNotice::UILoginNotice(uint16_t message, std::function<void()> okhandler, std::function<void()> cancelhandler) : okhandler(okhandler), cancelhandler(cancelhandler)
 	{
+		multiple = false;
+
 		nl::node Notice = nl::nx::ui["Login.img"]["Notice"];
 		nl::node backgrnd;
 
 		switch (message)
 		{
-		case jrc::UILoginNotice::NAME_IN_USE:
-		case jrc::UILoginNotice::ILLEGAL_NAME:
-		case jrc::UILoginNotice::BLOCKED_ID:
-		case jrc::UILoginNotice::INCORRECT_PIC:
+		case Message::NAME_IN_USE:
+		case Message::ILLEGAL_NAME:
+		case Message::BLOCKED_ID:
+		case Message::INCORRECT_PIC:
 			backgrnd = Notice["backgrnd"]["1"];
 			break;
 		default:
@@ -47,13 +49,23 @@ namespace jrc
 		sprites.emplace_back(backgrnd);
 		sprites.emplace_back(Notice["text"][message], Point<int16_t>(17, 13));
 
-		buttons[Buttons::YES] = std::make_unique<MapleButton>(Notice["BtYes"], Point<int16_t>(100, 106));
+		if (message == Message::DELETE_CONFIRMATION)
+		{
+			multiple = true;
+
+			buttons[Buttons::YES] = std::make_unique<MapleButton>(Notice["BtYes"], Point<int16_t>(70, 106));
+			buttons[Buttons::NO] = std::make_unique<MapleButton>(Notice["BtNo"], Point<int16_t>(130, 106));
+		}
+		else
+		{
+			buttons[Buttons::YES] = std::make_unique<MapleButton>(Notice["BtYes"], Point<int16_t>(100, 106));
+		}
 
 		position = Point<int16_t>(275, 199);
 		dimension = Texture(backgrnd).get_dimensions();
-		active = true;
 	}
 
+	UILoginNotice::UILoginNotice(uint16_t message, std::function<void()> okhandler) : UILoginNotice(message, okhandler, []() {}) {}
 	UILoginNotice::UILoginNotice(uint16_t message) : UILoginNotice(message, []() {}) {}
 
 	void UILoginNotice::draw(float alpha) const
@@ -64,20 +76,32 @@ namespace jrc
 	void UILoginNotice::send_key(int32_t keycode, bool pressed)
 	{
 		if (pressed)
-			if (keycode == KeyAction::ESCAPE || keycode == KeyAction::RETURN)
-				close();
+		{
+			if (keycode == KeyAction::ESCAPE)
+			{
+				if (!multiple)
+					okhandler();
+				else
+					cancelhandler();
+
+				deactivate();
+			}
+			else if (keycode == KeyAction::RETURN)
+			{
+				okhandler();
+				deactivate();
+			}
+		}
 	}
 
-	void UILoginNotice::close()
+	Button::State UILoginNotice::button_pressed(uint16_t buttonid)
 	{
-		active = false;
+		if (buttonid == Buttons::YES)
+			okhandler();
+		else if (buttonid == Buttons::NO)
+			cancelhandler();
 
-		okhandler();
-	}
-
-	Button::State UILoginNotice::button_pressed(uint16_t id)
-	{
-		close();
+		deactivate();
 
 		return Button::State::NORMAL;
 	}
@@ -121,9 +145,9 @@ namespace jrc
 		}
 	}
 
-	Button::State UIQuitConfirm::button_pressed(uint16_t id)
+	Button::State UIQuitConfirm::button_pressed(uint16_t buttonid)
 	{
-		if (id == BT_OK)
+		if (buttonid == BT_OK)
 			UI::get().quit();
 
 		active = false;
@@ -243,6 +267,11 @@ namespace jrc
 		UIElement::draw(inter);
 	}
 
+	bool UIClassConfirm::remove_cursor(bool clicked, Point<int16_t> cursorpos)
+	{
+		return false;
+	}
+
 	Cursor::State UIClassConfirm::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
 		for (auto& btit : buttons)
@@ -297,22 +326,20 @@ namespace jrc
 
 	UIKeySelect::UIKeySelect(std::function<void(bool)> oh, bool l) : okhandler(oh), login(l)
 	{
-		nl::node keyType = nl::nx::ui["UIWindow2.img"]["KeyConfig"]["KeyType"];
+		nl::node KeyType = nl::nx::ui["UIWindow2.img"]["KeyConfig"]["KeyType"];
+		nl::node backgrnd = KeyType["backgrnd"];
 
-		background = keyType["backgrnd"];
+		sprites.emplace_back(backgrnd);
 
-		buttons[BT_KEY_TYPE_A] = std::make_unique<MapleButton>(keyType["btTypeA"]);
-		buttons[BT_KEY_TYPE_B] = std::make_unique<MapleButton>(keyType["btTypeB"], Point<int16_t>(1, 1));
+		buttons[Buttons::TYPEA] = std::make_unique<MapleButton>(KeyType["btTypeA"]);
+		buttons[Buttons::TYPEB] = std::make_unique<MapleButton>(KeyType["btTypeB"], Point<int16_t>(1, 1));
 
-		position = { 181, 135 };
-		dimension = { 362, 219 };
-		active = true;
+		position = Point<int16_t>(181, 135);
+		dimension = Texture(backgrnd).get_dimensions();
 	}
 
 	void UIKeySelect::draw(float alpha) const
 	{
-		background.draw(position);
-
 		UIElement::draw(alpha);
 	}
 
@@ -320,22 +347,22 @@ namespace jrc
 	{
 		if (pressed && !login)
 			if (keycode == KeyAction::Id::ESCAPE || keycode == KeyAction::Id::RETURN)
-				active = false;
+				deactivate();
 	}
 
-	Button::State UIKeySelect::button_pressed(uint16_t id)
+	Button::State UIKeySelect::button_pressed(uint16_t buttonid)
 	{
-		bool alternate = (id == BT_KEY_TYPE_A) ? false : true;
+		bool alternate = (buttonid == Buttons::TYPEA) ? false : true;
 
-		if (id == BT_KEY_TYPE_A)
-			buttons[BT_KEY_TYPE_B]->set_state(Button::State::DISABLED);
+		if (alternate)
+			buttons[Buttons::TYPEA]->set_state(Button::State::DISABLED);
 		else
-			buttons[BT_KEY_TYPE_A]->set_state(Button::State::DISABLED);
+			buttons[Buttons::TYPEB]->set_state(Button::State::DISABLED);
 
-		auto onok = [&]()
+		auto onok = [&, alternate]()
 		{
-			active = false;
 			okhandler(alternate);
+			deactivate();
 		};
 
 		UI::get().emplace<UIKeyConfirm>(alternate, onok, login);
@@ -345,21 +372,19 @@ namespace jrc
 
 	UIKeyConfirm::UIKeyConfirm(bool alternate, std::function<void()> oh, bool l) : okhandler(oh), login(l)
 	{
-		nl::node notice = nl::nx::ui["UIWindow2.img"]["KeyConfig"]["KeyType"]["alert"];
+		nl::node alert = nl::nx::ui["UIWindow2.img"]["KeyConfig"]["KeyType"]["alert"];
+		nl::node background = alternate ? alert["alternate"] : alert["default"];
 
-		background = alternate ? notice["alternate"] : notice["default"];
+		sprites.emplace_back(background);
 
-		buttons[BT_OK] = std::make_unique<MapleButton>(notice["btOk"]);
+		buttons[Buttons::OK] = std::make_unique<MapleButton>(alert["btOk"]);
 
-		position = { 276, 219 };
-		dimension = { 362, 219 };
-		active = true;
+		position = Point<int16_t>(276, 219);
+		dimension = Texture(background).get_dimensions();
 	}
 
 	void UIKeyConfirm::draw(float alpha) const
 	{
-		background.draw(position);
-
 		UIElement::draw(alpha);
 	}
 
@@ -367,20 +392,14 @@ namespace jrc
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::RETURN)
-			{
+			if (keycode == KeyAction::Id::RETURN)
 				confirm();
-			}
-			else if (!login && keycode == KeyAction::ESCAPE)
-			{
-				active = false;
-
-				UI::get().remove(UIElement::LOGINNOTICE);
-			}
+			else if (!login && keycode == KeyAction::Id::ESCAPE)
+				UI::get().remove(UIElement::Type::LOGINNOTICE);
 		}
 	}
 
-	Button::State UIKeyConfirm::button_pressed(uint16_t id)
+	Button::State UIKeyConfirm::button_pressed(uint16_t buttonid)
 	{
 		confirm();
 
@@ -389,7 +408,8 @@ namespace jrc
 
 	void UIKeyConfirm::confirm()
 	{
-		active = false;
 		okhandler();
+
+		UI::get().remove(UIElement::Type::LOGINNOTICE);
 	}
 }

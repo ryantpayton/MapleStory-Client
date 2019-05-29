@@ -132,7 +132,6 @@ namespace jrc
 		selected_index = 0;
 		selected_class = class_index[selected_index];
 
-		buttons[Buttons::CLASS0]->set_state(Button::State::PRESSED);
 		buttons[Buttons::LEFT]->set_state(Button::State::DISABLED);
 
 		Sound(Sound::Name::RACESELECT).play();
@@ -356,8 +355,9 @@ namespace jrc
 			{
 				if (!class_isdisabled[selected_class])
 				{
-					deactivate();
+					Sound(Sound::Name::SCROLLUP).play();
 
+					UI::get().remove(UIElement::Type::CHARCREATION);
 					UI::get().emplace<UIClassCreation>(selected_class);
 				}
 			};
@@ -426,7 +426,7 @@ namespace jrc
 		}
 		else if (buttonid >= Buttons::CLASS0)
 		{
-			auto index = buttonid - Buttons::CLASS0;
+			auto index = buttonid - Buttons::CLASS0 + index_shift;
 
 			select_class(index);
 
@@ -469,8 +469,11 @@ namespace jrc
 
 				selected_class = class_index[button_index];
 				mouseover[selected_index - index_shift] = true;
-				buttons[button_index + Buttons::CLASS0]->set_state(Button::State::PRESSED);
 			}
+		}
+		else
+		{
+			button_pressed(Buttons::MAKE);
 		}
 
 		if (selected_index > 0)

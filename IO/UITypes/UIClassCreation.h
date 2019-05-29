@@ -32,31 +32,54 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
-		UIClassCreation(uint16_t job);
+		UIClassCreation(uint8_t selected_class);
 
-		void draw(float) const override;
+		void draw(float inter) const override;
 		void update() override;
 
-		Cursor::State send_cursor(bool, Point<int16_t>) override;
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		void send_key(int32_t keycode, bool pressed) override;
 
-		void send_naming_result(bool success);
+		void send_naming_result(bool nameused);
 
 	protected:
-		Button::State button_pressed(uint16_t button_id) override;
+		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
-		void back();
 		void randomize_look();
 		const std::string& get_equipname(Equipslot::Id slot) const;
 
-		enum Classes
+		enum Classes : uint8_t
 		{
-			CYGNUS,
-			EXPLORERS,
-			ARAN
+			RESISTANCE,
+			EXPLORER,
+			CYGNUSKNIGHTS,
+			ARAN,
+			EVAN,
+			MERCEDES,
+			DEMON,
+			PHANTOM,
+			DUALBLADE,
+			MIHILE,
+			LUMINOUS,
+			KAISER,
+			ANGELICBUSTER,
+			CANNONEER,
+			XENON,
+			ZERO,
+			SHADE,
+			JETT,
+			HAYATO,
+			KANNA,
+			CHASE,
+			PINKBEAN,
+			KINESIS,
+			CADENA,
+			ILLIUM,
+			ARK,
 		};
 
-		enum Buttons
+		enum Buttons : uint16_t
 		{
 			BT_BACK,
 			BT_CHARC_OK,
@@ -87,7 +110,7 @@ namespace jrc
 			BT_CHARC_HAIRC7
 		};
 
-		enum GenderButtons
+		enum GenderButtons : uint8_t
 		{
 			GENDER_BACKGROUND,
 			GENDER_HEAD,
@@ -138,6 +161,6 @@ namespace jrc
 		Text wepname;
 		Text gendername;
 		Text version;
-		uint16_t cjob;
+		uint16_t selected_class;
 	};
 }

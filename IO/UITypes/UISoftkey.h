@@ -19,9 +19,8 @@
 #include "../UIElement.h"
 
 #include "../Components/Textfield.h"
+#include "../Components/TextTooltip.h"
 #include "../Util/Randomizer.h"
-
-#include <functional>
 
 namespace jrc
 {
@@ -29,52 +28,64 @@ namespace jrc
 	class UISoftkey : public UIElement
 	{
 	public:
-		using Callback = std::function<void(const std::string&)>;
+		using OkCallback = std::function<void(const std::string& entered)>;
+		using CancelCallback = std::function<void()>;
 
 		static constexpr Type TYPE = SOFTKEYBOARD;
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
 
-		UISoftkey(Callback callback);
+		UISoftkey(OkCallback ok_callback, CancelCallback cancel_callback, std::string tooltip_text, Point<int16_t> tooltip_pos);
+		UISoftkey(OkCallback ok_callback, CancelCallback cancel_callback, std::string tooltip_text);
+		UISoftkey(OkCallback ok_callback, CancelCallback cancel_callback);
+		UISoftkey(OkCallback ok_callback);
 
-		void draw(float alpha) const override;
+		void draw(float inter) const override;
+		void update() override;
 
 		void send_key(int32_t keycode, bool pressed) override;
 
 	protected:
-		Button::State button_pressed(uint16_t) override;
+		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
 		void shufflekeys();
-		Point<int16_t> keypos(uint8_t) const;
+		void show_text(std::string text);
+		void clear_tooltip();
+		Point<int16_t> keypos(uint8_t num) const;
 
-		enum Buttons
+		enum Buttons : uint16_t
 		{
-			BT_0,
-			BT_1,
-			BT_2,
-			BT_3,
-			BT_4,
-			BT_5,
-			BT_6,
-			BT_7,
-			BT_8,
-			BT_9,
-			BT_TAB_0,
-			BT_TAB_1,
-			BT_TAB_2,
-			BT_NEXT,
-			BT_BACK,
-			BT_CANCEL,
-			BT_OK
+			NEXT,
+			DEL,
+			CANCEL,
+			OK,
+			TAB0,
+			TAB1,
+			TAB2,
+			NUM0,
+			NUM1,
+			NUM2,
+			NUM3,
+			NUM4,
+			NUM5,
+			NUM6,
+			NUM7,
+			NUM8,
+			NUM9
 		};
 
 		static constexpr size_t MIN_SIZE = 6;
-		static constexpr size_t MAX_SIZE = 12;
+		static constexpr size_t MAX_SIZE = 16;
 		static constexpr uint8_t NUM_KEYS = 10;
 
-		Callback callback;
+		OkCallback ok_callback;
+		CancelCallback cancel_callback;
 		Textfield entry;
 		Randomizer random;
+		TextTooltip tetooltip;
+		Optional<Tooltip> tooltip;
+		Point<int16_t> tooltipposition;
+		int16_t timestamp;
 	};
 }

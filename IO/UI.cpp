@@ -238,7 +238,10 @@ namespace jrc
 						types.emplace_back(UIElement::Type::WORLDSELECT);
 						types.emplace_back(UIElement::Type::CHARSELECT);
 						types.emplace_back(UIElement::Type::CHARCREATION); // No tab
+						types.emplace_back(UIElement::Type::CLASSCREATION); // No tab (No arrows, but shouldn't send else where)
 						types.emplace_back(UIElement::Type::LOGINNOTICE); // No tab (No arrows, but shouldn't send else where)
+						types.emplace_back(UIElement::Type::LOGINNOTICE_CONFIRM); // No tab (No arrows, but shouldn't send else where)
+						types.emplace_back(UIElement::Type::LOGINWAIT); // No tab (No arrows, but shouldn't send else where)
 
 						// Game
 						types.emplace_back(UIElement::Type::CHANNEL); // No tab
@@ -246,6 +249,8 @@ namespace jrc
 
 					if (escape)
 					{
+						types.emplace_back(UIElement::Type::SOFTKEYBOARD);
+
 						// Game
 						types.emplace_back(UIElement::Type::NOTICE);
 						types.emplace_back(UIElement::Type::KEYCONFIG);
@@ -264,6 +269,8 @@ namespace jrc
 					}
 					else if (enter)
 					{
+						types.emplace_back(UIElement::Type::SOFTKEYBOARD);
+
 						// Game
 						types.emplace_back(UIElement::Type::NOTICE);
 						types.emplace_back(UIElement::Type::JOYPAD);

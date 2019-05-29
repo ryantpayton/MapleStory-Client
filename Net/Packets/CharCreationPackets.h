@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -36,10 +36,8 @@ namespace jrc
 	class CreateCharPacket : public OutPacket
 	{
 	public:
-		CreateCharPacket(const std::string& name, uint16_t job, int32_t face, int32_t hair,
-			uint8_t hairc, uint8_t skin, int32_t top, int32_t bot, int32_t shoes,
-			int32_t weapon, bool female) : OutPacket(CREATE_CHAR) {
-
+		CreateCharPacket(const std::string& name, uint16_t job, int32_t face, int32_t hair, uint8_t hairc, uint8_t skin, int32_t top, int32_t bot, int32_t shoes, int32_t weapon, bool female) : OutPacket(CREATE_CHAR)
+		{
 			write_string(name);
 			write_int(job);
 			write_int(face);

@@ -42,6 +42,7 @@ namespace jrc
 		void send_key(int32_t keycode, bool pressed) override;
 
 		void add_character(CharEntry&& character);
+		void post_add_character();
 		void remove_character(int32_t id);
 
 		const CharEntry& get_character(int32_t id);
@@ -58,6 +59,8 @@ namespace jrc
 		Point<int16_t> get_character_slot_pos(size_t index, uint16_t x_adj, uint16_t y_adj) const;
 		Point<int16_t> get_infolabel_pos(size_t index) const;
 		std::string get_infolabel(size_t index, StatsEntry character_stats) const;
+		void request_pic();
+		void check_pic(const std::string entered_pic) const;
 
 		static constexpr uint8_t PAGESIZE = 8;
 

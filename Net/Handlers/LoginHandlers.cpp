@@ -177,9 +177,6 @@ namespace jrc
 		std::string name = recv.read_string();
 		bool used = recv.read_bool();
 
-		if (used)
-			UI::get().emplace<UILoginNotice>(UILoginNotice::NAME_IN_USE);
-
 		// Notify the character creation screen.
 		if (auto classcreation = UI::get().get_element<UIClassCreation>())
 			classcreation->send_naming_result(used);

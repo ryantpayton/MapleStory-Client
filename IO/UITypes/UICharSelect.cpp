@@ -19,6 +19,7 @@
 #include "UIWorldSelect.h"
 #include "UICharCreation.h"
 #include "UISoftkey.h"
+#include "UILoginNotice.h"
 
 #include "../UI.h"
 #include "../Configuration.h"
@@ -31,6 +32,9 @@
 #include "../Net/Packets/SelectCharPackets.h"
 
 #include <nlnx/nx.hpp>
+
+#define NOMINMAX
+#include <windows.h>
 
 namespace jrc
 {
@@ -60,7 +64,7 @@ namespace jrc
 
 		Point<int16_t> tab_adj = Point<int16_t>(86, 5);
 
-		tab_pos[0] = character_sel_pos + tab_adj;
+		tab_pos[0] = character_sel_pos + tab_adj + Point<int16_t>(47, 3);
 		tab_pos[1] = character_new_pos + tab_adj;
 		tab_pos[2] = character_del_pos + tab_adj;
 
@@ -83,10 +87,10 @@ namespace jrc
 		uint8_t world_id = Configuration::get().get_worldid();
 		uint8_t channel_id = Configuration::get().get_channelid();
 
-			world_sprites.emplace_back(selectWorld, worldpos);
-			world_sprites.emplace_back(selectedWorld["icon"][world_id], worldpos - Point<int16_t>(14, -1));
-			world_sprites.emplace_back(selectedWorld["name"][world_id], worldpos - Point<int16_t>(8, 1));
-			world_sprites.emplace_back(selectedWorld["ch"][channel_id], worldpos - Point<int16_t>(0, 1));
+		world_sprites.emplace_back(selectWorld, worldpos);
+		world_sprites.emplace_back(selectedWorld["icon"][world_id], worldpos - Point<int16_t>(14, -1));
+		world_sprites.emplace_back(selectedWorld["name"][world_id], worldpos - Point<int16_t>(8, 1));
+		world_sprites.emplace_back(selectedWorld["ch"][channel_id], worldpos - Point<int16_t>(0, 1));
 
 		nl::node map = nl::nx::map["Back"]["login.img"];
 		nl::node ani = map["ani"];
@@ -128,6 +132,12 @@ namespace jrc
 		for (size_t i = 0; i < PAGESIZE; i++)
 			buttons[Buttons::CHARACTER_SLOT0 + i] = std::make_unique<AreaButton>(get_character_slot_pos(i, 105, 144), Point<int16_t>(50, 80));
 
+		if (require_pic == 0)
+		{
+			buttons[Buttons::CHANGEPIC]->set_active(false);
+			buttons[Buttons::RESETPIC]->set_active(false);
+		}
+
 		levelset = Charset(CharSelect["lv"], Charset::Alignment::CENTER);
 		namelabel = OutlinedText(Text::Font::A15B, Text::Alignment::CENTER, Text::Color::WHITE, Text::Color::IRISHCOFFEE);
 
@@ -156,11 +166,16 @@ namespace jrc
 		update_buttons();
 
 		if (characters_count > 0)
-			update_selected_character();
+		{
+			if (selected_character < characters_count)
+				update_selected_character();
+			else
+				select_last_slot();
 		}
+	}
 
 	void UICharSelect::draw(float inter) const
-		{
+	{
 		UIElement::draw_sprites(inter);
 
 		version.draw(position + Point<int16_t>(707, -9));
@@ -182,7 +197,7 @@ namespace jrc
 			bool selectedslot = index == selected_character;
 
 			if (index < characters_count)
-		{
+			{
 				Point<int16_t> charpos = get_character_slot_pos(i, 135, 224);
 				DrawArgument chararg = DrawArgument(charpos, flip_character);
 
@@ -191,11 +206,11 @@ namespace jrc
 				const StatsEntry& character_stats = characters[index].stats;
 
 				if (selectedslot)
-	{
+				{
 					selectedslot_effect[1].draw(charpos + Point<int16_t>(-5, 16), inter);
 
 					int8_t lvy = -115;
-					Point<int16_t> pos_adj = Point<int16_t>(665, 355);
+					Point<int16_t> pos_adj = Point<int16_t>(668, 355);
 
 					charinfo.draw(position + charinfopos);
 
@@ -206,10 +221,10 @@ namespace jrc
 					namelabel.draw(pos_adj + Point<int16_t>(8, -106));
 
 					for (size_t i = 0; i < InfoLabel::NUM_LABELS; i++)
-		{
+					{
 						Point<int16_t> labelpos = pos_adj + get_infolabel_pos(i);
 						infolabels[i].draw(labelpos);
-			}
+					}
 				}
 
 				uint8_t j = 0;
@@ -255,21 +270,21 @@ namespace jrc
 		pagenumber.draw(current.substr(1, 1), position + pagepos + Point<int16_t>(pagenumberpos[1]));
 		pagenumber.draw(total.substr(0, 1), position + pagepos + Point<int16_t>(pagenumberpos[2]));
 		pagenumber.draw(total.substr(1, 1), position + pagepos + Point<int16_t>(pagenumberpos[3]));
-			}
+	}
 
 	void UICharSelect::update()
 	{
 		UIElement::update();
 
 		if (show_timestamp)
-	{
-			if (timestamp > 0)
 		{
+			if (timestamp > 0)
+			{
 				timestamp -= Constants::TIMESTEP;
 
 				if (timestamp <= 176)
 					charslot_y += 1;
-		}
+			}
 		}
 		else
 		{
@@ -279,8 +294,8 @@ namespace jrc
 
 				if (charslot_y >= 0)
 					charslot_y -= 1;
-					}
-				}
+			}
+		}
 
 		if (tab_move && tab_move_pos < 4)
 			tab_move_pos += 1;
@@ -301,7 +316,7 @@ namespace jrc
 
 		if (burning_character)
 			burning_notice.update();
-					}
+	}
 
 	Cursor::State UICharSelect::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
@@ -341,6 +356,9 @@ namespace jrc
 
 						btit.second->set_state(button_pressed(btit.first));
 
+						if (tab_active && btit.first == tab_map[tab_index])
+							btit.second->set_state(Button::State::MOUSEOVER);
+
 						ret = Cursor::State::IDLE;
 					}
 					else
@@ -364,21 +382,65 @@ namespace jrc
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::Id::LEFT)
+			uint8_t selected_index = selected_character;
+			uint8_t index_total = std::min(characters_count, static_cast<int8_t>((selected_page + 1) * PAGESIZE));
+
+			uint8_t COLUMNS = 4;
+			uint8_t columns = std::min(index_total, COLUMNS);
+
+			uint8_t rows = std::floor((index_total - 1) / COLUMNS) + 1;
+
+			div_t div = std::div(selected_index, columns);
+			auto current_col = div.rem;
+			//auto current_row = div.quot;
+
+			if (keycode == KeyAction::Id::UP)
 			{
-				// selected_characters--;
+				auto next_index = (selected_index - COLUMNS < 0 ? (selected_index - COLUMNS) + rows * COLUMNS : selected_index - COLUMNS);
+
+				if (next_index == selected_character)
+					return;
+
+				if (next_index >= index_total)
+					button_pressed(next_index - COLUMNS + Buttons::CHARACTER_SLOT0);
+				else
+					button_pressed(next_index + Buttons::CHARACTER_SLOT0);
 			}
-			else if (keycode == KeyAction::Id::UP)
-			{
-				// same page, get position directly above current position
-		}
-			else if (keycode == KeyAction::Id::RIGHT)
-			{
-				// selected_characters++;
-	}
 			else if (keycode == KeyAction::Id::DOWN)
 			{
-				// same page, get position directly below current position
+				auto next_index = (selected_index + COLUMNS >= index_total ? current_col : selected_index + COLUMNS);
+
+				if (next_index == selected_character)
+					return;
+
+				if (next_index > index_total)
+					button_pressed(next_index + COLUMNS + Buttons::CHARACTER_SLOT0);
+				else
+					button_pressed(next_index + Buttons::CHARACTER_SLOT0);
+			}
+			else if (keycode == KeyAction::Id::LEFT)
+			{
+				if (selected_index != 0)
+				{
+					selected_index--;
+
+					if (selected_index >= (selected_page + 1) * PAGESIZE - PAGESIZE)
+						button_pressed(selected_index + Buttons::CHARACTER_SLOT0);
+					else
+						button_pressed(Buttons::PAGELEFT);
+				}
+			}
+			else if (keycode == KeyAction::Id::RIGHT)
+			{
+				if (selected_index != characters_count - 1)
+				{
+					selected_index++;
+
+					if (selected_index < index_total)
+						button_pressed(selected_index + Buttons::CHARACTER_SLOT0);
+					else
+						button_pressed(Buttons::PAGERIGHT);
+				}
 			}
 			else if (keycode == KeyAction::Id::TAB)
 			{
@@ -411,11 +473,14 @@ namespace jrc
 				if (prev_state != Button::State::DISABLED)
 					prev_btn->set_state(Button::State::NORMAL);
 
-				auto &btn = buttons[tab_map[tab_index]];
-				auto state = btn->get_state();
+				if (tab_active)
+				{
+					auto &btn = buttons[tab_map[tab_index]];
+					auto state = btn->get_state();
 
-				if (state != Button::State::DISABLED)
-					btn->set_state(Button::State::MOUSEOVER);
+					if (state != Button::State::DISABLED)
+						btn->set_state(Button::State::MOUSEOVER);
+				}
 			}
 			else if (keycode == KeyAction::Id::ESCAPE)
 			{
@@ -431,16 +496,13 @@ namespace jrc
 					auto state = btn->get_state();
 
 					if (state != Button::State::DISABLED)
-					{
 						button_pressed(btn_index);
-
-						tab_index = 0;
-						tab_active = false;
-						tab_move = false;
-						tab_move_pos = 0;
+				}
+				else
+				{
+					button_pressed(Buttons::CHARACTER_SELECT);
+				}
 			}
-		}
-	}
 		}
 	}
 
@@ -451,7 +513,10 @@ namespace jrc
 		characters.emplace_back(std::forward<CharEntry>(character));
 
 		characters_count++;
+	}
 
+	void UICharSelect::post_add_character()
+	{
 		auto page_matches = (characters_count - 1) / PAGESIZE == selected_page;
 
 		if (!page_matches)
@@ -463,6 +528,8 @@ namespace jrc
 			select_last_slot();
 		else
 			update_selected_character();
+
+		makeactive();
 
 		chatslotlabel.change_text(get_slot_text());
 	}
@@ -491,18 +558,16 @@ namespace jrc
 
 				if (selected_character < characters_count)
 					update_selected_character();
-		else
+				else
 					select_last_slot();
 
-				chatslotlabel.change_text(get_slot_text());
-
 				return;
-		}
+			}
 		}
 	}
 
 	const CharEntry& UICharSelect::get_character(int32_t id)
-		{
+	{
 		for (auto& character : characters)
 			if (character.id == id)
 				return character;
@@ -512,7 +577,7 @@ namespace jrc
 		static const CharEntry null_character = { {}, {}, 0 };
 
 		return null_character;
-		}
+	}
 
 	Button::State UICharSelect::button_pressed(uint16_t buttonid)
 	{
@@ -524,67 +589,91 @@ namespace jrc
 			int32_t id = characters[selected_character].id;
 
 			switch (require_pic)
-		{
-		case 0:
-				UI::get().emplace<UISoftkey>(
-					[id](const std::string& pic)
-					{
-						RegisterPicPacket(id, pic).dispatch();
-					}
-				);
+			{
+			case 0:
+			{
+				std::function<void()> onok = [&]()
+				{
+					request_pic();
+				};
 
+				UI::get().emplace<UILoginNotice>(UILoginNotice::Message::PIC_REQ, onok);
+			}
 			break;
-		case 1:
-				UI::get().emplace<UISoftkey>(
-					[id](const std::string& pic)
-					{
-						SelectCharPicPacket(pic, id).dispatch();
-					}
-				);
+			case 1:
+			{
+				std::function<void(const std::string&)> onok = [id](const std::string& pic)
+				{
+					SelectCharPicPacket(pic, id).dispatch();
+				};
 
+				UI::get().emplace<UISoftkey>(onok);
+			}
 			break;
-		case 2:
-				Sound(Sound::Name::SELECTCHAR).play();
+			case 2:
 				SelectCharPacket(id).dispatch();
-
-			break;
+				break;
+			}
 		}
-	}
 		break;
 		case Buttons::CHARACTER_NEW:
 			Sound(Sound::Name::SCROLLUP).play();
 
 			deactivate();
 
+			tab_index = 0;
+			tab_active = false;
+			tab_move = false;
+			tab_move_pos = 0;
+
 			UI::get().emplace<UICharCreation>();
 			break;
 		case Buttons::CHARACTER_DELETE:
-	{
+		{
 			int32_t id = characters[selected_character].id;
 
 			switch (require_pic)
 			{
 			case 0:
-				UI::get().emplace<UISoftkey>(
-					[id](const std::string& pic)
-					{
-						RegisterPicPacket(id, pic).dispatch();
-					}
-				);
+			{
+				std::function<void()> onok = [&]()
+				{
+					chatslotlabel.change_text(get_slot_text());
+				};
 
-				break;
+				UI::get().emplace<UILoginNotice>(UILoginNotice::Message::CHAR_DEL_FAIL_NO_PIC, onok);
+			}
+			break;
 			case 1:
-			UI::get().emplace<UISoftkey>(
-				[id](const std::string& pic)
-		{
-					DeleteCharPacket(pic, id).dispatch();
-		}
-			);
+			{
+				std::function<void()> oncancel = [&]()
+				{
+					chatslotlabel.change_text(get_slot_text());
+				};
 
-				break;
+				std::function<void()> onok = [&, id, oncancel]()
+				{
+					std::function<void(const std::string&)> onok = [&, id](const std::string& pic)
+					{
+						DeleteCharPicPacket(pic, id).dispatch();
+						chatslotlabel.change_text(get_slot_text());
+					};
+
+					UI::get().emplace<UISoftkey>(onok, oncancel);
+				};
+
+				const StatsEntry& character_stats = characters[selected_character].stats;
+				uint16_t cjob = character_stats.stats[Maplestat::Id::JOB];
+
+				if (cjob < 1000)
+					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::DELETE_CONFIRMATION, onok, oncancel);
+				else
+					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::CASH_ITEMS_CONFIRM_DELETION, onok);
+			}
+			break;
 			case 2:
-				DeleteCharPacket(0, id).dispatch();
-
+				DeleteCharPacket(id).dispatch();
+				chatslotlabel.change_text(get_slot_text());
 				break;
 			}
 		}
@@ -602,7 +691,7 @@ namespace jrc
 				update_buttons();
 
 			select_last_slot();
-	}
+		}
 		break;
 		case Buttons::PAGERIGHT:
 		{
@@ -614,7 +703,7 @@ namespace jrc
 				selected_page = 0;
 
 			if (previous_page != selected_page)
-	{
+			{
 				update_buttons();
 
 				button_pressed(Buttons::CHARACTER_SLOT0);
@@ -624,7 +713,12 @@ namespace jrc
 		case Buttons::CHANGEPIC:
 			break;
 		case Buttons::RESETPIC:
-			break;
+		{
+			std::string url = Configuration::get().get_resetpic();
+
+			ShellExecute(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+		}
+		break;
 		case Buttons::EDITCHARLIST:
 			break;
 		case Buttons::BACK:
@@ -638,14 +732,14 @@ namespace jrc
 			break;
 		default:
 			if (buttonid >= Buttons::CHARACTER_SLOT0)
-	{
+			{
 				uint8_t previous_character = selected_character;
 				selected_character = buttonid - Buttons::CHARACTER_SLOT0 + selected_page * PAGESIZE;
 
 				if (previous_character != selected_character)
 				{
 					if (previous_character < characters_count)
-		{
+					{
 						charlooks[previous_character].set_stance(Stance::Id::STAND1);
 						nametags[previous_character].set_selected(false);
 					}
@@ -655,7 +749,7 @@ namespace jrc
 				}
 			}
 
-				break;
+			break;
 		}
 
 		return Button::State::NORMAL;
@@ -689,7 +783,7 @@ namespace jrc
 				character_found = true;
 
 				break;
-	}
+			}
 		}
 
 		buttons[Buttons::CHARACTER_SELECT]->set_active(character_found);
@@ -718,7 +812,7 @@ namespace jrc
 			auto index = i + selected_page * PAGESIZE;
 
 			if (index < characters_count)
-		{
+			{
 				button_pressed(i + Buttons::CHARACTER_SLOT0);
 
 				return;
@@ -729,19 +823,19 @@ namespace jrc
 	std::string UICharSelect::get_slot_text()
 	{
 		show_timestamp = true;
-		timestamp = 7000;
+		timestamp = 7 * 1000;
 		charslot_y = 0;
 
 		return pad_number_with_leading_zero(characters_count) + "/" + pad_number_with_leading_zero(slots);
 	}
 
 	std::string UICharSelect::pad_number_with_leading_zero(uint8_t value) const
-		{
+	{
 		std::string return_val = std::to_string(value);
 		return_val.insert(return_val.begin(), 2 - return_val.length(), '0');
 
 		return return_val;
-		}
+	}
 
 	Point<int16_t> UICharSelect::get_character_slot_pos(size_t index, uint16_t x_adj, uint16_t y_adj) const
 	{
@@ -754,7 +848,7 @@ namespace jrc
 	Point<int16_t> UICharSelect::get_infolabel_pos(size_t index) const
 	{
 		switch (index)
-	{
+		{
 		case InfoLabel::JOB:
 			return { 68, -74 };
 		case InfoLabel::STR:
@@ -777,7 +871,7 @@ namespace jrc
 	std::string UICharSelect::get_infolabel(size_t index, StatsEntry character_stats) const
 	{
 		switch (index)
-	{
+		{
 		case InfoLabel::JOB:
 			return Job(character_stats.stats[Maplestat::Id::JOB]).get_name();
 		case InfoLabel::STR:
@@ -795,5 +889,77 @@ namespace jrc
 		}
 
 		return "";
+	}
+
+	void UICharSelect::request_pic()
+	{
+		std::function<void(const std::string&)> enterpic = [&](const std::string& entered_pic)
+		{
+			std::function<void(const std::string&)> verifypic = [&, entered_pic](const std::string& verify_pic)
+			{
+				if (entered_pic == verify_pic)
+				{
+					check_pic(entered_pic);
+				}
+				else
+				{
+					std::function<void()> onreturn = [&]()
+					{
+						request_pic();
+					};
+
+					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::PASSWORD_IS_INCORRECT, onreturn);
+				}
+			};
+
+			UI::get().emplace<UISoftkey>(verifypic, []() {}, "Please re-enter your new PIC.", Point<int16_t>(24, 0));
+		};
+
+		UI::get().emplace<UISoftkey>(enterpic, []() {}, "Your new PIC must at least be 6 characters long.", Point<int16_t>(24, 0));
+	}
+
+	void UICharSelect::check_pic(const std::string entered_pic) const
+	{
+		const char *pStr = entered_pic.c_str();
+
+		if (pStr == NULL)
+			return;
+
+		int count = 0;
+		char m = ' ';
+		bool reptitive = false;
+
+		while (*pStr)
+		{
+			if (*pStr == m)
+			{
+				count++;
+			}
+			else
+			{
+				count = 0;
+				m = *pStr;
+			}
+
+			if (count > 2)
+			{
+				reptitive = true;
+				break;
+			}
+
+			pStr++;
+		}
+
+		if (reptitive)
+		{
+			UI::get().emplace<UILoginNotice>(UILoginNotice::Message::PIC_REPITIVE);
+		}
+		else
+		{
+			RegisterPicPacket(
+				characters[selected_character].id,
+				entered_pic
+			).dispatch();
+		}
 	}
 }

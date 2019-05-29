@@ -17,163 +17,188 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UISoftKey.h"
 
+#include "../Constants.h"
+
 #include "../Components/MapleButton.h"
 #include "../Components/TwoSpriteButton.h"
 
-#include "../Net/Packets/SelectCharPackets.h"
+#include "../Configuration.h"
 
 #include "nlnx/nx.hpp"
 
 namespace jrc
 {
-	UISoftkey::UISoftkey(Callback c) : callback(c) {
-		nl::node src = nl::nx::ui["Login.img"]["Common"]["SoftKey"];
+	UISoftkey::UISoftkey(OkCallback ok, CancelCallback cancel, std::string tooltip_text, Point<int16_t> tooltip_pos) : ok_callback(ok), cancel_callback(cancel), tooltipposition(tooltip_pos)
+	{
+		Point<int16_t> screen_adj = Point<int16_t>(-1, 0);
 
-		sprites.emplace_back(src["backgrnd"], Point<int16_t>(-1, 0));
-		sprites.emplace_back(src["backgrnd2"]);
-		sprites.emplace_back(src["backgrnd3"]);
+		nl::node SoftKey = nl::nx::ui["Login.img"]["Common"]["SoftKey"];
+		nl::node backgrnd = SoftKey["backgrnd"];
 
-		buttons[BT_TAB_0] = std::make_unique<TwoSpriteButton>(src["Tab"]["normal"]["0"], src["Tab"]["selected"]["0"], Point<int16_t>(-1, 0));
-		buttons[BT_TAB_1] = std::make_unique<TwoSpriteButton>(src["Tab"]["normal"]["1"], src["Tab"]["selected"]["1"], Point<int16_t>(-1, 0));
-		buttons[BT_TAB_2] = std::make_unique<TwoSpriteButton>(src["Tab"]["normal"]["2"], src["Tab"]["selected"]["1"], Point<int16_t>(-1, 0));
+		nl::node Tab = SoftKey["Tab"];
+		nl::node TabNormal = Tab["normal"];
+		nl::node TabSelected = Tab["selected"];
 
-		buttons[BT_NEXT] = std::make_unique<MapleButton>(src["BtNext"]);
-		buttons[BT_BACK] = std::make_unique<MapleButton>(src["BtDel"]);
-		buttons[BT_OK] = std::make_unique<MapleButton>(src["BtOK"], Point<int16_t>(14, 235));
-		buttons[BT_CANCEL] = std::make_unique<MapleButton>(src["BtCancel"], Point<int16_t>(72, 235));
+		sprites.emplace_back(backgrnd, screen_adj);
+		sprites.emplace_back(SoftKey["backgrnd2"]);
+		sprites.emplace_back(SoftKey["backgrnd3"]);
 
-		nl::node keys = src["BtNum"];
+		buttons[Buttons::NEXT] = std::make_unique<MapleButton>(SoftKey["BtNext"]);
+		buttons[Buttons::DEL] = std::make_unique<MapleButton>(SoftKey["BtDel"]);
+		buttons[Buttons::CANCEL] = std::make_unique<MapleButton>(SoftKey["BtCancel"], Point<int16_t>(72, 235));
+		buttons[Buttons::OK] = std::make_unique<MapleButton>(SoftKey["BtOK"], Point<int16_t>(14, 235));
 
-		buttons[BT_0] = std::make_unique<MapleButton>(keys["0"]);
-		buttons[BT_1] = std::make_unique<MapleButton>(keys["1"]);
-		buttons[BT_2] = std::make_unique<MapleButton>(keys["2"]);
-		buttons[BT_3] = std::make_unique<MapleButton>(keys["3"]);
-		buttons[BT_4] = std::make_unique<MapleButton>(keys["4"]);
-		buttons[BT_5] = std::make_unique<MapleButton>(keys["5"]);
-		buttons[BT_6] = std::make_unique<MapleButton>(keys["6"]);
-		buttons[BT_7] = std::make_unique<MapleButton>(keys["7"]);
-		buttons[BT_8] = std::make_unique<MapleButton>(keys["8"]);
-		buttons[BT_9] = std::make_unique<MapleButton>(keys["9"]);
+		for (size_t i = 0; i < 3; i++)
+		{
+			buttons[Buttons::TAB0 + i] = std::make_unique<TwoSpriteButton>(TabNormal[i], TabSelected[i], screen_adj);
 
-		buttons[BT_TAB_0]->set_state(Button::PRESSED);
-		buttons[BT_TAB_1]->set_state(Button::DISABLED);
-		buttons[BT_TAB_2]->set_state(Button::DISABLED);
-		buttons[BT_OK]->set_state(Button::DISABLED);
+			if (i == 0)
+				buttons[Buttons::TAB0 + i]->set_state(Button::State::PRESSED);
+			else
+				buttons[Buttons::TAB0 + i]->set_state(Button::State::DISABLED);
+		}
 
-		entry = { Text::A11M, Text::LEFT, Text::LIGHTGREY, {{ -3, -4 }, { 150, 24 }}, MAX_SIZE };
+		for (size_t i = 0; i < NUM_KEYS; i++)
+			buttons[Buttons::NUM0 + i] = std::make_unique<MapleButton>(SoftKey["BtNum"][i]);
+
+		entry = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LIGHTGREY, Rectangle<int16_t>(Point<int16_t>(-3, -4), Point<int16_t>(150, 24)), MAX_SIZE);
 		entry.set_cryptchar('*');
 
 		shufflekeys();
+		show_text(tooltip_text);
 
-		position = { 330, 150 };
-		dimension = { 140, 280 };
-		active = true;
+		position = Point<int16_t>(330, 150);
+		dimension = Texture(backgrnd).get_dimensions();
 	}
 
-	void UISoftkey::draw(float alpha) const
+	UISoftkey::UISoftkey(OkCallback ok_callback, CancelCallback cancel_callback, std::string tooltip_text) : UISoftkey(ok_callback, cancel_callback, tooltip_text, Point<int16_t>(0, 0)) {}
+	UISoftkey::UISoftkey(OkCallback ok_callback, CancelCallback cancel_callback) : UISoftkey(ok_callback, cancel_callback, "") {}
+	UISoftkey::UISoftkey(OkCallback ok_callback) : UISoftkey(ok_callback, []() {}) {}
+
+	void UISoftkey::draw(float inter) const
 	{
-		UIElement::draw(alpha);
+		UIElement::draw(inter);
 
 		entry.draw(position + Point<int16_t>(15, 43));
+
+		if (tooltip)
+			tooltip->draw(position + Point<int16_t>(71, 46) + tooltipposition);
+	}
+
+	void UISoftkey::update()
+	{
+		UIElement::update();
+
+		if (tooltip)
+		{
+			if (timestamp > 0)
+				timestamp -= Constants::TIMESTEP;
+			else
+				clear_tooltip();
+		}
 	}
 
 	void UISoftkey::send_key(int32_t keycode, bool pressed)
 	{
-		if (pressed && keycode == KeyAction::Id::ESCAPE)
-			deactivate();
+		if (pressed)
+		{
+			if (keycode == KeyAction::Id::ESCAPE)
+				button_pressed(Buttons::CANCEL);
+			else if (keycode == KeyAction::Id::RETURN)
+				button_pressed(Buttons::OK);
+		}
 	}
 
-	Button::State UISoftkey::button_pressed(uint16_t id)
+	Button::State UISoftkey::button_pressed(uint16_t buttonid)
 	{
 		std::string entered = entry.get_text();
+		size_t size = entered.size();
 
-		switch (id)
+		if (buttonid == Buttons::DEL)
 		{
-		case BT_0:
-		case BT_1:
-		case BT_2:
-		case BT_3:
-		case BT_4:
-		case BT_5:
-		case BT_6:
-		case BT_7:
-		case BT_8:
-		case BT_9:
-			if (entered.size() <= MAX_SIZE)
-				entered.append(std::to_string(id));
-
-			buttons[id]->set_state(Button::NORMAL);
-			break;
-		case BT_BACK:
-			if (entered.size() > 0)
-				entered.pop_back();
-
-			buttons[id]->set_state(Button::NORMAL);
-			break;
-		case BT_CANCEL:
-			active = false;
-			break;
-		case BT_OK:
-			if (entered.size() >= MIN_SIZE && callback)
+			if (size > 0)
 			{
-				callback(entered);
-				active = false;
+				entered.pop_back();
+				entry.change_text(entered);
 			}
-
-			break;
-		case BT_TAB_0:
-		case BT_TAB_1:
-		case BT_TAB_2:
-			buttons[id]->set_state(Button::PRESSED);
-			break;
 		}
-
-		switch (entered.size())
+		else if (buttonid == Buttons::CANCEL)
 		{
-		case MIN_SIZE - 1:
-			buttons[BT_OK]->set_state(Button::DISABLED);
-			break;
-		case MIN_SIZE:
-			buttons[BT_OK]->set_state(Button::NORMAL);
-			break;
-		case MAX_SIZE - 1:
-			for (uint8_t i = 0; i < NUM_KEYS; i++)
-				buttons[i]->set_state(Button::NORMAL);
-
-			break;
-		case MAX_SIZE:
-			for (uint8_t i = 0; i < NUM_KEYS; i++)
-				buttons[i]->set_state(Button::DISABLED);
-
-			break;
+			if (cancel_callback)
+			{
+				cancel_callback();
+				deactivate();
+			}
+		}
+		else if (buttonid == Buttons::OK)
+		{
+			if (size >= MIN_SIZE)
+			{
+				if (ok_callback)
+				{
+					ok_callback(entered);
+					deactivate();
+				}
+			}
+			else
+			{
+				clear_tooltip();
+				show_text("The PIC needs to be at least 6 characters long.");
+			}
+		}
+		else if (buttonid >= Buttons::NUM0)
+		{
+			if (size < MAX_SIZE)
+			{
+				entered.append(std::to_string(buttonid - Buttons::NUM0));
+				entry.change_text(entered);
+			}
 		}
 
-		entry.change_text(entered);
-
-		return Button::IDENTITY;
+		return Button::State::NORMAL;
 	}
 
 	void UISoftkey::shufflekeys()
 	{
 		std::vector<uint8_t> reserve;
 
-		for (uint8_t i = 0; i < NUM_KEYS; i++)
+		for (size_t i = 0; i < NUM_KEYS; i++)
 			reserve.push_back(i);
 
-		for (uint8_t i = 0; i < NUM_KEYS; i++)
+		for (size_t i = 0; i < NUM_KEYS; i++)
 		{
 			size_t rand = random.next_int(reserve.size());
 			Point<int16_t> pos = keypos(reserve[rand]);
-			buttons[BT_0 + i]->set_position(pos);
+
+			buttons[Buttons::NUM0 + i]->set_position(pos);
+
 			reserve.erase(reserve.begin() + rand);
 		}
 	}
 
+	void UISoftkey::show_text(std::string text)
+	{
+		tetooltip.set_text(text);
+
+		if (!text.empty())
+		{
+			tooltip = tetooltip;
+			timestamp = 7 * 1000;
+		}
+	}
+
+	void UISoftkey::clear_tooltip()
+	{
+		tooltipposition = Point<int16_t>(0, 0);
+		tetooltip.set_text("");
+		tooltip = {};
+	}
+
 	Point<int16_t> UISoftkey::keypos(uint8_t num) const
 	{
-		return {
-			12 + (num % 3) * 39,
-			94 + (num / 3) * 35
-		};
+		auto x = (num % 3) * 39;
+		auto y = (num / 3) * 35;
+
+		return Point<int16_t>(12 + x, 94 + y);
 	}
 }

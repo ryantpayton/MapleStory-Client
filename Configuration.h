@@ -55,6 +55,8 @@ namespace jrc
 		std::string get_findid() const;
 		// Get private member FINDPASS
 		std::string get_findpass() const;
+		// Get private member RESETPIC
+		std::string get_resetpic() const;
 		// Set private member MACS
 		void set_macs(char* macs);
 		// Set private member HWID
@@ -196,6 +198,7 @@ namespace jrc
 		const char* WEBSITE = "http://maplestory.nexon.net/";
 		const char* FINDID = "https://www.nexon.com/account/en/login";
 		const char* FINDPASS = "https://www.nexon.com/account/en/reset-password";
+		const char* RESETPIC = "https://www.nexon.com/account/en/login";
 		const bool SHOW_FPS = false;
 		bool rightclicksell = false;
 		bool show_weekly = true;

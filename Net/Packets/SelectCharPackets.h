@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -60,13 +60,24 @@ namespace jrc
 		}
 	};
 
-
-	// Requests deleting the specified character with the specified pic.
-	// Opcode: DELETE_PIC(23)
+	// Requests deleting the specified character without a pic.
+	// Opcode: DELETE_CHAR(23)
 	class DeleteCharPacket : public OutPacket
 	{
 	public:
-		DeleteCharPacket(const std::string& pic, int32_t cid) : OutPacket(DELETE_CHAR)
+		DeleteCharPacket(int32_t cid) : OutPacket(DELETE_CHAR)
+		{
+			write_string("");
+			write_int(cid);
+		}
+	};
+
+	// Requests deleting the specified character with the specified pic.
+	// Opcode: DELETE_CHAR(23)
+	class DeleteCharPicPacket : public OutPacket
+	{
+	public:
+		DeleteCharPicPacket(const std::string& pic, int32_t cid) : OutPacket(DELETE_CHAR)
 		{
 			write_string(pic);
 			write_int(cid);

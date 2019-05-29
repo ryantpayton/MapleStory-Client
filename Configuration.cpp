@@ -184,6 +184,11 @@ namespace jrc
 		return FINDPASS;
 	}
 
+	std::string Configuration::get_resetpic() const
+	{
+		return RESETPIC;
+	}
+
 	void Configuration::set_macs(char* macs)
 	{
 		MACS = macs;

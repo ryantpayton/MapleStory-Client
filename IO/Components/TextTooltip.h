@@ -37,6 +37,5 @@ namespace jrc
 		Texture cover;
 		std::string text;
 		Text text_label;
-		int16_t fillwidth;
 	};
 }

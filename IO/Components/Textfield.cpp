@@ -18,8 +18,7 @@
 #include "Textfield.h"
 
 #include "../UI.h"
-
-#include "../../Constants.h"
+#include "../Constants.h"
 
 namespace jrc
 {
@@ -80,8 +79,8 @@ namespace jrc
 
 			if (state != DISABLED)
 			{
-			elapsed = 0;
-			showmarker = true;
+				elapsed = 0;
+				showmarker = true;
 			}
 			else
 			{
@@ -133,12 +132,7 @@ namespace jrc
 					break;
 				case KeyAction::RETURN:
 					if (onreturn)
-					{
 						onreturn(text);
-						text = "";
-						markerpos = 0;
-						modifytext(text);
-					}
 
 					break;
 				case KeyAction::SPACE:
