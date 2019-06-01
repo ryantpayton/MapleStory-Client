@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License //
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
-#include "UICharCreation.h"
+#include "UIRaceSelect.h"
 #include "UILoginNotice.h"
 #include "UICharSelect.h"
 #include "UIClassCreation.h"
@@ -31,7 +31,7 @@
 
 namespace jrc
 {
-	UICharCreation::UICharCreation() : UIElement(Point<int16_t>(0, 0), Point<int16_t>(800, 600))
+	UIRaceSelect::UIRaceSelect() : UIElement(Point<int16_t>(0, 0), Point<int16_t>(800, 600))
 	{
 		std::string version_text = Configuration::get().get_version();
 		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. " + version_text);
@@ -137,7 +137,7 @@ namespace jrc
 		Sound(Sound::Name::RACESELECT).play();
 	}
 
-	void UICharCreation::draw(float inter) const
+	void UIRaceSelect::draw(float inter) const
 	{
 		if (selected_class == Classes::ZERO)
 			backZero.draw(position + screen_adj);
@@ -222,7 +222,7 @@ namespace jrc
 		back_ani.draw(position + screen_adj, inter);
 	}
 
-	void UICharCreation::update()
+	void UIRaceSelect::update()
 	{
 		UIElement::update();
 
@@ -274,7 +274,7 @@ namespace jrc
 		}
 	}
 
-	Cursor::State UICharCreation::send_cursor(bool clicked, Point<int16_t> cursorpos)
+	Cursor::State UIRaceSelect::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
 		for (auto& btit : buttons)
 		{
@@ -316,7 +316,7 @@ namespace jrc
 		return Cursor::State::LEAF;
 	}
 
-	void UICharCreation::send_key(int32_t keycode, bool pressed)
+	void UIRaceSelect::send_key(int32_t keycode, bool pressed)
 	{
 		if (pressed)
 		{
@@ -341,7 +341,7 @@ namespace jrc
 		}
 	}
 
-	Button::State UICharCreation::button_pressed(uint16_t buttonid)
+	Button::State UIRaceSelect::button_pressed(uint16_t buttonid)
 	{
 		if (buttonid == Buttons::BACK)
 		{
@@ -438,7 +438,7 @@ namespace jrc
 		}
 	}
 
-	void UICharCreation::select_class(uint8_t index)
+	void UIRaceSelect::select_class(uint8_t index)
 	{
 		uint8_t previous_index = selected_index;
 		selected_index = index;
@@ -487,7 +487,7 @@ namespace jrc
 			buttons[Buttons::RIGHT]->set_state(Button::State::DISABLED);
 	}
 
-	void UICharCreation::show_charselect()
+	void UIRaceSelect::show_charselect()
 	{
 		Sound(Sound::Name::SCROLLUP).play();
 
@@ -497,7 +497,7 @@ namespace jrc
 			charselect->makeactive();
 	}
 
-	Point<int16_t> UICharCreation::get_class_pos(size_t index) const
+	Point<int16_t> UIRaceSelect::get_class_pos(size_t index) const
 	{
 		uint16_t x_adj = index * 126;
 

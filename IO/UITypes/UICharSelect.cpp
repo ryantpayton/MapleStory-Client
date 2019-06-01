@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UICharSelect.h"
 #include "UIWorldSelect.h"
-#include "UICharCreation.h"
+#include "UIRaceSelect.h"
 #include "UISoftkey.h"
 #include "UILoginNotice.h"
 
@@ -626,7 +626,7 @@ namespace jrc
 			tab_move = false;
 			tab_move_pos = 0;
 
-			UI::get().emplace<UICharCreation>();
+			UI::get().emplace<UIRaceSelect>();
 			break;
 		case Buttons::CHARACTER_DELETE:
 		{

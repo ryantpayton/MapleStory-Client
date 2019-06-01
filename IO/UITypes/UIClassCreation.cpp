@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "UIClassCreation.h"
-#include "UICharCreation.h"
+#include "UIRaceSelect.h"
 #include "UILoginNotice.h"
 #include "UICharSelect.h"
 
@@ -741,7 +741,7 @@ namespace jrc
 			Sound(Sound::Name::SCROLLUP).play();
 
 			UI::get().remove(UIElement::Type::CLASSCREATION);
-			UI::get().emplace<UICharCreation>();
+			UI::get().emplace<UIRaceSelect>();
 
 			return Button::State::NORMAL;
 		case Buttons::BT_CHARC_CANCEL:

@@ -231,7 +231,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="IO\UITypes\UIChat.cpp" />
     <ClCompile Include="IO\UITypes\UIClassCreation.cpp" />
     <ClCompile Include="io\uitypes\UIBuffList.cpp" />
-    <ClCompile Include="io\uitypes\UICharCreation.cpp" />
+    <ClCompile Include="io\uitypes\UIRaceSelect.cpp" />
     <ClCompile Include="io\uitypes\UICharSelect.cpp" />
     <ClCompile Include="io\uitypes\UIChatbar.cpp" />
     <ClCompile Include="io\uitypes\UIEquipInventory.cpp" />
@@ -421,7 +421,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="IO\UITypes\UIChat.h" />
     <ClInclude Include="IO\UITypes\UIClassCreation.h" />
     <ClInclude Include="io\uitypes\UIBuffList.h" />
-    <ClInclude Include="io\uitypes\UICharCreation.h" />
+    <ClInclude Include="io\uitypes\UIRaceSelect.h" />
     <ClInclude Include="io\uitypes\UICharSelect.h" />
     <ClInclude Include="io\uitypes\UIChatbar.h" />
     <ClInclude Include="io\uitypes\UIEquipInventory.h" />

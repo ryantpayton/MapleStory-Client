@@ -360,9 +360,6 @@
     <ClCompile Include="io\uitypes\UIBuffList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\uitypes\UICharCreation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="io\uitypes\UICharSelect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -523,6 +520,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IO\UITypes\UITermsOfService.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="io\uitypes\UIRaceSelect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -923,9 +923,6 @@
     <ClInclude Include="io\uitypes\UIBuffList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="io\uitypes\UICharCreation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="io\uitypes\UICharSelect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1194,6 +1191,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IO\UITypes\UITermsOfService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="io\uitypes\UIRaceSelect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
