@@ -362,11 +362,11 @@ namespace jrc
 					UI::get().remove(UIElement::Type::CHARCREATION);
 
 					if (selected_class == Classes::EXPLORER)
-						UI::get().emplace<UIExplorerCreation>(selected_class);
+						UI::get().emplace<UIExplorerCreation>();
 					else if (selected_class == Classes::CYGNUSKNIGHTS)
-						UI::get().emplace<UICygnusCreation>(selected_class);
+						UI::get().emplace<UICygnusCreation>();
 					else if (selected_class == Classes::ARAN)
-						UI::get().emplace<UIAranCreation>(selected_class);
+						UI::get().emplace<UIAranCreation>();
 				}
 			};
 

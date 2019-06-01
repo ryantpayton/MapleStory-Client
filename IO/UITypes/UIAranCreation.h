@@ -32,7 +32,7 @@ namespace jrc
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
-		UIAranCreation(uint8_t selected_class);
+		UIAranCreation();
 
 		void draw(float inter) const override;
 		void update() override;
@@ -48,36 +48,6 @@ namespace jrc
 	private:
 		void randomize_look();
 		const std::string& get_equipname(Equipslot::Id slot) const;
-
-		enum Classes : uint8_t
-		{
-			RESISTANCE,
-			EXPLORER,
-			CYGNUSKNIGHTS,
-			ARAN,
-			EVAN,
-			MERCEDES,
-			DEMON,
-			PHANTOM,
-			DUALBLADE,
-			MIHILE,
-			LUMINOUS,
-			KAISER,
-			ANGELICBUSTER,
-			CANNONEER,
-			XENON,
-			ZERO,
-			SHADE,
-			JETT,
-			HAYATO,
-			KANNA,
-			CHASE,
-			PINKBEAN,
-			KINESIS,
-			CADENA,
-			ILLIUM,
-			ARK,
-		};
 
 		enum Buttons : uint16_t
 		{
@@ -161,6 +131,5 @@ namespace jrc
 		Text wepname;
 		Text gendername;
 		Text version;
-		uint16_t selected_class;
 	};
 }
