@@ -27,7 +27,7 @@ namespace jrc
 	class UIRaceSelect : public UIElement
 	{
 	public:
-		static constexpr Type TYPE = CHARCREATION;
+		static constexpr Type TYPE = RACESELECT;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
@@ -38,6 +38,8 @@ namespace jrc
 
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		void send_key(int32_t keycode, bool pressed) override;
+
+		void send_naming_result(bool nameused);
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;

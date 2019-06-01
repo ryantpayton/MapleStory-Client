@@ -237,7 +237,7 @@ namespace jrc
 						// Login
 						types.emplace_back(UIElement::Type::WORLDSELECT);
 						types.emplace_back(UIElement::Type::CHARSELECT);
-						types.emplace_back(UIElement::Type::CHARCREATION); // No tab
+						types.emplace_back(UIElement::Type::RACESELECT); // No tab
 						types.emplace_back(UIElement::Type::CLASSCREATION); // No tab (No arrows, but shouldn't send else where)
 						types.emplace_back(UIElement::Type::LOGINNOTICE); // No tab (No arrows, but shouldn't send else where)
 						types.emplace_back(UIElement::Type::LOGINNOTICE_CONFIRM); // No tab (No arrows, but shouldn't send else where)

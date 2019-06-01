@@ -343,6 +343,25 @@ namespace jrc
 		}
 	}
 
+	void UIRaceSelect::send_naming_result(bool nameused)
+	{
+		if (selected_class == Classes::EXPLORER)
+		{
+			if (auto explorercreation = UI::get().get_element<UIExplorerCreation>())
+				explorercreation->send_naming_result(nameused);
+		}
+		else if (selected_class == Classes::CYGNUSKNIGHTS)
+		{
+			if (auto cygnuscreation = UI::get().get_element<UICygnusCreation>())
+				cygnuscreation->send_naming_result(nameused);
+		}
+		else if (selected_class == Classes::ARAN)
+		{
+			if (auto arancreation = UI::get().get_element<UIAranCreation>())
+				arancreation->send_naming_result(nameused);
+		}
+	}
+
 	Button::State UIRaceSelect::button_pressed(uint16_t buttonid)
 	{
 		if (buttonid == Buttons::BACK)
@@ -358,8 +377,6 @@ namespace jrc
 				if (!class_isdisabled[selected_class])
 				{
 					Sound(Sound::Name::SCROLLUP).play();
-
-					UI::get().remove(UIElement::Type::CHARCREATION);
 
 					if (selected_class == Classes::EXPLORER)
 						UI::get().emplace<UIExplorerCreation>();

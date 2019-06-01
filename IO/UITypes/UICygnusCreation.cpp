@@ -389,7 +389,7 @@ namespace jrc
 					UI::get().remove(UIElement::Type::LOGINNOTICE_CONFIRM);
 					UI::get().remove(UIElement::Type::LOGINNOTICE);
 					UI::get().remove(UIElement::Type::CLASSCREATION);
-					UI::get().remove(UIElement::Type::CHARCREATION);
+					UI::get().remove(UIElement::Type::RACESELECT);
 
 					if (auto charselect = UI::get().get_element<UICharSelect>())
 						charselect->post_add_character();
