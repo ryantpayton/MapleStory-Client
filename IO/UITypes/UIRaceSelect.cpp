@@ -18,7 +18,9 @@
 #include "UIRaceSelect.h"
 #include "UILoginNotice.h"
 #include "UICharSelect.h"
-#include "UIClassCreation.h"
+#include "UIExplorerCreation.h"
+#include "UICygnusCreation.h"
+#include "UIAranCreation.h"
 
 #include "../UI.h"
 #include "../Configuration.h"
@@ -358,7 +360,13 @@ namespace jrc
 					Sound(Sound::Name::SCROLLUP).play();
 
 					UI::get().remove(UIElement::Type::CHARCREATION);
-					UI::get().emplace<UIClassCreation>(selected_class);
+
+					if (selected_class == Classes::EXPLORER)
+						UI::get().emplace<UIExplorerCreation>(selected_class);
+					else if (selected_class == Classes::CYGNUSKNIGHTS)
+						UI::get().emplace<UICygnusCreation>(selected_class);
+					else if (selected_class == Classes::ARAN)
+						UI::get().emplace<UIAranCreation>(selected_class);
 				}
 			};
 

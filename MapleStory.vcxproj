@@ -227,10 +227,12 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="io\UIElement.cpp" />
     <ClCompile Include="io\UIStateGame.cpp" />
     <ClCompile Include="io\UIStateLogin.cpp" />
+    <ClCompile Include="IO\UITypes\UIAranCreation.cpp" />
     <ClCompile Include="IO\UITypes\UIChannel.cpp" />
     <ClCompile Include="IO\UITypes\UIChat.cpp" />
-    <ClCompile Include="IO\UITypes\UIClassCreation.cpp" />
+    <ClCompile Include="IO\UITypes\UIExplorerCreation.cpp" />
     <ClCompile Include="io\uitypes\UIBuffList.cpp" />
+    <ClCompile Include="IO\UITypes\UICygnusCreation.cpp" />
     <ClCompile Include="io\uitypes\UIRaceSelect.cpp" />
     <ClCompile Include="io\uitypes\UICharSelect.cpp" />
     <ClCompile Include="io\uitypes\UIChatbar.cpp" />
@@ -417,10 +419,12 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="io\UIState.h" />
     <ClInclude Include="io\UIStateGame.h" />
     <ClInclude Include="io\UIStateLogin.h" />
+    <ClInclude Include="IO\UITypes\UIAranCreation.h" />
     <ClInclude Include="IO\UITypes\UIChannel.h" />
     <ClInclude Include="IO\UITypes\UIChat.h" />
-    <ClInclude Include="IO\UITypes\UIClassCreation.h" />
+    <ClInclude Include="IO\UITypes\UIExplorerCreation.h" />
     <ClInclude Include="io\uitypes\UIBuffList.h" />
+    <ClInclude Include="IO\UITypes\UICygnusCreation.h" />
     <ClInclude Include="io\uitypes\UIRaceSelect.h" />
     <ClInclude Include="io\uitypes\UICharSelect.h" />
     <ClInclude Include="io\uitypes\UIChatbar.h" />

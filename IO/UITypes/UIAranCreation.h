@@ -25,14 +25,14 @@
 
 namespace jrc
 {
-	class UIClassCreation : public UIElement
+	class UIAranCreation : public UIElement
 	{
 	public:
 		static constexpr Type TYPE = CLASSCREATION;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
-		UIClassCreation(uint8_t selected_class);
+		UIAranCreation(uint8_t selected_class);
 
 		void draw(float inter) const override;
 		void update() override;

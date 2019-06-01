@@ -29,7 +29,9 @@
 #include "../IO/UITypes/UILoginNotice.h"
 #include "../IO/UITypes/UIWorldSelect.h"
 #include "../IO/UITypes/UICharSelect.h"
-#include "../IO/UITypes/UIClassCreation.h"
+#include "../IO/UITypes/UIExplorerCreation.h"
+#include "../IO/UITypes/UICygnusCreation.h"
+#include "../IO/UITypes/UIAranCreation.h"
 #include "../IO/UITypes/UILoginwait.h"
 #include "../IO/UITypes/UITermsOfService.h"
 
@@ -178,8 +180,16 @@ namespace jrc
 		bool used = recv.read_bool();
 
 		// Notify the character creation screen.
-		if (auto classcreation = UI::get().get_element<UIClassCreation>())
-			classcreation->send_naming_result(used);
+		auto explorercreation = UI::get().get_element<UIExplorerCreation>();
+		auto cygnuscreation = UI::get().get_element<UICygnusCreation>();
+		auto arancreation = UI::get().get_element<UIAranCreation>();
+
+		if (explorercreation && explorercreation->is_active())
+			explorercreation->send_naming_result(used);
+		else if (cygnuscreation && cygnuscreation->is_active())
+			cygnuscreation->send_naming_result(used);
+		else if (arancreation && arancreation->is_active())
+			arancreation->send_naming_result(used);
 	}
 
 	void AddNewCharEntryHandler::handle(InPacket& recv) const

@@ -480,9 +480,6 @@
     <ClCompile Include="Net\Handlers\TestingHandlers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IO\UITypes\UIClassCreation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IO\UITypes\UIQuestLog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -523,6 +520,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="io\uitypes\UIRaceSelect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UICygnusCreation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIAranCreation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIExplorerCreation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1142,9 +1148,6 @@
     <ClInclude Include="Util\HardwareInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IO\UITypes\UIClassCreation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IO\UITypes\UIQuestLog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1194,6 +1197,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="io\uitypes\UIRaceSelect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIAranCreation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UICygnusCreation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIExplorerCreation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

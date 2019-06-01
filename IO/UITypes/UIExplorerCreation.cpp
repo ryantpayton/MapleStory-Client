@@ -16,7 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "UIClassCreation.h"
+#include "UIExplorerCreation.h"
 #include "UIRaceSelect.h"
 #include "UILoginNotice.h"
 #include "UICharSelect.h"
@@ -34,7 +34,7 @@
 
 namespace jrc
 {
-	UIClassCreation::UIClassCreation(uint8_t selected) : UIElement(Point<int16_t>(0, 0), Point<int16_t>(800, 600)), selected_class(selected)
+	UIExplorerCreation::UIExplorerCreation(uint8_t selected) : UIElement(Point<int16_t>(0, 0), Point<int16_t>(800, 600)), selected_class(selected)
 	{
 		gender = false;
 		charSet = false;
@@ -302,7 +302,7 @@ namespace jrc
 		cloudfx = 200.0f;
 	}
 
-	void UIClassCreation::draw(float inter) const
+	void UIExplorerCreation::draw(float inter) const
 	{
 		for (size_t i = 0; i < 2; i++)
 			for (size_t k = 0; k < 800; k += sky.width())
@@ -455,7 +455,7 @@ namespace jrc
 		version.draw(position + Point<int16_t>(707, -9));
 	}
 
-	void UIClassCreation::update()
+	void UIExplorerCreation::update()
 	{
 		if (!gender)
 		{
@@ -495,7 +495,7 @@ namespace jrc
 		cloudfx += 0.25f;
 	}
 
-	Cursor::State UIClassCreation::send_cursor(bool clicked, Point<int16_t> cursorpos)
+	Cursor::State UIExplorerCreation::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
 		if (namechar.get_bounds().contains(cursorpos))
 		{
@@ -515,7 +515,7 @@ namespace jrc
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	void UIClassCreation::send_key(int32_t keycode, bool pressed)
+	void UIExplorerCreation::send_key(int32_t keycode, bool pressed)
 	{
 		if (pressed)
 		{
@@ -526,7 +526,7 @@ namespace jrc
 		}
 	}
 
-	void UIClassCreation::send_naming_result(bool nameused)
+	void UIExplorerCreation::send_naming_result(bool nameused)
 	{
 		if (!named)
 		{
@@ -588,7 +588,7 @@ namespace jrc
 		}
 	}
 
-	Button::State UIClassCreation::button_pressed(uint16_t buttonid)
+	Button::State UIExplorerCreation::button_pressed(uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -962,7 +962,7 @@ namespace jrc
 		return Button::State::PRESSED;
 	}
 
-	void UIClassCreation::randomize_look()
+	void UIExplorerCreation::randomize_look()
 	{
 		hair = randomizer.next_int(hairs[female].size());
 		face = randomizer.next_int(faces[female].size());
@@ -993,7 +993,7 @@ namespace jrc
 		gendername.change_text(female ? "Female" : "Male");
 	}
 
-	const std::string& UIClassCreation::get_equipname(Equipslot::Id slot) const
+	const std::string& UIExplorerCreation::get_equipname(Equipslot::Id slot) const
 	{
 		if (int32_t item_id = newchar.get_equips().get_equip(slot))
 		{
