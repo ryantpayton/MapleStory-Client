@@ -378,6 +378,8 @@ namespace jrc
 				{
 					Sound(Sound::Name::SCROLLUP).play();
 
+					deactivate();
+
 					if (selected_class == Classes::EXPLORER)
 						UI::get().emplace<UIExplorerCreation>();
 					else if (selected_class == Classes::CYGNUSKNIGHTS)

@@ -45,22 +45,21 @@ namespace jrc
 
 		nl::node Login = nl::nx::ui["Login.img"];
 		nl::node Common = Login["Common"];
-		nl::node CustomizeChar = Login["CustomizeChar"];
+		nl::node CustomizeChar = Login["CustomizeChar"]["000"];
 		nl::node back = nl::nx::map["Back"]["login.img"]["back"];
+		nl::node signboard = nl::nx::map["Obj"]["login.img"]["NewChar"]["signboard"];
+		nl::node board = CustomizeChar["board"];
+		nl::node genderSelect = CustomizeChar["genderSelect"];
 
 		sky = back["2"];
 		cloud = back["27"];
 
-		nl::node customizeCharExplorers = CustomizeChar["000"];
-		nl::node board = customizeCharExplorers["board"];
-		nl::node genderSelect = customizeCharExplorers["genderSelect"];
-
 		sprites.emplace_back(back["14"], Point<int16_t>(250, 292)); // From v203.3
+		sprites.emplace_back(signboard["2"], DrawArgument(Point<int16_t>(234, 225), 2.0f)); // From v204.1
 		sprites_gender_select.emplace_back(board["genderTop"], Point<int16_t>(486, 85));
 		sprites_gender_select.emplace_back(board["boardMid"], Point<int16_t>(486, 199));
 		sprites_gender_select.emplace_back(board["boardBottom"], Point<int16_t>(486, 319));
-
-		sprites_lookboard.emplace_back(customizeCharExplorers["charSet"], Point<int16_t>(486, 85));
+		sprites_lookboard.emplace_back(CustomizeChar["charSet"], Point<int16_t>(486, 85));
 
 		for (size_t i = 0; i <= 5; i++)
 		{
@@ -69,28 +68,27 @@ namespace jrc
 			if (i >= 2)
 				f++;
 
-			sprites_lookboard.emplace_back(customizeCharExplorers["avatarSel"][i]["normal"], Point<int16_t>(497, 187 + (f * 18)));
+			sprites_lookboard.emplace_back(CustomizeChar["avatarSel"][i]["normal"], Point<int16_t>(497, 187 + (f * 18)));
 		}
 
 		buttons[Buttons::BT_CHARC_GENDER_M] = std::make_unique<MapleButton>(genderSelect["male"], Point<int16_t>(487, 99));
 		buttons[Buttons::BT_CHARC_GEMDER_F] = std::make_unique<MapleButton>(genderSelect["female"], Point<int16_t>(485, 99));
-
-		buttons[Buttons::BT_CHARC_FACEL] = std::make_unique<MapleButton>(customizeCharExplorers["BtLeft"], Point<int16_t>(552, 188 + (0 * 18)));
-		buttons[Buttons::BT_CHARC_FACER] = std::make_unique<MapleButton>(customizeCharExplorers["BtRight"], Point<int16_t>(684, 188 + (0 * 18)));
-		buttons[Buttons::BT_CHARC_HAIRL] = std::make_unique<MapleButton>(customizeCharExplorers["BtLeft"], Point<int16_t>(552, 188 + (1 * 18)));
-		buttons[Buttons::BT_CHARC_HAIRR] = std::make_unique<MapleButton>(customizeCharExplorers["BtRight"], Point<int16_t>(684, 188 + (1 * 18)));
-		buttons[Buttons::BT_CHARC_SKINL] = std::make_unique<MapleButton>(customizeCharExplorers["BtLeft"], Point<int16_t>(552, 188 + (3 * 18)));
-		buttons[Buttons::BT_CHARC_SKINR] = std::make_unique<MapleButton>(customizeCharExplorers["BtRight"], Point<int16_t>(684, 188 + (3 * 18)));
-		buttons[Buttons::BT_CHARC_TOPL] = std::make_unique<MapleButton>(customizeCharExplorers["BtLeft"], Point<int16_t>(552, 188 + (4 * 18)));
-		buttons[Buttons::BT_CHARC_TOPR] = std::make_unique<MapleButton>(customizeCharExplorers["BtRight"], Point<int16_t>(684, 188 + (4 * 18)));
-		buttons[Buttons::BT_CHARC_SHOESL] = std::make_unique<MapleButton>(customizeCharExplorers["BtLeft"], Point<int16_t>(552, 188 + (5 * 18)));
-		buttons[Buttons::BT_CHARC_SHOESR] = std::make_unique<MapleButton>(customizeCharExplorers["BtRight"], Point<int16_t>(684, 188 + (5 * 18)));
-		buttons[Buttons::BT_CHARC_WEPL] = std::make_unique<MapleButton>(customizeCharExplorers["BtLeft"], Point<int16_t>(552, 188 + (6 * 18)));
-		buttons[Buttons::BT_CHARC_WEPR] = std::make_unique<MapleButton>(customizeCharExplorers["BtRight"], Point<int16_t>(684, 188 + (6 * 18)));
+		buttons[Buttons::BT_CHARC_FACEL] = std::make_unique<MapleButton>(CustomizeChar["BtLeft"], Point<int16_t>(552, 188 + (0 * 18)));
+		buttons[Buttons::BT_CHARC_FACER] = std::make_unique<MapleButton>(CustomizeChar["BtRight"], Point<int16_t>(684, 188 + (0 * 18)));
+		buttons[Buttons::BT_CHARC_HAIRL] = std::make_unique<MapleButton>(CustomizeChar["BtLeft"], Point<int16_t>(552, 188 + (1 * 18)));
+		buttons[Buttons::BT_CHARC_HAIRR] = std::make_unique<MapleButton>(CustomizeChar["BtRight"], Point<int16_t>(684, 188 + (1 * 18)));
+		buttons[Buttons::BT_CHARC_SKINL] = std::make_unique<MapleButton>(CustomizeChar["BtLeft"], Point<int16_t>(552, 188 + (3 * 18)));
+		buttons[Buttons::BT_CHARC_SKINR] = std::make_unique<MapleButton>(CustomizeChar["BtRight"], Point<int16_t>(684, 188 + (3 * 18)));
+		buttons[Buttons::BT_CHARC_TOPL] = std::make_unique<MapleButton>(CustomizeChar["BtLeft"], Point<int16_t>(552, 188 + (4 * 18)));
+		buttons[Buttons::BT_CHARC_TOPR] = std::make_unique<MapleButton>(CustomizeChar["BtRight"], Point<int16_t>(684, 188 + (4 * 18)));
+		buttons[Buttons::BT_CHARC_SHOESL] = std::make_unique<MapleButton>(CustomizeChar["BtLeft"], Point<int16_t>(552, 188 + (5 * 18)));
+		buttons[Buttons::BT_CHARC_SHOESR] = std::make_unique<MapleButton>(CustomizeChar["BtRight"], Point<int16_t>(684, 188 + (5 * 18)));
+		buttons[Buttons::BT_CHARC_WEPL] = std::make_unique<MapleButton>(CustomizeChar["BtLeft"], Point<int16_t>(552, 188 + (6 * 18)));
+		buttons[Buttons::BT_CHARC_WEPR] = std::make_unique<MapleButton>(CustomizeChar["BtRight"], Point<int16_t>(684, 188 + (6 * 18)));
 
 		for (size_t i = 0; i <= 7; i++)
 		{
-			buttons[Buttons::BT_CHARC_HAIRC0 + i] = std::make_unique<MapleButton>(customizeCharExplorers["hairSelect"][i], Point<int16_t>(549 + (i * 15), 224));
+			buttons[Buttons::BT_CHARC_HAIRC0 + i] = std::make_unique<MapleButton>(CustomizeChar["hairSelect"][i], Point<int16_t>(549 + (i * 15), 224));
 			buttons[Buttons::BT_CHARC_HAIRC0 + i]->set_active(false);
 		}
 
@@ -107,10 +105,10 @@ namespace jrc
 		buttons[Buttons::BT_CHARC_WEPL]->set_active(false);
 		buttons[Buttons::BT_CHARC_WEPR]->set_active(false);
 
-		buttons[Buttons::BT_CHARC_OK] = std::make_unique<MapleButton>(customizeCharExplorers["BtYes"], Point<int16_t>(514, 384));
-		buttons[Buttons::BT_CHARC_CANCEL] = std::make_unique<MapleButton>(customizeCharExplorers["BtNo"], Point<int16_t>(590, 384));
+		buttons[Buttons::BT_CHARC_OK] = std::make_unique<MapleButton>(CustomizeChar["BtYes"], Point<int16_t>(514, 384));
+		buttons[Buttons::BT_CHARC_CANCEL] = std::make_unique<MapleButton>(CustomizeChar["BtNo"], Point<int16_t>(590, 384));
 
-		nameboard = customizeCharExplorers["charName"];
+		nameboard = CustomizeChar["charName"];
 		namechar = Textfield(Text::Font::A13M, Text::Alignment::LEFT, Text::Color::WHITE, Rectangle<int16_t>(Point<int16_t>(522, 185), Point<int16_t>(630, 243)), 12);
 
 		sprites.emplace_back(Common["frame"], Point<int16_t>(399, 289));
@@ -137,13 +135,10 @@ namespace jrc
 
 		facename = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
 		hairname = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
-		haircname = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
 		bodyname = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
 		topname = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
-		botname = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
 		shoename = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
 		wepname = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
-		gendername = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
 
 		nl::node mkinfo = nl::nx::etc["MakeCharInfo.img"]["Info"];
 
@@ -332,18 +327,20 @@ namespace jrc
 
 	Cursor::State UIExplorerCreation::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
-		if (namechar.get_bounds().contains(cursorpos))
+		if (namechar.get_state() == Textfield::State::NORMAL)
 		{
-			if (clicked)
+			if (namechar.get_bounds().contains(cursorpos))
 			{
-				if (namechar.get_state() == Textfield::State::NORMAL)
+				if (clicked)
+				{
 					namechar.set_state(Textfield::State::FOCUSED);
 
-				return Cursor::State::CLICKING;
-			}
-			else
-			{
-				return Cursor::State::IDLE;
+					return Cursor::State::CLICKING;
+				}
+				else
+				{
+					return Cursor::State::IDLE;
+				}
 			}
 		}
 
@@ -596,114 +593,117 @@ namespace jrc
 					return Button::State::NORMAL;
 				}
 			}
-		}
+		case Buttons::BT_CHARC_FACEL:
+			face = (face > 0) ? face - 1 : faces[female].size() - 1;
+			newchar.set_face(faces[female][face]);
+			facename.change_text(newchar.get_face()->get_name());
 
-		if (buttonid >= Buttons::BT_CHARC_FACEL && buttonid <= Buttons::BT_CHARC_HAIRC7)
-		{
-			switch (buttonid)
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_FACER:
+			face = (face < faces[female].size() - 1) ? face + 1 : 0;
+			newchar.set_face(faces[female][face]);
+			facename.change_text(newchar.get_face()->get_name());
+
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_HAIRL:
+			hair = (hair > 0) ? hair - 1 : hairs[female].size() - 1;
+			newchar.set_hair(hairs[female][hair] + haircolors[female][haircolor]);
+			hairname.change_text(newchar.get_hair()->get_name());
+
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_HAIRR:
+			hair = (hair < hairs[female].size() - 1) ? hair + 1 : 0;
+			newchar.set_hair(hairs[female][hair] + haircolors[female][haircolor]);
+			hairname.change_text(newchar.get_hair()->get_name());
+
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_HAIRC0:
+		case Buttons::BT_CHARC_HAIRC1:
+		case Buttons::BT_CHARC_HAIRC2:
+		case Buttons::BT_CHARC_HAIRC3:
+		case Buttons::BT_CHARC_HAIRC4:
+		case Buttons::BT_CHARC_HAIRC5:
+		case Buttons::BT_CHARC_HAIRC6:
+		case Buttons::BT_CHARC_HAIRC7:
+			// TODO: These need to be changed so when you click the color it only assigns the color, not the next in the series
+			haircolor = (haircolor > 0) ? haircolor - 1 : haircolors[female].size() - 1;
+			newchar.set_hair(hairs[female][hair] + haircolors[female][haircolor]);
+
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_SKINL:
+			skin = (skin > 0) ? skin - 1 : skins[female].size() - 1;
+			newchar.set_body(skins[female][skin]);
+			bodyname.change_text(newchar.get_body()->get_name());
+
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_SKINR:
+			skin = (skin < skins[female].size() - 1) ? skin + 1 : 0;
+			newchar.set_body(skins[female][skin]);
+			bodyname.change_text(newchar.get_body()->get_name());
+
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_TOPL:
+			top = (top > 0) ? top - 1 : tops[female].size() - 1;
+			newchar.add_equip(tops[female][top]);
+			topname.change_text(get_equipname(Equipslot::Id::TOP));
+
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_TOPR:
+			top = (top < tops[female].size() - 1) ? top + 1 : 0;
+			newchar.add_equip(tops[female][top]);
+			topname.change_text(get_equipname(Equipslot::Id::TOP));
+
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_BOTL:
+			bot = (bot > 0) ? bot - 1 : bots[female].size() - 1;
+			newchar.add_equip(bots[female][bot]);
+
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_BOTR:
+			bot = (bot < bots[female].size() - 1) ? bot + 1 : 0;
+			newchar.add_equip(bots[female][bot]);
+
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_SHOESL:
+			shoe = (shoe > 0) ? shoe - 1 : shoes[female].size() - 1;
+			newchar.add_equip(shoes[female][shoe]);
+			shoename.change_text(get_equipname(Equipslot::Id::SHOES));
+
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_SHOESR:
+			shoe = (shoe < shoes[female].size() - 1) ? shoe + 1 : 0;
+			newchar.add_equip(shoes[female][shoe]);
+			shoename.change_text(get_equipname(Equipslot::Id::SHOES));
+
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_WEPL:
+			weapon = (weapon > 0) ? weapon - 1 : weapons[female].size() - 1;
+			newchar.add_equip(weapons[female][weapon]);
+			wepname.change_text(get_equipname(Equipslot::Id::WEAPON));
+
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_WEPR:
+			weapon = (weapon < weapons[female].size() - 1) ? weapon + 1 : 0;
+			newchar.add_equip(weapons[female][weapon]);
+			wepname.change_text(get_equipname(Equipslot::Id::WEAPON));
+
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_GENDER_M:
+			if (female)
 			{
-			case Buttons::BT_CHARC_FACEL:
-				face = (face > 0) ? face - 1 : faces[female].size() - 1;
-				newchar.set_face(faces[female][face]);
-				facename.change_text(newchar.get_face()->get_name());
-				break;
-			case Buttons::BT_CHARC_FACER:
-				face = (face < faces[female].size() - 1) ? face + 1 : 0;
-				newchar.set_face(faces[female][face]);
-				facename.change_text(newchar.get_face()->get_name());
-				break;
-			case Buttons::BT_CHARC_HAIRL:
-				hair = (hair > 0) ? hair - 1 : hairs[female].size() - 1;
-				newchar.set_hair(hairs[female][hair] + haircolors[female][haircolor]);
-				hairname.change_text(newchar.get_hair()->get_name());
-				break;
-			case Buttons::BT_CHARC_HAIRR:
-				hair = (hair < hairs[female].size() - 1) ? hair + 1 : 0;
-				newchar.set_hair(hairs[female][hair] + haircolors[female][haircolor]);
-				hairname.change_text(newchar.get_hair()->get_name());
-				break;
-			case Buttons::BT_CHARC_HAIRC0:
-			case Buttons::BT_CHARC_HAIRC1:
-			case Buttons::BT_CHARC_HAIRC2:
-			case Buttons::BT_CHARC_HAIRC3:
-			case Buttons::BT_CHARC_HAIRC4:
-			case Buttons::BT_CHARC_HAIRC5:
-			case Buttons::BT_CHARC_HAIRC6:
-			case Buttons::BT_CHARC_HAIRC7:
-				// TODO: These need to be changed so when you click the color it only assigns the color, not the next in the series
-				haircolor = (haircolor > 0) ? haircolor - 1 : haircolors[female].size() - 1;
-				newchar.set_hair(hairs[female][hair] + haircolors[female][haircolor]);
-				haircname.change_text(newchar.get_hair()->getcolor());
-				break;
-			case Buttons::BT_CHARC_SKINL:
-				skin = (skin > 0) ? skin - 1 : skins[female].size() - 1;
-				newchar.set_body(skins[female][skin]);
-				bodyname.change_text(newchar.get_body()->get_name());
-				break;
-			case Buttons::BT_CHARC_SKINR:
-				skin = (skin < skins[female].size() - 1) ? skin + 1 : 0;
-				newchar.set_body(skins[female][skin]);
-				bodyname.change_text(newchar.get_body()->get_name());
-				break;
-			case Buttons::BT_CHARC_TOPL:
-				top = (top > 0) ? top - 1 : tops[female].size() - 1;
-				newchar.add_equip(tops[female][top]);
-				topname.change_text(get_equipname(Equipslot::Id::TOP));
-				break;
-			case Buttons::BT_CHARC_TOPR:
-				top = (top < tops[female].size() - 1) ? top + 1 : 0;
-				newchar.add_equip(tops[female][top]);
-				topname.change_text(get_equipname(Equipslot::Id::TOP));
-				break;
-			case Buttons::BT_CHARC_BOTL:
-				bot = (bot > 0) ? bot - 1 : bots[female].size() - 1;
-				newchar.add_equip(bots[female][bot]);
-				botname.change_text(get_equipname(Equipslot::Id::PANTS));
-				break;
-			case Buttons::BT_CHARC_BOTR:
-				bot = (bot < bots[female].size() - 1) ? bot + 1 : 0;
-				newchar.add_equip(bots[female][bot]);
-				botname.change_text(get_equipname(Equipslot::Id::PANTS));
-				break;
-			case Buttons::BT_CHARC_SHOESL:
-				shoe = (shoe > 0) ? shoe - 1 : shoes[female].size() - 1;
-				newchar.add_equip(shoes[female][shoe]);
-				shoename.change_text(get_equipname(Equipslot::Id::SHOES));
-				break;
-			case Buttons::BT_CHARC_SHOESR:
-				shoe = (shoe < shoes[female].size() - 1) ? shoe + 1 : 0;
-				newchar.add_equip(shoes[female][shoe]);
-				shoename.change_text(get_equipname(Equipslot::Id::SHOES));
-				break;
-			case Buttons::BT_CHARC_WEPL:
-				weapon = (weapon > 0) ? weapon - 1 : weapons[female].size() - 1;
-				newchar.add_equip(weapons[female][weapon]);
-				wepname.change_text(get_equipname(Equipslot::Id::WEAPON));
-				break;
-			case Buttons::BT_CHARC_WEPR:
-				weapon = (weapon < weapons[female].size() - 1) ? weapon + 1 : 0;
-				newchar.add_equip(weapons[female][weapon]);
-				wepname.change_text(get_equipname(Equipslot::Id::WEAPON));
-				break;
-			case Buttons::BT_CHARC_GENDER_M:
-				if (female)
-				{
-					female = false;
-					randomize_look();
-				}
-
-				break;
-			case Buttons::BT_CHARC_GEMDER_F:
-				if (!female)
-				{
-					female = true;
-					randomize_look();
-				}
-
-				break;
+				female = false;
+				randomize_look();
 			}
 
-			return Button::State::MOUSEOVER;
+			return Button::State::NORMAL;
+		case Buttons::BT_CHARC_GEMDER_F:
+			if (!female)
+			{
+				female = true;
+				randomize_look();
+			}
+
+			return Button::State::NORMAL;
 		}
 
 		return Button::State::PRESSED;
@@ -716,7 +716,7 @@ namespace jrc
 		skin = randomizer.next_int(skins[female].size());
 		haircolor = randomizer.next_int(haircolors[female].size());
 		top = randomizer.next_int(tops[female].size());
-		bot = randomizer.next_int(bots[female].size());
+		bot = 0;
 		shoe = randomizer.next_int(shoes[female].size());
 		weapon = randomizer.next_int(weapons[female].size());
 
@@ -731,13 +731,9 @@ namespace jrc
 		bodyname.change_text(newchar.get_body()->get_name());
 		facename.change_text(newchar.get_face()->get_name());
 		hairname.change_text(newchar.get_hair()->get_name());
-		haircname.change_text(newchar.get_hair()->getcolor());
-
 		topname.change_text(get_equipname(Equipslot::Id::TOP));
-		botname.change_text(get_equipname(Equipslot::Id::PANTS));
 		shoename.change_text(get_equipname(Equipslot::Id::SHOES));
 		wepname.change_text(get_equipname(Equipslot::Id::WEAPON));
-		gendername.change_text(female ? "Female" : "Male");
 	}
 
 	const std::string& UIExplorerCreation::get_equipname(Equipslot::Id slot) const

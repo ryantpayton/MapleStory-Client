@@ -54,18 +54,8 @@ namespace jrc
 			BT_BACK,
 			BT_CHARC_OK,
 			BT_CHARC_CANCEL,
-			BT_CHARC_FACEL,
-			BT_CHARC_FACER,
-			BT_CHARC_HAIRL,
-			BT_CHARC_HAIRR,
 			BT_CHARC_SKINL,
 			BT_CHARC_SKINR,
-			BT_CHARC_TOPL,
-			BT_CHARC_TOPR,
-			BT_CHARC_BOTL,
-			BT_CHARC_BOTR,
-			BT_CHARC_SHOESL,
-			BT_CHARC_SHOESR,
 			BT_CHARC_WEPL,
 			BT_CHARC_WEPR,
 			BT_CHARC_GENDER_M,
@@ -123,13 +113,11 @@ namespace jrc
 		size_t weapon;
 		Text facename;
 		Text hairname;
-		Text haircname;
 		Text bodyname;
 		Text topname;
 		Text botname;
 		Text shoename;
 		Text wepname;
-		Text gendername;
 		Text version;
 	};
 }

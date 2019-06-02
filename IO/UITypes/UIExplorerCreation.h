@@ -123,13 +123,10 @@ namespace jrc
 		size_t weapon;
 		Text facename;
 		Text hairname;
-		Text haircname;
 		Text bodyname;
 		Text topname;
-		Text botname;
 		Text shoename;
 		Text wepname;
-		Text gendername;
 		Text version;
 	};
 }
