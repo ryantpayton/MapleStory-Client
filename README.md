@@ -51,3 +51,10 @@ The default settings can be configured by editing the **Configuration.h** file. 
 
 # Binaries
 The latest build (05.01.2019) can be found here: [HeavenClient.zip](https://drive.google.com/open?id=1Aq10iPZuTdSh47EgqkUWVhuwlXZU-pD5)
+
+# Donations
+If you feel obligated to donate, to further help and support all parties involved in the development of the HeavenClient project, you can donate using [this](https://paypal.me/pools/c/8frYNoobcY) link.
+
+Please remember this is ONLY for the HeavenClient development and will only be used in the support of helping further develop the client. *Also please remember to support Nexon as this is not meant to replace anything Nexon offers*
+
+Another important note to remember is that HeavenClient is a free open-sourced client developed for personal use. Do NOT pay for any services requested by anyone in regards to this client. It will always remain open and free of charge. There is no intent to publish this code with any payment in mind. If that ever changes, donations and disclaimers for donations will be removed.
