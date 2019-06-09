@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -41,6 +41,8 @@ namespace jrc
 		Point<int16_t> get_dimensions() const;
 
 	private:
+		nl::node find_child(nl::node source, std::string link);
+
 		nl::bitmap bitmap;
 		Point<int16_t> origin;
 		Point<int16_t> dimensions;

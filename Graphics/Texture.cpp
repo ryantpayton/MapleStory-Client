@@ -30,48 +30,30 @@ namespace jrc
 		{
 			origin = src["origin"];
 
-			std::string link = src["source"];
+			std::string source = src["source"];
+			std::string _outlink = src["_outlink"];
+			std::string _inlink = src["_inlink"];
 
-			if (link != "")
+			auto foundSource = find_child(src, source);
+			auto foundOutlink = find_child(src, _outlink);
+
+			auto foundChild = foundSource || foundOutlink;
+
+			if (foundChild)
+				src = foundSource ? foundSource : foundOutlink;
+
+			if (!foundChild && !_inlink.empty())
 			{
-				nl::node srcfile = src;
+				auto parent_node = src.root();
 
-				while (srcfile != srcfile.root())
-					srcfile = srcfile.root();
-
-				src = srcfile.resolve(link.substr(link.find('/') + 1));
-			}
-			else
-			{
-				link = src["_inlink"];
-
-				if (link != "")
+				for (auto child_node = parent_node.begin(); child_node != parent_node.end(); ++child_node)
 				{
-					nl::node srcfile = src;
+					auto found_node = child_node.resolve(_inlink);
 
-					while (srcfile != srcfile.root())
-						srcfile = srcfile.root();
-
-					for (auto t = srcfile.begin(); t != srcfile.end(); ++t)
+					if (found_node.data_type() == nl::node::type::bitmap)
 					{
-						src = t.resolve(link);
-
-						if (src.data_type() != nl::node::type::none)
-							break;
-					}
-				}
-				else
-				{
-					link = src["_outlink"];
-
-					if (link != "")
-					{
-						nl::node srcfile = src;
-
-						while (srcfile != srcfile.root())
-							srcfile = srcfile.root();
-
-						src = srcfile.resolve(link.substr(link.find('/') + 1));
+						src = found_node;
+						break;
 					}
 				}
 			}
@@ -84,17 +66,21 @@ namespace jrc
 	}
 
 	Texture::Texture() {}
-
 	Texture::~Texture() {}
 
 	void Texture::draw(const DrawArgument& args) const
 	{
 		size_t id = bitmap.id();
+
 		if (id == 0)
 			return;
 
-		GraphicsGL::get()
-			.draw(bitmap, args.get_rectangle(origin, dimensions), args.get_color(), args.get_angle());
+		GraphicsGL::get().draw(
+			bitmap,
+			args.get_rectangle(origin, dimensions),
+			args.get_color(),
+			args.get_angle()
+		);
 	}
 
 	void Texture::shift(Point<int16_t> amount)
@@ -125,5 +111,17 @@ namespace jrc
 	Point<int16_t> Texture::get_dimensions() const
 	{
 		return dimensions;
+	}
+
+	nl::node Texture::find_child(nl::node source, std::string link)
+	{
+		if (!link.empty())
+		{
+			nl::node parent_node = source.root();
+
+			return parent_node.resolve(link.substr(link.find('/') + 1));
+		}
+
+		return nl::node();
 	}
 }

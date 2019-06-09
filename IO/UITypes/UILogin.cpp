@@ -39,18 +39,19 @@ namespace jrc
 		std::string version_text = Configuration::get().get_version();
 		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. " + version_text);
 
-		nl::node map = nl::nx::map["Back"]["login.img"];
-		nl::node obj = nl::nx::map["Obj"]["login.img"];
+		nl::node map = nl::nx::map001["Back"]["login.img"];
 		nl::node back = map["back"];
 		nl::node ani = map["ani"];
+
+		nl::node obj = nl::nx::map["Obj"]["login.img"];
 		nl::node title = nl::nx::ui["Login.img"]["Title"];
 		nl::node common = nl::nx::ui["Login.img"]["Common"];
 
-		sprites.emplace_back(back["11"], Point<int16_t>(400, 290)); // From v203.3
-		sprites.emplace_back(ani["17"], Point<int16_t>(129, 273)); // From v167
-		sprites.emplace_back(ani["18"], Point<int16_t>(306, 242)); // From v167
-		sprites.emplace_back(ani["19"], Point<int16_t>(379, 197)); // From v167
-		sprites.emplace_back(back["35"], Point<int16_t>(399, 250)); // From v203.3
+		sprites.emplace_back(back["11"], Point<int16_t>(400, 290));
+		sprites.emplace_back(ani["17"], Point<int16_t>(129, 273));
+		sprites.emplace_back(ani["18"], Point<int16_t>(306, 242));
+		sprites.emplace_back(ani["19"], Point<int16_t>(379, 197));
+		sprites.emplace_back(back["35"], Point<int16_t>(399, 250));
 		sprites.emplace_back(ani["16"], Point<int16_t>(394, 163)); // From v167
 		sprites.emplace_back(title["signboard"], Point<int16_t>(391, 320));
 		sprites.emplace_back(common["frame"], Point<int16_t>(399, 289));

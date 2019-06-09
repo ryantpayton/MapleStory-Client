@@ -46,15 +46,15 @@ namespace jrc
 		nl::node Login = nl::nx::ui["Login.img"];
 		nl::node Common = Login["Common"];
 		nl::node CustomizeChar = Login["CustomizeChar"]["2000"];
-		nl::node back = nl::nx::map["Back"]["login.img"]["back"];
+		nl::node back = nl::nx::map001["Back"]["login.img"]["back"];
 		nl::node board = CustomizeChar["board"];
 		nl::node genderSelect = CustomizeChar["genderSelect"];
 
 		sky = back["2"];
 		cloud = back["27"];
 
-		sprites.emplace_back(back["33"], Point<int16_t>(256, 289)); // From v203.3
-		sprites.emplace_back(back["34"], Point<int16_t>(587, 147)); // From v203.3
+		sprites.emplace_back(back["33"], Point<int16_t>(256, 289));
+		sprites.emplace_back(back["34"], Point<int16_t>(587, 147));
 		sprites_gender_select.emplace_back(board["genderTop"], Point<int16_t>(491, 158));
 		sprites_gender_select.emplace_back(board["boardMid"], Point<int16_t>(491, 210));
 		sprites_gender_select.emplace_back(board["boardBottom"], Point<int16_t>(491, 303));

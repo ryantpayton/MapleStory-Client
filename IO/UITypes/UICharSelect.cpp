@@ -92,13 +92,13 @@ namespace jrc
 		world_sprites.emplace_back(selectedWorld["name"][world_id], worldpos - Point<int16_t>(8, 1));
 		world_sprites.emplace_back(selectedWorld["ch"][channel_id], worldpos - Point<int16_t>(0, 1));
 
-		nl::node map = nl::nx::map["Back"]["login.img"];
+		nl::node map = nl::nx::map001["Back"]["login.img"];
 		nl::node ani = map["ani"];
 
-		sprites.emplace_back(map["back"]["13"], Point<int16_t>(392, 287)); // From v203.3
-		sprites.emplace_back(ani["17"], Point<int16_t>(151, 273)); // From v167
-		sprites.emplace_back(ani["18"], Point<int16_t>(365, 242)); // From v167
-		sprites.emplace_back(ani["19"], Point<int16_t>(191, 198)); // From v167
+		sprites.emplace_back(map["back"]["13"], Point<int16_t>(392, 287));
+		sprites.emplace_back(ani["17"], Point<int16_t>(151, 273));
+		sprites.emplace_back(ani["18"], Point<int16_t>(365, 242));
+		sprites.emplace_back(ani["19"], Point<int16_t>(191, 198));
 		sprites.emplace_back(Common["frame"], Point<int16_t>(399, 289));
 		sprites.emplace_back(Common["step"]["2"], Point<int16_t>(40, -10));
 
