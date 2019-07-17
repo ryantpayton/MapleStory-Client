@@ -16,7 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../UIElement.h"
 #include "../UIDragElement.h"
 
 #include "../Character/Questlog.h"
@@ -33,7 +32,6 @@ namespace jrc
 		UIQuestLog(const Questlog& questLog);
 
 		void draw(float inter) const override;
-		void update() override;
 
 		void send_key(int32_t keycode, bool pressed) override;
 
@@ -41,22 +39,23 @@ namespace jrc
 		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
-		void change_tab(uint8_t tabid);
+		void change_tab(uint16_t tabid);
 
-		enum Buttons
+		enum Buttons : uint16_t
 		{
-			BT_TAB_AVAILABLE,
-			BT_TAB_IN_PROGRESS,
-			BT_TAB_COMPLETED,
-			BT_CLOSE,
-			BT_SEARCH,
-			BT_ALL_LEVEL,
-			BT_ALL_LOCATION
+			TAB0,
+			TAB1,
+			TAB2,
+			CLOSE,
+			SEARCH,
+			ALL_LEVEL,
+			ALL_LOCATION
 		};
 
 		const Questlog& questlog;
 
 		uint16_t tab;
-		std::vector<Sprite> sprites_notice;
+		std::vector<Sprite> notice_sprites;
+		Point<int16_t> notice_position;
 	};
 }

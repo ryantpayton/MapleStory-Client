@@ -124,7 +124,6 @@ namespace jrc
 
 		position = Point<int16_t>(0, 0);
 		dimension = Point<int16_t>(800, 600);
-		active = true;
 	}
 
 	void UILogin::draw(float alpha) const

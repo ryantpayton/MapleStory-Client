@@ -27,66 +27,63 @@ namespace jrc
 {
 	UIQuestLog::UIQuestLog(const Questlog& ql) : UIDragElement<PosQUEST>(Point<int16_t>(172, 20)), questlog(ql)
 	{
-		tab = 0;
+		tab = Buttons::TAB0;
 
 		nl::node close = nl::nx::ui["Basic.img"]["BtClose"];
 		nl::node quest = nl::nx::ui["UIWindow2.img"]["Quest"];
 		nl::node list = quest["list"];
 
-		sprites.emplace_back(list["backgrnd"]);
+		nl::node backgrnd = list["backgrnd"];
+
+		sprites.emplace_back(backgrnd);
 		sprites.emplace_back(list["backgrnd2"]);
 		sprites.emplace_back(list["searchArea"]);
-		sprites_notice.emplace_back(list["notice0"]);
-		sprites_notice.emplace_back(list["notice1"]);
-		sprites_notice.emplace_back(list["notice2"]);
+
+		notice_position = Point<int16_t>(0, 26);
+
+		notice_sprites.emplace_back(list["notice0"]);
+		notice_sprites.emplace_back(list["notice1"]);
+		notice_sprites.emplace_back(list["notice2"]);
 
 		nl::node taben = list["Tab"]["enabled"];
 		nl::node tabdis = list["Tab"]["disabled"];
 
-		buttons[BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(276, 12));
-		buttons[BT_SEARCH] = std::make_unique<MapleButton>(list["BtSearch"], Point<int16_t>(256, 12));
+		buttons[Buttons::TAB0] = std::make_unique<TwoSpriteButton>(tabdis["0"], taben["0"]);
+		buttons[Buttons::TAB1] = std::make_unique<TwoSpriteButton>(tabdis["1"], taben["1"]);
+		buttons[Buttons::TAB2] = std::make_unique<TwoSpriteButton>(tabdis["2"], taben["2"]);
+		buttons[Buttons::CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(281, 12));
+		buttons[Buttons::SEARCH] = std::make_unique<MapleButton>(list["BtSearch"]);
+		buttons[Buttons::ALL_LEVEL] = std::make_unique<MapleButton>(quest["BtAllLevel"]);
+		buttons[Buttons::ALL_LOCATION] = std::make_unique<MapleButton>(quest["BtAllLocation"]);
 
-		buttons[BT_TAB_AVAILABLE] = std::make_unique<TwoSpriteButton>(tabdis["0"], taben["0"]);
-		buttons[BT_TAB_IN_PROGRESS] = std::make_unique<TwoSpriteButton>(tabdis["1"], taben["1"]);
-		buttons[BT_TAB_COMPLETED] = std::make_unique<TwoSpriteButton>(tabdis["2"], taben["2"]);
+		change_tab(tab);
 
-		buttons[BT_ALL_LEVEL] = std::make_unique<MapleButton>(quest["BtAllLevel"]);
-		buttons[BT_ALL_LOCATION] = std::make_unique<MapleButton>(quest["BtAllLocation"]);
-
-		change_tab(0);
-
-		dimension = { 276, 335 };
-		active = true;
+		dimension = Texture(backgrnd).get_dimensions();
 	}
 
 	void UIQuestLog::draw(float alpha) const
 	{
 		UIElement::draw(alpha);
 
-		sprites_notice[tab].draw(position, alpha);
-	}
-
-	void UIQuestLog::update()
-	{
-		UIElement::update();
+		notice_sprites[tab].draw(position + notice_position, alpha);
 	}
 
 	void UIQuestLog::send_key(int32_t keycode, bool pressed)
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::ESCAPE)
+			if (keycode == KeyAction::Id::ESCAPE)
 			{
-				active = false;
+				deactivate();
 			}
-			else if (keycode == KeyAction::TAB)
+			else if (keycode == KeyAction::Id::TAB)
 			{
 				uint16_t new_tab = tab;
 
-				if (new_tab < BT_TAB_COMPLETED)
+				if (new_tab < Buttons::TAB2)
 					new_tab++;
 				else
-					new_tab = BT_TAB_AVAILABLE;
+					new_tab = Buttons::TAB0;
 
 				change_tab(new_tab);
 			}
@@ -97,27 +94,29 @@ namespace jrc
 	{
 		switch (buttonid)
 		{
-		case BT_CLOSE:
-			active = false;
-			break;
-		case BT_TAB_AVAILABLE:
-		case BT_TAB_IN_PROGRESS:
-		case BT_TAB_COMPLETED:
+		case Buttons::TAB0:
+		case Buttons::TAB1:
+		case Buttons::TAB2:
 			change_tab(buttonid);
-			break;
-		}
 
-		return Button::State::NORMAL;
+			return Button::State::IDENTITY;
+		case Buttons::CLOSE:
+			deactivate();
+
+			return Button::State::NORMAL;
+		default:
+			return Button::State::PRESSED;
+		}
 	}
 
-	void UIQuestLog::change_tab(uint8_t tabid)
+	void UIQuestLog::change_tab(uint16_t tabid)
 	{
-		uint8_t oldtab = tab;
+		uint16_t oldtab = tab;
 		tab = tabid;
 
 		if (oldtab != tab)
-			buttons[BT_TAB_AVAILABLE + oldtab]->set_state(Button::State::NORMAL);
+			buttons[Buttons::TAB0 + oldtab]->set_state(Button::State::NORMAL);
 
-		buttons[BT_TAB_AVAILABLE + tab]->set_state(Button::State::PRESSED);
+		buttons[Buttons::TAB0 + tab]->set_state(Button::State::PRESSED);
 	}
 }

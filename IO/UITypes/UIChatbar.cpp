@@ -86,21 +86,28 @@ namespace jrc
 		chatfield.set_state(chatopen ? Textfield::State::NORMAL : Textfield::State::DISABLED);
 
 		chatfield.set_enter_callback(
-			[&](std::string msg) {
+			[&](std::string msg)
+			{
 				if (msg.size() > 0)
 				{
-				size_t last = msg.find_last_not_of(' ');
+					size_t last = msg.find_last_not_of(' ');
 
-				if (last != std::string::npos)
-				{
-					msg.erase(last + 1);
+					if (last != std::string::npos)
+					{
+						msg.erase(last + 1);
 
-					GeneralChatPacket(msg, true).dispatch();
+						GeneralChatPacket(msg, true).dispatch();
 
-					lastentered.push_back(msg);
-					lastpos = lastentered.size();
+						lastentered.push_back(msg);
+						lastpos = lastentered.size();
+					}
+					else
+					{
+						toggle_chatfield();
+					}
+
+					chatfield.change_text("");
 				}
-			}
 				else
 				{
 					toggle_chatfield();
@@ -206,12 +213,12 @@ namespace jrc
 			chatfield.draw(position + Point<int16_t>(-4, -4));
 		}
 
-			UIElement::draw_buttons(inter);
+		UIElement::draw_buttons(inter);
 
 		if (chatopen)
 			for (size_t i = 0; i < NUM_CHATTAB; i++)
 				chattab_text[CHT_ALL + i].draw(position + Point<int16_t>(chattab_x + (i * chattab_span) + 25, chattab_y - 3));
-		}
+	}
 
 	void UIChatbar::update()
 	{

@@ -136,7 +136,7 @@ namespace jrc
 
 					break;
 				case KeyAction::SPACE:
-					if (markerpos > 0 && belowlimit())
+					if (belowlimit())
 					{
 						text.insert(markerpos, 1, ' ');
 						markerpos++;
