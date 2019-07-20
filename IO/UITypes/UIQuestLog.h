@@ -19,6 +19,8 @@
 #include "../UIDragElement.h"
 
 #include "../Character/Questlog.h"
+#include "../Components/Textfield.h"
+#include "../Components/Slider.h"
 
 namespace jrc
 {
@@ -34,6 +36,7 @@ namespace jrc
 		void draw(float inter) const override;
 
 		void send_key(int32_t keycode, bool pressed) override;
+		Cursor::State send_cursor(bool clicking, Point<int16_t> cursorpos) override;
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -49,13 +52,15 @@ namespace jrc
 			CLOSE,
 			SEARCH,
 			ALL_LEVEL,
-			ALL_LOCATION
+			MY_LOCATION
 		};
 
 		const Questlog& questlog;
 
 		uint16_t tab;
 		std::vector<Sprite> notice_sprites;
-		Point<int16_t> notice_position;
+		Textfield search;
+		Text placeholder;
+		Slider slider;
 	};
 }

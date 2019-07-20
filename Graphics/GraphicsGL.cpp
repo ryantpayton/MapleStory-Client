@@ -697,7 +697,8 @@ namespace jrc
 			{ 0.0f, 0.4f, 0.67f }, // Endeavour
 			{ 0.3f, 0.2f, 0.1f }, // Brown Derby
 			{ 0.94f, 0.95f, 0.95f }, // Porcelain
-			{ 0.34f, 0.27f, 0.14f } // Irish Coffee
+			{ 0.34f, 0.27f, 0.14f }, // Irish Coffee
+			{ 0.47f, 0.47f, 0.47f } // Boulder
 		};
 
 		for (const Text::Layout::Line& line : layout)

@@ -75,6 +75,7 @@ namespace jrc
 			BROWNDERBY,
 			PORCELAIN,
 			IRISHCOFFEE,
+			BOULDER,
 			NUM_COLORS
 		};
 

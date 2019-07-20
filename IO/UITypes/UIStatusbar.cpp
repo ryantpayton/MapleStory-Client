@@ -40,6 +40,7 @@
 #include "../UITypes/UIJoypad.h"
 #include "../UITypes/UIEvent.h"
 #include "../UITypes/UIKeyConfig.h"
+#include "../UITypes/UIChat.h"
 
 #include "../Net/Packets/LoginPackets.h"
 
@@ -633,7 +634,13 @@ namespace jrc
 		}
 		break;
 		case BT_COMMUNITY_GUILD:
+			remove_menus();
+			break;
 		case BT_COMMUNITY_MAPLECHAT:
+			UI::get().emplace<UIChat>();
+
+			remove_menus();
+			break;
 		case BT_CHARACTER_INFO:
 			remove_menus();
 			break;

@@ -21,9 +21,10 @@
 
 namespace jrc
 {
-	Slider::Slider(int32_t t, Range<int16_t> ver, int16_t xp, int16_t ur, int16_t rm, std::function<void(bool)> om) : type(t), vertical(ver), x(xp), onmoved(om) {
-		start = { x, vertical.first() };
-		end = { x, vertical.second() };
+	Slider::Slider(int32_t t, Range<int16_t> ver, int16_t xp, int16_t ur, int16_t rm, std::function<void(bool)> om) : type(t), vertical(ver), x(xp), onmoved(om)
+	{
+		start = Point<int16_t>(x, vertical.first());
+		end = Point<int16_t>(x, vertical.second());
 
 		nl::node src;
 		std::string base_str = "base";
@@ -46,17 +47,18 @@ namespace jrc
 		nl::node dsrc = src["disabled"];
 
 		dbase = dsrc[base_str];
-		dnext = dsrc["next"];
+
 		dprev = dsrc["prev"];
+		dnext = dsrc["next"];
 
 		nl::node esrc = src["enabled"];
 
 		base = esrc[base_str];
 
-		prev = { esrc["prev0"], esrc["prev1"], start };
-		next = { esrc["next0"], esrc["next1"], end };
+		prev = TwoSpriteButton(esrc["prev0"], esrc["prev1"], start);
+		next = TwoSpriteButton(esrc["next0"], esrc["next1"], end);
 
-		thumb = { esrc["thumb0"], esrc["thumb1"] };
+		thumb = TwoSpriteButton(esrc["thumb0"], esrc["thumb1"]);
 
 		buttonheight = dnext.get_dimensions().y();
 
@@ -98,8 +100,8 @@ namespace jrc
 	void Slider::setvertical(Range<int16_t> ver)
 	{
 		vertical = ver;
-		start = { x, vertical.first() };
-		end = { x, vertical.second() };
+		start = Point<int16_t>(x, vertical.first());
+		end = Point<int16_t>(x, vertical.second());
 		prev.set_position(start);
 		next.set_position(end);
 
@@ -111,23 +113,31 @@ namespace jrc
 
 	void Slider::draw(Point<int16_t> position) const
 	{
-		Point<int16_t> fill(0, vertical.length() + buttonheight);
+		Point<int16_t> base_pos = position + start;
+		Point<int16_t> fill = Point<int16_t>(0, vertical.length() + buttonheight - 2);
+		DrawArgument base_arg = DrawArgument(Point<int16_t>(base_pos.x(), base_pos.y() + 1), fill);
 
 		if (enabled)
 		{
-			base.draw({ position + start, fill });
-
 			if (rowheight > 0)
-				thumb.draw({ position + getthumbpos() });
-
-			prev.draw({ position });
-			next.draw({ position });
+			{
+				base.draw(base_arg);
+				thumb.draw(position + getthumbpos());
+				prev.draw(position);
+				next.draw(position);
+			}
+			else
+			{
+				dbase.draw(base_arg);
+				dprev.draw(position + start);
+				dnext.draw(position + end);
+			}
 		}
 		else
 		{
-			dbase.draw({ position + start, fill });
-			dprev.draw({ position });
-			dnext.draw({ position });
+			dbase.draw(base_arg);
+			dprev.draw(position + start);
+			dnext.draw(position + end);
 		}
 	}
 
@@ -139,9 +149,9 @@ namespace jrc
 		}
 		else
 		{
-			thumb.set_state(Button::NORMAL);
-			next.set_state(Button::NORMAL);
-			prev.set_state(Button::NORMAL);
+			thumb.set_state(Button::State::NORMAL);
+			next.set_state(Button::State::NORMAL);
+			prev.set_state(Button::State::NORMAL);
 
 			return false;
 		}
@@ -149,11 +159,12 @@ namespace jrc
 
 	Point<int16_t> Slider::getthumbpos() const
 	{
-		int16_t y = row < rowmax ?
-			vertical.first() + row * rowheight + buttonheight
-			: vertical.second() - buttonheight * 2 - 2;
+		int16_t y =
+			row < rowmax ?
+			vertical.first() + row * rowheight + buttonheight :
+			vertical.second() - buttonheight * 2 - 2;
 
-		return{ x, y };
+		return Point<int16_t>(x, y);
 	}
 
 	Cursor::State Slider::send_cursor(Point<int16_t> cursor, bool pressed)
@@ -178,7 +189,7 @@ namespace jrc
 					onmoved(true);
 				}
 
-				return Cursor::VSCROLLIDLE;
+				return Cursor::State::VSCROLLIDLE;
 			}
 			else
 			{
@@ -187,11 +198,11 @@ namespace jrc
 		}
 		else if (relative.x() < 0 || relative.y() < 0 || relative.x() > 8 || relative.y() > vertical.second())
 		{
-			thumb.set_state(Button::NORMAL);
-			next.set_state(Button::NORMAL);
-			prev.set_state(Button::NORMAL);
+			thumb.set_state(Button::State::NORMAL);
+			next.set_state(Button::State::NORMAL);
+			prev.set_state(Button::State::NORMAL);
 
-			return Cursor::IDLE;
+			return Cursor::State::IDLE;
 		}
 
 		Point<int16_t> thumbpos = getthumbpos();
@@ -201,20 +212,20 @@ namespace jrc
 			if (pressed)
 			{
 				scrolling = true;
-				thumb.set_state(Button::PRESSED);
+				thumb.set_state(Button::State::PRESSED);
 
-				return Cursor::VSCROLLIDLE;
+				return Cursor::State::VSCROLLIDLE;
 			}
 			else
 			{
-				thumb.set_state(Button::NORMAL);
+				thumb.set_state(Button::State::NORMAL);
 
-				return Cursor::VSCROLL;
+				return Cursor::State::VSCROLL;
 			}
 		}
 		else
 		{
-			thumb.set_state(Button::NORMAL);
+			thumb.set_state(Button::State::NORMAL);
 		}
 
 		if (prev.bounds(Point<int16_t>()).contains(cursor))
@@ -227,20 +238,20 @@ namespace jrc
 					onmoved(true);
 				}
 
-				prev.set_state(Button::PRESSED);
+				prev.set_state(Button::State::PRESSED);
 
-				return Cursor::VSCROLLIDLE;
+				return Cursor::State::VSCROLLIDLE;
 			}
 			else
 			{
-				prev.set_state(Button::MOUSEOVER);
+				prev.set_state(Button::State::MOUSEOVER);
 
-				return Cursor::VSCROLL;
+				return Cursor::State::VSCROLL;
 			}
 		}
 		else
 		{
-			prev.set_state(Button::NORMAL);
+			prev.set_state(Button::State::NORMAL);
 		}
 
 		if (next.bounds(Point<int16_t>()).contains(cursor))
@@ -253,20 +264,20 @@ namespace jrc
 					onmoved(false);
 				}
 
-				next.set_state(Button::PRESSED);
+				next.set_state(Button::State::PRESSED);
 
-				return Cursor::VSCROLLIDLE;
+				return Cursor::State::VSCROLLIDLE;
 			}
 			else
 			{
-				next.set_state(Button::MOUSEOVER);
+				next.set_state(Button::State::MOUSEOVER);
 
-				return Cursor::VSCROLL;
+				return Cursor::State::VSCROLL;
 			}
 		}
 		else
 		{
-			next.set_state(Button::NORMAL);
+			next.set_state(Button::State::NORMAL);
 		}
 
 		if (cursor.y() < vertical.second())
@@ -300,11 +311,11 @@ namespace jrc
 					}
 				}
 
-				return Cursor::VSCROLLIDLE;
+				return Cursor::State::VSCROLLIDLE;
 			}
 		}
 
-		return Cursor::VSCROLL;
+		return Cursor::State::VSCROLL;
 	}
 
 	void Slider::send_scroll(double yoffset)
