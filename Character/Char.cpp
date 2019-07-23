@@ -42,7 +42,7 @@ namespace jrc
 		}
 		else
 		{
-			color = Color::Name::WHITE;
+			color = Color::Code::CWHITE;
 		}
 
 		look.draw(DrawArgument(absp, color), alpha);
