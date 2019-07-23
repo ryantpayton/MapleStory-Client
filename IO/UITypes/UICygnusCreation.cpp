@@ -30,7 +30,7 @@
 
 #include "../Net/Packets/CharCreationPackets.h"
 
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -41,7 +41,7 @@ namespace jrc
 		named = false;
 
 		std::string version_text = Configuration::get().get_version();
-		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. " + version_text);
+		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::LEMONGRASS, "Ver. " + version_text);
 
 		nl::node Login = nl::nx::ui["Login.img"];
 		nl::node Common = Login["Common"];
@@ -95,7 +95,7 @@ namespace jrc
 		buttons[Buttons::BT_CHARC_CANCEL] = std::make_unique<MapleButton>(CustomizeChar["BtNo"], Point<int16_t>(615, 386));
 
 		nameboard = CustomizeChar["charName"];
-		namechar = Textfield(Text::Font::A13M, Text::Alignment::LEFT, Text::Color::BLACK, Rectangle<int16_t>(Point<int16_t>(538, 200), Point<int16_t>(630, 243)), 12);
+		namechar = Textfield(Text::Font::A13M, Text::Alignment::LEFT, Color::Name::BLACK, Rectangle<int16_t>(Point<int16_t>(538, 200), Point<int16_t>(630, 243)), 12);
 
 		sprites.emplace_back(Common["frame"], Point<int16_t>(399, 289));
 		sprites.emplace_back(Common["step"]["3"], Point<int16_t>(40, -10));
@@ -119,13 +119,13 @@ namespace jrc
 			}
 		);
 
-		facename = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
-		hairname = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
-		bodyname = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
-		topname = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
-		botname = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
-		shoename = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
-		wepname = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK);
+		facename = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::BLACK);
+		hairname = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::BLACK);
+		bodyname = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::BLACK);
+		topname = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::BLACK);
+		botname = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::BLACK);
+		shoename = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::BLACK);
+		wepname = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::BLACK);
 
 		nl::node mkinfo = nl::nx::etc["MakeCharInfo.img"]["Info"];
 

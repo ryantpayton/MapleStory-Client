@@ -18,17 +18,15 @@
 #include "UISkillbook.h"
 
 #include "../Components/MapleButton.h"
-#include "../Components/TwoSpriteButton.h"
+#include "../Character/SkillId.h"
+#include "../Data/JobData.h"
+#include "../Data/SkillData.h"
+#include "../Gameplay/Stage.h"
+#include "../IO/UI.h"
 
-#include "../../Character/SkillId.h"
-#include "../../Data/JobData.h"
-#include "../../Data/SkillData.h"
-#include "../../Gameplay/Stage.h"
-#include "../../Net/Packets/PlayerPackets.h"
-#include "../../IO/UI.h"
-#include "../../Util/Misc.h"
+#include "../Net/Packets/PlayerPackets.h"
 
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -43,8 +41,8 @@ namespace jrc
 		std::string namestr = data.get_name();
 		std::string levelstr = std::to_string(lv);
 
-		name = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::EMPEROR, namestr);
-		level = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::EMPEROR, levelstr);
+		name = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR, namestr);
+		level = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR, levelstr);
 		state = State::NORMAL;
 
 		constexpr uint16_t MAX_NAME_WIDTH = 97;
@@ -149,8 +147,8 @@ namespace jrc
 				y_adj += ROW_HEIGHT;
 		}
 
-		booktext = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::WHITE, "", 100);
-		splabel = Text(Text::Font::A12M, Text::Alignment::RIGHT, Text::Color::BLACK);
+		booktext = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::WHITE, "", 100);
+		splabel = Text(Text::Font::A12M, Text::Alignment::RIGHT, Color::Name::BLACK);
 
 		slider = Slider(
 			Slider::Type::DEFAULT, Range<int16_t>(93, 317), 295, ROWS, 1,

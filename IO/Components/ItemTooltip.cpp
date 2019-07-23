@@ -19,10 +19,9 @@
 
 #include "../Constants.h"
 
-#include "../../Data/ItemData.h"
+#include "../Data/ItemData.h"
 
-#include "nlnx/nx.hpp"
-#include "nlnx/node.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -57,8 +56,8 @@ namespace jrc
 
 		itemicon = idata.get_icon(false);
 
-		name = Text(Text::Font::A12B, Text::Alignment::LEFT, Text::Color::WHITE, idata.get_name(), 240);
-		desc = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, idata.get_desc(), 185);
+		name = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE, idata.get_name(), 240);
+		desc = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE, idata.get_desc(), 185);
 
 		fillwidth = 264;
 		fillheight = 83 + name.height();

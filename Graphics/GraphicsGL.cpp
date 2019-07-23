@@ -18,9 +18,6 @@
 #include "GraphicsGL.h"
 
 #include "../Configuration.h"
-#include "../Console.h"
-
-#include <algorithm>
 
 namespace jrc
 {
@@ -394,7 +391,7 @@ namespace jrc
 
 				wasted += x * (h - yrange.second());
 
-				yrange = { y + h, h };
+				yrange = Range<int16_t>(y + h, h);
 			}
 			else if (h < yrange.first() - y)
 			{
@@ -441,7 +438,7 @@ namespace jrc
 		size_t length = text.length();
 
 		if (length == 0)
-			return{};
+			return Text::Layout();
 
 		LayoutBuilder builder(fonts[id], alignment, maxwidth, formatted, line_adj);
 
@@ -467,7 +464,7 @@ namespace jrc
 	GraphicsGL::LayoutBuilder::LayoutBuilder(const Font& f, Text::Alignment a, int16_t mw, bool fm, int16_t la) : font(f), alignment(a), maxwidth(mw), formatted(fm), line_adj(la)
 	{
 		fontid = Text::NUM_FONTS;
-		color = Text::NUM_COLORS;
+		color = Color::Name::NUM_COLORS;
 		ax = 0;
 		ay = font.linespace();
 		width = 0;
@@ -483,7 +480,7 @@ namespace jrc
 			return prev;
 
 		Text::Font last_font = fontid;
-		Text::Color last_color = color;
+		Color::Name last_color = color;
 		size_t skip = 0;
 		bool linebreak = false;
 
@@ -515,16 +512,16 @@ namespace jrc
 					switch (text[first + 1])
 					{
 					case 'k':
-						color = Text::DARKGREY;
+						color = Color::Name::DARKGREY;
 						break;
 					case 'b':
-						color = Text::BLUE;
+						color = Color::Name::BLUE;
 						break;
 					case 'r':
-						color = Text::RED;
+						color = Color::Name::RED;
 						break;
 					case 'c':
-						color = Text::ORANGE;
+						color = Color::Name::ORANGE;
 						break;
 					}
 
@@ -607,10 +604,10 @@ namespace jrc
 
 		advances.push_back(ax);
 
-		return{ lines, advances, width, ay, ax, endy };
+		return Text::Layout(lines, advances, width, ay, ax, endy);
 	}
 
-	void GraphicsGL::LayoutBuilder::add_word(size_t word_first, size_t word_last, Text::Font word_font, Text::Color word_color)
+	void GraphicsGL::LayoutBuilder::add_word(size_t word_first, size_t word_last, Text::Font word_font, Color::Name word_color)
 	{
 		words.push_back({ word_first, word_last, word_font, word_color });
 	}
@@ -634,7 +631,7 @@ namespace jrc
 		words.clear();
 	}
 
-	void GraphicsGL::drawtext(const DrawArgument& args, const std::string& text, const Text::Layout& layout, Text::Font id, Text::Color colorid, Text::Background background)
+	void GraphicsGL::drawtext(const DrawArgument& args, const std::string& text, const Text::Layout& layout, Text::Font id, Color::Name colorid, Text::Background background)
 	{
 		if (locked)
 			return;
@@ -660,7 +657,7 @@ namespace jrc
 				GLshort right = left + w + 3;
 				GLshort top = y + line.position.y() - font.linespace() + 5;
 				GLshort bottom = top + h - 2;
-				Color ntcolor{ 0.0f, 0.0f, 0.0f, 0.6f };
+				Color ntcolor = Color(0.0f, 0.0f, 0.0f, 0.6f);
 
 				quads.emplace_back(left, right, top, bottom, nulloffset, ntcolor, 0.0f);
 				quads.emplace_back(left - 1, left, top + 1, bottom - 1, nulloffset, ntcolor, 0.0f);
@@ -669,37 +666,6 @@ namespace jrc
 
 			break;
 		}
-
-		constexpr GLfloat colors[Text::NUM_COLORS][3] =
-		{
-			{ 0.0f, 0.0f, 0.0f }, // Black
-			{ 1.0f, 1.0f, 1.0f }, // White
-			{ 1.0f, 1.0f, 0.0f }, // Yellow
-			{ 0.0f, 0.0f, 1.0f }, // Blue
-			{ 1.0f, 0.0f, 0.0f }, // Red
-			{ 0.8f, 0.3f, 0.3f }, // DarkRed
-			{ 0.5f, 0.25f, 0.0f }, // Brown
-			{ 0.34f, 0.2f, 0.07f }, // Jambalaya
-			{ 0.5f, 0.5f, 0.5f }, // Lightgrey
-			{ 0.25f, 0.25f, 0.25f }, // Darkgrey
-			{ 1.0f, 0.5f, 0.0f }, // Orange
-			{ 0.0f, 0.75f, 1.0f }, // Mediumblue
-			{ 0.5f, 0.0f, 0.5f }, // Violet
-			{ 0.47f, 0.4f, 0.27f }, // Tobacco Brown
-			{ 0.74f, 0.74f, 0.67f }, // Eagle
-			{ 0.6f, 0.6f, 0.54f }, // Lemon Grass
-			{ 0.2f, 0.2f, 0.27f }, // Tuna
-			{ 0.94f, 0.94f, 0.94f }, // Gallery
-			{ 0.6f, 0.6f, 0.6f }, // Dusty Gray
-			{ 0.34f, 0.34f, 0.34f }, // Emperor
-			{ 0.2f, 0.2f, 0.2f }, // Mine Shaft
-			{ 1.0f, 1.0f, 0.87f }, // Half and Half
-			{ 0.0f, 0.4f, 0.67f }, // Endeavour
-			{ 0.3f, 0.2f, 0.1f }, // Brown Derby
-			{ 0.94f, 0.95f, 0.95f }, // Porcelain
-			{ 0.34f, 0.27f, 0.14f }, // Irish Coffee
-			{ 0.47f, 0.47f, 0.47f } // Boulder
-		};
 
 		for (const Text::Layout::Line& line : layout)
 		{
@@ -712,12 +678,12 @@ namespace jrc
 
 				const GLfloat* wordcolor;
 
-				if (word.color < Text::NUM_COLORS)
-					wordcolor = colors[word.color];
+				if (word.color < Color::Name::NUM_COLORS)
+					wordcolor = Color::colors[word.color];
 				else
-					wordcolor = colors[colorid];
+					wordcolor = Color::colors[colorid];
 
-				Color abscolor = color * Color{ wordcolor[0], wordcolor[1], wordcolor[2], 1.0f };
+				Color abscolor = color * Color(wordcolor[0], wordcolor[1], wordcolor[2], 1.0f);
 
 				for (size_t pos = word.first; pos < word.last; ++pos)
 				{
@@ -748,7 +714,7 @@ namespace jrc
 		if (locked)
 			return;
 
-		quads.emplace_back(x, x + w, y, y + h, nulloffset, Color{ r, g, b, a }, 0.0f);
+		quads.emplace_back(x, x + w, y, y + h, nulloffset, Color(r, g, b, a), 0.0f);
 	}
 
 	void GraphicsGL::drawscreenfill(float r, float g, float b, float a)
@@ -773,7 +739,7 @@ namespace jrc
 		if (coverscene)
 		{
 			float complement = 1.0f - opacity;
-			Color color{ 0.0f, 0.0f, 0.0f, complement };
+			Color color = Color(0.0f, 0.0f, 0.0f, complement);
 
 			quads.emplace_back(SCREEN.l(), SCREEN.r(), SCREEN.t(), SCREEN.b(), nulloffset, color, 0.0f);
 		}

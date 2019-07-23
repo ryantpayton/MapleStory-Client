@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,8 +18,6 @@
 #include "Color.h"
 
 #include "../Util/Lerp.h"
-
-#include <algorithm>
 
 namespace jrc
 {
@@ -41,10 +39,15 @@ namespace jrc
 	Color Color::blend(const Color& other, float alpha) const
 	{
 		underlying_t blended;
-		std::transform(begin(), end(), other.begin(), blended.begin(),
-			[alpha](float f, float s) {
-			return lerp(f, s, alpha);
-		});
+
+		std::transform(
+			begin(), end(), other.begin(), blended.begin(),
+			[alpha](float f, float s)
+			{
+				return lerp(f, s, alpha);
+			}
+		);
+
 		return blended;
 	}
 }

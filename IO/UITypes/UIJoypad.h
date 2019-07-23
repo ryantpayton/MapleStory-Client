@@ -26,7 +26,7 @@ namespace jrc
 	class UIJoypad : public UIDragElement<PosJOYPAD>
 	{
 	public:
-		static constexpr Type TYPE = JOYPAD;
+		static constexpr Type TYPE = UIElement::Type::JOYPAD;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 

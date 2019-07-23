@@ -26,7 +26,7 @@ namespace jrc
 	class UIWorldSelect : public UIElement
 	{
 	public:
-		static constexpr Type TYPE = WORLDSELECT;
+		static constexpr Type TYPE = UIElement::Type::WORLDSELECT;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 

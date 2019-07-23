@@ -19,15 +19,14 @@
 #include "../UIElement.h"
 
 #include "../Components/Textfield.h"
-
-#include "../../Template/BoolPair.h"
+#include "../Template/BoolPair.h"
 
 namespace jrc
 {
 	class UILogin : public UIElement
 	{
 	public:
-		static constexpr Type TYPE = LOGIN;
+		static constexpr Type TYPE = UIElement::Type::LOGIN;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 

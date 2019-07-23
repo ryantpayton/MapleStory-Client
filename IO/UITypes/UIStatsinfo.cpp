@@ -22,9 +22,9 @@
 #include "../Components/MapleButton.h"
 #include "../UITypes/UINotice.h"
 
-#include "../../Net/Packets/PlayerPackets.h"
+#include "../Net/Packets/PlayerPackets.h"
 
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -46,83 +46,83 @@ namespace jrc
 		textures_detail.emplace_back(detail["backgrnd3"]);
 		textures_detail.emplace_back(detail["backgrnd4"]);
 
-		abilities[RARE] = abilityTitle["rare"]["0"];
-		abilities[EPIC] = abilityTitle["epic"]["0"];
-		abilities[UNIQUE] = abilityTitle["unique"]["0"];
-		abilities[LEGENDARY] = abilityTitle["legendary"]["0"];
-		abilities[NONE] = abilityTitle["normal"]["0"];
+		abilities[Ability::RARE] = abilityTitle["rare"]["0"];
+		abilities[Ability::EPIC] = abilityTitle["epic"]["0"];
+		abilities[Ability::UNIQUE] = abilityTitle["unique"]["0"];
+		abilities[Ability::LEGENDARY] = abilityTitle["legendary"]["0"];
+		abilities[Ability::NONE] = abilityTitle["normal"]["0"];
 
 		inner_ability[true] = metierLine["activated"]["0"];
 		inner_ability[false] = metierLine["disabled"]["0"];
 
-		buttons[BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(196, 12));
-		buttons[BT_HP] = std::make_unique<MapleButton>(main["BtHpUp"]);
-		buttons[BT_MP] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0, 18));		// TODO: "BtMpUp" not Working
-		buttons[BT_STR] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0, 87));		// TODO: "BtStrUp" not working
-		buttons[BT_DEX] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0, 105));	// TODO: "BtDexUp" not working
-		buttons[BT_INT] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0, 123));	// TODO: "BtIntUp" not working
-		buttons[BT_LUK] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0, 141));	// TODO: "BtLukUp" not working
-		buttons[BT_AUTO] = std::make_unique<MapleButton>(main["BtAuto"]);
-		buttons[BT_HYPERSTATOPEN] = std::make_unique<MapleButton>(main["BtHyperStatOpen"]);
-		buttons[BT_HYPERSTATCLOSE] = std::make_unique<MapleButton>(main["BtHyperStatClose"]);
-		buttons[BT_DETAILOPEN] = std::make_unique<MapleButton>(main["BtDetailOpen"]);
-		buttons[BT_DETAILCLOSE] = std::make_unique<MapleButton>(main["BtDetailClose"]);
-		buttons[BT_ABILITY] = std::make_unique<MapleButton>(detail["BtAbility"], Point<int16_t>(212, 0));
-		buttons[BT_DETAIL_DETAILCLOSE] = std::make_unique<MapleButton>(detail["BtHpUp"], Point<int16_t>(212, 0));
+		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(196, 12));
+		buttons[Buttons::BT_HP] = std::make_unique<MapleButton>(main["BtHpUp"]);
+		buttons[Buttons::BT_MP] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0, 18));		// TODO: "BtMpUp" not Working
+		buttons[Buttons::BT_STR] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0, 87));	// TODO: "BtStrUp" not working
+		buttons[Buttons::BT_DEX] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0, 105));	// TODO: "BtDexUp" not working
+		buttons[Buttons::BT_INT] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0, 123));	// TODO: "BtIntUp" not working
+		buttons[Buttons::BT_LUK] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0, 141));	// TODO: "BtLukUp" not working
+		buttons[Buttons::BT_AUTO] = std::make_unique<MapleButton>(main["BtAuto"]);
+		buttons[Buttons::BT_HYPERSTATOPEN] = std::make_unique<MapleButton>(main["BtHyperStatOpen"]);
+		buttons[Buttons::BT_HYPERSTATCLOSE] = std::make_unique<MapleButton>(main["BtHyperStatClose"]);
+		buttons[Buttons::BT_DETAILOPEN] = std::make_unique<MapleButton>(main["BtDetailOpen"]);
+		buttons[Buttons::BT_DETAILCLOSE] = std::make_unique<MapleButton>(main["BtDetailClose"]);
+		buttons[Buttons::BT_ABILITY] = std::make_unique<MapleButton>(detail["BtAbility"], Point<int16_t>(212, 0));
+		buttons[Buttons::BT_DETAIL_DETAILCLOSE] = std::make_unique<MapleButton>(detail["BtHpUp"], Point<int16_t>(212, 0));
 
-		buttons[BT_HYPERSTATOPEN]->set_active(false);
-		buttons[BT_DETAILCLOSE]->set_active(false);
-		buttons[BT_ABILITY]->set_active(false);
-		buttons[BT_ABILITY]->set_state(Button::State::DISABLED);
-		buttons[BT_DETAIL_DETAILCLOSE]->set_active(false);
+		buttons[Buttons::BT_HYPERSTATOPEN]->set_active(false);
+		buttons[Buttons::BT_DETAILCLOSE]->set_active(false);
+		buttons[Buttons::BT_ABILITY]->set_active(false);
+		buttons[Buttons::BT_ABILITY]->set_state(Button::State::DISABLED);
+		buttons[Buttons::BT_DETAIL_DETAILCLOSE]->set_active(false);
 
 		update_ap();
 
 		// Normal
-		for (size_t i = NAME; i <= LUK; i++)
-			statlabels[i] = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::EMPEROR);
+		for (size_t i = StatLabel::NAME; i <= LUK; i++)
+			statlabels[i] = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR);
 
-		statoffsets[NAME] = Point<int16_t>(73, 26);
-		statoffsets[JOB] = Point<int16_t>(74, 44);
-		statoffsets[GUILD] = Point<int16_t>(74, 63);
-		statoffsets[FAME] = Point<int16_t>(74, 80);
-		statoffsets[DAMAGE] = Point<int16_t>(74, 98);
-		statoffsets[HP] = Point<int16_t>(74, 116);
-		statoffsets[MP] = Point<int16_t>(74, 134);
-		statoffsets[AP] = Point<int16_t>(86, 175);
-		statoffsets[STR] = Point<int16_t>(73, 204);
-		statoffsets[DEX] = Point<int16_t>(73, 222);
-		statoffsets[INT] = Point<int16_t>(73, 240);
-		statoffsets[LUK] = Point<int16_t>(73, 258);
+		statoffsets[StatLabel::NAME] = Point<int16_t>(73, 26);
+		statoffsets[StatLabel::JOB] = Point<int16_t>(74, 44);
+		statoffsets[StatLabel::GUILD] = Point<int16_t>(74, 63);
+		statoffsets[StatLabel::FAME] = Point<int16_t>(74, 80);
+		statoffsets[StatLabel::DAMAGE] = Point<int16_t>(74, 98);
+		statoffsets[StatLabel::HP] = Point<int16_t>(74, 116);
+		statoffsets[StatLabel::MP] = Point<int16_t>(74, 134);
+		statoffsets[StatLabel::AP] = Point<int16_t>(86, 175);
+		statoffsets[StatLabel::STR] = Point<int16_t>(73, 204);
+		statoffsets[StatLabel::DEX] = Point<int16_t>(73, 222);
+		statoffsets[StatLabel::INT] = Point<int16_t>(73, 240);
+		statoffsets[StatLabel::LUK] = Point<int16_t>(73, 258);
 
 		// Detailed
-		statlabels[DAMAGE_DETAILED] = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::EMPEROR);
-		statlabels[DAMAGE_BONUS] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Text::Color::EMPEROR);
-		statlabels[BOSS_DAMAGE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Text::Color::EMPEROR);
-		statlabels[FINAL_DAMAGE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Text::Color::EMPEROR);
-		statlabels[IGNORE_DEFENSE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Text::Color::EMPEROR);
-		statlabels[CRITICAL_RATE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Text::Color::EMPEROR);
-		statlabels[CRITICAL_DAMAGE] = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::EMPEROR);
-		statlabels[STATUS_RESISTANCE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Text::Color::EMPEROR);
-		statlabels[KNOCKBACK_RESISTANCE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Text::Color::EMPEROR);
-		statlabels[DEFENSE] = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::EMPEROR);
-		statlabels[SPEED] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Text::Color::EMPEROR);
-		statlabels[JUMP] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Text::Color::EMPEROR);
-		statlabels[HONOR] = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::EMPEROR);
+		statlabels[StatLabel::DAMAGE_DETAILED] = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR);
+		statlabels[StatLabel::DAMAGE_BONUS] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
+		statlabels[StatLabel::BOSS_DAMAGE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
+		statlabels[StatLabel::FINAL_DAMAGE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
+		statlabels[StatLabel::IGNORE_DEFENSE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
+		statlabels[StatLabel::CRITICAL_RATE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
+		statlabels[StatLabel::CRITICAL_DAMAGE] = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR);
+		statlabels[StatLabel::STATUS_RESISTANCE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
+		statlabels[StatLabel::KNOCKBACK_RESISTANCE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
+		statlabels[StatLabel::DEFENSE] = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR);
+		statlabels[StatLabel::SPEED] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
+		statlabels[StatLabel::JUMP] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
+		statlabels[StatLabel::HONOR] = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR);
 
-		statoffsets[DAMAGE_DETAILED] = Point<int16_t>(73, 38);
-		statoffsets[DAMAGE_BONUS] = Point<int16_t>(100, 56);
-		statoffsets[BOSS_DAMAGE] = Point<int16_t>(196, 56);
-		statoffsets[FINAL_DAMAGE] = Point<int16_t>(100, 74);
-		statoffsets[IGNORE_DEFENSE] = Point<int16_t>(196, 74);
-		statoffsets[CRITICAL_RATE] = Point<int16_t>(100, 92);
-		statoffsets[CRITICAL_DAMAGE] = Point<int16_t>(73, 110);
-		statoffsets[STATUS_RESISTANCE] = Point<int16_t>(100, 128);
-		statoffsets[KNOCKBACK_RESISTANCE] = Point<int16_t>(196, 128);
-		statoffsets[DEFENSE] = Point<int16_t>(73, 146);
-		statoffsets[SPEED] = Point<int16_t>(100, 164);
-		statoffsets[JUMP] = Point<int16_t>(196, 164);
-		statoffsets[HONOR] = Point<int16_t>(73, 283);
+		statoffsets[StatLabel::DAMAGE_DETAILED] = Point<int16_t>(73, 38);
+		statoffsets[StatLabel::DAMAGE_BONUS] = Point<int16_t>(100, 56);
+		statoffsets[StatLabel::BOSS_DAMAGE] = Point<int16_t>(196, 56);
+		statoffsets[StatLabel::FINAL_DAMAGE] = Point<int16_t>(100, 74);
+		statoffsets[StatLabel::IGNORE_DEFENSE] = Point<int16_t>(196, 74);
+		statoffsets[StatLabel::CRITICAL_RATE] = Point<int16_t>(100, 92);
+		statoffsets[StatLabel::CRITICAL_DAMAGE] = Point<int16_t>(73, 110);
+		statoffsets[StatLabel::STATUS_RESISTANCE] = Point<int16_t>(100, 128);
+		statoffsets[StatLabel::KNOCKBACK_RESISTANCE] = Point<int16_t>(196, 128);
+		statoffsets[StatLabel::DEFENSE] = Point<int16_t>(73, 146);
+		statoffsets[StatLabel::SPEED] = Point<int16_t>(100, 164);
+		statoffsets[StatLabel::JUMP] = Point<int16_t>(196, 164);
+		statoffsets[StatLabel::HONOR] = Point<int16_t>(73, 283);
 
 		update_all_stats();
 		update_stat(Maplestat::Id::JOB);
@@ -145,20 +145,20 @@ namespace jrc
 			textures_detail[2].draw(detail_pos);
 			textures_detail[3].draw(detail_pos);
 
-			abilities[NONE].draw(DrawArgument(detail_pos));
+			abilities[Ability::NONE].draw(DrawArgument(detail_pos));
 
 			inner_ability[false].draw(detail_pos);
 			inner_ability[false].draw(detail_pos + Point<int16_t>(0, 19));
 			inner_ability[false].draw(detail_pos + Point<int16_t>(0, 38));
 		}
 
-		size_t last = showdetail ? NUM_LABELS : NUM_NORMAL;
+		size_t last = showdetail ? StatLabel::NUM_LABELS : StatLabel::NUM_NORMAL;
 
 		for (size_t i = 0; i < last; i++)
 		{
 			Point<int16_t> labelpos = position + statoffsets[i];
 
-			if (i >= NUM_NORMAL)
+			if (i >= StatLabel::NUM_NORMAL)
 				labelpos.shift_x(213);
 
 			statlabels[i].draw(labelpos);
@@ -169,7 +169,7 @@ namespace jrc
 
 	void UIStatsinfo::send_key(int32_t keycode, bool pressed)
 	{
-		if (pressed && keycode == KeyAction::ESCAPE)
+		if (pressed && keycode == KeyAction::Id::ESCAPE)
 			active = false;
 	}
 
@@ -203,12 +203,12 @@ namespace jrc
 		update_basevstotal(StatLabel::INT, Maplestat::Id::INT, Equipstat::Id::INT);
 		update_basevstotal(StatLabel::LUK, Maplestat::Id::LUK, Equipstat::Id::LUK);
 
-		statlabels[DAMAGE].change_text(std::to_string(stats.get_mindamage()) + " ~ " + std::to_string(stats.get_maxdamage()));
+		statlabels[StatLabel::DAMAGE].change_text(std::to_string(stats.get_mindamage()) + " ~ " + std::to_string(stats.get_maxdamage()));
 
 		if (stats.is_damage_buffed())
-			statlabels[DAMAGE].change_color(Text::Color::RED);
+			statlabels[StatLabel::DAMAGE].change_color(Color::Name::RED);
 		else
-			statlabels[DAMAGE].change_color(Text::Color::EMPEROR);
+			statlabels[StatLabel::DAMAGE].change_color(Color::Name::EMPEROR);
 
 		statlabels[StatLabel::DAMAGE_DETAILED].change_text(std::to_string(stats.get_mindamage()) + " ~ " + std::to_string(stats.get_maxdamage()));
 		statlabels[StatLabel::DAMAGE_BONUS].change_text("0%");
@@ -219,7 +219,9 @@ namespace jrc
 		statlabels[StatLabel::CRITICAL_DAMAGE].change_text("0.00%");
 		statlabels[StatLabel::STATUS_RESISTANCE].change_text(std::to_string(static_cast<int32_t>(stats.get_resistance())));
 		statlabels[StatLabel::KNOCKBACK_RESISTANCE].change_text("0%");
+
 		update_buffed(StatLabel::DEFENSE, Equipstat::Id::WDEF);
+
 		statlabels[StatLabel::SPEED].change_text(std::to_string(stats.get_total(Equipstat::Id::SPEED)) + "%");
 		statlabels[StatLabel::JUMP].change_text(std::to_string(stats.get_total(Equipstat::Id::JUMP)) + "%");
 		statlabels[StatLabel::HONOR].change_text(std::to_string(stats.get_honor()));
@@ -230,10 +232,10 @@ namespace jrc
 		switch (stat)
 		{
 		case Maplestat::Id::JOB:
-			statlabels[JOB].change_text(stats.get_jobname());
+			statlabels[StatLabel::JOB].change_text(stats.get_jobname());
 			break;
 		case Maplestat::Id::FAME:
-			update_simple(FAME, Maplestat::Id::FAME);
+			update_simple(StatLabel::FAME, Maplestat::Id::FAME);
 			break;
 		}
 	}
@@ -242,51 +244,51 @@ namespace jrc
 	{
 		switch (id)
 		{
-		case BT_CLOSE:
+		case Buttons::BT_CLOSE:
 			active = false;
 			break;
-		case BT_DETAILOPEN:
+		case Buttons::BT_DETAILOPEN:
 			showdetail = true;
 
-			buttons[BT_DETAILOPEN]->set_active(false);
-			buttons[BT_DETAILCLOSE]->set_active(true);
-			buttons[BT_ABILITY]->set_active(true);
-			buttons[BT_DETAIL_DETAILCLOSE]->set_active(true);
+			buttons[Buttons::BT_DETAILOPEN]->set_active(false);
+			buttons[Buttons::BT_DETAILCLOSE]->set_active(true);
+			buttons[Buttons::BT_ABILITY]->set_active(true);
+			buttons[Buttons::BT_DETAIL_DETAILCLOSE]->set_active(true);
 			break;
-		case BT_DETAILCLOSE:
-		case BT_DETAIL_DETAILCLOSE:
+		case Buttons::BT_DETAILCLOSE:
+		case Buttons::BT_DETAIL_DETAILCLOSE:
 			showdetail = false;
 
-			buttons[BT_DETAILOPEN]->set_active(true);
-			buttons[BT_DETAILCLOSE]->set_active(false);
-			buttons[BT_ABILITY]->set_active(false);
-			buttons[BT_DETAIL_DETAILCLOSE]->set_active(false);
+			buttons[Buttons::BT_DETAILOPEN]->set_active(true);
+			buttons[Buttons::BT_DETAILCLOSE]->set_active(false);
+			buttons[Buttons::BT_ABILITY]->set_active(false);
+			buttons[Buttons::BT_DETAIL_DETAILCLOSE]->set_active(false);
 			break;
-		case BT_HP:
+		case Buttons::BT_HP:
 			send_apup(Maplestat::Id::HP);
 			break;
-		case BT_MP:
+		case Buttons::BT_MP:
 			send_apup(Maplestat::Id::MP);
 			break;
-		case BT_STR:
+		case Buttons::BT_STR:
 			send_apup(Maplestat::Id::STR);
 			break;
-		case BT_DEX:
+		case Buttons::BT_DEX:
 			send_apup(Maplestat::Id::DEX);
 			break;
-		case BT_INT:
+		case Buttons::BT_INT:
 			send_apup(Maplestat::Id::INT);
 			break;
-		case BT_LUK:
+		case Buttons::BT_LUK:
 			send_apup(Maplestat::Id::LUK);
 			break;
-		case BT_HYPERSTATCLOSE:
+		case Buttons::BT_HYPERSTATCLOSE:
 			int16_t level = 0;
 
 			if (level < 140)
 			{
 				constexpr char* message = "You can use the Hyper Stat at Lv. 140 and above.";
-				auto onok = [&]() {};
+				auto onok = []() {};
 
 				UI::get().emplace<UIOk>(message, onok, UINotice::NoticeType::OK);
 			}
@@ -306,7 +308,7 @@ namespace jrc
 		bool nowap = stats.get_stat(Maplestat::Id::AP) > 0;
 		Button::State newstate = nowap ? Button::State::NORMAL : Button::State::DISABLED;
 
-		for (int i = BT_HP; i <= BT_AUTO; i++)
+		for (int i = Buttons::BT_HP; i <= Buttons::BT_AUTO; i++)
 			buttons[i]->set_state(newstate);
 
 		hasap = nowap;
@@ -355,13 +357,13 @@ namespace jrc
 			{
 				stattext += "+" + std::to_string(delta);
 
-				statlabels[label].change_color(Text::Color::RED);
+				statlabels[label].change_color(Color::Name::RED);
 			}
 			else if (delta < 0)
 			{
 				stattext += "-" + std::to_string(-delta);
 
-				statlabels[label].change_color(Text::Color::BLUE);
+				statlabels[label].change_color(Color::Name::BLUE);
 			}
 
 			stattext += ")";

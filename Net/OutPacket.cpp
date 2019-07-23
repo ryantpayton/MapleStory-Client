@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -32,16 +32,13 @@ namespace jrc
 
 	void OutPacket::dispatch()
 	{
-		Session::get().
-			write(bytes.data(), bytes.size());
+		Session::get().write(bytes.data(), bytes.size());
 	}
 
 	void OutPacket::skip(size_t count)
 	{
 		for (size_t i = 0; i < count; i++)
-		{
 			bytes.push_back(0);
-		}
 	}
 
 	void OutPacket::write_byte(int8_t ch)
@@ -81,6 +78,7 @@ namespace jrc
 		auto duration = std::chrono::steady_clock::now().time_since_epoch();
 		auto since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
 		auto timestamp = static_cast<int32_t>(since_epoch.count());
+
 		write_int(timestamp);
 	}
 
@@ -96,9 +94,7 @@ namespace jrc
 		write_short(length);
 
 		for (int16_t i = 0; i < length; i++)
-		{
 			write_byte(str[i]);
-		}
 	}
 
 	void OutPacket::write_hardware_info()

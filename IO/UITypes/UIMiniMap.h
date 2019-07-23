@@ -26,7 +26,7 @@ namespace jrc
 	class UIMiniMap : public UIDragElement<PosMINIMAP>
 	{
 	public:
-		static constexpr Type TYPE = MINIMAP;
+		static constexpr Type TYPE = UIElement::Type::MINIMAP;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 

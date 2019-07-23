@@ -211,6 +211,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="io\components\IconCover.cpp" />
     <ClCompile Include="io\components\ItemTooltip.cpp" />
     <ClCompile Include="io\components\MapleButton.cpp" />
+    <ClCompile Include="IO\Components\MapleComboBox.cpp" />
     <ClCompile Include="io\components\MapleFrame.cpp" />
     <ClCompile Include="io\components\Nametag.cpp" />
     <ClCompile Include="io\components\Npctext.cpp" />
@@ -233,6 +234,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="IO\UITypes\UIExplorerCreation.cpp" />
     <ClCompile Include="io\uitypes\UIBuffList.cpp" />
     <ClCompile Include="IO\UITypes\UICygnusCreation.cpp" />
+    <ClCompile Include="IO\UITypes\UIGender.cpp" />
     <ClCompile Include="io\uitypes\UIRaceSelect.cpp" />
     <ClCompile Include="io\uitypes\UICharSelect.cpp" />
     <ClCompile Include="io\uitypes\UIChatbar.cpp" />
@@ -398,6 +400,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="io\components\IconCover.h" />
     <ClInclude Include="io\components\ItemTooltip.h" />
     <ClInclude Include="io\components\MapleButton.h" />
+    <ClInclude Include="IO\Components\MapleComboBox.h" />
     <ClInclude Include="io\components\MapleFrame.h" />
     <ClInclude Include="io\components\Nametag.h" />
     <ClInclude Include="io\components\ScrollingNotice.h" />
@@ -425,6 +428,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="IO\UITypes\UIExplorerCreation.h" />
     <ClInclude Include="io\uitypes\UIBuffList.h" />
     <ClInclude Include="IO\UITypes\UICygnusCreation.h" />
+    <ClInclude Include="IO\UITypes\UIGender.h" />
     <ClInclude Include="io\uitypes\UIRaceSelect.h" />
     <ClInclude Include="io\uitypes\UICharSelect.h" />
     <ClInclude Include="io\uitypes\UIChatbar.h" />

@@ -19,9 +19,8 @@
 #include "../UIDragElement.h"
 
 #include "../Template/BoolPair.h"
-
-#include "../../Character/CharStats.h"
-#include "../../Graphics/Text.h"
+#include "../Character/CharStats.h"
+#include "../Graphics/Text.h"
 
 namespace jrc
 {

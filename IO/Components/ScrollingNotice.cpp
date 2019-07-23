@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,15 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "ScrollingNotice.h"
 
-#include "../../Constants.h"
-
 namespace jrc
 {
 	ScrollingNotice::ScrollingNotice()
 	{
-		background = ColorBox(800, 20, ColorBox::BLACK, 0.6f);
+		background = ColorBox(800, 20, Color::Name::BLACK, 0.6f);
 		backposition = Point<int16_t>(0, -Constants::VIEWYOFFSET);
-		notice = Text(Text::A12M, Text::LEFT, Text::YELLOW);
+		notice = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::YELLOW);
+
 		xpos.set(0.0);
 		active = false;
 	}
@@ -43,6 +42,7 @@ namespace jrc
 		{
 			int16_t interx = static_cast<int16_t>(std::round(xpos.get(alpha)));
 			auto position = Point<int16_t>(interx, -Constants::VIEWYOFFSET - 2);
+
 			background.draw(backposition);
 			notice.draw(position);
 		}
@@ -55,10 +55,9 @@ namespace jrc
 			xpos -= 0.5;
 
 			auto xmin = static_cast<double>(-notice.width());
+
 			if (xpos.last() < xmin)
-			{
 				xpos.set(800.0);
-			}
 		}
 	}
 }

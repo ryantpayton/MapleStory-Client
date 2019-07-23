@@ -58,8 +58,8 @@ namespace jrc
 
 		charset = Charset(socialChatEnter["number"], Charset::Alignment::RIGHT);
 
-		name_left = Text(Text::Font::A12B, Text::Alignment::CENTER, Text::Color::WHITE);
-		name_right = Text(Text::Font::A12B, Text::Alignment::CENTER, Text::Color::WHITE);
+		name_left = Text(Text::Font::A12B, Text::Alignment::CENTER, Color::Name::WHITE);
+		name_right = Text(Text::Font::A12B, Text::Alignment::CENTER, Color::Name::WHITE);
 
 		dimension = Texture(backgrnd).get_dimensions();
 
@@ -144,8 +144,8 @@ namespace jrc
 
 		charset = Charset(socialRank["number"], Charset::Alignment::RIGHT);
 
-		name_left = Text(Text::Font::A12B, Text::Alignment::CENTER, Text::Color::WHITE);
-		name_right = Text(Text::Font::A12B, Text::Alignment::CENTER, Text::Color::WHITE);
+		name_left = Text(Text::Font::A12B, Text::Alignment::CENTER, Color::Name::WHITE);
+		name_right = Text(Text::Font::A12B, Text::Alignment::CENTER, Color::Name::WHITE);
 
 		dimension = Texture(backgrnd).get_dimensions();
 		position = position + Point<int16_t>(211, 124);

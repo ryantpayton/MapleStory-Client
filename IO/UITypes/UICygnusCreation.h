@@ -19,16 +19,16 @@
 #include "../UIElement.h"
 
 #include "../Components/Textfield.h"
+#include "../Template/BoolPair.h"
 
-#include "../../Character/Look/CharLook.h"
-#include "../../Template/BoolPair.h"
+#include "../Character/Look/CharLook.h"
 
 namespace jrc
 {
 	class UICygnusCreation : public UIElement
 	{
 	public:
-		static constexpr Type TYPE = CLASSCREATION;
+		static constexpr Type TYPE = UIElement::Type::CLASSCREATION;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 

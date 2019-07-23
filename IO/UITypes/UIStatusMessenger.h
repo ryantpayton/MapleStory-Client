@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,8 +18,7 @@
 #pragma once
 #include "../UIElement.h"
 
-#include "../../Graphics/Text.h"
-#include "../../Template/Interpolated.h"
+#include "../Graphics/Text.h"
 
 #include <deque>
 
@@ -28,7 +27,7 @@ namespace jrc
 	class StatusInfo
 	{
 	public:
-		StatusInfo(const std::string& str, Text::Color color);
+		StatusInfo(const std::string& str, Color::Name color);
 
 		void draw(Point<int16_t> position, float alpha) const;
 		bool update();
@@ -46,7 +45,7 @@ namespace jrc
 	class UIStatusMessenger : public UIElement
 	{
 	public:
-		static constexpr Type TYPE = STATUSMESSENGER;
+		static constexpr Type TYPE = UIElement::Type::STATUSMESSENGER;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
@@ -55,7 +54,7 @@ namespace jrc
 		void draw(float alpha) const override;
 		void update() override;
 
-		void show_status(Text::Color color, const std::string& message);
+		void show_status(Color::Name color, const std::string& message);
 
 	private:
 		static constexpr size_t MAX_MESSAGES = 5;

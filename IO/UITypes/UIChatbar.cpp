@@ -21,7 +21,7 @@
 
 #include "../Net/Packets/MessagingPackets.h"
 
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -68,10 +68,10 @@ namespace jrc
 		{
 			buttons[BT_TAB_0 + i] = std::make_unique<MapleButton>(view["tab"], Point<int16_t>(chattab_x + (i * chattab_span), chattab_y));
 			buttons[BT_TAB_0 + i]->set_active(chatopen ? true : false);
-			chattab_text[CHT_ALL + i] = Text(Text::Font::A12M, Text::Alignment::CENTER, Text::Color::DUSTYGRAY, ChatTabText[i]);
+			chattab_text[CHT_ALL + i] = Text(Text::Font::A12M, Text::Alignment::CENTER, Color::Name::DUSTYGRAY, ChatTabText[i]);
 		}
 
-		chattab_text[CHT_ALL].change_color(Text::Color::WHITE);
+		chattab_text[CHT_ALL].change_color(Color::Name::WHITE);
 
 		buttons[BT_TAB_0 + NUM_CHATTAB] = std::make_unique<MapleButton>(view["btAddTab"], Point<int16_t>(chattab_x + (NUM_CHATTAB * chattab_span), chattab_y));
 		buttons[BT_TAB_0 + NUM_CHATTAB]->set_active(chatopen ? true : false);
@@ -82,7 +82,7 @@ namespace jrc
 		chatenter = input["layer:chatEnter"];
 		chatcover = input["layer:backgrnd"];
 
-		chatfield = Textfield(Text::A11M, Text::LEFT, Text::WHITE, Rectangle<int16_t>(Point<int16_t>(62, -9), Point<int16_t>(330, 8)), 0);
+		chatfield = Textfield(Text::A11M, Text::LEFT, Color::Name::WHITE, Rectangle<int16_t>(Point<int16_t>(62, -9), Point<int16_t>(330, 8)), 0);
 		chatfield.set_state(chatopen ? Textfield::State::NORMAL : Textfield::State::DISABLED);
 
 		chatfield.set_enter_callback(
@@ -116,7 +116,9 @@ namespace jrc
 		);
 
 		chatfield.set_key_callback(
-			KeyAction::UP, [&]() {
+			KeyAction::UP,
+			[&]()
+			{
 				if (lastpos > 0)
 				{
 					lastpos--;
@@ -126,7 +128,9 @@ namespace jrc
 		);
 
 		chatfield.set_key_callback(
-			KeyAction::DOWN, [&]() {
+			KeyAction::DOWN,
+			[&]()
+			{
 				if (lastentered.size() > 0 && lastpos < lastentered.size() - 1)
 				{
 					lastpos++;
@@ -136,7 +140,9 @@ namespace jrc
 		);
 
 		chatfield.set_key_callback(
-			KeyAction::ESCAPE, [&]() {
+			KeyAction::ESCAPE,
+			[&]()
+			{
 				toggle_chatfield(false);
 			}
 		);
@@ -388,12 +394,14 @@ namespace jrc
 				return Cursor::CHATBARHDRAG;
 			}
 		}
+
 		return UIDragElement::send_cursor(clicking, cursorpos);
 	}
 
 	bool UIChatbar::indragrange(Point<int16_t> cursorpos) const
 	{
 		auto bounds = getbounds(dragarea);
+
 		return bounds.contains(cursorpos);
 	}
 
@@ -404,21 +412,21 @@ namespace jrc
 
 		//slider.setrows(rowpos, chatrows, rowmax);
 
-		Text::Color color;
+		Color::Name color;
 
 		switch (type)
 		{
 		case RED:
-			color = Text::Color::DARKRED;
+			color = Color::Name::DARKRED;
 			break;
 		case BLUE:
-			color = Text::Color::MEDIUMBLUE;
+			color = Color::Name::MEDIUMBLUE;
 			break;
 		case YELLOW:
-			color = Text::Color::YELLOW;
+			color = Color::Name::YELLOW;
 			break;
 		default:
-			color = Text::Color::WHITE;
+			color = Color::Name::WHITE;
 			break;
 		}
 
@@ -434,7 +442,7 @@ namespace jrc
 		if (message_cooldowns[line] > 0)
 			return;
 
-		std::string message{ Messages::messages[line] };
+		std::string message = Messages::messages[line];
 		send_chatline(message, type);
 
 		message_cooldowns[line] = MESSAGE_COOLDOWN;
@@ -520,10 +528,10 @@ namespace jrc
 			for (size_t i = 0; i < NUM_CHATTAB; i++)
 			{
 				buttons[BT_TAB_0 + i]->set_state(Button::State::NORMAL);
-				chattab_text[CHT_ALL + i].change_color(Text::Color::DUSTYGRAY);
+				chattab_text[CHT_ALL + i].change_color(Color::Name::DUSTYGRAY);
 			}
 
-			chattab_text[buttonid - BT_TAB_0].change_color(Text::Color::WHITE);
+			chattab_text[buttonid - BT_TAB_0].change_color(Color::Name::WHITE);
 
 			return Button::State::PRESSED;
 		}

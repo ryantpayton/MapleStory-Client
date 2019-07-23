@@ -16,7 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-
 #include "Text.h"
 
 namespace jrc
@@ -29,7 +28,7 @@ namespace jrc
 		Text t;
 		Text b;
 
-		OutlinedText(Text::Font font, Text::Alignment alignment, Text::Color innerColor, Text::Color outerColor)
+		OutlinedText(Text::Font font, Text::Alignment alignment, Color::Name innerColor, Color::Name outerColor)
 		{
 			inner = Text(font, alignment, innerColor);
 			l = Text(font, alignment, outerColor);
@@ -58,7 +57,7 @@ namespace jrc
 			b.change_text(text);
 		}
 
-		void change_color(Text::Color color)
+		void change_color(Color::Name color)
 		{
 			inner.change_color(color);
 		}
@@ -74,7 +73,7 @@ namespace jrc
 		Text top;
 		Text shadow;
 
-		ShadowText(Text::Font font, Text::Alignment alignment, Text::Color topColor, Text::Color shadowColor)
+		ShadowText(Text::Font font, Text::Alignment alignment, Color::Name topColor, Color::Name shadowColor)
 		{
 			top = Text(font, alignment, topColor);
 			shadow = Text(font, alignment, shadowColor);
@@ -94,7 +93,7 @@ namespace jrc
 			shadow.change_text(text);
 		}
 
-		void change_color(Text::Color color)
+		void change_color(Color::Name color)
 		{
 			top.change_color(color);
 		}

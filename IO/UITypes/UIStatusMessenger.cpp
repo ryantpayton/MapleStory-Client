@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,41 +17,43 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIStatusMessenger.h"
 
-#include "../../Constants.h"
+#include "../Constants.h"
 
 namespace jrc
 {
-	StatusInfo::StatusInfo(const std::string& str, Text::Color color)
+	StatusInfo::StatusInfo(const std::string& str, Color::Name color)
 	{
-		text = { Text::A12M, Text::RIGHT, color, str };
-		shadow = { Text::A12M, Text::RIGHT, Text::BLACK, str };
+		text = Text(Text::Font::A12M, Text::Alignment::RIGHT, color, str);
+		shadow = Text(Text::Font::A12M, Text::Alignment::RIGHT, Color::Name::BLACK, str);
+
 		opacity.set(1.0f);
 	}
 
 	void StatusInfo::draw(Point<int16_t> position, float alpha) const
 	{
 		float interopc = opacity.get(alpha);
-		shadow.draw({ position + Point<int16_t>(1, 1), interopc });
-		text.draw({ position, interopc });
+
+		shadow.draw(DrawArgument(position + Point<int16_t>(1, 1), interopc));
+		text.draw(DrawArgument(position, interopc));
 	}
 
 	bool StatusInfo::update()
 	{
 		constexpr float FADE_STEP = Constants::TIMESTEP * 1.0f / FADE_DURATION;
-
 		opacity -= FADE_STEP;
+
 		return opacity.last() < FADE_STEP;
 	}
 
-
 	UIStatusMessenger::UIStatusMessenger()
 	{
-		position = { 790, 500 };
+		position = Point<int16_t>(790, 500);
 	}
 
 	void UIStatusMessenger::draw(float inter) const
 	{
-		Point<int16_t> infopos = { position.x(), position.y() };
+		Point<int16_t> infopos = Point<int16_t>(position.x(), position.y());
+
 		for (const StatusInfo& info : statusinfos)
 		{
 			info.draw(infopos, inter);
@@ -62,14 +64,12 @@ namespace jrc
 	void UIStatusMessenger::update()
 	{
 		for (StatusInfo& info : statusinfos)
-		{
 			info.update();
-		}
 	}
 
-	void UIStatusMessenger::show_status(Text::Color color, const std::string& message)
+	void UIStatusMessenger::show_status(Color::Name color, const std::string& message)
 	{
-		statusinfos.push_front({ message, color });
+		statusinfos.push_front(StatusInfo(message, color));
 
 		if (statusinfos.size() > MAX_MESSAGES)
 			statusinfos.pop_back();

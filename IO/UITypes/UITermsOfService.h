@@ -26,7 +26,7 @@ namespace jrc
 	class UITermsOfService : public UIElement
 	{
 	public:
-		static constexpr Type TYPE = TOS;
+		static constexpr Type TYPE = UIElement::Type::TOS;
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
 

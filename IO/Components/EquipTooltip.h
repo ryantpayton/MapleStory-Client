@@ -17,15 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Tooltip.h"
-
 #include "Charset.h"
 
-#include "../../Character/Maplestat.h"
-#include "../../Character/Inventory/Equip.h"
-#include "../../Character/Inventory/Weapon.h"
-#include "../../Graphics/Text.h"
-#include "../../Template/BoolPair.h"
-#include "../../Template/EnumMap.h"
+#include "../Character/Maplestat.h"
+#include "../Graphics/Text.h"
+#include "../Template/BoolPair.h"
+
+#include "../Character/Inventory/Equip.h"
 
 namespace jrc
 {

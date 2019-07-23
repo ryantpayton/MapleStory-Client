@@ -18,7 +18,6 @@
 #pragma once
 #include "DrawArgument.h"
 
-#include <cstdint>
 #include <map>
 #include <vector>
 
@@ -47,38 +46,6 @@ namespace jrc
 			RIGHT
 		};
 
-		enum Color
-		{
-			BLACK,
-			WHITE,
-			YELLOW,
-			BLUE,
-			RED,
-			DARKRED,
-			BROWN,
-			JAMBALAYA,
-			LIGHTGREY,
-			DARKGREY,
-			ORANGE,
-			MEDIUMBLUE,
-			VIOLET,
-			TOBACCOBROWN,
-			EAGLE,
-			LEMONGRASS,
-			TUNA,
-			GALLERY,
-			DUSTYGRAY,
-			EMPEROR,
-			MINESHAFT,
-			HALFANDHALF,
-			ENDEAVOUR,
-			BROWNDERBY,
-			PORCELAIN,
-			IRISHCOFFEE,
-			BOULDER,
-			NUM_COLORS
-		};
-
 		enum Background
 		{
 			NONE,
@@ -93,7 +60,7 @@ namespace jrc
 				size_t first;
 				size_t last;
 				Font font;
-				Color color;
+				Color::Name color;
 			};
 
 			struct Line
@@ -122,14 +89,14 @@ namespace jrc
 			Point<int16_t> endoffset;
 		};
 
-		Text(Font font, Alignment alignment, Color color, Background background, const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true, int16_t line_adj = 0);
-		Text(Font font, Alignment alignment, Color color, const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true, int16_t line_adj = 0);
+		Text(Font font, Alignment alignment, Color::Name color, Background background, const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true, int16_t line_adj = 0);
+		Text(Font font, Alignment alignment, Color::Name color, const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true, int16_t line_adj = 0);
 		Text();
 
 		void draw(const DrawArgument& args) const;
 
 		void change_text(const std::string& text);
-		void change_color(Color color);
+		void change_color(Color::Name color);
 		void set_background(Background background);
 
 		bool empty() const;
@@ -146,7 +113,7 @@ namespace jrc
 
 		Font font;
 		Alignment alignment;
-		Color color;
+		Color::Name color;
 		Background background;
 		Layout layout;
 		uint16_t maxwidth;

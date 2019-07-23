@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,14 +18,12 @@
 #pragma once
 #include "Npc.h"
 
-#include "nlnx/node.hpp"
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
-	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, bool cnt, Point<int16_t> position) 
-		: MapObject(o) {
-
+	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, bool cnt, Point<int16_t> position) : MapObject(o)
+	{
 		std::string strid = std::to_string(id);
 		strid.insert(0, 7 - strid.size(), '0');
 		strid.append(".img");
@@ -34,6 +32,7 @@ namespace jrc
 		nl::node strsrc = nl::nx::string["Npc.img"][std::to_string(id)];
 
 		std::string link = src["info"]["link"];
+
 		if (link.size() > 0)
 		{
 			link.append(".img");
@@ -49,6 +48,7 @@ namespace jrc
 		for (auto npcnode : src)
 		{
 			std::string state = npcnode.name();
+
 			if (state != "info")
 			{
 				animations[state] = npcnode;
@@ -56,16 +56,14 @@ namespace jrc
 			}
 
 			for (auto speaknode : npcnode["speak"])
-			{
 				lines[state].push_back(strsrc[speaknode.get_string()]);
-			}
 		}
 
 		name = strsrc["name"];
 		func = strsrc["func"];
 
-		namelabel = { Text::A13B, Text::CENTER, Text::YELLOW, Text::NAMETAG, name };
-		funclabel = { Text::A13B, Text::CENTER, Text::YELLOW, Text::NAMETAG, func };
+		namelabel = Text(Text::Font::A13B, Text::Alignment::CENTER, Color::Name::YELLOW, Text::Background::NAMETAG, name);
+		funclabel = Text(Text::Font::A13B, Text::Alignment::CENTER, Color::Name::YELLOW, Text::Background::NAMETAG, func);
 
 		npcid = id;
 		flip = !fl;
@@ -79,10 +77,10 @@ namespace jrc
 	void Npc::draw(double viewx, double viewy, float alpha) const
 	{
 		Point<int16_t> absp = phobj.get_absolute(viewx, viewy, alpha);
+
 		if (animations.count(stance))
-		{
 			animations.at(stance).draw(DrawArgument(absp, flip), alpha);
-		}
+
 		if (!hidename)
 		{
 			namelabel.draw(absp);
@@ -100,6 +98,7 @@ namespace jrc
 		if (animations.count(stance))
 		{
 			bool aniend = animations.at(stance).update();
+
 			if (aniend && states.size() > 0)
 			{
 				size_t next_stance = random.next_int(states.size());
@@ -118,6 +117,7 @@ namespace jrc
 			stance = st;
 
 			auto iter = animations.find(stance);
+
 			if (iter == animations.end())
 				return;
 
@@ -136,14 +136,16 @@ namespace jrc
 			return false;
 
 		Point<int16_t> absp = get_position() + viewpos;
-		Point<int16_t> dim = animations.count(stance) ?
+
+		Point<int16_t> dim =
+			animations.count(stance) ?
 			animations.at(stance).get_dimensions() :
 			Point<int16_t>();
 
 		return Rectangle<int16_t>(
-			absp.x() - dim.x() / 2, 
-			absp.x() + dim.x() / 2, 
-			absp.y() - dim.y(), 
+			absp.x() - dim.x() / 2,
+			absp.x() + dim.x() / 2,
+			absp.y() - dim.y(),
 			absp.y()
 			).contains(cursorpos);
 	}

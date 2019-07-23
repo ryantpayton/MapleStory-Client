@@ -16,17 +16,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UIElement.h"
-#include "UI.h"
 
-#include "../Constants.h"
 #include "../Audio/Audio.h"
-#include "../IO/UITypes/UISoftkey.h"
 
 namespace jrc
 {
 	UIElement::UIElement(Point<int16_t> p, Point<int16_t> d, bool a) : position(p), dimension(d), active(a) {}
 	UIElement::UIElement(Point<int16_t> p, Point<int16_t> d) : UIElement(p, d, true) {}
-	UIElement::UIElement() : UIElement({}, {}) {}
+	UIElement::UIElement() : UIElement(Point<int16_t>(), Point<int16_t>()) {}
 
 	void UIElement::draw(float alpha) const
 	{

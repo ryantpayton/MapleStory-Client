@@ -18,26 +18,74 @@
 #pragma once
 #include "Button.h"
 
+#include "../Graphics/Geometry.h"
+
+#include <memory>
+
 namespace jrc
 {
-	// A standard maplestory-button with 4 states and a texture for each state.
-	class MapleButton : public Button
+	// A standard maplestory-combobox with 4 states and three textures for each state.
+	class MapleComboBox : public Button
 	{
 	public:
-		MapleButton(nl::node src, Point<int16_t> position);
-		MapleButton(nl::node src, int16_t x, int16_t y);
-		MapleButton(nl::node src);
+		enum Type : uint8_t
+		{
+			DEFAULT = 1,
+			BROWN = 3,
+			BLUENEG,
+			DEFAULT2,
+			BLACKM,
+			BLACKL,
+			BLACKS,
+			BROWNNEG,
+			BLACKL2,
+			GREENNEG
+		};
+
+		MapleComboBox(Type type, std::vector<std::string> options, uint16_t default_option, Point<int16_t> position);
+		MapleComboBox(Type type, std::vector<std::string> options, uint16_t default_option, int16_t x, int16_t y);
+		MapleComboBox(Type type, std::vector<std::string> options, uint16_t default_option);
 
 		void draw(Point<int16_t> position) const;
 		Rectangle<int16_t> bounds(Point<int16_t> parentpos) const;
+		bool in_combobox(Point<int16_t> parentpos);
 		int16_t width() const;
 		Point<int16_t> origin() const;
-		Cursor::State send_cursor(bool, Point<int16_t>) { return Cursor::State::IDLE; };
-		bool remove_cursor(bool, Point<int16_t>) { return false; };
-		bool in_combobox(Point<int16_t>) { return false; };
-		uint16_t get_selected() const { return 0; };
+		bool remove_cursor(bool clicked, Point<int16_t> cursorpos);
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos);
+		uint16_t get_selected() const;
+
+	protected:
+		Button::State button_pressed(uint16_t buttonid);
 
 	private:
-		Texture textures[NUM_STATES];
+		Texture textures[Button::State::NUM_STATES][3];
+		std::vector<std::string> options;
+		std::vector<Text> option_text;
+		Text selected;
+		ColorBox background;
+		ColorBox rect;
+		ColorBox current_rect;
+		uint16_t rwidth;
+		static constexpr uint16_t HEIGHT = 16;
+		std::map<uint16_t, std::unique_ptr<Button>> buttons;
+		uint16_t current_pos;
+		bool current_shown;
+		uint16_t last_shown;
+		uint16_t selected_index;
+
+		enum Buttons : uint16_t
+		{
+			OPTION1,
+			OPTION2,
+			OPTION3,
+			OPTION4,
+			OPTION5,
+			OPTION6,
+			OPTION7,
+			OPTION8,
+			OPTION9,
+			OPTION10
+		};
 	};
 }

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -20,12 +20,12 @@
 
 namespace jrc
 {
-	Text::Text(Font f, Alignment a, Color c, Background b, const std::string& t, uint16_t mw, bool fm, int16_t la) : font(f), alignment(a), color(c), background(b), maxwidth(mw), formatted(fm), line_adj(la)
+	Text::Text(Font f, Alignment a, Color::Name c, Background b, const std::string& t, uint16_t mw, bool fm, int16_t la) : font(f), alignment(a), color(c), background(b), maxwidth(mw), formatted(fm), line_adj(la)
 	{
 		change_text(t);
 	}
 
-	Text::Text(Font f, Alignment a, Color c, const std::string& t, uint16_t mw, bool fm, int16_t la) : Text(f, a, c, Background::NONE, t, mw, fm, la) {}
+	Text::Text(Font f, Alignment a, Color::Name c, const std::string& t, uint16_t mw, bool fm, int16_t la) : Text(f, a, c, Background::NONE, t, mw, fm, la) {}
 	Text::Text() : Text(Font::A11M, Alignment::LEFT, Color::BLACK) {}
 
 	void Text::reset_layout()
@@ -46,7 +46,7 @@ namespace jrc
 		reset_layout();
 	}
 
-	void Text::change_color(Color c)
+	void Text::change_color(Color::Name c)
 	{
 		if (color == c)
 			return;
@@ -106,8 +106,8 @@ namespace jrc
 		return text;
 	}
 
-	Text::Layout::Layout(const std::vector<Line>& l, const std::vector<int16_t>& a, int16_t w, int16_t h, int16_t ex, int16_t ey) : lines(l), advances(a), dimensions(w, h), endoffset(ex, ey) {}
-	Text::Layout::Layout() : Layout({}, {}, 0, 0, 0, 0) {}
+	Text::Layout::Layout(const std::vector<Layout::Line>& l, const std::vector<int16_t>& a, int16_t w, int16_t h, int16_t ex, int16_t ey) : lines(l), advances(a), dimensions(w, h), endoffset(ex, ey) {}
+	Text::Layout::Layout() : Layout(std::vector<Layout::Line>(), std::vector<int16_t>(), 0, 0, 0, 0) {}
 
 	int16_t Text::Layout::width() const
 	{

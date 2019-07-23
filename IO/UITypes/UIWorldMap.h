@@ -16,10 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../UIElement.h"
 #include "../UIDragElement.h"
 
-#include "../Character/Questlog.h"
 #include "../Components/Textfield.h"
 
 namespace jrc
@@ -27,7 +25,7 @@ namespace jrc
 	class UIWorldMap : public UIDragElement<PosMAP>
 	{
 	public:
-		static constexpr Type TYPE = WORLDMAP;
+		static constexpr Type TYPE = UIElement::Type::WORLDMAP;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 

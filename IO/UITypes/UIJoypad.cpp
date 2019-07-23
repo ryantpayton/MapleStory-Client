@@ -39,7 +39,7 @@ namespace jrc
 		buttons[Buttons::OK] = std::make_unique<MapleButton>(Basic["BtOK4"], Point<int16_t>(82, 303));
 
 		for each (Text& text in key_text)
-			text = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::BLACK, "None");
+			text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::BLACK, "None");
 
 		dimension = backgrnd[true].get_dimensions();
 	}
@@ -52,7 +52,7 @@ namespace jrc
 		int16_t y = 24;
 		int16_t y_adj = 18;
 
-		for (size_t i = 0; i < SETTING_NUM; i++)
+		for (size_t i = 0; i < Setting::SETTING_NUM; i++)
 		{
 			if (i == 0)
 				key_text[i].draw(position + Point<int16_t>(x, y));
@@ -74,9 +74,9 @@ namespace jrc
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::ESCAPE)
+			if (keycode == KeyAction::Id::ESCAPE)
 				cancel();
-			else if (keycode == KeyAction::RETURN)
+			else if (keycode == KeyAction::Id::RETURN)
 				save();
 		}
 	}

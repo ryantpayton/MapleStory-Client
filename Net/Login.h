@@ -17,9 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "../Character/Maplestat.h"
-#include "../Template/EnumMap.h"
 
-#include <cstdint>
 #include <string>
 #include <vector>
 #include <map>
@@ -30,7 +28,7 @@ namespace jrc
 	{
 		std::string name;
 		int32_t accid;
-		bool female;
+		uint8_t female;
 		bool muted;
 		int16_t pin;
 		int8_t gmlevel;

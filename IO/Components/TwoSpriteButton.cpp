@@ -19,20 +19,21 @@
 
 namespace jrc
 {
-	TwoSpriteButton::TwoSpriteButton(nl::node nsrc, nl::node ssrc, Point<int16_t> np, Point<int16_t> sp) : textures(ssrc, nsrc), npos(np), spos(sp) {
-		state = NORMAL;
+	TwoSpriteButton::TwoSpriteButton(nl::node nsrc, nl::node ssrc, Point<int16_t> np, Point<int16_t> sp) : textures(ssrc, nsrc), npos(np), spos(sp)
+	{
+		state = Button::State::NORMAL;
 		active = true;
 	}
 
 	TwoSpriteButton::TwoSpriteButton(nl::node nsrc, nl::node ssrc, Point<int16_t> pos) : TwoSpriteButton(nsrc, ssrc, pos, pos) {}
-	TwoSpriteButton::TwoSpriteButton(nl::node nsrc, nl::node ssrc) : TwoSpriteButton(nsrc, ssrc, {}) {}
+	TwoSpriteButton::TwoSpriteButton(nl::node nsrc, nl::node ssrc) : TwoSpriteButton(nsrc, ssrc, Point<int16_t>()) {}
 	TwoSpriteButton::TwoSpriteButton() : textures({}, {}) {}
 
 	void TwoSpriteButton::draw(Point<int16_t> parentpos) const
 	{
 		if (active)
 		{
-			bool selected = state == MOUSEOVER || state == PRESSED;
+			bool selected = state == Button::State::MOUSEOVER || state == Button::State::PRESSED;
 
 			if (selected)
 				textures[selected].draw(spos + parentpos);
@@ -43,7 +44,7 @@ namespace jrc
 
 	Rectangle<int16_t> TwoSpriteButton::bounds(Point<int16_t> parentpos) const
 	{
-		bool selected = state == MOUSEOVER || state == PRESSED;
+		bool selected = state == Button::State::MOUSEOVER || state == Button::State::PRESSED;
 		Point<int16_t> absp;
 		Point<int16_t> dim;
 
@@ -58,19 +59,19 @@ namespace jrc
 			dim = textures[selected].get_dimensions();
 		}
 
-		return{ absp, absp + dim };
+		return Rectangle<int16_t>(absp, absp + dim);
 	}
 
 	int16_t TwoSpriteButton::width() const
 	{
-		bool selected = state == MOUSEOVER || state == PRESSED;
+		bool selected = state == Button::State::MOUSEOVER || state == Button::State::PRESSED;
 
 		return textures[selected].width();
 	}
 
 	Point<int16_t> TwoSpriteButton::origin() const
 	{
-		bool selected = state == MOUSEOVER || state == PRESSED;
+		bool selected = state == Button::State::MOUSEOVER || state == Button::State::PRESSED;
 
 		return textures[selected].get_origin();
 	}

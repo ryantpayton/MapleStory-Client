@@ -21,12 +21,12 @@ namespace jrc
 {
 	MapleButton::MapleButton(nl::node src, Point<int16_t> pos)
 	{
-		textures[PRESSED] = src["pressed"]["0"];
-		textures[MOUSEOVER] = src["mouseOver"]["0"];
-		textures[NORMAL] = src["normal"]["0"];
-		textures[DISABLED] = src["disabled"]["0"];
+		textures[Button::State::PRESSED] = src["pressed"]["0"];
+		textures[Button::State::MOUSEOVER] = src["mouseOver"]["0"];
+		textures[Button::State::NORMAL] = src["normal"]["0"];
+		textures[Button::State::DISABLED] = src["disabled"]["0"];
 		position = pos;
-		state = NORMAL;
+		state = Button::State::NORMAL;
 		active = true;
 	}
 

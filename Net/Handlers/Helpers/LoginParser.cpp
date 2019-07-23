@@ -26,7 +26,7 @@ namespace jrc
 		recv.skip(2);
 
 		account.accid = recv.read_int();
-		account.female = recv.read_bool();
+		account.female = recv.read_byte();
 
 		recv.read_bool(); // is admin
 
@@ -54,7 +54,7 @@ namespace jrc
 		int8_t wid = recv.read_byte();
 
 		if (wid == -1)
-			return{ {}, {}, {}, 0, 0, wid };
+			return { {}, {}, {}, 0, 0, wid };
 
 		std::string name = recv.read_string();
 		uint8_t flag = recv.read_byte();
@@ -77,7 +77,7 @@ namespace jrc
 
 		recv.skip(2);
 
-		return{ name, message, chloads, channelcount, flag, wid };
+		return { name, message, chloads, channelcount, flag, wid };
 	}
 
 	RecommendedWorld LoginParser::parse_recommended_world(InPacket& recv)
@@ -113,7 +113,7 @@ namespace jrc
 			stats.jobrank = std::make_pair(curjobrank, jobrankmc);
 		}
 
-		return{ stats, look, cid };
+		return { stats, look, cid };
 	}
 
 	StatsEntry LoginParser::parse_stats(InPacket& recv)

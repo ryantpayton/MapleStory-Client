@@ -17,12 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "SkillTooltip.h"
 
-#include "../Constants.h"
+#include "../Data/SkillData.h"
 
-#include "../../Data/SkillData.h"
-
-#include "nlnx/nx.hpp"
-#include "nlnx/node.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -93,7 +90,7 @@ namespace jrc
 
 		if (expiration > 0)
 		{
-			// TODO: ?
+			// TODO: Blank
 		}
 		else
 		{
@@ -121,9 +118,9 @@ namespace jrc
 			levelstr += "[Next Level: " + std::to_string(level + 1) + "]\\n" + data.get_level_desc(level + 1);
 
 		icon = data.get_icon(SkillData::Icon::NORMAL);
-		name = Text(Text::Font::A12B, Text::Alignment::LEFT, Text::Color::WHITE, data.get_name(), 320);
-		desc = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, descstr, 210);
-		leveldesc = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, levelstr, 290);
+		name = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE, data.get_name(), 320);
+		desc = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE, descstr, 210);
+		leveldesc = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE, levelstr, 290);
 
 		int16_t desc_height = desc.height() + 11;
 
@@ -134,8 +131,8 @@ namespace jrc
 		int16_t icon_width = (icon.get_dimensions().x() * 2) + 4;
 		width = 292;
 
-		line = ColorLine(width + 16, Geometry::Color::WHITE, 1.0f);
-		box = ColorBox(icon_width, icon_width, Geometry::Color::WHITE, 0.65f);
+		line = ColorLine(width + 16, Color::Name::WHITE, 1.0f);
+		box = ColorBox(icon_width, icon_width, Color::Name::WHITE, 0.65f);
 	}
 
 	void SkillTooltip::draw(Point<int16_t> pos) const

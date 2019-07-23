@@ -19,10 +19,7 @@
 
 #include "../Constants.h"
 
-#include "../../Data/ItemData.h"
-
-#include "nlnx/nx.hpp"
-#include "nlnx/node.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -77,7 +74,7 @@ namespace jrc
 		if (text.empty())
 			return false;
 
-		text_label = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, text, 340, true, 2);
+		text_label = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE, text, 340, true, 2);
 
 		return true;
 	}

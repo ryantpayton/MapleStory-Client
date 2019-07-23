@@ -31,7 +31,7 @@ namespace jrc
 		using OkCallback = std::function<void(const std::string& entered)>;
 		using CancelCallback = std::function<void()>;
 
-		static constexpr Type TYPE = SOFTKEYBOARD;
+		static constexpr Type TYPE = UIElement::Type::SOFTKEYBOARD;
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
 

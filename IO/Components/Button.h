@@ -18,11 +18,6 @@
 #pragma once
 #include "../Cursor.h"
 
-#include "../../Template/Rectangle.h"
-
-#include <cstdint>
-#include <functional>
-
 namespace jrc
 {
 	// Base class for different button types.
@@ -45,17 +40,24 @@ namespace jrc
 		virtual Rectangle<int16_t> bounds(Point<int16_t> parentpos) const = 0;
 		virtual int16_t width() const = 0;
 		virtual Point<int16_t> origin() const = 0;
+		virtual Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) = 0;
+		virtual bool remove_cursor(bool clicked, Point<int16_t> cursorpos) = 0;
+		virtual bool in_combobox(Point<int16_t> cursorpos) = 0;
+		virtual uint16_t get_selected() const = 0;
 
 		void set_position(Point<int16_t> position);
 		void set_state(State state);
 		void set_active(bool active);
+		void toggle_pressed();
 
 		bool is_active() const;
 		State get_state() const;
+		bool is_pressed() const;
 
 	protected:
 		State state;
 		Point<int16_t> position;
 		bool active;
+		bool pressed;
 	};
 }

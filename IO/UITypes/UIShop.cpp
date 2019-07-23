@@ -23,15 +23,12 @@
 #include "../Components/AreaButton.h"
 #include "../Components/Charset.h"
 #include "../Components/MapleButton.h"
-#include "../Components/TwoSpriteButton.h"
 #include "../Audio/Audio.h"
+#include "../Data/ItemData.h"
 
-#include "../../Data/ItemData.h"
-#include "../../Util/Misc.h"
+#include "../Net/Packets/NpcInteractionPackets.h"
 
-#include "../../Net/Packets/NpcInteractionPackets.h"
-
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -49,9 +46,9 @@ namespace jrc
 		sprites.emplace_back(src["backgrnd3"]);
 		sprites.emplace_back(src["backgrnd4"]);
 
-		buttons[BUY_ITEM] = std::make_unique<MapleButton>(src["BtBuy"]);
-		buttons[SELL_ITEM] = std::make_unique<MapleButton>(src["BtSell"]);
-		buttons[EXIT] = std::make_unique<MapleButton>(src["BtExit"]);
+		buttons[Buttons::BUY_ITEM] = std::make_unique<MapleButton>(src["BtBuy"]);
+		buttons[Buttons::SELL_ITEM] = std::make_unique<MapleButton>(src["BtSell"]);
+		buttons[Buttons::EXIT] = std::make_unique<MapleButton>(src["BtExit"]);
 
 		Texture cben = src["checkBox"][0];
 		Texture cbdis = src["checkBox"][1];
@@ -63,19 +60,19 @@ namespace jrc
 		checkBox[0] = cbdis;
 		checkBox[1] = cben;
 
-		buttons[CHECKBOX] = std::make_unique<AreaButton>(Point<int16_t>(std::abs(cb_x), std::abs(cb_y)), cben.get_dimensions());
+		buttons[Buttons::CHECKBOX] = std::make_unique<AreaButton>(Point<int16_t>(std::abs(cb_x), std::abs(cb_y)), cben.get_dimensions());
 
 		nl::node buyen = src["TabBuy"]["enabled"];
 		nl::node buydis = src["TabBuy"]["disabled"];
 
-		buttons[OVERALL] = std::make_unique<TwoSpriteButton>(buydis[0], buyen[0]);
+		buttons[Buttons::OVERALL] = std::make_unique<TwoSpriteButton>(buydis[0], buyen[0]);
 
 		nl::node sellen = src["TabSell"]["enabled"];
 		nl::node selldis = src["TabSell"]["disabled"];
 
-		for (uint16_t i = EQUIP; i <= CASH; i++)
+		for (uint16_t i = Buttons::EQUIP; i <= Buttons::CASH; i++)
 		{
-			std::string tabnum = std::to_string(i - EQUIP);
+			std::string tabnum = std::to_string(i - Buttons::EQUIP);
 			buttons[i] = std::make_unique<TwoSpriteButton>(selldis[tabnum], sellen[tabnum]);
 		}
 
@@ -85,9 +82,9 @@ namespace jrc
 		buy_x = 8;
 		buy_width = 257;
 
-		for (uint16_t i = BUY0; i <= BUY8; i++)
+		for (uint16_t i = Buttons::BUY0; i <= Buttons::BUY8; i++)
 		{
-			Point<int16_t> pos(buy_x, item_y + 42 * (i - BUY0));
+			Point<int16_t> pos(buy_x, item_y + 42 * (i - Buttons::BUY0));
 			Point<int16_t> dim(buy_width, item_height);
 			buttons[i] = std::make_unique<AreaButton>(pos, dim);
 		}
@@ -95,9 +92,9 @@ namespace jrc
 		sell_x = 284;
 		sell_width = 200;
 
-		for (uint16_t i = SELL0; i <= SELL8; i++)
+		for (uint16_t i = Buttons::SELL0; i <= Buttons::SELL8; i++)
 		{
-			Point<int16_t> pos(sell_x, item_y + 42 * (i - SELL0));
+			Point<int16_t> pos(sell_x, item_y + 42 * (i - Buttons::SELL0));
 			Point<int16_t> dim(sell_width, item_height);
 			buttons[i] = std::make_unique<AreaButton>(pos, dim);
 		}
@@ -106,7 +103,7 @@ namespace jrc
 		sell_selection = src["select2"];
 		meso = src["meso"];
 
-		mesolabel = Text(Text::Font::A11M, Text::Alignment::RIGHT, Text::Color::MINESHAFT);
+		mesolabel = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::MINESHAFT);
 
 		buyslider = Slider(
 			Slider::Type::DEFAULT, Range<int16_t>(123, 484), 257, 5, 1,
@@ -169,12 +166,12 @@ namespace jrc
 	{
 		clear_tooltip();
 
-		constexpr Range<uint16_t> buy(BUY0, BUY8);
-		constexpr Range<uint16_t> sell(SELL0, SELL8);
+		constexpr Range<uint16_t> buy(Buttons::BUY0, Buttons::BUY8);
+		constexpr Range<uint16_t> sell(Buttons::SELL0, Buttons::SELL8);
 
 		if (buy.contains(buttonid))
 		{
-			int16_t selected = buttonid - BUY0;
+			int16_t selected = buttonid - Buttons::BUY0;
 			buystate.select(selected);
 			sellstate.selection = -1;
 
@@ -182,7 +179,7 @@ namespace jrc
 		}
 		else if (sell.contains(buttonid))
 		{
-			int16_t selected = buttonid - SELL0;
+			int16_t selected = buttonid - Buttons::SELL0;
 			sellstate.select(selected);
 			buystate.selection = -1;
 
@@ -192,40 +189,40 @@ namespace jrc
 		{
 			switch (buttonid)
 			{
-			case BUY_ITEM:
+			case Buttons::BUY_ITEM:
 				buystate.buy();
 
 				return Button::State::NORMAL;
-			case SELL_ITEM:
+			case Buttons::SELL_ITEM:
 				sellstate.sell(false);
 
 				return Button::State::NORMAL;
-			case EXIT:
+			case Buttons::EXIT:
 				exit_shop();
 
 				return Button::State::PRESSED;
-			case CHECKBOX:
+			case Buttons::CHECKBOX:
 				rightclicksell = !rightclicksell;
 				Configuration::get().set_rightclicksell(rightclicksell);
 
 				return Button::State::NORMAL;
-			case EQUIP:
+			case Buttons::EQUIP:
 				changeselltab(InventoryType::Id::EQUIP);
 
 				return Button::State::IDENTITY;
-			case USE:
+			case Buttons::USE:
 				changeselltab(InventoryType::Id::USE);
 
 				return Button::State::IDENTITY;
-			case ETC:
+			case Buttons::ETC:
 				changeselltab(InventoryType::Id::ETC);
 
 				return Button::State::IDENTITY;
-			case SETUP:
+			case Buttons::SETUP:
 				changeselltab(InventoryType::Id::SETUP);
 
 				return Button::State::IDENTITY;
-			case CASH:
+			case Buttons::CASH:
 				changeselltab(InventoryType::Id::CASH);
 
 				return Button::State::IDENTITY;
@@ -293,78 +290,78 @@ namespace jrc
 			clear_tooltip();
 		}
 
-		Cursor::State ret = clicked ? Cursor::CLICKING : Cursor::IDLE;
+		Cursor::State ret = clicked ? Cursor::State::CLICKING : Cursor::State::IDLE;
 
-		for (size_t i = 0; i < NUM_BUTTONS; i++)
+		for (size_t i = 0; i < Buttons::NUM_BUTTONS; i++)
 		{
 			if (buttons[i]->is_active() && buttons[i]->bounds(position).contains(cursorpos))
 			{
-				if (buttons[i]->get_state() == Button::NORMAL)
+				if (buttons[i]->get_state() == Button::State::NORMAL)
 				{
-					if (i >= BUY_ITEM && i <= EXIT)
+					if (i >= Buttons::BUY_ITEM && i <= Buttons::EXIT)
 					{
-						Sound(Sound::BUTTONOVER).play();
+						Sound(Sound::Name::BUTTONOVER).play();
 
-						buttons[i]->set_state(Button::MOUSEOVER);
-						ret = Cursor::CANCLICK;
+						buttons[i]->set_state(Button::State::MOUSEOVER);
+						ret = Cursor::State::CANCLICK;
 					}
 					else
 					{
-						buttons[i]->set_state(Button::MOUSEOVER);
-						ret = Cursor::IDLE;
+						buttons[i]->set_state(Button::State::MOUSEOVER);
+						ret = Cursor::State::IDLE;
 					}
 				}
-				else if (buttons[i]->get_state() == Button::MOUSEOVER)
+				else if (buttons[i]->get_state() == Button::State::MOUSEOVER)
 				{
 					if (clicked)
 					{
-						if (i >= BUY_ITEM && i <= CASH)
+						if (i >= Buttons::BUY_ITEM && i <= Buttons::CASH)
 						{
-							if (i >= OVERALL && i <= CASH)
+							if (i >= Buttons::OVERALL && i <= Buttons::CASH)
 							{
-								Sound(Sound::TAB).play();
+								Sound(Sound::Name::TAB).play();
 							}
 							else
 							{
-								if (i != CHECKBOX)
-									Sound(Sound::BUTTONCLICK).play();
+								if (i != Buttons::CHECKBOX)
+									Sound(Sound::Name::BUTTONCLICK).play();
 							}
 
 							buttons[i]->set_state(button_pressed(i));
 
-							ret = Cursor::IDLE;
+							ret = Cursor::State::IDLE;
 						}
 						else
 						{
 							buttons[i]->set_state(button_pressed(i));
 
-							ret = Cursor::IDLE;
+							ret = Cursor::State::IDLE;
 						}
 					}
 					else
 					{
-						if (i >= BUY_ITEM && i <= EXIT)
-							ret = Cursor::CANCLICK;
+						if (i >= Buttons::BUY_ITEM && i <= Buttons::EXIT)
+							ret = Cursor::State::CANCLICK;
 						else
-							ret = Cursor::IDLE;
+							ret = Cursor::State::IDLE;
 					}
 				}
-				else if (buttons[i]->get_state() == Button::PRESSED)
+				else if (buttons[i]->get_state() == Button::State::PRESSED)
 				{
 					if (clicked)
 					{
-						if (i >= OVERALL && i <= CASH)
+						if (i >= Buttons::OVERALL && i <= Buttons::CASH)
 						{
-							Sound(Sound::TAB).play();
+							Sound(Sound::Name::TAB).play();
 
-							ret = Cursor::IDLE;
+							ret = Cursor::State::IDLE;
 						}
 					}
 				}
 			}
-			else if (buttons[i]->get_state() == Button::MOUSEOVER)
+			else if (buttons[i]->get_state() == Button::State::MOUSEOVER)
 			{
-				buttons[i]->set_state(Button::NORMAL);
+				buttons[i]->set_state(Button::State::NORMAL);
 			}
 		}
 
@@ -411,7 +408,7 @@ namespace jrc
 
 	void UIShop::send_key(int32_t keycode, bool pressed)
 	{
-		if (pressed && keycode == KeyAction::ESCAPE)
+		if (pressed && keycode == KeyAction::Id::ESCAPE)
 			exit_shop();
 	}
 
@@ -444,9 +441,9 @@ namespace jrc
 
 		sellslider.setrows(5, sellstate.lastslot);
 
-		for (size_t i = SELL0; i < SELL8; i++)
+		for (size_t i = Buttons::SELL0; i < Buttons::SELL8; i++)
 		{
-			if (i - SELL0 < sellstate.lastslot)
+			if (i - Buttons::SELL0 < sellstate.lastslot)
 				buttons[i]->set_state(Button::State::NORMAL);
 			else
 				buttons[i]->set_state(Button::State::DISABLED);
@@ -461,8 +458,8 @@ namespace jrc
 		for (auto& button : buttons)
 			button.second->set_state(Button::State::NORMAL);
 
-		buttons[OVERALL]->set_state(Button::State::PRESSED);
-		buttons[EQUIP]->set_state(Button::State::PRESSED);
+		buttons[Buttons::OVERALL]->set_state(Button::State::PRESSED);
+		buttons[Buttons::EQUIP]->set_state(Button::State::PRESSED);
 
 		buystate.reset();
 		sellstate.reset();
@@ -523,15 +520,15 @@ namespace jrc
 		switch (type)
 		{
 		case InventoryType::Id::EQUIP:
-			return EQUIP;
+			return Buttons::EQUIP;
 		case InventoryType::Id::USE:
-			return USE;
+			return Buttons::USE;
 		case InventoryType::Id::ETC:
-			return ETC;
+			return Buttons::ETC;
 		case InventoryType::Id::SETUP:
-			return SETUP;
+			return Buttons::SETUP;
 		case InventoryType::Id::CASH:
-			return CASH;
+			return Buttons::CASH;
 		default:
 			return 0;
 		}
@@ -547,8 +544,8 @@ namespace jrc
 
 	UIShop::BuyItem::BuyItem(Texture cur, int32_t i, int32_t p, int32_t pt, int32_t t, int16_t cp, int16_t b) : currency(cur), id(i), price(p), pitch(pt), time(t), chargeprice(cp), buyable(b)
 	{
-		namelabel = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::MINESHAFT);
-		pricelabel = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::MINESHAFT);
+		namelabel = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::MINESHAFT);
+		pricelabel = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::MINESHAFT);
 
 		const ItemData& item = ItemData::get(id);
 
@@ -591,8 +588,8 @@ namespace jrc
 		slot = s;
 		showcount = sc;
 
-		namelabel = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::MINESHAFT);
-		pricelabel = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::MINESHAFT);
+		namelabel = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::MINESHAFT);
+		pricelabel = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::MINESHAFT);
 
 		std::string name = idata.get_name();
 

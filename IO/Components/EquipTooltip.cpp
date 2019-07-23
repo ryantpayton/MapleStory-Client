@@ -17,12 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "EquipTooltip.h"
 
-#include "../../Gameplay/Stage.h"
-#include "../../Data/EquipData.h"
-#include "../../Data/WeaponData.h"
+#include "../Gameplay/Stage.h"
+#include "../Data/WeaponData.h"
 
-#include "nlnx/nx.hpp"
-#include "nlnx/node.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -45,7 +43,7 @@ namespace jrc
 		type[true] = ItemIcon["new"];
 		type[false] = ItemIcon["old"];
 
-		potential[Equip::Potential::POT_NONE] = {};
+		potential[Equip::Potential::POT_NONE] = Texture();
 		potential[Equip::Potential::POT_HIDDEN] = ItemIcon["0"];
 		potential[Equip::Potential::POT_RARE] = ItemIcon["1"];
 		potential[Equip::Potential::POT_EPIC] = ItemIcon["2"];
@@ -198,23 +196,23 @@ namespace jrc
 		switch (prank)
 		{
 		case Equip::Potential::POT_HIDDEN:
-			potflag = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::RED);
+			potflag = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::RED);
 			potflag.change_text("(Hidden Potential)");
 			break;
 		case Equip::Potential::POT_RARE:
-			potflag = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::WHITE);
+			potflag = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::WHITE);
 			potflag.change_text("(Rare Item)");
 			break;
 		case Equip::Potential::POT_EPIC:
-			potflag = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::WHITE);
+			potflag = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::WHITE);
 			potflag.change_text("(Epic Item)");
 			break;
 		case Equip::Potential::POT_UNIQUE:
-			potflag = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::WHITE);
+			potflag = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::WHITE);
 			potflag.change_text("(Unique Item)");
 			break;
 		case Equip::Potential::POT_LEGENDARY:
-			potflag = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::WHITE);
+			potflag = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::WHITE);
 			potflag.change_text("(Legendary Item)");
 			break;
 		default:
@@ -222,27 +220,27 @@ namespace jrc
 			break;
 		}
 
-		Text::Color namecolor;
+		Color::Name namecolor;
 
 		switch (equip.get_quality())
 		{
 		case EquipQuality::Id::GREY:
-			namecolor = Text::Color::LIGHTGREY;
+			namecolor = Color::Name::LIGHTGREY;
 			break;
 		case EquipQuality::Id::ORANGE:
-			namecolor = Text::Color::ORANGE;
+			namecolor = Color::Name::ORANGE;
 			break;
 		case EquipQuality::Id::BLUE:
-			namecolor = Text::Color::MEDIUMBLUE;
+			namecolor = Color::Name::MEDIUMBLUE;
 			break;
 		case EquipQuality::Id::VIOLET:
-			namecolor = Text::Color::VIOLET;
+			namecolor = Color::Name::VIOLET;
 			break;
 		case EquipQuality::Id::GOLD:
-			namecolor = Text::Color::YELLOW;
+			namecolor = Color::Name::YELLOW;
 			break;
 		default:
-			namecolor = Text::Color::WHITE;
+			namecolor = Color::Name::WHITE;
 			break;
 		}
 
@@ -256,25 +254,25 @@ namespace jrc
 		}
 
 		name = Text(Text::Font::A12B, Text::Alignment::LEFT, namecolor, namestr, 400);
-		atkinc = Text(Text::Font::A11M, Text::Alignment::RIGHT, Text::Color::DUSTYGRAY, "ATT INCREASE");
+		atkinc = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::DUSTYGRAY, "ATT INCREASE");
 
 		std::string desctext = itemdata.get_desc();
 		hasdesc = desctext.size() > 0;
 
 		if (hasdesc)
 		{
-			desc = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, desctext, 250);
+			desc = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE, desctext, 250);
 			height += desc.height() + 10;
 		}
 
-		category = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::WHITE, "Type: " + equipdata.get_type());
+		category = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::WHITE, "Type: " + equipdata.get_type());
 
 		is_weapon = equipdata.is_weapon();
 
 		if (is_weapon)
 		{
 			const WeaponData& weapon = WeaponData::get(item_id);
-			wepspeed = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::WHITE, "Attack Speed: " + weapon.getspeedstring());
+			wepspeed = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::WHITE, "Attack Speed: " + weapon.getspeedstring());
 		}
 		else
 		{
@@ -285,14 +283,14 @@ namespace jrc
 
 		if (hasslots)
 		{
-			slots = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::WHITE, "Remaining Enhancements: " + std::to_string(equip.get_slots()));
+			slots = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::WHITE, "Remaining Enhancements: " + std::to_string(equip.get_slots()));
 
 			std::string vicious = std::to_string(equip.get_vicious());
 
 			if (equip.get_vicious() > 1)
 				vicious.append(" (MAX) ");
 
-			hammers = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::WHITE, "Hammers Applied: " + vicious);
+			hammers = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::WHITE, "Hammers Applied: " + vicious);
 		}
 		else
 		{
@@ -315,7 +313,7 @@ namespace jrc
 					statstr.append(std::to_string(abs(delta)) + ")");
 				}
 
-				statlabels[es] = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::WHITE, Equipstat::names[es] + std::string(": ") + statstr);
+				statlabels[es] = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::WHITE, Equipstat::names[es] + std::string(": ") + statstr);
 			}
 			else
 			{

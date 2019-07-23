@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,30 +17,25 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "IconCover.h"
 
-#include "../../Constants.h"
-
 namespace jrc
 {
 	IconCover::IconCover(Type t, int32_t duration)
 	{
-		cover = ColorBox(30, 30, Geometry::BLACK, 0.6f);
+		cover = ColorBox(30, 30, Color::Name::BLACK, 0.6f);
 
 		if (duration <= Constants::TIMESTEP)
-		{
 			scalestep = 1.0f;
-		}
 		else
-		{
 			scalestep = Constants::TIMESTEP * 1.0f / duration;
-		}
 
 		type = t;
+
 		switch (type)
 		{
-		case BUFF:
+		case Type::BUFF:
 			yscale.set(0.0f);
 			break;
-		case COOLDOWN:
+		case Type::COOLDOWN:
 			yscale.set(1.0f);
 			break;
 		}
@@ -50,12 +45,15 @@ namespace jrc
 	{
 		float interyscale = yscale.get(alpha);
 		auto interheight = static_cast<int16_t>(30 * interyscale);
+
 		if (interheight == 0)
 			return;
 
-		cover.draw({
-			position + Point<int16_t>(0, 30 - interheight),
-			Point<int16_t>(30, interheight) }
+		cover.draw(
+			DrawArgument(
+				position + Point<int16_t>(0, 30 - interheight),
+				Point<int16_t>(30, interheight)
+			)
 		);
 	}
 
@@ -63,21 +61,25 @@ namespace jrc
 	{
 		switch (type)
 		{
-		case BUFF:
+		case Type::BUFF:
 			yscale += scalestep;
+
 			if (yscale.last() >= 1.0f)
 			{
 				yscale.set(1.0f);
 				scalestep = 0.0f;
 			}
+
 			break;
-		case COOLDOWN:
+		case Type::COOLDOWN:
 			yscale -= scalestep;
+
 			if (yscale.last() <= 0.0f)
 			{
 				yscale.set(0.0f);
 				scalestep = 0.0f;
 			}
+
 			break;
 		}
 	}

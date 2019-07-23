@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,13 +18,9 @@
 #pragma once
 #include "MapObject.h"
 
-#include "../Physics/PhysicsObject.h"
-
-#include "../../Graphics/Animation.h"
-#include "../../Graphics/Text.h"
-#include "../../Util/Randomizer.h"
-
-#include <map>
+#include "../Graphics/Animation.h"
+#include "../Graphics/Text.h"
+#include "../Util/Randomizer.h"
 
 namespace jrc
 {
@@ -35,8 +31,7 @@ namespace jrc
 	public:
 		// Constructs an npc by combining data from game files with
 		// data sent by the server.
-		Npc(int32_t npcid, int32_t oid, bool mirrored, uint16_t fhid, 
-			bool control, Point<int16_t> position);
+		Npc(int32_t npcid, int32_t oid, bool mirrored, uint16_t fhid, bool control, Point<int16_t> position);
 
 		// Draws the current animation and name/function tags.
 		void draw(double viewx, double viewy, float alpha) const override;
@@ -71,4 +66,3 @@ namespace jrc
 		Text funclabel;
 	};
 }
-

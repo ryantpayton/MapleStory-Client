@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,8 +16,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "GL/glew.h"
+
 #include <array>
-#include <cstdint>
 
 namespace jrc
 {
@@ -31,47 +32,113 @@ namespace jrc
 		// Codes of predefined colors.
 		enum Code : uint32_t
 		{
-			NONE = 0x00000000,
-			WHITE = 0xFFFFFFFF,
-			BLACK = 0x000000FF,
-			RED = 0xFF0000FF,
-			GREEN = 0x00FF00FF,
-			BLUE = 0x0000FFFF,
-			YELLOW = 0xFFFF00FF,
-			TURQUOISE = 0x00FFFFFF,
-			PURPLE = 0xFF00FFFF
+			CNONE = 0x00000000,
+			CWHITE = 0xFFFFFFFF,
+			CBLACK = 0x000000FF,
+			CRED = 0xFF0000FF,
+			CGREEN = 0x00FF00FF,
+			CBLUE = 0x0000FFFF,
+			CYELLOW = 0xFFFF00FF,
+			CTURQUOISE = 0x00FFFFFF,
+			CPURPLE = 0xFF00FFFF
+		};
+
+		// Name of predefined colors.
+		enum Name : uint32_t
+		{
+			BLACK,
+			WHITE,
+			YELLOW,
+			BLUE,
+			RED,
+			DARKRED,
+			BROWN,
+			JAMBALAYA,
+			LIGHTGREY,
+			DARKGREY,
+			ORANGE,
+			MEDIUMBLUE,
+			VIOLET,
+			TOBACCOBROWN,
+			EAGLE,
+			LEMONGRASS,
+			TUNA,
+			GALLERY,
+			DUSTYGRAY,
+			EMPEROR,
+			MINESHAFT,
+			HALFANDHALF,
+			ENDEAVOUR,
+			BROWNDERBY,
+			PORCELAIN,
+			IRISHCOFFEE,
+			BOULDER,
+			GREEN,
+			LIGHTGREEN,
+			JAPANESELAUREL,
+			GRAYOLIVE,
+			NUM_COLORS
+		};
+
+		// Predefined colors by name
+		static constexpr GLfloat colors[Name::NUM_COLORS][3] =
+		{
+			{ 0.00f, 0.00f, 0.00f }, // Black
+			{ 1.00f, 1.00f, 1.00f }, // White
+			{ 1.00f, 1.00f, 0.00f }, // Yellow
+			{ 0.00f, 0.00f, 1.00f }, // Blue
+			{ 1.00f, 0.00f, 0.00f }, // Red
+			{ 0.80f, 0.30f, 0.30f }, // DarkRed
+			{ 0.50f, 0.25f, 0.00f }, // Brown
+			{ 0.34f, 0.20f, 0.07f }, // Jambalaya
+			{ 0.50f, 0.50f, 0.50f }, // Lightgrey
+			{ 0.25f, 0.25f, 0.25f }, // Darkgrey
+			{ 1.00f, 0.50f, 0.00f }, // Orange
+			{ 0.00f, 0.75f, 1.00f }, // Mediumblue
+			{ 0.50f, 0.00f, 0.50f }, // Violet
+			{ 0.47f, 0.40f, 0.27f }, // Tobacco Brown
+			{ 0.74f, 0.74f, 0.67f }, // Eagle
+			{ 0.60f, 0.60f, 0.54f }, // Lemon Grass
+			{ 0.20f, 0.20f, 0.27f }, // Tuna
+			{ 0.94f, 0.94f, 0.94f }, // Gallery
+			{ 0.60f, 0.60f, 0.60f }, // Dusty Gray
+			{ 0.34f, 0.34f, 0.34f }, // Emperor
+			{ 0.20f, 0.20f, 0.20f }, // Mine Shaft
+			{ 1.00f, 1.00f, 0.87f }, // Half and Half
+			{ 0.00f, 0.40f, 0.67f }, // Endeavour
+			{ 0.30f, 0.20f, 0.10f }, // Brown Derby
+			{ 0.94f, 0.95f, 0.95f }, // Porcelain
+			{ 0.34f, 0.27f, 0.14f }, // Irish Coffee
+			{ 0.47f, 0.47f, 0.47f }, // Boulder
+			{ 0.00f, 0.75f, 0.00f }, // Green (Mob HP Bar)
+			{ 0.00f, 1.00f, 0.00f }, // Light Green (Mob HP Bar)
+			{ 0.00f, 0.50f, 0.00f }, // Japanese Laurel (Mob HP Bar)
+			{ 0.67f, 0.67f, 0.60f }  // Gray Olive
 		};
 
 		// Create a color by an array of real numbers [0.0f, 1.0f]
-		constexpr Color(underlying_t comps)
-			: rgba(comps) {}
+		constexpr Color(underlying_t comps) : rgba(comps) {}
 		// Create a color by real numbers [0.0f, 1.0f]
-		constexpr Color(float red, float green, float blue, float alpha)
-			: Color(underlying_t{ red, green, blue, alpha }) {}
+		constexpr Color(float red, float green, float blue, float alpha) : Color(underlying_t{ red, green, blue, alpha }) {}
 		// Create a color by an array of natural numbers [0, 255]
-		constexpr Color(const std::array<uint8_t, Color::LENGTH> comps)
-			: Color(comps[0], comps[1], comps[2], comps[3]) {}
+		constexpr Color(const std::array<uint8_t, Color::LENGTH> comps) : Color(comps[0], comps[1], comps[2], comps[3]) {}
 		// Create a color by natural numbers [0, 255]
-		constexpr Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
-			: Color(
-				static_cast<float>(red) / 255,
-				static_cast<float>(green) / 255,
-				static_cast<float>(blue) / 255,
-				static_cast<float>(alpha) / 255
-			) {}
+		constexpr Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) : Color(
+			static_cast<float>(red) / 255,
+			static_cast<float>(green) / 255,
+			static_cast<float>(blue) / 255,
+			static_cast<float>(alpha) / 255
+		) {}
 		// Create a color by code.
-		constexpr Color(uint32_t code)
-			: Color(
-				static_cast<uint8_t>(code >> 24),
-				static_cast<uint8_t>(code >> 16),
-				static_cast<uint8_t>(code >> 8),
-				static_cast<uint8_t>(code)
-			) {}
+		constexpr Color(uint32_t code) : Color(
+			static_cast<uint8_t>(code >> 24),
+			static_cast<uint8_t>(code >> 16),
+			static_cast<uint8_t>(code >> 8),
+			static_cast<uint8_t>(code)
+		) {}
 		// Create a color by named code.
-		constexpr Color(Code code)
-			: Color((uint32_t)code) {}
-		constexpr Color()
-			: Color(NONE) {}
+		constexpr Color(Code code) : Color((uint32_t)code) {}
+		constexpr Color() : Color(CNONE) {}
 
 		// Check wether the color is completely invisble.
 		constexpr bool invisible() const
@@ -118,23 +185,23 @@ namespace jrc
 		// Combine two colors.
 		constexpr Color operator*(const Color& o) const
 		{
-			return{
+			return Color(
 				r() * o.r(),
 				g() * o.g(),
 				b() * o.b(),
 				a() * o.a()
-			};
+			);
 		}
 
 		// Combine two colors.
 		constexpr Color operator/(const Color& o) const
 		{
-			return{
+			return Color(
 				r() / o.r(),
 				g() / o.g(),
 				b() / o.b(),
 				a() / o.a()
-			};
+			);
 		}
 
 	private:

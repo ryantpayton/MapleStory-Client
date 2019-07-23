@@ -19,7 +19,7 @@
 
 #include "../Components/MapleButton.h"
 
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -54,17 +54,17 @@ namespace jrc
 		bt_max_pos = Point<int16_t>(209, -6);
 		bt_min_pos = Point<int16_t>(195, -6);
 
-		buttons[BT_MAP] = std::make_unique<MapleButton>(MiniMap["BtMap"], bt_map_pos);
-		buttons[BT_MAX] = std::make_unique<MapleButton>(MiniMap["BtMax"], bt_max_pos);
-		buttons[BT_MIN] = std::make_unique<MapleButton>(MiniMap["BtMin"], bt_min_pos);
-		buttons[BT_NPC] = std::make_unique<MapleButton>(MiniMap["BtNpc"], Point<int16_t>(276, -6));
-		buttons[BT_SMALL] = std::make_unique<MapleButton>(MiniMap["BtSmall"], Point<int16_t>(223, -6));
+		buttons[Buttons::BT_MAP] = std::make_unique<MapleButton>(MiniMap["BtMap"], bt_map_pos);
+		buttons[Buttons::BT_MAX] = std::make_unique<MapleButton>(MiniMap["BtMax"], bt_max_pos);
+		buttons[Buttons::BT_MIN] = std::make_unique<MapleButton>(MiniMap["BtMin"], bt_min_pos);
+		buttons[Buttons::BT_NPC] = std::make_unique<MapleButton>(MiniMap["BtNpc"], Point<int16_t>(276, -6));
+		buttons[Buttons::BT_SMALL] = std::make_unique<MapleButton>(MiniMap["BtSmall"], Point<int16_t>(223, -6));
 
 		min_left = Min[Left];
 		min_center = Min[Center];
 		min_right = Min[Right];
 
-		combined_text = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE);
+		combined_text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE);
 
 		std::string DownCenter = simpleMode ? "DownCenter" : "s";
 		std::string DownLeft = simpleMode ? "DownLeft" : "sw";
@@ -111,8 +111,8 @@ namespace jrc
 		max_sprites.emplace_back(Max[UpLeft], ul_pos);
 		max_sprites.emplace_back(Max[UpRight], ur_pos);
 
-		region_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Text::Color::WHITE);
-		town_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Text::Color::WHITE);
+		region_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
+		town_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
 	}
 
 	void UIMiniMap::draw(float alpha) const
@@ -189,9 +189,9 @@ namespace jrc
 	void UIMiniMap::update_buttons()
 	{
 		// Add one pixel for a space to the right of each button
-		bt_min_width = buttons[BT_MIN]->width() + 1;
-		bt_max_width = buttons[BT_MAX]->width() + 1;
-		bt_map_width = buttons[BT_MAP]->width() + 1;
+		bt_min_width = buttons[Buttons::BT_MIN]->width() + 1;
+		bt_max_width = buttons[Buttons::BT_MAX]->width() + 1;
+		bt_map_width = buttons[Buttons::BT_MAP]->width() + 1;
 		combined_text_width = combined_text.width() / 2;
 	}
 
@@ -199,46 +199,46 @@ namespace jrc
 	{
 		if (type == Type::MIN)
 		{
-			buttons[BT_MAP]->set_active(true);
-			buttons[BT_MAX]->set_active(true);
-			buttons[BT_MIN]->set_active(true);
-			buttons[BT_NPC]->set_active(false);
-			buttons[BT_SMALL]->set_active(false);
+			buttons[Buttons::BT_MAP]->set_active(true);
+			buttons[Buttons::BT_MAX]->set_active(true);
+			buttons[Buttons::BT_MIN]->set_active(true);
+			buttons[Buttons::BT_NPC]->set_active(false);
+			buttons[Buttons::BT_SMALL]->set_active(false);
 
-			buttons[BT_MIN]->set_state(Button::State::DISABLED);
-			buttons[BT_MAX]->set_state(Button::State::NORMAL);
+			buttons[Buttons::BT_MIN]->set_state(Button::State::DISABLED);
+			buttons[Buttons::BT_MAX]->set_state(Button::State::NORMAL);
 
 			int16_t bt_min_x = position.x() + combined_text_width + center_start_x + bt_min_width + bt_max_width + bt_map_width;
 			final_pos = bt_min_x + bt_min_width - 2;
 
-			buttons[BT_MIN]->set_position(Point<int16_t>(bt_min_x, bt_min_pos.y()));
+			buttons[Buttons::BT_MIN]->set_position(Point<int16_t>(bt_min_x, bt_min_pos.y()));
 
 			int16_t bt_max_x = bt_min_x + bt_max_width;
 
-			buttons[BT_MAX]->set_position(Point<int16_t>(bt_max_x, bt_max_pos.y()));
+			buttons[Buttons::BT_MAX]->set_position(Point<int16_t>(bt_max_x, bt_max_pos.y()));
 
 			int16_t bt_map_x = bt_max_x + bt_max_width;
 
-			buttons[BT_MAP]->set_position(Point<int16_t>(bt_map_x, bt_map_pos.y()));
+			buttons[Buttons::BT_MAP]->set_position(Point<int16_t>(bt_map_x, bt_map_pos.y()));
 		}
 		else
 		{
-			buttons[BT_MAP]->set_active(true);
-			buttons[BT_MAX]->set_active(true);
-			buttons[BT_MIN]->set_active(true);
-			buttons[BT_NPC]->set_active(true);
-			buttons[BT_SMALL]->set_active(true);
+			buttons[Buttons::BT_MAP]->set_active(true);
+			buttons[Buttons::BT_MAX]->set_active(true);
+			buttons[Buttons::BT_MIN]->set_active(true);
+			buttons[Buttons::BT_NPC]->set_active(true);
+			buttons[Buttons::BT_SMALL]->set_active(true);
 
-			buttons[BT_MIN]->set_state(Button::State::NORMAL);
+			buttons[Buttons::BT_MIN]->set_state(Button::State::NORMAL);
 
 			if (type == Type::MAX)
-				buttons[BT_MAX]->set_state(Button::State::DISABLED);
+				buttons[Buttons::BT_MAX]->set_state(Button::State::DISABLED);
 			else
-				buttons[BT_MAX]->set_state(Button::State::NORMAL);
+				buttons[Buttons::BT_MAX]->set_state(Button::State::NORMAL);
 
-			buttons[BT_MIN]->set_position(bt_min_pos);
-			buttons[BT_MAX]->set_position(bt_max_pos);
-			buttons[BT_MAP]->set_position(bt_map_pos);
+			buttons[Buttons::BT_MIN]->set_position(bt_min_pos);
+			buttons[Buttons::BT_MAX]->set_position(bt_max_pos);
+			buttons[Buttons::BT_MAP]->set_position(bt_map_pos);
 		}
 	}
 

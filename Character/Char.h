@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,18 +17,17 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "CharEffect.h"
+
 #include "Inventory/Weapon.h"
 #include "Look/Afterimage.h"
 #include "Look/CharLook.h"
 #include "Look/PetLook.h"
 
+#include "../Graphics/EffectLayer.h"
+
 #include "../Gameplay/Combat/DamageNumber.h"
 #include "../Gameplay/Maplemap/Mapobject.h"
-#include "../Graphics/EffectLayer.h"
 #include "../IO/Components/ChatBalloon.h"
-#include "../Template/EnumMap.h"
-#include "../Template/Rectangle.h"
-#include "../Util/TimedBool.h"
 
 namespace jrc
 {
@@ -111,8 +110,7 @@ namespace jrc
 		void set_expression(int32_t expression);
 
 		// Add a pet with the specified stats.
-		void add_pet(uint8_t index, int32_t iid, const std::string& name,
-			int32_t uniqueid, Point<int16_t> pos, uint8_t stance, int32_t fhid);
+		void add_pet(uint8_t index, int32_t iid, const std::string& name, int32_t uniqueid, Point<int16_t> pos, uint8_t stance, int32_t fhid);
 		// Remove a pet with the specified index and reason.
 		void remove_pet(uint8_t index, bool hunger);
 

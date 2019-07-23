@@ -17,7 +17,6 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "UIEvent.h"
 
-#include "../KeyAction.h"
 #include "../UI.h"
 
 #include "../Components/MapleButton.h"
@@ -55,10 +54,10 @@ namespace jrc
 		events.emplace_back(BoolPair<bool>(false, false));
 
 		for (size_t i = 0; i < 3; i++)
-			event_title[i] = ShadowText(Text::Font::A18M, Text::Alignment::LEFT, Text::Color::HALFANDHALF, Text::Color::ENDEAVOUR);
+			event_title[i] = ShadowText(Text::Font::A18M, Text::Alignment::LEFT, Color::Name::HALFANDHALF, Color::Name::ENDEAVOUR);
 
 		for (size_t i = 0; i < 3; i++)
-			event_date[i] = Text(Text::Font::A12B, Text::Alignment::LEFT, Text::Color::WHITE);
+			event_date[i] = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
 
 		item_reward = main["event"]["normal"];
 		text_reward = main["liveEvent"]["normal"];
@@ -203,7 +202,7 @@ namespace jrc
 
 	void UIEvent::send_key(int32_t keycode, bool pressed)
 	{
-		if (pressed && keycode == KeyAction::ESCAPE)
+		if (pressed && keycode == KeyAction::Id::ESCAPE)
 			close();
 	}
 

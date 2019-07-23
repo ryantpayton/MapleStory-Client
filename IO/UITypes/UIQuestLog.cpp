@@ -19,9 +19,8 @@
 
 #include "../IO/Components/MapleButton.h"
 #include "../IO/Components/TwoSpriteButton.h"
-#include "../IO/KeyAction.h"
 
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -54,8 +53,8 @@ namespace jrc
 		buttons[Buttons::ALL_LEVEL] = std::make_unique<MapleButton>(list["BtAllLevel"]);
 		buttons[Buttons::MY_LOCATION] = std::make_unique<MapleButton>(list["BtMyLocation"]);
 
-		search = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::BOULDER, Rectangle<int16_t>(Point<int16_t>(124, 141), Point<int16_t>(320, 153)), 50);
-		placeholder = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::BOULDER, "Enter the quest name.");
+		search = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BOULDER, Rectangle<int16_t>(Point<int16_t>(124, 141), Point<int16_t>(320, 153)), 50);
+		placeholder = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BOULDER, "Enter the quest name.");
 
 		slider = Slider(Slider::Type::DEFAULT, Range<int16_t>(0, 279), 150, 20, 5, [](bool) {});
 

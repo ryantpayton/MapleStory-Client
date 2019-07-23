@@ -19,10 +19,8 @@
 #include "../Cursor.h"
 #include "../Keyboard.h"
 
-#include "../../Graphics/Text.h"
-#include "../../Template/Rectangle.h"
+#include "../Graphics/Text.h"
 
-#include <map>
 #include <functional>
 
 namespace jrc
@@ -37,7 +35,7 @@ namespace jrc
 			FOCUSED
 		};
 
-		Textfield(Text::Font font, Text::Alignment alignment, Text::Color color, Rectangle<int16_t> bounds, size_t limit);
+		Textfield(Text::Font font, Text::Alignment alignment, Color::Name color, Rectangle<int16_t> bounds, size_t limit);
 		Textfield();
 		~Textfield();
 

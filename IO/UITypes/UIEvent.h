@@ -19,8 +19,6 @@
 #include "../UIDragElement.h"
 
 #include "../Components/Slider.h"
-#include "../Template/BoolPair.h"
-#include "../Graphics/Text.h"
 #include "../Graphics/SpecialText.h"
 
 namespace jrc
@@ -28,7 +26,7 @@ namespace jrc
 	class UIEvent : public UIDragElement<PosEVENT>
 	{
 	public:
-		static constexpr Type TYPE = EVENT;
+		static constexpr Type TYPE = UIElement::Type::EVENT;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 

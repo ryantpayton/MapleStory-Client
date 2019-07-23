@@ -16,23 +16,38 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../Graphics/Texture.h"
-#include "../Template/BoolPair.h"
-#include "../Graphics/SpecialText.h"
+#include "../UIElement.h"
 
 namespace jrc
 {
-	class Nametag
+	class UIGender : public UIElement
 	{
 	public:
-		Nametag(nl::node src, Text::Font font, std::string name);
+		static constexpr Type TYPE = UIElement::Type::GENDER;
+		static constexpr bool FOCUSED = true;
+		static constexpr bool TOGGLED = false;
 
-		void draw(Point<int16_t> position) const;
-		void set_selected(bool selected);
+		UIGender(std::function<void()> okhandler);
+
+		void draw(float inter) const override;
+		void update() override;
+
+		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
+
+	protected:
+		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
-		OutlinedText name;
-		BoolPair<std::vector<Texture>> textures;
-		bool selected;
+		enum Buttons : uint16_t
+		{
+			NO,
+			YES,
+			SELECT
+		};
+
+		Texture gender_sprites[3];
+		uint16_t CUR_TIMESTEP;
+		std::function<void()> okhandler;
 	};
 }

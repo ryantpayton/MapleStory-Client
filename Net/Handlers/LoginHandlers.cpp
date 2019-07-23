@@ -20,18 +20,17 @@
 #include "Helpers/LoginParser.h"
 
 #include "../Session.h"
-#include "../Configuration.h"
 
 #include "../Packets/LoginPackets.h"
 #include "../IO/UI.h"
 
-#include "../IO/UITypes/UILogin.h"
 #include "../IO/UITypes/UILoginNotice.h"
 #include "../IO/UITypes/UIWorldSelect.h"
 #include "../IO/UITypes/UICharSelect.h"
 #include "../IO/UITypes/UIRaceSelect.h"
 #include "../IO/UITypes/UILoginwait.h"
 #include "../IO/UITypes/UITermsOfService.h"
+#include "../IO/UITypes/UIGender.h"
 
 namespace jrc
 {
@@ -42,8 +41,10 @@ namespace jrc
 		if (loginwait && loginwait->is_active())
 		{
 			// Remove previous UIs.
-			UI::get().remove(UIElement::LOGINNOTICE);
-			UI::get().remove(UIElement::LOGINWAIT);
+			UI::get().remove(UIElement::Type::LOGINNOTICE);
+			UI::get().remove(UIElement::Type::LOGINWAIT);
+			UI::get().remove(UIElement::Type::TOS);
+			UI::get().remove(UIElement::Type::GENDER);
 
 			std::function<void()> okhandler = loginwait->get_handler();
 
@@ -84,12 +85,19 @@ namespace jrc
 				// Login successfull. The packet contains information on the account, so we initialise the account with it.
 				Account account = LoginParser::parse_account(recv);
 
-				// Save the Login ID if the box for it on the login panel is checked.
-				if (Setting<SaveLogin>::get().load())
-					Setting<DefaultAccount>::get().save(account.name);
+				if (account.female == 10)
+				{
+					UI::get().emplace<UIGender>(okhandler);
+				}
+				else
+				{
+					// Save the Login ID if the box for it on the login panel is checked.
+					if (Setting<SaveLogin>::get().load())
+						Setting<DefaultAccount>::get().save(account.name);
 
-				// Request the list of worlds and channels online.
-				ServerRequestPacket().dispatch();
+					// Request the list of worlds and channels online.
+					ServerRequestPacket().dispatch();
+				}
 			}
 		}
 	}
@@ -113,7 +121,7 @@ namespace jrc
 			else
 			{
 				// Remove previous UIs.
-				UI::get().remove(UIElement::LOGIN);
+				UI::get().remove(UIElement::Type::LOGIN);
 
 				// Add the world selection screen to the ui.
 				worldselect->draw_world();
@@ -159,8 +167,8 @@ namespace jrc
 			int32_t slots = recv.read_int();
 
 			// Remove previous UIs.
-			UI::get().remove(UIElement::LOGINNOTICE);
-			UI::get().remove(UIElement::LOGINWAIT);
+			UI::get().remove(UIElement::Type::LOGINNOTICE);
+			UI::get().remove(UIElement::Type::LOGINWAIT);
 
 			// Remove the world selection screen.
 			if (auto worldselect = UI::get().get_element<UIWorldSelect>())
@@ -208,13 +216,13 @@ namespace jrc
 			switch (state)
 			{
 			case 10:
-				message = UILoginNotice::BIRTHDAY_INCORRECT;
+				message = UILoginNotice::Message::BIRTHDAY_INCORRECT;
 				break;
 			case 20:
-				message = UILoginNotice::INCORRECT_PIC;
+				message = UILoginNotice::Message::INCORRECT_PIC;
 				break;
 			default:
-				message = UILoginNotice::UNKNOWN_ERROR;
+				message = UILoginNotice::Message::UNKNOWN_ERROR;
 			}
 
 			UI::get().emplace<UILoginNotice>(message);

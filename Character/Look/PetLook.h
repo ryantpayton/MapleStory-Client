@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -16,15 +16,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../../Gameplay/Physics/Physics.h"
-#include "../../Graphics/Text.h"
-#include "../../Graphics/Animation.h"
-#include "../../Template/EnumMap.h"
-#include "../../Template/Point.h"
+#include "../Graphics/Text.h"
+#include "../Graphics/Animation.h"
+#include "../Template/EnumMap.h"
 
-#include <cstdint>
-#include <string>
-#include <map>
+#include "../Gameplay/Physics/Physics.h"
 
 namespace jrc
 {
@@ -47,11 +43,11 @@ namespace jrc
 		static Stance stancebyvalue(uint8_t value)
 		{
 			uint8_t valueh = value / 2;
-			return valueh >= LENGTH ? STAND : static_cast<Stance>(valueh);
+
+			return valueh >= Stance::LENGTH ? Stance::STAND : static_cast<Stance>(valueh);
 		}
 
-		PetLook(int32_t iid, std::string name, int32_t uniqueid,
-			Point<int16_t> pos, uint8_t stance, int32_t fhid);
+		PetLook(int32_t iid, std::string name, int32_t uniqueid, Point<int16_t> pos, uint8_t stance, int32_t fhid);
 		PetLook();
 
 		void draw(double viewx, double viewy, float alpha) const;

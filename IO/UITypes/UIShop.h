@@ -19,19 +19,16 @@
 #include "../UIDragElement.h"
 
 #include "../Components/Slider.h"
+#include "../Graphics/Text.h"
 
-#include "../../Graphics/Text.h"
-#include "../../Graphics/Texture.h"
-
-#include "../../Character/Look/CharLook.h"
-#include "../../Character/Inventory/Inventory.h"
+#include "../Character/Look/CharLook.h"
 
 namespace jrc
 {
 	class UIShop : public UIDragElement<PosSHOP>
 	{
 	public:
-		static constexpr Type TYPE = SHOP;
+		static constexpr Type TYPE = UIElement::Type::SHOP;
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = true;
 

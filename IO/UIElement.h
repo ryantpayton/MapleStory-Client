@@ -16,16 +16,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "Cursor.h"
-
 #include "Components/Button.h"
 #include "Components/Icon.h"
 
 #include "../Graphics/Sprite.h"
-
-#include <map>
-#include <memory>
-#include <vector>
 
 namespace jrc
 {
@@ -41,6 +35,7 @@ namespace jrc
 			START,
 			LOGIN,
 			TOS,
+			GENDER,
 			WORLDSELECT,
 			REGION,
 			CHARSELECT,

@@ -21,7 +21,7 @@
 
 #include "../Components/MapleButton.h"
 
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -40,12 +40,12 @@ namespace jrc
 		if (type == NoticeType::YESNO)
 		{
 			position.shift_y(-8);
-			question = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::WHITE, message, 200);
+			question = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::WHITE, message, 200);
 		}
 		else if (type == NoticeType::ENTERNUMBER)
 		{
 			position.shift_y(-16);
-			question = Text(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::WHITE, message, 200);
+			question = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE, message, 200);
 		}
 		else if (type == NoticeType::OK || type == NoticeType::OKSMALL)
 		{
@@ -57,7 +57,7 @@ namespace jrc
 			if (type == NoticeType::OK)
 				position.shift_y(-8);
 
-			question = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::WHITE, message, maxwidth);
+			question = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::WHITE, message, maxwidth);
 		}
 
 		height = question.height();
@@ -102,7 +102,7 @@ namespace jrc
 
 	void UINotice::send_key(int32_t keycode, bool pressed)
 	{
-		if (pressed && (keycode == KeyAction::RETURN || keycode == KeyAction::ESCAPE))
+		if (pressed && (keycode == KeyAction::Id::RETURN || keycode == KeyAction::Id::ESCAPE))
 		{
 			if (type == NoticeType::OK || type == NoticeType::OKSMALL)
 				UI::get().get_element<UIOk>()->send_key(keycode, pressed);
@@ -126,8 +126,8 @@ namespace jrc
 
 		nl::node src = nl::nx::ui["Basic.img"];
 
-		buttons[YES] = std::make_unique<MapleButton>(src["BtOK4"], Point<int16_t>(156, belowtext));
-		buttons[NO] = std::make_unique<MapleButton>(src["BtCancel4"], Point<int16_t>(198, belowtext));
+		buttons[Buttons::YES] = std::make_unique<MapleButton>(src["BtOK4"], Point<int16_t>(156, belowtext));
+		buttons[Buttons::NO] = std::make_unique<MapleButton>(src["BtCancel4"], Point<int16_t>(198, belowtext));
 	}
 
 	void UIYesNo::draw(float alpha) const
@@ -138,12 +138,12 @@ namespace jrc
 
 	void UIYesNo::send_key(int32_t keycode, bool pressed)
 	{
-		if (keycode == KeyAction::RETURN)
+		if (keycode == KeyAction::Id::RETURN)
 		{
 			yesnohandler(true);
 			active = false;
 		}
-		else if (keycode == KeyAction::ESCAPE)
+		else if (keycode == KeyAction::Id::ESCAPE)
 		{
 			yesnohandler(false);
 			active = false;
@@ -154,10 +154,10 @@ namespace jrc
 	{
 		switch (buttonid)
 		{
-		case YES:
+		case Buttons::YES:
 			yesnohandler(true);
 			break;
-		case NO:
+		case Buttons::NO:
 			yesnohandler(false);
 			break;
 		}
@@ -177,10 +177,10 @@ namespace jrc
 
 		nl::node src = nl::nx::ui["Basic.img"];
 
-		buttons[OK] = std::make_unique<MapleButton>(src["BtOK4"], 156, pos_y);
-		buttons[CANCEL] = std::make_unique<MapleButton>(src["BtCancel4"], 198, pos_y);
+		buttons[Buttons::OK] = std::make_unique<MapleButton>(src["BtOK4"], 156, pos_y);
+		buttons[Buttons::CANCEL] = std::make_unique<MapleButton>(src["BtCancel4"], 198, pos_y);
 
-		numfield = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LIGHTGREY, Rectangle<int16_t>(24, 232, belowtext, belowtext + 20), 10);
+		numfield = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::LIGHTGREY, Rectangle<int16_t>(24, 232, belowtext, belowtext + 20), 10);
 		numfield.change_text(std::to_string(quantity));
 
 		numfield.set_enter_callback(
@@ -231,12 +231,12 @@ namespace jrc
 
 	void UIEnterNumber::send_key(int32_t keycode, bool pressed)
 	{
-		if (keycode == KeyAction::RETURN)
+		if (keycode == KeyAction::Id::RETURN)
 		{
 			handlestring(numfield.get_text());
 			active = false;
 		}
-		else if (keycode == KeyAction::ESCAPE)
+		else if (keycode == KeyAction::Id::ESCAPE)
 		{
 			active = false;
 		}
@@ -246,10 +246,10 @@ namespace jrc
 	{
 		switch (buttonid)
 		{
-		case OK:
+		case Buttons::OK:
 			handlestring(numfield.get_text());
 			break;
-		case CANCEL:
+		case Buttons::CANCEL:
 			active = false;
 			break;
 		}
@@ -265,7 +265,7 @@ namespace jrc
 		auto okhandler = [&]()
 		{
 			numfield.set_state(Textfield::State::FOCUSED);
-			buttons[OK]->set_state(Button::State::NORMAL);
+			buttons[Buttons::OK]->set_state(Button::State::NORMAL);
 		};
 
 		if (!has_only_digits)
@@ -297,7 +297,7 @@ namespace jrc
 			active = false;
 		}
 
-		buttons[OK]->set_state(Button::State::NORMAL);
+		buttons[Buttons::OK]->set_state(Button::State::NORMAL);
 	}
 
 	UIOk::UIOk(std::string message, std::function<void()> oh, NoticeType type) : UINotice(message, type)
@@ -306,7 +306,7 @@ namespace jrc
 
 		nl::node src = nl::nx::ui["Basic.img"];
 
-		buttons[OK] = std::make_unique<MapleButton>(src["BtOK4"], 197, box2offset());
+		buttons[Buttons::OK] = std::make_unique<MapleButton>(src["BtOK4"], 197, box2offset());
 	}
 
 	void UIOk::draw(float alpha) const
@@ -317,12 +317,12 @@ namespace jrc
 
 	void UIOk::send_key(int32_t keycode, bool pressed)
 	{
-		if (keycode == KeyAction::RETURN)
+		if (keycode == KeyAction::Id::RETURN)
 		{
 			okhandler();
 			active = false;
 		}
-		else if (keycode == KeyAction::ESCAPE)
+		else if (keycode == KeyAction::Id::ESCAPE)
 		{
 			active = false;
 		}
@@ -332,7 +332,7 @@ namespace jrc
 	{
 		switch (buttonid)
 		{
-		case OK:
+		case Buttons::OK:
 			okhandler();
 			break;
 		}

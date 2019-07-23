@@ -17,10 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "ChatBalloon.h"
 
-#include "../../Constants.h"
+#include "../Constants.h"
 
-#include "nlnx/nx.hpp"
-#include "nlnx/node.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -47,7 +46,7 @@ namespace jrc
 		arrow = src["arrow"];
 		frame = src;
 
-		textlabel = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::BLACK, "", 80);
+		textlabel = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::BLACK, "", 80);
 
 		duration = 0;
 	}
@@ -105,7 +104,7 @@ namespace jrc
 		xtile = std::max<int16_t>(north.width(), 1);
 		ytile = std::max<int16_t>(west.height(), 1);
 
-		textlabel = Text(Text::Font::A12B, Text::Alignment::LEFT, Text::Color::BLACK, "", 300);
+		textlabel = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::BLACK, "", 300);
 	}
 
 	void ChatBalloonHorizontal::draw(Point<int16_t> position) const

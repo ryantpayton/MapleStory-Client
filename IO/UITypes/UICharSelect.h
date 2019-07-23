@@ -29,7 +29,7 @@ namespace jrc
 	class UICharSelect : public UIElement
 	{
 	public:
-		static constexpr Type TYPE = CHARSELECT;
+		static constexpr Type TYPE = UIElement::Type::CHARSELECT;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 

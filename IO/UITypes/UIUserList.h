@@ -26,7 +26,7 @@ namespace jrc
 	class UIUserList : public UIDragElement<PosUSERLIST>
 	{
 	public:
-		static constexpr Type TYPE = USERLIST;
+		static constexpr Type TYPE = UIElement::Type::USERLIST;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 

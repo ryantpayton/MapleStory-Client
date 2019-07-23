@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -21,12 +21,24 @@
 
 namespace jrc
 {
+	// Send user selected Gender
+	// Opcode: SET_GENDER(8)
+	class GenderPacket : public OutPacket
+	{
+	public:
+		GenderPacket(const bool female) : OutPacket(OutPacket::Opcode::SET_GENDER)
+		{
+			write_byte(1);
+			write_byte(female);
+		}
+	};
+
 	// Accept the Terms of Service.
 	// Opcode: ACCEPT_TOS(7)
 	class TOSPacket : public OutPacket
 	{
 	public:
-		TOSPacket() : OutPacket(ACCEPT_TOS)
+		TOSPacket() : OutPacket(OutPacket::Opcode::ACCEPT_TOS)
 		{
 			write_byte(1);
 		}
@@ -37,7 +49,7 @@ namespace jrc
 	class LoginPacket : public OutPacket
 	{
 	public:
-		LoginPacket(const std::string& acc, const std::string& pass) : OutPacket(LOGIN)
+		LoginPacket(const std::string& acc, const std::string& pass) : OutPacket(OutPacket::Opcode::LOGIN)
 		{
 			std::string volumeSerialNumber = Configuration::get().get_vol_serial_num();
 
@@ -66,7 +78,7 @@ namespace jrc
 	class ServerRequestPacket : public OutPacket
 	{
 	public:
-		ServerRequestPacket() : OutPacket(SERVERLIST_REQUEST) {}
+		ServerRequestPacket() : OutPacket(OutPacket::Opcode::SERVERLIST_REQUEST) {}
 	};
 
 	// Requests the list of characters on a world.
@@ -74,7 +86,7 @@ namespace jrc
 	class CharlistRequestPacket : public OutPacket
 	{
 	public:
-		CharlistRequestPacket(uint8_t world, uint8_t channel) : OutPacket(CHARLIST_REQUEST)
+		CharlistRequestPacket(uint8_t world, uint8_t channel) : OutPacket(OutPacket::Opcode::CHARLIST_REQUEST)
 		{
 			write_byte(0);
 			write_byte(world);
@@ -87,7 +99,7 @@ namespace jrc
 	class PlayerLoginPacket : public OutPacket
 	{
 	public:
-		PlayerLoginPacket(int32_t cid) : OutPacket(PLAYER_LOGIN)
+		PlayerLoginPacket(int32_t cid) : OutPacket(OutPacket::Opcode::PLAYER_LOGIN)
 		{
 			write_int(cid);
 		}

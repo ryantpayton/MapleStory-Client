@@ -22,9 +22,7 @@
 #include "../Components/MapleButton.h"
 #include "../Components/TwoSpriteButton.h"
 
-#include "../Configuration.h"
-
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -61,7 +59,7 @@ namespace jrc
 		for (size_t i = 0; i < NUM_KEYS; i++)
 			buttons[Buttons::NUM0 + i] = std::make_unique<MapleButton>(SoftKey["BtNum"][i]);
 
-		entry = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LIGHTGREY, Rectangle<int16_t>(Point<int16_t>(-3, -4), Point<int16_t>(150, 24)), MAX_SIZE);
+		entry = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::LIGHTGREY, Rectangle<int16_t>(Point<int16_t>(-3, -4), Point<int16_t>(150, 24)), MAX_SIZE);
 		entry.set_cryptchar('*');
 
 		shufflekeys();
@@ -191,7 +189,7 @@ namespace jrc
 	{
 		tooltipposition = Point<int16_t>(0, 0);
 		tetooltip.set_text("");
-		tooltip = {};
+		tooltip = Optional<Tooltip>();
 	}
 
 	Point<int16_t> UISoftkey::keypos(uint8_t num) const

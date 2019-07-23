@@ -56,7 +56,7 @@ namespace jrc
 				{
 					position = cursorpos - cursoroffset;
 
-					return Cursor::CLICKING;
+					return Cursor::State::CLICKING;
 				}
 				else if (indragrange(cursorpos))
 				{
@@ -93,6 +93,7 @@ namespace jrc
 		virtual bool indragrange(Point<int16_t> cursorpos) const
 		{
 			auto bounds = Rectangle<int16_t>(position, position + dragarea);
+
 			return bounds.contains(cursorpos);
 		}
 	};

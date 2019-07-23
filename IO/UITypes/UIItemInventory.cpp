@@ -18,14 +18,14 @@
 #include "UIItemInventory.h"
 
 #include "../UI.h"
+
 #include "../Components/MapleButton.h"
 #include "../Components/TwoSpriteButton.h"
+#include "../Data/ItemData.h"
 
-#include "../../Data/ItemData.h"
-#include "../../Net/Packets/InventoryPackets.h"
-#include "../../Util/Misc.h"
+#include "../Net/Packets/InventoryPackets.h"
 
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -45,55 +45,58 @@ namespace jrc
 		nl::node taben = src["Tab"]["enabled"];
 		nl::node tabdis = src["Tab"]["disabled"];
 
-		buttons[BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(156, 12));
+		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(156, 12));
 
-		buttons[BT_TAB_EQUIP] = std::make_unique<TwoSpriteButton>(tabdis["0"], taben["0"]);
-		buttons[BT_TAB_USE] = std::make_unique<TwoSpriteButton>(tabdis["1"], taben["1"]);
-		buttons[BT_TAB_ETC] = std::make_unique<TwoSpriteButton>(tabdis["2"], taben["2"]);
-		buttons[BT_TAB_SETUP] = std::make_unique<TwoSpriteButton>(tabdis["3"], taben["3"]);
-		buttons[BT_TAB_CASH] = std::make_unique<TwoSpriteButton>(tabdis["4"], taben["4"]);
+		buttons[Buttons::BT_TAB_EQUIP] = std::make_unique<TwoSpriteButton>(tabdis["0"], taben["0"]);
+		buttons[Buttons::BT_TAB_USE] = std::make_unique<TwoSpriteButton>(tabdis["1"], taben["1"]);
+		buttons[Buttons::BT_TAB_ETC] = std::make_unique<TwoSpriteButton>(tabdis["2"], taben["2"]);
+		buttons[Buttons::BT_TAB_SETUP] = std::make_unique<TwoSpriteButton>(tabdis["3"], taben["3"]);
+		buttons[Buttons::BT_TAB_CASH] = std::make_unique<TwoSpriteButton>(tabdis["4"], taben["4"]);
 
-		buttons[BT_DROPMESO] = std::make_unique<MapleButton>(src["BtCoin3"]);
-		buttons[BT_POINTS] = std::make_unique<MapleButton>(src["BtPoint0"]);
-		buttons[BT_GATHER] = std::make_unique<MapleButton>(src["BtGather3"]);
-		buttons[BT_SORT] = std::make_unique<MapleButton>(src["BtSort3"]);
-		buttons[BT_EXPAND] = std::make_unique<MapleButton>(src["BtFull3"]);
-		buttons[BT_ITEMPOT] = std::make_unique<MapleButton>(src["BtPot3"]);
-		buttons[BT_UPGRADE] = std::make_unique<MapleButton>(src["BtUpgrade3"]);
-		buttons[BT_MAGNIFY] = std::make_unique<MapleButton>(src["BtAppraise3"]);
-		buttons[BT_EXTRACT] = std::make_unique<MapleButton>(src["BtExtract3"]);
-		buttons[BT_DISASSEMBLE] = std::make_unique<MapleButton>(src["BtDisassemble3"]);
-		buttons[BT_TOAD] = std::make_unique<MapleButton>(src["BtToad3"]);
+		buttons[Buttons::BT_DROPMESO] = std::make_unique<MapleButton>(src["BtCoin3"]);
+		buttons[Buttons::BT_POINTS] = std::make_unique<MapleButton>(src["BtPoint0"]);
+		buttons[Buttons::BT_GATHER] = std::make_unique<MapleButton>(src["BtGather3"]);
+		buttons[Buttons::BT_SORT] = std::make_unique<MapleButton>(src["BtSort3"]);
+		buttons[Buttons::BT_EXPAND] = std::make_unique<MapleButton>(src["BtFull3"]);
+		buttons[Buttons::BT_ITEMPOT] = std::make_unique<MapleButton>(src["BtPot3"]);
+		buttons[Buttons::BT_UPGRADE] = std::make_unique<MapleButton>(src["BtUpgrade3"]);
+		buttons[Buttons::BT_MAGNIFY] = std::make_unique<MapleButton>(src["BtAppraise3"]);
+		buttons[Buttons::BT_EXTRACT] = std::make_unique<MapleButton>(src["BtExtract3"]);
+		buttons[Buttons::BT_DISASSEMBLE] = std::make_unique<MapleButton>(src["BtDisassemble3"]);
+		buttons[Buttons::BT_TOAD] = std::make_unique<MapleButton>(src["BtToad3"]);
 
-		tab = InventoryType::EQUIP;
+		tab = InventoryType::Id::EQUIP;
 		slotrange.first = 1;
 		slotrange.second = 24;
-		newtab = InventoryType::NONE;
+		newtab = InventoryType::Id::NONE;
 		newslot = 0;
 
-		buttons[BT_SORT]->set_active(false);
-		buttons[BT_ITEMPOT]->set_state(Button::State::DISABLED);
-		buttons[BT_EXTRACT]->set_state(Button::State::DISABLED);
-		buttons[BT_DISASSEMBLE]->set_state(Button::State::DISABLED);
-		buttons[button_by_tab(tab)]->set_state(Button::PRESSED);
+		buttons[Buttons::BT_SORT]->set_active(false);
+		buttons[Buttons::BT_ITEMPOT]->set_state(Button::State::DISABLED);
+		buttons[Buttons::BT_EXTRACT]->set_state(Button::State::DISABLED);
+		buttons[Buttons::BT_DISASSEMBLE]->set_state(Button::State::DISABLED);
+		buttons[button_by_tab(tab)]->set_state(Button::State::PRESSED);
 
-		mesolabel = { Text::A11M, Text::RIGHT, Text::BLACK };
-		maplepointslabel = { Text::A11M, Text::RIGHT, Text::BLACK };
+		mesolabel = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::BLACK);
+		maplepointslabel = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::BLACK);
 
-		slider = {
-			Slider::Type::DEFAULT, { 50, 245 }, 152, 6, 1 + inventory.get_slotmax(tab) / 4, [&](bool upwards) {
+		slider = Slider(
+			Slider::Type::DEFAULT, Range<int16_t>(50, 245), 152, 6, 1 + inventory.get_slotmax(tab) / 4,
+			[&](bool upwards)
+			{
 				int16_t shift = upwards ? -4 : 4;
 				bool above = slotrange.first + shift > 0;
 				bool below = slotrange.second + shift < inventory.get_slotmax(tab) + 1 + 4;
 
-				if (above && below) {
+				if (above && below)
+				{
 					slotrange.first += shift;
 					slotrange.second += shift;
 				}
 			}
-		};
+		);
 
-		dimension = { 172, 335 };
+		dimension = Point<int16_t>(172, 335);
 		active = true;
 
 		load_icons();
@@ -118,22 +121,22 @@ namespace jrc
 
 		int16_t bulletslot = inventory.get_bulletslot();
 
-		if (tab == InventoryType::USE && is_visible(bulletslot))
+		if (tab == InventoryType::Id::USE && is_visible(bulletslot))
 		{
 			Point<int16_t> bulletslotpos = position + get_slotpos(bulletslot);
-			projectile.draw({ bulletslotpos });
+			projectile.draw(DrawArgument(bulletslotpos));
 		}
 		else if (newtab == tab && is_visible(newslot))
 		{
 			Point<int16_t> newslotpos = position + get_slotpos(newslot);
 			newslotpos.shift_y(1);
-			newitemslot.draw({ newslotpos }, alpha);
+			newitemslot.draw(DrawArgument(newslotpos), alpha);
 		}
 
-		if (newtab != tab && newtab != InventoryType::NONE)
+		if (newtab != tab && newtab != InventoryType::Id::NONE)
 		{
 			Point<int16_t> newtabpos = position + get_tabpos(newtab);
-			newitemtab.draw({ newtabpos }, alpha);
+			newitemtab.draw(DrawArgument(newtabpos), alpha);
 		}
 
 		mesolabel.draw(position + Point<int16_t>(127, 262));
@@ -160,7 +163,7 @@ namespace jrc
 		{
 			int16_t count;
 
-			if (tab == InventoryType::EQUIP)
+			if (tab == InventoryType::Id::EQUIP)
 				count = -1;
 			else
 				count = inventory.get_item_count(tab, slot);
@@ -170,8 +173,7 @@ namespace jrc
 
 			icons[slot] = std::make_unique<Icon>(
 				std::make_unique<ItemIcon>(tab, eqslot, slot),
-				texture,
-				count
+				texture, count
 				);
 		}
 		else if (icons.count(slot))
@@ -196,39 +198,39 @@ namespace jrc
 
 		switch (buttonid)
 		{
-		case BT_CLOSE:
+		case Buttons::BT_CLOSE:
 			active = false;
 			return Button::State::NORMAL;
-		case BT_TAB_EQUIP:
-			tab = InventoryType::EQUIP;
+		case Buttons::BT_TAB_EQUIP:
+			tab = InventoryType::Id::EQUIP;
 			break;
-		case BT_TAB_USE:
-			tab = InventoryType::USE;
+		case Buttons::BT_TAB_USE:
+			tab = InventoryType::Id::USE;
 			break;
-		case BT_TAB_SETUP:
-			tab = InventoryType::SETUP;
+		case Buttons::BT_TAB_SETUP:
+			tab = InventoryType::Id::SETUP;
 			break;
-		case BT_TAB_ETC:
-			tab = InventoryType::ETC;
+		case Buttons::BT_TAB_ETC:
+			tab = InventoryType::Id::ETC;
 			break;
-		case BT_TAB_CASH:
-			tab = InventoryType::CASH;
+		case Buttons::BT_TAB_CASH:
+			tab = InventoryType::Id::CASH;
 			break;
-		case BT_GATHER:
+		case Buttons::BT_GATHER:
 			GatherItemsPacket(tab).dispatch();
 			break;
-		case BT_SORT:
+		case Buttons::BT_SORT:
 			SortItemsPacket(tab).dispatch();
 			break;
-		case BT_DROPMESO:
-		case BT_POINTS:
-		case BT_EXPAND:
-		case BT_ITEMPOT:
-		case BT_UPGRADE:
-		case BT_MAGNIFY:;
-		case BT_EXTRACT:
-		case BT_DISASSEMBLE:
-		case BT_TOAD:
+		case Buttons::BT_DROPMESO:
+		case Buttons::BT_POINTS:
+		case Buttons::BT_EXPAND:
+		case Buttons::BT_ITEMPOT:
+		case Buttons::BT_UPGRADE:
+		case Buttons::BT_MAGNIFY:;
+		case Buttons::BT_EXTRACT:
+		case Buttons::BT_DISASSEMBLE:
+		case Buttons::BT_TOAD:
 			return Button::State::NORMAL;
 		}
 
@@ -239,7 +241,7 @@ namespace jrc
 
 			slider.setrows(6, 1 + inventory.get_slotmax(tab) / 4);
 
-			buttons[button_by_tab(oldtab)]->set_state(Button::NORMAL);
+			buttons[button_by_tab(oldtab)]->set_state(Button::State::NORMAL);
 
 			load_icons();
 			enable_gather();
@@ -258,10 +260,10 @@ namespace jrc
 			{
 				switch (tab)
 				{
-				case InventoryType::EQUIP:
+				case InventoryType::Id::EQUIP:
 					EquipItemPacket(slot, inventory.find_equipslot(item_id)).dispatch();
 					break;
-				case InventoryType::USE:
+				case InventoryType::Id::USE:
 					UseItemPacket(slot, item_id).dispatch();
 					break;
 				}
@@ -279,14 +281,14 @@ namespace jrc
 			Equipslot::Id eqslot;
 			bool equip;
 
-			if (item_id && tab == InventoryType::EQUIP)
+			if (item_id && tab == InventoryType::Id::EQUIP)
 			{
 				eqslot = inventory.find_equipslot(item_id);
 				equip = true;
 			}
 			else
 			{
-				eqslot = Equipslot::NONE;
+				eqslot = Equipslot::Id::NONE;
 				equip = false;
 			}
 
@@ -311,7 +313,7 @@ namespace jrc
 		{
 			Cursor::State sstate = slider.send_cursor(cursor_relative, pressed);
 
-			if (sstate != Cursor::IDLE)
+			if (sstate != Cursor::State::IDLE)
 			{
 				clear_tooltip();
 
@@ -361,13 +363,13 @@ namespace jrc
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::ESCAPE)
+			if (keycode == KeyAction::Id::ESCAPE)
 			{
 				clear_tooltip();
 
 				active = false;
 			}
-			else if (keycode == KeyAction::TAB)
+			else if (keycode == KeyAction::Id::TAB)
 			{
 				clear_tooltip();
 
@@ -375,20 +377,20 @@ namespace jrc
 
 				switch (oldtab)
 				{
-				case InventoryType::EQUIP:
-					tab = InventoryType::USE;
+				case InventoryType::Id::EQUIP:
+					tab = InventoryType::Id::USE;
 					break;
-				case InventoryType::USE:
-					tab = InventoryType::ETC;
+				case InventoryType::Id::USE:
+					tab = InventoryType::Id::ETC;
 					break;
-				case InventoryType::ETC:
-					tab = InventoryType::SETUP;
+				case InventoryType::Id::ETC:
+					tab = InventoryType::Id::SETUP;
 					break;
-				case InventoryType::SETUP:
-					tab = InventoryType::CASH;
+				case InventoryType::Id::SETUP:
+					tab = InventoryType::Id::CASH;
 					break;
-				case InventoryType::CASH:
-					tab = InventoryType::EQUIP;
+				case InventoryType::Id::CASH:
+					tab = InventoryType::Id::EQUIP;
 					break;
 				}
 
@@ -399,13 +401,13 @@ namespace jrc
 
 					slider.setrows(6, 1 + inventory.get_slotmax(tab) / 4);
 
-					buttons[button_by_tab(oldtab)]->set_state(Button::NORMAL);
+					buttons[button_by_tab(oldtab)]->set_state(Button::State::NORMAL);
 
 					load_icons();
 					enable_gather();
 				}
 
-				buttons[button_by_tab(tab)]->set_state(Button::PRESSED);
+				buttons[button_by_tab(tab)]->set_state(Button::State::PRESSED);
 			}
 		}
 	}
@@ -419,18 +421,18 @@ namespace jrc
 		{
 			switch (mode)
 			{
-			case Inventory::ADD:
+			case Inventory::Modification::ADD:
 				update_slot(slot);
 				newtab = type;
 				newslot = slot;
 				break;
-			case Inventory::CHANGECOUNT:
-			case Inventory::ADDCOUNT:
+			case Inventory::Modification::CHANGECOUNT:
+			case Inventory::Modification::ADDCOUNT:
 				if (auto icon = get_icon(slot))
 					icon->set_count(arg);
 
 				break;
-			case Inventory::SWAP:
+			case Inventory::Modification::SWAP:
 				if (arg != slot)
 				{
 					update_slot(slot);
@@ -438,7 +440,7 @@ namespace jrc
 				}
 
 				break;
-			case Inventory::REMOVE:
+			case Inventory::Modification::REMOVE:
 				update_slot(slot);
 				break;
 			}
@@ -446,18 +448,18 @@ namespace jrc
 
 		switch (mode)
 		{
-		case Inventory::ADD:
-		case Inventory::ADDCOUNT:
+		case Inventory::Modification::ADD:
+		case Inventory::Modification::ADDCOUNT:
 			newtab = type;
 			newslot = slot;
 			break;
-		case Inventory::CHANGECOUNT:
-		case Inventory::SWAP:
-		case Inventory::REMOVE:
+		case Inventory::Modification::CHANGECOUNT:
+		case Inventory::Modification::SWAP:
+		case Inventory::Modification::REMOVE:
 			if (newslot == slot && newtab == type)
 			{
 				newslot = 0;
-				newtab = InventoryType::NONE;
+				newtab = InventoryType::Id::NONE;
 			}
 
 			break;
@@ -466,16 +468,16 @@ namespace jrc
 
 	void UIItemInventory::enable_sort()
 	{
-		buttons[BT_GATHER]->set_active(false);
-		buttons[BT_SORT]->set_active(true);
-		buttons[BT_SORT]->set_state(Button::NORMAL);
+		buttons[Buttons::BT_GATHER]->set_active(false);
+		buttons[Buttons::BT_SORT]->set_active(true);
+		buttons[Buttons::BT_SORT]->set_state(Button::State::NORMAL);
 	}
 
 	void UIItemInventory::enable_gather()
 	{
-		buttons[BT_SORT]->set_active(false);
-		buttons[BT_GATHER]->set_active(true);
-		buttons[BT_GATHER]->set_state(Button::NORMAL);
+		buttons[Buttons::BT_SORT]->set_active(false);
+		buttons[Buttons::BT_GATHER]->set_active(true);
+		buttons[Buttons::BT_GATHER]->set_state(Button::State::NORMAL);
 	}
 
 	void UIItemInventory::toggle_active()
@@ -494,20 +496,20 @@ namespace jrc
 
 	void UIItemInventory::show_item(int16_t slot)
 	{
-		if (tab == InventoryType::EQUIP)
+		if (tab == InventoryType::Id::EQUIP)
 		{
-			UI::get().show_equip(Tooltip::ITEMINVENTORY, slot);
+			UI::get().show_equip(Tooltip::Parent::ITEMINVENTORY, slot);
 		}
 		else
 		{
 			int32_t item_id = inventory.get_item_id(tab, slot);
-			UI::get().show_item(Tooltip::ITEMINVENTORY, item_id);
+			UI::get().show_item(Tooltip::Parent::ITEMINVENTORY, item_id);
 		}
 	}
 
 	void UIItemInventory::clear_tooltip()
 	{
-		UI::get().clear_tooltip(Tooltip::ITEMINVENTORY);
+		UI::get().clear_tooltip(Tooltip::Parent::ITEMINVENTORY);
 	}
 
 	bool UIItemInventory::is_visible(int16_t slot) const
@@ -547,15 +549,15 @@ namespace jrc
 	{
 		switch (tb)
 		{
-		case InventoryType::EQUIP:
+		case InventoryType::Id::EQUIP:
 			return Point<int16_t>(10, 28);
-		case InventoryType::USE:
+		case InventoryType::Id::USE:
 			return Point<int16_t>(42, 28);
-		case InventoryType::SETUP:
+		case InventoryType::Id::SETUP:
 			return Point<int16_t>(74, 28);
-		case InventoryType::ETC:
+		case InventoryType::Id::ETC:
 			return Point<int16_t>(105, 28);
-		case InventoryType::CASH:
+		case InventoryType::Id::CASH:
 			return Point<int16_t>(138, 28);
 		default:
 			return Point<int16_t>();
@@ -566,16 +568,16 @@ namespace jrc
 	{
 		switch (tb)
 		{
-		case InventoryType::EQUIP:
-			return BT_TAB_EQUIP;
-		case InventoryType::USE:
-			return BT_TAB_USE;
-		case InventoryType::SETUP:
-			return BT_TAB_SETUP;
-		case InventoryType::ETC:
-			return BT_TAB_ETC;
+		case InventoryType::Id::EQUIP:
+			return Buttons::BT_TAB_EQUIP;
+		case InventoryType::Id::USE:
+			return Buttons::BT_TAB_USE;
+		case InventoryType::Id::SETUP:
+			return Buttons::BT_TAB_SETUP;
+		case InventoryType::Id::ETC:
+			return Buttons::BT_TAB_ETC;
 		default:
-			return BT_TAB_CASH;
+			return Buttons::BT_TAB_CASH;
 		}
 	}
 
@@ -605,12 +607,12 @@ namespace jrc
 	{
 		switch (sourcetab)
 		{
-		case InventoryType::EQUIP:
+		case InventoryType::Id::EQUIP:
 			if (eqsource == eqslot)
 				EquipItemPacket(source, eqslot).dispatch();
 
 			break;
-		case InventoryType::USE:
+		case InventoryType::Id::USE:
 			ScrollEquipPacket(source, eqslot).dispatch();
 			break;
 		}

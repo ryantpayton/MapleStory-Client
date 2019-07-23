@@ -20,16 +20,12 @@
 
 #include "../Components/Textfield.h"
 
-#include "../../Graphics/Texture.h"
-
-#include <functional>
-
 namespace jrc
 {
 	class UINotice : public UIDragElement<PosNOTICE>
 	{
 	public:
-		static constexpr Type TYPE = NOTICE;
+		static constexpr Type TYPE = UIElement::Type::NOTICE;
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
 

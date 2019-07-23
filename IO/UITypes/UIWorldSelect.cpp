@@ -28,13 +28,13 @@
 
 #include "../Net/Packets/LoginPackets.h"
 
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
 #include <ctime>
 
 namespace jrc
 {
-	UIWorldSelect::UIWorldSelect() : UIElement({ 0, 0 }, { 800, 600 })
+	UIWorldSelect::UIWorldSelect() : UIElement(Point<int16_t>(), Point<int16_t>(800, 600))
 	{
 		worldcount = 0;
 		recommended_worldcount = 0;
@@ -44,9 +44,9 @@ namespace jrc
 		draw_chatballoon = true;
 
 		std::string version_text = Configuration::get().get_version();
-		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. " + version_text);
+		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::LEMONGRASS, "Ver. " + version_text);
 
-		recommended_message = Text(Text::Font::A11M, Text::Alignment::CENTER, Text::Color::JAMBALAYA, "", 100, true, 5);
+		recommended_message = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::JAMBALAYA, "", 100, true, 5);
 
 		worldsrc_pos = Point<int16_t>(646, 20);
 		channelsrc_pos = Point<int16_t>(203, 154);
@@ -321,7 +321,7 @@ namespace jrc
 						selected_world = get_next_world(selected_world, forward);
 
 						for (auto world : worlds)
-				{
+						{
 							if (world.wid == selected_world)
 							{
 								world_found = true;
@@ -369,13 +369,13 @@ namespace jrc
 						}
 
 						if (found)
-						button_pressed(selected_world + Buttons::BT_WORLD0);
+							button_pressed(selected_world + Buttons::BT_WORLD0);
 						else
 							buttons[Buttons::BT_WORLD0 + selected_world]->set_state(Button::State::PRESSED);
+					}
 				}
 			}
 		}
-	}
 	}
 
 	void UIWorldSelect::draw_world()

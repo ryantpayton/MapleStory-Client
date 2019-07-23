@@ -19,9 +19,7 @@
 
 #include "../IO/Components/MapleButton.h"
 
-#include "../Template/Rectangle.h"
-
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -36,24 +34,24 @@ namespace jrc
 		search_background = WorldMapSearch["backgrnd"];
 		search_notice = WorldMapSearch["notice"];
 
-		buttons[BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(638, 10));
-		buttons[BT_SEARCH] = std::make_unique<MapleButton>(WorldMap["BtSearch"]);
+		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(638, 10));
+		buttons[Buttons::BT_SEARCH] = std::make_unique<MapleButton>(WorldMap["BtSearch"]);
 
-		buttons[BT_AUTOFLY] = std::make_unique<MapleButton>(WorldMap["BtAutoFly_1"]);
-		buttons[BT_NAVIREG] = std::make_unique<MapleButton>(WorldMap["BtNaviRegister"]);
+		buttons[Buttons::BT_AUTOFLY] = std::make_unique<MapleButton>(WorldMap["BtAutoFly_1"]);
+		buttons[Buttons::BT_NAVIREG] = std::make_unique<MapleButton>(WorldMap["BtNaviRegister"]);
 
-		buttons[BT_SEARCH_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(785, 10));
-		buttons[BT_ALLSEARCH] = std::make_unique<MapleButton>(WorldMapSearch["BtAllsearch"], Point<int16_t>(654, 0));
+		buttons[Buttons::BT_SEARCH_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(785, 10));
+		buttons[Buttons::BT_ALLSEARCH] = std::make_unique<MapleButton>(WorldMapSearch["BtAllsearch"], Point<int16_t>(654, 0));
 
-		buttons[BT_SEARCH_CLOSE]->set_active(false);
-		buttons[BT_ALLSEARCH]->set_active(false);
+		buttons[Buttons::BT_SEARCH_CLOSE]->set_active(false);
+		buttons[Buttons::BT_ALLSEARCH]->set_active(false);
 
 		size_t text_limit = 15;
-		search_text = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::BLACK, Rectangle<int16_t>(Point<int16_t>(670, 20), Point<int16_t>(745, 40)), text_limit);
+		search_text = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, Rectangle<int16_t>(Point<int16_t>(670, 20), Point<int16_t>(745, 40)), text_limit);
 		search_text.set_state(Textfield::State::DISABLED);
 
 		search = false;
-		dimension = { 648, 535 };
+		dimension = Point<int16_t>(648, 535);
 		active = true;
 	}
 
@@ -85,7 +83,7 @@ namespace jrc
 
 	void UIWorldMap::send_key(int32_t keycode, bool pressed)
 	{
-		if (pressed && keycode == KeyAction::ESCAPE)
+		if (pressed && keycode == KeyAction::Id::ESCAPE)
 			active = false;
 	}
 
@@ -93,18 +91,18 @@ namespace jrc
 	{
 		switch (buttonid)
 		{
-		case BT_CLOSE:
+		case Buttons::BT_CLOSE:
 			active = false;
 			break;
-		case BT_SEARCH:
+		case Buttons::BT_SEARCH:
 			if (!search)
 			{
 				search = true;
-				buttons[BT_SEARCH_CLOSE]->set_active(true);
-				buttons[BT_ALLSEARCH]->set_active(true);
+				buttons[Buttons::BT_SEARCH_CLOSE]->set_active(true);
+				buttons[Buttons::BT_ALLSEARCH]->set_active(true);
 				search_text.set_state(Textfield::State::NORMAL);
-				dimension = { 795, 535 };
-				dragarea = { 795, 20 };
+				dimension = Point<int16_t>(795, 535);
+				dragarea = Point<int16_t>(795, 20);
 			}
 			else
 			{
@@ -112,7 +110,7 @@ namespace jrc
 			}
 
 			break;
-		case BT_SEARCH_CLOSE:
+		case Buttons::BT_SEARCH_CLOSE:
 			close_search();
 			break;
 		}
@@ -131,10 +129,10 @@ namespace jrc
 	void UIWorldMap::close_search()
 	{
 		search = false;
-		buttons[BT_SEARCH_CLOSE]->set_active(false);
-		buttons[BT_ALLSEARCH]->set_active(false);
+		buttons[Buttons::BT_SEARCH_CLOSE]->set_active(false);
+		buttons[Buttons::BT_ALLSEARCH]->set_active(false);
 		search_text.set_state(Textfield::State::DISABLED);
-		dimension = { 648, 535 };
-		dragarea = { 648, 20 };
+		dimension = Point<int16_t>(648, 535);
+		dragarea = Point<int16_t>(648, 20);
 	}
 }

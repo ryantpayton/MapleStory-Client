@@ -18,18 +18,17 @@
 #include "Textfield.h"
 
 #include "../UI.h"
-#include "../Constants.h"
 
 namespace jrc
 {
-	Textfield::Textfield(Text::Font font, Text::Alignment alignment, Text::Color color, Rectangle<int16_t> bnd, size_t lim) : textlabel(font, alignment, color, "", 0, false), marker(font, alignment, color, "|")
+	Textfield::Textfield(Text::Font font, Text::Alignment alignment, Color::Name color, Rectangle<int16_t> bnd, size_t lim) : textlabel(font, alignment, color, "", 0, false), marker(font, alignment, color, "|")
 	{
 		bounds = bnd;
 		limit = lim;
 		text = "";
 		markerpos = 0;
 		crypt = 0;
-		state = NORMAL;
+		state = State::NORMAL;
 	}
 
 	Textfield::Textfield()
@@ -41,7 +40,7 @@ namespace jrc
 
 	void Textfield::draw(Point<int16_t> parent) const
 	{
-		if (state == DISABLED)
+		if (state == State::DISABLED)
 			return;
 
 		Point<int16_t> absp = bounds.getlt() + parent;
@@ -49,7 +48,7 @@ namespace jrc
 		if (text.size() > 0)
 			textlabel.draw(absp);
 
-		if (state == FOCUSED && showmarker)
+		if (state == State::FOCUSED && showmarker)
 		{
 			Point<int16_t> mpos = absp + Point<int16_t>(textlabel.advance(markerpos), -1);
 			marker.draw(mpos);
@@ -58,7 +57,7 @@ namespace jrc
 
 	void Textfield::update(Point<int16_t> parent)
 	{
-		if (state == DISABLED)
+		if (state == State::DISABLED)
 			return;
 
 		parentpos = parent;
@@ -77,7 +76,7 @@ namespace jrc
 		{
 			state = st;
 
-			if (state != DISABLED)
+			if (state != State::DISABLED)
 			{
 				elapsed = 0;
 				showmarker = true;
@@ -87,7 +86,7 @@ namespace jrc
 				UI::get().remove_textfield();
 			}
 
-			if (state == FOCUSED)
+			if (state == State::FOCUSED)
 				UI::get().focus_textfield(this);
 		}
 	}
@@ -106,22 +105,22 @@ namespace jrc
 	{
 		switch (type)
 		{
-		case KeyType::ACTION:
+		case KeyType::Id::ACTION:
 			if (pressed)
 			{
 				switch (key)
 				{
-				case KeyAction::LEFT:
+				case KeyAction::Id::LEFT:
 					if (markerpos > 0)
 						markerpos--;
 
 					break;
-				case KeyAction::RIGHT:
+				case KeyAction::Id::RIGHT:
 					if (markerpos < text.size())
 						markerpos++;
 
 					break;
-				case KeyAction::BACK:
+				case KeyAction::Id::BACK:
 					if (text.size() > 0 && markerpos > 0)
 					{
 						text.erase(markerpos - 1, 1);
@@ -130,12 +129,12 @@ namespace jrc
 					}
 
 					break;
-				case KeyAction::RETURN:
+				case KeyAction::Id::RETURN:
 					if (onreturn)
 						onreturn(text);
 
 					break;
-				case KeyAction::SPACE:
+				case KeyAction::Id::SPACE:
 					if (belowlimit())
 					{
 						text.insert(markerpos, 1, ' ');
@@ -144,13 +143,13 @@ namespace jrc
 					}
 
 					break;
-				case KeyAction::HOME:
+				case KeyAction::Id::HOME:
 					markerpos = 0;
 					break;
-				case KeyAction::END:
+				case KeyAction::Id::END:
 					markerpos = text.size();
 					break;
-				case KeyAction::DELETE:
+				case KeyAction::Id::DELETE:
 					if (text.size() > 0 && markerpos < text.size())
 					{
 						text.erase(markerpos, 1);
@@ -167,7 +166,7 @@ namespace jrc
 			}
 
 			break;
-		case KeyType::TEXT:
+		case KeyType::Id::TEXT:
 			if (!pressed)
 			{
 				int8_t c = static_cast<int8_t>(key);
@@ -215,8 +214,8 @@ namespace jrc
 
 	Cursor::State Textfield::send_cursor(Point<int16_t> cursorpos, bool clicked)
 	{
-		if (state == DISABLED)
-			return Cursor::IDLE;
+		if (state == State::DISABLED)
+			return Cursor::State::IDLE;
 
 		auto abs_bounds = get_bounds();
 
@@ -226,16 +225,16 @@ namespace jrc
 			{
 				switch (state)
 				{
-				case NORMAL:
-					set_state(FOCUSED);
+				case State::NORMAL:
+					set_state(State::FOCUSED);
 					break;
 				}
 
-				return Cursor::CLICKING;
+				return Cursor::State::CLICKING;
 			}
 			else
 			{
-				return Cursor::CANCLICK;
+				return Cursor::State::CANCLICK;
 			}
 		}
 		else
@@ -244,13 +243,13 @@ namespace jrc
 			{
 				switch (state)
 				{
-				case FOCUSED:
-					set_state(NORMAL);
+				case State::FOCUSED:
+					set_state(State::NORMAL);
 					break;
 				}
 			}
 
-			return Cursor::IDLE;
+			return Cursor::State::IDLE;
 		}
 	}
 

@@ -16,24 +16,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "DrawArgument.h"
 #include "Text.h"
 
 #include "../Constants.h"
 #include "../Error.h"
 #include "../Util/QuadTree.h"
-#include "../Template/Rectangle.h"
 #include "../Template/Singleton.h"
 
-#include "nlnx/bitmap.hpp"
-
-#include "GL/glew.h"
+#include <nlnx/bitmap.hpp>
 
 #include "ft2build.h"
 #include FT_FREETYPE_H
-
-#include <unordered_map>
-#include <vector>
 
 namespace jrc
 {
@@ -59,7 +52,7 @@ namespace jrc
 		// Create a layout for the text with the parameters specified.
 		Text::Layout createlayout(const std::string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth, bool formatted, int16_t line_adj);
 		// Draw a text with the given parameters.
-		void drawtext(const DrawArgument& args, const std::string& text, const Text::Layout& layout, Text::Font font, Text::Color color, Text::Background back);
+		void drawtext(const DrawArgument& args, const std::string& text, const Text::Layout& layout, Text::Font font, Color::Name color, Text::Background back);
 
 		// Draw a rectangle filled with the specified color.
 		void drawrectangle(int16_t x, int16_t y, int16_t w, int16_t h, float r, float g, float b, float a);
@@ -227,14 +220,14 @@ namespace jrc
 			Text::Layout finish(size_t first, size_t last);
 
 		private:
-			void add_word(size_t first, size_t last, Text::Font font, Text::Color color);
+			void add_word(size_t first, size_t last, Text::Font font, Color::Name color);
 			void add_line();
 
 			const Font& font;
 
 			Text::Alignment alignment;
 			Text::Font fontid;
-			Text::Color color;
+			Color::Name color;
 			int16_t maxwidth;
 			bool formatted;
 

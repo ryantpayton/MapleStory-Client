@@ -23,7 +23,7 @@ namespace jrc
 	{
 		position = pos;
 		dimension = dim;
-		state = NORMAL;
+		state = Button::State::NORMAL;
 		active = true;
 	}
 
@@ -41,6 +41,6 @@ namespace jrc
 
 	Point<int16_t> AreaButton::origin() const
 	{
-		return { 0, 0 };
+		return Point<int16_t>();
 	}
 }

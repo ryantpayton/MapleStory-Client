@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,11 +18,8 @@
 #pragma once
 #include "../UIDragElement.h"
 
-#include "../Components/Icon.h"
 #include "../Components/Slider.h"
-
-#include "../../Character/Inventory/Inventory.h"
-#include "../../Graphics/Text.h"
+#include "../Graphics/Text.h"
 
 namespace jrc
 {
@@ -30,7 +27,7 @@ namespace jrc
 	class UIItemInventory : public UIDragElement<PosINV>
 	{
 	public:
-		static constexpr Type TYPE = ITEMINVENTORY;
+		static constexpr Type TYPE = UIElement::Type::ITEMINVENTORY;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 
@@ -74,7 +71,7 @@ namespace jrc
 			void drop_on_stage() const override;
 			void drop_on_equips(Equipslot::Id eqslot) const override;
 			void drop_on_items(InventoryType::Id tab, Equipslot::Id, int16_t slot, bool) const override;
-			void drop_on_bindings(Point<int16_t>, bool) const override {}
+			void drop_on_bindings(Point<int16_t>, bool) const override {};
 
 		private:
 			InventoryType::Id sourcetab;

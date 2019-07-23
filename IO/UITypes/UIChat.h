@@ -26,7 +26,7 @@ namespace jrc
 	class UIChat : public UIDragElement<PosMAPLECHAT>
 	{
 	public:
-		static constexpr Type TYPE = CHAT;
+		static constexpr Type TYPE = UIElement::Type::CHAT;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 

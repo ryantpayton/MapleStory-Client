@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,15 +18,14 @@
 #pragma once
 #include "../UIElement.h"
 
-#include "../../Graphics/Text.h"
-#include "../../Graphics/Texture.h"
+#include "../Graphics/Text.h"
 
 namespace jrc
 {
 	class UINpcTalk : public UIElement
 	{
 	public:
-		static constexpr Type TYPE = NPCTALK;
+		static constexpr Type TYPE = UIElement::Type::NPCTALK;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 

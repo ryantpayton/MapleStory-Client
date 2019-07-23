@@ -26,7 +26,7 @@
 
 #include "../Net/Packets/LoginPackets.h"
 
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
 #include <windows.h>
 
@@ -37,7 +37,7 @@ namespace jrc
 		Music("BgmUI.img/Title").play();
 
 		std::string version_text = Configuration::get().get_version();
-		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. " + version_text);
+		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::LEMONGRASS, "Ver. " + version_text);
 
 		nl::node map = nl::nx::map001["Back"]["login.img"];
 		nl::node back = map["back"];
@@ -67,7 +67,7 @@ namespace jrc
 		checkbox[false] = title["check"]["0"];
 		checkbox[true] = title["check"]["1"];
 
-		account = Textfield(Text::Font::A13M, Text::Alignment::LEFT, Text::Color::WHITE, Rectangle<int16_t>(Point<int16_t>(296, 269), Point<int16_t>(446, 293)), 12);
+		account = Textfield(Text::Font::A13M, Text::Alignment::LEFT, Color::Name::WHITE, Rectangle<int16_t>(Point<int16_t>(296, 269), Point<int16_t>(446, 293)), 12);
 
 		account.set_key_callback
 		(
@@ -88,7 +88,7 @@ namespace jrc
 
 		accountbg = title["ID"];
 
-		password = Textfield(Text::Font::A13M, Text::Alignment::LEFT, Text::Color::WHITE, Rectangle<int16_t>(Point<int16_t>(296, 295), Point<int16_t>(446, 319)), 12);
+		password = Textfield(Text::Font::A13M, Text::Alignment::LEFT, Color::Name::WHITE, Rectangle<int16_t>(Point<int16_t>(296, 295), Point<int16_t>(446, 319)), 12);
 
 		password.set_key_callback
 		(

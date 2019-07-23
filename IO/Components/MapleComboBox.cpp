@@ -1,0 +1,223 @@
+//////////////////////////////////////////////////////////////////////////////
+// This file is part of the Journey MMORPG client                           //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
+//                                                                          //
+// This program is free software: you can redistribute it and/or modify     //
+// it under the terms of the GNU Affero General Public License as           //
+// published by the Free Software Foundation, either version 3 of the       //
+// License, or (at your option) any later version.                          //
+//                                                                          //
+// This program is distributed in the hope that it will be useful,          //
+// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
+// GNU Affero General Public License for more details.                      //
+//                                                                          //
+// You should have received a copy of the GNU Affero General Public License //
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
+//////////////////////////////////////////////////////////////////////////////
+#include "MapleComboBox.h"
+#include "AreaButton.h"
+
+#include "../Audio/Audio.h"
+
+#include <nlnx/nx.hpp>
+
+namespace jrc
+{
+	MapleComboBox::MapleComboBox(Type type, std::vector<std::string> o, uint16_t default_option, Point<int16_t> pos) : options(o)
+	{
+		std::string combobox = "ComboBox";
+
+		if (type != Type::DEFAULT)
+			combobox += std::to_string(type);
+
+		nl::node src = nl::nx::ui["Basic.img"][combobox];
+
+		textures[Button::State::PRESSED][0] = src["pressed"][0];
+		textures[Button::State::PRESSED][1] = src["pressed"][1];
+		textures[Button::State::PRESSED][2] = src["pressed"][2];
+
+		textures[Button::State::MOUSEOVER][0] = src["mouseOver"][0];
+		textures[Button::State::MOUSEOVER][1] = src["mouseOver"][1];
+		textures[Button::State::MOUSEOVER][2] = src["mouseOver"][2];
+
+		textures[Button::State::NORMAL][0] = src["normal"][0];
+		textures[Button::State::NORMAL][1] = src["normal"][1];
+		textures[Button::State::NORMAL][2] = src["normal"][2];
+
+		textures[Button::State::DISABLED][0] = src["disabled"][0];
+		textures[Button::State::DISABLED][1] = src["disabled"][1];
+		textures[Button::State::DISABLED][2] = src["disabled"][2];
+
+		rwidth = 0;
+
+		for each (auto option in options)
+			option_text.push_back(Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::BLACK, option));
+
+		selected = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::BLACK, options[default_option]);
+
+		for each (auto text in option_text)
+		{
+			auto new_width = text.width();
+
+			if (new_width > rwidth)
+				rwidth = new_width;
+		}
+
+		state = Button::State::NORMAL;
+		background = ColorBox(width(), options.size() * HEIGHT, Color::Name::DUSTYGRAY, 1.0f);
+		rect = ColorBox(width() - 2, options.size() * HEIGHT - 2, Color::Name::GALLERY, 1.0f);
+		current_rect = ColorBox(width() - 2, HEIGHT - 2, Color::Name::GRAYOLIVE, 1.0f);
+
+		Point<int16_t> option_pos = Point<int16_t>(position.x(), position.y() + textures[state][0].get_dimensions().y());
+
+		for (size_t i = 0; i < option_text.size(); i++)
+			buttons[i] = std::make_unique<AreaButton>(Point<int16_t>(option_pos.x() + 1, option_pos.y() + (i * HEIGHT) + 1), Point<int16_t>(width() - 2, HEIGHT - 2));
+
+		current_pos = 0;
+		current_shown = false;
+		last_shown = 0;
+		selected_index = default_option;
+
+		position = pos;
+		active = true;
+		pressed = false;
+	}
+
+	MapleComboBox::MapleComboBox(Type type, std::vector<std::string> options, uint16_t default_option, int16_t x, int16_t y) : MapleComboBox(type, options, default_option, Point<int16_t>(x, y)) {}
+	MapleComboBox::MapleComboBox(Type type, std::vector<std::string> options, uint16_t default_option) : MapleComboBox(type, options, default_option, Point<int16_t>()) {}
+
+	void MapleComboBox::draw(Point<int16_t> parentpos) const
+	{
+		if (active)
+		{
+			Point<int16_t> lpos = Point<int16_t>(position + parentpos);
+			Point<int16_t> mpos = Point<int16_t>(lpos.x() + textures[state][0].width(), lpos.y());
+			Point<int16_t> epos = Point<int16_t>(mpos.x() + textures[state][1].width(), mpos.y());
+
+			textures[state][0].draw(lpos);
+			textures[state][1].draw(DrawArgument(Point<int16_t>(mpos.x(), mpos.y()), Point<int16_t>(rwidth, 0)));
+			textures[state][2].draw(Point<int16_t>(mpos.x() + rwidth, epos.y()));
+
+			selected.draw(Point<int16_t>(lpos.x() + 2, lpos.y() - 3));
+
+			if (pressed)
+			{
+				Point<int16_t> pos = Point<int16_t>(position.x(), position.y() + textures[state][0].get_dimensions().y());
+
+				background.draw(pos + Point<int16_t>(0, 2));
+				rect.draw(pos + Point<int16_t>(1, 3));
+
+				if (current_shown)
+					current_rect.draw(DrawArgument(pos.x() + 1, pos.y() + current_pos + 3));
+
+				for (size_t i = 0; i < option_text.size(); i++)
+					option_text[i].draw(DrawArgument(pos.x() + 6, pos.y() + (i * HEIGHT) - 4));
+			}
+		}
+	}
+
+	Rectangle<int16_t> MapleComboBox::bounds(Point<int16_t> parentpos) const
+	{
+		auto lt = parentpos + position - origin();
+		auto rb = lt + textures[state][0].get_dimensions();
+
+		auto m = textures[state][1].get_dimensions();
+		auto e = textures[state][2].get_dimensions();
+
+		rb = Point<int16_t>(rb.x() + m.x() + e.x() + rwidth, rb.y());
+
+		return Rectangle<int16_t>(lt, rb);
+	}
+
+	bool MapleComboBox::in_combobox(Point<int16_t> cursorpos)
+	{
+		Point<int16_t> lt = Point<int16_t>(position.x() + 1, position.y() + textures[state][0].get_dimensions().y() + 1);
+		Point<int16_t> rb = lt + Point<int16_t>(width() - 2, options.size() * HEIGHT - 2);
+
+		auto abs_bounds = Rectangle<int16_t>(lt, rb);
+
+		return abs_bounds.contains(cursorpos);
+	}
+
+	int16_t MapleComboBox::width() const
+	{
+		return textures[state][0].width() + textures[state][2].width() + rwidth;
+	}
+
+	Point<int16_t> MapleComboBox::origin() const
+	{
+		return textures[state][0].get_origin();
+	}
+
+	bool MapleComboBox::remove_cursor(bool clicked, Point<int16_t> cursorpos)
+	{
+		current_shown = false;
+		option_text[last_shown].change_color(Color::Name::BLACK);
+
+		return true;
+	}
+
+	Cursor::State MapleComboBox::send_cursor(bool down, Point<int16_t> pos)
+	{
+		Cursor::State ret = down ? Cursor::State::CLICKING : Cursor::State::IDLE;
+
+		current_shown = false;
+		option_text[last_shown].change_color(Color::Name::BLACK);
+
+		for (auto& btit : buttons)
+		{
+			if (btit.second->is_active() && btit.second->bounds(position).contains(pos))
+			{
+				if (btit.second->get_state() == Button::State::NORMAL)
+				{
+					Sound(Sound::Name::BUTTONOVER).play();
+
+					btit.second->set_state(Button::State::MOUSEOVER);
+					ret = Cursor::State::CANCLICK;
+				}
+				else if (btit.second->get_state() == Button::State::MOUSEOVER)
+				{
+					if (down)
+					{
+						Sound(Sound::Name::BUTTONCLICK).play();
+
+						btit.second->set_state(button_pressed(btit.first));
+
+						ret = Cursor::State::IDLE;
+					}
+					else
+					{
+						ret = Cursor::State::CANCLICK;
+						current_pos = btit.first * HEIGHT;
+						current_shown = true;
+						last_shown = btit.first;
+						option_text[btit.first].change_color(Color::Name::WHITE);
+					}
+				}
+			}
+			else if (btit.second->get_state() == Button::State::MOUSEOVER)
+			{
+				btit.second->set_state(Button::State::NORMAL);
+			}
+		}
+
+		return ret;
+	}
+
+	uint16_t MapleComboBox::get_selected() const
+	{
+		return selected_index;
+	}
+
+	Button::State MapleComboBox::button_pressed(uint16_t buttonid)
+	{
+		selected_index = buttonid;
+
+		selected.change_text(options[selected_index]);
+
+		toggle_pressed();
+
+		return Button::State::NORMAL;
+	}
+}

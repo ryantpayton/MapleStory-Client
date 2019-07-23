@@ -17,11 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Tooltip.h"
-
 #include "MapleFrame.h"
 
-#include "../../Graphics/Geometry.h"
-#include "../../Graphics/Text.h"
+#include "../Graphics/Geometry.h"
 
 namespace jrc
 {

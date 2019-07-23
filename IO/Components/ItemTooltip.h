@@ -17,12 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Tooltip.h"
-#include "Charset.h"
 
 #include "../Template/BoolPair.h"
 #include "../Components/MapleFrame.h"
-
-#include "../../Graphics/Text.h"
+#include "../Graphics/Text.h"
 
 namespace jrc
 {

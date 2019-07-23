@@ -20,12 +20,9 @@
 #include "../UIDragElement.h"
 
 #include "../Components/Slider.h"
-
-#include "../../Character/CharStats.h"
-#include "../../Character/Skillbook.h"
-#include "../../Graphics/Text.h"
-
-#include <vector>
+#include "../Character/CharStats.h"
+#include "../Character/Skillbook.h"
+#include "../Graphics/Text.h"
 
 namespace jrc
 {
@@ -65,7 +62,7 @@ namespace jrc
 	class UISkillbook : public UIDragElement<PosSKILL>
 	{
 	public:
-		static constexpr Type TYPE = SKILLBOOK;
+		static constexpr Type TYPE = UIElement::Type::SKILLBOOK;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 

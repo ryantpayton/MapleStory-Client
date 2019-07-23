@@ -20,21 +20,15 @@
 
 #include "../Components/Charset.h"
 #include "../Components/Gauge.h"
-#include "../Components/Textfield.h"
-
-#include "../../Character/CharStats.h"
-#include "../../Character/Inventory/Inventory.h"
-#include "../../Character/Job.h"
-#include "../../Graphics/Animation.h"
-#include "../../Graphics/Text.h"
-#include "../../Graphics/SpecialText.h"
+#include "../Character/CharStats.h"
+#include "../Graphics/SpecialText.h"
 
 namespace jrc
 {
 	class UIStatusbar : public UIElement
 	{
 	public:
-		static constexpr Type TYPE = STATUSBAR;
+		static constexpr Type TYPE = UIElement::Type::STATUSBAR;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 

@@ -43,7 +43,7 @@ namespace jrc
 		burning_character = true;
 
 		std::string version_text = Configuration::get().get_version();
-		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::LEMONGRASS, "Ver. " + version_text);
+		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::LEMONGRASS, "Ver. " + version_text);
 
 		pagepos = Point<int16_t>(247, 452);
 		worldpos = Point<int16_t>(586, 36);
@@ -105,7 +105,7 @@ namespace jrc
 		nl::node Burning = Common["Burning"];
 
 		burning_notice = Burning["BurningNotice"];
-		burning_count = Text(Text::Font::A12B, Text::Alignment::LEFT, Text::Color::WHITE, "1");
+		burning_count = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE, "1");
 
 		charinfo = CharSelect["charInfo"];
 		charslot = CharSelect["charSlot"]["0"];
@@ -139,10 +139,10 @@ namespace jrc
 		}
 
 		levelset = Charset(CharSelect["lv"], Charset::Alignment::CENTER);
-		namelabel = OutlinedText(Text::Font::A15B, Text::Alignment::CENTER, Text::Color::WHITE, Text::Color::IRISHCOFFEE);
+		namelabel = OutlinedText(Text::Font::A15B, Text::Alignment::CENTER, Color::Name::WHITE, Color::Name::IRISHCOFFEE);
 
 		for (size_t i = 0; i < InfoLabel::NUM_LABELS; i++)
-			infolabels[i] = OutlinedText(Text::Font::A11M, Text::Alignment::RIGHT, Text::Color::WHITE, Text::Color::TOBACCOBROWN);
+			infolabels[i] = OutlinedText(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::WHITE, Color::Name::TOBACCOBROWN);
 
 		for (auto& entry : characters)
 		{
@@ -156,7 +156,7 @@ namespace jrc
 		selectedslot_effect[0] = CharSelect["effect"][0];
 		selectedslot_effect[1] = CharSelect["effect"][1];
 
-		chatslotlabel = OutlinedText(Text::Font::A12M, Text::Alignment::LEFT, Text::Color::PORCELAIN, Text::Color::BROWNDERBY);
+		chatslotlabel = OutlinedText(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::PORCELAIN, Color::Name::BROWNDERBY);
 		chatslotlabel.change_text(get_slot_text());
 
 		position = Point<int16_t>(0, 0);
@@ -850,22 +850,22 @@ namespace jrc
 		switch (index)
 		{
 		case InfoLabel::JOB:
-			return { 68, -74 };
+			return Point<int16_t>(68, -74);
 		case InfoLabel::STR:
-			return { -3, -50 };
+			return Point<int16_t>(-3, -50);
 		case InfoLabel::DEX:
-			return { -3, -27 };
+			return Point<int16_t>(-3, -27);
 		case InfoLabel::INT:
-			return { 68, -50 };
+			return Point<int16_t>(68, -50);
 		case InfoLabel::LUK:
-			return { 68, -27 };
+			return Point<int16_t>(68, -27);
 		case InfoLabel::NUM_LABELS:
 			break;
 		default:
 			break;
 		}
 
-		return {};
+		return Point<int16_t>();
 	}
 
 	std::string UICharSelect::get_infolabel(size_t index, StatsEntry character_stats) const

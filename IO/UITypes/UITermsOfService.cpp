@@ -24,7 +24,7 @@
 
 #include "../Net/Packets/LoginPackets.h"
 
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
 namespace jrc
 {
@@ -72,7 +72,7 @@ namespace jrc
 		EULA += "software, and you must permanetly delete and destroy all copies of ";
 		EULA += "the MapleStory software in your possession or control.";
 
-		text = Text(Text::Font::A11M, Text::Alignment::LEFT, Text::Color::BLACK, EULA, 340, true, 2);
+		text = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, EULA, 340, true, 2);
 		max_rows = std::floor(text.height() / 50) - 5;
 
 		int16_t slider_y = 77;

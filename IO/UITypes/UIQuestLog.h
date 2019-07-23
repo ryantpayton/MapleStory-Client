@@ -27,7 +27,7 @@ namespace jrc
 	class UIQuestLog : public UIDragElement<PosQUEST>
 	{
 	public:
-		static constexpr Type TYPE = QUESTLOG;
+		static constexpr Type TYPE = UIElement::Type::QUESTLOG;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 

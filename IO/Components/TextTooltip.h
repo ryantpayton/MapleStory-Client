@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "Tooltip.h"
+#include "MapleFrame.h"
 
-#include "../Components/MapleFrame.h"
 #include "../Graphics/Text.h"
 
 namespace jrc
