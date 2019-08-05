@@ -75,8 +75,8 @@ namespace jrc
 		party_search_grid[1] = PartySearch["request"];
 		party_search_grid[2] = PartySearch["table"];
 
-		buttons[Buttons::BT_PARTY_SEARCH_LEVEL]->set_active(false);
 		buttons[Buttons::BT_PARTY_SEARCH_LEVEL] = std::make_unique<MapleButton>(PartySearch["BtPartyLevel"]);
+		buttons[Buttons::BT_PARTY_SEARCH_LEVEL]->set_active(false);
 
 		int16_t party_x = 243;
 		int16_t party_y = 114;
