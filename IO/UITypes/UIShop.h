@@ -41,7 +41,7 @@ namespace jrc
 		Cursor::State send_cursor(bool clicked, Point<int16_t> position) override;
 		void send_scroll(double yoffset) override;
 		void rightclick(Point<int16_t> cursorpos) override;
-		void send_key(int32_t keycode, bool pressed) override;
+		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
 		void reset(int32_t npcid);
 		void add_item(int32_t id, int32_t price, int32_t pitch, int32_t time, int16_t buyable);

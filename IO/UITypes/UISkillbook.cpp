@@ -363,11 +363,11 @@ namespace jrc
 		return Cursor::State::IDLE;
 	}
 
-	void UISkillbook::send_key(int32_t keycode, bool pressed)
+	void UISkillbook::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::Id::ESCAPE)
+			if (escape)
 			{
 				close();
 			}

@@ -378,7 +378,7 @@ namespace jrc
 		return ret;
 	}
 
-	void UICharSelect::send_key(int32_t keycode, bool pressed)
+	void UICharSelect::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -482,7 +482,7 @@ namespace jrc
 						btn->set_state(Button::State::MOUSEOVER);
 				}
 			}
-			else if (keycode == KeyAction::Id::ESCAPE)
+			else if (escape)
 			{
 				button_pressed(Buttons::BACK);
 			}

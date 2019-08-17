@@ -359,11 +359,11 @@ namespace jrc
 		}
 	}
 
-	void UIItemInventory::send_key(int32_t keycode, bool pressed)
+	void UIItemInventory::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::Id::ESCAPE)
+			if (escape)
 			{
 				clear_tooltip();
 

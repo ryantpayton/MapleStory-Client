@@ -242,13 +242,13 @@ namespace jrc
 			iter.second -= Constants::TIMESTEP;
 	}
 
-	void UIChatbar::send_key(int32_t keycode, bool pressed)
+	void UIChatbar::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
 			if (keycode == KeyAction::RETURN)
 				toggle_chatfield();
-			else if (keycode == KeyAction::ESCAPE)
+			else if (escape)
 				toggle_chatfield(false);
 		}
 	}

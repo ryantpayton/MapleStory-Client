@@ -34,6 +34,7 @@
 #include "UITypes/UIWorldMap.h"
 #include "UITypes/UIUserList.h"
 #include "UITypes/UIKeyConfig.h"
+#include "UITypes/UIEvent.h"
 
 #include "../Gameplay/Stage.h"
 
@@ -41,8 +42,8 @@ namespace jrc
 {
 	UIStateGame::UIStateGame()
 	{
-		focused = UIElement::NONE;
-		tooltipparent = Tooltip::NONE;
+		focused = UIElement::Type::NONE;
+		tooltipparent = Tooltip::Parent::NONE;
 
 		const CharLook& look = Stage::get().get_player().get_look();
 		const CharStats& stats = Stage::get().get_player().get_stats();
@@ -87,7 +88,7 @@ namespace jrc
 
 	void UIStateGame::drop_icon(const Icon& icon, Point<int16_t> pos)
 	{
-		if (UIElement* front = get_front(pos))
+		if (UIElement * front = get_front(pos))
 			front->send_icon(icon, pos);
 		else
 			icon.drop_on_stage();
@@ -95,52 +96,65 @@ namespace jrc
 
 	void UIStateGame::doubleclick(Point<int16_t> pos)
 	{
-		if (UIElement* front = get_front(pos))
+		if (UIElement * front = get_front(pos))
 			front->doubleclick(pos);
 	}
 
 	void UIStateGame::rightclick(Point<int16_t> pos)
 	{
-		if (UIElement* front = get_front(pos))
+		if (UIElement * front = get_front(pos))
 			front->rightclick(pos);
 	}
 
-	void UIStateGame::send_key(KeyType::Id type, int32_t action, bool pressed)
+	void UIStateGame::send_key(KeyType::Id type, int32_t action, bool pressed, bool escape)
 	{
 		switch (type)
 		{
-		case KeyType::MENU:
+		case KeyType::Id::MENU:
 			if (pressed)
 			{
 				switch (action)
 				{
-				case KeyAction::EQUIPMENT:
+				case KeyAction::Id::EQUIPMENT:
 					emplace<UIEquipInventory>(
 						Stage::get().get_player().get_inventory()
 						);
 					break;
-				case KeyAction::ITEMS:
+				case KeyAction::Id::ITEMS:
 					emplace<UIItemInventory>(
 						Stage::get().get_player().get_inventory()
 						);
 					break;
-				case KeyAction::STATS:
+				case KeyAction::Id::STATS:
 					emplace<UIStatsinfo>(
 						Stage::get().get_player().get_stats()
 						);
 					break;
-				case KeyAction::SKILLS:
+				case KeyAction::Id::SKILLS:
 					emplace<UISkillbook>(
 						Stage::get().get_player().get_stats(),
 						Stage::get().get_player().get_skills()
 						);
 					break;
-				case KeyAction::FRIENDS:
-				case KeyAction::PARTY:
-				case KeyAction::BOSSPARTY:
+				case KeyAction::Id::FRIENDS:
+				case KeyAction::Id::PARTY:
+				case KeyAction::Id::BOSSPARTY:
 				{
 					auto userlist = UI::get().get_element<UIUserList>();
-					auto tab = (action == KeyAction::FRIENDS) ? UIUserList::Tab::FRIEND : UIUserList::Tab::PARTY;
+					UIUserList::Tab tab;
+
+					switch (action)
+					{
+					case KeyAction::Id::FRIENDS:
+						tab = UIUserList::Tab::FRIEND;
+						break;
+					case KeyAction::Id::PARTY:
+						tab = UIUserList::Tab::PARTY;
+						break;
+					case KeyAction::Id::BOSSPARTY:
+						tab = UIUserList::Tab::BOSS;
+						break;
+					}
 
 					if (!userlist)
 					{
@@ -168,10 +182,10 @@ namespace jrc
 					}
 				}
 				break;
-				case KeyAction::WORLDMAP:
+				case KeyAction::Id::WORLDMAP:
 					emplace<UIWorldMap>();
 					break;
-				case KeyAction::MAPLECHAT:
+				case KeyAction::Id::MAPLECHAT:
 				{
 					auto chat = UI::get().get_element<UIChat>();
 
@@ -181,33 +195,49 @@ namespace jrc
 						chat->makeactive();
 				}
 				break;
-				case KeyAction::MINIMAP:
+				case KeyAction::Id::MINIMAP:
 					if (auto minimap = UI::get().get_element<UIMiniMap>())
-						minimap->send_key(action, pressed);
+						minimap->send_key(action, pressed, escape);
 
 					break;
-				case KeyAction::QUESTLOG:
+				case KeyAction::Id::QUESTLOG:
 					emplace<UIQuestLog>(
 						Stage::get().get_player().get_quests()
 						);
 					break;
-				case KeyAction::MENU:
+				case KeyAction::Id::MENU:
 					if (auto statusbar = UI::get().get_element<UIStatusbar>())
 						statusbar->toggle_menu();
 
 					break;
-				case KeyAction::QUICKSLOTS:
+				case KeyAction::Id::QUICKSLOTS:
 					if (auto statusbar = UI::get().get_element<UIStatusbar>())
 						statusbar->toggle_qs();
 
 					break;
-				case KeyAction::TOGGLECHAT:
+				case KeyAction::Id::TOGGLECHAT:
 					if (auto chatbar = UI::get().get_element<UIChatbar>())
 						chatbar->toggle_chat();
 
 					break;
-				case KeyAction::KEYBINDINGS:
-					emplace<UIKeyConfig>();
+				case KeyAction::Id::KEYBINDINGS:
+				{
+					auto keyconfig = UI::get().get_element<UIKeyConfig>();
+
+					if (!keyconfig || !keyconfig->is_active())
+						emplace<UIKeyConfig>();
+					else if (keyconfig && keyconfig->is_active())
+						keyconfig->close();
+
+					break;
+				}
+				case KeyAction::Id::MAINMENU:
+					if (auto statusbar = UI::get().get_element<UIStatusbar>())
+						statusbar->send_key(action, pressed, escape);
+
+					break;
+				case KeyAction::Id::EVENT:
+					emplace<UIEvent>();
 					break;
 				default:
 					std::cout << "Action (" << action << ") not handled!" << std::endl;
@@ -215,10 +245,10 @@ namespace jrc
 				}
 			}
 			break;
-		case KeyType::ACTION:
-		case KeyType::FACE:
-		case KeyType::ITEM:
-		case KeyType::SKILL:
+		case KeyType::Id::ACTION:
+		case KeyType::Id::FACE:
+		case KeyType::Id::ITEM:
+		case KeyType::Id::SKILL:
 			Stage::get().send_key(type, action, pressed);
 			break;
 		}
@@ -230,21 +260,21 @@ namespace jrc
 		{
 			switch (mst)
 			{
-			case Cursor::CLICKING:
+			case Cursor::State::CLICKING:
 				drop_icon(*draggedicon, pos);
 				draggedicon->reset();
 				draggedicon = {};
 
 				return mst;
 			default:
-				return Cursor::GRABBING;
+				return Cursor::State::GRABBING;
 			}
 		}
 		else
 		{
-			bool clicked = mst == Cursor::CLICKING || mst == Cursor::VSCROLLIDLE;
+			bool clicked = mst == Cursor::State::CLICKING || mst == Cursor::State::VSCROLLIDLE;
 
-			if (UIElement* focusedelement = get(focused))
+			if (UIElement * focusedelement = get(focused))
 			{
 				if (focusedelement->is_active())
 				{
@@ -252,7 +282,7 @@ namespace jrc
 				}
 				else
 				{
-					focused = UIElement::NONE;
+					focused = UIElement::Type::NONE;
 
 					return mst;
 				}
@@ -260,7 +290,7 @@ namespace jrc
 			else
 			{
 				UIElement* front = nullptr;
-				UIElement::Type fronttype = UIElement::NONE;
+				UIElement::Type fronttype = UIElement::Type::NONE;
 
 				for (auto& type : elementorder)
 				{
@@ -328,11 +358,11 @@ namespace jrc
 	{
 		if (parent == tooltipparent)
 		{
-			eqtooltip.set_equip(Tooltip::NONE, 0);
+			eqtooltip.set_equip(Tooltip::Parent::NONE, 0);
 			ittooltip.set_item(0);
 			tetooltip.set_text("");
 			tooltip = {};
-			tooltipparent = Tooltip::NONE;
+			tooltipparent = Tooltip::Parent::NONE;
 		}
 	}
 
@@ -381,7 +411,7 @@ namespace jrc
 	}
 
 	template <class T, typename...Args>
-	void UIStateGame::emplace(Args&&...args)
+	void UIStateGame::emplace(Args&& ...args)
 	{
 		if (auto iter = pre_add(T::TYPE, T::TOGGLED, T::FOCUSED))
 		{
@@ -418,14 +448,14 @@ namespace jrc
 	void UIStateGame::remove(UIElement::Type type)
 	{
 		if (type == focused)
-			focused = UIElement::NONE;
+			focused = UIElement::Type::NONE;
 
 		if (type == tooltipparent)
 			clear_tooltip(tooltipparent);
 
 		elementorder.remove(type);
 
-		if (auto& element = elements[type])
+		if (auto & element = elements[type])
 		{
 			element->deactivate();
 			element.release();

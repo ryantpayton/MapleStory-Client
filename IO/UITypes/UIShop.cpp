@@ -406,9 +406,9 @@ namespace jrc
 		}
 	}
 
-	void UIShop::send_key(int32_t keycode, bool pressed)
+	void UIShop::send_key(int32_t keycode, bool pressed, bool escape)
 	{
-		if (pressed && keycode == KeyAction::Id::ESCAPE)
+		if (pressed && escape)
 			exit_shop();
 	}
 

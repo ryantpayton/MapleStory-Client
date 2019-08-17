@@ -35,7 +35,7 @@ namespace jrc
 
 		void draw(float alpha) const override;
 
-		void send_key(int32_t keycode, bool pressed) override;
+		void send_key(int32_t keycode, bool pressed, bool escape) override;
 		bool is_in_range(Point<int16_t> cursorpos) const override;
 
 		void update_all_stats();

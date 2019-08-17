@@ -167,9 +167,9 @@ namespace jrc
 		}
 	}
 
-	void UIEquipInventory::send_key(int32_t keycode, bool pressed)
+	void UIEquipInventory::send_key(int32_t keycode, bool pressed, bool escape)
 	{
-		if (pressed && keycode == KeyAction::ESCAPE)
+		if (pressed && escape)
 		{
 			clear_tooltip();
 

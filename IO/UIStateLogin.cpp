@@ -65,13 +65,13 @@ namespace jrc
 	void UIStateLogin::doubleclick(Point<int16_t>) {}
 	void UIStateLogin::rightclick(Point<int16_t>) {}
 
-	void UIStateLogin::send_key(KeyType::Id type, int32_t action, bool pressed)
+	void UIStateLogin::send_key(KeyType::Id type, int32_t action, bool pressed, bool escape)
 	{
 		if (UIElement* focusedelement = get(focused))
 		{
 			if (focusedelement->is_active())
 			{
-				return focusedelement->send_key(action, pressed);
+				return focusedelement->send_key(action, pressed, escape);
 			}
 			else
 			{

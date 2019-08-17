@@ -35,7 +35,7 @@ namespace jrc
 		void draw(float alpha) const override;
 		void update() override;
 
-		void send_key(int32_t keycode, bool pressed) override;
+		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
 	private:
 		static constexpr int16_t center_start_x = 64;

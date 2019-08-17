@@ -79,6 +79,7 @@ namespace jrc
 			// Player
 			SPEND_AP = 87,
 			SPEND_SP = 90,
+			CHANGE_KEYMAP = 135,
 
 			// Skill
 			USE_SKILL = 91,

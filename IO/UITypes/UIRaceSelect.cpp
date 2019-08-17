@@ -318,11 +318,11 @@ namespace jrc
 		return Cursor::State::LEAF;
 	}
 
-	void UIRaceSelect::send_key(int32_t keycode, bool pressed)
+	void UIRaceSelect::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::Id::ESCAPE)
+			if (escape)
 			{
 				show_charselect();
 			}

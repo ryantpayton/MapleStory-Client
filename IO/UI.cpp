@@ -226,7 +226,7 @@ namespace jrc
 
 				if (escape && statusbar && statusbar->is_menu_active())
 				{
-					statusbar->send_key(mapping.action, pressed);
+					statusbar->send_key(mapping.action, pressed, escape);
 					sent = true;
 				}
 				else
@@ -290,7 +290,7 @@ namespace jrc
 
 						if (element && element != nullptr)
 						{
-							element->send_key(mapping.action, pressed);
+							element->send_key(mapping.action, pressed, escape);
 							sent = true;
 						}
 					}
@@ -303,42 +303,37 @@ namespace jrc
 					if (escape)
 					{
 						if (chatbar && chatbar->is_chatopen())
-							chatbar->send_key(mapping.action, pressed);
-						else if (statusbar)
-							statusbar->send_key(mapping.action, pressed);
+							chatbar->send_key(mapping.action, pressed, escape);
+						else if (statusbar && statusbar->is_menu_active())
+							statusbar->send_key(mapping.action, pressed, escape);
 						else
-							state->send_key(mapping.type, mapping.action, pressed);
+							state->send_key(mapping.type, mapping.action, pressed, escape);
 					}
 					else if (enter)
 					{
 						if (statusbar && statusbar->is_menu_active())
-							statusbar->send_key(mapping.action, pressed);
+							statusbar->send_key(mapping.action, pressed, escape);
 						else if (chatbar)
-							chatbar->send_key(mapping.action, pressed);
+							chatbar->send_key(mapping.action, pressed, escape);
 						else
-							state->send_key(mapping.type, mapping.action, pressed);
+							state->send_key(mapping.type, mapping.action, pressed, escape);
 					}
 					else if (up_down)
 					{
 						if (statusbar && statusbar->is_menu_active())
-							statusbar->send_key(mapping.action, pressed);
+							statusbar->send_key(mapping.action, pressed, escape);
 						else
-							state->send_key(mapping.type, mapping.action, pressed);
+							state->send_key(mapping.type, mapping.action, pressed, escape);
 					}
 					else
 					{
-						state->send_key(mapping.type, mapping.action, pressed);
+						state->send_key(mapping.type, mapping.action, pressed, escape);
 					}
 				}
 			}
 		}
 
 		is_key_down[keycode] = pressed;
-	}
-
-	void UI::send_menu(KeyAction::Id action)
-	{
-		state->send_key(KeyType::MENU, action, true);
 	}
 
 	void UI::set_scrollnotice(const std::string& notice)
@@ -397,7 +392,7 @@ namespace jrc
 		state->show_text(parent, text);
 	}
 
-	Keyboard UI::get_keyboard()
+	Keyboard& UI::get_keyboard()
 	{
 		return keyboard;
 	}

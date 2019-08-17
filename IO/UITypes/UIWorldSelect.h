@@ -35,7 +35,7 @@ namespace jrc
 		void draw(float alpha) const override;
 
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
-		void send_key(int32_t keycode, bool pressed) override;
+		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
 		void draw_world();
 		void add_world(World world);

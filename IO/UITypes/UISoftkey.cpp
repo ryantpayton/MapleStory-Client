@@ -96,11 +96,11 @@ namespace jrc
 		}
 	}
 
-	void UISoftkey::send_key(int32_t keycode, bool pressed)
+	void UISoftkey::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::Id::ESCAPE)
+			if (escape)
 				button_pressed(Buttons::CANCEL);
 			else if (keycode == KeyAction::Id::RETURN)
 				button_pressed(Buttons::OK);

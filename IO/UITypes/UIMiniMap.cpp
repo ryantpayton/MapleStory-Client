@@ -176,7 +176,7 @@ namespace jrc
 		UIElement::update();
 	}
 
-	void UIMiniMap::send_key(int32_t keycode, bool pressed)
+	void UIMiniMap::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (type < Type::MAX)
 			type++;

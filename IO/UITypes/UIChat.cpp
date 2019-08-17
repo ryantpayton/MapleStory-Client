@@ -83,9 +83,9 @@ namespace jrc
 		UIElement::update();
 	}
 
-	void UIChat::send_key(int32_t keycode, bool pressed)
+	void UIChat::send_key(int32_t keycode, bool pressed, bool escape)
 	{
-		if (pressed && keycode == KeyAction::Id::ESCAPE)
+		if (pressed && escape)
 			close();
 	}
 
@@ -167,9 +167,9 @@ namespace jrc
 		UIElement::update();
 	}
 
-	void UIRank::send_key(int32_t keycode, bool pressed)
+	void UIRank::send_key(int32_t keycode, bool pressed, bool escape)
 	{
-		if (pressed && keycode == KeyAction::Id::ESCAPE)
+		if (pressed && escape)
 			close();
 	}
 

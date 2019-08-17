@@ -19,7 +19,6 @@
 #include "KeyAction.h"
 #include "KeyType.h"
 
-#include <cstdint>
 #include <map>
 
 namespace jrc
@@ -32,20 +31,21 @@ namespace jrc
 			KeyType::Id type;
 			int32_t action;
 
-			Mapping() : type(KeyType::NONE), action(0) {}
+			Mapping() : type(KeyType::Id::NONE), action(0) {}
 			Mapping(KeyType::Id in_type, int32_t in_action) : type(in_type), action(in_action) {}
 		};
 
 		Keyboard();
 
 		void assign(uint8_t key, uint8_t type, int32_t action);
+		void remove(uint8_t key);
 
 		int32_t leftshiftcode() const;
 		int32_t rightshiftcode() const;
 		int32_t capslockcode() const;
 		int32_t leftctrlcode() const;
 		int32_t rightctrlcode() const;
-		int32_t get_maplekey(KeyAction::Id action) const;
+		std::map<int32_t, Mapping> get_maplekeys() const;
 		KeyAction::Id get_ctrl_action(int32_t keycode) const;
 		Mapping get_mapping(int32_t keycode) const;
 		Mapping get_maple_mapping(int32_t keycode) const;

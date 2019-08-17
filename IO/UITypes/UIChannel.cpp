@@ -104,11 +104,11 @@ namespace jrc
 			sprite.update();
 	}
 
-	void UIChannel::send_key(int32_t keycode, bool pressed)
+	void UIChannel::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::ESCAPE)
+			if (escape)
 			{
 				cancel();
 			}

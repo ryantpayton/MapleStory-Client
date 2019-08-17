@@ -17,6 +17,7 @@ The default settings can be configured by editing the **Configuration.h** file. 
 # Building
 1. Open **MapleStory.sln** in Visual Studio 2017 CE
 2. Make sure to use **Windows SDK Version: 8.1** and **Platform Toolset: v140** (If you don't have these, download them)
+   * [Windows 8.1 SDK](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)
 3. Press **Build** > **Build Solution** or **Ctrl + Shift + B**
 4. After a successful build, you can now run the program by pressing **Debug** > **Start Debugging** or **F5**
 5. Make sure all nx files are present in the parent folder.

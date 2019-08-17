@@ -22,6 +22,7 @@
 #include "../Components/MapleButton.h"
 #include "../UITypes/UINotice.h"
 #include "../UITypes/UILoginNotice.h"
+#include "../Net/Packets/PlayerPackets.h"
 
 #include <nlnx/nx.hpp>
 
@@ -29,7 +30,8 @@ namespace jrc
 {
 	UIKeyConfig::UIKeyConfig() : UIDragElement<PosKEYCONFIG>(Point<int16_t>())
 	{
-		keyboard = UI::get().get_keyboard();
+		keyboard = &UI::get().get_keyboard();
+		tempkeys = keyboard->get_maplekeys();
 
 		nl::node close = nl::nx::ui["Basic.img"]["BtClose"];
 
@@ -71,28 +73,21 @@ namespace jrc
 			{
 				if (std::find(found_actions.begin(), found_actions.end(), ficon.first) != found_actions.end())
 				{
-					int32_t maplekey = keyboard.get_maplekey(ficon.first);
+					int32_t maplekey = get_tempkey(ficon.first);
 
 					if (maplekey != -1)
 					{
 						KeyConfig::Key fkey = KeyConfig::actionbyid(maplekey);
-						ficon.second->draw(position + keys_pos[fkey] - Point<int16_t>(2, 3));
+
+						if (maplekey == KeyConfig::Key::SPACE)
+							ficon.second->draw(position + keys_pos[fkey] - Point<int16_t>(0, 3));
+						else
+							ficon.second->draw(position + keys_pos[fkey] - Point<int16_t>(2, 3));
 					}
 				}
 				else
 				{
-					Point<int16_t> pos = icons_pos[ficon.first];
-
-					for (auto uaction : updated_actions)
-					{
-						if (uaction.second == ficon.first)
-						{
-							pos = keys_pos[uaction.first] - Point<int16_t>(2, 3);
-							break;
-						}
-					}
-
-					ficon.second->draw(position + pos);
+					ficon.second->draw(position + icons_pos[ficon.first]);
 				}
 			}
 		}
@@ -106,9 +101,9 @@ namespace jrc
 		UIElement::update();
 	}
 
-	void UIKeyConfig::send_key(int32_t keycode, bool pressed)
+	void UIKeyConfig::send_key(int32_t keycode, bool pressed, bool escape)
 	{
-		if (pressed && keycode == KeyAction::Id::ESCAPE)
+		if (pressed && escape)
 			close();
 	}
 
@@ -143,21 +138,25 @@ namespace jrc
 
 		if (key_slot != KeyConfig::Key::LENGTH)
 		{
-			Keyboard::Mapping map = keyboard.get_maple_mapping(key_slot);
-			KeyAction::Id action = KeyAction::actionbyid(map.action);
+			Keyboard::Mapping map = get_tempkey_mapping(key_slot);
 
-			if (auto icon = icons[action].get())
+			if (map.type != KeyType::Id::NONE)
 			{
-				if (clicked)
-				{
-					icon->start_drag(cursorpos - position - keys_pos[key_slot]);
-					UI::get().drag_icon(icon);
+				KeyAction::Id action = KeyAction::actionbyid(map.action);
 
-					return Cursor::State::GRABBING;
-				}
-				else
+				if (auto icon = icons[action].get())
 				{
-					return Cursor::State::CANGRAB;
+					if (clicked)
+					{
+						icon->start_drag(cursorpos - position - keys_pos[key_slot]);
+						UI::get().drag_icon(icon);
+
+						return Cursor::State::GRABBING;
+					}
+					else
+					{
+						return Cursor::State::CANGRAB;
+					}
 				}
 			}
 		}
@@ -186,28 +185,66 @@ namespace jrc
 
 	void UIKeyConfig::remove_key(KeyAction::Id action)
 	{
-		for (int i = 0; i < found_actions.size(); i++)
-		{
-			auto faction = found_actions.at(i);
+		auto iter = std::find(found_actions.begin(), found_actions.end(), action);
 
-			if (faction == action)
-				found_actions.erase(found_actions.begin() + i);
+		if (iter != found_actions.end())
+		{
+			found_actions.erase(iter);
+
+			auto it = tempkeys.begin();
+
+			while (it != tempkeys.end())
+			{
+				Keyboard::Mapping map = it->second;
+
+				if (map.action == action)
+				{
+					tempkeys.erase(it->first);
+					break;
+				}
+
+				it++;
+			}
 		}
 	}
 
 	void UIKeyConfig::add_key(Point<int16_t> cursorposition, KeyAction::Id action)
 	{
-		KeyConfig::Key fkey = all_keys_by_position(cursorposition);
-		int32_t okey = keyboard.get_maplekey(action);
-
-		if (fkey == okey)
+		if (std::find(found_actions.begin(), found_actions.end(), action) == found_actions.end())
 		{
+			KeyConfig::Key key = all_keys_by_position(cursorposition);
+			KeyType::Id type = get_keytype(action);
+
 			found_actions.emplace_back(action);
+			tempkeys[key] = Keyboard::Mapping(type, action);
 		}
 		else
 		{
-			if (fkey != KeyConfig::Key::LENGTH)
-				updated_actions.emplace_back(std::make_pair(fkey, action));
+			KeyConfig::Key key = all_keys_by_position(cursorposition);
+			KeyType::Id type = get_keytype(action);
+
+			auto it = tempkeys.begin();
+
+			while (it != tempkeys.end())
+			{
+				Keyboard::Mapping map = it->second;
+
+				if (map.action == action)
+				{
+					tempkeys.erase(it->first);
+					break;
+				}
+
+				it++;
+			}
+
+			Keyboard::Mapping map = tempkeys[key];
+			KeyAction::Id map_action = KeyAction::actionbyid(map.action);
+
+			if (map.type != KeyType::Id::NONE && map_action != action)
+				remove_key(map_action);
+
+			tempkeys[key] = Keyboard::Mapping(type, action);
 		}
 	}
 
@@ -222,13 +259,19 @@ namespace jrc
 		case Buttons::DEFAULT:
 		{
 			constexpr char* message = "Would you like to revert to default settings?";
+
 			auto onok = [&]()
 			{
 				auto keysel_onok = [&](bool alternate)
 				{
-					std::cout << alternate << std::endl;
+					clear();
 
-					reset();
+					if (alternate)
+						tempkeys = alternate_keys;
+					else
+						tempkeys = basic_keys;
+
+					map_keys();
 				};
 
 				UI::get().emplace<UIKeySelect>(keysel_onok, false);
@@ -251,7 +294,63 @@ namespace jrc
 		case Buttons::KEYSETTING:
 			break;
 		case Buttons::OK:
-			break;
+		{
+			std::vector<std::tuple<KeyConfig::Key, KeyType::Id, KeyAction::Id>> updated_actions;
+
+			for each (auto key in tempkeys)
+			{
+				KeyConfig::Key k = KeyConfig::actionbyid(key.first);
+				Keyboard::Mapping map = key.second;
+				KeyAction::Id action = KeyAction::actionbyid(map.action);
+
+				Keyboard::Mapping fmap = keyboard->get_maple_mapping(key.first);
+
+				if (map.action != fmap.action)
+				{
+					updated_actions.emplace_back(std::make_tuple(k, map.type, action));
+				}
+			}
+
+			auto maplekeys = keyboard->get_maplekeys();
+
+			for each (auto key in maplekeys)
+			{
+				bool keyFound = false;
+				KeyConfig::Key keyConfig = KeyConfig::actionbyid(key.first);
+
+				for each (auto tkey in tempkeys)
+				{
+					KeyConfig::Key tKeyConfig = KeyConfig::actionbyid(tkey.first);
+
+					if (keyConfig == tKeyConfig)
+					{
+						keyFound = true;
+						break;
+					}
+				}
+
+				if (!keyFound)
+					updated_actions.emplace_back(std::make_tuple(keyConfig, KeyType::Id::NONE, KeyAction::Id::LENGTH));
+			}
+
+			if (updated_actions.size() > 0)
+				ChangeKeyMapPacket(updated_actions).dispatch();
+
+			for each (auto action in updated_actions)
+			{
+				KeyConfig::Key key = std::get<0>(action);
+				KeyType::Id type = std::get<1>(action);
+				KeyAction::Id keyAction = std::get<2>(action);
+
+				if (type == KeyType::Id::NONE)
+					keyboard->remove(key);
+				else
+					keyboard->assign(key, type, keyAction);
+			}
+
+			close();
+		}
+		break;
 		default:
 			break;
 		}
@@ -612,7 +711,7 @@ namespace jrc
 	{
 		for (auto fkey : keys)
 		{
-			Keyboard::Mapping map = keyboard.get_maple_mapping(fkey.first);
+			Keyboard::Mapping map = get_tempkey_mapping(fkey.first);
 
 			if (map.type != KeyType::Id::NONE)
 			{
@@ -627,12 +726,16 @@ namespace jrc
 	void UIKeyConfig::clear()
 	{
 		found_actions.clear();
-		updated_actions.clear();
+
+		tempkeys = {};
 	}
 
 	void UIKeyConfig::reset()
 	{
 		clear();
+
+		tempkeys = keyboard->get_maplekeys();
+
 		map_keys();
 	}
 
@@ -659,10 +762,9 @@ namespace jrc
 	{
 		for (auto iter : keys_pos)
 		{
-			Keyboard::Mapping map = keyboard.get_maple_mapping(iter.first);
-			KeyAction::Id k = KeyAction::actionbyid(map.action);
+			Keyboard::Mapping map = get_tempkey_mapping(iter.first);
 
-			if (map.action != KeyType::Id::NONE)
+			if (map.type != KeyType::Id::NONE)
 			{
 				if (std::find(found_actions.begin(), found_actions.end(), map.action) != found_actions.end())
 				{
@@ -694,6 +796,118 @@ namespace jrc
 		}
 
 		return KeyConfig::Key::LENGTH;
+	}
+
+	int32_t UIKeyConfig::get_tempkey(KeyAction::Id action) const
+	{
+		for (auto map : tempkeys)
+		{
+			Keyboard::Mapping m = map.second;
+
+			if (m.action == action)
+				return map.first;
+		}
+
+		return -1;
+	}
+
+	Keyboard::Mapping UIKeyConfig::get_tempkey_mapping(int32_t keycode) const
+	{
+		auto iter = tempkeys.find(keycode);
+
+		if (iter == tempkeys.end())
+			return {};
+
+		return iter->second;
+	}
+
+	KeyType::Id UIKeyConfig::get_keytype(KeyAction::Id action) const
+	{
+		switch (action)
+		{
+		case KeyAction::Id::EQUIPMENT:
+		case KeyAction::Id::ITEMS:
+		case KeyAction::Id::STATS:
+		case KeyAction::Id::SKILLS:
+		case KeyAction::Id::FRIENDS:
+		case KeyAction::Id::WORLDMAP:
+		case KeyAction::Id::MAPLECHAT:
+		case KeyAction::Id::MINIMAP:
+		case KeyAction::Id::QUESTLOG:
+		case KeyAction::Id::KEYBINDINGS:
+		case KeyAction::Id::TOGGLECHAT:
+		case KeyAction::Id::WHISPER:
+		case KeyAction::Id::SAY:
+		case KeyAction::Id::PARTYCHAT:
+		case KeyAction::Id::MENU:
+		case KeyAction::Id::QUICKSLOTS:
+		case KeyAction::Id::GUILD:
+		case KeyAction::Id::FRIENDSCHAT:
+		case KeyAction::Id::PARTY:
+		case KeyAction::Id::NOTIFIER:
+		case KeyAction::Id::CASHSHOP:
+		case KeyAction::Id::GUILDCHAT:
+		case KeyAction::Id::MEDALS:
+		case KeyAction::Id::BITS:
+		case KeyAction::Id::ALLIANCECHAT:
+		case KeyAction::Id::MAPLENEWS:
+		case KeyAction::Id::MANAGELEGION:
+		case KeyAction::Id::PROFESSION:
+		case KeyAction::Id::BOSSPARTY:
+		case KeyAction::Id::ITEMPOT:
+		case KeyAction::Id::EVENT:
+		case KeyAction::Id::SILENTCRUSADE:
+		case KeyAction::Id::BATTLEANALYSIS:
+		case KeyAction::Id::GUIDE:
+		case KeyAction::Id::VIEWERSCHAT:
+		case KeyAction::Id::ENHANCEEQUIP:
+		case KeyAction::Id::MONSTERCOLLECTION:
+		case KeyAction::Id::SOULWEAPON:
+		case KeyAction::Id::CHARINFO:
+		case KeyAction::Id::CHANGECHANNEL:
+		case KeyAction::Id::MAINMENU:
+		case KeyAction::Id::SCREENSHOT:
+		case KeyAction::Id::PICTUREMODE:
+		case KeyAction::Id::MAPLEACHIEVEMENT:
+			return KeyType::Id::MENU;
+		case KeyAction::Id::PICKUP:
+		case KeyAction::Id::SIT:
+		case KeyAction::Id::ATTACK:
+		case KeyAction::Id::JUMP:
+			return KeyType::Id::ACTION;
+		case KeyAction::Id::INTERACT_HARVEST:
+		case KeyAction::Id::MAPLESTORAGE:
+		case KeyAction::Id::SAFEMODE:
+		case KeyAction::Id::MUTE:
+		case KeyAction::Id::MONSTERBOOK:
+		case KeyAction::Id::TOSPOUSE:
+			return KeyType::Id::MENU;
+		case KeyAction::Id::FACE1:
+		case KeyAction::Id::FACE2:
+		case KeyAction::Id::FACE3:
+		case KeyAction::Id::FACE4:
+		case KeyAction::Id::FACE5:
+		case KeyAction::Id::FACE6:
+		case KeyAction::Id::FACE7:
+			return KeyType::Id::FACE;
+		case KeyAction::Id::LEFT:
+		case KeyAction::Id::RIGHT:
+		case KeyAction::Id::UP:
+		case KeyAction::Id::DOWN:
+		case KeyAction::Id::BACK:
+		case KeyAction::Id::TAB:
+		case KeyAction::Id::RETURN:
+		case KeyAction::Id::ESCAPE:
+		case KeyAction::Id::SPACE:
+		case KeyAction::Id::DELETE:
+		case KeyAction::Id::HOME:
+		case KeyAction::Id::END:
+		case KeyAction::Id::COPY:
+		case KeyAction::Id::PASTE:
+		case KeyAction::Id::LENGTH:
+		default:
+			return KeyType::Id::NONE;
+		}
 	}
 
 	UIKeyConfig::KeyIcon::KeyIcon(KeyAction::Id keyId)

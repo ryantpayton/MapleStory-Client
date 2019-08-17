@@ -73,11 +73,11 @@ namespace jrc
 		UIElement::draw(alpha);
 	}
 
-	void UILoginNotice::send_key(int32_t keycode, bool pressed)
+	void UILoginNotice::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::ESCAPE)
+			if (escape)
 			{
 				if (!multiple)
 					okhandler();
@@ -129,11 +129,11 @@ namespace jrc
 		UIElement::draw(alpha);
 	}
 
-	void UIQuitConfirm::send_key(int32_t keycode, bool pressed)
+	void UIQuitConfirm::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::ESCAPE)
+			if (escape)
 			{
 				active = false;
 			}
@@ -303,11 +303,11 @@ namespace jrc
 		return Cursor::State::LEAF;
 	}
 
-	void UIClassConfirm::send_key(int32_t keycode, bool pressed)
+	void UIClassConfirm::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::Id::ESCAPE)
+			if (escape)
 				deactivate();
 			else if (keycode == KeyAction::Id::RETURN)
 				button_pressed(Buttons::OK);
@@ -343,10 +343,10 @@ namespace jrc
 		UIElement::draw(alpha);
 	}
 
-	void UIKeySelect::send_key(int32_t keycode, bool pressed)
+	void UIKeySelect::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && !login)
-			if (keycode == KeyAction::Id::ESCAPE || keycode == KeyAction::Id::RETURN)
+			if (escape || keycode == KeyAction::Id::RETURN)
 				deactivate();
 	}
 
@@ -388,13 +388,13 @@ namespace jrc
 		UIElement::draw(alpha);
 	}
 
-	void UIKeyConfirm::send_key(int32_t keycode, bool pressed)
+	void UIKeyConfirm::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
 			if (keycode == KeyAction::Id::RETURN)
 				confirm();
-			else if (!login && keycode == KeyAction::Id::ESCAPE)
+			else if (!login && escape)
 				UI::get().remove(UIElement::Type::LOGINNOTICE);
 		}
 	}
@@ -409,6 +409,7 @@ namespace jrc
 	void UIKeyConfirm::confirm()
 	{
 		okhandler();
+		deactivate();
 
 		UI::get().remove(UIElement::Type::LOGINNOTICE);
 	}

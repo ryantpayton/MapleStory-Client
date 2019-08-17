@@ -228,7 +228,7 @@ namespace jrc
 		return ret;
 	}
 
-	void UIWorldSelect::send_key(int32_t keycode, bool pressed)
+	void UIWorldSelect::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -290,7 +290,7 @@ namespace jrc
 
 					button_pressed(selected_channel + Buttons::BT_CHANNEL0);
 				}
-				else if (keycode == KeyAction::Id::ESCAPE)
+				else if (escape)
 				{
 					world_selected = false;
 
@@ -303,7 +303,7 @@ namespace jrc
 			}
 			else if (show_recommended)
 			{
-				if (keycode == KeyAction::Id::ESCAPE || keycode == KeyAction::Id::RETURN)
+				if (escape || keycode == KeyAction::Id::RETURN)
 					toggle_recommended(false);
 			}
 			else
@@ -336,7 +336,7 @@ namespace jrc
 
 					buttons[Buttons::BT_WORLD0 + worldid]->set_state(Button::State::PRESSED);
 				}
-				else if (keycode == KeyAction::Id::ESCAPE)
+				else if (escape)
 				{
 					auto quitconfirm = UI::get().get_element<UIQuitConfirm>();
 

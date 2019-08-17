@@ -200,9 +200,9 @@ namespace jrc
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	void UIEvent::send_key(int32_t keycode, bool pressed)
+	void UIEvent::send_key(int32_t keycode, bool pressed, bool escape)
 	{
-		if (pressed && keycode == KeyAction::Id::ESCAPE)
+		if (pressed && escape)
 			close();
 	}
 

@@ -679,11 +679,11 @@ namespace jrc
 		return Button::State::NORMAL;
 	}
 
-	void UIStatusbar::send_key(int32_t keycode, bool pressed)
+	void UIStatusbar::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::Id::ESCAPE)
+			if (escape)
 			{
 				if (!menu_active && !setting_active && !community_active && !character_active && !event_active)
 					toggle_setting();

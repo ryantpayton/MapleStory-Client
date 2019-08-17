@@ -40,7 +40,7 @@ namespace jrc
 
 		virtual void doubleclick(Point<int16_t> pos) = 0;
 		virtual void rightclick(Point<int16_t> pos) = 0;
-		virtual void send_key(KeyType::Id type, int32_t action, bool pressed) = 0;
+		virtual void send_key(KeyType::Id type, int32_t action, bool pressed, bool escape) = 0;
 		virtual Cursor::State send_cursor(Cursor::State mst, Point<int16_t> pos) = 0;
 		virtual void send_scroll(double yoffset) = 0;
 		virtual void send_close() = 0;
@@ -65,7 +65,7 @@ namespace jrc
 		void update() override {}
 		void doubleclick(Point<int16_t>) override {}
 		void rightclick(Point<int16_t>) override {}
-		void send_key(KeyType::Id, int32_t, bool) override {}
+		void send_key(KeyType::Id, int32_t, bool, bool) override {}
 		Cursor::State send_cursor(Cursor::State, Point<int16_t>) override { return Cursor::IDLE; }
 		void send_scroll(double yoffset) override {}
 		void send_close() override {}

@@ -246,11 +246,11 @@ namespace jrc
 				sprite.update();
 	}
 
-	void UIUserList::send_key(int32_t keycode, bool pressed)
+	void UIUserList::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::Id::ESCAPE)
+			if (escape)
 			{
 				active = false;
 			}

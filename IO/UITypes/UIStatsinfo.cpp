@@ -167,9 +167,9 @@ namespace jrc
 		UIElement::draw_buttons(alpha);
 	}
 
-	void UIStatsinfo::send_key(int32_t keycode, bool pressed)
+	void UIStatsinfo::send_key(int32_t keycode, bool pressed, bool escape)
 	{
-		if (pressed && keycode == KeyAction::Id::ESCAPE)
+		if (pressed && escape)
 			active = false;
 	}
 

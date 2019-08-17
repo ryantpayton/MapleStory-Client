@@ -37,17 +37,7 @@ namespace jrc
 			PAGE_UP = 73,
 			END = 79,
 			PAGE_DOWN = 81,
-			INSERT,
-			DELETE,
-			// TODO: F11/F12 are set twice!
-			//F11 = 87,
-			//F12,
-			// TOOD: These key are never assigned!
-			ESCAPE,
-			SCROLL_LOCK,
-			RIGHT_SHIFT,
-			RIGHT_ALT,
-			RIGHT_CONTROL,
+			INSERT, DELETE, ESCAPE, RIGHT_CONTROL, RIGHT_SHIFT, RIGHT_ALT, SCROLL_LOCK,
 			LENGTH
 		};
 

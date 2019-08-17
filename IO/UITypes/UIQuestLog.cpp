@@ -84,11 +84,11 @@ namespace jrc
 		slider.draw(position + Point<int16_t>(126, 75));
 	}
 
-	void UIQuestLog::send_key(int32_t keycode, bool pressed)
+	void UIQuestLog::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::Id::ESCAPE)
+			if (escape)
 			{
 				deactivate();
 			}

@@ -34,7 +34,7 @@ namespace jrc
 		void draw(float inter) const override;
 		void update() override;
 
-		void send_key(int32_t keycode, bool pressed) override;
+		void send_key(int32_t keycode, bool pressed, bool escape) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
 
 	protected:

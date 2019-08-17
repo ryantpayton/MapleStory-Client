@@ -100,16 +100,16 @@ namespace jrc
 		bottombox.draw(start);
 	}
 
-	void UINotice::send_key(int32_t keycode, bool pressed)
+	void UINotice::send_key(int32_t keycode, bool pressed, bool escape)
 	{
-		if (pressed && (keycode == KeyAction::Id::RETURN || keycode == KeyAction::Id::ESCAPE))
+		if (pressed && (keycode == KeyAction::Id::RETURN || escape))
 		{
 			if (type == NoticeType::OK || type == NoticeType::OKSMALL)
-				UI::get().get_element<UIOk>()->send_key(keycode, pressed);
+				UI::get().get_element<UIOk>()->send_key(keycode, pressed, escape);
 			else if (type == NoticeType::YESNO)
-				UI::get().get_element<UIYesNo>()->send_key(keycode, pressed);
+				UI::get().get_element<UIYesNo>()->send_key(keycode, pressed, escape);
 			else if (type == NoticeType::ENTERNUMBER)
-				UI::get().get_element<UIEnterNumber>()->send_key(keycode, pressed);
+				UI::get().get_element<UIEnterNumber>()->send_key(keycode, pressed, escape);
 		}
 	}
 
@@ -136,14 +136,14 @@ namespace jrc
 		UIElement::draw(alpha);
 	}
 
-	void UIYesNo::send_key(int32_t keycode, bool pressed)
+	void UIYesNo::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (keycode == KeyAction::Id::RETURN)
 		{
 			yesnohandler(true);
 			active = false;
 		}
-		else if (keycode == KeyAction::Id::ESCAPE)
+		else if (escape)
 		{
 			yesnohandler(false);
 			active = false;
@@ -229,14 +229,14 @@ namespace jrc
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	void UIEnterNumber::send_key(int32_t keycode, bool pressed)
+	void UIEnterNumber::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (keycode == KeyAction::Id::RETURN)
 		{
 			handlestring(numfield.get_text());
 			active = false;
 		}
-		else if (keycode == KeyAction::Id::ESCAPE)
+		else if (escape)
 		{
 			active = false;
 		}
@@ -315,14 +315,14 @@ namespace jrc
 		UIElement::draw(alpha);
 	}
 
-	void UIOk::send_key(int32_t keycode, bool pressed)
+	void UIOk::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (keycode == KeyAction::Id::RETURN)
 		{
 			okhandler();
 			active = false;
 		}
-		else if (keycode == KeyAction::Id::ESCAPE)
+		else if (escape)
 		{
 			active = false;
 		}

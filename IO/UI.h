@@ -62,7 +62,6 @@ namespace jrc
 		void rightclick();
 		void doubleclick();
 		void send_key(int32_t keycode, bool pressed);
-		void send_menu(KeyAction::Id action);
 
 		void set_scrollnotice(const std::string& notice);
 		void focus_textfield(Textfield* textfield);
@@ -77,7 +76,7 @@ namespace jrc
 		void show_skill(Tooltip::Parent parent, int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration);
 		void show_text(Tooltip::Parent parent, std::string text);
 
-		Keyboard get_keyboard();
+		Keyboard& get_keyboard();
 
 		template <class T, typename...Args>
 		Optional<T> emplace(Args&&...args);

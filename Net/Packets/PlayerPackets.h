@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -18,7 +18,9 @@
 #pragma once
 #include "../OutPacket.h"
 
-#include "../../Character/Maplestat.h"
+#include "../Character/Maplestat.h"
+
+#include "../IO/UITypes/UIKeyConfig.h"
 
 namespace jrc
 {
@@ -27,23 +29,43 @@ namespace jrc
 	class SpendApPacket : public OutPacket
 	{
 	public:
-		SpendApPacket(Maplestat::Id stat) : OutPacket(SPEND_AP)
+		SpendApPacket(Maplestat::Id stat) : OutPacket(OutPacket::Opcode::SPEND_AP)
 		{
 			write_time();
 			write_int(Maplestat::codes[stat]);
 		}
 	};
 
-
 	// Requests a skill level increase by spending sp.
 	// Opcode: SPEND_SP(90)
 	class SpendSpPacket : public OutPacket
 	{
 	public:
-		SpendSpPacket(int32_t skill_id) : OutPacket(SPEND_SP)
+		SpendSpPacket(int32_t skill_id) : OutPacket(OutPacket::Opcode::SPEND_SP)
 		{
 			write_time();
 			write_int(skill_id);
+		}
+	};
+
+	// Requests the server to change kep mappings
+	// Opcode: CHANGE_KEYMAP(135)
+	class ChangeKeyMapPacket : public OutPacket
+	{
+	public:
+		ChangeKeyMapPacket(std::vector<std::tuple<KeyConfig::Key, KeyType::Id, KeyAction::Id>> updated_actions) : OutPacket(OutPacket::Opcode::CHANGE_KEYMAP)
+		{
+			write_int(0); // mode
+			write_int(updated_actions.size()); // Number of key changes
+
+			for (size_t i = 0; i < updated_actions.size(); i++)
+			{
+				auto keymap = updated_actions[i];
+
+				write_int(std::get<0>(keymap)); // key
+				write_byte(std::get<1>(keymap));// type
+				write_int(std::get<2>(keymap)); // action
+			}
 		}
 	};
 }

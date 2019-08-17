@@ -347,11 +347,11 @@ namespace jrc
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	void UICygnusCreation::send_key(int32_t keycode, bool pressed)
+	void UICygnusCreation::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::Id::ESCAPE)
+			if (escape)
 				button_pressed(Buttons::BT_CHARC_CANCEL);
 			else if (keycode == KeyAction::Id::RETURN)
 				button_pressed(Buttons::BT_CHARC_OK);
