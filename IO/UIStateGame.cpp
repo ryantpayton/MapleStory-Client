@@ -121,10 +121,21 @@ namespace jrc
 						);
 					break;
 				case KeyAction::Id::ITEMS:
-					emplace<UIItemInventory>(
-						Stage::get().get_player().get_inventory()
-						);
-					break;
+				{
+					auto iteminventory = UI::get().get_element<UIItemInventory>();
+
+					if (!iteminventory)
+					{
+						emplace<UIItemInventory>(
+							Stage::get().get_player().get_inventory()
+							);
+					}
+					else
+					{
+						iteminventory->toggle_active();
+					}
+				}
+				break;
 				case KeyAction::Id::STATS:
 					emplace<UIStatsinfo>(
 						Stage::get().get_player().get_stats()

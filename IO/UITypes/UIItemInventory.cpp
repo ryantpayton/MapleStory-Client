@@ -129,11 +129,11 @@ namespace jrc
 		else if (newtab == tab && is_visible(newslot))
 		{
 			Point<int16_t> newslotpos = position + get_slotpos(newslot);
-			newslotpos.shift_y(1);
+			newslotpos.shift(Point<int16_t>(1, 1));
 			newitemslot.draw(DrawArgument(newslotpos), alpha);
 		}
 
-		if (newtab != tab && newtab != InventoryType::Id::NONE)
+		if (newtab != InventoryType::Id::NONE)
 		{
 			Point<int16_t> newtabpos = position + get_tabpos(newtab);
 			newitemtab.draw(DrawArgument(newtabpos), alpha);
@@ -199,7 +199,7 @@ namespace jrc
 		switch (buttonid)
 		{
 		case Buttons::BT_CLOSE:
-			active = false;
+			toggle_active();
 			return Button::State::NORMAL;
 		case Buttons::BT_TAB_EQUIP:
 			tab = InventoryType::Id::EQUIP;
@@ -365,9 +365,7 @@ namespace jrc
 		{
 			if (escape)
 			{
-				clear_tooltip();
-
-				active = false;
+				toggle_active();
 			}
 			else if (keycode == KeyAction::Id::TAB)
 			{
@@ -482,8 +480,15 @@ namespace jrc
 
 	void UIItemInventory::toggle_active()
 	{
-		clear_tooltip();
 		UIElement::toggle_active();
+
+		if (!active)
+		{
+			newtab = InventoryType::Id::NONE;
+			newslot = 0;
+
+			clear_tooltip();
+		}
 	}
 
 	bool UIItemInventory::remove_cursor(bool clicked, Point<int16_t> cursorpos)
@@ -547,21 +552,19 @@ namespace jrc
 
 	Point<int16_t> UIItemInventory::get_tabpos(InventoryType::Id tb) const
 	{
+		int8_t fixed_tab = tb;
+
 		switch (tb)
 		{
-		case InventoryType::Id::EQUIP:
-			return Point<int16_t>(10, 28);
-		case InventoryType::Id::USE:
-			return Point<int16_t>(42, 28);
-		case InventoryType::Id::SETUP:
-			return Point<int16_t>(74, 28);
 		case InventoryType::Id::ETC:
-			return Point<int16_t>(105, 28);
-		case InventoryType::Id::CASH:
-			return Point<int16_t>(138, 28);
-		default:
-			return Point<int16_t>();
+			fixed_tab = 3;
+			break;
+		case InventoryType::Id::SETUP:
+			fixed_tab = 4;
+			break;
 		}
+
+		return Point<int16_t>(10 + ((fixed_tab - 1) * 31), 29);
 	}
 
 	uint16_t UIItemInventory::button_by_tab(InventoryType::Id tb) const
