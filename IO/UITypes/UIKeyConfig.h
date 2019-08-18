@@ -132,19 +132,19 @@ namespace jrc
 		   {KeyConfig::Key::L, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::NOTIFIER)},
 		   {KeyConfig::Key::SEMICOLON, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::MEDALS)},
 		   {KeyConfig::Key::APOSTROPHE, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::TOGGLECHAT)},
-		   {KeyConfig::Key::Z, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::PICKUP)},
-		   {KeyConfig::Key::X, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::SIT)},
+		   {KeyConfig::Key::Z, Keyboard::Mapping(KeyType::Id::ACTION, KeyAction::Id::PICKUP)},
+		   {KeyConfig::Key::X, Keyboard::Mapping(KeyType::Id::ACTION, KeyAction::Id::SIT)},
 		   {KeyConfig::Key::C, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::STATS)},
 		   {KeyConfig::Key::V, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::EVENT)},
 		   {KeyConfig::Key::B, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::PROFESSION)},
 		   {KeyConfig::Key::N, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::WORLDMAP)},
 		   {KeyConfig::Key::M, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::MINIMAP)},
 		   {KeyConfig::Key::PERIOD, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::FRIENDS)},
-		   {KeyConfig::Key::LEFT_CONTROL, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::ATTACK)},
-		   {KeyConfig::Key::LEFT_ALT, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::JUMP)},
+		   {KeyConfig::Key::LEFT_CONTROL, Keyboard::Mapping(KeyType::Id::ACTION, KeyAction::Id::ATTACK)},
+		   {KeyConfig::Key::LEFT_ALT, Keyboard::Mapping(KeyType::Id::ACTION, KeyAction::Id::JUMP)},
 		   {KeyConfig::Key::SPACE, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::INTERACT_HARVEST)},
-		   {KeyConfig::Key::RIGHT_ALT, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::JUMP)},
-		   {KeyConfig::Key::RIGHT_CONTROL, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::ATTACK)}
+		   {KeyConfig::Key::RIGHT_ALT, Keyboard::Mapping(KeyType::Id::ACTION, KeyAction::Id::JUMP)},
+		   {KeyConfig::Key::RIGHT_CONTROL, Keyboard::Mapping(KeyType::Id::ACTION, KeyAction::Id::ATTACK)}
 		};
 
 		std::map<int32_t, Keyboard::Mapping> basic_keys = {
@@ -183,17 +183,17 @@ namespace jrc
 		   {KeyConfig::Key::L, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::NOTIFIER)},
 		   {KeyConfig::Key::SEMICOLON, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::MEDALS)},
 		   {KeyConfig::Key::APOSTROPHE, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::TOGGLECHAT)},
-		   {KeyConfig::Key::Z, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::PICKUP)},
-		   {KeyConfig::Key::X, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::SIT)},
+		   {KeyConfig::Key::Z, Keyboard::Mapping(KeyType::Id::ACTION, KeyAction::Id::PICKUP)},
+		   {KeyConfig::Key::X, Keyboard::Mapping(KeyType::Id::ACTION, KeyAction::Id::SIT)},
 		   {KeyConfig::Key::C, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::MAPLECHAT)},
 		   {KeyConfig::Key::V, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::EVENT)},
 		   {KeyConfig::Key::B, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::PROFESSION)},
 		   {KeyConfig::Key::M, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::MINIMAP)},
-		   {KeyConfig::Key::LEFT_CONTROL, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::ATTACK)},
-		   {KeyConfig::Key::LEFT_ALT, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::JUMP)},
+		   {KeyConfig::Key::LEFT_CONTROL, Keyboard::Mapping(KeyType::Id::ACTION, KeyAction::Id::ATTACK)},
+		   {KeyConfig::Key::LEFT_ALT, Keyboard::Mapping(KeyType::Id::ACTION, KeyAction::Id::JUMP)},
 		   {KeyConfig::Key::SPACE, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::INTERACT_HARVEST)},
-		   {KeyConfig::Key::RIGHT_ALT, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::JUMP)},
-		   {KeyConfig::Key::RIGHT_CONTROL, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::ATTACK)}
+		   {KeyConfig::Key::RIGHT_ALT, Keyboard::Mapping(KeyType::Id::ACTION, KeyAction::Id::JUMP)},
+		   {KeyConfig::Key::RIGHT_CONTROL, Keyboard::Mapping(KeyType::Id::ACTION, KeyAction::Id::ATTACK)}
 		};
 	};
 }

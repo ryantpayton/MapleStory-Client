@@ -80,9 +80,31 @@ namespace jrc
 						KeyConfig::Key fkey = KeyConfig::actionbyid(maplekey);
 
 						if (maplekey == KeyConfig::Key::SPACE)
+						{
 							ficon.second->draw(position + keys_pos[fkey] - Point<int16_t>(0, 3));
+						}
 						else
-							ficon.second->draw(position + keys_pos[fkey] - Point<int16_t>(2, 3));
+						{
+							if (fkey == KeyConfig::Key::LEFT_CONTROL || fkey == KeyConfig::Key::RIGHT_CONTROL)
+							{
+								ficon.second->draw(position + keys_pos[KeyConfig::Key::LEFT_CONTROL] - Point<int16_t>(2, 3));
+								ficon.second->draw(position + keys_pos[KeyConfig::Key::RIGHT_CONTROL] - Point<int16_t>(2, 3));
+							}
+							else if (fkey == KeyConfig::Key::LEFT_ALT || fkey == KeyConfig::Key::RIGHT_ALT)
+							{
+								ficon.second->draw(position + keys_pos[KeyConfig::Key::LEFT_ALT] - Point<int16_t>(2, 3));
+								ficon.second->draw(position + keys_pos[KeyConfig::Key::RIGHT_ALT] - Point<int16_t>(2, 3));
+							}
+							else if (fkey == KeyConfig::Key::LEFT_SHIFT || fkey == KeyConfig::Key::RIGHT_SHIFT)
+							{
+								ficon.second->draw(position + keys_pos[KeyConfig::Key::LEFT_SHIFT] - Point<int16_t>(2, 3));
+								ficon.second->draw(position + keys_pos[KeyConfig::Key::RIGHT_SHIFT] - Point<int16_t>(2, 3));
+							}
+							else
+							{
+								ficon.second->draw(position + keys_pos[fkey] - Point<int16_t>(2, 3));
+							}
+						}
 					}
 				}
 				else
@@ -199,7 +221,26 @@ namespace jrc
 
 				if (map.action == action)
 				{
-					tempkeys.erase(it->first);
+					if (it->first == KeyConfig::Key::LEFT_CONTROL || it->first == KeyConfig::Key::RIGHT_CONTROL)
+					{
+						tempkeys.erase(KeyConfig::Key::LEFT_CONTROL);
+						tempkeys.erase(KeyConfig::Key::RIGHT_CONTROL);
+					}
+					else if (it->first == KeyConfig::Key::LEFT_ALT || it->first == KeyConfig::Key::RIGHT_ALT)
+					{
+						tempkeys.erase(KeyConfig::Key::LEFT_ALT);
+						tempkeys.erase(KeyConfig::Key::RIGHT_ALT);
+					}
+					else if (it->first == KeyConfig::Key::LEFT_SHIFT || it->first == KeyConfig::Key::RIGHT_SHIFT)
+					{
+						tempkeys.erase(KeyConfig::Key::LEFT_SHIFT);
+						tempkeys.erase(KeyConfig::Key::RIGHT_SHIFT);
+					}
+					else
+					{
+						tempkeys.erase(it->first);
+					}
+
 					break;
 				}
 
@@ -216,7 +257,32 @@ namespace jrc
 			KeyType::Id type = get_keytype(action);
 
 			found_actions.emplace_back(action);
-			tempkeys[key] = Keyboard::Mapping(type, action);
+
+			Keyboard::Mapping map = tempkeys[key];
+			KeyAction::Id map_action = KeyAction::actionbyid(map.action);
+
+			if (map.type != KeyType::Id::NONE && map_action != action)
+				remove_key(map_action);
+
+			if (key == KeyConfig::Key::LEFT_CONTROL || key == KeyConfig::Key::RIGHT_CONTROL)
+			{
+				tempkeys[KeyConfig::Key::LEFT_CONTROL] = Keyboard::Mapping(type, action);
+				tempkeys[KeyConfig::Key::RIGHT_CONTROL] = Keyboard::Mapping(type, action);
+			}
+			else if (key == KeyConfig::Key::LEFT_ALT || key == KeyConfig::Key::RIGHT_ALT)
+			{
+				tempkeys[KeyConfig::Key::LEFT_ALT] = Keyboard::Mapping(type, action);
+				tempkeys[KeyConfig::Key::RIGHT_ALT] = Keyboard::Mapping(type, action);
+			}
+			else if (key == KeyConfig::Key::LEFT_SHIFT || key == KeyConfig::Key::RIGHT_SHIFT)
+			{
+				tempkeys[KeyConfig::Key::LEFT_SHIFT] = Keyboard::Mapping(type, action);
+				tempkeys[KeyConfig::Key::RIGHT_SHIFT] = Keyboard::Mapping(type, action);
+			}
+			else
+			{
+				tempkeys[key] = Keyboard::Mapping(type, action);
+			}
 		}
 		else
 		{
@@ -231,7 +297,26 @@ namespace jrc
 
 				if (map.action == action)
 				{
-					tempkeys.erase(it->first);
+					if (it->first == KeyConfig::Key::LEFT_CONTROL || it->first == KeyConfig::Key::RIGHT_CONTROL)
+					{
+						tempkeys.erase(KeyConfig::Key::LEFT_CONTROL);
+						tempkeys.erase(KeyConfig::Key::RIGHT_CONTROL);
+					}
+					else if (key == KeyConfig::Key::LEFT_ALT || key == KeyConfig::Key::RIGHT_ALT)
+					{
+						tempkeys.erase(KeyConfig::Key::LEFT_ALT);
+						tempkeys.erase(KeyConfig::Key::RIGHT_ALT);
+					}
+					else if (key == KeyConfig::Key::LEFT_SHIFT || key == KeyConfig::Key::RIGHT_SHIFT)
+					{
+						tempkeys.erase(KeyConfig::Key::LEFT_SHIFT);
+						tempkeys.erase(KeyConfig::Key::RIGHT_SHIFT);
+					}
+					else
+					{
+						tempkeys.erase(it->first);
+					}
+
 					break;
 				}
 
@@ -244,7 +329,25 @@ namespace jrc
 			if (map.type != KeyType::Id::NONE && map_action != action)
 				remove_key(map_action);
 
-			tempkeys[key] = Keyboard::Mapping(type, action);
+			if (key == KeyConfig::Key::LEFT_CONTROL || key == KeyConfig::Key::RIGHT_CONTROL)
+			{
+				tempkeys[KeyConfig::Key::LEFT_CONTROL] = Keyboard::Mapping(type, action);
+				tempkeys[KeyConfig::Key::RIGHT_CONTROL] = Keyboard::Mapping(type, action);
+			}
+			else if (key == KeyConfig::Key::LEFT_ALT || key == KeyConfig::Key::RIGHT_ALT)
+			{
+				tempkeys[KeyConfig::Key::LEFT_ALT] = Keyboard::Mapping(type, action);
+				tempkeys[KeyConfig::Key::RIGHT_ALT] = Keyboard::Mapping(type, action);
+			}
+			else if (key == KeyConfig::Key::LEFT_SHIFT || key == KeyConfig::Key::RIGHT_SHIFT)
+			{
+				tempkeys[KeyConfig::Key::LEFT_SHIFT] = Keyboard::Mapping(type, action);
+				tempkeys[KeyConfig::Key::RIGHT_SHIFT] = Keyboard::Mapping(type, action);
+			}
+			else
+			{
+				tempkeys[key] = Keyboard::Mapping(type, action);
+			}
 		}
 	}
 

@@ -210,125 +210,122 @@ namespace jrc
 		{
 			Keyboard::Mapping mapping = keyboard.get_mapping(keycode);
 
-			if (mapping.type)
+			bool sent = false;
+			std::list<UIElement::Type> types;
+
+			bool escape = keycode == GLFW_KEY_ESCAPE;
+			bool tab = keycode == GLFW_KEY_TAB;
+			bool enter = keycode == GLFW_KEY_ENTER || keycode == GLFW_KEY_KP_ENTER;
+			bool up_down = keycode == GLFW_KEY_UP || keycode == GLFW_KEY_DOWN;
+			bool left_right = keycode == GLFW_KEY_LEFT || keycode == GLFW_KEY_RIGHT;
+			bool arrows = up_down || left_right;
+
+			auto statusbar = UI::get().get_element<UIStatusbar>();
+
+			if (escape && statusbar && statusbar->is_menu_active())
 			{
-				bool sent = false;
-				std::list<UIElement::Type> types;
-
-				bool escape = keycode == GLFW_KEY_ESCAPE;
-				bool tab = keycode == GLFW_KEY_TAB;
-				bool enter = keycode == GLFW_KEY_ENTER || keycode == GLFW_KEY_KP_ENTER;
-				bool up_down = keycode == GLFW_KEY_UP || keycode == GLFW_KEY_DOWN;
-				bool left_right = keycode == GLFW_KEY_LEFT || keycode == GLFW_KEY_RIGHT;
-				bool arrows = up_down || left_right;
-
-				auto statusbar = UI::get().get_element<UIStatusbar>();
-
-				if (escape && statusbar && statusbar->is_menu_active())
+				statusbar->send_key(mapping.action, pressed, escape);
+				sent = true;
+			}
+			else
+			{
+				// All
+				if (escape || tab || enter || arrows)
 				{
-					statusbar->send_key(mapping.action, pressed, escape);
-					sent = true;
+					// Login
+					types.emplace_back(UIElement::Type::WORLDSELECT);
+					types.emplace_back(UIElement::Type::CHARSELECT);
+					types.emplace_back(UIElement::Type::RACESELECT); // No tab
+					types.emplace_back(UIElement::Type::CLASSCREATION); // No tab (No arrows, but shouldn't send else where)
+					types.emplace_back(UIElement::Type::LOGINNOTICE); // No tab (No arrows, but shouldn't send else where)
+					types.emplace_back(UIElement::Type::LOGINNOTICE_CONFIRM); // No tab (No arrows, but shouldn't send else where)
+					types.emplace_back(UIElement::Type::LOGINWAIT); // No tab (No arrows, but shouldn't send else where)
+
+					// Game
+					types.emplace_back(UIElement::Type::CHANNEL); // No tab
+				}
+
+				if (escape)
+				{
+					types.emplace_back(UIElement::Type::SOFTKEYBOARD);
+
+					// Game
+					types.emplace_back(UIElement::Type::NOTICE);
+					types.emplace_back(UIElement::Type::KEYCONFIG);
+					types.emplace_back(UIElement::Type::CHATRANK);
+					types.emplace_back(UIElement::Type::CHAT);
+					types.emplace_back(UIElement::Type::JOYPAD);
+					types.emplace_back(UIElement::Type::EVENT);
+					types.emplace_back(UIElement::Type::SHOP);
+					types.emplace_back(UIElement::Type::STATSINFO);
+					types.emplace_back(UIElement::Type::ITEMINVENTORY);
+					types.emplace_back(UIElement::Type::EQUIPINVENTORY);
+					types.emplace_back(UIElement::Type::SKILLBOOK);
+					types.emplace_back(UIElement::Type::QUESTLOG);
+					types.emplace_back(UIElement::Type::WORLDMAP);
+					types.emplace_back(UIElement::Type::USERLIST);
+				}
+				else if (enter)
+				{
+					types.emplace_back(UIElement::Type::SOFTKEYBOARD);
+
+					// Game
+					types.emplace_back(UIElement::Type::NOTICE);
+					types.emplace_back(UIElement::Type::JOYPAD);
+				}
+				else if (tab)
+				{
+					// Game
+					types.emplace_back(UIElement::Type::ITEMINVENTORY);
+					types.emplace_back(UIElement::Type::SKILLBOOK);
+					types.emplace_back(UIElement::Type::QUESTLOG);
+					types.emplace_back(UIElement::Type::USERLIST);
+				}
+
+				if (types.size() > 0)
+				{
+					auto element = state->get_front(types);
+
+					if (element && element != nullptr)
+					{
+						element->send_key(mapping.action, pressed, escape);
+						sent = true;
+					}
+				}
+			}
+
+			if (!sent)
+			{
+				auto chatbar = UI::get().get_element<UIChatbar>();
+
+				if (escape)
+				{
+					if (chatbar && chatbar->is_chatopen())
+						chatbar->send_key(mapping.action, pressed, escape);
+					else if (statusbar && statusbar->is_menu_active())
+						statusbar->send_key(mapping.action, pressed, escape);
+					else
+						state->send_key(mapping.type, mapping.action, pressed, escape);
+				}
+				else if (enter)
+				{
+					if (statusbar && statusbar->is_menu_active())
+						statusbar->send_key(mapping.action, pressed, escape);
+					else if (chatbar)
+						chatbar->send_key(mapping.action, pressed, escape);
+					else
+						state->send_key(mapping.type, mapping.action, pressed, escape);
+				}
+				else if (up_down)
+				{
+					if (statusbar && statusbar->is_menu_active())
+						statusbar->send_key(mapping.action, pressed, escape);
+					else
+						state->send_key(mapping.type, mapping.action, pressed, escape);
 				}
 				else
 				{
-					// All
-					if (escape || tab || enter || arrows)
-					{
-						// Login
-						types.emplace_back(UIElement::Type::WORLDSELECT);
-						types.emplace_back(UIElement::Type::CHARSELECT);
-						types.emplace_back(UIElement::Type::RACESELECT); // No tab
-						types.emplace_back(UIElement::Type::CLASSCREATION); // No tab (No arrows, but shouldn't send else where)
-						types.emplace_back(UIElement::Type::LOGINNOTICE); // No tab (No arrows, but shouldn't send else where)
-						types.emplace_back(UIElement::Type::LOGINNOTICE_CONFIRM); // No tab (No arrows, but shouldn't send else where)
-						types.emplace_back(UIElement::Type::LOGINWAIT); // No tab (No arrows, but shouldn't send else where)
-
-						// Game
-						types.emplace_back(UIElement::Type::CHANNEL); // No tab
-					}
-
-					if (escape)
-					{
-						types.emplace_back(UIElement::Type::SOFTKEYBOARD);
-
-						// Game
-						types.emplace_back(UIElement::Type::NOTICE);
-						types.emplace_back(UIElement::Type::KEYCONFIG);
-						types.emplace_back(UIElement::Type::CHATRANK);
-						types.emplace_back(UIElement::Type::CHAT);
-						types.emplace_back(UIElement::Type::JOYPAD);
-						types.emplace_back(UIElement::Type::EVENT);
-						types.emplace_back(UIElement::Type::SHOP);
-						types.emplace_back(UIElement::Type::STATSINFO);
-						types.emplace_back(UIElement::Type::ITEMINVENTORY);
-						types.emplace_back(UIElement::Type::EQUIPINVENTORY);
-						types.emplace_back(UIElement::Type::SKILLBOOK);
-						types.emplace_back(UIElement::Type::QUESTLOG);
-						types.emplace_back(UIElement::Type::WORLDMAP);
-						types.emplace_back(UIElement::Type::USERLIST);
-					}
-					else if (enter)
-					{
-						types.emplace_back(UIElement::Type::SOFTKEYBOARD);
-
-						// Game
-						types.emplace_back(UIElement::Type::NOTICE);
-						types.emplace_back(UIElement::Type::JOYPAD);
-					}
-					else if (tab)
-					{
-						// Game
-						types.emplace_back(UIElement::Type::ITEMINVENTORY);
-						types.emplace_back(UIElement::Type::SKILLBOOK);
-						types.emplace_back(UIElement::Type::QUESTLOG);
-						types.emplace_back(UIElement::Type::USERLIST);
-					}
-
-					if (types.size() > 0)
-					{
-						auto element = state->get_front(types);
-
-						if (element && element != nullptr)
-						{
-							element->send_key(mapping.action, pressed, escape);
-							sent = true;
-						}
-					}
-				}
-
-				if (!sent)
-				{
-					auto chatbar = UI::get().get_element<UIChatbar>();
-
-					if (escape)
-					{
-						if (chatbar && chatbar->is_chatopen())
-							chatbar->send_key(mapping.action, pressed, escape);
-						else if (statusbar && statusbar->is_menu_active())
-							statusbar->send_key(mapping.action, pressed, escape);
-						else
-							state->send_key(mapping.type, mapping.action, pressed, escape);
-					}
-					else if (enter)
-					{
-						if (statusbar && statusbar->is_menu_active())
-							statusbar->send_key(mapping.action, pressed, escape);
-						else if (chatbar)
-							chatbar->send_key(mapping.action, pressed, escape);
-						else
-							state->send_key(mapping.type, mapping.action, pressed, escape);
-					}
-					else if (up_down)
-					{
-						if (statusbar && statusbar->is_menu_active())
-							statusbar->send_key(mapping.action, pressed, escape);
-						else
-							state->send_key(mapping.type, mapping.action, pressed, escape);
-					}
-					else
-					{
-						state->send_key(mapping.type, mapping.action, pressed, escape);
-					}
+					state->send_key(mapping.type, mapping.action, pressed, escape);
 				}
 			}
 		}
