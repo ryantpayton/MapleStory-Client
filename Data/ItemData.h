@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,7 +17,6 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "../Template/Cache.h"
-
 #include "../Graphics/Texture.h"
 #include "../Template/BoolPair.h"
 
@@ -29,6 +28,14 @@ namespace jrc
 	public:
 		// Returns wether the item was loaded correctly.
 		bool is_valid() const;
+		// Returns whether the item is tradable or not.
+		bool is_untradable() const;
+		// Returns whether the item is a one-of-a-kind item or not.
+		bool is_unique() const;
+		// Returns whether the item is able to be sold or not.
+		bool is_unsellable() const;
+		// Returns whether the item is a cash item or not.
+		bool is_cashitem() const;
 		// Returns wether the item was loaded correctly.
 		explicit operator bool() const;
 
@@ -61,6 +68,9 @@ namespace jrc
 		std::string category;
 
 		bool valid;
+		bool untradable;
+		bool unique;
+		bool unsellable;
+		bool cashitem;
 	};
 }
-

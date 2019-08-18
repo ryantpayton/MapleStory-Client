@@ -55,14 +55,27 @@ namespace jrc
 		const ItemData& idata = ItemData::get(itemid);
 
 		itemicon = idata.get_icon(false);
+		untradable = idata.is_untradable();
+		unique = idata.is_unique();
+
+		std::string quality = "";
+
+		if (unique && untradable)
+			quality = "One-of-a-kind Item, Untradable";
+		else if (unique && !untradable)
+			quality = "One-of-a-kind Item";
+		else if (!unique && untradable)
+			quality = "Untradable";
+		else
+			quality = "";
 
 		name = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE, idata.get_name(), 240);
 		desc = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE, idata.get_desc(), 185);
+		qual = Text(Text::Font::A12M, Text::Alignment::CENTER, Color::Name::ORANGE, quality, 185);
 
 		fillwidth = 264;
 		fillheight = 83 + name.height();
-
-		int16_t descdelta = desc.height() - 80;
+		descdelta = desc.height() - 80;
 
 		if (descdelta > 0)
 			fillheight += descdelta;
@@ -83,17 +96,23 @@ namespace jrc
 		int16_t adj_x = cur_width - max_width;
 		int16_t adj_y = cur_height - max_height;
 
+		int16_t adj_d = descdelta > 0 ? descdelta : 0;
+		int16_t adj_t = (untradable || unique) ? 19 : 0;
+
 		if (adj_x > 0)
 			pos.shift_x(adj_x * -1);
 
 		if (adj_y > 0)
 			pos.shift_y(adj_y * -1);
 
-		frame.draw(pos + Point<int16_t>(150, 118), fillwidth, fillheight);
+		frame.draw(pos + Point<int16_t>(150, 118 + adj_d + adj_t), fillwidth, fillheight + adj_t);
 		cover.draw(pos + Point<int16_t>(4, 4));
 		name.draw(pos + Point<int16_t>(22, 8));
 
-		pos.shift(14, 18 + name.height());
+		if (untradable || unique)
+			qual.draw(pos + Point<int16_t>(148, 27));
+
+		pos.shift(14, 18 + name.height() + adj_t);
 
 		base.draw(pos);
 		type[true].draw(pos);

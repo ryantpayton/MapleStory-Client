@@ -37,14 +37,18 @@ namespace jrc
 		int32_t itemid;
 		int16_t fillwidth;
 		int16_t fillheight;
+		int16_t descdelta;
 		Texture itemicon;
 
 		Text name;
 		Text desc;
+		Text qual;
 		MapleFrame frame;
 		Texture cover;
 		Texture base;
 		Texture itemcover;
 		BoolPair<Texture> type;
+		bool untradable;
+		bool unique;
 	};
 }

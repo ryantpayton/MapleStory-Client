@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,13 +17,17 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "ItemData.h"
 
-#include "nlnx/nx.hpp"
-#include "nlnx/node.hpp"
+#include <nlnx/nx.hpp>
+#include <nlnx/node.hpp>
 
 namespace jrc
 {
-	ItemData::ItemData(int32_t id)
-		: itemid(id) {
+	ItemData::ItemData(int32_t id) : itemid(id)
+	{
+		untradable = false;
+		unique = false;
+		unsellable = false;
+		cashitem = false;
 
 		nl::node src;
 		nl::node strsrc;
@@ -31,6 +35,7 @@ namespace jrc
 		std::string strprefix = "0" + std::to_string(itemid / 10000);
 		std::string strid = "0" + std::to_string(itemid);
 		int32_t prefix = itemid / 1000000;
+
 		switch (prefix)
 		{
 		case 1:
@@ -65,6 +70,10 @@ namespace jrc
 			icons[false] = src["icon"];
 			icons[true] = src["iconRaw"];
 			price = src["price"];
+			untradable = src["tradeBlock"].get_bool();
+			unique = src["only"].get_bool();
+			unsellable = src["notSale"].get_bool();
+			cashitem = src["cash"].get_bool();
 
 			name = strsrc["name"];
 			desc = strsrc["desc"];
@@ -87,23 +96,38 @@ namespace jrc
 		};
 
 		size_t index = (id / 10000) - 100;
+
 		if (index < 15)
-		{
 			return categorynames[index];
-		}
 		else if (index >= 30 && index <= 70)
-		{
 			return "Weapon";
-		}
 		else
-		{
 			return "";
-		}
 	}
 
 	bool ItemData::is_valid() const
 	{
 		return valid;
+	}
+
+	bool ItemData::is_untradable() const
+	{
+		return untradable;
+	}
+
+	bool ItemData::is_unique() const
+	{
+		return unique;
+	}
+
+	bool ItemData::is_unsellable() const
+	{
+		return unsellable;
+	}
+
+	bool ItemData::is_cashitem() const
+	{
+		return cashitem;
 	}
 
 	ItemData::operator bool() const
