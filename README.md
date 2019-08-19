@@ -22,7 +22,7 @@ The default settings can be configured by editing the **Configuration.h** file. 
 4. After a successful build, you can now run the program by pressing **Debug** > **Start Debugging** or **F5**
 5. Make sure all nx files are present in the parent folder.
    - For a list of files required navigate to **NxFiles.h**
-6. To convert wz files to nx you can use the [NoLifeStory.zip](https://drive.google.com/open?id=1FOYs2qfRd3kWb1bJQnrOeEcSOzop_5gf)
+6. To convert wz files to nx you can use the [NoLifeStory.zip](https://drive.google.com/open?id=1Mk3Kq1lY4NTMqylN5sn0-DQNAcoZZRYH)
    - Extract the zip
    - Place your wz files in the **files** folder
    - Run **start.bat**
@@ -50,8 +50,8 @@ The default settings can be configured by editing the **Configuration.h** file. 
 - Networking:
 [Asio](http://think-async.com/) (optional)
 
-# Binaries
-The latest build (05.01.2019) can be found here: [HeavenClient.zip](https://drive.google.com/open?id=1Aq10iPZuTdSh47EgqkUWVhuwlXZU-pD5)
+# Binaries (08.19.2019)
+The latest build ([ddd67c8](https://github.com/ryantpayton/HeavenClient/commit/ddd67c8693ef2ad352e8c2dc1e4628e625c49953)) can be found here: [HeavenClient.zip](https://drive.google.com/open?id=186fBZWcuK5uSB3CN6jeTJ_AdU6tK82Ey)
 
 # Donations
 If you feel obligated to donate, to further help and support all parties involved in the development of the HeavenClient project, you can donate using [this](https://paypal.me/pools/c/8frYNoobcY) link.
