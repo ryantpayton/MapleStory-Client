@@ -44,7 +44,7 @@ namespace jrc
 
 		void draw(bool textfield) const;
 
-		int16_t box2offset() const;
+		int16_t box2offset(bool textfield) const;
 
 	private:
 		Texture top;

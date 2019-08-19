@@ -46,6 +46,8 @@ namespace jrc
 		void setclipboard(const std::string& text) const;
 		std::string getclipboard() const;
 
+		void toggle_fullscreen();
+
 	private:
 		void updateopc();
 

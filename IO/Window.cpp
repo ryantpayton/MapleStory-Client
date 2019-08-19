@@ -194,21 +194,18 @@ namespace jrc
 
 	void Window::check_events()
 	{
-		int32_t tabstate = glfwGetKey(glwnd, GLFW_KEY_F11);
+		// TODO: Get max resolution of computer
+		int32_t max_width = 1920;
+		int32_t max_height = 1080;
 		int32_t new_width = Constants::Constants::get().get_viewwidth();
 		int32_t new_height = Constants::Constants::get().get_viewheight();
 
-		if (tabstate == GLFW_PRESS)
-		{
-			fullscreen = !fullscreen;
-			initwindow();
-		}
-		else if (width != new_width || height != new_height)
+		if (width != new_width || height != new_height)
 		{
 			width = new_width;
 			height = new_height;
 
-			if (width == 1920)
+			if (max_width == new_width && max_height == new_height)
 				fullscreen = true;
 
 			initwindow();
@@ -244,5 +241,20 @@ namespace jrc
 		const char* text = glfwGetClipboardString(glwnd);
 
 		return text ? text : "";
+	}
+
+	void Window::toggle_fullscreen()
+	{
+		// TODO: Get max resolution of computer
+		int32_t max_width = 1920;
+		int32_t max_height = 1080;
+
+		if (max_width != width && max_height != height)
+		{
+			fullscreen = !fullscreen;
+			initwindow();
+
+			glfwPollEvents();
+		}
 	}
 }

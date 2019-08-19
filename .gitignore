@@ -3,4 +3,7 @@
 
 *.nx
 *.aps
+*.log
+*.tlog
+
 Settings

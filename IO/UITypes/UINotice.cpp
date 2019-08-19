@@ -87,8 +87,10 @@ namespace jrc
 		}
 		else
 		{
-			center.draw(DrawArgument(start, Point<int16_t>(0, 32)));
-			start.shift_y(32);
+			int16_t pos_y = height >= 32 ? height : 32;
+
+			center.draw(DrawArgument(start, Point<int16_t>(0, pos_y)));
+			start.shift_y(pos_y);
 			centerbox.draw(start);
 			start.shift_y(centerbox.height());
 			box.draw(start);
@@ -113,16 +115,16 @@ namespace jrc
 		}
 	}
 
-	int16_t UINotice::box2offset() const
+	int16_t UINotice::box2offset(bool textfield) const
 	{
-		return top.height() + centerbox.height() + box.height() + 16;
+		return top.height() + centerbox.height() + box.height() + height - (textfield ? 0 : 16);
 	}
 
 	UIYesNo::UIYesNo(std::string message, std::function<void(bool)> yh) : UINotice(message, NoticeType::YESNO)
 	{
 		yesnohandler = yh;
 
-		int16_t belowtext = box2offset();
+		int16_t belowtext = box2offset(false);
 
 		nl::node src = nl::nx::ui["Basic.img"];
 
@@ -172,8 +174,8 @@ namespace jrc
 		numhandler = nh;
 		max = m;
 
-		int16_t belowtext = box2offset() - 21;
-		int16_t pos_y = belowtext + 37;
+		int16_t belowtext = box2offset(true) - 21;
+		int16_t pos_y = belowtext + 35;
 
 		nl::node src = nl::nx::ui["Basic.img"];
 
@@ -306,7 +308,7 @@ namespace jrc
 
 		nl::node src = nl::nx::ui["Basic.img"];
 
-		buttons[Buttons::OK] = std::make_unique<MapleButton>(src["BtOK4"], 197, box2offset());
+		buttons[Buttons::OK] = std::make_unique<MapleButton>(src["BtOK4"], 197, box2offset(false) + 15);
 	}
 
 	void UIOk::draw(float alpha) const

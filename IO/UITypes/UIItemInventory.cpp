@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UIItemInventory.h"
+#include "UINotice.h"
 
 #include "../UI.h"
 
@@ -168,11 +169,13 @@ namespace jrc
 			else
 				count = inventory.get_item_count(tab, slot);
 
+			const bool untradable = ItemData::get(item_id).is_untradable();
+			const bool cashitem = ItemData::get(item_id).is_cashitem();
 			const Texture& texture = ItemData::get(item_id).get_icon(false);
 			Equipslot::Id eqslot = inventory.find_equipslot(item_id);
 
 			icons[slot] = std::make_unique<Icon>(
-				std::make_unique<ItemIcon>(tab, eqslot, slot),
+				std::make_unique<ItemIcon>(tab, eqslot, slot, count, untradable, cashitem),
 				texture, count
 				);
 		}
@@ -594,16 +597,74 @@ namespace jrc
 			return nullptr;
 	}
 
-	UIItemInventory::ItemIcon::ItemIcon(InventoryType::Id st, Equipslot::Id eqs, int16_t s)
+	void UIItemInventory::ItemIcon::set_count(int16_t c)
+	{
+		count = c;
+	}
+
+	UIItemInventory::ItemIcon::ItemIcon(InventoryType::Id st, Equipslot::Id eqs, int16_t s, int16_t c, bool u, bool cash)
 	{
 		sourcetab = st;
 		eqsource = eqs;
 		source = s;
+		count = c;
+		untradable = u;
+		cashitem = cash;
 	}
 
 	void UIItemInventory::ItemIcon::drop_on_stage() const
 	{
-		MoveItemPacket(sourcetab, source, 0, 1).dispatch();
+		constexpr char* dropmessage = "How many will you drop?";
+		constexpr char* untradablemessage = "This item can't be taken back once thrown away.\\nWill you still drop it?";
+		constexpr char* cashmessage = "You can't drop this item.";
+
+		if (cashitem)
+		{
+			UI::get().emplace<UIOk>(cashmessage, []() {}, UINotice::NoticeType::OKSMALL);
+		}
+		else
+		{
+			if (untradable)
+			{
+				auto onok = [&, dropmessage](bool ok)
+				{
+					if (ok)
+					{
+						if (count <= 1)
+						{
+							MoveItemPacket(sourcetab, source, 0, 1).dispatch();
+						}
+						else
+						{
+							auto onenter = [&](int32_t qty)
+							{
+								MoveItemPacket(sourcetab, source, 0, qty).dispatch();
+							};
+
+							UI::get().emplace<UIEnterNumber>(dropmessage, onenter, count, count);
+						}
+					}
+				};
+
+				UI::get().emplace<UIYesNo>(untradablemessage, onok);
+			}
+			else
+			{
+				if (count <= 1)
+				{
+					MoveItemPacket(sourcetab, source, 0, 1).dispatch();
+				}
+				else
+				{
+					auto onenter = [&](int32_t qty)
+					{
+						MoveItemPacket(sourcetab, source, 0, qty).dispatch();
+					};
+
+					UI::get().emplace<UIEnterNumber>(dropmessage, onenter, count, count);
+				}
+			}
+		}
 	}
 
 	void UIItemInventory::ItemIcon::drop_on_equips(Equipslot::Id eqslot) const

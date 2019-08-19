@@ -44,6 +44,7 @@ namespace jrc
 	UIStatusbar::UIStatusbar(const CharStats& st) : stats(st)
 	{
 		quickslot_active = false;
+		quickslot_adj = Point<int16_t>(QUICKSLOT_MAX, 0);
 		VWIDTH = Constants::Constants::get().get_viewwidth();
 
 		menu_active = false;
@@ -87,6 +88,11 @@ namespace jrc
 			pos_adj = 171;
 		else if (VWIDTH == 1920)
 			pos_adj = 448;
+
+		if (VWIDTH == 1024)
+			quickslot_min = 1;
+		else
+			quickslot_min = 0;
 
 		if (VWIDTH == 800)
 		{
@@ -223,27 +229,27 @@ namespace jrc
 		if (VWIDTH == 800)
 		{
 			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], Point<int16_t>(579, 0));
-			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(791, 0));
+			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(580, 0));
 		}
 		else if (VWIDTH == 1024)
 		{
-			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], Point<int16_t>(628 + pos_adj, 37));
-			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(838 + pos_adj, 37));
+			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], Point<int16_t>(627 + pos_adj, 37));
+			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(627 + pos_adj, 37));
 		}
 		else if (VWIDTH == 1280)
 		{
 			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], Point<int16_t>(621 + pos_adj, 37));
-			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(832 + pos_adj, 37));
+			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(621 + pos_adj, 37));
 		}
 		else if (VWIDTH == 1366)
 		{
 			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], Point<int16_t>(623 + pos_adj, 37));
-			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(834 + pos_adj, 37));
+			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(623 + pos_adj, 37));
 		}
 		else if (VWIDTH == 1920)
 		{
 			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], Point<int16_t>(900 + pos_adj, 37));
-			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(1111 + pos_adj, 37));
+			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(900 + pos_adj, 37));
 		}
 
 		if (quickslot_active)
@@ -339,7 +345,7 @@ namespace jrc
 	{
 		UIElement::draw_sprites(alpha);
 
-		for (size_t i = 0; i <= Buttons::BT_EXTEND_QS; i++)
+		for (size_t i = 0; i <= Buttons::BT_EVENT; i++)
 			buttons.at(i)->draw(position);
 
 		hpmp_sprites[0].draw(position, alpha);
@@ -382,23 +388,18 @@ namespace jrc
 
 		namelabel.draw(position + namelabel_pos);
 
-		if (quickslot_active)
+		buttons.at(Buttons::BT_FOLD_QS)->draw(position + quickslot_adj);
+		buttons.at(Buttons::BT_EXTEND_QS)->draw(position + quickslot_adj);
+
+		if (VWIDTH > 800 && VWIDTH < 1366)
 		{
-			quickslot[0].draw(position + quickslot_pos);
-			quickslot[1].draw(position + quickslot_pos);
+			quickslot[0].draw(position + quickslot_pos + Point<int16_t>(-1, 0) + quickslot_adj);
+			quickslot[1].draw(position + quickslot_pos + Point<int16_t>(-1, 0) + quickslot_adj);
 		}
 		else
 		{
-			if (VWIDTH > 800 && VWIDTH < 1366)
-			{
-				quickslot[0].draw(position + quickslot_pos + Point<int16_t>(210, 0));
-				quickslot[1].draw(position + quickslot_pos + Point<int16_t>(210, 0));
-			}
-			else
-			{
-				quickslot[0].draw(position + quickslot_pos + Point<int16_t>(211, 0));
-				quickslot[1].draw(position + quickslot_pos + Point<int16_t>(211, 0));
-			}
+			quickslot[0].draw(position + quickslot_pos + quickslot_adj);
+			quickslot[1].draw(position + quickslot_pos + quickslot_adj);
 		}
 
 #pragma region Menu
@@ -491,6 +492,28 @@ namespace jrc
 				pos_adj += Point<int16_t>(0, -73);
 			else
 				pos_adj += Point<int16_t>(0, -31);
+
+			if (quickslot_adj.x() > quickslot_min)
+			{
+				int16_t new_x = quickslot_adj.x() - Constants::TIMESTEP;
+
+				if (new_x < quickslot_min)
+					quickslot_adj.set_x(quickslot_min);
+				else
+					quickslot_adj.shift_x(-Constants::TIMESTEP);
+			}
+		}
+		else
+		{
+			if (quickslot_adj.x() < QUICKSLOT_MAX)
+			{
+				int16_t new_x = quickslot_adj.x() + Constants::TIMESTEP;
+
+				if (new_x > QUICKSLOT_MAX)
+					quickslot_adj.set_x(QUICKSLOT_MAX);
+				else
+					quickslot_adj.shift_x(Constants::TIMESTEP);
+			}
 		}
 
 		for (size_t i = Buttons::BT_MENU_QUEST; i <= Buttons::BT_MENU_CLAIM; i++)

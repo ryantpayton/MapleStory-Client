@@ -58,6 +58,8 @@ namespace jrc
 		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
+		static constexpr int16_t QUICKSLOT_MAX = 211;
+
 		float getexppercent() const;
 		float gethppercent() const;
 		float getmppercent() const;
@@ -132,11 +134,13 @@ namespace jrc
 		Point<int16_t> levelset_pos;
 		Point<int16_t> namelabel_pos;
 		Point<int16_t> quickslot_pos;
+		Point<int16_t> quickslot_adj;
 		Point<int16_t> menu_pos;
 		Point<int16_t> setting_pos;
 		Point<int16_t> community_pos;
 		Point<int16_t> character_pos;
 		Point<int16_t> event_pos;
+		int16_t quickslot_min;
 		int16_t position_x;
 		int16_t position_y;
 
