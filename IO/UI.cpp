@@ -16,7 +16,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #include "UI.h"
-
 #include "UIStateLogin.h"
 #include "UIStateGame.h"
 #include "Window.h"

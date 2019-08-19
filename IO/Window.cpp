@@ -195,10 +195,10 @@ namespace jrc
 	void Window::check_events()
 	{
 		// TODO: Get max resolution of computer
-		int32_t max_width = 1920;
-		int32_t max_height = 1080;
-		int32_t new_width = Constants::Constants::get().get_viewwidth();
-		int32_t new_height = Constants::Constants::get().get_viewheight();
+		int16_t max_width = 1920;
+		int16_t max_height = 1080;
+		int16_t new_width = Constants::Constants::get().get_viewwidth();
+		int16_t new_height = Constants::Constants::get().get_viewheight();
 
 		if (width != new_width || height != new_height)
 		{
@@ -246,8 +246,8 @@ namespace jrc
 	void Window::toggle_fullscreen()
 	{
 		// TODO: Get max resolution of computer
-		int32_t max_width = 1920;
-		int32_t max_height = 1080;
+		int16_t max_width = 1920;
+		int16_t max_height = 1080;
 
 		if (max_width != width && max_height != height)
 		{

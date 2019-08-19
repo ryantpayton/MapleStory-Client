@@ -22,13 +22,14 @@
 
 #include "Audio/Audio.h"
 #include "Character/Char.h"
-#include "Gameplay/Combat/DamageNumber.h"
 #include "Gameplay/Stage.h"
 #include "IO/UI.h"
 #include "IO/Window.h"
 #include "Net/Session.h"
 #include "Util/NxFiles.h"
 #include "Util/HardwareInfo.h"
+
+#include "Gameplay/Combat/DamageNumber.h"
 
 #include <iostream>
 
@@ -101,15 +102,14 @@ namespace jrc
 
 			// Update game with constant timestep as many times as possible.
 			for (accumulator += elapsed; accumulator >= timestep; accumulator -= timestep)
-			{
 				update();
-			}
 
 			// Draw the game. Interpolate to account for remaining time.
 			float alpha = static_cast<float>(accumulator) / timestep;
 			draw(alpha);
 
-			if (show_fps) {
+			if (show_fps)
+			{
 				if (samples < 100)
 				{
 					period += elapsed;
@@ -142,10 +142,9 @@ namespace jrc
 
 			std::string command;
 			std::cin >> command;
+
 			if (can_retry && command == "retry")
-			{
 				start();
-			}
 		}
 		else
 		{

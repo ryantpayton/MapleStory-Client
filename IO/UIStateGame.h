@@ -62,7 +62,7 @@ namespace jrc
 	private:
 		void drop_icon(const Icon& icon, Point<int16_t> pos);
 		template <class T, typename...Args>
-		void emplace(Args&&...args);
+		void emplace(Args&& ...args);
 
 		EnumMap<UIElement::Type, UIElement::UPtr, UIElement::NUM_TYPES> elements;
 		std::list<UIElement::Type> elementorder;

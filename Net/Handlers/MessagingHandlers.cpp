@@ -20,6 +20,7 @@
 #include "../Data/ItemData.h"
 #include "../Gameplay/Stage.h"
 #include "../IO/UI.h"
+
 #include "../IO/UITypes/UIStatusMessenger.h"
 #include "../IO/UITypes/UIChatbar.h"
 
