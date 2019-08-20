@@ -35,6 +35,7 @@
 #include "UITypes/UIUserList.h"
 #include "UITypes/UIKeyConfig.h"
 #include "UITypes/UIEvent.h"
+#include "UITypes/UIChannel.h"
 
 #include "../Gameplay/Stage.h"
 
@@ -169,7 +170,7 @@ namespace jrc
 
 					if (!userlist)
 					{
-						UI::get().emplace<UIUserList>(tab);
+						emplace<UIUserList>(tab);
 					}
 					else
 					{
@@ -249,6 +250,9 @@ namespace jrc
 					break;
 				case KeyAction::Id::EVENT:
 					emplace<UIEvent>();
+					break;
+				case KeyAction::Id::CHANGECHANNEL:
+					emplace<UIChannel>();
 					break;
 				default:
 					std::cout << "Action (" << action << ") not handled!" << std::endl;

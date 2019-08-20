@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
+// Copyright Â© 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -28,6 +28,7 @@
 #include "Net/Session.h"
 #include "Util/NxFiles.h"
 #include "Util/HardwareInfo.h"
+#include "Util/ScreenResolution.h"
 
 #include "Gameplay/Combat/DamageNumber.h"
 
@@ -156,6 +157,7 @@ namespace jrc
 int main()
 {
 	jrc::HardwareInfo();
+	jrc::ScreenResolution();
 	jrc::start();
 	return 0;
 }

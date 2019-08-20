@@ -73,6 +73,8 @@ namespace jrc
 		void remove_active_menu(MenuType type);
 		void transition() const;
 
+		Point<int16_t> get_quickslot_pos();
+
 		enum Buttons : uint16_t
 		{
 			BT_CASHSHOP,
@@ -135,6 +137,7 @@ namespace jrc
 		Point<int16_t> namelabel_pos;
 		Point<int16_t> quickslot_pos;
 		Point<int16_t> quickslot_adj;
+		Point<int16_t> quickslot_qs_adj;
 		Point<int16_t> menu_pos;
 		Point<int16_t> setting_pos;
 		Point<int16_t> community_pos;
@@ -146,6 +149,7 @@ namespace jrc
 
 		bool quickslot_active;
 		int16_t VWIDTH;
+		int16_t VHEIGHT;
 
 		bool menu_active;
 		bool setting_active;

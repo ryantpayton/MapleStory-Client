@@ -194,9 +194,8 @@ namespace jrc
 
 	void Window::check_events()
 	{
-		// TODO: Get max resolution of computer
-		int16_t max_width = 1920;
-		int16_t max_height = 1080;
+		int16_t max_width = Configuration::get().get_max_width();
+		int16_t max_height = Configuration::get().get_max_height();
 		int16_t new_width = Constants::Constants::get().get_viewwidth();
 		int16_t new_height = Constants::Constants::get().get_viewheight();
 
@@ -205,7 +204,7 @@ namespace jrc
 			width = new_width;
 			height = new_height;
 
-			if (max_width == new_width && max_height == new_height)
+			if (new_width >= max_width || new_height >= max_height)
 				fullscreen = true;
 
 			initwindow();
@@ -245,15 +244,15 @@ namespace jrc
 
 	void Window::toggle_fullscreen()
 	{
-		// TODO: Get max resolution of computer
-		int16_t max_width = 1920;
-		int16_t max_height = 1080;
+		int16_t max_width = Configuration::get().get_max_width();
+		int16_t max_height = Configuration::get().get_max_height();
 
-		if (max_width != width && max_height != height)
+		if (width < max_width && height < max_height)
 		{
 			fullscreen = !fullscreen;
-			initwindow();
+			Setting<Fullscreen>::get().save(fullscreen);
 
+			initwindow();
 			glfwPollEvents();
 		}
 	}

@@ -46,6 +46,7 @@ namespace jrc
 		quickslot_active = false;
 		quickslot_adj = Point<int16_t>(QUICKSLOT_MAX, 0);
 		VWIDTH = Constants::Constants::get().get_viewwidth();
+		VHEIGHT = Constants::Constants::get().get_viewheight();
 
 		menu_active = false;
 		setting_active = false;
@@ -226,30 +227,45 @@ namespace jrc
 			extend += "800";
 		}
 
+		if (VWIDTH == 1366)
+			quickslot_qs_adj = Point<int16_t>(213, 0);
+		else
+			quickslot_qs_adj = Point<int16_t>(211, 0);
+
 		if (VWIDTH == 800)
 		{
-			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], Point<int16_t>(579, 0));
-			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(580, 0));
+			Point<int16_t> quickslot_qs = Point<int16_t>(579, 0);
+
+			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], quickslot_qs);
+			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], quickslot_qs + quickslot_qs_adj);
 		}
 		else if (VWIDTH == 1024)
 		{
-			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], Point<int16_t>(627 + pos_adj, 37));
-			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(627 + pos_adj, 37));
+			Point<int16_t> quickslot_qs = Point<int16_t>(627 + pos_adj, 37);
+
+			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], quickslot_qs);
+			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], quickslot_qs + quickslot_qs_adj);
 		}
 		else if (VWIDTH == 1280)
 		{
-			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], Point<int16_t>(621 + pos_adj, 37));
-			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(621 + pos_adj, 37));
+			Point<int16_t> quickslot_qs = Point<int16_t>(621 + pos_adj, 37);
+
+			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], quickslot_qs);
+			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], quickslot_qs + quickslot_qs_adj);
 		}
 		else if (VWIDTH == 1366)
 		{
-			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], Point<int16_t>(623 + pos_adj, 37));
-			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(623 + pos_adj, 37));
+			Point<int16_t> quickslot_qs = Point<int16_t>(623 + pos_adj, 37);
+
+			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], quickslot_qs);
+			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], quickslot_qs + quickslot_qs_adj);
 		}
 		else if (VWIDTH == 1920)
 		{
-			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], Point<int16_t>(900 + pos_adj, 37));
-			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], Point<int16_t>(900 + pos_adj, 37));
+			Point<int16_t> quickslot_qs = Point<int16_t>(900 + pos_adj, 37);
+
+			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], quickslot_qs);
+			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend], quickslot_qs + quickslot_qs_adj);
 		}
 
 		if (quickslot_active)
@@ -334,7 +350,7 @@ namespace jrc
 		}
 		else if (VWIDTH == 1920)
 		{
-			position = Point<int16_t>(0, 950);
+			position = Point<int16_t>(0, 950 + (VHEIGHT - 1080));
 			position_x = 860;
 			position_y = position.y() + 40;
 			dimension = Point<int16_t>(VWIDTH - position_x, 70);
@@ -389,7 +405,7 @@ namespace jrc
 		namelabel.draw(position + namelabel_pos);
 
 		buttons.at(Buttons::BT_FOLD_QS)->draw(position + quickslot_adj);
-		buttons.at(Buttons::BT_EXTEND_QS)->draw(position + quickslot_adj);
+		buttons.at(Buttons::BT_EXTEND_QS)->draw(position + quickslot_adj - quickslot_qs_adj);
 
 		if (VWIDTH > 800 && VWIDTH < 1366)
 		{
@@ -484,15 +500,10 @@ namespace jrc
 
 		namelabel.change_text(stats.get_name());
 
-		Point<int16_t> pos_adj = Point<int16_t>(0, 0);
+		Point<int16_t> pos_adj = get_quickslot_pos();
 
 		if (quickslot_active)
 		{
-			if (VWIDTH == 800)
-				pos_adj += Point<int16_t>(0, -73);
-			else
-				pos_adj += Point<int16_t>(0, -31);
-
 			if (quickslot_adj.x() > quickslot_min)
 			{
 				int16_t new_x = quickslot_adj.x() - Constants::TIMESTEP;
@@ -794,16 +805,6 @@ namespace jrc
 		}
 		else
 		{
-			Point<int16_t> pos_adj = Point<int16_t>(0, 0);
-
-			if (quickslot_active)
-			{
-				if (VWIDTH == 800)
-					pos_adj += Point<int16_t>(0, -73);
-				else
-					pos_adj += Point<int16_t>(0, -31);
-			}
-
 			uint8_t button_count;
 			int16_t pos_y_adj;
 
@@ -838,6 +839,9 @@ namespace jrc
 				pos_y_adj = 248;
 			}
 
+			pos_y_adj += VHEIGHT - 600;
+
+			Point<int16_t> pos_adj = const_cast<UIStatusbar*>(this)->get_quickslot_pos();
 			pos = Point<int16_t>(pos.x(), std::abs(pos.y()) + pos_y_adj) + pos_adj;
 
 			uint16_t end_y = std::floor(28.2 * button_count);
@@ -1032,6 +1036,19 @@ namespace jrc
 		GraphicsGL::get().lock();
 		Stage::get().clear();
 		Timer::get().start();
+	}
+
+	Point<int16_t> UIStatusbar::get_quickslot_pos()
+	{
+		if (quickslot_active)
+		{
+			if (VWIDTH == 800)
+				return Point<int16_t>(0, -73);
+			else
+				return Point<int16_t>(0, -31);
+		}
+
+		return Point<int16_t>(0, 0);
 	}
 
 	bool UIStatusbar::is_menu_active()

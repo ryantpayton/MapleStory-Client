@@ -1220,6 +1220,9 @@
     <ClInclude Include="IO\Components\MapleComboBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Util\ScreenResolution.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MapleStory.rc">

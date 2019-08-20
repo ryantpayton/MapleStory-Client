@@ -1,6 +1,6 @@
-//////////////////////////////////////////////////////////////////////////////
+﻿//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
-// Copyright � 2015-2016 Daniel Allendorf                                   //
+// Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -17,13 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Configuration.h"
-
-#include <stdio.h>
 #include <Windows.h>
-#include <Iphlpapi.h>
-#include <Assert.h>
-#pragma comment(lib, "iphlpapi.lib")
+#include <IPHlpApi.h>
 
 namespace jrc
 {
@@ -32,7 +27,7 @@ namespace jrc
 	public:
 		HardwareInfo() {
 			// Hard Drive VolumeSerialNumber
-			char *volumeSerialNumber = (char*)malloc(18);
+			char* volumeSerialNumber = (char*)malloc(18);
 
 			TCHAR szVolume[MAX_PATH + 1];
 			TCHAR szFileSystem[MAX_PATH + 1];
@@ -61,10 +56,10 @@ namespace jrc
 			// HWID/MACS
 			PIP_ADAPTER_INFO AdapterInfo;
 			DWORD dwBufLen = sizeof(IP_ADAPTER_INFO);
-			char *hwid = (char*)malloc(18);
-			char *macs = (char*)malloc(18);
+			char* hwid = (char*)malloc(18);
+			char* macs = (char*)malloc(18);
 
-			AdapterInfo = (IP_ADAPTER_INFO *)malloc(sizeof(IP_ADAPTER_INFO));
+			AdapterInfo = (IP_ADAPTER_INFO*)malloc(sizeof(IP_ADAPTER_INFO));
 
 			if (AdapterInfo == NULL) {
 				printf("Error allocating memory needed to call GetAdaptersinfo\n");
@@ -77,7 +72,7 @@ namespace jrc
 			// Make an initial call to GetAdaptersInfo to get the necessary size into the dwBufLen variable
 			if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == ERROR_BUFFER_OVERFLOW) {
 				free(AdapterInfo);
-				AdapterInfo = (IP_ADAPTER_INFO *)malloc(dwBufLen);
+				AdapterInfo = (IP_ADAPTER_INFO*)malloc(dwBufLen);
 
 				if (AdapterInfo == NULL) {
 					printf("Error allocating memory needed to call GetAdaptersinfo\n");

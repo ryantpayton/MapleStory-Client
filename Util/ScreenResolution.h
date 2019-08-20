@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////
+﻿//////////////////////////////////////////////////////////////////////////////
 // This file is part of the Journey MMORPG client                           //
 // Copyright © 2015-2016 Daniel Allendorf                                   //
 //                                                                          //
@@ -16,27 +16,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
 //////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../Graphics/Geometry.h"
-#include "../Template/Interpolated.h"
 
 namespace jrc
 {
-	// The scrolling server notice at the top of the screen.
-	class ScrollingNotice
+	class ScreenResolution
 	{
 	public:
-		ScrollingNotice();
+		ScreenResolution()
+		{
+			RECT desktop;
 
-		void setnotice(std::string notice);
-		void draw(float alpha) const;
-		void update();
+			// Get a handle to the desktop window
+			const HWND hDesktop = GetDesktopWindow();
 
-	private:
-		ColorBox background;
-		Point<int16_t> backposition;
-		Text notice;
-		Linear<double> xpos;
-		bool active;
-		int16_t width;
+			// Get the size of screen to the variable desktop
+			GetWindowRect(hDesktop, &desktop);
+
+			// The top left corner will have coordinates (0, 0) and the bottom right corner will have coordinates (horizontal, vertical)
+			Configuration::get().set_max_width(desktop.right);
+			Configuration::get().set_max_height(desktop.bottom);
+		}
 	};
 }

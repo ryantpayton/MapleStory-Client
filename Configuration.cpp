@@ -216,6 +216,16 @@ namespace jrc
 		HWID = newHWID;
 	}
 
+	void Configuration::set_max_width(int16_t max_width)
+	{
+		MAXWIDTH = max_width;
+	}
+
+	void Configuration::set_max_height(int16_t max_height)
+	{
+		MAXHEIGHT = max_height;
+	}
+
 	std::string Configuration::get_macs()
 	{
 		return MACS;
@@ -229,6 +239,16 @@ namespace jrc
 	std::string Configuration::get_vol_serial_num()
 	{
 		return VolumeSerialNumber;
+	}
+
+	int16_t Configuration::get_max_width()
+	{
+		return MAXWIDTH;
+	}
+
+	int16_t Configuration::get_max_height()
+	{
+		return MAXHEIGHT;
 	}
 
 	bool Configuration::get_rightclicksell()
