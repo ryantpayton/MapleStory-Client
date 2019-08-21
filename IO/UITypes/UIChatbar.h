@@ -1,28 +1,29 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include "../UIDragElement.h"
 #include "../Messages.h"
 
 #include "../Components/Textfield.h"
 #include "../Components/Slider.h"
 
-namespace jrc
+namespace ms
 {
 	class UIChatbar : public UIDragElement<PosCHAT>
 	{
@@ -122,7 +123,7 @@ namespace jrc
 		Textfield chatfield;
 		Point<int16_t> closechat;
 
-		Text chattab_text[NUM_CHATTAB];
+		Text chattab_text[UIChatbar::ChatTab::NUM_CHATTAB];
 		int16_t chattab_x;
 		int16_t chattab_y;
 		int16_t chattab_span;

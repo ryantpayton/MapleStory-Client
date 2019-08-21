@@ -1,27 +1,28 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include <string>
 #include <cmath>
 
-#include "nlnx/node.hpp"
+#include <nlnx/node.hpp>
 
-namespace jrc
+namespace ms
 {
 	template <class T>
 	class Point
@@ -35,12 +36,10 @@ namespace jrc
 		}
 
 		// Construct a point from the specified coordinates.
-		constexpr Point(T first, T second)
-			: a(first), b(second) {}
+		constexpr Point(T first, T second) : a(first), b(second) {}
 
 		// Construct a point with coordinates (0, 0).
-		constexpr Point()
-			: Point(0, 0) {}
+		constexpr Point() : Point(0, 0) {}
 
 		// Return the x-coordinate.
 		constexpr T x() const
@@ -62,7 +61,7 @@ namespace jrc
 				);
 		}
 
-		// Check wether the coordinates are equal.
+		// Check whether the coordinates are equal.
 		constexpr bool straight() const
 		{
 			return a == b;
@@ -119,13 +118,13 @@ namespace jrc
 			b += v.b;
 		}
 
-		// Check wether point is equivalent to the specified point.
+		// Check whether point is equivalent to the specified point.
 		constexpr bool operator == (const Point<T>& v) const
 		{
 			return a == v.a && b == v.b;
 		}
 
-		// Check wether point is not equivalent to the specified point.
+		// Check whether point is not equivalent to the specified point.
 		constexpr bool operator != (const Point<T>& v) const
 		{
 			return !(*this == v);
@@ -145,58 +144,58 @@ namespace jrc
 			b -= v.b;
 		}
 
-		// Return a point whose coordaintes are the negation of this point's coordinates.
+		// Return a point whose coordinates are the negation of this point's coordinates.
 		constexpr Point<T> operator - () const
 		{
-			return{ -a, -b };
+			return { -a, -b };
 		}
 
 		// Return a point whose coordinates have been added the specified amount.
 		constexpr Point<T> operator + (T v) const
 		{
-			return{ a + v, b + v };
+			return { a + v, b + v };
 		}
 
 		// Return a point whose coordinates have been substracted the specified amount.
 		constexpr Point<T> operator - (T v) const
 		{
-			return{ a - v, b - v };
+			return { a - v, b - v };
 		}
 
 		// Return a point whose coordinates have been multiplied by the specified amount.
 		constexpr Point<T> operator * (T v) const
 		{
-			return{ a * v, b * v };
+			return { a * v, b * v };
 		}
 
 		// Return a point whose coordinates have been divided by the specified amount.
 		constexpr Point<T> operator / (T v) const
 		{
-			return{ a / v, b / v };
+			return { a / v, b / v };
 		}
 
 		// Return a point whose coordinates are the sum of this and another points coordinates.
 		constexpr Point<T> operator + (Point<T> v) const
 		{
-			return{ a + v.a, b + v.b };
+			return { a + v.a, b + v.b };
 		}
 
 		// Return a point whose coordinates are the difference of this and another points coordinates.
 		constexpr Point<T> operator - (Point<T> v) const
 		{
-			return{ a - v.a, b - v.b };
+			return { a - v.a, b - v.b };
 		}
 
 		// Return a point whose coordinates are the product of this and another points coordinates.
 		constexpr Point<T> operator * (Point<T> v) const
 		{
-			return{ a / v.a, b / v.b };
+			return { a / v.a, b / v.b };
 		}
 
 		// Return a point whose coordinates are the division of this and another points coordinates.
 		constexpr Point<T> operator / (Point<T> v) const
 		{
-			return{ 
+			return {
 				a / (v.a == 0 ? 1 : v.a),
 				b / (v.b == 0 ? 1 : v.b)
 			};

@@ -1,25 +1,25 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "LoginParser.h"
 
-namespace jrc
+namespace ms
 {
-	Account LoginParser::parse_account(InPacket & recv)
+	Account LoginParser::parse_account(InPacket& recv)
 	{
 		Account account;
 
@@ -130,20 +130,20 @@ namespace jrc
 		for (size_t i = 0; i < 3; i++)
 			statsentry.petids.push_back(recv.read_long());
 
-		statsentry.stats[Maplestat::LEVEL] = recv.read_short();
-		statsentry.stats[Maplestat::JOB] = recv.read_short();
-		statsentry.stats[Maplestat::STR] = recv.read_short();
-		statsentry.stats[Maplestat::DEX] = recv.read_short();
-		statsentry.stats[Maplestat::INT] = recv.read_short();
-		statsentry.stats[Maplestat::LUK] = recv.read_short();
-		statsentry.stats[Maplestat::HP] = recv.read_short();
-		statsentry.stats[Maplestat::MAXHP] = recv.read_short();
-		statsentry.stats[Maplestat::MP] = recv.read_short();
-		statsentry.stats[Maplestat::MAXMP] = recv.read_short();
-		statsentry.stats[Maplestat::AP] = recv.read_short();
-		statsentry.stats[Maplestat::SP] = recv.read_short();
+		statsentry.stats[Maplestat::Id::LEVEL] = recv.read_short();
+		statsentry.stats[Maplestat::Id::JOB] = recv.read_short();
+		statsentry.stats[Maplestat::Id::STR] = recv.read_short();
+		statsentry.stats[Maplestat::Id::DEX] = recv.read_short();
+		statsentry.stats[Maplestat::Id::INT] = recv.read_short();
+		statsentry.stats[Maplestat::Id::LUK] = recv.read_short();
+		statsentry.stats[Maplestat::Id::HP] = recv.read_short();
+		statsentry.stats[Maplestat::Id::MAXHP] = recv.read_short();
+		statsentry.stats[Maplestat::Id::MP] = recv.read_short();
+		statsentry.stats[Maplestat::Id::MAXMP] = recv.read_short();
+		statsentry.stats[Maplestat::Id::AP] = recv.read_short();
+		statsentry.stats[Maplestat::Id::SP] = recv.read_short();
 		statsentry.exp = recv.read_int();
-		statsentry.stats[Maplestat::FAME] = recv.read_short();
+		statsentry.stats[Maplestat::Id::FAME] = recv.read_short();
 
 		recv.skip(4); // gachaexp
 

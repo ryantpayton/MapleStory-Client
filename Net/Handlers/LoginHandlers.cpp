@@ -1,20 +1,20 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "LoginHandlers.h"
 
 #include "Helpers/LoginParser.h"
@@ -32,7 +32,7 @@
 #include "../IO/UITypes/UITermsOfService.h"
 #include "../IO/UITypes/UIGender.h"
 
-namespace jrc
+namespace ms
 {
 	void LoginResultHandler::handle(InPacket& recv) const
 	{
@@ -132,7 +132,7 @@ namespace jrc
 		}
 	}
 
-	void RecommendedWorldsHandler::handle(InPacket & recv) const
+	void RecommendedWorldsHandler::handle(InPacket& recv) const
 	{
 		if (auto worldselect = UI::get().get_element<UIWorldSelect>())
 		{
@@ -238,7 +238,7 @@ namespace jrc
 	{
 		recv.skip(2);
 
-		// Read the ipv4 adress in a string.
+		// Read the ipv4 address in a string.
 		std::string addrstr;
 
 		for (int i = 0; i < 4; i++)
@@ -250,7 +250,7 @@ namespace jrc
 				addrstr.push_back('.');
 		}
 
-		// Read the port adress in a string.
+		// Read the port address in a string.
 		std::string portstr = std::to_string(recv.read_short());
 
 		int32_t cid = recv.read_int();

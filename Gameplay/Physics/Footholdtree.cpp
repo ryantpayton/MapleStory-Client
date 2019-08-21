@@ -1,25 +1,25 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "Footholdtree.h"
 
-#include "../../Console.h"
+#include "../Console.h"
 
-namespace jrc
+namespace ms
 {
 	Footholdtree::Footholdtree(nl::node src)
 	{
@@ -105,7 +105,7 @@ namespace jrc
 			double wall = get_wall(phobj.fhid, left, phobj.next_y());
 			bool collision = left ? crnt_x >= wall && next_x <= wall : crnt_x <= wall && next_x >= wall;
 
-			if (!collision && phobj.is_flag_set(PhysicsObject::TURNATEDGES))
+			if (!collision && phobj.is_flag_set(PhysicsObject::Flag::TURNATEDGES))
 			{
 				wall = get_edge(phobj.fhid, left);
 				collision = left ? crnt_x >= wall && next_x <= wall : crnt_x <= wall && next_x >= wall;
@@ -114,7 +114,7 @@ namespace jrc
 			if (collision)
 			{
 				phobj.limitx(wall);
-				phobj.clear_flag(PhysicsObject::TURNATEDGES);
+				phobj.clear_flag(PhysicsObject::Flag::TURNATEDGES);
 			}
 		}
 
@@ -148,7 +148,7 @@ namespace jrc
 
 	void Footholdtree::update_fh(PhysicsObject& phobj) const
 	{
-		if (phobj.type == PhysicsObject::FIXATED && phobj.fhid > 0)
+		if (phobj.type == PhysicsObject::Type::FIXATED && phobj.fhid > 0)
 			return;
 
 		const Foothold& curfh = get_fh(phobj.fhid);
@@ -199,7 +199,7 @@ namespace jrc
 
 		phobj.onground = phobj.y == ground;
 
-		if (phobj.enablejd || phobj.is_flag_set(PhysicsObject::CHECKBELOW))
+		if (phobj.enablejd || phobj.is_flag_set(PhysicsObject::Flag::CHECKBELOW))
 		{
 			uint16_t belowid = get_fhid_below(x, nextfh.ground_below(x) + 1.0);
 
@@ -214,7 +214,7 @@ namespace jrc
 				phobj.enablejd = false;
 			}
 
-			phobj.clear_flag(PhysicsObject::CHECKBELOW);
+			phobj.clear_flag(PhysicsObject::Flag::CHECKBELOW);
 		}
 
 		if (phobj.fhlayer == 0 || phobj.onground)

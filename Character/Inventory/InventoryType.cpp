@@ -1,25 +1,25 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "InventoryType.h"
 
-#include "../../Console.h"
+#include "../Console.h"
 
-namespace jrc
+namespace ms
 {
 	InventoryType::Id InventoryType::by_item_id(int32_t item_id)
 	{
@@ -29,7 +29,7 @@ namespace jrc
 		};
 
 		int32_t prefix = item_id / 1000000;
-		return (prefix > NONE && prefix <= CASH) ? values_by_id[prefix] : NONE;
+		return (prefix > Id::NONE && prefix <= Id::CASH) ? values_by_id[prefix] : Id::NONE;
 	}
 
 	InventoryType::Id InventoryType::by_value(int8_t value)
@@ -37,21 +37,21 @@ namespace jrc
 		switch (value)
 		{
 		case -1:
-			return EQUIPPED;
+			return Id::EQUIPPED;
 		case 1:
-			return EQUIP;
+			return Id::EQUIP;
 		case 2:
-			return USE;
+			return Id::USE;
 		case 3:
-			return SETUP;
+			return Id::SETUP;
 		case 4:
-			return ETC;
+			return Id::ETC;
 		case 5:
-			return CASH;
+			return Id::CASH;
 		}
 
-		Console::get()
-			.print("Unknown inventory type: " + std::to_string(value));
-		return NONE;
+		Console::get().print("Unknown inventory type: " + std::to_string(value));
+
+		return Id::NONE;
 	}
 }

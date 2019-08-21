@@ -1,29 +1,28 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "OtherChar.h"
 
 #include "../Constants.h"
 
-namespace jrc
+namespace ms
 {
-	OtherChar::OtherChar(int32_t id, const CharLook& lk, uint8_t lvl,
-		int16_t jb, const std::string& nm, int8_t st, Point<int16_t> pos) : Char(id, lk, nm) {
-
+	OtherChar::OtherChar(int32_t id, const CharLook& lk, uint8_t lvl, int16_t jb, const std::string& nm, int8_t st, Point<int16_t> pos) : Char(id, lk, nm)
+	{
 		level = lvl;
 		job = jb;
 		set_position(pos);
@@ -69,10 +68,9 @@ namespace jrc
 		physics.get_fht().update_fh(phobj);
 
 		bool aniend = Char::update(physics, get_stancespeed());
+
 		if (aniend && attacking)
-		{
 			attacking = false;
-		}
 
 		return get_layer();
 	}
@@ -119,6 +117,7 @@ namespace jrc
 	int32_t OtherChar::get_skilllevel(int32_t skillid) const
 	{
 		auto iter = skilllevels.find(skillid);
+
 		if (iter == skilllevels.end())
 			return 0;
 

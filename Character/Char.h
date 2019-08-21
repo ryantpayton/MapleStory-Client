@@ -1,21 +1,22 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include "CharEffect.h"
 
 #include "Inventory/Weapon.h"
@@ -29,7 +30,7 @@
 #include "../Gameplay/Maplemap/Mapobject.h"
 #include "../IO/Components/ChatBalloon.h"
 
-namespace jrc
+namespace ms
 {
 	// Base for characters, e.g. the player and other clients on the same map.
 	class Char : public MapObject
@@ -63,7 +64,7 @@ namespace jrc
 		// Return the current map layer, or 7 if on a ladder or rope.
 		int8_t get_layer() const override;
 
-		// Check wether the character is invincible.
+		// Check whether the character is invincible.
 		virtual bool is_invincible() const;
 		// Return the character's level.
 		virtual uint16_t get_level() const = 0;
@@ -94,7 +95,7 @@ namespace jrc
 
 		// Display an animation as an effect with the character.
 		void show_attack_effect(Animation animation, int8_t z);
-		// Display an animation as an effect ontop of the character.
+		// Display an animation as an effect on top of the character.
 		void show_effect_id(CharEffect::Id toshow);
 		// Display the iron body skill animation.
 		void show_iron_body();
@@ -123,7 +124,7 @@ namespace jrc
 		bool is_sitting() const;
 		// Return if the char is in the Char::LADDER or Char::ROPE state.
 		bool is_climbing() const;
-		// Return wether the character sprite uses stances for two-handed weapons.
+		// Return whether the character sprite uses stances for two-handed weapons.
 		bool is_twohanded() const;
 		// Return the type of the currently equipped weapon.
 		Weapon::Type get_weapontype() const;

@@ -1,30 +1,32 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include "MapObjects.h"
+
+#include "../Spawn.h"
 
 #include "../Combat/Attack.h"
 #include "../Combat/SpecialMove.h"
-#include "../Spawn.h"
 
 #include <queue>
 
-namespace jrc
+namespace ms
 {
 	// A collection of mobs on a map.
 	class MapMobs
@@ -52,8 +54,7 @@ namespace jrc
 		// Calculate the results of an attack.
 		AttackResult send_attack(const Attack& attack);
 		// Applies damage to a mob.
-		void apply_damage(int32_t oid, int32_t damage, bool toleft,
-			const AttackUser& user, const SpecialMove& move);
+		void apply_damage(int32_t oid, int32_t damage, bool toleft, const AttackUser& user, const SpecialMove& move);
 
 		// Check if the mob with the specified oid exists.
 		bool contains(int32_t oid) const;
@@ -74,4 +75,3 @@ namespace jrc
 		std::queue<MobSpawn> spawns;
 	};
 }
-

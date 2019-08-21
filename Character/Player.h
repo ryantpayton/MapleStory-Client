@@ -1,21 +1,22 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include "Char.h"
 #include "CharStats.h"
 #include "Skillbook.h"
@@ -29,17 +30,17 @@
 #include "Look/CharLook.h"
 #include "Inventory/Inventory.h"
 
+#include "../Gameplay/Movement.h"
+#include "../Gameplay/Playable.h"
+#include "../Util/Randomizer.h"
+
 #include "../Gameplay/Combat/Attack.h"
 #include "../Gameplay/Combat/Skill.h"
 #include "../Gameplay/Maplemap/Layer.h"
-#include "../Gameplay/Movement.h"
 #include "../Gameplay/Maplemap/MapInfo.h"
-#include "../Gameplay/Playable.h"
 #include "../Gameplay/Physics/Physics.h"
 
-#include "../Util/Randomizer.h"
-
-namespace jrc
+namespace ms
 {
 	class Player : public Playable, public Char
 	{
@@ -70,9 +71,9 @@ namespace jrc
 
 		// Return if the player is attacking.
 		bool is_attacking() const;
-		// Return wether the player can attack or not.
+		// Return whether the player can attack or not.
 		bool can_attack() const;
-		// Return wether the player can use a skill or not.
+		// Return whether the player can use a skill or not.
 		SpecialMove::ForbidReason can_use(const SpecialMove& move) const;
 		// Create an attack struct using the player's stats.
 		Attack prepare_attack(bool skill) const;
@@ -80,7 +81,7 @@ namespace jrc
 		// Execute a rush movement.
 		void rush(double targetx);
 
-		// Check wether the player is invincible.
+		// Check whether the player is invincible.
 		bool is_invincible() const override;
 		// Handle an attack to the player.
 		MobAttackResult damage(const MobAttack& attack);
@@ -89,7 +90,7 @@ namespace jrc
 		void give_buff(Buff buff);
 		// Cancel a buff.
 		void cancel_buff(Buffstat::Id stat);
-		// Return wether the buff is active.
+		// Return whether the buff is active.
 		bool has_buff(Buffstat::Id stat) const;
 
 		// Change a skill.
@@ -99,7 +100,7 @@ namespace jrc
 		// Check if a skill is on cooldown.
 		bool has_cooldown(int32_t skill_id) const;
 
-		// Change the player's level, display the levelup effect.
+		// Change the player's level, display the "level up" effect.
 		void change_level(uint16_t level);
 		// Change the player's job, display the job change effect.
 		void change_job(uint16_t jobid);
@@ -120,7 +121,7 @@ namespace jrc
 		// Returns the flying force.
 		float get_flyforce() const;
 
-		// Return wether the player is underwater.
+		// Return whether the player is underwater.
 		bool is_underwater() const;
 		// Returns if a Keyaction is currently active. 
 		bool is_key_down(KeyAction::Id action) const;
@@ -129,7 +130,7 @@ namespace jrc
 
 		// Change players position to the seat's position and stance to Char::SIT.
 		void set_seat(Optional<const Seat> seat);
-		// Change players xpos to the ladder x and change stance to Char::LADDER or Char::ROPE.
+		// Change players x-pos to the ladder x and change stance to Char::LADDER or Char::ROPE.
 		void set_ladder(Optional<const Ladder> ladder);
 
 		// Obtain a reference to the player's stats.
@@ -173,4 +174,3 @@ namespace jrc
 		bool underwater;
 	};
 }
-

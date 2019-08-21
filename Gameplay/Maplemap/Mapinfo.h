@@ -1,30 +1,31 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../../Template/Point.h"
-#include "../../Template/Range.h"
-#include "../../Template/Optional.h"
 
-#include "nlnx/node.hpp"
+#include "../Template/Point.h"
+#include "../Template/Range.h"
+#include "../Template/Optional.h"
 
 #include <vector>
 
-namespace jrc
+#include <nlnx/node.hpp>
+
+namespace ms
 {
 	class Seat
 	{
@@ -37,7 +38,6 @@ namespace jrc
 	private:
 		Point<int16_t> pos;
 	};
-
 
 	class Ladder
 	{
@@ -56,7 +56,6 @@ namespace jrc
 		bool ladder;
 	};
 
-
 	class MapInfo
 	{
 	public:
@@ -68,7 +67,7 @@ namespace jrc
 		Range<int16_t> get_walls() const;
 		Range<int16_t> get_borders() const;
 
-		// Find a setat the player's position.
+		// Find a seat the player's position.
 		Optional<const Seat> findseat(Point<int16_t> position) const;
 		// Find a ladder at the player's position. upwards = false implies downwards.
 		Optional<const Ladder> findladder(Point<int16_t> position, bool upwards) const;

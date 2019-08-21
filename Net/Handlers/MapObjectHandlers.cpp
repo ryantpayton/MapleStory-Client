@@ -1,30 +1,30 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "MapObjectHandlers.h"
 
 #include "Helpers/LoginParser.h"
 #include "Helpers\MovementParser.h"
 
-#include "../../Audio/Audio.h"
-#include "../../Gameplay/Stage.h"
-#include "../../Gameplay/Spawn.h"
+#include "../Audio/Audio.h"
+#include "../Gameplay/Stage.h"
+#include "../Gameplay/Spawn.h"
 
-namespace jrc
+namespace ms
 {
 	void SpawnCharHandler::handle(InPacket& recv) const
 	{
@@ -32,21 +32,21 @@ namespace jrc
 		uint8_t level = recv.read_byte();
 		std::string name = recv.read_string();
 
-		recv.read_string(); // guildname
-		recv.read_short(); // guildlogobg
-		recv.read_byte(); // guildlogobgcolor
-		recv.read_short(); // guildlogo
-		recv.read_byte(); // guildlogocolor
+		recv.read_string();	// guildname
+		recv.read_short();	// guildlogobg
+		recv.read_byte();	// guildlogobgcolor
+		recv.read_short();	// guildlogo
+		recv.read_byte();	// guildlogocolor
 
 		recv.skip(8);
 
 		bool morphed = recv.read_int() == 2;
 		int32_t buffmask1 = recv.read_int();
 		int16_t buffvalue = 0;
+
 		if (buffmask1 != 0)
-		{
 			buffvalue = morphed ? recv.read_short() : recv.read_byte();
-		}
+
 		recv.read_int(); // buffmask 2
 
 		recv.skip(43);
@@ -58,7 +58,7 @@ namespace jrc
 		int16_t job = recv.read_short();
 		LookEntry look = LoginParser::parse_look(recv);
 
-		recv.read_int(); //count of 5110000 
+		recv.read_int(); // count of 5110000 
 		recv.read_int(); // 'itemeffect'
 		recv.read_int(); // 'chair'
 
@@ -70,16 +70,17 @@ namespace jrc
 		for (size_t i = 0; i < 3; i++)
 		{
 			int8_t available = recv.read_byte();
+
 			if (available == 1)
 			{
-				recv.read_byte(); // 'byte2'
-				recv.read_int(); // petid
-				recv.read_string(); // name
-				recv.read_int(); // unique id
+				recv.read_byte();	// 'byte2'
+				recv.read_int();	// petid
+				recv.read_string();	// name
+				recv.read_int();	// unique id
 				recv.read_int();
-				recv.read_point(); // pos
-				recv.read_byte(); // stance
-				recv.read_int(); // fhid
+				recv.read_point();	// pos
+				recv.read_byte();	// stance
+				recv.read_int();	// fhid
 			}
 			else
 			{
@@ -91,9 +92,9 @@ namespace jrc
 		recv.read_int(); // mountexp
 		recv.read_int(); // mounttiredness
 
-		//shop stuff, TO DO
+		// TODO: Shop stuff
 		recv.read_byte();
-		//shop stuff end
+		// TODO: Shop stuff end
 
 		bool chalkboard = recv.read_bool();
 		std::string chalktext = chalkboard ? recv.read_string() : "";
@@ -101,11 +102,10 @@ namespace jrc
 		recv.skip(3);
 		recv.read_byte(); // team
 
-		Stage::get().get_chars().spawn({ 
-			cid, look, level, job, name, stance, position 
-		});
+		Stage::get().get_chars().spawn(
+			{ cid, look, level, job, name, stance, position }
+		);
 	}
-
 
 	void RemoveCharHandler::handle(InPacket& recv) const
 	{
@@ -114,12 +114,11 @@ namespace jrc
 		Stage::get().get_chars().remove(cid);
 	}
 
-
 	void SpawnPetHandler::handle(InPacket& recv) const
 	{
 		int32_t cid = recv.read_int();
-		Optional<Char> character = Stage::get()
-			.get_character(cid);
+		Optional<Char> character = Stage::get().get_character(cid);
+
 		if (!character)
 			return;
 
@@ -150,7 +149,6 @@ namespace jrc
 		}
 	}
 
-
 	void CharMovedHandler::handle(InPacket& recv) const
 	{
 		int32_t cid = recv.read_int();
@@ -159,7 +157,6 @@ namespace jrc
 
 		Stage::get().get_chars().send_movement(cid, movements);
 	}
-
 
 	void UpdateCharLookHandler::handle(InPacket& recv) const
 	{
@@ -170,19 +167,18 @@ namespace jrc
 		Stage::get().get_chars().update_look(cid, look);
 	}
 
-
 	void ShowForeignEffectHandler::handle(InPacket& recv) const
 	{
 		int32_t cid = recv.read_int();
 		int8_t effect = recv.read_byte();
+
 		if (effect == 10) // recovery
 		{
 			recv.read_byte(); // 'amount'
 		}
 		else if (effect == 13) // card effect
 		{
-			Stage::get()
-				.show_character_effect(cid, CharEffect::MONSTER_CARD);
+			Stage::get().show_character_effect(cid, CharEffect::MONSTER_CARD);
 		}
 		else if (recv.available()) // skill
 		{
@@ -197,7 +193,6 @@ namespace jrc
 			// todo
 		}
 	}
-
 
 	void SpawnMobHandler::handle(InPacket& recv) const
 	{
@@ -219,21 +214,19 @@ namespace jrc
 		{
 			recv.read_byte();
 			recv.read_short();
+
 			if (effect == 15)
-			{
 				recv.read_byte();
-			}
 		}
 
 		int8_t team = recv.read_byte();
 
 		recv.skip(4);
 
-		Stage::get().get_mobs().spawn({
-			oid, id, 0, stance, fh, effect == -2, team, position
-		});
+		Stage::get().get_mobs().spawn(
+			{ oid, id, 0, stance, fh, effect == -2, team, position }
+		);
 	}
-
 
 	void KillMobHandler::handle(InPacket& recv) const
 	{
@@ -243,11 +236,11 @@ namespace jrc
 		Stage::get().get_mobs().remove(oid, animation);
 	}
 
-
 	void SpawnMobControllerHandler::handle(InPacket& recv) const
 	{
 		int8_t mode = recv.read_byte();
 		int32_t oid = recv.read_int();
+
 		if (mode == 0)
 		{
 			Stage::get().get_mobs().set_control(oid, false);
@@ -274,27 +267,25 @@ namespace jrc
 				{
 					recv.read_byte();
 					recv.read_short();
+
 					if (effect == 15)
-					{
 						recv.read_byte();
-					}
 				}
 
 				int8_t team = recv.read_byte();
 
 				recv.skip(4);
 
-				Stage::get().get_mobs().spawn({
-					oid, id, mode, stance, fh, effect == -2, team, position
-				});
+				Stage::get().get_mobs().spawn(
+					{ oid, id, mode, stance, fh, effect == -2, team, position }
+				);
 			}
 			else
 			{
-				// remove monster invisibility, not used in moopledev or solaxia (maybe in an event script?)
+				// TODO: Remove monster invisibility, not used (maybe in an event script?), Check this!
 			}
 		}
 	}
-
 
 	void MobMovedHandler::handle(InPacket& recv) const
 	{
@@ -314,7 +305,6 @@ namespace jrc
 		Stage::get().get_mobs().send_movement(oid, position, std::move(movements));
 	}
 
-
 	void ShowMobHpHandler::handle(InPacket& recv) const
 	{
 		int32_t oid = recv.read_int();
@@ -323,7 +313,6 @@ namespace jrc
 
 		Stage::get().get_mobs().send_mobhp(oid, hppercent, playerlevel);
 	}
-
 
 	void SpawnNpcHandler::handle(InPacket& recv) const
 	{
@@ -336,11 +325,10 @@ namespace jrc
 		recv.read_short(); // 'rx'
 		recv.read_short(); // 'ry'
 
-		Stage::get().get_npcs().spawn({
-			oid, id, position, flip, fh
-		});
+		Stage::get().get_npcs().spawn(
+			{ oid, id, position, flip, fh }
+		);
 	}
-
 
 	void SpawnNpcControllerHandler::handle(InPacket& recv) const
 	{
@@ -358,16 +346,15 @@ namespace jrc
 			bool flip = recv.read_bool();
 			uint16_t fh = recv.read_short();
 
-			recv.read_short(); // 'rx'
-			recv.read_short(); // 'ry'
-			recv.read_bool(); // 'minimap'
+			recv.read_short();	// 'rx'
+			recv.read_short();	// 'ry'
+			recv.read_bool();	// 'minimap'
 
-			Stage::get().get_npcs().spawn({
-				oid, id, position, flip, fh
-			});
+			Stage::get().get_npcs().spawn(
+				{ oid, id, position, flip, fh }
+			);
 		}
 	}
-
 
 	void DropLootHandler::handle(InPacket& recv) const
 	{
@@ -382,6 +369,7 @@ namespace jrc
 		recv.skip(4);
 
 		Point<int16_t> dropfrom;
+
 		if (mode != 2)
 		{
 			dropfrom = recv.read_point();
@@ -394,16 +382,14 @@ namespace jrc
 		}
 
 		if (!meso)
-		{
 			recv.skip(8);
-		}
+
 		bool playerdrop = !recv.read_bool();
 
-		Stage::get().get_drops().spawn({
-			oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mode, playerdrop
-		});
+		Stage::get().get_drops().spawn(
+			{ oid, itemid, meso, owner, dropfrom, dropto, pickuptype, mode, playerdrop }
+		);
 	}
-
 
 	void RemoveLootHandler::handle(InPacket& recv) const
 	{
@@ -411,24 +397,21 @@ namespace jrc
 		int32_t oid = recv.read_int();
 
 		Optional<PhysicsObject> looter;
+
 		if (mode > 1)
 		{
 			int32_t cid = recv.read_int();
+
 			if (recv.length() > 0)
-			{
 				recv.read_byte(); // pet
-			}
 			else if (auto character = Stage::get().get_character(cid))
-			{
 				looter = character->get_phobj();
-			}
 
 			Sound(Sound::PICKUP).play();
 		}
 
 		Stage::get().get_drops().remove(oid, mode, looter.get());
 	}
-
 
 	void SpawnReactorHandler::handle(InPacket& recv) const
 	{
@@ -437,15 +420,14 @@ namespace jrc
 		int8_t state = recv.read_byte();
 		Point<int16_t> point = recv.read_point();
 
-		// Unused in Solaxia
+		// TODO: Unused, Check this!
 		// uint16_t fhid = recv.read_short();
 		// recv.read_byte()
 
-		Stage::get().get_reactors().spawn({
-			oid, rid, state, point
-		});
+		Stage::get().get_reactors().spawn(
+			{ oid, rid, state, point }
+		);
 	}
-
 
 	void RemoveReactorHandler::handle(InPacket& recv) const
 	{
@@ -453,7 +435,6 @@ namespace jrc
 		int8_t state = recv.read_byte();
 		Point<int16_t> point = recv.read_point();
 
-		Stage::get().get_reactors()
-			.remove(oid, state, point);
+		Stage::get().get_reactors().remove(oid, state, point);
 	}
 }

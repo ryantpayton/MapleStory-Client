@@ -1,28 +1,29 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "Animation.h"
 
 #include "../Constants.h"
+
 #include "../Util/Misc.h"
 
 #include <set>
 
-namespace jrc
+namespace ms
 {
 	Frame::Frame(nl::node src)
 	{
@@ -30,11 +31,13 @@ namespace jrc
 		bounds = src;
 		head = src["head"];
 		delay = src["delay"];
+
 		if (delay == 0)
 			delay = 100;
 
 		bool hasa0 = src["a0"].data_type() == nl::node::type::integer;
 		bool hasa1 = src["a1"].data_type() == nl::node::type::integer;
+
 		if (hasa0 && hasa1)
 		{
 			opacities = { src["a0"], src["a1"] };
@@ -56,22 +59,15 @@ namespace jrc
 
 		bool hasz0 = src["z0"].data_type() == nl::node::type::integer;
 		bool hasz1 = src["z1"].data_type() == nl::node::type::integer;
+
 		if (hasz0 && hasz1)
-		{
 			scales = { src["z0"], src["z1"] };
-		}
 		else if (hasz0)
-		{
 			scales = { src["z0"], 0 };
-		}
 		else if (hasz1)
-		{
 			scales = { 100, src["z1"] };
-		}
 		else
-		{
 			scales = { 100, 100 };
-		}
 	}
 
 	Frame::Frame()
@@ -131,10 +127,10 @@ namespace jrc
 		return timestep * static_cast<float>(scales.second - scales.first) / delay;
 	}
 
-
 	Animation::Animation(nl::node src)
 	{
 		bool istexture = src.data_type() == nl::node::type::bitmap;
+
 		if (istexture)
 		{
 			frames.push_back(src);
@@ -142,15 +138,15 @@ namespace jrc
 		else
 		{
 			std::set<int16_t> frameids;
+
 			for (auto sub : src)
 			{
 				if (sub.data_type() == nl::node::type::bitmap)
 				{
 					int16_t fid = string_conversion::or_default<int16_t>(sub.name(), -1);
+
 					if (fid >= 0)
-					{
 						frameids.insert(fid);
-					}
 				}
 			}
 
@@ -159,6 +155,7 @@ namespace jrc
 				auto sub = src[std::to_string(fid)];
 				frames.push_back(sub);
 			}
+
 			if (frames.empty())
 				frames.push_back(Frame());
 		}
@@ -169,7 +166,7 @@ namespace jrc
 		reset();
 	}
 
-	Animation::Animation() 
+	Animation::Animation()
 	{
 		animated = false;
 		zigzag = false;
@@ -196,14 +193,11 @@ namespace jrc
 
 		bool modifyopc = interopc != 1.0f;
 		bool modifyscale = interscale != 1.0f;
+
 		if (modifyopc || modifyscale)
-		{
 			frames[interframe].draw(args + DrawArgument(interscale, interscale, interopc));
-		}
 		else
-		{
 			frames[interframe].draw(args);
-		}
 	}
 
 	bool Animation::update()
@@ -216,26 +210,23 @@ namespace jrc
 		const Frame& framedata = get_frame();
 
 		opacity += framedata.opcstep(timestep);
+
 		if (opacity.last() < 0.0f)
-		{
 			opacity.set(0.0f);
-		}
 		else if (opacity.last() > 255.0f)
-		{
 			opacity.set(255.0f);
-		}
 
 		xyscale += framedata.scalestep(timestep);
+
 		if (xyscale.last() < 0.0f)
-		{
 			opacity.set(0.0f);
-		}
 
 		if (timestep >= delay)
 		{
 			int16_t lastframe = static_cast<int16_t>(frames.size() - 1);
 			int16_t nextframe;
 			bool ended;
+
 			if (zigzag && lastframe > 0)
 			{
 				if (framestep == 1 && frame == lastframe)
@@ -274,11 +265,13 @@ namespace jrc
 			frame.next(nextframe, threshold);
 
 			delay = frames[nextframe].get_delay();
+
 			if (delay >= delta)
 				delay -= delta;
 
 			opacity.set(frames[nextframe].start_opacity());
 			xyscale.set(frames[nextframe].start_scale());
+
 			return ended;
 		}
 		else
@@ -286,6 +279,7 @@ namespace jrc
 			frame.normalize();
 
 			delay -= timestep;
+
 			return false;
 		}
 	}
@@ -298,6 +292,7 @@ namespace jrc
 	uint16_t Animation::getdelayuntil(int16_t frame_id) const
 	{
 		uint16_t total = 0;
+
 		for (int16_t i = 0; i < frame_id; i++)
 		{
 			if (i >= frames.size())
@@ -305,6 +300,7 @@ namespace jrc
 
 			total += frames[frame_id].get_delay();
 		}
+
 		return total;
 	}
 
@@ -319,7 +315,7 @@ namespace jrc
 	}
 
 	Point<int16_t> Animation::get_head() const
-	{ 
+	{
 		return get_frame().get_head();
 	}
 

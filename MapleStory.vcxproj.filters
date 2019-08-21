@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -16,9 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Configuration.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Journey.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="audio\Audio.cpp">
@@ -537,6 +534,9 @@
     <ClCompile Include="IO\Components\MapleComboBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MapleStory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Configuration.h">
@@ -549,9 +549,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Error.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Journey.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
@@ -1221,6 +1218,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Util\ScreenResolution.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MapleStory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

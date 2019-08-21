@@ -1,26 +1,27 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include "GL/glew.h"
 
 #include <array>
 
-namespace jrc
+namespace ms
 {
 	// Simple color class which stores r-g-b-a components.
 	class Color
@@ -122,6 +123,7 @@ namespace jrc
 		constexpr Color(float red, float green, float blue, float alpha) : Color(underlying_t{ red, green, blue, alpha }) {}
 		// Create a color by an array of natural numbers [0, 255]
 		constexpr Color(const std::array<uint8_t, Color::LENGTH> comps) : Color(comps[0], comps[1], comps[2], comps[3]) {}
+
 		// Create a color by natural numbers [0, 255]
 		constexpr Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) : Color(
 			static_cast<float>(red) / 255,
@@ -129,6 +131,7 @@ namespace jrc
 			static_cast<float>(blue) / 255,
 			static_cast<float>(alpha) / 255
 		) {}
+
 		// Create a color by code.
 		constexpr Color(uint32_t code) : Color(
 			static_cast<uint8_t>(code >> 24),
@@ -136,11 +139,12 @@ namespace jrc
 			static_cast<uint8_t>(code >> 8),
 			static_cast<uint8_t>(code)
 		) {}
+
 		// Create a color by named code.
 		constexpr Color(Code code) : Color((uint32_t)code) {}
-		constexpr Color() : Color(CNONE) {}
+		constexpr Color() : Color(Code::CNONE) {}
 
-		// Check wether the color is completely invisble.
+		// Check whether the color is completely invisble.
 		constexpr bool invisible() const
 		{
 			return rgba[3] <= 0.0f;

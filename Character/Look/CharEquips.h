@@ -1,24 +1,25 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include "Clothing.h"
 
-namespace jrc
+namespace ms
 {
 	// A characters equipment (the visual part).
 	class CharEquips
@@ -27,11 +28,11 @@ namespace jrc
 		// Cap types (vslot).
 		enum CapType
 		{
-			   NONE,
-			   HEADBAND,
-			   HAIRPIN,
-			   HALFCOVER,
-			   FULLCOVER
+			NONE,
+			HEADBAND,
+			HAIRPIN,
+			HALFCOVER,
+			FULLCOVER
 		};
 
 		// Initialize pointers with 0.
@@ -52,7 +53,7 @@ namespace jrc
 		bool has_overall() const;
 		// Return if there is a weapon equipped.
 		bool has_weapon() const;
-		// Return wether the equipped weapon is twohanded.
+		// Return whether the equipped weapon is twohanded.
 		bool is_twohanded() const;
 		// Return the cap type (vslot).
 		CapType getcaptype() const;
@@ -66,8 +67,6 @@ namespace jrc
 	private:
 		EnumMap<Equipslot::Id, const Clothing*> clothes;
 
-
 		static std::unordered_map<int32_t, Clothing> cloth_cache;
 	};
 }
-

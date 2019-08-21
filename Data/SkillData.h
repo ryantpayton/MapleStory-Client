@@ -1,21 +1,22 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include "../Character/Inventory/Weapon.h"
 #include "../Graphics/Texture.h"
 #include "../Template/Rectangle.h"
@@ -25,7 +26,7 @@
 #include <array>
 #include <unordered_map>
 
-namespace jrc
+namespace ms
 {
 	// Contains information about a skill.
 	class SkillData : public Cache<SkillData>
@@ -50,9 +51,7 @@ namespace jrc
 			float hrange;
 			Rectangle<int16_t> range;
 
-			constexpr Stats(
-				float damage, int32_t matk, int32_t fixdamage, int32_t mastery, uint8_t attackcount, uint8_t mobcount, uint8_t bulletcount, int16_t bulletcost, int32_t hpcost, int32_t mpcost, float chance, float critical, float ignoredef, float hrange, Rectangle<int16_t> range)
-				: damage(damage), matk(matk), fixdamage(fixdamage), mastery(mastery), attackcount(attackcount), mobcount(mobcount), bulletcount(bulletcount), bulletcost(bulletcost), hpcost(hpcost), mpcost(mpcost), chance(chance), critical(critical), ignoredef(ignoredef), hrange(hrange), range(range) {}
+			constexpr Stats(float damage, int32_t matk, int32_t fixdamage, int32_t mastery, uint8_t attackcount, uint8_t mobcount, uint8_t bulletcount, int16_t bulletcost, int32_t hpcost, int32_t mpcost, float chance, float critical, float ignoredef, float hrange, Rectangle<int16_t> range) : damage(damage), matk(matk), fixdamage(fixdamage), mastery(mastery), attackcount(attackcount), mobcount(mobcount), bulletcount(bulletcount), bulletcost(bulletcost), hpcost(hpcost), mpcost(mpcost), chance(chance), critical(critical), ignoredef(ignoredef), hrange(hrange), range(range) {}
 		};
 
 		// Skill flags, unfortunately these just have to be hardcoded
@@ -72,11 +71,11 @@ namespace jrc
 			NUM_ICONS
 		};
 
-		// Return wether the skill is passive.
+		// Return whether the skill is passive.
 		bool is_passive() const;
-		// Return wether the skill is an attack skill.
+		// Return whether the skill is an attack skill.
 		bool is_attack() const;
-		// Return wether this skill is invisible in the skill book ui.
+		// Return whether this skill is invisible in the skill book ui.
 		bool is_invisible() const;
 		// Return the default masterlevel.
 		int32_t get_masterlevel() const;
@@ -123,6 +122,6 @@ namespace jrc
 		std::unordered_map<int32_t, std::string> levels;
 		std::unordered_map<int32_t, int32_t> reqskills;
 
-		std::array<Texture, NUM_ICONS> icons;
+		std::array<Texture, SkillData::Icon::NUM_ICONS> icons;
 	};
 }

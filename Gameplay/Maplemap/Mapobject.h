@@ -1,31 +1,33 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include "../Camera.h"
+
 #include "../Physics/Physics.h"
 
-namespace jrc
+namespace ms
 {
-	// Base for objects on a map, eg. mobs, npcs, characters etc.
+	// Base for objects on a map, eg. mobs, NPCs, characters etc.
 	class MapObject
 	{
 	public:
-		virtual ~MapObject(){}
+		virtual ~MapObject() {}
 
 		// Draws the object at the given position and with the specified interpolation.
 		virtual void draw(double viewx, double viewy, float alpha) const = 0;
@@ -36,7 +38,7 @@ namespace jrc
 		virtual void makeactive();
 		// Deactivates the object.
 		virtual void deactivate();
-		// Checks wether this object is active.
+		// Checks whether this object is active.
 		virtual bool is_active() const;
 		// Obtains the layer used to determine the drawing order on the map.
 		virtual int8_t get_layer() const;

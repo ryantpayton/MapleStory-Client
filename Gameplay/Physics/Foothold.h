@@ -1,26 +1,27 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../../Template/Range.h"
 
-#include "nlnx/node.hpp"
+#include "../Template/Range.h"
 
-namespace jrc
+#include <nlnx/node.hpp>
+
+namespace ms
 {
 	// Represents a platform part on a maple-map.
 	class Foothold
@@ -70,7 +71,7 @@ namespace jrc
 		bool hcontains(int16_t x) const;
 		// Returns if a y-coordinate is right or left of this platform.
 		bool vcontains(int16_t y) const;
-		// Check wether this foothold blocks an object.
+		// Check whether this foothold blocks an object.
 		bool is_blocking(const Range<int16_t>& vertical) const;
 		// Returns the width.
 		int16_t hdelta() const;
@@ -90,4 +91,3 @@ namespace jrc
 		Range<int16_t> m_vertical;
 	};
 }
-

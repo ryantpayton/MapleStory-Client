@@ -278,7 +278,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="IO\UITypes\UIWorldMap.cpp" />
     <ClCompile Include="io\uitypes\UIWorldSelect.cpp" />
     <ClCompile Include="io\Window.cpp" />
-    <ClCompile Include="Journey.cpp" />
+    <ClCompile Include="MapleStory.cpp" />
     <ClCompile Include="net\Cryptography.cpp" />
     <ClCompile Include="net\handlers\AttackHandlers.cpp" />
     <ClCompile Include="net\handlers\CommonHandlers.cpp" />
@@ -472,7 +472,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="IO\UITypes\UIWorldMap.h" />
     <ClInclude Include="io\uitypes\UIWorldSelect.h" />
     <ClInclude Include="io\Window.h" />
-    <ClInclude Include="Journey.h" />
+    <ClInclude Include="MapleStory.h" />
     <ClInclude Include="net\Cryptography.h" />
     <ClInclude Include="net\handlers\AttackHandlers.h" />
     <ClInclude Include="net\handlers\CommonHandlers.h" />

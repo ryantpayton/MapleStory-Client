@@ -1,27 +1,26 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "Icon.h"
-
 #include "Charset.h"
 
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
-namespace jrc
+namespace ms
 {
 	Icon::Icon(std::unique_ptr<Type> t, Texture tx, int16_t c) : type(std::move(t)), texture(tx), count(c)
 	{
@@ -39,7 +38,7 @@ namespace jrc
 
 		if (showcount)
 		{
-			static const Charset countset = { nl::nx::ui["Basic.img"]["ItemNo"], Charset::LEFT };
+			static const Charset countset = { nl::nx::ui["Basic.img"]["ItemNo"], Charset::Alignment::LEFT };
 			countset.draw(std::to_string(count), position + Point<int16_t>(0, 20));
 		}
 	}
@@ -47,9 +46,7 @@ namespace jrc
 	void Icon::dragdraw(Point<int16_t> cursorpos) const
 	{
 		if (dragged)
-		{
 			texture.draw({ cursorpos - cursoroffset, 0.5f });
-		}
 	}
 
 	void Icon::drop_on_stage() const

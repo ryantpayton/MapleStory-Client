@@ -1,29 +1,29 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include "HashUtility.h"
 
-#ifdef JOURNEY_USE_XXHASH
+#ifdef USE_XXHASH
 #include <xxhash.h>
-
 #include <fstream>
 
-namespace jrc
+namespace ms
 {
 	namespace HashUtility
 	{
@@ -36,6 +36,7 @@ namespace jrc
 			std::ifstream file(filename);
 
 			uint64_t result;
+
 			if (file.good())
 			{
 				// Get size of file.
@@ -60,13 +61,16 @@ namespace jrc
 
 					error = XXH64_reset(&xxhstate, seed);
 					size_t offset = 0;
+
 					while (offset < end && error == XXH_OK)
 					{
 						file.read(buffer, CHUNK_SIZE);
 						error = XXH64_update(&xxhstate, buffer, CHUNK_SIZE);
 						offset += CHUNK_SIZE;
 					}
+
 					size_t remaining = offset - end;
+
 					if (remaining > 0)
 					{
 						file.read(buffer, CHUNK_SIZE);
@@ -74,13 +78,10 @@ namespace jrc
 					}
 
 					if (error == XXH_OK)
-					{
 						result = XXH64_digest(&xxhstate);
-					}
 					else
-					{
 						result = 0;
-					}
+
 					delete[] buffer;
 				}
 			}
@@ -90,6 +91,7 @@ namespace jrc
 			}
 
 			file.close();
+
 			return std::to_string(result);
 		}
 	}

@@ -1,31 +1,32 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include "../OutPacket.h"
 
-namespace jrc
+namespace ms
 {
 	// Tell the server which character was picked.
 	// Opcode: SELECT_CHAR(19)
 	class SelectCharPacket : public OutPacket
 	{
 	public:
-		SelectCharPacket(int32_t cid) : OutPacket(SELECT_CHAR)
+		SelectCharPacket(int32_t cid) : OutPacket(OutPacket::Opcode::SELECT_CHAR)
 		{
 			write_int(cid);
 			write_hardware_info();
@@ -37,7 +38,7 @@ namespace jrc
 	class RegisterPicPacket : public OutPacket
 	{
 	public:
-		RegisterPicPacket(int32_t cid, const std::string& pic) : OutPacket(REGISTER_PIC)
+		RegisterPicPacket(int32_t cid, const std::string& pic) : OutPacket(OutPacket::Opcode::REGISTER_PIC)
 		{
 			skip(1);
 
@@ -52,7 +53,7 @@ namespace jrc
 	class SelectCharPicPacket : public OutPacket
 	{
 	public:
-		SelectCharPicPacket(const std::string& pic, int32_t cid) : OutPacket(SELECT_CHAR_PIC)
+		SelectCharPicPacket(const std::string& pic, int32_t cid) : OutPacket(OutPacket::Opcode::SELECT_CHAR_PIC)
 		{
 			write_string(pic);
 			write_int(cid);
@@ -65,7 +66,7 @@ namespace jrc
 	class DeleteCharPacket : public OutPacket
 	{
 	public:
-		DeleteCharPacket(int32_t cid) : OutPacket(DELETE_CHAR)
+		DeleteCharPacket(int32_t cid) : OutPacket(OutPacket::Opcode::DELETE_CHAR)
 		{
 			write_string("");
 			write_int(cid);
@@ -77,7 +78,7 @@ namespace jrc
 	class DeleteCharPicPacket : public OutPacket
 	{
 	public:
-		DeleteCharPicPacket(const std::string& pic, int32_t cid) : OutPacket(DELETE_CHAR)
+		DeleteCharPicPacket(const std::string& pic, int32_t cid) : OutPacket(OutPacket::Opcode::DELETE_CHAR)
 		{
 			write_string(pic);
 			write_int(cid);

@@ -1,54 +1,49 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "Cryptography.h"
 
-namespace jrc
+namespace ms
 {
-	Cryptography::Cryptography(const int8_t* handshake) 
+	Cryptography::Cryptography(const int8_t* handshake)
 	{
-#ifdef JOURNEY_USE_CRYPTO
+#ifdef USE_CRYPTO
 		for (size_t i = 0; i < HEADER_LENGTH; i++)
-		{
 			sendiv[i] = handshake[i + 7];
-		}
 
 		for (size_t i = 0; i < HEADER_LENGTH; i++)
-		{
 			recviv[i] = handshake[i + 11];
-		}
 #endif
 	}
 
 	Cryptography::Cryptography() {}
-
 	Cryptography::~Cryptography() {}
 
 	void Cryptography::encrypt(int8_t* bytes, size_t length)
 	{
-#ifdef JOURNEY_USE_CRYPTO
+#ifdef USE_CRYPTO
 		mapleencrypt(bytes, length);
 		aesofb(bytes, length, sendiv);
 #endif
 	}
 
-	void Cryptography::decrypt(int8_t* bytes, size_t length) 
+	void Cryptography::decrypt(int8_t* bytes, size_t length)
 	{
-#ifdef JOURNEY_USE_CRYPTO
+#ifdef USE_CRYPTO
 		aesofb(bytes, length, recviv);
 		mapledecrypt(bytes, length);
 #endif
@@ -56,17 +51,19 @@ namespace jrc
 
 	void Cryptography::create_header(int8_t* buffer, size_t length) const
 	{
-#ifdef JOURNEY_USE_CRYPTO
+#ifdef USE_CRYPTO
 		static const uint8_t MAPLEVERSION = 83;
 
 		size_t a = ((sendiv[3] << 8) | sendiv[2]) ^ MAPLEVERSION;
 		size_t b = a ^ length;
+
 		buffer[0] = static_cast<int8_t>(a % 0x100);
 		buffer[1] = static_cast<int8_t>(a / 0x100);
 		buffer[2] = static_cast<int8_t>(b % 0x100);
 		buffer[3] = static_cast<int8_t>(b / 0x100);
 #else
 		int32_t length = static_cast<int32_t>(slength);
+
 		for (int32_t i = 0; i < HEADERLEN; i++)
 		{
 			buffer[i] = static_cast<int8_t>(length);
@@ -77,19 +74,19 @@ namespace jrc
 
 	size_t Cryptography::check_length(const int8_t* bytes) const
 	{
-#ifdef JOURNEY_USE_CRYPTO
+#ifdef USE_CRYPTO
 		uint32_t headermask = 0;
+
 		for (size_t i = 0; i < 4; i++)
-		{
 			headermask |= static_cast<uint8_t>(bytes[i]) << (8 * i);
-		}
+
 		return static_cast<int16_t>((headermask >> 16) ^ (headermask & 0xFFFF));
 #else
 		size_t length = 0;
+
 		for (int32_t i = 0; i < HEADERLEN; i++)
-		{
 			length += static_cast<uint8_t>(bytes[i]) << (8 * i);
-		}
+
 		return length;
 #endif
 	}
@@ -100,17 +97,19 @@ namespace jrc
 		{
 			int8_t remember = 0;
 			int8_t datalen = static_cast<int8_t>(length & 0xFF);
+
 			for (size_t i = 0; i < length; i++)
 			{
 				int8_t cur = (rollleft(bytes[i], 3) + datalen) ^ remember;
 				remember = cur;
-				cur = rollright(cur, static_cast<int32_t>(datalen)& 0xFF);
+				cur = rollright(cur, static_cast<int32_t>(datalen) & 0xFF);
 				bytes[i] = static_cast<int8_t>((~cur) & 0xFF) + 0x48;
 				datalen--;
 			}
 
 			remember = 0;
 			datalen = static_cast<int8_t>(length & 0xFF);
+
 			for (size_t i = length; i--;)
 			{
 				int8_t cur = (rollleft(bytes[i], 4) + datalen) ^ remember;
@@ -138,10 +137,11 @@ namespace jrc
 
 			remember = 0;
 			datalen = static_cast<uint8_t>(length & 0xFF);
+
 			for (size_t j = 0; j < length; j++)
 			{
 				uint8_t cur = (~(bytes[j] - 0x48)) & 0xFF;
-				cur = rollleft(cur, static_cast<int32_t>(datalen)& 0xFF);
+				cur = rollleft(cur, static_cast<int32_t>(datalen) & 0xFF);
 				bytes[j] = rollright((cur ^ remember) - datalen, 3);
 				remember = cur;
 				datalen--;
@@ -199,20 +199,20 @@ namespace jrc
 		}
 
 		for (size_t i = 0; i < 4; i++)
-		{
 			iv[i] = mbytes[i];
-		}
 	}
 
 	int8_t Cryptography::rollleft(int8_t data, size_t count) const
 	{
 		int32_t mask = (data & 0xFF) << (count % 8);
+
 		return static_cast<int8_t>((mask & 0xFF) | (mask >> 8));
 	}
 
 	int8_t Cryptography::rollright(int8_t data, size_t count) const
 	{
 		int32_t mask = ((data & 0xFF) << 8) >> (count % 8);
+
 		return static_cast<int8_t>((mask & 0xFF) | (mask >> 8));
 	}
 
@@ -220,27 +220,26 @@ namespace jrc
 	{
 		size_t blocklength = 0x5B0;
 		size_t offset = 0;
+
 		while (offset < length)
 		{
 			uint8_t miv[16];
+
 			for (size_t i = 0; i < 16; i++)
-			{
 				miv[i] = iv[i % 4];
-			}
 
 			size_t remaining = length - offset;
+
 			if (remaining > blocklength)
-			{
 				remaining = blocklength;
-			}
 
 			for (size_t x = 0; x < remaining; x++)
 			{
 				size_t relpos = x % 16;
+
 				if (relpos == 0)
-				{
 					aesencrypt(miv);
-				}
+
 				bytes[x + offset] ^= miv[relpos];
 			}
 
@@ -293,10 +292,9 @@ namespace jrc
 		};
 
 		uint8_t offset = round * 16;
+
 		for (uint8_t i = 0; i < 16; i++)
-		{
 			bytes[i] ^= maplekey[i + offset];
-		}
 	}
 
 	void Cryptography::subbytes(uint8_t* bytes) const
@@ -323,9 +321,7 @@ namespace jrc
 		};
 
 		for (uint8_t i = 0; i < 16; i++)
-		{
 			bytes[i] = subbox[bytes[i]];
-		}
 	}
 
 	void Cryptography::shiftrows(uint8_t* bytes) const

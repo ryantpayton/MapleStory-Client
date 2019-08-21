@@ -1,31 +1,32 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include "MovementPacket.h"
 
-namespace jrc
+namespace ms
 {
 	// Requests the server to warp the player to a different map.
 	// Opcode: CHANGE_MAP(38)
 	class ChangeMapPacket : public OutPacket
 	{
 	public:
-		ChangeMapPacket(bool died, int32_t targetid, const std::string& targetp, bool usewheel) : OutPacket(CHANGEMAP)
+		ChangeMapPacket(bool died, int32_t targetid, const std::string& targetp, bool usewheel) : OutPacket(OutPacket::Opcode::CHANGEMAP)
 		{
 			write_byte(died);
 			write_int(targetid);
@@ -40,7 +41,7 @@ namespace jrc
 	class PlayerMapTransferPacket : public OutPacket
 	{
 	public:
-		PlayerMapTransferPacket() : OutPacket(PLAYER_MAP_TRANSFER) {}
+		PlayerMapTransferPacket() : OutPacket(OutPacket::Opcode::PLAYER_MAP_TRANSFER) {}
 	};
 
 	// Updates the player's position with the server.
@@ -48,7 +49,7 @@ namespace jrc
 	class MovePlayerPacket : public MovementPacket
 	{
 	public:
-		MovePlayerPacket(const Movement& movement) : MovementPacket(MOVE_PLAYER)
+		MovePlayerPacket(const Movement& movement) : MovementPacket(OutPacket::Opcode::MOVE_PLAYER)
 		{
 			skip(9);
 			write_byte(1);
@@ -72,7 +73,7 @@ namespace jrc
 		};
 
 	protected:
-		PartyOperationPacket(Operation op) : OutPacket(PARTY_OPERATION)
+		PartyOperationPacket(Operation op) : OutPacket(OutPacket::Opcode::PARTY_OPERATION)
 		{
 			write_byte(op);
 		}
@@ -83,7 +84,7 @@ namespace jrc
 	class CreatePartyPacket : public PartyOperationPacket
 	{
 	public:
-		CreatePartyPacket() : PartyOperationPacket(CREATE) {}
+		CreatePartyPacket() : PartyOperationPacket(PartyOperationPacket::Operation::CREATE) {}
 	};
 
 	// Leaves a party
@@ -91,7 +92,7 @@ namespace jrc
 	class LeavePartyPacket : public PartyOperationPacket
 	{
 	public:
-		LeavePartyPacket() : PartyOperationPacket(LEAVE) {}
+		LeavePartyPacket() : PartyOperationPacket(PartyOperationPacket::Operation::LEAVE) {}
 	};
 
 	// Joins a party.
@@ -99,7 +100,7 @@ namespace jrc
 	class JoinPartyPacket : public PartyOperationPacket
 	{
 	public:
-		JoinPartyPacket(int32_t party_id) : PartyOperationPacket(JOIN)
+		JoinPartyPacket(int32_t party_id) : PartyOperationPacket(PartyOperationPacket::Operation::JOIN)
 		{
 			write_int(party_id);
 		}
@@ -110,7 +111,7 @@ namespace jrc
 	class InviteToPartyPacket : public PartyOperationPacket
 	{
 	public:
-		InviteToPartyPacket(const std::string& name) : PartyOperationPacket(INVITE)
+		InviteToPartyPacket(const std::string& name) : PartyOperationPacket(PartyOperationPacket::Operation::INVITE)
 		{
 			write_string(name);
 		}
@@ -121,7 +122,7 @@ namespace jrc
 	class ExpelFromPartyPacket : public PartyOperationPacket
 	{
 	public:
-		ExpelFromPartyPacket(int32_t cid) : PartyOperationPacket(EXPEL)
+		ExpelFromPartyPacket(int32_t cid) : PartyOperationPacket(PartyOperationPacket::Operation::EXPEL)
 		{
 			write_int(cid);
 		}
@@ -132,7 +133,7 @@ namespace jrc
 	class ChangePartyLeaderPacket : public PartyOperationPacket
 	{
 	public:
-		ChangePartyLeaderPacket(int32_t cid) : PartyOperationPacket(PASS_LEADER)
+		ChangePartyLeaderPacket(int32_t cid) : PartyOperationPacket(PartyOperationPacket::Operation::PASS_LEADER)
 		{
 			write_int(cid);
 		}
@@ -143,7 +144,7 @@ namespace jrc
 	class MoveMobPacket : public MovementPacket
 	{
 	public:
-		MoveMobPacket(int32_t oid, int16_t type, int8_t skillb, int8_t skill0, int8_t skill1, int8_t skill2, int8_t skill3, int8_t skill4, Point<int16_t> startpos, const Movement& movement) : MovementPacket(MOVE_MONSTER)
+		MoveMobPacket(int32_t oid, int16_t type, int8_t skillb, int8_t skill0, int8_t skill1, int8_t skill2, int8_t skill3, int8_t skill4, Point<int16_t> startpos, const Movement& movement) : MovementPacket(OutPacket::Opcode::MOVE_MONSTER)
 		{
 			write_int(oid);
 			write_short(type);
@@ -168,7 +169,7 @@ namespace jrc
 	class PickupItemPacket : public OutPacket
 	{
 	public:
-		PickupItemPacket(int32_t oid, Point<int16_t> position) : OutPacket(PICKUP_ITEM)
+		PickupItemPacket(int32_t oid, Point<int16_t> position) : OutPacket(OutPacket::Opcode::PICKUP_ITEM)
 		{
 			write_int(0);
 			write_byte(0);

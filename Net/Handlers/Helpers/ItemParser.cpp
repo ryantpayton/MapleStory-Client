@@ -1,23 +1,23 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "ItemParser.h"
 
-namespace jrc
+namespace ms
 {
 	namespace ItemParser
 	{
@@ -26,20 +26,18 @@ namespace jrc
 		{
 			// Read all item stats.
 			bool cash = recv.read_bool();
+
 			if (cash)
-			{
 				recv.skip(8); // unique id
-			}
+
 			int64_t expire = recv.read_long();
 			int16_t count = recv.read_short();
 			std::string owner = recv.read_string();
 			int16_t flag = recv.read_short();
 
-			// If the item is a rechargable projectile, some additional bytes are sent.
+			// If the item is a rechargeable projectile, some additional bytes are sent.
 			if ((id / 10000 == 233) || (id / 10000 == 207))
-			{
 				recv.skip(8);
-			}
 
 			inventory.add_item(invtype, slot, id, cash, expire, count, owner, flag);
 		}
@@ -49,10 +47,10 @@ namespace jrc
 		{
 			// Read all pet stats.
 			bool cash = recv.read_bool();
+
 			if (cash)
-			{
 				recv.skip(8); // unique id
-			}
+
 			int64_t expire = recv.read_long();
 			std::string petname = recv.read_padded_string(13);
 			int8_t petlevel = recv.read_byte();
@@ -70,20 +68,19 @@ namespace jrc
 		{
 			// Read equip information.
 			bool cash = recv.read_bool();
+
 			if (cash)
-			{
 				recv.skip(8); // unique id
-			}
+
 			int64_t expire = recv.read_long();
 			uint8_t slots = recv.read_byte();
 			uint8_t level = recv.read_byte();
 
 			// Read equip stats.
 			EnumMap<Equipstat::Id, uint16_t> stats;
+
 			for (auto iter : stats)
-			{
 				iter.second = recv.read_short();
-			}
 
 			// Some more information.
 			std::string owner = recv.read_string();
@@ -91,6 +88,7 @@ namespace jrc
 			uint8_t itemlevel = 0;
 			uint16_t itemexp = 0;
 			int32_t vicious = 0;
+
 			if (cash)
 			{
 				// Some unused bytes.
@@ -110,12 +108,11 @@ namespace jrc
 
 			if (slot < 0)
 			{
-				invtype = InventoryType::EQUIPPED;
+				invtype = InventoryType::Id::EQUIPPED;
 				slot = -slot;
 			}
 
-			inventory.add_equip(invtype, slot, id, cash, expire, slots,
-				level, stats, owner, flag, itemlevel, itemexp, vicious);
+			inventory.add_equip(invtype, slot, id, cash, expire, slots, level, stats, owner, flag, itemlevel, itemexp, vicious);
 		}
 
 		void parse_item(InPacket& recv, InventoryType::Id invtype, int16_t slot, Inventory& inventory)
@@ -124,7 +121,7 @@ namespace jrc
 			recv.read_byte(); // 'type' byte
 			int32_t iid = recv.read_int();
 
-			if (invtype == InventoryType::EQUIP || invtype == InventoryType::EQUIPPED)
+			if (invtype == InventoryType::Id::EQUIP || invtype == InventoryType::Id::EQUIPPED)
 			{
 				// Parse an equip.
 				add_equip(recv, invtype, slot, iid, inventory);

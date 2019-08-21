@@ -1,28 +1,28 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "DamageNumber.h"
 
-#include "../../Constants.h"
+#include "../Constants.h"
 
-#include "nlnx/nx.hpp"
-#include "nlnx/node.hpp"
+#include <nlnx/nx.hpp>
+#include <nlnx/node.hpp>
 
-namespace jrc
+namespace ms
 {
 	DamageNumber::DamageNumber(Type t, int32_t damage, int16_t starty, int16_t x)
 	{
@@ -34,6 +34,7 @@ namespace jrc
 
 			std::string number = std::to_string(damage);
 			firstnum = number[0];
+
 			if (number.size() > 1)
 			{
 				restnum = number.substr(1);
@@ -46,10 +47,12 @@ namespace jrc
 			}
 
 			int16_t total = getadvance(firstnum, true);
+
 			for (size_t i = 0; i < restnum.length(); i++)
 			{
 				char c = restnum[i];
 				int16_t advance;
+
 				if (i < restnum.length() - 1)
 				{
 					char n = restnum[i + 1];
@@ -59,8 +62,10 @@ namespace jrc
 				{
 					advance = getadvance(c, false);
 				}
+
 				total += advance;
 			}
+
 			shift = total / 2;
 		}
 		else
@@ -85,13 +90,11 @@ namespace jrc
 
 		if (miss)
 		{
-			charsets[type][true]
-				.draw('M', { position, interopc });
+			charsets[type][true].draw('M', { position, interopc });
 		}
 		else
 		{
-			charsets[type][false]
-				.draw(firstnum, { position, interopc });
+			charsets[type][false].draw(firstnum, { position, interopc });
 
 			if (multiple)
 			{
@@ -102,10 +105,10 @@ namespace jrc
 				{
 					char c = restnum[i];
 					Point<int16_t> yshift = { 0, (i % 2) ? -2 : 2 };
-					charsets[type][true]
-						.draw(c, { position + yshift, interopc });
+					charsets[type][true].draw(c, { position + yshift, interopc });
 
 					int16_t advance;
+
 					if (i < restnum.length() - 1)
 					{
 						char n = restnum[i + 1];
@@ -127,33 +130,34 @@ namespace jrc
 	int16_t DamageNumber::getadvance(char c, bool first) const
 	{
 		constexpr size_t LENGTH = 10;
+
 		constexpr int16_t advances[LENGTH] =
 		{
 			24, 20, 22, 22, 24, 23, 24, 22, 24, 24
 		};
 
 		size_t index = c - 48;
+
 		if (index < LENGTH)
 		{
 			int16_t advance = advances[index];
+
 			switch (type)
 			{
-			case CRITICAL:
+			case DamageNumber::Type::CRITICAL:
 				if (first)
-				{
 					advance += 8;
-				}
 				else
-				{
 					advance += 4;
-				}
+
 				break;
 			default:
 				if (first)
-				{
 					advance += 2;
-				}
+
+				break;
 			}
+
 			return advance;
 		}
 		else
@@ -173,9 +177,9 @@ namespace jrc
 
 		constexpr float FADE_STEP = Constants::TIMESTEP * 1.0f / FADE_TIME;
 		opacity -= FADE_STEP;
+
 		return opacity.last() <= 0.0f;
 	}
-
 
 	int16_t DamageNumber::rowheight(bool critical)
 	{
@@ -184,12 +188,12 @@ namespace jrc
 
 	void DamageNumber::init()
 	{
-		charsets[NORMAL].set(false, nl::nx::effect["BasicEff.img"]["NoRed1"], Charset::LEFT);
-		charsets[NORMAL].set(true, nl::nx::effect["BasicEff.img"]["NoRed0"], Charset::LEFT);
-		charsets[CRITICAL].set(false, nl::nx::effect["BasicEff.img"]["NoCri1"], Charset::LEFT);
-		charsets[CRITICAL].set(true, nl::nx::effect["BasicEff.img"]["NoCri0"], Charset::LEFT);
-		charsets[TOPLAYER].set(false, nl::nx::effect["BasicEff.img"]["NoViolet1"], Charset::LEFT);
-		charsets[TOPLAYER].set(true, nl::nx::effect["BasicEff.img"]["NoViolet0"], Charset::LEFT);
+		charsets[DamageNumber::Type::NORMAL].set(false, nl::nx::effect["BasicEff.img"]["NoRed1"], Charset::Alignment::LEFT);
+		charsets[DamageNumber::Type::NORMAL].set(true, nl::nx::effect["BasicEff.img"]["NoRed0"], Charset::Alignment::LEFT);
+		charsets[DamageNumber::Type::CRITICAL].set(false, nl::nx::effect["BasicEff.img"]["NoCri1"], Charset::Alignment::LEFT);
+		charsets[DamageNumber::Type::CRITICAL].set(true, nl::nx::effect["BasicEff.img"]["NoCri0"], Charset::Alignment::LEFT);
+		charsets[DamageNumber::Type::TOPLAYER].set(false, nl::nx::effect["BasicEff.img"]["NoViolet1"], Charset::Alignment::LEFT);
+		charsets[DamageNumber::Type::TOPLAYER].set(true, nl::nx::effect["BasicEff.img"]["NoViolet0"], Charset::Alignment::LEFT);
 	}
 
 	BoolPair<Charset> DamageNumber::charsets[NUM_TYPES];

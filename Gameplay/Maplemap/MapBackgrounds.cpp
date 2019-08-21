@@ -1,28 +1,28 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "MapBackgrounds.h"
 
-#include "../../Constants.h"
-#include "../../Graphics/GraphicsGL.h"
+#include "../Constants.h"
+#include "../Graphics/GraphicsGL.h"
 
-#include "nlnx/nx.hpp"
+#include <nlnx/nx.hpp>
 
-namespace jrc
+namespace ms
 {
 	Background::Background(nl::node src)
 	{
@@ -51,24 +51,26 @@ namespace jrc
 	{
 		if (cx == 0)
 			cx = animation.get_dimensions().x();
+
 		if (cy == 0)
 			cy = animation.get_dimensions().y();
 
 		htile = 1;
 		vtile = 1;
+
 		switch (type)
 		{
-		case HTILED:
-		case HMOVEA:
+		case Type::HTILED:
+		case Type::HMOVEA:
 			htile = VWIDTH / cx + 3;
 			break;
-		case VTILED:
-		case VMOVEA:
+		case Type::VTILED:
+		case Type::VMOVEA:
 			vtile = VHEIGHT / cy + 3;
 			break;
-		case TILED:
-		case HMOVEB:
-		case VMOVEB:
+		case Type::TILED:
+		case Type::HMOVEB:
+		case Type::VMOVEB:
 			htile = VWIDTH / cx + 3;
 			vtile = VHEIGHT / cy + 3;
 			break;
@@ -76,12 +78,12 @@ namespace jrc
 
 		switch (type)
 		{
-		case HMOVEA:
-		case HMOVEB:
+		case Type::HMOVEA:
+		case Type::HMOVEB:
 			moveobj.hspeed = rx / 16;
 			break;
-		case VMOVEA:
-		case VMOVEB:
+		case Type::VMOVEA:
+		case Type::VMOVEB:
 			moveobj.vspeed = ry / 16;
 			break;
 		}
@@ -90,6 +92,7 @@ namespace jrc
 	void Background::draw(double viewx, double viewy, float alpha) const
 	{
 		double x;
+
 		if (moveobj.hmobile())
 		{
 			x = moveobj.get_absolute_x(viewx, alpha);
@@ -101,6 +104,7 @@ namespace jrc
 		}
 
 		double y;
+
 		if (moveobj.vmobile())
 		{
 			y = moveobj.get_absolute_y(viewy, alpha);
@@ -114,38 +118,30 @@ namespace jrc
 		if (htile > 1)
 		{
 			while (x > 0)
-			{
 				x -= cx;
-			}
+
 			while (x < -cx)
-			{
 				x += cx;
-			}
 		}
 
 		if (vtile > 1)
 		{
 			while (y > 0)
-			{
 				y -= cy;
-			}
+
 			while (y < -cy)
-			{
 				y += cy;
-			}
 		}
+
 		int16_t ix = static_cast<int16_t>(std::round(x));
 		int16_t iy = static_cast<int16_t>(std::round(y));
 
 		int16_t tw = cx * htile;
 		int16_t th = cy * vtile;
+
 		for (int16_t tx = 0; tx < tw; tx += cx)
-		{
 			for (int16_t ty = 0; ty < th; ty += cy)
-			{
 				animation.draw(DrawArgument(Point<int16_t>(ix + tx, iy + ty), flipped, opacity / 255), alpha);
-			}
-		}
 	}
 
 	void Background::update()
@@ -154,22 +150,19 @@ namespace jrc
 		animation.update();
 	}
 
-
 	MapBackgrounds::MapBackgrounds(nl::node src)
 	{
 		int16_t no = 0;
 		nl::node back = src[std::to_string(no)];
+
 		while (back.size() > 0)
 		{
 			bool front = back["front"].get_bool();
+
 			if (front)
-			{
 				foregrounds.push_back(back);
-			}
 			else
-			{
 				backgrounds.push_back(back);
-			}
 
 			no++;
 			back = src[std::to_string(no)];
@@ -178,41 +171,29 @@ namespace jrc
 		black = src["0"]["bS"].get_string() == "";
 	}
 
-
 	MapBackgrounds::MapBackgrounds() {}
 
 	void MapBackgrounds::drawbackgrounds(double viewx, double viewy, float alpha) const
 	{
 		if (black)
-		{
-			GraphicsGL::get()
-				.drawscreenfill(0.0f, 0.0f, 0.0f, 1.0f);
-		}
+			GraphicsGL::get().drawscreenfill(0.0f, 0.0f, 0.0f, 1.0f);
 
 		for (auto& background : backgrounds)
-		{
 			background.draw(viewx, viewy, alpha);
-		}
 	}
 
 	void MapBackgrounds::drawforegrounds(double viewx, double viewy, float alpha) const
 	{
 		for (auto& foreground : foregrounds)
-		{
 			foreground.draw(viewx, viewy, alpha);
-		}
 	}
 
 	void MapBackgrounds::update()
 	{
 		for (auto& background : backgrounds)
-		{
 			background.update();
-		}
 
 		for (auto& foreground : foregrounds)
-		{
 			foreground.update();
-		}
 	}
 }

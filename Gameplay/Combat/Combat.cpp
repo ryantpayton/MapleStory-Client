@@ -1,53 +1,37 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "Combat.h"
 
-#include "../../Character/SkillId.h"
-#include "../../IO/Messages.h"
-#include "../../Net/Packets/AttackAndSkillPackets.h"
+#include "../Character/SkillId.h"
+#include "../IO/Messages.h"
+#include "../Net/Packets/AttackAndSkillPackets.h"
 
-namespace jrc
+namespace ms
 {
-	Combat::Combat(Player& in_player,
-		MapChars& in_chars, MapMobs& in_mobs) :
-		player(in_player),
-		chars(in_chars),
-		mobs(in_mobs),
-		attackresults([&](const AttackResult& attack) {
-			apply_attack(attack);
-		}),
-		bulleteffects([&](const BulletEffect& effect) {
-			apply_bullet_effect(effect);
-		}),
-		damageeffects([&](const DamageEffect& effect) {
-			apply_damage_effect(effect);
-		}) {}
+	Combat::Combat(Player& in_player, MapChars& in_chars, MapMobs& in_mobs) : player(in_player), chars(in_chars), mobs(in_mobs), attackresults([&](const AttackResult& attack) { apply_attack(attack); }), bulleteffects([&](const BulletEffect& effect) { apply_bullet_effect(effect); }), damageeffects([&](const DamageEffect& effect) { apply_damage_effect(effect); }) {}
 
 	void Combat::draw(double viewx, double viewy, float alpha) const
 	{
 		for (auto& be : bullets)
-		{
 			be.bullet.draw(viewx, viewy, alpha);
-		}
+
 		for (auto& dn : damagenumbers)
-		{
 			dn.draw(viewx, viewy, alpha);
-		}
 	}
 
 	void Combat::update()
@@ -56,26 +40,34 @@ namespace jrc
 		bulleteffects.update();
 		damageeffects.update();
 
-		bullets.remove_if([&](BulletEffect& mb) {
-			int32_t target_oid = mb.damageeffect.target_oid;
-			if (mobs.contains(target_oid))
+		bullets.remove_if(
+			[&](BulletEffect& mb)
 			{
-				mb.target = mobs.get_mob_head_position(target_oid);
-				bool apply = mb.bullet.update(mb.target);
-				if (apply)
+				int32_t target_oid = mb.damageeffect.target_oid;
+
+				if (mobs.contains(target_oid))
 				{
-					apply_damage_effect(mb.damageeffect);
+					mb.target = mobs.get_mob_head_position(target_oid);
+					bool apply = mb.bullet.update(mb.target);
+
+					if (apply)
+						apply_damage_effect(mb.damageeffect);
+
+					return apply;
 				}
-				return apply;
+				else
+				{
+					return mb.bullet.update(mb.target);
+				}
 			}
-			else
+		);
+
+		damagenumbers.remove_if(
+			[](DamageNumber& dn)
 			{
-				return mb.bullet.update(mb.target);
+				return dn.update();
 			}
-		});
-		damagenumbers.remove_if([](DamageNumber& dn) {
-			return dn.update();
-		});
+		);
 	}
 
 	void Combat::use_move(int32_t move_id)
@@ -87,9 +79,10 @@ namespace jrc
 
 		SpecialMove::ForbidReason reason = player.can_use(move);
 		Weapon::Type weapontype = player.get_stats().get_weapontype();
+
 		switch (reason)
 		{
-		case SpecialMove::FBR_NONE:
+		case SpecialMove::ForbidReason::FBR_NONE:
 			apply_move(move);
 			break;
 		default:
@@ -123,7 +116,7 @@ namespace jrc
 		else
 		{
 			move.apply_useeffects(player);
-			move.apply_actions(player, Attack::MAGIC);
+			move.apply_actions(player, Attack::Type::MAGIC);
 
 			int32_t moveid = move.get_id();
 			int32_t level = player.get_skills().get_level(moveid);
@@ -135,11 +128,11 @@ namespace jrc
 	{
 		switch (move.get_id())
 		{
-		case SkillId::TELEPORT_FP:
-		case SkillId::IL_TELEPORT:
-		case SkillId::PRIEST_TELEPORT:
+		case SkillId::Id::TELEPORT_FP:
+		case SkillId::Id::IL_TELEPORT:
+		case SkillId::Id::PRIEST_TELEPORT:
 			break;
-		case SkillId::FLASH_JUMP:
+		case SkillId::Id::FLASH_JUMP:
 			break;
 		}
 	}
@@ -148,9 +141,9 @@ namespace jrc
 	{
 		switch (move.get_id())
 		{
-		case SkillId::RUSH_HERO:
-		case SkillId::RUSH_PALADIN:
-		case SkillId::RUSH_DK:
+		case SkillId::Id::RUSH_HERO:
+		case SkillId::Id::RUSH_PALADIN:
+		case SkillId::Id::RUSH_DK:
 			apply_rush(result);
 			break;
 		}
@@ -169,6 +162,7 @@ namespace jrc
 	void Combat::apply_bullet_effect(const BulletEffect& effect)
 	{
 		bullets.push_back(effect);
+
 		if (bullets.back().bullet.settarget(effect.target))
 		{
 			apply_damage_effect(effect.damageeffect);
@@ -203,13 +197,9 @@ namespace jrc
 			move.apply_useeffects(user);
 
 			if (Stance::Id stance = Stance::by_id(attack.stance))
-			{
 				user.attack(stance);
-			}
 			else
-			{
 				move.apply_actions(user, attack.type);
-			}
 
 			user.set_afterimage(attack.skill);
 
@@ -225,6 +215,7 @@ namespace jrc
 			user.is_twohanded(),
 			!result.toleft
 		};
+
 		if (result.bullet)
 		{
 			Bullet bullet{
@@ -236,12 +227,14 @@ namespace jrc
 			for (auto& line : result.damagelines)
 			{
 				int32_t oid = line.first;
+
 				if (mobs.contains(oid))
 				{
 					std::vector<DamageNumber> numbers = place_numbers(oid, line.second);
 					Point<int16_t> head = mobs.get_mob_head_position(oid);
 
 					size_t i = 0;
+
 					for (auto& number : numbers)
 					{
 						DamageEffect effect{
@@ -252,6 +245,7 @@ namespace jrc
 							oid,
 							move.get_id()
 						};
+
 						bulleteffects.emplace(user.get_attackdelay(i), std::move(effect), bullet, head);
 						i++;
 					}
@@ -262,16 +256,10 @@ namespace jrc
 			{
 				int16_t xshift = result.toleft ? -400 : 400;
 				Point<int16_t> target = user.get_position() + Point<int16_t>(xshift, -26);
+
 				for (uint8_t i = 0; i < result.hitcount; i++)
 				{
-					DamageEffect effect{
-						attackuser,
-						{},
-						0,
-						false,
-						0,
-						0
-					};
+					DamageEffect effect{ attackuser, {}, 0, false, 0, 0 };
 					bulleteffects.emplace(user.get_attackdelay(i), std::move(effect), bullet, target);
 				}
 			}
@@ -281,16 +269,18 @@ namespace jrc
 			for (auto& line : result.damagelines)
 			{
 				int32_t oid = line.first;
+
 				if (mobs.contains(oid))
 				{
 					std::vector<DamageNumber> numbers = place_numbers(oid, line.second);
 
 					size_t i = 0;
+
 					for (auto& number : numbers)
 					{
 						damageeffects.emplace(
-							user.get_attackdelay(i), 
-							attackuser, 
+							user.get_attackdelay(i),
+							attackuser,
 							number,
 							line.second[i].first,
 							result.toleft,
@@ -309,15 +299,17 @@ namespace jrc
 	{
 		std::vector<DamageNumber> numbers;
 		int16_t head = mobs.get_mob_head_position(oid).y();
+
 		for (auto& line : damagelines)
 		{
 			int32_t amount = line.first;
 			bool critical = line.second;
-			DamageNumber::Type type = critical ? DamageNumber::CRITICAL : DamageNumber::NORMAL;
+			DamageNumber::Type type = critical ? DamageNumber::Type::CRITICAL : DamageNumber::Type::NORMAL;
 			numbers.emplace_back(type, amount, head);
 
 			head -= DamageNumber::rowheight(critical);
 		}
+
 		return numbers;
 	}
 
@@ -330,14 +322,13 @@ namespace jrc
 
 			const SpecialMove& move = get_move(skillid);
 			move.apply_useeffects(user);
-			move.apply_actions(user, Attack::MAGIC);
+			move.apply_actions(user, Attack::Type::MAGIC);
 		}
 	}
 
 	void Combat::show_player_buff(int32_t skillid)
 	{
-		get_move(skillid)
-			.apply_useeffects(player);
+		get_move(skillid).apply_useeffects(player);
 	}
 
 	const SpecialMove& Combat::get_move(int32_t move_id)
@@ -346,10 +337,10 @@ namespace jrc
 			return regularattack;
 
 		auto iter = skills.find(move_id);
+
 		if (iter == skills.end())
-		{
 			iter = skills.emplace(move_id, move_id).first;
-		}
+
 		return iter->second;
 	}
 }

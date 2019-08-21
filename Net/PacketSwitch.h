@@ -1,27 +1,28 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include "PacketHandler.h"
 
 #include <type_traits>
 #include <memory>
 
-namespace jrc
+namespace ms
 {
 	// Class which contains the array of handler classes to use.
 	class PacketSwitch
@@ -53,17 +54,14 @@ namespace jrc
 
 		// Register a handler for the specified opcode.
 		template <size_t O, typename T, typename...Args>
-		void emplace(Args&&...args)
+		void emplace(Args&& ...args)
 		{
-			static_assert(O < NUM_HANDLERS,
-				"PacketSwitch::emplace - Opcode out of array bounds.");
-			static_assert(std::is_base_of<PacketHandler, T>::value,
-				"Error: Packet handlers must derive from PacketHandler");
+			static_assert(O < NUM_HANDLERS, "PacketSwitch::emplace - Opcode out of array bounds.");
+			static_assert(std::is_base_of<PacketHandler, T>::value, "Error: Packet handlers must derive from PacketHandler");
 
 			if (handlers[O])
-			{
 				warn(MSG_REREGISTER, O);
-			}
+
 			handlers[O] = std::make_unique<T>(
 				std::forward<Args>(args)...
 				);

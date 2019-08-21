@@ -1,20 +1,20 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "UISkillbook.h"
 
 #include "../Components/MapleButton.h"
@@ -28,7 +28,7 @@
 
 #include <nlnx/nx.hpp>
 
-namespace jrc
+namespace ms
 {
 	SkillIcon::SkillIcon(int32_t i, int32_t l) : id(i), lv(l)
 	{
@@ -414,7 +414,7 @@ namespace jrc
 
 		Job::Level level = job.get_level();
 
-		for (uint16_t i = 0; i <= Job::Level::FOURTHT; i++)
+		for (uint16_t i = 0; i <= Job::Level::FOURTH; i++)
 			buttons[Buttons::BT_TAB0 + i]->set_active(i <= level);
 
 		change_tab(level - Job::Level::BEGINNER);
@@ -564,7 +564,7 @@ namespace jrc
 		case 3:
 			return Job::Level::THIRD;
 		case 4:
-			return Job::Level::FOURTHT;
+			return Job::Level::FOURTH;
 		default:
 			return Job::Level::BEGINNER;
 		}

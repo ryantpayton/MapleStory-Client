@@ -1,23 +1,23 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "Bullet.h"
 
-namespace jrc
+namespace ms
 {
 	Bullet::Bullet(Animation a, Point<int16_t> origin, bool toleft)
 	{
@@ -38,35 +38,31 @@ namespace jrc
 	{
 		double xdelta = target.x() - moveobj.crnt_x();
 		double ydelta = target.y() - moveobj.crnt_y();
+
 		if (std::abs(xdelta) < 10.0)
 			return true;
 
 		flip = xdelta > 0.0;
 
 		moveobj.hspeed = xdelta / 32;
+
 		if (xdelta > 0.0)
 		{
 			if (moveobj.hspeed < 3.0)
-			{
 				moveobj.hspeed = 3.0;
-			}
 			else if (moveobj.hspeed > 6.0)
-			{
 				moveobj.hspeed = 6.0;
-			}
 		}
 		else if (xdelta < 0.0)
 		{
 			if (moveobj.hspeed > -3.0)
-			{
 				moveobj.hspeed = -3.0;
-			}
 			else if (moveobj.hspeed < -6.0)
-			{
 				moveobj.hspeed = -6.0;
-			}
 		}
+
 		moveobj.vspeed = moveobj.hspeed * ydelta / xdelta;
+
 		return false;
 	}
 

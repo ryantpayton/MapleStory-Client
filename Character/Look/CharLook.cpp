@@ -1,28 +1,29 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "CharLook.h"
 
-#include "../../Constants.h"
-#include "../../Data/WeaponData.h"
+#include "../Constants.h"
+
+#include "../Data/WeaponData.h"
 
 #include <array>
 
-namespace jrc
+namespace ms
 {
 	CharLook::CharLook(const LookEntry& entry)
 	{
@@ -33,9 +34,7 @@ namespace jrc
 		set_face(entry.faceid);
 
 		for (auto& equip : entry.equips)
-		{
 			add_equip(equip.second);
-		}
 	}
 
 	CharLook::CharLook()
@@ -55,138 +54,138 @@ namespace jrc
 		actionstr = "";
 		actframe = 0;
 
-		set_stance(Stance::STAND1);
+		set_stance(Stance::Id::STAND1);
 		stframe.set(0);
 		stelapsed = 0;
 
-		set_expression(Expression::DEFAULT);
+		set_expression(Expression::Id::DEFAULT);
 		expframe.set(0);
 		expelapsed = 0;
 	}
 
-	void CharLook::draw(const DrawArgument& args, Stance::Id interstance,
-		Expression::Id interexpression, uint8_t interframe, uint8_t interexpframe) const {
-
+	void CharLook::draw(const DrawArgument& args, Stance::Id interstance, Expression::Id interexpression, uint8_t interframe, uint8_t interexpframe) const
+	{
 		Point<int16_t> faceshift = drawinfo.getfacepos(interstance, interframe);
-		DrawArgument faceargs = args + DrawArgument{ faceshift, false, Point<int16_t>{}};
+		DrawArgument faceargs = args + DrawArgument{ faceshift, false, Point<int16_t>{} };
 
 		if (Stance::is_climbing(interstance))
 		{
-			body->draw(interstance, Body::BODY, interframe, args);
-			equips.draw(Equipslot::GLOVES, interstance, Clothing::GLOVE, interframe, args);
-			equips.draw(Equipslot::SHOES, interstance, Clothing::SHOES, interframe, args);
-			equips.draw(Equipslot::PANTS, interstance, Clothing::PANTS, interframe, args);
-			equips.draw(Equipslot::TOP, interstance, Clothing::TOP, interframe, args);
-			equips.draw(Equipslot::TOP, interstance, Clothing::MAIL, interframe, args);
-			equips.draw(Equipslot::CAPE, interstance, Clothing::CAPE, interframe, args);
-			body->draw(interstance, Body::HEAD, interframe, args);
-			equips.draw(Equipslot::EARRINGS, interstance, Clothing::EARRINGS, interframe, args);
+			body->draw(interstance, Body::Layer::BODY, interframe, args);
+			equips.draw(Equipslot::Id::GLOVES, interstance, Clothing::Layer::GLOVE, interframe, args);
+			equips.draw(Equipslot::Id::SHOES, interstance, Clothing::Layer::SHOES, interframe, args);
+			equips.draw(Equipslot::Id::PANTS, interstance, Clothing::Layer::PANTS, interframe, args);
+			equips.draw(Equipslot::Id::TOP, interstance, Clothing::Layer::TOP, interframe, args);
+			equips.draw(Equipslot::Id::TOP, interstance, Clothing::Layer::MAIL, interframe, args);
+			equips.draw(Equipslot::Id::CAPE, interstance, Clothing::Layer::CAPE, interframe, args);
+			body->draw(interstance, Body::Layer::HEAD, interframe, args);
+			equips.draw(Equipslot::Id::EARRINGS, interstance, Clothing::Layer::EARRINGS, interframe, args);
 
 			switch (equips.getcaptype())
 			{
-			case CharEquips::NONE:
-				hair->draw(interstance, Hair::BACK, interframe, args);
+			case CharEquips::CapType::NONE:
+				hair->draw(interstance, Hair::Layer::BACK, interframe, args);
 				break;
-			case CharEquips::HEADBAND:
-				equips.draw(Equipslot::CAP, interstance, Clothing::CAP, interframe, args);
-				hair->draw(interstance, Hair::BACK, interframe, args);
+			case CharEquips::CapType::HEADBAND:
+				equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP, interframe, args);
+				hair->draw(interstance, Hair::Layer::BACK, interframe, args);
 				break;
-			case CharEquips::HALFCOVER:
-				hair->draw(interstance, Hair::BELOWCAP, interframe, args);
-				equips.draw(Equipslot::CAP, interstance, Clothing::CAP, interframe, args);
+			case CharEquips::CapType::HALFCOVER:
+				hair->draw(interstance, Hair::Layer::BELOWCAP, interframe, args);
+				equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP, interframe, args);
 				break;
-			case CharEquips::FULLCOVER:
-				equips.draw(Equipslot::CAP, interstance, Clothing::CAP, interframe, args);
+			case CharEquips::CapType::FULLCOVER:
+				equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP, interframe, args);
 				break;
 			}
 
-			equips.draw(Equipslot::SHIELD, interstance, Clothing::BACKSHIELD, interframe, args);
-			equips.draw(Equipslot::WEAPON, interstance, Clothing::BACKWEAPON, interframe, args);
+			equips.draw(Equipslot::Id::SHIELD, interstance, Clothing::Layer::BACKSHIELD, interframe, args);
+			equips.draw(Equipslot::Id::WEAPON, interstance, Clothing::Layer::BACKWEAPON, interframe, args);
 		}
 		else
 		{
-			hair->draw(interstance, Hair::BELOWBODY, interframe, args);
-			equips.draw(Equipslot::CAPE, interstance, Clothing::CAPE, interframe, args);
-			equips.draw(Equipslot::SHIELD, interstance, Clothing::SHIELD_BELOW_BODY, interframe, args);
-			equips.draw(Equipslot::WEAPON, interstance, Clothing::WEAPON_BELOW_BODY, interframe, args);
-			equips.draw(Equipslot::CAP, interstance, Clothing::CAP_BELOW_BODY, interframe, args);
-			body->draw(interstance, Body::BODY, interframe, args);
-			equips.draw(Equipslot::GLOVES, interstance, Clothing::WRIST_OVER_BODY, interframe, args);
-			equips.draw(Equipslot::GLOVES, interstance, Clothing::GLOVE_OVER_BODY, interframe, args);
-			equips.draw(Equipslot::SHOES, interstance, Clothing::SHOES, interframe, args);
-			body->draw(interstance, Body::ARM_BELOW_HEAD, interframe, args);
+			hair->draw(interstance, Hair::Layer::BELOWBODY, interframe, args);
+			equips.draw(Equipslot::Id::CAPE, interstance, Clothing::Layer::CAPE, interframe, args);
+			equips.draw(Equipslot::Id::SHIELD, interstance, Clothing::Layer::SHIELD_BELOW_BODY, interframe, args);
+			equips.draw(Equipslot::Id::WEAPON, interstance, Clothing::Layer::WEAPON_BELOW_BODY, interframe, args);
+			equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP_BELOW_BODY, interframe, args);
+			body->draw(interstance, Body::Layer::BODY, interframe, args);
+			equips.draw(Equipslot::Id::GLOVES, interstance, Clothing::Layer::WRIST_OVER_BODY, interframe, args);
+			equips.draw(Equipslot::Id::GLOVES, interstance, Clothing::Layer::GLOVE_OVER_BODY, interframe, args);
+			equips.draw(Equipslot::Id::SHOES, interstance, Clothing::Layer::SHOES, interframe, args);
+			body->draw(interstance, Body::Layer::ARM_BELOW_HEAD, interframe, args);
 
 			if (equips.has_overall())
 			{
-				equips.draw(Equipslot::TOP, interstance, Clothing::MAIL, interframe, args);
+				equips.draw(Equipslot::Id::TOP, interstance, Clothing::Layer::MAIL, interframe, args);
 			}
 			else
 			{
-				equips.draw(Equipslot::PANTS, interstance, Clothing::PANTS, interframe, args);
-				equips.draw(Equipslot::TOP, interstance, Clothing::TOP, interframe, args);
+				equips.draw(Equipslot::Id::PANTS, interstance, Clothing::Layer::PANTS, interframe, args);
+				equips.draw(Equipslot::Id::TOP, interstance, Clothing::Layer::TOP, interframe, args);
 			}
 
-			body->draw(interstance, Body::ARM_BELOW_HEAD_OVER_MAIL, interframe, args);
-			hair->draw(interstance, Hair::DEFAULT, interframe, args);
-			equips.draw(Equipslot::SHIELD, interstance, Clothing::SHIELD_OVER_HAIR, interframe, args);
-			equips.draw(Equipslot::EARRINGS, interstance, Clothing::EARRINGS, interframe, args);
-			body->draw(interstance, Body::HEAD, interframe, args);
-			hair->draw(interstance, Hair::SHADE, interframe, args);
+			body->draw(interstance, Body::Layer::ARM_BELOW_HEAD_OVER_MAIL, interframe, args);
+			hair->draw(interstance, Hair::Layer::DEFAULT, interframe, args);
+			equips.draw(Equipslot::Id::SHIELD, interstance, Clothing::Layer::SHIELD_OVER_HAIR, interframe, args);
+			equips.draw(Equipslot::Id::EARRINGS, interstance, Clothing::Layer::EARRINGS, interframe, args);
+			body->draw(interstance, Body::Layer::HEAD, interframe, args);
+			hair->draw(interstance, Hair::Layer::SHADE, interframe, args);
 			face->draw(interexpression, interexpframe, faceargs);
-			equips.draw(Equipslot::FACEACC, interstance, Clothing::FACEACC, 0, faceargs);
-			equips.draw(Equipslot::EYEACC, interstance, Clothing::EYEACC, interframe, args);
-			equips.draw(Equipslot::SHIELD, interstance, Clothing::SHIELD, interframe, args);
+			equips.draw(Equipslot::Id::FACEACC, interstance, Clothing::Layer::FACEACC, 0, faceargs);
+			equips.draw(Equipslot::Id::EYEACC, interstance, Clothing::Layer::EYEACC, interframe, args);
+			equips.draw(Equipslot::Id::SHIELD, interstance, Clothing::Layer::SHIELD, interframe, args);
 
 			switch (equips.getcaptype())
 			{
-			case CharEquips::NONE:
-				hair->draw(interstance, Hair::OVERHEAD, interframe, args);
+			case CharEquips::CapType::NONE:
+				hair->draw(interstance, Hair::Layer::OVERHEAD, interframe, args);
 				break;
-			case CharEquips::HEADBAND:
-				equips.draw(Equipslot::CAP, interstance, Clothing::CAP, interframe, args);
-				hair->draw(interstance, Hair::DEFAULT, interframe, args);
-				hair->draw(interstance, Hair::OVERHEAD, interframe, args);
-				equips.draw(Equipslot::CAP, interstance, Clothing::CAP_OVER_HAIR, interframe, args);
+			case CharEquips::CapType::HEADBAND:
+				equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP, interframe, args);
+				hair->draw(interstance, Hair::Layer::DEFAULT, interframe, args);
+				hair->draw(interstance, Hair::Layer::OVERHEAD, interframe, args);
+				equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP_OVER_HAIR, interframe, args);
 				break;
-			case CharEquips::HALFCOVER:
-				hair->draw(interstance, Hair::DEFAULT, interframe, args);
-				equips.draw(Equipslot::CAP, interstance, Clothing::CAP, interframe, args);
+			case CharEquips::CapType::HALFCOVER:
+				hair->draw(interstance, Hair::Layer::DEFAULT, interframe, args);
+				equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP, interframe, args);
 				break;
-			case CharEquips::FULLCOVER:
-				equips.draw(Equipslot::CAP, interstance, Clothing::CAP, interframe, args);
+			case CharEquips::CapType::FULLCOVER:
+				equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP, interframe, args);
 				break;
 			}
 
-			equips.draw(Equipslot::WEAPON, interstance, Clothing::WEAPON_BELOW_ARM, interframe, args);
+			equips.draw(Equipslot::Id::WEAPON, interstance, Clothing::Layer::WEAPON_BELOW_ARM, interframe, args);
 			bool twohanded = is_twohanded(interstance);
+
 			if (twohanded)
 			{
-				equips.draw(Equipslot::TOP, interstance, Clothing::MAILARM, interframe, args);
-				body->draw(interstance, Body::ARM, interframe, args);
-				equips.draw(Equipslot::WEAPON, interstance, Clothing::WEAPON, interframe, args);
+				equips.draw(Equipslot::Id::TOP, interstance, Clothing::Layer::MAILARM, interframe, args);
+				body->draw(interstance, Body::Layer::ARM, interframe, args);
+				equips.draw(Equipslot::Id::WEAPON, interstance, Clothing::Layer::WEAPON, interframe, args);
 			}
 			else
 			{
-				equips.draw(Equipslot::WEAPON, interstance, Clothing::WEAPON, interframe, args);
-				body->draw(interstance, Body::ARM, interframe, args);
-				equips.draw(Equipslot::TOP, interstance, Clothing::MAILARM, interframe, args);
+				equips.draw(Equipslot::Id::WEAPON, interstance, Clothing::Layer::WEAPON, interframe, args);
+				body->draw(interstance, Body::Layer::ARM, interframe, args);
+				equips.draw(Equipslot::Id::TOP, interstance, Clothing::Layer::MAILARM, interframe, args);
 			}
 
-			equips.draw(Equipslot::GLOVES, interstance, Clothing::WRIST, interframe, args);
-			equips.draw(Equipslot::GLOVES, interstance, Clothing::GLOVE, interframe, args);
-			equips.draw(Equipslot::WEAPON, interstance, Clothing::WEAPON_OVER_GLOVE, interframe, args);
+			equips.draw(Equipslot::Id::GLOVES, interstance, Clothing::Layer::WRIST, interframe, args);
+			equips.draw(Equipslot::Id::GLOVES, interstance, Clothing::Layer::GLOVE, interframe, args);
+			equips.draw(Equipslot::Id::WEAPON, interstance, Clothing::Layer::WEAPON_OVER_GLOVE, interframe, args);
 
-			body->draw(interstance, Body::HAND_BELOW_WEAPON, interframe, args);
+			body->draw(interstance, Body::Layer::HAND_BELOW_WEAPON, interframe, args);
 
-			body->draw(interstance, Body::ARM_OVER_HAIR, interframe, args);
-			body->draw(interstance, Body::ARM_OVER_HAIR_BELOW_WEAPON, interframe, args);
-			equips.draw(Equipslot::WEAPON, interstance, Clothing::WEAPON_OVER_HAND, interframe, args);
-			equips.draw(Equipslot::WEAPON, interstance, Clothing::WEAPON_OVER_BODY, interframe, args);
-			body->draw(interstance, Body::HAND_OVER_HAIR, interframe, args);
-			body->draw(interstance, Body::HAND_OVER_WEAPON, interframe, args);
+			body->draw(interstance, Body::Layer::ARM_OVER_HAIR, interframe, args);
+			body->draw(interstance, Body::Layer::ARM_OVER_HAIR_BELOW_WEAPON, interframe, args);
+			equips.draw(Equipslot::Id::WEAPON, interstance, Clothing::Layer::WEAPON_OVER_HAND, interframe, args);
+			equips.draw(Equipslot::Id::WEAPON, interstance, Clothing::Layer::WEAPON_OVER_BODY, interframe, args);
+			body->draw(interstance, Body::Layer::HAND_OVER_HAIR, interframe, args);
+			body->draw(interstance, Body::Layer::HAND_OVER_WEAPON, interframe, args);
 
-			equips.draw(Equipslot::GLOVES, interstance, Clothing::WRIST_OVER_HAIR, interframe, args);
-			equips.draw(Equipslot::GLOVES, interstance, Clothing::GLOVE_OVER_HAIR, interframe, args);
+			equips.draw(Equipslot::Id::GLOVES, interstance, Clothing::Layer::WRIST_OVER_HAIR, interframe, args);
+			equips.draw(Equipslot::Id::GLOVES, interstance, Clothing::Layer::GLOVE_OVER_HAIR, interframe, args);
 		}
 	}
 
@@ -196,10 +195,9 @@ namespace jrc
 			return;
 
 		Point<int16_t> acmove;
+
 		if (action)
-		{
 			acmove = action->get_move();
-		}
 
 		DrawArgument relargs = { acmove, flip };
 
@@ -210,21 +208,19 @@ namespace jrc
 
 		switch (interstance)
 		{
-		case Stance::STAND1:
-		case Stance::STAND2:
+		case Stance::Id::STAND1:
+		case Stance::Id::STAND2:
 			if (alerted)
-			{
-				interstance = Stance::ALERT;
-			}
+				interstance = Stance::Id::ALERT;
+
 			break;
 		}
 
 		draw(relargs + args, interstance, interexpression, interframe, interexpframe);
 	}
 
-	void CharLook::draw(Point<int16_t> position, bool flipped,
-		Stance::Id interstance, Expression::Id interexpression) const {
-
+	void CharLook::draw(Point<int16_t> position, bool flipped, Stance::Id interstance, Expression::Id interexpression) const
+	{
 		interstance = equips.adjust_stance(interstance);
 		draw({ position, flipped }, interstance, interexpression, 0, 0);
 	}
@@ -243,10 +239,12 @@ namespace jrc
 		alerted.update();
 
 		bool aniend = false;
+
 		if (action == nullptr)
 		{
 			uint16_t delay = get_delay(stance.get(), stframe.get());
 			uint16_t delta = delay - stelapsed;
+
 			if (timestep >= delta)
 			{
 				stelapsed = timestep - delta;
@@ -256,9 +254,7 @@ namespace jrc
 				stframe.next(nextframe, threshold);
 
 				if (stframe == 0)
-				{
 					aniend = true;
-				}
 			}
 			else
 			{
@@ -272,15 +268,16 @@ namespace jrc
 		{
 			uint16_t delay = action->get_delay();
 			uint16_t delta = delay - stelapsed;
+
 			if (timestep >= delta)
 			{
 				stelapsed = timestep - delta;
-
 				actframe = drawinfo.next_actionframe(actionstr, actframe);
+
 				if (actframe > 0)
 				{
 					action = drawinfo.get_action(actionstr, actframe);
-					
+
 					float threshold = static_cast<float>(delta) / timestep;
 					stance.next(action->get_stance(), threshold);
 					stframe.next(action->get_frame(), threshold);
@@ -290,7 +287,7 @@ namespace jrc
 					aniend = true;
 					action = nullptr;
 					actionstr = "";
-					set_stance(Stance::STAND1);
+					set_stance(Stance::Id::STAND1);
 				}
 			}
 			else
@@ -304,6 +301,7 @@ namespace jrc
 
 		uint16_t expdelay = face->get_delay(expression.get(), expframe.get());
 		uint16_t expdelta = expdelay - expelapsed;
+
 		if (timestep >= expdelta)
 		{
 			expelapsed = timestep - expdelta;
@@ -314,14 +312,10 @@ namespace jrc
 
 			if (expframe == 0)
 			{
-				if (expression == Expression::DEFAULT)
-				{
-					expression.next(Expression::BLINK, fcthreshold);
-				}
+				if (expression == Expression::Id::DEFAULT)
+					expression.next(Expression::Id::BLINK, fcthreshold);
 				else
-				{
-					expression.next(Expression::DEFAULT, fcthreshold);
-				}
+					expression.next(Expression::Id::DEFAULT, fcthreshold);
 			}
 		}
 		else
@@ -338,6 +332,7 @@ namespace jrc
 	void CharLook::set_body(int32_t skin_id)
 	{
 		auto iter = bodytypes.find(skin_id);
+
 		if (iter == bodytypes.end())
 		{
 			iter = bodytypes.emplace(
@@ -346,12 +341,14 @@ namespace jrc
 				std::forward_as_tuple(skin_id, drawinfo)
 			).first;
 		}
+
 		body = &iter->second;
 	}
 
 	void CharLook::set_hair(int32_t hair_id)
 	{
 		auto iter = hairstyles.find(hair_id);
+
 		if (iter == hairstyles.end())
 		{
 			iter = hairstyles.emplace(
@@ -360,16 +357,17 @@ namespace jrc
 				std::forward_as_tuple(hair_id, drawinfo)
 			).first;
 		}
+
 		hair = &iter->second;
 	}
 
 	void CharLook::set_face(int32_t face_id)
 	{
 		auto iter = facetypes.find(face_id);
+
 		if (iter == facetypes.end())
-		{
 			iter = facetypes.emplace(face_id, face_id).first;
-		}
+
 		face = &iter->second;
 	}
 
@@ -388,22 +386,25 @@ namespace jrc
 	void CharLook::remove_equip(Equipslot::Id slot)
 	{
 		equips.remove_equip(slot);
-		if (slot == Equipslot::WEAPON)
+
+		if (slot == Equipslot::Id::WEAPON)
 			updatetwohanded();
 	}
 
 	void CharLook::attack(bool degenerate)
 	{
 		int32_t weapon_id = equips.get_weapon();
+
 		if (weapon_id <= 0)
 			return;
 
 		const WeaponData& weapon = WeaponData::get(weapon_id);
 
 		uint8_t attacktype = weapon.get_attack();
+
 		if (attacktype == 9 && !degenerate)
 		{
-			stance.set(Stance::SHOT);
+			stance.set(Stance::Id::SHOT);
 			set_action("handgun");
 		}
 		else
@@ -413,31 +414,32 @@ namespace jrc
 			stelapsed = 0;
 		}
 
-		weapon.get_usesound(degenerate)
-			.play();
+		weapon.get_usesound(degenerate).play();
 	}
 
 	void CharLook::attack(Stance::Id newstance)
 	{
-		if (action || newstance == Stance::NONE)
+		if (action || newstance == Stance::Id::NONE)
 			return;
 
 		switch (newstance)
 		{
-		case Stance::SHOT:
+		case Stance::Id::SHOT:
 			set_action("handgun");
 			break;
 		default:
 			set_stance(newstance);
+			break;
 		}
 	}
 
 	void CharLook::set_stance(Stance::Id newstance)
 	{
-		if (action || newstance == Stance::NONE)
+		if (action || newstance == Stance::Id::NONE)
 			return;
 
 		Stance::Id adjstance = equips.adjust_stance(newstance);
+
 		if (stance != adjstance)
 		{
 			stance.set(adjstance);
@@ -448,8 +450,8 @@ namespace jrc
 
 	Stance::Id CharLook::getattackstance(uint8_t attack, bool degenerate) const
 	{
-		if (stance == Stance::PRONE)
-			return Stance::PRONESTAB;
+		if (stance == Stance::Id::PRONE)
+			return Stance::Id::PRONESTAB;
 
 		enum Attack
 		{
@@ -465,42 +467,46 @@ namespace jrc
 			NUM_ATTACKS
 		};
 
-		static const std::array<std::vector<Stance::Id>, NUM_ATTACKS> degen_stances =
-		{ {
-			{ Stance::NONE },
-			{ Stance::NONE },
-			{ Stance::NONE },
-			{ Stance::SWINGT1, Stance::SWINGT3 },
-			{ Stance::SWINGT1, Stance::STABT1 },
-			{ Stance::NONE },
-			{ Stance::NONE },
-			{ Stance::SWINGT1, Stance::STABT1 },
-			{ Stance::NONE },
-			{ Stance::SWINGP1, Stance::STABT2 }
-		} };
+		static const std::array<std::vector<Stance::Id>, Attack::NUM_ATTACKS> degen_stances = {
+			{
+				{ Stance::Id::NONE },
+				{ Stance::Id::NONE },
+				{ Stance::Id::NONE },
+				{ Stance::Id::SWINGT1, Stance::Id::SWINGT3 },
+				{ Stance::Id::SWINGT1, Stance::Id::STABT1 },
+				{ Stance::Id::NONE },
+				{ Stance::Id::NONE },
+				{ Stance::Id::SWINGT1, Stance::Id::STABT1 },
+				{ Stance::Id::NONE },
+				{ Stance::Id::SWINGP1, Stance::Id::STABT2 }
+			}
+		};
 
-		static const std::array<std::vector<Stance::Id>, NUM_ATTACKS> attack_stances =
-		{ {
-			{ Stance::NONE },
-			{ Stance::STABO1, Stance::STABO2, Stance::SWINGO1, Stance::SWINGO2, Stance::SWINGO3 },
-			{ Stance::STABT1, Stance::SWINGP1 },
-			{ Stance::SHOOT1 },
-			{ Stance::SHOOT2 },
-			{ Stance::STABO1, Stance::STABO2, Stance::SWINGT1, Stance::SWINGT2, Stance::SWINGT3 },
-			{ Stance::SWINGO1, Stance::SWINGO2 },
-			{ Stance::SWINGO1, Stance::SWINGO2 },
-			{ Stance::NONE },
-			{ Stance::SHOT }
-		} };
+		static const std::array<std::vector<Stance::Id>, NUM_ATTACKS> attack_stances = {
+			{
+				{ Stance::Id::NONE },
+				{ Stance::Id::STABO1, Stance::Id::STABO2, Stance::Id::SWINGO1, Stance::Id::SWINGO2, Stance::Id::SWINGO3 },
+				{ Stance::Id::STABT1, Stance::Id::SWINGP1 },
+				{ Stance::Id::SHOOT1 },
+				{ Stance::Id::SHOOT2 },
+				{ Stance::Id::STABO1, Stance::Id::STABO2, Stance::Id::SWINGT1, Stance::Id::SWINGT2, Stance::Id::SWINGT3 },
+				{ Stance::Id::SWINGO1, Stance::Id::SWINGO2 },
+				{ Stance::Id::SWINGO1, Stance::Id::SWINGO2 },
+				{ Stance::Id::NONE },
+				{ Stance::Id::SHOT }
+			}
+		};
 
-		if (attack <= NONE || attack >= NUM_ATTACKS)
-			return Stance::STAND1;
+		if (attack <= Attack::NONE || attack >= Attack::NUM_ATTACKS)
+			return Stance::Id::STAND1;
 
 		const auto& stances = degenerate ? degen_stances[attack] : attack_stances[attack];
+
 		if (stances.empty())
-			return Stance::STAND1;
+			return Stance::Id::STAND1;
 
 		size_t index = randomizer.next_int(stances.size());
+
 		return stances[index];
 	}
 
@@ -564,11 +570,11 @@ namespace jrc
 	{
 		switch (st)
 		{
-		case Stance::STAND1:
-		case Stance::WALK1:
+		case Stance::Id::STAND1:
+		case Stance::Id::WALK1:
 			return false;
-		case Stance::STAND2:
-		case Stance::WALK2:
+		case Stance::Id::STAND2:
+		case Stance::Id::WALK2:
 			return true;
 		default:
 			return equips.is_twohanded();
@@ -584,10 +590,10 @@ namespace jrc
 		else
 		{
 			uint16_t delay = 0;
+
 			for (uint8_t frame = 0; frame < first_frame; frame++)
-			{
 				delay += get_delay(stance.get(), frame);
-			}
+
 			return delay;
 		}
 	}
@@ -621,8 +627,6 @@ namespace jrc
 	{
 		return equips;
 	}
-
-
 
 	void CharLook::init()
 	{

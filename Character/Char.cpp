@@ -1,27 +1,27 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "Char.h"
 
 #include "../Data/WeaponData.h"
 
 #include <nlnx/nx.hpp>
 
-namespace jrc
+namespace ms
 {
 	Char::Char(int32_t o, const CharLook& lk, const std::string& name) : MapObject(o), look(lk), namelabel(Text(Text::Font::A13M, Text::Alignment::CENTER, Color::Name::WHITE, Text::Background::NAMETAG, name)) {}
 
@@ -74,7 +74,8 @@ namespace jrc
 	bool Char::update(const Physics& physics, float speed)
 	{
 		damagenumbers.remove_if(
-			[](DamageNumber& number) {
+			[](DamageNumber& number)
+			{
 				return number.update();
 			}
 		);
@@ -90,16 +91,18 @@ namespace jrc
 			{
 				switch (state)
 				{
-				case LADDER:
-				case ROPE:
+				case State::LADDER:
+				case State::ROPE:
 					pet.set_stance(PetLook::Stance::HANG);
 					break;
-				case SWIM:
+				case State::SWIM:
 					pet.set_stance(PetLook::Stance::FLY);
 					break;
 				default:
 					if (pet.get_stance() == PetLook::Stance::HANG || pet.get_stance() == PetLook::Stance::FLY)
 						pet.set_stance(PetLook::Stance::STAND);
+
+					break;
 				}
 
 				pet.update(physics, get_position());
@@ -267,7 +270,7 @@ namespace jrc
 		const WeaponData& weapon = WeaponData::get(weapon_id);
 
 		std::string stance_name = Stance::names[look.get_stance()];
-		int16_t weapon_level = weapon.get_equipdata().get_reqstat(Maplestat::LEVEL);
+		int16_t weapon_level = weapon.get_equipdata().get_reqstat(Maplestat::Id::LEVEL);
 		const std::string& ai_name = weapon.get_afterimage();
 
 		afterimage = Afterimage(skill_id, ai_name, stance_name, weapon_level);

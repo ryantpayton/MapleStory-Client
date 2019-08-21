@@ -1,31 +1,32 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../Physics/PhysicsObject.h"
 
-#include "../../Console.h"
-#include "../../Constants.h"
-#include "../../Graphics/Texture.h"
-#include "../../Graphics/Animation.h"
+#include "../Console.h"
+#include "../Constants.h"
+
+#include "../Physics/PhysicsObject.h"
+#include "../Graphics/Texture.h"
+#include "../Graphics/Animation.h"
 
 #include <vector>
 
-namespace jrc
+namespace ms
 {
 	class Background
 	{
@@ -50,12 +51,12 @@ namespace jrc
 
 		static Type typebyid(int32_t id)
 		{
-			if (id >= NORMAL && id <= VMOVEB)
+			if (id >= Type::NORMAL && id <= Type::VMOVEB)
 				return static_cast<Type>(id);
 
 			Console::get().print("Unhandled background type: " + std::to_string(id));
 
-			return NORMAL;
+			return Type::NORMAL;
 		}
 
 		void settype(Type type);
@@ -78,7 +79,6 @@ namespace jrc
 
 		MovingObject moveobj;
 	};
-
 
 	class MapBackgrounds
 	{

@@ -1,28 +1,28 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "CharStats.h"
 #include "StatCaps.h"
 
-namespace jrc
+namespace ms
 {
 	CharStats::CharStats(const StatsEntry& s) : name(s.name), petids(s.petids), exp(s.exp), mapid(s.mapid), portal(s.portal), rank(s.rank), jobrank(s.jobrank), basestats(s.stats)
 	{
-		job = basestats[Maplestat::JOB];
+		job = basestats[Maplestat::Id::JOB];
 		init_totalstats();
 	}
 
@@ -34,14 +34,14 @@ namespace jrc
 		buffdeltas.clear();
 		percentages.clear();
 
-		totalstats[Equipstat::HP] = get_stat(Maplestat::MAXHP);
-		totalstats[Equipstat::MP] = get_stat(Maplestat::MAXMP);
-		totalstats[Equipstat::STR] = get_stat(Maplestat::STR);
-		totalstats[Equipstat::DEX] = get_stat(Maplestat::DEX);
-		totalstats[Equipstat::INT] = get_stat(Maplestat::INT);
-		totalstats[Equipstat::LUK] = get_stat(Maplestat::LUK);
-		totalstats[Equipstat::SPEED] = 100;
-		totalstats[Equipstat::JUMP] = 100;
+		totalstats[Equipstat::Id::HP] = get_stat(Maplestat::Id::MAXHP);
+		totalstats[Equipstat::Id::MP] = get_stat(Maplestat::Id::MAXMP);
+		totalstats[Equipstat::Id::STR] = get_stat(Maplestat::Id::STR);
+		totalstats[Equipstat::Id::DEX] = get_stat(Maplestat::Id::DEX);
+		totalstats[Equipstat::Id::INT] = get_stat(Maplestat::Id::INT);
+		totalstats[Equipstat::Id::LUK] = get_stat(Maplestat::Id::LUK);
+		totalstats[Equipstat::Id::SPEED] = 100;
+		totalstats[Equipstat::Id::JUMP] = 100;
 
 		maxdamage = 0;
 		mindamage = 0;
@@ -62,7 +62,7 @@ namespace jrc
 
 	void CharStats::close_totalstats()
 	{
-		totalstats[Equipstat::ACC] += calculateaccuracy();
+		totalstats[Equipstat::Id::ACC] += calculateaccuracy();
 
 		for (auto iter : percentages)
 		{
@@ -74,7 +74,7 @@ namespace jrc
 
 		int32_t primary = get_primary_stat();
 		int32_t secondary = get_secondary_stat();
-		int32_t attack = get_total(Equipstat::WATK);
+		int32_t attack = get_total(Equipstat::Id::WATK);
 		float multiplier = damagepercent + static_cast<float>(attack) / 100;
 		maxdamage = static_cast<int32_t>((primary + secondary) * multiplier);
 		mindamage = static_cast<int32_t>(((primary * 0.9f * mastery) + secondary) * multiplier);
@@ -82,8 +82,8 @@ namespace jrc
 
 	int32_t CharStats::calculateaccuracy() const
 	{
-		int32_t totaldex = get_total(Equipstat::DEX);
-		int32_t totalluk = get_total(Equipstat::LUK);
+		int32_t totaldex = get_total(Equipstat::Id::DEX);
+		int32_t totalluk = get_total(Equipstat::Id::LUK);
 
 		return static_cast<int32_t>(totaldex * 0.8f + totalluk * 0.5f);
 	}
@@ -106,28 +106,28 @@ namespace jrc
 	{
 		switch (weapontype)
 		{
-		case Weapon::SWORD_1H:
+		case Weapon::Type::SWORD_1H:
 			return 4.0f;
-		case Weapon::AXE_1H:
-		case Weapon::MACE_1H:
-		case Weapon::WAND:
-		case Weapon::STAFF:
+		case Weapon::Type::AXE_1H:
+		case Weapon::Type::MACE_1H:
+		case Weapon::Type::WAND:
+		case Weapon::Type::STAFF:
 			return 4.4f;
-		case Weapon::DAGGER:
-		case Weapon::CROSSBOW:
-		case Weapon::CLAW:
-		case Weapon::GUN:
+		case Weapon::Type::DAGGER:
+		case Weapon::Type::CROSSBOW:
+		case Weapon::Type::CLAW:
+		case Weapon::Type::GUN:
 			return 3.6f;
-		case Weapon::SWORD_2H:
+		case Weapon::Type::SWORD_2H:
 			return 4.6f;
-		case Weapon::AXE_2H:
-		case Weapon::MACE_2H:
-		case Weapon::KNUCKLE:
+		case Weapon::Type::AXE_2H:
+		case Weapon::Type::MACE_2H:
+		case Weapon::Type::KNUCKLE:
 			return 4.8f;
-		case Weapon::SPEAR:
-		case Weapon::POLEARM:
+		case Weapon::Type::SPEAR:
+		case Weapon::Type::POLEARM:
 			return 5.0f;
-		case Weapon::BOW:
+		case Weapon::Type::BOW:
 			return 3.4f;
 		default:
 			return 0.0f;
@@ -218,7 +218,7 @@ namespace jrc
 
 	bool CharStats::is_damage_buffed() const
 	{
-		return get_buffdelta(Equipstat::WATK) > 0 || get_buffdelta(Equipstat::MAGIC) > 0;
+		return get_buffdelta(Equipstat::Id::WATK) > 0 || get_buffdelta(Equipstat::Id::MAGIC) > 0;
 	}
 
 	uint16_t CharStats::get_stat(Maplestat::Id stat) const

@@ -1,30 +1,33 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../Journey.h"
-#ifndef JOURNEY_USE_ASIO
+
+#include "../MapleStory.h"
+
+#ifndef USE_ASIO
 #include "NetConstants.h"
+
 #include <cstdlib>
 #include <cstdint>
 
-namespace jrc
+namespace ms
 {
-#ifdef JOURNEY_USE_CRYPTO
+#ifdef USE_CRYPTO
 	const size_t HANDSHAKE_LEN = 16;
 #else
 	const size_t HANDSHAKE_LEN = 2;
@@ -33,7 +36,7 @@ namespace jrc
 	class SocketWinsock
 	{
 	public:
-		bool open(const char* adress, const char* port);
+		bool open(const char* address, const char* port);
 		bool close();
 
 		bool dispatch(const int8_t* bytes, size_t length) const;
@@ -46,4 +49,3 @@ namespace jrc
 	};
 }
 #endif
-

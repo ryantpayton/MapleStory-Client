@@ -1,26 +1,28 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../../Constants.h"
-#include "../../Template/Interpolated.h"
-#include "../../Template/Point.h"
 
-namespace jrc
+#include "../Constants.h"
+
+#include "../Template/Interpolated.h"
+#include "../Template/Point.h"
+
+namespace ms
 {
 	// Struct that contains all properties for movement calculations.
 	struct MovingObject
@@ -143,12 +145,13 @@ namespace jrc
 
 		Point<int16_t> get_position() const
 		{
-			return{ get_x(), get_y() };
+			return { get_x(), get_y() };
 		}
 
 		int16_t get_absolute_x(double viewx, float alpha) const
 		{
 			double interx = x.normalized() ? std::round(x.get()) : x.get(alpha);
+
 			return static_cast<int16_t>(
 				std::round(interx + viewx)
 				);
@@ -157,6 +160,7 @@ namespace jrc
 		int16_t get_absolute_y(double viewy, float alpha) const
 		{
 			double intery = y.normalized() ? std::round(y.get()) : y.get(alpha);
+
 			return static_cast<int16_t>(
 				std::round(intery + viewy)
 				);
@@ -164,11 +168,11 @@ namespace jrc
 
 		Point<int16_t> get_absolute(double viewx, double viewy, float alpha) const
 		{
-			return{ get_absolute_x(viewx, alpha), get_absolute_y(viewy, alpha) };
+			return { get_absolute_x(viewx, alpha), get_absolute_y(viewy, alpha) };
 		}
 	};
 
-	// Struct that contains all properties neccessary for physics calculations.
+	// Struct that contains all properties necessary for physics calculations.
 	struct PhysicsObject : public MovingObject
 	{
 		// Determines which physics engine to use.
@@ -228,4 +232,3 @@ namespace jrc
 		}
 	};
 }
-

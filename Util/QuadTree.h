@@ -1,26 +1,27 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include <functional>
 #include <vector>
 #include <unordered_map>
 
-namespace jrc
+namespace ms
 {
 	template<typename K, typename V>
 	class QuadTree
@@ -37,8 +38,7 @@ namespace jrc
 			comparator = c;
 		}
 
-		QuadTree()
-			: QuadTree(nullptr) {}
+		QuadTree() : QuadTree(nullptr) {}
 
 		void clear()
 		{
@@ -50,9 +50,11 @@ namespace jrc
 		void add(K key, V value)
 		{
 			K parent = 0;
+
 			if (root)
 			{
 				K current = root;
+
 				while (current)
 				{
 					parent = current;
@@ -68,7 +70,7 @@ namespace jrc
 				std::piecewise_construct,
 				std::forward_as_tuple(key),
 				std::forward_as_tuple(value, parent, 0, 0, 0, 0)
-				);
+			);
 		}
 
 		void erase(K key)
@@ -79,31 +81,26 @@ namespace jrc
 			Node& toerase = nodes[key];
 
 			std::vector<K> leaves;
+
 			for (size_t i = LEFT; i <= DOWN; i++)
 			{
 				K leafkey = toerase[i];
+
 				if (leafkey)
-				{
 					leaves.push_back(leafkey);
-				}
 			}
 
 			K parent = toerase.parent;
+
 			if (root == key)
-			{
 				root = 0;
-			}
 			else if (nodes.count(parent))
-			{
 				nodes[parent].erase(key);
-			}
 
 			nodes.erase(key);
 
 			for (auto& leaf : leaves)
-			{
 				readd(parent, leaf);
-			}
 		}
 
 		K findnode(const V& value, std::function<bool(const V&, const V&)> predicate)
@@ -111,6 +108,7 @@ namespace jrc
 			if (root)
 			{
 				K key = findfrom(root, value, predicate);
+
 				return predicate(value, nodes[key].value) ? key : 0;
 			}
 			else
@@ -137,21 +135,20 @@ namespace jrc
 
 			bool fulfilled = predicate(value, nodes[start].value);
 			Direction dir = comparator(value, nodes[start].value);
+
 			if (dir == RIGHT)
 			{
 				K right = findfrom(nodes[start].right, value, predicate);
+
 				if (right && predicate(value, nodes[right].value))
-				{
 					return right;
-				}
 				else
-				{
 					return start;
-				}
 			}
 			else if (dir == DOWN)
 			{
 				K bottom = findfrom(nodes[start].bottom, value, predicate);
+
 				if (bottom && predicate(value, nodes[bottom].value))
 				{
 					return bottom;
@@ -163,19 +160,17 @@ namespace jrc
 				else
 				{
 					K right = findfrom(nodes[start].right, value, predicate);
+
 					if (right && predicate(value, nodes[right].value))
-					{
 						return right;
-					}
 					else
-					{
 						return start;
-					}
 				}
 			}
 			else if (dir == UP)
 			{
 				K top = findfrom(nodes[start].top, value, predicate);
+
 				if (top && predicate(value, nodes[top].value))
 				{
 					return top;
@@ -187,57 +182,42 @@ namespace jrc
 				else
 				{
 					K right = findfrom(nodes[start].right, value, predicate);
+
 					if (right && predicate(value, nodes[right].value))
-					{
 						return right;
-					}
 					else
-					{
 						return start;
-					}
 				}
 			}
 			else
 			{
 				K left = findfrom(nodes[start].left, value, predicate);
+
 				if (left && predicate(value, nodes[left].value))
-				{
 					return left;
-				}
 				else if (fulfilled)
-				{
 					return start;
-				}
 
 				K bottom = findfrom(nodes[start].bottom, value, predicate);
+
 				if (bottom && predicate(value, nodes[bottom].value))
-				{
 					return bottom;
-				}
 				else if (fulfilled)
-				{
 					return start;
-				}
 
 				K top = findfrom(nodes[start].top, value, predicate);
+
 				if (top && predicate(value, nodes[top].value))
-				{
 					return top;
-				}
 				else if (fulfilled)
-				{
 					return start;
-				}
 
 				K right = findfrom(nodes[start].right, value, predicate);
+
 				if (right && predicate(value, nodes[right].value))
-				{
 					return right;
-				}
 				else
-				{
 					return start;
-				}
 			}
 		}
 
@@ -247,6 +227,7 @@ namespace jrc
 			{
 				K parent = 0;
 				K current = start;
+
 				while (current)
 				{
 					parent = current;
@@ -276,11 +257,8 @@ namespace jrc
 			K top;
 			K bottom;
 
-			Node(const V& v, K p, K l, K r, K t, K b)
-				: value(v), parent(p), left(l), right(r), top(t), bottom(b) {}
-
-			Node()
-				: Node(V(), 0, 0, 0, 0, 0) {}
+			Node(const V& v, K p, K l, K r, K t, K b) : value(v), parent(p), left(l), right(r), top(t), bottom(b) {}
+			Node() : Node(V(), 0, 0, 0, 0, 0) {}
 
 			void erase(K key)
 			{
@@ -298,6 +276,7 @@ namespace jrc
 			{
 				Direction dir = comparator(val, value);
 				K dirkey = leaf(dir);
+
 				if (!dirkey)
 				{
 					switch (dir)
@@ -316,6 +295,7 @@ namespace jrc
 						break;
 					}
 				}
+
 				return dirkey;
 			}
 
@@ -339,6 +319,7 @@ namespace jrc
 			K operator [](size_t d)
 			{
 				auto dir = static_cast<Direction>(d);
+
 				return leaf(dir);
 			}
 		};

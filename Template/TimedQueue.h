@@ -1,36 +1,36 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include "../Constants.h"
 
 #include <queue>
 #include <functional>
 #include <cstdint>
 
-namespace jrc
+namespace ms
 {
 	template <typename T>
 	class TimedQueue
 	{
 	public:
-		TimedQueue(std::function<void(const T&)> in_action)
-			: action(in_action) {
-
+		TimedQueue(std::function<void(const T&)> in_action) : action(in_action)
+		{
 			time = 0;
 		}
 
@@ -40,7 +40,7 @@ namespace jrc
 		}
 
 		template <typename...Args>
-		void emplace(int64_t delay, Args&&...args)
+		void emplace(int64_t delay, Args&& ...args)
 		{
 			queue.emplace(time + delay, std::move(args)...);
 		}
@@ -52,6 +52,7 @@ namespace jrc
 			for (; !queue.empty(); queue.pop())
 			{
 				const Timed& top = queue.top();
+
 				if (top.when > time)
 					break;
 
@@ -65,12 +66,10 @@ namespace jrc
 			T value;
 			int64_t when;
 
-			Timed(int64_t w, const T& v)
-				: when{ w }, value{ v } {}
+			Timed(int64_t w, const T& v) : when{ w }, value{ v } {}
 
 			template <typename...Args>
-			Timed(int64_t w, Args&&...args)
-				: when{ w }, value{ std::forward<Args>(args)... } {}
+			Timed(int64_t w, Args&& ...args) : when{ w }, value{ std::forward<Args>(args)... } {}
 		};
 
 		struct TimedComparator

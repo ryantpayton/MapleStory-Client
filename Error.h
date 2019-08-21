@@ -1,23 +1,23 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-namespace jrc
+namespace ms
 {
 	// Error codes to be checked after initialisation.
 	class Error
@@ -42,20 +42,17 @@ namespace jrc
 			LENGTH
 		};
 
-		constexpr Error(Code c)
-			: Error(c, "") {}
-
-		constexpr Error(Code c, const char* args)
-			: code(c), args(args) {}
+		constexpr Error(Code c) : Error(c, "") {}
+		constexpr Error(Code c, const char* args) : code(c), args(args) {}
 
 		constexpr operator bool() const
 		{
-			return code != NONE;
+			return code != Code::NONE;
 		}
 
 		constexpr bool can_retry() const
 		{
-			return code == CONNECTION || code == MISSING_FILE;
+			return code == Code::CONNECTION || code == Code::MISSING_FILE;
 		}
 
 		constexpr const char* get_message() const
@@ -72,7 +69,7 @@ namespace jrc
 		Code code;
 		const char* args;
 
-		static constexpr const char* messages[LENGTH] =
+		static constexpr const char* messages[Code::LENGTH] =
 		{
 			"",
 			"The server seems to be offline. Please start the server and enter 'retry'.",

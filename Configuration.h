@@ -1,21 +1,22 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include "Template/Point.h"
 #include "Template/Singleton.h"
 #include "Template/TypeMap.h"
@@ -26,7 +27,7 @@
 #include <type_traits>
 #include <functional>
 
-namespace jrc
+namespace ms
 {
 	// Manages the 'Settings' file which contains configurations set by user behaviour.
 	class Configuration : public Singleton<Configuration>
@@ -251,7 +252,7 @@ namespace jrc
 		Height() : ShortEntry("Height", "600") {}
 	};
 
-	// Whether to use vsync.
+	// Whether to use Vsync.
 	struct VSync : public Configuration::BoolEntry
 	{
 		VSync() : BoolEntry("VSync", "true") {}
@@ -420,11 +421,10 @@ namespace jrc
 		// Access a setting.
 		static T& get()
 		{
-			static_assert(std::is_base_of<Configuration::Entry, T>::value,
-				"template parameter T for Setting must inherit from Configuration::Entry.");
+			static_assert(std::is_base_of<Configuration::Entry, T>::value, "template parameter T for Setting must inherit from Configuration::Entry.");
 
-			auto* entry = Configuration::get()
-				.settings.get<T>();
+			auto* entry = Configuration::get().settings.get<T>();
+
 			if (entry)
 			{
 				return *entry;

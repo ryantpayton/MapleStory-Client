@@ -1,30 +1,31 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../../Template/Rectangle.h"
+
+#include "../Template/Rectangle.h"
 
 #include <cstdint>
 #include <vector>
 #include <unordered_map>
 
-namespace jrc
+namespace ms
 {
-	struct Attack 
+	struct Attack
 	{
 		enum Type
 		{
@@ -40,8 +41,8 @@ namespace jrc
 			DMG_FIXED
 		};
 
-		Type type = CLOSE;
-		DamageType damagetype = DMG_WEAPON;
+		Type type = Type::CLOSE;
+		DamageType damagetype = DamageType::DMG_WEAPON;
 
 		double mindamage = 1.0;
 		double maxdamage = 1.0;
@@ -65,10 +66,9 @@ namespace jrc
 		bool toleft = false;
 	};
 
-
 	struct MobAttack
 	{
-		Attack::Type type = Attack::CLOSE;
+		Attack::Type type = Attack::Type::CLOSE;
 		int32_t watk = 0;
 		int32_t matk = 0;
 		int32_t mobid = 0;
@@ -77,18 +77,14 @@ namespace jrc
 		bool valid = false;
 
 		// Create a mob attack for touch damage.
-		MobAttack(int32_t watk, Point<int16_t> origin, int32_t mobid, int32_t oid)
-			: type(Attack::CLOSE), watk(watk), origin(origin), mobid(mobid), oid(oid), valid(true) {}
-
-		MobAttack()
-			: valid(false) {}
+		MobAttack(int32_t watk, Point<int16_t> origin, int32_t mobid, int32_t oid) : type(Attack::Type::CLOSE), watk(watk), origin(origin), mobid(mobid), oid(oid), valid(true) {}
+		MobAttack() : valid(false) {}
 
 		explicit operator bool() const
 		{
 			return valid;
 		}
 	};
-
 
 	struct MobAttackResult
 	{
@@ -97,10 +93,8 @@ namespace jrc
 		int32_t oid;
 		uint8_t direction;
 
-		MobAttackResult(const MobAttack& attack, int32_t damage, uint8_t direction)
-			: damage(damage), direction(direction), mobid(attack.mobid), oid(attack.oid) {}
+		MobAttackResult(const MobAttack& attack, int32_t damage, uint8_t direction) : damage(damage), direction(direction), mobid(attack.mobid), oid(attack.oid) {}
 	};
-
 
 	struct AttackResult
 	{

@@ -1,28 +1,28 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #pragma once
+
 #include "Attack.h"
 
 #include "../Maplemap/Mob.h"
+#include "../Template/BoolPair.h"
 
-#include "../../Template/BoolPair.h"
-
-namespace jrc
+namespace ms
 {
 	// Interface for hit effects, animations applied to a mob for each hit.
 	class SkillHitEffect
@@ -55,14 +55,12 @@ namespace jrc
 		};
 	};
 
-
 	// No animation.
 	class NoHitEffect : public SkillHitEffect
 	{
 	public:
 		void apply(const AttackUser&, Mob&) const override {}
 	};
-
 
 	// A single animation.
 	class SingleHitEffect : public SkillHitEffect
@@ -76,7 +74,6 @@ namespace jrc
 		Effect effect;
 	};
 
-
 	// The animation changes depending on the weapon used.
 	class TwoHHitEffect : public SkillHitEffect
 	{
@@ -88,7 +85,6 @@ namespace jrc
 	private:
 		BoolPair<Effect> effects;
 	};
-
 
 	// The animation changes with the character level.
 	class ByLevelHitEffect : public SkillHitEffect
@@ -102,7 +98,6 @@ namespace jrc
 		std::map<uint16_t, Effect> effects;
 	};
 
-
 	// The animation changes with the character level and weapon used.
 	class ByLevelTwoHHitEffect : public SkillHitEffect
 	{
@@ -114,7 +109,6 @@ namespace jrc
 	private:
 		std::map<uint16_t, BoolPair<Effect>> effects;
 	};
-
 
 	// The animation changes with the skill level.
 	class BySkillLevelHitEffect : public SkillHitEffect

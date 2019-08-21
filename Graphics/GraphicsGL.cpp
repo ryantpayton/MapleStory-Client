@@ -1,25 +1,25 @@
-//////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsGL.h"
 
 #include "../Configuration.h"
 
-namespace jrc
+namespace ms
 {
 	GraphicsGL::GraphicsGL()
 	{
@@ -33,15 +33,15 @@ namespace jrc
 	Error GraphicsGL::init()
 	{
 		if (glewInit())
-			return Error::GLEW;
+			return Error::Code::GLEW;
 
 		if (FT_Init_FreeType(&ftlibrary))
-			return Error::FREETYPE;
+			return Error::Code::FREETYPE;
 
 		GLint result = GL_FALSE;
 		GLuint vs = glCreateShader(GL_VERTEX_SHADER);
 
-		const char *vs_source =
+		const char* vs_source =
 			"#version 120\n"
 			"attribute vec4 coord;"
 			"attribute vec4 color;"
@@ -50,7 +50,8 @@ namespace jrc
 			"uniform vec2 screensize;"
 			"uniform int yoffset;"
 
-			"void main(void) {"
+			"void main(void)"
+			"{"
 			"	float x = -1.0 + coord.x * 2.0 / screensize.x;"
 			"	float y = 1.0 - (coord.y + yoffset) * 2.0 / screensize.y;"
 			"   gl_Position = vec4(x, y, 0.0, 1.0);"
@@ -63,11 +64,11 @@ namespace jrc
 		glGetShaderiv(vs, GL_COMPILE_STATUS, &result);
 
 		if (!result)
-			return Error::VERTEX_SHADER;
+			return Error::Code::VERTEX_SHADER;
 
 		GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
 
-		const char *fs_source =
+		const char* fs_source =
 			"#version 120\n"
 			"varying vec2 texpos;"
 			"varying vec4 colormod;"
@@ -75,12 +76,18 @@ namespace jrc
 			"uniform vec2 atlassize;"
 			"uniform int fontregion;"
 
-			"void main(void) {"
-			"	if (texpos.y == 0) {"
+			"void main(void)"
+			"{"
+			"	if (texpos.y == 0)"
+			"	{"
 			"		gl_FragColor = colormod;"
-			"	} else if (texpos.y <= fontregion) {"
+			"	}"
+			"	else if (texpos.y <= fontregion)"
+			"	{"
 			"		gl_FragColor = vec4(1, 1, 1, texture2D(texture, texpos / atlassize).r) * colormod;"
-			"	} else {"
+			"	}"
+			"	else"
+			"	{"
 			"		gl_FragColor = texture2D(texture, texpos / atlassize) * colormod;"
 			"	}"
 			"}";
@@ -90,7 +97,7 @@ namespace jrc
 		glGetShaderiv(fs, GL_COMPILE_STATUS, &result);
 
 		if (!result)
-			return Error::FRAGMENT_SHADER;
+			return Error::Code::FRAGMENT_SHADER;
 
 		program = glCreateProgram();
 
@@ -100,7 +107,7 @@ namespace jrc
 		glGetProgramiv(program, GL_LINK_STATUS, &result);
 
 		if (!result)
-			return Error::SHADER_PROGRAM;
+			return Error::Code::SHADER_PROGRAM;
 
 		attribute_coord = glGetAttribLocation(program, "coord");
 		attribute_color = glGetAttribLocation(program, "color");
@@ -111,7 +118,7 @@ namespace jrc
 		uniform_fontregion = glGetUniformLocation(program, "fontregion");
 
 		if (attribute_coord == -1 || attribute_color == -1 || uniform_texture == -1 || uniform_atlassize == -1 || uniform_yoffset == -1 || uniform_screensize == -1)
-			return Error::SHADER_VARS;
+			return Error::Code::SHADER_VARS;
 
 		glGenBuffers(1, &vbo);
 
@@ -133,14 +140,14 @@ namespace jrc
 		const char* FONT_NORMAL_STR = FONT_NORMAL.c_str();
 		const char* FONT_BOLD_STR = FONT_BOLD.c_str();
 
-		addfont(FONT_NORMAL_STR, Text::A11M, 0, 11);
-		addfont(FONT_BOLD_STR, Text::A11B, 0, 11);
-		addfont(FONT_NORMAL_STR, Text::A12M, 0, 12);
-		addfont(FONT_BOLD_STR, Text::A12B, 0, 12);
-		addfont(FONT_NORMAL_STR, Text::A13M, 0, 13);
-		addfont(FONT_BOLD_STR, Text::A13B, 0, 13);
-		addfont(FONT_BOLD_STR, Text::A15B, 0, 15);
-		addfont(FONT_NORMAL_STR, Text::A18M, 0, 18);
+		addfont(FONT_NORMAL_STR, Text::Font::A11M, 0, 11);
+		addfont(FONT_BOLD_STR, Text::Font::A11B, 0, 11);
+		addfont(FONT_NORMAL_STR, Text::Font::A12M, 0, 12);
+		addfont(FONT_BOLD_STR, Text::Font::A12B, 0, 12);
+		addfont(FONT_NORMAL_STR, Text::Font::A13M, 0, 13);
+		addfont(FONT_BOLD_STR, Text::Font::A13B, 0, 13);
+		addfont(FONT_BOLD_STR, Text::Font::A15B, 0, 15);
+		addfont(FONT_NORMAL_STR, Text::Font::A18M, 0, 18);
 
 		fontymax += fontborder.y();
 
@@ -151,17 +158,17 @@ namespace jrc
 				bool hcomp = first.height() >= second.height();
 
 				if (wcomp && hcomp)
-					return QuadTree<size_t, Leftover>::RIGHT;
+					return QuadTree<size_t, Leftover>::Direction::RIGHT;
 				else if (wcomp)
-					return QuadTree<size_t, Leftover>::DOWN;
+					return QuadTree<size_t, Leftover>::Direction::DOWN;
 				else if (hcomp)
-					return QuadTree<size_t, Leftover>::UP;
+					return QuadTree<size_t, Leftover>::Direction::UP;
 				else
-					return QuadTree<size_t, Leftover>::LEFT;
+					return QuadTree<size_t, Leftover>::Direction::LEFT;
 			}
 		);
 
-		return Error::NONE;
+		return Error::Code::NONE;
 	}
 
 	bool GraphicsGL::addfont(const char* name, Text::Font id, FT_UInt pixelw, FT_UInt pixelh)
@@ -463,7 +470,7 @@ namespace jrc
 
 	GraphicsGL::LayoutBuilder::LayoutBuilder(const Font& f, Text::Alignment a, int16_t mw, bool fm, int16_t la) : font(f), alignment(a), maxwidth(mw), formatted(fm), line_adj(la)
 	{
-		fontid = Text::NUM_FONTS;
+		fontid = Text::Font::NUM_FONTS;
 		color = Color::Name::NUM_COLORS;
 		ax = 0;
 		ay = font.linespace();
@@ -619,10 +626,10 @@ namespace jrc
 
 		switch (alignment)
 		{
-		case Text::CENTER:
+		case Text::Alignment::CENTER:
 			line_x -= ax / 2;
 			break;
-		case Text::RIGHT:
+		case Text::Alignment::RIGHT:
 			line_x -= ax;
 			break;
 		}
@@ -650,7 +657,7 @@ namespace jrc
 
 		switch (background)
 		{
-		case Text::NAMETAG:
+		case Text::Background::NAMETAG:
 			for (const Text::Layout::Line& line : layout)
 			{
 				GLshort left = x + line.position.x() - 2;

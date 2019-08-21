@@ -1,25 +1,25 @@
-/////////////////////////////////////////////////////////////////////////////
-// This file is part of the Journey MMORPG client                           //
-// Copyright © 2015-2016 Daniel Allendorf                                   //
-//                                                                          //
-// This program is free software: you can redistribute it and/or modify     //
-// it under the terms of the GNU Affero General Public License as           //
-// published by the Free Software Foundation, either version 3 of the       //
-// License, or (at your option) any later version.                          //
-//                                                                          //
-// This program is distributed in the hope that it will be useful,          //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of           //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
-// GNU Affero General Public License for more details.                      //
-//                                                                          //
-// You should have received a copy of the GNU Affero General Public License //
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.    //
-//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//	This file is part of the continued Journey MMORPG client					//
+//	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
+//																				//
+//	This program is free software: you can redistribute it and/or modify		//
+//	it under the terms of the GNU Affero General Public License as published by	//
+//	the Free Software Foundation, either version 3 of the License, or			//
+//	(at your option) any later version.											//
+//																				//
+//	This program is distributed in the hope that it will be useful,				//
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of				//
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				//
+//	GNU Affero General Public License for more details.							//
+//																				//
+//	You should have received a copy of the GNU Affero General Public License	//
+//	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
+//////////////////////////////////////////////////////////////////////////////////
 #include "PlayerStates.h"
 
 #include "../Audio/Audio.h"
 
-namespace jrc
+namespace ms
 {
 	// Base class
 	void PlayerState::play_jumpsound() const
@@ -27,43 +27,40 @@ namespace jrc
 		Sound(Sound::JUMP).play();
 	}
 
-
 	// Null state
 	void PlayerNullState::update_state(Player& player) const
 	{
 		Char::State state;
+
 		if (player.get_phobj().onground)
 		{
-			if (player.is_key_down(KeyAction::LEFT))
+			if (player.is_key_down(KeyAction::Id::LEFT))
 			{
-				state = Char::WALK;
+				state = Char::State::WALK;
 				player.set_direction(false);
 			}
-			else if (player.is_key_down(KeyAction::RIGHT))
+			else if (player.is_key_down(KeyAction::Id::RIGHT))
 			{
-				state = Char::WALK;
+				state = Char::State::WALK;
 				player.set_direction(true);
 			}
-			else if (player.is_key_down(KeyAction::DOWN))
+			else if (player.is_key_down(KeyAction::Id::DOWN))
 			{
-				state = Char::PRONE;
+				state = Char::State::PRONE;
 			}
 			else
 			{
-				state = Char::STAND;
+				state = Char::State::STAND;
 			}
 		}
 		else
 		{
 			Optional<const Ladder> ladder = player.get_ladder();
+
 			if (ladder)
-			{
-				state = ladder->is_ladder() ? Char::LADDER : Char::ROPE;
-			}
+				state = ladder->is_ladder() ? Char::State::LADDER : Char::State::ROPE;
 			else
-			{
-				state = Char::FALL;
-			}
+				state = Char::State::FALL;
 		}
 
 		player.get_phobj().clear_flags();
@@ -71,11 +68,10 @@ namespace jrc
 		player.set_state(state);
 	}
 
-
 	// Standing
 	void PlayerStandState::initialize(Player& player) const
 	{
-		player.get_phobj().type = PhysicsObject::NORMAL;
+		player.get_phobj().type = PhysicsObject::Type::NORMAL;
 	}
 
 	void PlayerStandState::send_action(Player& player, KeyAction::Id ka, bool down) const
@@ -87,20 +83,20 @@ namespace jrc
 		{
 			switch (ka)
 			{
-			case KeyAction::LEFT:
+			case KeyAction::Id::LEFT:
 				player.set_direction(false);
-				player.set_state(Char::WALK);
+				player.set_state(Char::State::WALK);
 				break;
-			case KeyAction::RIGHT:
+			case KeyAction::Id::RIGHT:
 				player.set_direction(true);
-				player.set_state(Char::WALK);
+				player.set_state(Char::State::WALK);
 				break;
-			case KeyAction::JUMP:
+			case KeyAction::Id::JUMP:
 				play_jumpsound();
 				player.get_phobj().vforce = -player.get_jumpforce();
 				break;
-			case KeyAction::DOWN:
-				player.set_state(Char::PRONE);
+			case KeyAction::Id::DOWN:
+				player.set_state(Char::State::PRONE);
 				break;
 			}
 		}
@@ -109,22 +105,19 @@ namespace jrc
 	void PlayerStandState::update(Player& player) const
 	{
 		if (player.get_phobj().enablejd == false)
-			player.get_phobj().set_flag(PhysicsObject::CHECKBELOW);
+			player.get_phobj().set_flag(PhysicsObject::Flag::CHECKBELOW);
 	}
 
 	void PlayerStandState::update_state(Player& player) const
 	{
 		if (!player.get_phobj().onground)
-		{
-			player.set_state(Char::FALL);
-		}
+			player.set_state(Char::State::FALL);
 	}
-
 
 	// Walking
 	void PlayerWalkState::initialize(Player& player) const
 	{
-		player.get_phobj().type = PhysicsObject::NORMAL;
+		player.get_phobj().type = PhysicsObject::Type::NORMAL;
 	}
 
 	void PlayerWalkState::send_action(Player& player, KeyAction::Id ka, bool down) const
@@ -136,18 +129,18 @@ namespace jrc
 		{
 			switch (ka)
 			{
-			case KeyAction::LEFT:
+			case KeyAction::Id::LEFT:
 				player.set_direction(false);
 				break;
-			case KeyAction::RIGHT:
+			case KeyAction::Id::RIGHT:
 				player.set_direction(true);
 				break;
-			case KeyAction::JUMP:
+			case KeyAction::Id::JUMP:
 				play_jumpsound();
 				player.get_phobj().vforce = -player.get_jumpforce();
 				break;
-			case KeyAction::DOWN:
-				player.set_state(Char::PRONE);
+			case KeyAction::Id::DOWN:
+				player.set_state(Char::State::PRONE);
 				break;
 			}
 		}
@@ -155,7 +148,7 @@ namespace jrc
 
 	bool PlayerWalkState::haswalkinput(const Player& player) const
 	{
-		return player.is_key_down(KeyAction::LEFT) || player.is_key_down(KeyAction::RIGHT);
+		return player.is_key_down(KeyAction::Id::LEFT) || player.is_key_down(KeyAction::Id::RIGHT);
 	}
 
 	void PlayerWalkState::update(Player& player) const
@@ -164,7 +157,7 @@ namespace jrc
 			player.get_phobj().hforce += player.getflip() ? player.get_walkforce() : -player.get_walkforce();
 
 		if (player.get_phobj().enablejd == false)
-			player.get_phobj().set_flag(PhysicsObject::CHECKBELOW);
+			player.get_phobj().set_flag(PhysicsObject::Flag::CHECKBELOW);
 	}
 
 	void PlayerWalkState::update_state(Player& player) const
@@ -172,18 +165,18 @@ namespace jrc
 		if (player.get_phobj().onground)
 		{
 			if (!haswalkinput(player) || player.get_phobj().hspeed == 0.0f)
-				player.set_state(Char::STAND);
+				player.set_state(Char::State::STAND);
 		}
 		else
 		{
-			player.set_state(Char::FALL);
+			player.set_state(Char::State::FALL);
 		}
 	}
 
 	// Falling
 	void PlayerFallState::initialize(Player& player) const
 	{
-		player.get_phobj().type = PhysicsObject::NORMAL;
+		player.get_phobj().type = PhysicsObject::Type::NORMAL;
 	}
 
 	void PlayerFallState::send_action(Player& player, KeyAction::Id ka, bool down) const
@@ -192,10 +185,10 @@ namespace jrc
 		{
 			switch (ka)
 			{
-			case KeyAction::LEFT:
+			case KeyAction::Id::LEFT:
 				player.set_direction(false);
 				break;
-			case KeyAction::RIGHT:
+			case KeyAction::Id::RIGHT:
 				player.set_direction(true);
 				break;
 			}
@@ -205,15 +198,18 @@ namespace jrc
 	void PlayerFallState::update(Player& player) const
 	{
 		auto& hspeed = player.get_phobj().hspeed;
-		if (player.is_key_down(KeyAction::LEFT) && hspeed > 0.0)
+
+		if (player.is_key_down(KeyAction::Id::LEFT) && hspeed > 0.0)
 		{
 			hspeed -= 0.025;
+
 			if (hspeed < 0.0)
 				hspeed = 0.0;
 		}
-		else if (player.is_key_down(KeyAction::RIGHT) && hspeed < 0.0)
+		else if (player.is_key_down(KeyAction::Id::RIGHT) && hspeed < 0.0)
 		{
 			hspeed += 0.025;
+
 			if (hspeed > 0.0)
 				hspeed = 0.0;
 		}
@@ -223,27 +219,26 @@ namespace jrc
 	{
 		if (player.get_phobj().onground)
 		{
-			if (player.is_key_down(KeyAction::LEFT))
+			if (player.is_key_down(KeyAction::Id::LEFT))
 			{
 				player.set_direction(false);
-				player.set_state(Char::WALK);
+				player.set_state(Char::State::WALK);
 			}
-			else if (player.is_key_down(KeyAction::RIGHT))
+			else if (player.is_key_down(KeyAction::Id::RIGHT))
 			{
 				player.set_direction(true);
-				player.set_state(Char::WALK);
+				player.set_state(Char::State::WALK);
 			}
 			else
 			{
-				player.set_state(Char::STAND);
+				player.set_state(Char::State::STAND);
 			}
 		}
 		else if (player.is_underwater())
 		{
-			player.set_state(Char::SWIM);
+			player.set_state(Char::State::SWIM);
 		}
 	}
-
 
 	// Prone
 	void PlayerProneState::send_action(Player& player, KeyAction::Id ka, bool down) const
@@ -252,18 +247,19 @@ namespace jrc
 		{
 			switch (ka)
 			{
-			case KeyAction::JUMP:
-				if (player.get_phobj().enablejd && player.is_key_down(KeyAction::DOWN))
+			case KeyAction::Id::JUMP:
+				if (player.get_phobj().enablejd && player.is_key_down(KeyAction::Id::DOWN))
 				{
 					play_jumpsound();
 					player.get_phobj().y = player.get_phobj().groundbelow;
-					player.set_state(Char::FALL);
+					player.set_state(Char::State::FALL);
 				}
 				else
 				{
-					player.set_state(Char::STAND);
+					player.set_state(Char::State::STAND);
 					player.send_action(ka, down);
 				}
+
 				break;
 			}
 		}
@@ -271,8 +267,8 @@ namespace jrc
 		{
 			switch (ka)
 			{
-			case KeyAction::DOWN:
-				player.set_state(Char::STAND);
+			case KeyAction::Id::DOWN:
+				player.set_state(Char::State::STAND);
 				break;
 			}
 		}
@@ -281,9 +277,8 @@ namespace jrc
 	void PlayerProneState::update(Player& player) const
 	{
 		if (player.get_phobj().enablejd == false)
-			player.get_phobj().set_flag(PhysicsObject::CHECKBELOW);
+			player.get_phobj().set_flag(PhysicsObject::Flag::CHECKBELOW);
 	}
-
 
 	// Sitting
 	void PlayerSitState::send_action(Player& player, KeyAction::Id ka, bool down) const
@@ -292,30 +287,29 @@ namespace jrc
 		{
 			switch (ka)
 			{
-			case KeyAction::LEFT:
+			case KeyAction::Id::LEFT:
 				player.set_direction(false);
-				player.set_state(Char::WALK);
+				player.set_state(Char::State::WALK);
 				break;
-			case KeyAction::RIGHT:
+			case KeyAction::Id::RIGHT:
 				player.set_direction(true);
-				player.set_state(Char::WALK);
+				player.set_state(Char::State::WALK);
 				break;
-			case KeyAction::JUMP:
+			case KeyAction::Id::JUMP:
 				play_jumpsound();
-				player.set_state(Char::STAND);
+				player.set_state(Char::State::STAND);
 				break;
-			case KeyAction::UP:
-				player.set_state(Char::SWIM);
+			case KeyAction::Id::UP:
+				player.set_state(Char::State::STAND);
 				break;
 			}
 		}
 	}
 
-
 	// Flying
 	void PlayerFlyState::initialize(Player& player) const
 	{
-		player.get_phobj().type = player.is_underwater() ? PhysicsObject::SWIMMING : PhysicsObject::FLYING;
+		player.get_phobj().type = player.is_underwater() ? PhysicsObject::Type::SWIMMING : PhysicsObject::Type::FLYING;
 	}
 
 	void PlayerFlyState::send_action(Player& player, KeyAction::Id ka, bool down) const
@@ -324,10 +318,10 @@ namespace jrc
 		{
 			switch (ka)
 			{
-			case KeyAction::LEFT:
+			case KeyAction::Id::LEFT:
 				player.set_direction(false);
 				break;
-			case KeyAction::RIGHT:
+			case KeyAction::Id::RIGHT:
 				player.set_direction(true);
 				break;
 			}
@@ -339,14 +333,14 @@ namespace jrc
 		if (player.is_attacking())
 			return;
 
-		if (player.is_key_down(KeyAction::LEFT))
+		if (player.is_key_down(KeyAction::Id::LEFT))
 			player.get_phobj().hforce = -player.get_flyforce();
-		else if (player.is_key_down(KeyAction::RIGHT))
+		else if (player.is_key_down(KeyAction::Id::RIGHT))
 			player.get_phobj().hforce = player.get_flyforce();
 
-		if (player.is_key_down(KeyAction::UP))
+		if (player.is_key_down(KeyAction::Id::UP))
 			player.get_phobj().vforce = -player.get_flyforce();
-		else if (player.is_key_down(KeyAction::DOWN))
+		else if (player.is_key_down(KeyAction::Id::DOWN))
 			player.get_phobj().vforce = player.get_flyforce();
 	}
 
@@ -355,33 +349,34 @@ namespace jrc
 		if (player.get_phobj().onground && player.is_underwater())
 		{
 			Char::State state;
-			if (player.is_key_down(KeyAction::LEFT))
+
+			if (player.is_key_down(KeyAction::Id::LEFT))
 			{
-				state = Char::WALK;
+				state = Char::State::WALK;
 				player.set_direction(false);
 			}
-			else if (player.is_key_down(KeyAction::RIGHT))
+			else if (player.is_key_down(KeyAction::Id::RIGHT))
 			{
-				state = Char::WALK;
+				state = Char::State::WALK;
 				player.set_direction(true);
 			}
-			else if (player.is_key_down(KeyAction::DOWN))
+			else if (player.is_key_down(KeyAction::Id::DOWN))
 			{
-				state = Char::PRONE;
+				state = Char::State::PRONE;
 			}
 			else
 			{
-				state = Char::STAND;
+				state = Char::State::STAND;
 			}
+
 			player.set_state(state);
 		}
 	}
 
-
 	// Climbing
 	void PlayerClimbState::initialize(Player& player) const
 	{
-		player.get_phobj().type = PhysicsObject::FIXATED;
+		player.get_phobj().type = PhysicsObject::Type::FIXATED;
 	}
 
 	void PlayerClimbState::send_action(Player& player, KeyAction::Id ka, bool down) const
@@ -390,8 +385,8 @@ namespace jrc
 		{
 			switch (ka)
 			{
-			case KeyAction::JUMP:
-				if (player.is_key_down(KeyAction::LEFT))
+			case KeyAction::Id::JUMP:
+				if (player.is_key_down(KeyAction::Id::LEFT))
 				{
 					play_jumpsound();
 					player.set_direction(false);
@@ -399,7 +394,7 @@ namespace jrc
 					player.get_phobj().vspeed = -player.get_jumpforce() / 1.5;
 					cancel_ladder(player);
 				}
-				else if (player.is_key_down(KeyAction::RIGHT))
+				else if (player.is_key_down(KeyAction::Id::RIGHT))
 				{
 					play_jumpsound();
 					player.set_direction(true);
@@ -407,6 +402,7 @@ namespace jrc
 					player.get_phobj().vspeed = -player.get_jumpforce() / 1.5;
 					cancel_ladder(player);
 				}
+
 				break;
 			}
 		}
@@ -414,34 +410,27 @@ namespace jrc
 
 	void PlayerClimbState::update(Player& player) const
 	{
-		if (player.is_key_down(KeyAction::UP))
-		{
+		if (player.is_key_down(KeyAction::Id::UP))
 			player.get_phobj().vspeed = -player.get_climbforce();
-		}
-		else if (player.is_key_down(KeyAction::DOWN))
-		{
+		else if (player.is_key_down(KeyAction::Id::DOWN))
 			player.get_phobj().vspeed = player.get_climbforce();
-		}
 		else
-		{
 			player.get_phobj().vspeed = 0.0;
-		}
 	}
 
 	void PlayerClimbState::update_state(Player& player) const
 	{
 		int16_t y = player.get_phobj().get_y();
-		bool downwards = player.is_key_down(KeyAction::DOWN);
+		bool downwards = player.is_key_down(KeyAction::Id::DOWN);
 		auto ladder = player.get_ladder();
+
 		if (ladder && ladder->felloff(y, downwards))
-		{
 			cancel_ladder(player);
-		}
 	}
 
 	void PlayerClimbState::cancel_ladder(Player& player) const
 	{
-		player.set_state(Char::FALL);
+		player.set_state(Char::State::FALL);
 		player.set_ladder(nullptr);
 	}
 }
