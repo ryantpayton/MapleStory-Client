@@ -33,8 +33,6 @@ namespace ms
 		Point<int16_t> origin() const;
 		Cursor::State send_cursor(bool, Point<int16_t>) { return Cursor::State::IDLE; }
 		bool remove_cursor(bool, Point<int16_t>) { return false; }
-		bool in_combobox(Point<int16_t>) { return false; }
-		uint16_t get_selected() const { return 0; }
 
 	private:
 		Point<int16_t> dimension;

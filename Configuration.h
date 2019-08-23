@@ -252,7 +252,7 @@ namespace ms
 		Height() : ShortEntry("Height", "600") {}
 	};
 
-	// Whether to use Vsync.
+	// Whether to use VSync.
 	struct VSync : public Configuration::BoolEntry
 	{
 		VSync() : BoolEntry("VSync", "true") {}
@@ -412,6 +412,12 @@ namespace ms
 	struct PosKEYCONFIG : public Configuration::PointEntry
 	{
 		PosKEYCONFIG() : PointEntry("PosKEYCONFIG", "(65, 40)") {}
+	};
+
+	// The default position of the option menu.
+	struct PosOPTIONMENU : public Configuration::PointEntry
+	{
+		PosOPTIONMENU() : PointEntry("PosUSERLIST", "(170, -11)") {}
 	};
 
 	template <typename T>

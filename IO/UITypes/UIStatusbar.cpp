@@ -35,6 +35,7 @@
 #include "../UITypes/UIEvent.h"
 #include "../UITypes/UIKeyConfig.h"
 #include "../UITypes/UIChat.h"
+#include "../UITypes/UIOptionMenu.h"
 #include "../Character/ExpTable.h"
 
 #include <nlnx/nx.hpp>
@@ -610,6 +611,8 @@ namespace ms
 			remove_menus();
 			break;
 		case Buttons::BT_SETTING_OPTION:
+			UI::get().emplace<UIOptionMenu>();
+
 			remove_menus();
 			break;
 		case Buttons::BT_SETTING_KEYS:

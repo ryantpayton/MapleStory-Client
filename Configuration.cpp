@@ -55,6 +55,7 @@ namespace ms
 		settings.emplace<PosJOYPAD>();
 		settings.emplace<PosEVENT>();
 		settings.emplace<PosKEYCONFIG>();
+		settings.emplace<PosOPTIONMENU>();
 
 		load();
 	}
@@ -67,16 +68,18 @@ namespace ms
 	void Configuration::load()
 	{
 		std::unordered_map<std::string, std::string> rawsettings;
-
 		std::ifstream file(FILENAME);
+
 		if (file.is_open())
 		{
 			// Go through the file line for line.
 			std::string line;
+
 			while (getline(file, line))
 			{
 				// If the setting is not empty, load the value.
 				size_t split = line.find('=');
+
 				if (split != std::string::npos && split + 2 < line.size())
 				{
 					rawsettings.emplace(
@@ -91,6 +94,7 @@ namespace ms
 		for (auto& setting : settings)
 		{
 			auto rsiter = rawsettings.find(setting.second->name);
+
 			if (rsiter != rawsettings.end())
 				setting.second->value = rsiter->second;
 		}
@@ -100,15 +104,14 @@ namespace ms
 	{
 		// Open the settings file.
 		std::ofstream config(FILENAME);
+
 		if (config.is_open())
 		{
 			// Save settings line by line.
 			for (auto& setting : settings)
-			{
 				config << setting.second->to_string() << std::endl;
 			}
 		}
-	}
 
 	void Configuration::BoolEntry::save(bool b)
 	{
@@ -137,15 +140,12 @@ namespace ms
 
 	Point<int16_t> Configuration::PointEntry::load() const
 	{
-		std::string xstr = value
-			.substr(1, value
-				.find(",") - 1);
-		std::string ystr = value
-			.substr(value
-				.find(",") + 1, value.find(")") - value.find(",") - 1);
+		std::string xstr = value.substr(1, value.find(",") - 1);
+		std::string ystr = value.substr(value.find(",") + 1, value.find(")") - value.find(",") - 1);
 
 		auto x = string_conversion::or_zero<int16_t>(xstr);
 		auto y = string_conversion::or_zero<int16_t>(ystr);
+
 		return { x, y };
 	}
 

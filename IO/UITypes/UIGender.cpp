@@ -50,9 +50,8 @@ namespace ms
 
 		buttons[Buttons::NO] = std::make_unique<MapleButton>(Login["BtCancel"], Point<int16_t>(650, 349)); // TODO: _inlink issue: Original: Gender["BtNo"]
 		buttons[Buttons::YES] = std::make_unique<MapleButton>(Gender["BtYes"], Point<int16_t>(578, 349));
-		buttons[Buttons::SELECT] = std::make_unique<MapleComboBox>(MapleComboBox::Type::DEFAULT, options, default_option, Point<int16_t>(510, 283));
+		buttons[Buttons::SELECT] = std::make_unique<MapleComboBox>(MapleComboBox::Type::DEFAULT, options, default_option, position, Point<int16_t>(510, 283), 65);
 
-		position = Point<int16_t>(0, 0);
 		dimension = Texture(gender_sprites[2]).get_dimensions();
 	}
 
@@ -122,11 +121,8 @@ namespace ms
 		{
 			UI::get().emplace<UILoginwait>();
 
-			uint16_t t = buttons[Buttons::SELECT]->get_selected();
-
-			std::cout << std::to_string(t) << std::endl;
-
-			GenderPacket(t).dispatch();
+			uint16_t selected_value = buttons[Buttons::SELECT]->get_selected();
+			GenderPacket(selected_value).dispatch();
 		}
 		break;
 		case Buttons::SELECT:

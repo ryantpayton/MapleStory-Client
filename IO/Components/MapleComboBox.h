@@ -43,23 +43,35 @@ namespace ms
 			GREENNEG
 		};
 
-		MapleComboBox(Type type, std::vector<std::string> options, uint16_t default_option, Point<int16_t> position);
-		MapleComboBox(Type type, std::vector<std::string> options, uint16_t default_option, int16_t x, int16_t y);
-		MapleComboBox(Type type, std::vector<std::string> options, uint16_t default_option);
+		MapleComboBox(Type type, std::vector<std::string> options, uint16_t default_option, Point<int16_t> parentpos, Point<int16_t> position, int64_t width);
 
-		void draw(Point<int16_t> position) const;
-		Rectangle<int16_t> bounds(Point<int16_t> parentpos) const;
-		bool in_combobox(Point<int16_t> parentpos);
-		int16_t width() const;
-		Point<int16_t> origin() const;
-		bool remove_cursor(bool clicked, Point<int16_t> cursorpos);
-		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos);
-		uint16_t get_selected() const;
+		void draw(Point<int16_t> parentpos) const override;
+		Rectangle<int16_t> bounds(Point<int16_t> parentpos) const override;
+		int16_t width() const override;
+		Point<int16_t> origin() const override;
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		bool in_combobox(Point<int16_t> cursorpos) override;
+		uint16_t get_selected() const override;
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid);
 
 	private:
+		enum Buttons : uint16_t
+		{
+			OPTION1,
+			OPTION2,
+			OPTION3,
+			OPTION4,
+			OPTION5,
+			OPTION6,
+			OPTION7,
+			OPTION8,
+			OPTION9,
+			OPTION10
+		};
+
 		Texture textures[Button::State::NUM_STATES][3];
 		std::vector<std::string> options;
 		std::vector<Text> option_text;
@@ -74,19 +86,7 @@ namespace ms
 		bool current_shown;
 		uint16_t last_shown;
 		uint16_t selected_index;
-
-		enum Buttons : uint16_t
-		{
-			OPTION1,
-			OPTION2,
-			OPTION3,
-			OPTION4,
-			OPTION5,
-			OPTION6,
-			OPTION7,
-			OPTION8,
-			OPTION9,
-			OPTION10
-		};
+		Point<int16_t> selected_adj;
+		Point<int16_t> parentpos;
 	};
 }

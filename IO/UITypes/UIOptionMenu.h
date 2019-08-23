@@ -17,48 +17,44 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Cursor.h"
+#include "../UIDragElement.h"
+#include "../Components/MapleComboBox.h"
 
 namespace ms
 {
-	// Base class for different button types.
-	class Button
+	class UIOptionMenu : public UIDragElement<PosOPTIONMENU>
 	{
 	public:
-		enum State
+		static constexpr Type TYPE = UIElement::Type::OPTIONMENU;
+		static constexpr bool FOCUSED = true;
+		static constexpr bool TOGGLED = false;
+
+		UIOptionMenu();
+
+		void draw(float inter) const override;
+
+		Button::State button_pressed(uint16_t buttonid) override;
+
+		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
+
+	private:
+		void change_tab(uint16_t tabid);
+
+		enum Buttons : uint16_t
 		{
-			NORMAL,
-			DISABLED,
-			MOUSEOVER,
-			PRESSED,
-			IDENTITY,
-			NUM_STATES
+			TAB0,
+			TAB1,
+			TAB2,
+			TAB3,
+			TAB4,
+			CANCEL,
+			OK,
+			UIRESET,
+			SELECT_RES
 		};
 
-		virtual ~Button() {}
-
-		virtual void draw(Point<int16_t> parentpos) const = 0;
-		virtual Rectangle<int16_t> bounds(Point<int16_t> parentpos) const = 0;
-		virtual int16_t width() const = 0;
-		virtual Point<int16_t> origin() const = 0;
-		virtual Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) = 0;
-		virtual bool remove_cursor(bool clicked, Point<int16_t> cursorpos) = 0;
-		virtual bool in_combobox(Point<int16_t> cursorpos);
-		virtual uint16_t get_selected() const;
-
-		void set_position(Point<int16_t> position);
-		void set_state(State state);
-		void set_active(bool active);
-		void toggle_pressed();
-
-		bool is_active() const;
-		State get_state() const;
-		bool is_pressed() const;
-
-	protected:
-		State state;
-		Point<int16_t> position;
-		bool active;
-		bool pressed;
+		uint16_t selected_tab;
+		Texture tab_background[Buttons::CANCEL];
 	};
 }

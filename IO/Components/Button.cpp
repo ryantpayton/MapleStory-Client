@@ -19,6 +19,16 @@
 
 namespace ms
 {
+	bool Button::in_combobox(Point<int16_t>)
+	{
+		return false;
+	}
+
+	uint16_t Button::get_selected() const
+	{
+		return uint16_t();
+	}
+
 	void Button::set_position(Point<int16_t> pos)
 	{
 		position = pos;

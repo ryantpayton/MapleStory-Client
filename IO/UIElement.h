@@ -67,6 +67,7 @@ namespace ms
 			JOYPAD,
 			EVENT,
 			KEYCONFIG,
+			OPTIONMENU,
 			NUM_TYPES
 		};
 

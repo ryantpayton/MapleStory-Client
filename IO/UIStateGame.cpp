@@ -57,6 +57,9 @@ namespace ms
 		emplace<UIBuffList>();
 		emplace<UINpcTalk>();
 		emplace<UIShop>(look, inventory);
+
+		VWIDTH = Constants::Constants::get().get_viewwidth();
+		VHEIGHT = Constants::Constants::get().get_viewheight();
 	}
 
 	void UIStateGame::draw(float inter, Point<int16_t> cursor) const
@@ -78,6 +81,20 @@ namespace ms
 
 	void UIStateGame::update()
 	{
+		int16_t new_width = Constants::Constants::get().get_viewwidth();
+		int16_t new_height = Constants::Constants::get().get_viewheight();
+
+		if (VWIDTH != new_width || VHEIGHT != new_height)
+		{
+			VWIDTH = new_width;
+			VHEIGHT = new_height;
+
+			UI::get().remove(UIElement::Type::STATUSBAR);
+
+			const CharStats& stats = Stage::get().get_player().get_stats();
+			emplace<UIStatusbar>(stats);
+		}
+
 		for (auto& type : elementorder)
 		{
 			auto& element = elements[type];

@@ -77,5 +77,8 @@ namespace ms
 		Tooltip::Parent tooltipparent;
 
 		Optional<Icon> draggedicon;
+
+		int16_t VWIDTH;
+		int16_t VHEIGHT;
 	};
 }
