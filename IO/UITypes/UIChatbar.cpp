@@ -49,35 +49,35 @@ namespace ms
 		int16_t chattop_y = getchattop(true) - 33;
 		closechat = Point<int16_t>(387, 21);
 
-		buttons[BT_OPENCHAT] = std::make_unique<MapleButton>(view["btMax"], Point<int16_t>(391, -7));
-		buttons[BT_CLOSECHAT] = std::make_unique<MapleButton>(view["btMin"], closechat + Point<int16_t>(0, chattop_y));
-		buttons[BT_CHAT] = std::make_unique<MapleButton>(input["button:chat"], Point<int16_t>(344, -8));
-		buttons[BT_LINK] = std::make_unique<MapleButton>(input["button:itemLink"], Point<int16_t>(365, -8));
-		buttons[BT_HELP] = std::make_unique<MapleButton>(input["button:help"], Point<int16_t>(386, -8));
+		buttons[Buttons::BT_OPENCHAT] = std::make_unique<MapleButton>(view["btMax"], Point<int16_t>(391, -7));
+		buttons[Buttons::BT_CLOSECHAT] = std::make_unique<MapleButton>(view["btMin"], closechat + Point<int16_t>(0, chattop_y));
+		buttons[Buttons::BT_CHAT] = std::make_unique<MapleButton>(input["button:chat"], Point<int16_t>(344, -8));
+		buttons[Buttons::BT_LINK] = std::make_unique<MapleButton>(input["button:itemLink"], Point<int16_t>(365, -8));
+		buttons[Buttons::BT_HELP] = std::make_unique<MapleButton>(input["button:help"], Point<int16_t>(386, -8));
 
-		buttons[chatopen ? BT_OPENCHAT : BT_CLOSECHAT]->set_active(false);
-		buttons[BT_CHAT]->set_active(chatopen ? true : false);
-		buttons[BT_LINK]->set_active(chatopen ? true : false);
-		buttons[BT_HELP]->set_active(chatopen ? true : false);
+		buttons[chatopen ? Buttons::BT_OPENCHAT : Buttons::BT_CLOSECHAT]->set_active(false);
+		buttons[Buttons::BT_CHAT]->set_active(chatopen ? true : false);
+		buttons[Buttons::BT_LINK]->set_active(chatopen ? true : false);
+		buttons[Buttons::BT_HELP]->set_active(chatopen ? true : false);
 
 		chattab_x = 6;
 		chattab_y = chattop_y;
 		chattab_span = 54;
 
-		for (size_t i = 0; i < NUM_CHATTAB; i++)
+		for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
 		{
-			buttons[BT_TAB_0 + i] = std::make_unique<MapleButton>(view["tab"], Point<int16_t>(chattab_x + (i * chattab_span), chattab_y));
-			buttons[BT_TAB_0 + i]->set_active(chatopen ? true : false);
-			chattab_text[CHT_ALL + i] = Text(Text::Font::A12M, Text::Alignment::CENTER, Color::Name::DUSTYGRAY, ChatTabText[i]);
+			buttons[Buttons::BT_TAB_0 + i] = std::make_unique<MapleButton>(view["tab"], Point<int16_t>(chattab_x + (i * chattab_span), chattab_y));
+			buttons[Buttons::BT_TAB_0 + i]->set_active(chatopen ? true : false);
+			chattab_text[ChatTab::CHT_ALL + i] = Text(Text::Font::A12M, Text::Alignment::CENTER, Color::Name::DUSTYGRAY, ChatTabText[i]);
 		}
 
-		chattab_text[CHT_ALL].change_color(Color::Name::WHITE);
+		chattab_text[ChatTab::CHT_ALL].change_color(Color::Name::WHITE);
 
-		buttons[BT_TAB_0 + NUM_CHATTAB] = std::make_unique<MapleButton>(view["btAddTab"], Point<int16_t>(chattab_x + (NUM_CHATTAB * chattab_span), chattab_y));
-		buttons[BT_TAB_0 + NUM_CHATTAB]->set_active(chatopen ? true : false);
+		buttons[Buttons::BT_TAB_0 + ChatTab::NUM_CHATTAB] = std::make_unique<MapleButton>(view["btAddTab"], Point<int16_t>(chattab_x + (ChatTab::NUM_CHATTAB * chattab_span), chattab_y));
+		buttons[Buttons::BT_TAB_0 + ChatTab::NUM_CHATTAB]->set_active(chatopen ? true : false);
 
-		buttons[BT_CHAT_TARGET] = std::make_unique<MapleButton>(chatTarget["all"], Point<int16_t>(5, -8));
-		buttons[BT_CHAT_TARGET]->set_active(chatopen ? true : false);
+		buttons[Buttons::BT_CHAT_TARGET] = std::make_unique<MapleButton>(chatTarget["all"], Point<int16_t>(5, -8));
+		buttons[Buttons::BT_CHAT_TARGET]->set_active(chatopen ? true : false);
 
 		chatenter = input["layer:chatEnter"];
 		chatcover = input["layer:backgrnd"];
@@ -116,7 +116,7 @@ namespace ms
 		);
 
 		chatfield.set_key_callback(
-			KeyAction::UP,
+			KeyAction::Id::UP,
 			[&]()
 			{
 				if (lastpos > 0)
@@ -128,7 +128,7 @@ namespace ms
 		);
 
 		chatfield.set_key_callback(
-			KeyAction::DOWN,
+			KeyAction::Id::DOWN,
 			[&]()
 			{
 				if (lastentered.size() > 0 && lastpos < lastentered.size() - 1)
@@ -140,7 +140,7 @@ namespace ms
 		);
 
 		chatfield.set_key_callback(
-			KeyAction::ESCAPE,
+			KeyAction::Id::ESCAPE,
 			[&]()
 			{
 				toggle_chatfield(false);
@@ -222,19 +222,19 @@ namespace ms
 		UIElement::draw_buttons(inter);
 
 		if (chatopen)
-			for (size_t i = 0; i < NUM_CHATTAB; i++)
-				chattab_text[CHT_ALL + i].draw(position + Point<int16_t>(chattab_x + (i * chattab_span) + 25, chattab_y - 3));
+			for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
+				chattab_text[ChatTab::CHT_ALL + i].draw(position + Point<int16_t>(chattab_x + (i * chattab_span) + 25, chattab_y - 3));
 	}
 
 	void UIChatbar::update()
 	{
 		UIElement::update();
 
-		for (size_t i = 0; i < NUM_CHATTAB; i++)
+		for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
 			buttons[BT_TAB_0 + i]->set_position(Point<int16_t>(chattab_x + (i * chattab_span), chattab_y));
 
-		buttons[BT_TAB_0 + NUM_CHATTAB]->set_position(Point<int16_t>(chattab_x + (NUM_CHATTAB * chattab_span), chattab_y));
-		buttons[BT_CLOSECHAT]->set_position(closechat + Point<int16_t>(0, chattab_y));
+		buttons[Buttons::BT_TAB_0 + ChatTab::NUM_CHATTAB]->set_position(Point<int16_t>(chattab_x + (ChatTab::NUM_CHATTAB * chattab_span), chattab_y));
+		buttons[Buttons::BT_CLOSECHAT]->set_position(closechat + Point<int16_t>(0, chattab_y));
 
 		chatfield.update(position);
 
@@ -246,7 +246,7 @@ namespace ms
 	{
 		if (pressed)
 		{
-			if (keycode == KeyAction::RETURN)
+			if (keycode == KeyAction::Id::RETURN)
 				toggle_chatfield();
 			else if (escape)
 				toggle_chatfield(false);
@@ -322,7 +322,7 @@ namespace ms
 				chattab_y = getchattop(chatopen) - 33;
 				//dimension.set_y(getchatbarheight());
 
-				return Cursor::CLICKING;
+				return Cursor::State::CLICKING;
 			}
 			else
 			{
@@ -335,11 +335,11 @@ namespace ms
 			{
 				dragchattop = true;
 
-				return Cursor::CLICKING;
+				return Cursor::State::CLICKING;
 			}
 			else
 			{
-				return Cursor::CHATBARVDRAG;
+				return Cursor::State::CHATBARVDRAG;
 			}
 		}
 		else if (in_chattopleft)
@@ -348,11 +348,11 @@ namespace ms
 			{
 				//dragchattopleft = true;
 
-				return Cursor::CLICKING;
+				return Cursor::State::CLICKING;
 			}
 			else
 			{
-				return Cursor::CHATBARBRTLDRAG;
+				return Cursor::State::CHATBARBRTLDRAG;
 			}
 		}
 		else if (in_chattopright)
@@ -361,11 +361,11 @@ namespace ms
 			{
 				//dragchattopright = true;
 
-				return Cursor::CLICKING;
+				return Cursor::State::CLICKING;
 			}
 			else
 			{
-				return Cursor::CHATBARBLTRDRAG;
+				return Cursor::State::CHATBARBLTRDRAG;
 			}
 		}
 		else if (in_chatleft)
@@ -374,11 +374,11 @@ namespace ms
 			{
 				//dragchatleft = true;
 
-				return Cursor::CLICKING;
+				return Cursor::State::CLICKING;
 			}
 			else
 			{
-				return Cursor::CHATBARHDRAG;
+				return Cursor::State::CHATBARHDRAG;
 			}
 		}
 		else if (in_chatright)
@@ -387,11 +387,11 @@ namespace ms
 			{
 				//dragchatright = true;
 
-				return Cursor::CLICKING;
+				return Cursor::State::CLICKING;
 			}
 			else
 			{
-				return Cursor::CHATBARHDRAG;
+				return Cursor::State::CHATBARHDRAG;
 			}
 		}
 
@@ -416,13 +416,13 @@ namespace ms
 
 		switch (type)
 		{
-		case RED:
+		case LineType::RED:
 			color = Color::Name::DARKRED;
 			break;
-		case BLUE:
+		case LineType::BLUE:
 			color = Color::Name::MEDIUMBLUE;
 			break;
-		case YELLOW:
+		case LineType::YELLOW:
 			color = Color::Name::YELLOW;
 			break;
 		default:
@@ -460,13 +460,13 @@ namespace ms
 			return;
 
 		chatopen = chat_open;
-		buttons[BT_OPENCHAT]->set_active(!chat_open);
-		buttons[BT_CLOSECHAT]->set_active(chat_open);
+		buttons[Buttons::BT_OPENCHAT]->set_active(!chat_open);
+		buttons[Buttons::BT_CLOSECHAT]->set_active(chat_open);
 
-		for (size_t i = 0; i < NUM_CHATTAB; i++)
-			buttons[BT_TAB_0 + i]->set_active(chat_open);
+		for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
+			buttons[Buttons::BT_TAB_0 + i]->set_active(chat_open);
 
-		buttons[BT_TAB_0 + NUM_CHATTAB]->set_active(chat_open);
+		buttons[Buttons::BT_TAB_0 + ChatTab::NUM_CHATTAB]->set_active(chat_open);
 	}
 
 	void UIChatbar::toggle_chatfield()
@@ -483,10 +483,10 @@ namespace ms
 
 		if (chatfieldopen)
 		{
-			buttons[BT_CHAT]->set_active(true);
-			buttons[BT_HELP]->set_active(true);
-			buttons[BT_LINK]->set_active(true);
-			buttons[BT_CHAT_TARGET]->set_active(true);
+			buttons[Buttons::BT_CHAT]->set_active(true);
+			buttons[Buttons::BT_HELP]->set_active(true);
+			buttons[Buttons::BT_LINK]->set_active(true);
+			buttons[Buttons::BT_CHAT_TARGET]->set_active(true);
 
 			chatfield.set_state(Textfield::State::FOCUSED);
 
@@ -494,10 +494,10 @@ namespace ms
 		}
 		else
 		{
-			buttons[BT_CHAT]->set_active(false);
-			buttons[BT_HELP]->set_active(false);
-			buttons[BT_LINK]->set_active(false);
-			buttons[BT_CHAT_TARGET]->set_active(false);
+			buttons[Buttons::BT_CHAT]->set_active(false);
+			buttons[Buttons::BT_HELP]->set_active(false);
+			buttons[Buttons::BT_LINK]->set_active(false);
+			buttons[Buttons::BT_CHAT_TARGET]->set_active(false);
 
 			chatfield.set_state(Textfield::State::DISABLED);
 			chatfield.change_text("");
@@ -515,23 +515,23 @@ namespace ms
 	{
 		switch (buttonid)
 		{
-		case BT_OPENCHAT:
-		case BT_CLOSECHAT:
+		case Buttons::BT_OPENCHAT:
+		case Buttons::BT_CLOSECHAT:
 			toggle_chat();
 			break;
-		case BT_TAB_0:
-		case BT_TAB_1:
-		case BT_TAB_2:
-		case BT_TAB_3:
-		case BT_TAB_4:
-		case BT_TAB_5:
-			for (size_t i = 0; i < NUM_CHATTAB; i++)
+		case Buttons::BT_TAB_0:
+		case Buttons::BT_TAB_1:
+		case Buttons::BT_TAB_2:
+		case Buttons::BT_TAB_3:
+		case Buttons::BT_TAB_4:
+		case Buttons::BT_TAB_5:
+			for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
 			{
-				buttons[BT_TAB_0 + i]->set_state(Button::State::NORMAL);
-				chattab_text[CHT_ALL + i].change_color(Color::Name::DUSTYGRAY);
+				buttons[Buttons::BT_TAB_0 + i]->set_state(Button::State::NORMAL);
+				chattab_text[ChatTab::CHT_ALL + i].change_color(Color::Name::DUSTYGRAY);
 			}
 
-			chattab_text[buttonid - BT_TAB_0].change_color(Color::Name::WHITE);
+			chattab_text[buttonid - Buttons::BT_TAB_0].change_color(Color::Name::WHITE);
 
 			return Button::State::PRESSED;
 		}

@@ -84,7 +84,7 @@ namespace ms
 	void UIWorldMap::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && escape)
-			active = false;
+			deactivate();
 	}
 
 	Button::State UIWorldMap::button_pressed(uint16_t buttonid)
@@ -92,7 +92,7 @@ namespace ms
 		switch (buttonid)
 		{
 		case Buttons::BT_CLOSE:
-			active = false;
+			deactivate();
 			break;
 		case Buttons::BT_SEARCH:
 			if (!search)

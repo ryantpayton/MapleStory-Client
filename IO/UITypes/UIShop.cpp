@@ -538,7 +538,7 @@ namespace ms
 	{
 		clear_tooltip();
 
-		active = false;
+		deactivate();
 		NpcShopActionPacket().dispatch();
 	}
 

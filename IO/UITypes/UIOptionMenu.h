@@ -37,6 +37,7 @@ namespace ms
 
 		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
 	private:
 		void change_tab(uint16_t tabid);

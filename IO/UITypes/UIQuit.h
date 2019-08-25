@@ -22,6 +22,7 @@
 #include "../Components/Charset.h"
 #include "../Character/Charstats.h"
 #include "../Graphics/Text.h"
+#include "../Graphics/Geometry.h"
 
 namespace ms
 {
@@ -35,6 +36,10 @@ namespace ms
 		UIQuit(const CharStats& stats);
 
 		void draw(float inter) const override;
+		void update() override;
+
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -52,8 +57,12 @@ namespace ms
 		};
 
 		Point<int16_t> screen_adj;
+		ColorBox background;
 
 		// Time
+		int64_t minutes;
+		int64_t hours;
+
 		Charset time_minutes;
 		Point<int16_t> time_minutes_pos;
 		std::string time_minutes_text;
@@ -64,10 +73,19 @@ namespace ms
 
 		int64_t time_number_width;
 
+		Point<int16_t> time_lt;
+		Point<int16_t> time_rb;
+
 		// Level
+		Sprite levelupEffect;
+
+		uint16_t uplevel;
+
 		Charset levelBefore;
 		Point<int16_t> levelBeforePos;
 		std::string levelBeforeText;
+
+		uint16_t cur_level;
 
 		Charset levelAfter;
 		Point<int16_t> levelAfterPos;

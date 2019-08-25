@@ -112,11 +112,11 @@ namespace ms
 			{
 				cancel();
 			}
-			else if (keycode == KeyAction::RETURN)
+			else if (keycode == KeyAction::Id::RETURN)
 			{
 				change_channel();
 			}
-			else if (keycode == KeyAction::UP)
+			else if (keycode == KeyAction::Id::UP)
 			{
 				if (selected_channel > 4)
 				{
@@ -143,7 +143,7 @@ namespace ms
 
 				update_selected_channel_position();
 			}
-			else if (keycode == KeyAction::DOWN)
+			else if (keycode == KeyAction::Id::DOWN)
 			{
 				if (selected_channel < 15)
 				{
@@ -170,7 +170,7 @@ namespace ms
 
 				update_selected_channel_position();
 			}
-			else if (keycode == KeyAction::LEFT)
+			else if (keycode == KeyAction::Id::LEFT)
 			{
 				if (selected_channel != 0)
 					selected_channel--;
@@ -187,7 +187,7 @@ namespace ms
 
 				update_selected_channel_position();
 			}
-			else if (keycode == KeyAction::RIGHT)
+			else if (keycode == KeyAction::Id::RIGHT)
 			{
 				if (selected_channel != channel_count - 1)
 					selected_channel++;
@@ -219,7 +219,7 @@ namespace ms
 				{
 					if (i < Buttons::CH)
 					{
-						Sound(Sound::BUTTONOVER).play();
+						Sound(Sound::Name::BUTTONOVER).play();
 
 						buttons[i]->set_state(Button::State::MOUSEOVER);
 						ret = Cursor::State::CANCLICK;
@@ -235,7 +235,7 @@ namespace ms
 					if (clicked)
 					{
 						if (i < Buttons::CH)
-							Sound(Sound::BUTTONCLICK).play();
+							Sound(Sound::Name::BUTTONCLICK).play();
 
 						buttons[i]->set_state(button_pressed(i));
 

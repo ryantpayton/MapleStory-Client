@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIOptionMenu.h"
 
+#include "../KeyAction.h"
+
 #include "../Components/MapleButton.h"
 #include "../Components/TwoSpriteButton.h"
 
@@ -227,6 +229,17 @@ namespace ms
 		}
 
 		return UIElement::send_cursor(clicked, cursorpos);
+	}
+
+	void UIOptionMenu::send_key(int32_t keycode, bool pressed, bool escape)
+	{
+		if (pressed)
+		{
+			if (escape)
+				deactivate();
+			else if (keycode == KeyAction::Id::RETURN)
+				button_pressed(Buttons::OK);
+		}
 	}
 
 	void UIOptionMenu::change_tab(uint16_t tabid)

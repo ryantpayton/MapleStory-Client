@@ -36,6 +36,8 @@
 #include "../IO/UITypes/UIEvent.h"
 #include "../IO/UITypes/UIChat.h"
 #include "../IO/UITypes/UIKeyConfig.h"
+#include "../IO/UITypes/UIOptionMenu.h"
+#include "../IO/UITypes/UIQuit.h"
 
 namespace ms
 {
@@ -48,7 +50,7 @@ namespace ms
 	void UI::init()
 	{
 		cursor.init();
-		change_state(LOGIN);
+		change_state(State::LOGIN);
 	}
 
 	void UI::draw(float alpha) const
@@ -81,10 +83,10 @@ namespace ms
 	{
 		switch (id)
 		{
-		case LOGIN:
+		case State::LOGIN:
 			state = std::make_unique<UIStateLogin>();
 			break;
-		case GAME:
+		case State::GAME:
 			state = std::make_unique<UIStateGame>();
 			break;
 		}
@@ -138,7 +140,7 @@ namespace ms
 
 	void UI::send_cursor(bool pressed)
 	{
-		Cursor::State cursorstate = (pressed && enabled) ? Cursor::CLICKING : Cursor::IDLE;
+		Cursor::State cursorstate = (pressed && enabled) ? Cursor::State::CLICKING : Cursor::State::IDLE;
 		Point<int16_t> cursorpos = cursor.get_position();
 		send_cursor(cursorpos, cursorstate);
 
@@ -148,7 +150,7 @@ namespace ms
 
 			switch (tstate)
 			{
-			case Cursor::IDLE:
+			case Cursor::State::IDLE:
 				focusedtextfield = {};
 				break;
 			}
@@ -201,10 +203,10 @@ namespace ms
 
 					switch (action)
 					{
-					case KeyAction::COPY:
+					case KeyAction::Id::COPY:
 						Window::get().setclipboard(focusedtextfield->get_text());
 						break;
-					case KeyAction::PASTE:
+					case KeyAction::Id::PASTE:
 						focusedtextfield->add_string(Window::get().getclipboard());
 						break;
 					}
@@ -232,10 +234,54 @@ namespace ms
 			bool arrows = up_down || left_right;
 
 			auto statusbar = UI::get().get_element<UIStatusbar>();
+			auto channel = UI::get().get_element<UIChannel>();
+			auto worldmap = UI::get().get_element<UIWorldMap>();
+			auto optionmenu = UI::get().get_element<UIOptionMenu>();
+			auto shop = UI::get().get_element<UIShop>();
+			auto joypad = UI::get().get_element<UIJoypad>();
+			auto rank = UI::get().get_element<UIRank>();
+			auto quit = UI::get().get_element<UIQuit>();
+			//auto report = UI::get().get_element<UIReport>();
+			//auto whisper = UI::get().get_element<UIWhisper>();
 
-			if (escape && statusbar && statusbar->is_menu_active())
+			if (statusbar && statusbar->is_menu_active())
 			{
 				statusbar->send_key(mapping.action, pressed, escape);
+				sent = true;
+			}
+			else if (channel && channel->is_active())
+			{
+				channel->send_key(mapping.action, pressed, escape);
+				sent = true;
+			}
+			else if (worldmap && worldmap->is_active() && mapping.action != KeyAction::Id::WORLDMAP)
+			{
+				worldmap->send_key(mapping.action, pressed, escape);
+				sent = true;
+			}
+			else if (optionmenu && optionmenu->is_active())
+			{
+				optionmenu->send_key(mapping.action, pressed, escape);
+				sent = true;
+			}
+			else if (shop && shop->is_active())
+			{
+				shop->send_key(mapping.action, pressed, escape);
+				sent = true;
+			}
+			else if (joypad && joypad->is_active())
+			{
+				joypad->send_key(mapping.action, pressed, escape);
+				sent = true;
+			}
+			else if (rank && rank->is_active())
+			{
+				rank->send_key(mapping.action, pressed, escape);
+				sent = true;
+			}
+			else if (quit && quit->is_active())
+			{
+				quit->send_key(mapping.action, pressed, escape);
 				sent = true;
 			}
 			else
@@ -246,43 +292,37 @@ namespace ms
 					// Login
 					types.emplace_back(UIElement::Type::WORLDSELECT);
 					types.emplace_back(UIElement::Type::CHARSELECT);
-					types.emplace_back(UIElement::Type::RACESELECT); // No tab
-					types.emplace_back(UIElement::Type::CLASSCREATION); // No tab (No arrows, but shouldn't send else where)
-					types.emplace_back(UIElement::Type::LOGINNOTICE); // No tab (No arrows, but shouldn't send else where)
-					types.emplace_back(UIElement::Type::LOGINNOTICE_CONFIRM); // No tab (No arrows, but shouldn't send else where)
-					types.emplace_back(UIElement::Type::LOGINWAIT); // No tab (No arrows, but shouldn't send else where)
-
-					// Game
-					types.emplace_back(UIElement::Type::CHANNEL); // No tab
+					types.emplace_back(UIElement::Type::RACESELECT);			// No tab
+					types.emplace_back(UIElement::Type::CLASSCREATION);			// No tab (No arrows, but shouldn't send else where)
+					types.emplace_back(UIElement::Type::LOGINNOTICE);			// No tab (No arrows, but shouldn't send else where)
+					types.emplace_back(UIElement::Type::LOGINNOTICE_CONFIRM);	// No tab (No arrows, but shouldn't send else where)
+					types.emplace_back(UIElement::Type::LOGINWAIT);				// No tab (No arrows, but shouldn't send else where)
 				}
 
 				if (escape)
 				{
+					// Login
 					types.emplace_back(UIElement::Type::SOFTKEYBOARD);
 
 					// Game
 					types.emplace_back(UIElement::Type::NOTICE);
 					types.emplace_back(UIElement::Type::KEYCONFIG);
-					types.emplace_back(UIElement::Type::CHATRANK);
 					types.emplace_back(UIElement::Type::CHAT);
-					types.emplace_back(UIElement::Type::JOYPAD);
 					types.emplace_back(UIElement::Type::EVENT);
-					types.emplace_back(UIElement::Type::SHOP);
 					types.emplace_back(UIElement::Type::STATSINFO);
 					types.emplace_back(UIElement::Type::ITEMINVENTORY);
 					types.emplace_back(UIElement::Type::EQUIPINVENTORY);
 					types.emplace_back(UIElement::Type::SKILLBOOK);
 					types.emplace_back(UIElement::Type::QUESTLOG);
-					types.emplace_back(UIElement::Type::WORLDMAP);
 					types.emplace_back(UIElement::Type::USERLIST);
 				}
 				else if (enter)
 				{
+					// Login
 					types.emplace_back(UIElement::Type::SOFTKEYBOARD);
 
 					// Game
 					types.emplace_back(UIElement::Type::NOTICE);
-					types.emplace_back(UIElement::Type::JOYPAD);
 				}
 				else if (tab)
 				{
@@ -313,24 +353,13 @@ namespace ms
 				{
 					if (chatbar && chatbar->is_chatopen())
 						chatbar->send_key(mapping.action, pressed, escape);
-					else if (statusbar && statusbar->is_menu_active())
-						statusbar->send_key(mapping.action, pressed, escape);
 					else
 						state->send_key(mapping.type, mapping.action, pressed, escape);
 				}
 				else if (enter)
 				{
-					if (statusbar && statusbar->is_menu_active())
-						statusbar->send_key(mapping.action, pressed, escape);
-					else if (chatbar)
+					if (chatbar)
 						chatbar->send_key(mapping.action, pressed, escape);
-					else
-						state->send_key(mapping.type, mapping.action, pressed, escape);
-				}
-				else if (up_down)
-				{
-					if (statusbar && statusbar->is_menu_active())
-						statusbar->send_key(mapping.action, pressed, escape);
 					else
 						state->send_key(mapping.type, mapping.action, pressed, escape);
 				}
@@ -353,7 +382,7 @@ namespace ms
 	{
 		if (focusedtextfield)
 		{
-			focusedtextfield->set_state(Textfield::NORMAL);
+			focusedtextfield->set_state(Textfield::State::NORMAL);
 		}
 
 		focusedtextfield = tofocus;

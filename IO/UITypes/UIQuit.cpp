@@ -47,8 +47,8 @@ namespace ms
 
 		// Time
 		int64_t uptime = UI::get().get_uptime() / 1000 / 1000;
-		int64_t minutes = uptime / 60;
-		int64_t hours = minutes / 60;
+		minutes = uptime / 60;
+		hours = minutes / 60;
 
 		time_minutes = Charset(time["number"], Charset::Alignment::LEFT);
 		time_minutes_pos = time["posM"];
@@ -60,14 +60,19 @@ namespace ms
 
 		time_number_width = time["numberWidth"];
 
+		time_lt = time["tooltip"]["lt"];
+		time_rb = time["tooltip"]["rb"];
+
 		// Level
-		uint16_t uplevel = UI::get().get_uplevel();
+		levelupEffect = level["levelupEffect"];
+
+		uplevel = UI::get().get_uplevel();
 
 		levelBefore = Charset(level["number"], Charset::Alignment::LEFT);
 		levelBeforePos = level["posBefore"];
 		levelBeforeText = std::to_string(uplevel);
 
-		uint16_t cur_level = stats.get_stat(Maplestat::Id::LEVEL);
+		cur_level = stats.get_stat(Maplestat::Id::LEVEL);
 
 		levelAfter = Charset(level["number"], Charset::Alignment::LEFT);
 		levelAfterPos = level["posAfter"];
@@ -99,12 +104,15 @@ namespace ms
 		int16_t width = Constants::Constants::get().get_viewwidth();
 		int16_t height = Constants::Constants::get().get_viewheight();
 
+		background = ColorBox(width, height, Color::Name::BLACK, 0.5f);
 		position = Point<int16_t>(width / 2, height / 2);
 		dimension = Texture(backgrnd).get_dimensions();
 	}
 
 	void UIQuit::draw(float inter) const
 	{
+		background.draw(Point<int16_t>(0, 0));
+
 		UIElement::draw(inter);
 
 		time_minutes.draw(time_minutes_text, time_number_width, position + time_minutes_pos - screen_adj);
@@ -113,8 +121,44 @@ namespace ms
 		levelBefore.draw(levelBeforeText, levelNumberWidth, position + levelBeforePos + level_adj - screen_adj);
 		levelAfter.draw(levelAfterText, levelNumberWidth, position + levelAfterPos + level_adj - screen_adj);
 
+		if (cur_level > uplevel)
+			levelupEffect.draw(position - screen_adj, inter);
+
 		expBefore.draw(position + expBeforePos - exp_adj - screen_adj);
 		expAfter.draw(position + expAfterPos - exp_adj - screen_adj);
+	}
+
+	void UIQuit::update()
+	{
+		UIElement::update();
+
+		levelupEffect.update();
+	}
+
+	Cursor::State UIQuit::send_cursor(bool clicked, Point<int16_t> cursorpos)
+	{
+		auto lt = position + time_lt - screen_adj;
+		auto rb = position + time_rb - screen_adj;
+
+		auto bounds = Rectangle<int16_t>(lt, rb);
+
+		if (bounds.contains(cursorpos))
+			UI::get().show_text(Tooltip::Parent::TEXT, std::to_string(hours) + "Hour " + std::to_string(minutes) + "Minute");
+		else
+			UI::get().clear_tooltip(Tooltip::Parent::TEXT);
+
+		return UIElement::send_cursor(clicked, cursorpos);
+	}
+
+	void UIQuit::send_key(int32_t keycode, bool pressed, bool escape)
+	{
+		if (pressed)
+		{
+			if (escape)
+				deactivate();
+			else if (keycode == KeyAction::Id::RETURN)
+				button_pressed(Buttons::YES);
+		}
 	}
 
 	Button::State UIQuit::button_pressed(uint16_t buttonid)
