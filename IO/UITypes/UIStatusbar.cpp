@@ -18,12 +18,9 @@
 #include "UIStatusbar.h"
 
 #include "../UI.h"
-#include "../Window.h"
-#include "../Timer.h"
 
 #include "../Components/MapleButton.h"
 #include "../Gameplay/Stage.h"
-#include "../Net/Session.h"
 #include "../UITypes/UIQuestLog.h"
 #include "../UITypes/UIUserList.h"
 #include "../UITypes/UIStatsinfo.h"
@@ -36,6 +33,7 @@
 #include "../UITypes/UIKeyConfig.h"
 #include "../UITypes/UIChat.h"
 #include "../UITypes/UIOptionMenu.h"
+#include "../UITypes/UIQuit.h"
 #include "../Character/ExpTable.h"
 
 #include <nlnx/nx.hpp>
@@ -626,8 +624,9 @@ namespace ms
 			remove_menus();
 			break;
 		case Buttons::BT_SETTING_QUIT:
+			UI::get().emplace<UIQuit>(stats);
+
 			remove_menus();
-			transition();
 			break;
 		case Buttons::BT_COMMUNITY_FRIENDS:
 		case Buttons::BT_COMMUNITY_PARTY:
@@ -1012,33 +1011,6 @@ namespace ms
 			toggle_character();
 		else if (event_active && type != MenuType::EVENT)
 			toggle_event();
-	}
-
-	void UIStatusbar::transition() const
-	{
-		Constants::Constants::get().set_viewwidth(800);
-		Constants::Constants::get().set_viewheight(600);
-
-		float fadestep = 0.025f;
-
-		Window::get().fadeout(
-			fadestep,
-			[]()
-			{
-				GraphicsGL::get().clear();
-
-				UI::get().change_state(UI::State::LOGIN);
-				Session::get().reconnect();
-
-				UI::get().enable();
-				Timer::get().start();
-				GraphicsGL::get().unlock();
-			}
-		);
-
-		GraphicsGL::get().lock();
-		Stage::get().clear();
-		Timer::get().start();
 	}
 
 	Point<int16_t> UIStatusbar::get_quickslot_pos()

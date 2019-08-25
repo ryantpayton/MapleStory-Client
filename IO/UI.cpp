@@ -405,6 +405,21 @@ namespace ms
 		return keyboard;
 	}
 
+	int64_t UI::get_uptime()
+	{
+		return state->get_uptime();
+	}
+
+	uint16_t UI::get_uplevel()
+	{
+		return state->get_uplevel();
+	}
+
+	int64_t UI::get_upexp()
+	{
+		return state->get_upexp();
+	}
+
 	void UI::remove(UIElement::Type type)
 	{
 		focusedtextfield = {};

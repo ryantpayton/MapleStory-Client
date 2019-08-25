@@ -56,4 +56,36 @@ namespace ms
 
 		clock::time_point point;
 	};
+
+	// Small class for measuring elapsed time given a specific start time.
+	class ContinuousTimer : public Singleton<ContinuousTimer>
+	{
+	public:
+		using point = std::chrono::time_point<std::chrono::steady_clock>;
+
+		ContinuousTimer()
+		{
+			start();
+		}
+
+		~ContinuousTimer() {}
+
+		// Return now from the clock to be used to calculate elapsed time later.
+		point start()
+		{
+			return clock::now();
+		}
+
+		// Return time elapsed since the last measurement provided.
+		int64_t stop(point last)
+		{
+			auto now = clock::now();
+
+			auto duration = std::chrono::duration_cast<std::chrono::microseconds>(now - last);
+			return duration.count();
+		}
+
+	private:
+		using clock = std::chrono::high_resolution_clock;
+	};
 }

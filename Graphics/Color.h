@@ -78,6 +78,7 @@ namespace ms
 			LIGHTGREEN,
 			JAPANESELAUREL,
 			GRAYOLIVE,
+			ELECTRICLIME,
 			NUM_COLORS
 		};
 
@@ -114,7 +115,8 @@ namespace ms
 			{ 0.00f, 0.75f, 0.00f }, // Green (Mob HP Bar)
 			{ 0.00f, 1.00f, 0.00f }, // Light Green (Mob HP Bar)
 			{ 0.00f, 0.50f, 0.00f }, // Japanese Laurel (Mob HP Bar)
-			{ 0.67f, 0.67f, 0.60f }  // Gray Olive
+			{ 0.67f, 0.67f, 0.60f }, // Gray Olive
+			{ 0.80f, 1.00f, 0.00f }  // Electric Lime
 		};
 
 		// Create a color by an array of real numbers [0.0f, 1.0f]

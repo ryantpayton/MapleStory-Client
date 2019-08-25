@@ -24,6 +24,10 @@
 
 #include "../Graphics/GraphicsGL.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+#include <Windows.h>
+
 namespace ms
 {
 	Window::Window()
@@ -107,7 +111,7 @@ namespace ms
 		fullscreen = Setting<Fullscreen>::get().load();
 
 		if (!glfwInit())
-			return Error::GLFW;
+			return Error::Code::GLFW;
 
 		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 		context = glfwCreateWindow(1, 1, "", nullptr, nullptr);
@@ -136,7 +140,7 @@ namespace ms
 		);
 
 		if (!glwnd)
-			return Error::WINDOW;
+			return Error::Code::WINDOW;
 
 		glfwMakeContextCurrent(glwnd);
 
@@ -156,9 +160,25 @@ namespace ms
 		glfwSetScrollCallback(glwnd, scroll_callback);
 		glfwSetWindowCloseCallback(glwnd, close_callback);
 
+		char buf[256];
+		GetCurrentDirectoryA(256, buf);
+		strcat(buf, "\\Icon.png");
+
+		GLFWimage images[1];
+
+		auto stbi = stbi_load(buf, &images[0].width, &images[0].height, 0, 4);
+
+		if (stbi == NULL)
+			return Error(Error::Code::MISSING_ICON, stbi_failure_reason());
+
+		images[0].pixels = stbi;
+
+		glfwSetWindowIcon(glwnd, 1, images);
+		stbi_image_free(images[0].pixels);
+
 		GraphicsGL::get().reinit();
 
-		return Error::NONE;
+		return Error::Code::NONE;
 	}
 
 	bool Window::not_closed() const

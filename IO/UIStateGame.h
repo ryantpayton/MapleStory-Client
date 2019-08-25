@@ -24,8 +24,11 @@
 #include "Components/SkillTooltip.h"
 #include "Components/TextTooltip.h"
 
+#include "../Timer.h"
+
 #include "../Template/EnumMap.h"
 #include "../Template/Optional.h"
+#include "../Character/Charstats.h"
 
 #include <list>
 #include <memory>
@@ -59,8 +62,13 @@ namespace ms
 		UIElement* get(UIElement::Type type) override;
 		UIElement* get_front(std::list<UIElement::Type> types) override;
 		UIElement* get_front(Point<int16_t> pos) override;
+		int64_t get_uptime() override;
+		uint16_t get_uplevel() override;
+		int64_t get_upexp() override;
 
 	private:
+		const CharStats& stats;
+
 		void drop_icon(const Icon& icon, Point<int16_t> pos);
 		template <class T, typename...Args>
 		void emplace(Args&& ...args);
@@ -80,5 +88,8 @@ namespace ms
 
 		int16_t VWIDTH;
 		int16_t VHEIGHT;
+		std::chrono::time_point<std::chrono::steady_clock> start;
+		uint16_t levelBefore;
+		int64_t expBefore;
 	};
 }

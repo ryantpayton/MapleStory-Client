@@ -39,6 +39,7 @@ namespace ms
 			SHADER_VARS,
 			WINDOW,
 			AUDIO,
+			MISSING_ICON,
 			LENGTH
 		};
 
@@ -84,7 +85,8 @@ namespace ms
 			"Failed to create shader program.",
 			"Failed to locate shader variables.",
 			"Failed to create window.",
-			"Failed to initialize audio"
+			"Failed to initialize audio",
+			"Could not load icon. Message: "
 		};
 	};
 }

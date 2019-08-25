@@ -78,9 +78,12 @@ namespace ms
 		void show_text(Tooltip::Parent parent, std::string text);
 
 		Keyboard& get_keyboard();
+		int64_t get_uptime();
+		uint16_t get_uplevel();
+		int64_t get_upexp();
 
 		template <class T, typename...Args>
-		Optional<T> emplace(Args&&...args);
+		Optional<T> emplace(Args&& ...args);
 		template <class T>
 		Optional<T> get_element();
 		void remove(UIElement::Type type);
@@ -100,7 +103,7 @@ namespace ms
 	};
 
 	template <class T, typename...Args>
-	Optional<T> UI::emplace(Args&&...args)
+	Optional<T> UI::emplace(Args&& ...args)
 	{
 		if (auto iter = state->pre_add(T::TYPE, T::TOGGLED, T::FOCUSED))
 		{

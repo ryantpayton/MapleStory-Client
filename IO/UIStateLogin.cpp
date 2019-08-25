@@ -240,4 +240,19 @@ namespace ms
 
 		return nullptr;
 	}
+
+	int64_t UIStateLogin::get_uptime()
+	{
+		return 0;
+	}
+
+	uint16_t UIStateLogin::get_uplevel()
+	{
+		return 0;
+	}
+
+	int64_t UIStateLogin::get_upexp()
+	{
+		return 0;
+	}
 }

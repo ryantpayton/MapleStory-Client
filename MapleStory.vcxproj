@@ -100,7 +100,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)includes\bass24\c;$(ProjectDir)includes\glfw-3.2.1.bin.WIN64\include\GLFW;$(ProjectDir)includes\freetype\include;$(ProjectDir)includes\glew-2.1.0\include;$(ProjectDir)includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)includes\stb;$(ProjectDir)includes\bass24\c;$(ProjectDir)includes\glfw-3.2.1.bin.WIN64\include\GLFW;$(ProjectDir)includes\freetype\include;$(ProjectDir)includes\glew-2.1.0\include;$(ProjectDir)includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(ProjectDir)includes\bass24\c\x64;$(ProjectDir)includes\glfw-3.2.1.bin.WIN64\lib-vc2015;$(ProjectDir)includes\freetype\win64;$(ProjectDir)includes\glew-2.1.0\lib\Release\x64;$(ProjectDir)includes\nlnx\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -115,7 +115,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)includes\bass24\c;$(ProjectDir)includes\glfw-3.2.1.bin.WIN64\include\GLFW;$(ProjectDir)includes\freetype\include;$(ProjectDir)includes\glew-2.1.0\include;$(ProjectDir)includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)includes\stb;$(ProjectDir)includes\bass24\c;$(ProjectDir)includes\glfw-3.2.1.bin.WIN64\include\GLFW;$(ProjectDir)includes\freetype\include;$(ProjectDir)includes\glew-2.1.0\include;$(ProjectDir)includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(ProjectDir)includes\bass24\c\x64;$(ProjectDir)includes\glfw-3.2.1.bin.WIN64\lib-vc2015;$(ProjectDir)includes\freetype\win64;$(ProjectDir)includes\glew-2.1.0\lib\Release\x64;$(ProjectDir)includes\nlnx\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -251,6 +251,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="IO\UITypes\UICygnusCreation.cpp" />
     <ClCompile Include="IO\UITypes\UIGender.cpp" />
     <ClCompile Include="IO\UITypes\UIOptionMenu.cpp" />
+    <ClCompile Include="IO\UITypes\UIQuit.cpp" />
     <ClCompile Include="io\uitypes\UIRaceSelect.cpp" />
     <ClCompile Include="io\uitypes\UICharSelect.cpp" />
     <ClCompile Include="io\uitypes\UIChatbar.cpp" />
@@ -446,6 +447,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="IO\UITypes\UICygnusCreation.h" />
     <ClInclude Include="IO\UITypes\UIGender.h" />
     <ClInclude Include="IO\UITypes\UIOptionMenu.h" />
+    <ClInclude Include="IO\UITypes\UIQuit.h" />
     <ClInclude Include="io\uitypes\UIRaceSelect.h" />
     <ClInclude Include="io\uitypes\UICharSelect.h" />
     <ClInclude Include="io\uitypes\UIChatbar.h" />

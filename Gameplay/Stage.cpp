@@ -33,7 +33,7 @@ namespace ms
 {
 	Stage::Stage() : combat(player, chars, mobs)
 	{
-		state = INACTIVE;
+		state = State::INACTIVE;
 	}
 
 	void Stage::init()
@@ -45,16 +45,16 @@ namespace ms
 	{
 		switch (state)
 		{
-		case INACTIVE:
+		case State::INACTIVE:
 			load_map(mapid);
 			respawn(portalid);
 			break;
-		case TRANSITION:
+		case State::TRANSITION:
 			respawn(portalid);
 			break;
 		}
 
-		state = ACTIVE;
+		state = State::ACTIVE;
 	}
 
 	void Stage::loadplayer(const CharEntry& entry)
@@ -65,7 +65,7 @@ namespace ms
 
 	void Stage::clear()
 	{
-		state = INACTIVE;
+		state = State::INACTIVE;
 
 		chars.clear();
 		npcs.clear();
@@ -100,7 +100,7 @@ namespace ms
 
 	void Stage::draw(float alpha) const
 	{
-		if (state != ACTIVE)
+		if (state != State::ACTIVE)
 			return;
 
 		Point<int16_t> viewpos = camera.position(alpha);
@@ -128,7 +128,7 @@ namespace ms
 
 	void Stage::update()
 	{
-		if (state != ACTIVE)
+		if (state != State::ACTIVE)
 			return;
 
 		combat.update();
@@ -153,7 +153,7 @@ namespace ms
 			if (MobAttack attack = mobs.create_attack(oid_id))
 			{
 				MobAttackResult result = player.damage(attack);
-				TakeDamagePacket(result, TakeDamagePacket::TOUCH).dispatch();
+				TakeDamagePacket(result, TakeDamagePacket::From::TOUCH).dispatch();
 			}
 		}
 	}
@@ -219,30 +219,30 @@ namespace ms
 
 	void Stage::send_key(KeyType::Id type, int32_t action, bool down)
 	{
-		if (state != ACTIVE || !playable)
+		if (state != State::ACTIVE || !playable)
 			return;
 
 		switch (type)
 		{
-		case KeyType::ACTION:
+		case KeyType::Id::ACTION:
 			if (down)
 			{
 				switch (action)
 				{
-				case KeyAction::UP:
+				case KeyAction::Id::UP:
 					check_ladders(true);
 					check_portals();
 					break;
-				case KeyAction::DOWN:
+				case KeyAction::Id::DOWN:
 					check_ladders(false);
 					break;
-				case KeyAction::SIT:
+				case KeyAction::Id::SIT:
 					check_seats();
 					break;
-				case KeyAction::ATTACK:
+				case KeyAction::Id::ATTACK:
 					combat.use_move(0);
 					break;
-				case KeyAction::PICKUP:
+				case KeyAction::Id::PICKUP:
 					check_drops();
 					break;
 				}
@@ -250,13 +250,13 @@ namespace ms
 
 			playable->send_action(KeyAction::actionbyid(action), down);
 			break;
-		case KeyType::SKILL:
+		case KeyType::Id::SKILL:
 			combat.use_move(action);
 			break;
-		case KeyType::ITEM:
+		case KeyType::Id::ITEM:
 			player.use_item(action);
 			break;
-		case KeyType::FACE:
+		case KeyType::Id::FACE:
 			player.set_expression(action);
 			break;
 		}

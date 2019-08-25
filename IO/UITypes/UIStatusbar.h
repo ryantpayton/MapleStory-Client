@@ -72,7 +72,6 @@ namespace ms
 		void toggle_event();
 		void remove_menus();
 		void remove_active_menu(MenuType type);
-		void transition() const;
 
 		Point<int16_t> get_quickslot_pos();
 

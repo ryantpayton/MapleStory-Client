@@ -36,18 +36,18 @@
 #include "UITypes/UIKeyConfig.h"
 #include "UITypes/UIEvent.h"
 #include "UITypes/UIChannel.h"
+#include "UITypes/UIQuit.h"
 
 #include "../Gameplay/Stage.h"
 
 namespace ms
 {
-	UIStateGame::UIStateGame()
+	UIStateGame::UIStateGame() : stats(Stage::get().get_player().get_stats())
 	{
 		focused = UIElement::Type::NONE;
 		tooltipparent = Tooltip::Parent::NONE;
 
 		const CharLook& look = Stage::get().get_player().get_look();
-		const CharStats& stats = Stage::get().get_player().get_stats();
 		const Inventory& inventory = Stage::get().get_player().get_inventory();
 
 		emplace<UIStatusMessenger>();
@@ -60,6 +60,10 @@ namespace ms
 
 		VWIDTH = Constants::Constants::get().get_viewwidth();
 		VHEIGHT = Constants::Constants::get().get_viewheight();
+
+		start = ContinuousTimer::get().start();
+		levelBefore = stats.get_stat(Maplestat::Id::LEVEL);
+		expBefore = stats.get_exp();
 	}
 
 	void UIStateGame::draw(float inter, Point<int16_t> cursor) const
@@ -379,7 +383,10 @@ namespace ms
 		}
 	}
 
-	void UIStateGame::send_close() {}
+	void UIStateGame::send_close()
+	{
+		UI::get().emplace<UIQuit>(stats);
+	}
 
 	void UIStateGame::drag_icon(Icon* drgic)
 	{
@@ -532,5 +539,20 @@ namespace ms
 		}
 
 		return nullptr;
+	}
+
+	int64_t UIStateGame::get_uptime()
+	{
+		return ContinuousTimer::get().stop(start);
+	}
+
+	uint16_t UIStateGame::get_uplevel()
+	{
+		return levelBefore;
+	}
+
+	int64_t UIStateGame::get_upexp()
+	{
+		return expBefore;
 	}
 }

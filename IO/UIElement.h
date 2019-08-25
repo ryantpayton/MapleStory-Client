@@ -68,6 +68,7 @@ namespace ms
 			EVENT,
 			KEYCONFIG,
 			OPTIONMENU,
+			QUIT,
 			NUM_TYPES
 		};
 
