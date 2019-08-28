@@ -38,7 +38,7 @@ namespace ms
 		void update() override;
 
 		void doubleclick(Point<int16_t> position) override;
-		void send_icon(const Icon& icon, Point<int16_t> position) override;
+		bool send_icon(const Icon& icon, Point<int16_t> position) override;
 		void toggle_active() override;
 		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		Cursor::State send_cursor(bool pressed, Point<int16_t> position) override;
@@ -47,6 +47,7 @@ namespace ms
 		void modify(InventoryType::Id type, int16_t pos, int8_t mode, int16_t arg);
 		void enable_sort();
 		void enable_gather();
+		void change_tab(InventoryType::Id type);
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -71,7 +72,7 @@ namespace ms
 
 			void drop_on_stage() const override;
 			void drop_on_equips(Equipslot::Id eqslot) const override;
-			void drop_on_items(InventoryType::Id tab, Equipslot::Id, int16_t slot, bool) const override;
+			bool drop_on_items(InventoryType::Id tab, Equipslot::Id, int16_t slot, bool) const override;
 			void drop_on_bindings(Point<int16_t>, bool) const override {}
 			void set_count(int16_t count) override;
 

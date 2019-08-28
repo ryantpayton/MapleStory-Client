@@ -375,6 +375,8 @@ namespace ms
 			dropfrom = recv.read_point();
 
 			recv.skip(2);
+
+			Sound(Sound::Name::DROP).play();
 		}
 		else
 		{
@@ -407,7 +409,7 @@ namespace ms
 			else if (auto character = Stage::get().get_character(cid))
 				looter = character->get_phobj();
 
-			Sound(Sound::PICKUP).play();
+			Sound(Sound::Name::PICKUP).play();
 		}
 
 		Stage::get().get_drops().remove(oid, mode, looter.get());

@@ -186,7 +186,7 @@ namespace ms
 		return Cursor::State::IDLE;
 	}
 
-	void UIKeyConfig::send_icon(const Icon& icon, Point<int16_t> cursorpos)
+	bool UIKeyConfig::send_icon(const Icon& icon, Point<int16_t> cursorpos)
 	{
 		for (auto iter : icons_pos)
 		{
@@ -203,6 +203,8 @@ namespace ms
 
 		if (fkey != KeyConfig::Key::LENGTH)
 			icon.drop_on_bindings(cursorpos, false);
+
+		return true;
 	}
 
 	void UIKeyConfig::remove_key(KeyAction::Id action)

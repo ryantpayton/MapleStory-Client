@@ -23,6 +23,7 @@
 #include "../Components/MapleButton.h"
 #include "../Components/TwoSpriteButton.h"
 #include "../Data/ItemData.h"
+#include "../Audio/Audio.h"
 
 #include "../Net/Packets/InventoryPackets.h"
 
@@ -245,12 +246,13 @@ namespace ms
 			slider.setrows(6, 1 + inventory.get_slotmax(tab) / 4);
 
 			buttons[button_by_tab(oldtab)]->set_state(Button::State::NORMAL);
+			buttons[button_by_tab(tab)]->set_state(Button::State::PRESSED);
 
 			load_icons();
 			enable_gather();
 		}
 
-		return Button::State::PRESSED;
+		return Button::State::IDENTITY;
 	}
 
 	void UIItemInventory::doubleclick(Point<int16_t> cursorpos)
@@ -274,7 +276,7 @@ namespace ms
 		}
 	}
 
-	void UIItemInventory::send_icon(const Icon& icon, Point<int16_t> cursorpos)
+	bool UIItemInventory::send_icon(const Icon& icon, Point<int16_t> cursorpos)
 	{
 		int16_t slot = slot_by_position(cursorpos - position);
 
@@ -295,8 +297,10 @@ namespace ms
 				equip = false;
 			}
 
-			icon.drop_on_items(tab, eqslot, slot, equip);
+			return icon.drop_on_items(tab, eqslot, slot, equip);
 		}
+
+		return true;
 	}
 
 	Cursor::State UIItemInventory::send_cursor(bool pressed, Point<int16_t> cursorpos)
@@ -479,6 +483,11 @@ namespace ms
 		buttons[Buttons::BT_SORT]->set_active(false);
 		buttons[Buttons::BT_GATHER]->set_active(true);
 		buttons[Buttons::BT_GATHER]->set_state(Button::State::NORMAL);
+	}
+
+	void UIItemInventory::change_tab(InventoryType::Id type)
+	{
+		button_pressed(button_by_tab(type));
 	}
 
 	void UIItemInventory::toggle_active()
@@ -673,7 +682,10 @@ namespace ms
 		{
 		case InventoryType::Id::EQUIP:
 			if (eqsource == eqslot)
+			{
 				EquipItemPacket(source, eqslot).dispatch();
+				Sound(Sound::Name::DRAGEND).play();
+			}
 
 			break;
 		case InventoryType::Id::USE:
@@ -682,11 +694,13 @@ namespace ms
 		}
 	}
 
-	void UIItemInventory::ItemIcon::drop_on_items(InventoryType::Id tab, Equipslot::Id, int16_t slot, bool) const
+	bool UIItemInventory::ItemIcon::drop_on_items(InventoryType::Id tab, Equipslot::Id, int16_t slot, bool) const
 	{
 		if (tab != sourcetab || slot == source)
-			return;
+			return true;
 
 		MoveItemPacket(tab, source, slot, 1).dispatch();
+
+		return true;
 	}
 }

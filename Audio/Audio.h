@@ -46,6 +46,8 @@ namespace ms
 			SCROLLUP,
 			TAB,
 			WORLDSELECT,
+			DRAGSTART,
+			DRAGEND,
 
 			// Login
 			SELECTCHAR,
@@ -57,6 +59,7 @@ namespace ms
 			PICKUP,
 			PORTAL,
 			LEVELUP,
+			TOMBSTONE,
 			LENGTH
 		};
 

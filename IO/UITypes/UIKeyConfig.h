@@ -40,7 +40,7 @@ namespace ms
 
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
-		void send_icon(const Icon& icon, Point<int16_t> cursorpos) override;
+		bool send_icon(const Icon& icon, Point<int16_t> cursorpos) override;
 
 		void remove_key(KeyAction::Id action);
 		void add_key(Point<int16_t> cursorposition, KeyAction::Id action);
@@ -83,7 +83,7 @@ namespace ms
 
 			void drop_on_stage() const override {}
 			void drop_on_equips(Equipslot::Id) const override {}
-			void drop_on_items(InventoryType::Id, Equipslot::Id, int16_t, bool) const override {}
+			bool drop_on_items(InventoryType::Id, Equipslot::Id, int16_t, bool) const override { return true; }
 			void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const override;
 			void set_count(int16_t) override {}
 

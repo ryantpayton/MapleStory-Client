@@ -108,12 +108,14 @@ namespace ms
 		}
 	}
 
-	void UIStateGame::drop_icon(const Icon& icon, Point<int16_t> pos)
+	bool UIStateGame::drop_icon(const Icon& icon, Point<int16_t> pos)
 	{
 		if (UIElement * front = get_front(pos))
-			front->send_icon(icon, pos);
+			return front->send_icon(icon, pos);
 		else
 			icon.drop_on_stage();
+
+		return true;
 	}
 
 	void UIStateGame::doubleclick(Point<int16_t> pos)
@@ -297,9 +299,11 @@ namespace ms
 			switch (mst)
 			{
 			case Cursor::State::CLICKING:
-				drop_icon(*draggedicon, pos);
-				draggedicon->reset();
-				draggedicon = {};
+				if (drop_icon(*draggedicon, pos))
+				{
+					draggedicon->reset();
+					draggedicon = {};
+				}
 
 				return mst;
 			default:

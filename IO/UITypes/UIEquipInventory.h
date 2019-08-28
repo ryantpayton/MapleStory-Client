@@ -41,7 +41,7 @@ namespace ms
 
 		void toggle_active() override;
 		void doubleclick(Point<int16_t> position) override;
-		void send_icon(const Icon& icon, Point<int16_t> position) override;
+		bool send_icon(const Icon& icon, Point<int16_t> position) override;
 		Cursor::State send_cursor(bool pressed, Point<int16_t> position) override;
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
@@ -63,8 +63,8 @@ namespace ms
 			EquipIcon(int16_t source);
 
 			void drop_on_stage() const override;
-			void drop_on_equips(Equipslot::Id) const override {}
-			void drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const override;
+			void drop_on_equips(Equipslot::Id slot) const override;
+			bool drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const override;
 			void drop_on_bindings(Point<int16_t>, bool) const override {}
 			void set_count(int16_t) override {}
 

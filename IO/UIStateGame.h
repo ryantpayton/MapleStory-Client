@@ -69,7 +69,7 @@ namespace ms
 	private:
 		const CharStats& stats;
 
-		void drop_icon(const Icon& icon, Point<int16_t> pos);
+		bool drop_icon(const Icon& icon, Point<int16_t> pos);
 		template <class T, typename...Args>
 		void emplace(Args&& ...args);
 

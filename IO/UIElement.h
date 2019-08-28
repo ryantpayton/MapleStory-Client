@@ -83,7 +83,7 @@ namespace ms
 
 		virtual void toggle_active();
 		virtual Button::State button_pressed(uint16_t buttonid);
-		virtual void send_icon(const Icon& icon, Point<int16_t> cursorpos);
+		virtual bool send_icon(const Icon& icon, Point<int16_t> cursorpos);
 
 		virtual void doubleclick(Point<int16_t> cursorpos);
 		virtual void rightclick(Point<int16_t> cursorpos);

@@ -318,6 +318,15 @@ namespace ms
 			burning_notice.update();
 	}
 
+	void UICharSelect::doubleclick(Point<int16_t> cursorpos)
+	{
+		uint16_t button_index = selected_character + Buttons::CHARACTER_SLOT0;
+		auto& btit = buttons[button_index];
+
+		if (btit->is_active() && btit->bounds(position).contains(cursorpos) && btit->get_state() == Button::State::NORMAL && button_index >= Buttons::CHARACTER_SLOT0)
+			button_pressed(Buttons::CHARACTER_SELECT);
+	}
+
 	Cursor::State UICharSelect::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
 		Rectangle<int16_t> charslot_bounds = Rectangle<int16_t>(
@@ -467,7 +476,7 @@ namespace ms
 				tab_move = true;
 				tab_move_pos = 0;
 
-				auto &prev_btn = buttons[tab_map[prev_tab]];
+				auto& prev_btn = buttons[tab_map[prev_tab]];
 				auto prev_state = prev_btn->get_state();
 
 				if (prev_state != Button::State::DISABLED)
@@ -475,7 +484,7 @@ namespace ms
 
 				if (tab_active)
 				{
-					auto &btn = buttons[tab_map[tab_index]];
+					auto& btn = buttons[tab_map[tab_index]];
 					auto state = btn->get_state();
 
 					if (state != Button::State::DISABLED)
@@ -492,7 +501,7 @@ namespace ms
 				{
 					uint16_t btn_index = tab_map[tab_index];
 
-					auto &btn = buttons[btn_index];
+					auto& btn = buttons[btn_index];
 					auto state = btn->get_state();
 
 					if (state != Button::State::DISABLED)

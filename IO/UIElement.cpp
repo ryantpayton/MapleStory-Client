@@ -80,7 +80,7 @@ namespace ms
 	}
 
 	Button::State UIElement::button_pressed(uint16_t) { return Button::State::DISABLED; }
-	void UIElement::send_icon(const Icon&, Point<int16_t>) {}
+	bool UIElement::send_icon(const Icon&, Point<int16_t>) { return true; }
 
 	void UIElement::doubleclick(Point<int16_t>) {}
 	void UIElement::rightclick(Point<int16_t>) {}

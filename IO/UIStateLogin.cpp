@@ -21,6 +21,7 @@
 #include "UITypes/UILogo.h"
 #include "UITypes/UILoginNotice.h"
 #include "UITypes/UIRegion.h"
+#include "UITypes/UICharSelect.h"
 
 #include "../Configuration.h"
 
@@ -62,7 +63,12 @@ namespace ms
 		}
 	}
 
-	void UIStateLogin::doubleclick(Point<int16_t>) {}
+	void UIStateLogin::doubleclick(Point<int16_t> pos)
+	{
+		if (auto charselect = UI::get().get_element<UICharSelect>())
+			charselect->doubleclick(pos);
+	}
+
 	void UIStateLogin::rightclick(Point<int16_t>) {}
 
 	void UIStateLogin::send_key(KeyType::Id type, int32_t action, bool pressed, bool escape)

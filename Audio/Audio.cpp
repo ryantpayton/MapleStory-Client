@@ -66,6 +66,8 @@ namespace ms
 		add_sound(Sound::Name::SCROLLUP, uisrc["ScrollUp"]);
 		add_sound(Sound::Name::TAB, uisrc["Tab"]);
 		add_sound(Sound::Name::WORLDSELECT, uisrc["WorldSelect"]);
+		add_sound(Sound::Name::DRAGSTART, uisrc["DragStart"]);
+		add_sound(Sound::Name::DRAGEND, uisrc["DragEnd"]);
 
 		nl::node gamesrc = nl::nx::sound["Game.img"];
 
@@ -75,6 +77,7 @@ namespace ms
 		add_sound(Sound::Name::PICKUP, gamesrc["PickUpItem"]);
 		add_sound(Sound::Name::PORTAL, gamesrc["Portal"]);
 		add_sound(Sound::Name::LEVELUP, gamesrc["LevelUp"]);
+		add_sound(Sound::Name::TOMBSTONE, gamesrc["Tombstone"]);
 
 		uint8_t volume = Setting<SFXVolume>::get().load();
 

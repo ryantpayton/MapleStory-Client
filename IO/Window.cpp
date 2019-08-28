@@ -21,6 +21,7 @@
 #include "../Console.h"
 #include "../Constants.h"
 #include "../Configuration.h"
+#include "../Timer.h"
 
 #include "../Graphics/GraphicsGL.h"
 
@@ -55,6 +56,8 @@ namespace ms
 		UI::get().send_key(key, action != GLFW_RELEASE);
 	}
 
+	std::chrono::time_point<std::chrono::steady_clock> start = ContinuousTimer::get().start();
+
 	void mousekey_callback(GLFWwindow*, int button, int action, int)
 	{
 		switch (button)
@@ -66,9 +69,18 @@ namespace ms
 				UI::get().send_cursor(true);
 				break;
 			case GLFW_RELEASE:
+			{
+				auto diff_ms = ContinuousTimer::get().stop(start) / 1000;
+				start = ContinuousTimer::get().start();
+
+				if (diff_ms > 10 && diff_ms < 200)
+					UI::get().doubleclick();
+
 				UI::get().send_cursor(false);
-				break;
 			}
+			break;
+			}
+
 			break;
 		case GLFW_MOUSE_BUTTON_RIGHT:
 			switch (action)
@@ -77,6 +89,7 @@ namespace ms
 				UI::get().rightclick();
 				break;
 			}
+
 			break;
 		}
 	}

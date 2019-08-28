@@ -18,6 +18,8 @@
 #include "Icon.h"
 #include "Charset.h"
 
+#include "../Audio/Audio.h"
+
 #include <nlnx/nx.hpp>
 
 namespace ms
@@ -59,9 +61,14 @@ namespace ms
 		type->drop_on_equips(eqslot);
 	}
 
-	void Icon::drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const
+	bool Icon::drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const
 	{
-		type->drop_on_items(tab, eqslot, slot, equip);
+		bool remove_icon = type->drop_on_items(tab, eqslot, slot, equip);
+
+		if (remove_icon)
+			Sound(Sound::Name::DRAGEND).play();
+
+		return remove_icon;
 	}
 
 	void Icon::drop_on_bindings(Point<int16_t> cursorposition, bool remove) const
@@ -73,6 +80,8 @@ namespace ms
 	{
 		cursoroffset = offset;
 		dragged = true;
+
+		Sound(Sound::Name::DRAGSTART).play();
 	}
 
 	void Icon::reset()
