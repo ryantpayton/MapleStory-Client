@@ -48,6 +48,7 @@ namespace ms
 		void enable_sort();
 		void enable_gather();
 		void change_tab(InventoryType::Id type);
+		void clear_new();
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;

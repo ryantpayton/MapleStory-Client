@@ -70,8 +70,6 @@ namespace ms
 		tab = InventoryType::Id::EQUIP;
 		slotrange.first = 1;
 		slotrange.second = 24;
-		newtab = InventoryType::Id::NONE;
-		newslot = 0;
 
 		buttons[Buttons::BT_SORT]->set_active(false);
 		buttons[Buttons::BT_ITEMPOT]->set_state(Button::State::DISABLED);
@@ -101,6 +99,7 @@ namespace ms
 		dimension = Point<int16_t>(172, 335);
 		active = true;
 
+		clear_new();
 		load_icons();
 	}
 
@@ -332,37 +331,30 @@ namespace ms
 		Icon* icon = get_icon(slot);
 		bool is_icon = icon && is_visible(slot);
 
-		if (is_icon && icon->get_drag())
+		if (is_icon)
 		{
-			return Cursor::State::GRABBING;
-		}
-		else
-		{
-			if (is_icon)
+			if (pressed)
 			{
-				if (pressed)
-				{
-					Point<int16_t> slotpos = get_slotpos(slot);
-					icon->start_drag(cursor_relative - slotpos);
-					UI::get().drag_icon(icon);
+				Point<int16_t> slotpos = get_slotpos(slot);
+				icon->start_drag(cursor_relative - slotpos);
+				UI::get().drag_icon(icon);
 
-					clear_tooltip();
+				clear_tooltip();
 
-					return Cursor::State::GRABBING;
-				}
-				else
-				{
-					show_item(slot);
-
-					return Cursor::State::CANGRAB;
-				}
+				return Cursor::State::GRABBING;
 			}
 			else
 			{
-				clear_tooltip();
+				show_item(slot);
 
 				return Cursor::State::CANGRAB;
 			}
+		}
+		else
+		{
+			clear_tooltip();
+
+			return UIElement::send_cursor(pressed, cursorpos);
 		}
 	}
 
@@ -462,10 +454,7 @@ namespace ms
 		case Inventory::Modification::SWAP:
 		case Inventory::Modification::REMOVE:
 			if (newslot == slot && newtab == type)
-			{
-				newslot = 0;
-				newtab = InventoryType::Id::NONE;
-			}
+				clear_new();
 
 			break;
 		}
@@ -490,15 +479,19 @@ namespace ms
 		button_pressed(button_by_tab(type));
 	}
 
+	void UIItemInventory::clear_new()
+	{
+		newtab = InventoryType::Id::NONE;
+		newslot = 0;
+	}
+
 	void UIItemInventory::toggle_active()
 	{
 		UIElement::toggle_active();
 
 		if (!active)
 		{
-			newtab = InventoryType::Id::NONE;
-			newslot = 0;
-
+			clear_new();
 			clear_tooltip();
 		}
 	}

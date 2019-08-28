@@ -39,7 +39,10 @@ namespace ms
 	void SortResultHandler::handle(InPacket&) const
 	{
 		if (auto iteminventory = UI::get().get_element<UIItemInventory>())
+		{
 			iteminventory->enable_gather();
+			iteminventory->clear_new();
+		}
 	}
 
 	void ModifyInventoryHandler::handle(InPacket& recv) const
@@ -147,7 +150,7 @@ namespace ms
 						eqinvent->modify(-mod.pos, 3, 0);
 
 					if (itinvent)
-						itinvent->modify(InventoryType::Id::EQUIP, mod.arg, 0, 0);
+						itinvent->modify(InventoryType::Id::EQUIP, mod.arg, mod.mode, 0);
 
 					Stage::get().get_player().change_equip(-mod.pos);
 				}
@@ -157,7 +160,7 @@ namespace ms
 						eqinvent->modify(-mod.arg, 0, 0);
 
 					if (itinvent)
-						itinvent->modify(InventoryType::Id::EQUIP, mod.pos, 3, 0);
+						itinvent->modify(InventoryType::Id::EQUIP, mod.pos, Inventory::Modification::REMOVE, 0);
 
 					Stage::get().get_player().change_equip(-mod.arg);
 				}
