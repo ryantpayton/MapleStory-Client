@@ -490,9 +490,27 @@ namespace ms
 							buttons[Buttons::BT_CHARC_OK]->set_state(Button::State::DISABLED);
 							buttons[Buttons::BT_CHARC_CANCEL]->set_state(Button::State::DISABLED);
 
-							NameCharPacket(name).dispatch();
+							if (auto raceselect = UI::get().get_element<UIRaceSelect>())
+							{
+								if (raceselect->check_name(name))
+								{
+									NameCharPacket(name).dispatch();
 
-							return Button::State::IDENTITY;
+									return Button::State::IDENTITY;
+								}
+							}
+
+							std::function<void()> okhandler = [&]()
+							{
+								namechar.set_state(Textfield::State::FOCUSED);
+
+								buttons[Buttons::BT_CHARC_OK]->set_state(Button::State::NORMAL);
+								buttons[Buttons::BT_CHARC_CANCEL]->set_state(Button::State::NORMAL);
+							};
+
+							UI::get().emplace<UILoginNotice>(UILoginNotice::Message::ILLEGAL_NAME, okhandler);
+
+							return Button::State::NORMAL;
 						}
 						else
 						{

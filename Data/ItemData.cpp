@@ -28,13 +28,14 @@ namespace ms
 		unique = false;
 		unsellable = false;
 		cashitem = false;
+		gender = 0;
 
 		nl::node src;
 		nl::node strsrc;
 
-		std::string strprefix = "0" + std::to_string(itemid / 10000);
+		std::string strprefix = "0" + std::to_string(get_item_prefix(itemid));
 		std::string strid = "0" + std::to_string(itemid);
-		int32_t prefix = itemid / 1000000;
+		int32_t prefix = get_prefix(itemid);
 
 		switch (prefix)
 		{
@@ -74,6 +75,7 @@ namespace ms
 			unique = src["only"].get_bool();
 			unsellable = src["notSale"].get_bool();
 			cashitem = src["cash"].get_bool();
+			gender = get_item_gender(itemid);
 
 			name = strsrc["name"];
 			desc = strsrc["desc"];
@@ -107,7 +109,7 @@ namespace ms
 			"Accessory"
 		};
 
-		size_t index = (id / 10000) - 100;
+		int32_t index = get_item_prefix(id) - 100;
 
 		if (index < 15)
 			return categorynames[index];
@@ -115,6 +117,28 @@ namespace ms
 			return "Weapon";
 		else
 			return "";
+	}
+
+	int32_t ItemData::get_prefix(int32_t id) const
+	{
+		return id / 1000000;
+	}
+
+	int32_t ItemData::get_item_prefix(int32_t id) const
+	{
+		return id / 10000;
+	}
+
+	int8_t ItemData::get_item_gender(int32_t id) const
+	{
+		const int32_t item_prefix = get_item_prefix(id);
+
+		if ((get_prefix(id) != 1 && item_prefix != 254) || item_prefix == 119 || item_prefix == 168)
+			return 2;
+
+		const int32_t gender_digit = id / 1000 % 10;
+
+		return (gender_digit > 1) ? 2 : gender_digit;
 	}
 
 	bool ItemData::is_valid() const
@@ -155,6 +179,11 @@ namespace ms
 	int32_t ItemData::get_price() const
 	{
 		return price;
+	}
+
+	int8_t ItemData::get_gender() const
+	{
+		return gender;
 	}
 
 	const std::string& ItemData::get_name() const

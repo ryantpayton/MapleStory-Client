@@ -35,26 +35,42 @@ namespace ms
 
 		void set_equip(Tooltip::Parent parent, int16_t invpos);
 		void draw(Point<int16_t> position) const override;
+		void draw_preview(Point<int16_t> position) const;
 
 	private:
 		int16_t invpos;
+		int16_t invpos_preview;
 		int16_t height;
+		int16_t height_preview;
 		bool hasdesc;
+		bool hasdesc_preview;
 		bool hasslots;
+		bool hasslots_preview;
 		bool is_weapon;
+		bool is_weapon_preview;
 		EnumMap<Maplestat::Id, std::string> reqstatstrings;
+		EnumMap<Maplestat::Id, std::string> reqstatstrings_preview;
 		Texture itemicon;
+		Texture itemicon_preview;
 
 		Text name;
+		Text name_preview;
 		Text desc;
+		Text desc_preview;
 		Text potflag;
-		Text flag;
+		Text potflag_preview;
 		Text category;
+		Text category_preview;
 		Text wepspeed;
+		Text wepspeed_preview;
 		Text slots;
+		Text slots_preview;
 		Text hammers;
+		Text hammers_preview;
 		Text atkinc;
+		Text atkinc_preview;
 		EnumMap<Equipstat::Id, Text> statlabels;
+		EnumMap<Equipstat::Id, Text> statlabels_preview;
 
 		Texture top;
 		Texture mid;
@@ -64,6 +80,7 @@ namespace ms
 
 		EnumMap<Equip::Potential, Texture> potential;
 		Equip::Potential prank;
+		Equip::Potential prank_preview;
 
 		Texture cover;
 		Texture itemcover;
@@ -72,6 +89,7 @@ namespace ms
 		std::vector<Maplestat::Id> requirements;
 		EnumMap<Maplestat::Id, BoolPair<Texture>> reqstattextures;
 		EnumMap<Maplestat::Id, bool> canequip;
+		EnumMap<Maplestat::Id, bool> canequip_preview;
 		EnumMap<Maplestat::Id, Point<int16_t>> reqstatpositions;
 		BoolPair<Charset> reqset;
 		BoolPair<Charset> lvset;
@@ -80,5 +98,6 @@ namespace ms
 		Texture jobsback;
 		BoolPair<std::map<uint8_t, Texture>> jobs;
 		std::vector<uint8_t> okjobs;
+		std::vector<uint8_t> okjobs_preview;
 	};
 }

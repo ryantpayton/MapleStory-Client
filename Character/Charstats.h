@@ -82,6 +82,7 @@ namespace ms
 		void set_attackspeed(int8_t speed);
 		int8_t get_attackspeed() const;
 		const Job& get_job() const;
+		bool get_female() const;
 
 	private:
 		int32_t calculateaccuracy() const;
@@ -117,5 +118,6 @@ namespace ms
 		float stance;
 		float resiststatus;
 		float reducedamage;
+		bool female;
 	};
 }

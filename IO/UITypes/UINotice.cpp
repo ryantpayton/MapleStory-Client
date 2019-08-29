@@ -20,6 +20,7 @@
 #include "../UI.h"
 
 #include "../Components/MapleButton.h"
+#include "../Audio/Audio.h"
 
 #include <nlnx/nx.hpp>
 
@@ -47,22 +48,19 @@ namespace ms
 			position.shift_y(-16);
 			question = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE, message, 200);
 		}
-		else if (type == NoticeType::OK || type == NoticeType::OKSMALL)
+		else if (type == NoticeType::OK)
 		{
-			uint16_t maxwidth = 160;
+			uint16_t maxwidth = top.width() - 6;
 
-			if (type == NoticeType::OK)
-				maxwidth = top.width() - 6;
-
-			if (type == NoticeType::OK)
-				position.shift_y(-8);
-
+			position.shift_y(-8);
 			question = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::WHITE, message, maxwidth);
 		}
 
 		height = question.height();
 		dimension = Point<int16_t>(top.width(), top.height() + height + bottom.height());
 		position = Point<int16_t>(position.x() - dimension.x() / 2, position.y() - dimension.y() / 2);
+
+		Sound(Sound::Name::DLGNOTICE).play();
 	}
 
 	void UINotice::draw(bool textfield) const
@@ -106,7 +104,7 @@ namespace ms
 	{
 		if (pressed && (keycode == KeyAction::Id::RETURN || escape))
 		{
-			if (type == NoticeType::OK || type == NoticeType::OKSMALL)
+			if (type == NoticeType::OK)
 				UI::get().get_element<UIOk>()->send_key(keycode, pressed, escape);
 			else if (type == NoticeType::YESNO)
 				UI::get().get_element<UIYesNo>()->send_key(keycode, pressed, escape);
@@ -117,7 +115,13 @@ namespace ms
 
 	int16_t UINotice::box2offset(bool textfield) const
 	{
-		return top.height() + centerbox.height() + box.height() + height - (textfield ? 0 : 16);
+		int16_t offset = top.height() + centerbox.height() + box.height() + height - (textfield ? 0 : 16);
+
+		if (type == NoticeType::OK)
+			if (height < 34)
+				offset += 15;
+
+		return offset;
 	}
 
 	UIYesNo::UIYesNo(std::string message, std::function<void(bool)> yh) : UINotice(message, NoticeType::YESNO)
@@ -273,7 +277,7 @@ namespace ms
 		if (!has_only_digits)
 		{
 			numfield.set_state(Textfield::State::DISABLED);
-			UI::get().emplace<UIOk>("Only numbers are allowed.", okhandler, NoticeType::OKSMALL);
+			UI::get().emplace<UIOk>("Only numbers are allowed.", okhandler);
 			return;
 		}
 		else
@@ -284,13 +288,13 @@ namespace ms
 		if (num < 1)
 		{
 			numfield.set_state(Textfield::State::DISABLED);
-			UI::get().emplace<UIOk>("You may only enter a number equal to or higher than 1.", okhandler, NoticeType::OKSMALL);
+			UI::get().emplace<UIOk>("You may only enter a number equal to or higher than 1.", okhandler);
 			return;
 		}
 		else if (num > max)
 		{
 			numfield.set_state(Textfield::State::DISABLED);
-			UI::get().emplace<UIOk>("You may only enter a number equal to or lower than " + std::to_string(max) + ".", okhandler, NoticeType::OKSMALL);
+			UI::get().emplace<UIOk>("You may only enter a number equal to or lower than " + std::to_string(max) + ".", okhandler);
 			return;
 		}
 		else
@@ -302,13 +306,13 @@ namespace ms
 		buttons[Buttons::OK]->set_state(Button::State::NORMAL);
 	}
 
-	UIOk::UIOk(std::string message, std::function<void()> oh, NoticeType type) : UINotice(message, type)
+	UIOk::UIOk(std::string message, std::function<void()> oh) : UINotice(message, NoticeType::OK)
 	{
 		okhandler = oh;
 
 		nl::node src = nl::nx::ui["Basic.img"];
 
-		buttons[Buttons::OK] = std::make_unique<MapleButton>(src["BtOK4"], 197, box2offset(false) + 15);
+		buttons[Buttons::OK] = std::make_unique<MapleButton>(src["BtOK4"], 197, box2offset(false));
 	}
 
 	void UIOk::draw(float alpha) const

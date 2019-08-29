@@ -30,17 +30,16 @@ namespace ms
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
 
-		enum NoticeType
-		{
-			YESNO,
-			ENTERNUMBER,
-			OK,
-			OKSMALL
-		};
-
 		void send_key(int32_t keycode, bool pressed, bool escape);
 
 	protected:
+		enum NoticeType : uint8_t
+		{
+			YESNO,
+			ENTERNUMBER,
+			OK
+		};
+
 		UINotice(std::string message, NoticeType type);
 
 		void draw(bool textfield) const;
@@ -111,7 +110,7 @@ namespace ms
 	class UIOk : public UINotice
 	{
 	public:
-		UIOk(std::string message, std::function<void()> okhandler, NoticeType type);
+		UIOk(std::string message, std::function<void()> okhandler);
 
 		void draw(float alpha) const override;
 

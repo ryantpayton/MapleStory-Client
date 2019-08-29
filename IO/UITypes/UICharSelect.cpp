@@ -929,7 +929,7 @@ namespace ms
 
 	void UICharSelect::check_pic(const std::string entered_pic) const
 	{
-		const char *pStr = entered_pic.c_str();
+		const char* pStr = entered_pic.c_str();
 
 		if (pStr == NULL)
 			return;

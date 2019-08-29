@@ -29,6 +29,8 @@
 #include "../Components/AreaButton.h"
 #include "../Audio/Audio.h"
 
+#include <cctype>
+
 #include <nlnx/nx.hpp>
 
 namespace ms
@@ -343,6 +345,22 @@ namespace ms
 		}
 	}
 
+	bool UIRaceSelect::check_name(std::string name) const
+	{
+		nl::node ForbiddenName = nl::nx::etc["ForbiddenName.img"];
+
+		for each (std::string forbiddenName in ForbiddenName)
+		{
+			std::string lName = to_lower(name);
+			std::string fName = to_lower(forbiddenName);
+
+			if (lName.find(fName) != std::string::npos)
+				return false;
+		}
+
+		return true;
+	}
+
 	void UIRaceSelect::send_naming_result(bool nameused)
 	{
 		if (selected_class == Classes::EXPLORER)
@@ -529,5 +547,12 @@ namespace ms
 		uint16_t x_adj = index * 126;
 
 		return Point<int16_t>(95 + x_adj, 420);
+	}
+
+	std::string UIRaceSelect::to_lower(std::string value) const
+	{
+		std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+
+		return value;
 	}
 }

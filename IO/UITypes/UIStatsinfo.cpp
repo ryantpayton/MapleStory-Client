@@ -290,7 +290,7 @@ namespace ms
 				constexpr char* message = "You can use the Hyper Stat at Lv. 140 and above.";
 				auto onok = []() {};
 
-				UI::get().emplace<UIOk>(message, onok, UINotice::NoticeType::OK);
+				UI::get().emplace<UIOk>(message, onok);
 			}
 		}
 

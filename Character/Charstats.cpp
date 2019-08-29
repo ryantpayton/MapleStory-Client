@@ -20,7 +20,7 @@
 
 namespace ms
 {
-	CharStats::CharStats(const StatsEntry& s) : name(s.name), petids(s.petids), exp(s.exp), mapid(s.mapid), portal(s.portal), rank(s.rank), jobrank(s.jobrank), basestats(s.stats)
+	CharStats::CharStats(const StatsEntry& s) : name(s.name), petids(s.petids), exp(s.exp), mapid(s.mapid), portal(s.portal), rank(s.rank), jobrank(s.jobrank), basestats(s.stats), female(s.female)
 	{
 		job = basestats[Maplestat::Id::JOB];
 		init_totalstats();
@@ -354,5 +354,10 @@ namespace ms
 	const Job& CharStats::get_job() const
 	{
 		return job;
+	}
+
+	bool CharStats::get_female() const
+	{
+		return female;
 	}
 }

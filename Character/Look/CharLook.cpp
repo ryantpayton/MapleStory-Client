@@ -566,6 +566,11 @@ namespace ms
 		alerted.set_for(millis);
 	}
 
+	bool CharLook::get_alerted() const
+	{
+		return (bool)alerted;
+	}
+
 	bool CharLook::is_twohanded(Stance::Id st) const
 	{
 		switch (st)

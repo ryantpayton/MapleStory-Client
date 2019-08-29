@@ -382,18 +382,19 @@ namespace ms
 				UI::get().emplace<UIKeySelect>(keysel_onok, false);
 			};
 
-			UI::get().emplace<UIOk>(message, onok, UINotice::NoticeType::OK);
+			UI::get().emplace<UIOk>(message, onok);
 		}
 		break;
 		case Buttons::DELETE:
 		{
 			constexpr char* message = "Would you like to clear all key bindings?";
+
 			auto onok = [&]()
 			{
 				clear();
 			};
 
-			UI::get().emplace<UIOk>(message, onok, UINotice::NoticeType::OK);
+			UI::get().emplace<UIOk>(message, onok);
 		}
 		break;
 		case Buttons::KEYSETTING:

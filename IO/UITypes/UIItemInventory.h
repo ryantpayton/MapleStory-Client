@@ -60,6 +60,7 @@ namespace ms
 		void update_slot(int16_t slot);
 		bool is_visible(int16_t slot) const;
 		bool is_not_visible(int16_t slot) const;
+		bool can_wear_equip(int16_t slot) const;
 		int16_t slot_by_position(Point<int16_t> position) const;
 		uint16_t button_by_tab(InventoryType::Id tab) const;
 		Point<int16_t> get_slotpos(int16_t slot) const;
@@ -69,7 +70,7 @@ namespace ms
 		class ItemIcon : public Icon::Type
 		{
 		public:
-			ItemIcon(InventoryType::Id sourcetab, Equipslot::Id eqsource, int16_t source, int16_t count, bool untradable, bool cashitem);
+			ItemIcon(const UIItemInventory& parent, InventoryType::Id sourcetab, Equipslot::Id eqsource, int16_t source, int16_t count, bool untradable, bool cashitem);
 
 			void drop_on_stage() const override;
 			void drop_on_equips(Equipslot::Id eqslot) const override;
@@ -84,6 +85,7 @@ namespace ms
 			int16_t count;
 			bool untradable;
 			bool cashitem;
+			const UIItemInventory& parent;
 		};
 
 		enum Buttons
@@ -122,5 +124,6 @@ namespace ms
 		std::pair<int16_t, int16_t> slotrange;
 		InventoryType::Id newtab;
 		int16_t newslot;
+		bool ignore_tooltip;
 	};
 }

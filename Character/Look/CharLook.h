@@ -54,6 +54,7 @@ namespace ms
 		void set_action(const std::string& action);
 		void set_direction(bool mirrored);
 		void set_alerted(int64_t millis);
+		bool get_alerted() const;
 
 		bool is_twohanded(Stance::Id stance) const;
 		uint16_t get_attackdelay(size_t no, uint8_t first_frame) const;

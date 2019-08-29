@@ -24,6 +24,9 @@
 #include "../Components/TwoSpriteButton.h"
 #include "../Data/ItemData.h"
 #include "../Audio/Audio.h"
+#include "../Character/Player.h"
+#include "../Gameplay/Stage.h"
+#include "../Data/EquipData.h"
 
 #include "../Net/Packets/InventoryPackets.h"
 
@@ -31,7 +34,7 @@
 
 namespace ms
 {
-	UIItemInventory::UIItemInventory(const Inventory& invent) : UIDragElement<PosINV>(Point<int16_t>(172, 20)), inventory(invent)
+	UIItemInventory::UIItemInventory(const Inventory& invent) : UIDragElement<PosINV>(Point<int16_t>(172, 20)), inventory(invent), ignore_tooltip(false)
 	{
 		nl::node close = nl::nx::ui["Basic.img"]["BtClose"];
 		nl::node src = nl::nx::ui["UIWindow2.img"]["Item"];
@@ -175,7 +178,7 @@ namespace ms
 			Equipslot::Id eqslot = inventory.find_equipslot(item_id);
 
 			icons[slot] = std::make_unique<Icon>(
-				std::make_unique<ItemIcon>(tab, eqslot, slot, count, untradable, cashitem),
+				std::make_unique<ItemIcon>(*this, tab, eqslot, slot, count, untradable, cashitem),
 				texture, count
 				);
 		}
@@ -265,7 +268,9 @@ namespace ms
 				switch (tab)
 				{
 				case InventoryType::Id::EQUIP:
-					EquipItemPacket(slot, inventory.find_equipslot(item_id)).dispatch();
+					if (can_wear_equip(slot))
+						EquipItemPacket(slot, inventory.find_equipslot(item_id)).dispatch();
+
 					break;
 				case InventoryType::Id::USE:
 					UseItemPacket(slot, item_id).dispatch();
@@ -295,6 +300,8 @@ namespace ms
 				eqslot = Equipslot::Id::NONE;
 				equip = false;
 			}
+
+			ignore_tooltip = true;
 
 			return icon.drop_on_items(tab, eqslot, slot, equip);
 		}
@@ -343,9 +350,15 @@ namespace ms
 
 				return Cursor::State::GRABBING;
 			}
-			else
+			else if (!ignore_tooltip)
 			{
 				show_item(slot);
+
+				return Cursor::State::CANGRAB;
+			}
+			else
+			{
+				ignore_tooltip = false;
 
 				return Cursor::State::CANGRAB;
 			}
@@ -532,6 +545,87 @@ namespace ms
 		return slot < slotrange.first || slot > slotrange.second;
 	}
 
+	bool UIItemInventory::can_wear_equip(int16_t slot) const
+	{
+		const Player& player = Stage::get().get_player();
+		const CharStats& stats = player.get_stats();
+		const CharLook& look = player.get_look();
+		const bool alerted = look.get_alerted();
+
+		if (alerted)
+		{
+			UI::get().emplace<UIOk>("You cannot complete this action right now.\\nEvade the attack and try again.", []() {});
+			return false;
+		}
+
+		const int32_t item_id = inventory.get_item_id(InventoryType::Id::EQUIP, slot);
+		const EquipData& equipdata = EquipData::get(item_id);
+		const ItemData& itemdata = equipdata.get_itemdata();
+
+		const int8_t reqGender = itemdata.get_gender();
+		const bool female = stats.get_female();
+
+		switch (reqGender)
+		{
+		case 0: // Male
+			if (female)
+				return false;
+
+			break;
+		case 1: // Female
+			if (!female)
+				return false;
+
+			break;
+		case 2: // Unisex
+		default:
+			break;
+		}
+
+		const std::string jobname = stats.get_jobname();
+
+		if (jobname == "GM" || jobname == "SuperGM")
+			return true;
+
+		int16_t reqJOB = equipdata.get_reqstat(Maplestat::Id::JOB);
+
+		if (!stats.get_job().is_sub_job(reqJOB))
+		{
+			UI::get().emplace<UIOk>("Your current job\\ncannot equip the selected item.", []() {});
+			return false;
+		}
+
+		int16_t reqLevel = equipdata.get_reqstat(Maplestat::Id::LEVEL);
+		int16_t reqDEX = equipdata.get_reqstat(Maplestat::Id::DEX);
+		int16_t reqSTR = equipdata.get_reqstat(Maplestat::Id::STR);
+		int16_t reqLUK = equipdata.get_reqstat(Maplestat::Id::LUK);
+		int16_t reqINT = equipdata.get_reqstat(Maplestat::Id::INT);
+		int16_t reqFAME = equipdata.get_reqstat(Maplestat::Id::FAME);
+
+		int8_t i = 0;
+
+		if (reqLevel > stats.get_stat(Maplestat::Id::LEVEL))
+			i++;
+		else if (reqDEX > stats.get_total(Equipstat::Id::DEX))
+			i++;
+		else if (reqSTR > stats.get_total(Equipstat::Id::STR))
+			i++;
+		else if (reqLUK > stats.get_total(Equipstat::Id::LUK))
+			i++;
+		else if (reqINT > stats.get_total(Equipstat::Id::INT))
+			i++;
+		else if (reqFAME > stats.get_honor())
+			i++;
+
+		if (i > 0)
+		{
+			UI::get().emplace<UIOk>("Your stats are too low to equip this item\\nor you do not meet the job requirement.", []() {});
+			return false;
+		}
+
+		return true;
+	}
+
 	int16_t UIItemInventory::slot_by_position(Point<int16_t> cursorpos) const
 	{
 		int16_t xoff = cursorpos.x() - 11;
@@ -604,7 +698,7 @@ namespace ms
 		count = c;
 	}
 
-	UIItemInventory::ItemIcon::ItemIcon(InventoryType::Id st, Equipslot::Id eqs, int16_t s, int16_t c, bool u, bool cash)
+	UIItemInventory::ItemIcon::ItemIcon(const UIItemInventory& parent, InventoryType::Id st, Equipslot::Id eqs, int16_t s, int16_t c, bool u, bool cash) : parent(parent)
 	{
 		sourcetab = st;
 		eqsource = eqs;
@@ -622,7 +716,7 @@ namespace ms
 
 		if (cashitem)
 		{
-			UI::get().emplace<UIOk>(cashmessage, []() {}, UINotice::NoticeType::OKSMALL);
+			UI::get().emplace<UIOk>(cashmessage, []() {});
 		}
 		else
 		{
@@ -675,10 +769,10 @@ namespace ms
 		{
 		case InventoryType::Id::EQUIP:
 			if (eqsource == eqslot)
-			{
-				EquipItemPacket(source, eqslot).dispatch();
-				Sound(Sound::Name::DRAGEND).play();
-			}
+				if (parent.can_wear_equip(source))
+					EquipItemPacket(source, eqslot).dispatch();
+
+			Sound(Sound::Name::DRAGEND).play();
 
 			break;
 		case InventoryType::Id::USE:
