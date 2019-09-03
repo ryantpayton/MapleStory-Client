@@ -26,7 +26,7 @@
 
 namespace ms
 {
-	UINotice::UINotice(std::string message, NoticeType t) : UIDragElement<PosNOTICE>(Point<int16_t>()), type(t)
+	UINotice::UINotice(std::string message, NoticeType t, Text::Alignment a) : UIDragElement<PosNOTICE>(Point<int16_t>()), type(t), alignment(a)
 	{
 		nl::node src = nl::nx::ui["Basic.img"]["Notice6"];
 
@@ -41,7 +41,7 @@ namespace ms
 		if (type == NoticeType::YESNO)
 		{
 			position.shift_y(-8);
-			question = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::WHITE, message, 200);
+			question = Text(Text::Font::A11M, alignment, Color::Name::WHITE, message, 200);
 		}
 		else if (type == NoticeType::ENTERNUMBER)
 		{
@@ -59,9 +59,13 @@ namespace ms
 		height = question.height();
 		dimension = Point<int16_t>(top.width(), top.height() + height + bottom.height());
 		position = Point<int16_t>(position.x() - dimension.x() / 2, position.y() - dimension.y() / 2);
+		dragarea = Point<int16_t>(dimension.x(), 20);
 
-		Sound(Sound::Name::DLGNOTICE).play();
+		if (type != NoticeType::ENTERNUMBER)
+			Sound(Sound::Name::DLGNOTICE).play();
 	}
+
+	UINotice::UINotice(std::string message, NoticeType t) : UINotice(message, t, Text::Alignment::CENTER) {}
 
 	void UINotice::draw(bool textfield) const
 	{
@@ -94,7 +98,10 @@ namespace ms
 			box.draw(start);
 			start.shift_y(box.height());
 
-			question.draw(position + Point<int16_t>(131, 14));
+			if (type == NoticeType::YESNO && alignment == Text::Alignment::LEFT)
+				question.draw(position + Point<int16_t>(31, 14));
+			else
+				question.draw(position + Point<int16_t>(131, 14));
 		}
 
 		bottombox.draw(start);
@@ -124,7 +131,7 @@ namespace ms
 		return offset;
 	}
 
-	UIYesNo::UIYesNo(std::string message, std::function<void(bool)> yh) : UINotice(message, NoticeType::YESNO)
+	UIYesNo::UIYesNo(std::string message, std::function<void(bool yes)> yh, Text::Alignment alignment) : UINotice(message, NoticeType::YESNO, alignment)
 	{
 		yesnohandler = yh;
 
@@ -135,6 +142,8 @@ namespace ms
 		buttons[Buttons::YES] = std::make_unique<MapleButton>(src["BtOK4"], Point<int16_t>(156, belowtext));
 		buttons[Buttons::NO] = std::make_unique<MapleButton>(src["BtCancel4"], Point<int16_t>(198, belowtext));
 	}
+
+	UIYesNo::UIYesNo(std::string message, std::function<void(bool yes)> yesnohandler) : UIYesNo(message, yesnohandler, Text::Alignment::CENTER) {}
 
 	void UIYesNo::draw(float alpha) const
 	{

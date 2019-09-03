@@ -21,6 +21,8 @@
 
 #include "../Components/MapleButton.h"
 #include "../UITypes/UINotice.h"
+#include "../Character/Player.h"
+#include "../Gameplay/Stage.h"
 
 #include "../Net/Packets/PlayerPackets.h"
 
@@ -82,6 +84,8 @@ namespace ms
 		for (size_t i = StatLabel::NAME; i <= LUK; i++)
 			statlabels[i] = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR);
 
+		statlabels[StatLabel::AP] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
+
 		statoffsets[StatLabel::NAME] = Point<int16_t>(73, 26);
 		statoffsets[StatLabel::JOB] = Point<int16_t>(74, 44);
 		statoffsets[StatLabel::GUILD] = Point<int16_t>(74, 63);
@@ -89,7 +93,7 @@ namespace ms
 		statoffsets[StatLabel::DAMAGE] = Point<int16_t>(74, 98);
 		statoffsets[StatLabel::HP] = Point<int16_t>(74, 116);
 		statoffsets[StatLabel::MP] = Point<int16_t>(74, 134);
-		statoffsets[StatLabel::AP] = Point<int16_t>(86, 175);
+		statoffsets[StatLabel::AP] = Point<int16_t>(91, 175);
 		statoffsets[StatLabel::STR] = Point<int16_t>(73, 204);
 		statoffsets[StatLabel::DEX] = Point<int16_t>(73, 222);
 		statoffsets[StatLabel::INT] = Point<int16_t>(73, 240);
@@ -242,27 +246,12 @@ namespace ms
 
 	Button::State UIStatsinfo::button_pressed(uint16_t id)
 	{
+		const Player& player = Stage::get().get_player();
+
 		switch (id)
 		{
 		case Buttons::BT_CLOSE:
-			active = false;
-			break;
-		case Buttons::BT_DETAILOPEN:
-			showdetail = true;
-
-			buttons[Buttons::BT_DETAILOPEN]->set_active(false);
-			buttons[Buttons::BT_DETAILCLOSE]->set_active(true);
-			buttons[Buttons::BT_ABILITY]->set_active(true);
-			buttons[Buttons::BT_DETAIL_DETAILCLOSE]->set_active(true);
-			break;
-		case Buttons::BT_DETAILCLOSE:
-		case Buttons::BT_DETAIL_DETAILCLOSE:
-			showdetail = false;
-
-			buttons[Buttons::BT_DETAILOPEN]->set_active(true);
-			buttons[Buttons::BT_DETAILCLOSE]->set_active(false);
-			buttons[Buttons::BT_ABILITY]->set_active(false);
-			buttons[Buttons::BT_DETAIL_DETAILCLOSE]->set_active(false);
+			deactivate();
 			break;
 		case Buttons::BT_HP:
 			send_apup(Maplestat::Id::HP);
@@ -282,16 +271,83 @@ namespace ms
 		case Buttons::BT_LUK:
 			send_apup(Maplestat::Id::LUK);
 			break;
-		case Buttons::BT_HYPERSTATCLOSE:
-			int16_t level = 0;
+		case Buttons::BT_AUTO:
+		{
+			uint16_t autostr = 0;
+			uint16_t autodex = 0;
+			uint16_t autoint = 0;
+			uint16_t autoluk = 0;
+			uint16_t nowap = stats.get_stat(Maplestat::Id::AP);
+			Equipstat::Id id = player.get_stats().get_job().get_primary(player.get_weapontype());
 
-			if (level < 140)
+			switch (id)
 			{
-				constexpr char* message = "You can use the Hyper Stat at Lv. 140 and above.";
-				auto onok = []() {};
-
-				UI::get().emplace<UIOk>(message, onok);
+			case Equipstat::Id::STR:
+				autostr = nowap;
+				break;
+			case Equipstat::Id::DEX:
+				autodex = nowap;
+				break;
+			case Equipstat::Id::INT:
+				autoint = nowap;
+				break;
+			case Equipstat::Id::LUK:
+				autoluk = nowap;
+				break;
 			}
+
+			std::string message =
+				"Your AP will be distributed as follows:\\r"
+				"\\nSTR : +" + std::to_string(autostr) +
+				"\\nDEX : +" + std::to_string(autodex) +
+				"\\nINT : +" + std::to_string(autoint) +
+				"\\nLUK : +" + std::to_string(autoluk) +
+				"\\r\\n";
+
+			std::function<void(bool)> yesnohandler = [&, autostr, autodex, autoint, autoluk](bool yes)
+			{
+				if (yes)
+				{
+					if (autostr > 0)
+						for (size_t i = 0; i < autostr; i++)
+							send_apup(Maplestat::Id::STR);
+
+					if (autodex > 0)
+						for (size_t i = 0; i < autodex; i++)
+							send_apup(Maplestat::Id::DEX);
+
+					if (autoint > 0)
+						for (size_t i = 0; i < autoint; i++)
+							send_apup(Maplestat::Id::INT);
+
+					if (autoluk > 0)
+						for (size_t i = 0; i < autoluk; i++)
+							send_apup(Maplestat::Id::LUK);
+				}
+			};
+
+			UI::get().emplace<UIYesNo>(message, yesnohandler, Text::Alignment::LEFT);
+		}
+		break;
+		case Buttons::BT_HYPERSTATOPEN:
+			break;
+		case Buttons::BT_HYPERSTATCLOSE:
+		{
+			if (player.get_level() < 140)
+				UI::get().emplace<UIOk>("You can use the Hyper Stat at Lv. 140 and above.", []() {});
+		}
+		break;
+		case Buttons::BT_DETAILOPEN:
+			set_detail(true);
+			break;
+		case Buttons::BT_DETAILCLOSE:
+		case Buttons::BT_DETAIL_DETAILCLOSE:
+			set_detail(false);
+			break;
+		case Buttons::BT_ABILITY:
+			break;
+		default:
+			break;
 		}
 
 		return Button::State::NORMAL;
@@ -301,6 +357,16 @@ namespace ms
 	{
 		SpendApPacket(stat).dispatch();
 		UI::get().disable();
+	}
+
+	void UIStatsinfo::set_detail(bool enabled)
+	{
+		showdetail = enabled;
+
+		buttons[Buttons::BT_DETAILOPEN]->set_active(!enabled);
+		buttons[Buttons::BT_DETAILCLOSE]->set_active(enabled);
+		buttons[Buttons::BT_ABILITY]->set_active(enabled);
+		buttons[Buttons::BT_DETAIL_DETAILCLOSE]->set_active(enabled);
 	}
 
 	void UIStatsinfo::update_ap()

@@ -28,6 +28,7 @@ namespace ms
 		AreaButton(Point<int16_t> position, Point<int16_t> dimensions);
 
 		void draw(Point<int16_t>) const {}
+		void update() {}
 		Rectangle<int16_t> bounds(Point<int16_t> parentpos) const;
 		int16_t width() const;
 		Point<int16_t> origin() const;

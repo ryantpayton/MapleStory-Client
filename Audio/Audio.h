@@ -48,6 +48,8 @@ namespace ms
 			WORLDSELECT,
 			DRAGSTART,
 			DRAGEND,
+			WORLDMAPOPEN,
+			WORLDMAPCLOSE,
 
 			// Login
 			SELECTCHAR,

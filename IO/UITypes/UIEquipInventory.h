@@ -74,6 +74,7 @@ namespace ms
 
 		enum Buttons
 		{
+			BT_CLOSE,
 			BT_TOGGLEPETS
 		};
 

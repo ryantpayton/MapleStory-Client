@@ -19,6 +19,8 @@
 
 #include "Button.h"
 
+#include "../Graphics/Animation.h"
+
 namespace ms
 {
 	// A standard maplestory-button with 4 states and a texture for each state.
@@ -30,6 +32,7 @@ namespace ms
 		MapleButton(nl::node src);
 
 		void draw(Point<int16_t> position) const;
+		void update();
 		Rectangle<int16_t> bounds(Point<int16_t> parentpos) const;
 		int16_t width() const;
 		Point<int16_t> origin() const;
@@ -38,5 +41,6 @@ namespace ms
 
 	private:
 		Texture textures[Button::State::NUM_STATES];
+		Animation animations[Button::State::NUM_STATES];
 	};
 }

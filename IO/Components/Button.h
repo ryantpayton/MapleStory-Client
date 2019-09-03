@@ -38,6 +38,7 @@ namespace ms
 		virtual ~Button() {}
 
 		virtual void draw(Point<int16_t> parentpos) const = 0;
+		virtual void update() = 0;
 		virtual Rectangle<int16_t> bounds(Point<int16_t> parentpos) const = 0;
 		virtual int16_t width() const = 0;
 		virtual Point<int16_t> origin() const = 0;

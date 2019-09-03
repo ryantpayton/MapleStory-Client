@@ -61,6 +61,7 @@ namespace ms
 		void update_basevstotal(StatLabel label, Maplestat::Id bstat, Equipstat::Id tstat);
 		void update_buffed(StatLabel label, Equipstat::Id stat);
 		void send_apup(Maplestat::Id stat) const;
+		void set_detail(bool enabled);
 
 		enum Buttons
 		{
@@ -77,8 +78,7 @@ namespace ms
 			BT_DETAILOPEN,
 			BT_DETAILCLOSE,
 			BT_ABILITY,
-			BT_DETAIL_DETAILCLOSE,
-			NUM_BUTTONS
+			BT_DETAIL_DETAILCLOSE
 		};
 
 		const CharStats& stats;

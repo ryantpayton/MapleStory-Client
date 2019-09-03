@@ -46,6 +46,7 @@ namespace ms
 		MapleComboBox(Type type, std::vector<std::string> options, uint16_t default_option, Point<int16_t> parentpos, Point<int16_t> position, int64_t width);
 
 		void draw(Point<int16_t> parentpos) const override;
+		void update() {}
 		Rectangle<int16_t> bounds(Point<int16_t> parentpos) const override;
 		int16_t width() const override;
 		Point<int16_t> origin() const override;

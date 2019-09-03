@@ -166,11 +166,23 @@ namespace ms
 						);
 					break;
 				case KeyAction::Id::SKILLS:
-					emplace<UISkillbook>(
-						Stage::get().get_player().get_stats(),
-						Stage::get().get_player().get_skills()
-						);
-					break;
+				{
+					auto skillbook = UI::get().get_element<UISkillbook>();
+
+					if (!skillbook)
+					{
+						emplace<UISkillbook>(
+							Stage::get().get_player().get_stats(),
+							Stage::get().get_player().get_skills()
+							);
+					}
+					else
+					{
+						if (!skillbook->is_skillpoint_enabled())
+							skillbook->toggle_active();
+					}
+				}
+				break;
 				case KeyAction::Id::FRIENDS:
 				case KeyAction::Id::PARTY:
 				case KeyAction::Id::BOSSPARTY:

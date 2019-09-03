@@ -21,13 +21,20 @@ namespace ms
 {
 	MapleButton::MapleButton(nl::node src, Point<int16_t> pos)
 	{
+		nl::node normal = src["normal"];
+
+		if (normal.size() > 1)
+			animations[Button::State::NORMAL] = normal;
+		else
+			textures[Button::State::NORMAL] = normal["0"];
+
 		textures[Button::State::PRESSED] = src["pressed"]["0"];
 		textures[Button::State::MOUSEOVER] = src["mouseOver"]["0"];
-		textures[Button::State::NORMAL] = src["normal"]["0"];
 		textures[Button::State::DISABLED] = src["disabled"]["0"];
+
+		active = true;
 		position = pos;
 		state = Button::State::NORMAL;
-		active = true;
 	}
 
 	MapleButton::MapleButton(nl::node src, int16_t x, int16_t y) : MapleButton(src, Point<int16_t>(x, y)) {}
@@ -36,13 +43,33 @@ namespace ms
 	void MapleButton::draw(Point<int16_t> parentpos) const
 	{
 		if (active)
+		{
 			textures[state].draw(position + parentpos);
+			animations[state].draw(position + parentpos, 1.0f);
+		}
+	}
+
+	void MapleButton::update()
+	{
+		if (active)
+			animations[state].update(6);
 	}
 
 	Rectangle<int16_t> MapleButton::bounds(Point<int16_t> parentpos) const
 	{
-		auto lt = parentpos + position - textures[state].get_origin();
-		auto rb = lt + textures[state].get_dimensions();
+		Point<int16_t> lt;
+		Point<int16_t> rb;
+
+		if (textures[state].is_valid())
+		{
+			lt = parentpos + position - textures[state].get_origin();
+			rb = lt + textures[state].get_dimensions();
+		}
+		else
+		{
+			lt = parentpos + position - animations[state].get_origin();
+			rb = lt + animations[state].get_dimensions();
+		}
 
 		return Rectangle<int16_t>(lt, rb);
 	}

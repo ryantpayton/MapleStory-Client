@@ -30,7 +30,7 @@
 
 namespace ms
 {
-	UIEquipInventory::UIEquipInventory(const Inventory& invent) : UIDragElement<PosEQINV>(Point<int16_t>(184, 20)), inventory(invent)
+	UIEquipInventory::UIEquipInventory(const Inventory& invent) : UIDragElement<PosEQINV>(Point<int16_t>(0, 0)), inventory(invent), showpetequips(false)
 	{
 		iconpositions[Equipslot::Id::CAP] = Point<int16_t>(43, 25);
 		iconpositions[Equipslot::Id::FACEACC] = Point<int16_t>(43, 91);
@@ -53,27 +53,31 @@ namespace ms
 		iconpositions[Equipslot::Id::MEDAL] = Point<int16_t>(10, 58);
 		iconpositions[Equipslot::Id::BELT] = Point<int16_t>(76, 157);
 
+		nl::node close = nl::nx::ui["Basic.img"]["BtClose"];
 		nl::node source = nl::nx::ui["UIWindow2.img"]["Equip"]["character"];
 		nl::node petsource = nl::nx::ui["UIWindow2.img"]["Equip"]["pet"];
+		nl::node backgrnd = source["backgrnd"];
 
-		sprites.emplace_back(source["backgrnd"]);
+		Point<int16_t> bg_dimensions = Texture(backgrnd).get_dimensions();
+
+		sprites.emplace_back(backgrnd);
 		sprites.emplace_back(source["backgrnd2"]);
 		sprites.emplace_back(source["backgrnd3_Kanna"]);
 		sprites.emplace_back(source["cashPendant"]);
 		sprites.emplace_back(source["charmPocket"]);
 		sprites.emplace_back(source["emblem"]);
 
+		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(bg_dimensions.x() - 17, 12));
 		buttons[Buttons::BT_TOGGLEPETS] = std::make_unique<MapleButton>(source["BtPet"]);
 
 		textures_pet.emplace_back(petsource["backgrnd"]);
 		textures_pet.emplace_back(petsource["backgrnd2"]);
 		textures_pet.emplace_back(petsource["backgrnd3"]);
 
-		load_icons();
+		dimension = bg_dimensions;
+		dragarea = Point<int16_t>(bg_dimensions.x(), 20);
 
-		dimension = Point<int16_t>(184, 290);
-		active = true;
-		showpetequips = false;
+		load_icons();
 	}
 
 	void UIEquipInventory::draw(float alpha) const
@@ -97,6 +101,9 @@ namespace ms
 	{
 		switch (id)
 		{
+		case Buttons::BT_CLOSE:
+			toggle_active();
+			return Button::State::NORMAL;
 		case Buttons::BT_TOGGLEPETS:
 			showpetequips = !showpetequips;
 

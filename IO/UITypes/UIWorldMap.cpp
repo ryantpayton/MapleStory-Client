@@ -23,36 +23,39 @@
 
 namespace ms
 {
-	UIWorldMap::UIWorldMap() : UIDragElement<PosMAP>(Point<int16_t>(648, 20))
+	UIWorldMap::UIWorldMap() : UIDragElement<PosMAP>(Point<int16_t>(0, 0))
 	{
 		nl::node close = nl::nx::ui["Basic.img"]["BtClose"];
 		nl::node WorldMap = nl::nx::ui["UIWindow2.img"]["WorldMap"];
 		nl::node WorldMapSearch = WorldMap["WorldMapSearch"];
+		nl::node Border = WorldMap["Border"]["0"];
+		nl::node backgrnd = WorldMapSearch["backgrnd"];
 
-		sprites.emplace_back(WorldMap["Border"]["0"]);
+		sprites.emplace_back(Border);
 
-		search_background = WorldMapSearch["backgrnd"];
+		search_background = backgrnd;
 		search_notice = WorldMapSearch["notice"];
 
-		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(638, 10));
-		buttons[Buttons::BT_SEARCH] = std::make_unique<MapleButton>(WorldMap["BtSearch"]);
+		bg_dimensions = Texture(Border).get_dimensions();
+		bg_search_dimensions = search_background.get_dimensions();
+		background_dimensions = Point<int16_t>(bg_dimensions.x(), 0);
 
+		Point<int16_t> close_dimensions = Point<int16_t>(bg_dimensions.x() - 16, 10);
+
+		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close, close_dimensions);
+		buttons[Buttons::BT_SEARCH] = std::make_unique<MapleButton>(WorldMap["BtSearch"]);
 		buttons[Buttons::BT_AUTOFLY] = std::make_unique<MapleButton>(WorldMap["BtAutoFly_1"]);
 		buttons[Buttons::BT_NAVIREG] = std::make_unique<MapleButton>(WorldMap["BtNaviRegister"]);
+		buttons[Buttons::BT_SEARCH_CLOSE] = std::make_unique<MapleButton>(close, close_dimensions + Point<int16_t>(bg_search_dimensions.x(), 0));
+		buttons[Buttons::BT_ALLSEARCH] = std::make_unique<MapleButton>(WorldMapSearch["BtAllsearch"], background_dimensions);
 
-		buttons[Buttons::BT_SEARCH_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(785, 10));
-		buttons[Buttons::BT_ALLSEARCH] = std::make_unique<MapleButton>(WorldMapSearch["BtAllsearch"], Point<int16_t>(654, 0));
+		Point<int16_t> search_text_pos = Point<int16_t>(bg_dimensions.x() + 14, 25);
+		Point<int16_t> search_box_dim = Point<int16_t>(83, 15);
+		Rectangle<int16_t> search_text_dim = Rectangle<int16_t>(search_text_pos, search_text_pos + search_box_dim);
 
-		buttons[Buttons::BT_SEARCH_CLOSE]->set_active(false);
-		buttons[Buttons::BT_ALLSEARCH]->set_active(false);
+		search_text = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, search_text_dim, 15);
 
-		size_t text_limit = 15;
-		search_text = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, Rectangle<int16_t>(Point<int16_t>(670, 20), Point<int16_t>(745, 40)), text_limit);
-		search_text.set_state(Textfield::State::DISABLED);
-
-		search = false;
-		dimension = Point<int16_t>(648, 535);
-		active = true;
+		set_search(false);
 	}
 
 	void UIWorldMap::draw(float alpha) const
@@ -61,8 +64,8 @@ namespace ms
 
 		if (search)
 		{
-			search_background.draw(position + Point<int16_t>(654, 0), alpha);
-			search_notice.draw(position + Point<int16_t>(654, 0), alpha);
+			search_background.draw(position + background_dimensions);
+			search_notice.draw(position + background_dimensions);
 			search_text.draw(position);
 		}
 
@@ -74,11 +77,7 @@ namespace ms
 		UIElement::update();
 
 		if (search)
-		{
-			search_background.update();
-			search_notice.update();
 			search_text.update(position);
-		}
 	}
 
 	void UIWorldMap::send_key(int32_t keycode, bool pressed, bool escape)
@@ -95,23 +94,10 @@ namespace ms
 			deactivate();
 			break;
 		case Buttons::BT_SEARCH:
-			if (!search)
-			{
-				search = true;
-				buttons[Buttons::BT_SEARCH_CLOSE]->set_active(true);
-				buttons[Buttons::BT_ALLSEARCH]->set_active(true);
-				search_text.set_state(Textfield::State::NORMAL);
-				dimension = Point<int16_t>(795, 535);
-				dragarea = Point<int16_t>(795, 20);
-			}
-			else
-			{
-				close_search();
-			}
-
+			set_search(!search);
 			break;
 		case Buttons::BT_SEARCH_CLOSE:
-			close_search();
+			set_search(false);
 			break;
 		}
 
@@ -126,13 +112,24 @@ namespace ms
 		return UIDragElement::send_cursor(clicked, cursorpos);
 	}
 
-	void UIWorldMap::close_search()
+	void UIWorldMap::set_search(bool enable)
 	{
-		search = false;
-		buttons[Buttons::BT_SEARCH_CLOSE]->set_active(false);
-		buttons[Buttons::BT_ALLSEARCH]->set_active(false);
-		search_text.set_state(Textfield::State::DISABLED);
-		dimension = Point<int16_t>(648, 535);
-		dragarea = Point<int16_t>(648, 20);
+		search = enable;
+
+		buttons[Buttons::BT_SEARCH_CLOSE]->set_active(enable);
+		buttons[Buttons::BT_ALLSEARCH]->set_active(enable);
+
+		if (enable)
+		{
+			search_text.set_state(Textfield::State::NORMAL);
+			dimension = bg_dimensions + bg_search_dimensions;
+		}
+		else
+		{
+			search_text.set_state(Textfield::State::DISABLED);
+			dimension = bg_dimensions;
+		}
+
+		dragarea = Point<int16_t>(dimension.x(), 20);
 	}
 }

@@ -33,14 +33,14 @@ namespace ms
 	void GatherResultHandler::handle(InPacket&) const
 	{
 		if (auto iteminventory = UI::get().get_element<UIItemInventory>())
-			iteminventory->enable_sort();
+			iteminventory->set_sort(true);
 	}
 
 	void SortResultHandler::handle(InPacket&) const
 	{
 		if (auto iteminventory = UI::get().get_element<UIItemInventory>())
 		{
-			iteminventory->enable_gather();
+			iteminventory->set_sort(false);
 			iteminventory->clear_new();
 		}
 	}

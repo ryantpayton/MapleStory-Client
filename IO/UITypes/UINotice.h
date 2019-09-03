@@ -40,6 +40,7 @@ namespace ms
 			OK
 		};
 
+		UINotice(std::string message, NoticeType type, Text::Alignment alignment);
 		UINotice(std::string message, NoticeType type);
 
 		void draw(bool textfield) const;
@@ -57,11 +58,13 @@ namespace ms
 		Text question;
 		int16_t height;
 		NoticeType type;
+		Text::Alignment alignment;
 	};
 
 	class UIYesNo : public UINotice
 	{
 	public:
+		UIYesNo(std::string message, std::function<void(bool yes)> yesnohandler, Text::Alignment alignment);
 		UIYesNo(std::string message, std::function<void(bool yes)> yesnohandler);
 
 		void draw(float alpha) const override;

@@ -21,6 +21,7 @@
 #include "../UIDragElement.h"
 
 #include "../Components/Slider.h"
+#include "../Components/Charset.h"
 #include "../Character/CharStats.h"
 #include "../Character/Skillbook.h"
 #include "../Graphics/Text.h"
@@ -45,6 +46,7 @@ namespace ms
 
 		int32_t get_id() const;
 		int32_t get_level() const;
+		Texture get_icon() const;
 
 	private:
 		Texture normal;
@@ -58,7 +60,6 @@ namespace ms
 		State state;
 		bool enabled;
 	};
-
 
 	class UISkillbook : public UIDragElement<PosSKILL>
 	{
@@ -79,14 +80,14 @@ namespace ms
 
 		void update_stat(Maplestat::Id stat, int16_t value);
 		void update_skills(int32_t skill_id);
+		bool is_skillpoint_enabled();
 
 	protected:
 		Button::State button_pressed(uint16_t id) override;
 
 	private:
 		void change_job(uint16_t id);
-		void change_sp(int16_t value);
-		void change_beginner_sp();
+		void change_sp();
 		void change_tab(uint16_t new_tab);
 		void change_offset(uint16_t new_offset);
 
@@ -95,21 +96,30 @@ namespace ms
 
 		bool can_raise(int32_t skill_id) const;
 		void send_spup(uint16_t row);
+		void spend_sp(int32_t skill_id);
 
 		Job::Level joblevel_by_tab(uint16_t tab) const;
 		SkillIcon* icon_by_position(Point<int16_t> cursorpos);
 
 		void close();
-		int16_t calculate_remaining_beginner_sp();
 		bool check_required(int32_t id) const;
+
+		void set_macro(bool enabled);
+		void set_skillpoint(bool enabled);
 
 		enum Buttons : uint16_t
 		{
 			BT_CLOSE,
 			BT_HYPER,
-			BT_GUILD,
-			BT_MOUNT,
+			BT_GUILDSKILL,
+			BT_RIDE,
 			BT_MACRO,
+			BT_MACRO_OK,
+			BT_CANCLE,
+			BT_OKAY,
+			BT_SPDOWN,
+			BT_SPMAX,
+			BT_SPUP,
 			BT_TAB0,
 			BT_TAB1,
 			BT_TAB2,
@@ -158,5 +168,27 @@ namespace ms
 
 		std::vector<SkillIcon> icons;
 		bool grabbing;
+
+		Point<int16_t> bg_dimensions;
+
+		bool macro_enabled;
+		Texture macro_backgrnd;
+		Texture macro_backgrnd2;
+		Texture macro_backgrnd3;
+
+		bool sp_enabled;
+		Texture sp_backgrnd;
+		Texture sp_backgrnd2;
+		Texture sp_backgrnd3;
+		Charset sp_before;
+		Charset sp_after;
+		std::string sp_before_text;
+		std::string sp_after_text;
+		Text sp_used;
+		Text sp_remaining;
+		Text sp_name;
+		Texture sp_skill;
+		int32_t sp_id;
+		int32_t sp_masterlevel;
 	};
 }

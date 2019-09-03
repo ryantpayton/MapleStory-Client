@@ -32,6 +32,7 @@ namespace ms
 		TwoSpriteButton();
 
 		void draw(Point<int16_t> position) const;
+		void update() {}
 		Rectangle<int16_t> bounds(Point<int16_t> position) const;
 		int16_t width() const;
 		Point<int16_t> origin() const;

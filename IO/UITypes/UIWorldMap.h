@@ -42,7 +42,7 @@ namespace ms
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursor_pos) override;
 
 	private:
-		void close_search();
+		void set_search(bool enable);
 
 		enum Buttons
 		{
@@ -55,8 +55,11 @@ namespace ms
 		};
 
 		bool search;
-		Sprite search_background;
-		Sprite search_notice;
+		Texture search_background;
+		Texture search_notice;
 		Textfield search_text;
+		Point<int16_t> bg_dimensions;
+		Point<int16_t> bg_search_dimensions;
+		Point<int16_t> background_dimensions;
 	};
 }

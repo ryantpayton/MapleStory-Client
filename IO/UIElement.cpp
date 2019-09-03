@@ -48,6 +48,10 @@ namespace ms
 	{
 		for (auto& sprite : sprites)
 			sprite.update();
+
+		for (auto& iter : buttons)
+			if (Button * button = iter.second.get())
+				button->update();
 	}
 
 	void UIElement::makeactive()

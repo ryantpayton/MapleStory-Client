@@ -68,6 +68,8 @@ namespace ms
 		add_sound(Sound::Name::WORLDSELECT, uisrc["WorldSelect"]);
 		add_sound(Sound::Name::DRAGSTART, uisrc["DragStart"]);
 		add_sound(Sound::Name::DRAGEND, uisrc["DragEnd"]);
+		add_sound(Sound::Name::WORLDMAPOPEN, uisrc["WorldmapOpen"]);
+		add_sound(Sound::Name::WORLDMAPCLOSE, uisrc["WorldmapClose"]);
 
 		nl::node gamesrc = nl::nx::sound["Game.img"];
 
