@@ -15,22 +15,24 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "Weapon.h"
+#pragma once
 
-#include "../Console.h"
+#include "../Graphics/Animation.h"
 
 namespace ms
 {
-	Weapon::Type Weapon::by_value(int32_t value)
+	class MapEffect
 	{
-		if (value < 130 || (value > 133 && value < 137) || value == 139 || (value > 149 && value < 170) || value > 170)
-		{
-			if (value != 100)
-				Console::get().print("Warning: Unhandled weapon type (" + std::to_string(value) + ").");
+	public:
+		MapEffect(std::string path);
+		MapEffect();
 
-			return Weapon::NONE;
-		}
+		void draw() const;
+		void update();
 
-		return static_cast<Type>(value);
-	}
+	private:
+		bool active;
+		Animation effect;
+		Point<int16_t> position;
+	};
 }

@@ -124,6 +124,7 @@ namespace ms
 		combat.draw(viewx, viewy, alpha);
 		portals.draw(viewpos, alpha);
 		backgrounds.drawforegrounds(viewx, viewy, alpha);
+		effect.draw();
 	}
 
 	void Stage::update()
@@ -133,6 +134,7 @@ namespace ms
 
 		combat.update();
 		backgrounds.update();
+		effect.update();
 		tilesobjs.update();
 
 		reactors.update(physics);
@@ -313,5 +315,10 @@ namespace ms
 			return player;
 		else
 			return chars.get_char(cid);
+	}
+
+	void Stage::add_effect(std::string path)
+	{
+		effect = MapEffect(path);
 	}
 }

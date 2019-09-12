@@ -543,6 +543,9 @@
     <ClCompile Include="IO\UITypes\UIQuit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Gameplay\Maplemap\MapEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Configuration.h">
@@ -1233,6 +1236,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IO\UITypes\UIQuit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameplay\Maplemap\MapEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

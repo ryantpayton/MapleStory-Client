@@ -188,6 +188,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="gameplay\maplemap\MapBackgrounds.cpp" />
     <ClCompile Include="gameplay\maplemap\Mapchars.cpp" />
     <ClCompile Include="gameplay\maplemap\MapDrops.cpp" />
+    <ClCompile Include="Gameplay\Maplemap\MapEffect.cpp" />
     <ClCompile Include="gameplay\maplemap\Mapinfo.cpp" />
     <ClCompile Include="gameplay\maplemap\Mapmobs.cpp" />
     <ClCompile Include="gameplay\maplemap\MapNpcs.cpp" />
@@ -374,6 +375,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="gameplay\maplemap\MapBackgrounds.h" />
     <ClInclude Include="gameplay\maplemap\Mapchars.h" />
     <ClInclude Include="gameplay\maplemap\MapDrops.h" />
+    <ClInclude Include="Gameplay\Maplemap\MapEffect.h" />
     <ClInclude Include="gameplay\maplemap\Mapinfo.h" />
     <ClInclude Include="gameplay\maplemap\Mapmobs.h" />
     <ClInclude Include="gameplay\maplemap\MapNpcs.h" />

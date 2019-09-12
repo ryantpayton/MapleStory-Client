@@ -101,8 +101,7 @@ namespace ms
 		class Entry
 		{
 		protected:
-			Entry(const char* n, const char* v)
-				: name(n), value(v) {}
+			Entry(const char* n, const char* v) : name(n), value(v) {}
 
 			std::string name;
 			std::string value;

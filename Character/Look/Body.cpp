@@ -128,7 +128,8 @@ namespace ms
 
 		if (layer_iter == layers_by_name.end())
 		{
-			Console::get().print("Warning: Unhandled body layer (" + name + ")");
+			if (name != "")
+				Console::get().print("Warning: Unhandled body layer (" + name + ")");
 
 			return Body::Layer::NONE;
 		}

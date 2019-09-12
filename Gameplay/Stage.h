@@ -30,6 +30,7 @@
 #include "Maplemap/MapReactors.h"
 #include "Maplemap/MapNpcs.h"
 #include "Maplemap/MapDrops.h"
+#include "Maplemap/MapEffect.h"
 #include "Physics/Physics.h"
 
 #include "../Character/Player.h"
@@ -88,6 +89,9 @@ namespace ms
 		// Return a pointer to a character, possibly the player.
 		Optional<Char> get_character(int32_t cid);
 
+		// Set a map effect
+		void add_effect(std::string path);
+
 	private:
 		void load_map(int32_t mapid);
 		void respawn(int8_t portalid);
@@ -119,6 +123,7 @@ namespace ms
 		MapChars chars;
 		MapMobs mobs;
 		MapDrops drops;
+		MapEffect effect;
 
 		Combat combat;
 	};

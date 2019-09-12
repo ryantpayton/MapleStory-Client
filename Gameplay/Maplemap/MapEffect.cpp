@@ -15,22 +15,36 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "Weapon.h"
+#include "MapEffect.h"
 
-#include "../Console.h"
+#include "../Constants.h"
+
+#include <nlnx\nx.hpp>
 
 namespace ms
 {
-	Weapon::Type Weapon::by_value(int32_t value)
+	MapEffect::MapEffect(std::string path) : active(false)
 	{
-		if (value < 130 || (value > 133 && value < 137) || value == 139 || (value > 149 && value < 170) || value > 170)
-		{
-			if (value != 100)
-				Console::get().print("Warning: Unhandled weapon type (" + std::to_string(value) + ").");
+		nl::node Effect = nl::nx::map["Effect.img"];
 
-			return Weapon::NONE;
-		}
+		effect = Effect.resolve(path);
 
-		return static_cast<Type>(value);
+		int16_t width = Constants::Constants::get().get_viewwidth();
+
+		position = Point<int16_t>(width / 2, 250);
+	}
+
+	MapEffect::MapEffect() {}
+
+	void MapEffect::draw() const
+	{
+		if (!active)
+			effect.draw(position, 1.0f);
+	}
+
+	void MapEffect::update()
+	{
+		if (!active)
+			active = effect.update(6);
 	}
 }
