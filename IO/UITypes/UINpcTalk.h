@@ -26,6 +26,22 @@ namespace ms
 	class UINpcTalk : public UIElement
 	{
 	public:
+		enum TalkType : int8_t
+		{
+			NONE = -1,
+			SENDOK,
+			SENDYESNO,
+
+			// TODO: Unconfirmed
+			SENDNEXT,
+			SENDNEXTPREV,
+			SENDACCEPTDECLINE,
+			SENDGETTEXT,
+			SENDGETNUMBER,
+			SENDSIMPLE,
+			LENGTH
+		};
+
 		static constexpr Type TYPE = UIElement::Type::NPCTALK;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
@@ -40,14 +56,25 @@ namespace ms
 		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
+		TalkType get_by_value(int8_t value);
+
 		enum Buttons
 		{
-			OK,
+			ALLLEVEL,
+			CLOSE,
+			MYLEVEL,
 			NEXT,
+			NO,
+			OK,
 			PREV,
-			END,
-			YES,
-			NO
+			QAFTER,
+			QCNO,
+			QCYES,
+			QGIVEUP,
+			QNO,
+			QSTART,
+			QYES,
+			YES
 		};
 
 		Texture top;
@@ -62,6 +89,6 @@ namespace ms
 		int16_t vtile;
 		bool slider;
 
-		int8_t type;
+		TalkType type;
 	};
 }
