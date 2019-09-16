@@ -304,12 +304,12 @@ namespace ms
 						tempkeys.erase(KeyConfig::Key::LEFT_CONTROL);
 						tempkeys.erase(KeyConfig::Key::RIGHT_CONTROL);
 					}
-					else if (key == KeyConfig::Key::LEFT_ALT || key == KeyConfig::Key::RIGHT_ALT)
+					else if (it->first == KeyConfig::Key::LEFT_ALT || it->first == KeyConfig::Key::RIGHT_ALT)
 					{
 						tempkeys.erase(KeyConfig::Key::LEFT_ALT);
 						tempkeys.erase(KeyConfig::Key::RIGHT_ALT);
 					}
-					else if (key == KeyConfig::Key::LEFT_SHIFT || key == KeyConfig::Key::RIGHT_SHIFT)
+					else if (it->first == KeyConfig::Key::LEFT_SHIFT || it->first == KeyConfig::Key::RIGHT_SHIFT)
 					{
 						tempkeys.erase(KeyConfig::Key::LEFT_SHIFT);
 						tempkeys.erase(KeyConfig::Key::RIGHT_SHIFT);
