@@ -19,12 +19,12 @@
 
 namespace ms
 {
-	Equipstat::Id Equipstat::by_id(size_t id)
+	Equipstat::Id Equipstat::by_id(std::size_t id)
 	{
 		return static_cast<Id>(id);
 	}
 
-	int32_t Equipstat::value_of(Id value)
+	std::int32_t Equipstat::value_of(Id value)
 	{
 		return value;
 	}

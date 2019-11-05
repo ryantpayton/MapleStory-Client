@@ -19,14 +19,14 @@
 
 #include "MapleFrame.h"
 
-#include "../Graphics/Text.h"
+#include "Graphics/Text.h"
 
 namespace ms
 {
 	class ChatBalloon
 	{
 	public:
-		ChatBalloon(int8_t type);
+		ChatBalloon(std::int8_t type);
 		ChatBalloon();
 
 		void draw(Point<int16_t> position) const;
@@ -37,12 +37,12 @@ namespace ms
 
 	private:
 		// How long a line stays on screen
-		static constexpr int16_t DURATION = 4000; // 4 seconds
+		static constexpr std::int16_t DURATION = 4000; // 4 seconds
 
 		MapleFrame frame;
 		Text textlabel;
 		Texture arrow;
-		int16_t duration;
+		std::int16_t duration;
 	};
 
 	class ChatBalloonHorizontal
@@ -66,7 +66,7 @@ namespace ms
 		Texture southwest;
 		Texture south;
 		Texture southeast;
-		int16_t xtile;
-		int16_t ytile;
+		std::int16_t xtile;
+		std::int16_t ytile;
 	};
 }

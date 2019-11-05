@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Clothing.h"
 
-#include "../Data/EquipData.h"
-#include "../Data/WeaponData.h"
+#include "../../Data/EquipData.h"
+#include "../../Data/WeaponData.h"
 
 #include <unordered_set>
 
@@ -27,7 +27,7 @@
 
 namespace ms
 {
-	Clothing::Clothing(int32_t id, const BodyDrawinfo& drawinfo) : itemid(id)
+	Clothing::Clothing(std::int32_t id, const BodyDrawinfo& drawinfo) : itemid(id)
 	{
 		const EquipData& equipdata = EquipData::get(itemid);
 
@@ -38,9 +38,9 @@ namespace ms
 		else
 			twohanded = false;
 
-		constexpr size_t NON_WEAPON_TYPES = 15;
-		constexpr size_t WEAPON_OFFSET = NON_WEAPON_TYPES + 15;
-		constexpr size_t WEAPON_TYPES = 20;
+		constexpr std::size_t NON_WEAPON_TYPES = 15;
+		constexpr std::size_t WEAPON_OFFSET = NON_WEAPON_TYPES + 15;
+		constexpr std::size_t WEAPON_TYPES = 20;
 
 		constexpr Clothing::Layer layers[NON_WEAPON_TYPES] =
 		{
@@ -62,7 +62,7 @@ namespace ms
 		};
 
 		Clothing::Layer chlayer;
-		size_t index = (itemid / 10000) - 100;
+		std::size_t index = (itemid / 10000) - 100;
 
 		if (index < NON_WEAPON_TYPES)
 			chlayer = layers[index];
@@ -76,9 +76,9 @@ namespace ms
 		nl::node src = nl::nx::character[category][strid + ".img"];
 		nl::node info = src["info"];
 
-		vslot = info["vslot"];
+		vslot = info["vslot"].get_string();
 
-		switch (int32_t standno = info["stand"])
+		switch (std::int32_t standno = info["stand"])
 		{
 		case 1:
 			stand = Stance::Id::STAND1;
@@ -91,7 +91,7 @@ namespace ms
 			break;
 		}
 
-		switch (int32_t walkno = info["walk"])
+		switch (std::int32_t walkno = info["walk"])
 		{
 		case 1:
 			walk = Stance::Id::WALK1;
@@ -114,7 +114,7 @@ namespace ms
 			if (!stancenode)
 				continue;
 
-			for (uint8_t frame = 0; nl::node framenode = stancenode[frame]; ++frame)
+			for (std::uint8_t frame = 0; nl::node framenode = stancenode[frame]; ++frame)
 			{
 				for (nl::node partnode : framenode)
 				{
@@ -188,7 +188,7 @@ namespace ms
 			}
 		}
 
-		static const std::unordered_set<int32_t> transparents =
+		static const std::unordered_set<std::int32_t> transparents =
 		{
 			1002186
 		};
@@ -196,7 +196,7 @@ namespace ms
 		transparent = transparents.count(itemid) > 0;
 	}
 
-	void Clothing::draw(Stance::Id stance, Layer layer, uint8_t frame, const DrawArgument& args) const
+	void Clothing::draw(Stance::Id stance, Layer layer, std::uint8_t frame, const DrawArgument& args) const
 	{
 		auto range = stances[stance][layer].equal_range(frame);
 
@@ -219,7 +219,7 @@ namespace ms
 		return twohanded;
 	}
 
-	int32_t Clothing::get_id() const
+	std::int32_t Clothing::get_id() const
 	{
 		return itemid;
 	}

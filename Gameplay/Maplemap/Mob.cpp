@@ -17,15 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Mob.h"
 
-#include "../Util/Misc.h"
+#include "../../Util/Misc.h"
 
-#include "../Net/Packets/GameplayPackets.h"
+#include "../../Net/Packets/GameplayPackets.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	Mob::Mob(int32_t oi, int32_t mid, int8_t mode, int8_t st, uint16_t fh, bool newspawn, int8_t tm, Point<int16_t> position) : MapObject(oi)
+	Mob::Mob(std::int32_t oi, std::int32_t mid, std::int8_t mode, std::int8_t st, std::uint16_t fh, bool newspawn, std::int8_t tm, Point<int16_t> position) : MapObject(oi)
 	{
 		std::string strid = string_format::extend_id(mid, 7);
 		nl::node src = nl::nx::mob[strid + ".img"];
@@ -65,7 +65,7 @@ namespace ms
 		animations[Stance::HIT] = src["hit1"];
 		animations[Stance::DIE] = src["die1"];
 
-		name = nl::nx::string["Mob.img"][std::to_string(mid)]["name"];
+		name = nl::nx::string["Mob.img"][std::to_string(mid)]["name"].get_string();
 
 		nl::node sndsrc = nl::nx::sound["Mob.img"][strid];
 
@@ -114,7 +114,7 @@ namespace ms
 			next_move();
 	}
 
-	void Mob::set_stance(uint8_t stancebyte)
+	void Mob::set_stance(std::uint8_t stancebyte)
 	{
 		flip = (stancebyte % 2) == 0;
 
@@ -137,7 +137,7 @@ namespace ms
 		}
 	}
 
-	int8_t Mob::update(const Physics& physics)
+	std::int8_t Mob::update(const Physics& physics)
 	{
 		if (!active)
 			return phobj.fhlayer;
@@ -346,7 +346,7 @@ namespace ms
 		effects.drawabove(absp, alpha);
 	}
 
-	void Mob::set_control(int8_t mode)
+	void Mob::set_control(std::int8_t mode)
 	{
 		control = mode > 0;
 		aggro = mode == 2;
@@ -366,7 +366,7 @@ namespace ms
 
 		const Movement& lastmove = movements.front();
 
-		uint8_t laststance = lastmove.newstate;
+		std::uint8_t laststance = lastmove.newstate;
 		set_stance(laststance);
 
 		phobj.fhid = lastmove.fh;
@@ -382,7 +382,7 @@ namespace ms
 		return position;
 	}
 
-	void Mob::kill(int8_t animation)
+	void Mob::kill(std::int8_t animation)
 	{
 		switch (animation)
 		{
@@ -403,11 +403,11 @@ namespace ms
 		}
 	}
 
-	void Mob::show_hp(int8_t percent, uint16_t playerlevel)
+	void Mob::show_hp(std::int8_t percent, std::uint16_t playerlevel)
 	{
 		if (hppercent == 0)
 		{
-			int16_t delta = playerlevel - level;
+			std::int16_t delta = playerlevel - level;
 
 			if (delta > 9)
 				namelabel.change_color(Color::Name::YELLOW);
@@ -424,7 +424,7 @@ namespace ms
 		showhp.set_for(2000);
 	}
 
-	void Mob::show_effect(const Animation& animation, int8_t pos, int8_t z, bool f)
+	void Mob::show_effect(const Animation& animation, std::int8_t pos, std::int8_t z, bool f)
 	{
 		if (!active)
 			return;
@@ -449,7 +449,7 @@ namespace ms
 		effects.add(animation, DrawArgument(shift, f), z);
 	}
 
-	float Mob::calculate_hitchance(int16_t leveldelta, int32_t player_accuracy) const
+	float Mob::calculate_hitchance(std::int16_t leveldelta, std::int32_t player_accuracy) const
 	{
 		float faccuracy = static_cast<float>(player_accuracy);
 		float hitchance = faccuracy / (((1.84f + 0.07f * leveldelta) * avoid) + 1.0f);
@@ -460,7 +460,7 @@ namespace ms
 		return hitchance;
 	}
 
-	double Mob::calculate_mindamage(int16_t leveldelta, double damage, bool magic) const
+	double Mob::calculate_mindamage(std::int16_t leveldelta, double damage, bool magic) const
 	{
 		double mindamage =
 			magic ?
@@ -470,7 +470,7 @@ namespace ms
 		return mindamage < 1.0 ? 1.0 : mindamage;
 	}
 
-	double Mob::calculate_maxdamage(int16_t leveldelta, double damage, bool magic) const
+	double Mob::calculate_maxdamage(std::int16_t leveldelta, double damage, bool magic) const
 	{
 		double maxdamage =
 			magic ?
@@ -480,13 +480,13 @@ namespace ms
 		return maxdamage < 1.0 ? 1.0 : maxdamage;
 	}
 
-	std::vector<std::pair<int32_t, bool>> Mob::calculate_damage(const Attack& attack)
+	std::vector<std::pair<std::int32_t, bool>> Mob::calculate_damage(const Attack& attack)
 	{
 		double mindamage;
 		double maxdamage;
 		float hitchance;
 		float critical;
-		int16_t leveldelta = level - attack.playerlevel;
+		std::int16_t leveldelta = level - attack.playerlevel;
 
 		if (leveldelta < 0)
 			leveldelta = 0;
@@ -510,7 +510,7 @@ namespace ms
 			break;
 		}
 
-		std::vector<std::pair<int32_t, bool>> result(attack.hitcount);
+		std::vector<std::pair<std::int32_t, bool>> result(attack.hitcount);
 
 		std::generate(
 			result.begin(), result.end(),
@@ -526,12 +526,12 @@ namespace ms
 		return result;
 	}
 
-	std::pair<int32_t, bool> Mob::next_damage(double mindamage, double maxdamage, float hitchance, float critical) const
+	std::pair<std::int32_t, bool> Mob::next_damage(double mindamage, double maxdamage, float hitchance, float critical) const
 	{
 		bool hit = randomizer.below(hitchance);
 
 		if (!hit)
-			return std::pair<int32_t, bool>(0, false);
+			return std::pair<std::int32_t, bool>(0, false);
 
 		constexpr double DAMAGECAP = 999999.0;
 
@@ -546,12 +546,12 @@ namespace ms
 		else if (damage > DAMAGECAP)
 			damage = DAMAGECAP;
 
-		auto intdamage = static_cast<int32_t>(damage);
+		auto intdamage = static_cast<std::int32_t>(damage);
 
-		return std::pair<int32_t, bool>(intdamage, iscritical);
+		return std::pair<std::int32_t, bool>(intdamage, iscritical);
 	}
 
-	void Mob::apply_damage(int32_t damage, bool toleft)
+	void Mob::apply_damage(std::int32_t damage, bool toleft)
 	{
 		hitsound.play();
 
@@ -575,9 +575,9 @@ namespace ms
 		if (!touchdamage)
 			return MobAttack();
 
-		int32_t minattack = static_cast<int32_t>(watk * 0.8f);
-		int32_t maxattack = watk;
-		int32_t attack = randomizer.next_int(minattack, maxattack);
+		std::int32_t minattack = static_cast<std::int32_t>(watk * 0.8f);
+		std::int32_t maxattack = watk;
+		std::int32_t attack = randomizer.next_int(minattack, maxattack);
 
 		return MobAttack(attack, get_position(), id, oid);
 	}

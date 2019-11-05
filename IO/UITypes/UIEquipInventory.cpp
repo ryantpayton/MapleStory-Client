@@ -20,11 +20,11 @@
 #include "../UI.h"
 
 #include "../Components/MapleButton.h"
-#include "../Data/ItemData.h"
-#include "../Audio/Audio.h"
+#include "../../Data/ItemData.h"
+#include "../../Audio/Audio.h"
 
-#include "../Net/Packets/InventoryPackets.h"
-#include "../IO/UITypes/UIItemInventory.h"
+#include "../../Net/Packets/InventoryPackets.h"
+#include "UIItemInventory.h"
 
 #include <nlnx/nx.hpp>
 
@@ -97,7 +97,7 @@ namespace ms
 		}
 	}
 
-	Button::State UIEquipInventory::button_pressed(uint16_t id)
+	Button::State UIEquipInventory::button_pressed(std::uint16_t id)
 	{
 		switch (id)
 		{
@@ -115,7 +115,7 @@ namespace ms
 
 	void UIEquipInventory::update_slot(Equipslot::Id slot)
 	{
-		if (int32_t item_id = inventory.get_item_id(InventoryType::Id::EQUIPPED, slot))
+		if (std::int32_t item_id = inventory.get_item_id(InventoryType::Id::EQUIPPED, slot))
 		{
 			const Texture& texture = ItemData::get(item_id).get_icon(false);
 
@@ -181,7 +181,7 @@ namespace ms
 		}
 	}
 
-	void UIEquipInventory::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIEquipInventory::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && escape)
 		{
@@ -195,7 +195,7 @@ namespace ms
 		Equipslot::Id slot = slot_by_position(cursorpos);
 
 		if (icons[slot])
-			if (int16_t freeslot = inventory.find_free_slot(InventoryType::Id::EQUIP))
+			if (std::int16_t freeslot = inventory.find_free_slot(InventoryType::Id::EQUIP))
 				UnequipItemPacket(slot, freeslot).dispatch();
 	}
 
@@ -214,7 +214,7 @@ namespace ms
 		UIElement::toggle_active();
 	}
 
-	void UIEquipInventory::modify(int16_t pos, int8_t mode, int16_t arg)
+	void UIEquipInventory::modify(std::int16_t pos, std::int8_t mode, std::int16_t arg)
 	{
 		Equipslot::Id eqpos = Equipslot::by_id(pos);
 		Equipslot::Id eqarg = Equipslot::by_id(arg);
@@ -258,7 +258,7 @@ namespace ms
 		return Equipslot::Id::NONE;
 	}
 
-	UIEquipInventory::EquipIcon::EquipIcon(int16_t s)
+	UIEquipInventory::EquipIcon::EquipIcon(std::int16_t s)
 	{
 		source = s;
 	}
@@ -274,7 +274,7 @@ namespace ms
 			Sound(Sound::Name::DRAGEND).play();
 	}
 
-	bool UIEquipInventory::EquipIcon::drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const
+	bool UIEquipInventory::EquipIcon::drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, std::int16_t slot, bool equip) const
 	{
 		if (tab != InventoryType::Id::EQUIP)
 		{

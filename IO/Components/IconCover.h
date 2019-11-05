@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Graphics/Geometry.h"
-#include "../Template/Interpolated.h"
+#include "Graphics/Geometry.h"
+#include "../../Template/Interpolated.h"
 
 namespace ms
 {
@@ -32,7 +32,7 @@ namespace ms
 			COOLDOWN
 		};
 
-		IconCover(Type type, int32_t duration);
+		IconCover(Type type, std::int32_t duration);
 
 		void draw(Point<int16_t> position, float alpha) const;
 		void update();

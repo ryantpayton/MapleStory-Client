@@ -19,7 +19,7 @@
 
 #include "../Constants.h"
 
-#include "../Data/WeaponData.h"
+#include "../../Data/WeaponData.h"
 
 #include <array>
 
@@ -63,7 +63,7 @@ namespace ms
 		expelapsed = 0;
 	}
 
-	void CharLook::draw(const DrawArgument& args, Stance::Id interstance, Expression::Id interexpression, uint8_t interframe, uint8_t interexpframe) const
+	void CharLook::draw(const DrawArgument& args, Stance::Id interstance, Expression::Id interexpression, std::uint8_t interframe, std::uint8_t interexpframe) const
 	{
 		Point<int16_t> faceshift = drawinfo.getfacepos(interstance, interframe);
 		DrawArgument faceargs = args + DrawArgument{ faceshift, false, Point<int16_t>{} };
@@ -203,8 +203,8 @@ namespace ms
 
 		Stance::Id interstance = stance.get(alpha);
 		Expression::Id interexpression = expression.get(alpha);
-		uint8_t interframe = stframe.get(alpha);
-		uint8_t interexpframe = expframe.get(alpha);
+		std::uint8_t interframe = stframe.get(alpha);
+		std::uint8_t interexpframe = expframe.get(alpha);
 
 		switch (interstance)
 		{
@@ -225,7 +225,7 @@ namespace ms
 		draw({ position, flipped }, interstance, interexpression, 0, 0);
 	}
 
-	bool CharLook::update(uint16_t timestep)
+	bool CharLook::update(std::uint16_t timestep)
 	{
 		if (timestep == 0)
 		{
@@ -242,14 +242,14 @@ namespace ms
 
 		if (action == nullptr)
 		{
-			uint16_t delay = get_delay(stance.get(), stframe.get());
-			uint16_t delta = delay - stelapsed;
+			std::uint16_t delay = get_delay(stance.get(), stframe.get());
+			std::uint16_t delta = delay - stelapsed;
 
 			if (timestep >= delta)
 			{
 				stelapsed = timestep - delta;
 
-				uint8_t nextframe = getnextframe(stance.get(), stframe.get());
+				std::uint8_t nextframe = getnextframe(stance.get(), stframe.get());
 				float threshold = static_cast<float>(delta) / timestep;
 				stframe.next(nextframe, threshold);
 
@@ -266,8 +266,8 @@ namespace ms
 		}
 		else
 		{
-			uint16_t delay = action->get_delay();
-			uint16_t delta = delay - stelapsed;
+			std::uint16_t delay = action->get_delay();
+			std::uint16_t delta = delay - stelapsed;
 
 			if (timestep >= delta)
 			{
@@ -299,14 +299,14 @@ namespace ms
 			}
 		}
 
-		uint16_t expdelay = face->get_delay(expression.get(), expframe.get());
-		uint16_t expdelta = expdelay - expelapsed;
+		std::uint16_t expdelay = face->get_delay(expression.get(), expframe.get());
+		std::uint16_t expdelta = expdelay - expelapsed;
 
 		if (timestep >= expdelta)
 		{
 			expelapsed = timestep - expdelta;
 
-			uint8_t nextexpframe = face->nextframe(expression.get(), expframe.get());
+			std::uint8_t nextexpframe = face->nextframe(expression.get(), expframe.get());
 			float fcthreshold = static_cast<float>(expdelta) / timestep;
 			expframe.next(nextexpframe, fcthreshold);
 
@@ -329,7 +329,7 @@ namespace ms
 		return aniend;
 	}
 
-	void CharLook::set_body(int32_t skin_id)
+	void CharLook::set_body(std::int32_t skin_id)
 	{
 		auto iter = bodytypes.find(skin_id);
 
@@ -345,7 +345,7 @@ namespace ms
 		body = &iter->second;
 	}
 
-	void CharLook::set_hair(int32_t hair_id)
+	void CharLook::set_hair(std::int32_t hair_id)
 	{
 		auto iter = hairstyles.find(hair_id);
 
@@ -361,7 +361,7 @@ namespace ms
 		hair = &iter->second;
 	}
 
-	void CharLook::set_face(int32_t face_id)
+	void CharLook::set_face(std::int32_t face_id)
 	{
 		auto iter = facetypes.find(face_id);
 
@@ -377,7 +377,7 @@ namespace ms
 		set_stance(basestance);
 	}
 
-	void CharLook::add_equip(int32_t itemid)
+	void CharLook::add_equip(std::int32_t itemid)
 	{
 		equips.add_equip(itemid, drawinfo);
 		updatetwohanded();
@@ -393,14 +393,14 @@ namespace ms
 
 	void CharLook::attack(bool degenerate)
 	{
-		int32_t weapon_id = equips.get_weapon();
+		std::int32_t weapon_id = equips.get_weapon();
 
 		if (weapon_id <= 0)
 			return;
 
 		const WeaponData& weapon = WeaponData::get(weapon_id);
 
-		uint8_t attacktype = weapon.get_attack();
+		std::uint8_t attacktype = weapon.get_attack();
 
 		if (attacktype == 9 && !degenerate)
 		{
@@ -448,7 +448,7 @@ namespace ms
 		}
 	}
 
-	Stance::Id CharLook::getattackstance(uint8_t attack, bool degenerate) const
+	Stance::Id CharLook::getattackstance(std::uint8_t attack, bool degenerate) const
 	{
 		if (stance == Stance::Id::PRONE)
 			return Stance::Id::PRONESTAB;
@@ -505,17 +505,17 @@ namespace ms
 		if (stances.empty())
 			return Stance::Id::STAND1;
 
-		size_t index = randomizer.next_int(stances.size());
+		std::size_t index = randomizer.next_int(stances.size());
 
 		return stances[index];
 	}
 
-	uint16_t CharLook::get_delay(Stance::Id st, uint8_t fr) const
+	std::uint16_t CharLook::get_delay(Stance::Id st, std::uint8_t fr) const
 	{
 		return drawinfo.get_delay(st, fr);
 	}
 
-	uint8_t CharLook::getnextframe(Stance::Id st, uint8_t fr) const
+	std::uint8_t CharLook::getnextframe(Stance::Id st, std::uint8_t fr) const
 	{
 		return drawinfo.nextframe(st, fr);
 	}
@@ -586,7 +586,7 @@ namespace ms
 		}
 	}
 
-	uint16_t CharLook::get_attackdelay(size_t no, uint8_t first_frame) const
+	std::uint16_t CharLook::get_attackdelay(std::size_t no, std::uint8_t first_frame) const
 	{
 		if (action)
 		{
@@ -594,16 +594,16 @@ namespace ms
 		}
 		else
 		{
-			uint16_t delay = 0;
+			std::uint16_t delay = 0;
 
-			for (uint8_t frame = 0; frame < first_frame; frame++)
+			for (std::uint8_t frame = 0; frame < first_frame; frame++)
 				delay += get_delay(stance.get(), frame);
 
 			return delay;
 		}
 	}
 
-	uint8_t CharLook::get_frame() const
+	std::uint8_t CharLook::get_frame() const
 	{
 		return stframe.get();
 	}
@@ -639,7 +639,7 @@ namespace ms
 	}
 
 	BodyDrawinfo CharLook::drawinfo;
-	std::unordered_map<int32_t, Hair> CharLook::hairstyles;
-	std::unordered_map<int32_t, Face> CharLook::facetypes;
-	std::unordered_map<int32_t, Body> CharLook::bodytypes;
+	std::unordered_map<std::int32_t, Hair> CharLook::hairstyles;
+	std::unordered_map<std::int32_t, Face> CharLook::facetypes;
+	std::unordered_map<std::int32_t, Body> CharLook::bodytypes;
 }

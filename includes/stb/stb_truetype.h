@@ -1133,7 +1133,7 @@ static stbtt_uint32 stbtt__buf_get(stbtt__buf *b, int n)
    return v;
 }
 
-static stbtt__buf stbtt__new_buf(const void *p, size_t size)
+static stbtt__buf stbtt__new_buf(const void *p, std::size_t size)
 {
    stbtt__buf r;
    STBTT_assert(size < 0x40000000);
@@ -2657,7 +2657,7 @@ typedef struct stbtt__hheap
    int    num_remaining_in_head_chunk;
 } stbtt__hheap;
 
-static void *stbtt__hheap_alloc(stbtt__hheap *hh, size_t size, void *userdata)
+static void *stbtt__hheap_alloc(stbtt__hheap *hh, std::size_t size, void *userdata)
 {
    if (hh->first_free) {
       void *p = hh->first_free;

@@ -22,15 +22,15 @@
 #include "../Session.h"
 
 #include "../Packets/LoginPackets.h"
-#include "../IO/UI.h"
+#include "../../IO/UI.h"
 
-#include "../IO/UITypes/UILoginNotice.h"
-#include "../IO/UITypes/UIWorldSelect.h"
-#include "../IO/UITypes/UICharSelect.h"
-#include "../IO/UITypes/UIRaceSelect.h"
-#include "../IO/UITypes/UILoginwait.h"
-#include "../IO/UITypes/UITermsOfService.h"
-#include "../IO/UITypes/UIGender.h"
+#include "../../IO/UITypes/UILoginNotice.h"
+#include "../../IO/UITypes/UIWorldSelect.h"
+#include "../../IO/UITypes/UICharSelect.h"
+#include "../../IO/UITypes/UIRaceSelect.h"
+#include "../../IO/UITypes/UILoginwait.h"
+#include "../../IO/UITypes/UITermsOfService.h"
+#include "../../IO/UITypes/UIGender.h"
 
 namespace ms
 {
@@ -49,7 +49,7 @@ namespace ms
 			std::function<void()> okhandler = loginwait->get_handler();
 
 			// The packet should contain a 'reason' integer which can signify various things.
-			if (int32_t reason = recv.read_int())
+			if (std::int32_t reason = recv.read_int())
 			{
 				// Login unsuccessfull. The LoginNotice displayed will contain the specific information.
 				switch (reason)
@@ -74,7 +74,7 @@ namespace ms
 					// Other reasons.
 					if (reason > 0)
 					{
-						auto reasonbyte = static_cast<int8_t>(reason - 1);
+						auto reasonbyte = static_cast<std::int8_t>(reason - 1);
 
 						UI::get().emplace<UILoginNotice>(reasonbyte, okhandler);
 					}
@@ -136,9 +136,9 @@ namespace ms
 	{
 		if (auto worldselect = UI::get().get_element<UIWorldSelect>())
 		{
-			int16_t count = recv.read_byte();
+			std::int16_t count = recv.read_byte();
 
-			for (size_t i = 0; i < count; i++)
+			for (std::size_t i = 0; i < count; i++)
 			{
 				RecommendedWorld world = LoginParser::parse_recommended_world(recv);
 
@@ -154,17 +154,17 @@ namespace ms
 
 		if (loginwait && loginwait->is_active())
 		{
-			uint8_t channel_id = recv.read_byte();
+			std::uint8_t channel_id = recv.read_byte();
 
 			// Parse all characters.
 			std::vector<CharEntry> characters;
-			int8_t charcount = recv.read_byte();
+			std::int8_t charcount = recv.read_byte();
 
-			for (uint8_t i = 0; i < charcount; ++i)
+			for (std::uint8_t i = 0; i < charcount; ++i)
 				characters.emplace_back(LoginParser::parse_charentry(recv));
 
-			int8_t pic = recv.read_byte();
-			int32_t slots = recv.read_int();
+			std::int8_t pic = recv.read_byte();
+			std::int32_t slots = recv.read_int();
 
 			// Remove previous UIs.
 			UI::get().remove(UIElement::Type::LOGINNOTICE);
@@ -205,8 +205,8 @@ namespace ms
 	void DeleteCharResponseHandler::handle(InPacket& recv) const
 	{
 		// Read the character id and if deletion was successfull (pic was correct).
-		int32_t cid = recv.read_int();
-		uint8_t state = recv.read_byte();
+		std::int32_t cid = recv.read_int();
+		std::uint8_t state = recv.read_byte();
 
 		// Extract information from the state byte.
 		if (state)
@@ -243,7 +243,7 @@ namespace ms
 
 		for (int i = 0; i < 4; i++)
 		{
-			uint8_t num = static_cast<uint8_t>(recv.read_byte());
+			std::uint8_t num = static_cast<std::uint8_t>(recv.read_byte());
 			addrstr.append(std::to_string(num));
 
 			if (i < 3)
@@ -253,7 +253,7 @@ namespace ms
 		// Read the port address in a string.
 		std::string portstr = std::to_string(recv.read_short());
 
-		int32_t cid = recv.read_int();
+		std::int32_t cid = recv.read_int();
 
 		// Attempt to reconnect to the server and if successfull, login to the game.
 		Session::get().reconnect(addrstr.c_str(), portstr.c_str());

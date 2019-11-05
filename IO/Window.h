@@ -59,7 +59,7 @@ namespace ms
 		float opacity;
 		float opcstep;
 		std::function<void()> fadeprocedure;
-		int16_t width;
-		int16_t height;
+		std::int16_t width;
+		std::int16_t height;
 	};
 }

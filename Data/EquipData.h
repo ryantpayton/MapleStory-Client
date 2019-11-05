@@ -39,9 +39,9 @@ namespace ms
 		// Returns whether this equip has equipslot WEAPON.
 		bool is_weapon() const;
 		// Returns a required base stat.
-		int16_t get_reqstat(Maplestat::Id stat) const;
+		std::int16_t get_reqstat(Maplestat::Id stat) const;
 		// Returns a default stat.
-		int16_t get_defstat(Equipstat::Id stat) const;
+		std::int16_t get_defstat(Equipstat::Id stat) const;
 		// Returns the equip slot.
 		Equipslot::Id get_eqslot() const;
 		// Returns the category name.
@@ -53,15 +53,15 @@ namespace ms
 		// Allow the cache to use the constructor.
 		friend Cache<EquipData>;
 		// Load an equip from the game files.
-		EquipData(int32_t id);
+		EquipData(std::int32_t id);
 
 		const ItemData& itemdata;
 
-		EnumMap<Maplestat::Id, int16_t> reqstats;
-		EnumMap<Equipstat::Id, int16_t> defstats;
+		EnumMap<Maplestat::Id, std::int16_t> reqstats;
+		EnumMap<Equipstat::Id, std::int16_t> defstats;
 		std::string type;
 		Equipslot::Id eqslot;
-		uint8_t slots;
+		std::uint8_t slots;
 		bool cash;
 		bool tradeblock;
 	};

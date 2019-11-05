@@ -358,7 +358,7 @@ STBVXDEC void stbvox_init_mesh_maker(stbvox_mesh_maker *mm);
 // used to build meshes. You should have one context per thread
 // that's building meshes.
 
-STBVXDEC void stbvox_set_buffer(stbvox_mesh_maker *mm, int mesh, int slot, void *buffer, size_t len);
+STBVXDEC void stbvox_set_buffer(stbvox_mesh_maker *mm, int mesh, int slot, void *buffer, std::size_t len);
 // Call this to set the buffer into which stbvox will write the mesh
 // it creates. It can build more than one mesh in parallel (distinguished
 // by the 'mesh' parameter), and each mesh can be made up of more than
@@ -1221,8 +1221,8 @@ struct stbvox_mesh_maker
 // have to use our own names to avoid the _MSC_VER path having conflicting type names
 #ifndef _MSC_VER
    #include <stdint.h>
-   typedef uint16_t stbvox_uint16;
-   typedef uint32_t stbvox_uint32;
+   typedef std::uint16_t stbvox_uint16;
+   typedef std::int32_t stbvox_uint32;
 #else
    typedef unsigned short stbvox_uint16;
    typedef unsigned int   stbvox_uint32;
@@ -3547,7 +3547,7 @@ void stbvox_reset_buffers(stbvox_mesh_maker *mm)
    }
 }
 
-void stbvox_set_buffer(stbvox_mesh_maker *mm, int mesh, int slot, void *buffer, size_t len)
+void stbvox_set_buffer(stbvox_mesh_maker *mm, int mesh, int slot, void *buffer, std::size_t len)
 {
    int i;
    stbvox_bring_up_to_date(mm);

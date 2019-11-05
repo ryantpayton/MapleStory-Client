@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIWorldMap.h"
 
-#include "../IO/Components/MapleButton.h"
+#include "../../IO/Components/MapleButton.h"
 
 #include <nlnx/nx.hpp>
 
@@ -80,13 +80,13 @@ namespace ms
 			search_text.update(position);
 	}
 
-	void UIWorldMap::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIWorldMap::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && escape)
 			deactivate();
 	}
 
-	Button::State UIWorldMap::button_pressed(uint16_t buttonid)
+	Button::State UIWorldMap::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{

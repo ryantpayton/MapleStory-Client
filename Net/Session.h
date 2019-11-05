@@ -23,7 +23,7 @@
 #include "../Error.h"
 #include "../MapleStory.h"
 
-#include "../Template/Singleton.h"
+#include "Template/Singleton.h"
 
 #ifdef USE_ASIO
 #include "SocketAsio.h"
@@ -42,7 +42,7 @@ namespace ms
 		// Connect using host and port from the configuration file.
 		Error init();
 		// Send a packet to the server.
-		void write(int8_t* bytes, size_t length);
+		void write(std::int8_t* bytes, std::size_t length);
 		// Check for incoming packets and handle them.
 		void read();
 		// Closes the current connection and opens a new one with default connection settings.
@@ -54,14 +54,14 @@ namespace ms
 
 	private:
 		bool init(const char* host, const char* port);
-		void process(const int8_t* bytes, size_t available);
+		void process(const std::int8_t* bytes, std::size_t available);
 
 		Cryptography cryptography;
 		PacketSwitch packetswitch;
 
-		int8_t buffer[MAX_PACKET_LENGTH];
-		size_t length;
-		size_t pos;
+		std::int8_t buffer[MAX_PACKET_LENGTH];
+		std::size_t length;
+		std::size_t pos;
 		bool connected;
 
 #ifdef USE_ASIO

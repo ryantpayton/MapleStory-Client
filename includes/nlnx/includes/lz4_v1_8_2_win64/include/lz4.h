@@ -40,7 +40,7 @@ extern "C" {
 #define LZ4_H_2983827168210
 
 /* --- Dependency --- */
-#include <stddef.h>   /* size_t */
+#include <stddef.h>   /* std::size_t */
 
 
 /**
@@ -471,20 +471,20 @@ LZ4LIB_API void LZ4_attach_dictionary(LZ4_stream_t *working_stream, const LZ4_st
 
 typedef struct LZ4_stream_t_internal LZ4_stream_t_internal;
 struct LZ4_stream_t_internal {
-    uint32_t hashTable[LZ4_HASH_SIZE_U32];
-    uint32_t currentOffset;
-    uint16_t initCheck;
-    uint16_t tableType;
-    const uint8_t* dictionary;
+    std::int32_t hashTable[LZ4_HASH_SIZE_U32];
+    std::int32_t currentOffset;
+    std::uint16_t initCheck;
+    std::uint16_t tableType;
+    const std::uint8_t* dictionary;
     const LZ4_stream_t_internal* dictCtx;
-    uint32_t dictSize;
+    std::int32_t dictSize;
 };
 
 typedef struct {
-    const uint8_t* externalDict;
-    size_t extDictSize;
-    const uint8_t* prefixEnd;
-    size_t prefixSize;
+    const std::uint8_t* externalDict;
+    std::size_t extDictSize;
+    const std::uint8_t* prefixEnd;
+    std::size_t prefixSize;
 } LZ4_streamDecode_t_internal;
 
 #else
@@ -502,9 +502,9 @@ struct LZ4_stream_t_internal {
 
 typedef struct {
     const unsigned char* externalDict;
-    size_t extDictSize;
+    std::size_t extDictSize;
     const unsigned char* prefixEnd;
-    size_t prefixSize;
+    std::size_t prefixSize;
 } LZ4_streamDecode_t_internal;
 
 #endif

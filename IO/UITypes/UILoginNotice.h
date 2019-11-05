@@ -32,10 +32,10 @@ namespace ms
 
 		void draw(float alpha) const override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
 		void confirm();
@@ -60,10 +60,10 @@ namespace ms
 
 		void draw(float alpha) const override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
 		enum Buttons
@@ -83,25 +83,25 @@ namespace ms
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
-		UIClassConfirm(uint8_t selected_class, bool unavailable, std::function<void()> okhandler);
+		UIClassConfirm(std::uint8_t selected_class, bool unavailable, std::function<void()> okhandler);
 
 		void draw(float inter) const override;
 
 		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			OK,
 			CANCEL
 		};
 
-		enum Classes : uint8_t
+		enum Classes : std::uint8_t
 		{
 			RESISTANCE,
 			EXPLORER,
@@ -145,10 +145,10 @@ namespace ms
 
 		void draw(float alpha) const override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
 		enum Buttons
@@ -168,7 +168,7 @@ namespace ms
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
 
-		enum Message : uint16_t
+		enum Message : unsigned
 		{
 			VULGAR_NAME,
 			DELETE_CHAR_ENTER_BIRTHDAY,
@@ -294,19 +294,19 @@ namespace ms
 			JAPANESE2
 		};
 
-		UILoginNotice(uint16_t message, std::function<void()> okhandler, std::function<void()> cancelhandler);
-		UILoginNotice(uint16_t message, std::function<void()> okhandler);
-		UILoginNotice(uint16_t message);
+		UILoginNotice(std::uint16_t message, std::function<void()> okhandler, std::function<void()> cancelhandler);
+		UILoginNotice(std::uint16_t message, std::function<void()> okhandler);
+		UILoginNotice(std::uint16_t message);
 
 		void draw(float alpha) const override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			YES,
 			NO

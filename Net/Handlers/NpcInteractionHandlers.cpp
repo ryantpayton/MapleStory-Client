@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "NpcInteractionHandlers.h"
 
-#include "../IO/UI.h"
-#include "../IO/UITypes/UINpcTalk.h"
-#include "../IO/UITypes/UIShop.h"
+#include "../../IO/UI.h"
+#include "../../IO/UITypes/UINpcTalk.h"
+#include "../../IO/UITypes/UIShop.h"
 
 namespace ms
 {
@@ -27,12 +27,12 @@ namespace ms
 	{
 		recv.skip(1);
 
-		int32_t npcid = recv.read_int();
-		int8_t msgtype = recv.read_byte(); // 0 - textonly, 1 - yes/no, 4 - selection, 12 - accept/decline
-		int8_t speaker = recv.read_byte();
+		std::int32_t npcid = recv.read_int();
+		std::int8_t msgtype = recv.read_byte(); // 0 - textonly, 1 - yes/no, 4 - selection, 12 - accept/decline
+		std::int8_t speaker = recv.read_byte();
 		std::string text = recv.read_string();
 
-		int16_t style = 0;
+		std::int16_t style = 0;
 
 		if (msgtype == 0 && recv.length() > 0)
 			style = recv.read_short();
@@ -46,7 +46,7 @@ namespace ms
 
 	void OpenNpcShopHandler::handle(InPacket& recv) const
 	{
-		int32_t npcid = recv.read_int();
+		std::int32_t npcid = recv.read_int();
 		auto oshop = UI::get().get_element<UIShop>();
 
 		if (!oshop)
@@ -56,14 +56,14 @@ namespace ms
 
 		shop.reset(npcid);
 
-		int16_t size = recv.read_short();
+		std::int16_t size = recv.read_short();
 
-		for (int16_t i = 0; i < size; i++)
+		for (std::int16_t i = 0; i < size; i++)
 		{
-			int32_t itemid = recv.read_int();
-			int32_t price = recv.read_int();
-			int32_t pitch = recv.read_int();
-			int32_t time = recv.read_int();
+			std::int32_t itemid = recv.read_int();
+			std::int32_t price = recv.read_int();
+			std::int32_t pitch = recv.read_int();
+			std::int32_t time = recv.read_int();
 
 			recv.skip(4);
 
@@ -71,7 +71,7 @@ namespace ms
 
 			if (norecharge)
 			{
-				int16_t buyable = recv.read_short();
+				std::int16_t buyable = recv.read_short();
 
 				shop.add_item(itemid, price, pitch, time, buyable);
 			}
@@ -79,8 +79,8 @@ namespace ms
 			{
 				recv.skip(4);
 
-				int16_t rechargeprice = recv.read_short();
-				int16_t slotmax = recv.read_short();
+				std::int16_t rechargeprice = recv.read_short();
+				std::int16_t slotmax = recv.read_short();
 
 				shop.add_rechargable(itemid, price, pitch, time, rechargeprice, slotmax);
 			}

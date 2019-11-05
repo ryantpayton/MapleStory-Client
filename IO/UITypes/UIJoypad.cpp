@@ -23,7 +23,7 @@
 
 namespace ms
 {
-	// TODO: Add combo boxes nl::nx::ui["Basic.img"]["ComboBox"] / ["ComboBox5"];
+	// TODO: Add combo boxes nl::nx::ui["Basic.img"]["ComboBox"../../ ["ComboBox5"];
 	UIJoypad::UIJoypad() : UIDragElement<PosJOYPAD>(Point<int16_t>())
 	{
 		alternative_settings = false; // TODO: Get user's key settings type
@@ -38,7 +38,7 @@ namespace ms
 		buttons[Buttons::CANCEL] = std::make_unique<MapleButton>(Basic["BtCancel4"], Point<int16_t>(124, 303));
 		buttons[Buttons::OK] = std::make_unique<MapleButton>(Basic["BtOK4"], Point<int16_t>(82, 303));
 
-		for each (Text & text in key_text)
+		for(Text & text : key_text)
 			text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::BLACK, "None");
 
 		dimension = backgrnd[true].get_dimensions();
@@ -48,11 +48,11 @@ namespace ms
 	{
 		backgrnd[alternative_settings].draw(position);
 
-		int16_t x = 79;
-		int16_t y = 24;
-		int16_t y_adj = 18;
+		std::int16_t x = 79;
+		std::int16_t y = 24;
+		std::int16_t y_adj = 18;
 
-		for (size_t i = 0; i < Setting::SETTING_NUM; i++)
+		for (std::size_t i = 0; i < Setting::SETTING_NUM; i++)
 		{
 			if (i == 0)
 				key_text[i].draw(position + Point<int16_t>(x, y));
@@ -70,7 +70,7 @@ namespace ms
 		UIElement::update();
 	}
 
-	void UIJoypad::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIJoypad::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -81,7 +81,7 @@ namespace ms
 		}
 	}
 
-	Button::State UIJoypad::button_pressed(uint16_t buttonid)
+	Button::State UIJoypad::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{

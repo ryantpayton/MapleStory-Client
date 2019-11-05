@@ -37,16 +37,16 @@ namespace nl {
         //Every time this function is called
         //any previous pointers returned by this method become invalid
         void const * data() const;
-        uint16_t width() const;
-        uint16_t height() const;
-        uint32_t length() const;
+        std::uint16_t width() const;
+        std::uint16_t height() const;
+        std::int32_t length() const;
         //Returns a unique id, useful for keeping track of what bitmaps you loaded
-        size_t id() const;
+        std::size_t id() const;
     private:
-        bitmap(void const *, uint16_t, uint16_t);
+        bitmap(void const *, std::uint16_t, std::uint16_t);
         void const * m_data = nullptr;
-        uint16_t m_width = 0;
-        uint16_t m_height = 0;
+        std::uint16_t m_width = 0;
+        std::uint16_t m_height = 0;
         friend node;
     };
 }

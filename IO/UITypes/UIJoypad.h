@@ -19,7 +19,7 @@
 
 #include "../UIDragElement.h"
 
-#include "../Template/BoolPair.h"
+#include "../../Template/BoolPair.h"
 #include "../Components/Textfield.h"
 
 namespace ms
@@ -36,16 +36,16 @@ namespace ms
 		void draw(float inter) const override;
 		void update() override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
 		void cancel();
 		void save();
 
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			DEFAULT,
 			CANCEL,
@@ -55,7 +55,7 @@ namespace ms
 		bool alternative_settings;
 		BoolPair<Texture> backgrnd;
 
-		enum Setting : uint8_t
+		enum Setting : std::uint8_t
 		{
 			// Joypad name
 			NAME,

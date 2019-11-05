@@ -21,7 +21,7 @@
 
 namespace ms
 {
-	PetLook::PetLook(int32_t iid, std::string nm, int32_t uqid, Point<int16_t> pos, uint8_t st, int32_t)
+	PetLook::PetLook(std::int32_t iid, std::string nm, std::int32_t uqid, Point<int16_t> pos, std::uint8_t st, std::int32_t)
 	{
 		itemid = iid;
 		name = nm;
@@ -150,7 +150,7 @@ namespace ms
 		animations[stance].update();
 	}
 
-	void PetLook::set_position(int16_t x, int16_t y)
+	void PetLook::set_position(std::int16_t x, std::int16_t y)
 	{
 		phobj.set_x(x);
 		phobj.set_y(y);
@@ -165,13 +165,13 @@ namespace ms
 		}
 	}
 
-	void PetLook::set_stance(uint8_t stancebyte)
+	void PetLook::set_stance(std::uint8_t stancebyte)
 	{
 		flip = stancebyte % 2 == 1;
 		stance = stancebyvalue(stancebyte);
 	}
 
-	int32_t PetLook::get_itemid() const
+	std::int32_t PetLook::get_itemid() const
 	{
 		return itemid;
 	}

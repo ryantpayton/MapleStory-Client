@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIStatusMessenger.h"
 
-#include "../Constants.h"
+#include "../../Constants.h"
 
 namespace ms
 {

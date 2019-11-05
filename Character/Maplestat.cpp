@@ -23,7 +23,7 @@
 
 namespace ms
 {
-	Maplestat::Id Maplestat::by_id(size_t id)
+	Maplestat::Id Maplestat::by_id(std::size_t id)
 	{
 		if (id >= LENGTH)
 			Console::get().print("Invalid Maplestat id: " + std::to_string(id));
@@ -31,7 +31,7 @@ namespace ms
 		return static_cast<Id>(id);
 	}
 
-	const EnumMap<Maplestat::Id, int32_t> Maplestat::codes =
+	const EnumMap<Maplestat::Id, std::int32_t> Maplestat::codes =
 	{
 		0x1,
 		0x2,

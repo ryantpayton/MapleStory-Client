@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // NoLifeNx - Part of the NoLifeStory project                               //
-// Copyright © 2013 Peter Atashian                                          //
+// Copyright ï¿½ 2013 Peter Atashian                                          //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -23,23 +23,23 @@ namespace nl {
     //Internal data structure
 #pragma pack(push, 1)
     struct node::data {
-        uint32_t const name;
-        uint32_t const children;
-        uint16_t const num;
+        std::int32_t const name;
+        std::int32_t const children;
+        std::uint16_t const num;
         node::type const type;
         union {
             int64_t const ireal;
             double const dreal;
-            uint32_t const string;
-            int32_t const vector[2];
+            std::int32_t const string;
+            std::int32_t const vector[2];
             struct {
-                uint32_t index;
-                uint16_t width;
-                uint16_t height;
+                std::int32_t index;
+                std::uint16_t width;
+                std::uint16_t height;
             } const bitmap;
             struct {
-                uint32_t index;
-                uint32_t length;
+                std::int32_t index;
+                std::int32_t length;
             } const audio;
         };
     };

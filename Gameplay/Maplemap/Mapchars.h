@@ -22,7 +22,7 @@
 #include "../Movement.h"
 #include "../Spawn.h"
 
-#include "../Character/OtherChar.h"
+#include "../../Character/OtherChar.h"
 
 #include <queue>
 
@@ -40,16 +40,16 @@ namespace ms
 		// Spawn a new character, if it has not been spawned yet.
 		void spawn(CharSpawn&& spawn);
 		// Remove a character.
-		void remove(int32_t cid);
+		void remove(std::int32_t cid);
 		// Remove all characters.
 		void clear();
 
 		// Update a characters movement.
-		void send_movement(int32_t cid, const std::vector<Movement>& movements);
+		void send_movement(std::int32_t cid, const std::vector<Movement>& movements);
 		// Update a characters look.
-		void update_look(int32_t cid, const LookEntry& look);
+		void update_look(std::int32_t cid, const LookEntry& look);
 
-		Optional<OtherChar> get_char(int32_t cid);
+		Optional<OtherChar> get_char(std::int32_t cid);
 
 	private:
 		MapObjects chars;

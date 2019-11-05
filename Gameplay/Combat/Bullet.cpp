@@ -71,7 +71,7 @@ namespace ms
 		animation.update();
 		moveobj.move();
 
-		int16_t xdelta = target.x() - moveobj.get_x();
+		std::int16_t xdelta = target.x() - moveobj.get_x();
 		return moveobj.hspeed > 0.0 ? xdelta < 10 : xdelta > 10;
 	}
 }

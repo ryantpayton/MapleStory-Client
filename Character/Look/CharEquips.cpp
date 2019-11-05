@@ -25,13 +25,13 @@ namespace ms
 			iter.second = nullptr;
 	}
 
-	void CharEquips::draw(Equipslot::Id slot, Stance::Id stance, Clothing::Layer layer, uint8_t frame, const DrawArgument& args) const
+	void CharEquips::draw(Equipslot::Id slot, Stance::Id stance, Clothing::Layer layer, std::uint8_t frame, const DrawArgument& args) const
 	{
 		if (const Clothing * cloth = clothes[slot])
 			cloth->draw(stance, layer, frame, args);
 	}
 
-	void CharEquips::add_equip(int32_t itemid, const BodyDrawinfo& drawinfo)
+	void CharEquips::add_equip(std::int32_t itemid, const BodyDrawinfo& drawinfo)
 	{
 		if (itemid <= 0)
 			return;
@@ -134,7 +134,7 @@ namespace ms
 		}
 	}
 
-	int32_t CharEquips::get_equip(Equipslot::Id slot) const
+	std::int32_t CharEquips::get_equip(Equipslot::Id slot) const
 	{
 		if (const Clothing * cloth = clothes[slot])
 			return cloth->get_id();
@@ -142,10 +142,10 @@ namespace ms
 			return 0;
 	}
 
-	int32_t CharEquips::get_weapon() const
+	std::int32_t CharEquips::get_weapon() const
 	{
 		return get_equip(Equipslot::Id::WEAPON);
 	}
 
-	std::unordered_map<int32_t, Clothing> CharEquips::cloth_cache;
+	std::unordered_map<std::int32_t, Clothing> CharEquips::cloth_cache;
 }

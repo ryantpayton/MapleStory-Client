@@ -17,15 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIBuffList.h"
 
-#include "../Data/ItemData.h"
-#include "../Util/Misc.h"
+#include "../../Data/ItemData.h"
+#include "../../Util/Misc.h"
 
 #include <nlnx/nx.hpp>
 #include <nlnx/node.hpp>
 
 namespace ms
 {
-	BuffIcon::BuffIcon(int32_t buff, int32_t dur)
+	BuffIcon::BuffIcon(std::int32_t buff, std::int32_t dur)
 		: cover(IconCover::BUFF, dur - FLASH_TIME) {
 
 		buffid = buff;
@@ -108,7 +108,7 @@ namespace ms
 		return UIElement::send_cursor(pressed, cursorposition);
 	}
 
-	void UIBuffList::add_buff(int32_t buffid, int32_t duration)
+	void UIBuffList::add_buff(std::int32_t buffid, std::int32_t duration)
 	{
 		icons.emplace(
 			std::piecewise_construct,

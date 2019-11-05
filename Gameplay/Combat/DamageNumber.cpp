@@ -17,14 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "DamageNumber.h"
 
-#include "../Constants.h"
+#include "../../Constants.h"
 
 #include <nlnx/nx.hpp>
 #include <nlnx/node.hpp>
 
 namespace ms
 {
-	DamageNumber::DamageNumber(Type t, int32_t damage, int16_t starty, int16_t x)
+	DamageNumber::DamageNumber(Type t, std::int32_t damage, std::int16_t starty, std::int16_t x)
 	{
 		type = t;
 
@@ -46,12 +46,12 @@ namespace ms
 				multiple = false;
 			}
 
-			int16_t total = getadvance(firstnum, true);
+			std::int16_t total = getadvance(firstnum, true);
 
-			for (size_t i = 0; i < restnum.length(); i++)
+			for (std::size_t i = 0; i < restnum.length(); i++)
 			{
 				char c = restnum[i];
-				int16_t advance;
+				std::int16_t advance;
 
 				if (i < restnum.length() - 1)
 				{
@@ -98,22 +98,22 @@ namespace ms
 
 			if (multiple)
 			{
-				int16_t first_advance = getadvance(firstnum, true);
+				std::int16_t first_advance = getadvance(firstnum, true);
 				position.shift_x(first_advance);
 
-				for (size_t i = 0; i < restnum.length(); i++)
+				for (std::size_t i = 0; i < restnum.length(); i++)
 				{
 					char c = restnum[i];
 					Point<int16_t> yshift = { 0, (i % 2) ? -2 : 2 };
 					charsets[type][true].draw(c, { position + yshift, interopc });
 
-					int16_t advance;
+					std::int16_t advance;
 
 					if (i < restnum.length() - 1)
 					{
 						char n = restnum[i + 1];
-						int16_t c_advance = getadvance(c, false);
-						int16_t n_advance = getadvance(n, false);
+						std::int16_t c_advance = getadvance(c, false);
+						std::int16_t n_advance = getadvance(n, false);
 						advance = (c_advance + n_advance) / 2;
 					}
 					else
@@ -127,20 +127,20 @@ namespace ms
 		}
 	}
 
-	int16_t DamageNumber::getadvance(char c, bool first) const
+	std::int16_t DamageNumber::getadvance(char c, bool first) const
 	{
-		constexpr size_t LENGTH = 10;
+		constexpr std::size_t LENGTH = 10;
 
-		constexpr int16_t advances[LENGTH] =
+		constexpr std::int16_t advances[LENGTH] =
 		{
 			24, 20, 22, 22, 24, 23, 24, 22, 24, 24
 		};
 
-		size_t index = c - 48;
+		std::size_t index = c - 48;
 
 		if (index < LENGTH)
 		{
-			int16_t advance = advances[index];
+			std::int16_t advance = advances[index];
 
 			switch (type)
 			{
@@ -166,7 +166,7 @@ namespace ms
 		}
 	}
 
-	void DamageNumber::set_x(int16_t headx)
+	void DamageNumber::set_x(std::int16_t headx)
 	{
 		moveobj.set_x(headx);
 	}
@@ -181,7 +181,7 @@ namespace ms
 		return opacity.last() <= 0.0f;
 	}
 
-	int16_t DamageNumber::rowheight(bool critical)
+	std::int16_t DamageNumber::rowheight(bool critical)
 	{
 		return critical ? 36 : 30;
 	}

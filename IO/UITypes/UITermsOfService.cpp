@@ -22,7 +22,7 @@
 
 #include "../Components/MapleButton.h"
 
-#include "../Net/Packets/LoginPackets.h"
+#include "../../Net/Packets/LoginPackets.h"
 
 #include <nlnx/nx.hpp>
 
@@ -1064,13 +1064,13 @@ namespace ms
 		text = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, EULA, 340, true, 2);
 		max_rows = std::floor(text.height() / 50) - 5;
 
-		int16_t slider_y = 77;
+		std::int16_t slider_y = 77;
 
 		slider = Slider(
 			Slider::Type::GOLD, Range<int16_t>(slider_y, slider_y + 305), 574, unit_rows, max_rows,
 			[&](bool upwards)
 			{
-				int16_t shift = upwards ? -1 : 1;
+				std::int16_t shift = upwards ? -1 : 1;
 				bool above = offset + shift >= 0;
 				bool below = offset + shift <= max_rows - unit_rows;
 
@@ -1125,7 +1125,7 @@ namespace ms
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	Button::State UITermsOfService::button_pressed(uint16_t buttonid)
+	Button::State UITermsOfService::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -1145,11 +1145,11 @@ namespace ms
 		return Button::State::NORMAL;
 	}
 
-	void UITermsOfService::update_accept(uint16_t offset)
+	void UITermsOfService::update_accept(std::uint16_t offset)
 	{
-		if (offset == max_rows - unit_rows)
+		// if (offset == max_rows - unit_rows)
 			buttons[Buttons::OK]->set_state(Button::State::NORMAL);
-		else
-			buttons[Buttons::OK]->set_state(Button::State::DISABLED);
+		// else
+		// 	buttons[Buttons::OK]->set_state(Button::State::DISABLED);
 	}
 }

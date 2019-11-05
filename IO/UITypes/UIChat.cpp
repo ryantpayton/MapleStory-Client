@@ -83,13 +83,13 @@ namespace ms
 		UIElement::update();
 	}
 
-	void UIChat::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIChat::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && escape)
 			close();
 	}
 
-	Button::State UIChat::button_pressed(uint16_t buttonid)
+	Button::State UIChat::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -167,13 +167,13 @@ namespace ms
 		UIElement::update();
 	}
 
-	void UIRank::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIRank::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && escape)
 			close();
 	}
 
-	Button::State UIRank::button_pressed(uint16_t buttonid)
+	Button::State UIRank::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{

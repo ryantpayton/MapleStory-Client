@@ -19,12 +19,12 @@
 
 namespace ms
 {
-	void Telerock::addlocation(int32_t mapid)
+	void Telerock::addlocation(std::int32_t mapid)
 	{
 		locations.push_back(mapid);
 	}
 
-	void Telerock::addviplocation(int32_t mapid)
+	void Telerock::addviplocation(std::int32_t mapid)
 	{
 		viplocations.push_back(mapid);
 	}

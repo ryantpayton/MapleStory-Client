@@ -19,14 +19,14 @@
 
 #include "Helpers/ItemParser.h"
 
-#include "../Gameplay/Stage.h"
-#include "../IO/UI.h"
-#include "../IO/Messages.h"
+#include "../../Gameplay/Stage.h"
+#include "../../IO/UI.h"
+#include "../../IO/Messages.h"
 
-#include "../Character/Inventory/Inventory.h"
-#include "../IO/UITypes/UIShop.h"
-#include "../IO/UITypes/UIEquipInventory.h"
-#include "../IO/UITypes/UIItemInventory.h"
+#include "../../Character/Inventory/Inventory.h"
+#include "../../IO/UITypes/UIShop.h"
+#include "../../IO/UITypes/UIEquipInventory.h"
+#include "../../IO/UITypes/UIItemInventory.h"
 
 namespace ms
 {
@@ -55,17 +55,17 @@ namespace ms
 
 		struct Mod
 		{
-			int8_t mode;
+			std::int8_t mode;
 			InventoryType::Id type;
-			int16_t pos;
-			int16_t arg;
+			std::int16_t pos;
+			std::int16_t arg;
 		};
 
 		std::vector<Mod> mods;
 
-		int8_t size = recv.read_byte();
+		std::int8_t size = recv.read_byte();
 
-		for (int8_t i = 0; i < size; i++)
+		for (std::int8_t i = 0; i < size; i++)
 		{
 			Mod mod;
 			mod.mode = recv.read_byte();
@@ -83,8 +83,8 @@ namespace ms
 			{
 				mod.arg = recv.read_short();
 
-				int16_t count_before = inventory.get_item_count(mod.type, mod.pos);
-				int16_t count_now = mod.arg;
+				std::int16_t count_before = inventory.get_item_count(mod.type, mod.pos);
+				std::int16_t count_now = mod.arg;
 
 				inventory.modify(mod.type, mod.pos, mod.mode, mod.arg, Inventory::Movement::MOVE_NONE);
 

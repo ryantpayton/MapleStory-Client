@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Graphics/Texture.h"
+#include "../../Graphics/Texture.h"
 
 #include <nlnx/node.hpp>
 
@@ -29,7 +29,7 @@ namespace ms
 		MapleFrame(nl::node src);
 		MapleFrame();
 
-		void draw(Point<int16_t> position, int16_t width, int16_t height) const;
+		void draw(Point<int16_t> position, std::int16_t width, std::int16_t height) const;
 
 	private:
 		Texture center;
@@ -41,7 +41,7 @@ namespace ms
 		Texture southwest;
 		Texture south;
 		Texture southeast;
-		int16_t xtile;
-		int16_t ytile;
+		std::int16_t xtile;
+		std::int16_t ytile;
 	};
 }

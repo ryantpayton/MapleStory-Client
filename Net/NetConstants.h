@@ -17,12 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <cstdint>
+#include <cstddef>
 
 namespace ms
 {
-	const size_t HEADER_LENGTH = 4;
-	const size_t OPCODE_LENGTH = 2;
-	const size_t MIN_PACKET_LENGTH = HEADER_LENGTH + OPCODE_LENGTH;
-	const size_t MAX_PACKET_LENGTH = 131072;
+	const std::size_t HEADER_LENGTH = 4;
+	const std::size_t OPCODE_LENGTH = 2;
+	const std::size_t MIN_PACKET_LENGTH = HEADER_LENGTH + OPCODE_LENGTH;
+	const std::size_t MAX_PACKET_LENGTH = 131072;
 }

@@ -35,10 +35,10 @@ namespace ms
 		void draw(float inter) const override;
 		void update() override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursor_pos) override;
 
 	private:

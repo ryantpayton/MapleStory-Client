@@ -17,11 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Equipslot.h"
 
-#include "../Console.h"
+#include "../../Console.h"
 
 namespace ms
 {
-	Equipslot::Id Equipslot::by_id(size_t id)
+	Equipslot::Id Equipslot::by_id(std::size_t id)
 	{
 		if (id >= Equipslot::Id::LENGTH)
 		{

@@ -26,11 +26,11 @@ namespace ms
 	class Telerock
 	{
 	public:
-		void addlocation(int32_t);
-		void addviplocation(int32_t);
+		void addlocation(std::int32_t);
+		void addviplocation(std::int32_t);
 
 	private:
-		std::vector<int32_t> locations;
-		std::vector<int32_t> viplocations;
+		std::vector<std::int32_t> locations;
+		std::vector<std::int32_t> viplocations;
 	};
 }

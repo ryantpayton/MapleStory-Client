@@ -30,32 +30,32 @@ namespace ms
 		struct Mapping
 		{
 			KeyType::Id type;
-			int32_t action;
+			std::int32_t action;
 
 			Mapping() : type(KeyType::Id::NONE), action(0) {}
-			Mapping(KeyType::Id in_type, int32_t in_action) : type(in_type), action(in_action) {}
+			Mapping(KeyType::Id in_type, std::int32_t in_action) : type(in_type), action(in_action) {}
 		};
 
 		Keyboard();
 
-		void assign(uint8_t key, uint8_t type, int32_t action);
-		void remove(uint8_t key);
+		void assign(std::uint8_t key, std::uint8_t type, std::int32_t action);
+		void remove(std::uint8_t key);
 
-		int32_t leftshiftcode() const;
-		int32_t rightshiftcode() const;
-		int32_t capslockcode() const;
-		int32_t leftctrlcode() const;
-		int32_t rightctrlcode() const;
-		std::map<int32_t, Mapping> get_maplekeys() const;
-		KeyAction::Id get_ctrl_action(int32_t keycode) const;
-		Mapping get_mapping(int32_t keycode) const;
-		Mapping get_maple_mapping(int32_t keycode) const;
-		Mapping get_text_mapping(int32_t keycode, bool shift) const;
+		std::int32_t leftshiftcode() const;
+		std::int32_t rightshiftcode() const;
+		std::int32_t capslockcode() const;
+		std::int32_t leftctrlcode() const;
+		std::int32_t rightctrlcode() const;
+		std::map<std::int32_t, Mapping> get_maplekeys() const;
+		KeyAction::Id get_ctrl_action(std::int32_t keycode) const;
+		Mapping get_mapping(std::int32_t keycode) const;
+		Mapping get_maple_mapping(std::int32_t keycode) const;
+		Mapping get_text_mapping(std::int32_t keycode, bool shift) const;
 
 	private:
-		std::map<int32_t, Mapping> keymap;
-		std::map<int32_t, Mapping> maplekeys;
-		std::map<int32_t, KeyAction::Id> textactions;
-		std::map<int32_t, bool> keystate;
+		std::map<std::int32_t, Mapping> keymap;
+		std::map<std::int32_t, Mapping> maplekeys;
+		std::map<std::int32_t, KeyAction::Id> textactions;
+		std::map<std::int32_t, bool> keystate;
 	};
 }

@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "SkillTooltip.h"
 
-#include "../Data/SkillData.h"
+#include "../../Data/SkillData.h"
 
 #include <nlnx/nx.hpp>
 
@@ -33,7 +33,7 @@ namespace ms
 		skill_id = 0;
 	}
 
-	void SkillTooltip::set_skill(int32_t id, int32_t level, int32_t mlevel, int64_t expiration)
+	void SkillTooltip::set_skill(std::int32_t id, std::int32_t level, std::int32_t mlevel, int64_t expiration)
 	{
 		if (skill_id == id)
 			return;
@@ -45,7 +45,7 @@ namespace ms
 
 		const SkillData& data = SkillData::get(id);
 
-		int32_t masterlevel;
+		std::int32_t masterlevel;
 
 		if (mlevel > 0)
 			masterlevel = mlevel;
@@ -58,13 +58,13 @@ namespace ms
 		{
 			const std::string mltag = "Master Level";
 			const std::string mlstr = std::to_string(masterlevel);
-			size_t mlstart = descstr.find(mltag);
-			size_t mlpos = descstr.find(':', mlstart) + 2;
-			size_t mlend = descstr.find("]", mlstart);
+			std::size_t mlstart = descstr.find(mltag);
+			std::size_t mlpos = descstr.find(':', mlstart) + 2;
+			std::size_t mlend = descstr.find("]", mlstart);
 
 			if (mlpos < mlend && mlend != std::string::npos)
 			{
-				size_t mlsize = mlend - mlpos;
+				std::size_t mlsize = mlend - mlpos;
 				descstr.erase(mlpos, mlsize);
 				descstr.insert(mlpos, mlstr);
 
@@ -75,7 +75,7 @@ namespace ms
 					mlend++;
 				}
 
-				size_t linebreak = descstr.find("]\\n", mlstart);
+				std::size_t linebreak = descstr.find("]\\n", mlstart);
 
 				if (linebreak != mlend)
 					descstr.insert(mlend + 1, "\\n");
@@ -94,12 +94,12 @@ namespace ms
 		}
 		else
 		{
-			size_t expstart = descstr.find(exptag);
-			size_t expend = descstr.find('#', expstart + 1);
+			std::size_t expstart = descstr.find(exptag);
+			std::size_t expend = descstr.find('#', expstart + 1);
 
 			if (expstart < expend && expend != std::string::npos)
 			{
-				size_t expsize = expend - expstart + 1;
+				std::size_t expsize = expend - expstart + 1;
 				descstr.erase(expstart, expsize);
 			}
 		}
@@ -122,13 +122,13 @@ namespace ms
 		desc = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE, descstr, 210);
 		leveldesc = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE, levelstr, 290);
 
-		int16_t desc_height = desc.height() + 11;
+		std::int16_t desc_height = desc.height() + 11;
 
 		icon_offset = name.height();
 		level_offset = std::max<int16_t>(desc_height, 85);
 		height = icon_offset + level_offset + leveldesc.height();
 
-		int16_t icon_width = (icon.get_dimensions().x() * 2) + 4;
+		std::int16_t icon_width = (icon.get_dimensions().x() * 2) + 4;
 		width = 292;
 
 		line = ColorLine(width + 16, Color::Name::WHITE, 1.0f);
@@ -140,13 +140,13 @@ namespace ms
 		if (skill_id == 0)
 			return;
 
-		int16_t max_width = Constants::Constants::get().get_viewwidth();
-		int16_t max_height = Constants::Constants::get().get_viewheight();
-		int16_t cur_width = pos.x() + width + 45;
-		int16_t cur_height = pos.y() + height + 35;
+		std::int16_t max_width = Constants::Constants::get().get_viewwidth();
+		std::int16_t max_height = Constants::Constants::get().get_viewheight();
+		std::int16_t cur_width = pos.x() + width + 45;
+		std::int16_t cur_height = pos.y() + height + 35;
 
-		int16_t adj_x = cur_width - max_width;
-		int16_t adj_y = cur_height - max_height;
+		std::int16_t adj_x = cur_width - max_width;
+		std::int16_t adj_y = cur_height - max_height;
 
 		if (adj_x > 0)
 			pos.shift_x(adj_x * -1);

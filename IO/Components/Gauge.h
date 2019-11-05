@@ -17,16 +17,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Graphics/Texture.h"
+#include "Graphics/Texture.h"
 
 namespace ms
 {
 	class Gauge
 	{
 	public:
-		Gauge(Texture front, int16_t max, float percent);
-		Gauge(Texture front, Texture mid, int16_t max, float percent);
-		Gauge(Texture front, Texture mid, Texture end, int16_t maximum, float percentage);
+		Gauge(Texture front, std::int16_t max, float percent);
+		Gauge(Texture front, Texture mid, std::int16_t max, float percent);
+		Gauge(Texture front, Texture mid, Texture end, std::int16_t maximum, float percentage);
 		Gauge();
 
 		void draw(const DrawArgument& args) const;
@@ -36,7 +36,7 @@ namespace ms
 		Texture barfront;
 		Texture barmid;
 		Texture barend;
-		int16_t maximum;
+		std::int16_t maximum;
 
 		float percentage;
 		float target;

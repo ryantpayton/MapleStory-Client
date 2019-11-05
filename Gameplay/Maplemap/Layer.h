@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Template/Enumeration.h"
+#include "../../Template/Enumeration.h"
 
 namespace ms
 {

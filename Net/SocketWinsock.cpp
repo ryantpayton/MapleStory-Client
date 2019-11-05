@@ -111,12 +111,12 @@ namespace ms
 		return error != SOCKET_ERROR;
 	}
 
-	bool SocketWinsock::dispatch(const int8_t* bytes, size_t length) const
+	bool SocketWinsock::dispatch(const std::int8_t* bytes, std::size_t length) const
 	{
 		return send(sock, (char*)bytes, static_cast<int>(length), 0) != SOCKET_ERROR;
 	}
 
-	size_t SocketWinsock::receive(bool* success)
+	std::size_t SocketWinsock::receive(bool* success)
 	{
 		timeval timeout = { 0, 0 };
 		fd_set sockset = { 0 };
@@ -138,7 +138,7 @@ namespace ms
 		}
 	}
 
-	const int8_t* SocketWinsock::get_buffer() const
+	const std::int8_t* SocketWinsock::get_buffer() const
 	{
 		return buffer;
 	}

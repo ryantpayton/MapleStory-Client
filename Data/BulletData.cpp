@@ -21,7 +21,7 @@
 
 namespace ms
 {
-	BulletData::BulletData(int32_t itemid) : itemdata(ItemData::get(itemid))
+	BulletData::BulletData(std::int32_t itemid) : itemdata(ItemData::get(itemid))
 	{
 		std::string prefix = "0" + std::to_string(itemid / 10000);
 		std::string strid = "0" + std::to_string(itemid);
@@ -41,7 +41,7 @@ namespace ms
 		return is_valid();
 	}
 
-	int16_t BulletData::get_watk() const
+	std::int16_t BulletData::get_watk() const
 	{
 		return watk;
 	}

@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "MapBackgrounds.h"
 
-#include "../Constants.h"
-#include "../Graphics/GraphicsGL.h"
+#include "../../Constants.h"
+#include "../../Graphics/GraphicsGL.h"
 
 #include <nlnx/nx.hpp>
 
@@ -133,14 +133,14 @@ namespace ms
 				y += cy;
 		}
 
-		int16_t ix = static_cast<int16_t>(std::round(x));
-		int16_t iy = static_cast<int16_t>(std::round(y));
+		std::int16_t ix = static_cast<int16_t>(std::round(x));
+		std::int16_t iy = static_cast<int16_t>(std::round(y));
 
-		int16_t tw = cx * htile;
-		int16_t th = cy * vtile;
+		std::int16_t tw = cx * htile;
+		std::int16_t th = cy * vtile;
 
-		for (int16_t tx = 0; tx < tw; tx += cx)
-			for (int16_t ty = 0; ty < th; ty += cy)
+		for (std::int16_t tx = 0; tx < tw; tx += cx)
+			for (std::int16_t ty = 0; ty < th; ty += cy)
 				animation.draw(DrawArgument(Point<int16_t>(ix + tx, iy + ty), flipped, opacity / 255), alpha);
 	}
 
@@ -152,7 +152,7 @@ namespace ms
 
 	MapBackgrounds::MapBackgrounds(nl::node src)
 	{
-		int16_t no = 0;
+		std::int16_t no = 0;
 		nl::node back = src[std::to_string(no)];
 
 		while (back.size() > 0)

@@ -82,7 +82,7 @@ namespace ms
 
 			std::vector<K> leaves;
 
-			for (size_t i = LEFT; i <= DOWN; i++)
+			for (std::size_t i = LEFT; i <= DOWN; i++)
 			{
 				K leafkey = toerase[i];
 
@@ -316,7 +316,7 @@ namespace ms
 				}
 			}
 
-			K operator [](size_t d)
+			K operator [](std::size_t d)
 			{
 				auto dir = static_cast<Direction>(d);
 

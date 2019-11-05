@@ -20,7 +20,7 @@
 #include "../UIDragElement.h"
 
 #include "../Components/Slider.h"
-#include "../Graphics/SpecialText.h"
+#include "../../Graphics/SpecialText.h"
 
 namespace ms
 {
@@ -38,27 +38,27 @@ namespace ms
 
 		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
 		void clear_tooltip();
 		void close();
-		std::string get_event_title(uint8_t id);
-		std::string get_event_date(uint8_t id);
-		int16_t row_by_position(int16_t y);
-		int16_t col_by_position(int16_t x);
-		void show_item(int16_t row, int16_t col);
+		std::string get_event_title(std::uint8_t id);
+		std::string get_event_date(std::uint8_t id);
+		std::int16_t row_by_position(std::int16_t y);
+		std::int16_t col_by_position(std::int16_t x);
+		void show_item(std::int16_t row, std::int16_t col);
 
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			CLOSE
 		};
 
-		int16_t offset;
-		int16_t event_count;
+		std::int16_t offset;
+		std::int16_t event_count;
 		ShadowText event_title[3];
 		Text event_date[3];
 		Slider slider;

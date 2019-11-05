@@ -20,7 +20,7 @@
 #include "../UIElement.h"
 
 #include "../Components/Textfield.h"
-#include "../Template/BoolPair.h"
+#include "../../Template/BoolPair.h"
 
 namespace ms
 {
@@ -39,11 +39,11 @@ namespace ms
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursor_pos) override;
 
 	protected:
-		Button::State button_pressed(uint16_t id) override;
+		Button::State button_pressed(std::uint16_t id) override;
 
 	private:
 		void login();
-		void open_url(uint16_t id);
+		void open_url(std::uint16_t id);
 
 		enum Buttons
 		{

@@ -82,9 +82,9 @@ namespace ms
 		Point<int16_t> ul_pos = Point<int16_t>(0, -10);
 		Point<int16_t> ur_pos = Point<int16_t>(260, -10);
 
-		int16_t dc_y = 68;
-		int16_t dl_dr_y = 50;
-		int16_t ml_mr_y = 17;
+		std::int16_t dc_y = 68;
+		std::int16_t dl_dr_y = 50;
+		std::int16_t ml_mr_y = 17;
 
 		normal_sprites.emplace_back(Normal[DownCenter], DrawArgument(Point<int16_t>(0, dc_y)) + DrawArgument(Point<int16_t>(64, 0), Point<int16_t>(196, 0)));
 		normal_sprites.emplace_back(Normal[DownLeft], Point<int16_t>(0, dl_dr_y));
@@ -96,10 +96,10 @@ namespace ms
 		normal_sprites.emplace_back(Normal[UpLeft], ul_pos);
 		normal_sprites.emplace_back(Normal[UpRight], ur_pos);
 
-		int16_t max_adj = 40;
-		int16_t max_dc_y = dc_y + max_adj;
-		int16_t max_dl_dr_y = dl_dr_y + max_adj;
-		int16_t max_ml_mr_y = ml_mr_y + max_adj;
+		std::int16_t max_adj = 40;
+		std::int16_t max_dc_y = dc_y + max_adj;
+		std::int16_t max_dl_dr_y = dl_dr_y + max_adj;
+		std::int16_t max_ml_mr_y = ml_mr_y + max_adj;
 
 		max_sprites.emplace_back(Max[DownCenter], DrawArgument(Point<int16_t>(0, max_dc_y)) + DrawArgument(Point<int16_t>(64, 0), Point<int16_t>(196, 0)));
 		max_sprites.emplace_back(Max[DownLeft], Point<int16_t>(0, max_dl_dr_y));
@@ -129,12 +129,12 @@ namespace ms
 		}
 		else if (type == Type::NORMAL)
 		{
-			for each (Sprite sprite in normal_sprites)
+			for(Sprite sprite : normal_sprites)
 				sprite.draw(position, alpha);
 		}
 		else
 		{
-			for each (Sprite sprite in max_sprites)
+			for(Sprite sprite : max_sprites)
 				sprite.draw(position, alpha);
 
 			region_text.draw(position + Point<int16_t>(48, 4));
@@ -146,7 +146,7 @@ namespace ms
 
 	void UIMiniMap::update()
 	{
-		int32_t mid = stats.get_mapid();
+		std::int32_t mid = stats.get_mapid();
 
 		if (mid != mapid)
 		{
@@ -164,19 +164,19 @@ namespace ms
 		}
 		else if (type == Type::NORMAL)
 		{
-			for each (Sprite sprite in normal_sprites)
+			for(Sprite sprite : normal_sprites)
 				sprite.update();
 		}
 		else
 		{
-			for each (Sprite sprite in max_sprites)
+			for(Sprite sprite : max_sprites)
 				sprite.update();
 		}
 
 		UIElement::update();
 	}
 
-	void UIMiniMap::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIMiniMap::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (type < Type::MAX)
 			type++;
@@ -208,16 +208,16 @@ namespace ms
 			buttons[Buttons::BT_MIN]->set_state(Button::State::DISABLED);
 			buttons[Buttons::BT_MAX]->set_state(Button::State::NORMAL);
 
-			int16_t bt_min_x = position.x() + combined_text_width + center_start_x + bt_min_width + bt_max_width + bt_map_width;
+			std::int16_t bt_min_x = position.x() + combined_text_width + center_start_x + bt_min_width + bt_max_width + bt_map_width;
 			final_pos = bt_min_x + bt_min_width - 2;
 
 			buttons[Buttons::BT_MIN]->set_position(Point<int16_t>(bt_min_x, bt_min_pos.y()));
 
-			int16_t bt_max_x = bt_min_x + bt_max_width;
+			std::int16_t bt_max_x = bt_min_x + bt_max_width;
 
 			buttons[Buttons::BT_MAX]->set_position(Point<int16_t>(bt_max_x, bt_max_pos.y()));
 
-			int16_t bt_map_x = bt_max_x + bt_max_width;
+			std::int16_t bt_map_x = bt_max_x + bt_max_width;
 
 			buttons[Buttons::BT_MAP]->set_position(Point<int16_t>(bt_map_x, bt_map_pos.y()));
 		}

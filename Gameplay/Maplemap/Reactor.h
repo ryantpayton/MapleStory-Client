@@ -19,7 +19,7 @@
 
 #include "MapObject.h"
 
-#include "../Graphics/Animation.h"
+#include "../../Graphics/Animation.h"
 
 #include <vector>
 
@@ -28,16 +28,16 @@ namespace ms
 	class Reactor : public MapObject
 	{
 	public:
-		Reactor(int32_t oid, int32_t rid, int8_t state, Point<int16_t> position);
+		Reactor(std::int32_t oid, std::int32_t rid, std::int8_t state, Point<int16_t> position);
 
 		void draw(double viewx, double viewy, float alpha) const override;
 
-		void destroy(int8_t state, Point<int16_t> position);
+		void destroy(std::int8_t state, Point<int16_t> position);
 
 	private:
-		int32_t oid;
-		int32_t rid;
-		int8_t state;
+		std::int32_t oid;
+		std::int32_t rid;
+		std::int8_t state;
 
 		Animation normal;
 	};

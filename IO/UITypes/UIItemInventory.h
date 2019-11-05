@@ -20,7 +20,7 @@
 #include "../UIDragElement.h"
 
 #include "../Components/Slider.h"
-#include "../Graphics/Text.h"
+#include "../../Graphics/Text.h"
 
 namespace ms
 {
@@ -42,59 +42,59 @@ namespace ms
 		void toggle_active() override;
 		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		Cursor::State send_cursor(bool pressed, Point<int16_t> position) override;
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
-		void modify(InventoryType::Id type, int16_t pos, int8_t mode, int16_t arg);
+		void modify(InventoryType::Id type, std::int16_t pos, std::int8_t mode, std::int16_t arg);
 		void set_sort(bool enabled);
 		void change_tab(InventoryType::Id type);
 		void clear_new();
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
-		void show_item(int16_t slot);
+		void show_item(std::int16_t slot);
 		void clear_tooltip();
 		void load_icons();
-		void update_slot(int16_t slot);
-		bool is_visible(int16_t slot) const;
-		bool is_not_visible(int16_t slot) const;
-		bool can_wear_equip(int16_t slot) const;
-		int16_t slot_by_position(Point<int16_t> position) const;
-		uint16_t button_by_tab(InventoryType::Id tab) const;
-		Point<int16_t> get_slotpos(int16_t slot) const;
-		Point<int16_t> get_full_slotpos(int16_t slot) const;
+		void update_slot(std::int16_t slot);
+		bool is_visible(std::int16_t slot) const;
+		bool is_not_visible(std::int16_t slot) const;
+		bool can_wear_equip(std::int16_t slot) const;
+		std::int16_t slot_by_position(Point<int16_t> position) const;
+		std::uint16_t button_by_tab(InventoryType::Id tab) const;
+		Point<int16_t> get_slotpos(std::int16_t slot) const;
+		Point<int16_t> get_full_slotpos(std::int16_t slot) const;
 		Point<int16_t> get_tabpos(InventoryType::Id tab) const;
-		Icon* get_icon(int16_t slot);
+		Icon* get_icon(std::int16_t slot);
 		void set_full(bool enabled);
 
 		class ItemIcon : public Icon::Type
 		{
 		public:
-			ItemIcon(const UIItemInventory& parent, InventoryType::Id sourcetab, Equipslot::Id eqsource, int16_t source, int16_t count, bool untradable, bool cashitem);
+			ItemIcon(const UIItemInventory& parent, InventoryType::Id sourcetab, Equipslot::Id eqsource, std::int16_t source, std::int16_t count, bool untradable, bool cashitem);
 
 			void drop_on_stage() const override;
 			void drop_on_equips(Equipslot::Id eqslot) const override;
-			bool drop_on_items(InventoryType::Id tab, Equipslot::Id, int16_t slot, bool) const override;
+			bool drop_on_items(InventoryType::Id tab, Equipslot::Id, std::int16_t slot, bool) const override;
 			void drop_on_bindings(Point<int16_t>, bool) const override {}
-			void set_count(int16_t count) override;
+			void set_count(std::int16_t count) override;
 
 		private:
 			InventoryType::Id sourcetab;
 			Equipslot::Id eqsource;
-			int16_t source;
-			int16_t count;
+			std::int16_t source;
+			std::int16_t count;
 			bool untradable;
 			bool cashitem;
 			const UIItemInventory& parent;
 		};
 
-		static constexpr uint16_t ROWS = 8;
-		static constexpr uint16_t COLUMNS = 4;
-		static constexpr uint16_t MAXSLOTS = ROWS * COLUMNS;
-		static constexpr uint16_t MAXFULLSLOTS = COLUMNS * MAXSLOTS;
-		static constexpr uint16_t ICON_WIDTH = 36;
-		static constexpr uint16_t ICON_HEIGHT = 35;
+		static constexpr std::uint16_t ROWS = 8;
+		static constexpr std::uint16_t COLUMNS = 4;
+		static constexpr std::uint16_t MAXSLOTS = ROWS * COLUMNS;
+		static constexpr std::uint16_t MAXFULLSLOTS = COLUMNS * MAXSLOTS;
+		static constexpr std::uint16_t ICON_WIDTH = 36;
+		static constexpr std::uint16_t ICON_HEIGHT = 35;
 
 		enum Buttons
 		{
@@ -142,11 +142,11 @@ namespace ms
 		Slider slider;
 
 		std::map<int16_t, std::unique_ptr<Icon>> icons;
-		std::map<InventoryType::Id, std::pair<int16_t, int16_t>> slotrange;
+		std::map<InventoryType::Id, std::pair<int16_t, std::int16_t>> slotrange;
 
 		InventoryType::Id tab;
 		InventoryType::Id newtab;
-		int16_t newslot;
+		std::int16_t newslot;
 		bool ignore_tooltip;
 
 		bool sort_enabled;

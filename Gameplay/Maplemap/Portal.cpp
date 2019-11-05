@@ -19,7 +19,7 @@
 
 namespace ms
 {
-	Portal::Portal(const Animation* a, Type t, std::string nm, bool intramap, Point<int16_t> p, int32_t tid, std::string tnm) : animation(a), type(t), name(nm), position(p), warpinfo(tid, intramap, tnm, nm)
+	Portal::Portal(const Animation* a, Type t, std::string nm, bool intramap, Point<int16_t> p, std::int32_t tid, std::string tnm) : animation(a), type(t), name(nm), position(p), warpinfo(tid, intramap, tnm, nm)
 	{
 		touched = false;
 	}

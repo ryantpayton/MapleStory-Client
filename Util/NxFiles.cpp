@@ -28,6 +28,9 @@ namespace ms
 {
 	Error NxFiles::init()
 	{
+		// std::string path = std::filesystem::current_path();
+		// Console::get().print(path);
+
 		for (auto filename : NxFiles::filenames)
 			if (std::ifstream{ filename }.good() == false)
 				return Error(Error::Code::MISSING_FILE, filename);

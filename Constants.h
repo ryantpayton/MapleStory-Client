@@ -26,9 +26,9 @@ namespace ms
 	namespace Constants
 	{
 		// Timestep, e.g. the granularity in which the game advances.
-		constexpr uint16_t TIMESTEP = 8;
+		constexpr std::uint16_t TIMESTEP = 8;
 		// View y offset.
-		constexpr int16_t VIEWYOFFSET = 10;
+		constexpr std::int16_t VIEWYOFFSET = 10;
 
 		class Constants : public Singleton<Constants>
 		{
@@ -41,31 +41,31 @@ namespace ms
 
 			~Constants() {};
 
-			int16_t get_viewwidth()
+			std::int16_t get_viewwidth()
 			{
 				return VIEWWIDTH;
 			}
 
-			void set_viewwidth(int16_t width)
+			void set_viewwidth(std::int16_t width)
 			{
 				VIEWWIDTH = width;
 			}
 
-			int16_t get_viewheight()
+			std::int16_t get_viewheight()
 			{
 				return VIEWHEIGHT;
 			}
 
-			void set_viewheight(int16_t height)
+			void set_viewheight(std::int16_t height)
 			{
 				VIEWHEIGHT = height;
 			}
 
 		private:
 			// Window and screen width.
-			int16_t VIEWWIDTH;
+			std::int16_t VIEWWIDTH;
 			// Window and screen height.
-			int16_t VIEWHEIGHT;
+			std::int16_t VIEWHEIGHT;
 		};
 	}
 }

@@ -20,7 +20,7 @@
 #include "Layer.h"
 #include "MapObject.h"
 
-#include "../Template/Optional.h"
+#include "../../Template/Optional.h"
 
 #include <array>
 #include <memory>
@@ -41,18 +41,18 @@ namespace ms
 		// Adds a mapobject of this type.
 		void add(std::unique_ptr<MapObject> mapobject);
 		// Removes the mapobject with the given oid.
-		void remove(int32_t oid);
+		void remove(std::int32_t oid);
 		// Removes all mapobjects of this type.
 		void clear();
 
 		// Check if a map object with the specified id exists on the map.
-		bool contains(int32_t oid) const;
+		bool contains(std::int32_t oid) const;
 		// Obtains a pointer to the mapobject with the given oid.
-		Optional<MapObject> get(int32_t oid);
+		Optional<MapObject> get(std::int32_t oid);
 		// Obtains a const pointer to the mapobject with the given oid.
-		Optional<const MapObject> get(int32_t oid) const;
+		Optional<const MapObject> get(std::int32_t oid) const;
 
-		using underlying_t = typename std::unordered_map<int32_t, std::unique_ptr<MapObject>>;
+		using underlying_t = typename std::unordered_map<std::int32_t, std::unique_ptr<MapObject>>;
 		// Return a begin iterator.
 		underlying_t::iterator begin();
 		// Return an end iterator.
@@ -63,7 +63,7 @@ namespace ms
 		underlying_t::const_iterator end() const;
 
 	private:
-		std::unordered_map<int32_t, std::unique_ptr<MapObject>> objects;
-		std::array<std::unordered_set<int32_t>, Layer::Id::LENGTH> layers;
+		std::unordered_map<std::int32_t, std::unique_ptr<MapObject>> objects;
+		std::array<std::unordered_set<std::int32_t>, Layer::Id::LENGTH> layers;
 	};
 }

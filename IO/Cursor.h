@@ -68,7 +68,7 @@ namespace ms
 
 		State state;
 		Point<int16_t> position;
-		int32_t hide_counter;
+		std::int32_t hide_counter;
 
 		static constexpr int64_t HIDE_TIME = 15'000;
 	};

@@ -70,7 +70,7 @@ namespace ms
 
 	void Texture::draw(const DrawArgument& args) const
 	{
-		size_t id = bitmap.id();
+		std::size_t id = bitmap.id();
 
 		if (id == 0)
 			return;
@@ -93,12 +93,12 @@ namespace ms
 		return bitmap.id() > 0;
 	}
 
-	int16_t Texture::width() const
+	std::int16_t Texture::width() const
 	{
 		return dimensions.x();
 	}
 
-	int16_t Texture::height() const
+	std::int16_t Texture::height() const
 	{
 		return dimensions.y();
 	}

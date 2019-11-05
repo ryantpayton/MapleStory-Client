@@ -106,7 +106,7 @@ namespace ms
 
 		for (auto stat : Equipstat::values)
 		{
-			int32_t inventory_total = inventory.get_stat(stat);
+			std::int32_t inventory_total = inventory.get_stat(stat);
 			stats.add_value(stat, inventory_total);
 		}
 
@@ -114,8 +114,8 @@ namespace ms
 
 		for (auto& passive : passive_skills)
 		{
-			int32_t skill_id = passive.first;
-			int32_t skill_level = passive.second;
+			std::int32_t skill_id = passive.first;
+			std::int32_t skill_level = passive.second;
 
 			passive_buffs.apply_buff(stats, skill_id, skill_level);
 		}
@@ -129,19 +129,19 @@ namespace ms
 			statsinfo->update_all_stats();
 	}
 
-	void Player::change_equip(int16_t slot)
+	void Player::change_equip(std::int16_t slot)
 	{
-		if (int32_t itemid = inventory.get_item_id(InventoryType::Id::EQUIPPED, slot))
+		if (std::int32_t itemid = inventory.get_item_id(InventoryType::Id::EQUIPPED, slot))
 			look.add_equip(itemid);
 		else
 			look.remove_equip(Equipslot::by_id(slot));
 	}
 
-	void Player::use_item(int32_t itemid)
+	void Player::use_item(std::int32_t itemid)
 	{
 		InventoryType::Id type = InventoryType::by_item_id(itemid);
 
-		if (int16_t slot = inventory.find_item(type, itemid))
+		if (std::int16_t slot = inventory.find_item(type, itemid))
 		{
 			switch (type)
 			{
@@ -158,7 +158,7 @@ namespace ms
 			Char::draw(viewx, viewy, alpha);
 	}
 
-	int8_t Player::update(const Physics& physics)
+	std::int8_t Player::update(const Physics& physics)
 	{
 		const PlayerState* pst = get_state(state);
 
@@ -180,7 +180,7 @@ namespace ms
 			}
 		}
 
-		uint8_t stancebyte = flip ? state : state + 1;
+		std::uint8_t stancebyte = flip ? state : state + 1;
 		Movement newmove(phobj, stancebyte);
 		bool needupdate = lastmove.hasmoved(newmove);
 
@@ -193,17 +193,17 @@ namespace ms
 		return get_layer();
 	}
 
-	int8_t Player::get_integer_attackspeed() const
+	std::int8_t Player::get_integer_attackspeed() const
 	{
-		int32_t weapon_id = look.get_equips().get_weapon();
+		std::int32_t weapon_id = look.get_equips().get_weapon();
 
 		if (weapon_id <= 0)
 			return 0;
 
 		const WeaponData& weapon = WeaponData::get(weapon_id);
 
-		int8_t base_speed = stats.get_attackspeed();
-		int8_t weapon_speed = weapon.get_speed();
+		std::int8_t base_speed = stats.get_attackspeed();
+		std::int8_t weapon_speed = weapon.get_speed();
 
 		return base_speed + weapon_speed;
 	}
@@ -248,12 +248,12 @@ namespace ms
 		if (has_cooldown(move.get_id()))
 			return SpecialMove::ForbidReason::FBR_COOLDOWN;
 
-		int32_t level = skillbook.get_level(move.get_id());
+		std::int32_t level = skillbook.get_level(move.get_id());
 		Weapon::Type weapon = get_weapontype();
 		const Job& job = stats.get_job();
-		uint16_t hp = stats.get_stat(Maplestat::Id::HP);
-		uint16_t mp = stats.get_stat(Maplestat::Id::MP);
-		uint16_t bullets = inventory.get_bulletcount();
+		std::uint16_t hp = stats.get_stat(Maplestat::Id::HP);
+		std::uint16_t mp = stats.get_stat(Maplestat::Id::MP);
+		std::uint16_t bullets = inventory.get_bulletcount();
 
 		return move.can_use(level, weapon, job, hp, mp, bullets);
 	}
@@ -321,7 +321,7 @@ namespace ms
 	{
 		if (phobj.onground)
 		{
-			uint16_t delay = get_attackdelay(1);
+			std::uint16_t delay = get_attackdelay(1);
 			phobj.movexuntil(targetx, delay);
 			phobj.set_flag(PhysicsObject::Flag::TURNATEDGES);
 		}
@@ -340,7 +340,7 @@ namespace ms
 
 	MobAttackResult Player::damage(const MobAttack& attack)
 	{
-		int32_t damage = stats.calculate_damage(attack.watk);
+		std::int32_t damage = stats.calculate_damage(attack.watk);
 		show_damage(damage);
 
 		bool fromleft = attack.origin.x() > phobj.get_x();
@@ -355,7 +355,7 @@ namespace ms
 			phobj.vforce -= 3.5;
 		}
 
-		uint8_t direction = fromleft ? 0 : 1;
+		std::uint8_t direction = fromleft ? 0 : 1;
 
 		return { attack, damage, direction };
 	}
@@ -375,21 +375,21 @@ namespace ms
 		return buffs[stat].value > 0;
 	}
 
-	void Player::change_skill(int32_t skill_id, int32_t skill_level, int32_t masterlevel, int64_t expiration)
+	void Player::change_skill(std::int32_t skill_id, std::int32_t skill_level, std::int32_t masterlevel, int64_t expiration)
 	{
-		int32_t old_level = skillbook.get_level(skill_id);
+		std::int32_t old_level = skillbook.get_level(skill_id);
 		skillbook.set_skill(skill_id, skill_level, masterlevel, expiration);
 
 		if (old_level != skill_level)
 			recalc_stats(false);
 	}
 
-	void Player::add_cooldown(int32_t skill_id, int32_t cooltime)
+	void Player::add_cooldown(std::int32_t skill_id, std::int32_t cooltime)
 	{
 		cooldowns[skill_id] = cooltime;
 	}
 
-	bool Player::has_cooldown(int32_t skill_id) const
+	bool Player::has_cooldown(std::int32_t skill_id) const
 	{
 		auto iter = cooldowns.find(skill_id);
 
@@ -399,9 +399,9 @@ namespace ms
 		return iter->second > 0;
 	}
 
-	void Player::change_level(uint16_t level)
+	void Player::change_level(std::uint16_t level)
 	{
-		uint16_t oldlevel = get_level();
+		std::uint16_t oldlevel = get_level();
 
 		if (level > oldlevel)
 			show_effect_id(CharEffect::Id::LEVELUP);
@@ -409,17 +409,17 @@ namespace ms
 		stats.set_stat(Maplestat::Id::LEVEL, level);
 	}
 
-	uint16_t Player::get_level() const
+	std::uint16_t Player::get_level() const
 	{
 		return stats.get_stat(Maplestat::Id::LEVEL);
 	}
 
-	int32_t Player::get_skilllevel(int32_t skillid) const
+	std::int32_t Player::get_skilllevel(std::int32_t skillid) const
 	{
 		return skillbook.get_level(skillid);
 	}
 
-	void Player::change_job(uint16_t jobid)
+	void Player::change_job(std::uint16_t jobid)
 	{
 		show_effect_id(CharEffect::Id::JOBCHANGE);
 		stats.change_job(jobid);

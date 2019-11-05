@@ -56,15 +56,15 @@ namespace nl {
         //Effectivelly calls root()
         operator node() const;
         //Returns the number of strings in the file
-        uint32_t string_count() const;
+        std::int32_t string_count() const;
         //Returns the number of bitmaps in the file
-        uint32_t bitmap_count() const;
+        std::int32_t bitmap_count() const;
         //Returns the number of audios in the file
-        uint32_t audio_count() const;
+        std::int32_t audio_count() const;
         //Returns the number of nodes in the file
-        uint32_t node_count() const;
+        std::int32_t node_count() const;
         //Returns the string with a given id number
-        std::string get_string(uint32_t) const;
+        std::string get_string(std::int32_t) const;
     private:
         data * m_data = nullptr;
         friend node;

@@ -22,13 +22,13 @@
 
 #include "../Components/MapleButton.h"
 #include "../Components/TwoSpriteButton.h"
-#include "../Data/ItemData.h"
-#include "../Audio/Audio.h"
-#include "../Character/Player.h"
-#include "../Gameplay/Stage.h"
-#include "../Data/EquipData.h"
+#include "../../Data/ItemData.h"
+#include "../../Audio/Audio.h"
+#include "../../Character/Player.h"
+#include "../../Gameplay/Stage.h"
+#include "../../Data/EquipData.h"
 
-#include "../Net/Packets/InventoryPackets.h"
+#include "../../Net/Packets/InventoryPackets.h"
 
 #include <nlnx/nx.hpp>
 
@@ -120,7 +120,7 @@ namespace ms
 			Slider::Type::DEFAULT, Range<int16_t>(50, 245), 152, 6, 1 + inventory.get_slotmax(tab) / COLUMNS,
 			[&](bool upwards)
 			{
-				int16_t shift = upwards ? -COLUMNS : COLUMNS;
+				std::int16_t shift = upwards ? -COLUMNS : COLUMNS;
 				bool above = slotrange[tab].first + shift > 0;
 				bool below = slotrange[tab].second + shift < inventory.get_slotmax(tab) + 1 + COLUMNS;
 
@@ -167,11 +167,11 @@ namespace ms
 
 		auto range = slotrange.at(tab);
 
-		size_t numslots = inventory.get_slotmax(tab);
-		size_t firstslot = full_enabled ? 1 : range.first;
-		size_t lastslot = full_enabled ? MAXFULLSLOTS : range.second;
+		std::size_t numslots = inventory.get_slotmax(tab);
+		std::size_t firstslot = full_enabled ? 1 : range.first;
+		std::size_t lastslot = full_enabled ? MAXFULLSLOTS : range.second;
 
-		for (size_t i = 0; i <= MAXFULLSLOTS; i++)
+		for (std::size_t i = 0; i <= MAXFULLSLOTS; i++)
 		{
 			Point<int16_t> slotpos = full_enabled ? get_full_slotpos(i) : get_slotpos(i);
 
@@ -189,7 +189,7 @@ namespace ms
 			}
 		}
 
-		int16_t bulletslot = inventory.get_bulletslot();
+		std::int16_t bulletslot = inventory.get_bulletslot();
 
 		if (tab == InventoryType::Id::USE && is_visible(bulletslot))
 			projectile.draw(position + get_slotpos(bulletslot));
@@ -218,11 +218,11 @@ namespace ms
 		mesolabel.change_text(meso_str);
 	}
 
-	void UIItemInventory::update_slot(int16_t slot)
+	void UIItemInventory::update_slot(std::int16_t slot)
 	{
-		if (int32_t item_id = inventory.get_item_id(tab, slot))
+		if (std::int32_t item_id = inventory.get_item_id(tab, slot))
 		{
-			int16_t count;
+			std::int16_t count;
 
 			if (tab == InventoryType::Id::EQUIP)
 				count = -1;
@@ -249,14 +249,14 @@ namespace ms
 	{
 		icons.clear();
 
-		uint8_t numslots = inventory.get_slotmax(tab);
+		std::uint8_t numslots = inventory.get_slotmax(tab);
 
-		for (size_t i = 0; i <= MAXFULLSLOTS; i++)
+		for (std::size_t i = 0; i <= MAXFULLSLOTS; i++)
 			if (i <= numslots)
 				update_slot(i);
 	}
 
-	Button::State UIItemInventory::button_pressed(uint16_t buttonid)
+	Button::State UIItemInventory::button_pressed(std::uint16_t buttonid)
 	{
 		InventoryType::Id oldtab = tab;
 
@@ -318,7 +318,7 @@ namespace ms
 
 		if (tab != oldtab)
 		{
-			uint16_t row = slotrange.at(tab).first / COLUMNS;
+			std::uint16_t row = slotrange.at(tab).first / COLUMNS;
 			slider.setrows(row, 6, 1 + inventory.get_slotmax(tab) / COLUMNS);
 
 			buttons[button_by_tab(oldtab)]->set_state(Button::State::NORMAL);
@@ -333,11 +333,11 @@ namespace ms
 
 	void UIItemInventory::doubleclick(Point<int16_t> cursorpos)
 	{
-		int16_t slot = slot_by_position(cursorpos - position);
+		std::int16_t slot = slot_by_position(cursorpos - position);
 
 		if (icons.count(slot) && is_visible(slot))
 		{
-			if (int32_t item_id = inventory.get_item_id(tab, slot))
+			if (std::int32_t item_id = inventory.get_item_id(tab, slot))
 			{
 				switch (tab)
 				{
@@ -356,11 +356,11 @@ namespace ms
 
 	bool UIItemInventory::send_icon(const Icon& icon, Point<int16_t> cursorpos)
 	{
-		int16_t slot = slot_by_position(cursorpos - position);
+		std::int16_t slot = slot_by_position(cursorpos - position);
 
 		if (slot > 0)
 		{
-			int32_t item_id = inventory.get_item_id(tab, slot);
+			std::int32_t item_id = inventory.get_item_id(tab, slot);
 			Equipslot::Id eqslot;
 			bool equip;
 
@@ -408,7 +408,7 @@ namespace ms
 			}
 		}
 
-		int16_t slot = slot_by_position(cursor_relative);
+		std::int16_t slot = slot_by_position(cursor_relative);
 		Icon* icon = get_icon(slot);
 		bool is_icon = icon && is_visible(slot);
 
@@ -445,7 +445,7 @@ namespace ms
 		}
 	}
 
-	void UIItemInventory::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIItemInventory::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -483,7 +483,7 @@ namespace ms
 		}
 	}
 
-	void UIItemInventory::modify(InventoryType::Id type, int16_t slot, int8_t mode, int16_t arg)
+	void UIItemInventory::modify(InventoryType::Id type, std::int16_t slot, std::int8_t mode, std::int16_t arg)
 	{
 		if (slot <= 0)
 			return;
@@ -604,7 +604,7 @@ namespace ms
 		return slider.remove_cursor(clicked);
 	}
 
-	void UIItemInventory::show_item(int16_t slot)
+	void UIItemInventory::show_item(std::int16_t slot)
 	{
 		if (tab == InventoryType::Id::EQUIP)
 		{
@@ -612,7 +612,7 @@ namespace ms
 		}
 		else
 		{
-			int32_t item_id = inventory.get_item_id(tab, slot);
+			std::int32_t item_id = inventory.get_item_id(tab, slot);
 			UI::get().show_item(Tooltip::Parent::ITEMINVENTORY, item_id);
 		}
 	}
@@ -622,12 +622,12 @@ namespace ms
 		UI::get().clear_tooltip(Tooltip::Parent::ITEMINVENTORY);
 	}
 
-	bool UIItemInventory::is_visible(int16_t slot) const
+	bool UIItemInventory::is_visible(std::int16_t slot) const
 	{
 		return !is_not_visible(slot);
 	}
 
-	bool UIItemInventory::is_not_visible(int16_t slot) const
+	bool UIItemInventory::is_not_visible(std::int16_t slot) const
 	{
 		auto range = slotrange.at(tab);
 
@@ -637,7 +637,7 @@ namespace ms
 			return slot < range.first || slot > range.second;
 	}
 
-	bool UIItemInventory::can_wear_equip(int16_t slot) const
+	bool UIItemInventory::can_wear_equip(std::int16_t slot) const
 	{
 		const Player& player = Stage::get().get_player();
 		const CharStats& stats = player.get_stats();
@@ -650,11 +650,11 @@ namespace ms
 			return false;
 		}
 
-		const int32_t item_id = inventory.get_item_id(InventoryType::Id::EQUIP, slot);
+		const std::int32_t item_id = inventory.get_item_id(InventoryType::Id::EQUIP, slot);
 		const EquipData& equipdata = EquipData::get(item_id);
 		const ItemData& itemdata = equipdata.get_itemdata();
 
-		const int8_t reqGender = itemdata.get_gender();
+		const std::int8_t reqGender = itemdata.get_gender();
 		const bool female = stats.get_female();
 
 		switch (reqGender)
@@ -679,7 +679,7 @@ namespace ms
 		if (jobname == "GM" || jobname == "SuperGM")
 			return true;
 
-		int16_t reqJOB = equipdata.get_reqstat(Maplestat::Id::JOB);
+		std::int16_t reqJOB = equipdata.get_reqstat(Maplestat::Id::JOB);
 
 		if (!stats.get_job().is_sub_job(reqJOB))
 		{
@@ -687,14 +687,14 @@ namespace ms
 			return false;
 		}
 
-		int16_t reqLevel = equipdata.get_reqstat(Maplestat::Id::LEVEL);
-		int16_t reqDEX = equipdata.get_reqstat(Maplestat::Id::DEX);
-		int16_t reqSTR = equipdata.get_reqstat(Maplestat::Id::STR);
-		int16_t reqLUK = equipdata.get_reqstat(Maplestat::Id::LUK);
-		int16_t reqINT = equipdata.get_reqstat(Maplestat::Id::INT);
-		int16_t reqFAME = equipdata.get_reqstat(Maplestat::Id::FAME);
+		std::int16_t reqLevel = equipdata.get_reqstat(Maplestat::Id::LEVEL);
+		std::int16_t reqDEX = equipdata.get_reqstat(Maplestat::Id::DEX);
+		std::int16_t reqSTR = equipdata.get_reqstat(Maplestat::Id::STR);
+		std::int16_t reqLUK = equipdata.get_reqstat(Maplestat::Id::LUK);
+		std::int16_t reqINT = equipdata.get_reqstat(Maplestat::Id::INT);
+		std::int16_t reqFAME = equipdata.get_reqstat(Maplestat::Id::FAME);
 
-		int8_t i = 0;
+		std::int8_t i = 0;
 
 		if (reqLevel > stats.get_stat(Maplestat::Id::LEVEL))
 			i++;
@@ -718,22 +718,22 @@ namespace ms
 		return true;
 	}
 
-	int16_t UIItemInventory::slot_by_position(Point<int16_t> cursorpos) const
+	std::int16_t UIItemInventory::slot_by_position(Point<int16_t> cursorpos) const
 	{
-		int16_t xoff = cursorpos.x() - 11;
-		int16_t yoff = cursorpos.y() - 51;
+		std::int16_t xoff = cursorpos.x() - 11;
+		std::int16_t yoff = cursorpos.y() - 51;
 
 		if (xoff < 1 || xoff > 143 || yoff < 1)
 			return 0;
 
-		int16_t slot = (full_enabled ? 1 : slotrange.at(tab).first) + (xoff / ICON_WIDTH) + COLUMNS * (yoff / ICON_HEIGHT);
+		std::int16_t slot = (full_enabled ? 1 : slotrange.at(tab).first) + (xoff / ICON_WIDTH) + COLUMNS * (yoff / ICON_HEIGHT);
 
 		return is_visible(slot) ? slot : 0;
 	}
 
-	Point<int16_t> UIItemInventory::get_slotpos(int16_t slot) const
+	Point<int16_t> UIItemInventory::get_slotpos(std::int16_t slot) const
 	{
-		int16_t absslot = slot - slotrange.at(tab).first;
+		std::int16_t absslot = slot - slotrange.at(tab).first;
 
 		return Point<int16_t>(
 			10 + (absslot % COLUMNS) * ICON_WIDTH,
@@ -741,12 +741,12 @@ namespace ms
 			);
 	}
 
-	Point<int16_t> UIItemInventory::get_full_slotpos(int16_t slot) const
+	Point<int16_t> UIItemInventory::get_full_slotpos(std::int16_t slot) const
 	{
-		int16_t absslot = slot - 1;
+		std::int16_t absslot = slot - 1;
 		div_t div = std::div(absslot, MAXSLOTS);
-		int16_t new_slot = absslot - (div.quot * MAXSLOTS);
-		int16_t adj_x = div.quot * COLUMNS * ICON_WIDTH;
+		std::int16_t new_slot = absslot - (div.quot * MAXSLOTS);
+		std::int16_t adj_x = div.quot * COLUMNS * ICON_WIDTH;
 
 		return Point<int16_t>(
 			10 + adj_x + (new_slot % COLUMNS) * ICON_WIDTH,
@@ -756,7 +756,7 @@ namespace ms
 
 	Point<int16_t> UIItemInventory::get_tabpos(InventoryType::Id tb) const
 	{
-		int8_t fixed_tab = tb;
+		std::int8_t fixed_tab = tb;
 
 		switch (tb)
 		{
@@ -771,7 +771,7 @@ namespace ms
 		return Point<int16_t>(10 + ((fixed_tab - 1) * 31), 29);
 	}
 
-	uint16_t UIItemInventory::button_by_tab(InventoryType::Id tb) const
+	std::uint16_t UIItemInventory::button_by_tab(InventoryType::Id tb) const
 	{
 		switch (tb)
 		{
@@ -788,7 +788,7 @@ namespace ms
 		}
 	}
 
-	Icon* UIItemInventory::get_icon(int16_t slot)
+	Icon* UIItemInventory::get_icon(std::int16_t slot)
 	{
 		auto iter = icons.find(slot);
 
@@ -823,7 +823,7 @@ namespace ms
 
 		dragarea = Point<int16_t>(dimension.x(), 20);
 
-		int16_t adj_x = full_enabled ? 14 : 16;
+		std::int16_t adj_x = full_enabled ? 14 : 16;
 		buttons[Buttons::BT_CLOSE]->set_position(Point<int16_t>(dimension.x() - adj_x, 12));
 
 		buttons[Buttons::BT_COIN]->set_active(!enabled);
@@ -850,12 +850,12 @@ namespace ms
 		load_icons();
 	}
 
-	void UIItemInventory::ItemIcon::set_count(int16_t c)
+	void UIItemInventory::ItemIcon::set_count(std::int16_t c)
 	{
 		count = c;
 	}
 
-	UIItemInventory::ItemIcon::ItemIcon(const UIItemInventory& parent, InventoryType::Id st, Equipslot::Id eqs, int16_t s, int16_t c, bool u, bool cash) : parent(parent)
+	UIItemInventory::ItemIcon::ItemIcon(const UIItemInventory& parent, InventoryType::Id st, Equipslot::Id eqs, std::int16_t s, std::int16_t c, bool u, bool cash) : parent(parent)
 	{
 		sourcetab = st;
 		eqsource = eqs;
@@ -889,7 +889,7 @@ namespace ms
 						}
 						else
 						{
-							auto onenter = [&](int32_t qty)
+							auto onenter = [&](std::int32_t qty)
 							{
 								MoveItemPacket(sourcetab, source, 0, qty).dispatch();
 							};
@@ -909,7 +909,7 @@ namespace ms
 				}
 				else
 				{
-					auto onenter = [&](int32_t qty)
+					auto onenter = [&](std::int32_t qty)
 					{
 						MoveItemPacket(sourcetab, source, 0, qty).dispatch();
 					};
@@ -938,7 +938,7 @@ namespace ms
 		}
 	}
 
-	bool UIItemInventory::ItemIcon::drop_on_items(InventoryType::Id tab, Equipslot::Id, int16_t slot, bool) const
+	bool UIItemInventory::ItemIcon::drop_on_items(InventoryType::Id tab, Equipslot::Id, std::int16_t slot, bool) const
 	{
 		if (tab != sourcetab || slot == source)
 			return true;

@@ -18,7 +18,7 @@
 #pragma once
 
 #include "../OutPacket.h"
-#include "../Configuration.h"
+#include "../../Configuration.h"
 
 namespace ms
 {
@@ -59,10 +59,10 @@ namespace ms
 			std::string part3 = volumeSerialNumber.substr(4, 2);
 			std::string part4 = volumeSerialNumber.substr(6, 2);
 
-			const int32_t h = hex_to_dec(part4);
-			const int32_t w = hex_to_dec(part3);
-			const int32_t i = hex_to_dec(part2);
-			const int32_t d = hex_to_dec(part1);
+			const std::int32_t h = hex_to_dec(part4);
+			const std::int32_t w = hex_to_dec(part3);
+			const std::int32_t i = hex_to_dec(part2);
+			const std::int32_t d = hex_to_dec(part1);
 
 			write_string(acc);
 			write_string(pass);
@@ -87,7 +87,7 @@ namespace ms
 	class CharlistRequestPacket : public OutPacket
 	{
 	public:
-		CharlistRequestPacket(uint8_t world, uint8_t channel) : OutPacket(OutPacket::Opcode::CHARLIST_REQUEST)
+		CharlistRequestPacket(std::uint8_t world, std::uint8_t channel) : OutPacket(OutPacket::Opcode::CHARLIST_REQUEST)
 		{
 			write_byte(0);
 			write_byte(world);
@@ -100,7 +100,7 @@ namespace ms
 	class PlayerLoginPacket : public OutPacket
 	{
 	public:
-		PlayerLoginPacket(int32_t cid) : OutPacket(OutPacket::Opcode::PLAYER_LOGIN)
+		PlayerLoginPacket(std::int32_t cid) : OutPacket(OutPacket::Opcode::PLAYER_LOGIN)
 		{
 			write_int(cid);
 		}

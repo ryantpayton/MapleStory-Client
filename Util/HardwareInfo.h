@@ -1,4 +1,4 @@
-﻿//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //	This file is part of the continued Journey MMORPG client					//
 //	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
 //																				//
@@ -19,105 +19,110 @@
 
 #include "../Configuration.h"
 
-#include <Windows.h>
-#include <IPHlpApi.h>
+// #include <Windows.h>
+// #include <IPHlpApi.h>
 #include <cstdio>
 
 namespace ms
 {
-	class HardwareInfo
-	{
-	public:
-		HardwareInfo()
-		{
-			// Hard Drive VolumeSerialNumber
-			char* volumeSerialNumber = (char*)malloc(18);
+class HardwareInfo
+{
+public:
+  HardwareInfo()
+  {
+    // // Hard Drive VolumeSerialNumber
+    // char* volumeSerialNumber = (char*)malloc(18);
 
-			TCHAR szVolume[MAX_PATH + 1];
-			TCHAR szFileSystem[MAX_PATH + 1];
+    // TCHAR szVolume[MAX_PATH + 1];
+    // TCHAR szFileSystem[MAX_PATH + 1];
 
-			DWORD dwSerialNumber, dwMaxLen, dwSystemFlags;
+    // DWORD dwSerialNumber, dwMaxLen, dwSystemFlags;
 
-			TCHAR szDrives[MAX_PATH + 1];
-			DWORD dwLen = GetLogicalDriveStrings(MAX_PATH, szDrives);
-			TCHAR* pLetter = szDrives;
+    // TCHAR szDrives[MAX_PATH + 1];
+    // DWORD dwLen = GetLogicalDriveStrings(MAX_PATH, szDrives);
+    // TCHAR* pLetter = szDrives;
 
-			BOOL bSuccess;
+    // BOOL bSuccess;
 
-			bSuccess = GetVolumeInformation(pLetter, szVolume, MAX_PATH, &dwSerialNumber, &dwMaxLen, &dwSystemFlags, szFileSystem, MAX_PATH);
+    // bSuccess = GetVolumeInformation(pLetter, szVolume, MAX_PATH, &dwSerialNumber, &dwMaxLen, &dwSystemFlags, szFileSystem, MAX_PATH);
 
-			if (bSuccess)
-			{
-				sprintf(volumeSerialNumber, "%X%X", HIWORD(dwSerialNumber), LOWORD(dwSerialNumber));
-			}
-			else
-			{
-				printf("Cannot retrieve Volume information for %s\n", pLetter);
-				free(volumeSerialNumber);
-				return;
-			}
+    // if (bSuccess)
+    // {
+    // 	sprintf(volumeSerialNumber, "%X%X", HIWORD(dwSerialNumber), LOWORD(dwSerialNumber));
+    // }
+    // else
+    // {
+    // 	printf("Cannot retrieve Volume information for %s\n", pLetter);
+    // 	free(volumeSerialNumber);
+    // 	return;
+    // }
 
-			// HWID/MACS
-			PIP_ADAPTER_INFO AdapterInfo;
-			DWORD dwBufLen = sizeof(IP_ADAPTER_INFO);
-			char* hwid = (char*)malloc(18);
-			char* macs = (char*)malloc(18);
+    // // HWID/MACS
+    // PIP_ADAPTER_INFO AdapterInfo;
+    // DWORD dwBufLen = sizeof(IP_ADAPTER_INFO);
+    // char* hwid = (char*)malloc(18);
+    // char* macs = (char*)malloc(18);
 
-			AdapterInfo = (IP_ADAPTER_INFO*)malloc(sizeof(IP_ADAPTER_INFO));
+    // AdapterInfo = (IP_ADAPTER_INFO*)malloc(sizeof(IP_ADAPTER_INFO));
 
-			if (AdapterInfo == NULL)
-			{
-				printf("Error allocating memory needed to call GetAdaptersinfo\n");
-				free(volumeSerialNumber);
-				free(hwid);
-				free(macs);
-				return;
-			}
+    // if (AdapterInfo == NULL)
+    // {
+    // 	printf("Error allocating memory needed to call GetAdaptersinfo\n");
+    // 	free(volumeSerialNumber);
+    // 	free(hwid);
+    // 	free(macs);
+    // 	return;
+    // }
 
-			// Make an initial call to GetAdaptersInfo to get the necessary size into the dwBufLen variable
-			if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == ERROR_BUFFER_OVERFLOW)
-			{
-				free(AdapterInfo);
-				AdapterInfo = (IP_ADAPTER_INFO*)malloc(dwBufLen);
+    // // Make an initial call to GetAdaptersInfo to get the necessary size into the dwBufLen variable
+    // if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == ERROR_BUFFER_OVERFLOW)
+    // {
+    // 	free(AdapterInfo);
+    // 	AdapterInfo = (IP_ADAPTER_INFO*)malloc(dwBufLen);
 
-				if (AdapterInfo == NULL)
-				{
-					printf("Error allocating memory needed to call GetAdaptersinfo\n");
-					free(volumeSerialNumber);
-					free(hwid);
-					free(macs);
-					return;
-				}
-			}
+    // 	if (AdapterInfo == NULL)
+    // 	{
+    // 		printf("Error allocating memory needed to call GetAdaptersinfo\n");
+    // 		free(volumeSerialNumber);
+    // 		free(hwid);
+    // 		free(macs);
+    // 		return;
+    // 	}
+    // }
 
-			if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == NO_ERROR)
-			{
-				// Contains pointer to current adapter info
-				PIP_ADAPTER_INFO pAdapterInfo = AdapterInfo;
+    // if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == NO_ERROR)
+    // {
+    // 	// Contains pointer to current adapter info
+    // 	PIP_ADAPTER_INFO pAdapterInfo = AdapterInfo;
 
-				// Technically should look at pAdapterInfo->AddressLength and not assume it is 6.
-				sprintf(hwid, "%02X%02X%02X%02X%02X%02X",
-					pAdapterInfo->Address[0], pAdapterInfo->Address[1],
-					pAdapterInfo->Address[2], pAdapterInfo->Address[3],
-					pAdapterInfo->Address[4], pAdapterInfo->Address[5]);
+    // 	// Technically should look at pAdapterInfo->AddressLength and not assume it is 6.
+    // 	sprintf(hwid, "%02X%02X%02X%02X%02X%02X",
+    // 		pAdapterInfo->Address[0], pAdapterInfo->Address[1],
+    // 		pAdapterInfo->Address[2], pAdapterInfo->Address[3],
+    // 		pAdapterInfo->Address[4], pAdapterInfo->Address[5]);
 
-				Configuration::get().set_hwid(hwid, volumeSerialNumber);
+    // 	Configuration::get().set_hwid(hwid, volumeSerialNumber);
 
-				pAdapterInfo = pAdapterInfo->Next;
+    // 	pAdapterInfo = pAdapterInfo->Next;
 
-				// Technically should look at pAdapterInfo->AddressLength and not assume it is 6.
-				sprintf(macs, "%02X-%02X-%02X-%02X-%02X-%02X",
-					pAdapterInfo->Address[0], pAdapterInfo->Address[1],
-					pAdapterInfo->Address[2], pAdapterInfo->Address[3],
-					pAdapterInfo->Address[4], pAdapterInfo->Address[5]);
+    // 	// Technically should look at pAdapterInfo->AddressLength and not assume it is 6.
+    // 	sprintf(macs, "%02X-%02X-%02X-%02X-%02X-%02X",
+    // 		pAdapterInfo->Address[0], pAdapterInfo->Address[1],
+    // 		pAdapterInfo->Address[2], pAdapterInfo->Address[3],
+    // 		pAdapterInfo->Address[4], pAdapterInfo->Address[5]);
 
-				Configuration::get().set_macs(macs);
-			}
+    // 	Configuration::get().set_macs(macs);
+    // }
 
-			free(AdapterInfo);
-			free(volumeSerialNumber);
-			free(hwid);
-			free(macs);
-		}
-	};
-}
+    // free(AdapterInfo);
+    // free(volumeSerialNumber);
+    // free(hwid);
+    // free(macs);
+
+    char* hwid = "685D43F88888";
+    char* macs = "18-9C-73-F2-B7-2C";
+    Configuration::get().set_hwid(hwid, hwid);
+    Configuration::get().set_macs(macs);
+  }
+};
+} // namespace ms

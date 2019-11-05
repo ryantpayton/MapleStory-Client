@@ -20,7 +20,7 @@
 #include "../UIElement.h"
 
 #include "../Components/Textfield.h"
-#include "../Template/BoolPair.h"
+#include "../../Template/BoolPair.h"
 
 namespace ms
 {
@@ -38,24 +38,24 @@ namespace ms
 		void update() override;
 
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 		bool check_name(std::string name) const;
 		void send_naming_result(bool nameused);
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
-		void select_class(uint8_t index);
+		void select_class(std::uint8_t index);
 		void show_charselect();
-		Point<int16_t> get_class_pos(size_t index) const;
+		Point<int16_t> get_class_pos(std::size_t index) const;
 		std::string to_lower(std::string value) const;
 
-		static constexpr uint8_t INDEX_COUNT = 5;
-		static constexpr uint8_t CLASS_COUNT = 26;
+		static constexpr std::uint8_t INDEX_COUNT = 5;
+		static constexpr std::uint8_t CLASS_COUNT = 26;
 
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			BACK,
 			MAKE,
@@ -68,7 +68,7 @@ namespace ms
 			CLASS4
 		};
 
-		enum Classes : uint8_t
+		enum Classes : std::uint8_t
 		{
 			RESISTANCE,
 			EXPLORER,
@@ -111,11 +111,11 @@ namespace ms
 		Sprite newlabel;
 		Sprite hotbtn;
 		Sprite newbtn;
-		uint8_t class_index[INDEX_COUNT];
+		std::uint8_t class_index[INDEX_COUNT];
 		bool mouseover[INDEX_COUNT];
-		uint8_t selected_class;
-		uint8_t index_shift;
-		uint16_t selected_index;
+		std::uint8_t selected_class;
+		std::uint8_t index_shift;
+		std::uint16_t selected_index;
 		bool class_isdisabled[CLASS_COUNT];
 		BoolPair<Texture> class_disabled[CLASS_COUNT];
 		BoolPair<Texture> class_normal[CLASS_COUNT];

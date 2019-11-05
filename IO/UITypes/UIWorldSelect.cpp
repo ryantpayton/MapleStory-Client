@@ -22,11 +22,11 @@
 
 #include "../UI.h"
 
-#include "../Audio/Audio.h"
+#include "../../Audio/Audio.h"
 #include "../Components/MapleButton.h"
 #include "../Components/TwoSpriteButton.h"
 
-#include "../Net/Packets/LoginPackets.h"
+#include "../../Net/Packets/LoginPackets.h"
 
 #include <ctime>
 
@@ -95,7 +95,7 @@ namespace ms
 		buttons[Buttons::BT_CHANGEREGION] = std::make_unique<MapleButton>(worldselect["BtRegion"], Point<int16_t>(3, 117));
 		buttons[Buttons::BT_QUITGAME] = std::make_unique<MapleButton>(common["BtExit"], Point<int16_t>(0, 505));
 
-		for (size_t i = Buttons::BT_WORLD0; i < Buttons::BT_WORLD17; i++)
+		for (std::size_t i = Buttons::BT_WORLD0; i < Buttons::BT_WORLD17; i++)
 		{
 			std::string world = std::to_string(i);
 			world_textures.emplace_back(channelsrc["release"]["layer:" + world]);
@@ -110,7 +110,7 @@ namespace ms
 		buttons[Buttons::BT_WORLD17] = std::make_unique<TwoSpriteButton>(worldsrc["button:45"]["normal"]["0"], worldsrc["button:45"]["keyFocused"]["0"], worldsrc_pos);
 		buttons[Buttons::BT_WORLD17]->set_active(false);
 
-		for (size_t i = 0; i < Buttons::BT_ENTERWORLD - Buttons::BT_CHANNEL0; i++)
+		for (std::size_t i = 0; i < Buttons::BT_ENTERWORLD - Buttons::BT_CHANNEL0; i++)
 		{
 			std::string ch = std::to_string(i);
 
@@ -228,7 +228,7 @@ namespace ms
 		return ret;
 	}
 
-	void UIWorldSelect::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIWorldSelect::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -236,13 +236,13 @@ namespace ms
 			{
 				World selectedWorld = worlds[worldid];
 
-				uint8_t selected_channel = channelid;
-				uint8_t channel_total = selectedWorld.channelcount;
+				std::uint8_t selected_channel = channelid;
+				std::uint8_t channel_total = selectedWorld.channelcount;
 
-				uint8_t COLUMNS = 5;
-				uint8_t columns = std::min(channel_total, COLUMNS);
+				std::uint8_t COLUMNS = 5;
+				std::uint8_t columns = std::min(channel_total, COLUMNS);
 
-				uint8_t rows = std::floor((channel_total - 1) / COLUMNS) + 1;
+				std::uint8_t rows = std::floor((channel_total - 1) / COLUMNS) + 1;
 
 				div_t div = std::div(selected_channel, columns);
 				auto current_col = div.rem;
@@ -332,7 +332,7 @@ namespace ms
 
 					buttons[Buttons::BT_WORLD0 + worldid]->set_state(Button::State::NORMAL);
 
-					worldid = static_cast<uint8_t>(selected_world);
+					worldid = static_cast<std::uint8_t>(selected_world);
 
 					buttons[Buttons::BT_WORLD0 + worldid]->set_state(Button::State::PRESSED);
 				}
@@ -357,7 +357,7 @@ namespace ms
 					{
 						bool found = false;
 
-						for (size_t i = Buttons::BT_WORLD0; i < Buttons::BT_CHANNEL0; i++)
+						for (std::size_t i = Buttons::BT_WORLD0; i < Buttons::BT_CHANNEL0; i++)
 						{
 							auto state = buttons[Buttons::BT_WORLD0 + i]->get_state();
 
@@ -413,7 +413,7 @@ namespace ms
 	{
 		buttons[Buttons::BT_WORLD0 + selectedWorld.wid]->set_state(Button::State::PRESSED);
 
-		for (size_t i = 0; i < selectedWorld.channelcount; ++i)
+		for (std::size_t i = 0; i < selectedWorld.channelcount; ++i)
 		{
 			buttons[Buttons::BT_CHANNEL0 + i]->set_active(true);
 
@@ -435,7 +435,7 @@ namespace ms
 		draw_chatballoon = false;
 	}
 
-	Button::State UIWorldSelect::button_pressed(uint16_t id)
+	Button::State UIWorldSelect::button_pressed(std::uint16_t id)
 	{
 		if (id == Buttons::BT_ENTERWORLD)
 		{
@@ -517,7 +517,7 @@ namespace ms
 
 			buttons[Buttons::BT_WORLD0 + worldid]->set_state(Button::State::NORMAL);
 
-			worldid = static_cast<uint8_t>(id - Buttons::BT_WORLD0);
+			worldid = static_cast<std::uint8_t>(id - Buttons::BT_WORLD0);
 
 			world_selected = true;
 			clear_selected_world();
@@ -527,12 +527,12 @@ namespace ms
 		}
 		else if (id >= Buttons::BT_CHANNEL0 && id < Buttons::BT_ENTERWORLD)
 		{
-			uint8_t selectedch = static_cast<uint8_t>(id - Buttons::BT_CHANNEL0);
+			std::uint8_t selectedch = static_cast<std::uint8_t>(id - Buttons::BT_CHANNEL0);
 
 			if (selectedch != channelid)
 			{
 				buttons[Buttons::BT_CHANNEL0 + channelid]->set_state(Button::State::NORMAL);
-				channelid = static_cast<uint8_t>(id - Buttons::BT_CHANNEL0);
+				channelid = static_cast<std::uint8_t>(id - Buttons::BT_CHANNEL0);
 				buttons[Buttons::BT_CHANNEL0 + channelid]->set_state(Button::State::PRESSED);
 				Sound(Sound::Name::WORLDSELECT).play();
 			}
@@ -597,18 +597,18 @@ namespace ms
 	{
 		channelid = 0;
 
-		for (size_t i = Buttons::BT_CHANNEL0; i < Buttons::BT_ENTERWORLD; i++)
+		for (std::size_t i = Buttons::BT_CHANNEL0; i < Buttons::BT_ENTERWORLD; i++)
 			buttons[i]->set_state(Button::State::NORMAL);
 
 		buttons[Buttons::BT_CHANNEL0]->set_state(Button::State::PRESSED);
 
-		for (size_t i = 0; i < Buttons::BT_ENTERWORLD - Buttons::BT_CHANNEL0; i++)
+		for (std::size_t i = 0; i < Buttons::BT_ENTERWORLD - Buttons::BT_CHANNEL0; i++)
 			buttons[Buttons::BT_CHANNEL0 + i]->set_active(false);
 
 		buttons[Buttons::BT_ENTERWORLD]->set_active(false);
 	}
 
-	uint16_t UIWorldSelect::get_next_world(uint16_t id, bool upward)
+	std::uint16_t UIWorldSelect::get_next_world(std::uint16_t id, bool upward)
 	{
 		if (id == Worlds::SCANIA)
 			return (upward) ? Worlds::WINDIA : Worlds::REBOOT;

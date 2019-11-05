@@ -39,7 +39,7 @@ namespace ms
 		animation.draw(DrawArgument(pos + viewpos, flip), inter);
 	}
 
-	uint8_t Obj::getz() const
+	std::uint8_t Obj::getz() const
 	{
 		return z;
 	}

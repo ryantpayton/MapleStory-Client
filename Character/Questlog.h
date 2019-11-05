@@ -18,6 +18,8 @@
 #pragma once
 
 #include <map>
+#include <cstdint>
+#include <string>
 
 namespace ms
 {
@@ -25,15 +27,15 @@ namespace ms
 	class Questlog
 	{
 	public:
-		void add_started(int16_t, const std::string& quest_data);
-		void add_in_progress(int16_t, int16_t, const std::string& quest_data);
-		void add_completed(int16_t, int64_t);
-		bool is_started(int16_t);
-		int16_t get_last_started();
+    void add_started(std::int16_t, std::string&& quest_data);
+    void add_in_progress(std::int16_t, std::int16_t, std::string&& quest_data);
+    void add_completed(std::int16_t, std::int64_t);
+    bool is_started(std::int16_t);
+		std::int16_t get_last_started();
 
 	private:
-		std::map<int16_t, std::string> started;
-		std::map<int16_t, std::pair<int16_t, std::string>> in_progress;
-		std::map<int16_t, int64_t> completed;
+		std::map<std::int16_t, std::string> started;
+		std::map<std::int16_t, std::pair<std::int16_t, std::string>> in_progress;
+		std::map<std::int16_t, std::int64_t> completed;
 	};
 }

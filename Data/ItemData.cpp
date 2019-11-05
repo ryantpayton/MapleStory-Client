@@ -22,7 +22,7 @@
 
 namespace ms
 {
-	ItemData::ItemData(int32_t id) : itemid(id)
+	ItemData::ItemData(std::int32_t id) : itemid(id)
 	{
 		untradable = false;
 		unique = false;
@@ -35,7 +35,7 @@ namespace ms
 
 		std::string strprefix = "0" + std::to_string(get_item_prefix(itemid));
 		std::string strid = "0" + std::to_string(itemid);
-		int32_t prefix = get_prefix(itemid);
+		std::int32_t prefix = get_prefix(itemid);
 
 		switch (prefix)
 		{
@@ -77,8 +77,8 @@ namespace ms
 			cashitem = src["cash"].get_bool();
 			gender = get_item_gender(itemid);
 
-			name = strsrc["name"];
-			desc = strsrc["desc"];
+			name = strsrc["name"].get_string();
+			desc = strsrc["desc"].get_string();
 
 			valid = true;
 		}
@@ -88,7 +88,7 @@ namespace ms
 		}
 	}
 
-	std::string ItemData::get_eqcategory(int32_t id) const
+	std::string ItemData::get_eqcategory(std::int32_t id) const
 	{
 		constexpr char* categorynames[15] =
 		{
@@ -109,7 +109,7 @@ namespace ms
 			"Accessory"
 		};
 
-		int32_t index = get_item_prefix(id) - 100;
+		std::int32_t index = get_item_prefix(id) - 100;
 
 		if (index < 15)
 			return categorynames[index];
@@ -119,24 +119,24 @@ namespace ms
 			return "";
 	}
 
-	int32_t ItemData::get_prefix(int32_t id) const
+	std::int32_t ItemData::get_prefix(std::int32_t id) const
 	{
 		return id / 1000000;
 	}
 
-	int32_t ItemData::get_item_prefix(int32_t id) const
+	std::int32_t ItemData::get_item_prefix(std::int32_t id) const
 	{
 		return id / 10000;
 	}
 
-	int8_t ItemData::get_item_gender(int32_t id) const
+	std::int8_t ItemData::get_item_gender(std::int32_t id) const
 	{
-		const int32_t item_prefix = get_item_prefix(id);
+		const std::int32_t item_prefix = get_item_prefix(id);
 
 		if ((get_prefix(id) != 1 && item_prefix != 254) || item_prefix == 119 || item_prefix == 168)
 			return 2;
 
-		const int32_t gender_digit = id / 1000 % 10;
+		const std::int32_t gender_digit = id / 1000 % 10;
 
 		return (gender_digit > 1) ? 2 : gender_digit;
 	}
@@ -171,17 +171,17 @@ namespace ms
 		return is_valid();
 	}
 
-	int32_t ItemData::get_id() const
+	std::int32_t ItemData::get_id() const
 	{
 		return itemid;
 	}
 
-	int32_t ItemData::get_price() const
+	std::int32_t ItemData::get_price() const
 	{
 		return price;
 	}
 
-	int8_t ItemData::get_gender() const
+	std::int8_t ItemData::get_gender() const
 	{
 		return gender;
 	}

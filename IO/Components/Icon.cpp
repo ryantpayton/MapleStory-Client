@@ -18,13 +18,13 @@
 #include "Icon.h"
 #include "Charset.h"
 
-#include "../Audio/Audio.h"
+#include "../../Audio/Audio.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	Icon::Icon(std::unique_ptr<Type> t, Texture tx, int16_t c) : type(std::move(t)), texture(tx), count(c)
+	Icon::Icon(std::unique_ptr<Type> t, Texture tx, std::int16_t c) : type(std::move(t)), texture(tx), count(c)
 	{
 		texture.shift({ 0, 32 });
 		showcount = c > -1;
@@ -61,7 +61,7 @@ namespace ms
 		type->drop_on_equips(eqslot);
 	}
 
-	bool Icon::drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const
+	bool Icon::drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, std::int16_t slot, bool equip) const
 	{
 		bool remove_icon = type->drop_on_items(tab, eqslot, slot, equip);
 
@@ -89,13 +89,13 @@ namespace ms
 		dragged = false;
 	}
 
-	void Icon::set_count(int16_t c)
+	void Icon::set_count(std::int16_t c)
 	{
 		count = c;
 		type->set_count(c);
 	}
 
-	int16_t Icon::get_count() const
+	std::int16_t Icon::get_count() const
 	{
 		return count;
 	}

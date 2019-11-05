@@ -26,7 +26,7 @@ namespace ms
 	class TalkToNPCPacket : public OutPacket
 	{
 	public:
-		TalkToNPCPacket(int32_t oid) : OutPacket(OutPacket::Opcode::TALK_TO_NPC)
+		TalkToNPCPacket(std::int32_t oid) : OutPacket(OutPacket::Opcode::TALK_TO_NPC)
 		{
 			write_int(oid);
 		}
@@ -37,7 +37,7 @@ namespace ms
 	class NpcTalkMorePacket : public OutPacket
 	{
 	public:
-		NpcTalkMorePacket(int8_t lastmsg, int8_t response) : OutPacket(OutPacket::Opcode::NPC_TALK_MORE)
+		NpcTalkMorePacket(std::int8_t lastmsg, std::int8_t response) : OutPacket(OutPacket::Opcode::NPC_TALK_MORE)
 		{
 			write_byte(lastmsg);
 			write_byte(response);
@@ -48,7 +48,7 @@ namespace ms
 			write_string(response);
 		}
 
-		NpcTalkMorePacket(int32_t selection) : NpcTalkMorePacket(4, 1)
+		NpcTalkMorePacket(std::int32_t selection) : NpcTalkMorePacket(4, 1)
 		{
 			write_int(selection);
 		}
@@ -60,7 +60,7 @@ namespace ms
 	{
 	public:
 		// Requests that an item should be bought from or sold to a npc shop.
-		NpcShopActionPacket(int16_t slot, int32_t itemid, int16_t qty, bool buy) : NpcShopActionPacket(buy ? Mode::BUY : Mode::SELL)
+		NpcShopActionPacket(std::int16_t slot, std::int32_t itemid, std::int16_t qty, bool buy) : NpcShopActionPacket(buy ? Mode::BUY : Mode::SELL)
 		{
 			write_short(slot);
 			write_int(itemid);
@@ -68,7 +68,7 @@ namespace ms
 		}
 
 		// Requests that an item should be recharged at a npc shop.
-		NpcShopActionPacket(int16_t slot) : NpcShopActionPacket(Mode::RECHARGE)
+		NpcShopActionPacket(std::int16_t slot) : NpcShopActionPacket(Mode::RECHARGE)
 		{
 			write_short(slot);
 		}
@@ -77,7 +77,7 @@ namespace ms
 		NpcShopActionPacket() : NpcShopActionPacket(Mode::LEAVE) {}
 
 	protected:
-		enum Mode : int8_t
+		enum Mode : std::int8_t
 		{
 			BUY, SELL, RECHARGE, LEAVE
 		};

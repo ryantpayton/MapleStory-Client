@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Combat.h"
 
-#include "../Character/SkillId.h"
-#include "../IO/Messages.h"
-#include "../Net/Packets/AttackAndSkillPackets.h"
+#include "../../Character/SkillId.h"
+#include "../../IO/Messages.h"
+#include "../../Net/Packets/AttackAndSkillPackets.h"
 
 namespace ms
 {
@@ -43,7 +43,7 @@ namespace ms
 		bullets.remove_if(
 			[&](BulletEffect& mb)
 			{
-				int32_t target_oid = mb.damageeffect.target_oid;
+				std::int32_t target_oid = mb.damageeffect.target_oid;
 
 				if (mobs.contains(target_oid))
 				{
@@ -70,7 +70,7 @@ namespace ms
 		);
 	}
 
-	void Combat::use_move(int32_t move_id)
+	void Combat::use_move(std::int32_t move_id)
 	{
 		if (!player.can_attack())
 			return;
@@ -118,8 +118,8 @@ namespace ms
 			move.apply_useeffects(player);
 			move.apply_actions(player, Attack::Type::MAGIC);
 
-			int32_t moveid = move.get_id();
-			int32_t level = player.get_skills().get_level(moveid);
+			std::int32_t moveid = move.get_id();
+			std::int32_t level = player.get_skills().get_level(moveid);
 			UseSkillPacket(moveid, level).dispatch();
 		}
 	}
@@ -155,7 +155,7 @@ namespace ms
 			return;
 
 		Point<int16_t> mob_position = mobs.get_mob_position(result.last_oid);
-		int16_t targetx = mob_position.x();
+		std::int16_t targetx = mob_position.x();
 		player.rush(targetx);
 	}
 
@@ -226,14 +226,14 @@ namespace ms
 
 			for (auto& line : result.damagelines)
 			{
-				int32_t oid = line.first;
+				std::int32_t oid = line.first;
 
 				if (mobs.contains(oid))
 				{
 					std::vector<DamageNumber> numbers = place_numbers(oid, line.second);
 					Point<int16_t> head = mobs.get_mob_head_position(oid);
 
-					size_t i = 0;
+					std::size_t i = 0;
 
 					for (auto& number : numbers)
 					{
@@ -254,10 +254,10 @@ namespace ms
 
 			if (result.damagelines.empty())
 			{
-				int16_t xshift = result.toleft ? -400 : 400;
+				std::int16_t xshift = result.toleft ? -400 : 400;
 				Point<int16_t> target = user.get_position() + Point<int16_t>(xshift, -26);
 
-				for (uint8_t i = 0; i < result.hitcount; i++)
+				for (std::uint8_t i = 0; i < result.hitcount; i++)
 				{
 					DamageEffect effect{ attackuser, {}, 0, false, 0, 0 };
 					bulleteffects.emplace(user.get_attackdelay(i), std::move(effect), bullet, target);
@@ -268,13 +268,13 @@ namespace ms
 		{
 			for (auto& line : result.damagelines)
 			{
-				int32_t oid = line.first;
+				std::int32_t oid = line.first;
 
 				if (mobs.contains(oid))
 				{
 					std::vector<DamageNumber> numbers = place_numbers(oid, line.second);
 
-					size_t i = 0;
+					std::size_t i = 0;
 
 					for (auto& number : numbers)
 					{
@@ -295,14 +295,14 @@ namespace ms
 		}
 	}
 
-	std::vector<DamageNumber> Combat::place_numbers(int32_t oid, const std::vector<std::pair<int32_t, bool>>& damagelines)
+	std::vector<DamageNumber> Combat::place_numbers(std::int32_t oid, const std::vector<std::pair<std::int32_t, bool>>& damagelines)
 	{
 		std::vector<DamageNumber> numbers;
-		int16_t head = mobs.get_mob_head_position(oid).y();
+		std::int16_t head = mobs.get_mob_head_position(oid).y();
 
 		for (auto& line : damagelines)
 		{
-			int32_t amount = line.first;
+			std::int32_t amount = line.first;
 			bool critical = line.second;
 			DamageNumber::Type type = critical ? DamageNumber::Type::CRITICAL : DamageNumber::Type::NORMAL;
 			numbers.emplace_back(type, amount, head);
@@ -313,7 +313,7 @@ namespace ms
 		return numbers;
 	}
 
-	void Combat::show_buff(int32_t cid, int32_t skillid, int8_t level)
+	void Combat::show_buff(std::int32_t cid, std::int32_t skillid, std::int8_t level)
 	{
 		if (Optional<OtherChar> ouser = chars.get_char(cid))
 		{
@@ -326,12 +326,12 @@ namespace ms
 		}
 	}
 
-	void Combat::show_player_buff(int32_t skillid)
+	void Combat::show_player_buff(std::int32_t skillid)
 	{
 		get_move(skillid).apply_useeffects(player);
 	}
 
-	const SpecialMove& Combat::get_move(int32_t move_id)
+	const SpecialMove& Combat::get_move(std::int32_t move_id)
 	{
 		if (move_id == 0)
 			return regularattack;

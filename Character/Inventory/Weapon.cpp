@@ -17,11 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Weapon.h"
 
-#include "../Console.h"
+#include "../../Console.h"
 
 namespace ms
 {
-	Weapon::Type Weapon::by_value(int32_t value)
+	Weapon::Type Weapon::by_value(std::int32_t value)
 	{
 		if (value < 130 || (value > 133 && value < 137) || value == 139 || (value > 149 && value < 170) || value > 170)
 		{

@@ -32,14 +32,14 @@ namespace ms
 		PacketSwitch();
 
 		// Forward a packet to the correct handler.
-		void forward(const int8_t* bytes, size_t length) const;
+		void forward(const std::int8_t* bytes, std::size_t length) const;
 
 	private:
 		// Print a warning.
-		void warn(const std::string& message, size_t opcode) const;
+		void warn(const std::string& message, std::size_t opcode) const;
 
 		// Opcodes for which handlers can be registered.
-		enum Opcode : uint16_t;
+		enum Opcode : std::uint16_t;
 
 		// Message when an unhandled packet is received.
 		static constexpr const char* MSG_UNHANDLED = "Unhandled packet detected";
@@ -48,12 +48,12 @@ namespace ms
 		// Message when a packet with a larger opcode than the array size is received.
 		static constexpr const char* MSG_REREGISTER = "Handler was registered twice";
 		// Maximum number of handlers needed.
-		static constexpr const size_t NUM_HANDLERS = 500;
+		static constexpr const std::size_t NUM_HANDLERS = 500;
 
 		std::unique_ptr<PacketHandler> handlers[NUM_HANDLERS];
 
 		// Register a handler for the specified opcode.
-		template <size_t O, typename T, typename...Args>
+		template <std::size_t O, typename T, typename...Args>
 		void emplace(Args&& ...args)
 		{
 			static_assert(O < NUM_HANDLERS, "PacketSwitch::emplace - Opcode out of array bounds.");

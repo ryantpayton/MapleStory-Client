@@ -420,7 +420,7 @@ namespace ms
 
 	void PlayerClimbState::update_state(Player& player) const
 	{
-		int16_t y = player.get_phobj().get_y();
+		std::int16_t y = player.get_phobj().get_y();
 		bool downwards = player.is_key_down(KeyAction::Id::DOWN);
 		auto ladder = player.get_ladder();
 

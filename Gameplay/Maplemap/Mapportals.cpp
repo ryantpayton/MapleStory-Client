@@ -17,18 +17,18 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Mapportals.h"
 
-#include "../Constants.h"
-#include "../Util/Misc.h"
+#include "../../Constants.h"
+#include "../../Util/Misc.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	MapPortals::MapPortals(nl::node src, int32_t mapid)
+	MapPortals::MapPortals(nl::node src, std::int32_t mapid)
 	{
 		for (auto sub : src)
 		{
-			int8_t portal_id = string_conversion::or_default<int8_t>(sub.name(), -1);
+			std::int8_t portal_id = string_conversion::or_default<std::int8_t>(sub.name(), -1);
 
 			if (portal_id < 0)
 				continue;
@@ -36,7 +36,7 @@ namespace ms
 			Portal::Type type = Portal::typebyid(sub["pt"]);
 			std::string name = sub["pn"];
 			std::string target_name = sub["tn"];
-			int32_t target_id = sub["tm"];
+			std::int32_t target_id = sub["tm"];
 			Point<int16_t> position = { sub["x"], sub["y"] };
 
 			const Animation* animation = &animations[type];
@@ -86,7 +86,7 @@ namespace ms
 			ptit.second.draw(viewpos, inter);
 	}
 
-	Point<int16_t> MapPortals::get_portal_by_id(uint8_t portal_id) const
+	Point<int16_t> MapPortals::get_portal_by_id(std::uint8_t portal_id) const
 	{
 		auto iter = portals_by_id.find(portal_id);
 

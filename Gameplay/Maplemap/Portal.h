@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Graphics/Animation.h"
-#include "../Template/Rectangle.h"
+#include "../../Graphics/Animation.h"
+#include "../../Template/Rectangle.h"
 
 #include <cstdint>
 #include <map>
@@ -47,20 +47,20 @@ namespace ms
 			TYPE14
 		};
 
-		static Type typebyid(int32_t id)
+		static Type typebyid(std::int32_t id)
 		{
 			return static_cast<Type>(id);
 		}
 
 		struct WarpInfo
 		{
-			int32_t mapid;
+			std::int32_t mapid;
 			std::string toname;
 			std::string name;
 			bool intramap;
 			bool valid;
 
-			WarpInfo(int32_t m, bool i, std::string tn, std::string n) : mapid(m), intramap(i), toname(tn), name(n)
+			WarpInfo(std::int32_t m, bool i, std::string tn, std::string n) : mapid(m), intramap(i), toname(tn), name(n)
 			{
 				valid = mapid < 999999999;
 			}
@@ -68,7 +68,7 @@ namespace ms
 			WarpInfo() : WarpInfo(999999999, false, {}, {}) {}
 		};
 
-		Portal(const Animation* animation, Type type, std::string name, bool intramap, Point<int16_t> position, int32_t tomap, std::string toname);
+		Portal(const Animation* animation, Type type, std::string name, bool intramap, Point<int16_t> position, std::int32_t tomap, std::string toname);
 		Portal();
 
 		void update(Point<int16_t> playerpos);

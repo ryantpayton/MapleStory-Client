@@ -20,7 +20,7 @@
 #include "../UI.h"
 
 #include "../Components/MapleButton.h"
-#include "../Audio/Audio.h"
+#include "../../Audio/Audio.h"
 
 #include <nlnx/nx.hpp>
 
@@ -50,7 +50,7 @@ namespace ms
 		}
 		else if (type == NoticeType::OK)
 		{
-			uint16_t maxwidth = top.width() - 6;
+			std::uint16_t maxwidth = top.width() - 6;
 
 			position.shift_y(-8);
 			question = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::WHITE, message, maxwidth);
@@ -89,7 +89,7 @@ namespace ms
 		}
 		else
 		{
-			int16_t pos_y = height >= 32 ? height : 32;
+			std::int16_t pos_y = height >= 32 ? height : 32;
 
 			center.draw(DrawArgument(start, Point<int16_t>(0, pos_y)));
 			start.shift_y(pos_y);
@@ -107,7 +107,7 @@ namespace ms
 		bottombox.draw(start);
 	}
 
-	void UINotice::send_key(int32_t keycode, bool pressed, bool escape)
+	void UINotice::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && (keycode == KeyAction::Id::RETURN || escape))
 		{
@@ -120,9 +120,9 @@ namespace ms
 		}
 	}
 
-	int16_t UINotice::box2offset(bool textfield) const
+	std::int16_t UINotice::box2offset(bool textfield) const
 	{
-		int16_t offset = top.height() + centerbox.height() + box.height() + height - (textfield ? 0 : 16);
+		std::int16_t offset = top.height() + centerbox.height() + box.height() + height - (textfield ? 0 : 16);
 
 		if (type == NoticeType::OK)
 			if (height < 34)
@@ -135,7 +135,7 @@ namespace ms
 	{
 		yesnohandler = yh;
 
-		int16_t belowtext = box2offset(false);
+		std::int16_t belowtext = box2offset(false);
 
 		nl::node src = nl::nx::ui["Basic.img"];
 
@@ -151,7 +151,7 @@ namespace ms
 		UIElement::draw(alpha);
 	}
 
-	void UIYesNo::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIYesNo::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (keycode == KeyAction::Id::RETURN)
 		{
@@ -165,7 +165,7 @@ namespace ms
 		}
 	}
 
-	Button::State UIYesNo::button_pressed(uint16_t buttonid)
+	Button::State UIYesNo::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -182,13 +182,13 @@ namespace ms
 		return Button::State::PRESSED;
 	}
 
-	UIEnterNumber::UIEnterNumber(std::string message, std::function<void(int32_t)> nh, int32_t m, int32_t quantity) : UINotice(message, NoticeType::ENTERNUMBER)
+	UIEnterNumber::UIEnterNumber(std::string message, std::function<void(std::int32_t)> nh, std::int32_t m, std::int32_t quantity) : UINotice(message, NoticeType::ENTERNUMBER)
 	{
 		numhandler = nh;
 		max = m;
 
-		int16_t belowtext = box2offset(true) - 21;
-		int16_t pos_y = belowtext + 35;
+		std::int16_t belowtext = box2offset(true) - 21;
+		std::int16_t pos_y = belowtext + 35;
 
 		nl::node src = nl::nx::ui["Basic.img"];
 
@@ -244,7 +244,7 @@ namespace ms
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	void UIEnterNumber::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIEnterNumber::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (keycode == KeyAction::Id::RETURN)
 		{
@@ -257,7 +257,7 @@ namespace ms
 		}
 	}
 
-	Button::State UIEnterNumber::button_pressed(uint16_t buttonid)
+	Button::State UIEnterNumber::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -330,7 +330,7 @@ namespace ms
 		UIElement::draw(alpha);
 	}
 
-	void UIOk::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIOk::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (keycode == KeyAction::Id::RETURN)
 		{
@@ -343,7 +343,7 @@ namespace ms
 		}
 	}
 
-	Button::State UIOk::button_pressed(uint16_t buttonid)
+	Button::State UIOk::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{

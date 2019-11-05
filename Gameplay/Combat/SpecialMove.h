@@ -20,8 +20,8 @@
 #include "Attack.h"
 
 #include "../Maplemap/Mob.h"
-#include "../Character/Char.h"
-#include "../Character/Job.h"
+#include "../../Character/Char.h"
+#include "../../Character/Job.h"
 
 namespace ms
 {
@@ -46,12 +46,12 @@ namespace ms
 		virtual void apply_actions(Char& user, Attack::Type type) const = 0;
 		virtual void apply_stats(const Char& user, Attack& attack) const = 0;
 		virtual void apply_hiteffects(const AttackUser& user, Mob& target) const = 0;
-		virtual Animation get_bullet(const Char& user, int32_t bulletid) const = 0;
+		virtual Animation get_bullet(const Char& user, std::int32_t bulletid) const = 0;
 
 		virtual bool is_attack() const = 0;
 		virtual bool is_skill() const = 0;
-		virtual int32_t get_id() const = 0;
+		virtual std::int32_t get_id() const = 0;
 
-		virtual ForbidReason can_use(int32_t level, Weapon::Type weapon, const Job& job, uint16_t hp, uint16_t mp, uint16_t bullets) const = 0;
+		virtual ForbidReason can_use(std::int32_t level, Weapon::Type weapon, const Job& job, std::uint16_t hp, std::uint16_t mp, std::uint16_t bullets) const = 0;
 	};
 }

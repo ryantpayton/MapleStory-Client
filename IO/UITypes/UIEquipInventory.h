@@ -21,9 +21,9 @@
 
 #include "../Components/EquipTooltip.h"
 #include "../Components/Icon.h"
-#include "../Template/EnumMap.h"
+#include "../../Template/EnumMap.h"
 
-#include "../Character/Inventory/Inventory.h"
+#include "../../Character/Inventory/Inventory.h"
 
 namespace ms
 {
@@ -43,12 +43,12 @@ namespace ms
 		void doubleclick(Point<int16_t> position) override;
 		bool send_icon(const Icon& icon, Point<int16_t> position) override;
 		Cursor::State send_cursor(bool pressed, Point<int16_t> position) override;
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
-		void modify(int16_t pos, int8_t mode, int16_t arg);
+		void modify(std::int16_t pos, std::int8_t mode, std::int16_t arg);
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
 		void show_equip(Equipslot::Id slot);
@@ -60,16 +60,16 @@ namespace ms
 		class EquipIcon : public Icon::Type
 		{
 		public:
-			EquipIcon(int16_t source);
+			EquipIcon(std::int16_t source);
 
 			void drop_on_stage() const override;
 			void drop_on_equips(Equipslot::Id slot) const override;
-			bool drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const override;
+			bool drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, std::int16_t slot, bool equip) const override;
 			void drop_on_bindings(Point<int16_t>, bool) const override {}
-			void set_count(int16_t) override {}
+			void set_count(std::int16_t) override {}
 
 		private:
-			int16_t source;
+			std::int16_t source;
 		};
 
 		enum Buttons

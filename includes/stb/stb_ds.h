@@ -87,7 +87,7 @@ DOCUMENTATION
           Returns the number of elements in the array.
 
       arrlenu:
-        size_t arrlenu(T*);
+        std::size_t arrlenu(T*);
           Returns the number of elements in the array as an unsigned type.
 
       arrpop:
@@ -127,12 +127,12 @@ DOCUMENTATION
           slots at the end if necessary.
 
       arrsetcap:
-        size_t arrsetcap(T* a, int n);
+        std::size_t arrsetcap(T* a, int n);
           Sets the length of allocated storage to at least n. It will not
           change the length of the array.
 
       arrcap:
-        size_t arrcap(T* a);
+        std::size_t arrcap(T* a);
           Returns the number of total elements the array can contain without
           needing to be reallocated.
 
@@ -145,16 +145,16 @@ DOCUMENTATION
     Special interface:
 
       stbds_rand_seed:
-        void stbds_rand_seed(size_t seed);
+        void stbds_rand_seed(std::size_t seed);
           For security against adversarially chosen data, you should seed the
           library with a strong random number. Or at least seed it with time().
 
       stbds_hash_string:
-        size_t stbds_hash_string(char *str, size_t seed);
+        std::size_t stbds_hash_string(char *str, std::size_t seed);
           Returns a hash value for a string.
 
       stbds_hash_bytes:
-        size_t stbds_hash_bytes(void *p, size_t len, size_t seed);
+        std::size_t stbds_hash_bytes(void *p, std::size_t len, std::size_t seed);
           These functions hash an arbitrary number of bytes. The function
           uses a custom hash for 4- and 8-byte data, and a weakened version
           of SipHash for everything else. On 64-bit platforms you can get
@@ -185,8 +185,8 @@ DOCUMENTATION
 
       hmlenu
       shlenu
-        size_t hmlenu(T*)
-        size_t shlenu(T*)
+        std::size_t hmlenu(T*)
+        std::size_t shlenu(T*)
           Returns the number of elements in the hashmap.
 
       hmgeti
@@ -411,11 +411,11 @@ extern "C" {
 #endif
 
 // for security against attackers, seed the library with a random number, at least time() but stronger is better
-extern void stbds_rand_seed(size_t seed);
+extern void stbds_rand_seed(std::size_t seed);
 
 // these are the hash functions used internally if you want to test them or use them for other purposes
-extern size_t stbds_hash_bytes(void *p, size_t len, size_t seed);
-extern size_t stbds_hash_string(char *str, size_t seed);
+extern std::size_t stbds_hash_bytes(void *p, std::size_t len, std::size_t seed);
+extern std::size_t stbds_hash_string(char *str, std::size_t seed);
 
 // this is a simple string arena allocator, initialize with e.g. 'stbds_string_arena my_arena={0}'.
 typedef struct stbds_string_arena stbds_string_arena;
@@ -430,13 +430,13 @@ extern void stbds_unit_tests(void);
 // Everything below here is implementation details
 //
 
-extern void * stbds_arrgrowf(void *a, size_t elemsize, size_t addlen, size_t min_cap);
-extern void   stbds_hmfree_func(void *p, size_t elemsize, size_t keyoff);
-extern void * stbds_hmget_key(void *a, size_t elemsize, void *key, size_t keysize, int mode);
-extern void * stbds_hmput_default(void *a, size_t elemsize);
-extern void * stbds_hmput_key(void *a, size_t elemsize, void *key, size_t keysize, int mode);
-extern void * stbds_hmdel_key(void *a, size_t elemsize, void *key, size_t keysize, size_t keyoffset, int mode);
-extern void * stbds_shmode_func(size_t elemsize, int mode);
+extern void * stbds_arrgrowf(void *a, std::size_t elemsize, std::size_t addlen, std::size_t min_cap);
+extern void   stbds_hmfree_func(void *p, std::size_t elemsize, std::size_t keyoff);
+extern void * stbds_hmget_key(void *a, std::size_t elemsize, void *key, std::size_t keysize, int mode);
+extern void * stbds_hmput_default(void *a, std::size_t elemsize);
+extern void * stbds_hmput_key(void *a, std::size_t elemsize, void *key, std::size_t keysize, int mode);
+extern void * stbds_hmdel_key(void *a, std::size_t elemsize, void *key, std::size_t keysize, std::size_t keyoffset, int mode);
+extern void * stbds_shmode_func(std::size_t elemsize, int mode);
 
 #ifdef __cplusplus
 }
@@ -561,8 +561,8 @@ extern void * stbds_shmode_func(size_t elemsize, int mode);
 
 typedef struct
 {
-  size_t      length;
-  size_t      capacity;
+  std::size_t      length;
+  std::size_t      capacity;
   void      * hash_table;
   ptrdiff_t   temp;
 } stbds_array_header;
@@ -576,7 +576,7 @@ typedef struct stbds_string_block
 struct stbds_string_arena
 {
   stbds_string_block *storage;
-  size_t remaining;
+  std::size_t remaining;
   unsigned char block;
   unsigned char mode;  // this isn't used by the string arena itself
 };
@@ -594,22 +594,22 @@ enum
 #ifdef __cplusplus
 // in C we use implicit assignment from these void*-returning functions to T*.
 // in C++ these templates make the same code work
-template<class T> static T * stbds_arrgrowf_wrapper(T *a, size_t elemsize, size_t addlen, size_t min_cap) {
+template<class T> static T * stbds_arrgrowf_wrapper(T *a, std::size_t elemsize, std::size_t addlen, std::size_t min_cap) {
   return (T*)stbds_arrgrowf((void *)a, elemsize, addlen, min_cap);
 }
-template<class T> static T * stbds_hmget_key_wrapper(T *a, size_t elemsize, void *key, size_t keysize, int mode) {
+template<class T> static T * stbds_hmget_key_wrapper(T *a, std::size_t elemsize, void *key, std::size_t keysize, int mode) {
   return (T*)stbds_hmget_key((void*)a, elemsize, key, keysize, mode);
 }
-template<class T> static T * stbds_hmput_default_wrapper(T *a, size_t elemsize) {
+template<class T> static T * stbds_hmput_default_wrapper(T *a, std::size_t elemsize) {
   return (T*)stbds_hmput_default((void *)a, elemsize);
 }
-template<class T> static T * stbds_hmput_key_wrapper(T *a, size_t elemsize, void *key, size_t keysize, int mode) {
+template<class T> static T * stbds_hmput_key_wrapper(T *a, std::size_t elemsize, void *key, std::size_t keysize, int mode) {
   return (T*)stbds_hmput_key((void*)a, elemsize, key, keysize, mode);
 }
-template<class T> static T * stbds_hmdel_key_wrapper(T *a, size_t elemsize, void *key, size_t keysize, size_t keyoffset, int mode){
+template<class T> static T * stbds_hmdel_key_wrapper(T *a, std::size_t elemsize, void *key, std::size_t keysize, std::size_t keyoffset, int mode){
   return (T*)stbds_hmdel_key((void*)a, elemsize, key, keysize, keyoffset, mode);
 }
-template<class T> static T * stbds_shmode_func_wrapper(T *, size_t elemsize, int mode) {
+template<class T> static T * stbds_shmode_func_wrapper(T *, std::size_t elemsize, int mode) {
   return (T*)stbds_shmode_func(elemsize, mode);
 }
 #else
@@ -640,14 +640,14 @@ template<class T> static T * stbds_shmode_func_wrapper(T *, size_t elemsize, int
 
 #ifdef STBDS_STATISTICS
 #define STBDS_STATS(x)   x
-size_t stbds_array_grow;
-size_t stbds_hash_grow;
-size_t stbds_hash_shrink;
-size_t stbds_hash_rebuild;
-size_t stbds_hash_probes;
-size_t stbds_hash_alloc;
-size_t stbds_rehash_probes;
-size_t stbds_rehash_items;
+std::size_t stbds_array_grow;
+std::size_t stbds_hash_grow;
+std::size_t stbds_hash_shrink;
+std::size_t stbds_hash_rebuild;
+std::size_t stbds_hash_probes;
+std::size_t stbds_hash_alloc;
+std::size_t stbds_rehash_probes;
+std::size_t stbds_rehash_items;
 #else
 #define STBDS_STATS(x)
 #endif
@@ -656,10 +656,10 @@ size_t stbds_rehash_items;
 // stbds_arr implementation
 //
 
-void *stbds_arrgrowf(void *a, size_t elemsize, size_t addlen, size_t min_cap)
+void *stbds_arrgrowf(void *a, std::size_t elemsize, std::size_t addlen, std::size_t min_cap)
 {
   void *b;
-  size_t min_len = stbds_arrlen(a) + addlen;
+  std::size_t min_len = stbds_arrlen(a) + addlen;
 
   // compute the minimum capacity needed
   if (min_len > min_cap)
@@ -704,20 +704,20 @@ void *stbds_arrgrowf(void *a, size_t elemsize, size_t addlen, size_t min_cap)
 
 typedef struct
 {
-   size_t    hash [STBDS_BUCKET_LENGTH];
+   std::size_t    hash [STBDS_BUCKET_LENGTH];
    ptrdiff_t index[STBDS_BUCKET_LENGTH];
 } stbds_hash_bucket; // in 32-bit, this is one 64-byte cache line; in 64-bit, each array is one 64-byte cache line
 
 typedef struct
 {
-  size_t slot_count;
-  size_t used_count;
-  size_t used_count_threshold;
-  size_t used_count_shrink_threshold;
-  size_t tombstone_count;
-  size_t tombstone_count_threshold;
-  size_t seed;
-  size_t slot_count_log2;
+  std::size_t slot_count;
+  std::size_t used_count;
+  std::size_t used_count_threshold;
+  std::size_t used_count_shrink_threshold;
+  std::size_t tombstone_count;
+  std::size_t tombstone_count_threshold;
+  std::size_t seed;
+  std::size_t slot_count_log2;
   stbds_string_arena string;
   stbds_hash_bucket *storage; // not a separate allocation, just 64-byte aligned storage after this struct
 } stbds_hash_index;
@@ -729,9 +729,9 @@ typedef struct
 #define STBDS_HASH_EMPTY      0
 #define STBDS_HASH_DELETED    1
 
-static size_t stbds_hash_seed=0x31415926;
+static std::size_t stbds_hash_seed=0x31415926;
 
-void stbds_rand_seed(size_t seed)
+void stbds_rand_seed(std::size_t seed)
 {
   stbds_hash_seed = seed;
 }
@@ -741,11 +741,11 @@ void stbds_rand_seed(size_t seed)
   var = v64_hi, var <<= 16, var <<= 16,                                    /* discard if 32-bit */   \
   var ^= temp ^ v32
 
-#define STBDS_SIZE_T_BITS           ((sizeof (size_t)) * 8)
+#define STBDS_std::size_t_BITS           ((sizeof (std::size_t)) * 8)
 
-static size_t stbds_probe_position(size_t hash, size_t slot_count, size_t slot_log2)
+static std::size_t stbds_probe_position(std::size_t hash, std::size_t slot_count, std::size_t slot_log2)
 {
-  size_t pos;
+  std::size_t pos;
   pos = hash & (slot_count-1);
   #ifdef STBDS_INTERNAL_BUCKET_START
   pos &= ~STBDS_BUCKET_MASK;
@@ -753,9 +753,9 @@ static size_t stbds_probe_position(size_t hash, size_t slot_count, size_t slot_l
   return pos;
 }
 
-static size_t stbds_log2(size_t slot_count)
+static std::size_t stbds_log2(std::size_t slot_count)
 {
-  size_t n=0;
+  std::size_t n=0;
   while (slot_count > 1) {
     slot_count >>= 1;
     ++n;
@@ -763,11 +763,11 @@ static size_t stbds_log2(size_t slot_count)
   return n;
 }
 
-static stbds_hash_index *stbds_make_hash_index(size_t slot_count, stbds_hash_index *ot)
+static stbds_hash_index *stbds_make_hash_index(std::size_t slot_count, stbds_hash_index *ot)
 {
   stbds_hash_index *t;
   t = (stbds_hash_index *) STBDS_REALLOC(NULL,0,(slot_count >> STBDS_BUCKET_SHIFT) * sizeof(stbds_hash_bucket) + sizeof(stbds_hash_index) + STBDS_CACHE_LINE_SIZE-1);
-  t->storage = (stbds_hash_bucket *) STBDS_ALIGN_FWD((size_t) (t+1), STBDS_CACHE_LINE_SIZE);
+  t->storage = (stbds_hash_bucket *) STBDS_ALIGN_FWD((std::size_t) (t+1), STBDS_CACHE_LINE_SIZE);
   t->slot_count = slot_count;
   t->slot_count_log2 = stbds_log2(slot_count);
   t->tombstone_count = 0;
@@ -821,7 +821,7 @@ static stbds_hash_index *stbds_make_hash_index(size_t slot_count, stbds_hash_ind
     // reuse old seed so we can reuse old hashes so below "copy out old data" doesn't do any hashing
     t->seed = ot->seed;
   } else {
-    size_t a,b,temp;
+    std::size_t a,b,temp;
     memset(&t->string, 0, sizeof(t->string));
     t->seed = stbds_hash_seed;
     // LCG
@@ -833,7 +833,7 @@ static stbds_hash_index *stbds_make_hash_index(size_t slot_count, stbds_hash_ind
   }
 
   {
-    size_t i,j;
+    std::size_t i,j;
     for (i=0; i < slot_count >> STBDS_BUCKET_SHIFT; ++i) {
       stbds_hash_bucket *b = &t->storage[i];
       for (j=0; j < STBDS_BUCKET_LENGTH; ++j)
@@ -845,18 +845,18 @@ static stbds_hash_index *stbds_make_hash_index(size_t slot_count, stbds_hash_ind
 
   // copy out the old data, if any
   if (ot) {
-    size_t i,j;
+    std::size_t i,j;
     t->used_count = ot->used_count;
     for (i=0; i < ot->slot_count >> STBDS_BUCKET_SHIFT; ++i) {
       stbds_hash_bucket *ob = &ot->storage[i];
       for (j=0; j < STBDS_BUCKET_LENGTH; ++j) {
         if (STBDS_INDEX_IN_USE(ob->index[j])) {
-          size_t hash = ob->hash[j];
-          size_t pos = stbds_probe_position(hash, t->slot_count, t->slot_count_log2);
-          size_t step = STBDS_BUCKET_LENGTH;
+          std::size_t hash = ob->hash[j];
+          std::size_t pos = stbds_probe_position(hash, t->slot_count, t->slot_count_log2);
+          std::size_t step = STBDS_BUCKET_LENGTH;
           STBDS_STATS(++stbds_rehash_items);
           for (;;) {
-            size_t limit,z;
+            std::size_t limit,z;
             stbds_hash_bucket *bucket;
             bucket = &t->storage[pos >> STBDS_BUCKET_SHIFT];
             STBDS_STATS(++stbds_rehash_probes);
@@ -892,12 +892,12 @@ static stbds_hash_index *stbds_make_hash_index(size_t slot_count, stbds_hash_ind
   return t;
 }
 
-#define STBDS_ROTATE_LEFT(val, n)   (((val) << (n)) | ((val) >> (STBDS_SIZE_T_BITS - (n))))
-#define STBDS_ROTATE_RIGHT(val, n)  (((val) >> (n)) | ((val) << (STBDS_SIZE_T_BITS - (n))))
+#define STBDS_ROTATE_LEFT(val, n)   (((val) << (n)) | ((val) >> (STBDS_std::size_t_BITS - (n))))
+#define STBDS_ROTATE_RIGHT(val, n)  (((val) >> (n)) | ((val) << (STBDS_std::size_t_BITS - (n))))
 
-size_t stbds_hash_string(char *str, size_t seed)
+std::size_t stbds_hash_string(char *str, std::size_t seed)
 {
-  size_t hash = seed;
+  std::size_t hash = seed;
   while (*str)
      hash = STBDS_ROTATE_LEFT(hash, 9) + (unsigned char) *str++;
 
@@ -915,7 +915,7 @@ size_t stbds_hash_string(char *str, size_t seed)
 #ifdef STBDS_SIPHASH_2_4
 #define STBDS_SIPHASH_C_ROUNDS 2
 #define STBDS_SIPHASH_D_ROUNDS 4
-typedef int STBDS_SIPHASH_2_4_can_only_be_used_in_64_bit_builds[sizeof(size_t) == 8 ? 1 : -1];
+typedef int STBDS_SIPHASH_2_4_can_only_be_used_in_64_bit_builds[sizeof(std::size_t) == 8 ? 1 : -1];
 #endif
 
 #ifndef STBDS_SIPHASH_C_ROUNDS
@@ -925,19 +925,19 @@ typedef int STBDS_SIPHASH_2_4_can_only_be_used_in_64_bit_builds[sizeof(size_t) =
 #define STBDS_SIPHASH_D_ROUNDS 1
 #endif
 
-static size_t stbds_siphash_bytes(void *p, size_t len, size_t seed)
+static std::size_t stbds_siphash_bytes(void *p, std::size_t len, std::size_t seed)
 {
   unsigned char *d = (unsigned char *) p;
-  size_t i,j;
-  size_t v0,v1,v2,v3, data;
+  std::size_t i,j;
+  std::size_t v0,v1,v2,v3, data;
 
   // hash that works on 32- or 64-bit registers without knowing which we have
   // (computes different results on 32-bit and 64-bit platform)
   // derived from siphash, but on 32-bit platforms very different as it uses 4 32-bit state not 4 64-bit
-  v0 = ((((size_t) 0x736f6d65 << 16) << 16) + 0x70736575) ^  seed;
-  v1 = ((((size_t) 0x646f7261 << 16) << 16) + 0x6e646f6d) ^ ~seed;
-  v2 = ((((size_t) 0x6c796765 << 16) << 16) + 0x6e657261) ^  seed; 
-  v3 = ((((size_t) 0x74656462 << 16) << 16) + 0x79746573) ^ ~seed;
+  v0 = ((((std::size_t) 0x736f6d65 << 16) << 16) + 0x70736575) ^  seed;
+  v1 = ((((std::size_t) 0x646f7261 << 16) << 16) + 0x6e646f6d) ^ ~seed;
+  v2 = ((((std::size_t) 0x6c796765 << 16) << 16) + 0x6e657261) ^  seed; 
+  v3 = ((((std::size_t) 0x74656462 << 16) << 16) + 0x79746573) ^ ~seed;
 
   #ifdef STBDS_TEST_SIPHASH_2_4
   // hardcoded with key material in the siphash test vectors
@@ -949,26 +949,26 @@ static size_t stbds_siphash_bytes(void *p, size_t len, size_t seed)
 
   #define STBDS_SIPROUND() \
     do {                   \
-      v0 += v1; v1 = STBDS_ROTATE_LEFT(v1, 13);  v1 ^= v0; v0 = STBDS_ROTATE_LEFT(v0,STBDS_SIZE_T_BITS/2); \
+      v0 += v1; v1 = STBDS_ROTATE_LEFT(v1, 13);  v1 ^= v0; v0 = STBDS_ROTATE_LEFT(v0,STBDS_std::size_t_BITS/2); \
       v2 += v3; v3 = STBDS_ROTATE_LEFT(v3, 16);  v3 ^= v2;                                                 \
-      v2 += v1; v1 = STBDS_ROTATE_LEFT(v1, 17);  v1 ^= v2; v2 = STBDS_ROTATE_LEFT(v2,STBDS_SIZE_T_BITS/2); \
+      v2 += v1; v1 = STBDS_ROTATE_LEFT(v1, 17);  v1 ^= v2; v2 = STBDS_ROTATE_LEFT(v2,STBDS_std::size_t_BITS/2); \
       v0 += v3; v3 = STBDS_ROTATE_LEFT(v3, 21);  v3 ^= v0;                                                 \
     } while (0)
 
-  for (i=0; i+sizeof(size_t) <= len; i += sizeof(size_t), d += sizeof(size_t)) {
+  for (i=0; i+sizeof(std::size_t) <= len; i += sizeof(std::size_t), d += sizeof(std::size_t)) {
     data = d[0] | (d[1] << 8) | (d[2] << 16) | (d[3] << 24);
-    data |= (size_t) (d[4] | (d[5] << 8) | (d[6] << 16) | (d[7] << 24)) << 16 << 16; // discarded if size_t == 4
+    data |= (std::size_t) (d[4] | (d[5] << 8) | (d[6] << 16) | (d[7] << 24)) << 16 << 16; // discarded if std::size_t == 4
 
     v3 ^= data;
     for (j=0; j < STBDS_SIPHASH_C_ROUNDS; ++j)
       STBDS_SIPROUND();
     v0 ^= data;
   }
-  data = len << (STBDS_SIZE_T_BITS-8);
+  data = len << (STBDS_std::size_t_BITS-8);
   switch (len - i) {
-    case 7: data |= ((size_t) d[6] << 24) << 24;
-    case 6: data |= ((size_t) d[5] << 20) << 20;
-    case 5: data |= ((size_t) d[4] << 16) << 16;
+    case 7: data |= ((std::size_t) d[6] << 24) << 24;
+    case 6: data |= ((std::size_t) d[5] << 20) << 20;
+    case 5: data |= ((std::size_t) d[4] << 16) << 16;
     case 4: data |= (d[3] << 24);
     case 3: data |= (d[2] << 16);
     case 2: data |= (d[1] << 8);
@@ -989,7 +989,7 @@ static size_t stbds_siphash_bytes(void *p, size_t len, size_t seed)
 #endif
 }
 
-size_t stbds_hash_bytes(void *p, size_t len, size_t seed)
+std::size_t stbds_hash_bytes(void *p, std::size_t len, std::size_t seed)
 {
 #ifdef STBDS_SIPHASH_2_4
   return stbds_siphash_bytes(p,len,seed);
@@ -1051,10 +1051,10 @@ size_t stbds_hash_bytes(void *p, size_t len, size_t seed)
     //  185.28ms   //  195.15ms   //  187.74ms : 500,000 inserts & deletes in 200M table
     //   15.58ms   //   14.79ms   //   15.52ms : 200,000 inserts creating 200K table with varying key spacing
 
-    return (((size_t) hash << 16 << 16) | hash) ^ seed;
-  } else if (len == 8 && sizeof(size_t) == 8) {
-    size_t hash = d[0] | (d[1] << 8) | (d[2] << 16) | (d[3] << 24);
-    hash |= (size_t) (d[4] | (d[5] << 8) | (d[6] << 16) | (d[7] << 24)) << 16 << 16; // avoid warning if size_t == 4
+    return (((std::size_t) hash << 16 << 16) | hash) ^ seed;
+  } else if (len == 8 && sizeof(std::size_t) == 8) {
+    std::size_t hash = d[0] | (d[1] << 8) | (d[2] << 16) | (d[3] << 24);
+    hash |= (std::size_t) (d[4] | (d[5] << 8) | (d[6] << 16) | (d[7] << 24)) << 16 << 16; // avoid warning if std::size_t == 4
     hash ^= seed;
     hash = (~hash) + (hash << 21);
     hash ^= STBDS_ROTATE_RIGHT(hash,24);
@@ -1072,7 +1072,7 @@ size_t stbds_hash_bytes(void *p, size_t len, size_t seed)
 #endif
 }
 
-static int stbds_is_key_equal(void *a, size_t elemsize, void *key, size_t keysize, int mode, size_t i)
+static int stbds_is_key_equal(void *a, std::size_t elemsize, void *key, std::size_t keysize, int mode, std::size_t i)
 {
   if (mode >= STBDS_HM_STRING)
     return 0==strcmp((char *) key, * (char **) ((char *) a + elemsize*i));
@@ -1085,12 +1085,12 @@ static int stbds_is_key_equal(void *a, size_t elemsize, void *key, size_t keysiz
 
 #define stbds_hash_table(a)  ((stbds_hash_index *) stbds_header(a)->hash_table)
  
-void stbds_hmfree_func(void *a, size_t elemsize, size_t keyoff)
+void stbds_hmfree_func(void *a, std::size_t elemsize, std::size_t keyoff)
 {
   if (a == NULL) return;
   if (stbds_hash_table(a) != NULL) {
      if (stbds_hash_table(a)->string.mode == STBDS_SH_STRDUP) {
-       size_t i;
+       std::size_t i;
        // skip 0th element, which is default
        for (i=1; i < stbds_header(a)->length; ++i)
          STBDS_FREE(NULL, *(char**) ((char *) a + elemsize*i));
@@ -1101,14 +1101,14 @@ void stbds_hmfree_func(void *a, size_t elemsize, size_t keyoff)
   STBDS_FREE(NULL, stbds_header(a));
 }
 
-static ptrdiff_t stbds_hm_find_slot(void *a, size_t elemsize, void *key, size_t keysize, int mode)
+static ptrdiff_t stbds_hm_find_slot(void *a, std::size_t elemsize, void *key, std::size_t keysize, int mode)
 {
   void *raw_a = STBDS_HASH_TO_ARR(a,elemsize);
   stbds_hash_index *table = stbds_hash_table(raw_a);
-  size_t hash = mode >= STBDS_HM_STRING ? stbds_hash_string((char*)key,table->seed) : stbds_hash_bytes(key, keysize,table->seed);
-  size_t step = STBDS_BUCKET_LENGTH;
-  size_t limit,i;
-  size_t pos;
+  std::size_t hash = mode >= STBDS_HM_STRING ? stbds_hash_string((char*)key,table->seed) : stbds_hash_bytes(key, keysize,table->seed);
+  std::size_t step = STBDS_BUCKET_LENGTH;
+  std::size_t limit,i;
+  std::size_t pos;
   stbds_hash_bucket *bucket;
 
   if (hash < 2) hash += 2; // stored hash values are forbidden from being 0, so we can detect empty slots
@@ -1151,7 +1151,7 @@ static ptrdiff_t stbds_hm_find_slot(void *a, size_t elemsize, void *key, size_t 
   return -1;
 }
 
-void * stbds_hmget_key(void *a, size_t elemsize, void *key, size_t keysize, int mode)
+void * stbds_hmget_key(void *a, std::size_t elemsize, void *key, std::size_t keysize, int mode)
 {
   if (a == NULL) {
     // make it non-empty so we can return a temp
@@ -1181,7 +1181,7 @@ void * stbds_hmget_key(void *a, size_t elemsize, void *key, size_t keysize, int 
   }
 }
 
-void * stbds_hmput_default(void *a, size_t elemsize)
+void * stbds_hmput_default(void *a, std::size_t elemsize)
 {
   // three cases:
   //   a is NULL <- allocate
@@ -1198,7 +1198,7 @@ void * stbds_hmput_default(void *a, size_t elemsize)
 
 static char *stbds_strdup(char *str);
 
-void *stbds_hmput_key(void *a, size_t elemsize, void *key, size_t keysize, int mode)
+void *stbds_hmput_key(void *a, std::size_t elemsize, void *key, std::size_t keysize, int mode)
 {
   void *raw_a;
   stbds_hash_index *table;
@@ -1219,7 +1219,7 @@ void *stbds_hmput_key(void *a, size_t elemsize, void *key, size_t keysize, int m
 
   if (table == NULL || table->used_count >= table->used_count_threshold) {
     stbds_hash_index *nt;
-    size_t slot_count;
+    std::size_t slot_count;
 
     slot_count = (table == NULL) ? STBDS_BUCKET_LENGTH : table->slot_count*2;
     nt = stbds_make_hash_index(slot_count, table);
@@ -1232,10 +1232,10 @@ void *stbds_hmput_key(void *a, size_t elemsize, void *key, size_t keysize, int m
 
   // we iterate hash table explicitly because we want to track if we saw a tombstone
   {
-    size_t hash = mode >= STBDS_HM_STRING ? stbds_hash_string((char*)key,table->seed) : stbds_hash_bytes(key, keysize,table->seed);
-    size_t step = STBDS_BUCKET_LENGTH;
-    size_t limit,i;
-    size_t pos;
+    std::size_t hash = mode >= STBDS_HM_STRING ? stbds_hash_string((char*)key,table->seed) : stbds_hash_bytes(key, keysize,table->seed);
+    std::size_t step = STBDS_BUCKET_LENGTH;
+    std::size_t limit,i;
+    std::size_t pos;
     ptrdiff_t tombstone = -1;
     stbds_hash_bucket *bucket;
 
@@ -1296,11 +1296,11 @@ void *stbds_hmput_key(void *a, size_t elemsize, void *key, size_t keysize, int m
     {
       ptrdiff_t i = (ptrdiff_t) stbds_arrlen(a);
     // we want to do stbds_arraddn(1), but we can't use the macros since we don't have something of the right type
-      if ((size_t) i+1 > stbds_arrcap(a))
+      if ((std::size_t) i+1 > stbds_arrcap(a))
         *(void **) &a = stbds_arrgrowf(a, elemsize, 1, 0);
       raw_a = STBDS_ARR_TO_HASH(a,elemsize);
 
-      STBDS_ASSERT((size_t) i+1 <= stbds_arrcap(a));
+      STBDS_ASSERT((std::size_t) i+1 <= stbds_arrcap(a));
       stbds_header(a)->length = i+1;
       bucket = &table->storage[pos >> STBDS_BUCKET_SHIFT];
       bucket->hash[pos & STBDS_BUCKET_MASK] = hash;
@@ -1317,7 +1317,7 @@ void *stbds_hmput_key(void *a, size_t elemsize, void *key, size_t keysize, int m
   }
 }
 
-void * stbds_shmode_func(size_t elemsize, int mode)
+void * stbds_shmode_func(std::size_t elemsize, int mode)
 {
   void *a = stbds_arrgrowf(0, elemsize, 0, 1);
   stbds_hash_index *h;
@@ -1328,7 +1328,7 @@ void * stbds_shmode_func(size_t elemsize, int mode)
   return STBDS_ARR_TO_HASH(a,elemsize);
 }
 
-void * stbds_hmdel_key(void *a, size_t elemsize, void *key, size_t keysize, size_t keyoffset, int mode)
+void * stbds_hmdel_key(void *a, std::size_t elemsize, void *key, std::size_t keysize, std::size_t keyoffset, int mode)
 {
   if (a == NULL) {
     return 0;
@@ -1401,7 +1401,7 @@ static char *stbds_strdup(char *str)
 {
   // to keep replaceable allocator simple, we don't want to use strdup.
   // rolling our own also avoids problem of strdup vs _strdup
-  size_t len = strlen(str)+1;
+  std::size_t len = strlen(str)+1;
   char *p = (char*) STBDS_REALLOC(NULL, 0, len);
   memmove(p, str, len);
   return p;
@@ -1417,17 +1417,17 @@ static char *stbds_strdup(char *str)
 char *stbds_stralloc(stbds_string_arena *a, char *str)
 {
   char *p;
-  size_t len = strlen(str)+1;
+  std::size_t len = strlen(str)+1;
   if (len > a->remaining) {
     // compute the next blocksize
-    size_t blocksize = a->block;
+    std::size_t blocksize = a->block;
 
     // size is 512, 512, 1024, 1024, 2048, 2048, 4096, 4096, etc., so that
     // there are log(SIZE) allocations to free when we destroy the table
-    blocksize = (size_t) (STBDS_STRING_ARENA_BLOCKSIZE_MIN) << (blocksize>>1);
+    blocksize = (std::size_t) (STBDS_STRING_ARENA_BLOCKSIZE_MIN) << (blocksize>>1);
 
     // if size is under 1M, advance to next blocktype
-    if (blocksize < (size_t)(STBDS_STRING_ARENA_BLOCKSIZE_MAX))
+    if (blocksize < (std::size_t)(STBDS_STRING_ARENA_BLOCKSIZE_MAX))
       ++a->block;
 
     if (len > blocksize) {

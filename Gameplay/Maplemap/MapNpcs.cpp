@@ -18,7 +18,7 @@
 #include "MapNpcs.h"
 #include "Npc.h"
 
-#include "../Net/Packets/NpcInteractionPackets.h"
+#include "../../Net/Packets/NpcInteractionPackets.h"
 
 namespace ms
 {
@@ -33,7 +33,7 @@ namespace ms
 		{
 			const NpcSpawn& spawn = spawns.front();
 
-			int32_t oid = spawn.get_oid();
+			std::int32_t oid = spawn.get_oid();
 			Optional<MapObject> npc = npcs.get(oid);
 
 			if (npc)
@@ -50,7 +50,7 @@ namespace ms
 		spawns.emplace(std::move(spawn));
 	}
 
-	void MapNpcs::remove(int32_t oid)
+	void MapNpcs::remove(std::int32_t oid)
 	{
 		if (auto npc = npcs.get(oid))
 			npc->deactivate();

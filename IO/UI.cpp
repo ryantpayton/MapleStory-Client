@@ -114,10 +114,10 @@ namespace ms
 		if (focused)
 		{
 			// The window gained input focus
-			uint8_t sfxvolume = Setting<SFXVolume>::get().load();
+			std::uint8_t sfxvolume = Setting<SFXVolume>::get().load();
 			Sound::set_sfxvolume(sfxvolume);
 
-			uint8_t bgmvolume = Setting<BGMVolume>::get().load();
+			std::uint8_t bgmvolume = Setting<BGMVolume>::get().load();
 			Music::set_bgmvolume(bgmvolume);
 		}
 		else
@@ -174,7 +174,7 @@ namespace ms
 		state->doubleclick(pos);
 	}
 
-	void UI::send_key(int32_t keycode, bool pressed)
+	void UI::send_key(std::int32_t keycode, bool pressed)
 	{
 		if ((is_key_down[GLFW_KEY_LEFT_ALT] || is_key_down[GLFW_KEY_RIGHT_ALT]) && (is_key_down[GLFW_KEY_ENTER] || is_key_down[GLFW_KEY_KP_ENTER]))
 		{
@@ -398,7 +398,7 @@ namespace ms
 		state->drag_icon(icon);
 	}
 
-	void UI::add_keymapping(uint8_t no, uint8_t type, int32_t action)
+	void UI::add_keymapping(std::uint8_t no, std::uint8_t type, std::int32_t action)
 	{
 		keyboard.assign(no, type, action);
 	}
@@ -408,18 +408,18 @@ namespace ms
 		state->clear_tooltip(parent);
 	}
 
-	void UI::show_equip(Tooltip::Parent parent, int16_t slot)
+	void UI::show_equip(Tooltip::Parent parent, std::int16_t slot)
 	{
 		state->show_equip(parent, slot);
 	}
 
-	void UI::show_item(Tooltip::Parent parent, int32_t item_id)
+	void UI::show_item(Tooltip::Parent parent, std::int32_t item_id)
 	{
 		state->show_item(parent, item_id);
 	}
 
-	void UI::show_skill(Tooltip::Parent parent, int32_t skill_id,
-		int32_t level, int32_t masterlevel, int64_t expiration) {
+	void UI::show_skill(Tooltip::Parent parent, std::int32_t skill_id,
+		std::int32_t level, std::int32_t masterlevel, int64_t expiration) {
 
 		state->show_skill(parent, skill_id, level, masterlevel, expiration);
 	}
@@ -439,7 +439,7 @@ namespace ms
 		return state->get_uptime();
 	}
 
-	uint16_t UI::get_uplevel()
+	std::uint16_t UI::get_uplevel()
 	{
 		return state->get_uplevel();
 	}

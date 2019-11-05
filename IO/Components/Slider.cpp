@@ -21,7 +21,7 @@
 
 namespace ms
 {
-	Slider::Slider(int32_t t, Range<int16_t> ver, int16_t xp, int16_t ur, int16_t rm, std::function<void(bool)> om) : type(t), vertical(ver), x(xp), onmoved(om)
+	Slider::Slider(std::int32_t t, Range<int16_t> ver, std::int16_t xp, std::int16_t ur, std::int16_t rm, std::function<void(bool)> om) : type(t), vertical(ver), x(xp), onmoved(om)
 	{
 		start = Point<int16_t>(x, vertical.first());
 		end = Point<int16_t>(x, vertical.second());
@@ -80,7 +80,7 @@ namespace ms
 		enabled = en;
 	}
 
-	void Slider::setrows(int16_t nr, int16_t ur, int16_t rm)
+	void Slider::setrows(std::int16_t nr, std::int16_t ur, std::int16_t rm)
 	{
 		rowmax = rm - ur;
 
@@ -92,7 +92,7 @@ namespace ms
 		row = nr;
 	}
 
-	void Slider::setrows(int16_t ur, int16_t rm)
+	void Slider::setrows(std::int16_t ur, std::int16_t rm)
 	{
 		setrows(0, ur, rm);
 	}
@@ -159,7 +159,7 @@ namespace ms
 
 	Point<int16_t> Slider::getthumbpos() const
 	{
-		int16_t y =
+		std::int16_t y =
 			row < rowmax ?
 			vertical.first() + row * rowheight + buttonheight :
 			vertical.second() - buttonheight * 2 - 2;
@@ -175,8 +175,8 @@ namespace ms
 		{
 			if (pressed)
 			{
-				int16_t thumby = row * rowheight + buttonheight * 2;
-				int16_t delta = relative.y() - thumby;
+				std::int16_t thumby = row * rowheight + buttonheight * 2;
+				std::int16_t delta = relative.y() - thumby;
 
 				if (delta > rowheight / 2 && row < rowmax)
 				{
@@ -292,9 +292,9 @@ namespace ms
 				else if (cursorrow > rowmax)
 					cursorrow = rowmax;
 
-				int16_t delta = row - cursorrow;
+				std::int16_t delta = row - cursorrow;
 
-				for (size_t i = 0; i < 2; i++)
+				for (std::size_t i = 0; i < 2; i++)
 				{
 					if (delta > 0)
 					{

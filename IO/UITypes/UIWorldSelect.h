@@ -20,7 +20,7 @@
 #include "../UIElement.h"
 
 #include "../Components/ChatBalloon.h"
-#include "../Net/Login.h"
+#include "../../Net/Login.h"
 
 namespace ms
 {
@@ -36,7 +36,7 @@ namespace ms
 		void draw(float alpha) const override;
 
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 		void draw_world();
 		void add_world(World world);
@@ -45,15 +45,15 @@ namespace ms
 		void remove_selected();
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
 		void enter_world();
 		void toggle_recommended(bool active);
 		void clear_selected_world();
-		uint16_t get_next_world(uint16_t id, bool upward);
+		std::uint16_t get_next_world(std::uint16_t id, bool upward);
 
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			BT_WORLD0,	// Scania
 			BT_WORLD1,	// Bera
@@ -104,7 +104,7 @@ namespace ms
 			BT_QUITGAME
 		};
 
-		enum Worlds : uint16_t
+		enum Worlds : std::uint16_t
 		{
 			SCANIA,
 			BERA,
@@ -134,11 +134,11 @@ namespace ms
 		Point<int16_t> channelsrc_pos;
 		ChatBalloonHorizontal chatballoon;
 
-		uint8_t worldid;
-		uint8_t recommended_worldid;
-		uint8_t channelid;
-		uint8_t worldcount;
-		uint8_t recommended_worldcount;
+		std::uint8_t worldid;
+		std::uint8_t recommended_worldid;
+		std::uint8_t channelid;
+		std::uint8_t worldcount;
+		std::uint8_t recommended_worldcount;
 
 		std::vector<World> worlds;
 		std::vector<RecommendedWorld> recommended_worlds;

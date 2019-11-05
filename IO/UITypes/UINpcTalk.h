@@ -19,14 +19,14 @@
 
 #include "../UIElement.h"
 
-#include "../Graphics/Text.h"
+#include "../../Graphics/Text.h"
 
 namespace ms
 {
 	class UINpcTalk : public UIElement
 	{
 	public:
-		enum TalkType : int8_t
+		enum TalkType : std::int8_t
 		{
 			NONE = -1,
 			SENDOK,
@@ -50,13 +50,13 @@ namespace ms
 
 		void draw(float inter) const override;
 
-		void change_text(int32_t npcid, int8_t msgtype, int16_t style, int8_t speaker, const std::string& text);
+		void change_text(std::int32_t npcid, std::int8_t msgtype, std::int16_t style, std::int8_t speaker, const std::string& text);
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
-		TalkType get_by_value(int8_t value);
+		TalkType get_by_value(std::int8_t value);
 
 		enum Buttons
 		{
@@ -85,8 +85,8 @@ namespace ms
 		Text text;
 		Texture speaker;
 		Text name;
-		int16_t height;
-		int16_t vtile;
+		std::int16_t height;
+		std::int16_t vtile;
 		bool slider;
 
 		TalkType type;

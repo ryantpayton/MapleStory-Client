@@ -19,17 +19,17 @@
 
 namespace ms
 {
-	Gauge::Gauge(Texture front, int16_t max, float percent) : barfront(front), maximum(max), percentage(percent)
+	Gauge::Gauge(Texture front, std::int16_t max, float percent) : barfront(front), maximum(max), percentage(percent)
 	{
 		target = percentage;
 	}
 
-	Gauge::Gauge(Texture front, Texture mid, int16_t max, float percent) : barfront(front), barmid(mid), maximum(max), percentage(percent)
+	Gauge::Gauge(Texture front, Texture mid, std::int16_t max, float percent) : barfront(front), barmid(mid), maximum(max), percentage(percent)
 	{
 		target = percentage;
 	}
 
-	Gauge::Gauge(Texture front, Texture mid, Texture end, int16_t max, float percent) : barfront(front), barmid(mid), barend(end), maximum(max), percentage(percent)
+	Gauge::Gauge(Texture front, Texture mid, Texture end, std::int16_t max, float percent) : barfront(front), barmid(mid), barend(end), maximum(max), percentage(percent)
 	{
 		target = percentage;
 	}
@@ -38,7 +38,7 @@ namespace ms
 
 	void Gauge::draw(const DrawArgument& args) const
 	{
-		int16_t length = static_cast<int16_t>(percentage * maximum);
+		std::int16_t length = static_cast<int16_t>(percentage * maximum);
 
 		if (length > 0)
 		{

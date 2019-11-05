@@ -38,7 +38,7 @@ namespace ms
 	public:
 		// Player states which determine animation and state. 
 		// Values are used in movement packets (add 1 if facing left).
-		enum State : int8_t
+		enum State : std::int8_t
 		{
 			WALK = 2,
 			STAND = 4,
@@ -52,7 +52,7 @@ namespace ms
 			SIT = 20
 		};
 
-		static State by_value(int8_t value)
+		static State by_value(std::int8_t value)
 		{
 			return static_cast<State>(value);
 		}
@@ -60,23 +60,23 @@ namespace ms
 		// Draw look, nametag, effects and chat bubble.
 		void draw(double viewx, double viewy, float alpha) const override;
 		// Update look and movements.
-		int8_t update(const Physics& physics) override;
+		std::int8_t update(const Physics& physics) override;
 		// Return the current map layer, or 7 if on a ladder or rope.
-		int8_t get_layer() const override;
+		std::int8_t get_layer() const override;
 
 		// Check whether the character is invincible.
 		virtual bool is_invincible() const;
 		// Return the character's level.
-		virtual uint16_t get_level() const = 0;
+		virtual std::uint16_t get_level() const = 0;
 		// Return the character's level.
-		virtual int32_t get_skilllevel(int32_t skillid) const = 0;
+		virtual std::int32_t get_skilllevel(std::int32_t skillid) const = 0;
 		// Return the character's base attacking speed.
-		virtual int8_t get_integer_attackspeed() const = 0;
+		virtual std::int8_t get_integer_attackspeed() const = 0;
 
 		// Return the attack speed as a multiplier.
 		float get_real_attackspeed() const;
 		// Return the delay until applying an attack.
-		uint16_t get_attackdelay(size_t no) const;
+		std::uint16_t get_attackdelay(std::size_t no) const;
 
 		// Set if the character sprite is mirrored (true = facing left)
 		virtual void set_direction(bool flipped);
@@ -89,31 +89,31 @@ namespace ms
 		// Change the character's stance to it's regular attack.
 		void attack(bool degenerate);
 		// Set the afterimage for an attack.
-		void set_afterimage(int32_t skill_id);
+		void set_afterimage(std::int32_t skill_id);
 		// Return the current afterimage.
 		const Afterimage& get_afterimage() const;
 
 		// Display an animation as an effect with the character.
-		void show_attack_effect(Animation animation, int8_t z);
+		void show_attack_effect(Animation animation, std::int8_t z);
 		// Display an animation as an effect on top of the character.
 		void show_effect_id(CharEffect::Id toshow);
 		// Display the iron body skill animation.
 		void show_iron_body();
 		// Display damage over the characters head.
-		void show_damage(int32_t damage);
+		void show_damage(std::int32_t damage);
 		// Display a chat bubble with the specified line in it.
 		void speak(const std::string& line);
 		// Change a part of the character's look.
-		void change_look(Maplestat::Id stat, int32_t id);
+		void change_look(Maplestat::Id stat, std::int32_t id);
 		// Change the character's state by id.
-		void set_state(uint8_t statebyte);
+		void set_state(std::uint8_t statebyte);
 		// Change the character's face expression by id.
-		void set_expression(int32_t expression);
+		void set_expression(std::int32_t expression);
 
 		// Add a pet with the specified stats.
-		void add_pet(uint8_t index, int32_t iid, const std::string& name, int32_t uniqueid, Point<int16_t> pos, uint8_t stance, int32_t fhid);
+		void add_pet(std::uint8_t index, std::int32_t iid, const std::string& name, std::int32_t uniqueid, Point<int16_t> pos, std::uint8_t stance, std::int32_t fhid);
 		// Remove a pet with the specified index and reason.
-		void remove_pet(uint8_t index, bool hunger);
+		void remove_pet(std::uint8_t index, bool hunger);
 
 		// Return if the character is facing left.
 		bool getflip() const;
@@ -140,7 +140,7 @@ namespace ms
 		static void init();
 
 	protected:
-		Char(int32_t oid, const CharLook& look, const std::string& name);
+		Char(std::int32_t oid, const CharLook& look, const std::string& name);
 
 		// Update the character's animation with the given speed.
 		bool update(const Physics& physics, float speed);

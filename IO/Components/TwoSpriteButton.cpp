@@ -62,7 +62,7 @@ namespace ms
 		return Rectangle<int16_t>(absp, absp + dim);
 	}
 
-	int16_t TwoSpriteButton::width() const
+	std::int16_t TwoSpriteButton::width() const
 	{
 		bool selected = state == Button::State::MOUSEOVER || state == Button::State::PRESSED;
 

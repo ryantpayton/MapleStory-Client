@@ -19,8 +19,8 @@
 
 #include "../UIDragElement.h"
 
-#include "../Graphics/Text.h"
-#include "../Character/Charstats.h"
+#include "../../Graphics/Text.h"
+#include "../../Character/Charstats.h"
 
 namespace ms
 {
@@ -36,10 +36,10 @@ namespace ms
 		void draw(float alpha) const override;
 		void update() override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	private:
-		static constexpr int16_t center_start_x = 64;
+		static constexpr std::int16_t center_start_x = 64;
 		const CharStats& stats;
 
 		void update_buttons();
@@ -62,16 +62,16 @@ namespace ms
 			MAX
 		};
 
-		int32_t mapid;
-		int8_t type;
-		int16_t combined_text_width;
+		std::int32_t mapid;
+		std::int8_t type;
+		std::int16_t combined_text_width;
 		Point<int16_t> bt_map_pos;
 		Point<int16_t> bt_max_pos;
 		Point<int16_t> bt_min_pos;
-		int16_t bt_min_width;
-		int16_t bt_max_width;
-		int16_t bt_map_width;
-		int16_t final_pos;
+		std::int16_t bt_min_width;
+		std::int16_t bt_max_width;
+		std::int16_t bt_map_width;
+		std::int16_t final_pos;
 		Animation min_left;
 		Animation min_center;
 		Animation min_right;

@@ -20,11 +20,11 @@
 #include "nxfwd.hpp"
 #include <string>
 #include <cstdint>
-#include <cstddef>
+#include <cstdint>
 
 namespace nl {
     struct _file_data;
-    typedef std::pair<int32_t, int32_t> vector2i;
+    typedef std::pair<std::int32_t, std::int32_t> vector2i;
     class node {
     public:
         using difference_type = ptrdiff_t;
@@ -34,7 +34,7 @@ namespace nl {
         using iterator_category = std::random_access_iterator_tag;
         struct data;
         //Type of node data
-        enum class type : uint16_t {
+        enum class type : std::uint16_t {
             none = 0,
             integer = 1,
             real = 2,
@@ -110,12 +110,12 @@ namespace nl {
         bool get_bool() const;
         bool get_bool(bool) const;
         //Returns the x and y coordinates of the vector data value
-        int32_t x() const;
-        int32_t y() const;
+        std::int32_t x() const;
+        std::int32_t y() const;
         //The name of the node
         std::string name() const;
         //The number of children in the node
-        size_t size() const;
+        std::size_t size() const;
         //Gets the type of data contained within the node
         type data_type() const;
         //Returns the root node of the file this node was derived from
@@ -124,7 +124,7 @@ namespace nl {
         node resolve(std::string) const;
     private:
         node(data const *, _file_data const *);
-        node get_child(char const *, uint16_t) const;
+        node get_child(char const *, std::uint16_t) const;
         int64_t to_integer() const;
         double to_real() const;
         std::string to_string() const;

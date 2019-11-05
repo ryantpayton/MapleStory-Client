@@ -17,13 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Reactor.h"
 
-#include "../Util/Misc.h"
+#include "../../Util/Misc.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	Reactor::Reactor(int32_t o, int32_t r, int8_t s, Point<int16_t> p) : MapObject(o, p), rid(r), state(s)
+	Reactor::Reactor(std::int32_t o, std::int32_t r, std::int8_t s, Point<int16_t> p) : MapObject(o, p), rid(r), state(s)
 	{
 		std::string strid = string_format::extend_id(rid, 7);
 		nl::node src = nl::nx::reactor[strid + ".img"];
@@ -38,7 +38,7 @@ namespace ms
 		normal.draw(absp - shift, alpha);
 	}
 
-	void Reactor::destroy(int8_t, Point<int16_t>)
+	void Reactor::destroy(std::int8_t, Point<int16_t>)
 	{
 		deactivate();
 	}

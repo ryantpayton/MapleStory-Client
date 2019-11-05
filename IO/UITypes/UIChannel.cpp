@@ -21,7 +21,7 @@
 
 #include "../Components/MapleButton.h"
 #include "../Components/AreaButton.h"
-#include "../Audio/Audio.h"
+#include "../../Audio/Audio.h"
 
 #include <nlnx/nx.hpp>
 
@@ -29,7 +29,7 @@ namespace ms
 {
 	UIChannel::UIChannel() : UIDragElement<PosCHANNEL>(Point<int16_t>())
 	{
-		uint8_t selected_world = 1; // TODO: Need to get current world user is on
+		std::uint8_t selected_world = 1; // TODO: Need to get current world user is on
 		current_channel = 9; // TODO: Need to get current channel user is on
 		selected_channel = current_channel;
 		channel_count = 20; // TODO: Need to get total number of channels on world
@@ -50,10 +50,10 @@ namespace ms
 		channel[true] = Channel["channel1"];
 		channel[false] = Channel["channel0"];
 
-		size_t x = 0;
-		size_t y = 0;
+		std::size_t x = 0;
+		std::size_t y = 0;
 
-		for (size_t i = 0; i < channel_count; i++)
+		for (unsigned i = 0; i < channel_count; i++)
 		{
 			if (x >= 5)
 			{
@@ -92,7 +92,7 @@ namespace ms
 			channel[false].draw(DrawArgument(position.x() + current_channel_x, position.y() + current_channel_y));
 		}
 
-		for each (auto sprite in ch)
+		for(auto sprite : ch)
 			sprite.draw(position, inter);
 	}
 
@@ -100,11 +100,11 @@ namespace ms
 	{
 		UIElement::update();
 
-		for each (auto sprite in ch)
+		for(auto sprite : ch)
 			sprite.update();
 	}
 
-	void UIChannel::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIChannel::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -124,7 +124,7 @@ namespace ms
 				}
 				else
 				{
-					for (size_t i = 0; i < 3; i++)
+					for (std::size_t i = 0; i < 3; i++)
 						selected_channel += 5;
 				}
 
@@ -136,7 +136,7 @@ namespace ms
 					}
 					else
 					{
-						for (size_t i = 0; i < 3; i++)
+						for (std::size_t i = 0; i < 3; i++)
 							selected_channel += 5;
 					}
 				}
@@ -151,7 +151,7 @@ namespace ms
 				}
 				else
 				{
-					for (size_t i = 0; i < 3; i++)
+					for (std::size_t i = 0; i < 3; i++)
 						selected_channel -= 5;
 				}
 
@@ -163,7 +163,7 @@ namespace ms
 					}
 					else
 					{
-						for (size_t i = 0; i < 3; i++)
+						for (std::size_t i = 0; i < 3; i++)
 							selected_channel -= 5;
 					}
 				}
@@ -211,7 +211,7 @@ namespace ms
 	{
 		Cursor::State ret = clicked ? Cursor::State::CLICKING : Cursor::State::IDLE;
 
-		for (size_t i = 0; i < channel_count + Buttons::CH; i++)
+		for (std::size_t i = 0; i < channel_count + Buttons::CH; i++)
 		{
 			if (buttons[i]->is_active() && buttons[i]->bounds(position).contains(cursorpos))
 			{
@@ -259,7 +259,7 @@ namespace ms
 		return ret;
 	}
 
-	Button::State UIChannel::button_pressed(uint16_t buttonid)
+	Button::State UIChannel::button_pressed(std::uint16_t buttonid)
 	{
 		if (buttonid < Buttons::CH)
 		{
@@ -305,10 +305,10 @@ namespace ms
 
 	void UIChannel::update_selected_channel_position()
 	{
-		size_t x = 0;
-		size_t y = 0;
+		std::size_t x = 0;
+		std::size_t y = 0;
 
-		for (size_t i = 0; i < channel_count; i++)
+		for (std::size_t i = 0; i < channel_count; i++)
 		{
 			if (x >= 5)
 			{

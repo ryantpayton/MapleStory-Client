@@ -24,9 +24,9 @@ namespace ms
 		return false;
 	}
 
-	uint16_t Button::get_selected() const
+	std::uint16_t Button::get_selected() const
 	{
-		return uint16_t();
+		return std::uint16_t();
 	}
 
 	void Button::set_position(Point<int16_t> pos)

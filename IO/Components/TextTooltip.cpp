@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "TextTooltip.h"
 
-#include "../Constants.h"
+#include "../../Constants.h"
 
 #include <nlnx/nx.hpp>
 
@@ -38,16 +38,16 @@ namespace ms
 		if (text_label.empty())
 			return;
 
-		int16_t fillwidth = text_label.width();
-		int16_t fillheight = text_label.height();
+		std::int16_t fillwidth = text_label.width();
+		std::int16_t fillheight = text_label.height();
 
-		int16_t max_width = Constants::Constants::get().get_viewwidth();
-		int16_t max_height = Constants::Constants::get().get_viewheight();
-		int16_t cur_width = pos.x() + fillwidth + 21;
-		int16_t cur_height = pos.y() + fillheight + 40;
+		std::int16_t max_width = Constants::Constants::get().get_viewwidth();
+		std::int16_t max_height = Constants::Constants::get().get_viewheight();
+		std::int16_t cur_width = pos.x() + fillwidth + 21;
+		std::int16_t cur_height = pos.y() + fillheight + 40;
 
-		int16_t adj_x = cur_width - max_width;
-		int16_t adj_y = cur_height - max_height;
+		std::int16_t adj_x = cur_width - max_width;
+		std::int16_t adj_y = cur_height - max_height;
 
 		if (adj_x > 0)
 			pos.shift_x(adj_x * -1);

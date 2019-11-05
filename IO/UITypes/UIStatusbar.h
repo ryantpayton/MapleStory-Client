@@ -21,8 +21,8 @@
 
 #include "../Components/Charset.h"
 #include "../Components/Gauge.h"
-#include "../Character/CharStats.h"
-#include "../Graphics/SpecialText.h"
+#include "../../Character/CharStats.h"
+#include "../../Graphics/SpecialText.h"
 
 namespace ms
 {
@@ -48,7 +48,7 @@ namespace ms
 		void update() override;
 		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 		bool is_in_range(Point<int16_t> cursorpos) const override;
 
 		void toggle_qs();
@@ -56,10 +56,10 @@ namespace ms
 		bool is_menu_active();
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
-		static constexpr int16_t QUICKSLOT_MAX = 211;
+		static constexpr std::int16_t QUICKSLOT_MAX = 211;
 
 		float getexppercent() const;
 		float gethppercent() const;
@@ -75,7 +75,7 @@ namespace ms
 
 		Point<int16_t> get_quickslot_pos();
 
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			BT_CASHSHOP,
 			BT_MENU,
@@ -143,13 +143,13 @@ namespace ms
 		Point<int16_t> community_pos;
 		Point<int16_t> character_pos;
 		Point<int16_t> event_pos;
-		int16_t quickslot_min;
-		int16_t position_x;
-		int16_t position_y;
+		std::int16_t quickslot_min;
+		std::int16_t position_x;
+		std::int16_t position_y;
 
 		bool quickslot_active;
-		int16_t VWIDTH;
-		int16_t VHEIGHT;
+		std::int16_t VWIDTH;
+		std::int16_t VHEIGHT;
 
 		bool menu_active;
 		bool setting_active;

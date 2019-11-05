@@ -21,7 +21,7 @@
 
 #include "../Cursor.h"
 
-#include "../Graphics/Texture.h"
+#include "Graphics/Texture.h"
 
 #include <functional>
 #include <memory>
@@ -31,13 +31,13 @@ namespace ms
 	class Slider
 	{
 	public:
-		Slider(int32_t type, Range<int16_t> vertical, int16_t x, int16_t unitrows, int16_t rowmax, std::function<void(bool upwards)> onmoved);
+		Slider(std::int32_t type, Range<int16_t> vertical, std::int16_t x, std::int16_t unitrows, std::int16_t rowmax, std::function<void(bool upwards)> onmoved);
 		Slider();
 
 		bool isenabled() const;
 		void setenabled(bool enabled);
-		void setrows(int16_t newrow, int16_t unitrows, int16_t rowmax);
-		void setrows(int16_t unitrows, int16_t rowmax);
+		void setrows(std::int16_t newrow, std::int16_t unitrows, std::int16_t rowmax);
+		void setrows(std::int16_t unitrows, std::int16_t rowmax);
 		void setvertical(Range<int16_t> vertical);
 
 		void draw(Point<int16_t> position) const;
@@ -84,12 +84,12 @@ namespace ms
 		Range<int16_t> vertical;
 		Point<int16_t> start;
 		Point<int16_t> end;
-		int16_t type;
-		int16_t buttonheight;
-		int16_t rowheight;
-		int16_t x;
-		int16_t row;
-		int16_t rowmax;
+		std::int16_t type;
+		std::int16_t buttonheight;
+		std::int16_t rowheight;
+		std::int16_t x;
+		std::int16_t row;
+		std::int16_t rowmax;
 		bool scrolling;
 		bool enabled;
 

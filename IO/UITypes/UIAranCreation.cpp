@@ -23,13 +23,13 @@
 #include "UICharSelect.h"
 
 #include "../UI.h"
-#include "../Configuration.h"
+#include "../../Configuration.h"
 
 #include "../Components/MapleButton.h"
-#include "../Data/ItemData.h"
-#include "../Audio/Audio.h"
+#include "../../Data/ItemData.h"
+#include "../../Audio/Audio.h"
 
-#include "../Net/Packets/CharCreationPackets.h"
+#include "../../Net/Packets/CharCreationPackets.h"
 
 #include <nlnx/nx.hpp>
 
@@ -47,6 +47,7 @@ namespace ms
 		nl::node Login = nl::nx::ui["Login.img"];
 		nl::node Common = Login["Common"];
 		nl::node CustomizeChar = Login["CustomizeChar"]["2000"];
+		// nl::node back = nl::nx::map["Back"]["login.img"]["back"];
 		nl::node back = nl::nx::map001["Back"]["login.img"]["back"];
 		nl::node board = CustomizeChar["board"];
 		nl::node genderSelect = CustomizeChar["genderSelect"];
@@ -61,7 +62,7 @@ namespace ms
 		sprites_gender_select.emplace_back(board["boardBottom"], Point<int16_t>(491, 303));
 		sprites_lookboard.emplace_back(CustomizeChar["charSet"], Point<int16_t>(473, 93));
 
-		for (size_t i = 0; i <= 6; i++)
+		for (unsigned i = 0; i <= 6; i++)
 			sprites_lookboard.emplace_back(CustomizeChar["avatarSel"][i]["normal"], Point<int16_t>(504, 177 + (i * 18)));
 
 		buttons[Buttons::BT_CHARC_GENDER_M] = std::make_unique<MapleButton>(genderSelect["male"], Point<int16_t>(439, 96));
@@ -109,7 +110,7 @@ namespace ms
 
 		nl::node mkinfo = nl::nx::etc["MakeCharInfo.img"]["Info"];
 
-		for (size_t i = 0; i < 2; i++)
+		for (std::size_t i = 0; i < 2; i++)
 		{
 			bool f;
 			nl::node CharGender;
@@ -131,7 +132,7 @@ namespace ms
 
 				for (auto idnode : node)
 				{
-					int32_t value = idnode;
+					std::int32_t value = idnode;
 
 					switch (num)
 					{
@@ -142,10 +143,10 @@ namespace ms
 						hairs[f].push_back(value);
 						break;
 					case 2:
-						haircolors[f].push_back(static_cast<uint8_t>(value));
+						haircolors[f].push_back(static_cast<std::uint8_t>(value));
 						break;
 					case 3:
-						skins[f].push_back(static_cast<uint8_t>(value));
+						skins[f].push_back(static_cast<std::uint8_t>(value));
 						break;
 					case 4:
 						tops[f].push_back(value);
@@ -174,22 +175,22 @@ namespace ms
 
 	void UIAranCreation::draw(float inter) const
 	{
-		for (size_t i = 0; i < 2; i++)
-			for (size_t k = 0; k < 800; k += sky.width())
+		for (std::size_t i = 0; i < 2; i++)
+			for (std::size_t k = 0; k < 800; k += sky.width())
 				sky.draw(Point<int16_t>(k, (400 * i) - 100));
 
-		int16_t cloudx = static_cast<int16_t>(cloudfx) % 800;
+		std::int16_t cloudx = static_cast<int16_t>(cloudfx) % 800;
 		cloud.draw(Point<int16_t>(cloudx - cloud.width(), 300));
 		cloud.draw(Point<int16_t>(cloudx, 300));
 		cloud.draw(Point<int16_t>(cloudx + cloud.width(), 300));
 
 		if (!gender)
 		{
-			for (size_t i = 0; i < sprites_gender_select.size(); i++)
+			for (std::size_t i = 0; i < sprites_gender_select.size(); i++)
 			{
 				if (i == 1)
 				{
-					for (size_t f = 0; f <= 4; f++)
+					for (std::size_t f = 0; f <= 4; f++)
 						sprites_gender_select[i].draw(position + Point<int16_t>(0, 24 * f), inter);
 				}
 				else
@@ -315,7 +316,7 @@ namespace ms
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	void UIAranCreation::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIAranCreation::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -335,14 +336,14 @@ namespace ms
 				named = true;
 
 				std::string cname = namechar.get_text();
-				int32_t cface = faces[female][face];
-				int32_t chair = hairs[female][hair];
-				uint8_t chairc = haircolors[female][haircolor];
-				uint8_t cskin = skins[female][skin];
-				int32_t ctop = tops[female][top];
-				int32_t cbot = bots[female][bot];
-				int32_t cshoe = shoes[female][shoe];
-				int32_t cwep = weapons[female][weapon];
+				std::int32_t cface = faces[female][face];
+				std::int32_t chair = hairs[female][hair];
+				std::uint8_t chairc = haircolors[female][haircolor];
+				std::uint8_t cskin = skins[female][skin];
+				std::int32_t ctop = tops[female][top];
+				std::int32_t cbot = bots[female][bot];
+				std::int32_t cshoe = shoes[female][shoe];
+				std::int32_t cwep = weapons[female][weapon];
 
 				CreateCharPacket(cname, 2, cface, chair, chairc, cskin, ctop, cbot, cshoe, cwep, female).dispatch();
 
@@ -376,7 +377,7 @@ namespace ms
 		}
 	}
 
-	Button::State UIAranCreation::button_pressed(uint16_t buttonid)
+	Button::State UIAranCreation::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -586,7 +587,7 @@ namespace ms
 
 	const std::string& UIAranCreation::get_equipname(Equipslot::Id slot) const
 	{
-		if (int32_t item_id = newchar.get_equips().get_equip(slot))
+		if (std::int32_t item_id = newchar.get_equips().get_equip(slot))
 		{
 			return ItemData::get(item_id).get_name();
 		}

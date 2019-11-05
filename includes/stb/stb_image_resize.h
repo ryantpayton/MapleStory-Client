@@ -189,9 +189,9 @@ typedef unsigned short stbir_uint16;
 typedef unsigned int   stbir_uint32;
 #else
 #include <stdint.h>
-typedef uint8_t  stbir_uint8;
-typedef uint16_t stbir_uint16;
-typedef uint32_t stbir_uint32;
+typedef std::uint8_t  stbir_uint8;
+typedef std::uint16_t stbir_uint16;
+typedef std::int32_t stbir_uint32;
 #endif
 
 #ifndef STBIRDEF
@@ -1248,11 +1248,11 @@ static void stbir__decode_scanline(stbir__info* stbir_info, int n)
     int type = stbir_info->type;
     int colorspace = stbir_info->colorspace;
     int input_w = stbir_info->input_w;
-    size_t input_stride_bytes = stbir_info->input_stride_bytes;
+    std::size_t input_stride_bytes = stbir_info->input_stride_bytes;
     float* decode_buffer = stbir__get_decode_buffer(stbir_info);
     stbir_edge edge_horizontal = stbir_info->edge_horizontal;
     stbir_edge edge_vertical = stbir_info->edge_vertical;
-    size_t in_buffer_row_offset = stbir__edge_wrap(edge_vertical, n, stbir_info->input_h) * input_stride_bytes;
+    std::size_t in_buffer_row_offset = stbir__edge_wrap(edge_vertical, n, stbir_info->input_h) * input_stride_bytes;
     const void* input_data = (char *) stbir_info->input_data + in_buffer_row_offset;
     int max_x = input_w + stbir_info->horizontal_filter_pixel_margin;
     int decode = STBIR__DECODE(type, colorspace);
@@ -2288,9 +2288,9 @@ static int stbir__resize_allocated(stbir__info *info,
     void* output_data, int output_stride_in_bytes,
     int alpha_channel, stbir_uint32 flags, stbir_datatype type,
     stbir_edge edge_horizontal, stbir_edge edge_vertical, stbir_colorspace colorspace,
-    void* tempmem, size_t tempmem_size_in_bytes)
+    void* tempmem, std::size_t tempmem_size_in_bytes)
 {
-    size_t memory_required = stbir__calculate_memory(info);
+    std::size_t memory_required = stbir__calculate_memory(info);
 
     int width_stride_input = input_stride_in_bytes ? input_stride_in_bytes : info->channels * info->input_w * stbir__type_size[type];
     int width_stride_output = output_stride_in_bytes ? output_stride_in_bytes : info->channels * info->output_w * stbir__type_size[type];
@@ -2302,7 +2302,7 @@ static int stbir__resize_allocated(stbir__info *info,
     unsigned char overwrite_output_after_pre[OVERWRITE_ARRAY_SIZE];
     unsigned char overwrite_tempmem_after_pre[OVERWRITE_ARRAY_SIZE];
 
-    size_t begin_forbidden = width_stride_output * (info->output_h - 1) + info->output_w * info->channels * stbir__type_size[type];
+    std::size_t begin_forbidden = width_stride_output * (info->output_h - 1) + info->output_w * info->channels * stbir__type_size[type];
     memcpy(overwrite_output_before_pre, &((unsigned char*)output_data)[-OVERWRITE_ARRAY_SIZE], OVERWRITE_ARRAY_SIZE);
     memcpy(overwrite_output_after_pre, &((unsigned char*)output_data)[begin_forbidden], OVERWRITE_ARRAY_SIZE);
     memcpy(overwrite_tempmem_before_pre, &((unsigned char*)tempmem)[-OVERWRITE_ARRAY_SIZE], OVERWRITE_ARRAY_SIZE);
@@ -2382,7 +2382,7 @@ static int stbir__resize_allocated(stbir__info *info,
         info->ring_buffer = STBIR__NEXT_MEMPTR(info->decode_buffer, float);
         info->encode_buffer = STBIR__NEXT_MEMPTR(info->ring_buffer, float);
 
-        STBIR_ASSERT((size_t)STBIR__NEXT_MEMPTR(info->encode_buffer, unsigned char) == (size_t)tempmem + tempmem_size_in_bytes);
+        STBIR_ASSERT((std::size_t)STBIR__NEXT_MEMPTR(info->encode_buffer, unsigned char) == (std::size_t)tempmem + tempmem_size_in_bytes);
     }
     else
     {
@@ -2390,7 +2390,7 @@ static int stbir__resize_allocated(stbir__info *info,
         info->ring_buffer = STBIR__NEXT_MEMPTR(info->horizontal_buffer, float);
         info->encode_buffer = NULL;
 
-        STBIR_ASSERT((size_t)STBIR__NEXT_MEMPTR(info->ring_buffer, unsigned char) == (size_t)tempmem + tempmem_size_in_bytes);
+        STBIR_ASSERT((std::size_t)STBIR__NEXT_MEMPTR(info->ring_buffer, unsigned char) == (std::size_t)tempmem + tempmem_size_in_bytes);
     }
 
 #undef STBIR__NEXT_MEMPTR
@@ -2432,7 +2432,7 @@ static int stbir__resize_arbitrary(
 {
     stbir__info info;
     int result;
-    size_t memory_required;
+    std::size_t memory_required;
     void* extra_memory;
 
     stbir__setup(&info, input_w, input_h, output_w, output_h, channels);

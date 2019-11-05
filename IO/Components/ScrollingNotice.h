@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Graphics/Geometry.h"
-#include "../Template/Interpolated.h"
+#include "Graphics/Geometry.h"
+#include "../../Template/Interpolated.h"
 
 namespace ms
 {
@@ -38,6 +38,6 @@ namespace ms
 		Text notice;
 		Linear<double> xpos;
 		bool active;
-		int16_t width;
+		std::int16_t width;
 	};
 }

@@ -83,7 +83,7 @@ namespace ms
 		}
 	}
 
-	Button::State UIElement::button_pressed(uint16_t) { return Button::State::DISABLED; }
+	Button::State UIElement::button_pressed(std::uint16_t) { return Button::State::DISABLED; }
 	bool UIElement::send_icon(const Icon&, Point<int16_t>) { return true; }
 
 	void UIElement::doubleclick(Point<int16_t>) {}
@@ -154,5 +154,5 @@ namespace ms
 	}
 
 	void UIElement::send_scroll(double) {}
-	void UIElement::send_key(int32_t, bool, bool) {}
+	void UIElement::send_key(std::int32_t, bool, bool) {}
 }

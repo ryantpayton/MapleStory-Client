@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Graphics/Texture.h"
-#include "../Template/BoolPair.h"
-#include "../Graphics/SpecialText.h"
+#include "../../Graphics/Texture.h"
+#include "../../Template/BoolPair.h"
+#include "../../Graphics/SpecialText.h"
 
 namespace ms
 {

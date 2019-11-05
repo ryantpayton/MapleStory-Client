@@ -51,21 +51,21 @@ namespace ms
 
 	World LoginParser::parse_world(InPacket& recv)
 	{
-		int8_t wid = recv.read_byte();
+		std::int8_t wid = recv.read_byte();
 
 		if (wid == -1)
 			return { {}, {}, {}, 0, 0, wid };
 
 		std::string name = recv.read_string();
-		uint8_t flag = recv.read_byte();
+		std::uint8_t flag = recv.read_byte();
 		std::string message = recv.read_string();
 
 		recv.skip(5);
 
-		std::vector<int32_t> chloads;
-		uint8_t channelcount = recv.read_byte();
+		std::vector<std::int32_t> chloads;
+		std::uint8_t channelcount = recv.read_byte();
 
-		for (uint8_t i = 0; i < channelcount; ++i)
+		for (std::uint8_t i = 0; i < channelcount; ++i)
 		{
 			recv.read_string(); // channel name
 
@@ -82,7 +82,7 @@ namespace ms
 
 	RecommendedWorld LoginParser::parse_recommended_world(InPacket& recv)
 	{
-		int32_t wid = recv.read_int();
+		std::int32_t wid = recv.read_int();
 
 		if (wid == -1)
 			return { {}, wid };
@@ -94,7 +94,7 @@ namespace ms
 
 	CharEntry LoginParser::parse_charentry(InPacket& recv)
 	{
-		int32_t cid = recv.read_int();
+		std::int32_t cid = recv.read_int();
 		StatsEntry stats = parse_stats(recv);
 		LookEntry look = parse_look(recv);
 
@@ -102,12 +102,12 @@ namespace ms
 
 		if (recv.read_bool())
 		{
-			int32_t currank = recv.read_int();
-			int32_t rankmv = recv.read_int();
-			int32_t curjobrank = recv.read_int();
-			int32_t jobrankmv = recv.read_int();
-			int8_t rankmc = (rankmv > 0) ? '+' : (rankmv < 0) ? '-' : '=';
-			int8_t jobrankmc = (jobrankmv > 0) ? '+' : (jobrankmv < 0) ? '-' : '=';
+			std::int32_t currank = recv.read_int();
+			std::int32_t rankmv = recv.read_int();
+			std::int32_t curjobrank = recv.read_int();
+			std::int32_t jobrankmv = recv.read_int();
+			std::int8_t rankmc = (rankmv > 0) ? '+' : (rankmv < 0) ? '-' : '=';
+			std::int8_t jobrankmc = (jobrankmv > 0) ? '+' : (jobrankmv < 0) ? '-' : '=';
 
 			stats.rank = std::make_pair(currank, rankmc);
 			stats.jobrank = std::make_pair(curjobrank, jobrankmc);
@@ -127,10 +127,10 @@ namespace ms
 		recv.read_int();	// face
 		recv.read_int();	// hair
 
-		for (size_t i = 0; i < 3; i++)
+		for (std::size_t i = 0; i < 3; i++)
 			statsentry.petids.push_back(recv.read_long());
 
-		statsentry.stats[Maplestat::Id::LEVEL] = recv.read_short();
+		statsentry.stats[Maplestat::Id::LEVEL] = recv.read_byte();
 		statsentry.stats[Maplestat::Id::JOB] = recv.read_short();
 		statsentry.stats[Maplestat::Id::STR] = recv.read_short();
 		statsentry.stats[Maplestat::Id::DEX] = recv.read_short();
@@ -167,7 +167,7 @@ namespace ms
 
 		look.hairid = recv.read_int();
 
-		uint8_t eqslot = recv.read_byte();
+		std::uint8_t eqslot = recv.read_byte();
 
 		while (eqslot != 0xFF)
 		{
@@ -175,7 +175,7 @@ namespace ms
 			eqslot = recv.read_byte();
 		}
 
-		uint8_t mskeqslot = recv.read_byte();
+		std::uint8_t mskeqslot = recv.read_byte();
 
 		while (mskeqslot != 0xFF)
 		{
@@ -185,7 +185,7 @@ namespace ms
 
 		look.maskedequips[-111] = recv.read_int();
 
-		for (uint8_t i = 0; i < 3; i++)
+		for (std::uint8_t i = 0; i < 3; i++)
 			look.petids.push_back(recv.read_int());
 
 		return look;

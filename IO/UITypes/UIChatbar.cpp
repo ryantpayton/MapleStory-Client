@@ -19,7 +19,7 @@
 
 #include "../Components/MapleButton.h"
 
-#include "../Net/Packets/MessagingPackets.h"
+#include "../../Net/Packets/MessagingPackets.h"
 
 #include <nlnx/nx.hpp>
 
@@ -46,7 +46,7 @@ namespace ms
 		chatspace[2] = view["min"]["bottom"];
 		chatspace[3] = view["drag"];
 
-		int16_t chattop_y = getchattop(true) - 33;
+		std::int16_t chattop_y = getchattop(true) - 33;
 		closechat = Point<int16_t>(387, 21);
 
 		buttons[Buttons::BT_OPENCHAT] = std::make_unique<MapleButton>(view["btMax"], Point<int16_t>(391, -7));
@@ -64,7 +64,7 @@ namespace ms
 		chattab_y = chattop_y;
 		chattab_span = 54;
 
-		for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
+		for (std::size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
 		{
 			buttons[Buttons::BT_TAB_0 + i] = std::make_unique<MapleButton>(view["tab"], Point<int16_t>(chattab_x + (i * chattab_span), chattab_y));
 			buttons[Buttons::BT_TAB_0 + i]->set_active(chatopen ? true : false);
@@ -90,7 +90,7 @@ namespace ms
 			{
 				if (msg.size() > 0)
 				{
-					size_t last = msg.find_last_not_of(' ');
+					std::size_t last = msg.find_last_not_of(' ');
 
 					if (last != std::string::npos)
 					{
@@ -167,7 +167,7 @@ namespace ms
 	{
 		UIElement::draw_sprites(inter);
 
-		int16_t chattop = getchattop(chatopen);
+		std::int16_t chattop = getchattop(chatopen);
 
 		if (chatopen)
 		{
@@ -181,16 +181,16 @@ namespace ms
 
 			//slider.draw(position);
 
-			int16_t yshift = chattop;
+			std::int16_t yshift = chattop;
 
-			for (size_t i = 0; i < chatrows; i++)
+			for (std::size_t i = 0; i < chatrows; i++)
 			{
-				int16_t rowid = rowpos - i;
+				std::int16_t rowid = rowpos - i;
 
 				if (!rowtexts.count(rowid))
 					break;
 
-				int16_t textheight = rowtexts.at(rowid).height() / CHATROWHEIGHT;
+				std::int16_t textheight = rowtexts.at(rowid).height() / CHATROWHEIGHT;
 
 				while (textheight > 0)
 				{
@@ -222,7 +222,7 @@ namespace ms
 		UIElement::draw_buttons(inter);
 
 		if (chatopen)
-			for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
+			for (std::size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
 				chattab_text[ChatTab::CHT_ALL + i].draw(position + Point<int16_t>(chattab_x + (i * chattab_span) + 25, chattab_y - 3));
 	}
 
@@ -230,7 +230,7 @@ namespace ms
 	{
 		UIElement::update();
 
-		for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
+		for (std::size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
 			buttons[BT_TAB_0 + i]->set_position(Point<int16_t>(chattab_x + (i * chattab_span), chattab_y));
 
 		buttons[Buttons::BT_TAB_0 + ChatTab::NUM_CHATTAB]->set_position(Point<int16_t>(chattab_x + (ChatTab::NUM_CHATTAB * chattab_span), chattab_y));
@@ -242,7 +242,7 @@ namespace ms
 			iter.second -= Constants::TIMESTEP;
 	}
 
-	void UIChatbar::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIChatbar::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -280,9 +280,9 @@ namespace ms
 		Point<int16_t> bounds_lt = bounds.getlt();
 		Point<int16_t> bounds_rb = bounds.getrb();
 
-		int16_t chattab_height = 20;
-		int16_t bounds_rb_y = bounds_rb.y();
-		int16_t bounds_lt_y = bounds_lt.y() + chattab_height;
+		std::int16_t chattab_height = 20;
+		std::int16_t bounds_rb_y = bounds_rb.y();
+		std::int16_t bounds_lt_y = bounds_lt.y() + chattab_height;
 
 		auto chattop_rb = Point<int16_t>(bounds_rb.x() - 1, bounds_rb_y - 27);
 		auto chattop = Rectangle<int16_t>(Point<int16_t>(bounds_lt.x() + 1, bounds_lt_y), chattop_rb);
@@ -302,7 +302,7 @@ namespace ms
 		{
 			if (clicking)
 			{
-				int16_t ydelta = cursorpos.y() - bounds_rb_y + 10;
+				std::int16_t ydelta = cursorpos.y() - bounds_rb_y + 10;
 
 				while (ydelta > 0 && chatrows > MINCHATROWS)
 				{
@@ -463,7 +463,7 @@ namespace ms
 		buttons[Buttons::BT_OPENCHAT]->set_active(!chat_open);
 		buttons[Buttons::BT_CLOSECHAT]->set_active(chat_open);
 
-		for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
+		for (std::size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
 			buttons[Buttons::BT_TAB_0 + i]->set_active(chat_open);
 
 		buttons[Buttons::BT_TAB_0 + ChatTab::NUM_CHATTAB]->set_active(chat_open);
@@ -511,7 +511,7 @@ namespace ms
 		return chatopen;
 	}
 
-	Button::State UIChatbar::button_pressed(uint16_t buttonid)
+	Button::State UIChatbar::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -525,7 +525,7 @@ namespace ms
 		case Buttons::BT_TAB_3:
 		case Buttons::BT_TAB_4:
 		case Buttons::BT_TAB_5:
-			for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
+			for (std::size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
 			{
 				buttons[Buttons::BT_TAB_0 + i]->set_state(Button::State::NORMAL);
 				chattab_text[ChatTab::CHT_ALL + i].change_color(Color::Name::DUSTYGRAY);
@@ -541,7 +541,7 @@ namespace ms
 		return Button::State::NORMAL;
 	}
 
-	int16_t UIChatbar::getchattop(bool chat_open) const
+	std::int16_t UIChatbar::getchattop(bool chat_open) const
 	{
 		if (chat_open)
 			return getchatbarheight() * -1;
@@ -549,14 +549,14 @@ namespace ms
 			return -1;
 	}
 
-	int16_t UIChatbar::getchatbarheight() const
+	std::int16_t UIChatbar::getchatbarheight() const
 	{
 		return 15 + chatrows * CHATROWHEIGHT;
 	}
 
 	Rectangle<int16_t> UIChatbar::getbounds(Point<int16_t> additional_area) const
 	{
-		int16_t screen_adj = (chatopen) ? 35 : 16;
+		std::int16_t screen_adj = (chatopen) ? 35 : 16;
 
 		auto absp = position + Point<int16_t>(0, getchattop(chatopen));
 		auto da = absp + additional_area;

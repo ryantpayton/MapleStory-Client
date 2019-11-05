@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // NoLifeNx - Part of the NoLifeStory project                               //
-// Copyright © 2013 Peter Atashian                                          //
+// Copyright ï¿½ 2013 Peter Atashian                                          //
 //                                                                          //
 // This program is free software: you can redistribute it and/or modify     //
 // it under the terms of the GNU Affero General Public License as           //
@@ -23,14 +23,14 @@
 namespace nl {
 #pragma pack(push, 1)
     struct file::header {
-        uint32_t const magic;
-        uint32_t const node_count;
+        std::int32_t const magic;
+        std::int32_t const node_count;
         uint64_t const node_offset;
-        uint32_t const string_count;
+        std::int32_t const string_count;
         uint64_t const string_offset;
-        uint32_t const bitmap_count;
+        std::int32_t const bitmap_count;
         uint64_t const bitmap_offset;
-        uint32_t const audio_count;
+        std::int32_t const audio_count;
         uint64_t const audio_offset;
     };
 #pragma pack(pop)
@@ -46,7 +46,7 @@ namespace nl {
         void * map = nullptr;
 #else
         int file_handle = 0;
-        size_t size = 0;
+        std::size_t size = 0;
 #endif
     };
 }

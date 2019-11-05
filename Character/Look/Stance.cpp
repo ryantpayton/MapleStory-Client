@@ -17,13 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Stance.h"
 
-#include "../Console.h"
+#include "../../Console.h"
 
 namespace ms
 {
-	Stance::Id Stance::by_state(int8_t state)
+	Stance::Id Stance::by_state(std::int8_t state)
 	{
-		int8_t index = (state / 2) - 1;
+		std::int8_t index = (state / 2) - 1;
 		if (index < 0 || index > 10)
 			return WALK1;
 
@@ -36,7 +36,7 @@ namespace ms
 		return statevalues[index];
 	}
 
-	Stance::Id Stance::by_id(uint8_t id)
+	Stance::Id Stance::by_id(std::uint8_t id)
 	{
 		if (id <= NONE || id >= LENGTH)
 			return NONE;

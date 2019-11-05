@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Graphics/Texture.h"
+#include "Graphics/Texture.h"
 
 #include <unordered_map>
 
@@ -36,13 +36,13 @@ namespace ms
 		Charset(nl::node source, Alignment alignment);
 		Charset();
 
-		void draw(int8_t character, const DrawArgument& args) const;
-		int16_t draw(const std::string& text, const DrawArgument& args) const;
-		int16_t draw(const std::string& text, int16_t hspace, const DrawArgument& args) const;
-		int16_t getw(int8_t character) const;
+		void draw(std::int8_t character, const DrawArgument& args) const;
+		std::int16_t draw(const std::string& text, const DrawArgument& args) const;
+		std::int16_t draw(const std::string& text, std::int16_t hspace, const DrawArgument& args) const;
+		std::int16_t getw(std::int8_t character) const;
 
 	private:
-		std::unordered_map<int8_t, Texture> chars;
+		std::unordered_map<std::int8_t, Texture> chars;
 		Alignment alignment;
 	};
 }

@@ -20,13 +20,13 @@
 #include "../UI.h"
 
 #include "../Components/MapleButton.h"
-#include "../Audio/Audio.h"
+#include "../../Audio/Audio.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	UILoginNotice::UILoginNotice(uint16_t message, std::function<void()> okhandler, std::function<void()> cancelhandler) : okhandler(okhandler), cancelhandler(cancelhandler)
+	UILoginNotice::UILoginNotice(std::uint16_t message, std::function<void()> okhandler, std::function<void()> cancelhandler) : okhandler(okhandler), cancelhandler(cancelhandler)
 	{
 		multiple = false;
 
@@ -65,15 +65,15 @@ namespace ms
 		dimension = Texture(backgrnd).get_dimensions();
 	}
 
-	UILoginNotice::UILoginNotice(uint16_t message, std::function<void()> okhandler) : UILoginNotice(message, okhandler, []() {}) {}
-	UILoginNotice::UILoginNotice(uint16_t message) : UILoginNotice(message, []() {}) {}
+	UILoginNotice::UILoginNotice(std::uint16_t message, std::function<void()> okhandler) : UILoginNotice(message, okhandler, []() {}) {}
+	UILoginNotice::UILoginNotice(std::uint16_t message) : UILoginNotice(message, []() {}) {}
 
 	void UILoginNotice::draw(float alpha) const
 	{
 		UIElement::draw(alpha);
 	}
 
-	void UILoginNotice::send_key(int32_t keycode, bool pressed, bool escape)
+	void UILoginNotice::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -94,7 +94,7 @@ namespace ms
 		}
 	}
 
-	Button::State UILoginNotice::button_pressed(uint16_t buttonid)
+	Button::State UILoginNotice::button_pressed(std::uint16_t buttonid)
 	{
 		if (buttonid == Buttons::YES)
 			okhandler();
@@ -129,7 +129,7 @@ namespace ms
 		UIElement::draw(alpha);
 	}
 
-	void UIQuitConfirm::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIQuitConfirm::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -145,7 +145,7 @@ namespace ms
 		}
 	}
 
-	Button::State UIQuitConfirm::button_pressed(uint16_t buttonid)
+	Button::State UIQuitConfirm::button_pressed(std::uint16_t buttonid)
 	{
 		if (buttonid == BT_OK)
 			UI::get().quit();
@@ -154,7 +154,7 @@ namespace ms
 		return Button::PRESSED;
 	}
 
-	UIClassConfirm::UIClassConfirm(uint8_t selected_class, bool unavailable, std::function<void()> okhandler) : okhandler(okhandler)
+	UIClassConfirm::UIClassConfirm(std::uint8_t selected_class, bool unavailable, std::function<void()> okhandler) : okhandler(okhandler)
 	{
 		nl::node RaceSelect = nl::nx::ui["Login.img"]["RaceSelect_new"];
 		nl::node type = unavailable ? RaceSelect["deny"] : RaceSelect["confirm"];
@@ -303,7 +303,7 @@ namespace ms
 		return Cursor::State::LEAF;
 	}
 
-	void UIClassConfirm::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIClassConfirm::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -314,7 +314,7 @@ namespace ms
 		}
 	}
 
-	Button::State UIClassConfirm::button_pressed(uint16_t buttonid)
+	Button::State UIClassConfirm::button_pressed(std::uint16_t buttonid)
 	{
 		deactivate();
 
@@ -343,14 +343,14 @@ namespace ms
 		UIElement::draw(alpha);
 	}
 
-	void UIKeySelect::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIKeySelect::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && !login)
 			if (escape || keycode == KeyAction::Id::RETURN)
 				deactivate();
 	}
 
-	Button::State UIKeySelect::button_pressed(uint16_t buttonid)
+	Button::State UIKeySelect::button_pressed(std::uint16_t buttonid)
 	{
 		bool alternate = (buttonid == Buttons::TYPEA) ? false : true;
 
@@ -388,7 +388,7 @@ namespace ms
 		UIElement::draw(alpha);
 	}
 
-	void UIKeyConfirm::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIKeyConfirm::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -399,7 +399,7 @@ namespace ms
 		}
 	}
 
-	Button::State UIKeyConfirm::button_pressed(uint16_t buttonid)
+	Button::State UIKeyConfirm::button_pressed(std::uint16_t buttonid)
 	{
 		confirm();
 

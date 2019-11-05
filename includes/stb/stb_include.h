@@ -49,14 +49,14 @@ char *stb_include_file(char *filename, char *inject, char *path_to_includes, cha
 #include <stdlib.h>
 #include <string.h>
 
-static char *stb_include_load_file(char *filename, size_t *plen)
+static char *stb_include_load_file(char *filename, std::size_t *plen)
 {
    char *text;
-   size_t len;
+   std::size_t len;
    FILE *f = fopen(filename, "rb");
    if (f == 0) return 0;
    fseek(f, 0, SEEK_END);
-   len = (size_t) ftell(f);
+   len = (std::size_t) ftell(f);
    if (plen) *plen = len;
    text = (char *) malloc(len+1);
    if (text == 0) return 0;
@@ -166,7 +166,7 @@ static void stb_include_itoa(char str[9], int n)
    }
 }
 
-static char *stb_include_append(char *str, size_t *curlen, char *addstr, size_t addlen)
+static char *stb_include_append(char *str, std::size_t *curlen, char *addstr, std::size_t addlen)
 {
    str = (char *) realloc(str, *curlen + addlen);
    memcpy(str + *curlen, addstr, addlen);
@@ -179,9 +179,9 @@ char *stb_include_string(char *str, char *inject, char *path_to_includes, char *
    char temp[4096];
    include_info *inc_list;
    int i, num = stb_include_find_includes(str, &inc_list);
-   size_t source_len = strlen(str);
+   std::size_t source_len = strlen(str);
    char *text=0;
-   size_t textlen=0, last=0;
+   std::size_t textlen=0, last=0;
    for (i=0; i < num; ++i) {
       text = stb_include_append(text, &textlen, str+last, inc_list[i].offset - last);
       // write out line directive for the include
@@ -248,7 +248,7 @@ char *stb_include_strings(char **strs, int count, char *inject, char *path_to_in
    char *text;
    char *result;
    int i;
-   size_t length=0;
+   std::size_t length=0;
    for (i=0; i < count; ++count)
       length += strlen(strs[i]);
    text = (char *) malloc(length+1);
@@ -264,7 +264,7 @@ char *stb_include_strings(char **strs, int count, char *inject, char *path_to_in
 
 char *stb_include_file(char *filename, char *inject, char *path_to_includes, char error[256])
 {
-   size_t len;
+   std::size_t len;
    char *result;
    char *text = stb_include_load_file(filename, &len);
    if (text == NULL) {

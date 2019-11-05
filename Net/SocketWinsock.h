@@ -28,9 +28,9 @@
 namespace ms
 {
 #ifdef USE_CRYPTO
-	const size_t HANDSHAKE_LEN = 16;
+	const std::size_t HANDSHAKE_LEN = 16;
 #else
-	const size_t HANDSHAKE_LEN = 2;
+	const std::size_t HANDSHAKE_LEN = 2;
 #endif
 
 	class SocketWinsock
@@ -39,13 +39,13 @@ namespace ms
 		bool open(const char* address, const char* port);
 		bool close();
 
-		bool dispatch(const int8_t* bytes, size_t length) const;
-		size_t receive(bool* connected);
-		const int8_t* get_buffer() const;
+		bool dispatch(const std::int8_t* bytes, std::size_t length) const;
+		std::size_t receive(bool* connected);
+		const std::int8_t* get_buffer() const;
 
 	private:
 		uint64_t sock;
-		int8_t buffer[MAX_PACKET_LENGTH];
+		std::int8_t buffer[MAX_PACKET_LENGTH];
 	};
 }
 #endif

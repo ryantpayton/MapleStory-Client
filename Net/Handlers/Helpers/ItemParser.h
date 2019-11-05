@@ -17,13 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Net/InPacket.h"
-#include "../Character/Inventory/Inventory.h"
+#include "../../InPacket.h"
+#include "../../../Character/Inventory/Inventory.h"
 
 namespace ms
 {
 	namespace ItemParser
 	{
-		void parse_item(InPacket& recv, InventoryType::Id invtype, int16_t slot, Inventory& inventory);
+		void parse_item(InPacket& recv, InventoryType::Id invtype, std::int16_t slot, Inventory& inventory);
 	}
 }

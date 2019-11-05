@@ -27,7 +27,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-#include <Windows.h>
+// #include <Windows.h>
 
 namespace ms
 {
@@ -96,8 +96,8 @@ namespace ms
 
 	void cursor_callback(GLFWwindow*, double xpos, double ypos)
 	{
-		int16_t x = static_cast<int16_t>(xpos);
-		int16_t y = static_cast<int16_t>(ypos);
+		std::int16_t x = static_cast<int16_t>(xpos);
+		std::int16_t y = static_cast<int16_t>(ypos);
 		Point<int16_t> pos = Point<int16_t>(x, y);
 		UI::get().send_cursor(pos);
 	}
@@ -145,8 +145,8 @@ namespace ms
 			glfwDestroyWindow(glwnd);
 
 		glwnd = glfwCreateWindow(
-			width,
-			height,
+			800,
+			600,
 			Configuration::get().get_title().c_str(),
 			fullscreen ? glfwGetPrimaryMonitor() : nullptr,
 			context
@@ -173,21 +173,21 @@ namespace ms
 		glfwSetScrollCallback(glwnd, scroll_callback);
 		glfwSetWindowCloseCallback(glwnd, close_callback);
 
-		char buf[256];
-		GetCurrentDirectoryA(256, buf);
-		strcat(buf, "\\Icon.png");
-
-		GLFWimage images[1];
-
-		auto stbi = stbi_load(buf, &images[0].width, &images[0].height, 0, 4);
-
-		if (stbi == NULL)
-			return Error(Error::Code::MISSING_ICON, stbi_failure_reason());
-
-		images[0].pixels = stbi;
-
-		glfwSetWindowIcon(glwnd, 1, images);
-		stbi_image_free(images[0].pixels);
+//		char buf[256];
+//		GetCurrentDirectoryA(256, buf);
+//		strcat(buf, "\\Icon.png");
+//
+//		GLFWimage images[1];
+//
+//		auto stbi = stbi_load(buf, &images[0].width, &images[0].height, 0, 4);
+//
+//		if (stbi == NULL)
+//			return Error(Error::Code::MISSING_ICON, stbi_failure_reason());
+//
+//		images[0].pixels = stbi;
+//
+//		glfwSetWindowIcon(glwnd, 1, images);
+//		stbi_image_free(images[0].pixels);
 
 		GraphicsGL::get().reinit();
 
@@ -227,10 +227,10 @@ namespace ms
 
 	void Window::check_events()
 	{
-		int16_t max_width = Configuration::get().get_max_width();
-		int16_t max_height = Configuration::get().get_max_height();
-		int16_t new_width = Constants::Constants::get().get_viewwidth();
-		int16_t new_height = Constants::Constants::get().get_viewheight();
+		std::int16_t max_width = Configuration::get().get_max_width();
+		std::int16_t max_height = Configuration::get().get_max_height();
+		std::int16_t new_width = Constants::Constants::get().get_viewwidth();
+		std::int16_t new_height = Constants::Constants::get().get_viewheight();
 
 		if (width != new_width || height != new_height)
 		{
@@ -277,8 +277,8 @@ namespace ms
 
 	void Window::toggle_fullscreen()
 	{
-		int16_t max_width = Configuration::get().get_max_width();
-		int16_t max_height = Configuration::get().get_max_height();
+		std::int16_t max_width = Configuration::get().get_max_width();
+		std::int16_t max_height = Configuration::get().get_max_height();
 
 		if (width < max_width && height < max_height)
 		{

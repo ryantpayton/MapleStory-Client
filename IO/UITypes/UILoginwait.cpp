@@ -20,7 +20,7 @@
 #include "UILoginwait.h"
 
 #include "../Components/MapleButton.h"
-#include "../Net/Session.h"
+#include "../../Net/Session.h"
 
 #include <nlnx/nx.hpp>
 
@@ -65,7 +65,7 @@ namespace ms
 		return okhandler;
 	}
 
-	Button::State UILoginwait::button_pressed(uint16_t id)
+	Button::State UILoginwait::button_pressed(std::uint16_t id)
 	{
 		Session::get().reconnect();
 

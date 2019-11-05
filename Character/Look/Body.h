@@ -19,7 +19,7 @@
 
 #include "BodyDrawinfo.h"
 
-#include "../Graphics/Texture.h"
+#include "Graphics/Texture.h"
 
 namespace ms
 {
@@ -42,16 +42,16 @@ namespace ms
 			NUM_LAYERS
 		};
 
-		Body(int32_t skin, const BodyDrawinfo& drawinfo);
+		Body(std::int32_t skin, const BodyDrawinfo& drawinfo);
 
-		void draw(Stance::Id stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
+		void draw(Stance::Id stance, Layer layer, std::uint8_t frame, const DrawArgument& args) const;
 
 		const std::string& get_name() const;
 
 		static Layer layer_by_name(const std::string& name);
 
 	private:
-		std::unordered_map<uint8_t, Texture> stances[Stance::Id::LENGTH][Layer::NUM_LAYERS];
+		std::unordered_map<std::uint8_t, Texture> stances[Stance::Id::LENGTH][Layer::NUM_LAYERS];
 		std::string name;
 
 		static const std::unordered_map<std::string, Layer> layers_by_name;

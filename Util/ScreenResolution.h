@@ -1,4 +1,4 @@
-﻿//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //	This file is part of the continued Journey MMORPG client					//
 //	Copyright (C) 2015-2019  Daniel Allendorf, Ryan Payton						//
 //																				//
@@ -19,8 +19,9 @@
 
 #include "../Configuration.h"
 
-#include <windef.h>
-#include <WinUser.h>
+// #include <windef.h>
+// #include <WinUser.h>
+#include <glfw3.h>
 
 namespace ms
 {
@@ -29,17 +30,21 @@ namespace ms
 	public:
 		ScreenResolution()
 		{
-			RECT desktop;
+			// RECT desktop;
 
 			// Get a handle to the desktop window
-			const HWND hDesktop = GetDesktopWindow();
+			// const HWND hDesktop = GetDesktopWindow();
 
-			// Get the size of screen to the variable desktop
-			GetWindowRect(hDesktop, &desktop);
+			// // Get the size of screen to the variable desktop
+			// GetWindowRect(hDesktop, &desktop);
 
-			// The top left corner will have coordinates (0, 0) and the bottom right corner will have coordinates (horizontal, vertical)
-			Configuration::get().set_max_width(desktop.right);
-			Configuration::get().set_max_height(desktop.bottom);
+			// // The top left corner will have coordinates (0, 0) and the bottom right corner will have coordinates (horizontal, vertical)
+			// Configuration::get().set_max_width(desktop.right);
+			// Configuration::get().set_max_height(desktop.bottom);
+
+      // const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+      Configuration::get().set_max_width(1920);
+			Configuration::get().set_max_height(1080);
 		}
 	};
 }

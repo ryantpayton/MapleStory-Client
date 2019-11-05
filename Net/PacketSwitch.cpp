@@ -33,7 +33,7 @@
 namespace ms
 {
 	// Opcodes for InPackets.
-	enum Opcode : uint16_t
+	enum Opcode : std::uint16_t
 	{
 		// Login 1
 		LOGIN_RESULT = 0,
@@ -252,12 +252,12 @@ namespace ms
 		emplace<AUTO_MP_POT, AutoMpPotHandler>();
 	}
 
-	void PacketSwitch::forward(const int8_t* bytes, size_t length) const
+	void PacketSwitch::forward(const std::int8_t* bytes, std::size_t length) const
 	{
 		// Wrap the bytes with a parser.
 		InPacket recv = { bytes, length };
 		// Read the opcode to determine handler responsible.
-		uint16_t opcode = recv.read_short();
+		std::uint16_t opcode = recv.read_short();
 
 		if (opcode < NUM_HANDLERS)
 		{
@@ -287,7 +287,7 @@ namespace ms
 		}
 	}
 
-	void PacketSwitch::warn(const std::string& message, size_t opcode) const
+	void PacketSwitch::warn(const std::string& message, std::size_t opcode) const
 	{
 		Console::get().print(message + ", Opcode: " + std::to_string(opcode));
 	}

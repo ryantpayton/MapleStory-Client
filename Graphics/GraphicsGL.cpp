@@ -151,20 +151,20 @@ namespace ms
 
 		fontymax += fontborder.y();
 
-		leftovers = QuadTree<size_t, Leftover>(
+		leftovers = QuadTree<std::size_t, Leftover>(
 			[](const Leftover& first, const Leftover& second)
 			{
 				bool wcomp = first.width() >= second.width();
 				bool hcomp = first.height() >= second.height();
 
 				if (wcomp && hcomp)
-					return QuadTree<size_t, Leftover>::Direction::RIGHT;
+					return QuadTree<std::size_t, Leftover>::Direction::RIGHT;
 				else if (wcomp)
-					return QuadTree<size_t, Leftover>::Direction::DOWN;
+					return QuadTree<std::size_t, Leftover>::Direction::DOWN;
 				else if (hcomp)
-					return QuadTree<size_t, Leftover>::Direction::UP;
+					return QuadTree<std::size_t, Leftover>::Direction::UP;
 				else
-					return QuadTree<size_t, Leftover>::Direction::LEFT;
+					return QuadTree<std::size_t, Leftover>::Direction::LEFT;
 			}
 		);
 
@@ -186,7 +186,7 @@ namespace ms
 		GLshort width = 0;
 		GLshort height = 0;
 
-		for (uint8_t c = 32; c < 128; c++)
+		for (std::uint8_t c = 32; c < 128; c++)
 		{
 			if (FT_Load_Char(face, c, FT_LOAD_RENDER))
 				continue;
@@ -220,7 +220,7 @@ namespace ms
 		GLshort ox = x;
 		GLshort oy = y;
 
-		for (uint8_t c = 32; c < 128; c++)
+		for (std::uint8_t c = 32; c < 128; c++)
 		{
 			if (FT_Load_Char(face, c, FT_LOAD_RENDER))
 				continue;
@@ -245,8 +245,8 @@ namespace ms
 
 	void GraphicsGL::reinit()
 	{
-		int32_t new_width = Constants::Constants::get().get_viewwidth();
-		int32_t new_height = Constants::Constants::get().get_viewheight();
+		std::int32_t new_width = Constants::Constants::get().get_viewwidth();
+		std::int32_t new_height = Constants::Constants::get().get_viewheight();
 
 		if (VWIDTH != new_width || VHEIGHT != new_height)
 		{
@@ -290,7 +290,7 @@ namespace ms
 
 	void GraphicsGL::clear()
 	{
-		size_t used = ATLASW * border.y() + border.x() * yrange.second();
+		std::size_t used = ATLASW * border.y() + border.x() * yrange.second();
 		double usedpercent = static_cast<double>(used) / (ATLASW * ATLASH);
 
 		if (usedpercent > 80.0)
@@ -304,7 +304,7 @@ namespace ms
 
 	const GraphicsGL::Offset& GraphicsGL::getoffset(const nl::bitmap& bmp)
 	{
-		size_t id = bmp.id();
+		std::size_t id = bmp.id();
 		auto offiter = offsets.find(id);
 
 		if (offiter != offsets.end())
@@ -320,7 +320,7 @@ namespace ms
 
 		auto value = Leftover(x, y, w, h);
 
-		size_t lid = leftovers.findnode(
+		std::size_t lid = leftovers.findnode(
 			value,
 			[](const Leftover& val, const Leftover& leaf)
 			{
@@ -412,7 +412,7 @@ namespace ms
 			}
 		}
 
-		//size_t used = ATLASW * border.y() + border.x() * yrange.second();
+		//std::size_t used = ATLASW * border.y() + border.x() * yrange.second();
 		//double usedpercent = static_cast<double>(used) / (ATLASW * ATLASH);
 		//double wastedpercent = static_cast<double>(wasted) / used;
 		//Console::get().print("Used: " + std::to_string(usedpercent) + ", wasted: " + std::to_string(wastedpercent));
@@ -440,9 +440,9 @@ namespace ms
 		quads.emplace_back(rect.l(), rect.r(), rect.t(), rect.b(), getoffset(bmp), color, angle);
 	}
 
-	Text::Layout GraphicsGL::createlayout(const std::string& text, Text::Font id, Text::Alignment alignment, int16_t maxwidth, bool formatted, int16_t line_adj)
+	Text::Layout GraphicsGL::createlayout(const std::string& text, Text::Font id, Text::Alignment alignment, std::int16_t maxwidth, bool formatted, std::int16_t line_adj)
 	{
-		size_t length = text.length();
+		std::size_t length = text.length();
 
 		if (length == 0)
 			return Text::Layout();
@@ -451,12 +451,12 @@ namespace ms
 
 		const char* p_text = text.c_str();
 
-		size_t first = 0;
-		size_t offset = 0;
+		std::size_t first = 0;
+		std::size_t offset = 0;
 
 		while (offset < length)
 		{
-			size_t last = text.find_first_of(" \\#", offset + 1);
+			std::size_t last = text.find_first_of(" \\#", offset + 1);
 
 			if (last == std::string::npos)
 				last = length;
@@ -468,7 +468,7 @@ namespace ms
 		return builder.finish(first, offset);
 	}
 
-	GraphicsGL::LayoutBuilder::LayoutBuilder(const Font& f, Text::Alignment a, int16_t mw, bool fm, int16_t la) : font(f), alignment(a), maxwidth(mw), formatted(fm), line_adj(la)
+	GraphicsGL::LayoutBuilder::LayoutBuilder(const Font& f, Text::Alignment a, std::int16_t mw, bool fm, std::int16_t la) : font(f), alignment(a), maxwidth(mw), formatted(fm), line_adj(la)
 	{
 		fontid = Text::Font::NUM_FONTS;
 		color = Color::Name::NUM_COLORS;
@@ -481,14 +481,14 @@ namespace ms
 			maxwidth = 800;
 	}
 
-	size_t GraphicsGL::LayoutBuilder::add(const char* text, size_t prev, size_t first, size_t last)
+	std::size_t GraphicsGL::LayoutBuilder::add(const char* text, std::size_t prev, std::size_t first, std::size_t last)
 	{
 		if (first == last)
 			return prev;
 
 		Text::Font last_font = fontid;
 		Color::Name last_color = color;
-		size_t skip = 0;
+		std::size_t skip = 0;
 		bool linebreak = false;
 
 		if (formatted)
@@ -540,11 +540,11 @@ namespace ms
 			}
 		}
 
-		int16_t wordwidth = 0;
+		std::int16_t wordwidth = 0;
 
 		if (!linebreak)
 		{
-			for (size_t i = first; i < last; i++)
+			for (std::size_t i = first; i < last; i++)
 			{
 				char c = text[i];
 				wordwidth += font.chars[c].ax;
@@ -582,7 +582,7 @@ namespace ms
 				ay -= line_adj;
 		}
 
-		for (size_t pos = first; pos < last; pos++)
+		for (std::size_t pos = first; pos < last; pos++)
 		{
 			char c = text[pos];
 			const Font::Char& ch = font.chars[c];
@@ -604,7 +604,7 @@ namespace ms
 			return prev;
 	}
 
-	Text::Layout GraphicsGL::LayoutBuilder::finish(size_t first, size_t last)
+	Text::Layout GraphicsGL::LayoutBuilder::finish(std::size_t first, std::size_t last)
 	{
 		add_word(first, last, fontid, color);
 		add_line();
@@ -614,15 +614,15 @@ namespace ms
 		return Text::Layout(lines, advances, width, ay, ax, endy);
 	}
 
-	void GraphicsGL::LayoutBuilder::add_word(size_t word_first, size_t word_last, Text::Font word_font, Color::Name word_color)
+	void GraphicsGL::LayoutBuilder::add_word(std::size_t word_first, std::size_t word_last, Text::Font word_font, Color::Name word_color)
 	{
 		words.push_back({ word_first, word_last, word_font, word_color });
 	}
 
 	void GraphicsGL::LayoutBuilder::add_line()
 	{
-		int16_t line_x = 0;
-		int16_t line_y = ay;
+		std::int16_t line_x = 0;
+		std::int16_t line_y = ay;
 
 		switch (alignment)
 		{
@@ -692,7 +692,7 @@ namespace ms
 
 				Color abscolor = color * Color(wordcolor[0], wordcolor[1], wordcolor[2], 1.0f);
 
-				for (size_t pos = word.first; pos < word.last; ++pos)
+				for (std::size_t pos = word.first; pos < word.last; ++pos)
 				{
 					const char c = text[pos];
 					const Font::Char& ch = font.chars[c];
@@ -716,7 +716,7 @@ namespace ms
 		}
 	}
 
-	void GraphicsGL::drawrectangle(int16_t x, int16_t y, int16_t w, int16_t h, float r, float g, float b, float a)
+	void GraphicsGL::drawrectangle(std::int16_t x, std::int16_t y, std::int16_t w, std::int16_t h, float r, float g, float b, float a)
 	{
 		if (locked)
 			return;

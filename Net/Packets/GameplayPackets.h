@@ -26,7 +26,7 @@ namespace ms
 	class ChangeMapPacket : public OutPacket
 	{
 	public:
-		ChangeMapPacket(bool died, int32_t targetid, const std::string& targetp, bool usewheel) : OutPacket(OutPacket::Opcode::CHANGEMAP)
+		ChangeMapPacket(bool died, std::int32_t targetid, const std::string& targetp, bool usewheel) : OutPacket(OutPacket::Opcode::CHANGEMAP)
 		{
 			write_byte(died);
 			write_int(targetid);
@@ -62,7 +62,7 @@ namespace ms
 	class PartyOperationPacket : public OutPacket
 	{
 	public:
-		enum Operation : int8_t
+		enum Operation : std::int8_t
 		{
 			CREATE = 1,
 			LEAVE = 2,
@@ -100,7 +100,7 @@ namespace ms
 	class JoinPartyPacket : public PartyOperationPacket
 	{
 	public:
-		JoinPartyPacket(int32_t party_id) : PartyOperationPacket(PartyOperationPacket::Operation::JOIN)
+		JoinPartyPacket(std::int32_t party_id) : PartyOperationPacket(PartyOperationPacket::Operation::JOIN)
 		{
 			write_int(party_id);
 		}
@@ -122,7 +122,7 @@ namespace ms
 	class ExpelFromPartyPacket : public PartyOperationPacket
 	{
 	public:
-		ExpelFromPartyPacket(int32_t cid) : PartyOperationPacket(PartyOperationPacket::Operation::EXPEL)
+		ExpelFromPartyPacket(std::int32_t cid) : PartyOperationPacket(PartyOperationPacket::Operation::EXPEL)
 		{
 			write_int(cid);
 		}
@@ -133,7 +133,7 @@ namespace ms
 	class ChangePartyLeaderPacket : public PartyOperationPacket
 	{
 	public:
-		ChangePartyLeaderPacket(int32_t cid) : PartyOperationPacket(PartyOperationPacket::Operation::PASS_LEADER)
+		ChangePartyLeaderPacket(std::int32_t cid) : PartyOperationPacket(PartyOperationPacket::Operation::PASS_LEADER)
 		{
 			write_int(cid);
 		}
@@ -144,7 +144,7 @@ namespace ms
 	class MoveMobPacket : public MovementPacket
 	{
 	public:
-		MoveMobPacket(int32_t oid, int16_t type, int8_t skillb, int8_t skill0, int8_t skill1, int8_t skill2, int8_t skill3, int8_t skill4, Point<int16_t> startpos, const Movement& movement) : MovementPacket(OutPacket::Opcode::MOVE_MONSTER)
+		MoveMobPacket(std::int32_t oid, std::int16_t type, std::int8_t skillb, std::int8_t skill0, std::int8_t skill1, std::int8_t skill2, std::int8_t skill3, std::int8_t skill4, Point<int16_t> startpos, const Movement& movement) : MovementPacket(OutPacket::Opcode::MOVE_MONSTER)
 		{
 			write_int(oid);
 			write_short(type);
@@ -169,7 +169,7 @@ namespace ms
 	class PickupItemPacket : public OutPacket
 	{
 	public:
-		PickupItemPacket(int32_t oid, Point<int16_t> position) : OutPacket(OutPacket::Opcode::PICKUP_ITEM)
+		PickupItemPacket(std::int32_t oid, Point<int16_t> position) : OutPacket(OutPacket::Opcode::PICKUP_ITEM)
 		{
 			write_int(0);
 			write_byte(0);

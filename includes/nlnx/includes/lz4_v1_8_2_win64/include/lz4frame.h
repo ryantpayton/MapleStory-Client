@@ -46,7 +46,7 @@ extern "C" {
 #endif
 
 /* ---   Dependency   --- */
-#include <stddef.h>   /* size_t */
+#include <stddef.h>   /* std::size_t */
 
 
 /**
@@ -91,7 +91,7 @@ extern "C" {
 /*-************************************
  *  Error management
  **************************************/
-typedef size_t LZ4F_errorCode_t;
+typedef std::size_t LZ4F_errorCode_t;
 
 LZ4FLIB_API unsigned    LZ4F_isError(LZ4F_errorCode_t code);   /**< tells when a function result is an error code */
 LZ4FLIB_API const char* LZ4F_getErrorName(LZ4F_errorCode_t code);   /**< return error code string; for debugging */
@@ -195,7 +195,7 @@ LZ4FLIB_API int LZ4F_compressionLevel_max(void);
  *  Note : this result is only usable with LZ4F_compressFrame().
  *         It may also be used with LZ4F_compressUpdate() _if no flush() operation_ is performed.
  */
-LZ4FLIB_API size_t LZ4F_compressFrameBound(size_t srcSize, const LZ4F_preferences_t* preferencesPtr);
+LZ4FLIB_API std::size_t LZ4F_compressFrameBound(std::size_t srcSize, const LZ4F_preferences_t* preferencesPtr);
 
 /*! LZ4F_compressFrame() :
  *  Compress an entire srcBuffer into a valid LZ4 frame.
@@ -204,8 +204,8 @@ LZ4FLIB_API size_t LZ4F_compressFrameBound(size_t srcSize, const LZ4F_preference
  * @return : number of bytes written into dstBuffer.
  *           or an error code if it fails (can be tested using LZ4F_isError())
  */
-LZ4FLIB_API size_t LZ4F_compressFrame(void* dstBuffer, size_t dstCapacity,
-                                const void* srcBuffer, size_t srcSize,
+LZ4FLIB_API std::size_t LZ4F_compressFrame(void* dstBuffer, std::size_t dstCapacity,
+                                const void* srcBuffer, std::size_t srcSize,
                                 const LZ4F_preferences_t* preferencesPtr);
 
 
@@ -246,8 +246,8 @@ LZ4FLIB_API LZ4F_errorCode_t LZ4F_freeCompressionContext(LZ4F_cctx* cctx);
  * @return : number of bytes written into dstBuffer for the header
  *           or an error code (which can be tested using LZ4F_isError())
  */
-LZ4FLIB_API size_t LZ4F_compressBegin(LZ4F_cctx* cctx,
-                                      void* dstBuffer, size_t dstCapacity,
+LZ4FLIB_API std::size_t LZ4F_compressBegin(LZ4F_cctx* cctx,
+                                      void* dstBuffer, std::size_t dstCapacity,
                                       const LZ4F_preferences_t* prefsPtr);
 
 /*! LZ4F_compressBound() :
@@ -261,7 +261,7 @@ LZ4FLIB_API size_t LZ4F_compressBegin(LZ4F_cctx* cctx,
  *  Result is always the same for a srcSize and prefsPtr, so it can be trusted to size reusable buffers.
  *  When srcSize==0, LZ4F_compressBound() provides an upper bound for LZ4F_flush() and LZ4F_compressEnd() operations.
  */
-LZ4FLIB_API size_t LZ4F_compressBound(size_t srcSize, const LZ4F_preferences_t* prefsPtr);
+LZ4FLIB_API std::size_t LZ4F_compressBound(std::size_t srcSize, const LZ4F_preferences_t* prefsPtr);
 
 /*! LZ4F_compressUpdate() :
  *  LZ4F_compressUpdate() can be called repetitively to compress as much data as necessary.
@@ -274,9 +274,9 @@ LZ4FLIB_API size_t LZ4F_compressBound(size_t srcSize, const LZ4F_preferences_t* 
  * @return : number of bytes written into `dstBuffer` (it can be zero, meaning input data was just buffered).
  *           or an error code if it fails (which can be tested using LZ4F_isError())
  */
-LZ4FLIB_API size_t LZ4F_compressUpdate(LZ4F_cctx* cctx,
-                                       void* dstBuffer, size_t dstCapacity,
-                                 const void* srcBuffer, size_t srcSize,
+LZ4FLIB_API std::size_t LZ4F_compressUpdate(LZ4F_cctx* cctx,
+                                       void* dstBuffer, std::size_t dstCapacity,
+                                 const void* srcBuffer, std::size_t srcSize,
                                  const LZ4F_compressOptions_t* cOptPtr);
 
 /*! LZ4F_flush() :
@@ -287,8 +287,8 @@ LZ4FLIB_API size_t LZ4F_compressUpdate(LZ4F_cctx* cctx,
  * @return : nb of bytes written into dstBuffer (can be zero, when there is no data stored within cctx)
  *           or an error code if it fails (which can be tested using LZ4F_isError())
  */
-LZ4FLIB_API size_t LZ4F_flush(LZ4F_cctx* cctx,
-                              void* dstBuffer, size_t dstCapacity,
+LZ4FLIB_API std::size_t LZ4F_flush(LZ4F_cctx* cctx,
+                              void* dstBuffer, std::size_t dstCapacity,
                         const LZ4F_compressOptions_t* cOptPtr);
 
 /*! LZ4F_compressEnd() :
@@ -300,8 +300,8 @@ LZ4FLIB_API size_t LZ4F_flush(LZ4F_cctx* cctx,
  *           or an error code if it fails (which can be tested using LZ4F_isError())
  *  A successful call to LZ4F_compressEnd() makes `cctx` available again for another compression task.
  */
-LZ4FLIB_API size_t LZ4F_compressEnd(LZ4F_cctx* cctx,
-                                    void* dstBuffer, size_t dstCapacity,
+LZ4FLIB_API std::size_t LZ4F_compressEnd(LZ4F_cctx* cctx,
+                                    void* dstBuffer, std::size_t dstCapacity,
                               const LZ4F_compressOptions_t* cOptPtr);
 
 
@@ -357,9 +357,9 @@ LZ4FLIB_API LZ4F_errorCode_t LZ4F_freeDecompressionContext(LZ4F_dctx* dctx);
  *  note 1 : in case of error, dctx is not modified. Decoding operation can resume from beginning safely.
  *  note 2 : frame parameters are *copied into* an already allocated LZ4F_frameInfo_t structure.
  */
-LZ4FLIB_API size_t LZ4F_getFrameInfo(LZ4F_dctx* dctx,
+LZ4FLIB_API std::size_t LZ4F_getFrameInfo(LZ4F_dctx* dctx,
                                      LZ4F_frameInfo_t* frameInfoPtr,
-                                     const void* srcBuffer, size_t* srcSizePtr);
+                                     const void* srcBuffer, std::size_t* srcSizePtr);
 
 /*! LZ4F_decompress() :
  *  Call this function repetitively to regenerate compressed data from `srcBuffer`.
@@ -390,9 +390,9 @@ LZ4FLIB_API size_t LZ4F_getFrameInfo(LZ4F_dctx* dctx,
  *
  *  After a frame is fully decoded, dctx can be used again to decompress another frame.
  */
-LZ4FLIB_API size_t LZ4F_decompress(LZ4F_dctx* dctx,
-                                   void* dstBuffer, size_t* dstSizePtr,
-                                   const void* srcBuffer, size_t* srcSizePtr,
+LZ4FLIB_API std::size_t LZ4F_decompress(LZ4F_dctx* dctx,
+                                   void* dstBuffer, std::size_t* dstSizePtr,
+                                   const void* srcBuffer, std::size_t* srcSizePtr,
                                    const LZ4F_decompressOptions_t* dOptPtr);
 
 
@@ -447,8 +447,8 @@ extern "C" {
         ITEM(ERROR_blockChecksum_invalid) \
         ITEM(ERROR_reservedFlag_set) \
         ITEM(ERROR_allocation_failed) \
-        ITEM(ERROR_srcSize_tooLarge) \
-        ITEM(ERROR_dstMaxSize_tooSmall) \
+        ITEM(ERROR_srcstd::size_tooLarge) \
+        ITEM(ERROR_dstMaxstd::size_tooSmall) \
         ITEM(ERROR_frameHeader_incomplete) \
         ITEM(ERROR_frameType_unknown) \
         ITEM(ERROR_frameSize_wrong) \
@@ -464,7 +464,7 @@ extern "C" {
 /* enum list is exposed, to handle specific errors */
 typedef enum { LZ4F_LIST_ERRORS(LZ4F_GENERATE_ENUM) } LZ4F_errorCodes;
 
-LZ4FLIB_STATIC_API LZ4F_errorCodes LZ4F_getErrorCode(size_t functionResult);
+LZ4FLIB_STATIC_API LZ4F_errorCodes LZ4F_getErrorCode(std::size_t functionResult);
 
 
 
@@ -478,7 +478,7 @@ typedef struct LZ4F_CDict_s LZ4F_CDict;
  *  LZ4_createCDict() will create a digested dictionary, ready to start future compression operations without startup delay.
  *  LZ4_CDict can be created once and shared by multiple threads concurrently, since its usage is read-only.
  * `dictBuffer` can be released after LZ4_CDict creation, since its content is copied within CDict */
-LZ4FLIB_STATIC_API LZ4F_CDict* LZ4F_createCDict(const void* dictBuffer, size_t dictSize);
+LZ4FLIB_STATIC_API LZ4F_CDict* LZ4F_createCDict(const void* dictBuffer, std::size_t dictSize);
 LZ4FLIB_STATIC_API void        LZ4F_freeCDict(LZ4F_CDict* CDict);
 
 
@@ -492,10 +492,10 @@ LZ4FLIB_STATIC_API void        LZ4F_freeCDict(LZ4F_CDict* CDict);
  *  but it's not recommended, as it's the only way to provide dictID in the frame header.
  * @return : number of bytes written into dstBuffer.
  *           or an error code if it fails (can be tested using LZ4F_isError()) */
-LZ4FLIB_STATIC_API size_t LZ4F_compressFrame_usingCDict(
+LZ4FLIB_STATIC_API std::size_t LZ4F_compressFrame_usingCDict(
     LZ4F_cctx* cctx,
-    void* dst, size_t dstCapacity,
-    const void* src, size_t srcSize,
+    void* dst, std::size_t dstCapacity,
+    const void* src, std::size_t srcSize,
     const LZ4F_CDict* cdict,
     const LZ4F_preferences_t* preferencesPtr);
 
@@ -507,9 +507,9 @@ LZ4FLIB_STATIC_API size_t LZ4F_compressFrame_usingCDict(
  *  however, it's the only way to provide dictID in the frame header.
  * @return : number of bytes written into dstBuffer for the header,
  *           or an error code (which can be tested using LZ4F_isError()) */
-LZ4FLIB_STATIC_API size_t LZ4F_compressBegin_usingCDict(
+LZ4FLIB_STATIC_API std::size_t LZ4F_compressBegin_usingCDict(
     LZ4F_cctx* cctx,
-    void* dstBuffer, size_t dstCapacity,
+    void* dstBuffer, std::size_t dstCapacity,
     const LZ4F_CDict* cdict,
     const LZ4F_preferences_t* prefsPtr);
 
@@ -518,11 +518,11 @@ LZ4FLIB_STATIC_API size_t LZ4F_compressBegin_usingCDict(
  *  Same as LZ4F_decompress(), using a predefined dictionary.
  *  Dictionary is used "in place", without any preprocessing.
  *  It must remain accessible throughout the entire frame decoding. */
-LZ4FLIB_STATIC_API size_t LZ4F_decompress_usingDict(
+LZ4FLIB_STATIC_API std::size_t LZ4F_decompress_usingDict(
     LZ4F_dctx* dctxPtr,
-    void* dstBuffer, size_t* dstSizePtr,
-    const void* srcBuffer, size_t* srcSizePtr,
-    const void* dict, size_t dictSize,
+    void* dstBuffer, std::size_t* dstSizePtr,
+    const void* srcBuffer, std::size_t* srcSizePtr,
+    const void* dict, std::size_t dictSize,
     const LZ4F_decompressOptions_t* decompressOptionsPtr);
 
 #if defined (__cplusplus)

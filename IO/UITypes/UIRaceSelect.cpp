@@ -23,11 +23,11 @@
 #include "UIAranCreation.h"
 
 #include "../UI.h"
-#include "../Configuration.h"
+#include "../../Configuration.h"
 
 #include "../Components/MapleButton.h"
 #include "../Components/AreaButton.h"
-#include "../Audio/Audio.h"
+#include "../../Audio/Audio.h"
 
 #include <cctype>
 
@@ -52,7 +52,7 @@ namespace ms
 		pos = Point<int16_t>(std::abs(make_pos.x()), std::abs(make_pos.y()));
 		posZero = Point<int16_t>(std::abs(make_posZero.x()), std::abs(make_posZero.y()));
 
-		uint8_t selected_list = 1;
+		std::uint8_t selected_list = 1;
 
 		order = RaceSelect["order"][selected_list];
 		hotlist = RaceSelect["hotList"][selected_list];
@@ -111,7 +111,7 @@ namespace ms
 		class_details_background = RaceSelect["Back1"]["0"]["0"];
 		class_details_backgroundZero = RaceSelect["Back1"]["1"]["0"];
 
-		for (size_t i = 0; i < CLASS_COUNT; i++)
+		for (unsigned i = 0; i < CLASS_COUNT; i++)
 		{
 			class_normal[i][false] = RaceSelect["button"][i]["normal"]["0"];
 			class_normal[i][true] = RaceSelect["button"][i]["mouseOver"]["0"];
@@ -129,7 +129,7 @@ namespace ms
 		buttons[Buttons::LEFT] = std::make_unique<MapleButton>(RaceSelect["leftArrow"], Point<int16_t>(41, 448));
 		buttons[Buttons::RIGHT] = std::make_unique<MapleButton>(RaceSelect["rightArrow"], Point<int16_t>(718, 448));
 
-		for (size_t i = 0; i <= Buttons::CLASS0; i++)
+		for (std::size_t i = 0; i <= Buttons::CLASS0; i++)
 			buttons[Buttons::CLASS0 + i] = std::make_unique<AreaButton>(get_class_pos(i), class_normal[0][true].get_dimensions());
 
 		index_shift = 0;
@@ -174,7 +174,7 @@ namespace ms
 		class_details[selected_class].draw(position + screen_adj);
 		class_title[selected_class].draw(position + screen_adj);
 
-		for each (auto node in hotlist)
+		for(auto node : hotlist)
 		{
 			if (node.get_integer() == selected_class)
 			{
@@ -187,7 +187,7 @@ namespace ms
 			}
 		}
 
-		for each (auto node in newlist)
+		for(auto node : newlist)
 		{
 			if (node.get_integer() == selected_class)
 			{
@@ -196,13 +196,13 @@ namespace ms
 			}
 		}
 
-		for (size_t i = 0; i < INDEX_COUNT; i++)
+		for (std::size_t i = 0; i < INDEX_COUNT; i++)
 		{
 			Point<int16_t> button_pos = get_class_pos(i);
 
 			class_isdisabled[class_index[i]] ? class_disabled[class_index[i]][mouseover[i]].draw(position + button_pos) : class_normal[class_index[i]][mouseover[i]].draw(position + button_pos);
 
-			for each (auto node in hotlist)
+			for(auto node : hotlist)
 			{
 				if (node.get_integer() == class_index[i])
 				{
@@ -211,7 +211,7 @@ namespace ms
 				}
 			}
 
-			for each (auto node in newlist)
+			for(auto node : newlist)
 			{
 				if (node.get_integer() == selected_class)
 				{
@@ -243,9 +243,9 @@ namespace ms
 
 		back_ani.update();
 
-		for each (auto node in bgm)
+		for(auto node : bgm)
 		{
-			uint8_t name = std::stoi(node.name());
+			std::uint8_t name = std::stoi(node.name());
 
 			if (name == selected_class)
 			{
@@ -320,7 +320,7 @@ namespace ms
 		return Cursor::State::LEAF;
 	}
 
-	void UIRaceSelect::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIRaceSelect::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -349,7 +349,7 @@ namespace ms
 	{
 		nl::node ForbiddenName = nl::nx::etc["ForbiddenName.img"];
 
-		for each (std::string forbiddenName in ForbiddenName)
+		for(std::string forbiddenName : ForbiddenName)
 		{
 			std::string lName = to_lower(name);
 			std::string fName = to_lower(forbiddenName);
@@ -380,7 +380,7 @@ namespace ms
 		}
 	}
 
-	Button::State UIRaceSelect::button_pressed(uint16_t buttonid)
+	Button::State UIRaceSelect::button_pressed(std::uint16_t buttonid)
 	{
 		if (buttonid == Buttons::BACK)
 		{
@@ -413,7 +413,7 @@ namespace ms
 		}
 		else if (buttonid == Buttons::LEFT)
 		{
-			uint8_t new_index = selected_index - 1;
+			std::uint8_t new_index = selected_index - 1;
 
 			int size = sizeof(class_index) / sizeof(class_index[0]);
 
@@ -442,7 +442,7 @@ namespace ms
 		}
 		else if (buttonid == Buttons::RIGHT)
 		{
-			uint8_t new_index = selected_index + 1;
+			std::uint8_t new_index = selected_index + 1;
 
 			int size = sizeof(class_index) / sizeof(class_index[0]);
 
@@ -483,9 +483,9 @@ namespace ms
 		}
 	}
 
-	void UIRaceSelect::select_class(uint8_t index)
+	void UIRaceSelect::select_class(std::uint8_t index)
 	{
-		uint8_t previous_index = selected_index;
+		std::uint8_t previous_index = selected_index;
 		selected_index = index;
 
 		if (previous_index != selected_index)
@@ -542,9 +542,9 @@ namespace ms
 			charselect->makeactive();
 	}
 
-	Point<int16_t> UIRaceSelect::get_class_pos(size_t index) const
+	Point<int16_t> UIRaceSelect::get_class_pos(std::size_t index) const
 	{
-		uint16_t x_adj = index * 126;
+		std::uint16_t x_adj = index * 126;
 
 		return Point<int16_t>(95 + x_adj, 420);
 	}

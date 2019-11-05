@@ -63,9 +63,9 @@ namespace ms
 		// Set private member HWID
 		void set_hwid(char* hwid, char* volumeSerialNumber);
 		// Set private member MAXWIDTH
-		void set_max_width(int16_t max_width);
+		void set_max_width(std::int16_t max_width);
 		// Set private member MAXHEIGHT
-		void set_max_height(int16_t max_height);
+		void set_max_height(std::int16_t max_height);
 		// Get private member MACS
 		std::string get_macs();
 		// Get private member HWID
@@ -73,9 +73,9 @@ namespace ms
 		// Get the Hard Drive Volume Serial Number
 		std::string get_vol_serial_num();
 		// Get the max width allowed
-		int16_t get_max_width();
+		std::int16_t get_max_width();
 		// Get the max height allowed
-		int16_t get_max_height();
+		std::int16_t get_max_height();
 		// Get the shop's "Right-click to sell item" boolean
 		bool get_rightclicksell();
 		// Set the shop's "Right-click to sell item" boolean
@@ -89,13 +89,13 @@ namespace ms
 		// Set whether to show the start screen
 		void set_start_shown(bool value);
 		// Get the character's selected world
-		uint8_t get_worldid();
+		std::uint8_t get_worldid();
 		// Set the character's selected world
-		void set_worldid(uint8_t id);
+		void set_worldid(std::uint8_t id);
 		// Get the character's selected channel
-		uint8_t get_channelid();
+		std::uint8_t get_channelid();
 		// Set the character's selected channel
-		void set_channelid(uint8_t id);
+		void set_channelid(std::uint8_t id);
 
 		// Base class for an entry in the settings file.
 		class Entry
@@ -168,21 +168,21 @@ namespace ms
 		};
 
 		// Setting which converts to a byte.
-		class ByteEntry : public IntegerEntry<uint8_t>
+		class ByteEntry : public IntegerEntry<std::uint8_t>
 		{
 		protected:
 			using IntegerEntry::IntegerEntry;
 		};
 
 		// Setting which converts to a short.
-		class ShortEntry : public IntegerEntry<uint16_t>
+		class ShortEntry : public IntegerEntry<std::uint16_t>
 		{
 		protected:
 			using IntegerEntry::IntegerEntry;
 		};
 
 		// Setting which converts to an int.
-		class IntEntry : public IntegerEntry<uint32_t>
+		class IntEntry : public IntegerEntry<std::int32_t>
 		{
 		protected:
 			using IntegerEntry::IntegerEntry;
@@ -213,11 +213,11 @@ namespace ms
 		bool start_shown = false;
 		std::string MACS;
 		std::string HWID;
-		int16_t MAXWIDTH;
-		int16_t MAXHEIGHT;
+		std::int16_t MAXWIDTH;
+		std::int16_t MAXHEIGHT;
 		std::string VolumeSerialNumber;
-		uint8_t worldid;
-		uint8_t channelid;
+		std::uint8_t worldid;
+		std::uint8_t channelid;
 		TypeMap<Entry> settings;
 	};
 

@@ -18,14 +18,14 @@
 #include "UIQuit.h"
 
 #include "../UI.h"
-#include "../Timer.h"
+#include "../../Timer.h"
 #include "../Window.h"
-#include "../Constants.h"
+#include "../../Constants.h"
 
-#include "../Net/Session.h"
-#include "../Gameplay/Stage.h"
+#include "../../Net/Session.h"
+#include "../../Gameplay/Stage.h"
 #include "../Components/MapleButton.h"
-#include "../Character/ExpTable.h"
+#include "../../Character/ExpTable.h"
 
 #include <nlnx/nx.hpp>
 
@@ -101,8 +101,8 @@ namespace ms
 
 		exp_adj = Point<int16_t>(0, 6);
 
-		int16_t width = Constants::Constants::get().get_viewwidth();
-		int16_t height = Constants::Constants::get().get_viewheight();
+		std::int16_t width = Constants::Constants::get().get_viewwidth();
+		std::int16_t height = Constants::Constants::get().get_viewheight();
 
 		background = ColorBox(width, height, Color::Name::BLACK, 0.5f);
 		position = Point<int16_t>(width / 2, height / 2);
@@ -150,7 +150,7 @@ namespace ms
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	void UIQuit::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIQuit::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -161,7 +161,7 @@ namespace ms
 		}
 	}
 
-	Button::State UIQuit::button_pressed(uint16_t buttonid)
+	Button::State UIQuit::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -209,7 +209,7 @@ namespace ms
 		return std::string(2 - ctime.length(), '0') + ctime;
 	}
 
-	float UIQuit::getexppercent(uint16_t level, int64_t exp) const
+	float UIQuit::getexppercent(std::uint16_t level, int64_t exp) const
 	{
 		if (level >= ExpTable::LEVELCAP)
 			return 0.0f;

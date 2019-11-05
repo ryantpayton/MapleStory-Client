@@ -25,12 +25,12 @@ namespace ms
 	class Item
 	{
 	public:
-		Item(int32_t itemid, int64_t expiration, const std::string& owner, int16_t flags);
+		Item(std::int32_t itemid, int64_t expiration, const std::string& owner, std::int16_t flags);
 
 	private:
-		int32_t item_id;
+		std::int32_t item_id;
 		int64_t expiration;
 		std::string owner;
-		int16_t flags;
+		std::int16_t flags;
 	};
 }

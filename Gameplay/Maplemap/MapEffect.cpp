@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "MapEffect.h"
 
-#include "../Constants.h"
+#include "../../Constants.h"
 
-#include <nlnx\nx.hpp>
+#include <nlnx/nx.hpp>
 
 namespace ms
 {
@@ -29,7 +29,7 @@ namespace ms
 
 		effect = Effect.resolve(path);
 
-		int16_t width = Constants::Constants::get().get_viewwidth();
+		std::int16_t width = Constants::Constants::get().get_viewwidth();
 
 		position = Point<int16_t>(width / 2, 250);
 	}

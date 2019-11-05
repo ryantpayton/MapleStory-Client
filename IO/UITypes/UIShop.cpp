@@ -23,10 +23,10 @@
 #include "../Components/AreaButton.h"
 #include "../Components/Charset.h"
 #include "../Components/MapleButton.h"
-#include "../Audio/Audio.h"
-#include "../Data/ItemData.h"
+#include "../../Audio/Audio.h"
+#include "../../Data/ItemData.h"
 
-#include "../Net/Packets/NpcInteractionPackets.h"
+#include "../../Net/Packets/NpcInteractionPackets.h"
 
 #include <nlnx/nx.hpp>
 
@@ -54,8 +54,8 @@ namespace ms
 		Texture cbdis = src["checkBox"][1];
 
 		Point<int16_t> cb_origin = cben.get_origin();
-		int16_t cb_x = cb_origin.x();
-		int16_t cb_y = cb_origin.y();
+		std::int16_t cb_x = cb_origin.x();
+		std::int16_t cb_y = cb_origin.y();
 
 		checkBox[0] = cbdis;
 		checkBox[1] = cben;
@@ -70,19 +70,19 @@ namespace ms
 		nl::node sellen = src["TabSell"]["enabled"];
 		nl::node selldis = src["TabSell"]["disabled"];
 
-		for (uint16_t i = Buttons::EQUIP; i <= Buttons::CASH; i++)
+		for (std::uint16_t i = Buttons::EQUIP; i <= Buttons::CASH; i++)
 		{
 			std::string tabnum = std::to_string(i - Buttons::EQUIP);
 			buttons[i] = std::make_unique<TwoSpriteButton>(selldis[tabnum], sellen[tabnum]);
 		}
 
-		int16_t item_y = 124;
-		int16_t item_height = 36;
+		std::int16_t item_y = 124;
+		std::int16_t item_height = 36;
 
 		buy_x = 8;
 		buy_width = 257;
 
-		for (uint16_t i = Buttons::BUY0; i <= Buttons::BUY8; i++)
+		for (std::uint16_t i = Buttons::BUY0; i <= Buttons::BUY8; i++)
 		{
 			Point<int16_t> pos(buy_x, item_y + 42 * (i - Buttons::BUY0));
 			Point<int16_t> dim(buy_width, item_height);
@@ -92,7 +92,7 @@ namespace ms
 		sell_x = 284;
 		sell_width = 200;
 
-		for (uint16_t i = Buttons::SELL0; i <= Buttons::SELL8; i++)
+		for (std::uint16_t i = Buttons::SELL0; i <= Buttons::SELL8; i++)
 		{
 			Point<int16_t> pos(sell_x, item_y + 42 * (i - Buttons::SELL0));
 			Point<int16_t> dim(sell_width, item_height);
@@ -109,7 +109,7 @@ namespace ms
 			Slider::Type::DEFAULT, Range<int16_t>(123, 484), 257, 5, 1,
 			[&](bool upwards)
 			{
-				int16_t shift = upwards ? -1 : 1;
+				std::int16_t shift = upwards ? -1 : 1;
 				bool above = buystate.offset + shift >= 0;
 				bool below = buystate.offset + shift <= buystate.lastslot - 5;
 
@@ -122,7 +122,7 @@ namespace ms
 			Slider::Type::DEFAULT, Range<int16_t>(123, 484), 488, 5, 1,
 			[&](bool upwards)
 			{
-				int16_t shift = upwards ? -1 : 1;
+				std::int16_t shift = upwards ? -1 : 1;
 				bool above = sellstate.offset + shift >= 0;
 				bool below = sellstate.offset + shift <= sellstate.lastslot - 5;
 
@@ -162,16 +162,16 @@ namespace ms
 		mesolabel.change_text(mesostr);
 	}
 
-	Button::State UIShop::button_pressed(uint16_t buttonid)
+	Button::State UIShop::button_pressed(std::uint16_t buttonid)
 	{
 		clear_tooltip();
 
-		constexpr Range<uint16_t> buy(Buttons::BUY0, Buttons::BUY8);
-		constexpr Range<uint16_t> sell(Buttons::SELL0, Buttons::SELL8);
+		constexpr Range<std::uint16_t> buy(Buttons::BUY0, Buttons::BUY8);
+		constexpr Range<std::uint16_t> sell(Buttons::SELL0, Buttons::SELL8);
 
 		if (buy.contains(buttonid))
 		{
-			int16_t selected = buttonid - Buttons::BUY0;
+			std::int16_t selected = buttonid - Buttons::BUY0;
 			buystate.select(selected);
 			sellstate.selection = -1;
 
@@ -179,7 +179,7 @@ namespace ms
 		}
 		else if (sell.contains(buttonid))
 		{
-			int16_t selected = buttonid - Buttons::SELL0;
+			std::int16_t selected = buttonid - Buttons::SELL0;
 			sellstate.select(selected);
 			buystate.selection = -1;
 
@@ -272,9 +272,9 @@ namespace ms
 			}
 		}
 
-		int16_t xoff = cursoroffset.x();
-		int16_t yoff = cursoroffset.y();
-		int16_t slot = slot_by_position(yoff);
+		std::int16_t xoff = cursoroffset.x();
+		std::int16_t yoff = cursoroffset.y();
+		std::int16_t slot = slot_by_position(yoff);
 
 		if (slot >= 0 && slot <= 8)
 		{
@@ -292,7 +292,7 @@ namespace ms
 
 		Cursor::State ret = clicked ? Cursor::State::CLICKING : Cursor::State::IDLE;
 
-		for (size_t i = 0; i < Buttons::NUM_BUTTONS; i++)
+		for (std::size_t i = 0; i < Buttons::NUM_BUTTONS; i++)
 		{
 			if (buttons[i]->is_active() && buttons[i]->bounds(position).contains(cursorpos))
 			{
@@ -370,8 +370,8 @@ namespace ms
 
 	void UIShop::send_scroll(double yoffset)
 	{
-		int16_t xoff = lastcursorpos.x();
-		int16_t slider_width = 10;
+		std::int16_t xoff = lastcursorpos.x();
+		std::int16_t slider_width = 10;
 
 		if (buyslider.isenabled())
 			if (xoff >= buy_x && xoff <= buy_width + slider_width)
@@ -388,9 +388,9 @@ namespace ms
 		{
 			Point<int16_t> cursoroffset = cursorpos - position;
 
-			int16_t xoff = cursoroffset.x();
-			int16_t yoff = cursoroffset.y();
-			int16_t slot = slot_by_position(yoff);
+			std::int16_t xoff = cursoroffset.x();
+			std::int16_t yoff = cursoroffset.y();
+			std::int16_t slot = slot_by_position(yoff);
 
 			if (slot >= 0 && slot <= 8)
 			{
@@ -406,7 +406,7 @@ namespace ms
 		}
 	}
 
-	void UIShop::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIShop::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && escape)
 			exit_shop();
@@ -417,7 +417,7 @@ namespace ms
 		UI::get().clear_tooltip(Tooltip::Parent::SHOP);
 	}
 
-	void UIShop::show_item(int16_t slot, bool buy)
+	void UIShop::show_item(std::int16_t slot, bool buy)
 	{
 		if (buy)
 			buystate.show_item(slot);
@@ -427,12 +427,12 @@ namespace ms
 
 	void UIShop::changeselltab(InventoryType::Id type)
 	{
-		uint16_t oldtab = tabbyinventory(sellstate.tab);
+		std::uint16_t oldtab = tabbyinventory(sellstate.tab);
 
 		if (oldtab > 0)
 			buttons[oldtab]->set_state(Button::State::NORMAL);
 
-		uint16_t newtab = tabbyinventory(type);
+		std::uint16_t newtab = tabbyinventory(type);
 
 		if (newtab > 0)
 			buttons[newtab]->set_state(Button::State::PRESSED);
@@ -441,7 +441,7 @@ namespace ms
 
 		sellslider.setrows(5, sellstate.lastslot);
 
-		for (size_t i = Buttons::SELL0; i < Buttons::SELL8; i++)
+		for (std::size_t i = Buttons::SELL0; i < Buttons::SELL8; i++)
 		{
 			if (i - Buttons::SELL0 < sellstate.lastslot)
 				buttons[i]->set_state(Button::State::NORMAL);
@@ -450,7 +450,7 @@ namespace ms
 		}
 	}
 
-	void UIShop::reset(int32_t npcid)
+	void UIShop::reset(std::int32_t npcid)
 	{
 		std::string strid = string_format::extend_id(npcid, 7);
 		npc = nl::nx::npc[strid + ".img"]["stand"]["0"];
@@ -476,12 +476,12 @@ namespace ms
 			changeselltab(type);
 	}
 
-	void UIShop::add_item(int32_t id, int32_t price, int32_t pitch, int32_t time, int16_t buyable)
+	void UIShop::add_item(std::int32_t id, std::int32_t price, std::int32_t pitch, std::int32_t time, std::int16_t buyable)
 	{
 		add_rechargable(id, price, pitch, time, 0, buyable);
 	}
 
-	void UIShop::add_rechargable(int32_t id, int32_t price, int32_t pitch, int32_t time, int16_t chargeprice, int16_t buyable)
+	void UIShop::add_rechargable(std::int32_t id, std::int32_t price, std::int32_t pitch, std::int32_t time, std::int16_t chargeprice, std::int16_t buyable)
 	{
 		auto buyitem = BuyItem(meso, id, price, pitch, time, chargeprice, buyable);
 		buystate.add(buyitem);
@@ -489,9 +489,9 @@ namespace ms
 		buyslider.setrows(5, buystate.lastslot);
 	}
 
-	int16_t UIShop::slot_by_position(int16_t y)
+	std::int16_t UIShop::slot_by_position(std::int16_t y)
 	{
-		int16_t yoff = y - 123;
+		std::int16_t yoff = y - 123;
 
 		if (yoff > 0 && yoff < 38)
 			return 0;
@@ -515,7 +515,7 @@ namespace ms
 			return -1;
 	}
 
-	uint16_t UIShop::tabbyinventory(InventoryType::Id type)
+	std::uint16_t UIShop::tabbyinventory(InventoryType::Id type)
 	{
 		switch (type)
 		{
@@ -542,7 +542,7 @@ namespace ms
 		NpcShopActionPacket().dispatch();
 	}
 
-	UIShop::BuyItem::BuyItem(Texture cur, int32_t i, int32_t p, int32_t pt, int32_t t, int16_t cp, int16_t b) : currency(cur), id(i), price(p), pitch(pt), time(t), chargeprice(cp), buyable(b)
+	UIShop::BuyItem::BuyItem(Texture cur, std::int32_t i, std::int32_t p, std::int32_t pt, std::int32_t t, std::int16_t cp, std::int16_t b) : currency(cur), id(i), price(p), pitch(pt), time(t), chargeprice(cp), buyable(b)
 	{
 		namelabel = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::MINESHAFT);
 		pricelabel = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::MINESHAFT);
@@ -568,17 +568,17 @@ namespace ms
 		pricelabel.draw(pos + Point<int16_t>(55, 24));
 	}
 
-	int32_t UIShop::BuyItem::get_id() const
+	std::int32_t UIShop::BuyItem::get_id() const
 	{
 		return id;
 	}
 
-	int16_t UIShop::BuyItem::get_buyable() const
+	std::int16_t UIShop::BuyItem::get_buyable() const
 	{
 		return buyable;
 	}
 
-	UIShop::SellItem::SellItem(int32_t item_id, int16_t count, int16_t s, bool sc, Texture cur)
+	UIShop::SellItem::SellItem(std::int32_t item_id, std::int16_t count, std::int16_t s, bool sc, Texture cur)
 	{
 		const ItemData& idata = ItemData::get(item_id);
 
@@ -598,7 +598,7 @@ namespace ms
 
 		namelabel.change_text(name);
 
-		int32_t price = idata.get_price();
+		std::int32_t price = idata.get_price();
 		std::string mesostr = std::to_string(price);
 		string_format::split_number(mesostr);
 		pricelabel.change_text(mesostr + "meso");
@@ -618,17 +618,17 @@ namespace ms
 		pricelabel.draw(pos + Point<int16_t>(84, 24));
 	}
 
-	int32_t UIShop::SellItem::get_id() const
+	std::int32_t UIShop::SellItem::get_id() const
 	{
 		return id;
 	}
 
-	int16_t UIShop::SellItem::get_slot() const
+	std::int16_t UIShop::SellItem::get_slot() const
 	{
 		return slot;
 	}
 
-	int16_t UIShop::SellItem::get_sellable() const
+	std::int16_t UIShop::SellItem::get_sellable() const
 	{
 		return sellable;
 	}
@@ -644,9 +644,9 @@ namespace ms
 
 	void UIShop::BuyState::draw(Point<int16_t> parentpos, const Texture& selected) const
 	{
-		for (int16_t i = 0; i < 9; i++)
+		for (std::int16_t i = 0; i < 9; i++)
 		{
-			int16_t slot = i + offset;
+			std::int16_t slot = i + offset;
 
 			if (slot >= lastslot)
 				break;
@@ -660,14 +660,14 @@ namespace ms
 		}
 	}
 
-	void UIShop::BuyState::show_item(int16_t slot)
+	void UIShop::BuyState::show_item(std::int16_t slot)
 	{
-		int16_t absslot = slot + offset;
+		std::int16_t absslot = slot + offset;
 
 		if (absslot < 0 || absslot >= lastslot)
 			return;
 
-		int32_t itemid = items[absslot].get_id();
+		std::int32_t itemid = items[absslot].get_id();
 		UI::get().show_item(Tooltip::Parent::SHOP, itemid);
 	}
 
@@ -684,15 +684,15 @@ namespace ms
 			return;
 
 		const BuyItem& item = items[selection];
-		int16_t buyable = item.get_buyable();
-		int16_t slot = selection;
-		int32_t itemid = item.get_id();
+		std::int16_t buyable = item.get_buyable();
+		std::int16_t slot = selection;
+		std::int32_t itemid = item.get_id();
 
 		if (buyable > 1)
 		{
 			constexpr char* question = "How many are you willing to buy?";
 
-			auto onenter = [slot, itemid](int32_t qty)
+			auto onenter = [slot, itemid](std::int32_t qty)
 			{
 				auto shortqty = static_cast<int16_t>(qty);
 
@@ -715,9 +715,9 @@ namespace ms
 		}
 	}
 
-	void UIShop::BuyState::select(int16_t selected)
+	void UIShop::BuyState::select(std::int16_t selected)
 	{
-		int16_t slot = selected + offset;
+		std::int16_t slot = selected + offset;
 
 		if (slot == selection)
 			buy();
@@ -743,13 +743,13 @@ namespace ms
 
 		items.clear();
 
-		int16_t slots = inventory.get_slotmax(tab);
+		std::int16_t slots = inventory.get_slotmax(tab);
 
-		for (int16_t i = 1; i <= slots; i++)
+		for (std::int16_t i = 1; i <= slots; i++)
 		{
-			if (int32_t item_id = inventory.get_item_id(tab, i))
+			if (std::int32_t item_id = inventory.get_item_id(tab, i))
 			{
-				int16_t count = inventory.get_item_count(tab, i);
+				std::int16_t count = inventory.get_item_count(tab, i);
 				items.emplace_back(item_id, count, i, tab != InventoryType::Id::EQUIP, meso);
 			}
 		}
@@ -759,9 +759,9 @@ namespace ms
 
 	void UIShop::SellState::draw(Point<int16_t> parentpos, const Texture& selected) const
 	{
-		for (int16_t i = 0; i <= 8; i++)
+		for (std::int16_t i = 0; i <= 8; i++)
 		{
-			int16_t slot = i + offset;
+			std::int16_t slot = i + offset;
 
 			if (slot >= lastslot)
 				break;
@@ -775,21 +775,21 @@ namespace ms
 		}
 	}
 
-	void UIShop::SellState::show_item(int16_t slot)
+	void UIShop::SellState::show_item(std::int16_t slot)
 	{
-		int16_t absslot = slot + offset;
+		std::int16_t absslot = slot + offset;
 
 		if (absslot < 0 || absslot >= lastslot)
 			return;
 
 		if (tab == InventoryType::Id::EQUIP)
 		{
-			int16_t realslot = items[absslot].get_slot();
+			std::int16_t realslot = items[absslot].get_slot();
 			UI::get().show_equip(Tooltip::Parent::SHOP, realslot);
 		}
 		else
 		{
-			int32_t itemid = items[absslot].get_id();
+			std::int32_t itemid = items[absslot].get_id();
 			UI::get().show_item(Tooltip::Parent::SHOP, itemid);
 		}
 	}
@@ -800,15 +800,15 @@ namespace ms
 			return;
 
 		const SellItem& item = items[selection];
-		int32_t itemid = item.get_id();
-		int16_t sellable = item.get_sellable();
-		int16_t slot = item.get_slot();
+		std::int32_t itemid = item.get_id();
+		std::int16_t sellable = item.get_sellable();
+		std::int16_t slot = item.get_slot();
 
 		if (sellable > 1)
 		{
 			constexpr char* question = "How many are you willing to sell?";
 
-			auto onenter = [itemid, slot](int32_t qty)
+			auto onenter = [itemid, slot](std::int32_t qty)
 			{
 				auto shortqty = static_cast<int16_t>(qty);
 
@@ -837,9 +837,9 @@ namespace ms
 		}
 	}
 
-	void UIShop::SellState::select(int16_t selected)
+	void UIShop::SellState::select(std::int16_t selected)
 	{
-		int16_t slot = selected + offset;
+		std::int16_t slot = selected + offset;
 
 		if (slot == selection)
 			sell(false);

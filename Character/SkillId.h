@@ -21,7 +21,7 @@ namespace ms
 {
 	namespace SkillId
 	{
-		enum Id : uint32_t
+		enum Id : std::int32_t
 		{
 			// Beginner
 			FOLLOW_THE_LEAD = 8,

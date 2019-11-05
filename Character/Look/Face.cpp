@@ -17,14 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Face.h"
 
-#include "../Console.h"
+#include "../../Console.h"
 
 #include <nlnx/nx.hpp>
 #include <nlnx/node.hpp>
 
 namespace ms
 {
-	Expression::Id Expression::byaction(size_t action)
+	Expression::Id Expression::byaction(std::size_t action)
 	{
 		action -= 98;
 
@@ -64,7 +64,7 @@ namespace ms
 		"wink"
 	};
 
-	Face::Face(int32_t faceid)
+	Face::Face(std::int32_t faceid)
 	{
 		std::string strid = "000" + std::to_string(faceid);
 		nl::node facenode = nl::nx::character["Face"][strid + ".img"];
@@ -82,15 +82,15 @@ namespace ms
 				const std::string& expname = iter.second;
 				nl::node expnode = facenode[expname];
 
-				for (uint8_t frame = 0; nl::node framenode = expnode[frame]; ++frame)
+				for (std::uint8_t frame = 0; nl::node framenode = expnode[frame]; ++frame)
 					expressions[exp].emplace(frame, framenode);
 			}
 		}
 
-		name = nl::nx::string["Eqp.img"]["Eqp"]["Face"][std::to_string(faceid)]["name"];
+		name = nl::nx::string["Eqp.img"]["Eqp"]["Face"][std::to_string(faceid)]["name"].get_string();
 	}
 
-	void Face::draw(Expression::Id expression, uint8_t frame, const DrawArgument& args) const
+	void Face::draw(Expression::Id expression, std::uint8_t frame, const DrawArgument& args) const
 	{
 		auto frameit = expressions[expression].find(frame);
 
@@ -98,12 +98,12 @@ namespace ms
 			frameit->second.texture.draw(args);
 	}
 
-	uint8_t Face::nextframe(Expression::Id exp, uint8_t frame) const
+	std::uint8_t Face::nextframe(Expression::Id exp, std::uint8_t frame) const
 	{
 		return expressions[exp].count(frame + 1) ? frame + 1 : 0;
 	}
 
-	int16_t Face::get_delay(Expression::Id exp, uint8_t frame) const
+	std::int16_t Face::get_delay(Expression::Id exp, std::uint8_t frame) const
 	{
 		auto delayit = expressions[exp].find(frame);
 		return delayit != expressions[exp].end() ? delayit->second.delay : 100;

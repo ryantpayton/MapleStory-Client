@@ -28,27 +28,27 @@ namespace ms
 	struct Account
 	{
 		std::string name;
-		int32_t accid;
-		uint8_t female;
+		std::int32_t accid;
+		std::uint8_t female;
 		bool muted;
-		int16_t pin;
-		int8_t gmlevel;
+		std::int16_t pin;
+		std::int8_t gmlevel;
 	};
 
 	struct World
 	{
 		std::string name;
 		std::string message;
-		std::vector<int32_t> chloads;
-		uint8_t channelcount;
-		uint8_t flag;
-		int8_t wid;
+		std::vector<std::int32_t> chloads;
+		std::uint8_t channelcount;
+		std::uint8_t flag;
+		std::int8_t wid;
 	};
 
 	struct RecommendedWorld
 	{
 		std::string message;
-		int32_t wid;
+		std::int32_t wid;
 	};
 
 	struct StatsEntry
@@ -56,29 +56,29 @@ namespace ms
 		std::string name;
 		bool female;
 		std::vector<int64_t> petids;
-		EnumMap<Maplestat::Id, uint16_t> stats;
+		EnumMap<Maplestat::Id, std::uint16_t> stats;
 		int64_t exp;
-		int32_t mapid;
-		uint8_t portal;
-		std::pair<int32_t, int8_t> rank;
-		std::pair<int32_t, int8_t> jobrank;
+		std::int32_t mapid;
+		std::uint8_t portal;
+		std::pair<std::int32_t, std::int8_t> rank;
+		std::pair<std::int32_t, std::int8_t> jobrank;
 	};
 
 	struct LookEntry
 	{
 		bool female;
-		uint8_t skin;
-		int32_t faceid;
-		int32_t hairid;
-		std::map<int8_t, int32_t> equips;
-		std::map<int8_t, int32_t> maskedequips;
-		std::vector<int32_t> petids;
+		std::uint8_t skin;
+		std::int32_t faceid;
+		std::int32_t hairid;
+		std::map<std::int8_t, std::int32_t> equips;
+		std::map<std::int8_t, std::int32_t> maskedequips;
+		std::vector<std::int32_t> petids;
 	};
 
 	struct CharEntry
 	{
 		StatsEntry stats;
 		LookEntry look;
-		int32_t id;
+		std::int32_t id;
 	};
 }

@@ -20,9 +20,9 @@
 #include "../UI.h"
 
 #include "../Components/MapleButton.h"
-#include "../UITypes/UINotice.h"
-#include "../UITypes/UILoginNotice.h"
-#include "../Net/Packets/PlayerPackets.h"
+#include "UINotice.h"
+#include "UILoginNotice.h"
+#include "../../Net/Packets/PlayerPackets.h"
 
 #include <nlnx/nx.hpp>
 
@@ -73,7 +73,7 @@ namespace ms
 			{
 				if (std::find(found_actions.begin(), found_actions.end(), ficon.first) != found_actions.end())
 				{
-					int32_t maplekey = get_tempkey(ficon.first);
+					std::int32_t maplekey = get_tempkey(ficon.first);
 
 					if (maplekey != -1)
 					{
@@ -123,7 +123,7 @@ namespace ms
 		UIElement::update();
 	}
 
-	void UIKeyConfig::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIKeyConfig::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && escape)
 			close();
@@ -353,7 +353,7 @@ namespace ms
 		}
 	}
 
-	Button::State UIKeyConfig::button_pressed(uint16_t buttonid)
+	Button::State UIKeyConfig::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -403,7 +403,7 @@ namespace ms
 		{
 			std::vector<std::tuple<KeyConfig::Key, KeyType::Id, KeyAction::Id>> updated_actions;
 
-			for each (auto key in tempkeys)
+			for(auto key : tempkeys)
 			{
 				KeyConfig::Key k = KeyConfig::actionbyid(key.first);
 				Keyboard::Mapping map = key.second;
@@ -419,12 +419,12 @@ namespace ms
 
 			auto maplekeys = keyboard->get_maplekeys();
 
-			for each (auto key in maplekeys)
+			for(auto key : maplekeys)
 			{
 				bool keyFound = false;
 				KeyConfig::Key keyConfig = KeyConfig::actionbyid(key.first);
 
-				for each (auto tkey in tempkeys)
+				for(auto tkey : tempkeys)
 				{
 					KeyConfig::Key tKeyConfig = KeyConfig::actionbyid(tkey.first);
 
@@ -442,7 +442,7 @@ namespace ms
 			if (updated_actions.size() > 0)
 				ChangeKeyMapPacket(updated_actions).dispatch();
 
-			for each (auto action in updated_actions)
+			for(auto action : updated_actions)
 			{
 				KeyConfig::Key key = std::get<0>(action);
 				KeyType::Id type = std::get<1>(action);
@@ -472,28 +472,28 @@ namespace ms
 
 	void UIKeyConfig::load_keys_pos()
 	{
-		int16_t slot_width = 33;
-		int16_t slot_width_lg = 98;
-		int16_t slot_height = 33;
+		std::int16_t slot_width = 33;
+		std::int16_t slot_width_lg = 98;
+		std::int16_t slot_height = 33;
 
-		int16_t row_y = 126;
-		int16_t row_special_y = row_y - slot_height - 5;
+		std::int16_t row_y = 126;
+		std::int16_t row_special_y = row_y - slot_height - 5;
 
-		int16_t row_quickslot_x = 535;
+		std::int16_t row_quickslot_x = 535;
 
-		int16_t row_one_x = 31;
-		int16_t row_two_x = 80;
-		int16_t row_three_x = 96;
-		int16_t row_four_x = 55;
-		int16_t row_five_x = 39;
+		std::int16_t row_one_x = 31;
+		std::int16_t row_two_x = 80;
+		std::int16_t row_three_x = 96;
+		std::int16_t row_four_x = 55;
+		std::int16_t row_five_x = 39;
 
-		int16_t row_special_x = row_one_x;
+		std::int16_t row_special_x = row_one_x;
 
 		keys_pos[KeyConfig::Key::ESCAPE] = Point<int16_t>(row_one_x, row_special_y);
 
 		row_special_x += slot_width * 2;
 
-		for (size_t i = KeyConfig::Key::F1; i <= KeyConfig::Key::F12; i++)
+		for (std::size_t i = KeyConfig::Key::F1; i <= KeyConfig::Key::F12; i++)
 		{
 			KeyConfig::Key id = KeyConfig::actionbyid(i);
 
@@ -521,7 +521,7 @@ namespace ms
 		keys_pos[KeyConfig::Key::MINUS] = Point<int16_t>(row_one_x + (slot_width * 11), row_y + (slot_height * 0));
 		keys_pos[KeyConfig::Key::EQUAL] = Point<int16_t>(row_one_x + (slot_width * 12), row_y + (slot_height * 0));
 
-		for (size_t i = KeyConfig::Key::Q; i <= KeyConfig::Key::RIGHT_BRACKET; i++)
+		for (std::size_t i = KeyConfig::Key::Q; i <= KeyConfig::Key::RIGHT_BRACKET; i++)
 		{
 			KeyConfig::Key id = KeyConfig::actionbyid(i);
 
@@ -532,7 +532,7 @@ namespace ms
 
 		keys_pos[KeyConfig::Key::BACKSLASH] = Point<int16_t>(row_two_x + (slot_width * 12), row_y + (slot_height * 1));
 
-		for (size_t i = KeyConfig::Key::A; i <= KeyConfig::Key::APOSTROPHE; i++)
+		for (std::size_t i = KeyConfig::Key::A; i <= KeyConfig::Key::APOSTROPHE; i++)
 		{
 			KeyConfig::Key id = KeyConfig::actionbyid(i);
 
@@ -543,7 +543,7 @@ namespace ms
 
 		row_four_x += 24;
 
-		for (size_t i = KeyConfig::Key::Z; i <= KeyConfig::Key::PERIOD; i++)
+		for (std::size_t i = KeyConfig::Key::Z; i <= KeyConfig::Key::PERIOD; i++)
 		{
 			KeyConfig::Key id = KeyConfig::actionbyid(i);
 
@@ -579,11 +579,11 @@ namespace ms
 
 	void UIKeyConfig::load_icons_pos()
 	{
-		int16_t row_x = 26;
-		int16_t row_y = 307;
+		std::int16_t row_x = 26;
+		std::int16_t row_y = 307;
 
-		int16_t slot_width = 36;
-		int16_t slot_height = 36;
+		std::int16_t slot_width = 36;
+		std::int16_t slot_height = 36;
 
 		icons_pos[KeyAction::Id::MAPLECHAT] = Point<int16_t>(row_x + (slot_width * 0), row_y + (slot_height * 0));
 		icons_pos[KeyAction::Id::TOGGLECHAT] = Point<int16_t>(row_x + (slot_width * 1), row_y + (slot_height * 0));
@@ -904,7 +904,7 @@ namespace ms
 		return KeyConfig::Key::LENGTH;
 	}
 
-	int32_t UIKeyConfig::get_tempkey(KeyAction::Id action) const
+	std::int32_t UIKeyConfig::get_tempkey(KeyAction::Id action) const
 	{
 		for (auto map : tempkeys)
 		{
@@ -917,7 +917,7 @@ namespace ms
 		return -1;
 	}
 
-	Keyboard::Mapping UIKeyConfig::get_tempkey_mapping(int32_t keycode) const
+	Keyboard::Mapping UIKeyConfig::get_tempkey_mapping(std::int32_t keycode) const
 	{
 		auto iter = tempkeys.find(keycode);
 

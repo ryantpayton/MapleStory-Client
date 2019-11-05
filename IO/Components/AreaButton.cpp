@@ -34,7 +34,7 @@ namespace ms
 		return Rectangle<int16_t>(absp, absp + dimension);
 	}
 
-	int16_t AreaButton::width() const
+	std::int16_t AreaButton::width() const
 	{
 		return dimension.x();
 	}

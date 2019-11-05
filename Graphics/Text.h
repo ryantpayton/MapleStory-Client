@@ -58,8 +58,8 @@ namespace ms
 		public:
 			struct Word
 			{
-				size_t first;
-				size_t last;
+				std::size_t first;
+				std::size_t last;
 				Font font;
 				Color::Name color;
 			};
@@ -70,12 +70,12 @@ namespace ms
 				Point<int16_t> position;
 			};
 
-			Layout(const std::vector<Line>& lines, const std::vector<int16_t>& advances, int16_t width, int16_t height, int16_t endx, int16_t endy);
+			Layout(const std::vector<Line>& lines, const std::vector<int16_t>& advances, std::int16_t width, std::int16_t height, std::int16_t endx, std::int16_t endy);
 			Layout();
 
-			int16_t width() const;
-			int16_t height() const;
-			int16_t advance(size_t index) const;
+			std::int16_t width() const;
+			std::int16_t height() const;
+			std::int16_t advance(std::size_t index) const;
 			Point<int16_t> get_dimensions() const;
 			Point<int16_t> get_endoffset() const;
 
@@ -90,8 +90,8 @@ namespace ms
 			Point<int16_t> endoffset;
 		};
 
-		Text(Font font, Alignment alignment, Color::Name color, Background background, const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true, int16_t line_adj = 0);
-		Text(Font font, Alignment alignment, Color::Name color, const std::string& text = "", uint16_t maxwidth = 0, bool formatted = true, int16_t line_adj = 0);
+		Text(Font font, Alignment alignment, Color::Name color, Background background, const std::string& text = "", std::uint16_t maxwidth = 0, bool formatted = true, std::int16_t line_adj = 0);
+		Text(Font font, Alignment alignment, Color::Name color, const std::string& text = "", std::uint16_t maxwidth = 0, bool formatted = true, std::int16_t line_adj = 0);
 		Text();
 
 		void draw(const DrawArgument& args) const;
@@ -101,10 +101,10 @@ namespace ms
 		void set_background(Background background);
 
 		bool empty() const;
-		size_t length() const;
-		int16_t width() const;
-		int16_t height() const;
-		uint16_t advance(size_t pos) const;
+		std::size_t length() const;
+		std::int16_t width() const;
+		std::int16_t height() const;
+		std::uint16_t advance(std::size_t pos) const;
 		Point<int16_t> dimensions() const;
 		Point<int16_t> endoffset() const;
 		const std::string& get_text() const;
@@ -117,9 +117,9 @@ namespace ms
 		Color::Name color;
 		Background background;
 		Layout layout;
-		uint16_t maxwidth;
+		std::uint16_t maxwidth;
 		bool formatted;
 		std::string text;
-		int16_t line_adj;
+		std::int16_t line_adj;
 	};
 }

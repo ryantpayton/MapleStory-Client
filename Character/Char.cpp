@@ -23,7 +23,7 @@
 
 namespace ms
 {
-	Char::Char(int32_t o, const CharLook& lk, const std::string& name) : MapObject(o), look(lk), namelabel(Text(Text::Font::A13M, Text::Alignment::CENTER, Color::Name::WHITE, Text::Background::NAMETAG, name)) {}
+	Char::Char(std::int32_t o, const CharLook& lk, const std::string& name) : MapObject(o), look(lk), namelabel(Text(Text::Font::A13M, Text::Alignment::CENTER, Color::Name::WHITE, Text::Background::NAMETAG, name)) {}
 
 	void Char::draw(double viewx, double viewy, float alpha) const
 	{
@@ -109,10 +109,10 @@ namespace ms
 			}
 		}
 
-		uint16_t stancespeed = 0;
+		std::uint16_t stancespeed = 0;
 
 		if (speed >= 1.0f / Constants::TIMESTEP)
-			stancespeed = static_cast<uint16_t>(Constants::TIMESTEP * speed);
+			stancespeed = static_cast<std::uint16_t>(Constants::TIMESTEP * speed);
 
 		afterimage.update(look.get_frame(), stancespeed);
 
@@ -138,33 +138,33 @@ namespace ms
 
 	float Char::get_real_attackspeed() const
 	{
-		int8_t speed = get_integer_attackspeed();
+		std::int8_t speed = get_integer_attackspeed();
 
 		return 1.7f - static_cast<float>(speed) / 10;
 	}
 
-	uint16_t Char::get_attackdelay(size_t no) const
+	std::uint16_t Char::get_attackdelay(std::size_t no) const
 	{
-		uint8_t first_frame = afterimage.get_first_frame();
-		uint16_t delay = look.get_attackdelay(no, first_frame);
+		std::uint8_t first_frame = afterimage.get_first_frame();
+		std::uint16_t delay = look.get_attackdelay(no, first_frame);
 		float fspeed = get_real_attackspeed();
 
-		return static_cast<uint16_t>(delay / fspeed);
+		return static_cast<std::uint16_t>(delay / fspeed);
 	}
 
-	int8_t Char::update(const Physics& physics)
+	std::int8_t Char::update(const Physics& physics)
 	{
 		update(physics, 1.0f);
 
 		return get_layer();
 	}
 
-	int8_t Char::get_layer() const
+	std::int8_t Char::get_layer() const
 	{
 		return is_climbing() ? 7 : phobj.fhlayer;
 	}
 
-	void Char::show_attack_effect(Animation toshow, int8_t z)
+	void Char::show_attack_effect(Animation toshow, std::int8_t z)
 	{
 		float attackspeed = get_real_attackspeed();
 
@@ -181,10 +181,10 @@ namespace ms
 		ironbody.set_for(500);
 	}
 
-	void Char::show_damage(int32_t damage)
+	void Char::show_damage(std::int32_t damage)
 	{
-		int16_t start_y = phobj.get_y() - 60;
-		int16_t x = phobj.get_x() - 10;
+		std::int16_t start_y = phobj.get_y() - 60;
+		std::int16_t x = phobj.get_x() - 10;
 
 		damagenumbers.emplace_back(DamageNumber::Type::TOPLAYER, damage, start_y, x);
 
@@ -197,7 +197,7 @@ namespace ms
 		chatballoon.change_text(line);
 	}
 
-	void Char::change_look(Maplestat::Id stat, int32_t id)
+	void Char::change_look(Maplestat::Id stat, std::int32_t id)
 	{
 		switch (stat)
 		{
@@ -213,7 +213,7 @@ namespace ms
 		}
 	}
 
-	void Char::set_state(uint8_t statebyte)
+	void Char::set_state(std::uint8_t statebyte)
 	{
 		if (statebyte % 2 == 1)
 		{
@@ -230,7 +230,7 @@ namespace ms
 		set_state(newstate);
 	}
 
-	void Char::set_expression(int32_t expid)
+	void Char::set_expression(std::int32_t expid)
 	{
 		Expression::Id expression = Expression::byaction(expid);
 		look.set_expression(expression);
@@ -260,9 +260,9 @@ namespace ms
 		look.set_alerted(5000);
 	}
 
-	void Char::set_afterimage(int32_t skill_id)
+	void Char::set_afterimage(std::int32_t skill_id)
 	{
-		int32_t weapon_id = look.get_equips().get_weapon();
+		std::int32_t weapon_id = look.get_equips().get_weapon();
 
 		if (weapon_id <= 0)
 			return;
@@ -270,7 +270,7 @@ namespace ms
 		const WeaponData& weapon = WeaponData::get(weapon_id);
 
 		std::string stance_name = Stance::names[look.get_stance()];
-		int16_t weapon_level = weapon.get_equipdata().get_reqstat(Maplestat::Id::LEVEL);
+		std::int16_t weapon_level = weapon.get_equipdata().get_reqstat(Maplestat::Id::LEVEL);
 		const std::string& ai_name = weapon.get_afterimage();
 
 		afterimage = Afterimage(skill_id, ai_name, stance_name, weapon_level);
@@ -295,7 +295,7 @@ namespace ms
 		look.set_stance(stance);
 	}
 
-	void Char::add_pet(uint8_t index, int32_t iid, const std::string& name, int32_t uniqueid, Point<int16_t> pos, uint8_t stance, int32_t fhid)
+	void Char::add_pet(std::uint8_t index, std::int32_t iid, const std::string& name, std::int32_t uniqueid, Point<int16_t> pos, std::uint8_t stance, std::int32_t fhid)
 	{
 		if (index > 2)
 			return;
@@ -303,7 +303,7 @@ namespace ms
 		pets[index] = PetLook(iid, name, uniqueid, pos, stance, fhid);
 	}
 
-	void Char::remove_pet(uint8_t index, bool hunger)
+	void Char::remove_pet(std::uint8_t index, bool hunger)
 	{
 		if (index > 2)
 			return;
@@ -338,7 +338,7 @@ namespace ms
 
 	Weapon::Type Char::get_weapontype() const
 	{
-		int32_t weapon_id = look.get_equips().get_weapon();
+		std::int32_t weapon_id = look.get_equips().get_weapon();
 
 		if (weapon_id <= 0)
 			return Weapon::Type::NONE;

@@ -45,6 +45,6 @@ namespace ms
 			CASH = 170
 		};
 
-		Type by_value(int32_t value);
+		Type by_value(std::int32_t value);
 	};
 }

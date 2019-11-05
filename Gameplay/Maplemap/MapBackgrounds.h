@@ -17,12 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Console.h"
-#include "../Constants.h"
+#include "../../Console.h"
+#include "../../Constants.h"
 
 #include "../Physics/PhysicsObject.h"
-#include "../Graphics/Texture.h"
-#include "../Graphics/Animation.h"
+#include "../../Graphics/Texture.h"
+#include "../../Graphics/Animation.h"
 
 #include <vector>
 
@@ -49,7 +49,7 @@ namespace ms
 			VMOVEB
 		};
 
-		static Type typebyid(int32_t id)
+		static Type typebyid(std::int32_t id)
 		{
 			if (id >= Type::NORMAL && id <= Type::VMOVEB)
 				return static_cast<Type>(id);
@@ -61,19 +61,19 @@ namespace ms
 
 		void settype(Type type);
 
-		int16_t VWIDTH;
-		int16_t VHEIGHT;
-		int16_t WOFFSET;
-		int16_t HOFFSET;
+		std::int16_t VWIDTH;
+		std::int16_t VHEIGHT;
+		std::int16_t WOFFSET;
+		std::int16_t HOFFSET;
 
 		Animation animation;
 		bool animated;
-		int16_t cx;
-		int16_t cy;
+		std::int16_t cx;
+		std::int16_t cy;
 		double rx;
 		double ry;
-		int16_t htile;
-		int16_t vtile;
+		std::int16_t htile;
+		std::int16_t vtile;
 		float opacity;
 		bool flipped;
 

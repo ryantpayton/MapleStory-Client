@@ -104,11 +104,11 @@ namespace ms
 	struct Buff
 	{
 		Buffstat::Id stat;
-		int16_t value;
-		int32_t skillid;
-		int32_t duration;
+		std::int16_t value;
+		std::int32_t skillid;
+		std::int32_t duration;
 
-		constexpr Buff(Buffstat::Id stat, int16_t value, int32_t skillid, int32_t duration) : stat(stat), value(value), skillid(skillid), duration(duration) {}
+		constexpr Buff(Buffstat::Id stat, std::int16_t value, std::int32_t skillid, std::int32_t duration) : stat(stat), value(value), skillid(skillid), duration(duration) {}
 		constexpr Buff() : Buff(Buffstat::Id::NONE, 0, 0, 0) {}
 	};
 }

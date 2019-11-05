@@ -97,7 +97,7 @@ extern "C" {
 //
 
 // you allocate the grid data structure to this size (note that it will be very big!!!)
-extern size_t stbcc_grid_sizeof(void);
+extern std::size_t stbcc_grid_sizeof(void);
 
 // initialize the grid, value of map[] is 0 = traversable, non-0 is solid
 extern void stbcc_init_grid(stbcc_grid *g, unsigned char *map, int w, int h);
@@ -579,7 +579,7 @@ void stbcc_update_batch_end(stbcc_grid *g)
    stbcc__build_connected_components_for_clumps(g); // @OPTIMIZE: only do this if update was non-empty
 }
 
-size_t stbcc_grid_sizeof(void)
+std::size_t stbcc_grid_sizeof(void)
 {
    return sizeof(stbcc_grid);
 }

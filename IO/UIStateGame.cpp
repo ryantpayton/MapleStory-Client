@@ -85,8 +85,8 @@ namespace ms
 
 	void UIStateGame::update()
 	{
-		int16_t new_width = Constants::Constants::get().get_viewwidth();
-		int16_t new_height = Constants::Constants::get().get_viewheight();
+		std::int16_t new_width = Constants::Constants::get().get_viewwidth();
+		std::int16_t new_height = Constants::Constants::get().get_viewheight();
 
 		if (VWIDTH != new_width || VHEIGHT != new_height)
 		{
@@ -130,7 +130,7 @@ namespace ms
 			front->rightclick(pos);
 	}
 
-	void UIStateGame::send_key(KeyType::Id type, int32_t action, bool pressed, bool escape)
+	void UIStateGame::send_key(KeyType::Id type, std::int32_t action, bool pressed, bool escape)
 	{
 		switch (type)
 		{
@@ -421,7 +421,7 @@ namespace ms
 		}
 	}
 
-	void UIStateGame::show_equip(Tooltip::Parent parent, int16_t slot)
+	void UIStateGame::show_equip(Tooltip::Parent parent, std::int16_t slot)
 	{
 		eqtooltip.set_equip(parent, slot);
 
@@ -432,7 +432,7 @@ namespace ms
 		}
 	}
 
-	void UIStateGame::show_item(Tooltip::Parent parent, int32_t itemid)
+	void UIStateGame::show_item(Tooltip::Parent parent, std::int32_t itemid)
 	{
 		ittooltip.set_item(itemid);
 
@@ -443,7 +443,7 @@ namespace ms
 		}
 	}
 
-	void UIStateGame::show_skill(Tooltip::Parent parent, int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration)
+	void UIStateGame::show_skill(Tooltip::Parent parent, std::int32_t skill_id, std::int32_t level, std::int32_t masterlevel, int64_t expiration)
 	{
 		sktooltip.set_skill(skill_id, level, masterlevel, expiration);
 
@@ -562,7 +562,7 @@ namespace ms
 		return ContinuousTimer::get().stop(start);
 	}
 
-	uint16_t UIStateGame::get_uplevel()
+	std::uint16_t UIStateGame::get_uplevel()
 	{
 		return levelBefore;
 	}

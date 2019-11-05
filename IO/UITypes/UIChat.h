@@ -20,7 +20,7 @@
 #include "../UIDragElement.h"
 
 #include "../Components/Charset.h"
-#include "../Graphics/Text.h"
+#include "../../Graphics/Text.h"
 
 namespace ms
 {
@@ -36,15 +36,15 @@ namespace ms
 		void draw(float inter) const override;
 		void update() override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
 		void close();
 
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			CLOSE,
 			CHAT_DUO,
@@ -74,15 +74,15 @@ namespace ms
 		void draw(float inter) const override;
 		void update() override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
 		void close();
 
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			CLOSE
 		};

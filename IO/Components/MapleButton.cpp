@@ -37,7 +37,7 @@ namespace ms
 		state = Button::State::NORMAL;
 	}
 
-	MapleButton::MapleButton(nl::node src, int16_t x, int16_t y) : MapleButton(src, Point<int16_t>(x, y)) {}
+	MapleButton::MapleButton(nl::node src, std::int16_t x, std::int16_t y) : MapleButton(src, Point<int16_t>(x, y)) {}
 	MapleButton::MapleButton(nl::node src) : MapleButton(src, Point<int16_t>()) {}
 
 	void MapleButton::draw(Point<int16_t> parentpos) const
@@ -74,7 +74,7 @@ namespace ms
 		return Rectangle<int16_t>(lt, rb);
 	}
 
-	int16_t MapleButton::width() const
+	std::int16_t MapleButton::width() const
 	{
 		return textures[state].width();
 	}

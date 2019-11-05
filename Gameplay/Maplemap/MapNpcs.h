@@ -21,7 +21,7 @@
 
 #include "../Spawn.h"
 
-#include "../IO/Cursor.h"
+#include "../../IO/Cursor.h"
 
 #include <queue>
 
@@ -38,7 +38,7 @@ namespace ms
 		// Add an npc to the spawn queue.
 		void spawn(NpcSpawn&& spawn);
 		// Remove the npc with the specified oid;
-		void remove(int32_t oid);
+		void remove(std::int32_t oid);
 		// Remove all NPCs.
 		void clear();
 

@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Template/EnumMap.h"
+#include "../../Template/EnumMap.h"
 
 #include <cstdint>
 #include <string>
@@ -26,7 +26,7 @@ namespace ms
 {
 	namespace Stance
 	{
-		enum Id : uint8_t
+		enum Id : std::uint8_t
 		{
 			NONE,
 			ALERT,
@@ -67,8 +67,8 @@ namespace ms
 			LENGTH
 		};
 
-		Id by_state(int8_t state);
-		Id by_id(uint8_t id);
+		Id by_state(std::int8_t state);
+		Id by_id(std::uint8_t id);
 		Id by_string(const std::string& name);
 
 		bool is_climbing(Id value);

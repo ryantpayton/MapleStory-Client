@@ -119,20 +119,20 @@ namespace nl {
     file::operator node() const {
         return root();
     }
-    uint32_t file::string_count() const {
+    std::int32_t file::string_count() const {
         return m_data->header->string_count;
     }
-    uint32_t file::bitmap_count() const {
+    std::int32_t file::bitmap_count() const {
         return m_data->header->bitmap_count;
     }
-    uint32_t file::audio_count() const {
+    std::int32_t file::audio_count() const {
         return m_data->header->audio_count;
     }
-    uint32_t file::node_count() const {
+    std::int32_t file::node_count() const {
         return m_data->header->node_count;
     }
-    std::string file::get_string(uint32_t i) const {
+    std::string file::get_string(std::int32_t i) const {
         auto const s = reinterpret_cast<char const *>(m_data->base) + m_data->string_table[i];
-        return {s + 2, *reinterpret_cast<uint16_t const *>(s)};
+        return {s + 2, *reinterpret_cast<std::uint16_t const *>(s)};
     }
 }

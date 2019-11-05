@@ -36,8 +36,8 @@ namespace ms
 		void shift(Point<int16_t> amount);
 
 		bool is_valid() const;
-		int16_t width() const;
-		int16_t height() const;
+		std::int16_t width() const;
+		std::int16_t height() const;
 		Point<int16_t> get_origin() const;
 		Point<int16_t> get_dimensions() const;
 

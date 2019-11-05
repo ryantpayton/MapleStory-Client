@@ -18,13 +18,13 @@
 #include "MapleComboBox.h"
 #include "AreaButton.h"
 
-#include "../Audio/Audio.h"
+#include "../../Audio/Audio.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	MapleComboBox::MapleComboBox(Type type, std::vector<std::string> o, uint16_t default_option, Point<int16_t> ppos, Point<int16_t> pos, int64_t w) : options(o), selected_index(default_option), parentpos(ppos), rwidth(w)
+	MapleComboBox::MapleComboBox(Type type, std::vector<std::string> o, std::uint16_t default_option, Point<int16_t> ppos, Point<int16_t> pos, int64_t w) : options(o), selected_index(default_option), parentpos(ppos), rwidth(w)
 	{
 		std::string combobox = "ComboBox";
 
@@ -49,7 +49,7 @@ namespace ms
 		textures[Button::State::DISABLED][1] = src["disabled"][1];
 		textures[Button::State::DISABLED][2] = src["disabled"][2];
 
-		for each (auto option in options)
+		for(auto option : options)
 			option_text.push_back(Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::BLACK, option));
 
 		Text::Font selected_font = Text::Font::A12M;
@@ -72,7 +72,7 @@ namespace ms
 
 		Point<int16_t> option_pos = Point<int16_t>(position.x(), position.y() + textures[state][0].get_dimensions().y()) + parentpos;
 
-		for (size_t i = 0; i < option_text.size(); i++)
+		for (std::size_t i = 0; i < option_text.size(); i++)
 			buttons[i] = std::make_unique<AreaButton>(Point<int16_t>(option_pos.x() + 1, option_pos.y() + (i * HEIGHT) + 1), Point<int16_t>(width() - 2, HEIGHT - 2));
 
 		current_pos = 0;
@@ -93,8 +93,8 @@ namespace ms
 			textures[state][0].draw(lpos);
 			lpos.shift_x(textures[state][0].width());
 
-			int16_t middle_width = textures[state][1].width();
-			int16_t current_width = middle_width;
+			std::int16_t middle_width = textures[state][1].width();
+			std::int16_t current_width = middle_width;
 
 			while (current_width < rwidth)
 			{
@@ -117,7 +117,7 @@ namespace ms
 				if (current_shown)
 					current_rect.draw(DrawArgument(pos.x() + 1, pos.y() + current_pos + 3));
 
-				for (size_t i = 0; i < option_text.size(); i++)
+				for (std::size_t i = 0; i < option_text.size(); i++)
 					option_text[i].draw(DrawArgument(pos.x() + 6, pos.y() + (i * HEIGHT) - 4));
 			}
 		}
@@ -135,7 +135,7 @@ namespace ms
 		return Rectangle<int16_t>(lt, rb);
 	}
 
-	int16_t MapleComboBox::width() const
+	std::int16_t MapleComboBox::width() const
 	{
 		return textures[state][0].width() + textures[state][2].width() + rwidth;
 	}
@@ -208,12 +208,12 @@ namespace ms
 		return Rectangle<int16_t>(lt, rb).contains(cursorpos);
 	}
 
-	uint16_t MapleComboBox::get_selected() const
+	std::uint16_t MapleComboBox::get_selected() const
 	{
 		return selected_index;
 	}
 
-	Button::State MapleComboBox::button_pressed(uint16_t buttonid)
+	Button::State MapleComboBox::button_pressed(std::uint16_t buttonid)
 	{
 		selected_index = buttonid;
 

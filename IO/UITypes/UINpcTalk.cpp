@@ -19,7 +19,7 @@
 
 #include "../Components/MapleButton.h"
 
-#include "../Net/Packets/NpcInteractionPackets.h"
+#include "../../Net/Packets/NpcInteractionPackets.h"
 
 #include <nlnx/nx.hpp>
 
@@ -76,7 +76,7 @@ namespace ms
 		text.draw(position + Point<int16_t>(156, 16 + ((vtile * fill.height() - text.height()) / 2)));
 	}
 
-	Button::State UINpcTalk::button_pressed(uint16_t buttonid)
+	Button::State UINpcTalk::button_pressed(std::uint16_t buttonid)
 	{
 		deactivate();
 
@@ -175,7 +175,7 @@ namespace ms
 		return Button::State::NORMAL;
 	}
 
-	UINpcTalk::TalkType UINpcTalk::get_by_value(int8_t value)
+	UINpcTalk::TalkType UINpcTalk::get_by_value(std::int8_t value)
 	{
 		if (value > TalkType::NONE && value < TalkType::LENGTH)
 			return static_cast<TalkType>(value);
@@ -183,7 +183,7 @@ namespace ms
 		return TalkType::NONE;
 	}
 
-	void UINpcTalk::change_text(int32_t npcid, int8_t msgtype, int16_t, int8_t speakerbyte, const std::string& tx)
+	void UINpcTalk::change_text(std::int32_t npcid, std::int8_t msgtype, std::int16_t, std::int8_t speakerbyte, const std::string& tx)
 	{
 		type = get_by_value(msgtype);
 		text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::DARKGREY, tx, 320);
@@ -212,7 +212,7 @@ namespace ms
 			button.second->set_state(Button::State::NORMAL);
 		}
 
-		int16_t y_cord = height + 48;
+		std::int16_t y_cord = height + 48;
 
 		buttons[Buttons::CLOSE]->set_position(Point<int16_t>(9, y_cord));
 		buttons[Buttons::CLOSE]->set_active(true);

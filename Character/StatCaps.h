@@ -23,7 +23,7 @@
 namespace ms
 {
 	// Externalising this for easier configurability.
-	const std::unordered_map<Equipstat::Id, int32_t> EQSTAT_CAPS =
+	const std::unordered_map<Equipstat::Id, std::int32_t> EQSTAT_CAPS =
 	{
 		{ Equipstat::Id::STR,	999 },
 		{ Equipstat::Id::DEX,	999 },

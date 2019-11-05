@@ -17,13 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "TestingHandlers.h"
 
-#include "../Configuration.h"
+#include "../../Configuration.h"
 
 #include "../Packets/LoginPackets.h"
-#include "../Gameplay/Stage.h"
-#include "../IO/UI.h"
+#include "../../Gameplay/Stage.h"
+#include "../../IO/UI.h"
 
-#include "../IO/UITypes/UILoginNotice.h"
+#include "../../IO/UITypes/UILoginNotice.h"
 
 namespace ms
 {
@@ -53,11 +53,11 @@ namespace ms
 		break;
 		case 5:
 		{
-			int32_t oid = recv.read_int();
-			int32_t currHP = recv.read_int();
-			int32_t maxHP = recv.read_int();
-			int8_t tagColor = recv.read_byte();
-			int8_t tagBgColor = recv.read_byte();
+			std::int32_t oid = recv.read_int();
+			std::int32_t currHP = recv.read_int();
+			std::int32_t maxHP = recv.read_int();
+			std::int8_t tagColor = recv.read_byte();
+			std::int8_t tagBgColor = recv.read_byte();
 		}
 		break;
 		case 3:

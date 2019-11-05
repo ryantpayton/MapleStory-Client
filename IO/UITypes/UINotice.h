@@ -30,10 +30,10 @@ namespace ms
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
 
-		void send_key(int32_t keycode, bool pressed, bool escape);
+		void send_key(std::int32_t keycode, bool pressed, bool escape);
 
 	protected:
-		enum NoticeType : uint8_t
+		enum NoticeType : std::uint8_t
 		{
 			YESNO,
 			ENTERNUMBER,
@@ -45,7 +45,7 @@ namespace ms
 
 		void draw(bool textfield) const;
 
-		int16_t box2offset(bool textfield) const;
+		std::int16_t box2offset(bool textfield) const;
 
 	private:
 		Texture top;
@@ -56,7 +56,7 @@ namespace ms
 		Texture bottom;
 		Texture bottombox;
 		Text question;
-		int16_t height;
+		std::int16_t height;
 		NoticeType type;
 		Text::Alignment alignment;
 	};
@@ -69,13 +69,13 @@ namespace ms
 
 		void draw(float alpha) const override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
-		enum Buttons : int16_t
+		enum Buttons : std::int16_t
 		{
 			YES, NO
 		};
@@ -86,28 +86,28 @@ namespace ms
 	class UIEnterNumber : public UINotice
 	{
 	public:
-		UIEnterNumber(std::string message, std::function<void(int32_t number)> numhandler, int32_t max, int32_t quantity);
+		UIEnterNumber(std::string message, std::function<void(std::int32_t number)> numhandler, std::int32_t max, std::int32_t quantity);
 
 		void draw(float alpha) const override;
 		void update() override;
 
 		Cursor::State send_cursor(bool pressed, Point<int16_t> cursorpos) override;
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
 		void handlestring(std::string numstr);
 
-		enum Buttons : int16_t
+		enum Buttons : std::int16_t
 		{
 			OK, CANCEL
 		};
 
-		std::function<void(int32_t number)> numhandler;
+		std::function<void(std::int32_t number)> numhandler;
 		Textfield numfield;
-		int32_t max;
+		std::int32_t max;
 	};
 
 	class UIOk : public UINotice
@@ -117,13 +117,13 @@ namespace ms
 
 		void draw(float alpha) const override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
-		enum Buttons : int16_t
+		enum Buttons : std::int16_t
 		{
 			OK
 		};

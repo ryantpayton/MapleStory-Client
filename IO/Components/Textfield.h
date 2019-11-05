@@ -20,62 +20,66 @@
 #include "../Cursor.h"
 #include "../Keyboard.h"
 
-#include "../Graphics/Text.h"
+#include "../../Graphics/Text.h"
 
 #include <functional>
 
 namespace ms
 {
-	class Textfield
+class Textfield
+{
+public:
+	enum State
 	{
-	public:
-		enum State
-		{
-			NORMAL,
-			DISABLED,
-			FOCUSED
-		};
-
-		Textfield(Text::Font font, Text::Alignment alignment, Color::Name color, Rectangle<int16_t> bounds, size_t limit);
-		Textfield();
-		~Textfield();
-
-		void draw(Point<int16_t> position) const;
-		void update(Point<int16_t> parentpos);
-		void send_key(KeyType::Id type, int32_t code, bool down);
-		void add_string(const std::string& str);
-
-		void set_state(State state);
-		void change_text(const std::string& text);
-		void set_cryptchar(int8_t character);
-
-		void set_enter_callback(std::function<void(std::string)> onreturn);
-		void set_key_callback(KeyAction::Id key, std::function<void(void)> action);
-
-		Cursor::State send_cursor(Point<int16_t> cursorpos, bool clicked);
-
-		bool empty() const;
-		State get_state() const;
-		Rectangle<int16_t> get_bounds() const;
-		const std::string& get_text() const;
-
-	private:
-		void modifytext(const std::string&);
-		bool belowlimit() const;
-
-		Text textlabel;
-		std::string text;
-		Text marker;
-		bool showmarker;
-		uint16_t elapsed;
-		size_t markerpos;
-		Rectangle<int16_t> bounds;
-		Point<int16_t> parentpos;
-		size_t limit;
-		int8_t crypt;
-		State state;
-
-		std::map<int32_t, std::function<void(void)>> callbacks;
-		std::function<void(std::string)> onreturn;
+		NORMAL,
+		DISABLED,
+		FOCUSED
 	};
-}
+
+	Textfield(Text::Font font,
+						Text::Alignment alignment,
+						Color::Name color,
+						Rectangle<int16_t> bounds,
+						std::size_t limit);
+	Textfield();
+	~Textfield();
+
+	void draw(Point<int16_t> position) const;
+	void update(Point<int16_t> parentpos);
+	void send_key(KeyType::Id type, std::int32_t code, bool down);
+	void add_string(const std::string &str);
+
+	void set_state(State state);
+	void change_text(const std::string &text);
+	void set_cryptchar(std::int8_t character);
+
+	void set_enter_callback(std::function<void(std::string)> onreturn);
+	void set_key_callback(KeyAction::Id key, std::function<void(void)> action);
+
+	Cursor::State send_cursor(Point<int16_t> cursorpos, bool clicked);
+
+	bool empty() const;
+	State get_state() const;
+	Rectangle<int16_t> get_bounds() const;
+	const std::string &get_text() const;
+
+private:
+	void modifytext(const std::string &);
+	bool belowlimit() const;
+
+	Text textlabel;
+	std::string text;
+	Text marker;
+	bool showmarker;
+	std::uint16_t elapsed;
+	std::size_t markerpos;
+	Rectangle<int16_t> bounds;
+	Point<int16_t> parentpos;
+	std::size_t limit;
+	std::int8_t crypt;
+	State state;
+
+	std::map<std::int32_t, std::function<void(void)>> callbacks;
+	std::function<void(std::string)> onreturn;
+};
+} // namespace ms

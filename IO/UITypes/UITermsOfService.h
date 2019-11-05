@@ -19,7 +19,7 @@
 
 #include "../UIElement.h"
 
-#include "../Graphics/Text.h"
+#include "../../Graphics/Text.h"
 #include "../Components/Slider.h"
 
 namespace ms
@@ -40,12 +40,12 @@ namespace ms
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
-		void update_accept(uint16_t offset);
+		void update_accept(std::uint16_t offset);
 
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			OK,
 			CANCEL
@@ -54,8 +54,8 @@ namespace ms
 		Text text;
 		Slider slider;
 		std::function<void()> okhandler;
-		uint16_t offset;
-		int16_t unit_rows;
-		int16_t max_rows;
+		std::uint16_t offset;
+		std::int16_t unit_rows;
+		std::int16_t max_rows;
 	};
 }

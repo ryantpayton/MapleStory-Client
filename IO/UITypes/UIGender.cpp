@@ -22,8 +22,8 @@
 #include "../Components/MapleButton.h"
 #include "../Components/MapleComboBox.h"
 
-#include "../IO/UITypes/UILoginwait.h"
-#include "../Net/Packets/LoginPackets.h"
+#include "UILoginwait.h"
+#include "../../Net/Packets/LoginPackets.h"
 
 #include <nlnx/nx.hpp>
 
@@ -37,7 +37,7 @@ namespace ms
 		nl::node Gender = Login["Gender"];
 		nl::node scroll = Gender["scroll"][0];
 
-		for (size_t i = 0; i < 3; i++)
+		for (unsigned i = 0; i < 3; i++)
 			gender_sprites[i] = scroll[i];
 
 		sprites.emplace_back(Gender["text"][0], Point<int16_t>(601, 326));
@@ -46,7 +46,7 @@ namespace ms
 		options.push_back("Male");
 		options.push_back("Female");
 
-		uint16_t default_option = 0;
+		std::uint16_t default_option = 0;
 
 		buttons[Buttons::NO] = std::make_unique<MapleButton>(Login["BtCancel"], Point<int16_t>(650, 349)); // TODO: _inlink issue: Original: Gender["BtNo"]
 		buttons[Buttons::YES] = std::make_unique<MapleButton>(Gender["BtYes"], Point<int16_t>(578, 349));
@@ -109,7 +109,7 @@ namespace ms
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	Button::State UIGender::button_pressed(uint16_t buttonid)
+	Button::State UIGender::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -121,7 +121,7 @@ namespace ms
 		{
 			UI::get().emplace<UILoginwait>();
 
-			uint16_t selected_value = buttons[Buttons::SELECT]->get_selected();
+			std::uint16_t selected_value = buttons[Buttons::SELECT]->get_selected();
 			GenderPacket(selected_value).dispatch();
 		}
 		break;

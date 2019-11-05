@@ -19,6 +19,8 @@
 
 #include "EquipQuality.h"
 
+#include <string>
+
 namespace ms
 {
 	class Equip
@@ -35,31 +37,31 @@ namespace ms
 			LENGTH
 		};
 
-		Equip(int32_t item_id, int64_t expiration, const std::string& owner, int16_t flags, uint8_t slots, uint8_t level, const EnumMap<Equipstat::Id, uint16_t>& stats, uint8_t itemlevel, int16_t itemexp, int32_t vicious);
+		Equip(std::int32_t item_id, int64_t expiration, const std::string& owner, std::int16_t flags, std::uint8_t slots, std::uint8_t level, const EnumMap<Equipstat::Id, std::uint16_t>& stats, std::uint8_t itemlevel, std::int16_t itemexp, std::int32_t vicious);
 
-		int32_t get_item_id() const;
+		std::int32_t get_item_id() const;
 		int64_t get_expiration() const;
 		const std::string& get_owner() const;
-		int16_t get_flags() const;
-		uint8_t get_slots() const;
-		uint8_t get_level() const;
-		uint8_t get_itemlevel() const;
-		uint16_t get_stat(Equipstat::Id type) const;
-		int32_t get_vicious() const;
+		std::int16_t get_flags() const;
+		std::uint8_t get_slots() const;
+		std::uint8_t get_level() const;
+		std::uint8_t get_itemlevel() const;
+		std::uint16_t get_stat(Equipstat::Id type) const;
+		std::int32_t get_vicious() const;
 		Potential get_potrank() const;
 		EquipQuality::Id get_quality() const;
 
 	private:
-		EnumMap<Equipstat::Id, uint16_t> stats;
-		int32_t item_id;
+		EnumMap<Equipstat::Id, std::uint16_t> stats;
+		std::int32_t item_id;
 		int64_t expiration;
 		std::string owner;
-		int16_t flags;
-		uint8_t slots;
-		uint8_t level;
-		uint8_t itemlevel;
-		int16_t itemexp;
-		int32_t vicious;
+		std::int16_t flags;
+		std::uint8_t slots;
+		std::uint8_t level;
+		std::uint8_t itemlevel;
+		std::int16_t itemexp;
+		std::int32_t vicious;
 		Potential potrank;
 		EquipQuality::Id quality;
 	};

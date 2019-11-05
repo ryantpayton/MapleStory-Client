@@ -88,9 +88,7 @@ namespace ms
 		template <class E>
 		E next_enum(E from, E to) const
 		{
-			auto next_underlying = next_int<std::underlying_type<E>::type>(from, to);
-
-			return static_cast<E>(next_underlying);
+			return static_cast<E>(next_int<std::underlying_type_t<E>>(from, to));
 		}
 	};
 }

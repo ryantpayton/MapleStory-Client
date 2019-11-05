@@ -17,14 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIUserList.h"
 
-#include "../IO/Components/MapleButton.h"
-#include "../IO/Components/TwoSpriteButton.h"
+#include "../../IO/Components/MapleButton.h"
+#include "../../IO/Components/TwoSpriteButton.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	UIUserList::UIUserList(uint16_t t) : UIDragElement<PosUSERLIST>(Point<int16_t>(260, 20)), tab(t)
+	UIUserList::UIUserList(std::uint16_t t) : UIDragElement<PosUSERLIST>(Point<int16_t>(260, 20)), tab(t)
 	{
 		nl::node close = nl::nx::ui["Basic.img"]["BtClose"];
 		UserList = nl::nx::ui["UIWindow2.img"]["UserList"];
@@ -49,7 +49,7 @@ namespace ms
 		party_tab = Tab::PARTY_MINE;
 		party_title = Party["title"];
 
-		for (size_t i = 0; i <= 4; i++)
+		for (unsigned i = 0; i <= 4; i++)
 			party_mine_grid[i] = UserList["Sheet2"][i];
 
 		party_mine_name = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::BLACK, "none", 0);
@@ -78,11 +78,11 @@ namespace ms
 		buttons[Buttons::BT_PARTY_SEARCH_LEVEL] = std::make_unique<MapleButton>(PartySearch["BtPartyLevel"]);
 		buttons[Buttons::BT_PARTY_SEARCH_LEVEL]->set_active(false);
 
-		int16_t party_x = 243;
-		int16_t party_y = 114;
-		int16_t party_height = party_y + 168;
-		int16_t party_unitrows = 6;
-		int16_t party_rowmax = 6;
+		std::int16_t party_x = 243;
+		std::int16_t party_y = 114;
+		std::int16_t party_height = party_y + 168;
+		std::int16_t party_unitrows = 6;
+		std::int16_t party_rowmax = 6;
 		party_slider = Slider(Slider::Type::DEFAULT, Range<int16_t>(party_y, party_height), party_x, party_unitrows, party_rowmax, [](bool) {});
 
 		// Buddy Tab
@@ -96,7 +96,7 @@ namespace ms
 		buttons[Buttons::BT_FRIEND_GROUP_0] = std::make_unique<MapleButton>(UserList["BtSheetIClose"], Point<int16_t>(13, 118));
 		buttons[Buttons::BT_FRIEND_GROUP_0]->set_active(false);
 
-		for (size_t i = 0; i <= 3; i++)
+		for (unsigned i = 0; i <= 3; i++)
 			friend_grid[i] = UserList["Sheet1"][i];
 
 		std::string text = "(" + std::to_string(friend_count) + std::string("/") + std::to_string(friend_total) + std::string(")");
@@ -118,11 +118,11 @@ namespace ms
 		buttons[Buttons::BT_TAB_FRIEND_ALL]->set_active(false);
 		buttons[Buttons::BT_TAB_FRIEND_ONLINE]->set_active(false);
 
-		int16_t friends_x = 243;
-		int16_t friends_y = 115;
-		int16_t friends_height = friends_y + 148;
-		int16_t friends_unitrows = 6;
-		int16_t friends_rowmax = 6;
+		std::int16_t friends_x = 243;
+		std::int16_t friends_y = 115;
+		std::int16_t friends_height = friends_y + 148;
+		std::int16_t friends_unitrows = 6;
+		std::int16_t friends_rowmax = 6;
 		friends_slider = Slider(Slider::Type::DEFAULT, Range<int16_t>(friends_y, friends_height), friends_x, friends_unitrows, friends_rowmax, [](bool) {});
 
 		// Boss tab
@@ -158,7 +158,7 @@ namespace ms
 
 		blacklist_title = Blacklist["base"];
 
-		for (size_t i = 0; i <= 3; i++)
+		for (unsigned i = 0; i <= 3; i++)
 			blacklist_grid[i] = UserList["Sheet6"][i];
 
 		blacklist_name = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::BLACK, "none", 0);
@@ -207,7 +207,7 @@ namespace ms
 		}
 		else if (tab == Buttons::BT_TAB_FRIEND)
 		{
-			for each (auto sprite in friend_sprites)
+			for(auto sprite : friend_sprites)
 				sprite.draw(position, alpha);
 
 			friends_online_text.draw(position + Point<int16_t>(211, 62));
@@ -220,7 +220,7 @@ namespace ms
 		}
 		else if (tab == Buttons::BT_TAB_BOSS)
 		{
-			for each (auto sprite in boss_sprites)
+			for(auto sprite : boss_sprites)
 				sprite.draw(position, alpha);
 		}
 		else if (tab == Buttons::BT_TAB_BLACKLIST)
@@ -238,15 +238,15 @@ namespace ms
 		UIElement::update();
 
 		if (tab == Buttons::BT_TAB_FRIEND)
-			for each (auto sprite in friend_sprites)
+			for(auto sprite : friend_sprites)
 				sprite.update();
 
 		if (tab == Buttons::BT_TAB_BOSS)
-			for each (auto sprite in boss_sprites)
+			for(auto sprite : boss_sprites)
 				sprite.update();
 	}
 
-	void UIUserList::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIUserList::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -256,7 +256,7 @@ namespace ms
 			}
 			else if (keycode == KeyAction::Id::TAB)
 			{
-				uint16_t new_tab = tab;
+				std::uint16_t new_tab = tab;
 
 				if (new_tab < Buttons::BT_TAB_BLACKLIST)
 					new_tab++;
@@ -268,7 +268,7 @@ namespace ms
 		}
 	}
 
-	Button::State UIUserList::button_pressed(uint16_t buttonid)
+	Button::State UIUserList::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -300,9 +300,9 @@ namespace ms
 		return Button::State::NORMAL;
 	}
 
-	void UIUserList::change_tab(uint8_t tabid)
+	void UIUserList::change_tab(std::uint8_t tabid)
 	{
-		uint8_t oldtab = tab;
+		std::uint8_t oldtab = tab;
 		tab = tabid;
 
 		background = tabid == Buttons::BT_TAB_BOSS ? UserList["Main"]["Boss"]["backgrnd3"] : UserList["Main"]["backgrnd2"];
@@ -399,14 +399,14 @@ namespace ms
 		}
 	}
 
-	uint16_t UIUserList::get_tab()
+	std::uint16_t UIUserList::get_tab()
 	{
 		return tab;
 	}
 
-	void UIUserList::change_party_tab(uint8_t tabid)
+	void UIUserList::change_party_tab(std::uint8_t tabid)
 	{
-		uint8_t oldtab = party_tab;
+		std::uint8_t oldtab = party_tab;
 		party_tab = tabid;
 
 		if (oldtab != party_tab)
@@ -420,9 +420,9 @@ namespace ms
 			buttons[Buttons::BT_PARTY_SEARCH_LEVEL]->set_active(false);
 	}
 
-	void UIUserList::change_friend_tab(uint8_t tabid)
+	void UIUserList::change_friend_tab(std::uint8_t tabid)
 	{
-		uint8_t oldtab = friend_tab;
+		std::uint8_t oldtab = friend_tab;
 		friend_tab = tabid;
 
 		if (oldtab != friend_tab)
@@ -431,9 +431,9 @@ namespace ms
 		buttons[Buttons::BT_TAB_FRIEND + friend_tab]->set_state(Button::State::PRESSED);
 	}
 
-	void UIUserList::change_blacklist_tab(uint8_t tabid)
+	void UIUserList::change_blacklist_tab(std::uint8_t tabid)
 	{
-		uint8_t oldtab = blacklist_tab;
+		std::uint8_t oldtab = blacklist_tab;
 		blacklist_tab = tabid;
 
 		if (oldtab != blacklist_tab)

@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Template/Point.h"
+#include "Template/Point.h"
 
 #include <vector>
 
@@ -28,12 +28,12 @@ namespace ms
 	{
 	public:
 		// Construct a packet by writing its opcode.
-		OutPacket(int16_t opcode);
+		OutPacket(std::int16_t opcode);
 
 		void dispatch();
 
 		// Opcodes for OutPackets associated with version 83 of the game.
-		enum Opcode : uint16_t
+		enum Opcode : std::uint16_t
 		{
 			// Login
 			LOGIN = 1,
@@ -97,13 +97,13 @@ namespace ms
 
 	protected:
 		// Skip a number of bytes (filled with zeroes).
-		void skip(size_t count);
+		void skip(std::size_t count);
 		// Write a byte.
-		void write_byte(int8_t ch);
+		void write_byte(std::int8_t ch);
 		// Write a short.
-		void write_short(int16_t sh);
+		void write_short(std::int16_t sh);
 		// Write an int.
-		void write_int(int32_t in);
+		void write_int(std::int32_t in);
 		// Write a long.
 		void write_long(int64_t lg);
 
@@ -121,6 +121,6 @@ namespace ms
 		int hex_to_dec(std::string hexVal);
 
 	private:
-		std::vector<int8_t> bytes;
+		std::vector<std::int8_t> bytes;
 	};
 }

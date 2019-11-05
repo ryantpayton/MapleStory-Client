@@ -23,20 +23,20 @@
 
 #include "../Combat/Attack.h"
 #include "../Combat/Bullet.h"
-#include "../Audio/Audio.h"
-#include "../Graphics/EffectLayer.h"
-#include "../Graphics/Geometry.h"
-#include "../Util/Randomizer.h"
-#include "../Util/TimedBool.h"
+#include "../../Audio/Audio.h"
+#include "../../Graphics/EffectLayer.h"
+#include "../../Graphics/Geometry.h"
+#include "../../Util/Randomizer.h"
+#include "../../Util/TimedBool.h"
 
 namespace ms
 {
 	class Mob : public MapObject
 	{
 	public:
-		static const size_t NUM_STANCES = 6;
+		static const std::size_t NUM_STANCES = 6;
 
-		enum Stance : uint8_t
+		enum Stance : std::uint8_t
 		{
 			MOVE = 2,
 			STAND = 4,
@@ -52,42 +52,42 @@ namespace ms
 				"move", "stand", "jump", "hit1", "die1", "fly"
 			};
 
-			size_t index = (stance - 1) / 2;
+			std::size_t index = (stance - 1) / 2;
 
 			return stancenames[index];
 		}
 
-		static uint8_t value_of(Stance stance, bool flip)
+		static std::uint8_t value_of(Stance stance, bool flip)
 		{
 			return flip ? stance : stance + 1;
 		}
 
 		// Construct a mob by combining data from game files with data sent by the server.
-		Mob(int32_t oid, int32_t mobid, int8_t mode, int8_t stance, uint16_t fhid, bool newspawn, int8_t team, Point<int16_t> position);
+		Mob(std::int32_t oid, std::int32_t mobid, std::int8_t mode, std::int8_t stance, std::uint16_t fhid, bool newspawn, std::int8_t team, Point<int16_t> position);
 
 		// Draw the mob.
 		void draw(double viewx, double viewy, float alpha) const override;
 		// Update movement and animations.
-		int8_t update(const Physics& physics) override;
+		std::int8_t update(const Physics& physics) override;
 
 		// Change this mob's control mode:
 		// 0 - no control, 1 - control, 2 - aggro
-		void set_control(int8_t mode);
+		void set_control(std::int8_t mode);
 		// Send movement to the mob.
 		void send_movement(Point<int16_t> start, std::vector<Movement>&& movements);
 		// Kill the mob with the appropriate type:
 		// 0 - make inactive 1 - death animation 2 - fade out
-		void kill(int8_t killtype);
+		void kill(std::int8_t killtype);
 		// Display the hp percentage above the mob.
 		// Use the playerlevel to determine color of nametag.
-		void show_hp(int8_t percentage, uint16_t playerlevel);
+		void show_hp(std::int8_t percentage, std::uint16_t playerlevel);
 		// Show an effect at the mob's position.
-		void show_effect(const Animation& animation, int8_t pos, int8_t z, bool flip);
+		void show_effect(const Animation& animation, std::int8_t pos, std::int8_t z, bool flip);
 
 		// Calculate the damage to this mob with the specified attack.
-		std::vector<std::pair<int32_t, bool>> calculate_damage(const Attack& attack);
+		std::vector<std::pair<std::int32_t, bool>> calculate_damage(const Attack& attack);
 		// Apply damage to the mob.
-		void apply_damage(int32_t damage, bool toleft);
+		void apply_damage(std::int32_t damage, bool toleft);
 
 		// Create a touch damage attack to the player.
 		MobAttack create_touch_attack() const;
@@ -109,7 +109,7 @@ namespace ms
 		};
 
 		// Set the stance by byte value.
-		void set_stance(uint8_t stancebyte);
+		void set_stance(std::uint8_t stancebyte);
 		// Set the stance by enum value.
 		void set_stance(Stance newstance);
 		// Start the death animation.
@@ -120,13 +120,13 @@ namespace ms
 		void update_movement();
 
 		// Calculate the hit chance.
-		float calculate_hitchance(int16_t leveldelta, int32_t accuracy) const;
+		float calculate_hitchance(std::int16_t leveldelta, std::int32_t accuracy) const;
 		// Calculate the minimum damage.
-		double calculate_mindamage(int16_t leveldelta, double mindamage, bool magic) const;
+		double calculate_mindamage(std::int16_t leveldelta, double mindamage, bool magic) const;
 		// Calculate the maximum damage.
-		double calculate_maxdamage(int16_t leveldelta, double maxdamage, bool magic) const;
+		double calculate_maxdamage(std::int16_t leveldelta, double maxdamage, bool magic) const;
 		// Calculate a random damage line based on the specified values.
-		std::pair<int32_t, bool> next_damage(double mindamage, double maxdamage, float hitchance, float critical) const;
+		std::pair<std::int32_t, bool> next_damage(double mindamage, double maxdamage, float hitchance, float critical) const;
 
 		// Return the current 'head' position.
 		Point<int16_t> get_head_position(Point<int16_t> position) const;
@@ -135,16 +135,16 @@ namespace ms
 		std::string name;
 		Sound hitsound;
 		Sound diesound;
-		uint16_t level;
+		std::uint16_t level;
 		float speed;
 		float flyspeed;
-		uint16_t watk;
-		uint16_t matk;
-		uint16_t wdef;
-		uint16_t mdef;
-		uint16_t accuracy;
-		uint16_t avoid;
-		uint16_t knockback;
+		std::uint16_t watk;
+		std::uint16_t matk;
+		std::uint16_t wdef;
+		std::uint16_t mdef;
+		std::uint16_t accuracy;
+		std::uint16_t avoid;
+		std::uint16_t knockback;
 		bool undead;
 		bool touchdamage;
 		bool noflip;
@@ -161,11 +161,11 @@ namespace ms
 		TimedBool showhp;
 
 		std::vector<Movement> movements;
-		uint16_t counter;
+		std::uint16_t counter;
 
-		int32_t id;
-		int8_t effect;
-		int8_t team;
+		std::int32_t id;
+		std::int8_t effect;
+		std::int8_t team;
 		bool dying;
 		bool dead;
 		bool awaitdeath;
@@ -175,7 +175,7 @@ namespace ms
 		bool flip;
 		FlyDirection flydirection;
 		float walkforce;
-		int8_t hppercent;
+		std::int8_t hppercent;
 		bool fading;
 		bool fadein;
 		Linear<float> opacity;

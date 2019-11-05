@@ -33,8 +33,8 @@ namespace ms
 		void drawbelow(Point<int16_t> position, float alpha) const;
 		void drawabove(Point<int16_t> position, float alpha) const;
 		void update();
-		void add(const Animation& effect, const DrawArgument& args, int8_t z, float speed);
-		void add(const Animation& effect, const DrawArgument& args, int8_t z);
+		void add(const Animation& effect, const DrawArgument& args, std::int8_t z, float speed);
+		void add(const Animation& effect, const DrawArgument& args, std::int8_t z);
 		void add(const Animation& effect, const DrawArgument& args);
 		void add(const Animation& effect);
 
@@ -52,7 +52,7 @@ namespace ms
 			bool update()
 			{
 				return sprite.update(
-					static_cast<uint16_t>(Constants::TIMESTEP * speed)
+					static_cast<std::uint16_t>(Constants::TIMESTEP * speed)
 				);
 			}
 
@@ -61,6 +61,6 @@ namespace ms
 			float speed;
 		};
 
-		std::map<int8_t, std::list<Effect>> effects;
+		std::map<std::int8_t, std::list<Effect>> effects;
 	};
 }

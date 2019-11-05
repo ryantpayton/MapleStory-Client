@@ -19,7 +19,7 @@
 
 #include "Button.h"
 
-#include "../Graphics/Geometry.h"
+#include "Graphics/Geometry.h"
 
 #include <memory>
 
@@ -29,7 +29,7 @@ namespace ms
 	class MapleComboBox : public Button
 	{
 	public:
-		enum Type : uint8_t
+		enum Type : std::uint8_t
 		{
 			DEFAULT = 1,
 			BROWN = 3,
@@ -43,23 +43,23 @@ namespace ms
 			GREENNEG
 		};
 
-		MapleComboBox(Type type, std::vector<std::string> options, uint16_t default_option, Point<int16_t> parentpos, Point<int16_t> position, int64_t width);
+		MapleComboBox(Type type, std::vector<std::string> options, std::uint16_t default_option, Point<int16_t> parentpos, Point<int16_t> position, int64_t width);
 
 		void draw(Point<int16_t> parentpos) const override;
 		void update() {}
 		Rectangle<int16_t> bounds(Point<int16_t> parentpos) const override;
-		int16_t width() const override;
+		std::int16_t width() const override;
 		Point<int16_t> origin() const override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		bool in_combobox(Point<int16_t> cursorpos) override;
-		uint16_t get_selected() const override;
+		std::uint16_t get_selected() const override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid);
+		Button::State button_pressed(std::uint16_t buttonid);
 
 	private:
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			OPTION1,
 			OPTION2,
@@ -80,13 +80,13 @@ namespace ms
 		ColorBox background;
 		ColorBox rect;
 		ColorBox current_rect;
-		uint16_t rwidth;
-		static constexpr uint16_t HEIGHT = 16;
-		std::map<uint16_t, std::unique_ptr<Button>> buttons;
-		uint16_t current_pos;
+		std::uint16_t rwidth;
+		static constexpr std::uint16_t HEIGHT = 16;
+		std::map<std::uint16_t, std::unique_ptr<Button>> buttons;
+		std::uint16_t current_pos;
 		bool current_shown;
-		uint16_t last_shown;
-		uint16_t selected_index;
+		std::uint16_t last_shown;
+		std::uint16_t selected_index;
 		Point<int16_t> selected_adj;
 		Point<int16_t> parentpos;
 	};

@@ -50,7 +50,7 @@ namespace ms
 		nl::node tab_disabled = tab["disabled"];
 		nl::node tab_enabled = tab["enabled"];
 
-		for (size_t i = Buttons::TAB0; i < Buttons::CANCEL; i++)
+		for (unsigned i = Buttons::TAB0; i < Buttons::CANCEL; i++)
 			buttons[i] = std::make_unique<TwoSpriteButton>(tab_disabled[i], tab_enabled[i]);
 
 		std::string sButtonUOL = graphic["combo:resolution"]["sButtonUOL"].get_string();
@@ -66,15 +66,15 @@ namespace ms
 			"1920 x 1080 ( 16 : 9 ) - Beta"
 		};
 
-		int16_t max_width = Configuration::get().get_max_width();
-		int16_t max_height = Configuration::get().get_max_height();
+		std::int16_t max_width = Configuration::get().get_max_width();
+		std::int16_t max_height = Configuration::get().get_max_height();
 
 		if (max_width >= 1920 && max_height >= 1200)
 			resolutions.emplace_back("1920 x 1200 ( 16 : 10 ) - Beta");
 
-		uint16_t default_option = 0;
-		int16_t screen_width = Constants::Constants::get().get_viewwidth();
-		int16_t screen_height = Constants::Constants::get().get_viewheight();
+		std::uint16_t default_option = 0;
+		std::int16_t screen_width = Constants::Constants::get().get_viewwidth();
+		std::int16_t screen_height = Constants::Constants::get().get_viewheight();
 
 		switch (screen_width)
 		{
@@ -126,7 +126,7 @@ namespace ms
 		UIElement::draw_buttons(inter);
 	}
 
-	Button::State UIOptionMenu::button_pressed(uint16_t buttonid)
+	Button::State UIOptionMenu::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -145,10 +145,10 @@ namespace ms
 			{
 			case Buttons::TAB0:
 			{
-				uint16_t selected_value = buttons[Buttons::SELECT_RES]->get_selected();
+				std::uint16_t selected_value = buttons[Buttons::SELECT_RES]->get_selected();
 
-				int16_t width = Constants::Constants::get().get_viewwidth();
-				int16_t height = Constants::Constants::get().get_viewheight();
+				std::int16_t width = Constants::Constants::get().get_viewwidth();
+				std::int16_t height = Constants::Constants::get().get_viewheight();
 
 				switch (selected_value)
 				{
@@ -231,7 +231,7 @@ namespace ms
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	void UIOptionMenu::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIOptionMenu::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -242,7 +242,7 @@ namespace ms
 		}
 	}
 
-	void UIOptionMenu::change_tab(uint16_t tabid)
+	void UIOptionMenu::change_tab(std::uint16_t tabid)
 	{
 		buttons[selected_tab]->set_state(Button::State::NORMAL);
 		buttons[tabid]->set_state(Button::State::PRESSED);

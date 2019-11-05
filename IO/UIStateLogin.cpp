@@ -71,7 +71,7 @@ namespace ms
 
 	void UIStateLogin::rightclick(Point<int16_t>) {}
 
-	void UIStateLogin::send_key(KeyType::Id type, int32_t action, bool pressed, bool escape)
+	void UIStateLogin::send_key(KeyType::Id type, std::int32_t action, bool pressed, bool escape)
 	{
 		if (UIElement * focusedelement = get(focused))
 		{
@@ -162,9 +162,9 @@ namespace ms
 		}
 	}
 
-	void UIStateLogin::show_equip(Tooltip::Parent, int16_t) {}
-	void UIStateLogin::show_item(Tooltip::Parent, int32_t) {}
-	void UIStateLogin::show_skill(Tooltip::Parent, int32_t, int32_t, int32_t, int64_t) {}
+	void UIStateLogin::show_equip(Tooltip::Parent, std::int16_t) {}
+	void UIStateLogin::show_item(Tooltip::Parent, std::int32_t) {}
+	void UIStateLogin::show_skill(Tooltip::Parent, std::int32_t, std::int32_t, std::int32_t, int64_t) {}
 
 	void UIStateLogin::show_text(Tooltip::Parent parent, std::string text)
 	{
@@ -252,7 +252,7 @@ namespace ms
 		return 0;
 	}
 
-	uint16_t UIStateLogin::get_uplevel()
+	std::uint16_t UIStateLogin::get_uplevel()
 	{
 		return 0;
 	}

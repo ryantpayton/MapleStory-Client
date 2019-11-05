@@ -46,12 +46,12 @@ namespace ms
 		}
 	}
 
-	void EffectLayer::add(const Animation& animation, const DrawArgument& args, int8_t z, float speed)
+	void EffectLayer::add(const Animation& animation, const DrawArgument& args, std::int8_t z, float speed)
 	{
 		effects[z].emplace_back(animation, args, speed);
 	}
 
-	void EffectLayer::add(const Animation& animation, const DrawArgument& args, int8_t z)
+	void EffectLayer::add(const Animation& animation, const DrawArgument& args, std::int8_t z)
 	{
 		add(animation, args, z, 1.0f);
 	}

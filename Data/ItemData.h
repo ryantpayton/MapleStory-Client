@@ -41,11 +41,11 @@ namespace ms
 		explicit operator bool() const;
 
 		// Returns the item id.
-		int32_t get_id() const;
+		std::int32_t get_id() const;
 		// Returns the item price.
-		int32_t get_price() const;
+		std::int32_t get_price() const;
 		// Returns the item's gender based on item id.
-		int8_t get_gender() const;
+		std::int8_t get_gender() const;
 		// Returns the item's name loaded from the String.nx file.
 		const std::string& get_name() const;
 		// Returns the item's description loaded from the String.nx file.
@@ -59,17 +59,17 @@ namespace ms
 		// Allow the cache to use the constructor.
 		friend Cache<ItemData>;
 		// Creates an item from the game's Item.nx with the specified id.
-		ItemData(int32_t itemid);
+		ItemData(std::int32_t itemid);
 
-		std::string get_eqcategory(int32_t itemid) const;
-		int32_t get_prefix(int32_t itemid) const;
-		int32_t get_item_prefix(int32_t itemid) const;
-		int8_t get_item_gender(int32_t itemid) const;
+		std::string get_eqcategory(std::int32_t itemid) const;
+		std::int32_t get_prefix(std::int32_t itemid) const;
+		std::int32_t get_item_prefix(std::int32_t itemid) const;
+		std::int8_t get_item_gender(std::int32_t itemid) const;
 
 		BoolPair<Texture> icons;
-		int32_t itemid;
-		int32_t price;
-		int8_t gender;
+		std::int32_t itemid;
+		std::int32_t price;
+		std::int8_t gender;
 		std::string name;
 		std::string desc;
 		std::string category;

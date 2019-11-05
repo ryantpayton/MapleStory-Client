@@ -22,7 +22,7 @@
 
 namespace ms
 {
-	EquipData::EquipData(int32_t id) : itemdata(ItemData::get(id))
+	EquipData::EquipData(std::int32_t id) : itemdata(ItemData::get(id))
 	{
 		std::string strid = "0" + std::to_string(id);
 		std::string category = itemdata.get_category();
@@ -54,10 +54,10 @@ namespace ms
 		defstats[Equipstat::Id::SPEED] = src["incSPEED"];
 		defstats[Equipstat::Id::JUMP] = src["incJUMP"];
 
-		constexpr size_t NON_WEAPON_TYPES = 15;
-		constexpr size_t WEAPON_OFFSET = NON_WEAPON_TYPES + 15;
-		constexpr size_t WEAPON_TYPES = 20;
-		size_t index = (id / 10000) - 100;
+		constexpr std::size_t NON_WEAPON_TYPES = 15;
+		constexpr std::size_t WEAPON_OFFSET = NON_WEAPON_TYPES + 15;
+		constexpr std::size_t WEAPON_TYPES = 20;
+		std::size_t index = (id / 10000) - 100;
 
 		if (index < NON_WEAPON_TYPES)
 		{
@@ -126,7 +126,7 @@ namespace ms
 				"GUN"
 			};
 
-			size_t weaponindex = index - WEAPON_OFFSET;
+			std::size_t weaponindex = index - WEAPON_OFFSET;
 			type = types[weaponindex];
 			eqslot = Equipslot::Id::WEAPON;
 		}
@@ -152,12 +152,12 @@ namespace ms
 		return eqslot == Equipslot::Id::WEAPON;
 	}
 
-	int16_t EquipData::get_reqstat(Maplestat::Id stat) const
+	std::int16_t EquipData::get_reqstat(Maplestat::Id stat) const
 	{
 		return reqstats[stat];
 	}
 
-	int16_t EquipData::get_defstat(Equipstat::Id stat) const
+	std::int16_t EquipData::get_defstat(Equipstat::Id stat) const
 	{
 		return defstats[stat];
 	}

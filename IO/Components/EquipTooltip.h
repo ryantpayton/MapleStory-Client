@@ -20,11 +20,11 @@
 #include "Tooltip.h"
 #include "Charset.h"
 
-#include "../Character/Maplestat.h"
-#include "../Graphics/Text.h"
-#include "../Template/BoolPair.h"
+#include "../../Character/Maplestat.h"
+#include "Graphics/Text.h"
+#include "../../Template/BoolPair.h"
 
-#include "../Character/Inventory/Equip.h"
+#include "../../Character/Inventory/Equip.h"
 
 namespace ms
 {
@@ -33,15 +33,15 @@ namespace ms
 	public:
 		EquipTooltip();
 
-		void set_equip(Tooltip::Parent parent, int16_t invpos);
+		void set_equip(Tooltip::Parent parent, std::int16_t invpos);
 		void draw(Point<int16_t> position) const override;
 		void draw_preview(Point<int16_t> position) const;
 
 	private:
-		int16_t invpos;
-		int16_t invpos_preview;
-		int16_t height;
-		int16_t height_preview;
+		std::int16_t invpos;
+		std::int16_t invpos_preview;
+		std::int16_t height;
+		std::int16_t height_preview;
 		bool hasdesc;
 		bool hasdesc_preview;
 		bool hasslots;
@@ -96,8 +96,8 @@ namespace ms
 		BoolPair<Charset> atkincset;
 
 		Texture jobsback;
-		BoolPair<std::map<uint8_t, Texture>> jobs;
-		std::vector<uint8_t> okjobs;
-		std::vector<uint8_t> okjobs_preview;
+		BoolPair<std::map<std::uint8_t, Texture>> jobs;
+		std::vector<std::uint8_t> okjobs;
+		std::vector<std::uint8_t> okjobs_preview;
 	};
 }

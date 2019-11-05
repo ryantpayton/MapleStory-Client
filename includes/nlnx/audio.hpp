@@ -36,13 +36,13 @@ namespace nl {
         //Do not free the pointer returned by this method
         //The pointer remains valid until the file this audio is part of is destroyed
         void const * data() const;
-        uint32_t length() const;
+        std::int32_t length() const;
         //Returns a unique id, useful for keeping track of what audio you loaded
-        size_t id() const;
+        std::size_t id() const;
     private:
-        audio(void const *, uint32_t);
+        audio(void const *, std::int32_t);
         void const * m_data = nullptr;
-        uint32_t m_length = 0;
+        std::int32_t m_length = 0;
         friend node;
     };
 }

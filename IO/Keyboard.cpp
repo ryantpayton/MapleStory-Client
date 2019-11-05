@@ -21,7 +21,7 @@
 
 namespace ms
 {
-	constexpr int32_t Keytable[90] =
+	constexpr std::int32_t Keytable[90] =
 	{
 		0, 0, // 1
 		GLFW_KEY_0, GLFW_KEY_1, GLFW_KEY_2, GLFW_KEY_3, GLFW_KEY_4, GLFW_KEY_5, GLFW_KEY_6, GLFW_KEY_7, GLFW_KEY_8, GLFW_KEY_9, GLFW_KEY_MINUS, GLFW_KEY_EQUAL,
@@ -41,7 +41,7 @@ namespace ms
 		GLFW_KEY_PAGE_DOWN, GLFW_KEY_INSERT, GLFW_KEY_DELETE, GLFW_KEY_ESCAPE, GLFW_KEY_RIGHT_CONTROL, GLFW_KEY_RIGHT_SHIFT, GLFW_KEY_RIGHT_ALT, GLFW_KEY_SCROLL_LOCK
 	};
 
-	constexpr int32_t Shifttable[126] =
+	constexpr std::int32_t Shifttable[126] =
 	{
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, //  10
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, //  20
@@ -58,7 +58,7 @@ namespace ms
 		  0,  0, 91, 92, 93, 96					 // 126
 	};
 
-	constexpr int32_t Specialtable[96] =
+	constexpr std::int32_t Specialtable[96] =
 	{
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 10
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 20
@@ -93,37 +93,37 @@ namespace ms
 		textactions[GLFW_KEY_DELETE] = KeyAction::Id::DELETE;
 	}
 
-	int32_t Keyboard::leftshiftcode() const
+	std::int32_t Keyboard::leftshiftcode() const
 	{
 		return GLFW_KEY_LEFT_SHIFT;
 	}
 
-	int32_t Keyboard::rightshiftcode() const
+	std::int32_t Keyboard::rightshiftcode() const
 	{
 		return GLFW_KEY_RIGHT_SHIFT;
 	}
 
-	int32_t Keyboard::capslockcode() const
+	std::int32_t Keyboard::capslockcode() const
 	{
 		return GLFW_KEY_CAPS_LOCK;
 	}
 
-	int32_t Keyboard::leftctrlcode() const
+	std::int32_t Keyboard::leftctrlcode() const
 	{
 		return GLFW_KEY_LEFT_CONTROL;
 	}
 
-	int32_t Keyboard::rightctrlcode() const
+	std::int32_t Keyboard::rightctrlcode() const
 	{
 		return GLFW_KEY_LEFT_CONTROL;
 	}
 
-	std::map<int32_t, Keyboard::Mapping> Keyboard::get_maplekeys() const
+	std::map<std::int32_t, Keyboard::Mapping> Keyboard::get_maplekeys() const
 	{
 		return maplekeys;
 	}
 
-	KeyAction::Id Keyboard::get_ctrl_action(int32_t keycode) const
+	KeyAction::Id Keyboard::get_ctrl_action(std::int32_t keycode) const
 	{
 		switch (keycode)
 		{
@@ -138,7 +138,7 @@ namespace ms
 		}
 	}
 
-	void Keyboard::assign(uint8_t key, uint8_t tid, int32_t action)
+	void Keyboard::assign(std::uint8_t key, std::uint8_t tid, std::int32_t action)
 	{
 		if (KeyType::Id type = KeyType::typebyid(tid))
 		{
@@ -149,7 +149,7 @@ namespace ms
 		}
 	}
 
-	void Keyboard::remove(uint8_t key)
+	void Keyboard::remove(std::uint8_t key)
 	{
 		Mapping mapping = Mapping(KeyType::Id::NONE, 0);
 
@@ -157,7 +157,7 @@ namespace ms
 		maplekeys[key] = mapping;
 	}
 
-	Keyboard::Mapping Keyboard::get_text_mapping(int32_t keycode, bool shift) const
+	Keyboard::Mapping Keyboard::get_text_mapping(std::int32_t keycode, bool shift) const
 	{
 		if (textactions.count(keycode))
 		{
@@ -192,7 +192,7 @@ namespace ms
 		}
 	}
 
-	Keyboard::Mapping Keyboard::get_mapping(int32_t keycode) const
+	Keyboard::Mapping Keyboard::get_mapping(std::int32_t keycode) const
 	{
 		auto iter = keymap.find(keycode);
 
@@ -202,7 +202,7 @@ namespace ms
 		return iter->second;
 	}
 
-	Keyboard::Mapping Keyboard::get_maple_mapping(int32_t keycode) const
+	Keyboard::Mapping Keyboard::get_maple_mapping(std::int32_t keycode) const
 	{
 		auto iter = maplekeys.find(keycode);
 

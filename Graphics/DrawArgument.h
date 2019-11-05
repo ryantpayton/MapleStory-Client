@@ -27,7 +27,7 @@ namespace ms
 	{
 	public:
 		constexpr DrawArgument() : DrawArgument(0, 0) {}
-		constexpr DrawArgument(int16_t x, int16_t y) : DrawArgument(Point<int16_t>{x, y}) {}
+		constexpr DrawArgument(std::int16_t x, std::int16_t y) : DrawArgument(Point<int16_t>{x, y}) {}
 		constexpr DrawArgument(Point<int16_t> p) : DrawArgument(p, 1.0f) {}
 		constexpr DrawArgument(Point<int16_t> p, float xs, float ys) : DrawArgument(p, p, xs, ys, 1.0f) {}
 		constexpr DrawArgument(Point<int16_t> p, Point<int16_t> s) : DrawArgument(p, p, s, 1.0f, 1.0f, 1.0f, 0.0f) {}
@@ -121,23 +121,23 @@ namespace ms
 
 		Rectangle<int16_t> get_rectangle(Point<int16_t> origin, Point<int16_t> dimensions) const
 		{
-			int16_t w = stretch.x();
+			std::int16_t w = stretch.x();
 
 			if (w == 0)
 				w = dimensions.x();
 
-			int16_t h = stretch.y();
+			std::int16_t h = stretch.y();
 
 			if (h == 0)
 				h = dimensions.y();
 
 			Point<int16_t> rlt = pos - center - origin;
-			int16_t rl = rlt.x();
-			int16_t rr = rlt.x() + w;
-			int16_t rt = rlt.y();
-			int16_t rb = rlt.y() + h;
-			int16_t cx = center.x();
-			int16_t cy = center.y();
+			std::int16_t rl = rlt.x();
+			std::int16_t rr = rlt.x() + w;
+			std::int16_t rt = rlt.y();
+			std::int16_t rb = rlt.y() + h;
+			std::int16_t cx = center.x();
+			std::int16_t cy = center.y();
 
 			return {
 				cx + static_cast<int16_t>(xscale * rl),

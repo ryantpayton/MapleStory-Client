@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "ItemTooltip.h"
 
-#include "../Constants.h"
+#include "../../Constants.h"
 
-#include "../Data/ItemData.h"
+#include "../../Data/ItemData.h"
 
 #include <nlnx/nx.hpp>
 
@@ -42,7 +42,7 @@ namespace ms
 		itemid = 0;
 	}
 
-	bool ItemTooltip::set_item(int32_t iid)
+	bool ItemTooltip::set_item(std::int32_t iid)
 	{
 		if (itemid == iid)
 			return false;
@@ -88,16 +88,16 @@ namespace ms
 		if (itemid == 0)
 			return;
 
-		int16_t max_width = Constants::Constants::get().get_viewwidth();
-		int16_t max_height = Constants::Constants::get().get_viewheight();
-		int16_t cur_width = pos.x() + fillwidth + 32;
-		int16_t cur_height = pos.y() + fillheight + 40;
+		std::int16_t max_width = Constants::Constants::get().get_viewwidth();
+		std::int16_t max_height = Constants::Constants::get().get_viewheight();
+		std::int16_t cur_width = pos.x() + fillwidth + 32;
+		std::int16_t cur_height = pos.y() + fillheight + 40;
 
-		int16_t adj_x = cur_width - max_width;
-		int16_t adj_y = cur_height - max_height;
+		std::int16_t adj_x = cur_width - max_width;
+		std::int16_t adj_y = cur_height - max_height;
 
-		int16_t adj_d = descdelta > 0 ? descdelta : 0;
-		int16_t adj_t = (untradable || unique) ? 19 : 0;
+		std::int16_t adj_d = descdelta > 0 ? descdelta : 0;
+		std::int16_t adj_t = (untradable || unique) ? 19 : 0;
 
 		if (adj_x > 0)
 			pos.shift_x(adj_x * -1);

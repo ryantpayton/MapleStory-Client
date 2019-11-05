@@ -19,8 +19,8 @@
 
 #include "BodyDrawinfo.h"
 
-#include "../Graphics/Texture.h"
-#include "../Template/EnumMap.h"
+#include "../../Graphics/Texture.h"
+#include "../../Template/EnumMap.h"
 
 namespace ms
 {
@@ -56,7 +56,7 @@ namespace ms
 			LENGTH
 		};
 
-		static Id byaction(size_t action);
+		static Id byaction(std::size_t action);
 
 		static const EnumMap<Id, std::string> names;
 	};
@@ -64,19 +64,19 @@ namespace ms
 	class Face
 	{
 	public:
-		Face(int32_t faceid);
+		Face(std::int32_t faceid);
 
-		void draw(Expression::Id expression, uint8_t frame, const DrawArgument& args) const;
+		void draw(Expression::Id expression, std::uint8_t frame, const DrawArgument& args) const;
 
-		uint8_t nextframe(Expression::Id expression, uint8_t frame) const;
-		int16_t get_delay(Expression::Id expression, uint8_t frame) const;
+		std::uint8_t nextframe(Expression::Id expression, std::uint8_t frame) const;
+		std::int16_t get_delay(Expression::Id expression, std::uint8_t frame) const;
 		const std::string& get_name() const;
 
 	private:
 		struct Frame
 		{
 			Texture texture;
-			uint16_t delay;
+			std::uint16_t delay;
 
 			Frame(nl::node src)
 			{
@@ -92,7 +92,7 @@ namespace ms
 			}
 		};
 
-		std::unordered_map<uint8_t, Frame> expressions[Expression::Id::LENGTH];
+		std::unordered_map<std::uint8_t, Frame> expressions[Expression::Id::LENGTH];
 		std::string name;
 	};
 }

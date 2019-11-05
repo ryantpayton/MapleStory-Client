@@ -20,7 +20,7 @@
 #include "../UI.h"
 
 #include "../Components/MapleButton.h"
-#include "../Data/ItemData.h"
+#include "../../Data/ItemData.h"
 
 #include <nlnx/nx.hpp>
 
@@ -45,18 +45,18 @@ namespace ms
 		bool in_progress = false;
 		bool item_rewards = false;
 
-		for (size_t i = 0; i < 5; i++)
+		for (std::size_t i = 0; i < 5; i++)
 			events.emplace_back(BoolPair<bool>(true, true));
 
-		for (size_t i = 0; i < 10; i++)
+		for (std::size_t i = 0; i < 10; i++)
 			events.emplace_back(BoolPair<bool>(false, true));
 
 		events.emplace_back(BoolPair<bool>(false, false));
 
-		for (size_t i = 0; i < 3; i++)
+		for (std::size_t i = 0; i < 3; i++)
 			event_title[i] = ShadowText(Text::Font::A18M, Text::Alignment::LEFT, Color::Name::HALFANDHALF, Color::Name::ENDEAVOUR);
 
-		for (size_t i = 0; i < 3; i++)
+		for (std::size_t i = 0; i < 3; i++)
 			event_date[i] = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
 
 		item_reward = main["event"]["normal"];
@@ -69,7 +69,7 @@ namespace ms
 			Slider::Type::DEFAULT, Range<int16_t>(86, 449), 396, 3, event_count,
 			[&](bool upwards)
 			{
-				int16_t shift = upwards ? -1 : 1;
+				std::int16_t shift = upwards ? -1 : 1;
 				bool above = offset + shift >= 0;
 				bool below = offset + shift <= event_count - 3;
 
@@ -87,9 +87,9 @@ namespace ms
 
 		slider.draw(position);
 
-		for (size_t i = 0; i < 3; i++)
+		for (std::size_t i = 0; i < 3; i++)
 		{
-			int16_t slot = i + offset;
+			std::int16_t slot = i + offset;
 
 			if (slot >= event_count)
 				break;
@@ -104,9 +104,9 @@ namespace ms
 			{
 				item_reward.draw(position + event_pos);
 
-				int16_t x_adj = 0;
+				std::int16_t x_adj = 0;
 
-				for (size_t f = 0; f < 5; f++)
+				for (std::size_t f = 0; f < 5; f++)
 				{
 					const ItemData& item_data = ItemData::get(2000000 + f);
 					Texture icon = item_data.get_icon(true);
@@ -146,9 +146,9 @@ namespace ms
 	{
 		UIElement::update();
 
-		for (size_t i = 0; i < 3; i++)
+		for (std::size_t i = 0; i < 3; i++)
 		{
-			int16_t slot = i + offset;
+			std::int16_t slot = i + offset;
 
 			if (slot >= event_count)
 				break;
@@ -187,10 +187,10 @@ namespace ms
 			}
 		}
 
-		int16_t yoff = cursoroffset.y();
-		int16_t xoff = cursoroffset.x();
-		int16_t row = row_by_position(yoff);
-		int16_t col = col_by_position(xoff);
+		std::int16_t yoff = cursoroffset.y();
+		std::int16_t xoff = cursoroffset.x();
+		std::int16_t row = row_by_position(yoff);
+		std::int16_t col = col_by_position(xoff);
 
 		if (row > 0 && row < 4 && col > 0 && col < 6)
 			show_item(row, col);
@@ -200,13 +200,13 @@ namespace ms
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	void UIEvent::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIEvent::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && escape)
 			close();
 	}
 
-	Button::State UIEvent::button_pressed(uint16_t buttonid)
+	Button::State UIEvent::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -229,7 +229,7 @@ namespace ms
 		active = false;
 	}
 
-	std::string UIEvent::get_event_title(uint8_t id)
+	std::string UIEvent::get_event_title(std::uint8_t id)
 	{
 		switch (id)
 		{
@@ -270,43 +270,43 @@ namespace ms
 		}
 	}
 
-	std::string UIEvent::get_event_date(uint8_t id)
+	std::string UIEvent::get_event_date(std::uint8_t id)
 	{
 		switch (id)
 		{
 		case 0:
 		case 1:
 		case 2:
-			return "04/24/2019 - 05/21/2019, 23:59";
+			return "../../24/2019 - 05/21/2019, 23:59";
 		case 3:
-			return "04/24/2019 - 05/07/2019, 23:59";
+			return "../../24/2019 - 05/07/2019, 23:59";
 		case 4:
-			return "04/24/2019 - 06/11/2019, 23:59";
+			return "../../24/2019 - 06/11/2019, 23:59";
 		case 5:
-			return "05/11/2019 - 05/11/2019, 23:59";
+			return "../../11/2019 - 05/11/2019, 23:59";
 		case 6:
 		case 10:
 		case 11:
 		case 12:
-			return "05/22/2019 - 06/11/2019, 23:59";
+			return "../../22/2019 - 06/11/2019, 23:59";
 		case 7:
 		case 8:
-			return "05/08/2019 - 05/21/2019, 23:59";
+			return "../../08/2019 - 05/21/2019, 23:59";
 		case 9:
-			return "05/08/2019 - 06/11/2019, 23:59";
+			return "../../08/2019 - 06/11/2019, 23:59";
 		case 13:
 		case 14:
-			return "05/29/2019 - 06/11/2019, 23:59";
+			return "../../29/2019 - 06/11/2019, 23:59";
 		case 15:
-			return "05/05/2019 - 05/05/2019, 23:59";
+			return "../../05/2019 - 05/05/2019, 23:59";
 		default:
 			return "";
 		}
 	}
 
-	int16_t UIEvent::row_by_position(int16_t y)
+	std::int16_t UIEvent::row_by_position(std::int16_t y)
 	{
-		int16_t item_height = 43;
+		std::int16_t item_height = 43;
 
 		if (y >= 148 && y <= 148 + item_height)
 			return 1;
@@ -318,9 +318,9 @@ namespace ms
 			return -1;
 	}
 
-	int16_t UIEvent::col_by_position(int16_t x)
+	std::int16_t UIEvent::col_by_position(std::int16_t x)
 	{
-		int16_t item_width = 43;
+		std::int16_t item_width = 43;
 
 		if (x >= 25 && x <= 25 + item_width)
 			return 1;
@@ -336,7 +336,7 @@ namespace ms
 			return -1;
 	}
 
-	void UIEvent::show_item(int16_t row, int16_t col)
+	void UIEvent::show_item(std::int16_t row, std::int16_t col)
 	{
 		UI::get().show_item(Tooltip::Parent::SHOP, 2000000 + col - 1);
 	}

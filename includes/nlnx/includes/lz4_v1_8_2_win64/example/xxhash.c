@@ -98,11 +98,11 @@
 /*! Modify the local functions below should you wish to use some other memory routines
 *   for malloc(), free() */
 #include <stdlib.h>
-static void* XXH_malloc(size_t s) { return malloc(s); }
+static void* XXH_malloc(std::size_t s) { return malloc(s); }
 static void  XXH_free  (void* p)  { free(p); }
 /*! and for memcpy() */
 #include <string.h>
-static void* XXH_memcpy(void* dest, const void* src, size_t size) { return memcpy(dest,src,size); }
+static void* XXH_memcpy(void* dest, const void* src, std::size_t size) { return memcpy(dest,src,size); }
 
 #define XXH_STATIC_LINKING_ONLY
 #include "xxhash.h"
@@ -138,10 +138,10 @@ static void* XXH_memcpy(void* dest, const void* src, size_t size) { return memcp
 #ifndef MEM_MODULE
 # if !defined (__VMS) && (defined (__cplusplus) || (defined (__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) /* C99 */) )
 #   include <stdint.h>
-    typedef uint8_t  BYTE;
-    typedef uint16_t U16;
-    typedef uint32_t U32;
-    typedef  int32_t S32;
+    typedef std::uint8_t  BYTE;
+    typedef std::uint16_t U16;
+    typedef std::int32_t U32;
+    typedef  std::int32_t S32;
 # else
     typedef unsigned char      BYTE;
     typedef unsigned short     U16;
@@ -266,7 +266,7 @@ static U32 XXH32_round(U32 seed, U32 input)
     return seed;
 }
 
-XXH_FORCE_INLINE U32 XXH32_endian_align(const void* input, size_t len, U32 seed, XXH_endianess endian, XXH_alignment align)
+XXH_FORCE_INLINE U32 XXH32_endian_align(const void* input, std::size_t len, U32 seed, XXH_endianess endian, XXH_alignment align)
 {
     const BYTE* p = (const BYTE*)input;
     const BYTE* bEnd = p + len;
@@ -276,7 +276,7 @@ XXH_FORCE_INLINE U32 XXH32_endian_align(const void* input, size_t len, U32 seed,
 #ifdef XXH_ACCEPT_NULL_INPUT_POINTER
     if (p==NULL) {
         len=0;
-        bEnd=p=(const BYTE*)(size_t)16;
+        bEnd=p=(const BYTE*)(std::size_t)16;
     }
 #endif
 
@@ -323,7 +323,7 @@ XXH_FORCE_INLINE U32 XXH32_endian_align(const void* input, size_t len, U32 seed,
 }
 
 
-XXH_PUBLIC_API unsigned int XXH32 (const void* input, size_t len, unsigned int seed)
+XXH_PUBLIC_API unsigned int XXH32 (const void* input, std::size_t len, unsigned int seed)
 {
 #if 0
     /* Simple version, good for code maintenance, but unfortunately slow for small inputs */
@@ -335,7 +335,7 @@ XXH_PUBLIC_API unsigned int XXH32 (const void* input, size_t len, unsigned int s
     XXH_endianess endian_detected = (XXH_endianess)XXH_CPU_LITTLE_ENDIAN;
 
     if (XXH_FORCE_ALIGN_CHECK) {
-        if ((((size_t)input) & 3) == 0) {   /* Input is 4-bytes aligned, leverage the speed benefit */
+        if ((((std::size_t)input) & 3) == 0) {   /* Input is 4-bytes aligned, leverage the speed benefit */
             if ((endian_detected==XXH_littleEndian) || XXH_FORCE_NATIVE_FORMAT)
                 return XXH32_endian_align(input, len, seed, XXH_littleEndian, XXH_aligned);
             else
@@ -381,7 +381,7 @@ XXH_PUBLIC_API XXH_errorcode XXH32_reset(XXH32_state_t* statePtr, unsigned int s
 }
 
 
-XXH_FORCE_INLINE XXH_errorcode XXH32_update_endian (XXH32_state_t* state, const void* input, size_t len, XXH_endianess endian)
+XXH_FORCE_INLINE XXH_errorcode XXH32_update_endian (XXH32_state_t* state, const void* input, std::size_t len, XXH_endianess endian)
 {
     const BYTE* p = (const BYTE*)input;
     const BYTE* const bEnd = p + len;
@@ -432,14 +432,14 @@ XXH_FORCE_INLINE XXH_errorcode XXH32_update_endian (XXH32_state_t* state, const 
     }
 
     if (p < bEnd) {
-        XXH_memcpy(state->mem32, p, (size_t)(bEnd-p));
+        XXH_memcpy(state->mem32, p, (std::size_t)(bEnd-p));
         state->memsize = (unsigned)(bEnd-p);
     }
 
     return XXH_OK;
 }
 
-XXH_PUBLIC_API XXH_errorcode XXH32_update (XXH32_state_t* state_in, const void* input, size_t len)
+XXH_PUBLIC_API XXH_errorcode XXH32_update (XXH32_state_t* state_in, const void* input, std::size_t len)
 {
     XXH_endianess endian_detected = (XXH_endianess)XXH_CPU_LITTLE_ENDIAN;
 
@@ -626,7 +626,7 @@ static U64 XXH64_mergeRound(U64 acc, U64 val)
     return acc;
 }
 
-XXH_FORCE_INLINE U64 XXH64_endian_align(const void* input, size_t len, U64 seed, XXH_endianess endian, XXH_alignment align)
+XXH_FORCE_INLINE U64 XXH64_endian_align(const void* input, std::size_t len, U64 seed, XXH_endianess endian, XXH_alignment align)
 {
     const BYTE* p = (const BYTE*)input;
     const BYTE* const bEnd = p + len;
@@ -636,7 +636,7 @@ XXH_FORCE_INLINE U64 XXH64_endian_align(const void* input, size_t len, U64 seed,
 #ifdef XXH_ACCEPT_NULL_INPUT_POINTER
     if (p==NULL) {
         len=0;
-        bEnd=p=(const BYTE*)(size_t)32;
+        bEnd=p=(const BYTE*)(std::size_t)32;
     }
 #endif
 
@@ -695,7 +695,7 @@ XXH_FORCE_INLINE U64 XXH64_endian_align(const void* input, size_t len, U64 seed,
 }
 
 
-XXH_PUBLIC_API unsigned long long XXH64 (const void* input, size_t len, unsigned long long seed)
+XXH_PUBLIC_API unsigned long long XXH64 (const void* input, std::size_t len, unsigned long long seed)
 {
 #if 0
     /* Simple version, good for code maintenance, but unfortunately slow for small inputs */
@@ -707,7 +707,7 @@ XXH_PUBLIC_API unsigned long long XXH64 (const void* input, size_t len, unsigned
     XXH_endianess endian_detected = (XXH_endianess)XXH_CPU_LITTLE_ENDIAN;
 
     if (XXH_FORCE_ALIGN_CHECK) {
-        if ((((size_t)input) & 7)==0) {  /* Input is aligned, let's leverage the speed advantage */
+        if ((((std::size_t)input) & 7)==0) {  /* Input is aligned, let's leverage the speed advantage */
             if ((endian_detected==XXH_littleEndian) || XXH_FORCE_NATIVE_FORMAT)
                 return XXH64_endian_align(input, len, seed, XXH_littleEndian, XXH_aligned);
             else
@@ -750,7 +750,7 @@ XXH_PUBLIC_API XXH_errorcode XXH64_reset(XXH64_state_t* statePtr, unsigned long 
     return XXH_OK;
 }
 
-XXH_FORCE_INLINE XXH_errorcode XXH64_update_endian (XXH64_state_t* state, const void* input, size_t len, XXH_endianess endian)
+XXH_FORCE_INLINE XXH_errorcode XXH64_update_endian (XXH64_state_t* state, const void* input, std::size_t len, XXH_endianess endian)
 {
     const BYTE* p = (const BYTE*)input;
     const BYTE* const bEnd = p + len;
@@ -798,14 +798,14 @@ XXH_FORCE_INLINE XXH_errorcode XXH64_update_endian (XXH64_state_t* state, const 
     }
 
     if (p < bEnd) {
-        XXH_memcpy(state->mem64, p, (size_t)(bEnd-p));
+        XXH_memcpy(state->mem64, p, (std::size_t)(bEnd-p));
         state->memsize = (unsigned)(bEnd-p);
     }
 
     return XXH_OK;
 }
 
-XXH_PUBLIC_API XXH_errorcode XXH64_update (XXH64_state_t* state_in, const void* input, size_t len)
+XXH_PUBLIC_API XXH_errorcode XXH64_update (XXH64_state_t* state_in, const void* input, std::size_t len)
 {
     XXH_endianess endian_detected = (XXH_endianess)XXH_CPU_LITTLE_ENDIAN;
 

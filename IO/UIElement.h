@@ -82,7 +82,7 @@ namespace ms
 		bool is_active() const;
 
 		virtual void toggle_active();
-		virtual Button::State button_pressed(uint16_t buttonid);
+		virtual Button::State button_pressed(std::uint16_t buttonid);
 		virtual bool send_icon(const Icon& icon, Point<int16_t> cursorpos);
 
 		virtual void doubleclick(Point<int16_t> cursorpos);
@@ -91,7 +91,7 @@ namespace ms
 		virtual bool remove_cursor(bool clicked, Point<int16_t> cursorpos);
 		virtual Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos);
 		virtual void send_scroll(double yoffset);
-		virtual void send_key(int32_t keycode, bool pressed, bool escape);
+		virtual void send_key(std::int32_t keycode, bool pressed, bool escape);
 
 	protected:
 		UIElement(Point<int16_t> position, Point<int16_t> dimension, bool active);
@@ -101,7 +101,7 @@ namespace ms
 		void draw_sprites(float alpha) const;
 		void draw_buttons(float alpha) const;
 
-		std::map<uint16_t, std::unique_ptr<Button>> buttons;
+		std::map<std::uint16_t, std::unique_ptr<Button>> buttons;
 		std::vector<Sprite> sprites;
 		Point<int16_t> position;
 		Point<int16_t> dimension;

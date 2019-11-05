@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Template/Point.h"
+#include "../../Template/Point.h"
 
 #include <cstdint>
 

@@ -19,7 +19,7 @@
 
 #include "../OutPacket.h"
 
-#include "../Character/Inventory/Inventory.h"
+#include "../../Character/Inventory/Inventory.h"
 
 namespace ms
 {
@@ -52,7 +52,7 @@ namespace ms
 	class MoveItemPacket : public OutPacket
 	{
 	public:
-		MoveItemPacket(InventoryType::Id type, int16_t slot, int16_t action, int16_t qty) : OutPacket(OutPacket::Opcode::MOVE_ITEM)
+		MoveItemPacket(InventoryType::Id type, std::int16_t slot, std::int16_t action, std::int16_t qty) : OutPacket(OutPacket::Opcode::MOVE_ITEM)
 		{
 			write_time();
 			write_byte(type);
@@ -67,7 +67,7 @@ namespace ms
 	class EquipItemPacket : public MoveItemPacket
 	{
 	public:
-		EquipItemPacket(int16_t src, Equipslot::Id dest) : MoveItemPacket(InventoryType::Id::EQUIP, src, -dest, 1) {}
+		EquipItemPacket(std::int16_t src, Equipslot::Id dest) : MoveItemPacket(InventoryType::Id::EQUIP, src, -dest, 1) {}
 	};
 
 	// Packet which requests that an item is unequipped.
@@ -75,7 +75,7 @@ namespace ms
 	class UnequipItemPacket : public MoveItemPacket
 	{
 	public:
-		UnequipItemPacket(int16_t src, int16_t dest) : MoveItemPacket(InventoryType::Id::EQUIPPED, -src, dest, 1) {}
+		UnequipItemPacket(std::int16_t src, std::int16_t dest) : MoveItemPacket(InventoryType::Id::EQUIPPED, -src, dest, 1) {}
 	};
 
 	// A packet which requests that an 'USE' item is used.
@@ -83,7 +83,7 @@ namespace ms
 	class UseItemPacket : public OutPacket
 	{
 	public:
-		UseItemPacket(int16_t slot, int32_t itemid) : OutPacket(OutPacket::Opcode::USE_ITEM)
+		UseItemPacket(std::int16_t slot, std::int32_t itemid) : OutPacket(OutPacket::Opcode::USE_ITEM)
 		{
 			write_time();
 			write_short(slot);
@@ -96,14 +96,14 @@ namespace ms
 	class ScrollEquipPacket : public OutPacket
 	{
 	public:
-		enum Flag : uint8_t
+		enum Flag : std::uint8_t
 		{
 			NONE = 0x00,
 			UNKNOWN = 0x01,
 			WHITESCROLL = 0x02
 		};
 
-		ScrollEquipPacket(int16_t source, Equipslot::Id target, uint8_t flags) : OutPacket(OutPacket::Opcode::SCROLL_EQUIP)
+		ScrollEquipPacket(std::int16_t source, Equipslot::Id target, std::uint8_t flags) : OutPacket(OutPacket::Opcode::SCROLL_EQUIP)
 		{
 			write_time();
 			write_short(source);
@@ -111,6 +111,6 @@ namespace ms
 			write_short(flags);
 		}
 
-		ScrollEquipPacket(int16_t source, Equipslot::Id target) : ScrollEquipPacket(source, target, 0) {}
+		ScrollEquipPacket(std::int16_t source, Equipslot::Id target) : ScrollEquipPacket(source, target, 0) {}
 	};
 }

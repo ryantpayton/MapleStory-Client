@@ -31,7 +31,7 @@ namespace ms
 		{
 			const ReactorSpawn& spawn = spawns.front();
 
-			int32_t oid = spawn.get_oid();
+			std::int32_t oid = spawn.get_oid();
 
 			if (auto reactor = reactors.get(oid))
 				reactor->makeactive();
@@ -47,7 +47,7 @@ namespace ms
 		spawns.emplace(std::move(spawn));
 	}
 
-	void MapReactors::remove(int32_t oid, int8_t state, Point<int16_t> position)
+	void MapReactors::remove(std::int32_t oid, std::int8_t state, Point<int16_t> position)
 	{
 		if (Optional<Reactor> reactor = reactors.get(oid))
 			reactor->destroy(state, position);

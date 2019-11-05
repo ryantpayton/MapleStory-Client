@@ -19,7 +19,7 @@
 
 namespace ms
 {
-	IconCover::IconCover(Type t, int32_t duration)
+	IconCover::IconCover(Type t, std::int32_t duration)
 	{
 		cover = ColorBox(30, 30, Color::Name::BLACK, 0.6f);
 

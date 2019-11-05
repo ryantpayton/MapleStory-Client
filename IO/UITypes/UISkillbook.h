@@ -22,16 +22,18 @@
 
 #include "../Components/Slider.h"
 #include "../Components/Charset.h"
-#include "../Character/CharStats.h"
-#include "../Character/Skillbook.h"
-#include "../Graphics/Text.h"
+#include "../../Character/CharStats.h"
+#include "../../Character/Skillbook.h"
+#include "../../Graphics/Text.h"
+
+#include <vector>
 
 namespace ms
 {
 	class SkillIcon
 	{
 	public:
-		SkillIcon(int32_t id, int32_t level);
+		SkillIcon(std::int32_t id, std::int32_t level);
 
 		void draw(const DrawArgument& args) const;
 
@@ -44,8 +46,8 @@ namespace ms
 
 		void set_state(State state);
 
-		int32_t get_id() const;
-		int32_t get_level() const;
+		std::int32_t get_id() const;
+		std::int32_t get_level() const;
 		Texture get_icon() const;
 
 	private:
@@ -54,8 +56,8 @@ namespace ms
 		Texture mouseover;
 		Text name;
 		Text level;
-		int32_t id;
-		int32_t lv;
+		std::int32_t id;
+		std::int32_t lv;
 
 		State state;
 		bool enabled;
@@ -76,38 +78,38 @@ namespace ms
 		void doubleclick(Point<int16_t> cursorpos) override;
 		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
-		void update_stat(Maplestat::Id stat, int16_t value);
-		void update_skills(int32_t skill_id);
+		void update_stat(Maplestat::Id stat, std::int16_t value);
+		void update_skills(std::int32_t skill_id);
 		bool is_skillpoint_enabled();
 
 	protected:
-		Button::State button_pressed(uint16_t id) override;
+		Button::State button_pressed(std::uint16_t id) override;
 
 	private:
-		void change_job(uint16_t id);
+		void change_job(std::uint16_t id);
 		void change_sp();
-		void change_tab(uint16_t new_tab);
-		void change_offset(uint16_t new_offset);
+		void change_tab(std::uint16_t new_tab);
+		void change_offset(std::uint16_t new_offset);
 
-		void show_skill(int32_t skill_id);
+		void show_skill(std::int32_t skill_id);
 		void clear_tooltip();
 
-		bool can_raise(int32_t skill_id) const;
-		void send_spup(uint16_t row);
-		void spend_sp(int32_t skill_id);
+		bool can_raise(std::int32_t skill_id) const;
+		void send_spup(std::uint16_t row);
+		void spend_sp(std::int32_t skill_id);
 
-		Job::Level joblevel_by_tab(uint16_t tab) const;
+		Job::Level joblevel_by_tab(std::uint16_t tab) const;
 		SkillIcon* icon_by_position(Point<int16_t> cursorpos);
 
 		void close();
-		bool check_required(int32_t id) const;
+		bool check_required(std::int32_t id) const;
 
 		void set_macro(bool enabled);
 		void set_skillpoint(bool enabled);
 
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			BT_CLOSE,
 			BT_HYPER,
@@ -139,9 +141,9 @@ namespace ms
 			BT_SPUP11
 		};
 
-		static constexpr int16_t ROWS = 12;
-		static constexpr int16_t ROW_HEIGHT = 40;
-		static constexpr int16_t ROW_WIDTH = 143;
+		static constexpr std::int16_t ROWS = 12;
+		static constexpr std::int16_t ROW_HEIGHT = 40;
+		static constexpr std::int16_t ROW_WIDTH = 143;
 		static constexpr Point<int16_t> SKILL_OFFSET = Point<int16_t>(11, 93);
 		static constexpr Point<int16_t> ICON_OFFSET = Point<int16_t>(2, 34);
 		static constexpr Point<int16_t> LINE_OFFSET = Point<int16_t>(0, 37);
@@ -159,12 +161,12 @@ namespace ms
 		Text splabel;
 
 		Job job;
-		int16_t sp;
-		int16_t beginner_sp;
+		std::int16_t sp;
+		std::int16_t beginner_sp;
 
-		uint16_t tab;
-		uint16_t skillcount;
-		uint16_t offset;
+		std::uint16_t tab;
+		std::uint16_t skillcount;
+		std::uint16_t offset;
 
 		std::vector<SkillIcon> icons;
 		bool grabbing;
@@ -188,7 +190,7 @@ namespace ms
 		Text sp_remaining;
 		Text sp_name;
 		Texture sp_skill;
-		int32_t sp_id;
-		int32_t sp_masterlevel;
+		std::int32_t sp_id;
+		std::int32_t sp_masterlevel;
 	};
 }

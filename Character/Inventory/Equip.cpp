@@ -19,13 +19,13 @@
 
 namespace ms
 {
-	Equip::Equip(int32_t item_id, int64_t expiration, const std::string& owner, int16_t flags, uint8_t slots, uint8_t level, const EnumMap<Equipstat::Id, uint16_t>& stats, uint8_t itemlevel, int16_t itemexp, int32_t vicious) : item_id(item_id), expiration(expiration), owner(owner), flags(flags), slots(slots), level(level), stats(stats), itemlevel(itemlevel), itemexp(itemexp), vicious(vicious)
+	Equip::Equip(std::int32_t item_id, int64_t expiration, const std::string& owner, std::int16_t flags, std::uint8_t slots, std::uint8_t level, const EnumMap<Equipstat::Id, std::uint16_t>& stats, std::uint8_t itemlevel, std::int16_t itemexp, std::int32_t vicious) : item_id(item_id), expiration(expiration), owner(owner), flags(flags), slots(slots), level(level), stats(stats), itemlevel(itemlevel), itemexp(itemexp), vicious(vicious)
 	{
 		potrank = Equip::Potential::POT_NONE;
 		quality = EquipQuality::check_quality(item_id, level > 0, stats);
 	}
 
-	int32_t Equip::get_item_id() const
+	std::int32_t Equip::get_item_id() const
 	{
 		return item_id;
 	}
@@ -40,32 +40,32 @@ namespace ms
 		return owner;
 	}
 
-	int16_t Equip::get_flags() const
+	std::int16_t Equip::get_flags() const
 	{
 		return flags;
 	}
 
-	uint8_t Equip::get_slots() const
+	std::uint8_t Equip::get_slots() const
 	{
 		return slots;
 	}
 
-	uint8_t Equip::get_level() const
+	std::uint8_t Equip::get_level() const
 	{
 		return level;
 	}
 
-	uint8_t Equip::get_itemlevel() const
+	std::uint8_t Equip::get_itemlevel() const
 	{
 		return itemlevel;
 	}
 
-	uint16_t Equip::get_stat(Equipstat::Id type) const
+	std::uint16_t Equip::get_stat(Equipstat::Id type) const
 	{
 		return stats[type];
 	}
 
-	int32_t Equip::get_vicious() const
+	std::int32_t Equip::get_vicious() const
 	{
 		return vicious;
 	}

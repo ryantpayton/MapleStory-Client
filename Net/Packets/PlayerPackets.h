@@ -19,7 +19,7 @@
 
 #include "../OutPacket.h"
 
-#include "../Character/Maplestat.h"
+#include "../../Character/Maplestat.h"
 
 #include "../IO/UITypes/UIKeyConfig.h"
 
@@ -42,7 +42,7 @@ namespace ms
 	class SpendSpPacket : public OutPacket
 	{
 	public:
-		SpendSpPacket(int32_t skill_id) : OutPacket(OutPacket::Opcode::SPEND_SP)
+		SpendSpPacket(std::int32_t skill_id) : OutPacket(OutPacket::Opcode::SPEND_SP)
 		{
 			write_time();
 			write_int(skill_id);
@@ -59,7 +59,7 @@ namespace ms
 			write_int(0); // mode
 			write_int(updated_actions.size()); // Number of key changes
 
-			for (size_t i = 0; i < updated_actions.size(); i++)
+			for (std::size_t i = 0; i < updated_actions.size(); i++)
 			{
 				auto keymap = updated_actions[i];
 

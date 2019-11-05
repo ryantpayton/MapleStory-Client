@@ -30,7 +30,7 @@ namespace ms
 		animation.draw(absargs, alpha);
 	}
 
-	bool Sprite::update(uint16_t timestep)
+	bool Sprite::update(std::uint16_t timestep)
 	{
 		return animation.update(timestep);
 	}

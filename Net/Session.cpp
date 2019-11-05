@@ -73,7 +73,7 @@ namespace ms
 			connected = false;
 	}
 
-	void Session::process(const int8_t* bytes, size_t available)
+	void Session::process(const std::int8_t* bytes, std::size_t available)
 	{
 		if (pos == 0)
 		{
@@ -85,7 +85,7 @@ namespace ms
 		}
 
 		// Determine how much we can write. Write data into the buffer.
-		size_t towrite = length - pos;
+		std::size_t towrite = length - pos;
 
 		if (towrite > available)
 			towrite = available;
@@ -111,7 +111,7 @@ namespace ms
 			length = 0;
 
 			// Check if there is more available.
-			size_t remaining = available - towrite;
+			std::size_t remaining = available - towrite;
 
 			if (remaining >= MIN_PACKET_LENGTH)
 			{
@@ -121,12 +121,12 @@ namespace ms
 		}
 	}
 
-	void Session::write(int8_t* packet_bytes, size_t packet_length)
+	void Session::write(std::int8_t* packet_bytes, std::size_t packet_length)
 	{
 		if (!connected)
 			return;
 
-		int8_t header[HEADER_LENGTH];
+		std::int8_t header[HEADER_LENGTH];
 		cryptography.create_header(header, packet_length);
 		cryptography.encrypt(packet_bytes, packet_length);
 
@@ -137,12 +137,12 @@ namespace ms
 	void Session::read()
 	{
 		// Check if a packet has arrived. Handle if data is sufficient: 4 bytes(header) + 2 bytes(opcode) = 6.
-		size_t result = socket.receive(&connected);
+		std::size_t result = socket.receive(&connected);
 
 		if (result >= MIN_PACKET_LENGTH || length > 0)
 		{
 			// Retrieve buffer from the socket and process it.
-			const int8_t* bytes = socket.get_buffer();
+			const std::int8_t* bytes = socket.get_buffer();
 			process(bytes, result);
 		}
 	}

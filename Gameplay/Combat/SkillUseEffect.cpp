@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "SkillUseEffect.h"
 
-#include "../Util/Misc.h"
+#include "../../Util/Misc.h"
 
 namespace ms
 {
@@ -38,7 +38,7 @@ namespace ms
 
 	MultiUseEffect::MultiUseEffect(nl::node src)
 	{
-		int8_t no = -1;
+		std::int8_t no = -1;
 		nl::node sub = src["effect"];
 
 		while (sub)
@@ -60,7 +60,7 @@ namespace ms
 	{
 		for (auto sub : src["CharLevel"])
 		{
-			auto level = string_conversion::or_zero<uint16_t>(sub.name());
+			auto level = string_conversion::or_zero<std::uint16_t>(sub.name());
 			effects.emplace(level, sub["effect"]);
 		}
 	}
@@ -70,7 +70,7 @@ namespace ms
 		if (effects.empty())
 			return;
 
-		uint16_t level = target.get_level();
+		std::uint16_t level = target.get_level();
 		auto iter = effects.begin();
 		for (; iter != effects.end() && level > iter->first; ++iter) {}
 

@@ -20,21 +20,21 @@
 #include "../UI.h"
 
 #include "../Components/MapleButton.h"
-#include "../Gameplay/Stage.h"
-#include "../UITypes/UIQuestLog.h"
-#include "../UITypes/UIUserList.h"
-#include "../UITypes/UIStatsinfo.h"
-#include "../UITypes/UISkillbook.h"
-#include "../UITypes/UIEquipInventory.h"
-#include "../UITypes/UIItemInventory.h"
-#include "../UITypes/UIChannel.h"
-#include "../UITypes/UIJoypad.h"
-#include "../UITypes/UIEvent.h"
-#include "../UITypes/UIKeyConfig.h"
-#include "../UITypes/UIChat.h"
-#include "../UITypes/UIOptionMenu.h"
-#include "../UITypes/UIQuit.h"
-#include "../Character/ExpTable.h"
+#include "../../Gameplay/Stage.h"
+#include "UIQuestLog.h"
+#include "UIUserList.h"
+#include "UIStatsinfo.h"
+#include "UISkillbook.h"
+#include "UIEquipInventory.h"
+#include "UIItemInventory.h"
+#include "UIChannel.h"
+#include "UIJoypad.h"
+#include "UIEvent.h"
+#include "UIKeyConfig.h"
+#include "UIChat.h"
+#include "UIOptionMenu.h"
+#include "UIQuit.h"
+#include "../../Character/ExpTable.h"
 
 #include <nlnx/nx.hpp>
 
@@ -71,7 +71,7 @@ namespace ms
 		sprites.emplace_back(EXPBar["backgrnd"], DrawArgument(Point<int16_t>(0, 87), Point<int16_t>(VWIDTH, 0)));
 		sprites.emplace_back(EXPBarRes["layer:back"], exp_pos);
 
-		int16_t exp_max = VWIDTH - 16;
+		std::int16_t exp_max = VWIDTH - 16;
 
 		expbar = Gauge(
 			EXPBarRes.resolve("layer:gauge"),
@@ -80,7 +80,7 @@ namespace ms
 			exp_max, 0.0f
 		);
 
-		int16_t pos_adj = 0;
+		std::int16_t pos_adj = 0;
 
 		if (VWIDTH == 1280)
 			pos_adj = 87;
@@ -172,7 +172,7 @@ namespace ms
 		else
 			hpmp_sprites.emplace_back(status["layer:Lv"], hpmp_pos - Point<int16_t>(1, 0));
 
-		int16_t hpmp_max = 139;
+		std::int16_t hpmp_max = 139;
 
 		if (VWIDTH > 800)
 			hpmp_max += 30;
@@ -309,7 +309,7 @@ namespace ms
 		buttons[Buttons::BT_EVENT_DAILY] = std::make_unique<MapleButton>(submenu["event"]["button:dailyGift"], event_pos);
 		buttons[Buttons::BT_EVENT_SCHEDULE] = std::make_unique<MapleButton>(submenu["event"]["button:schedule"], event_pos);
 
-		for (size_t i = Buttons::BT_MENU_QUEST; i <= Buttons::BT_EVENT_DAILY; i++)
+		for (std::size_t i = Buttons::BT_MENU_QUEST; i <= Buttons::BT_EVENT_DAILY; i++)
 			buttons[i]->set_active(false);
 
 		menutitle[0] = submenu["title"]["character"];
@@ -360,7 +360,7 @@ namespace ms
 	{
 		UIElement::draw_sprites(alpha);
 
-		for (size_t i = 0; i <= Buttons::BT_EVENT; i++)
+		for (std::size_t i = 0; i <= Buttons::BT_EVENT; i++)
 			buttons.at(i)->draw(position);
 
 		hpmp_sprites[0].draw(position, alpha);
@@ -372,11 +372,11 @@ namespace ms
 		hpmp_sprites[1].draw(position, alpha);
 		hpmp_sprites[2].draw(position, alpha);
 
-		int16_t level = stats.get_stat(Maplestat::Id::LEVEL);
-		int16_t hp = stats.get_stat(Maplestat::Id::HP);
-		int16_t mp = stats.get_stat(Maplestat::Id::MP);
-		int32_t maxhp = stats.get_total(Equipstat::Id::HP);
-		int32_t maxmp = stats.get_total(Equipstat::Id::MP);
+		std::int16_t level = stats.get_stat(Maplestat::Id::LEVEL);
+		std::int16_t hp = stats.get_stat(Maplestat::Id::HP);
+		std::int16_t mp = stats.get_stat(Maplestat::Id::MP);
+		std::int32_t maxhp = stats.get_total(Equipstat::Id::HP);
+		std::int32_t maxmp = stats.get_total(Equipstat::Id::MP);
 		int64_t exp = stats.get_exp();
 
 		std::string expstring = std::to_string(100 * getexppercent());
@@ -429,7 +429,7 @@ namespace ms
 		}
 
 		Point<int16_t> pos;
-		uint8_t button_count, menutitle_index;
+		std::uint8_t button_count, menutitle_index;
 
 		if (character_active)
 		{
@@ -468,12 +468,12 @@ namespace ms
 
 		Point<int16_t> mid_pos = Point<int16_t>(0, 29);
 
-		uint16_t end_y = std::floor(28.2 * button_count);
+		std::uint16_t end_y = std::floor(28.2 * button_count);
 
 		if (menu_active)
 			end_y -= 1;
 
-		uint16_t mid_y = end_y - mid_pos.y();
+		std::uint16_t mid_y = end_y - mid_pos.y();
 
 		menubackground[0].draw(position + pos + pos_adj);
 		menubackground[1].draw(DrawArgument(position + pos + pos_adj) + DrawArgument(mid_pos, Point<int16_t>(0, mid_y)));
@@ -481,7 +481,7 @@ namespace ms
 
 		menutitle[menutitle_index].draw(position + pos + pos_adj);
 
-		for (size_t i = Buttons::BT_MENU_QUEST; i <= Buttons::BT_EVENT_DAILY; i++)
+		for (std::size_t i = Buttons::BT_MENU_QUEST; i <= Buttons::BT_EVENT_DAILY; i++)
 			buttons.at(i)->draw(position);
 #pragma endregion
 	}
@@ -490,7 +490,7 @@ namespace ms
 	{
 		UIElement::update();
 
-		for each (auto sprite in hpmp_sprites)
+		for(auto sprite : hpmp_sprites)
 			sprite.update();
 
 		expbar.update(getexppercent());
@@ -505,7 +505,7 @@ namespace ms
 		{
 			if (quickslot_adj.x() > quickslot_min)
 			{
-				int16_t new_x = quickslot_adj.x() - Constants::TIMESTEP;
+				std::int16_t new_x = quickslot_adj.x() - Constants::TIMESTEP;
 
 				if (new_x < quickslot_min)
 					quickslot_adj.set_x(quickslot_min);
@@ -517,7 +517,7 @@ namespace ms
 		{
 			if (quickslot_adj.x() < QUICKSLOT_MAX)
 			{
-				int16_t new_x = quickslot_adj.x() + Constants::TIMESTEP;
+				std::int16_t new_x = quickslot_adj.x() + Constants::TIMESTEP;
 
 				if (new_x > QUICKSLOT_MAX)
 					quickslot_adj.set_x(QUICKSLOT_MAX);
@@ -526,7 +526,7 @@ namespace ms
 			}
 		}
 
-		for (size_t i = Buttons::BT_MENU_QUEST; i <= Buttons::BT_MENU_CLAIM; i++)
+		for (std::size_t i = Buttons::BT_MENU_QUEST; i <= Buttons::BT_MENU_CLAIM; i++)
 		{
 			Point<int16_t> menu_adj = Point<int16_t>(0, 0);
 
@@ -536,16 +536,16 @@ namespace ms
 			buttons[i]->set_position(menu_pos + menu_adj + pos_adj);
 		}
 
-		for (size_t i = Buttons::BT_SETTING_CHANNEL; i <= Buttons::BT_SETTING_QUIT; i++)
+		for (std::size_t i = Buttons::BT_SETTING_CHANNEL; i <= Buttons::BT_SETTING_QUIT; i++)
 			buttons[i]->set_position(setting_pos + pos_adj);
 
-		for (size_t i = Buttons::BT_COMMUNITY_FRIENDS; i <= Buttons::BT_COMMUNITY_MAPLECHAT; i++)
+		for (std::size_t i = Buttons::BT_COMMUNITY_FRIENDS; i <= Buttons::BT_COMMUNITY_MAPLECHAT; i++)
 			buttons[i]->set_position(community_pos + pos_adj);
 
-		for (size_t i = Buttons::BT_CHARACTER_INFO; i <= Buttons::BT_CHARACTER_ITEM; i++)
+		for (std::size_t i = Buttons::BT_CHARACTER_INFO; i <= Buttons::BT_CHARACTER_ITEM; i++)
 			buttons[i]->set_position(character_pos + pos_adj);
 
-		for (size_t i = Buttons::BT_EVENT_SCHEDULE; i <= Buttons::BT_EVENT_DAILY; i++)
+		for (std::size_t i = Buttons::BT_EVENT_SCHEDULE; i <= Buttons::BT_EVENT_DAILY; i++)
 			buttons[i]->set_position(event_pos + pos_adj);
 	}
 
@@ -557,7 +557,7 @@ namespace ms
 		return false;
 	}
 
-	Button::State UIStatusbar::button_pressed(uint16_t id)
+	Button::State UIStatusbar::button_pressed(std::uint16_t id)
 	{
 		switch (id)
 		{
@@ -715,7 +715,7 @@ namespace ms
 		return Button::State::NORMAL;
 	}
 
-	void UIStatusbar::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIStatusbar::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -728,13 +728,13 @@ namespace ms
 			}
 			else if (keycode == KeyAction::Id::RETURN)
 			{
-				for (size_t i = Buttons::BT_MENU_QUEST; i <= Buttons::BT_EVENT_DAILY; i++)
+				for (std::size_t i = Buttons::BT_MENU_QUEST; i <= Buttons::BT_EVENT_DAILY; i++)
 					if (buttons[i]->get_state() == Button::State::MOUSEOVER)
 						button_pressed(i);
 			}
 			else if (keycode == KeyAction::Id::UP || keycode == KeyAction::Id::DOWN)
 			{
-				uint16_t min_id, max_id;
+				std::uint16_t min_id, max_id;
 
 				if (menu_active)
 				{
@@ -762,9 +762,9 @@ namespace ms
 					max_id = Buttons::BT_EVENT_DAILY;
 				}
 
-				uint16_t id = min_id;
+				std::uint16_t id = min_id;
 
-				for (size_t i = min_id; i <= max_id; i++)
+				for (std::size_t i = min_id; i <= max_id; i++)
 				{
 					if (buttons[i]->get_state() != Button::State::NORMAL)
 					{
@@ -807,8 +807,8 @@ namespace ms
 		}
 		else
 		{
-			uint8_t button_count;
-			int16_t pos_y_adj;
+			std::uint8_t button_count;
+			std::int16_t pos_y_adj;
 
 			if (character_active)
 			{
@@ -846,7 +846,7 @@ namespace ms
 			Point<int16_t> pos_adj = const_cast<UIStatusbar*>(this)->get_quickslot_pos();
 			pos = Point<int16_t>(pos.x(), std::abs(pos.y()) + pos_y_adj) + pos_adj;
 
-			uint16_t end_y = std::floor(28.2 * button_count);
+			std::uint16_t end_y = std::floor(28.2 * button_count);
 
 			bounds = Rectangle<int16_t>(pos, pos + Point<int16_t>(113, end_y + 35));
 		}
@@ -998,7 +998,7 @@ namespace ms
 
 	void UIStatusbar::remove_active_menu(MenuType type)
 	{
-		for (size_t i = Buttons::BT_MENU_QUEST; i <= Buttons::BT_EVENT_DAILY; i++)
+		for (std::size_t i = Buttons::BT_MENU_QUEST; i <= Buttons::BT_EVENT_DAILY; i++)
 			buttons[i]->set_state(Button::State::NORMAL);
 
 		if (menu_active && type != MenuType::MENU)
@@ -1033,7 +1033,7 @@ namespace ms
 
 	float UIStatusbar::getexppercent() const
 	{
-		int16_t level = stats.get_stat(Maplestat::Id::LEVEL);
+		std::int16_t level = stats.get_stat(Maplestat::Id::LEVEL);
 
 		if (level >= ExpTable::LEVELCAP)
 			return 0.0f;
@@ -1047,16 +1047,16 @@ namespace ms
 
 	float UIStatusbar::gethppercent() const
 	{
-		int16_t hp = stats.get_stat(Maplestat::Id::HP);
-		int32_t maxhp = stats.get_total(Equipstat::Id::HP);
+		std::int16_t hp = stats.get_stat(Maplestat::Id::HP);
+		std::int32_t maxhp = stats.get_total(Equipstat::Id::HP);
 
 		return static_cast<float>(hp) / maxhp;
 	}
 
 	float UIStatusbar::getmppercent() const
 	{
-		int16_t mp = stats.get_stat(Maplestat::Id::MP);
-		int32_t maxmp = stats.get_total(Equipstat::Id::MP);
+		std::int16_t mp = stats.get_stat(Maplestat::Id::MP);
+		std::int32_t maxmp = stats.get_total(Equipstat::Id::MP);
 
 		return static_cast<float>(mp) / maxmp;
 	}

@@ -27,9 +27,9 @@
 
 namespace ms
 {
-	NpcSpawn::NpcSpawn(int32_t o, int32_t i, Point<int16_t> p, bool fl, uint16_t f) : oid(o), id(i), position(p), flip(fl), fh(f) {}
+	NpcSpawn::NpcSpawn(std::int32_t o, std::int32_t i, Point<int16_t> p, bool fl, std::uint16_t f) : oid(o), id(i), position(p), flip(fl), fh(f) {}
 
-	int32_t NpcSpawn::get_oid() const
+	std::int32_t NpcSpawn::get_oid() const
 	{
 		return oid;
 	}
@@ -40,14 +40,14 @@ namespace ms
 		return std::make_unique<Npc>(id, oid, flip, fh, false, spawnposition);
 	}
 
-	MobSpawn::MobSpawn(int32_t o, int32_t i, int8_t m, int8_t st, uint16_t f, bool ns, int8_t t, Point<int16_t> p) : oid(o), id(i), mode(m), stance(st), fh(f), newspawn(ns), team(t), position(p) {}
+	MobSpawn::MobSpawn(std::int32_t o, std::int32_t i, std::int8_t m, std::int8_t st, std::uint16_t f, bool ns, std::int8_t t, Point<int16_t> p) : oid(o), id(i), mode(m), stance(st), fh(f), newspawn(ns), team(t), position(p) {}
 
-	int8_t MobSpawn::get_mode() const
+	std::int8_t MobSpawn::get_mode() const
 	{
 		return mode;
 	}
 
-	int32_t MobSpawn::get_oid() const
+	std::int32_t MobSpawn::get_oid() const
 	{
 		return oid;
 	}
@@ -57,9 +57,9 @@ namespace ms
 		return std::make_unique<Mob>(oid, id, mode, stance, fh, newspawn, team, position);
 	}
 
-	ReactorSpawn::ReactorSpawn(int32_t o, int32_t r, int8_t s, Point<int16_t> p) : oid(o), rid(r), state(s), position(p) {}
+	ReactorSpawn::ReactorSpawn(std::int32_t o, std::int32_t r, std::int8_t s, Point<int16_t> p) : oid(o), rid(r), state(s), position(p) {}
 
-	int32_t ReactorSpawn::get_oid() const
+	std::int32_t ReactorSpawn::get_oid() const
 	{
 		return oid;
 	}
@@ -70,19 +70,19 @@ namespace ms
 		return std::make_unique<Reactor>(oid, rid, state, spawnposition);
 	}
 
-	DropSpawn::DropSpawn(int32_t o, int32_t i, bool ms, int32_t ow, Point<int16_t> p, Point<int16_t> d, int8_t t, int8_t m, bool pd) : oid(o), id(i), meso(ms), owner(ow), start(p), dest(d), droptype(t), mode(m), playerdrop(pd) {}
+	DropSpawn::DropSpawn(std::int32_t o, std::int32_t i, bool ms, std::int32_t ow, Point<int16_t> p, Point<int16_t> d, std::int8_t t, std::int8_t m, bool pd) : oid(o), id(i), meso(ms), owner(ow), start(p), dest(d), droptype(t), mode(m), playerdrop(pd) {}
 
 	bool DropSpawn::is_meso() const
 	{
 		return meso;
 	}
 
-	int32_t DropSpawn::get_itemid() const
+	std::int32_t DropSpawn::get_itemid() const
 	{
 		return id;
 	}
 
-	int32_t DropSpawn::get_oid() const
+	std::int32_t DropSpawn::get_oid() const
 	{
 		return oid;
 	}
@@ -97,9 +97,9 @@ namespace ms
 		return std::make_unique<ItemDrop>(oid, owner, start, dest, droptype, mode, id, playerdrop, icon);
 	}
 
-	CharSpawn::CharSpawn(int32_t c, const LookEntry& lk, uint8_t l, int16_t j, const std::string& nm, int8_t st, Point<int16_t> p) : cid(c), look(lk), level(l), job(j), name(nm), stance(st), position(p) {}
+	CharSpawn::CharSpawn(std::int32_t c, const LookEntry& lk, std::uint8_t l, std::int16_t j, const std::string& nm, std::int8_t st, Point<int16_t> p) : cid(c), look(lk), level(l), job(j), name(nm), stance(st), position(p) {}
 
-	int32_t CharSpawn::get_cid() const
+	std::int32_t CharSpawn::get_cid() const
 	{
 		return cid;
 	}

@@ -19,7 +19,7 @@
 // Define program attributes here
 
 // USE_ASIO : Use asio for networking, if not defined use Winsock.
-//#define USE_ASIO
+#define USE_ASIO
 
 // USE_XXHASH : Use xxhash for file check (additional dependency)
 //#define USE_XXHASH

@@ -28,7 +28,7 @@ namespace ms
 	namespace HashUtility
 	{
 		// 128 MB.
-		const size_t CHUNK_SIZE = 134217728;
+		const std::size_t CHUNK_SIZE = 134217728;
 
 		std::string get_filehash(const char* filename, uint64_t seed)
 		{
@@ -41,7 +41,7 @@ namespace ms
 			{
 				// Get size of file.
 				file.seekg(0, std::ios_base::end);
-				size_t end = file.tellg();
+				std::size_t end = file.tellg();
 				file.seekg(0, std::ios_base::beg);
 
 				if (end < CHUNK_SIZE)
@@ -60,7 +60,7 @@ namespace ms
 					XXH_errorcode error;
 
 					error = XXH64_reset(&xxhstate, seed);
-					size_t offset = 0;
+					std::size_t offset = 0;
 
 					while (offset < end && error == XXH_OK)
 					{
@@ -69,7 +69,7 @@ namespace ms
 						offset += CHUNK_SIZE;
 					}
 
-					size_t remaining = offset - end;
+					std::size_t remaining = offset - end;
 
 					if (remaining > 0)
 					{

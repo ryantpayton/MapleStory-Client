@@ -38,10 +38,10 @@ namespace ms
 		std::function<void()> get_handler();
 
 	protected:
-		Button::State button_pressed(uint16_t id) override;
+		Button::State button_pressed(std::uint16_t id) override;
 
 	private:
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			CANCEL
 		};

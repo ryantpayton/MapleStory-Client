@@ -7,3 +7,8 @@
 *.tlog
 
 Settings
+
+build
+jbuild
+Debug
+.DS_Store

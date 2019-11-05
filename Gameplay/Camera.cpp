@@ -32,8 +32,8 @@ namespace ms
 
 	void Camera::update(Point<int16_t> position)
 	{
-		int32_t new_width = Constants::Constants::get().get_viewwidth();
-		int32_t new_height = Constants::Constants::get().get_viewheight();
+		std::int32_t new_width = Constants::Constants::get().get_viewwidth();
+		std::int32_t new_height = Constants::Constants::get().get_viewheight();
 
 		if (VWIDTH != new_width || VHEIGHT != new_height)
 		{
@@ -69,8 +69,8 @@ namespace ms
 
 	void Camera::set_position(Point<int16_t> position)
 	{
-		int32_t new_width = Constants::Constants::get().get_viewwidth();
-		int32_t new_height = Constants::Constants::get().get_viewheight();
+		std::int32_t new_width = Constants::Constants::get().get_viewwidth();
+		std::int32_t new_height = Constants::Constants::get().get_viewheight();
 
 		if (VWIDTH != new_width || VHEIGHT != new_height)
 		{

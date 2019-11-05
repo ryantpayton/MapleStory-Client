@@ -20,7 +20,7 @@
 #include "Attack.h"
 
 #include "../Maplemap/Mob.h"
-#include "../Template/BoolPair.h"
+#include "../../Template/BoolPair.h"
 
 namespace ms
 {
@@ -50,8 +50,8 @@ namespace ms
 
 		private:
 			Animation animation;
-			int8_t pos;
-			int8_t z;
+			std::int8_t pos;
+			std::int8_t z;
 		};
 	};
 
@@ -95,7 +95,7 @@ namespace ms
 		void apply(const AttackUser& user, Mob& target) const override;
 
 	private:
-		std::map<uint16_t, Effect> effects;
+		std::map<std::uint16_t, Effect> effects;
 	};
 
 	// The animation changes with the character level and weapon used.
@@ -107,7 +107,7 @@ namespace ms
 		void apply(const AttackUser& user, Mob& target) const override;
 
 	private:
-		std::map<uint16_t, BoolPair<Effect>> effects;
+		std::map<std::uint16_t, BoolPair<Effect>> effects;
 	};
 
 	// The animation changes with the skill level.
@@ -119,6 +119,6 @@ namespace ms
 		void apply(const AttackUser& user, Mob& target) const override;
 
 	private:
-		std::map<int32_t, Effect> effects;
+		std::map<std::int32_t, Effect> effects;
 	};
 }

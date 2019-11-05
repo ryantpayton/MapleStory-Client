@@ -23,7 +23,7 @@ namespace ms
 {
 	namespace KeyConfig
 	{
-		enum Key : uint8_t
+		enum Key : std::uint8_t
 		{
 			NUM0 = 2,
 			NUM1, NUM2, NUM3, NUM4, NUM5, NUM6, NUM7, NUM8, NUM9, MINUS, EQUAL,
@@ -42,7 +42,7 @@ namespace ms
 			LENGTH
 		};
 
-		inline Key actionbyid(int32_t id)
+		inline Key actionbyid(std::int32_t id)
 		{
 			return static_cast<Key>(id);
 		}

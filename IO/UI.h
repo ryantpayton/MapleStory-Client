@@ -62,24 +62,24 @@ namespace ms
 		void send_close();
 		void rightclick();
 		void doubleclick();
-		void send_key(int32_t keycode, bool pressed);
+		void send_key(std::int32_t keycode, bool pressed);
 
 		void set_scrollnotice(const std::string& notice);
 		void focus_textfield(Textfield* textfield);
 		void remove_textfield();
 		void drag_icon(Icon* icon);
 
-		void add_keymapping(uint8_t no, uint8_t type, int32_t action);
+		void add_keymapping(std::uint8_t no, std::uint8_t type, std::int32_t action);
 
 		void clear_tooltip(Tooltip::Parent parent);
-		void show_equip(Tooltip::Parent parent, int16_t slot);
-		void show_item(Tooltip::Parent parent, int32_t item_id);
-		void show_skill(Tooltip::Parent parent, int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration);
+		void show_equip(Tooltip::Parent parent, std::int16_t slot);
+		void show_item(Tooltip::Parent parent, std::int32_t item_id);
+		void show_skill(Tooltip::Parent parent, std::int32_t skill_id, std::int32_t level, std::int32_t masterlevel, int64_t expiration);
 		void show_text(Tooltip::Parent parent, std::string text);
 
 		Keyboard& get_keyboard();
 		int64_t get_uptime();
-		uint16_t get_uplevel();
+		std::uint16_t get_uplevel();
 		int64_t get_upexp();
 
 		template <class T, typename...Args>
@@ -95,7 +95,7 @@ namespace ms
 		ScrollingNotice scrollingnotice;
 
 		Optional<Textfield> focusedtextfield;
-		std::unordered_map<int32_t, bool> is_key_down;
+		std::unordered_map<std::int32_t, bool> is_key_down;
 
 		bool enabled;
 		bool quitted;

@@ -22,7 +22,7 @@
 #include "../KeyConfig.h"
 #include "../Keyboard.h"
 
-#include "../Template/EnumMap.h"
+#include "../../Template/EnumMap.h"
 
 namespace ms
 {
@@ -38,7 +38,7 @@ namespace ms
 		void draw(float inter) const override;
 		void update() override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		bool send_icon(const Icon& icon, Point<int16_t> cursorpos) override;
 
@@ -48,7 +48,7 @@ namespace ms
 		void close();
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
 		void load_keys_pos();
@@ -62,11 +62,11 @@ namespace ms
 		KeyAction::Id icon_by_position(Point<int16_t> position) const;
 		KeyConfig::Key key_by_position(Point<int16_t> position) const;
 		KeyConfig::Key all_keys_by_position(Point<int16_t> position) const;
-		int32_t get_tempkey(KeyAction::Id action) const;
-		Keyboard::Mapping get_tempkey_mapping(int32_t keycode) const;
+		std::int32_t get_tempkey(KeyAction::Id action) const;
+		Keyboard::Mapping get_tempkey_mapping(std::int32_t keycode) const;
 		KeyType::Id get_keytype(KeyAction::Id action) const;
 
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			CLOSE,
 			CANCEL,
@@ -83,9 +83,9 @@ namespace ms
 
 			void drop_on_stage() const override {}
 			void drop_on_equips(Equipslot::Id) const override {}
-			bool drop_on_items(InventoryType::Id, Equipslot::Id, int16_t, bool) const override { return true; }
+			bool drop_on_items(InventoryType::Id, Equipslot::Id, std::int16_t, bool) const override { return true; }
 			void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const override;
-			void set_count(int16_t) override {}
+			void set_count(std::int16_t) override {}
 
 		private:
 			KeyAction::Id source;
@@ -101,9 +101,9 @@ namespace ms
 
 		Keyboard* keyboard = nullptr;
 		std::vector<KeyAction::Id> found_actions;
-		std::map<int32_t, Keyboard::Mapping> tempkeys;
+		std::map<std::int32_t, Keyboard::Mapping> tempkeys;
 
-		std::map<int32_t, Keyboard::Mapping> alternate_keys = {
+		std::map<std::int32_t, Keyboard::Mapping> alternate_keys = {
 		   { KeyConfig::Key::ESCAPE, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::MAINMENU) },
 		   { KeyConfig::Key::F1, Keyboard::Mapping(KeyType::Id::FACE, KeyAction::Id::FACE1) },
 		   { KeyConfig::Key::F2, Keyboard::Mapping(KeyType::Id::FACE, KeyAction::Id::FACE2) },
@@ -149,7 +149,7 @@ namespace ms
 		   { KeyConfig::Key::RIGHT_CONTROL, Keyboard::Mapping(KeyType::Id::ACTION, KeyAction::Id::ATTACK) }
 		};
 
-		std::map<int32_t, Keyboard::Mapping> basic_keys = {
+		std::map<std::int32_t, Keyboard::Mapping> basic_keys = {
 		   { KeyConfig::Key::ESCAPE, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::MAINMENU) },
 		   { KeyConfig::Key::F1, Keyboard::Mapping(KeyType::Id::FACE, KeyAction::Id::FACE1) },
 		   { KeyConfig::Key::F2, Keyboard::Mapping(KeyType::Id::FACE, KeyAction::Id::FACE2) },

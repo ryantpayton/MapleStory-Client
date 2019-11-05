@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "EquipTooltip.h"
 
-#include "../Gameplay/Stage.h"
-#include "../Data/WeaponData.h"
+#include "../../Gameplay/Stage.h"
+#include "../../Data/WeaponData.h"
 
 #include <nlnx/nx.hpp>
 
@@ -102,7 +102,7 @@ namespace ms
 		invpos_preview = 0;
 	}
 
-	void EquipTooltip::set_equip(Tooltip::Parent parent, int16_t ivp)
+	void EquipTooltip::set_equip(Tooltip::Parent parent, std::int16_t ivp)
 	{
 		if (invpos == ivp)
 			return;
@@ -133,7 +133,7 @@ namespace ms
 
 		if (invtype == InventoryType::Id::EQUIP)
 		{
-			const int32_t item_id = oequip.get()->get_item_id();
+			const std::int32_t item_id = oequip.get()->get_item_id();
 			const EquipData& equipdata = EquipData::get(item_id);
 			Equipslot::Id eqslot = equipdata.get_eqslot();
 
@@ -145,7 +145,7 @@ namespace ms
 				{
 					const Equip& equip = *eequip;
 
-					int32_t item_id = equip.get_item_id();
+					std::int32_t item_id = equip.get_item_id();
 
 					const EquipData& equipdata = EquipData::get(item_id);
 					const ItemData& itemdata = equipdata.get_itemdata();
@@ -257,7 +257,7 @@ namespace ms
 					}
 
 					std::string namestr = itemdata.get_name();
-					const int8_t reqGender = itemdata.get_gender();
+					const std::int8_t reqGender = itemdata.get_gender();
 					const bool female = stats.get_female();
 
 					switch (reqGender)
@@ -330,7 +330,7 @@ namespace ms
 					{
 						if (equip.get_stat(es) > 0)
 						{
-							int16_t delta = equip.get_stat(es) - equipdata.get_defstat(es);
+							std::int16_t delta = equip.get_stat(es) - equipdata.get_defstat(es);
 							std::string statstr = std::to_string(equip.get_stat(es));
 
 							if (delta != 0)
@@ -358,7 +358,7 @@ namespace ms
 
 		const Equip& equip = *oequip;
 
-		int32_t item_id = equip.get_item_id();
+		std::int32_t item_id = equip.get_item_id();
 
 		const EquipData& equipdata = EquipData::get(item_id);
 		const ItemData& itemdata = equipdata.get_itemdata();
@@ -470,7 +470,7 @@ namespace ms
 		}
 
 		std::string namestr = itemdata.get_name();
-		const int8_t reqGender = itemdata.get_gender();
+		const std::int8_t reqGender = itemdata.get_gender();
 		const bool female = stats.get_female();
 
 		switch (reqGender)
@@ -543,7 +543,7 @@ namespace ms
 		{
 			if (equip.get_stat(es) > 0)
 			{
-				int16_t delta = equip.get_stat(es) - equipdata.get_defstat(es);
+				std::int16_t delta = equip.get_stat(es) - equipdata.get_defstat(es);
 				std::string statstr = std::to_string(equip.get_stat(es));
 
 				if (delta != 0)
@@ -569,10 +569,10 @@ namespace ms
 
 		draw_preview(pos);
 
-		int16_t max_width = Constants::Constants::get().get_viewwidth();
-		int16_t max_height = Constants::Constants::get().get_viewheight();
-		int16_t cur_width = pos.x() + top.width();
-		int16_t cur_height = pos.y() + 36;
+		std::int16_t max_width = Constants::Constants::get().get_viewwidth();
+		std::int16_t max_height = Constants::Constants::get().get_viewheight();
+		std::int16_t cur_width = pos.x() + top.width();
+		std::int16_t cur_height = pos.y() + 36;
 
 		if (invpos_preview == 1)
 			cur_width += top.width();
@@ -582,8 +582,8 @@ namespace ms
 		else
 			cur_height += height;
 
-		int16_t adj_x = cur_width - max_width;
-		int16_t adj_y = cur_height - max_height;
+		std::int16_t adj_x = cur_width - max_width;
+		std::int16_t adj_y = cur_height - max_height;
 
 		if (adj_x > 0)
 			pos.shift_x(adj_x * -1);
@@ -615,7 +615,7 @@ namespace ms
 		potential[prank].draw(pos + Point<int16_t>(12, 10));
 		itemcover.draw(pos + Point<int16_t>(12, 10));
 
-		int16_t atkincnum = 0;
+		std::int16_t atkincnum = 0;
 		std::string atkincstr = std::to_string(atkincnum);
 		bool atkinc_pos = true;
 
@@ -670,8 +670,8 @@ namespace ms
 
 		pos.shift_y(49);
 
-		int16_t stat_x = 13;
-		int16_t stat_y = 15;
+		std::int16_t stat_x = 13;
+		std::int16_t stat_y = 15;
 
 		category.draw(pos + Point<int16_t>(stat_x, 0));
 
@@ -715,13 +715,13 @@ namespace ms
 
 		pos.shift_x(top.width());
 
-		int16_t max_width = Constants::Constants::get().get_viewwidth();
-		int16_t max_height = Constants::Constants::get().get_viewheight();
-		int16_t cur_width = pos.x() + top.width();
-		int16_t cur_height = pos.y() + height_preview + 36;
+		std::int16_t max_width = Constants::Constants::get().get_viewwidth();
+		std::int16_t max_height = Constants::Constants::get().get_viewheight();
+		std::int16_t cur_width = pos.x() + top.width();
+		std::int16_t cur_height = pos.y() + height_preview + 36;
 
-		int16_t adj_x = cur_width - max_width;
-		int16_t adj_y = cur_height - max_height;
+		std::int16_t adj_x = cur_width - max_width;
+		std::int16_t adj_y = cur_height - max_height;
 
 		if (adj_x > 0)
 			pos.shift_x(adj_x * -1);
@@ -753,7 +753,7 @@ namespace ms
 		potential[prank_preview].draw(pos + Point<int16_t>(12, 10));
 		itemcover.draw(pos + Point<int16_t>(12, 10));
 
-		int16_t atkincnum = 0;
+		std::int16_t atkincnum = 0;
 		std::string atkincstr = std::to_string(atkincnum);
 		bool atkinc_pos = true;
 
@@ -808,8 +808,8 @@ namespace ms
 
 		pos.shift_y(49);
 
-		int16_t stat_x = 13;
-		int16_t stat_y = 15;
+		std::int16_t stat_x = 13;
+		std::int16_t stat_y = 15;
 
 		category_preview.draw(pos + Point<int16_t>(stat_x, 0));
 

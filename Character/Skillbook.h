@@ -27,28 +27,28 @@ namespace ms
 	class Skillbook
 	{
 	public:
-		void set_skill(int32_t id, int32_t level, int32_t masterlevel, int64_t expiration);
+		void set_skill(std::int32_t id, std::int32_t level, std::int32_t masterlevel, int64_t expiration);
 
-		bool has_skill(int32_t id) const;
-		int32_t get_level(int32_t id) const;
-		int32_t get_masterlevel(int32_t id) const;
-		int64_t get_expiration(int32_t id) const;
+		bool has_skill(std::int32_t id) const;
+		std::int32_t get_level(std::int32_t id) const;
+		std::int32_t get_masterlevel(std::int32_t id) const;
+		int64_t get_expiration(std::int32_t id) const;
 
 		// Return id and level of all passive skills.
 		// An ordered map is used so that lower passive skills don't override higher ones.
-		std::map<int32_t, int32_t> collect_passives() const;
+		std::map<std::int32_t, std::int32_t> collect_passives() const;
 
 		// Return id and level of all required skills.
-		std::unordered_map<int32_t, int32_t> Skillbook::collect_required(int32_t id) const;
+		std::unordered_map<std::int32_t, std::int32_t> collect_required(std::int32_t id) const;
 
 	private:
 		struct SkillEntry
 		{
-			int32_t level;
-			int32_t masterlevel;
+			std::int32_t level;
+			std::int32_t masterlevel;
 			int64_t expiration;
 		};
 
-		std::unordered_map<int32_t, SkillEntry> skillentries;
+		std::unordered_map<std::int32_t, SkillEntry> skillentries;
 	};
 }

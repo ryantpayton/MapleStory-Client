@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIQuestLog.h"
 
-#include "../IO/Components/MapleButton.h"
-#include "../IO/Components/TwoSpriteButton.h"
+#include "../../IO/Components/MapleButton.h"
+#include "../../IO/Components/TwoSpriteButton.h"
 
 #include <nlnx/nx.hpp>
 
@@ -84,7 +84,7 @@ namespace ms
 		slider.draw(position + Point<int16_t>(126, 75));
 	}
 
-	void UIQuestLog::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIQuestLog::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -94,7 +94,7 @@ namespace ms
 			}
 			else if (keycode == KeyAction::Id::TAB)
 			{
-				uint16_t new_tab = tab;
+				std::uint16_t new_tab = tab;
 
 				if (new_tab < Buttons::TAB2)
 					new_tab++;
@@ -114,7 +114,7 @@ namespace ms
 		return UIDragElement::send_cursor(clicking, cursorpos);
 	}
 
-	Button::State UIQuestLog::button_pressed(uint16_t buttonid)
+	Button::State UIQuestLog::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -133,9 +133,9 @@ namespace ms
 		}
 	}
 
-	void UIQuestLog::change_tab(uint16_t tabid)
+	void UIQuestLog::change_tab(std::uint16_t tabid)
 	{
-		uint16_t oldtab = tab;
+		std::uint16_t oldtab = tab;
 		tab = tabid;
 
 		if (oldtab != tab)

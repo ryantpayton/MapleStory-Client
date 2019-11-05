@@ -17,11 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Inventory.h"
 
-#include "../Console.h"
+#include "../../Console.h"
 
-#include "../Data/BulletData.h"
-#include "../Data/EquipData.h"
-#include "../Data/ItemData.h"
+#include "../../Data/BulletData.h"
+#include "../../Data/EquipData.h"
+#include "../../Data/ItemData.h"
 
 namespace ms
 {
@@ -50,7 +50,7 @@ namespace ms
 			}
 		}
 
-		int32_t prefix;
+		std::int32_t prefix;
 
 		switch (type)
 		{
@@ -87,7 +87,7 @@ namespace ms
 			}
 		}
 
-		if (int32_t bulletid = get_bulletid())
+		if (std::int32_t bulletid = get_bulletid())
 			totalstats[Equipstat::Id::WATK] += BulletData::get(bulletid).get_watk();
 	}
 
@@ -96,12 +96,12 @@ namespace ms
 		meso = m;
 	}
 
-	void Inventory::set_slotmax(InventoryType::Id type, uint8_t slotmax)
+	void Inventory::set_slotmax(InventoryType::Id type, std::uint8_t slotmax)
 	{
 		slotmaxima[type] = slotmax;
 	}
 
-	void Inventory::add_item(InventoryType::Id invtype, int16_t slot, int32_t item_id, bool cash, int64_t expire, uint16_t count, const std::string& owner, int16_t flags)
+	void Inventory::add_item(InventoryType::Id invtype, std::int16_t slot, std::int32_t item_id, bool cash, int64_t expire, std::uint16_t count, const std::string& owner, std::int16_t flags)
 	{
 		items.emplace(
 			std::piecewise_construct,
@@ -110,7 +110,7 @@ namespace ms
 		);
 	}
 
-	void Inventory::add_pet(InventoryType::Id invtype, int16_t slot, int32_t item_id, bool cash, int64_t expire, const std::string& name, int8_t level, int16_t closeness, int8_t fullness)
+	void Inventory::add_pet(InventoryType::Id invtype, std::int16_t slot, std::int32_t item_id, bool cash, int64_t expire, const std::string& name, std::int8_t level, std::int16_t closeness, std::int8_t fullness)
 	{
 		pets.emplace(
 			std::piecewise_construct,
@@ -119,7 +119,7 @@ namespace ms
 		);
 	}
 
-	void Inventory::add_equip(InventoryType::Id invtype, int16_t slot, int32_t item_id, bool cash, int64_t expire, uint8_t slots, uint8_t level, const EnumMap<Equipstat::Id, uint16_t>& stats, const std::string& owner, int16_t flag, uint8_t ilevel, uint16_t iexp, int32_t vicious)
+	void Inventory::add_equip(InventoryType::Id invtype, std::int16_t slot, std::int32_t item_id, bool cash, int64_t expire, std::uint8_t slots, std::uint8_t level, const EnumMap<Equipstat::Id, std::uint16_t>& stats, const std::string& owner, std::int16_t flag, std::uint8_t ilevel, std::uint16_t iexp, std::int32_t vicious)
 	{
 		equips.emplace(
 			std::piecewise_construct,
@@ -128,14 +128,14 @@ namespace ms
 		);
 	}
 
-	void Inventory::remove(InventoryType::Id type, int16_t slot)
+	void Inventory::remove(InventoryType::Id type, std::int16_t slot)
 	{
 		auto iter = inventories[type].find(slot);
 
 		if (iter == inventories[type].end())
 			return;
 
-		int32_t unique_id = iter->second.unique_id;
+		std::int32_t unique_id = iter->second.unique_id;
 		inventories[type].erase(iter);
 
 		switch (type)
@@ -154,7 +154,7 @@ namespace ms
 		}
 	}
 
-	void Inventory::swap(InventoryType::Id firsttype, int16_t firstslot, InventoryType::Id secondtype, int16_t secondslot)
+	void Inventory::swap(InventoryType::Id firsttype, std::int16_t firstslot, InventoryType::Id secondtype, std::int16_t secondslot)
 	{
 		Slot first = std::move(inventories[firsttype][firstslot]);
 		inventories[firsttype][firstslot] = std::move(inventories[secondtype][secondslot]);
@@ -167,7 +167,7 @@ namespace ms
 			remove(secondtype, secondslot);
 	}
 
-	int32_t Inventory::add_slot(InventoryType::Id type, int16_t slot, int32_t item_id, int16_t count, bool cash)
+	std::int32_t Inventory::add_slot(InventoryType::Id type, std::int16_t slot, std::int32_t item_id, std::int16_t count, bool cash)
 	{
 		running_uid++;
 		inventories[type][slot] = { running_uid, item_id, count, cash };
@@ -175,7 +175,7 @@ namespace ms
 		return running_uid;
 	}
 
-	void Inventory::change_count(InventoryType::Id type, int16_t slot, int16_t count)
+	void Inventory::change_count(InventoryType::Id type, std::int16_t slot, std::int16_t count)
 	{
 		auto iter = inventories[type].find(slot);
 
@@ -183,7 +183,7 @@ namespace ms
 			iter->second.count = count;
 	}
 
-	void Inventory::modify(InventoryType::Id type, int16_t slot, int8_t mode, int16_t arg, Movement move)
+	void Inventory::modify(InventoryType::Id type, std::int16_t slot, std::int8_t mode, std::int16_t arg, Movement move)
 	{
 		if (slot < 0)
 		{
@@ -219,12 +219,12 @@ namespace ms
 		}
 	}
 
-	uint8_t Inventory::get_slotmax(InventoryType::Id type) const
+	std::uint8_t Inventory::get_slotmax(InventoryType::Id type) const
 	{
 		return slotmaxima[type];
 	}
 
-	uint16_t Inventory::get_stat(Equipstat::Id type) const
+	std::uint16_t Inventory::get_stat(Equipstat::Id type) const
 	{
 		return totalstats[type];
 	}
@@ -244,22 +244,22 @@ namespace ms
 		return inventories[InventoryType::Id::EQUIPPED].count(slot) > 0;
 	}
 
-	int16_t Inventory::get_bulletslot() const
+	std::int16_t Inventory::get_bulletslot() const
 	{
 		return bulletslot;
 	}
 
-	uint16_t Inventory::get_bulletcount() const
+	std::uint16_t Inventory::get_bulletcount() const
 	{
 		return get_item_count(InventoryType::Id::USE, bulletslot);
 	}
 
-	int32_t Inventory::get_bulletid() const
+	std::int32_t Inventory::get_bulletid() const
 	{
 		return get_item_id(InventoryType::Id::USE, bulletslot);
 	}
 
-	Equipslot::Id Inventory::find_equipslot(int32_t itemid) const
+	Equipslot::Id Inventory::find_equipslot(std::int32_t itemid) const
 	{
 		const EquipData& cloth = EquipData::get(itemid);
 
@@ -287,9 +287,9 @@ namespace ms
 		}
 	}
 
-	int16_t Inventory::find_free_slot(InventoryType::Id type) const
+	std::int16_t Inventory::find_free_slot(InventoryType::Id type) const
 	{
-		int16_t counter = 1;
+		std::int16_t counter = 1;
 
 		for (auto& iter : inventories[type])
 		{
@@ -302,7 +302,7 @@ namespace ms
 		return counter < slotmaxima[type] ? counter : 0;
 	}
 
-	int16_t Inventory::find_item(InventoryType::Id type, int32_t itemid) const
+	std::int16_t Inventory::find_item(InventoryType::Id type, std::int32_t itemid) const
 	{
 		for (auto& iter : inventories[type])
 			if (iter.second.item_id == itemid)
@@ -311,7 +311,7 @@ namespace ms
 		return 0;
 	}
 
-	int16_t Inventory::get_item_count(InventoryType::Id type, int16_t slot) const
+	std::int16_t Inventory::get_item_count(InventoryType::Id type, std::int16_t slot) const
 	{
 		auto iter = inventories[type].find(slot);
 
@@ -321,7 +321,7 @@ namespace ms
 			return 0;
 	}
 
-	int32_t Inventory::get_item_id(InventoryType::Id type, int16_t slot) const
+	std::int32_t Inventory::get_item_id(InventoryType::Id type, std::int16_t slot) const
 	{
 		auto iter = inventories[type].find(slot);
 
@@ -331,7 +331,7 @@ namespace ms
 			return 0;
 	}
 
-	Optional<const Equip> Inventory::get_equip(InventoryType::Id type, int16_t slot) const
+	Optional<const Equip> Inventory::get_equip(InventoryType::Id type, std::int16_t slot) const
 	{
 		if (type != InventoryType::Id::EQUIPPED && type != InventoryType::Id::EQUIP)
 			return {};
@@ -349,7 +349,7 @@ namespace ms
 		return equip_iter->second;
 	}
 
-	Inventory::Movement Inventory::movementbyvalue(int8_t value)
+	Inventory::Movement Inventory::movementbyvalue(std::int8_t value)
 	{
 		if (value >= Inventory::Movement::MOVE_INTERNAL && value <= Inventory::Movement::MOVE_EQUIP)
 			return static_cast<Movement>(value);

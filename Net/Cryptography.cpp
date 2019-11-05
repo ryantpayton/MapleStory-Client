@@ -19,13 +19,13 @@
 
 namespace ms
 {
-	Cryptography::Cryptography(const int8_t* handshake)
+	Cryptography::Cryptography(const std::int8_t* handshake)
 	{
 #ifdef USE_CRYPTO
-		for (size_t i = 0; i < HEADER_LENGTH; i++)
+		for (std::size_t i = 0; i < HEADER_LENGTH; i++)
 			sendiv[i] = handshake[i + 7];
 
-		for (size_t i = 0; i < HEADER_LENGTH; i++)
+		for (std::size_t i = 0; i < HEADER_LENGTH; i++)
 			recviv[i] = handshake[i + 11];
 #endif
 	}
@@ -33,7 +33,7 @@ namespace ms
 	Cryptography::Cryptography() {}
 	Cryptography::~Cryptography() {}
 
-	void Cryptography::encrypt(int8_t* bytes, size_t length)
+	void Cryptography::encrypt(std::int8_t* bytes, std::size_t length)
 	{
 #ifdef USE_CRYPTO
 		mapleencrypt(bytes, length);
@@ -41,7 +41,7 @@ namespace ms
 #endif
 	}
 
-	void Cryptography::decrypt(int8_t* bytes, size_t length)
+	void Cryptography::decrypt(std::int8_t* bytes, std::size_t length)
 	{
 #ifdef USE_CRYPTO
 		aesofb(bytes, length, recviv);
@@ -49,70 +49,70 @@ namespace ms
 #endif
 	}
 
-	void Cryptography::create_header(int8_t* buffer, size_t length) const
+	void Cryptography::create_header(std::int8_t* buffer, std::size_t length) const
 	{
 #ifdef USE_CRYPTO
-		static const uint8_t MAPLEVERSION = 83;
+		static const std::uint8_t MAPLEVERSION = 83;
 
-		size_t a = ((sendiv[3] << 8) | sendiv[2]) ^ MAPLEVERSION;
-		size_t b = a ^ length;
+		std::size_t a = ((sendiv[3] << 8) | sendiv[2]) ^ MAPLEVERSION;
+		std::size_t b = a ^ length;
 
-		buffer[0] = static_cast<int8_t>(a % 0x100);
-		buffer[1] = static_cast<int8_t>(a / 0x100);
-		buffer[2] = static_cast<int8_t>(b % 0x100);
-		buffer[3] = static_cast<int8_t>(b / 0x100);
+		buffer[0] = static_cast<std::int8_t>(a % 0x100);
+		buffer[1] = static_cast<std::int8_t>(a / 0x100);
+		buffer[2] = static_cast<std::int8_t>(b % 0x100);
+		buffer[3] = static_cast<std::int8_t>(b / 0x100);
 #else
-		int32_t length = static_cast<int32_t>(slength);
+		std::int32_t length = static_cast<std::int32_t>(slength);
 
-		for (int32_t i = 0; i < HEADERLEN; i++)
+		for (std::int32_t i = 0; i < HEADERLEN; i++)
 		{
-			buffer[i] = static_cast<int8_t>(length);
+			buffer[i] = static_cast<std::int8_t>(length);
 			length = length >> 8;
 		}
 #endif
 	}
 
-	size_t Cryptography::check_length(const int8_t* bytes) const
+	std::size_t Cryptography::check_length(const std::int8_t* bytes) const
 	{
 #ifdef USE_CRYPTO
-		uint32_t headermask = 0;
+		std::int32_t headermask = 0;
 
-		for (size_t i = 0; i < 4; i++)
-			headermask |= static_cast<uint8_t>(bytes[i]) << (8 * i);
+		for (std::size_t i = 0; i < 4; i++)
+			headermask |= static_cast<std::uint8_t>(bytes[i]) << (8 * i);
 
 		return static_cast<int16_t>((headermask >> 16) ^ (headermask & 0xFFFF));
 #else
-		size_t length = 0;
+		std::size_t length = 0;
 
-		for (int32_t i = 0; i < HEADERLEN; i++)
-			length += static_cast<uint8_t>(bytes[i]) << (8 * i);
+		for (std::int32_t i = 0; i < HEADERLEN; i++)
+			length += static_cast<std::uint8_t>(bytes[i]) << (8 * i);
 
 		return length;
 #endif
 	}
 
-	void Cryptography::mapleencrypt(int8_t* bytes, size_t length) const
+	void Cryptography::mapleencrypt(std::int8_t* bytes, std::size_t length) const
 	{
-		for (size_t j = 0; j < 3; j++)
+		for (std::size_t j = 0; j < 3; j++)
 		{
-			int8_t remember = 0;
-			int8_t datalen = static_cast<int8_t>(length & 0xFF);
+			std::int8_t remember = 0;
+			std::int8_t datalen = static_cast<std::int8_t>(length & 0xFF);
 
-			for (size_t i = 0; i < length; i++)
+			for (std::size_t i = 0; i < length; i++)
 			{
-				int8_t cur = (rollleft(bytes[i], 3) + datalen) ^ remember;
+				std::int8_t cur = (rollleft(bytes[i], 3) + datalen) ^ remember;
 				remember = cur;
-				cur = rollright(cur, static_cast<int32_t>(datalen) & 0xFF);
-				bytes[i] = static_cast<int8_t>((~cur) & 0xFF) + 0x48;
+				cur = rollright(cur, static_cast<std::int32_t>(datalen) & 0xFF);
+				bytes[i] = static_cast<std::int8_t>((~cur) & 0xFF) + 0x48;
 				datalen--;
 			}
 
 			remember = 0;
-			datalen = static_cast<int8_t>(length & 0xFF);
+			datalen = static_cast<std::int8_t>(length & 0xFF);
 
-			for (size_t i = length; i--;)
+			for (std::size_t i = length; i--;)
 			{
-				int8_t cur = (rollleft(bytes[i], 4) + datalen) ^ remember;
+				std::int8_t cur = (rollleft(bytes[i], 4) + datalen) ^ remember;
 				remember = cur;
 				bytes[i] = rollright(cur ^ 0x13, 3);
 				datalen--;
@@ -120,28 +120,28 @@ namespace ms
 		}
 	}
 
-	void Cryptography::mapledecrypt(int8_t* bytes, size_t length) const
+	void Cryptography::mapledecrypt(std::int8_t* bytes, std::size_t length) const
 	{
-		for (size_t i = 0; i < 3; i++)
+		for (std::size_t i = 0; i < 3; i++)
 		{
-			uint8_t remember = 0;
-			uint8_t datalen = static_cast<uint8_t>(length & 0xFF);
+			std::uint8_t remember = 0;
+			std::uint8_t datalen = static_cast<std::uint8_t>(length & 0xFF);
 
-			for (size_t j = length; j--;)
+			for (std::size_t j = length; j--;)
 			{
-				uint8_t cur = rollleft(bytes[j], 3) ^ 0x13;
+				std::uint8_t cur = rollleft(bytes[j], 3) ^ 0x13;
 				bytes[j] = rollright((cur ^ remember) - datalen, 4);
 				remember = cur;
 				datalen--;
 			}
 
 			remember = 0;
-			datalen = static_cast<uint8_t>(length & 0xFF);
+			datalen = static_cast<std::uint8_t>(length & 0xFF);
 
-			for (size_t j = 0; j < length; j++)
+			for (std::size_t j = 0; j < length; j++)
 			{
-				uint8_t cur = (~(bytes[j] - 0x48)) & 0xFF;
-				cur = rollleft(cur, static_cast<int32_t>(datalen) & 0xFF);
+				std::uint8_t cur = (~(bytes[j] - 0x48)) & 0xFF;
+				cur = rollleft(cur, static_cast<std::int32_t>(datalen) & 0xFF);
 				bytes[j] = rollright((cur ^ remember) - datalen, 3);
 				remember = cur;
 				datalen--;
@@ -149,9 +149,9 @@ namespace ms
 		}
 	}
 
-	void Cryptography::updateiv(uint8_t* iv) const
+	void Cryptography::updateiv(std::uint8_t* iv) const
 	{
-		static const uint8_t maplebytes[256] =
+		static const std::uint8_t maplebytes[256] =
 		{
 			0xEC, 0x3F, 0x77, 0xA4, 0x45, 0xD0, 0x71, 0xBF, 0xB7, 0x98, 0x20, 0xFC, 0x4B, 0xE9, 0xB3, 0xE1,
 			0x5C, 0x22, 0xF7, 0x0C, 0x44, 0x1B, 0x81, 0xBD, 0x63, 0x8D, 0xD4, 0xC3, 0xF2, 0x10, 0x19, 0xE0,
@@ -171,71 +171,71 @@ namespace ms
 			0x84, 0x7F, 0x61, 0x1E, 0xCF, 0xC5, 0xD1, 0x56, 0x3D, 0xCA, 0xF4, 0x05, 0xC6, 0xE5, 0x08, 0x49
 		};
 
-		uint8_t mbytes[4] =
+		std::uint8_t mbytes[4] =
 		{
 			0xF2, 0x53, 0x50, 0xC6
 		};
 
-		for (size_t i = 0; i < 4; i++)
+		for (std::size_t i = 0; i < 4; i++)
 		{
-			uint8_t ivbyte = iv[i];
+			std::uint8_t ivbyte = iv[i];
 			mbytes[0] += maplebytes[mbytes[1] & 0xFF] - ivbyte;
 			mbytes[1] -= mbytes[2] ^ maplebytes[ivbyte & 0xFF] & 0xFF;
 			mbytes[2] ^= maplebytes[mbytes[3] & 0xFF] + ivbyte;
 			mbytes[3] += (maplebytes[ivbyte & 0xFF] & 0xFF) - (mbytes[0] & 0xFF);
 
-			size_t mask = 0;
+			std::size_t mask = 0;
 			mask |= (mbytes[0]) & 0xFF;
 			mask |= (mbytes[1] << 8) & 0xFF00;
 			mask |= (mbytes[2] << 16) & 0xFF0000;
 			mask |= (mbytes[3] << 24) & 0xFF000000;
 			mask = (mask >> 0x1D) | (mask << 3);
 
-			for (size_t j = 0; j < 4; j++)
+			for (std::size_t j = 0; j < 4; j++)
 			{
-				size_t value = mask >> (8 * j);
-				mbytes[j] = static_cast<uint8_t>(value & 0xFF);
+				std::size_t value = mask >> (8 * j);
+				mbytes[j] = static_cast<std::uint8_t>(value & 0xFF);
 			}
 		}
 
-		for (size_t i = 0; i < 4; i++)
+		for (std::size_t i = 0; i < 4; i++)
 			iv[i] = mbytes[i];
 	}
 
-	int8_t Cryptography::rollleft(int8_t data, size_t count) const
+	std::int8_t Cryptography::rollleft(std::int8_t data, std::size_t count) const
 	{
-		int32_t mask = (data & 0xFF) << (count % 8);
+		std::int32_t mask = (data & 0xFF) << (count % 8);
 
-		return static_cast<int8_t>((mask & 0xFF) | (mask >> 8));
+		return static_cast<std::int8_t>((mask & 0xFF) | (mask >> 8));
 	}
 
-	int8_t Cryptography::rollright(int8_t data, size_t count) const
+	std::int8_t Cryptography::rollright(std::int8_t data, std::size_t count) const
 	{
-		int32_t mask = ((data & 0xFF) << 8) >> (count % 8);
+		std::int32_t mask = ((data & 0xFF) << 8) >> (count % 8);
 
-		return static_cast<int8_t>((mask & 0xFF) | (mask >> 8));
+		return static_cast<std::int8_t>((mask & 0xFF) | (mask >> 8));
 	}
 
-	void Cryptography::aesofb(int8_t* bytes, size_t length, uint8_t* iv) const
+	void Cryptography::aesofb(std::int8_t* bytes, std::size_t length, std::uint8_t* iv) const
 	{
-		size_t blocklength = 0x5B0;
-		size_t offset = 0;
+		std::size_t blocklength = 0x5B0;
+		std::size_t offset = 0;
 
 		while (offset < length)
 		{
-			uint8_t miv[16];
+			std::uint8_t miv[16];
 
-			for (size_t i = 0; i < 16; i++)
+			for (std::size_t i = 0; i < 16; i++)
 				miv[i] = iv[i % 4];
 
-			size_t remaining = length - offset;
+			std::size_t remaining = length - offset;
 
 			if (remaining > blocklength)
 				remaining = blocklength;
 
-			for (size_t x = 0; x < remaining; x++)
+			for (std::size_t x = 0; x < remaining; x++)
 			{
-				size_t relpos = x % 16;
+				std::size_t relpos = x % 16;
 
 				if (relpos == 0)
 					aesencrypt(miv);
@@ -250,9 +250,9 @@ namespace ms
 		updateiv(iv);
 	}
 
-	void Cryptography::aesencrypt(uint8_t* bytes) const
+	void Cryptography::aesencrypt(std::uint8_t* bytes) const
 	{
-		uint8_t round = 0;
+		std::uint8_t round = 0;
 		addroundkey(bytes, round);
 
 		for (round = 1; round < 14; round++)
@@ -268,10 +268,10 @@ namespace ms
 		addroundkey(bytes, round);
 	}
 
-	void Cryptography::addroundkey(uint8_t* bytes, uint8_t round) const
+	void Cryptography::addroundkey(std::uint8_t* bytes, std::uint8_t round) const
 	{
 		// This key is pre-expanded. Works only for lower versions.
-		static const uint8_t maplekey[256] =
+		static const std::uint8_t maplekey[256] =
 		{
 			0x13, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0xB4, 0x00, 0x00, 0x00,
 			0x1B, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x33, 0x00, 0x00, 0x00, 0x52, 0x00, 0x00, 0x00,
@@ -291,16 +291,16 @@ namespace ms
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 		};
 
-		uint8_t offset = round * 16;
+		std::uint8_t offset = round * 16;
 
-		for (uint8_t i = 0; i < 16; i++)
+		for (std::uint8_t i = 0; i < 16; i++)
 			bytes[i] ^= maplekey[i + offset];
 	}
 
-	void Cryptography::subbytes(uint8_t* bytes) const
+	void Cryptography::subbytes(std::uint8_t* bytes) const
 	{
 		// Rijndael substitution box.
-		static const uint8_t subbox[256] =
+		static const std::uint8_t subbox[256] =
 		{
 			0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
 			0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0,
@@ -320,13 +320,13 @@ namespace ms
 			0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16
 		};
 
-		for (uint8_t i = 0; i < 16; i++)
+		for (std::uint8_t i = 0; i < 16; i++)
 			bytes[i] = subbox[bytes[i]];
 	}
 
-	void Cryptography::shiftrows(uint8_t* bytes) const
+	void Cryptography::shiftrows(std::uint8_t* bytes) const
 	{
-		uint8_t remember = bytes[1];
+		std::uint8_t remember = bytes[1];
 		bytes[1] = bytes[5];
 		bytes[5] = bytes[9];
 		bytes[9] = bytes[13];
@@ -347,24 +347,24 @@ namespace ms
 		bytes[6] = remember;
 	}
 
-	uint8_t Cryptography::gmul(uint8_t x) const
+	std::uint8_t Cryptography::gmul(std::uint8_t x) const
 	{
-		return (x << 1) ^ (0x1B & (uint8_t)((int8_t)x >> 7));
+		return (x << 1) ^ (0x1B & (std::uint8_t)((std::int8_t)x >> 7));
 	}
 
-	void Cryptography::mixcolumns(uint8_t* bytes) const
+	void Cryptography::mixcolumns(std::uint8_t* bytes) const
 	{
-		for (uint8_t i = 0; i < 16; i += 4)
+		for (std::uint8_t i = 0; i < 16; i += 4)
 		{
-			uint8_t cpy0 = bytes[i];
-			uint8_t cpy1 = bytes[i + 1];
-			uint8_t cpy2 = bytes[i + 2];
-			uint8_t cpy3 = bytes[i + 3];
+			std::uint8_t cpy0 = bytes[i];
+			std::uint8_t cpy1 = bytes[i + 1];
+			std::uint8_t cpy2 = bytes[i + 2];
+			std::uint8_t cpy3 = bytes[i + 3];
 
-			uint8_t mul0 = gmul(bytes[i]);
-			uint8_t mul1 = gmul(bytes[i + 1]);
-			uint8_t mul2 = gmul(bytes[i + 2]);
-			uint8_t mul3 = gmul(bytes[i + 3]);
+			std::uint8_t mul0 = gmul(bytes[i]);
+			std::uint8_t mul1 = gmul(bytes[i + 1]);
+			std::uint8_t mul2 = gmul(bytes[i + 2]);
+			std::uint8_t mul3 = gmul(bytes[i + 3]);
 
 			bytes[i] = mul0 ^ cpy3 ^ cpy2 ^ mul1 ^ cpy1;
 			bytes[i + 1] = mul1 ^ cpy0 ^ cpy3 ^ mul2 ^ cpy2;

@@ -21,7 +21,7 @@
 #include <vector>
 
 namespace nl {
-    bitmap::bitmap(void const * d, uint16_t w, uint16_t h) :
+    bitmap::bitmap(void const * d, std::uint16_t w, std::uint16_t h) :
         m_data(d), m_width(w), m_height(h) {}
     bool bitmap::operator<(bitmap const & o) const {
         return m_data < o.m_data;
@@ -43,16 +43,16 @@ namespace nl {
             bitmap_buf.data(), static_cast<int>(l));
         return bitmap_buf.data();
     }
-    uint16_t bitmap::width() const {
+    std::uint16_t bitmap::width() const {
         return m_width;
     }
-    uint16_t bitmap::height() const {
+    std::uint16_t bitmap::height() const {
         return m_height;
     }
-    uint32_t bitmap::length() const {
+    std::int32_t bitmap::length() const {
         return 4u * m_width * m_height;
     }
-    size_t bitmap::id() const {
-        return reinterpret_cast<size_t>(m_data);
+    std::size_t bitmap::id() const {
+        return reinterpret_cast<std::size_t>(m_data);
     }
 }

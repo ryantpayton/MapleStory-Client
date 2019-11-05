@@ -19,9 +19,9 @@
 
 #include "Tooltip.h"
 
-#include "../Template/BoolPair.h"
-#include "../Components/MapleFrame.h"
-#include "../Graphics/Text.h"
+#include "../../Template/BoolPair.h"
+#include "MapleFrame.h"
+#include "Graphics/Text.h"
 
 namespace ms
 {
@@ -32,13 +32,13 @@ namespace ms
 
 		void draw(Point<int16_t> position) const override;
 
-		bool set_item(int32_t itemid);
+		bool set_item(std::int32_t itemid);
 
 	private:
-		int32_t itemid;
-		int16_t fillwidth;
-		int16_t fillheight;
-		int16_t descdelta;
+		std::int32_t itemid;
+		std::int16_t fillwidth;
+		std::int16_t fillheight;
+		std::int16_t descdelta;
 		Texture itemicon;
 
 		Text name;

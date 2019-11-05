@@ -36,7 +36,7 @@ namespace ms
 		sprites.emplace_back(Gateway["backgrnd2"], Point<int16_t>(0, -10));
 		sprites.emplace_back(Common["frame"], Point<int16_t>(399, 289));
 
-		int16_t pos_y = 74;
+		std::int16_t pos_y = 74;
 		Point<int16_t> na_pos = Point<int16_t>(155, pos_y);
 		Point<int16_t> eu_pos = Point<int16_t>(424, pos_y);
 
@@ -74,7 +74,7 @@ namespace ms
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	Button::State UIRegion::button_pressed(uint16_t buttonid)
+	Button::State UIRegion::button_pressed(std::uint16_t buttonid)
 	{
 		clear_tooltip();
 

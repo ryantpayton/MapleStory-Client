@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Template/Enumeration.h"
-#include "../Template/EnumMap.h"
+#include "../../Template/Enumeration.h"
+#include "../../Template/EnumMap.h"
 
 #include <cstdint>
 
@@ -26,7 +26,7 @@ namespace ms
 {
 	namespace Equipslot
 	{
-		enum Id : int16_t
+		enum Id : std::int16_t
 		{
 			NONE = 0,
 			CAP = 1,
@@ -52,7 +52,7 @@ namespace ms
 			LENGTH
 		};
 
-		Id by_id(size_t id);
+		Id by_id(std::size_t id);
 
 		constexpr Enumeration<Id> values;
 	};

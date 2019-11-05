@@ -21,172 +21,157 @@
 
 namespace ms
 {
-	Textfield::Textfield(Text::Font font, Text::Alignment alignment, Color::Name color, Rectangle<int16_t> bnd, size_t lim) : textlabel(font, alignment, color, "", 0, false), marker(font, alignment, color, "|")
+Textfield::Textfield(Text::Font font, Text::Alignment alignment, Color::Name color, Rectangle<int16_t> bnd, size_t lim) : textlabel(font, alignment, color, "", 0, false), marker(font, alignment, color, "|")
+{
+	bounds = bnd;
+	limit = lim;
+	text = "";
+	showmarker = true;
+	markerpos = 0;
+	crypt = 0;
+	state = State::NORMAL;
+}
+
+Textfield::Textfield()
+{
+	text = "";
+}
+
+Textfield::~Textfield() {}
+
+void Textfield::draw(Point<int16_t> parent) const
+{
+	if (state == State::DISABLED)
+		return;
+
+	Point<int16_t> absp = bounds.getlt() + parent;
+
+	if (text.size() > 0)
+		textlabel.draw(absp);
+
+	if (state == State::FOCUSED && showmarker)
 	{
-		bounds = bnd;
-		limit = lim;
-		text = "";
-		markerpos = 0;
-		crypt = 0;
-		state = State::NORMAL;
+		Point<int16_t> mpos = absp + Point<int16_t>(textlabel.advance(markerpos), -1);
+		marker.draw(mpos);
 	}
+}
 
-	Textfield::Textfield()
+void Textfield::update(Point<int16_t> parent)
+{
+	if (state == State::DISABLED)
+		return;
+
+	parentpos = parent;
+	elapsed += Constants::TIMESTEP;
+
+	if (elapsed > 256)
 	{
-		text = "";
+		showmarker = !showmarker;
+		elapsed = 0;
 	}
+}
 
-	Textfield::~Textfield() {}
-
-	void Textfield::draw(Point<int16_t> parent) const
+void Textfield::set_state(State st)
+{
+	if (state != st)
 	{
-		if (state == State::DISABLED)
-			return;
+		state = st;
 
-		Point<int16_t> absp = bounds.getlt() + parent;
-
-		if (text.size() > 0)
-			textlabel.draw(absp);
-
-		if (state == State::FOCUSED && showmarker)
+		if (state != State::DISABLED)
 		{
-			Point<int16_t> mpos = absp + Point<int16_t>(textlabel.advance(markerpos), -1);
-			marker.draw(mpos);
-		}
-	}
-
-	void Textfield::update(Point<int16_t> parent)
-	{
-		if (state == State::DISABLED)
-			return;
-
-		parentpos = parent;
-		elapsed += Constants::TIMESTEP;
-
-		if (elapsed > 256)
-		{
-			showmarker = !showmarker;
 			elapsed = 0;
+			showmarker = true;
 		}
-	}
-
-	void Textfield::set_state(State st)
-	{
-		if (state != st)
+		else
 		{
-			state = st;
-
-			if (state != State::DISABLED)
-			{
-				elapsed = 0;
-				showmarker = true;
-			}
-			else
-			{
-				UI::get().remove_textfield();
-			}
-
-			if (state == State::FOCUSED)
-				UI::get().focus_textfield(this);
+			UI::get().remove_textfield();
 		}
-	}
 
-	void Textfield::set_enter_callback(std::function<void(std::string)> or )
-	{
-		onreturn = or ;
+		if (state == State::FOCUSED)
+			UI::get().focus_textfield(this);
 	}
+}
 
-	void Textfield::set_key_callback(KeyAction::Id key, std::function<void(void)> action)
-	{
-		callbacks[key] = action;
-	}
+void Textfield::set_enter_callback(std::function<void(std::string)> onret)
+{
+	onreturn = onret;
+}
 
-	void Textfield::send_key(KeyType::Id type, int32_t key, bool pressed)
+void Textfield::set_key_callback(KeyAction::Id key, std::function<void(void)> action)
+{
+	callbacks[key] = action;
+}
+
+void Textfield::send_key(KeyType::Id type, int32_t key, bool pressed)
+{
+	switch (type)
 	{
-		switch (type)
+	case KeyType::Id::ACTION:
+		if (pressed)
 		{
-		case KeyType::Id::ACTION:
-			if (pressed)
+			switch (key)
 			{
-				switch (key)
+			case KeyAction::Id::LEFT:
+				if (markerpos > 0)
+					markerpos--;
+
+				break;
+			case KeyAction::Id::RIGHT:
+				if (markerpos < text.size())
+					markerpos++;
+
+				break;
+			case KeyAction::Id::BACK:
+				if (text.size() > 0 && markerpos > 0)
 				{
-				case KeyAction::Id::LEFT:
-					if (markerpos > 0)
-						markerpos--;
-
-					break;
-				case KeyAction::Id::RIGHT:
-					if (markerpos < text.size())
-						markerpos++;
-
-					break;
-				case KeyAction::Id::BACK:
-					if (text.size() > 0 && markerpos > 0)
-					{
-						text.erase(markerpos - 1, 1);
-						markerpos--;
-						modifytext(text);
-					}
-
-					break;
-				case KeyAction::Id::RETURN:
-					if (onreturn)
-						onreturn(text);
-
-					break;
-				case KeyAction::Id::SPACE:
-					if (belowlimit())
-					{
-						text.insert(markerpos, 1, ' ');
-						markerpos++;
-						modifytext(text);
-					}
-
-					break;
-				case KeyAction::Id::HOME:
-					markerpos = 0;
-					break;
-				case KeyAction::Id::END:
-					markerpos = text.size();
-					break;
-				case KeyAction::Id::DELETE:
-					if (text.size() > 0 && markerpos < text.size())
-					{
-						text.erase(markerpos, 1);
-						modifytext(text);
-					}
-
-					break;
-				default:
-					if (callbacks.count(key))
-						callbacks.at(key)();
-
-					break;
+					text.erase(markerpos - 1, 1);
+					markerpos--;
+					modifytext(text);
 				}
-			}
 
-			break;
-		case KeyType::Id::TEXT:
-			if (!pressed)
-			{
-				int8_t c = static_cast<int8_t>(key);
+				break;
+			case KeyAction::Id::RETURN:
+				if (onreturn)
+					onreturn(text);
 
+				break;
+			case KeyAction::Id::SPACE:
 				if (belowlimit())
 				{
-					text.insert(markerpos, 1, c);
+					text.insert(markerpos, 1, ' ');
 					markerpos++;
 					modifytext(text);
 				}
+
+				break;
+			case KeyAction::Id::HOME:
+				markerpos = 0;
+				break;
+			case KeyAction::Id::END:
+				markerpos = text.size();
+				break;
+			case KeyAction::Id::DELETE:
+				if (text.size() > 0 && markerpos < text.size())
+				{
+					text.erase(markerpos, 1);
+					modifytext(text);
+				}
+
+				break;
+			default:
+				if (callbacks.count(key))
+					callbacks.at(key)();
+
+				break;
 			}
-
-			break;
 		}
-	}
 
-	void Textfield::add_string(const std::string& str)
-	{
-		for (char c : str)
+		break;
+	case KeyType::Id::TEXT:
+		if (!pressed)
 		{
+			int8_t c = static_cast<int8_t>(key);
+
 			if (belowlimit())
 			{
 				text.insert(markerpos, 1, c);
@@ -194,110 +179,125 @@ namespace ms
 				modifytext(text);
 			}
 		}
-	}
 
-	void Textfield::modifytext(const std::string& t)
-	{
-		if (crypt > 0)
-		{
-			std::string crypted;
-			crypted.insert(0, t.size(), crypt);
-			textlabel.change_text(crypted);
-		}
-		else
-		{
-			textlabel.change_text(t);
-		}
-
-		text = t;
-	}
-
-	Cursor::State Textfield::send_cursor(Point<int16_t> cursorpos, bool clicked)
-	{
-		if (state == State::DISABLED)
-			return Cursor::State::IDLE;
-
-		auto abs_bounds = get_bounds();
-
-		if (abs_bounds.contains(cursorpos))
-		{
-			if (clicked)
-			{
-				switch (state)
-				{
-				case State::NORMAL:
-					set_state(State::FOCUSED);
-					break;
-				}
-
-				return Cursor::State::CLICKING;
-			}
-			else
-			{
-				return Cursor::State::CANCLICK;
-			}
-		}
-		else
-		{
-			if (clicked)
-			{
-				switch (state)
-				{
-				case State::FOCUSED:
-					set_state(State::NORMAL);
-					break;
-				}
-			}
-
-			return Cursor::State::IDLE;
-		}
-	}
-
-	void Textfield::change_text(const std::string& t)
-	{
-		modifytext(t);
-		markerpos = text.size();
-	}
-
-	void Textfield::set_cryptchar(int8_t c)
-	{
-		crypt = c;
-	}
-
-	bool Textfield::belowlimit() const
-	{
-		if (limit > 0)
-		{
-			return text.size() < limit;
-		}
-		else
-		{
-			uint16_t advance = textlabel.advance(text.size());
-
-			return (advance + 50) < bounds.get_horizontal().length();
-		}
-	}
-
-	const std::string& Textfield::get_text() const
-	{
-		return text;
-	}
-
-	bool Textfield::empty() const
-	{
-		return text.empty();
-	}
-
-	Textfield::State Textfield::get_state() const
-	{
-		return state;
-	}
-
-	Rectangle<int16_t> Textfield::get_bounds() const
-	{
-		return Rectangle<int16_t>(
-			bounds.getlt() + parentpos,
-			bounds.getrb() + parentpos
-			);
+		break;
 	}
 }
+
+void Textfield::add_string(const std::string &str)
+{
+	for (char c : str)
+	{
+		if (belowlimit())
+		{
+			text.insert(markerpos, 1, c);
+			markerpos++;
+			modifytext(text);
+		}
+	}
+}
+
+void Textfield::modifytext(const std::string &t)
+{
+	if (crypt > 0)
+	{
+		std::string crypted;
+		crypted.insert(0, t.size(), crypt);
+		textlabel.change_text(crypted);
+	}
+	else
+	{
+		textlabel.change_text(t);
+	}
+
+	text = t;
+}
+
+Cursor::State Textfield::send_cursor(Point<int16_t> cursorpos, bool clicked)
+{
+	if (state == State::DISABLED)
+		return Cursor::State::IDLE;
+
+	auto abs_bounds = get_bounds();
+
+	if (abs_bounds.contains(cursorpos))
+	{
+		if (clicked)
+		{
+			switch (state)
+			{
+			case State::NORMAL:
+				set_state(State::FOCUSED);
+				break;
+			}
+
+			return Cursor::State::CLICKING;
+		}
+		else
+		{
+			return Cursor::State::CANCLICK;
+		}
+	}
+	else
+	{
+		if (clicked)
+		{
+			switch (state)
+			{
+			case State::FOCUSED:
+				set_state(State::NORMAL);
+				break;
+			}
+		}
+
+		return Cursor::State::IDLE;
+	}
+}
+
+void Textfield::change_text(const std::string &t)
+{
+	modifytext(t);
+	markerpos = text.size();
+}
+
+void Textfield::set_cryptchar(int8_t c)
+{
+	crypt = c;
+}
+
+bool Textfield::belowlimit() const
+{
+	if (limit > 0)
+	{
+		return text.size() < limit;
+	}
+	else
+	{
+		uint16_t advance = textlabel.advance(text.size());
+
+		return (advance + 50) < bounds.get_horizontal().length();
+	}
+}
+
+const std::string &Textfield::get_text() const
+{
+	return text;
+}
+
+bool Textfield::empty() const
+{
+	return text.empty();
+}
+
+Textfield::State Textfield::get_state() const
+{
+	return state;
+}
+
+Rectangle<int16_t> Textfield::get_bounds() const
+{
+	return Rectangle<int16_t>(
+			bounds.getlt() + parentpos,
+			bounds.getrb() + parentpos);
+}
+} // namespace ms

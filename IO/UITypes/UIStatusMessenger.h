@@ -19,7 +19,7 @@
 
 #include "../UIElement.h"
 
-#include "../Graphics/Text.h"
+#include "../../Graphics/Text.h"
 
 #include <deque>
 
@@ -58,7 +58,7 @@ namespace ms
 		void show_status(Color::Name color, const std::string& message);
 
 	private:
-		static constexpr size_t MAX_MESSAGES = 5;
+		static constexpr std::size_t MAX_MESSAGES = 5;
 
 		std::deque<StatusInfo> statusinfos;
 	};

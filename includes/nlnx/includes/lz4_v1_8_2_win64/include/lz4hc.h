@@ -144,14 +144,14 @@ LZ4LIB_API int LZ4_saveDictHC (LZ4_streamHC_t* streamHCPtr, char* safeBuffer, in
 typedef struct LZ4HC_CCtx_internal LZ4HC_CCtx_internal;
 struct LZ4HC_CCtx_internal
 {
-    uint32_t   hashTable[LZ4HC_HASHTABLESIZE];
-    uint16_t   chainTable[LZ4HC_MAXD];
-    const uint8_t* end;         /* next block here to continue on current prefix */
-    const uint8_t* base;        /* All index relative to this position */
-    const uint8_t* dictBase;    /* alternate base for extDict */
-    uint32_t   dictLimit;       /* below that point, need extDict */
-    uint32_t   lowLimit;        /* below that point, no more dict */
-    uint32_t   nextToUpdate;    /* index from which to continue dictionary update */
+    std::int32_t   hashTable[LZ4HC_HASHTABLESIZE];
+    std::uint16_t   chainTable[LZ4HC_MAXD];
+    const std::uint8_t* end;         /* next block here to continue on current prefix */
+    const std::uint8_t* base;        /* All index relative to this position */
+    const std::uint8_t* dictBase;    /* alternate base for extDict */
+    std::int32_t   dictLimit;       /* below that point, need extDict */
+    std::int32_t   lowLimit;        /* below that point, no more dict */
+    std::int32_t   nextToUpdate;    /* index from which to continue dictionary update */
     short      compressionLevel;
     short      favorDecSpeed;
     const LZ4HC_CCtx_internal* dictCtx;
@@ -178,9 +178,9 @@ struct LZ4HC_CCtx_internal
 #endif
 
 #define LZ4_STREAMHCSIZE       (4*LZ4HC_HASHTABLESIZE + 2*LZ4HC_MAXD + 56) /* 262200 */
-#define LZ4_STREAMHCSIZE_SIZET (LZ4_STREAMHCSIZE / sizeof(size_t))
+#define LZ4_STREAMHCSIZE_SIZET (LZ4_STREAMHCSIZE / sizeof(std::size_t))
 union LZ4_streamHC_u {
-    size_t table[LZ4_STREAMHCSIZE_SIZET];
+    std::size_t table[LZ4_STREAMHCSIZE_SIZET];
     LZ4HC_CCtx_internal internal_donotuse;
 };   /* previously typedef'd to LZ4_streamHC_t */
 /*

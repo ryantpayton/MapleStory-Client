@@ -38,13 +38,13 @@ namespace ms
 		// Return whether this weapon uses twohanded-stances.
 		bool is_twohanded() const;
 		// Return the attack speed.
-		uint8_t get_speed() const;
+		std::uint8_t get_speed() const;
 		// Return the attack type.
-		uint8_t get_attack() const;
+		std::uint8_t get_attack() const;
 		// Return the speed as displayed in a tooltip.
 		std::string getspeedstring() const;
 		// Return the attack delay.
-		uint8_t get_attackdelay() const;
+		std::uint8_t get_attackdelay() const;
 		// Return the weapon type.
 		Weapon::Type get_type() const;
 		// Return the sound to play when attacking.
@@ -58,14 +58,14 @@ namespace ms
 		// Allow the cache to use the constructor.
 		friend Cache<WeaponData>;
 		// Load a weapon from the game files.
-		WeaponData(int32_t id);
+		WeaponData(std::int32_t id);
 
 		const EquipData& equipdata;
 
 		Weapon::Type type;
 		bool twohanded;
-		uint8_t attackspeed;
-		uint8_t attack;
+		std::uint8_t attackspeed;
+		std::uint8_t attack;
 		BoolPair<Sound> usesounds;
 		std::string afterimage;
 	};

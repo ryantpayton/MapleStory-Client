@@ -23,13 +23,13 @@
 #include "UICharSelect.h"
 
 #include "../UI.h"
-#include "../Configuration.h"
+#include "../../Configuration.h"
 
 #include "../Components/MapleButton.h"
-#include "../Data/ItemData.h"
-#include "../Audio/Audio.h"
+#include "../../Data/ItemData.h"
+#include "../../Audio/Audio.h"
 
-#include "../Net/Packets/CharCreationPackets.h"
+#include "../../Net/Packets/CharCreationPackets.h"
 
 #include <nlnx/nx.hpp>
 
@@ -47,6 +47,7 @@ namespace ms
 		nl::node Login = nl::nx::ui["Login.img"];
 		nl::node Common = Login["Common"];
 		nl::node CustomizeChar = Login["CustomizeChar"]["1000"];
+		// nl::node back = nl::nx::map["Back"]["login.img"]["back"];
 		nl::node back = nl::nx::map001["Back"]["login.img"]["back"];
 		nl::node signboard = nl::nx::map["Obj"]["login.img"]["NewChar"]["signboard"];
 		nl::node board = CustomizeChar["board"];
@@ -64,9 +65,9 @@ namespace ms
 		sprites_lookboard.emplace_back(board["boardMid"], Point<int16_t>(415, 197));
 		sprites_lookboard.emplace_back(board["boardBottom"], Point<int16_t>(415, 341));
 
-		for (size_t i = 0; i <= 6; i++)
+		for (unsigned i = 0; i <= 6; i++)
 		{
-			int16_t y = 0;
+			std::int16_t y = 0;
 
 			if (i == 3)
 				y = 2;
@@ -81,7 +82,7 @@ namespace ms
 		buttons[Buttons::BT_CHARC_WEPL] = std::make_unique<MapleButton>(CustomizeChar["BtLeft"], Point<int16_t>(418, 71 + (8 * 18)));
 		buttons[Buttons::BT_CHARC_WEPR] = std::make_unique<MapleButton>(CustomizeChar["BtRight"], Point<int16_t>(415, 71 + (8 * 18)));
 
-		for (size_t i = 0; i <= 7; i++)
+		for (unsigned i = 0; i <= 7; i++)
 		{
 			buttons[Buttons::BT_CHARC_HAIRC0 + i] = std::make_unique<MapleButton>(CustomizeChar["hairSelect"][i], Point<int16_t>(553 + (i * 15), 228));
 			buttons[Buttons::BT_CHARC_HAIRC0 + i]->set_active(false);
@@ -130,7 +131,7 @@ namespace ms
 
 		nl::node mkinfo = nl::nx::etc["MakeCharInfo.img"]["Info"];
 
-		for (size_t i = 0; i < 2; i++)
+		for (std::size_t i = 0; i < 2; i++)
 		{
 			bool f;
 			nl::node CharGender;
@@ -152,7 +153,7 @@ namespace ms
 
 				for (auto idnode : node)
 				{
-					int32_t value = idnode;
+					std::int32_t value = idnode;
 
 					switch (num)
 					{
@@ -163,10 +164,10 @@ namespace ms
 						hairs[f].push_back(value);
 						break;
 					case 2:
-						haircolors[f].push_back(static_cast<uint8_t>(value));
+						haircolors[f].push_back(static_cast<std::uint8_t>(value));
 						break;
 					case 3:
-						skins[f].push_back(static_cast<uint8_t>(value));
+						skins[f].push_back(static_cast<std::uint8_t>(value));
 						break;
 					case 4:
 						tops[f].push_back(value);
@@ -195,11 +196,11 @@ namespace ms
 
 	void UICygnusCreation::draw(float inter) const
 	{
-		for (size_t i = 0; i < 2; i++)
-			for (size_t k = 0; k < 800; k += sky.width())
+		for (std::size_t i = 0; i < 2; i++)
+			for (std::size_t k = 0; k < 800; k += sky.width())
 				sky.draw(Point<int16_t>(k, (400 * i) - 100));
 
-		int16_t cloudx = static_cast<int16_t>(cloudfx) % 800;
+		std::int16_t cloudx = static_cast<int16_t>(cloudfx) % 800;
 		cloud.draw(Point<int16_t>(cloudx - cloud.width(), 300));
 		cloud.draw(Point<int16_t>(cloudx, 300));
 		cloud.draw(Point<int16_t>(cloudx + cloud.width(), 300));
@@ -208,11 +209,11 @@ namespace ms
 		{
 			UIElement::draw_sprites(inter);
 
-			for (size_t i = 0; i < sprites_gender_select.size(); i++)
+			for (std::size_t i = 0; i < sprites_gender_select.size(); i++)
 			{
 				if (i == 1)
 				{
-					for (size_t f = 0; f <= 6; f++)
+					for (std::size_t f = 0; f <= 6; f++)
 						sprites_gender_select[i].draw(position + Point<int16_t>(0, 18 * f), inter);
 				}
 				else
@@ -231,11 +232,11 @@ namespace ms
 			{
 				UIElement::draw_sprites(inter);
 
-				for (size_t i = 0; i < sprites_lookboard.size(); i++)
+				for (std::size_t i = 0; i < sprites_lookboard.size(); i++)
 				{
 					if (i == 1)
 					{
-						for (size_t f = 0; f <= 7; f++)
+						for (std::size_t f = 0; f <= 7; f++)
 							sprites_lookboard[i].draw(position + Point<int16_t>(0, 18 * f), inter);
 					}
 					else
@@ -348,7 +349,7 @@ namespace ms
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	void UICygnusCreation::send_key(int32_t keycode, bool pressed, bool escape)
+	void UICygnusCreation::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -368,14 +369,14 @@ namespace ms
 				named = true;
 
 				std::string cname = namechar.get_text();
-				int32_t cface = faces[female][face];
-				int32_t chair = hairs[female][hair];
-				uint8_t chairc = haircolors[female][haircolor];
-				uint8_t cskin = skins[female][skin];
-				int32_t ctop = tops[female][top];
-				int32_t cbot = bots[female][bot];
-				int32_t cshoe = shoes[female][shoe];
-				int32_t cwep = weapons[female][weapon];
+				std::int32_t cface = faces[female][face];
+				std::int32_t chair = hairs[female][hair];
+				std::uint8_t chairc = haircolors[female][haircolor];
+				std::uint8_t cskin = skins[female][skin];
+				std::int32_t ctop = tops[female][top];
+				std::int32_t cbot = bots[female][bot];
+				std::int32_t cshoe = shoes[female][shoe];
+				std::int32_t cwep = weapons[female][weapon];
 
 				CreateCharPacket(cname, 0, cface, chair, chairc, cskin, ctop, cbot, cshoe, cwep, female).dispatch();
 
@@ -409,7 +410,7 @@ namespace ms
 		}
 	}
 
-	Button::State UICygnusCreation::button_pressed(uint16_t buttonid)
+	Button::State UICygnusCreation::button_pressed(std::uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -427,7 +428,7 @@ namespace ms
 				buttons[Buttons::BT_CHARC_WEPL]->set_active(true);
 				buttons[Buttons::BT_CHARC_WEPR]->set_active(true);
 
-				for (size_t i = 0; i <= 7; i++)
+				for (std::size_t i = 0; i <= 7; i++)
 					buttons[Buttons::BT_CHARC_HAIRC0 + i]->set_active(true);
 
 				buttons[Buttons::BT_CHARC_OK]->set_position(Point<int16_t>(502, 371));
@@ -447,7 +448,7 @@ namespace ms
 					buttons[Buttons::BT_CHARC_WEPL]->set_active(false);
 					buttons[Buttons::BT_CHARC_WEPR]->set_active(false);
 
-					for (size_t i = 0; i <= 7; i++)
+					for (std::size_t i = 0; i <= 7; i++)
 						buttons[Buttons::BT_CHARC_HAIRC0 + i]->set_active(false);
 
 					buttons[Buttons::BT_CHARC_OK]->set_position(Point<int16_t>(510, 279));
@@ -540,7 +541,7 @@ namespace ms
 				buttons[Buttons::BT_CHARC_WEPL]->set_active(true);
 				buttons[Buttons::BT_CHARC_WEPR]->set_active(true);
 
-				for (size_t i = 0; i <= 7; i++)
+				for (std::size_t i = 0; i <= 7; i++)
 					buttons[Buttons::BT_CHARC_HAIRC0 + i]->set_active(true);
 
 				buttons[Buttons::BT_CHARC_OK]->set_position(Point<int16_t>(502, 371));
@@ -565,7 +566,7 @@ namespace ms
 					buttons[Buttons::BT_CHARC_WEPL]->set_active(false);
 					buttons[Buttons::BT_CHARC_WEPR]->set_active(false);
 
-					for (size_t i = 0; i <= 7; i++)
+					for (std::size_t i = 0; i <= 7; i++)
 						buttons[Buttons::BT_CHARC_HAIRC0 + i]->set_active(false);
 
 					buttons[Buttons::BT_CHARC_OK]->set_position(Point<int16_t>(510, 386));
@@ -668,7 +669,7 @@ namespace ms
 
 	const std::string& UICygnusCreation::get_equipname(Equipslot::Id slot) const
 	{
-		if (int32_t item_id = newchar.get_equips().get_equip(slot))
+		if (std::int32_t item_id = newchar.get_equips().get_equip(slot))
 		{
 			return ItemData::get(item_id).get_name();
 		}

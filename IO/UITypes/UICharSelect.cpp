@@ -22,17 +22,17 @@
 #include "UILoginNotice.h"
 
 #include "../UI.h"
-#include "../Configuration.h"
+#include "../../Configuration.h"
 
 #include "../Components/MapleButton.h"
 #include "../Components/AreaButton.h"
-#include "../Audio/Audio.h"
-#include "../Character/Job.h"
+#include "../../Audio/Audio.h"
+#include "../../Character/Job.h"
 
-#include "../Net/Packets/SelectCharPackets.h"
+#include "../../Net/Packets/SelectCharPackets.h"
 
 #define NOMINMAX
-#include <windows.h>
+// #include <windows.h>
 
 #include <nlnx/nx.hpp>
 
@@ -93,6 +93,7 @@ namespace ms
 		world_sprites.emplace_back(selectedWorld["ch"][channel_id], worldpos - Point<int16_t>(0, 1));
 
 		nl::node map = nl::nx::map001["Back"]["login.img"];
+		// nl::node map = nl::nx::map["Back"]["login.img"];
 		nl::node ani = map["ani"];
 
 		sprites.emplace_back(map["back"]["13"], Point<int16_t>(392, 287));
@@ -725,7 +726,7 @@ namespace ms
 		{
 			std::string url = Configuration::get().get_resetpic();
 
-			ShellExecute(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+			// ShellExecute(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
 		}
 		break;
 		case Buttons::EDITCHARLIST:

@@ -17,12 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "MessagingHandlers.h"
 
-#include "../Data/ItemData.h"
-#include "../Gameplay/Stage.h"
-#include "../IO/UI.h"
+#include "../../Data/ItemData.h"
+#include "../../Gameplay/Stage.h"
+#include "../../IO/UI.h"
 
-#include "../IO/UITypes/UIStatusMessenger.h"
-#include "../IO/UITypes/UIChatbar.h"
+#include "../../IO/UITypes/UIStatusMessenger.h"
+#include "../../IO/UITypes/UIChatbar.h"
 
 namespace ms
 {
@@ -34,16 +34,16 @@ namespace ms
 	// 6 - Guild points
 	void ShowStatusInfoHandler::handle(InPacket& recv) const
 	{
-		int8_t mode = recv.read_byte();
+		std::int8_t mode = recv.read_byte();
 
 		if (mode == 0)
 		{
-			int8_t mode2 = recv.read_byte();
+			std::int8_t mode2 = recv.read_byte();
 
 			if (mode2 == 0)
 			{
-				int32_t itemid = recv.read_int();
-				int32_t qty = recv.read_int();
+				std::int32_t itemid = recv.read_int();
+				std::int32_t qty = recv.read_int();
 
 				const ItemData& idata = ItemData::get(itemid);
 
@@ -59,7 +59,7 @@ namespace ms
 			{
 				recv.skip(1);
 
-				int32_t gain = recv.read_int();
+				std::int32_t gain = recv.read_int();
 				std::string sign = (gain < 0) ? "-" : "+";
 
 				show_status(Color::Name::WHITE, "Received mesos (" + sign + std::to_string(gain) + ")");
@@ -68,9 +68,9 @@ namespace ms
 		else if (mode == 3)
 		{
 			bool white = recv.read_bool();
-			int32_t gain = recv.read_int();
+			std::int32_t gain = recv.read_int();
 			bool inchat = recv.read_bool();
-			int32_t bonus1 = recv.read_int();
+			std::int32_t bonus1 = recv.read_int();
 
 			recv.read_short();
 			recv.read_int();	// bonus 2
@@ -95,7 +95,7 @@ namespace ms
 		}
 		else if (mode == 4)
 		{
-			int32_t gain = recv.read_int();
+			std::int32_t gain = recv.read_int();
 			std::string sign = (gain < 0) ? "-" : "+";
 
 			show_status(Color::Name::WHITE, "Received fame (" + sign + std::to_string(gain) + ")");
@@ -114,7 +114,7 @@ namespace ms
 
 	void ServerMessageHandler::handle(InPacket& recv) const
 	{
-		int8_t type = recv.read_byte();
+		std::int8_t type = recv.read_byte();
 		bool servermessage = recv.inspect_bool();
 
 		if (servermessage)
@@ -153,12 +153,12 @@ namespace ms
 
 	void ChatReceivedHandler::handle(InPacket& recv) const
 	{
-		int32_t charid = recv.read_int();
+		std::int32_t charid = recv.read_int();
 
 		recv.read_bool(); // 'gm'
 
 		std::string message = recv.read_string();
-		int8_t type = recv.read_byte();
+		std::int8_t type = recv.read_byte();
 
 		if (auto character = Stage::get().get_character(charid))
 		{
@@ -174,7 +174,7 @@ namespace ms
 
 	void ScrollResultHandler::handle(InPacket& recv) const
 	{
-		int32_t cid = recv.read_int();
+		std::int32_t cid = recv.read_int();
 		bool success = recv.read_bool();
 		bool destroyed = recv.read_bool();
 
@@ -211,16 +211,16 @@ namespace ms
 
 	void ShowItemGainInChatHandler::handle(InPacket& recv) const
 	{
-		int8_t mode1 = recv.read_byte();
+		std::int8_t mode1 = recv.read_byte();
 
 		if (mode1 == 3)
 		{
-			int8_t mode2 = recv.read_byte();
+			std::int8_t mode2 = recv.read_byte();
 
 			if (mode2 == 1) // This is actually 'item gain in chat'
 			{
-				int32_t itemid = recv.read_int();
-				int32_t qty = recv.read_int();
+				std::int32_t itemid = recv.read_int();
+				std::int32_t qty = recv.read_int();
 
 				const ItemData& idata = ItemData::get(itemid);
 
@@ -250,7 +250,7 @@ namespace ms
 		}
 		else // Buff effect
 		{
-			int32_t skillid = recv.read_int();
+			std::int32_t skillid = recv.read_int();
 
 			// More bytes, but we don't need them
 			Stage::get().get_combat().show_player_buff(skillid);

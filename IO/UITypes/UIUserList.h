@@ -31,12 +31,12 @@ namespace ms
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 
-		UIUserList(uint16_t tab);
+		UIUserList(std::uint16_t tab);
 
 		void draw(float inter) const override;
 		void update() override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 		enum Tab
 		{
@@ -50,16 +50,16 @@ namespace ms
 			FRIEND_ONLINE
 		};
 
-		void change_tab(uint8_t tabid);
-		uint16_t get_tab();
+		void change_tab(std::uint8_t tabid);
+		std::uint16_t get_tab();
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
-		void change_party_tab(uint8_t tabid);
-		void change_friend_tab(uint8_t tabid);
-		void change_blacklist_tab(uint8_t tabid);
+		void change_party_tab(std::uint8_t tabid);
+		void change_friend_tab(std::uint8_t tabid);
+		void change_blacklist_tab(std::uint8_t tabid);
 		std::string get_cur_location();
 
 		enum Buttons
@@ -99,12 +99,12 @@ namespace ms
 			BT_BLACKLIST_DELETE
 		};
 
-		uint16_t tab;
+		std::uint16_t tab;
 		nl::node UserList;
 		Texture background;
 
 		// Party tab
-		uint16_t party_tab;
+		std::uint16_t party_tab;
 		Texture party_title;
 		Texture party_mine_grid[5];
 		Texture party_search_grid[3];
@@ -112,7 +112,7 @@ namespace ms
 		Slider party_slider;
 
 		// Buddy tab
-		uint16_t friend_tab;
+		std::uint16_t friend_tab;
 		int friend_count = 0;
 		int friend_total = 50;
 		std::vector<Sprite> friend_sprites;
@@ -127,7 +127,7 @@ namespace ms
 		std::vector<Sprite> boss_sprites;
 
 		// Blacklist tab
-		uint16_t blacklist_tab;
+		std::uint16_t blacklist_tab;
 		Texture blacklist_title;
 		Texture blacklist_grid[3];
 		Text blacklist_name;

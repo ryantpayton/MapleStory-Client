@@ -20,9 +20,9 @@
 #include "../UIElement.h"
 
 #include "../Components/Charset.h"
-#include "../Character/Charstats.h"
-#include "../Graphics/Text.h"
-#include "../Graphics/Geometry.h"
+#include "../../Character/Charstats.h"
+#include "../../Graphics/Text.h"
+#include "../../Graphics/Geometry.h"
 
 namespace ms
 {
@@ -39,18 +39,18 @@ namespace ms
 		void update() override;
 
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
 		const CharStats& stats;
 
 		std::string pad_time(int64_t time);
-		float getexppercent(uint16_t level, int64_t exp) const;
+		float getexppercent(std::uint16_t level, int64_t exp) const;
 
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			NO,
 			YES
@@ -79,13 +79,13 @@ namespace ms
 		// Level
 		Sprite levelupEffect;
 
-		uint16_t uplevel;
+		std::uint16_t uplevel;
 
 		Charset levelBefore;
 		Point<int16_t> levelBeforePos;
 		std::string levelBeforeText;
 
-		uint16_t cur_level;
+		std::uint16_t cur_level;
 
 		Charset levelAfter;
 		Point<int16_t> levelAfterPos;

@@ -17,13 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Hair.h"
 
-#include "../Console.h"
+#include "../../Console.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	Hair::Hair(int32_t hairid, const BodyDrawinfo& drawinfo)
+	Hair::Hair(std::int32_t hairid, const BodyDrawinfo& drawinfo)
 	{
 		nl::node hairnode = nl::nx::character["Hair"]["000" + std::to_string(hairid) + ".img"];
 
@@ -37,7 +37,7 @@ namespace ms
 			if (!stancenode)
 				continue;
 
-			for (uint8_t frame = 0; nl::node framenode = stancenode[frame]; ++frame)
+			for (std::uint8_t frame = 0; nl::node framenode = stancenode[frame]; ++frame)
 			{
 				for (nl::node layernode : framenode)
 				{
@@ -62,20 +62,20 @@ namespace ms
 			}
 		}
 
-		name = nl::nx::string["Eqp.img"]["Eqp"]["Hair"][std::to_string(hairid)]["name"];
+		name = nl::nx::string["Eqp.img"]["Eqp"]["Hair"][std::to_string(hairid)]["name"].get_string();
 
-		constexpr size_t NUM_COLORS = 8;
+		constexpr std::size_t NUM_COLORS = 8;
 
 		constexpr char* haircolors[NUM_COLORS] =
 		{
 			"Black", "Red", "Orange", "Blonde", "Green", "Blue", "Violet", "Brown"
 		};
 
-		size_t index = hairid % 10;
+		std::size_t index = hairid % 10;
 		color = (index < NUM_COLORS) ? haircolors[index] : "";
 	}
 
-	void Hair::draw(Stance::Id stance, Layer layer, uint8_t frame, const DrawArgument& args) const
+	void Hair::draw(Stance::Id stance, Layer layer, std::uint8_t frame, const DrawArgument& args) const
 	{
 		auto frameit = stances[stance][layer].find(frame);
 

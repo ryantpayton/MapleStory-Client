@@ -24,12 +24,12 @@ namespace ms
 		cover = 0;
 	}
 
-	void Monsterbook::set_cover(int32_t cov)
+	void Monsterbook::set_cover(std::int32_t cov)
 	{
 		cover = cov;
 	}
 
-	void Monsterbook::add_card(int16_t card, int8_t level)
+	void Monsterbook::add_card(std::int16_t card, std::int8_t level)
 	{
 		cards[card] = level;
 	}

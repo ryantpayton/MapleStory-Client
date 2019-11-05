@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Template/Point.h"
-#include "../Template/Range.h"
-#include "../Template/Optional.h"
+#include "../../Template/Point.h"
+#include "../../Template/Range.h"
+#include "../../Template/Optional.h"
 
 #include <vector>
 
@@ -46,13 +46,13 @@ namespace ms
 
 		bool is_ladder() const;
 		bool inrange(Point<int16_t> position, bool upwards) const;
-		bool felloff(int16_t y, bool downwards) const;
-		int16_t get_x() const;
+		bool felloff(std::int16_t y, bool downwards) const;
+		std::int16_t get_x() const;
 
 	private:
-		int16_t x;
-		int16_t y1;
-		int16_t y2;
+		std::int16_t x;
+		std::int16_t y1;
+		std::int16_t y2;
 		bool ladder;
 	};
 
@@ -73,7 +73,7 @@ namespace ms
 		Optional<const Ladder> findladder(Point<int16_t> position, bool upwards) const;
 
 	private:
-		int32_t fieldlimit;
+		std::int32_t fieldlimit;
 		bool cloud;
 		std::string bgm;
 		std::string mapdesc;

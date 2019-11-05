@@ -50,7 +50,7 @@ namespace ms
 			update(Constants::TIMESTEP);
 		}
 
-		void update(uint16_t timestep)
+		void update(std::uint16_t timestep)
 		{
 			if (value)
 			{

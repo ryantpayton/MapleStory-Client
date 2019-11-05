@@ -28,10 +28,10 @@ namespace ms
 	public:
 		Monsterbook();
 
-		void set_cover(int32_t);
-		void add_card(int16_t, int8_t);
+		void set_cover(std::int32_t);
+		void add_card(std::int16_t, std::int8_t);
 	private:
-		int32_t cover;
-		std::map<int16_t, int8_t> cards;
+		std::int32_t cover;
+		std::map<int16_t, std::int8_t> cards;
 	};
 }

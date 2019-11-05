@@ -21,7 +21,7 @@
 #include "Tile.h"
 #include "Obj.h"
 
-#include "../Template/EnumMap.h"
+#include "../../Template/EnumMap.h"
 
 #include <vector>
 #include <map>
@@ -39,8 +39,8 @@ namespace ms
 		void update();
 
 	private:
-		std::multimap<uint8_t, Tile> tiles;
-		std::multimap<uint8_t, Obj> objs;
+		std::multimap<std::uint8_t, Tile> tiles;
+		std::multimap<std::uint8_t, Obj> objs;
 	};
 
 	// The collection of tile and obj layers on a map.

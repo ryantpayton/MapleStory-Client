@@ -30,49 +30,49 @@ namespace ms
 	{
 	public:
 		// Obtain the initialization vector from the handshake.
-		Cryptography(const int8_t* handshake);
+		Cryptography(const std::int8_t* handshake);
 		Cryptography();
 		~Cryptography();
 
 		// Encrypt a byte array with the given length and iv.
-		void encrypt(int8_t* bytes, size_t length);
+		void encrypt(std::int8_t* bytes, std::size_t length);
 		// Decrypt a byte array with the given length and iv.
-		void decrypt(int8_t* bytes, size_t length);
+		void decrypt(std::int8_t* bytes, std::size_t length);
 		// Generate a header for the specified length and key.
-		void create_header(int8_t* buffer, size_t length) const;
+		void create_header(std::int8_t* buffer, std::size_t length) const;
 		// Use the 4-byte header of a received packet to determine its length.
-		size_t check_length(const int8_t* header) const;
+		std::size_t check_length(const std::int8_t* header) const;
 
 	private:
 		// Add the maple custom encryption.
-		void mapleencrypt(int8_t* bytes, size_t length) const;
+		void mapleencrypt(std::int8_t* bytes, std::size_t length) const;
 		// Remove the maple custom encryption.
-		void mapledecrypt(int8_t* bytes, size_t length) const;
+		void mapledecrypt(std::int8_t* bytes, std::size_t length) const;
 		// Update a key.
-		void updateiv(uint8_t* iv) const;
+		void updateiv(std::uint8_t* iv) const;
 		// Perform a roll-left operation.
-		int8_t rollleft(int8_t byte, size_t count) const;
+		std::int8_t rollleft(std::int8_t byte, std::size_t count) const;
 		// Perform a roll-right operation.
-		int8_t rollright(int8_t byte, size_t count) const;
+		std::int8_t rollright(std::int8_t byte, std::size_t count) const;
 
 		// Apply aesofb to a byte array.
-		void aesofb(int8_t* bytes, size_t length, uint8_t* iv) const;
+		void aesofb(std::int8_t* bytes, std::size_t length, std::uint8_t* iv) const;
 		// Encrypt a byte array with AES.
-		void aesencrypt(uint8_t* bytes) const;
+		void aesencrypt(std::uint8_t* bytes) const;
 		// AES addroundkey step.
-		void addroundkey(uint8_t* bytes, uint8_t round) const;
+		void addroundkey(std::uint8_t* bytes, std::uint8_t round) const;
 		// AES subbytes step.
-		void subbytes(uint8_t* bytes) const;
+		void subbytes(std::uint8_t* bytes) const;
 		// AES shiftrows step.
-		void shiftrows(uint8_t* bytes) const;
+		void shiftrows(std::uint8_t* bytes) const;
 		// Aes mixcolumns step.
-		void mixcolumns(uint8_t* bytes) const;
+		void mixcolumns(std::uint8_t* bytes) const;
 		// Perform a gauloise multiplication.
-		uint8_t gmul(uint8_t byte) const;
+		std::uint8_t gmul(std::uint8_t byte) const;
 
 #ifdef USE_CRYPTO
-		uint8_t sendiv[HEADER_LENGTH];
-		uint8_t recviv[HEADER_LENGTH];
+		std::uint8_t sendiv[HEADER_LENGTH];
+		std::uint8_t recviv[HEADER_LENGTH];
 #endif
 	};
 }

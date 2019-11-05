@@ -41,7 +41,7 @@ namespace ms
 	{
 		if (active)
 		{
-			int16_t interx = static_cast<int16_t>(std::round(xpos.get(alpha)));
+			std::int16_t interx = static_cast<int16_t>(std::round(xpos.get(alpha)));
 			auto position = Point<int16_t>(interx, -Constants::VIEWYOFFSET - 2);
 
 			background.draw(backposition);
@@ -53,7 +53,7 @@ namespace ms
 	{
 		if (active)
 		{
-			int16_t new_width = Constants::Constants::get().get_viewwidth();
+			std::int16_t new_width = Constants::Constants::get().get_viewwidth();
 
 			if (new_width != width)
 			{

@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "SkillAction.h"
 
-#include "../Util/Misc.h"
+#include "../../Util/Misc.h"
 
 namespace ms
 {
@@ -44,7 +44,7 @@ namespace ms
 
 	SingleAction::SingleAction(nl::node src)
 	{
-		action = src["action"]["0"];
+		action = src["action"]["0"].get_string();
 	}
 
 	void SingleAction::apply(Char& target, Attack::Type) const
@@ -54,8 +54,8 @@ namespace ms
 
 	TwoHAction::TwoHAction(nl::node src)
 	{
-		actions[false] = src["action"]["0"];
-		actions[true] = src["action"]["1"];
+		actions[false] = src["action"]["0"].get_string();
+		actions[true] = src["action"]["1"].get_string();
 	}
 
 	void TwoHAction::apply(Char& target, Attack::Type) const
@@ -66,12 +66,12 @@ namespace ms
 		target.attack(action);
 	}
 
-	ByLevelAction::ByLevelAction(nl::node src, int32_t id)
+	ByLevelAction::ByLevelAction(nl::node src, std::int32_t id)
 	{
 		for (auto sub : src["level"])
 		{
-			int32_t level = string_conversion::or_zero<int32_t>(sub.name());
-			actions[level] = sub["action"];
+			std::int32_t level = string_conversion::or_zero<std::int32_t>(sub.name());
+			actions[level] = sub["action"].get_string();
 		}
 
 		skillid = id;
@@ -79,7 +79,7 @@ namespace ms
 
 	void ByLevelAction::apply(Char& target, Attack::Type) const
 	{
-		int32_t level = target.get_skilllevel(skillid);
+		std::int32_t level = target.get_skilllevel(skillid);
 		auto iter = actions.find(level);
 
 		if (iter != actions.end())

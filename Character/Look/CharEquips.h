@@ -39,9 +39,9 @@ namespace ms
 		CharEquips();
 
 		// Draw an equip.
-		void draw(Equipslot::Id slot, Stance::Id stance, Clothing::Layer layer, uint8_t frame, const DrawArgument& args) const;
+		void draw(Equipslot::Id slot, Stance::Id stance, Clothing::Layer layer, std::uint8_t frame, const DrawArgument& args) const;
 		// Add an equip, if not in cache, the equip is created from the files.
-		void add_equip(int32_t itemid, const BodyDrawinfo& drawinfo);
+		void add_equip(std::int32_t itemid, const BodyDrawinfo& drawinfo);
 		// Remove an equip.
 		void remove_equip(Equipslot::Id slot);
 
@@ -60,13 +60,13 @@ namespace ms
 		// Return a stance which has been adjusted to the equipped weapon type.
 		Stance::Id adjust_stance(Stance::Id stance) const;
 		// Return the item id of the equip at the specified slot.
-		int32_t get_equip(Equipslot::Id slot) const;
+		std::int32_t get_equip(Equipslot::Id slot) const;
 		// Return the item id of the equipped weapon.
-		int32_t get_weapon() const;
+		std::int32_t get_weapon() const;
 
 	private:
 		EnumMap<Equipslot::Id, const Clothing*> clothes;
 
-		static std::unordered_map<int32_t, Clothing> cloth_cache;
+		static std::unordered_map<std::int32_t, Clothing> cloth_cache;
 	};
 }

@@ -37,7 +37,7 @@ namespace ms
 
 	private:
 		friend Cache<JobData>;
-		JobData(int32_t id);
+		JobData(std::int32_t id);
 
 		Texture icon;
 		std::vector<std::int32_t> skills;

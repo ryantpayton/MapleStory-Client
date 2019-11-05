@@ -99,7 +99,7 @@ and you'll save 4K of code space.
 ============
 This library also supports 64-bit integers and you can use MSVC style or
 GCC style indicators (%I64d or %lld).  It supports the C99 specifiers
-for size_t and ptr_diff_t (%jd %zd) as well.
+for std::size_t and ptr_diff_t (%jd %zd) as well.
 
 EXTRAS:
 =======
@@ -162,7 +162,7 @@ PERFORMANCE vs MSVC 2008 32-/64-bit (GCC is even slower than MSVC):
 #endif
 
 #include <stdarg.h> // for va_list()
-#include <stddef.h> // size_t, ptrdiff_t
+#include <stddef.h> // std::size_t, ptrdiff_t
 
 #ifndef STB_SPRINTF_MIN
 #define STB_SPRINTF_MIN 512 // how many characters per callback
@@ -469,10 +469,10 @@ STBSP__PUBLICDEF int STB_SPRINTF_DECORATE(vsprintfcb)(STBSP_SPRINTFCB *callback,
          break;
       // are we 64-bit on intmax? (c99)
       case 'j':
-         fl |= (sizeof(size_t) == 8) ? STBSP__INTMAX : 0;
+         fl |= (sizeof(std::size_t) == 8) ? STBSP__INTMAX : 0;
          ++f;
          break;
-      // are we 64-bit on size_t or ptrdiff_t? (c99)
+      // are we 64-bit on std::size_t or ptrdiff_t? (c99)
       case 'z':
          fl |= (sizeof(ptrdiff_t) == 8) ? STBSP__INTMAX : 0;
          ++f;

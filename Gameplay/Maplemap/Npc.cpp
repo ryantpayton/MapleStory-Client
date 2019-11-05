@@ -23,7 +23,7 @@
 
 namespace ms
 {
-	Npc::Npc(int32_t id, int32_t o, bool fl, uint16_t f, bool cnt, Point<int16_t> position) : MapObject(o)
+	Npc::Npc(std::int32_t id, std::int32_t o, bool fl, std::uint16_t f, bool cnt, Point<int16_t> position) : MapObject(o)
 	{
 		std::string strid = std::to_string(id);
 		strid.insert(0, 7 - strid.size(), '0');
@@ -60,8 +60,8 @@ namespace ms
 				lines[state].push_back(strsrc[speaknode.get_string()]);
 		}
 
-		name = strsrc["name"];
-		func = strsrc["func"];
+		name = strsrc["name"].get_string();
+		func = strsrc["func"].get_string();
 
 		namelabel = Text(Text::Font::A13B, Text::Alignment::CENTER, Color::Name::YELLOW, Text::Background::NAMETAG, name);
 		funclabel = Text(Text::Font::A13B, Text::Alignment::CENTER, Color::Name::YELLOW, Text::Background::NAMETAG, func);
@@ -89,7 +89,7 @@ namespace ms
 		}
 	}
 
-	int8_t Npc::update(const Physics& physics)
+	std::int8_t Npc::update(const Physics& physics)
 	{
 		if (!active)
 			return phobj.fhlayer;
@@ -102,7 +102,7 @@ namespace ms
 
 			if (aniend && states.size() > 0)
 			{
-				size_t next_stance = random.next_int(states.size());
+				std::size_t next_stance = random.next_int(states.size());
 				std::string new_stance = states[next_stance];
 				set_stance(new_stance);
 			}

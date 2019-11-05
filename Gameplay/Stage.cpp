@@ -41,7 +41,7 @@ namespace ms
 		drops.init();
 	}
 
-	void Stage::load(int32_t mapid, int8_t portalid)
+	void Stage::load(std::int32_t mapid, std::int8_t portalid)
 	{
 		switch (state)
 		{
@@ -74,7 +74,7 @@ namespace ms
 		reactors.clear();
 	}
 
-	void Stage::load_map(int32_t mapid)
+	void Stage::load_map(std::int32_t mapid)
 	{
 		std::string strid = string_format::extend_id(mapid, 9);
 		std::string prefix = std::to_string(mapid / 100000000);
@@ -87,7 +87,7 @@ namespace ms
 		portals = MapPortals(src["portal"], mapid);
 	}
 
-	void Stage::respawn(int8_t portalid)
+	void Stage::respawn(std::int8_t portalid)
 	{
 		Music(mapinfo.get_bgm()).play();
 
@@ -150,7 +150,7 @@ namespace ms
 		if (player.is_invincible())
 			return;
 
-		if (int32_t oid_id = mobs.find_colliding(player.get_phobj()))
+		if (std::int32_t oid_id = mobs.find_colliding(player.get_phobj()))
 		{
 			if (MobAttack attack = mobs.create_attack(oid_id))
 			{
@@ -160,7 +160,7 @@ namespace ms
 		}
 	}
 
-	void Stage::show_character_effect(int32_t cid, CharEffect::Id effect)
+	void Stage::show_character_effect(std::int32_t cid, CharEffect::Id effect)
 	{
 		if (auto character = get_character(cid))
 			character->show_effect_id(effect);
@@ -219,7 +219,7 @@ namespace ms
 			PickupItemPacket(loot.first, loot.second).dispatch();
 	}
 
-	void Stage::send_key(KeyType::Id type, int32_t action, bool down)
+	void Stage::send_key(KeyType::Id type, std::int32_t action, bool down)
 	{
 		if (state != State::ACTIVE || !playable)
 			return;
@@ -269,7 +269,7 @@ namespace ms
 		return npcs.send_cursor(pressed, position, camera.position());
 	}
 
-	bool Stage::is_player(int32_t cid) const
+	bool Stage::is_player(std::int32_t cid) const
 	{
 		return cid == player.get_oid();
 	}
@@ -309,7 +309,7 @@ namespace ms
 		return combat;
 	}
 
-	Optional<Char> Stage::get_character(int32_t cid)
+	Optional<Char> Stage::get_character(std::int32_t cid)
 	{
 		if (is_player(cid))
 			return player;

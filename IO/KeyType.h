@@ -38,7 +38,7 @@ namespace ms
 			LENGTH
 		};
 
-		inline Id typebyid(uint8_t id)
+		inline Id typebyid(std::uint8_t id)
 		{
 			if (id <= Id::NONE || id >= Id::LENGTH)
 				return Id::NONE;

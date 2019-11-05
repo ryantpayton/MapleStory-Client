@@ -78,7 +78,7 @@ namespace ms
 			while (getline(file, line))
 			{
 				// If the setting is not empty, load the value.
-				size_t split = line.find('=');
+				std::size_t split = line.find('=');
 
 				if (split != std::string::npos && split + 2 < line.size())
 				{
@@ -216,12 +216,12 @@ namespace ms
 		HWID = newHWID;
 	}
 
-	void Configuration::set_max_width(int16_t max_width)
+	void Configuration::set_max_width(std::int16_t max_width)
 	{
 		MAXWIDTH = max_width;
 	}
 
-	void Configuration::set_max_height(int16_t max_height)
+	void Configuration::set_max_height(std::int16_t max_height)
 	{
 		MAXHEIGHT = max_height;
 	}
@@ -241,12 +241,12 @@ namespace ms
 		return VolumeSerialNumber;
 	}
 
-	int16_t Configuration::get_max_width()
+	std::int16_t Configuration::get_max_width()
 	{
 		return MAXWIDTH;
 	}
 
-	int16_t Configuration::get_max_height()
+	std::int16_t Configuration::get_max_height()
 	{
 		return MAXHEIGHT;
 	}
@@ -281,22 +281,22 @@ namespace ms
 		start_shown = value;
 	}
 
-	uint8_t Configuration::get_worldid()
+	std::uint8_t Configuration::get_worldid()
 	{
 		return worldid;
 	}
 
-	void Configuration::set_worldid(uint8_t id)
+	void Configuration::set_worldid(std::uint8_t id)
 	{
 		worldid = id;
 	}
 
-	uint8_t Configuration::get_channelid()
+	std::uint8_t Configuration::get_channelid()
 	{
 		return channelid;
 	}
 
-	void Configuration::set_channelid(uint8_t id)
+	void Configuration::set_channelid(std::uint8_t id)
 	{
 		channelid = id;
 	}

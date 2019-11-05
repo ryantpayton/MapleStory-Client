@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Mapinfo.h"
 
-#include "../Constants.h"
+#include "../../Constants.h"
 
 namespace ms
 {
@@ -42,13 +42,13 @@ namespace ms
 		}
 
 		std::string bgmpath = info["bgm"];
-		size_t split = bgmpath.find('/');
+		std::size_t split = bgmpath.find('/');
 		bgm = bgmpath.substr(0, split) + ".img/" + bgmpath.substr(split + 1);
 
 		cloud = info["cloud"].get_bool();
 		fieldlimit = info["fieldLimit"];
 		hideminimap = info["hideMinimap"].get_bool();
-		mapmark = info["mapMark"];
+		mapmark = info["mapMark"].get_string();
 		swim = info["swim"].get_bool();
 		town = info["town"].get_bool();
 
@@ -135,21 +135,21 @@ namespace ms
 		auto hor = Range<int16_t>::symmetric(position.x(), 10);
 		auto ver = Range<int16_t>(y1, y2);
 
-		int16_t y = upwards ?
+		std::int16_t y = upwards ?
 			position.y() - 5 :
 			position.y() + 5;
 
 		return hor.contains(x) && ver.contains(y);
 	}
 
-	bool Ladder::felloff(int16_t y, bool downwards) const
+	bool Ladder::felloff(std::int16_t y, bool downwards) const
 	{
-		int16_t dy = downwards ? y + 5 : y - 5;
+		std::int16_t dy = downwards ? y + 5 : y - 5;
 
 		return dy > y2 || y + 5 < y1;
 	}
 
-	int16_t Ladder::get_x() const
+	std::int16_t Ladder::get_x() const
 	{
 		return x;
 	}

@@ -19,7 +19,7 @@
 
 namespace ms
 {
-	Drop::Drop(int32_t id, int32_t own, Point<int16_t> start, Point<int16_t> dst, int8_t type, int8_t mode, bool pldrp) : MapObject(id)
+	Drop::Drop(std::int32_t id, std::int32_t own, Point<int16_t> start, Point<int16_t> dst, std::int8_t type, std::int8_t mode, bool pldrp) : MapObject(id)
 	{
 		owner = own;
 		set_position(start.x(), start.y() - 4);
@@ -53,7 +53,7 @@ namespace ms
 		}
 	}
 
-	int8_t Drop::update(const Physics& physics)
+	std::int8_t Drop::update(const Physics& physics)
 	{
 		physics.move_object(phobj);
 
@@ -82,7 +82,7 @@ namespace ms
 
 		if (state == Drop::State::PICKEDUP)
 		{
-			static const uint16_t PICKUPTIME = 48;
+			static const std::uint16_t PICKUPTIME = 48;
 			static const float OPCSTEP = 1.0f / PICKUPTIME;
 
 			if (looter)
@@ -105,7 +105,7 @@ namespace ms
 		return phobj.fhlayer;
 	}
 
-	void Drop::expire(int8_t type, const PhysicsObject* lt)
+	void Drop::expire(std::int8_t type, const PhysicsObject* lt)
 	{
 		switch (type)
 		{

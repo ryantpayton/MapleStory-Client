@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Character/Char.h"
-#include "../Graphics/Animation.h"
-#include "../Template/BoolPair.h"
+#include "../../Character/Char.h"
+#include "../../Graphics/Animation.h"
+#include "../../Template/BoolPair.h"
 
 #include <unordered_map>
 #include <vector>
@@ -51,7 +51,7 @@ namespace ms
 
 		private:
 			Animation animation;
-			int8_t z;
+			std::int8_t z;
 		};
 	};
 
@@ -108,7 +108,7 @@ namespace ms
 		void apply(Char& target) const override;
 
 	private:
-		std::map<uint16_t, Effect> effects;
+		std::map<std::uint16_t, Effect> effects;
 	};
 
 	// Use effect for Iron Body.

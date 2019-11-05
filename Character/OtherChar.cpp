@@ -21,7 +21,7 @@
 
 namespace ms
 {
-	OtherChar::OtherChar(int32_t id, const CharLook& lk, uint8_t lvl, int16_t jb, const std::string& nm, int8_t st, Point<int16_t> pos) : Char(id, lk, nm)
+	OtherChar::OtherChar(std::int32_t id, const CharLook& lk, std::uint8_t lvl, std::int16_t jb, const std::string& nm, std::int8_t st, Point<int16_t> pos) : Char(id, lk, nm)
 	{
 		level = lvl;
 		job = jb;
@@ -36,7 +36,7 @@ namespace ms
 		attacking = false;
 	}
 
-	int8_t OtherChar::update(const Physics& physics)
+	std::int8_t OtherChar::update(const Physics& physics)
 	{
 		if (timer > 1)
 		{
@@ -57,7 +57,7 @@ namespace ms
 
 		if (!attacking)
 		{
-			uint8_t laststate = lastmove.newstate;
+			std::uint8_t laststate = lastmove.newstate;
 			set_state(laststate);
 		}
 
@@ -81,17 +81,17 @@ namespace ms
 
 		if (timer == 0)
 		{
-			constexpr uint16_t DELAY = 50;
+			constexpr std::uint16_t DELAY = 50;
 			timer = DELAY;
 		}
 	}
 
-	void OtherChar::update_skill(int32_t skillid, uint8_t skilllevel)
+	void OtherChar::update_skill(std::int32_t skillid, std::uint8_t skilllevel)
 	{
 		skilllevels[skillid] = skilllevel;
 	}
 
-	void OtherChar::update_speed(uint8_t as)
+	void OtherChar::update_speed(std::uint8_t as)
 	{
 		attackspeed = as;
 	}
@@ -100,21 +100,21 @@ namespace ms
 	{
 		look = newlook;
 
-		uint8_t laststate = lastmove.newstate;
+		std::uint8_t laststate = lastmove.newstate;
 		set_state(laststate);
 	}
 
-	int8_t OtherChar::get_integer_attackspeed() const
+	std::int8_t OtherChar::get_integer_attackspeed() const
 	{
 		return attackspeed;
 	}
 
-	uint16_t OtherChar::get_level() const
+	std::uint16_t OtherChar::get_level() const
 	{
 		return level;
 	}
 
-	int32_t OtherChar::get_skilllevel(int32_t skillid) const
+	std::int32_t OtherChar::get_skilllevel(std::int32_t skillid) const
 	{
 		auto iter = skilllevels.find(skillid);
 

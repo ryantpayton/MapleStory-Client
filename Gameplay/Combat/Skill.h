@@ -32,19 +32,19 @@ namespace ms
 	class Skill : public SpecialMove
 	{
 	public:
-		Skill(int32_t skillid);
+		Skill(std::int32_t skillid);
 
 		void apply_useeffects(Char& user) const override;
 		void apply_actions(Char& user, Attack::Type type) const override;
 		void apply_stats(const Char& user, Attack& attack) const override;
 		void apply_hiteffects(const AttackUser& user, Mob& target) const override;
-		Animation get_bullet(const Char& user, int32_t bulletid) const override;
+		Animation get_bullet(const Char& user, std::int32_t bulletid) const override;
 
 		bool is_attack() const override;
 		bool is_skill() const override;
-		int32_t get_id() const override;
+		std::int32_t get_id() const override;
 
-		ForbidReason can_use(int32_t level, Weapon::Type weapon, const Job& job, uint16_t hp, uint16_t mp, uint16_t bullets) const override;
+		ForbidReason can_use(std::int32_t level, Weapon::Type weapon, const Job& job, std::uint16_t hp, std::uint16_t mp, std::uint16_t bullets) const override;
 
 	private:
 		std::unique_ptr<SkillAction> action;
@@ -53,7 +53,7 @@ namespace ms
 		std::unique_ptr<SkillUseEffect> useeffect;
 		std::unique_ptr<SkillHitEffect> hiteffect;
 
-		int32_t skillid;
+		std::int32_t skillid;
 		bool overregular;
 		bool projectile;
 	};

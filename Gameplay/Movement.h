@@ -32,9 +32,9 @@ namespace ms
 			JUMPDOWN
 		};
 
-		Movement(Type t, uint8_t c, int16_t x, int16_t y, int16_t lx, int16_t ly, uint16_t f, uint8_t s, int16_t d) : type(t), command(c), xpos(x), ypos(y), lastx(lx), lasty(ly), fh(f), newstate(s), duration(d) {}
-		Movement(int16_t x, int16_t y, int16_t lx, int16_t ly, uint8_t s, int16_t d) : Movement(Type::ABSOLUTE, 0, x, y, lx, ly, 0, s, d) {}
-		Movement(const PhysicsObject& phobj, uint8_t s) : Movement(Type::ABSOLUTE, 0, phobj.get_x(), phobj.get_y(), phobj.get_last_x(), phobj.get_last_y(), phobj.fhid, s, 1) {}
+		Movement(Type t, std::uint8_t c, std::int16_t x, std::int16_t y, std::int16_t lx, std::int16_t ly, std::uint16_t f, std::uint8_t s, std::int16_t d) : type(t), command(c), xpos(x), ypos(y), lastx(lx), lasty(ly), fh(f), newstate(s), duration(d) {}
+		Movement(std::int16_t x, std::int16_t y, std::int16_t lx, std::int16_t ly, std::uint8_t s, std::int16_t d) : Movement(Type::ABSOLUTE, 0, x, y, lx, ly, 0, s, d) {}
+		Movement(const PhysicsObject& phobj, std::uint8_t s) : Movement(Type::ABSOLUTE, 0, phobj.get_x(), phobj.get_y(), phobj.get_last_x(), phobj.get_last_y(), phobj.fhid, s, 1) {}
 		Movement() : Movement(Type::NONE, 0, 0, 0, 0, 0) {}
 
 		bool hasmoved(const Movement& newmove) const
@@ -43,13 +43,13 @@ namespace ms
 		}
 
 		Type type;
-		uint8_t command;
-		int16_t xpos;
-		int16_t ypos;
-		int16_t lastx;
-		int16_t lasty;
-		uint16_t fh;
-		uint8_t newstate;
-		int16_t duration;
+		std::uint8_t command;
+		std::int16_t xpos;
+		std::int16_t ypos;
+		std::int16_t lastx;
+		std::int16_t lasty;
+		std::uint16_t fh;
+		std::uint8_t newstate;
+		std::int16_t duration;
 	};
 }

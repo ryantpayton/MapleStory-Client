@@ -17,10 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Constants.h"
+#include "../../Constants.h"
 
-#include "../Template/Interpolated.h"
-#include "../Template/Point.h"
+#include "../../Template/Interpolated.h"
+#include "../../Template/Point.h"
 
 namespace ms
 {
@@ -66,7 +66,7 @@ namespace ms
 			vspeed = 0.0;
 		}
 
-		void movexuntil(double d, uint16_t delay)
+		void movexuntil(double d, std::uint16_t delay)
 		{
 			if (delay)
 			{
@@ -75,7 +75,7 @@ namespace ms
 			}
 		}
 
-		void moveyuntil(double d, uint16_t delay)
+		void moveyuntil(double d, std::uint16_t delay)
 		{
 			if (delay)
 			{
@@ -119,25 +119,25 @@ namespace ms
 			return y + vspeed;
 		}
 
-		int16_t get_x() const
+		std::int16_t get_x() const
 		{
 			double rounded = std::round(x.get());
 			return static_cast<int16_t>(rounded);
 		}
 
-		int16_t get_y() const
+		std::int16_t get_y() const
 		{
 			double rounded = std::round(y.get());
 			return static_cast<int16_t>(rounded);
 		}
 
-		int16_t get_last_x() const
+		std::int16_t get_last_x() const
 		{
 			double rounded = std::round(x.last());
 			return static_cast<int16_t>(rounded);
 		}
 
-		int16_t get_last_y() const
+		std::int16_t get_last_y() const
 		{
 			double rounded = std::round(y.last());
 			return static_cast<int16_t>(rounded);
@@ -148,7 +148,7 @@ namespace ms
 			return { get_x(), get_y() };
 		}
 
-		int16_t get_absolute_x(double viewx, float alpha) const
+		std::int16_t get_absolute_x(double viewx, float alpha) const
 		{
 			double interx = x.normalized() ? std::round(x.get()) : x.get(alpha);
 
@@ -157,7 +157,7 @@ namespace ms
 				);
 		}
 
-		int16_t get_absolute_y(double viewy, float alpha) const
+		std::int16_t get_absolute_y(double viewy, float alpha) const
 		{
 			double intery = y.normalized() ? std::round(y.get()) : y.get(alpha);
 
@@ -193,10 +193,10 @@ namespace ms
 		};
 
 		Type type = NORMAL;
-		int32_t flags = 0;
-		uint16_t fhid = 0;
+		std::int32_t flags = 0;
+		std::uint16_t fhid = 0;
 		double fhslope = 0.0;
-		int8_t fhlayer = 0;
+		std::int8_t fhlayer = 0;
 		double groundbelow = 0.0;
 		bool onground = true;
 		bool enablejd = false;

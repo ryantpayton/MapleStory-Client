@@ -17,13 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "ChatBalloon.h"
 
-#include "../Constants.h"
+#include "../../Constants.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	ChatBalloon::ChatBalloon(int8_t type)
+	ChatBalloon::ChatBalloon(std::int8_t type)
 	{
 		std::string typestr;
 
@@ -65,8 +65,8 @@ namespace ms
 		if (duration == 0)
 			return;
 
-		int16_t width = textlabel.width();
-		int16_t height = textlabel.height();
+		std::int16_t width = textlabel.width();
+		std::int16_t height = textlabel.height();
 
 		frame.draw(position, width, height);
 		arrow.draw(position);
@@ -109,18 +109,18 @@ namespace ms
 
 	void ChatBalloonHorizontal::draw(Point<int16_t> position) const
 	{
-		int16_t width = textlabel.width() + 9;
-		int16_t height = textlabel.height() - 2;
+		std::int16_t width = textlabel.width() + 9;
+		std::int16_t height = textlabel.height() - 2;
 
-		int16_t left = position.x() - width / 2;
-		int16_t top = position.y() - height;
-		int16_t right = left + width;
-		int16_t bottom = top + height;
+		std::int16_t left = position.x() - width / 2;
+		std::int16_t top = position.y() - height;
+		std::int16_t right = left + width;
+		std::int16_t bottom = top + height;
 
 		northwest.draw(DrawArgument(left, top));
 		southwest.draw(DrawArgument(left, bottom));
 
-		for (int16_t y = top; y < bottom; y += ytile)
+		for (std::int16_t y = top; y < bottom; y += ytile)
 		{
 			west.draw(DrawArgument(left, y));
 			east.draw(DrawArgument(right, y));
@@ -128,7 +128,7 @@ namespace ms
 
 		center.draw(DrawArgument(Point<int16_t>(left - 8, top), Point<int16_t>(width + 8, height)));
 
-		for (int16_t x = left; x < right; x += xtile)
+		for (std::int16_t x = left; x < right; x += xtile)
 		{
 			north.draw(DrawArgument(x, top));
 			south.draw(DrawArgument(x, bottom));

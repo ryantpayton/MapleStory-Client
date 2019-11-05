@@ -24,7 +24,7 @@ namespace ms
 	namespace KeyAction
 	{
 		// Maple-specific keycodes, sent via the Keymap Packet.
-		enum Id : int32_t
+		enum Id : std::int32_t
 		{
 			NONE = 0,
 			EQUIPMENT = 1,
@@ -106,7 +106,7 @@ namespace ms
 			LENGTH
 		};
 
-		inline Id actionbyid(int32_t id)
+		inline Id actionbyid(std::int32_t id)
 		{
 			return static_cast<Id>(id);
 		}

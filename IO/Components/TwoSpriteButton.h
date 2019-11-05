@@ -19,7 +19,7 @@
 
 #include "Button.h"
 
-#include "../Template/BoolPair.h"
+#include "../../Template/BoolPair.h"
 
 namespace ms
 {
@@ -34,7 +34,7 @@ namespace ms
 		void draw(Point<int16_t> position) const;
 		void update() {}
 		Rectangle<int16_t> bounds(Point<int16_t> position) const;
-		int16_t width() const;
+		std::int16_t width() const;
 		Point<int16_t> origin() const;
 		Cursor::State send_cursor(bool, Point<int16_t>) { return Cursor::State::IDLE; }
 		bool remove_cursor(bool, Point<int16_t>) { return false; }

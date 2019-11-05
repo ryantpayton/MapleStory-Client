@@ -23,7 +23,7 @@
 
 namespace ms
 {
-	Afterimage::Afterimage(int32_t skill_id, const std::string& name, const std::string& stance_name, int16_t level)
+	Afterimage::Afterimage(std::int32_t skill_id, const std::string& name, const std::string& stance_name, std::int16_t level)
 	{
 		nl::node src;
 
@@ -42,7 +42,7 @@ namespace ms
 
 		for (nl::node sub : src)
 		{
-			uint8_t frame = string_conversion::or_default<uint8_t>(sub.name(), 255);
+			std::uint8_t frame = string_conversion::or_default<std::uint8_t>(sub.name(), 255);
 
 			if (frame < 255)
 			{
@@ -58,19 +58,19 @@ namespace ms
 		displayed = true;
 	}
 
-	void Afterimage::draw(uint8_t stframe, const DrawArgument& args, float alpha) const
+	void Afterimage::draw(std::uint8_t stframe, const DrawArgument& args, float alpha) const
 	{
 		if (!displayed && stframe >= firstframe)
 			animation.draw(args, alpha);
 	}
 
-	void Afterimage::update(uint8_t stframe, uint16_t timestep)
+	void Afterimage::update(std::uint8_t stframe, std::uint16_t timestep)
 	{
 		if (!displayed && stframe >= firstframe)
 			displayed = animation.update(timestep);
 	}
 
-	uint8_t Afterimage::get_first_frame() const
+	std::uint8_t Afterimage::get_first_frame() const
 	{
 		return firstframe;
 	}

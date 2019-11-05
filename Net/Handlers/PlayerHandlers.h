@@ -19,8 +19,8 @@
 
 #include "../PacketHandler.h"
 
-#include "../Character/Buff.h"
-#include "../Character/Maplestat.h"
+#include "../../Character/Buff.h"
+#include "../../Character/Maplestat.h"
 
 namespace ms
 {

@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "SkillHitEffect.h"
 
-#include "../Util/Misc.h"
+#include "Util/Misc.h"
 
 namespace ms
 {
@@ -39,7 +39,7 @@ namespace ms
 	{
 		for (auto sub : src["CharLevel"])
 		{
-			uint16_t level = string_conversion::or_zero<uint16_t>(sub.name());
+			std::uint16_t level = string_conversion::or_zero<std::uint16_t>(sub.name());
 			effects.emplace(level, sub["hit"]["0"]);
 		}
 	}
@@ -62,7 +62,7 @@ namespace ms
 	{
 		for (auto sub : src["CharLevel"])
 		{
-			auto level = string_conversion::or_zero<uint16_t>(sub.name());
+			auto level = string_conversion::or_zero<std::uint16_t>(sub.name());
 
 			effects.emplace(std::piecewise_construct,
 				std::forward_as_tuple(level),
@@ -89,7 +89,7 @@ namespace ms
 	{
 		for (auto sub : src["level"])
 		{
-			auto level = string_conversion::or_zero<int32_t>(sub.name());
+			auto level = string_conversion::or_zero<std::int32_t>(sub.name());
 			effects.emplace(level, sub["hit"]["0"]);
 		}
 	}

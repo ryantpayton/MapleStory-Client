@@ -443,12 +443,12 @@ static FILE * stb_p_wfopen(const wchar_t *filename, const wchar_t *mode)
    else
       return NULL;
 }
-static char *stb_p_strcpy_s(char *a, size_t size, const char *b)
+static char *stb_p_strcpy_s(char *a, std::size_t size, const char *b)
 {
    strcpy_s(a,size,b);
    return a;
 }
-static char *stb_p_strncpy_s(char *a, size_t size, const char *b, size_t count)
+static char *stb_p_strncpy_s(char *a, std::size_t size, const char *b, std::size_t count)
 {
    strncpy_s(a,size,b,count);
    return a;
@@ -484,13 +484,13 @@ static char *stb_p_strncpy_s(char *a, size_t size, const char *b, size_t count)
 #define stb_p_strnicmp   strnicmp
 #endif
 
-STB_EXTERN void stb_wrapper_malloc(void *newp, size_t sz, char *file, int line);
+STB_EXTERN void stb_wrapper_malloc(void *newp, std::size_t sz, char *file, int line);
 STB_EXTERN void stb_wrapper_free(void *oldp, char *file, int line);
-STB_EXTERN void stb_wrapper_realloc(void *oldp, void *newp, size_t sz, char *file, int line);
-STB_EXTERN void stb_wrapper_calloc(size_t num, size_t sz, char *file, int line);
-STB_EXTERN void stb_wrapper_listall(void (*func)(void *ptr, size_t sz, char *file, int line));
+STB_EXTERN void stb_wrapper_realloc(void *oldp, void *newp, std::size_t sz, char *file, int line);
+STB_EXTERN void stb_wrapper_calloc(std::size_t num, std::size_t sz, char *file, int line);
+STB_EXTERN void stb_wrapper_listall(void (*func)(void *ptr, std::size_t sz, char *file, int line));
 STB_EXTERN void stb_wrapper_dump(char *filename);
-STB_EXTERN size_t stb_wrapper_allocsize(void *oldp);
+STB_EXTERN std::size_t stb_wrapper_allocsize(void *oldp);
 STB_EXTERN void stb_wrapper_check(void *oldp);
 
 #ifdef STB_DEFINE
@@ -511,10 +511,10 @@ static void * stb__realloc_raw(void *p, int sz)
 #endif
 
 #ifdef _WIN32
-STB_EXTERN void * stb_smalloc(size_t sz);
+STB_EXTERN void * stb_smalloc(std::size_t sz);
 STB_EXTERN void   stb_sfree(void *p);
-STB_EXTERN void * stb_srealloc(void *p, size_t sz);
-STB_EXTERN void * stb_scalloc(size_t n, size_t sz);
+STB_EXTERN void * stb_srealloc(void *p, std::size_t sz);
+STB_EXTERN void * stb_scalloc(std::size_t n, std::size_t sz);
 STB_EXTERN char * stb_sstrdup(char *s);
 #endif
 
@@ -537,9 +537,9 @@ STB_EXTERN char * stb_sstrdup(char *s);
 #endif
 
 #ifdef STB_MALLOC_WRAPPER
-   STB_EXTERN void * stb__malloc(size_t, char *, int);
-   STB_EXTERN void * stb__realloc(void *, size_t, char *, int);
-   STB_EXTERN void * stb__calloc(size_t n, size_t s, char *, int);
+   STB_EXTERN void * stb__malloc(std::size_t, char *, int);
+   STB_EXTERN void * stb__realloc(void *, std::size_t, char *, int);
+   STB_EXTERN void * stb__calloc(std::size_t n, std::size_t s, char *, int);
    STB_EXTERN void   stb__free(void *, char *file, int);
    STB_EXTERN char * stb__strdup(char *s, char *file, int);
    STB_EXTERN void   stb_malloc_checkall(void);
@@ -582,7 +582,7 @@ STB_EXTERN char * stb_sstrdup(char *s);
       return 1;
    }
 
-   static void stb__check2(void *p, size_t sz, char *file, int line)
+   static void stb__check2(void *p, std::size_t sz, char *file, int line)
    {
       stb_mcheck(p);
    }
@@ -621,10 +621,10 @@ STB_EXTERN char * stb_sstrdup(char *s);
    #endif
    #endif
 
-   static void *stb__malloc_final(size_t sz)
+   static void *stb__malloc_final(std::size_t sz)
    {
       #ifdef STB_MALLOC_WRAPPER_PAGED
-      size_t aligned = (sz + STB__WINDOWS_PAGE - 1) & ~(STB__WINDOWS_PAGE-1);
+      std::size_t aligned = (sz + STB__WINDOWS_PAGE - 1) & ~(STB__WINDOWS_PAGE-1);
       char *p = VirtualAlloc(NULL, aligned + STB__WINDOWS_PAGE, 0x2000, 0x04); // RESERVE, READWRITE
       if (p == NULL) return p;
       VirtualAlloc(p, aligned,   0x1000, 0x04); // COMMIT, READWRITE
@@ -645,7 +645,7 @@ STB_EXTERN char * stb_sstrdup(char *s);
 
    int stb__malloc_failure;
    #ifdef STB_MALLOC_WRAPPER_PAGED
-   static void *stb__realloc_final(void *p, size_t sz, size_t old_sz)
+   static void *stb__realloc_final(void *p, std::size_t sz, std::size_t old_sz)
    {
       void *q = stb__malloc_final(sz);
       if (q == NULL)
@@ -675,7 +675,7 @@ STB_EXTERN char * stb_sstrdup(char *s);
       stb__free_final(p);
    }
 
-   void * stb__malloc(size_t sz, char *file, int line)
+   void * stb__malloc(std::size_t sz, char *file, int line)
    {
       void *p;
       stb_mcheck_all();
@@ -705,7 +705,7 @@ STB_EXTERN char * stb_sstrdup(char *s);
       return p;
    }
 
-   void * stb__realloc(void *p, size_t sz, char *file, int line)
+   void * stb__realloc(void *p, std::size_t sz, char *file, int line)
    {
       void *q;
 
@@ -719,7 +719,7 @@ STB_EXTERN char * stb_sstrdup(char *s);
       #endif
       #ifdef STB_MALLOC_WRAPPER_PAGED
       {
-         size_t n = stb_wrapper_allocsize(STB__ptr(p,STB__BIAS));
+         std::size_t n = stb_wrapper_allocsize(STB__ptr(p,STB__BIAS));
          if (!n)
             stb_wrapper_check(STB__ptr(p,STB__BIAS));
          q = stb__realloc_final(p, STB__FIXSIZE(sz), STB__FIXSIZE(n));
@@ -746,8 +746,8 @@ STB_EXTERN char * stb_sstrdup(char *s);
       return q;
    }
 
-   STB_EXTERN int stb_log2_ceil(size_t);
-   static void *stb__calloc(size_t n, size_t sz, char *file, int line)
+   STB_EXTERN int stb_log2_ceil(std::size_t);
+   static void *stb__calloc(std::size_t n, std::size_t sz, char *file, int line)
    {
       void *q;
       stb_mcheck_all();
@@ -797,11 +797,11 @@ STB_EXTERN char * stb_sstrdup(char *s);
 STB_EXTERN void stbprint(const char *fmt, ...);
 STB_EXTERN char *stb_sprintf(const char *fmt, ...);
 STB_EXTERN char *stb_mprintf(const char *fmt, ...);
-STB_EXTERN int  stb_snprintf(char *s, size_t n, const char *fmt, ...);
-STB_EXTERN int  stb_vsnprintf(char *s, size_t n, const char *fmt, va_list v);
+STB_EXTERN int  stb_snprintf(char *s, std::size_t n, const char *fmt, ...);
+STB_EXTERN int  stb_vsnprintf(char *s, std::size_t n, const char *fmt, va_list v);
 
 #ifdef STB_DEFINE
-int stb_vsnprintf(char *s, size_t n, const char *fmt, va_list v)
+int stb_vsnprintf(char *s, std::size_t n, const char *fmt, va_list v)
 {
    int res;
    #ifdef _WIN32
@@ -818,7 +818,7 @@ int stb_vsnprintf(char *s, size_t n, const char *fmt, va_list v)
    return (res >= (int) n || res < 0) ? -1 : res;
 }
 
-int stb_snprintf(char *s, size_t n, const char *fmt, ...)
+int stb_snprintf(char *s, std::size_t n, const char *fmt, ...)
 {
    int res;
    va_list v;
@@ -1124,8 +1124,8 @@ STB_EXTERN void stb_log(int active);
 STB_EXTERN void stb_log_fileline(int active);
 STB_EXTERN void stb_log_name(char *filename);
 
-STB_EXTERN void stb_swap(void *p, void *q, size_t sz);
-STB_EXTERN void *stb_copy(void *p, size_t sz);
+STB_EXTERN void stb_swap(void *p, void *q, std::size_t sz);
+STB_EXTERN void *stb_copy(void *p, std::size_t sz);
 STB_EXTERN void stb_pointer_array_free(void *p, int len);
 STB_EXTERN void **stb_array_block_alloc(int count, int blocksize);
 
@@ -1228,7 +1228,7 @@ typedef struct { char d[4]; } stb__4;
 typedef struct { char d[8]; } stb__8;
 
 // optimize the small cases, though you shouldn't be calling this for those!
-void stb_swap(void *p, void *q, size_t sz)
+void stb_swap(void *p, void *q, std::size_t sz)
 {
    char buffer[256];
    if (p == q) return;
@@ -1256,7 +1256,7 @@ void stb_swap(void *p, void *q, size_t sz)
    memcpy(q     , buffer, sz);
 }
 
-void *stb_copy(void *p, size_t sz)
+void *stb_copy(void *p, std::size_t sz)
 {
    void *q = malloc(sz);
    memcpy(q, p, sz);
@@ -1495,9 +1495,9 @@ STB_EXTERN          int stb_bitcount(unsigned int a);
 STB_EXTERN unsigned int stb_bitreverse8(unsigned char n);
 STB_EXTERN unsigned int stb_bitreverse(unsigned int n);
 
-STB_EXTERN          int stb_is_pow2(size_t);
-STB_EXTERN          int stb_log2_ceil(size_t);
-STB_EXTERN          int stb_log2_floor(size_t);
+STB_EXTERN          int stb_is_pow2(std::size_t);
+STB_EXTERN          int stb_log2_ceil(std::size_t);
+STB_EXTERN          int stb_log2_floor(std::size_t);
 
 STB_EXTERN          int stb_lowbit8(unsigned int n);
 STB_EXTERN          int stb_highbit8(unsigned int n);
@@ -1529,7 +1529,7 @@ unsigned int stb_bitreverse(unsigned int n)
   return (n >> 16) | (n << 16);
 }
 
-int stb_is_pow2(size_t n)
+int stb_is_pow2(std::size_t n)
 {
    return (n & (n-1)) == 0;
 }
@@ -1539,7 +1539,7 @@ int stb_is_pow2(size_t n)
 #if defined(_WIN32) && !defined(__MINGW32__)
 #pragma warning(push)
 #pragma warning(disable: 4035)  // disable warning about no return value
-int stb_log2_floor(size_t n)
+int stb_log2_floor(std::size_t n)
 {
    #if _MSC_VER > 1700
    unsigned long i;
@@ -1560,12 +1560,12 @@ int stb_log2_floor(size_t n)
 }
 #pragma warning(pop)
 #else
-int stb_log2_floor(size_t n)
+int stb_log2_floor(std::size_t n)
 {
    static signed char log2_4[16] = { -1,0,1,1,2,2,2,2,3,3,3,3,3,3,3,3 };
 
 #ifdef STB_PTR64
-   if (n >= ((size_t) 1u << 32))
+   if (n >= ((std::size_t) 1u << 32))
         return stb_log2_floor(n >> 32);
 #endif
 
@@ -1583,7 +1583,7 @@ int stb_log2_floor(size_t n)
 #endif
 
 // define ceil from floor
-int stb_log2_ceil(size_t n)
+int stb_log2_ceil(std::size_t n)
 {
    if (stb_is_pow2(n))  return     stb_log2_floor(n);
    else                 return 1 + stb_log2_floor(n);
@@ -1903,7 +1903,7 @@ STB_EXTERN char * stb_strichr(char *s, char t);
 STB_EXTERN char * stb_stristr(char *s, char *t);
 STB_EXTERN int    stb_prefix_count(char *s, char *t);
 STB_EXTERN const char * stb_plural(int n);  // "s" or ""
-STB_EXTERN size_t stb_strscpy(char *d, const char *s, size_t n);
+STB_EXTERN std::size_t stb_strscpy(char *d, const char *s, std::size_t n);
 
 STB_EXTERN char **stb_tokens(char *src, char *delimit, int *count);
 STB_EXTERN char **stb_tokens_nested(char *src, char *delimit, int *count, char *nest_in, char *nest_out);
@@ -1918,9 +1918,9 @@ STB_EXTERN char **stb_tokens_quoted(char *src, char *delimit, int *count);
 
 #ifdef STB_DEFINE
 
-size_t stb_strscpy(char *d, const char *s, size_t n)
+std::size_t stb_strscpy(char *d, const char *s, std::size_t n)
 {
-   size_t len = strlen(s);
+   std::size_t len = strlen(s);
    if (len >= n) {
       if (n) d[0] = 0;
       return 0;
@@ -1955,8 +1955,8 @@ int stb_prefix_count(char *s, char *t)
 
 int stb_suffix(char *s, char *t)
 {
-   size_t n = strlen(s);
-   size_t m = strlen(t);
+   std::size_t n = strlen(s);
+   std::size_t m = strlen(t);
    if (m <= n)
       return 0 == strcmp(s+n-m, t);
    else
@@ -1965,8 +1965,8 @@ int stb_suffix(char *s, char *t)
 
 int stb_suffixi(char *s, char *t)
 {
-   size_t n = strlen(s);
-   size_t m = strlen(t);
+   std::size_t n = strlen(s);
+   std::size_t m = strlen(t);
    if (m <= n)
       return 0 == stb_stricmp(s+n-m, t);
    else
@@ -2067,7 +2067,7 @@ char *stb_strichr(char *s, char t)
 
 char *stb_stristr(char *s, char *t)
 {
-   size_t n = strlen(t);
+   std::size_t n = strlen(t);
    char *z;
    if (n==0) return s;
    while ((z = stb_strichr(s, *t)) != NULL) {
@@ -2298,8 +2298,8 @@ char **stb_tokens_quoted(char *src, char *delimit, int *count)
 
 char *stb_dupreplace(char *src, char *find, char *replace)
 {
-   size_t len_find = strlen(find);
-   size_t len_replace = strlen(replace);
+   std::size_t len_find = strlen(find);
+   std::size_t len_replace = strlen(replace);
    int count = 0;
 
    char *s,*p,*q;
@@ -2332,8 +2332,8 @@ char *stb_dupreplace(char *src, char *find, char *replace)
 
 void stb_replaceinplace(char *src, char *find, char *replace)
 {
-   size_t len_find = strlen(find);
-   size_t len_replace = strlen(replace);
+   std::size_t len_find = strlen(find);
+   std::size_t len_replace = strlen(replace);
    int delta;
 
    char *s,*p,*q;
@@ -2551,12 +2551,12 @@ char *stb_replaceext(char *output, char *src, char *ext)
 // each one is from the last field.
 
 STB_EXTERN void  stb_free(void *p);
-STB_EXTERN void *stb_malloc_global(size_t size);
-STB_EXTERN void *stb_malloc(void *context, size_t size);
-STB_EXTERN void *stb_malloc_nofree(void *context, size_t size);
-STB_EXTERN void *stb_malloc_leaf(void *context, size_t size);
-STB_EXTERN void *stb_malloc_raw(void *context, size_t size);
-STB_EXTERN void *stb_realloc(void *ptr, size_t newsize);
+STB_EXTERN void *stb_malloc_global(std::size_t size);
+STB_EXTERN void *stb_malloc(void *context, std::size_t size);
+STB_EXTERN void *stb_malloc_nofree(void *context, std::size_t size);
+STB_EXTERN void *stb_malloc_leaf(void *context, std::size_t size);
+STB_EXTERN void *stb_malloc_raw(void *context, std::size_t size);
+STB_EXTERN void *stb_realloc(void *ptr, std::size_t newsize);
 
 STB_EXTERN void stb_reassign(void *new_context, void *ptr);
 STB_EXTERN void stb_malloc_validate(void *p, void *parent);
@@ -2893,7 +2893,7 @@ static void stb__insert_nochild(stb__alloc *src, stb__nochildren *s)
       *stb__prevn(s->next) = &s->next;
 }
 
-static void * malloc_base(void *context, size_t size, stb__alloc_type t, int align)
+static void * malloc_base(void *context, std::size_t size, stb__alloc_type t, int align)
 {
    void *p;
 
@@ -2974,37 +2974,37 @@ static void * malloc_base(void *context, size_t size, stb__alloc_type t, int ali
    return p;
 }
 
-void *stb_malloc_global(size_t size)
+void *stb_malloc_global(std::size_t size)
 {
    return malloc_base(NULL, size, STB__alloc, stb_alloc_alignment);
 }
 
-void *stb_malloc(void *context, size_t size)
+void *stb_malloc(void *context, std::size_t size)
 {
    return malloc_base(context, size, STB__alloc, stb_alloc_alignment);
 }
 
-void *stb_malloc_nofree(void *context, size_t size)
+void *stb_malloc_nofree(void *context, std::size_t size)
 {
    return malloc_base(context, size, STB__chunked, stb_alloc_alignment);
 }
 
-void *stb_malloc_leaf(void *context, size_t size)
+void *stb_malloc_leaf(void *context, std::size_t size)
 {
    return malloc_base(context, size, STB__nochildren, stb_alloc_alignment);
 }
 
-void *stb_malloc_raw(void *context, size_t size)
+void *stb_malloc_raw(void *context, std::size_t size)
 {
    return malloc_base(context, size, STB__chunk_raw, stb_alloc_alignment);
 }
 
-char *stb_malloc_string(void *context, size_t size)
+char *stb_malloc_string(void *context, std::size_t size)
 {
    return (char *) malloc_base(context, size, STB__chunk_raw, 1);
 }
 
-void *stb_realloc(void *ptr, size_t newsize)
+void *stb_realloc(void *ptr, std::size_t newsize)
 {
    stb__alloc_type t;
 
@@ -3046,7 +3046,7 @@ void *stb_realloc(void *ptr, size_t newsize)
    }
 }
 
-void *stb_realloc_c(void *context, void *ptr, size_t newsize)
+void *stb_realloc_c(void *context, void *ptr, std::size_t newsize)
 {
    if (ptr == NULL) return stb_malloc(context, newsize);
    if (newsize == 0) { stb_free(ptr); return NULL; }
@@ -3469,7 +3469,7 @@ unsigned int stb_hashlen(char *str, int len)
 
 unsigned int stb_hashptr(void *p)
 {
-    unsigned int x = (unsigned int)(size_t) p;
+    unsigned int x = (unsigned int)(std::size_t) p;
 
    // typically lacking in low bits and high bits
    x = stb_rehash(x);
@@ -3486,7 +3486,7 @@ unsigned int stb_hashptr(void *p)
 
 unsigned int stb_rehash_improved(unsigned int v)
 {
-   return stb_hashptr((void *)(size_t) v);
+   return stb_hashptr((void *)(std::size_t) v);
 }
 
 unsigned int stb_hash2(char *str, unsigned int *hash2_ptr)
@@ -3828,7 +3828,7 @@ int stb_ischar(char c, char *set)
    static unsigned char (*tables)[256];
    static char ** sets = NULL;
 
-   int z = stb_perfect_hash(&p, (int)(size_t) set);
+   int z = stb_perfect_hash(&p, (int)(std::size_t) set);
    if (z < 0) {
       int i,k,n,j,f;
       // special code that means free all existing data
@@ -3847,7 +3847,7 @@ int stb_ischar(char c, char *set)
       tables = (unsigned char (*)[256]) realloc(tables, sizeof(*tables) * k);
       memset(tables, 0, sizeof(*tables) * k);
       for (i=0; i < stb_arr_len(sets); ++i) {
-          k = stb_perfect_hash(&p, (int)(size_t) sets[i]);
+          k = stb_perfect_hash(&p, (int)(std::size_t) sets[i]);
          assert(k >= 0);
          n = k >> 3;
          f = bit[k&7];
@@ -3855,7 +3855,7 @@ int stb_ischar(char c, char *set)
             tables[n][(unsigned char) sets[i][j]] |= f;
          }
       }
-      z = stb_perfect_hash(&p, (int)(size_t) set);
+      z = stb_perfect_hash(&p, (int)(std::size_t) set);
    }
    return tables[z >> 3][(unsigned char) c] & bit[z & 7];
 }
@@ -5147,10 +5147,10 @@ STB_EXTERN int      stb_size_varlen64(stb_uint64 v);
 
 #define stb_filec    (char *) stb_file
 #define stb_fileu    (unsigned char *) stb_file
-STB_EXTERN void *  stb_file(char *filename, size_t *length);
-STB_EXTERN void *  stb_file_max(char *filename, size_t *length);
-STB_EXTERN size_t  stb_filelen(FILE *f);
-STB_EXTERN int     stb_filewrite(char *filename, void *data, size_t length);
+STB_EXTERN void *  stb_file(char *filename, std::size_t *length);
+STB_EXTERN void *  stb_file_max(char *filename, std::size_t *length);
+STB_EXTERN std::size_t  stb_filelen(FILE *f);
+STB_EXTERN int     stb_filewrite(char *filename, void *data, std::size_t length);
 STB_EXTERN int     stb_filewritestr(char *filename, char *data);
 STB_EXTERN char ** stb_stringfile(char *filename, int *len);
 STB_EXTERN char ** stb_stringfile_trimmed(char *name, int *len, char comm);
@@ -5189,8 +5189,8 @@ STB_EXTERN int     stb_size_varlen (int v);
 STB_EXTERN int     stb_size_varlenu(unsigned int v);
 STB_EXTERN int     stb_size_ranged (int b, stb_uint n);
 
-STB_EXTERN int     stb_fread(void *data, size_t len, size_t count, void *f);
-STB_EXTERN int     stb_fwrite(void *data, size_t len, size_t count, void *f);
+STB_EXTERN int     stb_fread(void *data, std::size_t len, std::size_t count, void *f);
+STB_EXTERN int     stb_fwrite(void *data, std::size_t len, std::size_t count, void *f);
 
 #if 0
 typedef struct
@@ -5203,8 +5203,8 @@ typedef struct
 } STBF;
 
 STB_EXTERN STBF *stb_tfopen(char *filename, char *mode);
-STB_EXTERN int stb_tfread(void *data, size_t len, size_t count, STBF *f);
-STB_EXTERN int stb_tfwrite(void *data, size_t len, size_t count, STBF *f);
+STB_EXTERN int stb_tfread(void *data, std::size_t len, std::size_t count, STBF *f);
+STB_EXTERN int stb_tfwrite(void *data, std::size_t len, std::size_t count, STBF *f);
 #endif
 
 #ifdef STB_DEFINE
@@ -5232,7 +5232,7 @@ STBF *stb_tfopen(char *filename, char *mode)
    return z;
 }
 
-int stb_tfread(void *data, size_t len, size_t count, STBF *f)
+int stb_tfread(void *data, std::size_t len, std::size_t count, STBF *f)
 {
    int total = len*count, done=0;
    if (!total) return 0;
@@ -5291,21 +5291,21 @@ time_t stb_ftimestamp(char *filename)
    }
 }
 
-size_t  stb_filelen(FILE *f)
+std::size_t  stb_filelen(FILE *f)
 {
    long len, pos;
    pos = ftell(f);
    fseek(f, 0, SEEK_END);
    len = ftell(f);
    fseek(f, pos, SEEK_SET);
-   return (size_t) len;
+   return (std::size_t) len;
 }
 
-void *stb_file(char *filename, size_t *length)
+void *stb_file(char *filename, std::size_t *length)
 {
    FILE *f = stb__fopen(filename, "rb");
    char *buffer;
-   size_t len, len2;
+   std::size_t len, len2;
    if (!f) return NULL;
    len = stb_filelen(f);
    buffer = (char *) malloc(len+2); // nul + extra
@@ -5321,15 +5321,15 @@ void *stb_file(char *filename, size_t *length)
    return buffer;
 }
 
-int stb_filewrite(char *filename, void *data, size_t length)
+int stb_filewrite(char *filename, void *data, std::size_t length)
 {
    FILE *f = stb_fopen(filename, "wb");
    if (f) {
       unsigned char *data_ptr = (unsigned char *) data;
-      size_t remaining = length;
+      std::size_t remaining = length;
       while (remaining > 0) {
-         size_t len2 = remaining > 65536 ? 65536 : remaining;
-         size_t len3 = fwrite(data_ptr, 1, len2, f);
+         std::size_t len2 = remaining > 65536 ? 65536 : remaining;
+         std::size_t len3 = fwrite(data_ptr, 1, len2, f);
          if (len2 != len3) {
             fprintf(stderr, "Failed while writing %s\n", filename);
             break;
@@ -5347,11 +5347,11 @@ int stb_filewritestr(char *filename, char *data)
    return stb_filewrite(filename, data, strlen(data));
 }
 
-void *  stb_file_max(char *filename, size_t *length)
+void *  stb_file_max(char *filename, std::size_t *length)
 {
    FILE *f = stb__fopen(filename, "rb");
    char *buffer;
-   size_t len, maxlen;
+   std::size_t len, maxlen;
    if (!f) return NULL;
    maxlen = *length;
    buffer = (char *) malloc(maxlen+1);
@@ -5366,7 +5366,7 @@ char ** stb_stringfile(char *filename, int *plen)
 {
    FILE *f = stb__fopen(filename, "rb");
    char *buffer, **list=NULL, *s;
-   size_t len, count, i;
+   std::size_t len, count, i;
 
    if (!f) return NULL;
    len = stb_filelen(f);
@@ -5446,14 +5446,14 @@ char * stb_fgets_malloc(FILE *f)
       return NULL;
 
    if (quick_buffer[sizeof(quick_buffer)-2] == 0) {
-      size_t n = strlen(quick_buffer);
+      std::size_t n = strlen(quick_buffer);
       if (n > 0 && quick_buffer[n-1] == '\n')
          quick_buffer[n-1] = 0;
       return stb_p_strdup(quick_buffer);
    } else {
       char *p;
       char *a = stb_p_strdup(quick_buffer);
-      size_t len = sizeof(quick_buffer)-1;
+      std::size_t len = sizeof(quick_buffer)-1;
 
       while (!feof(f)) {
          if (a[len-1] == '\n') break;
@@ -5572,7 +5572,7 @@ typedef struct
 
 static FILE *stb__open_temp_file(char *temp_name, char *src_name, const char *mode)
 {
-   size_t p;
+   std::size_t p;
 #ifdef _MSC_VER
    int j;
 #endif
@@ -5772,7 +5772,7 @@ int stb_copyfile(char *src, char *dest)
    }
 
    while (!feof(f)) {
-      size_t n = fread(buffer, 1, buf_size, f);
+      std::size_t n = fread(buffer, 1, buf_size, f);
       if (n != 0)
          fwrite(buffer, 1, n, g);
    }
@@ -5948,7 +5948,7 @@ int     stb_size_ranged(int b, stb_uint n)
 
 void stb_fput_string(FILE *f, char *s)
 {
-   size_t len = strlen(s);
+   std::size_t len = strlen(s);
    stb_fput_varlenu(f, (unsigned int) len);
    fwrite(s, 1, len, f);
 }
@@ -5967,7 +5967,7 @@ char *stb_fget_string(FILE *f, void *p)
 
 char *stb_strdup(char *str, void *pool)
 {
-   size_t len = strlen(str);
+   std::size_t len = strlen(str);
    char *p = stb_malloc_string(pool, len+1);
    stb_p_strcpy_s(p, len+1, str);
    return p;
@@ -6051,7 +6051,7 @@ char **stb_getopt_param(int *argc, char **argv, char *param)
                char *s;
                if (strchr(param, q[k])) {  // does it take a parameter?
                   char *t = &q[k+1], z = q[k];
-                  size_t len=0;
+                  std::size_t len=0;
                   if (*t == 0) {
                      if (i == *argc-1) { // takes a parameter, but none found
                         *argc = 0;
@@ -6128,7 +6128,7 @@ static char **readdir_raw(char *dir, int return_subdirs, char *mask)
 {
    char **results = NULL;
    char buffer[4096], with_slash[4096];
-   size_t n;
+   std::size_t n;
 
    #ifdef _MSC_VER
       stb__wchar *ws;
@@ -6590,7 +6590,7 @@ int stb_sha1_file(stb_uchar output[20], char *file)
    h[4] = 0xc3d2e1f0;
 
    for(;;) {
-      size_t n = fread(buffer, 1, 64, f);
+      std::size_t n = fread(buffer, 1, 64, f);
       if (n == 64) {
          stb__sha1(buffer, h);
          length += n;
@@ -6823,7 +6823,7 @@ STB_EXTERN void stb_cfg_set_directory(char *dir)
 
 STB_EXTERN stb_cfg * stb_cfg_open(char *config, const char *mode)
 {
-   size_t len;
+   std::size_t len;
    stb_cfg *z;
    char file[512];
    if (mode[0] != 'r' && mode[0] != 'w') return NULL;
@@ -7158,9 +7158,9 @@ static void stb__dirtree_scandir(char *path, time_t last_time, stb_dirtree *acti
       swprintf(full_path, L"%s/*", stb__from_utf8(path));
 #else
    if (has_slash)
-      swprintf((wchar_t *) full_path, (size_t) 1024, L"%s*", (wchar_t *) stb__from_utf8(path));
+      swprintf((wchar_t *) full_path, (std::size_t) 1024, L"%s*", (wchar_t *) stb__from_utf8(path));
    else
-      swprintf((wchar_t *) full_path, (size_t) 1024, L"%s/*", (wchar_t *) stb__from_utf8(path));
+      swprintf((wchar_t *) full_path, (std::size_t) 1024, L"%s/*", (wchar_t *) stb__from_utf8(path));
 #endif
 
    // it's possible this directory is already present: that means it was in the
@@ -7463,7 +7463,7 @@ typedef struct
    void *p;
    char *file;
    int  line;
-   size_t size;
+   std::size_t size;
 } stb_malloc_record;
 
 #ifndef STB_MALLOC_HISTORY_COUNT
@@ -7493,7 +7493,7 @@ static int stb__hashfind(void *p)
    }
 }
 
-size_t stb_wrapper_allocsize(void *p)
+std::size_t stb_wrapper_allocsize(void *p)
 {
    int n = stb__hashfind(p);
    if (n < 0) return 0;
@@ -7512,7 +7512,7 @@ static int stb__historyfind(void *p)
    return -1;
 }
 
-static void stb__add_alloc(void *p, size_t sz, char *file, int line);
+static void stb__add_alloc(void *p, std::size_t sz, char *file, int line);
 static void stb__grow_alloc(void)
 {
    int i,old_num = stb__alloc_size;
@@ -7542,7 +7542,7 @@ static void stb__grow_alloc(void)
    stb__realloc_raw(old, 0);
 }
 
-static void stb__add_alloc(void *p, size_t sz, char *file, int line)
+static void stb__add_alloc(void *p, std::size_t sz, char *file, int line)
 {
    stb_uint32 h;
    int n;
@@ -7575,7 +7575,7 @@ static void stb__remove_alloc(int n, char *file, int line)
    --stb__alloc_count;
 }
 
-void stb_wrapper_malloc(void *p, size_t sz, char *file, int line)
+void stb_wrapper_malloc(void *p, std::size_t sz, char *file, int line)
 {
    if (!p) return;
    stb__add_alloc(p,sz,file,line);
@@ -7628,7 +7628,7 @@ void stb_wrapper_check(void *p)
    stb_fatal("Checked unknown block %p");
 }
 
-void stb_wrapper_realloc(void *p, void *q, size_t sz, char *file, int line)
+void stb_wrapper_realloc(void *p, void *q, std::size_t sz, char *file, int line)
 {
    int n;
    if (p == NULL) { stb_wrapper_malloc(q, sz, file, line); return; }
@@ -7659,7 +7659,7 @@ void stb_wrapper_realloc(void *p, void *q, size_t sz, char *file, int line)
    }
 }
 
-void stb_wrapper_listall(void (*func)(void *ptr, size_t sz, char *file, int line))
+void stb_wrapper_listall(void (*func)(void *ptr, std::size_t sz, char *file, int line))
 {
    int i;
    for (i=0; i < stb__alloc_size; ++i)
@@ -7845,14 +7845,14 @@ static stb_ps_hash *stb_ps_makehash(int size, int old_size, void **old_data)
    h->any_offset = 0;
    memset(h->table, 0, size * sizeof(h->table[0]));
    for (i=0; i < old_size; ++i)
-        if (!stb_ps_empty((size_t)old_data[i]))
+        if (!stb_ps_empty((std::size_t)old_data[i]))
          stb_ps_add(EncodeHash(h), old_data[i]);
    return h;
 }
 
 void stb_ps_delete(stb_ps *ps)
 {
-    switch (3 & (int)(size_t) ps) {
+    switch (3 & (int)(std::size_t) ps) {
       case STB_ps_direct: break;
       case STB_ps_bucket: stb_bucket_free(GetBucket(ps)); break;
       case STB_ps_array : free(GetArray(ps)); break;
@@ -7864,7 +7864,7 @@ stb_ps *stb_ps_copy(stb_ps *ps)
 {
    int i;
    // not a switch: order based on expected performance/power-law distribution
-    switch (3 & (int)(size_t) ps) {
+    switch (3 & (int)(std::size_t) ps) {
       case STB_ps_direct: return ps;
       case STB_ps_bucket: {
          stb_ps_bucket *n = (stb_ps_bucket *) malloc(sizeof(*n));
@@ -7891,8 +7891,8 @@ stb_ps *stb_ps_copy(stb_ps *ps)
 
 int stb_ps_find(stb_ps *ps, void *value)
 {
-    int i, code = 3 & (int)(size_t) ps;
-    assert((3 & (int)(size_t) value) == STB_ps_direct);
+    int i, code = 3 & (int)(std::size_t) ps;
+    assert((3 & (int)(std::size_t) value) == STB_ps_direct);
    assert(stb_ps_fastlist_valid(value));
    // not a switch: order based on expected performance/power-law distribution
    if (code == STB_ps_direct)
@@ -7933,11 +7933,11 @@ stb_ps *  stb_ps_add   (stb_ps *ps, void *value)
    assert(!stb_ps_find(ps,value));
    #endif
    if (value == NULL) return ps; // ignore NULL adds to avoid bad breakage
-    assert((3 & (int)(size_t) value) == STB_ps_direct);
+    assert((3 & (int)(std::size_t) value) == STB_ps_direct);
    assert(stb_ps_fastlist_valid(value));
    assert(value != STB_DEL);     // STB_DEL is less likely
 
-    switch (3 & (int)(size_t) ps) {
+    switch (3 & (int)(std::size_t) ps) {
       case STB_ps_direct:
          if (ps == NULL) return (stb_ps *) value;
          return EncodeBucket(stb_bucket_create2(ps,value));
@@ -7986,11 +7986,11 @@ stb_ps *  stb_ps_add   (stb_ps *ps, void *value)
          stb_uint32 n = hash & h->mask;
          void **t = h->table;
          // find first NULL or STB_DEL entry
-          if (!stb_ps_empty((size_t)t[n])) {
+          if (!stb_ps_empty((std::size_t)t[n])) {
             stb_uint32 s = stb_rehash(hash) | 1;
             do {
                n = (n + s) & h->mask;
-            } while (!stb_ps_empty((size_t)t[n]));
+            } while (!stb_ps_empty((std::size_t)t[n]));
          }
          if (t[n] == STB_DEL)
             -- h->count_deletes;
@@ -8017,9 +8017,9 @@ stb_ps *stb_ps_remove(stb_ps *ps, void *value)
    #ifdef STB_DEBUG
    assert(stb_ps_find(ps, value));
    #endif
-    assert((3 & (int)(size_t) value) == STB_ps_direct);
+    assert((3 & (int)(std::size_t) value) == STB_ps_direct);
    if (value == NULL) return ps; // ignore NULL removes to avoid bad breakage
-    switch (3 & (int)(size_t) ps) {
+    switch (3 & (int)(std::size_t) ps) {
       case STB_ps_direct:
          return ps == value ? NULL : ps;
       case STB_ps_bucket: {
@@ -8078,7 +8078,7 @@ stb_ps *stb_ps_remove(stb_ps *ps, void *value)
                stb_ps_array *a = (stb_ps_array *) malloc(sizeof(*a) + (n-1) * sizeof(a->p[0]));
                int i,j=0;
                for (i=0; i < h->size; ++i)
-                    if (!stb_ps_empty((size_t)t[i]))
+                    if (!stb_ps_empty((std::size_t)t[i]))
                      a->p[j++] = t[i];
                assert(j == h->count);
                a->count = j;
@@ -8100,7 +8100,7 @@ stb_ps *stb_ps_remove(stb_ps *ps, void *value)
 stb_ps *stb_ps_remove_any(stb_ps *ps, void **value)
 {
    assert(ps != NULL);
-    switch (3 & (int)(size_t) ps) {
+    switch (3 & (int)(std::size_t) ps) {
       case STB_ps_direct:
          *value = ps;
          return NULL;
@@ -8133,7 +8133,7 @@ stb_ps *stb_ps_remove_any(stb_ps *ps, void **value)
          stb_ps_hash *h = GetHash(ps);
          void **t = h->table;
          stb_uint32 n = h->any_offset;
-          while (stb_ps_empty((size_t)t[n]))
+          while (stb_ps_empty((std::size_t)t[n]))
             n = (n + 1) & h->mask;
          *value = t[n];
          h->any_offset = (n+1) & h->mask;
@@ -8154,7 +8154,7 @@ void ** stb_ps_getlist(stb_ps *ps, int *count)
 {
    int i,n=0;
    void **p = NULL;
-    switch (3 & (int)(size_t) ps) {
+    switch (3 & (int)(std::size_t) ps) {
       case STB_ps_direct:
          if (ps == NULL) { *count = 0; return NULL; }
          p = (void **) malloc(sizeof(*p) * 1);
@@ -8180,7 +8180,7 @@ void ** stb_ps_getlist(stb_ps *ps, int *count)
          stb_ps_hash *h = GetHash(ps);
          p = (void **) malloc(sizeof(*p) * h->count);
          for (i=0; i < h->size; ++i)
-              if (!stb_ps_empty((size_t)h->table[i]))
+              if (!stb_ps_empty((std::size_t)h->table[i]))
                p[n++] = h->table[i];
          break;
       }
@@ -8192,7 +8192,7 @@ void ** stb_ps_getlist(stb_ps *ps, int *count)
 int stb_ps_writelist(stb_ps *ps, void **list, int size )
 {
    int i,n=0;
-    switch (3 & (int)(size_t) ps) {
+    switch (3 & (int)(std::size_t) ps) {
       case STB_ps_direct:
          if (ps == NULL || size <= 0) return 0;
          list[0] = ps;
@@ -8214,7 +8214,7 @@ int stb_ps_writelist(stb_ps *ps, void **list, int size )
          stb_ps_hash *h = GetHash(ps);
          if (size <= 0) return 0;
          for (i=0; i < h->count; ++i) {
-             if (!stb_ps_empty((size_t)h->table[i])) {
+             if (!stb_ps_empty((std::size_t)h->table[i])) {
                list[n++] = h->table[i];
                if (n == size) break;
             }
@@ -8228,7 +8228,7 @@ int stb_ps_writelist(stb_ps *ps, void **list, int size )
 int stb_ps_enum(stb_ps *ps, void *data, int (*func)(void *value, void *data))
 {
    int i;
-    switch (3 & (int)(size_t) ps) {
+    switch (3 & (int)(std::size_t) ps) {
       case STB_ps_direct:
          if (ps == NULL) return STB_TRUE;
          return func(ps, data);
@@ -8250,7 +8250,7 @@ int stb_ps_enum(stb_ps *ps, void *data, int (*func)(void *value, void *data))
       case STB_ps_hash: {
          stb_ps_hash *h = GetHash(ps);
          for (i=0; i < h->count; ++i)
-              if (!stb_ps_empty((size_t)h->table[i]))
+              if (!stb_ps_empty((std::size_t)h->table[i]))
                if (!func(h->table[i], data))
                   return STB_FALSE;
          return STB_TRUE;
@@ -8261,7 +8261,7 @@ int stb_ps_enum(stb_ps *ps, void *data, int (*func)(void *value, void *data))
 
 int stb_ps_count (stb_ps *ps)
 {
-    switch (3 & (int)(size_t) ps) {
+    switch (3 & (int)(std::size_t) ps) {
       case STB_ps_direct:
          return ps != NULL;
       case STB_ps_bucket: {
@@ -8285,7 +8285,7 @@ void ** stb_ps_fastlist(stb_ps *ps, int *count)
 {
    static void *storage;
 
-    switch (3 & (int)(size_t) ps) {
+    switch (3 & (int)(std::size_t) ps) {
       case STB_ps_direct:
          if (ps == NULL) { *count = 0; return NULL; }
          storage = ps;
@@ -8351,9 +8351,9 @@ STB_EXTERN double        stb_frandLCG(void);
 STB_EXTERN void          stb_srand(unsigned int seed);
 STB_EXTERN unsigned int  stb_rand(void);
 STB_EXTERN double        stb_frand(void);
-STB_EXTERN void          stb_shuffle(void *p, size_t n, size_t sz,
+STB_EXTERN void          stb_shuffle(void *p, std::size_t n, std::size_t sz,
                                         unsigned int seed);
-STB_EXTERN void stb_reverse(void *p, size_t n, size_t sz);
+STB_EXTERN void stb_reverse(void *p, std::size_t n, std::size_t sz);
 
 STB_EXTERN unsigned int  stb_randLCG_explicit(unsigned int  seed);
 
@@ -8393,7 +8393,7 @@ double stb_frandLCG(void)
    return stb_randLCG() / ((double) (1 << 16) * (1 << 16));
 }
 
-void stb_shuffle(void *p, size_t n, size_t sz, unsigned int seed)
+void stb_shuffle(void *p, std::size_t n, std::size_t sz, unsigned int seed)
 {
    char *a;
    unsigned int old_seed;
@@ -8411,9 +8411,9 @@ void stb_shuffle(void *p, size_t n, size_t sz, unsigned int seed)
       stb_srandLCG(old_seed);
 }
 
-void stb_reverse(void *p, size_t n, size_t sz)
+void stb_reverse(void *p, std::size_t n, std::size_t sz)
 {
-   size_t i,j = n-1;
+   std::size_t i,j = n-1;
    for (i=0; i < j; ++i,--j) {
       stb_swap((char *) p + i * sz, (char *) p + j * sz, sz);
    }
@@ -10045,7 +10045,7 @@ int stb_regex(char *regex, char *str)
    static char        ** regexps;
    static char        ** regexp_cache;
    static unsigned short *mapping;
-    int z = stb_perfect_hash(&p, (int)(size_t) regex);
+    int z = stb_perfect_hash(&p, (int)(std::size_t) regex);
    if (z >= 0) {
       if (strcmp(regex, regexp_cache[(int) mapping[z]])) {
          int i = mapping[z];
@@ -10076,8 +10076,8 @@ int stb_regex(char *regex, char *str)
       n = stb_perfect_create(&p, (unsigned int *) (char **) regexps, stb_arr_len(regexps));
       mapping = (unsigned short *) realloc(mapping, n * sizeof(*mapping));
       for (i=0; i < stb_arr_len(regexps); ++i)
-          mapping[stb_perfect_hash(&p, (int)(size_t) regexps[i])] = i;
-      z = stb_perfect_hash(&p, (int)(size_t) regex);
+          mapping[stb_perfect_hash(&p, (int)(std::size_t) regexps[i])] = i;
+      z = stb_perfect_hash(&p, (int)(std::size_t) regex);
    }
    return stb_matcher_find(matchers[(int) mapping[z]], str);
 }
@@ -10824,15 +10824,15 @@ int stb_compress_intofile(FILE *f, char *input, unsigned int length)
 //////////////////////    streaming I/O version    /////////////////////
 
 
-static size_t stb_out_backpatch_id(void)
+static std::size_t stb_out_backpatch_id(void)
 {
    if (stb__out)
-      return (size_t) stb__out;
+      return (std::size_t) stb__out;
    else
       return ftell(stb__outfile);
 }
 
-static void stb_out_backpatch(size_t id, stb_uint value)
+static void stb_out_backpatch(std::size_t id, stb_uint value)
 {
    stb_uchar data[4] = { (stb_uchar)(value >> 24), (stb_uchar)(value >> 16), (stb_uchar)(value >> 8), (stb_uchar)(value) };
    if (stb__out) {
@@ -12685,7 +12685,7 @@ stb__span *stb__get_nonempty_sizeclass(int c)
    return p;
 }
 
-static int stb__sizeclass(size_t sz)
+static int stb__sizeclass(std::size_t sz)
 {
    int z = stb_log2_floor(sz); // -1 below to group e.g. 13,14,15,16 correctly
    return stb__class_base[z] + ((sz-1) >> stb__class_shift[z]);
@@ -12737,7 +12737,7 @@ static void stb__init_sizeclass(void)
 #else
 #define stb__smemset(a,b,c)
 #endif
-void *stb_smalloc(size_t sz)
+void *stb_smalloc(std::size_t sz)
 {
    stb__span *s;
    if (sz == 0) return NULL;
@@ -12798,9 +12798,9 @@ void stb_sfree(void *p)
    }
 }
 
-void *stb_srealloc(void *p, size_t sz)
+void *stb_srealloc(void *p, std::size_t sz)
 {
-   size_t cur_size;
+   std::size_t cur_size;
    if (p == NULL) return stb_smalloc(sz);
    if (sz == 0) { stb_sfree(p); return NULL; }
    cur_size = stb_ssize(p);
@@ -12815,7 +12815,7 @@ void *stb_srealloc(void *p, size_t sz)
    return p;
 }
 
-void *stb_scalloc(size_t n, size_t sz)
+void *stb_scalloc(std::size_t n, std::size_t sz)
 {
    void *p;
    if (n == 0 || sz == 0) return NULL;

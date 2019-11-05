@@ -18,9 +18,9 @@
 #include "UILogo.h"
 #include "UILogin.h"
 
-#include "../Configuration.h"
+#include "../../Configuration.h"
 
-#include "../Audio/Audio.h"
+#include "../../Audio/Audio.h"
 
 #include <nlnx/nx.hpp>
 
@@ -28,7 +28,8 @@ namespace ms
 {
 	UILogo::UILogo()
 	{
-		Music("BgmUI.img/NxLogo").play_once();
+		// Music("BgmUI.img/NxLogo").play_once();
+		Music("BgmUI.img/NxLogo").play();
 
 		nexon_ended = false;
 		wizet_ended = false;

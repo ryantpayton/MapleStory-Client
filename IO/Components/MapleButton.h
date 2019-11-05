@@ -19,7 +19,7 @@
 
 #include "Button.h"
 
-#include "../Graphics/Animation.h"
+#include "Graphics/Animation.h"
 
 namespace ms
 {
@@ -28,13 +28,13 @@ namespace ms
 	{
 	public:
 		MapleButton(nl::node src, Point<int16_t> position);
-		MapleButton(nl::node src, int16_t x, int16_t y);
+		MapleButton(nl::node src, std::int16_t x, std::int16_t y);
 		MapleButton(nl::node src);
 
 		void draw(Point<int16_t> position) const;
 		void update();
 		Rectangle<int16_t> bounds(Point<int16_t> parentpos) const;
-		int16_t width() const;
+		std::int16_t width() const;
 		Point<int16_t> origin() const;
 		Cursor::State send_cursor(bool, Point<int16_t>) { return Cursor::State::IDLE; }
 		bool remove_cursor(bool, Point<int16_t>) { return false; }

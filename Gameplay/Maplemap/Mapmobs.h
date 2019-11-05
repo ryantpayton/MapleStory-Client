@@ -40,35 +40,35 @@ namespace ms
 		// Spawn a new mob.
 		void spawn(MobSpawn&& spawn);
 		// Kill a mob.
-		void remove(int32_t oid, int8_t effect);
+		void remove(std::int32_t oid, std::int8_t effect);
 		// Remove all mobs.
 		void clear();
 
 		// Update who a mob is controlled by.
-		void set_control(int32_t oid, bool control);
+		void set_control(std::int32_t oid, bool control);
 		// Update a mob's hp display.
-		void send_mobhp(int32_t oid, int8_t percent, uint16_t playerlevel);
+		void send_mobhp(std::int32_t oid, std::int8_t percent, std::uint16_t playerlevel);
 		// Update a mob's movements.
-		void send_movement(int32_t oid, Point<int16_t> start, std::vector<Movement>&& movements);
+		void send_movement(std::int32_t oid, Point<int16_t> start, std::vector<Movement>&& movements);
 
 		// Calculate the results of an attack.
 		AttackResult send_attack(const Attack& attack);
 		// Applies damage to a mob.
-		void apply_damage(int32_t oid, int32_t damage, bool toleft, const AttackUser& user, const SpecialMove& move);
+		void apply_damage(std::int32_t oid, std::int32_t damage, bool toleft, const AttackUser& user, const SpecialMove& move);
 
 		// Check if the mob with the specified oid exists.
-		bool contains(int32_t oid) const;
+		bool contains(std::int32_t oid) const;
 		// Return the id of the first mob who collides with the object.
-		int32_t find_colliding(const MovingObject& moveobj) const;
+		std::int32_t find_colliding(const MovingObject& moveobj) const;
 		// Create an attack by the specified mob.
-		MobAttack create_attack(int32_t oid) const;
+		MobAttack create_attack(std::int32_t oid) const;
 		// Return the position of a mob.
-		Point<int16_t> get_mob_position(int32_t oid) const;
+		Point<int16_t> get_mob_position(std::int32_t oid) const;
 		// Return the head position of a mob.
-		Point<int16_t> get_mob_head_position(int32_t oid) const;
+		Point<int16_t> get_mob_head_position(std::int32_t oid) const;
 
 	private:
-		std::vector<int32_t> find_closest(Rectangle<int16_t> range, Point<int16_t> origin, uint8_t mobcount) const;
+		std::vector<std::int32_t> find_closest(Rectangle<int16_t> range, Point<int16_t> origin, std::uint8_t mobcount) const;
 
 		MapObjects mobs;
 

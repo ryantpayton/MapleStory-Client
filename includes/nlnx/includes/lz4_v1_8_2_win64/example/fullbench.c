@@ -130,9 +130,9 @@ static clock_t BMK_GetClockSpan( clock_t clockStart )
 }
 
 
-static size_t BMK_findMaxMem(U64 requiredMem)
+static std::size_t BMK_findMaxMem(U64 requiredMem)
 {
-    size_t step = 64 MB;
+    std::size_t step = 64 MB;
     BYTE* testmem=NULL;
 
     requiredMem = (((requiredMem >> 26) + 1) << 26);
@@ -142,7 +142,7 @@ static size_t BMK_findMaxMem(U64 requiredMem)
     while (!testmem) {
         if (requiredMem > step) requiredMem -= step;
         else requiredMem >>= 1;
-        testmem = (BYTE*) malloc ((size_t)requiredMem);
+        testmem = (BYTE*) malloc ((std::size_t)requiredMem);
     }
     free (testmem);
 
@@ -150,7 +150,7 @@ static size_t BMK_findMaxMem(U64 requiredMem)
     if (requiredMem > step) requiredMem -= step;
     else requiredMem >>= 1;
 
-    return (size_t)requiredMem;
+    return (std::size_t)requiredMem;
 }
 
 
@@ -289,7 +289,7 @@ static int local_LZ4_decompress_safe_usingDict(const char* in, char* out, int in
 }
 
 #ifndef LZ4_DLL_IMPORT
-extern int LZ4_decompress_safe_forceExtDict(const char* in, char* out, int inSize, int outSize, const void* dict, size_t dictSize);
+extern int LZ4_decompress_safe_forceExtDict(const char* in, char* out, int inSize, int outSize, const void* dict, std::size_t dictSize);
 
 static int local_LZ4_decompress_safe_forceExtDict(const char* in, char* out, int inSize, int outSize)
 {
@@ -315,12 +315,12 @@ static LZ4F_decompressionContext_t g_dCtx;
 
 static int local_LZ4F_decompress(const char* in, char* out, int inSize, int outSize)
 {
-    size_t srcSize = inSize;
-    size_t dstSize = outSize;
-    size_t result;
+    std::size_t srcSize = inSize;
+    std::size_t dstSize = outSize;
+    std::size_t result;
     result = LZ4F_decompress(g_dCtx, out, &dstSize, in, &srcSize, NULL);
     if (result!=0) { DISPLAY("Error decompressing frame : unfinished frame\n"); exit(8); }
-    if (srcSize != (size_t)inSize) { DISPLAY("Error decompressing frame : read size incorrect\n"); exit(9); }
+    if (srcSize != (std::size_t)inSize) { DISPLAY("Error decompressing frame : read size incorrect\n"); exit(9); }
     return (int)dstSize;
 }
 
@@ -332,7 +332,7 @@ int fullSpeedBench(const char** fileNamesTable, int nbFiles)
     int fileIdx=0;
 
     /* Init */
-    { size_t const errorCode = LZ4F_createDecompressionContext(&g_dCtx, LZ4F_VERSION);
+    { std::size_t const errorCode = LZ4F_createDecompressionContext(&g_dCtx, LZ4F_VERSION);
       if (LZ4F_isError(errorCode)) { DISPLAY("dctx allocation issue \n"); return 10; } }
 
     /* Loop for each fileName */
@@ -343,13 +343,13 @@ int fullSpeedBench(const char** fileNamesTable, int nbFiles)
       const char* const inFileName = fileNamesTable[fileIdx++];
       FILE* const inFile = fopen( inFileName, "rb" );
       U64   inFileSize;
-      size_t benchedSize;
+      std::size_t benchedSize;
       int nbChunks;
       int maxCompressedChunkSize;
-      size_t readSize;
+      std::size_t readSize;
       int compressedBuffSize;
       U32 crcOriginal;
-      size_t errorCode;
+      std::size_t errorCode;
 
       /* Check file existence */
       if (inFile==NULL) { DISPLAY( "Pb opening %s\n", inFileName); return 11; }
@@ -359,17 +359,17 @@ int fullSpeedBench(const char** fileNamesTable, int nbFiles)
       if (inFileSize==0) { DISPLAY( "file is empty\n"); fclose(inFile); return 11; }
       benchedSize = BMK_findMaxMem(inFileSize*2) / 2;   /* because 2 buffers */
       if (benchedSize==0) { DISPLAY( "not enough memory\n"); fclose(inFile); return 11; }
-      if ((U64)benchedSize > inFileSize) benchedSize = (size_t)inFileSize;
+      if ((U64)benchedSize > inFileSize) benchedSize = (std::size_t)inFileSize;
       if (benchedSize < inFileSize)
           DISPLAY("Not enough memory for '%s' full size; testing %i MB only...\n", inFileName, (int)(benchedSize>>20));
 
       /* Allocation */
-      chunkP = (struct chunkParameters*) malloc(((benchedSize / (size_t)g_chunkSize)+1) * sizeof(struct chunkParameters));
+      chunkP = (struct chunkParameters*) malloc(((benchedSize / (std::size_t)g_chunkSize)+1) * sizeof(struct chunkParameters));
       orig_buff = (char*) malloc(benchedSize);
       nbChunks = (int) ((benchedSize + (g_chunkSize-1)) / g_chunkSize);
       maxCompressedChunkSize = LZ4_compressBound(g_chunkSize);
       compressedBuffSize = nbChunks * maxCompressedChunkSize;
-      compressed_buff = (char*)malloc((size_t)compressedBuffSize);
+      compressed_buff = (char*)malloc((std::size_t)compressedBuffSize);
       if(!chunkP || !orig_buff || !compressed_buff) {
           DISPLAY("\nError: not enough memory!\n");
           fclose(inFile);
@@ -398,7 +398,7 @@ int fullSpeedBench(const char** fileNamesTable, int nbFiles)
 
       /* Bench */
       { int loopNb, nb_loops, chunkNb, cAlgNb, dAlgNb;
-        size_t cSize=0;
+        std::size_t cSize=0;
         double ratio=0.;
 
         DISPLAY("\r%79s\r", "");
@@ -416,7 +416,7 @@ int fullSpeedBench(const char** fileNamesTable, int nbFiles)
 
             /* Init data chunks */
             {   int i;
-                size_t remaining = benchedSize;
+                std::size_t remaining = benchedSize;
                 char* in = orig_buff;
                 char* out = compressed_buff;
                 nbChunks = (int) (((int)benchedSize + (g_chunkSize-1))/ g_chunkSize);
@@ -468,7 +468,7 @@ int fullSpeedBench(const char** fileNamesTable, int nbFiles)
                 clock_t clockTime;
 
                 PROGRESS("%2i-%-34.34s :%10i ->\r", loopNb, compressorName, (int)benchedSize);
-                { size_t i; for (i=0; i<benchedSize; i++) compressed_buff[i]=(char)i; }     /* warming up memory */
+                { std::size_t i; for (i=0; i<benchedSize; i++) compressed_buff[i]=(char)i; }     /* warming up memory */
 
                 nb_loops = 0;
                 clockTime = clock();
@@ -502,7 +502,7 @@ int fullSpeedBench(const char** fileNamesTable, int nbFiles)
         /* Prepare layout for decompression */
         /* Init data chunks */
         { int i;
-          size_t remaining = benchedSize;
+          std::size_t remaining = benchedSize;
           char* in = orig_buff;
           char* out = compressed_buff;
 
@@ -558,7 +558,7 @@ int fullSpeedBench(const char** fileNamesTable, int nbFiles)
                 continue;   /* skip if unknown ID */
             }
 
-            { size_t i; for (i=0; i<benchedSize; i++) orig_buff[i]=0; }     /* zeroing source area, for CRC checking */
+            { std::size_t i; for (i=0; i<benchedSize; i++) orig_buff[i]=0; }     /* zeroing source area, for CRC checking */
 
             for (loopNb = 1; loopNb <= g_nbIterations; loopNb++) {
                 double averageTime;

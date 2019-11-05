@@ -34,13 +34,13 @@ namespace ms
 		{
 			static_assert(std::is_enum<K>::value, "Template parameter 'K' for EnumMap must be an enum.");
 
-			for (size_t i = 0; i < LENGTH; i++)
+			for (std::size_t i = 0; i < LENGTH; i++)
 				m_keys[i] = static_cast<K>(i);
 		}
 
 		void clear()
 		{
-			for (size_t i = 0; i < LENGTH; i++)
+			for (std::size_t i = 0; i < LENGTH; i++)
 				m_values[i] = V();
 		}
 

@@ -26,7 +26,7 @@ namespace ms
 	class SelectCharPacket : public OutPacket
 	{
 	public:
-		SelectCharPacket(int32_t cid) : OutPacket(OutPacket::Opcode::SELECT_CHAR)
+		SelectCharPacket(std::int32_t cid) : OutPacket(OutPacket::Opcode::SELECT_CHAR)
 		{
 			write_int(cid);
 			write_hardware_info();
@@ -38,7 +38,7 @@ namespace ms
 	class RegisterPicPacket : public OutPacket
 	{
 	public:
-		RegisterPicPacket(int32_t cid, const std::string& pic) : OutPacket(OutPacket::Opcode::REGISTER_PIC)
+		RegisterPicPacket(std::int32_t cid, const std::string& pic) : OutPacket(OutPacket::Opcode::REGISTER_PIC)
 		{
 			skip(1);
 
@@ -53,7 +53,7 @@ namespace ms
 	class SelectCharPicPacket : public OutPacket
 	{
 	public:
-		SelectCharPicPacket(const std::string& pic, int32_t cid) : OutPacket(OutPacket::Opcode::SELECT_CHAR_PIC)
+		SelectCharPicPacket(const std::string& pic, std::int32_t cid) : OutPacket(OutPacket::Opcode::SELECT_CHAR_PIC)
 		{
 			write_string(pic);
 			write_int(cid);
@@ -66,7 +66,7 @@ namespace ms
 	class DeleteCharPacket : public OutPacket
 	{
 	public:
-		DeleteCharPacket(int32_t cid) : OutPacket(OutPacket::Opcode::DELETE_CHAR)
+		DeleteCharPacket(std::int32_t cid) : OutPacket(OutPacket::Opcode::DELETE_CHAR)
 		{
 			write_string("");
 			write_int(cid);
@@ -78,7 +78,7 @@ namespace ms
 	class DeleteCharPicPacket : public OutPacket
 	{
 	public:
-		DeleteCharPicPacket(const std::string& pic, int32_t cid) : OutPacket(OutPacket::Opcode::DELETE_CHAR)
+		DeleteCharPicPacket(const std::string& pic, std::int32_t cid) : OutPacket(OutPacket::Opcode::DELETE_CHAR)
 		{
 			write_string(pic);
 			write_int(cid);

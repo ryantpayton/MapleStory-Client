@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Graphics/Animation.h"
-#include "../Template/Point.h"
+#include "../../Graphics/Animation.h"
+#include "../../Template/Point.h"
 
 namespace ms
 {
@@ -33,12 +33,12 @@ namespace ms
 		// Draw the obj at the specified position.
 		void draw(Point<int16_t> viewpos, float inter) const;
 		// Return depth of the obj.
-		uint8_t getz() const;
+		std::uint8_t getz() const;
 
 	private:
 		Animation animation;
 		Point<int16_t> pos;
-		uint8_t z;
+		std::uint8_t z;
 		bool flip;
 	};
 }

@@ -27,11 +27,11 @@ namespace ms
 	class Color
 	{
 	public:
-		static constexpr size_t LENGTH = 4;
+		static constexpr std::size_t LENGTH = 4;
 		using underlying_t = std::array<float, LENGTH>;
 
 		// Codes of predefined colors.
-		enum Code : uint32_t
+		enum Code : std::int32_t
 		{
 			CNONE = 0x00000000,
 			CWHITE = 0xFFFFFFFF,
@@ -45,7 +45,7 @@ namespace ms
 		};
 
 		// Name of predefined colors.
-		enum Name : uint32_t
+		enum Name : std::int32_t
 		{
 			BLACK,
 			WHITE,
@@ -126,10 +126,10 @@ namespace ms
 		// Create a color by real numbers [0.0f, 1.0f]
 		constexpr Color(float red, float green, float blue, float alpha) : Color(underlying_t{ red, green, blue, alpha }) {}
 		// Create a color by an array of natural numbers [0, 255]
-		constexpr Color(const std::array<uint8_t, Color::LENGTH> comps) : Color(comps[0], comps[1], comps[2], comps[3]) {}
+		constexpr Color(const std::array<std::uint8_t, Color::LENGTH> comps) : Color(comps[0], comps[1], comps[2], comps[3]) {}
 
 		// Create a color by natural numbers [0, 255]
-		constexpr Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) : Color(
+		constexpr Color(std::uint8_t red, std::uint8_t green, std::uint8_t blue, std::uint8_t alpha) : Color(
 			static_cast<float>(red) / 255,
 			static_cast<float>(green) / 255,
 			static_cast<float>(blue) / 255,
@@ -137,15 +137,15 @@ namespace ms
 		) {}
 
 		// Create a color by code.
-		constexpr Color(uint32_t code) : Color(
-			static_cast<uint8_t>(code >> 24),
-			static_cast<uint8_t>(code >> 16),
-			static_cast<uint8_t>(code >> 8),
-			static_cast<uint8_t>(code)
+		constexpr Color(std::int32_t code) : Color(
+			static_cast<std::uint8_t>(code >> 24),
+			static_cast<std::uint8_t>(code >> 16),
+			static_cast<std::uint8_t>(code >> 8),
+			static_cast<std::uint8_t>(code)
 		) {}
 
 		// Create a color by named code.
-		constexpr Color(Code code) : Color((uint32_t)code) {}
+		constexpr Color(Code code) : Color((std::int32_t)code) {}
 		constexpr Color() : Color(Code::CNONE) {}
 
 		// Check whether the color is completely invisble.

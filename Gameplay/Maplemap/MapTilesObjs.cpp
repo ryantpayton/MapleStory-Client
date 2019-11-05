@@ -26,14 +26,14 @@ namespace ms
 		for (auto tilenode : src["tile"])
 		{
 			Tile tile{ tilenode, tileset };
-			int8_t z = tile.getz();
+			std::int8_t z = tile.getz();
 			tiles.emplace(z, std::move(tile));
 		}
 
 		for (auto objnode : src["obj"])
 		{
 			Obj obj{ objnode };
-			int8_t z = obj.getz();
+			std::int8_t z = obj.getz();
 			objs.emplace(z, std::move(obj));
 		}
 	}

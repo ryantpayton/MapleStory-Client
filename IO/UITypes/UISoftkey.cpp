@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UISoftKey.h"
 
-#include "../Constants.h"
+#include "../../Constants.h"
 
 #include "../Components/MapleButton.h"
 #include "../Components/TwoSpriteButton.h"
@@ -46,7 +46,7 @@ namespace ms
 		buttons[Buttons::CANCEL] = std::make_unique<MapleButton>(SoftKey["BtCancel"], Point<int16_t>(72, 235));
 		buttons[Buttons::OK] = std::make_unique<MapleButton>(SoftKey["BtOK"], Point<int16_t>(14, 235));
 
-		for (size_t i = 0; i < 3; i++)
+		for (unsigned i = 0; i < 3; i++)
 		{
 			buttons[Buttons::TAB0 + i] = std::make_unique<TwoSpriteButton>(TabNormal[i], TabSelected[i], screen_adj);
 
@@ -56,7 +56,7 @@ namespace ms
 				buttons[Buttons::TAB0 + i]->set_state(Button::State::DISABLED);
 		}
 
-		for (size_t i = 0; i < NUM_KEYS; i++)
+		for (unsigned i = 0; i < NUM_KEYS; i++)
 			buttons[Buttons::NUM0 + i] = std::make_unique<MapleButton>(SoftKey["BtNum"][i]);
 
 		entry = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::LIGHTGREY, Rectangle<int16_t>(Point<int16_t>(-3, -4), Point<int16_t>(150, 24)), MAX_SIZE);
@@ -96,7 +96,7 @@ namespace ms
 		}
 	}
 
-	void UISoftkey::send_key(int32_t keycode, bool pressed, bool escape)
+	void UISoftkey::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -107,10 +107,10 @@ namespace ms
 		}
 	}
 
-	Button::State UISoftkey::button_pressed(uint16_t buttonid)
+	Button::State UISoftkey::button_pressed(std::uint16_t buttonid)
 	{
 		std::string entered = entry.get_text();
-		size_t size = entered.size();
+		std::size_t size = entered.size();
 
 		if (buttonid == Buttons::DEL)
 		{
@@ -158,14 +158,14 @@ namespace ms
 
 	void UISoftkey::shufflekeys()
 	{
-		std::vector<uint8_t> reserve;
+		std::vector<std::uint8_t> reserve;
 
-		for (size_t i = 0; i < NUM_KEYS; i++)
+		for (std::size_t i = 0; i < NUM_KEYS; i++)
 			reserve.push_back(i);
 
-		for (size_t i = 0; i < NUM_KEYS; i++)
+		for (std::size_t i = 0; i < NUM_KEYS; i++)
 		{
-			size_t rand = random.next_int(reserve.size());
+			std::size_t rand = random.next_int(reserve.size());
 			Point<int16_t> pos = keypos(reserve[rand]);
 
 			buttons[Buttons::NUM0 + i]->set_position(pos);
@@ -192,7 +192,7 @@ namespace ms
 		tooltip = Optional<Tooltip>();
 	}
 
-	Point<int16_t> UISoftkey::keypos(uint8_t num) const
+	Point<int16_t> UISoftkey::keypos(std::uint8_t num) const
 	{
 		auto x = (num % 3) * 39;
 		auto y = (num / 3) * 35;

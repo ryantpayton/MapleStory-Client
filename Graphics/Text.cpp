@@ -20,12 +20,12 @@
 
 namespace ms
 {
-	Text::Text(Font f, Alignment a, Color::Name c, Background b, const std::string& t, uint16_t mw, bool fm, int16_t la) : font(f), alignment(a), color(c), background(b), maxwidth(mw), formatted(fm), line_adj(la)
+	Text::Text(Font f, Alignment a, Color::Name c, Background b, const std::string& t, std::uint16_t mw, bool fm, std::int16_t la) : font(f), alignment(a), color(c), background(b), maxwidth(mw), formatted(fm), line_adj(la)
 	{
 		change_text(t);
 	}
 
-	Text::Text(Font f, Alignment a, Color::Name c, const std::string& t, uint16_t mw, bool fm, int16_t la) : Text(f, a, c, Background::NONE, t, mw, fm, la) {}
+	Text::Text(Font f, Alignment a, Color::Name c, const std::string& t, std::uint16_t mw, bool fm, std::int16_t la) : Text(f, a, c, Background::NONE, t, mw, fm, la) {}
 	Text::Text() : Text(Font::A11M, Alignment::LEFT, Color::BLACK) {}
 
 	void Text::reset_layout()
@@ -66,7 +66,7 @@ namespace ms
 		GraphicsGL::get().drawtext(args, text, layout, font, color, background);
 	}
 
-	uint16_t Text::advance(size_t pos) const
+	std::uint16_t Text::advance(std::size_t pos) const
 	{
 		return layout.advance(pos);
 	}
@@ -76,17 +76,17 @@ namespace ms
 		return text.empty();
 	}
 
-	size_t Text::length() const
+	std::size_t Text::length() const
 	{
 		return text.size();
 	}
 
-	int16_t Text::width() const
+	std::int16_t Text::width() const
 	{
 		return layout.width();
 	}
 
-	int16_t Text::height() const
+	std::int16_t Text::height() const
 	{
 		return layout.height();
 	}
@@ -106,20 +106,20 @@ namespace ms
 		return text;
 	}
 
-	Text::Layout::Layout(const std::vector<Layout::Line>& l, const std::vector<int16_t>& a, int16_t w, int16_t h, int16_t ex, int16_t ey) : lines(l), advances(a), dimensions(w, h), endoffset(ex, ey) {}
+	Text::Layout::Layout(const std::vector<Layout::Line>& l, const std::vector<int16_t>& a, std::int16_t w, std::int16_t h, std::int16_t ex, std::int16_t ey) : lines(l), advances(a), dimensions(w, h), endoffset(ex, ey) {}
 	Text::Layout::Layout() : Layout(std::vector<Layout::Line>(), std::vector<int16_t>(), 0, 0, 0, 0) {}
 
-	int16_t Text::Layout::width() const
+	std::int16_t Text::Layout::width() const
 	{
 		return dimensions.x();
 	}
 
-	int16_t Text::Layout::height() const
+	std::int16_t Text::Layout::height() const
 	{
 		return dimensions.y();
 	}
 
-	int16_t Text::Layout::advance(size_t index) const
+	std::int16_t Text::Layout::advance(std::size_t index) const
 	{
 		return index < advances.size() ? advances[index] : 0;
 	}

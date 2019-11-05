@@ -21,9 +21,9 @@
 #include "ItemDrop.h"
 #include "MesoDrop.h"
 
-#include "../Constants.h"
+#include "../../Constants.h"
 
-#include "../Data/ItemData.h"
+#include "../../Data/ItemData.h"
 
 #include <nlnx/nx.hpp>
 #include <nlnx/node.hpp>
@@ -56,7 +56,7 @@ namespace ms
 		{
 			const DropSpawn& spawn = spawns.front();
 
-			int32_t oid = spawn.get_oid();
+			std::int32_t oid = spawn.get_oid();
 
 			if (Optional<MapObject> drop = drops.get(oid))
 			{
@@ -64,7 +64,7 @@ namespace ms
 			}
 			else
 			{
-				int32_t itemid = spawn.get_itemid();
+				std::int32_t itemid = spawn.get_itemid();
 				bool meso = spawn.is_meso();
 
 				if (meso)
@@ -98,7 +98,7 @@ namespace ms
 		spawns.emplace(std::move(spawn));
 	}
 
-	void MapDrops::remove(int32_t oid, int8_t mode, const PhysicsObject* looter)
+	void MapDrops::remove(std::int32_t oid, std::int8_t mode, const PhysicsObject* looter)
 	{
 		if (Optional<Drop> drop = drops.get(oid))
 			drop->expire(mode, looter);
@@ -122,7 +122,7 @@ namespace ms
 			{
 				lootenabled = false;
 
-				int32_t oid = mmo.first;
+				std::int32_t oid = mmo.first;
 				Point<int16_t> position = drop->get_position();
 
 				return { oid, position };

@@ -90,10 +90,10 @@ namespace nl {
         return operator[](std::to_string(n));
     }
     node node::operator[](std::string const & o) const {
-        return get_child(o.c_str(), static_cast<uint16_t>(o.length()));
+        return get_child(o.c_str(), static_cast<std::uint16_t>(o.length()));
     }
     node node::operator[](char const * o) const {
-        return get_child(o, static_cast<uint16_t>(std::strlen(o)));
+        return get_child(o, static_cast<std::uint16_t>(std::strlen(o)));
     }
     node node::operator[](node const & o) const {
         return operator[](o.get_string());
@@ -230,10 +230,10 @@ namespace nl {
     bool node::get_bool(bool def) const {
         return m_data && m_data->type == type::integer ? to_integer() ? true : false : def;
     }
-    int32_t node::x() const {
+    std::int32_t node::x() const {
         return m_data && m_data->type == type::vector ? m_data->vector[0] : 0;
     }
-    int32_t node::y() const {
+    std::int32_t node::y() const {
         return m_data && m_data->type == type::vector ? m_data->vector[1] : 0;
     }
     std::string node::name() const {
@@ -241,15 +241,15 @@ namespace nl {
             return {};
         auto const s = reinterpret_cast<char const *>(m_file->base)
             + m_file->string_table[m_data->name];
-        return {s + 2, *reinterpret_cast<uint16_t const *>(s)};
+        return {s + 2, *reinterpret_cast<std::uint16_t const *>(s)};
     }
-    size_t node::size() const {
+    std::size_t node::size() const {
         return m_data ? m_data->num : 0u;
     }
     node::type node::data_type() const {
         return m_data ? m_data->type : type::none;
     }
-    node node::get_child(char const * const o, uint16_t const l) const {
+    node node::get_child(char const * const o, std::uint16_t const l) const {
         if (!m_data)
             return {nullptr, m_file};
         auto p = m_file->node_table + m_data->children;
@@ -262,9 +262,9 @@ namespace nl {
             auto const n2 = static_cast<decltype(n)>(n >> 1);
             auto const p2 = p + n2;
             auto const sl = b + t[p2->name];
-            auto const l1 = *reinterpret_cast<uint16_t const *>(sl);
-            auto const s = reinterpret_cast<uint8_t const *>(sl + 2);
-            auto const os = reinterpret_cast<uint8_t const *>(o);
+            auto const l1 = *reinterpret_cast<std::uint16_t const *>(sl);
+            auto const s = reinterpret_cast<std::uint8_t const *>(sl + 2);
+            auto const os = reinterpret_cast<std::uint8_t const *>(o);
             bool z = false;
             auto const len = l1 < l ? l1 : l;
             for (auto i = 0U; i < len; ++i) {
@@ -298,7 +298,7 @@ namespace nl {
     std::string node::to_string() const {
         auto const s = reinterpret_cast<char const *>(m_file->base)
             + m_file->string_table[m_data->string];
-        return {s + 2, *reinterpret_cast<uint16_t const *>(s)};
+        return {s + 2, *reinterpret_cast<std::uint16_t const *>(s)};
     }
     vector2i node::to_vector() const {
         return {m_data->vector[0], m_data->vector[1]};

@@ -22,7 +22,7 @@
 #include "../Components/Charset.h"
 #include "../Components/Nametag.h"
 
-#include "../Character/Look/CharLook.h"
+#include "../../Character/Look/CharLook.h"
 
 namespace ms
 {
@@ -34,39 +34,39 @@ namespace ms
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = false;
 
-		UICharSelect(std::vector<CharEntry> characters, int8_t characters_count, int32_t slots, int8_t require_pic);
+		UICharSelect(std::vector<CharEntry> characters, std::int8_t characters_count, std::int32_t slots, std::int8_t require_pic);
 
 		void draw(float inter) const override;
 		void update() override;
 
 		void doubleclick(Point<int16_t> cursorpos) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 		void add_character(CharEntry&& character);
 		void post_add_character();
-		void remove_character(int32_t id);
+		void remove_character(std::int32_t id);
 
-		const CharEntry& get_character(int32_t id);
+		const CharEntry& get_character(std::int32_t id);
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
 		void update_buttons();
 		void update_selected_character();
 		void select_last_slot();
 		std::string get_slot_text();
-		std::string pad_number_with_leading_zero(uint8_t value) const;
-		Point<int16_t> get_character_slot_pos(size_t index, uint16_t x_adj, uint16_t y_adj) const;
-		Point<int16_t> get_infolabel_pos(size_t index) const;
-		std::string get_infolabel(size_t index, StatsEntry character_stats) const;
+		std::string pad_number_with_leading_zero(std::uint8_t value) const;
+		Point<int16_t> get_character_slot_pos(std::size_t index, std::uint16_t x_adj, std::uint16_t y_adj) const;
+		Point<int16_t> get_infolabel_pos(std::size_t index) const;
+		std::string get_infolabel(std::size_t index, StatsEntry character_stats) const;
 		void request_pic();
 		void check_pic(const std::string entered_pic) const;
 
-		static constexpr uint8_t PAGESIZE = 8;
+		static constexpr std::uint8_t PAGESIZE = 8;
 
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			CHARACTER_SELECT,
 			CHARACTER_NEW,
@@ -81,23 +81,23 @@ namespace ms
 		};
 
 		std::vector<CharEntry> characters;
-		int8_t characters_count;
-		int32_t slots;
-		int8_t require_pic;
+		std::int8_t characters_count;
+		std::int32_t slots;
+		std::int8_t require_pic;
 		Text version;
 		Point<int16_t> pagepos;
 		Point<int16_t> worldpos;
 		Point<int16_t> charinfopos;
-		uint8_t selected_character;
-		uint8_t selected_page;
-		uint8_t page_count;
+		std::uint8_t selected_character;
+		std::uint8_t selected_page;
+		std::uint8_t page_count;
 		Texture tab;
-		uint8_t tab_index;
+		std::uint8_t tab_index;
 		bool tab_active;
 		bool tab_move;
 		Point<int16_t> tab_pos[3];
-		int16_t tab_move_pos;
-		std::map<uint8_t, uint16_t> tab_map;
+		std::int16_t tab_move_pos;
+		std::map<std::uint8_t, std::uint16_t> tab_map;
 		Point<int16_t> world_dimensions;
 		Animation burning_notice;
 		Text burning_count;
@@ -117,12 +117,12 @@ namespace ms
 		Texture emptyslot;
 		Animation selectedslot_effect[2];
 		OutlinedText chatslotlabel;
-		int16_t timestamp;
-		uint16_t charslot_y;
+		std::int16_t timestamp;
+		std::uint16_t charslot_y;
 		bool show_timestamp;
 		bool burning_character;
 
-		enum InfoLabel : uint8_t
+		enum InfoLabel : std::uint8_t
 		{
 			JOB,
 			STR,

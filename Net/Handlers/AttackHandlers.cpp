@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "AttackHandlers.h"
 
-#include "../Character/SkillId.h"
-#include "../Gameplay/Stage.h"
+#include "../../Character/SkillId.h"
+#include "../../Gameplay/Stage.h"
 
 #include <unordered_map>
 #include <vector>
@@ -32,8 +32,8 @@ namespace ms
 
 	void AttackHandler::handle(InPacket& recv) const
 	{
-		int32_t cid = recv.read_int();
-		uint8_t count = recv.read_byte();
+		std::int32_t cid = recv.read_int();
+		std::uint8_t count = recv.read_byte();
 
 		recv.skip(1);
 
@@ -56,17 +56,17 @@ namespace ms
 		attack.mobcount = (count >> 4) & 0xF;
 		attack.hitcount = count & 0xF;
 
-		for (uint8_t i = 0; i < attack.mobcount; i++)
+		for (std::uint8_t i = 0; i < attack.mobcount; i++)
 		{
-			int32_t oid = recv.read_int();
+			std::int32_t oid = recv.read_int();
 
 			recv.skip(1);
 
-			uint8_t length = (attack.skill == SkillId::Id::MESO_EXPLOSION) ? recv.read_byte() : attack.hitcount;
+			std::uint8_t length = (attack.skill == SkillId::Id::MESO_EXPLOSION) ? recv.read_byte() : attack.hitcount;
 
-			for (uint8_t j = 0; j < length; j++)
+			for (std::uint8_t j = 0; j < length; j++)
 			{
-				int32_t damage = recv.read_int();
+				std::int32_t damage = recv.read_int();
 				bool critical = false; // TODO: ?
 				auto singledamage = std::make_pair(damage, critical);
 				attack.damagelines[oid].push_back(singledamage);

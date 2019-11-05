@@ -52,12 +52,12 @@ namespace ms
 		void draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect, const Color& color, float angle);
 
 		// Create a layout for the text with the parameters specified.
-		Text::Layout createlayout(const std::string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth, bool formatted, int16_t line_adj);
+		Text::Layout createlayout(const std::string& text, Text::Font font, Text::Alignment alignment, std::int16_t maxwidth, bool formatted, std::int16_t line_adj);
 		// Draw a text with the given parameters.
 		void drawtext(const DrawArgument& args, const std::string& text, const Text::Layout& layout, Text::Font font, Color::Name color, Text::Background back);
 
 		// Draw a rectangle filled with the specified color.
-		void drawrectangle(int16_t x, int16_t y, int16_t w, int16_t h, float r, float g, float b, float a);
+		void drawrectangle(std::int16_t x, std::int16_t y, std::int16_t w, std::int16_t h, float r, float g, float b, float a);
 		// Fill the screen with the specified color.
 		void drawscreenfill(float r, float g, float b, float a);
 
@@ -148,7 +148,7 @@ namespace ms
 				Color c;
 			};
 
-			static const size_t LENGTH = 4;
+			static const std::size_t LENGTH = 4;
 			Vertex vertices[LENGTH];
 
 			Quad(GLshort l, GLshort r, GLshort t, GLshort b, const Offset& o, const Color& color, GLfloat rot)
@@ -207,7 +207,7 @@ namespace ms
 				height = 0;
 			}
 
-			int16_t linespace() const
+			std::int16_t linespace() const
 			{
 				return static_cast<int16_t>(height * 1.35 + 1);
 			}
@@ -216,13 +216,13 @@ namespace ms
 		class LayoutBuilder
 		{
 		public:
-			LayoutBuilder(const Font& font, Text::Alignment alignment, int16_t maxwidth, bool formatted, int16_t line_adj);
+			LayoutBuilder(const Font& font, Text::Alignment alignment, std::int16_t maxwidth, bool formatted, std::int16_t line_adj);
 
-			size_t add(const char* text, size_t prev, size_t first, size_t last);
-			Text::Layout finish(size_t first, size_t last);
+			std::size_t add(const char* text, std::size_t prev, std::size_t first, std::size_t last);
+			Text::Layout finish(std::size_t first, std::size_t last);
 
 		private:
-			void add_word(size_t first, size_t last, Text::Font font, Color::Name color);
+			void add_word(std::size_t first, std::size_t last, Text::Font font, Color::Name color);
 			void add_line();
 
 			const Font& font;
@@ -230,22 +230,22 @@ namespace ms
 			Text::Alignment alignment;
 			Text::Font fontid;
 			Color::Name color;
-			int16_t maxwidth;
+			std::int16_t maxwidth;
 			bool formatted;
 
-			int16_t ax;
-			int16_t ay;
+			std::int16_t ax;
+			std::int16_t ay;
 
 			std::vector<Text::Layout::Line> lines;
 			std::vector<Text::Layout::Word> words;
 			std::vector<int16_t> advances;
-			int16_t width;
-			int16_t endy;
-			int16_t line_adj;
+			std::int16_t width;
+			std::int16_t endy;
+			std::int16_t line_adj;
 		};
 
-		int16_t VWIDTH;
-		int16_t VHEIGHT;
+		std::int16_t VWIDTH;
+		std::int16_t VHEIGHT;
 		Rectangle<int16_t> SCREEN;
 
 		static const GLshort ATLASW = 8192;
@@ -267,12 +267,12 @@ namespace ms
 		GLint uniform_yoffset;
 		GLint uniform_fontregion;
 
-		std::unordered_map<size_t, Offset> offsets;
+		std::unordered_map<std::size_t, Offset> offsets;
 		Offset nulloffset;
 
-		QuadTree<size_t, Leftover> leftovers;
-		size_t rlid;
-		size_t wasted;
+		QuadTree<std::size_t, Leftover> leftovers;
+		std::size_t rlid;
+		std::size_t wasted;
 		Point<GLshort> border;
 		Range<GLshort> yrange;
 

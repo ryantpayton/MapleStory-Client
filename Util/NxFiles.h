@@ -27,7 +27,7 @@ namespace ms
 	namespace NxFiles
 	{
 		// Number of needed files.
-		constexpr uint8_t NUM_FILES = 15;
+		constexpr std::uint8_t NUM_FILES = 15;
 
 		// Names of the needed game files.
 		constexpr std::array<const char*, NUM_FILES> filenames =

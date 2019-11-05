@@ -23,10 +23,10 @@
 #include "Face.h"
 #include "CharEquips.h"
 
-#include "../Net/Login.h"
-#include "../Template/Interpolated.h"
-#include "../Util/Randomizer.h"
-#include "../Util/TimedBool.h"
+#include "../../Net/Login.h"
+#include "../../Template/Interpolated.h"
+#include "../../Util/Randomizer.h"
+#include "../../Util/TimedBool.h"
 
 namespace ms
 {
@@ -39,12 +39,12 @@ namespace ms
 		void reset();
 		void draw(const DrawArgument& args, float alpha) const;
 		void draw(Point<int16_t> pos, bool flip, Stance::Id stance, Expression::Id expression) const;
-		bool update(uint16_t timestep);
+		bool update(std::uint16_t timestep);
 
-		void set_hair(int32_t hairid);
-		void set_body(int32_t skinid);
-		void set_face(int32_t faceid);
-		void add_equip(int32_t equipid);
+		void set_hair(std::int32_t hairid);
+		void set_body(std::int32_t skinid);
+		void set_face(std::int32_t faceid);
+		void add_equip(std::int32_t equipid);
 		void remove_equip(Equipslot::Id slot);
 
 		void attack(bool degenerate);
@@ -57,8 +57,8 @@ namespace ms
 		bool get_alerted() const;
 
 		bool is_twohanded(Stance::Id stance) const;
-		uint16_t get_attackdelay(size_t no, uint8_t first_frame) const;
-		uint8_t get_frame() const;
+		std::uint16_t get_attackdelay(std::size_t no, std::uint8_t first_frame) const;
+		std::uint8_t get_frame() const;
 		Stance::Id get_stance() const;
 
 		const Body* get_body() const;
@@ -71,24 +71,24 @@ namespace ms
 
 	private:
 		void updatetwohanded();
-		void draw(const DrawArgument& args, Stance::Id interstance, Expression::Id interexp, uint8_t interframe, uint8_t interfcframe) const;
-		uint16_t get_delay(Stance::Id stance, uint8_t frame) const;
-		uint8_t getnextframe(Stance::Id stance, uint8_t frame) const;
-		Stance::Id getattackstance(uint8_t attack, bool degenerate) const;
+		void draw(const DrawArgument& args, Stance::Id interstance, Expression::Id interexp, std::uint8_t interframe, std::uint8_t interfcframe) const;
+		std::uint16_t get_delay(Stance::Id stance, std::uint8_t frame) const;
+		std::uint8_t getnextframe(Stance::Id stance, std::uint8_t frame) const;
+		Stance::Id getattackstance(std::uint8_t attack, bool degenerate) const;
 
 		Nominal<Stance::Id> stance;
-		Nominal<uint8_t> stframe;
-		uint16_t stelapsed;
+		Nominal<std::uint8_t> stframe;
+		std::uint16_t stelapsed;
 
 		Nominal<Expression::Id> expression;
-		Nominal<uint8_t> expframe;
-		uint16_t expelapsed;
+		Nominal<std::uint8_t> expframe;
+		std::uint16_t expelapsed;
 
 		bool flip;
 
 		const BodyAction* action;
 		std::string actionstr;
-		uint8_t actframe;
+		std::uint8_t actframe;
 
 		const Body* body;
 		const Hair* hair;
@@ -99,8 +99,8 @@ namespace ms
 		TimedBool alerted;
 
 		static BodyDrawinfo drawinfo;
-		static std::unordered_map<int32_t, Hair> hairstyles;
-		static std::unordered_map<int32_t, Face> facetypes;
-		static std::unordered_map<int32_t, Body> bodytypes;
+		static std::unordered_map<std::int32_t, Hair> hairstyles;
+		static std::unordered_map<std::int32_t, Face> facetypes;
+		static std::unordered_map<std::int32_t, Body> bodytypes;
 	};
 }

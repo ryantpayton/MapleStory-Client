@@ -46,7 +46,7 @@ namespace ms
 		void draw(float inter) const override;
 		void update() override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 		bool is_in_range(Point<int16_t> cursorpos) const override;
 		Cursor::State send_cursor(bool clicking, Point<int16_t> cursorpos) override;
@@ -61,22 +61,22 @@ namespace ms
 		bool is_chatopen();
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
 		bool indragrange(Point<int16_t> cursorpos) const override;
 
-		int16_t getchattop(bool chat_open) const;
-		int16_t getchatbarheight() const;
+		std::int16_t getchattop(bool chat_open) const;
+		std::int16_t getchatbarheight() const;
 		Rectangle<int16_t> getbounds(Point<int16_t> additional_area) const;
 
-		static constexpr int16_t CHATROWHEIGHT = 13;
-		static constexpr int16_t MINCHATROWS = 1;
-		static constexpr int16_t MAXCHATROWS = 16;
-		static constexpr int16_t DIMENSION_Y = 17;
+		static constexpr std::int16_t CHATROWHEIGHT = 13;
+		static constexpr std::int16_t MINCHATROWS = 1;
+		static constexpr std::int16_t MAXCHATROWS = 16;
+		static constexpr std::int16_t DIMENSION_Y = 17;
 		static constexpr time_t MESSAGE_COOLDOWN = 1'000;
 
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			BT_OPENCHAT,
 			BT_CLOSECHAT,
@@ -124,19 +124,19 @@ namespace ms
 		Point<int16_t> closechat;
 
 		Text chattab_text[UIChatbar::ChatTab::NUM_CHATTAB];
-		int16_t chattab_x;
-		int16_t chattab_y;
-		int16_t chattab_span;
+		std::int16_t chattab_x;
+		std::int16_t chattab_y;
+		std::int16_t chattab_span;
 
 		Slider slider;
 
 		EnumMap<Messages::Type, time_t> message_cooldowns;
 		std::vector<std::string> lastentered;
-		size_t lastpos;
+		std::size_t lastpos;
 
-		int16_t chatrows;
-		int16_t rowpos;
-		int16_t rowmax;
+		std::int16_t chatrows;
+		std::int16_t rowpos;
+		std::int16_t rowmax;
 		std::unordered_map<int16_t, Text> rowtexts;
 
 		bool dragchattop;

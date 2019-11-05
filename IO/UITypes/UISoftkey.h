@@ -21,7 +21,7 @@
 
 #include "../Components/Textfield.h"
 #include "../Components/TextTooltip.h"
-#include "../Util/Randomizer.h"
+#include "../../Util/Randomizer.h"
 
 namespace ms
 {
@@ -44,18 +44,18 @@ namespace ms
 		void draw(float inter) const override;
 		void update() override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 	private:
 		void shufflekeys();
 		void show_text(std::string text);
 		void clear_tooltip();
-		Point<int16_t> keypos(uint8_t num) const;
+		Point<int16_t> keypos(std::uint8_t num) const;
 
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			NEXT,
 			DEL,
@@ -76,9 +76,9 @@ namespace ms
 			NUM9
 		};
 
-		static constexpr size_t MIN_SIZE = 6;
-		static constexpr size_t MAX_SIZE = 16;
-		static constexpr uint8_t NUM_KEYS = 10;
+		static constexpr std::size_t MIN_SIZE = 6;
+		static constexpr std::size_t MAX_SIZE = 16;
+		static constexpr std::uint8_t NUM_KEYS = 10;
 
 		OkCallback ok_callback;
 		CancelCallback cancel_callback;
@@ -87,6 +87,6 @@ namespace ms
 		TextTooltip tetooltip;
 		Optional<Tooltip> tooltip;
 		Point<int16_t> tooltipposition;
-		int16_t timestamp;
+		std::int16_t timestamp;
 	};
 }

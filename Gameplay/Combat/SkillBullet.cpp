@@ -17,12 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "SkillBullet.h"
 
-#include "../Data/BulletData.h"
-#include "../Util/Misc.h"
+#include "../../Data/BulletData.h"
+#include "Util/Misc.h"
 
 namespace ms
 {
-	Animation RegularBullet::get(const Char&, int32_t bulletid) const
+	Animation RegularBullet::get(const Char&, std::int32_t bulletid) const
 	{
 		return BulletData::get(bulletid).get_animation();
 	}
@@ -32,25 +32,25 @@ namespace ms
 		ball = src["ball"];
 	}
 
-	Animation SingleBullet::get(const Char&, int32_t) const
+	Animation SingleBullet::get(const Char&, std::int32_t) const
 	{
 		return ball.animation;
 	}
 
-	BySkillLevelBullet::BySkillLevelBullet(nl::node src, int32_t id)
+	BySkillLevelBullet::BySkillLevelBullet(nl::node src, std::int32_t id)
 	{
 		skillid = id;
 
 		for (auto sub : src["level"])
 		{
-			auto level = string_conversion::or_zero<int32_t>(sub.name());
+			auto level = string_conversion::or_zero<std::int32_t>(sub.name());
 			bullets[level] = sub["ball"];
 		}
 	}
 
-	Animation BySkillLevelBullet::get(const Char& user, int32_t) const
+	Animation BySkillLevelBullet::get(const Char& user, std::int32_t) const
 	{
-		int32_t level = user.get_skilllevel(skillid);
+		std::int32_t level = user.get_skilllevel(skillid);
 		auto iter = bullets.find(level);
 
 		if (iter != bullets.end())

@@ -20,11 +20,11 @@
 #include "../UI.h"
 
 #include "../Components/MapleButton.h"
-#include "../UITypes/UINotice.h"
-#include "../Character/Player.h"
-#include "../Gameplay/Stage.h"
+#include "UINotice.h"
+#include "../../Character/Player.h"
+#include "../../Gameplay/Stage.h"
 
-#include "../Net/Packets/PlayerPackets.h"
+#include "../../Net/Packets/PlayerPackets.h"
 
 #include <nlnx/nx.hpp>
 
@@ -81,7 +81,7 @@ namespace ms
 		update_ap();
 
 		// Normal
-		for (size_t i = StatLabel::NAME; i <= LUK; i++)
+		for (std::size_t i = StatLabel::NAME; i <= LUK; i++)
 			statlabels[i] = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR);
 
 		statlabels[StatLabel::AP] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
@@ -156,9 +156,9 @@ namespace ms
 			inner_ability[false].draw(detail_pos + Point<int16_t>(0, 38));
 		}
 
-		size_t last = showdetail ? StatLabel::NUM_LABELS : StatLabel::NUM_NORMAL;
+		std::size_t last = showdetail ? StatLabel::NUM_LABELS : StatLabel::NUM_NORMAL;
 
-		for (size_t i = 0; i < last; i++)
+		for (std::size_t i = 0; i < last; i++)
 		{
 			Point<int16_t> labelpos = position + statoffsets[i];
 
@@ -171,7 +171,7 @@ namespace ms
 		UIElement::draw_buttons(alpha);
 	}
 
-	void UIStatsinfo::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIStatsinfo::send_key(std::int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && escape)
 			active = false;
@@ -216,12 +216,12 @@ namespace ms
 
 		statlabels[StatLabel::DAMAGE_DETAILED].change_text(std::to_string(stats.get_mindamage()) + " ~ " + std::to_string(stats.get_maxdamage()));
 		statlabels[StatLabel::DAMAGE_BONUS].change_text("0%");
-		statlabels[StatLabel::BOSS_DAMAGE].change_text(std::to_string(static_cast<int32_t>(stats.get_bossdmg() * 100)) + "%");
+		statlabels[StatLabel::BOSS_DAMAGE].change_text(std::to_string(static_cast<std::int32_t>(stats.get_bossdmg() * 100)) + "%");
 		statlabels[StatLabel::FINAL_DAMAGE].change_text("0%");
-		statlabels[StatLabel::IGNORE_DEFENSE].change_text(std::to_string(static_cast<int32_t>(stats.get_ignoredef())) + "%");
-		statlabels[StatLabel::CRITICAL_RATE].change_text(std::to_string(static_cast<int32_t>(stats.get_critical() * 100)) + "%");
+		statlabels[StatLabel::IGNORE_DEFENSE].change_text(std::to_string(static_cast<std::int32_t>(stats.get_ignoredef())) + "%");
+		statlabels[StatLabel::CRITICAL_RATE].change_text(std::to_string(static_cast<std::int32_t>(stats.get_critical() * 100)) + "%");
 		statlabels[StatLabel::CRITICAL_DAMAGE].change_text("0.00%");
-		statlabels[StatLabel::STATUS_RESISTANCE].change_text(std::to_string(static_cast<int32_t>(stats.get_resistance())));
+		statlabels[StatLabel::STATUS_RESISTANCE].change_text(std::to_string(static_cast<std::int32_t>(stats.get_resistance())));
 		statlabels[StatLabel::KNOCKBACK_RESISTANCE].change_text("0%");
 
 		update_buffed(StatLabel::DEFENSE, Equipstat::Id::WDEF);
@@ -244,7 +244,7 @@ namespace ms
 		}
 	}
 
-	Button::State UIStatsinfo::button_pressed(uint16_t id)
+	Button::State UIStatsinfo::button_pressed(std::uint16_t id)
 	{
 		const Player& player = Stage::get().get_player();
 
@@ -273,11 +273,11 @@ namespace ms
 			break;
 		case Buttons::BT_AUTO:
 		{
-			uint16_t autostr = 0;
-			uint16_t autodex = 0;
-			uint16_t autoint = 0;
-			uint16_t autoluk = 0;
-			uint16_t nowap = stats.get_stat(Maplestat::Id::AP);
+			std::uint16_t autostr = 0;
+			std::uint16_t autodex = 0;
+			std::uint16_t autoint = 0;
+			std::uint16_t autoluk = 0;
+			std::uint16_t nowap = stats.get_stat(Maplestat::Id::AP);
 			Equipstat::Id id = player.get_stats().get_job().get_primary(player.get_weapontype());
 
 			switch (id)
@@ -309,19 +309,19 @@ namespace ms
 				if (yes)
 				{
 					if (autostr > 0)
-						for (size_t i = 0; i < autostr; i++)
+						for (std::size_t i = 0; i < autostr; i++)
 							send_apup(Maplestat::Id::STR);
 
 					if (autodex > 0)
-						for (size_t i = 0; i < autodex; i++)
+						for (std::size_t i = 0; i < autodex; i++)
 							send_apup(Maplestat::Id::DEX);
 
 					if (autoint > 0)
-						for (size_t i = 0; i < autoint; i++)
+						for (std::size_t i = 0; i < autoint; i++)
 							send_apup(Maplestat::Id::INT);
 
 					if (autoluk > 0)
-						for (size_t i = 0; i < autoluk; i++)
+						for (std::size_t i = 0; i < autoluk; i++)
 							send_apup(Maplestat::Id::LUK);
 				}
 			};
@@ -387,9 +387,9 @@ namespace ms
 
 	void UIStatsinfo::update_basevstotal(StatLabel label, Maplestat::Id bstat, Equipstat::Id tstat)
 	{
-		int32_t base = stats.get_stat(bstat);
-		int32_t total = stats.get_total(tstat);
-		int32_t delta = total - base;
+		std::int32_t base = stats.get_stat(bstat);
+		std::int32_t total = stats.get_total(tstat);
+		std::int32_t delta = total - base;
 
 		std::string stattext = std::to_string(total);
 
@@ -410,8 +410,8 @@ namespace ms
 
 	void UIStatsinfo::update_buffed(StatLabel label, Equipstat::Id stat)
 	{
-		int32_t total = stats.get_total(stat);
-		int32_t delta = stats.get_buffdelta(stat);
+		std::int32_t total = stats.get_total(stat);
+		std::int32_t delta = stats.get_buffdelta(stat);
 
 		std::string stattext = std::to_string(total);
 

@@ -31,7 +31,7 @@ namespace ms
 		{
 			try
 			{
-				int32_t intval = std::stoi(str);
+				std::int32_t intval = std::stoi(str);
 				return static_cast<T>(intval);
 			}
 			catch (const std::exception& ex)
@@ -55,12 +55,12 @@ namespace ms
 		void split_number(std::string& input);
 
 		// Prefix an id with zeroes so that it has the minimum specified length.
-		std::string extend_id(int32_t id, size_t length);
+		std::string extend_id(std::int32_t id, std::size_t length);
 	};
 
 	namespace bytecode
 	{
 		// Check if a bit mask contains the specified value.
-		bool compare(int32_t mask, int32_t value);
+		bool compare(std::int32_t mask, std::int32_t value);
 	}
 }

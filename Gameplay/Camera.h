@@ -54,7 +54,7 @@ namespace ms
 		Range<int16_t> hbounds;
 		Range<int16_t> vbounds;
 
-		int16_t VWIDTH;
-		int16_t VHEIGHT;
+		std::int16_t VWIDTH;
+		std::int16_t VHEIGHT;
 	};
 }

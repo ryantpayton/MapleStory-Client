@@ -17,12 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "PlayerHandlers.h"
 
-#include "../Character/Buff.h"
-#include "../Gameplay/Stage.h"
-#include "../IO/UI.h"
-#include "../IO/UITypes/UIBuffList.h"
-#include "../IO/UITypes/UIStatsinfo.h"
-#include "../IO/UITypes/UISkillbook.h"
+#include "../../Character/Buff.h"
+#include "../../Gameplay/Stage.h"
+#include "../../IO/UI.h"
+#include "../../IO/UITypes/UIBuffList.h"
+#include "../../IO/UITypes/UIStatsinfo.h"
+#include "../../IO/UITypes/UISkillbook.h"
 
 namespace ms
 {
@@ -30,10 +30,10 @@ namespace ms
 	{
 		recv.skip(1);
 
-		for (uint8_t i = 0; i < 90; i++)
+		for (std::uint8_t i = 0; i < 90; i++)
 		{
-			uint8_t type = recv.read_byte();
-			int32_t action = recv.read_int();
+			std::uint8_t type = recv.read_byte();
+			std::int32_t action = recv.read_int();
 
 			UI::get().add_keymapping(i, type, action);
 		}
@@ -42,9 +42,9 @@ namespace ms
 
 	void SkillMacrosHandler::handle(InPacket& recv) const
 	{
-		uint8_t size = recv.read_byte();
+		std::uint8_t size = recv.read_byte();
 
-		for (uint8_t i = 0; i < size; i++)
+		for (std::uint8_t i = 0; i < size; i++)
 		{
 			recv.read_string(); // name
 			recv.read_byte(); // 'shout' byte
@@ -58,7 +58,7 @@ namespace ms
 	void ChangeStatsHandler::handle(InPacket& recv) const
 	{
 		recv.read_bool(); // 'itemreaction'
-		int32_t updatemask = recv.read_int();
+		std::int32_t updatemask = recv.read_int();
 
 		bool recalculate = false;
 
@@ -115,7 +115,7 @@ namespace ms
 
 		if (update_skillbook)
 		{
-			int16_t value = player.get_stats().get_stat(stat);
+			std::int16_t value = player.get_stats().get_stat(stat);
 
 			if (auto skillbook = UI::get().get_element<UISkillbook>())
 				skillbook->update_stat(stat, value);
@@ -182,9 +182,9 @@ namespace ms
 
 	void ApplyBuffHandler::handle_buff(InPacket& recv, Buffstat::Id bs) const
 	{
-		int16_t value = recv.read_short();
-		int32_t skillid = recv.read_int();
-		int32_t duration = recv.read_int();
+		std::int16_t value = recv.read_short();
+		std::int32_t skillid = recv.read_int();
+		std::int32_t duration = recv.read_int();
 
 		Stage::get().get_player().give_buff({ bs, value, skillid, duration });
 
@@ -207,9 +207,9 @@ namespace ms
 	{
 		recv.skip(3);
 
-		int32_t skillid = recv.read_int();
-		int32_t level = recv.read_int();
-		int32_t masterlevel = recv.read_int();
+		std::int32_t skillid = recv.read_int();
+		std::int32_t level = recv.read_int();
+		std::int32_t masterlevel = recv.read_int();
 		int64_t expire = recv.read_long();
 
 		Stage::get().get_player().change_skill(skillid, level, masterlevel, expire);
@@ -222,8 +222,8 @@ namespace ms
 
 	void AddCooldownHandler::handle(InPacket& recv) const
 	{
-		int32_t skill_id = recv.read_int();
-		int16_t cooltime = recv.read_short();
+		std::int32_t skill_id = recv.read_int();
+		std::int16_t cooltime = recv.read_short();
 
 		Stage::get().get_player().add_cooldown(skill_id, cooltime);
 	}

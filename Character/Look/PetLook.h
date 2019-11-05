@@ -17,18 +17,18 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Graphics/Text.h"
-#include "../Graphics/Animation.h"
-#include "../Template/EnumMap.h"
+#include "../../Graphics/Text.h"
+#include "../../Graphics/Animation.h"
+#include "../../Template/EnumMap.h"
 
-#include "../Gameplay/Physics/Physics.h"
+#include "../../Gameplay/Physics/Physics.h"
 
 namespace ms
 {
 	class PetLook
 	{
 	public:
-		enum Stance : uint8_t
+		enum Stance : std::uint8_t
 		{
 			MOVE,
 			STAND,
@@ -41,30 +41,30 @@ namespace ms
 			LENGTH
 		};
 
-		static Stance stancebyvalue(uint8_t value)
+		static Stance stancebyvalue(std::uint8_t value)
 		{
-			uint8_t valueh = value / 2;
+			std::uint8_t valueh = value / 2;
 
 			return valueh >= Stance::LENGTH ? Stance::STAND : static_cast<Stance>(valueh);
 		}
 
-		PetLook(int32_t iid, std::string name, int32_t uniqueid, Point<int16_t> pos, uint8_t stance, int32_t fhid);
+		PetLook(std::int32_t iid, std::string name, std::int32_t uniqueid, Point<int16_t> pos, std::uint8_t stance, std::int32_t fhid);
 		PetLook();
 
 		void draw(double viewx, double viewy, float alpha) const;
 		void update(const Physics& physics, Point<int16_t> charpos);
 
-		void set_position(int16_t xpos, int16_t ypos);
+		void set_position(std::int16_t xpos, std::int16_t ypos);
 		void set_stance(Stance stance);
-		void set_stance(uint8_t stancebyte);
+		void set_stance(std::uint8_t stancebyte);
 
-		int32_t get_itemid() const;
+		std::int32_t get_itemid() const;
 		Stance get_stance() const;
 
 	private:
-		int32_t itemid;
+		std::int32_t itemid;
 		std::string name;
-		int32_t uniqueid;
+		std::int32_t uniqueid;
 		Stance stance;
 		bool flip;
 

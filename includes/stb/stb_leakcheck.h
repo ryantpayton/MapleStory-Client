@@ -24,13 +24,13 @@ struct malloc_info
 {
    const char *file;
    int line;
-   size_t size;
+   std::size_t size;
    stb_leakcheck_malloc_info *next,*prev;
 };
 
 static stb_leakcheck_malloc_info *mi_head;
 
-void *stb_leakcheck_malloc(size_t sz, const char *file, int line)
+void *stb_leakcheck_malloc(std::size_t sz, const char *file, int line)
 {
    stb_leakcheck_malloc_info *mi = (stb_leakcheck_malloc_info *) malloc(sz + sizeof(*mi));
    if (mi == NULL) return mi;
@@ -63,7 +63,7 @@ void stb_leakcheck_free(void *ptr)
    }
 }
 
-void *stb_leakcheck_realloc(void *ptr, size_t sz, const char *file, int line)
+void *stb_leakcheck_realloc(void *ptr, std::size_t sz, const char *file, int line)
 {
    if (ptr == NULL) {
       return stb_leakcheck_malloc(sz, file, line);
@@ -139,8 +139,8 @@ void stb_leakcheck_dumpmem(void)
 #define free(p)       stb_leakcheck_free(p)
 #define realloc(p,sz) stb_leakcheck_realloc(p,sz, __FILE__, __LINE__)
 
-extern void * stb_leakcheck_malloc(size_t sz, const char *file, int line);
-extern void * stb_leakcheck_realloc(void *ptr, size_t sz, const char *file, int line);
+extern void * stb_leakcheck_malloc(std::size_t sz, const char *file, int line);
+extern void * stb_leakcheck_realloc(void *ptr, std::size_t sz, const char *file, int line);
 extern void   stb_leakcheck_free(void *ptr);
 extern void   stb_leakcheck_dumpmem(void);
 

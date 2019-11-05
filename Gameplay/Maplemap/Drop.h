@@ -19,23 +19,23 @@
 
 #include "MapObject.h"
 
-#include "../Template/Interpolated.h"
-#include "../Template/Rectangle.h"
+#include "../../Template/Interpolated.h"
+#include "../../Template/Rectangle.h"
 
 namespace ms
 {
 	class Drop : public MapObject
 	{
 	public:
-		virtual int8_t update(const Physics& physics) override;
+		virtual std::int8_t update(const Physics& physics) override;
 
-		void expire(int8_t, const PhysicsObject*);
+		void expire(std::int8_t, const PhysicsObject*);
 
 		Rectangle<int16_t> bounds() const;
 
 	protected:
-		Drop(int32_t oid, int32_t owner, Point<int16_t> start,
-			Point<int16_t> dest, int8_t type, int8_t mode, bool playerdrop);
+		Drop(std::int32_t oid, std::int32_t owner, Point<int16_t> start,
+			Point<int16_t> dest, std::int8_t type, std::int8_t mode, bool playerdrop);
 
 		Linear<float> opacity;
 		Linear<float> angle;
@@ -48,8 +48,8 @@ namespace ms
 			PICKEDUP
 		};
 
-		int32_t owner;
-		int8_t pickuptype;
+		std::int32_t owner;
+		std::int8_t pickuptype;
 		bool playerdrop;
 
 		const PhysicsObject* looter;

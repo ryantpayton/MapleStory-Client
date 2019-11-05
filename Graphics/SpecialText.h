@@ -63,7 +63,7 @@ namespace ms
 			inner.change_color(color);
 		}
 
-		int16_t width() const
+		std::int16_t width() const
 		{
 			return inner.width();
 		}
@@ -99,7 +99,7 @@ namespace ms
 			top.change_color(color);
 		}
 
-		int16_t width() const
+		std::int16_t width() const
 		{
 			return top.width();
 		}

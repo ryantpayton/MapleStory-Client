@@ -37,7 +37,7 @@ namespace ms
 		texture.draw(pos + viewpos);
 	}
 
-	uint8_t Tile::getz() const
+	std::uint8_t Tile::getz() const
 	{
 		return z;
 	}

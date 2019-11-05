@@ -24,7 +24,7 @@ namespace ms
 	namespace InventoryType
 	{
 		// Inventory types.
-		enum Id : int8_t
+		enum Id : std::int8_t
 		{
 			NONE,
 			EQUIP,
@@ -37,14 +37,14 @@ namespace ms
 		};
 
 		// Return the inventory type by item id.
-		Id by_item_id(int32_t item_id);
+		Id by_item_id(std::int32_t item_id);
 		// Return the inventory type by value.
-		Id by_value(int8_t value);
+		Id by_value(std::int8_t value);
 	}
 
 	struct InventoryPosition
 	{
 		InventoryType::Id type;
-		int16_t slot;
+		std::int16_t slot;
 	};
 }

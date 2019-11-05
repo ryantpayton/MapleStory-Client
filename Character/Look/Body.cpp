@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Body.h"
 
-#include "../Console.h"
+#include "../../Console.h"
 
 #include "../Util/Misc.h"
 
@@ -26,7 +26,7 @@
 
 namespace ms
 {
-	Body::Body(int32_t skin, const BodyDrawinfo& drawinfo)
+	Body::Body(std::int32_t skin, const BodyDrawinfo& drawinfo)
 	{
 		std::string strid = string_format::extend_id(skin, 2);
 		nl::node bodynode = nl::nx::character["000020" + strid + ".img"];
@@ -42,7 +42,7 @@ namespace ms
 			if (!stancenode)
 				continue;
 
-			for (uint8_t frame = 0; nl::node framenode = stancenode[frame]; ++frame)
+			for (std::uint8_t frame = 0; nl::node framenode = stancenode[frame]; ++frame)
 			{
 				for (nl::node partnode : framenode)
 				{
@@ -87,7 +87,7 @@ namespace ms
 			}
 		}
 
-		constexpr size_t NUM_SKINTYPES = 12;
+		constexpr std::size_t NUM_SKINTYPES = 12;
 
 		constexpr char* skintypes[NUM_SKINTYPES] =
 		{
@@ -103,11 +103,11 @@ namespace ms
 			"Red"
 		};
 
-		size_t index = skin;
+		std::size_t index = skin;
 		name = (index < NUM_SKINTYPES) ? skintypes[index] : "";
 	}
 
-	void Body::draw(Stance::Id stance, Layer layer, uint8_t frame, const DrawArgument& args) const
+	void Body::draw(Stance::Id stance, Layer layer, std::uint8_t frame, const DrawArgument& args) const
 	{
 		auto frameit = stances[stance][layer].find(frame);
 

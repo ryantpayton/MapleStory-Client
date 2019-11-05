@@ -42,7 +42,7 @@ namespace ms
 
 		auto& tag = textures[selected];
 
-		int16_t width = name.width();
+		std::int16_t width = name.width();
 		auto startpos = position - Point<int16_t>(6 + width / 2, -1);
 
 		tag[0].draw(startpos);

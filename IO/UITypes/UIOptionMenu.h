@@ -33,16 +33,16 @@ namespace ms
 
 		void draw(float inter) const override;
 
-		Button::State button_pressed(uint16_t buttonid) override;
+		Button::State button_pressed(std::uint16_t buttonid) override;
 
 		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		void send_key(std::int32_t keycode, bool pressed, bool escape) override;
 
 	private:
-		void change_tab(uint16_t tabid);
+		void change_tab(std::uint16_t tabid);
 
-		enum Buttons : uint16_t
+		enum Buttons : std::uint16_t
 		{
 			TAB0,
 			TAB1,
@@ -55,7 +55,7 @@ namespace ms
 			SELECT_RES
 		};
 
-		uint16_t selected_tab;
+		std::uint16_t selected_tab;
 		Texture tab_background[Buttons::CANCEL];
 	};
 }

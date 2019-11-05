@@ -41,21 +41,21 @@ namespace ms
 
 	MapleFrame::MapleFrame() {}
 
-	void MapleFrame::draw(Point<int16_t> position, int16_t rwidth, int16_t rheight) const
+	void MapleFrame::draw(Point<int16_t> position, std::int16_t rwidth, std::int16_t rheight) const
 	{
-		int16_t numhor = rwidth / xtile + 2;
-		int16_t numver = rheight / ytile;
-		int16_t width = numhor * xtile;
-		int16_t height = numver * ytile;
-		int16_t left = position.x() - width / 2;
-		int16_t top = position.y() - height;
-		int16_t right = left + width;
-		int16_t bottom = top + height;
+		std::int16_t numhor = rwidth / xtile + 2;
+		std::int16_t numver = rheight / ytile;
+		std::int16_t width = numhor * xtile;
+		std::int16_t height = numver * ytile;
+		std::int16_t left = position.x() - width / 2;
+		std::int16_t top = position.y() - height;
+		std::int16_t right = left + width;
+		std::int16_t bottom = top + height;
 
 		northwest.draw(DrawArgument(left, top));
 		southwest.draw(DrawArgument(left, bottom));
 
-		for (int16_t y = top; y < bottom; y += ytile)
+		for (std::int16_t y = top; y < bottom; y += ytile)
 		{
 			west.draw(DrawArgument(left, y));
 			east.draw(DrawArgument(right, y));
@@ -63,7 +63,7 @@ namespace ms
 
 		center.draw(DrawArgument(Point<int16_t>(left, top), Point<int16_t>(width, height)));
 
-		for (int16_t x = left; x < right; x += xtile)
+		for (std::int16_t x = left; x < right; x += xtile)
 		{
 			north.draw(DrawArgument(x, top));
 			south.draw(DrawArgument(x, bottom));

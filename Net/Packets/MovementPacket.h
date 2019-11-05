@@ -19,7 +19,7 @@
 
 #include "../OutPacket.h"
 
-#include "../Gameplay/Movement.h"
+#include "../../Gameplay/Movement.h"
 
 namespace ms
 {

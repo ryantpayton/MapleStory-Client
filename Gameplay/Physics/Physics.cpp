@@ -149,7 +149,7 @@ namespace ms
 
 	Point<int16_t> Physics::get_y_below(Point<int16_t> position) const
 	{
-		int16_t ground = fht.get_y_below(position);
+		std::int16_t ground = fht.get_y_below(position);
 
 		return Point<int16_t>(position.x(), ground - 1);
 	}
