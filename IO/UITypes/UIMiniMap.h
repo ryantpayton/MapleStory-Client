@@ -65,13 +65,17 @@ namespace ms
 			MAX
 		};
 
+		// Constants
+		const Point<int16_t> window_ul_pos = Point<int16_t>(0, -10);
+		const int16_t map_x = 13;
+
 		int32_t mapid;
 		int8_t type;
+		bool simpleMode;
 		int16_t combined_text_width;
 		Point<int16_t> bt_map_pos;
 		Point<int16_t> bt_max_pos;
 		Point<int16_t> bt_min_pos;
-		Point<int16_t> window_ul_pos = Point<int16_t>(0, -10);
 		int16_t bt_min_width;
 		int16_t bt_max_width;
 		int16_t bt_map_width;
