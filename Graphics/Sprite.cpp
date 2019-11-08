@@ -39,4 +39,9 @@ namespace ms
 	{
 		return animation.update();
 	}
+
+	Animation Sprite::get_animation()
+	{
+		return animation;
+	}
 }

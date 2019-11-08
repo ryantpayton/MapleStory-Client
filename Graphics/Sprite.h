@@ -36,6 +36,8 @@ namespace ms
 		bool update(uint16_t timestep);
 		bool update();
 
+		Animation get_animation();
+
 	private:
 		Animation animation;
 		DrawArgument stateargs;

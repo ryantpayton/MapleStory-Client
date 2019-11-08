@@ -45,6 +45,9 @@ namespace ms
 		void update_buttons();
 		void toggle_buttons();
 		void update_text();
+		void update_canvas();
+
+		nl::node get_map_node_name();
 
 		enum Buttons
 		{
@@ -68,6 +71,7 @@ namespace ms
 		Point<int16_t> bt_map_pos;
 		Point<int16_t> bt_max_pos;
 		Point<int16_t> bt_min_pos;
+		Point<int16_t> window_ul_pos = Point<int16_t>(0, -10);
 		int16_t bt_min_width;
 		int16_t bt_max_width;
 		int16_t bt_map_width;

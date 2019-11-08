@@ -31,7 +31,7 @@ namespace ms
 		std::string node = simpleMode ? "MiniMapSimpleMode" : "MiniMap";
 		nl::node MiniMap = nl::nx::ui["UIWindow2.img"][node];
 
-		nl::node Min, Normal, Max;
+		nl::node Min, Normal, Max, Map;
 
 		if (simpleMode)
 		{
@@ -45,6 +45,15 @@ namespace ms
 			Normal = MiniMap["MinMap"];
 			Max = MiniMap["MaxMap"];
 		}
+
+
+		mapid = stats.get_mapid();
+		Map = get_map_node_name();
+		Sprite map_sprite = Sprite(Map);
+		Point<int16_t> map_dimensions = map_sprite.get_animation().get_dimensions();
+
+		int16_t map_x = 13;
+		int16_t window_ur_x_offset = map_dimensions.x() - 128 + map_x * 2;
 
 		std::string Left = simpleMode ? "Left" : "w";
 		std::string Center = simpleMode ? "Center" : "c";
@@ -76,40 +85,43 @@ namespace ms
 		std::string UpLeft = simpleMode ? "UpLeft" : "nw";
 		std::string UpRight = simpleMode ? "UpRight" : "ne";
 
-		Point<int16_t> m_pos = Point<int16_t>(0, 33);
-		DrawArgument mr_pos = DrawArgument(Point<int16_t>(315, 0));
-		DrawArgument uc_pos = DrawArgument(Point<int16_t>(0, -10)) + DrawArgument(Point<int16_t>(64, 0), Point<int16_t>(196, 0));
-		Point<int16_t> ul_pos = Point<int16_t>(0, -10);
-		Point<int16_t> ur_pos = Point<int16_t>(260, -10);
+		Point<int16_t> m_stretch = Point<int16_t>(0, map_dimensions.y() - 17);
+		DrawArgument uc_pos = DrawArgument(window_ul_pos) + DrawArgument(Point<int16_t>(64, 0), Point<int16_t>(window_ur_x_offset, 0));
+		DrawArgument mr_pos = DrawArgument(Point<int16_t>(window_ur_x_offset + 64 + 55, 0));
+		
+		Point<int16_t> ur_pos = Point<int16_t>(64 + window_ur_x_offset, -10);
 
-		int16_t dc_y = 68;
-		int16_t dl_dr_y = 50;
 		int16_t ml_mr_y = 17;
-
-		normal_sprites.emplace_back(Normal[DownCenter], DrawArgument(Point<int16_t>(0, dc_y)) + DrawArgument(Point<int16_t>(64, 0), Point<int16_t>(196, 0)));
-		normal_sprites.emplace_back(Normal[DownLeft], Point<int16_t>(0, dl_dr_y));
-		normal_sprites.emplace_back(Normal[DownRight], Point<int16_t>(260, dl_dr_y));
-		normal_sprites.emplace_back(Normal[MiddleCenter]);
-		normal_sprites.emplace_back(Normal[MiddleLeft], DrawArgument(Point<int16_t>(0, ml_mr_y), m_pos));
-		normal_sprites.emplace_back(Normal[MiddleRight], mr_pos + DrawArgument(Point<int16_t>(0, ml_mr_y), m_pos));
+		int16_t dl_dr_y = map_dimensions.y();
+		int16_t dc_y = dl_dr_y + 18;
+		
+		normal_sprites.emplace_back(Normal[UpLeft], window_ul_pos);
 		normal_sprites.emplace_back(Normal[UpCenter], uc_pos);
-		normal_sprites.emplace_back(Normal[UpLeft], ul_pos);
 		normal_sprites.emplace_back(Normal[UpRight], ur_pos);
+		normal_sprites.emplace_back(Normal[MiddleCenter]);
+		normal_sprites.emplace_back(Normal[MiddleLeft], DrawArgument(Point<int16_t>(0, ml_mr_y), m_stretch));
+		normal_sprites.emplace_back(Normal[MiddleRight], mr_pos + DrawArgument(Point<int16_t>(0, ml_mr_y), m_stretch));
+		normal_sprites.emplace_back(Normal[DownCenter], DrawArgument(Point<int16_t>(0, dc_y)) + DrawArgument(Point<int16_t>(64, 0), Point<int16_t>(window_ur_x_offset, 0)));
+		normal_sprites.emplace_back(Normal[DownLeft], Point<int16_t>(0, dl_dr_y));
+		normal_sprites.emplace_back(Normal[DownRight], Point<int16_t>(64 + window_ur_x_offset, dl_dr_y));
+		
+		normal_sprites.emplace_back(Map, DrawArgument(position + Point<int16_t>(map_x, ml_mr_y - 5)));
 
 		int16_t max_adj = 40;
 		int16_t max_dc_y = dc_y + max_adj;
 		int16_t max_dl_dr_y = dl_dr_y + max_adj;
 		int16_t max_ml_mr_y = ml_mr_y + max_adj;
 
-		max_sprites.emplace_back(Max[DownCenter], DrawArgument(Point<int16_t>(0, max_dc_y)) + DrawArgument(Point<int16_t>(64, 0), Point<int16_t>(196, 0)));
+		max_sprites.emplace_back(Max[DownCenter], DrawArgument(Point<int16_t>(0, max_dc_y)) + DrawArgument(Point<int16_t>(64, 0), Point<int16_t>(window_ur_x_offset, 0)));
 		max_sprites.emplace_back(Max[DownLeft], Point<int16_t>(0, max_dl_dr_y));
-		max_sprites.emplace_back(Max[DownRight], Point<int16_t>(260, max_dl_dr_y));
+		max_sprites.emplace_back(Max[DownRight], Point<int16_t>(window_ur_x_offset + 64, max_dl_dr_y));
 		max_sprites.emplace_back(Max[MiddleCenter]);
-		max_sprites.emplace_back(Max[MiddleLeft], DrawArgument(Point<int16_t>(0, max_ml_mr_y), m_pos));
-		max_sprites.emplace_back(Max[MiddleRight], mr_pos + DrawArgument(Point<int16_t>(0, max_ml_mr_y), m_pos));
+		max_sprites.emplace_back(Max[MiddleLeft], DrawArgument(Point<int16_t>(0, max_ml_mr_y), m_stretch));
+		max_sprites.emplace_back(Max[MiddleRight], mr_pos + DrawArgument(Point<int16_t>(0, max_ml_mr_y), m_stretch));
 		max_sprites.emplace_back(Max[UpCenter], uc_pos);
-		max_sprites.emplace_back(Max[UpLeft], ul_pos);
+		max_sprites.emplace_back(Max[UpLeft], window_ul_pos);
 		max_sprites.emplace_back(Max[UpRight], ur_pos);
+		max_sprites.emplace_back(Map, DrawArgument(position + Point<int16_t>(map_x, max_ml_mr_y - 5)));
 
 		region_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
 		town_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
@@ -151,6 +163,7 @@ namespace ms
 		if (mid != mapid)
 		{
 			mapid = mid;
+			update_canvas();
 			update_text();
 			update_buttons();
 			toggle_buttons();
@@ -263,5 +276,28 @@ namespace ms
 				break;
 			}
 		}
+	}
+
+	void UIMiniMap::update_canvas()
+	{
+		// Delete old map canvas
+		normal_sprites.pop_back();
+		max_sprites.pop_back();
+
+		nl::node map = get_map_node_name();
+
+		// Emplace new canvas into sprite vectors
+		normal_sprites.emplace_back(map, DrawArgument(position + Point<int16_t>(3, 17)));
+		max_sprites.emplace_back(map, DrawArgument(position + Point<int16_t>(3, 57)));
+	}
+
+	nl::node UIMiniMap::get_map_node_name() {
+		// Create node name from new map id
+		std::string mid_string = "000000000.img";
+		std::string id_string = std::to_string(mapid);
+		mid_string.replace(9 - id_string.length(), id_string.length(), id_string);
+
+		// Get canvas of new map
+		return nl::nx::map["Map"]["Map" + std::to_string(mapid / 100000000)][mid_string]["miniMap"]["canvas"];
 	}
 }
