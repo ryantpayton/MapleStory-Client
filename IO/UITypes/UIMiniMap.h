@@ -67,22 +67,19 @@ namespace ms
 
 		// Constants
 		const Point<int16_t> window_ul_pos = Point<int16_t>(0, -10);
-		const int16_t map_x = 13;
+		const int16_t btn_min_y = -6;
+		int16_t ml_mr_y = 17;
 
 		int32_t mapid;
 		int8_t type;
 		bool simpleMode;
 		int16_t combined_text_width;
-		Point<int16_t> bt_map_pos;
-		Point<int16_t> bt_max_pos;
-		Point<int16_t> bt_min_pos;
+		int16_t middle_right_x;
+		nl::node MiniMap;
 		int16_t bt_min_width;
 		int16_t bt_max_width;
 		int16_t bt_map_width;
-		int16_t final_pos;
-		Animation min_left;
-		Animation min_center;
-		Animation min_right;
+		std::vector<Sprite> min_sprites;
 		std::vector<Sprite> normal_sprites;
 		std::vector<Sprite> max_sprites;
 		Text combined_text;
