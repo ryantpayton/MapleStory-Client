@@ -46,8 +46,11 @@ namespace ms
 		void toggle_buttons();
 		void update_text();
 		void update_canvas();
+		void update_markers();
 
 		nl::node get_map_node_name();
+
+		
 
 		enum Buttons
 		{
@@ -73,6 +76,7 @@ namespace ms
 		int32_t mapid;
 		int8_t type;
 		bool simpleMode;
+		nl::node Map;
 		int16_t combined_text_width;
 		int16_t middle_right_x;
 		nl::node MiniMap;
@@ -82,6 +86,7 @@ namespace ms
 		std::vector<Sprite> min_sprites;
 		std::vector<Sprite> normal_sprites;
 		std::vector<Sprite> max_sprites;
+		std::vector<Sprite> marker_sprites;
 		Text combined_text;
 		Text region_text;
 		Text town_text;

@@ -77,6 +77,7 @@ namespace ms
 		if (mid != mapid)
 		{
 			mapid = mid;
+			Map = get_map_node_name();
 			update_text();
 			update_buttons();
 			update_canvas();
@@ -206,7 +207,7 @@ namespace ms
 		normal_sprites.clear();
 		max_sprites.clear();
 
-		nl::node Min, Normal, Max, Map;
+		nl::node Min, Normal, Max;
 
 		if (simpleMode)
 		{
@@ -221,8 +222,6 @@ namespace ms
 			Max = MiniMap["MaxMap"];
 		}
 
-		mapid = stats.get_mapid();
-		Map = get_map_node_name();
 		Sprite map_sprite = Sprite(Map["miniMap"]["canvas"]);
 		Point<int16_t> map_dimensions = map_sprite.get_animation().get_dimensions();
 
@@ -243,8 +242,8 @@ namespace ms
 			map_draw_origin_y = 10 + m_stretch - map_dimensions.y();
 		}
 		else {
-			m_stretch = map_dimensions.y() - 20;
-			down_y_offset = 10 + m_stretch;
+			m_stretch = map_dimensions.y() - 27;
+			down_y_offset = 17 + m_stretch;
 			map_draw_origin_y = 10;
 		}
 
@@ -257,12 +256,16 @@ namespace ms
 		std::string DownCenter = simpleMode ? "DownCenter" : "s";
 		std::string DownLeft = simpleMode ? "DownLeft" : "sw";
 		std::string DownRight = simpleMode ? "DownRight" : "se";
-		std::string MiddleCenter = "MiddleCenter";
 		std::string MiddleLeft = simpleMode ? "MiddleLeft" : "w";
+		//std::string MiddleCenter = simpleMode ? "MiddleCenter" : "c";
 		std::string MiddleRight = simpleMode ? "MiddleRight" : "e";
 		std::string UpCenter = simpleMode ? "UpCenter" : "n";
 		std::string UpLeft = simpleMode ? "UpLeft" : "nw";
 		std::string UpRight = simpleMode ? "UpRight" : "ne";
+
+		// SimpleMode's backdrop is opaque, notSimpleMode's is transparent but lightly coloured 
+		// UI.wz v208 has normal centre sprite inlinked to bottom right window frame, not sure why?
+		nl::node MiddleCenter = simpleMode ? MiniMap["Window"]["Max"]["MiddleCenter"] : MiniMap["MaxMap"]["c"];
 
 		int16_t dl_dr_y = std::max(map_dimensions.y(), (int16_t)10);
 
@@ -273,7 +276,9 @@ namespace ms
 		min_sprites.emplace_back(Min[Left], DrawArgument(window_ul_pos));
 		min_sprites.emplace_back(Min[Right], DrawArgument(window_ul_pos + Point<int16_t>(min_c_stretch + center_start_x, 0)));
 
-		normal_sprites.emplace_back(Normal[MiddleCenter], DrawArgument(Point<int16_t>(7, 58), Point<int16_t>(c_stretch + 108, m_stretch + 20)));
+		// (7,10) is the top left corner of the inner window. 
+		//114 = 128 (width of left and right borders) - 14 (width of middle borders * 2). 27 = height of inner frame drawn on up and down borders
+		normal_sprites.emplace_back(MiddleCenter, DrawArgument(Point<int16_t>(7, 10), Point<int16_t>(c_stretch + 114, m_stretch + 27)));
 		normal_sprites.emplace_back(Map["miniMap"]["canvas"], DrawArgument(Point<int16_t>(map_draw_origin_x, map_draw_origin_y)));
 		normal_sprites.emplace_back(Normal[MiddleLeft], DrawArgument(Point<int16_t>(0, ml_mr_y), Point<int16_t>(0, m_stretch)));
 		normal_sprites.emplace_back(Normal[MiddleRight], DrawArgument(Point<int16_t>(middle_right_x, ml_mr_y), Point<int16_t>(0, m_stretch)));
@@ -286,7 +291,7 @@ namespace ms
 
 		int16_t max_adj = 40;
 
-		max_sprites.emplace_back(Max[MiddleCenter]);
+		max_sprites.emplace_back(MiddleCenter, DrawArgument(Point<int16_t>(7, 50), Point<int16_t>(c_stretch + 114, m_stretch + 27)));
 		max_sprites.emplace_back(Map["miniMap"]["canvas"], DrawArgument(Point<int16_t>(map_draw_origin_x, map_draw_origin_y + max_adj)));
 		max_sprites.emplace_back(Max[MiddleLeft], DrawArgument(Point<int16_t>(0, ml_mr_y + max_adj), Point<int16_t>(0, m_stretch)));
 		max_sprites.emplace_back(Max[MiddleRight], DrawArgument(Point<int16_t>(middle_right_x, ml_mr_y + max_adj), Point<int16_t>(0, m_stretch)));
@@ -309,5 +314,18 @@ namespace ms
 
 		// Get canvas of new map
 		return nl::nx::map["Map"]["Map" + std::to_string(mapid / 100000000)][mid_string];
+	}
+
+	void UIMiniMap::update_markers() {
+		nl::node base = nl::nx::map["MapHelper.img"];
+
+		// portals
+		nl::node portals = base["portal"];
+		for (nl::node p = portals.begin(); p != portals.end(); ++p) {
+			int targetMap = p["tm"];
+			if (targetMap != 999999999 && targetMap != mapid) {
+				marker_sprites.emplace_back();
+			}
+		}
 	}
 }
