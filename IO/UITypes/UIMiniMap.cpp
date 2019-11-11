@@ -41,6 +41,8 @@ namespace ms
 		town_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
 		combined_text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE);
 
+		player_marker = Animation(nl::nx::map["MapHelper.img"]["minimap"]["user"]);
+
 		update();
 	}
 
@@ -55,8 +57,17 @@ namespace ms
 		}
 		else if (type == Type::NORMAL)
 		{
+
 			for each (Sprite sprite in normal_sprites)
 				sprite.draw(position, alpha);
+
+			if (has_map) {
+				for each (Sprite s in static_marker_sprites)
+					s.draw(position, alpha);
+
+				player_marker.draw(position + player_marker_pos, alpha);
+			}
+
 		}
 		else
 		{
@@ -65,6 +76,13 @@ namespace ms
 
 			region_text.draw(position + Point<int16_t>(48, 4));
 			town_text.draw(position + Point<int16_t>(48, 18));
+
+			if (has_map) {
+				for each (Sprite s in static_marker_sprites)
+					s.draw(position + Point<int16_t>(0, 40), alpha);
+
+				player_marker.draw(position + player_marker_pos + Point<int16_t>(0, 40), alpha);
+			}
 		}
 
 		UIElement::draw(alpha);
@@ -72,16 +90,29 @@ namespace ms
 
 	void UIMiniMap::update()
 	{
+
+		//player_pos = Stage::get().get_player().get_position();
+		//std::cout << "Player pos: " << player_pos.to_string() << '\r' << std::flush;
+
+
 		int32_t mid = stats.get_mapid();
 
 		if (mid != mapid)
 		{
 			mapid = mid;
 			Map = get_map_node_name();
+			if (!Map["miniMap"]) {
+				has_map = false;
+			}
+			else
+				has_map = true;
+			scale = std::pow(2, (int)Map["miniMap"]["mag"]);
 			update_text();
 			update_buttons();
 			update_canvas();
+			update_static_markers();
 			toggle_buttons();
+				
 		}
 
 		if (type == Type::MIN)
@@ -98,6 +129,13 @@ namespace ms
 		{
 			for each (Sprite sprite in max_sprites)
 				sprite.update();
+		}
+
+		if (has_map) {
+		update_player_marker();
+
+		for each (Sprite s in static_marker_sprites)
+			s.update();
 		}
 
 		UIElement::update();
@@ -228,7 +266,7 @@ namespace ms
 		// 48 (Offset for text) + longer text's width + 10 (space for right side border)
 		int16_t mark_text_width = 48 + std::max(region_text.width(), town_text.width()) + 10;
 
-		int16_t c_stretch, ur_x_offset, map_draw_origin_x, m_stretch, down_y_offset, map_draw_origin_y;
+		int16_t c_stretch, ur_x_offset, m_stretch, down_y_offset;
 
 		int16_t window_width = std::max(178, std::max((int)mark_text_width, map_dimensions.x() + 20));
 
@@ -279,7 +317,8 @@ namespace ms
 		// (7,10) is the top left corner of the inner window. 
 		//114 = 128 (width of left and right borders) - 14 (width of middle borders * 2). 27 = height of inner frame drawn on up and down borders
 		normal_sprites.emplace_back(MiddleCenter, DrawArgument(Point<int16_t>(7, 10), Point<int16_t>(c_stretch + 114, m_stretch + 27)));
-		normal_sprites.emplace_back(Map["miniMap"]["canvas"], DrawArgument(Point<int16_t>(map_draw_origin_x, map_draw_origin_y)));
+		if (has_map)
+			normal_sprites.emplace_back(Map["miniMap"]["canvas"], DrawArgument(Point<int16_t>(map_draw_origin_x, map_draw_origin_y)));
 		normal_sprites.emplace_back(Normal[MiddleLeft], DrawArgument(Point<int16_t>(0, ml_mr_y), Point<int16_t>(0, m_stretch)));
 		normal_sprites.emplace_back(Normal[MiddleRight], DrawArgument(Point<int16_t>(middle_right_x, ml_mr_y), Point<int16_t>(0, m_stretch)));
 		normal_sprites.emplace_back(Normal[UpCenter], DrawArgument(Point<int16_t>(center_start_x, 0) + window_ul_pos, Point<int16_t>(c_stretch, 0)));
@@ -292,7 +331,8 @@ namespace ms
 		int16_t max_adj = 40;
 
 		max_sprites.emplace_back(MiddleCenter, DrawArgument(Point<int16_t>(7, 50), Point<int16_t>(c_stretch + 114, m_stretch + 27)));
-		max_sprites.emplace_back(Map["miniMap"]["canvas"], DrawArgument(Point<int16_t>(map_draw_origin_x, map_draw_origin_y + max_adj)));
+		if (has_map)
+			max_sprites.emplace_back(Map["miniMap"]["canvas"], DrawArgument(Point<int16_t>(map_draw_origin_x, map_draw_origin_y + max_adj)));
 		max_sprites.emplace_back(Max[MiddleLeft], DrawArgument(Point<int16_t>(0, ml_mr_y + max_adj), Point<int16_t>(0, m_stretch)));
 		max_sprites.emplace_back(Max[MiddleRight], DrawArgument(Point<int16_t>(middle_right_x, ml_mr_y + max_adj), Point<int16_t>(0, m_stretch)));
 		max_sprites.emplace_back(Max[UpCenter], DrawArgument(Point<int16_t>(center_start_x, 0) + window_ul_pos, Point<int16_t>(c_stretch, 0)));
@@ -316,15 +356,40 @@ namespace ms
 		return nl::nx::map["Map"]["Map" + std::to_string(mapid / 100000000)][mid_string];
 	}
 
-	void UIMiniMap::update_markers() {
-		nl::node base = nl::nx::map["MapHelper.img"];
+	void UIMiniMap::update_player_marker() {
 
+		Point<int16_t> player_pos = Stage::get().get_player().get_position();
+		Point<int16_t> sprite_offset = player_marker.get_dimensions() / Point<int16_t>(2, 0);
+		player_marker_pos = (player_pos + Point<int16_t>(Map["miniMap"]["centerX"], Map["miniMap"]["centerY"])) / scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y);
+	}
+	
+	void UIMiniMap::update_markers() {
+		nl::node marker = nl::nx::map["MapHelper.img"];
+		Animation marker_sprite;
+		Point<int16_t> sprite_offset;
+		// NPCs
+
+
+		// other characters
+
+		// Player
+		marker_sprite = Animation(marker["user"]);
+	}
+
+	void UIMiniMap::update_static_markers() {
+		static_marker_sprites.clear();
+		nl::node marker = nl::nx::map["MapHelper.img"]["minimap"];
+		Animation marker_sprite;
 		// portals
-		nl::node portals = base["portal"];
+		nl::node portals = Map["portal"];
+		marker_sprite = Animation(marker["portal"]);
+		Point<int16_t> marker_offset = marker_sprite.get_dimensions() / Point<int16_t>(2, 0);
 		for (nl::node p = portals.begin(); p != portals.end(); ++p) {
-			int targetMap = p["tm"];
-			if (targetMap != 999999999 && targetMap != mapid) {
-				marker_sprites.emplace_back();
+			int portal_type = p["pt"];
+			if (portal_type == 2) {
+				Point<int16_t> marker_pos = (Point<int16_t>(p["x"], p["y"]) + Point<int16_t>(Map["miniMap"]["centerX"], Map["miniMap"]["centerY"]))/scale - marker_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y);
+				std::cout << "Portal's at " << marker_pos.to_string() << '\n';
+				static_marker_sprites.emplace_back(marker_sprite, marker_pos);
 			}
 		}
 	}
