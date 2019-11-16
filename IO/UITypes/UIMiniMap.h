@@ -53,9 +53,6 @@ namespace ms
 
 		nl::node get_map_node_name();
 
-
-		
-
 		enum Buttons
 		{
 			BT_MAP,
@@ -75,7 +72,7 @@ namespace ms
 		// Constants
 		const Point<int16_t> window_ul_pos = Point<int16_t>(0, -10);
 		const int16_t btn_min_y = -6;
-		int16_t ml_mr_y = 17;
+		const int16_t ml_mr_y = 17;
 
 		int32_t mapid;
 		int8_t type;
@@ -93,8 +90,10 @@ namespace ms
 		std::vector<Sprite> normal_sprites;
 		std::vector<Sprite> max_sprites;
 		std::vector<Sprite> static_marker_sprites;
+		std::vector<Sprite> npc_sprites;
 		int16_t map_draw_origin_x, map_draw_origin_y;
 		Point<int16_t> player_marker_pos;
+		Point<int16_t> center_offset;
 		Animation player_marker;
 		Text combined_text;
 		Text region_text;

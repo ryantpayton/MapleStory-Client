@@ -62,6 +62,9 @@ namespace ms
 				sprite.draw(position, alpha);
 
 			if (has_map) {
+				for each (Sprite s in npc_sprites)
+					s.draw(position, alpha);
+
 				for each (Sprite s in static_marker_sprites)
 					s.draw(position, alpha);
 
@@ -78,6 +81,9 @@ namespace ms
 			town_text.draw(position + Point<int16_t>(48, 18));
 
 			if (has_map) {
+				for each (Sprite s in npc_sprites)
+					s.draw(position + Point<int16_t>(0, 40), alpha);
+
 				for each (Sprite s in static_marker_sprites)
 					s.draw(position + Point<int16_t>(0, 40), alpha);
 
@@ -90,11 +96,6 @@ namespace ms
 
 	void UIMiniMap::update()
 	{
-
-		//player_pos = Stage::get().get_player().get_position();
-		//std::cout << "Player pos: " << player_pos.to_string() << '\r' << std::flush;
-
-
 		int32_t mid = stats.get_mapid();
 
 		if (mid != mapid)
@@ -104,15 +105,17 @@ namespace ms
 			if (!Map["miniMap"]) {
 				has_map = false;
 			}
-			else
+			else {
 				has_map = true;
+			}
 			scale = std::pow(2, (int)Map["miniMap"]["mag"]);
+			center_offset = Point<int16_t>(Map["miniMap"]["centerX"], Map["miniMap"]["centerY"]);
 			update_text();
 			update_buttons();
 			update_canvas();
+			update_markers();
 			update_static_markers();
 			toggle_buttons();
-				
 		}
 
 		if (type == Type::MIN)
@@ -132,10 +135,13 @@ namespace ms
 		}
 
 		if (has_map) {
-		update_player_marker();
+			update_player_marker();
 
-		for each (Sprite s in static_marker_sprites)
-			s.update();
+			for each (Sprite s in static_marker_sprites)
+				s.update();
+
+			for each (Sprite s in npc_sprites)
+				s.update();
 		}
 
 		UIElement::update();
@@ -357,27 +363,41 @@ namespace ms
 	}
 
 	void UIMiniMap::update_player_marker() {
-
 		Point<int16_t> player_pos = Stage::get().get_player().get_position();
 		Point<int16_t> sprite_offset = player_marker.get_dimensions() / Point<int16_t>(2, 0);
-		player_marker_pos = (player_pos + Point<int16_t>(Map["miniMap"]["centerX"], Map["miniMap"]["centerY"])) / scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y);
+		player_marker_pos = (player_pos + center_offset) / scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y);
 	}
 	
 	void UIMiniMap::update_markers() {
-		nl::node marker = nl::nx::map["MapHelper.img"];
+		npc_sprites.clear();
+		if (!has_map)
+			return;
+		nl::node marker = nl::nx::map["MapHelper.img"]["minimap"];
 		Animation marker_sprite;
 		Point<int16_t> sprite_offset;
 		// NPCs
-
-
+		marker_sprite = Animation(marker["npc"]);
+		sprite_offset = marker_sprite.get_dimensions() / Point<int16_t>(2, 0);
+		// MapNpcs &npcs = Stage::get().get_npcs();
+		// for (auto npc = npcs.begin(); npc != npcs.end(); ++npc)
+		nl::node npcs = Map["life"];
+		for (nl::node npc = npcs.begin(); npc != npcs.end(); npc++)
+		{
+			// Point<int16_t> npc_pos = npc->second.get()->get_position();
+			if (npc["type"].get_string() != "n")
+				continue;
+			Point<int16_t> npc_pos = Point<int16_t>(npc["x"], npc["y"]);
+			npc_sprites.emplace_back(marker_sprite, (npc_pos + center_offset)/scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y));
+		}
 		// other characters
 
 		// Player
-		marker_sprite = Animation(marker["user"]);
 	}
 
 	void UIMiniMap::update_static_markers() {
 		static_marker_sprites.clear();
+		if (!has_map)
+			return;
 		nl::node marker = nl::nx::map["MapHelper.img"]["minimap"];
 		Animation marker_sprite;
 		// portals
@@ -387,8 +407,7 @@ namespace ms
 		for (nl::node p = portals.begin(); p != portals.end(); ++p) {
 			int portal_type = p["pt"];
 			if (portal_type == 2) {
-				Point<int16_t> marker_pos = (Point<int16_t>(p["x"], p["y"]) + Point<int16_t>(Map["miniMap"]["centerX"], Map["miniMap"]["centerY"]))/scale - marker_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y);
-				std::cout << "Portal's at " << marker_pos.to_string() << '\n';
+				Point<int16_t> marker_pos = (Point<int16_t>(p["x"], p["y"]) + center_offset)/scale - marker_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y);
 				static_marker_sprites.emplace_back(marker_sprite, marker_pos);
 			}
 		}
