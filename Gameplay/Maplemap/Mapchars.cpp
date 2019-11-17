@@ -61,6 +61,26 @@ namespace ms
 		chars.clear();
 	}
 
+	MapObjects::underlying_t::iterator MapChars::begin()
+	{
+		return chars.begin();
+	}
+	
+	MapObjects::underlying_t::iterator MapChars::end()
+	{
+		return chars.end();
+	}
+
+	MapObjects::underlying_t::const_iterator MapChars::begin() const
+	{
+		return chars.begin();
+	}
+
+	MapObjects::underlying_t::const_iterator MapChars::end() const
+	{
+		return chars.end();
+	}
+
 	void MapChars::send_movement(int32_t cid, const std::vector<Movement>& movements)
 	{
 		if (Optional<OtherChar> otherchar = get_char(cid))

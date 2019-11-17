@@ -44,6 +44,15 @@ namespace ms
 		// Remove all characters.
 		void clear();
 
+		// Returns a begin iterator.
+		MapObjects::underlying_t::iterator begin();
+		// Returns an end iterator.
+		MapObjects::underlying_t::iterator end();
+		// Returns a const begin iterator.
+		MapObjects::underlying_t::const_iterator begin() const;
+		// Return an const end iterator.
+		MapObjects::underlying_t::const_iterator end() const;
+
 		// Update a characters movement.
 		void send_movement(int32_t cid, const std::vector<Movement>& movements);
 		// Update a characters look.

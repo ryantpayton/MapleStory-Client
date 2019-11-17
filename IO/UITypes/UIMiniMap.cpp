@@ -96,7 +96,7 @@ namespace ms
 
 	void UIMiniMap::update()
 	{
-		int32_t mid = stats.get_mapid();
+		int32_t mid = Stage::get().get_mapid();
 
 		if (mid != mapid)
 		{
@@ -321,7 +321,7 @@ namespace ms
 		min_sprites.emplace_back(Min[Right], DrawArgument(window_ul_pos + Point<int16_t>(min_c_stretch + center_start_x, 0)));
 
 		// (7,10) is the top left corner of the inner window. 
-		//114 = 128 (width of left and right borders) - 14 (width of middle borders * 2). 27 = height of inner frame drawn on up and down borders
+		// 114 = 128 (width of left and right borders) - 14 (width of middle borders * 2). 27 = height of inner frame drawn on up and down borders
 		normal_sprites.emplace_back(MiddleCenter, DrawArgument(Point<int16_t>(7, 10), Point<int16_t>(c_stretch + 114, m_stretch + 27)));
 		if (has_map)
 			normal_sprites.emplace_back(Map["miniMap"]["canvas"], DrawArgument(Point<int16_t>(map_draw_origin_x, map_draw_origin_y)));
@@ -375,21 +375,25 @@ namespace ms
 		nl::node marker = nl::nx::map["MapHelper.img"]["minimap"];
 		Animation marker_sprite;
 		Point<int16_t> sprite_offset;
+
 		// NPCs
+		MapNpcs &npcs = Stage::get().get_npcs();
 		marker_sprite = Animation(marker["npc"]);
 		sprite_offset = marker_sprite.get_dimensions() / Point<int16_t>(2, 0);
-		// MapNpcs &npcs = Stage::get().get_npcs();
-		// for (auto npc = npcs.begin(); npc != npcs.end(); ++npc)
-		nl::node npcs = Map["life"];
-		for (nl::node npc = npcs.begin(); npc != npcs.end(); npc++)
+		for (auto npc = npcs.begin(); npc != npcs.end(); ++npc)
 		{
-			// Point<int16_t> npc_pos = npc->second.get()->get_position();
-			if (npc["type"].get_string() != "n")
-				continue;
-			Point<int16_t> npc_pos = Point<int16_t>(npc["x"], npc["y"]);
+			Point<int16_t> npc_pos = npc->second.get()->get_position();
 			npc_sprites.emplace_back(marker_sprite, (npc_pos + center_offset)/scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y));
 		}
+
 		// other characters
+		MapChars &chars = Stage::get().get_chars();
+		marker_sprite = Animation(marker["another"]);
+		sprite_offset = marker_sprite.get_dimensions() / Point<int16_t>(2, 0);
+		for (auto chr = chars.begin(); chr != chars.end(); ++chr) {
+			Point<int16_t> chr_pos = chr->second.get()->get_position();
+			npc_sprites.emplace_back(marker_sprite, (chr_pos + center_offset) / scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y));
+		}
 
 		// Player
 	}

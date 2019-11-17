@@ -80,6 +80,7 @@ namespace ms
 		std::string prefix = std::to_string(mapid / 100000000);
 		nl::node src = nl::nx::map["Map"]["Map" + prefix][strid + ".img"];
 
+		Stage::mapid = mapid;
 		tilesobjs = MapTilesObjs(src);
 		backgrounds = MapBackgrounds(src["back"]);
 		physics = Physics(src["foothold"]);
@@ -315,6 +316,11 @@ namespace ms
 			return player;
 		else
 			return chars.get_char(cid);
+	}
+
+	int32_t Stage::get_mapid()
+	{
+		return mapid;
 	}
 
 	void Stage::add_effect(std::string path)
