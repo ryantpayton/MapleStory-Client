@@ -207,7 +207,7 @@ namespace ms
 		const char* FINDID = "https://www.nexon.com/account/en/login";
 		const char* FINDPASS = "https://www.nexon.com/account/en/reset-password";
 		const char* RESETPIC = "https://www.nexon.com/account/en/login";
-		const bool SHOW_FPS = true;
+		const bool SHOW_FPS = false;
 		bool rightclicksell = false;
 		bool show_weekly = true;
 		bool start_shown = false;
