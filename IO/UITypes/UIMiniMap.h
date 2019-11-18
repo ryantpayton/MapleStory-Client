@@ -38,11 +38,12 @@ namespace ms
 		void update() override;
 
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
+		Cursor::State send_cursor(bool pressed, Point<int16_t> position) override;
 
 	private:
 		static constexpr int16_t center_start_x = 64;
-		static constexpr Point<int16_t> window_ul_pos = Point<int16_t>(0, -10);
-		static constexpr int16_t btn_min_y = -6;
+		static constexpr Point<int16_t> window_ul_pos = Point<int16_t>(0, 0);
+		static constexpr int16_t btn_min_y = 4;
 		static constexpr int16_t ml_mr_y = 17;
 		static constexpr int16_t max_adj = 40;
 		const CharStats& stats;
@@ -82,6 +83,7 @@ namespace ms
 		nl::node Map;
 		nl::node MiniMap;
 		nl::node marker;
+		Animation player_marker;
 		int16_t combined_text_width;
 		int16_t middle_right_x;
 		int16_t bt_min_width;
@@ -93,7 +95,8 @@ namespace ms
 		std::vector<Sprite> static_marker_sprites;
 		int16_t map_draw_origin_x, map_draw_origin_y;
 		Point<int16_t> center_offset;
-		Animation player_marker;
+		Point<int16_t> normal_dimensions;
+		Point<int16_t> max_dimensions;
 		Text combined_text;
 		Text region_text;
 		Text town_text;

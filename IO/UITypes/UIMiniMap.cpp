@@ -23,7 +23,7 @@
 
 namespace ms
 {
-	UIMiniMap::UIMiniMap(const CharStats& st) : UIDragElement<PosMINIMAP>(Point<int16_t>(50, 50)), stats(st)
+	UIMiniMap::UIMiniMap(const CharStats& st) : UIDragElement<PosMINIMAP>(Point<int16_t>(128, 20)), stats(st)
 	{
 		type = Setting<MiniMapType>::get().load();
 		simpleMode = Setting<MiniMapSimpleMode>::get().load();
@@ -55,7 +55,7 @@ namespace ms
 			for each (Sprite sprite in min_sprites)
 				sprite.draw(position, alpha);
 
-			combined_text.draw(position + Point<int16_t>(7, -13));
+			combined_text.draw(position + Point<int16_t>(7, -3));
 		}
 		else if (type == Type::NORMAL)
 		{
@@ -76,8 +76,8 @@ namespace ms
 			for each (Sprite sprite in max_sprites)
 				sprite.draw(position, alpha);
 
-			region_text.draw(position + Point<int16_t>(48, 4));
-			town_text.draw(position + Point<int16_t>(48, 18));
+			region_text.draw(position + Point<int16_t>(48, 14));
+			town_text.draw(position + Point<int16_t>(48, 28));
 
 			if (has_map) {
 				for each (Sprite s in static_marker_sprites)
@@ -147,6 +147,11 @@ namespace ms
 		toggle_buttons();
 	}
 
+	Cursor::State UIMiniMap::send_cursor(bool pressed, Point<int16_t> position)
+	{
+		return UIDragElement::send_cursor(pressed, position);
+	}
+
 	void UIMiniMap::update_buttons()
 	{
 		// Add one pixel for a space to the right of each button
@@ -158,7 +163,7 @@ namespace ms
 
 	void UIMiniMap::toggle_buttons()
 	{
-		int16_t bt_min_x = position.x();
+		int16_t bt_min_x;
 
 		if (type == Type::MIN)
 		{
@@ -171,7 +176,7 @@ namespace ms
 			buttons[Buttons::BT_MIN]->set_state(Button::State::DISABLED);
 			buttons[Buttons::BT_MAX]->set_state(Button::State::NORMAL);
 
-			bt_min_x += combined_text_width + 11;
+			bt_min_x = combined_text_width + 11;
 
 			buttons[Buttons::BT_MIN]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
 
@@ -182,6 +187,10 @@ namespace ms
 			bt_min_x += bt_max_width;
 
 			buttons[Buttons::BT_MAP]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
+
+			dimension = Point<int16_t>(bt_min_x + bt_map_width + 7, 20);
+
+			dragarea = dimension;
 		}
 		else
 		{
@@ -205,10 +214,16 @@ namespace ms
 			bt_min_x += bt_map_width;
 			buttons[Buttons::BT_NPC]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
 
-			if (type == Type::MAX)
+			if (type == Type::MAX) {
+				dimension = normal_dimensions;
 				buttons[Buttons::BT_MAX]->set_state(Button::State::DISABLED);
-			else
+			}
+			else {
+				dimension = max_dimensions;
 				buttons[Buttons::BT_MAX]->set_state(Button::State::NORMAL);
+			}
+
+			dragarea = Point<int16_t>(dimension.x(), 20);
 		}
 	}
 
@@ -325,6 +340,8 @@ namespace ms
 		normal_sprites.emplace_back(Normal[DownLeft], Point<int16_t>(0, down_y_offset));
 		normal_sprites.emplace_back(Normal[DownRight], Point<int16_t>(ur_x_offset, down_y_offset));
 
+		normal_dimensions = Point<int16_t>(ur_x_offset + 64, down_y_offset + 27);
+
 		// Max sprites queue
 		max_sprites.emplace_back(MiddleCenter, DrawArgument(Point<int16_t>(7, 50), Point<int16_t>(c_stretch + 114, m_stretch + 27)));
 		if (has_map)
@@ -337,7 +354,9 @@ namespace ms
 		max_sprites.emplace_back(Max[DownCenter], DrawArgument(Point<int16_t>(center_start_x, down_y_offset + max_adj + 18), Point<int16_t>(c_stretch, 0)));
 		max_sprites.emplace_back(Max[DownLeft], Point<int16_t>(0, down_y_offset + max_adj));
 		max_sprites.emplace_back(Max[DownRight], Point<int16_t>(ur_x_offset, down_y_offset + max_adj));
-		max_sprites.emplace_back(nl::nx::map["MapHelper.img"]["mark"][Map["info"]["mapMark"]], DrawArgument(Point<int16_t>(7, 6)));
+		max_sprites.emplace_back(nl::nx::map["MapHelper.img"]["mark"][Map["info"]["mapMark"]], DrawArgument(Point<int16_t>(7, 16)));
+
+		max_dimensions = normal_dimensions + Point<int16_t>(0, max_adj);
 	}
 
 	nl::node UIMiniMap::get_map_node_name() {
