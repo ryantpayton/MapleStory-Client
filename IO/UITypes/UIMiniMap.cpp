@@ -62,13 +62,10 @@ namespace ms
 				sprite.draw(position, alpha);
 
 			if (has_map) {
-				for each (Sprite s in npc_sprites)
-					s.draw(position, alpha);
-
 				for each (Sprite s in static_marker_sprites)
 					s.draw(position, alpha);
 
-				player_marker.draw(position + player_marker_pos, alpha);
+				draw_movable_markers(position, alpha);
 			}
 
 		}
@@ -81,13 +78,10 @@ namespace ms
 			town_text.draw(position + Point<int16_t>(48, 18));
 
 			if (has_map) {
-				for each (Sprite s in npc_sprites)
-					s.draw(position + Point<int16_t>(0, 40), alpha);
-
 				for each (Sprite s in static_marker_sprites)
 					s.draw(position + Point<int16_t>(0, 40), alpha);
 
-				player_marker.draw(position + player_marker_pos + Point<int16_t>(0, 40), alpha);
+				draw_movable_markers(position + Point<int16_t>(0, 40), alpha);
 			}
 		}
 
@@ -113,7 +107,6 @@ namespace ms
 			update_text();
 			update_buttons();
 			update_canvas();
-			update_markers();
 			update_static_markers();
 			toggle_buttons();
 		}
@@ -135,12 +128,7 @@ namespace ms
 		}
 
 		if (has_map) {
-			update_player_marker();
-
 			for each (Sprite s in static_marker_sprites)
-				s.update();
-
-			for each (Sprite s in npc_sprites)
 				s.update();
 		}
 
@@ -362,14 +350,7 @@ namespace ms
 		return nl::nx::map["Map"]["Map" + std::to_string(mapid / 100000000)][mid_string];
 	}
 
-	void UIMiniMap::update_player_marker() {
-		Point<int16_t> player_pos = Stage::get().get_player().get_position();
-		Point<int16_t> sprite_offset = player_marker.get_dimensions() / Point<int16_t>(2, 0);
-		player_marker_pos = (player_pos + center_offset) / scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y);
-	}
-	
-	void UIMiniMap::update_markers() {
-		npc_sprites.clear();
+	void UIMiniMap::draw_movable_markers(Point<int16_t> init_pos, float alpha) const {
 		if (!has_map)
 			return;
 		nl::node marker = nl::nx::map["MapHelper.img"]["minimap"];
@@ -383,7 +364,7 @@ namespace ms
 		for (auto npc = npcs.begin(); npc != npcs.end(); ++npc)
 		{
 			Point<int16_t> npc_pos = npc->second.get()->get_position();
-			npc_sprites.emplace_back(marker_sprite, (npc_pos + center_offset)/scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y));
+			marker_sprite.draw((npc_pos + center_offset)/scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y) + init_pos, alpha);
 		}
 
 		// other characters
@@ -392,10 +373,13 @@ namespace ms
 		sprite_offset = marker_sprite.get_dimensions() / Point<int16_t>(2, 0);
 		for (auto chr = chars.begin(); chr != chars.end(); ++chr) {
 			Point<int16_t> chr_pos = chr->second.get()->get_position();
-			npc_sprites.emplace_back(marker_sprite, (chr_pos + center_offset) / scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y));
+			marker_sprite.draw((chr_pos + center_offset) / scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y) + init_pos, alpha);
 		}
 
 		// Player
+		Point<int16_t> player_pos = Stage::get().get_player().get_position();
+		sprite_offset = player_marker.get_dimensions() / Point<int16_t>(2, 0);
+		player_marker.draw((player_pos + center_offset) / scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y) + init_pos, alpha);
 	}
 
 	void UIMiniMap::update_static_markers() {

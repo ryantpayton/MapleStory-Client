@@ -47,8 +47,7 @@ namespace ms
 		void toggle_buttons();
 		void update_text();
 		void update_canvas();
-		void update_player_marker();
-		void update_markers();
+		void draw_movable_markers(Point<int16_t> init_pos, float alpha) const;
 		void update_static_markers();
 
 		nl::node get_map_node_name();
@@ -90,9 +89,7 @@ namespace ms
 		std::vector<Sprite> normal_sprites;
 		std::vector<Sprite> max_sprites;
 		std::vector<Sprite> static_marker_sprites;
-		std::vector<Sprite> npc_sprites;
 		int16_t map_draw_origin_x, map_draw_origin_y;
-		Point<int16_t> player_marker_pos;
 		Point<int16_t> center_offset;
 		Animation player_marker;
 		Text combined_text;
