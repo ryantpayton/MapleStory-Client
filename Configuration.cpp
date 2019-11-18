@@ -56,6 +56,9 @@ namespace ms
 		settings.emplace<PosEVENT>();
 		settings.emplace<PosKEYCONFIG>();
 		settings.emplace<PosOPTIONMENU>();
+		settings.emplace<MiniMapType>();
+		settings.emplace<MiniMapSimpleMode>();
+		settings.emplace<MiniMapDefaultHelpers>();
 
 		load();
 	}

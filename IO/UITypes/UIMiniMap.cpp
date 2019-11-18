@@ -25,8 +25,8 @@ namespace ms
 {
 	UIMiniMap::UIMiniMap(const CharStats& st) : UIDragElement<PosMINIMAP>(Point<int16_t>(50, 50)), stats(st)
 	{
-		type = Type::MIN;
-		simpleMode = false;
+		type = Setting<MiniMapType>::get().load();
+		simpleMode = Setting<MiniMapSimpleMode>::get().load();
 
 		std::string node = simpleMode ? "MiniMapSimpleMode" : "MiniMap";
 		MiniMap = nl::nx::ui["UIWindow2.img"][node];
@@ -41,7 +41,9 @@ namespace ms
 		town_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
 		combined_text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE);
 
-		player_marker = Animation(nl::nx::map["MapHelper.img"]["minimap"]["user"]);
+		marker = Setting<MiniMapDefaultHelpers>::get().load() ? nl::nx::ui["UIWindow2.img"]["MiniMapSimpleMode"]["DefaultHelper"] : nl::nx::map["MapHelper.img"]["minimap"];
+
+		player_marker = Animation(marker["user"]);
 
 		update();
 	}
@@ -79,9 +81,9 @@ namespace ms
 
 			if (has_map) {
 				for each (Sprite s in static_marker_sprites)
-					s.draw(position + Point<int16_t>(0, 40), alpha);
+					s.draw(position + Point<int16_t>(0, max_adj), alpha);
 
-				draw_movable_markers(position + Point<int16_t>(0, 40), alpha);
+				draw_movable_markers(position + Point<int16_t>(0, max_adj), alpha);
 			}
 		}
 
@@ -254,8 +256,8 @@ namespace ms
 			Max = MiniMap["MaxMap"];
 		}
 
-		Sprite map_sprite = Sprite(Map["miniMap"]["canvas"]);
-		Point<int16_t> map_dimensions = map_sprite.get_animation().get_dimensions();
+		Animation map_sprite = Animation(Map["miniMap"]["canvas"]);
+		Point<int16_t> map_dimensions = map_sprite.get_dimensions();
 
 		// 48 (Offset for text) + longer text's width + 10 (space for right side border)
 		int16_t mark_text_width = 48 + std::max(region_text.width(), town_text.width()) + 10;
@@ -289,7 +291,6 @@ namespace ms
 		std::string DownLeft = simpleMode ? "DownLeft" : "sw";
 		std::string DownRight = simpleMode ? "DownRight" : "se";
 		std::string MiddleLeft = simpleMode ? "MiddleLeft" : "w";
-		//std::string MiddleCenter = simpleMode ? "MiddleCenter" : "c";
 		std::string MiddleRight = simpleMode ? "MiddleRight" : "e";
 		std::string UpCenter = simpleMode ? "UpCenter" : "n";
 		std::string UpLeft = simpleMode ? "UpLeft" : "nw";
@@ -304,12 +305,14 @@ namespace ms
 		// combined_text_width + 14 (7px buffer on both sides) + 4 (buffer between name and buttons) + 3 buttons' widths - 128 (length of left and right window borders)
 		int16_t min_c_stretch = combined_text_width + 18 + bt_min_width + bt_max_width + bt_map_width - 128;
 
+		// Min sprites queue
 		min_sprites.emplace_back(Min[Center], DrawArgument(window_ul_pos + Point<int16_t>(center_start_x, 0), Point<int16_t>(min_c_stretch, 0)));
 		min_sprites.emplace_back(Min[Left], DrawArgument(window_ul_pos));
 		min_sprites.emplace_back(Min[Right], DrawArgument(window_ul_pos + Point<int16_t>(min_c_stretch + center_start_x, 0)));
 
 		// (7,10) is the top left corner of the inner window. 
 		// 114 = 128 (width of left and right borders) - 14 (width of middle borders * 2). 27 = height of inner frame drawn on up and down borders
+		// Normal sprites queue
 		normal_sprites.emplace_back(MiddleCenter, DrawArgument(Point<int16_t>(7, 10), Point<int16_t>(c_stretch + 114, m_stretch + 27)));
 		if (has_map)
 			normal_sprites.emplace_back(Map["miniMap"]["canvas"], DrawArgument(Point<int16_t>(map_draw_origin_x, map_draw_origin_y)));
@@ -322,8 +325,7 @@ namespace ms
 		normal_sprites.emplace_back(Normal[DownLeft], Point<int16_t>(0, down_y_offset));
 		normal_sprites.emplace_back(Normal[DownRight], Point<int16_t>(ur_x_offset, down_y_offset));
 
-		int16_t max_adj = 40;
-
+		// Max sprites queue
 		max_sprites.emplace_back(MiddleCenter, DrawArgument(Point<int16_t>(7, 50), Point<int16_t>(c_stretch + 114, m_stretch + 27)));
 		if (has_map)
 			max_sprites.emplace_back(Map["miniMap"]["canvas"], DrawArgument(Point<int16_t>(map_draw_origin_x, map_draw_origin_y + max_adj)));
@@ -336,8 +338,6 @@ namespace ms
 		max_sprites.emplace_back(Max[DownLeft], Point<int16_t>(0, down_y_offset + max_adj));
 		max_sprites.emplace_back(Max[DownRight], Point<int16_t>(ur_x_offset, down_y_offset + max_adj));
 		max_sprites.emplace_back(nl::nx::map["MapHelper.img"]["mark"][Map["info"]["mapMark"]], DrawArgument(Point<int16_t>(7, 6)));
-
-
 	}
 
 	nl::node UIMiniMap::get_map_node_name() {
@@ -346,14 +346,13 @@ namespace ms
 		std::string id_string = std::to_string(mapid);
 		mid_string.replace(9 - id_string.length(), id_string.length(), id_string);
 
-		// Get canvas of new map
+		// Get node of new map
 		return nl::nx::map["Map"]["Map" + std::to_string(mapid / 100000000)][mid_string];
 	}
 
 	void UIMiniMap::draw_movable_markers(Point<int16_t> init_pos, float alpha) const {
 		if (!has_map)
 			return;
-		nl::node marker = nl::nx::map["MapHelper.img"]["minimap"];
 		Animation marker_sprite;
 		Point<int16_t> sprite_offset;
 
@@ -386,7 +385,6 @@ namespace ms
 		static_marker_sprites.clear();
 		if (!has_map)
 			return;
-		nl::node marker = nl::nx::map["MapHelper.img"]["minimap"];
 		Animation marker_sprite;
 		// portals
 		nl::node portals = Map["portal"];

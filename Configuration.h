@@ -419,6 +419,21 @@ namespace ms
 		PosOPTIONMENU() : PointEntry("PosUSERLIST", "(170, -11)") {}
 	};
 
+	struct MiniMapType : public Configuration::ByteEntry
+	{
+		MiniMapType() : ByteEntry("MiniMapType", "0"){}
+	};
+
+	struct MiniMapSimpleMode : public Configuration::BoolEntry
+	{
+		MiniMapSimpleMode() : BoolEntry("MiniMapSimpleMode", "false"){}
+	};
+
+	struct MiniMapDefaultHelpers : public Configuration::BoolEntry
+	{
+		MiniMapDefaultHelpers() : BoolEntry("MiniMapDefaultHelpers", "false") {}
+	};
+
 	template <typename T>
 	// Can be used to access settings.
 	struct Setting

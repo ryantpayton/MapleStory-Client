@@ -41,6 +41,10 @@ namespace ms
 
 	private:
 		static constexpr int16_t center_start_x = 64;
+		static constexpr Point<int16_t> window_ul_pos = Point<int16_t>(0, -10);
+		static constexpr int16_t btn_min_y = -6;
+		static constexpr int16_t ml_mr_y = 17;
+		static constexpr int16_t max_adj = 40;
 		const CharStats& stats;
 
 		void update_buttons();
@@ -69,9 +73,6 @@ namespace ms
 		};
 
 		// Constants
-		const Point<int16_t> window_ul_pos = Point<int16_t>(0, -10);
-		const int16_t btn_min_y = -6;
-		const int16_t ml_mr_y = 17;
 
 		int32_t mapid;
 		int8_t type;
@@ -79,9 +80,10 @@ namespace ms
 		bool has_map;
 		int16_t scale;
 		nl::node Map;
+		nl::node MiniMap;
+		nl::node marker;
 		int16_t combined_text_width;
 		int16_t middle_right_x;
-		nl::node MiniMap;
 		int16_t bt_min_width;
 		int16_t bt_max_width;
 		int16_t bt_map_width;
