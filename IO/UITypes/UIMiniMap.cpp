@@ -27,16 +27,17 @@ namespace ms
 	{
 		type = Setting<MiniMapType>::get().load();
 		simpleMode = Setting<MiniMapSimpleMode>::get().load();
+		big_map = true;
 
 		std::string node = simpleMode ? "MiniMapSimpleMode" : "MiniMap";
 		MiniMap = nl::nx::ui["UIWindow2.img"][node];
 
-		buttons[Buttons::BT_MAP] = std::make_unique<MapleButton>(MiniMap["BtMap"], Point<int16_t>(237, -6));
-		buttons[Buttons::BT_MAX] = std::make_unique<MapleButton>(MiniMap["BtMax"], Point<int16_t>(209, -6));
 		buttons[Buttons::BT_MIN] = std::make_unique<MapleButton>(MiniMap["BtMin"], Point<int16_t>(195, -6));
-		buttons[Buttons::BT_NPC] = std::make_unique<MapleButton>(MiniMap["BtNpc"], Point<int16_t>(276, -6));
+		buttons[Buttons::BT_MAX] = std::make_unique<MapleButton>(MiniMap["BtMax"], Point<int16_t>(209, -6));
 		buttons[Buttons::BT_SMALL] = std::make_unique<MapleButton>(MiniMap["BtSmall"], Point<int16_t>(223, -6));
-
+		buttons[Buttons::BT_BIG] = std::make_unique<MapleButton>(MiniMap["BtBig"], Point<int16_t>(223, -6));
+		buttons[Buttons::BT_MAP] = std::make_unique<MapleButton>(MiniMap["BtMap"], Point<int16_t>(237, -6));
+		buttons[Buttons::BT_NPC] = std::make_unique<MapleButton>(MiniMap["BtNpc"], Point<int16_t>(276, -6));
 		region_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
 		town_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
 		combined_text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE);
@@ -152,6 +153,33 @@ namespace ms
 		return UIDragElement::send_cursor(pressed, position);
 	}
 
+	Button::State UIMiniMap::button_pressed(uint16_t buttonid)
+	{
+		switch (buttonid) {
+			case BT_MIN:
+				type -= 1;
+				toggle_buttons();
+				return type == Type::MIN ? Button::State::DISABLED : Button::State::NORMAL;
+			case BT_MAX:
+				type += 1;
+				toggle_buttons();
+				return type == Type::MAX ? Button::State::DISABLED : Button::State::NORMAL;
+				break;
+			case BT_SMALL:
+			case BT_BIG:
+				big_map = !big_map;
+				toggle_buttons();
+				break;
+			case BT_MAP:
+				// TODO: open world map
+				break;
+			case BT_NPC:
+				// TODO: make NPC submenu
+				break;
+		}
+		return Button::State::NORMAL;
+	}
+
 	void UIMiniMap::update_buttons()
 	{
 		// Add one pixel for a space to the right of each button
@@ -172,6 +200,7 @@ namespace ms
 			buttons[Buttons::BT_MIN]->set_active(true);
 			buttons[Buttons::BT_NPC]->set_active(false);
 			buttons[Buttons::BT_SMALL]->set_active(false);
+			buttons[Buttons::BT_BIG]->set_active(false);
 
 			buttons[Buttons::BT_MIN]->set_state(Button::State::DISABLED);
 			buttons[Buttons::BT_MAX]->set_state(Button::State::NORMAL);
@@ -198,7 +227,14 @@ namespace ms
 			buttons[Buttons::BT_MAX]->set_active(true);
 			buttons[Buttons::BT_MIN]->set_active(true);
 			buttons[Buttons::BT_NPC]->set_active(true);
-			buttons[Buttons::BT_SMALL]->set_active(true);
+			if (big_map) {
+				buttons[Buttons::BT_BIG]->set_active(false);
+				buttons[Buttons::BT_SMALL]->set_active(true);
+			}
+			else {
+				buttons[Buttons::BT_BIG]->set_active(true);
+				buttons[Buttons::BT_SMALL]->set_active(false);
+			}
 
 			buttons[Buttons::BT_MIN]->set_state(Button::State::NORMAL);
 
@@ -206,9 +242,10 @@ namespace ms
 
 			buttons[Buttons::BT_MIN]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
 			bt_min_x += bt_max_width;
-			buttons[Buttons::BT_SMALL]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
-			bt_min_x += bt_max_width;
 			buttons[Buttons::BT_MAX]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
+			bt_min_x += bt_max_width;
+			buttons[Buttons::BT_SMALL]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
+			buttons[Buttons::BT_BIG]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
 			bt_min_x += bt_max_width;
 			buttons[Buttons::BT_MAP]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
 			bt_min_x += bt_map_width;
@@ -291,9 +328,9 @@ namespace ms
 			map_draw_origin_y = 10 + m_stretch - map_dimensions.y();
 		}
 		else {
-			m_stretch = map_dimensions.y() - 27;
+			m_stretch = map_dimensions.y() - 17;
 			down_y_offset = 17 + m_stretch;
-			map_draw_origin_y = 10;
+			map_draw_origin_y = 20;
 		}
 
 		middle_right_x = ur_x_offset + 55;

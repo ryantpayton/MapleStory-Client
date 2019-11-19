@@ -39,6 +39,7 @@ namespace ms
 
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 		Cursor::State send_cursor(bool pressed, Point<int16_t> position) override;
+		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
 		static constexpr int16_t center_start_x = 64;
@@ -59,11 +60,12 @@ namespace ms
 
 		enum Buttons
 		{
-			BT_MAP,
-			BT_MAX,
 			BT_MIN,
-			BT_NPC,
-			BT_SMALL
+			BT_MAX,
+			BT_SMALL,
+			BT_BIG,
+			BT_MAP,
+			BT_NPC
 		};
 
 		enum Type
@@ -78,6 +80,7 @@ namespace ms
 		int32_t mapid;
 		int8_t type;
 		bool simpleMode;
+		bool big_map;
 		bool has_map;
 		int16_t scale;
 		nl::node Map;
