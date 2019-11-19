@@ -38,7 +38,6 @@ namespace ms
 		void update() override;
 
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
-		Cursor::State send_cursor(bool pressed, Point<int16_t> position) override;
 		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:

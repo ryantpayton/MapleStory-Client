@@ -17,6 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIMiniMap.h"
 
+#include "../UI.h"
+#include "UIWorldMap.h"
+
 #include "../Components/MapleButton.h"
 
 #include <nlnx/nx.hpp>
@@ -148,11 +151,6 @@ namespace ms
 		toggle_buttons();
 	}
 
-	Cursor::State UIMiniMap::send_cursor(bool pressed, Point<int16_t> position)
-	{
-		return UIDragElement::send_cursor(pressed, position);
-	}
-
 	Button::State UIMiniMap::button_pressed(uint16_t buttonid)
 	{
 		switch (buttonid) {
@@ -172,6 +170,7 @@ namespace ms
 				break;
 			case BT_MAP:
 				// TODO: open world map
+				UI::get().emplace<UIWorldMap>();
 				break;
 			case BT_NPC:
 				// TODO: make NPC submenu
