@@ -16,9 +16,9 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIMiniMap.h"
+#include "UIWorldMap.h"
 
 #include "../UI.h"
-#include "UIWorldMap.h"
 
 #include "../Components/MapleButton.h"
 
@@ -48,8 +48,6 @@ namespace ms
 		marker = Setting<MiniMapDefaultHelpers>::get().load() ? nl::nx::ui["UIWindow2.img"]["MiniMapSimpleMode"]["DefaultHelper"] : nl::nx::map["MapHelper.img"]["minimap"];
 
 		player_marker = Animation(marker["user"]);
-
-		update();
 	}
 
 	void UIMiniMap::draw(float alpha) const
@@ -96,7 +94,7 @@ namespace ms
 
 	void UIMiniMap::update()
 	{
-		int32_t mid = Stage::get().get_mapid();
+		int32_t mid = stats.get_mapid();
 
 		if (mid != mapid)
 		{
@@ -166,10 +164,10 @@ namespace ms
 			case BT_SMALL:
 			case BT_BIG:
 				big_map = !big_map;
+				// TODO: toggle scrolling map
 				toggle_buttons();
 				break;
 			case BT_MAP:
-				// TODO: open world map
 				UI::get().emplace<UIWorldMap>();
 				break;
 			case BT_NPC:
