@@ -61,6 +61,11 @@ namespace ms
 		chars.clear();
 	}
 
+	MapObjects * MapChars::get_chars()
+	{
+		return &chars;
+	}
+
 	void MapChars::send_movement(int32_t cid, const std::vector<Movement>& movements)
 	{
 		if (Optional<OtherChar> otherchar = get_char(cid))

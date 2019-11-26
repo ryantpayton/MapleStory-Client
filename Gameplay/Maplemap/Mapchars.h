@@ -44,6 +44,9 @@ namespace ms
 		// Remove all characters.
 		void clear();
 
+		// Returns a reference to the MapObjects object.
+		MapObjects* get_chars();
+
 		// Update a characters movement.
 		void send_movement(int32_t cid, const std::vector<Movement>& movements);
 		// Update a characters look.

@@ -61,6 +61,11 @@ namespace ms
 		npcs.clear();
 	}
 
+	MapObjects * MapNpcs::get_npcs()
+	{
+		return &npcs;
+	}
+
 	Cursor::State MapNpcs::send_cursor(bool pressed, Point<int16_t> position, Point<int16_t> viewpos)
 	{
 		for (auto& mmo : npcs)
