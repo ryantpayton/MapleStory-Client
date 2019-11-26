@@ -61,24 +61,9 @@ namespace ms
 		npcs.clear();
 	}
 
-	MapObjects::underlying_t::iterator MapNpcs::begin()
+	MapObjects * MapNpcs::get_npcs()
 	{
-		return npcs.begin();
-	}
-
-	MapObjects::underlying_t::iterator MapNpcs::end() 
-	{
-		return npcs.end();
-	}
-
-	MapObjects::underlying_t::const_iterator MapNpcs::begin() const
-	{
-		return npcs.begin();
-	}
-
-	MapObjects::underlying_t::const_iterator MapNpcs::end() const
-	{
-		return npcs.end();
+		return &npcs;
 	}
 
 	Cursor::State MapNpcs::send_cursor(bool pressed, Point<int16_t> position, Point<int16_t> viewpos)

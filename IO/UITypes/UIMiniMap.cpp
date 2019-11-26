@@ -320,8 +320,8 @@ namespace ms
 		map_draw_origin_x = std::max(10, window_width / 2 - map_dimensions.x() / 2);
 
 		if (map_dimensions.y() <= 20) {
-			m_stretch = 0;
-			down_y_offset = 17;
+			m_stretch = 5;
+			down_y_offset = 17 + m_stretch;
 			map_draw_origin_y = 10 + m_stretch - map_dimensions.y();
 		}
 		else {
@@ -410,20 +410,20 @@ namespace ms
 		Point<int16_t> sprite_offset;
 
 		// NPCs
-		MapNpcs &npcs = Stage::get().get_npcs();
+		MapObjects *npcs = Stage::get().get_npcs().get_npcs();
 		marker_sprite = Animation(marker["npc"]);
 		sprite_offset = marker_sprite.get_dimensions() / Point<int16_t>(2, 0);
-		for (auto npc = npcs.begin(); npc != npcs.end(); ++npc)
+		for (auto npc = npcs->begin(); npc != npcs->end(); ++npc)
 		{
 			Point<int16_t> npc_pos = npc->second.get()->get_position();
 			marker_sprite.draw((npc_pos + center_offset)/scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y) + init_pos, alpha);
 		}
 
 		// other characters
-		MapChars &chars = Stage::get().get_chars();
+		MapObjects *chars = Stage::get().get_chars().get_chars();
 		marker_sprite = Animation(marker["another"]);
 		sprite_offset = marker_sprite.get_dimensions() / Point<int16_t>(2, 0);
-		for (auto chr = chars.begin(); chr != chars.end(); ++chr) {
+		for (auto chr = chars->begin(); chr != chars->end(); ++chr) {
 			Point<int16_t> chr_pos = chr->second.get()->get_position();
 			marker_sprite.draw((chr_pos + center_offset) / scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y) + init_pos, alpha);
 		}

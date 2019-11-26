@@ -42,14 +42,8 @@ namespace ms
 		// Remove all NPCs.
 		void clear();
 
-		// Returns a begin iterator.
-		MapObjects::underlying_t::iterator begin();
-		// Returns an end iterator.
-		MapObjects::underlying_t::iterator end();
-		// Returns a const begin iterator.
-		MapObjects::underlying_t::const_iterator begin() const;
-		// Return an const end iterator.
-		MapObjects::underlying_t::const_iterator end() const;
+		// Returns a reference to the MapObjects object.
+		MapObjects* get_npcs();
 
 		// Send mouse input to clickable NPCs.
 		Cursor::State send_cursor(bool pressed, Point<int16_t> position, Point<int16_t> viewpos);

@@ -89,9 +89,6 @@ namespace ms
 		// Return a pointer to a character, possibly the player.
 		Optional<Char> get_character(int32_t cid);
 
-		// Returns the mapid in int type.
-		int32_t get_mapid();
-
 		// Set a map effect
 		void add_effect(std::string path);
 
@@ -116,8 +113,6 @@ namespace ms
 
 		Optional<Playable> playable;
 		State state;
-
-		int32_t mapid;
 
 		MapInfo mapinfo;
 		MapTilesObjs tilesobjs;
