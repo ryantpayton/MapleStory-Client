@@ -75,7 +75,6 @@ namespace ms
 		};
 
 		// Constants
-
 		int32_t mapid;
 		int8_t type;
 		bool simpleMode;

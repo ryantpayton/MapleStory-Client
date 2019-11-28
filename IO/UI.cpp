@@ -55,17 +55,19 @@ namespace ms
 
 	void UI::draw(float alpha) const
 	{
+		scrollingnotice.draw(alpha);
+
 		state->draw(alpha, cursor.get_position());
 
-		scrollingnotice.draw(alpha);
 		cursor.draw(alpha);
 	}
 
 	void UI::update()
 	{
+		scrollingnotice.update();
+
 		state->update();
 
-		scrollingnotice.update();
 		cursor.update();
 	}
 

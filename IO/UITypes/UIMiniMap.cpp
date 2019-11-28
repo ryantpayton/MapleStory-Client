@@ -26,11 +26,10 @@
 
 namespace ms
 {
-	UIMiniMap::UIMiniMap(const CharStats& st) : UIDragElement<PosMINIMAP>(Point<int16_t>(128, 20)), stats(st)
+	UIMiniMap::UIMiniMap(const CharStats& st) : UIDragElement<PosMINIMAP>(Point<int16_t>(128, 20)), stats(st), big_map(true)
 	{
 		type = Setting<MiniMapType>::get().load();
 		simpleMode = Setting<MiniMapSimpleMode>::get().load();
-		big_map = true;
 
 		std::string node = simpleMode ? "MiniMapSimpleMode" : "MiniMap";
 		MiniMap = nl::nx::ui["UIWindow2.img"][node];
@@ -41,6 +40,7 @@ namespace ms
 		buttons[Buttons::BT_BIG] = std::make_unique<MapleButton>(MiniMap["BtBig"], Point<int16_t>(223, -6));
 		buttons[Buttons::BT_MAP] = std::make_unique<MapleButton>(MiniMap["BtMap"], Point<int16_t>(237, -6));
 		buttons[Buttons::BT_NPC] = std::make_unique<MapleButton>(MiniMap["BtNpc"], Point<int16_t>(276, -6));
+
 		region_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
 		town_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
 		combined_text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE);
@@ -48,42 +48,44 @@ namespace ms
 		marker = Setting<MiniMapDefaultHelpers>::get().load() ? nl::nx::ui["UIWindow2.img"]["MiniMapSimpleMode"]["DefaultHelper"] : nl::nx::map["MapHelper.img"]["minimap"];
 
 		player_marker = Animation(marker["user"]);
+
+		position.shift_y(-Constants::VIEWYOFFSET);
 	}
 
 	void UIMiniMap::draw(float alpha) const
 	{
 		if (type == Type::MIN)
 		{
-			for each (Sprite sprite in min_sprites)
+			for (auto sprite : min_sprites)
 				sprite.draw(position, alpha);
 
 			combined_text.draw(position + Point<int16_t>(7, -3));
 		}
 		else if (type == Type::NORMAL)
 		{
-
-			for each (Sprite sprite in normal_sprites)
+			for (auto sprite : normal_sprites)
 				sprite.draw(position, alpha);
 
-			if (has_map) {
-				for each (Sprite s in static_marker_sprites)
-					s.draw(position, alpha);
+			if (has_map)
+			{
+				for (auto sprite : static_marker_sprites)
+					sprite.draw(position, alpha);
 
 				draw_movable_markers(position, alpha);
 			}
-
 		}
 		else
 		{
-			for each (Sprite sprite in max_sprites)
+			for (auto sprite : max_sprites)
 				sprite.draw(position, alpha);
 
 			region_text.draw(position + Point<int16_t>(48, 14));
 			town_text.draw(position + Point<int16_t>(48, 28));
 
-			if (has_map) {
-				for each (Sprite s in static_marker_sprites)
-					s.draw(position + Point<int16_t>(0, max_adj), alpha);
+			if (has_map)
+			{
+				for (auto sprite : static_marker_sprites)
+					sprite.draw(position + Point<int16_t>(0, max_adj), alpha);
 
 				draw_movable_markers(position + Point<int16_t>(0, max_adj), alpha);
 			}
@@ -100,12 +102,12 @@ namespace ms
 		{
 			mapid = mid;
 			Map = get_map_node_name();
-			if (!Map["miniMap"]) {
+
+			if (!Map["miniMap"])
 				has_map = false;
-			}
-			else {
+			else
 				has_map = true;
-			}
+
 			scale = std::pow(2, (int)Map["miniMap"]["mag"]);
 			center_offset = Point<int16_t>(Map["miniMap"]["centerX"], Map["miniMap"]["centerY"]);
 			update_text();
@@ -117,24 +119,23 @@ namespace ms
 
 		if (type == Type::MIN)
 		{
-			for each (Sprite sprite in min_sprites)
+			for (auto sprite : min_sprites)
 				sprite.update();
 		}
 		else if (type == Type::NORMAL)
 		{
-			for each (Sprite sprite in normal_sprites)
+			for (auto sprite : normal_sprites)
 				sprite.update();
 		}
 		else
 		{
-			for each (Sprite sprite in max_sprites)
+			for (auto sprite : max_sprites)
 				sprite.update();
 		}
 
-		if (has_map) {
-			for each (Sprite s in static_marker_sprites)
-				s.update();
-		}
+		if (has_map)
+			for (auto sprite : static_marker_sprites)
+				sprite.update();
 
 		UIElement::update();
 	}
@@ -151,29 +152,30 @@ namespace ms
 
 	Button::State UIMiniMap::button_pressed(uint16_t buttonid)
 	{
-		switch (buttonid) {
-			case BT_MIN:
-				type -= 1;
-				toggle_buttons();
-				return type == Type::MIN ? Button::State::DISABLED : Button::State::NORMAL;
-			case BT_MAX:
-				type += 1;
-				toggle_buttons();
-				return type == Type::MAX ? Button::State::DISABLED : Button::State::NORMAL;
-				break;
-			case BT_SMALL:
-			case BT_BIG:
-				big_map = !big_map;
-				// TODO: toggle scrolling map
-				toggle_buttons();
-				break;
-			case BT_MAP:
-				UI::get().emplace<UIWorldMap>();
-				break;
-			case BT_NPC:
-				// TODO: make NPC submenu
-				break;
+		switch (buttonid)
+		{
+		case BT_MIN:
+			type -= 1;
+			toggle_buttons();
+			return type == Type::MIN ? Button::State::DISABLED : Button::State::NORMAL;
+		case BT_MAX:
+			type += 1;
+			toggle_buttons();
+			return type == Type::MAX ? Button::State::DISABLED : Button::State::NORMAL;
+		case BT_SMALL:
+		case BT_BIG:
+			big_map = !big_map;
+			// TODO: toggle scrolling map
+			toggle_buttons();
+			break;
+		case BT_MAP:
+			UI::get().emplace<UIWorldMap>();
+			break;
+		case BT_NPC:
+			// TODO: make NPC submenu
+			break;
 		}
+
 		return Button::State::NORMAL;
 	}
 
@@ -183,6 +185,7 @@ namespace ms
 		bt_min_width = buttons[Buttons::BT_MIN]->width() + 1;
 		bt_max_width = buttons[Buttons::BT_MAX]->width() + 1;
 		bt_map_width = buttons[Buttons::BT_MAP]->width() + 1;
+
 		combined_text_width = combined_text.width();
 	}
 
@@ -224,11 +227,14 @@ namespace ms
 			buttons[Buttons::BT_MAX]->set_active(true);
 			buttons[Buttons::BT_MIN]->set_active(true);
 			buttons[Buttons::BT_NPC]->set_active(true);
-			if (big_map) {
+
+			if (big_map)
+			{
 				buttons[Buttons::BT_BIG]->set_active(false);
 				buttons[Buttons::BT_SMALL]->set_active(true);
 			}
-			else {
+			else
+			{
 				buttons[Buttons::BT_BIG]->set_active(true);
 				buttons[Buttons::BT_SMALL]->set_active(false);
 			}
@@ -238,21 +244,31 @@ namespace ms
 			bt_min_x = middle_right_x - (bt_min_width + buttons[Buttons::BT_SMALL]->width() + 1 + bt_max_width + bt_map_width + buttons[Buttons::BT_NPC]->width());
 
 			buttons[Buttons::BT_MIN]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
+
 			bt_min_x += bt_max_width;
+
 			buttons[Buttons::BT_MAX]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
+
 			bt_min_x += bt_max_width;
+
 			buttons[Buttons::BT_SMALL]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
 			buttons[Buttons::BT_BIG]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
+
 			bt_min_x += bt_max_width;
+
 			buttons[Buttons::BT_MAP]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
+
 			bt_min_x += bt_map_width;
+
 			buttons[Buttons::BT_NPC]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
 
-			if (type == Type::MAX) {
+			if (type == Type::MAX)
+			{
 				dimension = normal_dimensions;
 				buttons[Buttons::BT_MAX]->set_state(Button::State::DISABLED);
 			}
-			else {
+			else
+			{
 				dimension = max_dimensions;
 				buttons[Buttons::BT_MAX]->set_state(Button::State::NORMAL);
 			}
@@ -266,9 +282,9 @@ namespace ms
 		nl::node Map = nl::nx::string["Map.img"];
 		nl::node foundMap;
 
-		for (auto t = Map.begin(); t != Map.end(); ++t)
+		for (auto node = Map.begin(); node != Map.end(); ++node)
 		{
-			foundMap = t.resolve(std::to_string(mapid));
+			foundMap = node.resolve(std::to_string(mapid));
 
 			if (foundMap.size() > 0)
 			{
@@ -310,21 +326,21 @@ namespace ms
 
 		// 48 (Offset for text) + longer text's width + 10 (space for right side border)
 		int16_t mark_text_width = 48 + std::max(region_text.width(), town_text.width()) + 10;
-
 		int16_t c_stretch, ur_x_offset, m_stretch, down_y_offset;
-
 		int16_t window_width = std::max(178, std::max((int)mark_text_width, map_dimensions.x() + 20));
 
 		c_stretch = std::max(0, window_width - 128);
 		ur_x_offset = center_start_x + c_stretch;
 		map_draw_origin_x = std::max(10, window_width / 2 - map_dimensions.x() / 2);
 
-		if (map_dimensions.y() <= 20) {
+		if (map_dimensions.y() <= 20)
+		{
 			m_stretch = 5;
 			down_y_offset = 17 + m_stretch;
 			map_draw_origin_y = 10 + m_stretch - map_dimensions.y();
 		}
-		else {
+		else
+		{
 			m_stretch = map_dimensions.y() - 17;
 			down_y_offset = 17 + m_stretch;
 			map_draw_origin_y = 20;
@@ -363,8 +379,10 @@ namespace ms
 		// 114 = 128 (width of left and right borders) - 14 (width of middle borders * 2). 27 = height of inner frame drawn on up and down borders
 		// Normal sprites queue
 		normal_sprites.emplace_back(MiddleCenter, DrawArgument(Point<int16_t>(7, 10), Point<int16_t>(c_stretch + 114, m_stretch + 27)));
+
 		if (has_map)
 			normal_sprites.emplace_back(Map["miniMap"]["canvas"], DrawArgument(Point<int16_t>(map_draw_origin_x, map_draw_origin_y)));
+
 		normal_sprites.emplace_back(Normal[MiddleLeft], DrawArgument(Point<int16_t>(0, ml_mr_y), Point<int16_t>(0, m_stretch)));
 		normal_sprites.emplace_back(Normal[MiddleRight], DrawArgument(Point<int16_t>(middle_right_x, ml_mr_y), Point<int16_t>(0, m_stretch)));
 		normal_sprites.emplace_back(Normal[UpCenter], DrawArgument(Point<int16_t>(center_start_x, 0) + window_ul_pos, Point<int16_t>(c_stretch, 0)));
@@ -378,8 +396,10 @@ namespace ms
 
 		// Max sprites queue
 		max_sprites.emplace_back(MiddleCenter, DrawArgument(Point<int16_t>(7, 50), Point<int16_t>(c_stretch + 114, m_stretch + 27)));
+
 		if (has_map)
 			max_sprites.emplace_back(Map["miniMap"]["canvas"], DrawArgument(Point<int16_t>(map_draw_origin_x, map_draw_origin_y + max_adj)));
+
 		max_sprites.emplace_back(Max[MiddleLeft], DrawArgument(Point<int16_t>(0, ml_mr_y + max_adj), Point<int16_t>(0, m_stretch)));
 		max_sprites.emplace_back(Max[MiddleRight], DrawArgument(Point<int16_t>(middle_right_x, ml_mr_y + max_adj), Point<int16_t>(0, m_stretch)));
 		max_sprites.emplace_back(Max[UpCenter], DrawArgument(Point<int16_t>(center_start_x, 0) + window_ul_pos, Point<int16_t>(c_stretch, 0)));
@@ -393,7 +413,8 @@ namespace ms
 		max_dimensions = normal_dimensions + Point<int16_t>(0, max_adj);
 	}
 
-	nl::node UIMiniMap::get_map_node_name() {
+	nl::node UIMiniMap::get_map_node_name()
+	{
 		// Create node name from new map id
 		std::string mid_string = "000000000.img";
 		std::string id_string = std::to_string(mapid);
@@ -403,27 +424,32 @@ namespace ms
 		return nl::nx::map["Map"]["Map" + std::to_string(mapid / 100000000)][mid_string];
 	}
 
-	void UIMiniMap::draw_movable_markers(Point<int16_t> init_pos, float alpha) const {
+	void UIMiniMap::draw_movable_markers(Point<int16_t> init_pos, float alpha) const
+	{
 		if (!has_map)
 			return;
+
 		Animation marker_sprite;
 		Point<int16_t> sprite_offset;
 
 		// NPCs
-		MapObjects *npcs = Stage::get().get_npcs().get_npcs();
+		MapObjects* npcs = Stage::get().get_npcs().get_npcs();
 		marker_sprite = Animation(marker["npc"]);
 		sprite_offset = marker_sprite.get_dimensions() / Point<int16_t>(2, 0);
+
 		for (auto npc = npcs->begin(); npc != npcs->end(); ++npc)
 		{
 			Point<int16_t> npc_pos = npc->second.get()->get_position();
-			marker_sprite.draw((npc_pos + center_offset)/scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y) + init_pos, alpha);
+			marker_sprite.draw((npc_pos + center_offset) / scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y) + init_pos, alpha);
 		}
 
 		// other characters
-		MapObjects *chars = Stage::get().get_chars().get_chars();
+		MapObjects* chars = Stage::get().get_chars().get_chars();
 		marker_sprite = Animation(marker["another"]);
 		sprite_offset = marker_sprite.get_dimensions() / Point<int16_t>(2, 0);
-		for (auto chr = chars->begin(); chr != chars->end(); ++chr) {
+
+		for (auto chr = chars->begin(); chr != chars->end(); ++chr)
+		{
 			Point<int16_t> chr_pos = chr->second.get()->get_position();
 			marker_sprite.draw((chr_pos + center_offset) / scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y) + init_pos, alpha);
 		}
@@ -434,19 +460,27 @@ namespace ms
 		player_marker.draw((player_pos + center_offset) / scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y) + init_pos, alpha);
 	}
 
-	void UIMiniMap::update_static_markers() {
+	void UIMiniMap::update_static_markers()
+	{
 		static_marker_sprites.clear();
+
 		if (!has_map)
 			return;
+
 		Animation marker_sprite;
+
 		// portals
 		nl::node portals = Map["portal"];
 		marker_sprite = Animation(marker["portal"]);
 		Point<int16_t> marker_offset = marker_sprite.get_dimensions() / Point<int16_t>(2, 0);
-		for (nl::node p = portals.begin(); p != portals.end(); ++p) {
-			int portal_type = p["pt"];
-			if (portal_type == 2) {
-				Point<int16_t> marker_pos = (Point<int16_t>(p["x"], p["y"]) + center_offset)/scale - marker_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y);
+
+		for (nl::node portal = portals.begin(); portal != portals.end(); ++portal)
+		{
+			int portal_type = portal["pt"];
+
+			if (portal_type == 2)
+			{
+				Point<int16_t> marker_pos = (Point<int16_t>(portal["x"], portal["y"]) + center_offset) / scale - marker_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y);
 				static_marker_sprites.emplace_back(marker_sprite, marker_pos);
 			}
 		}

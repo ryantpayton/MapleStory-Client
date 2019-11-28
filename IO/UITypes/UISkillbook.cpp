@@ -183,7 +183,7 @@ namespace ms
 				y_adj += ROW_HEIGHT;
 		}
 
-		booktext = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::WHITE, "", 100);
+		booktext = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::WHITE, "", 150);
 		splabel = Text(Text::Font::A12M, Text::Alignment::RIGHT, Color::Name::BLACK);
 
 		slider = Slider(
