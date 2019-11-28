@@ -125,6 +125,21 @@ namespace ms
 		buttons[Buttons::BT_ENTERWORLD]->set_active(false);
 
 		chatballoon.change_text("Please select the World you would like to play in.");
+
+		if (Configuration::get().get_auto_login())
+		{
+			auto world = Configuration::get().get_auto_world();
+			auto channel = Configuration::get().get_auto_channel();
+
+			Configuration::get().set_worldid(world);
+			Configuration::get().set_channelid(channel);
+
+			UI::get().emplace<UILoginwait>();
+			auto loginwait = UI::get().get_element<UILoginwait>();
+
+			if (loginwait && loginwait->is_active())
+				CharlistRequestPacket(world	, channel).dispatch();
+		}
 	}
 
 	void UIWorldSelect::draw(float alpha) const

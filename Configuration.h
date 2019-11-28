@@ -46,6 +46,20 @@ namespace ms
 		bool get_show_fps() const;
 		// Get private member SHOW_PACKETS
 		bool get_show_packets() const;
+		// Get private member AUTO_LOGIN
+		bool get_auto_login() const;
+		// Get the world to login with
+		uint8_t get_auto_world();
+		// Get the channel to login with
+		uint8_t get_auto_channel();
+		// Get the account to login with
+		std::string get_auto_acc();
+		// Get the password to login with
+		std::string get_auto_pass();
+		// Get the pic to login with
+		std::string get_auto_pic();
+		// Get the character id to login with
+		int32_t get_auto_cid();
 		// Get private member TITLE
 		std::string get_title() const;
 		// Get private member VERSION
@@ -211,6 +225,13 @@ namespace ms
 		const char* RESETPIC = "https://www.nexon.com/account/en/login";
 		const bool SHOW_FPS = false;
 		const bool SHOW_PACKETS = false;
+		const bool AUTO_LOGIN = false;
+		const uint8_t auto_world = 0;
+		const uint8_t auto_channel = 0;
+		const std::string auto_acc = "";
+		const std::string auto_pass = "";
+		const std::string auto_pic = "";
+		const int32_t auto_cid = 0;
 		bool rightclicksell = false;
 		bool show_weekly = true;
 		bool start_shown = false;
@@ -424,12 +445,12 @@ namespace ms
 
 	struct MiniMapType : public Configuration::ByteEntry
 	{
-		MiniMapType() : ByteEntry("MiniMapType", "0"){}
+		MiniMapType() : ByteEntry("MiniMapType", "0") {}
 	};
 
 	struct MiniMapSimpleMode : public Configuration::BoolEntry
 	{
-		MiniMapSimpleMode() : BoolEntry("MiniMapSimpleMode", "false"){}
+		MiniMapSimpleMode() : BoolEntry("MiniMapSimpleMode", "false") {}
 	};
 
 	struct MiniMapDefaultHelpers : public Configuration::BoolEntry

@@ -38,7 +38,7 @@
 
 namespace ms
 {
-	UICharSelect::UICharSelect(std::vector<CharEntry> c, int8_t characters_count, int32_t s, int8_t rp) : characters(c), characters_count(characters_count), slots(s), require_pic(rp)
+	UICharSelect::UICharSelect(std::vector<CharEntry> c, int8_t char_count, int32_t s, int8_t rp) : characters(c), characters_count(char_count), slots(s), require_pic(rp)
 	{
 		burning_character = true;
 
@@ -171,6 +171,14 @@ namespace ms
 				update_selected_character();
 			else
 				select_last_slot();
+		}
+
+		if (Configuration::get().get_auto_login())
+		{
+			SelectCharPicPacket(
+				Configuration::get().get_auto_pic(),
+				Configuration::get().get_auto_cid()
+			).dispatch();
 		}
 	}
 

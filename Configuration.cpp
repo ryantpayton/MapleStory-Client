@@ -162,6 +162,41 @@ namespace ms
 		return SHOW_PACKETS;
 	}
 
+	bool Configuration::get_auto_login() const
+	{
+		return AUTO_LOGIN;
+	}
+
+	uint8_t Configuration::get_auto_world()
+	{
+		return auto_world;
+	}
+
+	uint8_t Configuration::get_auto_channel()
+	{
+		return auto_channel;
+	}
+
+	std::string Configuration::get_auto_acc()
+	{
+		return auto_acc;
+	}
+
+	std::string Configuration::get_auto_pass()
+	{
+		return auto_pass;
+	}
+
+	std::string Configuration::get_auto_pic()
+	{
+		return auto_pic;
+	}
+
+	int32_t Configuration::get_auto_cid()
+	{
+		return auto_cid;
+	}
+
 	std::string Configuration::get_title() const
 	{
 		return TITLE;

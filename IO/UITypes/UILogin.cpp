@@ -124,6 +124,19 @@ namespace ms
 
 		position = Point<int16_t>(0, 0);
 		dimension = Point<int16_t>(800, 600);
+
+		if (Configuration::get().get_auto_login())
+		{
+			UI::get().emplace<UILoginwait>([]() {});
+
+			auto loginwait = UI::get().get_element<UILoginwait>();
+
+			if (loginwait && loginwait->is_active())
+				LoginPacket(
+					Configuration::get().get_auto_acc(),
+					Configuration::get().get_auto_pass()
+				).dispatch();
+		}
 	}
 
 	void UILogin::draw(float alpha) const
