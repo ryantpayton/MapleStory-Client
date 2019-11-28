@@ -29,6 +29,7 @@
 #include "Handlers/TestingHandlers.h"
 
 #include "../Console.h"
+#include "../Configuration.h"
 
 namespace ms
 {
@@ -258,6 +259,9 @@ namespace ms
 		InPacket recv = { bytes, length };
 		// Read the opcode to determine handler responsible.
 		uint16_t opcode = recv.read_short();
+
+		if (Configuration::get().get_show_packets())
+			std::cout << "Received Packet: " << std::to_string(opcode) << std::endl;
 
 		if (opcode < NUM_HANDLERS)
 		{

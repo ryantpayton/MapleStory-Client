@@ -157,6 +157,11 @@ namespace ms
 		return SHOW_FPS;
 	}
 
+	bool Configuration::get_show_packets() const
+	{
+		return SHOW_PACKETS;
+	}
+
 	std::string Configuration::get_title() const
 	{
 		return TITLE;

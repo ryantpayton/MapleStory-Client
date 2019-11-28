@@ -44,6 +44,8 @@ namespace ms
 		void save() const;
 		// Get private member SHOW_FPS
 		bool get_show_fps() const;
+		// Get private member SHOW_PACKETS
+		bool get_show_packets() const;
 		// Get private member TITLE
 		std::string get_title() const;
 		// Get private member VERSION
@@ -208,6 +210,7 @@ namespace ms
 		const char* FINDPASS = "https://www.nexon.com/account/en/reset-password";
 		const char* RESETPIC = "https://www.nexon.com/account/en/login";
 		const bool SHOW_FPS = false;
+		const bool SHOW_PACKETS = false;
 		bool rightclicksell = false;
 		bool show_weekly = true;
 		bool start_shown = false;
