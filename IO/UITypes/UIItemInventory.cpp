@@ -646,7 +646,7 @@ namespace ms
 
 		if (alerted)
 		{
-			UI::get().emplace<UIOk>("You cannot complete this action right now.\\nEvade the attack and try again.", []() {});
+			UI::get().emplace<UIOk>("You cannot complete this action right now.\\nEvade the attack and try again.", [](bool) {});
 			return false;
 		}
 
@@ -683,7 +683,7 @@ namespace ms
 
 		if (!stats.get_job().is_sub_job(reqJOB))
 		{
-			UI::get().emplace<UIOk>("Your current job\\ncannot equip the selected item.", []() {});
+			UI::get().emplace<UIOk>("Your current job\\ncannot equip the selected item.", [](bool) {});
 			return false;
 		}
 
@@ -711,7 +711,7 @@ namespace ms
 
 		if (i > 0)
 		{
-			UI::get().emplace<UIOk>("Your stats are too low to equip this item\\nor you do not meet the job requirement.", []() {});
+			UI::get().emplace<UIOk>("Your stats are too low to equip this item\\nor you do not meet the job requirement.", [](bool) {});
 			return false;
 		}
 
@@ -873,7 +873,7 @@ namespace ms
 
 		if (cashitem)
 		{
-			UI::get().emplace<UIOk>(cashmessage, []() {});
+			UI::get().emplace<UIOk>(cashmessage, [](bool) {});
 		}
 		else
 		{

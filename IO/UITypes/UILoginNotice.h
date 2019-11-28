@@ -68,6 +68,7 @@ namespace ms
 	private:
 		enum Buttons
 		{
+			CLOSE,
 			TYPEA,
 			TYPEB
 		};

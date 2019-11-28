@@ -277,7 +277,7 @@ namespace ms
 		int num = -1;
 		bool has_only_digits = (numstr.find_first_not_of("0123456789") == std::string::npos);
 
-		auto okhandler = [&]()
+		auto okhandler = [&](bool)
 		{
 			numfield.set_state(Textfield::State::FOCUSED);
 			buttons[Buttons::OK]->set_state(Button::State::NORMAL);
@@ -315,7 +315,7 @@ namespace ms
 		buttons[Buttons::OK]->set_state(Button::State::NORMAL);
 	}
 
-	UIOk::UIOk(std::string message, std::function<void()> oh) : UINotice(message, NoticeType::OK)
+	UIOk::UIOk(std::string message, std::function<void(bool ok)> oh) : UINotice(message, NoticeType::OK)
 	{
 		okhandler = oh;
 
@@ -332,14 +332,18 @@ namespace ms
 
 	void UIOk::send_key(int32_t keycode, bool pressed, bool escape)
 	{
-		if (keycode == KeyAction::Id::RETURN)
+		if (pressed)
 		{
-			okhandler();
-			active = false;
-		}
-		else if (escape)
-		{
-			active = false;
+			if (keycode == KeyAction::Id::RETURN)
+			{
+				okhandler(true);
+				active = false;
+			}
+			else if (escape)
+			{
+				okhandler(false);
+				active = false;
+			}
 		}
 	}
 
@@ -348,7 +352,7 @@ namespace ms
 		switch (buttonid)
 		{
 		case Buttons::OK:
-			okhandler();
+			okhandler(true);
 			break;
 		}
 

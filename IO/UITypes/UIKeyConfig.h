@@ -44,7 +44,6 @@ namespace ms
 
 		void remove_key(KeyAction::Id action);
 		void add_key(Point<int16_t> cursorposition, KeyAction::Id action);
-		void save_keys();
 
 		void close();
 
@@ -59,6 +58,8 @@ namespace ms
 		void map_keys();
 		void clear();
 		void reset();
+		void save_keys();
+		void safe_close();
 
 		KeyAction::Id icon_by_position(Point<int16_t> position) const;
 		KeyConfig::Key key_by_position(Point<int16_t> position) const;
@@ -76,6 +77,8 @@ namespace ms
 			KEYSETTING,
 			OK
 		};
+
+		bool dirty;
 
 		class KeyIcon : public Icon::Type
 		{

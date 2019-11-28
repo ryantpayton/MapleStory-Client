@@ -28,7 +28,7 @@
 
 namespace ms
 {
-	UIKeyConfig::UIKeyConfig() : UIDragElement<PosKEYCONFIG>(Point<int16_t>())
+	UIKeyConfig::UIKeyConfig() : UIDragElement<PosKEYCONFIG>(Point<int16_t>(0, 0)), dirty(false)
 	{
 		keyboard = &UI::get().get_keyboard();
 		tempkeys = keyboard->get_maplekeys();
@@ -61,6 +61,7 @@ namespace ms
 		map_keys();
 
 		dimension = bg_dimensions;
+		dragarea = Point<int16_t>(bg_dimensions.x(), 20);
 	}
 
 	void UIKeyConfig::draw(float inter) const
@@ -126,7 +127,7 @@ namespace ms
 	void UIKeyConfig::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && escape)
-			close();
+			safe_close();
 	}
 
 	Cursor::State UIKeyConfig::send_cursor(bool clicked, Point<int16_t> cursorpos)
@@ -183,7 +184,7 @@ namespace ms
 			}
 		}
 
-		return Cursor::State::IDLE;
+		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
 	bool UIKeyConfig::send_icon(const Icon& icon, Point<int16_t> cursorpos)
@@ -227,20 +228,28 @@ namespace ms
 					{
 						tempkeys.erase(KeyConfig::Key::LEFT_CONTROL);
 						tempkeys.erase(KeyConfig::Key::RIGHT_CONTROL);
+
+						dirty = true;
 					}
 					else if (it->first == KeyConfig::Key::LEFT_ALT || it->first == KeyConfig::Key::RIGHT_ALT)
 					{
 						tempkeys.erase(KeyConfig::Key::LEFT_ALT);
 						tempkeys.erase(KeyConfig::Key::RIGHT_ALT);
+
+						dirty = true;
 					}
 					else if (it->first == KeyConfig::Key::LEFT_SHIFT || it->first == KeyConfig::Key::RIGHT_SHIFT)
 					{
 						tempkeys.erase(KeyConfig::Key::LEFT_SHIFT);
 						tempkeys.erase(KeyConfig::Key::RIGHT_SHIFT);
+
+						dirty = true;
 					}
 					else
 					{
 						tempkeys.erase(it->first);
+
+						dirty = true;
 					}
 
 					break;
@@ -270,20 +279,28 @@ namespace ms
 			{
 				tempkeys[KeyConfig::Key::LEFT_CONTROL] = Keyboard::Mapping(type, action);
 				tempkeys[KeyConfig::Key::RIGHT_CONTROL] = Keyboard::Mapping(type, action);
+
+				dirty = true;
 			}
 			else if (key == KeyConfig::Key::LEFT_ALT || key == KeyConfig::Key::RIGHT_ALT)
 			{
 				tempkeys[KeyConfig::Key::LEFT_ALT] = Keyboard::Mapping(type, action);
 				tempkeys[KeyConfig::Key::RIGHT_ALT] = Keyboard::Mapping(type, action);
+
+				dirty = true;
 			}
 			else if (key == KeyConfig::Key::LEFT_SHIFT || key == KeyConfig::Key::RIGHT_SHIFT)
 			{
 				tempkeys[KeyConfig::Key::LEFT_SHIFT] = Keyboard::Mapping(type, action);
 				tempkeys[KeyConfig::Key::RIGHT_SHIFT] = Keyboard::Mapping(type, action);
+
+				dirty = true;
 			}
 			else
 			{
 				tempkeys[key] = Keyboard::Mapping(type, action);
+
+				dirty = true;
 			}
 		}
 		else
@@ -303,20 +320,28 @@ namespace ms
 					{
 						tempkeys.erase(KeyConfig::Key::LEFT_CONTROL);
 						tempkeys.erase(KeyConfig::Key::RIGHT_CONTROL);
+
+						dirty = true;
 					}
 					else if (it->first == KeyConfig::Key::LEFT_ALT || it->first == KeyConfig::Key::RIGHT_ALT)
 					{
 						tempkeys.erase(KeyConfig::Key::LEFT_ALT);
 						tempkeys.erase(KeyConfig::Key::RIGHT_ALT);
+
+						dirty = true;
 					}
 					else if (it->first == KeyConfig::Key::LEFT_SHIFT || it->first == KeyConfig::Key::RIGHT_SHIFT)
 					{
 						tempkeys.erase(KeyConfig::Key::LEFT_SHIFT);
 						tempkeys.erase(KeyConfig::Key::RIGHT_SHIFT);
+
+						dirty = true;
 					}
 					else
 					{
 						tempkeys.erase(it->first);
+
+						dirty = true;
 					}
 
 					break;
@@ -335,77 +360,29 @@ namespace ms
 			{
 				tempkeys[KeyConfig::Key::LEFT_CONTROL] = Keyboard::Mapping(type, action);
 				tempkeys[KeyConfig::Key::RIGHT_CONTROL] = Keyboard::Mapping(type, action);
+
+				dirty = true;
 			}
 			else if (key == KeyConfig::Key::LEFT_ALT || key == KeyConfig::Key::RIGHT_ALT)
 			{
 				tempkeys[KeyConfig::Key::LEFT_ALT] = Keyboard::Mapping(type, action);
 				tempkeys[KeyConfig::Key::RIGHT_ALT] = Keyboard::Mapping(type, action);
+
+				dirty = true;
 			}
 			else if (key == KeyConfig::Key::LEFT_SHIFT || key == KeyConfig::Key::RIGHT_SHIFT)
 			{
 				tempkeys[KeyConfig::Key::LEFT_SHIFT] = Keyboard::Mapping(type, action);
 				tempkeys[KeyConfig::Key::RIGHT_SHIFT] = Keyboard::Mapping(type, action);
+
+				dirty = true;
 			}
 			else
 			{
 				tempkeys[key] = Keyboard::Mapping(type, action);
+
+				dirty = true;
 			}
-		}
-	}
-
-	void UIKeyConfig::save_keys()
-	{
-		std::vector<std::tuple<KeyConfig::Key, KeyType::Id, KeyAction::Id>> updated_actions;
-
-		for each (auto key in tempkeys)
-		{
-			KeyConfig::Key k = KeyConfig::actionbyid(key.first);
-			Keyboard::Mapping map = key.second;
-			KeyAction::Id action = KeyAction::actionbyid(map.action);
-
-			Keyboard::Mapping fmap = keyboard->get_maple_mapping(key.first);
-
-			if (map.action != fmap.action)
-			{
-				updated_actions.emplace_back(std::make_tuple(k, map.type, action));
-			}
-		}
-
-		auto maplekeys = keyboard->get_maplekeys();
-
-		for each (auto key in maplekeys)
-		{
-			bool keyFound = false;
-			KeyConfig::Key keyConfig = KeyConfig::actionbyid(key.first);
-
-			for each (auto tkey in tempkeys)
-			{
-				KeyConfig::Key tKeyConfig = KeyConfig::actionbyid(tkey.first);
-
-				if (keyConfig == tKeyConfig)
-				{
-					keyFound = true;
-					break;
-				}
-			}
-
-			if (!keyFound)
-				updated_actions.emplace_back(std::make_tuple(keyConfig, KeyType::Id::NONE, KeyAction::Id::LENGTH));
-		}
-
-		if (updated_actions.size() > 0)
-			ChangeKeyMapPacket(updated_actions).dispatch();
-
-		for each (auto action in updated_actions)
-		{
-			KeyConfig::Key key = std::get<0>(action);
-			KeyType::Id type = std::get<1>(action);
-			KeyAction::Id keyAction = std::get<2>(action);
-
-			if (type == KeyType::Id::NONE)
-				keyboard->remove(key);
-			else
-				keyboard->assign(key, type, keyAction);
 		}
 	}
 
@@ -414,40 +391,31 @@ namespace ms
 		switch (buttonid)
 		{
 		case Buttons::CLOSE:
-		{
-			constexpr char* message = "Do you want to save your changes?";
-
-			auto onok = [&]()
-			{
-				save_keys();
-				close();
-			};
-
-			UI::get().emplace<UIOk>(message, onok);
-			break;
-		}
 		case Buttons::CANCEL:
-			close();
+			safe_close();
 			break;
 		case Buttons::DEFAULT:
 		{
 			constexpr char* message = "Would you like to revert to default settings?";
 
-			auto onok = [&]()
+			auto onok = [&](bool ok)
 			{
-				auto keysel_onok = [&](bool alternate)
+				if (ok)
 				{
-					clear();
+					auto keysel_onok = [&](bool alternate)
+					{
+						clear();
 
-					if (alternate)
-						tempkeys = alternate_keys;
-					else
-						tempkeys = basic_keys;
+						if (alternate)
+							tempkeys = alternate_keys;
+						else
+							tempkeys = basic_keys;
 
-					map_keys();
-				};
+						map_keys();
+					};
 
-				UI::get().emplace<UIKeySelect>(keysel_onok, false);
+					UI::get().emplace<UIKeySelect>(keysel_onok, false);
+				}
 			};
 
 			UI::get().emplace<UIOk>(message, onok);
@@ -457,9 +425,10 @@ namespace ms
 		{
 			constexpr char* message = "Would you like to clear all key bindings?";
 
-			auto onok = [&]()
+			auto onok = [&](bool ok)
 			{
-				clear();
+				if (ok)
+					clear();
 			};
 
 			UI::get().emplace<UIOk>(message, onok);
@@ -482,7 +451,7 @@ namespace ms
 
 	void UIKeyConfig::close()
 	{
-		active = false;
+		deactivate();
 		reset();
 	}
 
@@ -850,6 +819,8 @@ namespace ms
 		found_actions.clear();
 
 		tempkeys = {};
+
+		dirty = true;
 	}
 
 	void UIKeyConfig::reset()
@@ -859,6 +830,93 @@ namespace ms
 		tempkeys = keyboard->get_maplekeys();
 
 		map_keys();
+
+		dirty = false;
+	}
+
+	void UIKeyConfig::save_keys()
+	{
+		std::vector<std::tuple<KeyConfig::Key, KeyType::Id, KeyAction::Id>> updated_actions;
+
+		for each (auto key in tempkeys)
+		{
+			KeyConfig::Key k = KeyConfig::actionbyid(key.first);
+			Keyboard::Mapping map = key.second;
+			KeyAction::Id action = KeyAction::actionbyid(map.action);
+
+			Keyboard::Mapping fmap = keyboard->get_maple_mapping(key.first);
+
+			if (map.action != fmap.action)
+			{
+				updated_actions.emplace_back(std::make_tuple(k, map.type, action));
+			}
+		}
+
+		auto maplekeys = keyboard->get_maplekeys();
+
+		for each (auto key in maplekeys)
+		{
+			bool keyFound = false;
+			KeyConfig::Key keyConfig = KeyConfig::actionbyid(key.first);
+
+			for each (auto tkey in tempkeys)
+			{
+				KeyConfig::Key tKeyConfig = KeyConfig::actionbyid(tkey.first);
+
+				if (keyConfig == tKeyConfig)
+				{
+					keyFound = true;
+					break;
+				}
+			}
+
+			if (!keyFound)
+				updated_actions.emplace_back(std::make_tuple(keyConfig, KeyType::Id::NONE, KeyAction::Id::LENGTH));
+		}
+
+		if (updated_actions.size() > 0)
+			ChangeKeyMapPacket(updated_actions).dispatch();
+
+		for each (auto action in updated_actions)
+		{
+			KeyConfig::Key key = std::get<0>(action);
+			KeyType::Id type = std::get<1>(action);
+			KeyAction::Id keyAction = std::get<2>(action);
+
+			if (type == KeyType::Id::NONE)
+				keyboard->remove(key);
+			else
+				keyboard->assign(key, type, keyAction);
+		}
+
+		dirty = false;
+	}
+
+	void UIKeyConfig::safe_close()
+	{
+		if (dirty)
+		{
+			constexpr char* message = "Do you want to save your changes?";
+
+			auto onok = [&](bool ok)
+			{
+				if (ok)
+				{
+					save_keys();
+					close();
+				}
+				else
+				{
+					close();
+				}
+			};
+
+			UI::get().emplace<UIOk>(message, onok);
+		}
+		else
+		{
+			close();
+		}
 	}
 
 	KeyAction::Id UIKeyConfig::icon_by_position(Point<int16_t> cursorpos) const

@@ -331,6 +331,7 @@ namespace ms
 
 		sprites.emplace_back(backgrnd);
 
+		buttons[Buttons::CLOSE] = std::make_unique<MapleButton>(KeyType["btClose"]);
 		buttons[Buttons::TYPEA] = std::make_unique<MapleButton>(KeyType["btTypeA"]);
 		buttons[Buttons::TYPEB] = std::make_unique<MapleButton>(KeyType["btTypeB"], Point<int16_t>(1, 1));
 
@@ -352,20 +353,32 @@ namespace ms
 
 	Button::State UIKeySelect::button_pressed(uint16_t buttonid)
 	{
-		bool alternate = (buttonid == Buttons::TYPEA) ? false : true;
-
-		if (alternate)
-			buttons[Buttons::TYPEA]->set_state(Button::State::DISABLED);
-		else
-			buttons[Buttons::TYPEB]->set_state(Button::State::DISABLED);
-
-		auto onok = [&, alternate]()
+		switch (buttonid)
 		{
-			okhandler(alternate);
+		default:
+		case Buttons::CLOSE:
 			deactivate();
-		};
+			break;
+		case Buttons::TYPEA:
+		case Buttons::TYPEB:
+		{
+			bool alternate = (buttonid == Buttons::TYPEA) ? false : true;
 
-		UI::get().emplace<UIKeyConfirm>(alternate, onok, login);
+			if (alternate)
+				buttons[Buttons::TYPEA]->set_state(Button::State::DISABLED);
+			else
+				buttons[Buttons::TYPEB]->set_state(Button::State::DISABLED);
+
+			auto onok = [&, alternate]()
+			{
+				okhandler(alternate);
+				deactivate();
+			};
+
+			UI::get().emplace<UIKeyConfirm>(alternate, onok, login);
+			break;
+		}
+		}
 
 		return Button::State::DISABLED;
 	}
@@ -393,9 +406,15 @@ namespace ms
 		if (pressed)
 		{
 			if (keycode == KeyAction::Id::RETURN)
+			{
 				confirm();
+			}
 			else if (!login && escape)
+			{
+				deactivate();
+
 				UI::get().remove(UIElement::Type::LOGINNOTICE);
+			}
 		}
 	}
 

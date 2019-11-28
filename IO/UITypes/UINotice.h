@@ -113,7 +113,7 @@ namespace ms
 	class UIOk : public UINotice
 	{
 	public:
-		UIOk(std::string message, std::function<void()> okhandler);
+		UIOk(std::string message, std::function<void(bool ok)> okhandler);
 
 		void draw(float alpha) const override;
 
@@ -128,6 +128,6 @@ namespace ms
 			OK
 		};
 
-		std::function<void()> okhandler;
+		std::function<void(bool ok)> okhandler;
 	};
 }

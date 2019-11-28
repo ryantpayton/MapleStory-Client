@@ -334,7 +334,7 @@ namespace ms
 		case Buttons::BT_HYPERSTATCLOSE:
 		{
 			if (player.get_level() < 140)
-				UI::get().emplace<UIOk>("You can use the Hyper Stat at Lv. 140 and above.", []() {});
+				UI::get().emplace<UIOk>("You can use the Hyper Stat at Lv. 140 and above.", [](bool) {});
 		}
 		break;
 		case Buttons::BT_DETAILOPEN:
