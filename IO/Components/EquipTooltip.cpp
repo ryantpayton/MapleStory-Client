@@ -702,9 +702,9 @@ namespace ms
 
 		if (hasdesc)
 		{
-			pos.shift_y(-4);
+			pos.shift_y(13);
 			line.draw(pos);
-			desc.draw(pos + Point<int16_t>(9, 8));
+			desc.draw(pos + Point<int16_t>(9, 3));
 		}
 	}
 

@@ -56,6 +56,7 @@ namespace ms
 		void load_icons();
 		void update_slot(Equipslot::Id slot);
 		Equipslot::Id slot_by_position(Point<int16_t> position) const;
+		void change_tab(uint16_t tabid);
 
 		class EquipIcon : public Icon::Type
 		{
@@ -72,18 +73,36 @@ namespace ms
 			int16_t source;
 		};
 
-		enum Buttons
+		enum Buttons : uint16_t
 		{
+			BT_TAB0,
+			BT_TAB1,
+			BT_TAB2,
+			BT_TAB3,
+			BT_TABE,
 			BT_CLOSE,
-			BT_TOGGLEPETS
+			BT_SLOT,
+			BT_EFFECT,
+			BT_SALON,
+			BT_CONSUMESETTING,
+			BT_EXCEPTION,
+			BT_SHOP
 		};
 
 		const Inventory& inventory;
 
-		std::vector<Texture> textures_pet;
 		EnumMap<Equipslot::Id, Point<int16_t>> iconpositions;
 		EnumMap<Equipslot::Id, std::unique_ptr<Icon>> icons;
 
-		bool showpetequips;
+		uint16_t tab;
+		std::string tab_source[Buttons::BT_TABE];
+		Texture tabbar;
+		Texture background[Buttons::BT_TABE];
+		Texture disabled;
+		Texture disabled2;
+		std::vector<Texture> Slots[Buttons::BT_TABE];
+
+		bool hasPendantSlot;
+		bool hasPocketSlot;
 	};
 }

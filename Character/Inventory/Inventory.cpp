@@ -268,7 +268,7 @@ namespace ms
 
 		Equipslot::Id eqslot = cloth.get_eqslot();
 
-		if (eqslot == Equipslot::Id::RING)
+		if (eqslot == Equipslot::Id::RING1)
 		{
 			if (!has_equipped(Equipslot::Id::RING2))
 				return Equipslot::Id::RING2;
@@ -279,7 +279,7 @@ namespace ms
 			if (!has_equipped(Equipslot::Id::RING4))
 				return Equipslot::Id::RING4;
 
-			return Equipslot::Id::RING;
+			return Equipslot::Id::RING1;
 		}
 		else
 		{

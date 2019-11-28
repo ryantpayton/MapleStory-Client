@@ -155,18 +155,18 @@ namespace ms
 
 					switch (eqslot)
 					{
-					case Equipslot::Id::FACEACC:
+					case Equipslot::Id::FACE:
 						shift -= parentpos;
 						break;
 					case Equipslot::Id::SHOES:
 					case Equipslot::Id::GLOVES:
 					case Equipslot::Id::TOP:
-					case Equipslot::Id::PANTS:
+					case Equipslot::Id::BOTTOM:
 					case Equipslot::Id::CAPE:
 						shift = drawinfo.get_body_position(stance, frame) - parentpos;
 						break;
-					case Equipslot::Id::CAP:
-					case Equipslot::Id::EARRINGS:
+					case Equipslot::Id::HAT:
+					case Equipslot::Id::EARACC:
 					case Equipslot::Id::EYEACC:
 						shift = drawinfo.getfacepos(stance, frame) - parentpos;
 						break;

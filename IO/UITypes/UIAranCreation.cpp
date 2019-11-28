@@ -579,7 +579,7 @@ namespace ms
 		facename.change_text(newchar.get_face()->get_name());
 		hairname.change_text(newchar.get_hair()->get_name());
 		topname.change_text(get_equipname(Equipslot::Id::TOP));
-		botname.change_text(get_equipname(Equipslot::Id::PANTS));
+		botname.change_text(get_equipname(Equipslot::Id::BOTTOM));
 		shoename.change_text(get_equipname(Equipslot::Id::SHOES));
 		wepname.change_text(get_equipname(Equipslot::Id::WEAPON));
 	}

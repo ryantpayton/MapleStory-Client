@@ -82,19 +82,19 @@ namespace ms
 
 			constexpr Equipslot::Id equipslots[NON_WEAPON_TYPES] =
 			{
-				Equipslot::Id::CAP,
-				Equipslot::Id::FACEACC,
+				Equipslot::Id::HAT,
+				Equipslot::Id::FACE,
 				Equipslot::Id::EYEACC,
-				Equipslot::Id::EARRINGS,
+				Equipslot::Id::EARACC,
 				Equipslot::Id::TOP,
 				Equipslot::Id::TOP,
-				Equipslot::Id::PANTS,
+				Equipslot::Id::BOTTOM,
 				Equipslot::Id::SHOES,
 				Equipslot::Id::GLOVES,
 				Equipslot::Id::SHIELD,
 				Equipslot::Id::CAPE,
-				Equipslot::Id::RING,
-				Equipslot::Id::PENDANT,
+				Equipslot::Id::RING1,
+				Equipslot::Id::PENDANT1,
 				Equipslot::Id::BELT,
 				Equipslot::Id::MEDAL
 			};

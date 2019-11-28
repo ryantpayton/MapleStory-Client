@@ -94,7 +94,7 @@ namespace ms
 
 	CharEquips::CapType CharEquips::getcaptype() const
 	{
-		if (const Clothing * cap = clothes[Equipslot::Id::CAP])
+		if (const Clothing * cap = clothes[Equipslot::Id::HAT])
 		{
 			const std::string& vslot = cap->get_vslot();
 			if (vslot == "CpH1H5")

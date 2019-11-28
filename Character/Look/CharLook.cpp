@@ -73,12 +73,12 @@ namespace ms
 			body->draw(interstance, Body::Layer::BODY, interframe, args);
 			equips.draw(Equipslot::Id::GLOVES, interstance, Clothing::Layer::GLOVE, interframe, args);
 			equips.draw(Equipslot::Id::SHOES, interstance, Clothing::Layer::SHOES, interframe, args);
-			equips.draw(Equipslot::Id::PANTS, interstance, Clothing::Layer::PANTS, interframe, args);
+			equips.draw(Equipslot::Id::BOTTOM, interstance, Clothing::Layer::PANTS, interframe, args);
 			equips.draw(Equipslot::Id::TOP, interstance, Clothing::Layer::TOP, interframe, args);
 			equips.draw(Equipslot::Id::TOP, interstance, Clothing::Layer::MAIL, interframe, args);
 			equips.draw(Equipslot::Id::CAPE, interstance, Clothing::Layer::CAPE, interframe, args);
 			body->draw(interstance, Body::Layer::HEAD, interframe, args);
-			equips.draw(Equipslot::Id::EARRINGS, interstance, Clothing::Layer::EARRINGS, interframe, args);
+			equips.draw(Equipslot::Id::EARACC, interstance, Clothing::Layer::EARRINGS, interframe, args);
 
 			switch (equips.getcaptype())
 			{
@@ -86,15 +86,15 @@ namespace ms
 				hair->draw(interstance, Hair::Layer::BACK, interframe, args);
 				break;
 			case CharEquips::CapType::HEADBAND:
-				equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP, interframe, args);
+				equips.draw(Equipslot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
 				hair->draw(interstance, Hair::Layer::BACK, interframe, args);
 				break;
 			case CharEquips::CapType::HALFCOVER:
 				hair->draw(interstance, Hair::Layer::BELOWCAP, interframe, args);
-				equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP, interframe, args);
+				equips.draw(Equipslot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
 				break;
 			case CharEquips::CapType::FULLCOVER:
-				equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP, interframe, args);
+				equips.draw(Equipslot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
 				break;
 			}
 
@@ -107,7 +107,7 @@ namespace ms
 			equips.draw(Equipslot::Id::CAPE, interstance, Clothing::Layer::CAPE, interframe, args);
 			equips.draw(Equipslot::Id::SHIELD, interstance, Clothing::Layer::SHIELD_BELOW_BODY, interframe, args);
 			equips.draw(Equipslot::Id::WEAPON, interstance, Clothing::Layer::WEAPON_BELOW_BODY, interframe, args);
-			equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP_BELOW_BODY, interframe, args);
+			equips.draw(Equipslot::Id::HAT, interstance, Clothing::Layer::CAP_BELOW_BODY, interframe, args);
 			body->draw(interstance, Body::Layer::BODY, interframe, args);
 			equips.draw(Equipslot::Id::GLOVES, interstance, Clothing::Layer::WRIST_OVER_BODY, interframe, args);
 			equips.draw(Equipslot::Id::GLOVES, interstance, Clothing::Layer::GLOVE_OVER_BODY, interframe, args);
@@ -120,18 +120,18 @@ namespace ms
 			}
 			else
 			{
-				equips.draw(Equipslot::Id::PANTS, interstance, Clothing::Layer::PANTS, interframe, args);
+				equips.draw(Equipslot::Id::BOTTOM, interstance, Clothing::Layer::PANTS, interframe, args);
 				equips.draw(Equipslot::Id::TOP, interstance, Clothing::Layer::TOP, interframe, args);
 			}
 
 			body->draw(interstance, Body::Layer::ARM_BELOW_HEAD_OVER_MAIL, interframe, args);
 			hair->draw(interstance, Hair::Layer::DEFAULT, interframe, args);
 			equips.draw(Equipslot::Id::SHIELD, interstance, Clothing::Layer::SHIELD_OVER_HAIR, interframe, args);
-			equips.draw(Equipslot::Id::EARRINGS, interstance, Clothing::Layer::EARRINGS, interframe, args);
+			equips.draw(Equipslot::Id::EARACC, interstance, Clothing::Layer::EARRINGS, interframe, args);
 			body->draw(interstance, Body::Layer::HEAD, interframe, args);
 			hair->draw(interstance, Hair::Layer::SHADE, interframe, args);
 			face->draw(interexpression, interexpframe, faceargs);
-			equips.draw(Equipslot::Id::FACEACC, interstance, Clothing::Layer::FACEACC, 0, faceargs);
+			equips.draw(Equipslot::Id::FACE, interstance, Clothing::Layer::FACEACC, 0, faceargs);
 			equips.draw(Equipslot::Id::EYEACC, interstance, Clothing::Layer::EYEACC, interframe, args);
 			equips.draw(Equipslot::Id::SHIELD, interstance, Clothing::Layer::SHIELD, interframe, args);
 
@@ -141,17 +141,17 @@ namespace ms
 				hair->draw(interstance, Hair::Layer::OVERHEAD, interframe, args);
 				break;
 			case CharEquips::CapType::HEADBAND:
-				equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP, interframe, args);
+				equips.draw(Equipslot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
 				hair->draw(interstance, Hair::Layer::DEFAULT, interframe, args);
 				hair->draw(interstance, Hair::Layer::OVERHEAD, interframe, args);
-				equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP_OVER_HAIR, interframe, args);
+				equips.draw(Equipslot::Id::HAT, interstance, Clothing::Layer::CAP_OVER_HAIR, interframe, args);
 				break;
 			case CharEquips::CapType::HALFCOVER:
 				hair->draw(interstance, Hair::Layer::DEFAULT, interframe, args);
-				equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP, interframe, args);
+				equips.draw(Equipslot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
 				break;
 			case CharEquips::CapType::FULLCOVER:
-				equips.draw(Equipslot::Id::CAP, interstance, Clothing::Layer::CAP, interframe, args);
+				equips.draw(Equipslot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
 				break;
 			}
 
