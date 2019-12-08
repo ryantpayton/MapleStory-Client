@@ -61,15 +61,10 @@ namespace ms
 		void update_canvas();
 		void draw_movable_markers(Point<int16_t> init_pos, float alpha) const;
 		void update_static_markers();
-
 		void set_npclist_active(bool active);
-
 		void update_dimensions();
-
 		void update_npclist();
-
 		void draw_npclist(Point<int16_t> minimap_dims, float alpha) const;
-
 		void select_npclist(int16_t choice);
 
 		nl::node get_map_node_name();
@@ -139,7 +134,7 @@ namespace ms
 		const int16_t m_start = 36;
 		const int16_t listNpc_item_height = 17;
 		const int16_t listNpc_item_width = 128;
-		const int16_t listNpc_text_width = 114; 
+		const int16_t listNpc_text_width = 114;
 
 		Slider listNpc_slider;
 		int16_t listNpc_offset;
