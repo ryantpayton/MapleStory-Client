@@ -22,45 +22,13 @@
 
 #include "../Components/Slider.h"
 #include "../Components/Charset.h"
+#include "../Components/StatefulIcon.h"
 #include "../Character/CharStats.h"
 #include "../Character/Skillbook.h"
 #include "../Graphics/Text.h"
 
 namespace ms
 {
-	class SkillIcon
-	{
-	public:
-		SkillIcon(int32_t id, int32_t level);
-
-		void draw(const DrawArgument& args) const;
-
-		enum State
-		{
-			NORMAL,
-			DISABLED,
-			MOUSEOVER
-		};
-
-		void set_state(State state);
-
-		int32_t get_id() const;
-		int32_t get_level() const;
-		Texture get_icon() const;
-
-	private:
-		Texture normal;
-		Texture disabled;
-		Texture mouseover;
-		Text name;
-		Text level;
-		int32_t id;
-		int32_t lv;
-
-		State state;
-		bool enabled;
-	};
-
 	class UISkillbook : public UIDragElement<PosSKILL>
 	{
 	public:
@@ -86,6 +54,41 @@ namespace ms
 		Button::State button_pressed(uint16_t id) override;
 
 	private:
+		class SkillIcon : public StatefulIcon::Type
+		{
+		public:
+			SkillIcon(int32_t skill_id);
+
+			void drop_on_stage() const override {}
+			void drop_on_equips(Equipslot::Id) const override {}
+			bool drop_on_items(InventoryType::Id, Equipslot::Id, int16_t, bool) const override { return true; }
+			void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const override;
+			void set_count(int16_t) override {}
+			void set_state(StatefulIcon::State state) override {};
+
+		private:
+			int32_t skill_id;
+		};
+
+		class SkillDisplayMeta
+		{
+		public:
+			SkillDisplayMeta(int32_t id, int32_t level);
+
+			void draw(const DrawArgument& args) const;
+
+			int32_t get_id() const;
+			int32_t get_level() const;
+			StatefulIcon* get_icon() const;
+
+		private:
+			int32_t id;
+			int32_t level;
+			std::unique_ptr<StatefulIcon> icon;
+			Text name_text;
+			Text level_text;
+		};
+
 		void change_job(uint16_t id);
 		void change_sp();
 		void change_tab(uint16_t new_tab);
@@ -99,7 +102,7 @@ namespace ms
 		void spend_sp(int32_t skill_id);
 
 		Job::Level joblevel_by_tab(uint16_t tab) const;
-		SkillIcon* icon_by_position(Point<int16_t> cursorpos);
+		UISkillbook::SkillDisplayMeta* skill_by_position(Point<int16_t> cursorpos) const;
 
 		void close();
 		bool check_required(int32_t id) const;
@@ -143,7 +146,7 @@ namespace ms
 		static constexpr int16_t ROW_HEIGHT = 40;
 		static constexpr int16_t ROW_WIDTH = 143;
 		static constexpr Point<int16_t> SKILL_OFFSET = Point<int16_t>(11, 93);
-		static constexpr Point<int16_t> ICON_OFFSET = Point<int16_t>(2, 34);
+		static constexpr Point<int16_t> SKILL_META_OFFSET = Point<int16_t>(2, 2);
 		static constexpr Point<int16_t> LINE_OFFSET = Point<int16_t>(0, 37);
 
 		const CharStats& stats;
@@ -166,7 +169,7 @@ namespace ms
 		uint16_t skillcount;
 		uint16_t offset;
 
-		std::vector<SkillIcon> icons;
+		std::vector<SkillDisplayMeta> skills;
 		bool grabbing;
 
 		Point<int16_t> bg_dimensions;

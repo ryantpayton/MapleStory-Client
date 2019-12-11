@@ -17,27 +17,29 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Character/Inventory/Inventory.h"
-#include "../Graphics/Texture.h"
-#include "../Template/EnumMap.h"
+#include "Icon.h"
 
-#include <memory>
+#include "../Graphics/Texture.h"
 
 namespace ms
 {
-	class Icon
+	class StatefulIcon : public Icon
 	{
 	public:
-		class Type
+		enum State: uint8_t
+		{
+			NORMAL = 0,
+			DISABLED,
+			MOUSEOVER,
+			LENGTH
+		};
+
+		class Type : public Icon::Type
 		{
 		public:
 			virtual ~Type() {}
 
-			virtual void drop_on_stage() const = 0;
-			virtual void drop_on_equips(Equipslot::Id eqslot) const = 0;
-			virtual bool drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const = 0;
-			virtual void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const = 0;
-			virtual void set_count(int16_t) = 0;
+			virtual void set_state(State state) = 0;
 		};
 
 		class NullType : public Type
@@ -47,31 +49,18 @@ namespace ms
 			bool drop_on_items(InventoryType::Id, Equipslot::Id, int16_t, bool) const override { return true; }
 			void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const override {}
 			void set_count(int16_t) override {}
+			void set_state(State state) override {};
 		};
 
-		Icon(std::unique_ptr<Type> type, Texture texture, int16_t count);
-		Icon();
+		StatefulIcon(std::unique_ptr<Type> type, Texture normal_tx, Texture disabled_tx, Texture mouseover_tx);
+		StatefulIcon();
 
-		void draw(Point<int16_t> position) const;
-		void dragdraw(Point<int16_t> cursorpos) const;
-		void drop_on_stage() const;
-		void drop_on_equips(Equipslot::Id eqslot) const;
-		bool drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const;
-		void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const;
-		void start_drag(Point<int16_t> offset);
-		void reset();
-		virtual Texture get_texture() const;
-		void set_count(int16_t count);
-		int16_t get_count() const;
-		bool get_drag();
+		Texture get_texture() const override;
+
+		void set_state(State state);
 
 	private:
-		std::unique_ptr<Type> type;
-		bool showcount;
-		int16_t count;
-
-		Texture texture;
-		bool dragged;
-		Point<int16_t> cursoroffset;
+		State state;
+		EnumMap<State, Texture> textures;
 	};
 }

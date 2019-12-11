@@ -19,6 +19,8 @@
 #include "Charset.h"
 
 #include "../Audio/Audio.h"
+#include "../Graphics/Texture.h"
+#include "../Template/EnumMap.h"
 
 #include <nlnx/nx.hpp>
 
@@ -36,7 +38,7 @@ namespace ms
 	void Icon::draw(Point<int16_t> position) const
 	{
 		float opacity = dragged ? 0.5f : 1.0f;
-		texture.draw({ position, opacity });
+		get_texture().draw({ position, opacity });
 
 		if (showcount)
 		{
@@ -48,7 +50,7 @@ namespace ms
 	void Icon::dragdraw(Point<int16_t> cursorpos) const
 	{
 		if (dragged)
-			texture.draw({ cursorpos - cursoroffset, 0.5f });
+			get_texture().draw({ cursorpos - cursoroffset, 0.5f });
 	}
 
 	void Icon::drop_on_stage() const
@@ -87,6 +89,14 @@ namespace ms
 	void Icon::reset()
 	{
 		dragged = false;
+	}
+
+	/**
+	 * Allows for Icon extensibility. Use this instead of referencing texture directly.
+	 */
+	Texture Icon::get_texture() const
+	{
+		return texture;
 	}
 
 	void Icon::set_count(int16_t c)
