@@ -204,14 +204,19 @@ namespace ms
 
 	void CharStats::change_job(uint16_t id)
 	{
-		basestats[Maplestat::JOB] = id;
+		basestats[Maplestat::Id::JOB] = id;
 		job.change_job(id);
 	}
 
 	int32_t CharStats::calculate_damage(int32_t mobatk) const
 	{
 		// TODO: Random stuff, need to find the actual formula somewhere
-		int32_t reduceatk = mobatk / 2 + mobatk / get_total(Equipstat::WDEF);
+		auto weapon_def = get_total(Equipstat::Id::WDEF);
+
+		if (weapon_def == 0)
+			return mobatk;
+
+		int32_t reduceatk = mobatk / 2 + mobatk / weapon_def;
 
 		return reduceatk - static_cast<int32_t>(reduceatk * reducedamage);
 	}

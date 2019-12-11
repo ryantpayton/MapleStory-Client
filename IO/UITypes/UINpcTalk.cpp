@@ -175,6 +175,16 @@ namespace ms
 		return Button::State::NORMAL;
 	}
 
+	void UINpcTalk::send_key(int32_t keycode, bool pressed, bool escape)
+	{
+		if (pressed && escape)
+		{
+			deactivate();
+
+			NpcTalkMorePacket(type, 0).dispatch();
+		}
+	}
+
 	UINpcTalk::TalkType UINpcTalk::get_by_value(int8_t value)
 	{
 		if (value > TalkType::NONE && value < TalkType::LENGTH)

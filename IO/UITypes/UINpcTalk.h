@@ -54,6 +54,7 @@ namespace ms
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
+		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
 	private:
 		TalkType get_by_value(int8_t value);
