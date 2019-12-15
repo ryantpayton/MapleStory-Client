@@ -118,6 +118,15 @@ namespace ms
 			b += v.b;
 		}
 
+		// Take the absolute value of the point.
+		Point<T> abs()
+		{
+			return {
+				static_cast<T>(std::abs(a)),
+				static_cast<T>(std::abs(b))
+			};
+		}
+
 		// Check whether point is equivalent to the specified point.
 		constexpr bool operator == (const Point<T>& v) const
 		{

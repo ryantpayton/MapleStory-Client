@@ -405,9 +405,12 @@ namespace ms
 
 	void UISkillbook::toggle_active()
 	{
-		clear_tooltip();
+		if (!is_skillpoint_enabled())
+		{
+			UIElement::toggle_active();
 
-		UIElement::toggle_active();
+			clear_tooltip();
+		}
 	}
 
 	void UISkillbook::doubleclick(Point<int16_t> cursorpos)

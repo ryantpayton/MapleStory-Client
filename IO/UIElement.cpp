@@ -40,7 +40,7 @@ namespace ms
 	void UIElement::draw_buttons(float) const
 	{
 		for (auto& iter : buttons)
-			if (const Button * button = iter.second.get())
+			if (const Button* button = iter.second.get())
 				button->draw(position);
 	}
 
@@ -50,7 +50,7 @@ namespace ms
 			sprite.update();
 
 		for (auto& iter : buttons)
-			if (Button * button = iter.second.get())
+			if (Button* button = iter.second.get())
 				button->update();
 	}
 
@@ -72,15 +72,9 @@ namespace ms
 	void UIElement::toggle_active()
 	{
 		if (active)
-		{
-			Sound(Sound::Name::MENUDOWN).play();
-			active = false;
-		}
+			deactivate();
 		else
-		{
-			Sound(Sound::Name::MENUUP).play();
-			active = true;
-		}
+			makeactive();
 	}
 
 	Button::State UIElement::button_pressed(uint16_t) { return Button::State::DISABLED; }

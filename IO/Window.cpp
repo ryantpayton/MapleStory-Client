@@ -165,6 +165,12 @@ namespace ms
 		glLoadIdentity();
 
 		glfwSetInputMode(glwnd, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
+		double xpos, ypos;
+
+		glfwGetCursorPos(glwnd, &xpos, &ypos);
+		cursor_callback(glwnd, xpos, ypos);
+
 		glfwSetInputMode(glwnd, GLFW_STICKY_KEYS, 1);
 		glfwSetKeyCallback(glwnd, key_callback);
 		glfwSetMouseButtonCallback(glwnd, mousekey_callback);

@@ -54,6 +54,7 @@ namespace ms
 		void quit();
 		bool not_quitted() const;
 
+		void reset_cursor();
 		void send_cursor(Point<int16_t> pos);
 		void send_cursor(bool pressed);
 		void send_cursor(Point<int16_t> cursorpos, Cursor::State cursorstate);
@@ -111,6 +112,7 @@ namespace ms
 				std::forward<Args>(args)...
 				);
 		}
+
 		return state->get(T::TYPE);
 	}
 
@@ -119,6 +121,7 @@ namespace ms
 	{
 		UIElement::Type type = T::TYPE;
 		UIElement* element = state->get(type);
+
 		return static_cast<T*>(element);
 	}
 }

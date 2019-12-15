@@ -110,7 +110,7 @@ namespace ms
 
 	bool UIStateGame::drop_icon(const Icon& icon, Point<int16_t> pos)
 	{
-		if (UIElement * front = get_front(pos))
+		if (UIElement* front = get_front(pos))
 			return front->send_icon(icon, pos);
 		else
 			icon.drop_on_stage();
@@ -120,13 +120,13 @@ namespace ms
 
 	void UIStateGame::doubleclick(Point<int16_t> pos)
 	{
-		if (UIElement * front = get_front(pos))
+		if (UIElement* front = get_front(pos))
 			front->doubleclick(pos);
 	}
 
 	void UIStateGame::rightclick(Point<int16_t> pos)
 	{
-		if (UIElement * front = get_front(pos))
+		if (UIElement* front = get_front(pos))
 			front->rightclick(pos);
 	}
 
@@ -145,49 +145,25 @@ namespace ms
 						);
 					break;
 				case KeyAction::Id::ITEMS:
-				{
-					auto iteminventory = UI::get().get_element<UIItemInventory>();
-
-					if (!iteminventory)
-					{
-						emplace<UIItemInventory>(
-							Stage::get().get_player().get_inventory()
-							);
-					}
-					else
-					{
-						iteminventory->toggle_active();
-					}
-				}
-				break;
+					emplace<UIItemInventory>(
+						Stage::get().get_player().get_inventory()
+						);
+					break;
 				case KeyAction::Id::STATS:
 					emplace<UIStatsinfo>(
 						Stage::get().get_player().get_stats()
 						);
 					break;
 				case KeyAction::Id::SKILLS:
-				{
-					auto skillbook = UI::get().get_element<UISkillbook>();
-
-					if (!skillbook)
-					{
-						emplace<UISkillbook>(
-							Stage::get().get_player().get_stats(),
-							Stage::get().get_player().get_skills()
-							);
-					}
-					else
-					{
-						if (!skillbook->is_skillpoint_enabled())
-							skillbook->toggle_active();
-					}
-				}
-				break;
+					emplace<UISkillbook>(
+						Stage::get().get_player().get_stats(),
+						Stage::get().get_player().get_skills()
+						);
+					break;
 				case KeyAction::Id::FRIENDS:
 				case KeyAction::Id::PARTY:
 				case KeyAction::Id::BOSSPARTY:
 				{
-					auto userlist = UI::get().get_element<UIUserList>();
 					UIUserList::Tab tab;
 
 					switch (action)
@@ -203,29 +179,18 @@ namespace ms
 						break;
 					}
 
-					if (!userlist)
+					auto userlist = UI::get().get_element<UIUserList>();
+
+					if (userlist && userlist->get_tab() != tab && userlist->is_active())
 					{
-						emplace<UIUserList>(tab);
+						userlist->change_tab(tab);
 					}
 					else
 					{
-						auto cur_tab = userlist->get_tab();
-						auto is_active = userlist->is_active();
+						emplace<UIUserList>(tab);
 
-						if (cur_tab == tab)
-						{
-							if (is_active)
-								userlist->deactivate();
-							else
-								userlist->makeactive();
-						}
-						else
-						{
-							if (!is_active)
-								userlist->makeactive();
-
+						if (userlist && userlist->get_tab() != tab && userlist->is_active())
 							userlist->change_tab(tab);
-						}
 					}
 				}
 				break;
@@ -326,7 +291,7 @@ namespace ms
 		{
 			bool clicked = mst == Cursor::State::CLICKING || mst == Cursor::State::VSCROLLIDLE;
 
-			if (UIElement * focusedelement = get(focused))
+			if (UIElement* focusedelement = get(focused))
 			{
 				if (focusedelement->is_active())
 				{
@@ -473,6 +438,23 @@ namespace ms
 			(*iter).second = std::make_unique<T>(
 				std::forward<Args>(args)...
 				);
+
+			auto silent_types = {
+				UIElement::Type::STATUSMESSENGER,
+				UIElement::Type::STATUSBAR,
+				UIElement::Type::CHATBAR,
+				UIElement::Type::MINIMAP,
+				UIElement::Type::BUFFLIST,
+				UIElement::Type::NPCTALK,
+				UIElement::Type::SHOP
+			};
+
+			if (std::find(silent_types.begin(), silent_types.end(), T::TYPE) == silent_types.end())
+			{
+				Sound(Sound::Name::MENUUP).play();
+
+				UI::get().send_cursor(false);
+			}
 		}
 	}
 
@@ -484,7 +466,32 @@ namespace ms
 		{
 			elementorder.remove(type);
 			elementorder.push_back(type);
+
+			bool active = element->is_active();
+
 			element->toggle_active();
+
+			if (active != element->is_active())
+			{
+				if (element->is_active())
+				{
+					if (type == UIElement::Type::WORLDMAP)
+						Sound(Sound::Name::WORLDMAPOPEN).play();
+					else
+						Sound(Sound::Name::MENUUP).play();
+
+					UI::get().reset_cursor();
+				}
+				else
+				{
+					if (type == UIElement::Type::WORLDMAP)
+						Sound(Sound::Name::WORLDMAPCLOSE).play();
+					else
+						Sound(Sound::Name::MENUDOWN).play();
+
+					UI::get().send_cursor(false);
+				}
+			}
 
 			return elements.end();
 		}
@@ -510,7 +517,7 @@ namespace ms
 
 		elementorder.remove(type);
 
-		if (auto & element = elements[type])
+		if (auto& element = elements[type])
 		{
 			element->deactivate();
 			element.release();

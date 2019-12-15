@@ -159,6 +159,11 @@ namespace ms
 		}
 	}
 
+	void UI::reset_cursor()
+	{
+		cursor.set_state(Cursor::State::IDLE);
+	}
+
 	void UI::send_cursor(Point<int16_t> pos)
 	{
 		send_cursor(pos, cursor.get_state());

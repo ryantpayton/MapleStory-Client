@@ -53,9 +53,11 @@ namespace ms
 		Point<int16_t> search_box_dim = Point<int16_t>(83, 15);
 		Rectangle<int16_t> search_text_dim = Rectangle<int16_t>(search_text_pos, search_text_pos + search_box_dim);
 
-		search_text = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, search_text_dim, 15);
+		search_text = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, search_text_dim, 8);
 
-		set_search(false);
+		set_search(true);
+
+		dragarea = Point<int16_t>(bg_dimensions.x(), 20);
 	}
 
 	void UIWorldMap::draw(float alpha) const
@@ -66,7 +68,7 @@ namespace ms
 		{
 			search_background.draw(position + background_dimensions);
 			search_notice.draw(position + background_dimensions);
-			search_text.draw(position);
+			search_text.draw(position + Point<int16_t>(1, -5));
 		}
 
 		UIElement::draw_buttons(alpha);
@@ -80,10 +82,23 @@ namespace ms
 			search_text.update(position);
 	}
 
+	void UIWorldMap::toggle_active()
+	{
+		UIElement::toggle_active();
+
+		if (!active)
+			set_search(true);
+	}
+
 	void UIWorldMap::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && escape)
-			deactivate();
+		{
+			if (search)
+				set_search(false);
+			else
+				toggle_active();
+		}
 	}
 
 	Button::State UIWorldMap::button_pressed(uint16_t buttonid)
@@ -122,14 +137,12 @@ namespace ms
 		if (enable)
 		{
 			search_text.set_state(Textfield::State::NORMAL);
-			dimension = bg_dimensions + bg_search_dimensions;
+			dimension = bg_dimensions + Point<int16_t>(bg_search_dimensions.x(), 0);
 		}
 		else
 		{
 			search_text.set_state(Textfield::State::DISABLED);
 			dimension = bg_dimensions;
 		}
-
-		dragarea = Point<int16_t>(dimension.x(), 20);
 	}
 }

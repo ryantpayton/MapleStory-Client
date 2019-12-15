@@ -63,5 +63,6 @@ namespace ms
 		Textfield search;
 		Text placeholder;
 		Slider slider;
+		Texture search_area;
 	};
 }
