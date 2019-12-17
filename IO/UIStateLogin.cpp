@@ -69,11 +69,9 @@ namespace ms
 			charselect->doubleclick(pos);
 	}
 
-	void UIStateLogin::rightclick(Point<int16_t>) {}
-
 	void UIStateLogin::send_key(KeyType::Id type, int32_t action, bool pressed, bool escape)
 	{
-		if (UIElement * focusedelement = get(focused))
+		if (UIElement* focusedelement = get(focused))
 		{
 			if (focusedelement->is_active())
 			{
@@ -90,7 +88,7 @@ namespace ms
 
 	Cursor::State UIStateLogin::send_cursor(Cursor::State mst, Point<int16_t> pos)
 	{
-		if (UIElement * focusedelement = get(focused))
+		if (UIElement* focusedelement = get(focused))
 		{
 			if (focusedelement->is_active())
 			{
@@ -105,38 +103,12 @@ namespace ms
 		}
 		else
 		{
-			UIElement* front = nullptr;
-			UIElement::Type fronttype = UIElement::NONE;
-
-			for (auto iter : elements)
-			{
-				auto& element = iter.second;
-
-				if (element && element->is_active())
-				{
-					if (element->is_in_range(pos))
-					{
-						if (front)
-							element->remove_cursor(false, pos);
-
-						front = element.get();
-						fronttype = iter.first;
-					}
-					else
-					{
-						element->remove_cursor(false, pos);
-					}
-				}
-			}
-
-			if (front)
-				return front->send_cursor(mst == Cursor::CLICKING, pos);
+			if (auto front = get_front())
+				return front->send_cursor(mst == Cursor::State::CLICKING, pos);
 			else
-				return Cursor::IDLE;
+				return Cursor::State::IDLE;
 		}
 	}
-
-	void UIStateLogin::send_scroll(double) {}
 
 	void UIStateLogin::send_close()
 	{
@@ -150,8 +122,6 @@ namespace ms
 			UI::get().emplace<UIQuitConfirm>();
 	}
 
-	void UIStateLogin::drag_icon(Icon*) {}
-
 	void UIStateLogin::clear_tooltip(Tooltip::Parent parent)
 	{
 		if (parent == tooltipparent)
@@ -161,10 +131,6 @@ namespace ms
 			tooltipparent = Tooltip::Parent::NONE;
 		}
 	}
-
-	void UIStateLogin::show_equip(Tooltip::Parent, int16_t) {}
-	void UIStateLogin::show_item(Tooltip::Parent, int32_t) {}
-	void UIStateLogin::show_skill(Tooltip::Parent, int32_t, int32_t, int32_t, int64_t) {}
 
 	void UIStateLogin::show_text(Tooltip::Parent parent, std::string text)
 	{
@@ -203,7 +169,7 @@ namespace ms
 		if (focused == type)
 			focused = UIElement::NONE;
 
-		if (auto & element = elements[type])
+		if (auto& element = elements[type])
 		{
 			element->deactivate();
 			element.release();
@@ -213,6 +179,21 @@ namespace ms
 	UIElement* UIStateLogin::get(UIElement::Type type)
 	{
 		return elements[type].get();
+	}
+
+	UIElement* UIStateLogin::get_front()
+	{
+		UIElement* front = nullptr;
+
+		for (auto iter : elements)
+		{
+			auto& element = iter.second;
+
+			if (element && element->is_active())
+				front = element.get();
+		}
+
+		return front;
 	}
 
 	UIElement* UIStateLogin::get_front(std::list<UIElement::Type> types)
@@ -245,20 +226,5 @@ namespace ms
 		}
 
 		return nullptr;
-	}
-
-	int64_t UIStateLogin::get_uptime()
-	{
-		return 0;
-	}
-
-	uint16_t UIStateLogin::get_uplevel()
-	{
-		return 0;
-	}
-
-	int64_t UIStateLogin::get_upexp()
-	{
-		return 0;
 	}
 }

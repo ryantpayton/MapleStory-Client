@@ -26,7 +26,7 @@
 
 namespace ms
 {
-	UIOptionMenu::UIOptionMenu() : UIDragElement<PosOPTIONMENU>(Point<int16_t>()), selected_tab(0)
+	UIOptionMenu::UIOptionMenu() : UIDragElement<PosOPTIONMENU>(), selected_tab(0)
 	{
 		nl::node OptionMenu = nl::nx::ui["StatusBar3.img"]["OptionMenu"];
 		nl::node backgrnd = OptionMenu["backgrnd"];

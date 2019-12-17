@@ -26,7 +26,7 @@
 
 namespace ms
 {
-	UIEvent::UIEvent() : UIDragElement<PosEVENT>(Point<int16_t>())
+	UIEvent::UIEvent() : UIDragElement<PosEVENT>()
 	{
 		offset = 0;
 		event_count = 16;

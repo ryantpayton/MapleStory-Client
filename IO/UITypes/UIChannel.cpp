@@ -27,7 +27,7 @@
 
 namespace ms
 {
-	UIChannel::UIChannel() : UIDragElement<PosCHANNEL>(Point<int16_t>())
+	UIChannel::UIChannel() : UIDragElement<PosCHANNEL>()
 	{
 		uint8_t selected_world = 1; // TODO: Need to get current world user is on
 		current_channel = 9; // TODO: Need to get current channel user is on

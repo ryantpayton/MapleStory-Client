@@ -30,7 +30,7 @@
 
 namespace ms
 {
-	UIEquipInventory::UIEquipInventory(const Inventory& invent) : UIDragElement<PosEQINV>(Point<int16_t>(0, 0)), inventory(invent), tab(Buttons::BT_TAB1), hasPendantSlot(false), hasPocketSlot(false)
+	UIEquipInventory::UIEquipInventory(const Inventory& invent) : UIDragElement<PosEQINV>(), inventory(invent), tab(Buttons::BT_TAB1), hasPendantSlot(false), hasPocketSlot(false)
 	{
 		// Column 1
 		iconpositions[Equipslot::Id::RING1] = Point<int16_t>(14, 50);

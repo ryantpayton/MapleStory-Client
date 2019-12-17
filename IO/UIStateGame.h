@@ -46,7 +46,7 @@ namespace ms
 		void doubleclick(Point<int16_t> pos) override;
 		void rightclick(Point<int16_t> pos) override;
 		void send_key(KeyType::Id type, int32_t action, bool pressed, bool escape) override;
-		Cursor::State send_cursor(Cursor::State mst, Point<int16_t> pos) override;
+		Cursor::State send_cursor(Cursor::State cursorstate, Point<int16_t> cursorpos) override;
 		void send_scroll(double yoffset) override;
 		void send_close() override;
 
@@ -76,6 +76,7 @@ namespace ms
 		EnumMap<UIElement::Type, UIElement::UPtr, UIElement::Type::NUM_TYPES> elements;
 		std::list<UIElement::Type> elementorder;
 		UIElement::Type focused;
+		UIElement* dragged;
 
 		EquipTooltip eqtooltip;
 		ItemTooltip ittooltip;

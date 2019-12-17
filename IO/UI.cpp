@@ -390,9 +390,7 @@ namespace ms
 	void UI::focus_textfield(Textfield* tofocus)
 	{
 		if (focusedtextfield)
-		{
 			focusedtextfield->set_state(Textfield::State::NORMAL);
-		}
 
 		focusedtextfield = tofocus;
 	}
@@ -427,9 +425,8 @@ namespace ms
 		state->show_item(parent, item_id);
 	}
 
-	void UI::show_skill(Tooltip::Parent parent, int32_t skill_id,
-		int32_t level, int32_t masterlevel, int64_t expiration) {
-
+	void UI::show_skill(Tooltip::Parent parent, int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration)
+	{
 		state->show_skill(parent, skill_id, level, masterlevel, expiration);
 	}
 

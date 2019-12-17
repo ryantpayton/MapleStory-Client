@@ -269,85 +269,84 @@ namespace ms
 		}
 	}
 
-	Cursor::State UIStateGame::send_cursor(Cursor::State mst, Point<int16_t> pos)
+	Cursor::State UIStateGame::send_cursor(Cursor::State cursorstate, Point<int16_t> cursorpos)
 	{
 		if (draggedicon)
 		{
-			switch (mst)
+			switch (cursorstate)
 			{
 			case Cursor::State::CLICKING:
-				if (drop_icon(*draggedicon, pos))
+				if (drop_icon(*draggedicon, cursorpos))
 				{
 					draggedicon->reset();
 					draggedicon = {};
 				}
 
-				return mst;
+				return cursorstate;
 			default:
 				return Cursor::State::GRABBING;
 			}
 		}
 		else
 		{
-			bool clicked = mst == Cursor::State::CLICKING || mst == Cursor::State::VSCROLLIDLE;
+			bool clicked = cursorstate == Cursor::State::CLICKING || cursorstate == Cursor::State::VSCROLLIDLE;
 
 			if (UIElement* focusedelement = get(focused))
 			{
 				if (focusedelement->is_active())
 				{
-					return focusedelement->send_cursor(clicked, pos);
+					return focusedelement->send_cursor(clicked, cursorpos);
 				}
 				else
 				{
 					focused = UIElement::Type::NONE;
 
-					return mst;
+					return cursorstate;
 				}
 			}
 			else
 			{
-				UIElement* front = nullptr;
-				UIElement::Type fronttype = UIElement::Type::NONE;
-
-				for (auto& type : elementorder)
+				if (!clicked)
 				{
-					auto& element = elements[type];
-					bool found = false;
+					dragged = nullptr;
 
-					if (element && element->is_active())
-					{
-						if (element->is_in_range(pos))
-							found = true;
-						else
-							found = element->remove_cursor(clicked, pos);
+					auto element = get_front(cursorpos);
 
-						if (found)
-						{
-							if (front)
-								element->remove_cursor(false, pos);
-
-							front = element.get();
-							fronttype = type;
-						}
-					}
-				}
-
-				if (fronttype != tooltipparent)
-					clear_tooltip(tooltipparent);
-
-				if (front)
-				{
-					if (clicked)
-					{
-						elementorder.remove(fronttype);
-						elementorder.push_back(fronttype);
-					}
-
-					return front->send_cursor(clicked, pos);
+					if (element != nullptr)
+						return element->send_cursor(clicked, cursorpos);
+					else
+						return Stage::get().send_cursor(clicked, cursorpos);
 				}
 				else
 				{
-					return Stage::get().send_cursor(clicked, pos);
+
+					if (!dragged)
+					{
+						auto drag_element_type = UIElement::Type::NONE;
+
+						for (auto iter = elementorder.rbegin(); iter != elementorder.rend(); ++iter)
+						{
+							auto& element = elements[*iter];
+
+							if (element && element->is_active() && element->is_in_range(cursorpos))
+							{
+								dragged = element.get();
+								drag_element_type = *iter;
+								break;
+							}
+						}
+
+						if (drag_element_type != UIElement::Type::NONE)
+						{
+							elementorder.remove(drag_element_type);
+							elementorder.push_back(drag_element_type);
+						}
+					}
+
+					if (dragged)
+						return dragged->send_cursor(clicked, cursorpos);
+					else
+						return Stage::get().send_cursor(clicked, cursorpos);
 				}
 			}
 		}

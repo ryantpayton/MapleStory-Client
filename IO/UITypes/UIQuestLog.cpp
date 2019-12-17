@@ -24,7 +24,7 @@
 
 namespace ms
 {
-	UIQuestLog::UIQuestLog(const Questlog& ql) : UIDragElement<PosQUEST>(Point<int16_t>(0, 0)), questlog(ql)
+	UIQuestLog::UIQuestLog(const Questlog& ql) : UIDragElement<PosQUEST>(), questlog(ql)
 	{
 		tab = Buttons::TAB0;
 

@@ -26,7 +26,7 @@
 
 namespace ms
 {
-	UINotice::UINotice(std::string message, NoticeType t, Text::Alignment a) : UIDragElement<PosNOTICE>(Point<int16_t>()), type(t), alignment(a)
+	UINotice::UINotice(std::string message, NoticeType t, Text::Alignment a) : UIDragElement<PosNOTICE>(), type(t), alignment(a)
 	{
 		nl::node src = nl::nx::ui["Basic.img"]["Notice6"];
 

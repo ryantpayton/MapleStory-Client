@@ -36,27 +36,28 @@ namespace ms
 		void update() override;
 
 		void doubleclick(Point<int16_t> pos) override;
-		void rightclick(Point<int16_t> pos) override;
+		void rightclick(Point<int16_t>) override {}
 		void send_key(KeyType::Id type, int32_t action, bool pressed, bool escape) override;
 		Cursor::State send_cursor(Cursor::State mst, Point<int16_t> pos) override;
-		void send_scroll(double yoffset) override;
+		void send_scroll(double) override {}
 		void send_close() override;
 
-		void drag_icon(Icon* icon) override;
+		void drag_icon(Icon*) override {}
 		void clear_tooltip(Tooltip::Parent parent) override;
-		void show_equip(Tooltip::Parent parent, int16_t slot) override;
-		void show_item(Tooltip::Parent parent, int32_t itemid) override;
-		void show_skill(Tooltip::Parent parent, int32_t skill_id, int32_t level, int32_t masterlevel, int64_t expiration) override;
+		void show_equip(Tooltip::Parent, int16_t) override {}
+		void show_item(Tooltip::Parent, int32_t) override {}
+		void show_skill(Tooltip::Parent, int32_t, int32_t, int32_t, int64_t) override {}
 		void show_text(Tooltip::Parent parent, std::string text) override;
 
 		Iterator pre_add(UIElement::Type type, bool toggled, bool focused) override;
 		void remove(UIElement::Type type) override;
 		UIElement* get(UIElement::Type type) override;
+		UIElement* get_front();
 		UIElement* get_front(std::list<UIElement::Type> types) override;
 		UIElement* get_front(Point<int16_t> pos) override;
-		int64_t get_uptime() override;
-		uint16_t get_uplevel() override;
-		int64_t get_upexp() override;
+		int64_t get_uptime() override { return 0; }
+		uint16_t get_uplevel() override { return 0; }
+		int64_t get_upexp() override { return 0; }
 
 	private:
 		template <class T, typename...Args>

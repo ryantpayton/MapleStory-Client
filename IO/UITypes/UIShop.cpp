@@ -32,7 +32,7 @@
 
 namespace ms
 {
-	UIShop::UIShop(const CharLook& in_charlook, const Inventory& in_inventory) : UIDragElement<PosSHOP>(Point<int16_t>()), charlook(in_charlook), inventory(in_inventory)
+	UIShop::UIShop(const CharLook& in_charlook, const Inventory& in_inventory) : UIDragElement<PosSHOP>(), charlook(in_charlook), inventory(in_inventory)
 	{
 		nl::node src = nl::nx::ui["UIWindow2.img"]["Shop2"];
 
