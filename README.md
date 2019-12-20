@@ -6,10 +6,11 @@ The client is currently compatible with version 83 servers.
 The client has only been tested with [HeavenMS](https://github.com/ronancpl/HeavenMS).
 
 # Configuration
-The build can be configured by editing the **Journey.h** file. The following options are available:
-- **JOURNEY_USE_CRYPTO**: Use cryptography when communicating for the server.
-- **JOURNEY_USE_XXHASH** : Use xxhash for file check (additional dependency)
-- **JOURNEY_USE_ASIO**: Use Asio for networking (additional dependency)
+The build can be configured by editing the **MapleStory.h** file. The following options are available:
+- **USE_ASIO**: Use Asio for networking (additional dependency)
+- **USE_XXHASH** : Use xxhash for file check (additional dependency)
+- **USE_CRYPTO**: Use cryptography when communicating for the server.
+- **PRINT_WARNINGS**: Print warnings and minor errors to the console.
 
 The default settings can be configured by editing the **Configuration.h** file. These are also generated after a game session in a file called **Settings**. These can be altered in the same way as **Configuration.h**, although, these do not persist if you delete the file, unlike **Configuration.h**.
 
