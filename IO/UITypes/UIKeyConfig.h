@@ -21,6 +21,7 @@
 #include "../KeyAction.h"
 #include "../KeyConfig.h"
 #include "../Keyboard.h"
+#include "../KeyType.h"
 
 #include "../Template/EnumMap.h"
 
@@ -38,35 +39,39 @@ namespace ms
 		void draw(float inter) const override;
 		void update() override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		bool send_icon(const Icon& icon, Point<int16_t> cursorpos) override;
-
-		void remove_key(KeyAction::Id action);
-		void add_key(Point<int16_t> cursorposition, KeyAction::Id action);
+		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
 		void close();
+
+		void stage_mapping(Point<int16_t> cursorposition, Keyboard::Mapping mapping);
+		void unstage_mapping(Keyboard::Mapping mapping);
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
 		void load_keys_pos();
-		void load_icons_pos();
-		void load_keys();
-		void load_icons();
-		void map_keys();
-		void clear();
-		void reset();
-		void save_keys();
+		void load_unbound_actions_pos();
+		void load_key_textures();
+		void load_action_mappings();
+		void load_action_icons();
+		void load_skill_icons();
+
 		void safe_close();
 
-		KeyAction::Id icon_by_position(Point<int16_t> position) const;
+		void save_staged_mappings();
+		void bind_staged_action_keys();
+		void clear();
+		void reset();
+
+		Texture get_skill_texture(int32_t skill_id) const;
 		KeyConfig::Key key_by_position(Point<int16_t> position) const;
-		KeyConfig::Key all_keys_by_position(Point<int16_t> position) const;
-		int32_t get_tempkey(KeyAction::Id action) const;
-		Keyboard::Mapping get_tempkey_mapping(int32_t keycode) const;
-		KeyType::Id get_keytype(KeyAction::Id action) const;
+		KeyAction::Id unbound_action_by_position(Point<int16_t> position) const;
+		Keyboard::Mapping get_staged_mapping(int32_t keycode) const;
+		bool UIKeyConfig::is_action_mapping(Keyboard::Mapping mapping) const;
+		static KeyType::Id get_keytype(KeyAction::Id action);
 
 		enum Buttons : uint16_t
 		{
@@ -78,34 +83,42 @@ namespace ms
 			OK
 		};
 
-		bool dirty;
-
-		class KeyIcon : public Icon::Type
+		class MappingIcon : public Icon::Type
 		{
 		public:
-			KeyIcon(KeyAction::Id keyId);
+			MappingIcon(Keyboard::Mapping);
+			MappingIcon(KeyAction::Id keyId);
 
-			void drop_on_stage() const override {}
-			void drop_on_equips(Equipslot::Id) const override {}
+			void drop_on_stage() const override;
+			void drop_on_equips(Equipslot::Id eqslot) const override {}
 			bool drop_on_items(InventoryType::Id, Equipslot::Id, int16_t, bool) const override { return true; }
 			void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const override;
 			void set_count(int16_t) override {}
 
 		private:
-			KeyAction::Id source;
+			Keyboard::Mapping mapping;
 		};
 
-		nl::node icon;
-		EnumMap<KeyAction::Id, std::unique_ptr<Icon>> icons;
-		EnumMap<KeyAction::Id, Point<int16_t>> icons_pos;
-
-		nl::node key;
-		EnumMap<KeyConfig::Key, Texture> keys;
-		EnumMap<KeyConfig::Key, Point<int16_t>> keys_pos;
+		bool dirty;
 
 		Keyboard* keyboard = nullptr;
-		std::vector<KeyAction::Id> found_actions;
-		std::map<int32_t, Keyboard::Mapping> tempkeys;
+
+		nl::node key;
+		nl::node icon;
+
+		EnumMap<KeyConfig::Key, Texture> key_textures;
+		EnumMap<KeyConfig::Key, Point<int16_t>> keys_pos;
+
+		EnumMap<KeyAction::Id, std::unique_ptr<Icon>> action_icons;
+		EnumMap<KeyAction::Id, Point<int16_t>> unbound_actions_pos;
+
+		std::map<int32_t, std::unique_ptr<Icon>> skill_icons;
+
+		// Used to determine if mapping belongs to predefined action, e.g. attack, pick up, faces, etc.
+		std::vector<Keyboard::Mapping> action_mappings;
+
+		std::vector<KeyAction::Id> bound_actions;
+		std::map<int32_t, Keyboard::Mapping> staged_mappings;
 
 		std::map<int32_t, Keyboard::Mapping> alternate_keys = {
 		   { KeyConfig::Key::ESCAPE, Keyboard::Mapping(KeyType::Id::MENU, KeyAction::Id::MAINMENU) },

@@ -24,6 +24,8 @@
 #include "../Data/JobData.h"
 #include "../Data/SkillData.h"
 #include "../Gameplay/Stage.h"
+#include "../Keyboard.h"
+#include "../KeyType.h"
 #include "../IO/UI.h"
 
 #include "../Net/Packets/PlayerPackets.h"
@@ -36,7 +38,13 @@ namespace ms
 
 	void UISkillbook::SkillIcon::drop_on_bindings(Point<int16_t> cursorposition, bool remove) const
 	{
-		// TODO: Implement this
+		auto keyconfig = UI::get().get_element<UIKeyConfig>();
+		Keyboard::Mapping mapping = Keyboard::Mapping(KeyType::SKILL, skill_id);
+
+		if (remove)
+			keyconfig->unstage_mapping(mapping);
+		else
+			keyconfig->stage_mapping(cursorposition, mapping);
 	}
 
 	UISkillbook::SkillDisplayMeta::SkillDisplayMeta(int32_t i, int32_t l) : id(i), level(l)
