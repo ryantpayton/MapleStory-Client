@@ -53,6 +53,7 @@ namespace ms
 
 		void toggle_qs();
 		void toggle_menu();
+		void remove_menus();
 		bool is_menu_active();
 
 	protected:
@@ -70,7 +71,6 @@ namespace ms
 		void toggle_community();
 		void toggle_character();
 		void toggle_event();
-		void remove_menus();
 		void remove_active_menu(MenuType type);
 
 		Point<int16_t> get_quickslot_pos();

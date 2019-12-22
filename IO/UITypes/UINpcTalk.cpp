@@ -17,7 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UINpcTalk.h"
 
+#include "../UI.h"
+
 #include "../Components/MapleButton.h"
+#include "../Gameplay/Stage.h"
 
 #include "../Net/Packets/NpcInteractionPackets.h"
 
@@ -56,7 +59,7 @@ namespace ms
 		buttons[Buttons::QYES] = std::make_unique<MapleButton>(UtilDlgEx["BtQYes"]);
 		buttons[Buttons::YES] = std::make_unique<MapleButton>(UtilDlgEx["BtYes"]);
 
-		active = false;
+		UI::get().remove_textfield();
 	}
 
 	void UINpcTalk::draw(float inter) const
@@ -193,10 +196,59 @@ namespace ms
 		return TalkType::NONE;
 	}
 
+	// TODO: Move this to GraphicsGL?
+	std::string UINpcTalk::format_text(const std::string& tx, const int32_t& npcid)
+	{
+		std::string formatted_text = tx;
+		size_t begin = formatted_text.find("#p");
+
+		if (begin != std::string::npos)
+		{
+			size_t end = formatted_text.find("#", begin + 1);
+
+			if (end != std::string::npos)
+			{
+				std::string namestr = nl::nx::string["Npc.img"][std::to_string(npcid)]["name"];
+				formatted_text.replace(begin, end - begin, namestr);
+			}
+		}
+
+		begin = formatted_text.find("#h");
+
+		if (begin != std::string::npos)
+		{
+			size_t end = formatted_text.find("#", begin + 1);
+
+			if (end != std::string::npos)
+			{
+				std::string charstr = Stage::get().get_player().get_name();
+				formatted_text.replace(begin, end - begin, charstr);
+			}
+		}
+
+		begin = formatted_text.find("#t");
+
+		if (begin != std::string::npos)
+		{
+			size_t end = formatted_text.find("#", begin + 1);
+
+			if (end != std::string::npos)
+			{
+				size_t b = begin + 2;
+				int32_t itemid = std::stoi(formatted_text.substr(b, end - b));
+				std::string itemname = nl::nx::string["Consume.img"][itemid]["name"];
+
+				formatted_text.replace(begin, end - begin, itemname);
+			}
+		}
+
+		return formatted_text;
+	}
+
 	void UINpcTalk::change_text(int32_t npcid, int8_t msgtype, int16_t, int8_t speakerbyte, const std::string& tx)
 	{
 		type = get_by_value(msgtype);
-		text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::DARKGREY, tx, 320);
+		text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::DARKGREY, format_text(tx, npcid), 320);
 
 		if (speakerbyte == 0)
 		{

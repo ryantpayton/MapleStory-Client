@@ -20,12 +20,12 @@
 #include "../Audio/Audio.h"
 #include "../Character/SkillId.h"
 #include "../IO/Messages.h"
+#include "../IO/UI.h"
 #include "../Util/Misc.h"
 
-#include "../Net/Packets/GameplayPackets.h"
+#include "../IO/UITypes/UIStatusbar.h"
 #include "../Net/Packets/AttackAndSkillPackets.h"
-
-#include <iostream>
+#include "../Net/Packets/GameplayPackets.h"
 
 #include <nlnx/nx.hpp>
 
@@ -191,6 +191,8 @@ namespace ms
 			CharStats& stats = Stage::get().get_player().get_stats();
 
 			stats.set_mapid(warpinfo.mapid);
+
+			Sound(Sound::Name::PORTAL).play();
 		}
 	}
 
@@ -268,6 +270,20 @@ namespace ms
 
 	Cursor::State Stage::send_cursor(bool pressed, Point<int16_t> position)
 	{
+		auto statusbar = UI::get().get_element<UIStatusbar>();
+
+		if (statusbar && statusbar->is_menu_active())
+		{
+			if (pressed)
+			{
+				statusbar->remove_menus();
+
+				return npcs.send_cursor(pressed, position, camera.position());
+			}
+
+			return statusbar->send_cursor(pressed, position);
+		}
+
 		return npcs.send_cursor(pressed, position, camera.position());
 	}
 

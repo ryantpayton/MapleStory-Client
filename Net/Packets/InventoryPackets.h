@@ -85,6 +85,8 @@ namespace ms
 	public:
 		UseItemPacket(int16_t slot, int32_t itemid) : OutPacket(OutPacket::Opcode::USE_ITEM)
 		{
+			Sound(itemid).play();
+
 			write_time();
 			write_short(slot);
 			write_int(itemid);

@@ -167,17 +167,19 @@ namespace ms
 	{
 		UIElement::draw_sprites(inter);
 
-		int16_t chattop = getchattop(chatopen);
-
 		if (chatopen)
 		{
-			chatspace[0].draw(position + Point<int16_t>(0, chattop));
+			int16_t chattop = getchattop(chatopen);
+
+			auto pos_adj = chatfieldopen ? Point<int16_t>(0, 0) : Point<int16_t>(0, 28);
+
+			chatspace[0].draw(position + Point<int16_t>(0, chattop) + pos_adj);
 
 			if (chatrows > 1)
-				chatspace[1].draw(DrawArgument(position + Point<int16_t>(0, -28), Point<int16_t>(0, 28 + chattop)));
+				chatspace[1].draw(DrawArgument(position + Point<int16_t>(0, -28) + pos_adj, Point<int16_t>(0, 28 + chattop)));
 
-			chatspace[2].draw(position + Point<int16_t>(0, -28));
-			chatspace[3].draw(position + Point<int16_t>(0, -15 + chattop));
+			chatspace[2].draw(position + Point<int16_t>(0, -28) + pos_adj);
+			chatspace[3].draw(position + Point<int16_t>(0, -15 + chattop) + pos_adj);
 
 			//slider.draw(position);
 
@@ -198,18 +200,20 @@ namespace ms
 					textheight--;
 				}
 
-				rowtexts.at(rowid).draw(position + Point<int16_t>(9, getchattop(chatopen) - yshift - 21));
+				rowtexts.at(rowid).draw(position + Point<int16_t>(9, getchattop(chatopen) - yshift - 21) + pos_adj);
 			}
 		}
 		else
 		{
-			chatspace[0].draw(position + Point<int16_t>(0, -1));
-			chatspace[1].draw(position + Point<int16_t>(0, -1));
-			chatspace[2].draw(position);
-			chatspace[3].draw(position + Point<int16_t>(0, -16));
+			auto pos_adj = chatfieldopen ? Point<int16_t>(0, -28) : Point<int16_t>(0, 0);
+
+			chatspace[0].draw(position + Point<int16_t>(0, -1) + pos_adj);
+			chatspace[1].draw(position + Point<int16_t>(0, -1) + pos_adj);
+			chatspace[2].draw(position + pos_adj);
+			chatspace[3].draw(position + Point<int16_t>(0, -16) + pos_adj);
 
 			if (rowtexts.count(rowmax))
-				rowtexts.at(rowmax).draw(position + Point<int16_t>(9, -6));
+				rowtexts.at(rowmax).draw(position + Point<int16_t>(9, -6) + pos_adj);
 		}
 
 		if (chatfieldopen)
@@ -222,19 +226,25 @@ namespace ms
 		UIElement::draw_buttons(inter);
 
 		if (chatopen)
+		{
+			auto pos_adj = chatopen && !chatfieldopen ? Point<int16_t>(0, 28) : Point<int16_t>(0, 0);
+
 			for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
-				chattab_text[ChatTab::CHT_ALL + i].draw(position + Point<int16_t>(chattab_x + (i * chattab_span) + 25, chattab_y - 3));
+				chattab_text[ChatTab::CHT_ALL + i].draw(position + Point<int16_t>(chattab_x + (i * chattab_span) + 25, chattab_y - 3) + pos_adj);
+		}
 	}
 
 	void UIChatbar::update()
 	{
 		UIElement::update();
 
-		for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
-			buttons[BT_TAB_0 + i]->set_position(Point<int16_t>(chattab_x + (i * chattab_span), chattab_y));
+		auto pos_adj = chatopen && !chatfieldopen ? Point<int16_t>(0, 28) : Point<int16_t>(0, 0);
 
-		buttons[Buttons::BT_TAB_0 + ChatTab::NUM_CHATTAB]->set_position(Point<int16_t>(chattab_x + (ChatTab::NUM_CHATTAB * chattab_span), chattab_y));
-		buttons[Buttons::BT_CLOSECHAT]->set_position(closechat + Point<int16_t>(0, chattab_y));
+		for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
+			buttons[BT_TAB_0 + i]->set_position(Point<int16_t>(chattab_x + (i * chattab_span), chattab_y) + pos_adj);
+
+		buttons[Buttons::BT_TAB_0 + ChatTab::NUM_CHATTAB]->set_position(Point<int16_t>(chattab_x + (ChatTab::NUM_CHATTAB * chattab_span), chattab_y) + pos_adj);
+		buttons[Buttons::BT_CLOSECHAT]->set_position(closechat + Point<int16_t>(0, chattab_y) + pos_adj);
 
 		chatfield.update(position);
 
@@ -460,6 +470,10 @@ namespace ms
 			return;
 
 		chatopen = chat_open;
+
+		if (!chatopen && chatfieldopen)
+			toggle_chatfield();
+
 		buttons[Buttons::BT_OPENCHAT]->set_active(!chat_open);
 		buttons[Buttons::BT_CLOSECHAT]->set_active(chat_open);
 
@@ -509,6 +523,11 @@ namespace ms
 	bool UIChatbar::is_chatopen()
 	{
 		return chatopen;
+	}
+
+	bool UIChatbar::is_chatfieldopen()
+	{
+		return chatfieldopen;
 	}
 
 	Button::State UIChatbar::button_pressed(uint16_t buttonid)

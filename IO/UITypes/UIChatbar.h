@@ -59,6 +59,7 @@ namespace ms
 		void toggle_chatfield();
 		void toggle_chatfield(bool chatfield_open);
 		bool is_chatopen();
+		bool is_chatfieldopen();
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;

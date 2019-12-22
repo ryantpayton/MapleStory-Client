@@ -142,14 +142,8 @@ namespace ms
 		InventoryType::Id type = InventoryType::by_item_id(itemid);
 
 		if (int16_t slot = inventory.find_item(type, itemid))
-		{
-			switch (type)
-			{
-			case InventoryType::Id::USE:
+			if (type == InventoryType::Id::USE)
 				UseItemPacket(slot, itemid).dispatch();
-				break;
-			}
-		}
 	}
 
 	void Player::draw(Layer::Id layer, double viewx, double viewy, float alpha) const

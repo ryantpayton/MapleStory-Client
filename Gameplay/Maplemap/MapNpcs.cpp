@@ -68,26 +68,26 @@ namespace ms
 
 	Cursor::State MapNpcs::send_cursor(bool pressed, Point<int16_t> position, Point<int16_t> viewpos)
 	{
-		for (auto& mmo : npcs)
+		for (auto& map_object : npcs)
 		{
-			Npc* npc = static_cast<Npc*>(mmo.second.get());
+			Npc* npc = static_cast<Npc*>(map_object.second.get());
 
 			if (npc && npc->is_active() && npc->inrange(position, viewpos))
 			{
 				if (pressed)
 				{
-					// TODO: try finding dialogue first
+					// TODO: Try finding dialog first
 					TalkToNPCPacket(npc->get_oid()).dispatch();
 
-					return Cursor::IDLE;
+					return Cursor::State::IDLE;
 				}
 				else
 				{
-					return Cursor::CANCLICK;
+					return Cursor::State::CANCLICK;
 				}
 			}
 		}
 
-		return Cursor::IDLE;
+		return Cursor::State::IDLE;
 	}
 }

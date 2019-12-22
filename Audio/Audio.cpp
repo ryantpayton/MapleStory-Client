@@ -32,6 +32,26 @@ namespace ms
 		id = soundids[name];
 	}
 
+	Sound::Sound(int32_t itemid)
+	{
+		auto fitemid = format_id(itemid);
+
+		if (itemids.find(fitemid) != itemids.end())
+		{
+			id = itemids.at(fitemid);
+		}
+		else
+		{
+			auto pid = (10000 * (itemid / 10000));
+			auto fpid = format_id(pid);
+
+			if (itemids.find(fpid) != itemids.end())
+				id = itemids.at(fpid);
+			else
+				id = itemids.at("02000000");
+		}
+	}
+
 	Sound::Sound(nl::node src)
 	{
 		id = add_sound(src);
@@ -59,7 +79,6 @@ namespace ms
 		add_sound(Sound::Name::BUTTONOVER, uisrc["BtMouseOver"]);
 		add_sound(Sound::Name::CHARSELECT, uisrc["CharSelect"]);
 		add_sound(Sound::Name::DLGNOTICE, uisrc["DlgNotice"]);
-		add_sound(Sound::Name::SELECTCHAR, uisrc["CharSelect"]);
 		add_sound(Sound::Name::MENUDOWN, uisrc["MenuDown"]);
 		add_sound(Sound::Name::MENUUP, uisrc["MenuUp"]);
 		add_sound(Sound::Name::RACESELECT, uisrc["RaceSelect"]);
@@ -80,6 +99,11 @@ namespace ms
 		add_sound(Sound::Name::PORTAL, gamesrc["Portal"]);
 		add_sound(Sound::Name::LEVELUP, gamesrc["LevelUp"]);
 		add_sound(Sound::Name::TOMBSTONE, gamesrc["Tombstone"]);
+
+		nl::node itemsrc = nl::nx::sound["Item.img"];
+
+		for (auto node : itemsrc)
+			add_sound(node.name(), node["Use"]);
 
 		uint8_t volume = Setting<SFXVolume>::get().load();
 
@@ -118,6 +142,9 @@ namespace ms
 		{
 			size_t id = ad.id();
 
+			if (samples.find(id) != samples.end())
+				return 0;
+
 			samples[id] = BASS_SampleLoad(true, data, 82, (DWORD)ad.length(), 4, BASS_SAMPLE_OVER_POS);
 
 			return id;
@@ -136,8 +163,25 @@ namespace ms
 			soundids[name] = id;
 	}
 
+	void Sound::add_sound(std::string itemid, nl::node src)
+	{
+		size_t id = add_sound(src);
+
+		if (id)
+			itemids[itemid] = id;
+	}
+
+	std::string Sound::format_id(int32_t itemid)
+	{
+		std::string strid = std::to_string(itemid);
+		strid.insert(0, 8 - strid.size(), '0');
+
+		return strid;
+	}
+
 	std::unordered_map<size_t, uint64_t> Sound::samples;
 	EnumMap<Sound::Name, size_t> Sound::soundids;
+	std::unordered_map<std::string, size_t> Sound::itemids;
 
 	Music::Music(std::string p)
 	{

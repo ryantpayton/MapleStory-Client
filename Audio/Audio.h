@@ -52,7 +52,6 @@ namespace ms
 			WORLDMAPCLOSE,
 
 			// Login
-			SELECTCHAR,
 			GAMESTART,
 
 			// Game
@@ -66,6 +65,7 @@ namespace ms
 		};
 
 		Sound(Name name);
+		Sound(int32_t itemid);
 		Sound(nl::node src);
 		Sound();
 
@@ -82,9 +82,13 @@ namespace ms
 
 		static size_t add_sound(nl::node src);
 		static void add_sound(Sound::Name name, nl::node src);
+		static void add_sound(std::string itemid, nl::node src);
+
+		static std::string format_id(int32_t itemid);
 
 		static std::unordered_map<size_t, uint64_t> samples;
 		static EnumMap<Name, size_t> soundids;
+		static std::unordered_map<std::string, size_t> itemids;
 	};
 
 	class Music

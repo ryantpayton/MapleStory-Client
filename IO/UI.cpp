@@ -38,6 +38,7 @@
 #include "../IO/UITypes/UIKeyConfig.h"
 #include "../IO/UITypes/UIOptionMenu.h"
 #include "../IO/UITypes/UIQuit.h"
+#include "../IO/UITypes/UINpcTalk.h"
 
 namespace ms
 {
@@ -55,18 +56,18 @@ namespace ms
 
 	void UI::draw(float alpha) const
 	{
-		scrollingnotice.draw(alpha);
-
 		state->draw(alpha, cursor.get_position());
+
+		scrollingnotice.draw(alpha);
 
 		cursor.draw(alpha);
 	}
 
 	void UI::update()
 	{
-		scrollingnotice.update();
-
 		state->update();
+
+		scrollingnotice.update();
 
 		cursor.update();
 	}
@@ -248,15 +249,21 @@ namespace ms
 			auto joypad = UI::get().get_element<UIJoypad>();
 			auto rank = UI::get().get_element<UIRank>();
 			auto quit = UI::get().get_element<UIQuit>();
+			auto npctalk = UI::get().get_element<UINpcTalk>();
 			//auto report = UI::get().get_element<UIReport>();
 			//auto whisper = UI::get().get_element<UIWhisper>();
 
-			if (statusbar && statusbar->is_menu_active())
+			if (npctalk && npctalk->is_active())
+			{
+				npctalk->send_key(mapping.action, pressed, escape);
+				sent = true;
+			}
+			else if (statusbar && statusbar->is_menu_active())
 			{
 				statusbar->send_key(mapping.action, pressed, escape);
 				sent = true;
 			}
-			else if (channel && channel->is_active())
+			else if (channel && channel->is_active() && mapping.action != KeyAction::Id::CHANGECHANNEL)
 			{
 				channel->send_key(mapping.action, pressed, escape);
 				sent = true;
@@ -397,6 +404,9 @@ namespace ms
 
 	void UI::remove_textfield()
 	{
+		if (focusedtextfield)
+			focusedtextfield->set_state(Textfield::State::NORMAL);
+
 		focusedtextfield = {};
 	}
 

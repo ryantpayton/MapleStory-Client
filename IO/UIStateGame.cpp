@@ -42,7 +42,7 @@
 
 namespace ms
 {
-	UIStateGame::UIStateGame() : stats(Stage::get().get_player().get_stats())
+	UIStateGame::UIStateGame() : stats(Stage::get().get_player().get_stats()), dragged(nullptr)
 	{
 		focused = UIElement::Type::NONE;
 		tooltipparent = Tooltip::Parent::NONE;
@@ -55,7 +55,6 @@ namespace ms
 		emplace<UIChatbar>();
 		emplace<UIMiniMap>(stats);
 		emplace<UIBuffList>();
-		emplace<UINpcTalk>();
 		emplace<UIShop>(look, inventory);
 
 		VWIDTH = Constants::Constants::get().get_viewwidth();
@@ -132,140 +131,155 @@ namespace ms
 
 	void UIStateGame::send_key(KeyType::Id type, int32_t action, bool pressed, bool escape)
 	{
-		switch (type)
+		if (UIElement* focusedelement = get(focused))
 		{
-		case KeyType::Id::MENU:
-			if (pressed)
+			if (focusedelement->is_active())
 			{
-				switch (action)
-				{
-				case KeyAction::Id::EQUIPMENT:
-					emplace<UIEquipInventory>(
-						Stage::get().get_player().get_inventory()
-						);
-					break;
-				case KeyAction::Id::ITEMS:
-					emplace<UIItemInventory>(
-						Stage::get().get_player().get_inventory()
-						);
-					break;
-				case KeyAction::Id::STATS:
-					emplace<UIStatsinfo>(
-						Stage::get().get_player().get_stats()
-						);
-					break;
-				case KeyAction::Id::SKILLS:
-					emplace<UISkillbook>(
-						Stage::get().get_player().get_stats(),
-						Stage::get().get_player().get_skills()
-						);
-					break;
-				case KeyAction::Id::FRIENDS:
-				case KeyAction::Id::PARTY:
-				case KeyAction::Id::BOSSPARTY:
-				{
-					UIUserList::Tab tab;
+				return focusedelement->send_key(action, pressed, escape);
+			}
+			else
+			{
+				focused = UIElement::NONE;
 
+				return;
+			}
+		}
+		else
+		{
+			switch (type)
+			{
+			case KeyType::Id::MENU:
+				if (pressed)
+				{
 					switch (action)
 					{
+					case KeyAction::Id::EQUIPMENT:
+						emplace<UIEquipInventory>(
+							Stage::get().get_player().get_inventory()
+							);
+						break;
+					case KeyAction::Id::ITEMS:
+						emplace<UIItemInventory>(
+							Stage::get().get_player().get_inventory()
+							);
+						break;
+					case KeyAction::Id::STATS:
+						emplace<UIStatsinfo>(
+							Stage::get().get_player().get_stats()
+							);
+						break;
+					case KeyAction::Id::SKILLS:
+						emplace<UISkillbook>(
+							Stage::get().get_player().get_stats(),
+							Stage::get().get_player().get_skills()
+							);
+						break;
 					case KeyAction::Id::FRIENDS:
-						tab = UIUserList::Tab::FRIEND;
-						break;
 					case KeyAction::Id::PARTY:
-						tab = UIUserList::Tab::PARTY;
-						break;
 					case KeyAction::Id::BOSSPARTY:
-						tab = UIUserList::Tab::BOSS;
-						break;
-					}
-
-					auto userlist = UI::get().get_element<UIUserList>();
-
-					if (userlist && userlist->get_tab() != tab && userlist->is_active())
 					{
-						userlist->change_tab(tab);
-					}
-					else
-					{
-						emplace<UIUserList>(tab);
+						UIUserList::Tab tab;
+
+						switch (action)
+						{
+						case KeyAction::Id::FRIENDS:
+							tab = UIUserList::Tab::FRIEND;
+							break;
+						case KeyAction::Id::PARTY:
+							tab = UIUserList::Tab::PARTY;
+							break;
+						case KeyAction::Id::BOSSPARTY:
+							tab = UIUserList::Tab::BOSS;
+							break;
+						}
+
+						auto userlist = UI::get().get_element<UIUserList>();
 
 						if (userlist && userlist->get_tab() != tab && userlist->is_active())
+						{
 							userlist->change_tab(tab);
+						}
+						else
+						{
+							emplace<UIUserList>(tab);
+
+							if (userlist && userlist->get_tab() != tab && userlist->is_active())
+								userlist->change_tab(tab);
+						}
+					}
+					break;
+					case KeyAction::Id::WORLDMAP:
+						emplace<UIWorldMap>();
+						break;
+					case KeyAction::Id::MAPLECHAT:
+					{
+						auto chat = UI::get().get_element<UIChat>();
+
+						if (!chat || !chat->is_active())
+							emplace<UIChat>();
+					}
+					break;
+					case KeyAction::Id::MINIMAP:
+						if (auto minimap = UI::get().get_element<UIMiniMap>())
+							minimap->send_key(action, pressed, escape);
+
+						break;
+					case KeyAction::Id::QUESTLOG:
+						emplace<UIQuestLog>(
+							Stage::get().get_player().get_quests()
+							);
+						break;
+					case KeyAction::Id::MENU:
+						if (auto statusbar = UI::get().get_element<UIStatusbar>())
+							statusbar->toggle_menu();
+
+						break;
+					case KeyAction::Id::QUICKSLOTS:
+						if (auto statusbar = UI::get().get_element<UIStatusbar>())
+							statusbar->toggle_qs();
+
+						break;
+					case KeyAction::Id::TOGGLECHAT:
+						if (auto chatbar = UI::get().get_element<UIChatbar>())
+							if (!chatbar->is_chatfieldopen())
+								chatbar->toggle_chat();
+
+						break;
+					case KeyAction::Id::KEYBINDINGS:
+					{
+						auto keyconfig = UI::get().get_element<UIKeyConfig>();
+
+						if (!keyconfig || !keyconfig->is_active())
+							emplace<UIKeyConfig>();
+						else if (keyconfig && keyconfig->is_active())
+							keyconfig->close();
+
+						break;
+					}
+					case KeyAction::Id::MAINMENU:
+						if (auto statusbar = UI::get().get_element<UIStatusbar>())
+							statusbar->send_key(action, pressed, escape);
+
+						break;
+					case KeyAction::Id::EVENT:
+						emplace<UIEvent>();
+						break;
+					case KeyAction::Id::CHANGECHANNEL:
+						emplace<UIChannel>();
+						break;
+					default:
+						std::cout << "Action (" << action << ") not handled!" << std::endl;
+						break;
 					}
 				}
 				break;
-				case KeyAction::Id::WORLDMAP:
-					emplace<UIWorldMap>();
-					break;
-				case KeyAction::Id::MAPLECHAT:
-				{
-					auto chat = UI::get().get_element<UIChat>();
-
-					if (!chat)
-						emplace<UIChat>();
-					else if (chat && !chat->is_active())
-						chat->makeactive();
-				}
+			case KeyType::Id::ACTION:
+			case KeyType::Id::FACE:
+			case KeyType::Id::ITEM:
+			case KeyType::Id::SKILL:
+				Stage::get().send_key(type, action, pressed);
 				break;
-				case KeyAction::Id::MINIMAP:
-					if (auto minimap = UI::get().get_element<UIMiniMap>())
-						minimap->send_key(action, pressed, escape);
-
-					break;
-				case KeyAction::Id::QUESTLOG:
-					emplace<UIQuestLog>(
-						Stage::get().get_player().get_quests()
-						);
-					break;
-				case KeyAction::Id::MENU:
-					if (auto statusbar = UI::get().get_element<UIStatusbar>())
-						statusbar->toggle_menu();
-
-					break;
-				case KeyAction::Id::QUICKSLOTS:
-					if (auto statusbar = UI::get().get_element<UIStatusbar>())
-						statusbar->toggle_qs();
-
-					break;
-				case KeyAction::Id::TOGGLECHAT:
-					if (auto chatbar = UI::get().get_element<UIChatbar>())
-						chatbar->toggle_chat();
-
-					break;
-				case KeyAction::Id::KEYBINDINGS:
-				{
-					auto keyconfig = UI::get().get_element<UIKeyConfig>();
-
-					if (!keyconfig || !keyconfig->is_active())
-						emplace<UIKeyConfig>();
-					else if (keyconfig && keyconfig->is_active())
-						keyconfig->close();
-
-					break;
-				}
-				case KeyAction::Id::MAINMENU:
-					if (auto statusbar = UI::get().get_element<UIStatusbar>())
-						statusbar->send_key(action, pressed, escape);
-
-					break;
-				case KeyAction::Id::EVENT:
-					emplace<UIEvent>();
-					break;
-				case KeyAction::Id::CHANGECHANNEL:
-					emplace<UIChannel>();
-					break;
-				default:
-					std::cout << "Action (" << action << ") not handled!" << std::endl;
-					break;
-				}
 			}
-			break;
-		case KeyType::Id::ACTION:
-		case KeyType::Id::FACE:
-		case KeyType::Id::ITEM:
-		case KeyType::Id::SKILL:
-			Stage::get().send_key(type, action, pressed);
-			break;
 		}
 	}
 
@@ -450,7 +464,10 @@ namespace ms
 
 			if (std::find(silent_types.begin(), silent_types.end(), T::TYPE) == silent_types.end())
 			{
-				Sound(Sound::Name::MENUUP).play();
+				if (T::TYPE == UIElement::Type::WORLDMAP)
+					Sound(Sound::Name::WORLDMAPOPEN).play();
+				else
+					Sound(Sound::Name::MENUUP).play();
 
 				UI::get().send_cursor(false);
 			}

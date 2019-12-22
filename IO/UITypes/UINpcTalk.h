@@ -43,21 +43,23 @@ namespace ms
 		};
 
 		static constexpr Type TYPE = UIElement::Type::NPCTALK;
-		static constexpr bool FOCUSED = false;
-		static constexpr bool TOGGLED = true;
+		static constexpr bool FOCUSED = true;
+		static constexpr bool TOGGLED = false;
 
 		UINpcTalk();
 
 		void draw(float inter) const override;
 
+		void send_key(int32_t keycode, bool pressed, bool escape) override;
+
 		void change_text(int32_t npcid, int8_t msgtype, int16_t style, int8_t speaker, const std::string& text);
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
 	private:
 		TalkType get_by_value(int8_t value);
+		std::string format_text(const std::string& tx, const int32_t& npcid);
 
 		enum Buttons
 		{
