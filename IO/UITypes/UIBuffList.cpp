@@ -70,8 +70,14 @@ namespace ms
 		return duration < Constants::TIMESTEP;
 	}
 
-	// TODO: This needs a dimension set on it in order to cancel active buffs and hover over icons
-	UIBuffList::UIBuffList() : UIElement(Point<int16_t>(750, 40), Point<int16_t>(0, 0)) {}
+	UIBuffList::UIBuffList()
+	{
+		auto height = Constants::Constants::get().get_viewheight();
+		auto width = Constants::Constants::get().get_viewwidth();
+
+		position = Point<int16_t>(width - 35, 55);
+		dimension = Point<int16_t>(position.x(), 32);
+	}
 
 	void UIBuffList::draw(float alpha) const
 	{
