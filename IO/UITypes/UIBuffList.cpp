@@ -72,11 +72,10 @@ namespace ms
 
 	UIBuffList::UIBuffList()
 	{
-		auto height = Constants::Constants::get().get_viewheight();
-		auto width = Constants::Constants::get().get_viewwidth();
+		int16_t height = Constants::Constants::get().get_viewheight();
+		int16_t width = Constants::Constants::get().get_viewwidth();
 
-		position = Point<int16_t>(width - 35, 55);
-		dimension = Point<int16_t>(position.x(), 32);
+		update_screen(width, height);
 	}
 
 	void UIBuffList::draw(float alpha) const
@@ -101,6 +100,12 @@ namespace ms
 			else
 				iter++;
 		}
+	}
+
+	void UIBuffList::update_screen(int16_t new_width, int16_t)
+	{
+		position = Point<int16_t>(new_width - 35, 55);
+		dimension = Point<int16_t>(position.x(), 32);
 	}
 
 	Cursor::State UIBuffList::send_cursor(bool pressed, Point<int16_t> cursorposition)
