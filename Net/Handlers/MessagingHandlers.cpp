@@ -40,7 +40,11 @@ namespace ms
 		{
 			int8_t mode2 = recv.read_byte();
 
-			if (mode2 == 0)
+			if (mode2 == -1)
+			{
+				show_status(Color::Name::WHITE, "You can't get anymore items.");
+			}
+			else if (mode2 == 0)
 			{
 				int32_t itemid = recv.read_int();
 				int32_t qty = recv.read_int();
