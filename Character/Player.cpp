@@ -174,7 +174,7 @@ namespace ms
 			}
 		}
 
-		uint8_t stancebyte = flip ? state : state + 1;
+		uint8_t stancebyte = facing_right ? state : state + 1;
 		Movement newmove(phobj, stancebyte);
 		bool needupdate = lastmove.hasmoved(newmove);
 
@@ -264,7 +264,8 @@ namespace ms
 		}
 		else
 		{
-			Weapon::Type weapontype = get_weapontype();
+			Weapon::Type weapontype; 
+			weapontype = get_weapontype();
 
 			switch (weapontype)
 			{
@@ -305,7 +306,7 @@ namespace ms
 		attack.range = stats.get_range();
 		attack.bullet = inventory.get_bulletid();
 		attack.origin = get_position();
-		attack.toleft = !flip;
+		attack.toleft = !facing_right;
 		attack.speed = get_integer_attackspeed();
 
 		return attack;

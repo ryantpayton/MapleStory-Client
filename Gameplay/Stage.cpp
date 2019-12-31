@@ -31,7 +31,7 @@
 
 namespace ms
 {
-	Stage::Stage() : combat(player, chars, mobs)
+	Stage::Stage() : combat(player, chars, mobs, reactors)
 	{
 		state = State::INACTIVE;
 	}

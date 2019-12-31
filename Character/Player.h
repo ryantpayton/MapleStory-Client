@@ -171,6 +171,7 @@ namespace ms
 		Randomizer randomizer;
 
 		Optional<const Ladder> ladder;
+
 		bool underwater;
 	};
 }

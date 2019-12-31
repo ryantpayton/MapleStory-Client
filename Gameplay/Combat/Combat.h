@@ -23,6 +23,7 @@
 
 #include "../Maplemap/MapChars.h"
 #include "../Maplemap/MapMobs.h"
+#include "../Maplemap/MapReactors.h"
 #include "../Character/Player.h"
 #include "../Template/TimedQueue.h"
 
@@ -31,7 +32,7 @@ namespace ms
 	class Combat
 	{
 	public:
-		Combat(Player& player, MapChars& chars, MapMobs& mobs);
+		Combat(Player& player, MapChars& chars, MapMobs& mobs, MapReactors& reactors);
 
 		// Draw bullets, damage numbers etc.
 		void draw(double viewx, double viewy, float alpha) const;
@@ -68,6 +69,7 @@ namespace ms
 
 		void apply_attack(const AttackResult& attack);
 		void apply_move(const SpecialMove& move);
+		std::vector<int32_t> find_closest(MapObjects *objs, Rectangle<int16_t> range, Point<int16_t> origin, uint8_t objcount, bool use_mobs) const;
 		void apply_use_movement(const SpecialMove& move);
 		void apply_result_movement(const SpecialMove& move, const AttackResult& result);
 		void apply_rush(const AttackResult& result);
@@ -80,6 +82,7 @@ namespace ms
 		Player& player;
 		MapChars& chars;
 		MapMobs& mobs;
+		MapReactors& reactors;
 
 		std::unordered_map<int32_t, Skill> skills;
 		RegularAttack regularattack;

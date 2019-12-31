@@ -18,6 +18,7 @@
 #pragma once
 
 #include "MapObjects.h"
+#include "Reactor.h"
 
 #include "../Spawn.h"
 
@@ -34,12 +35,15 @@ namespace ms
 		// Update all reactors.
 		void update(const Physics& physics);
 
+		// Trigger a reactor.
+		void trigger(int32_t oid, int8_t state);
 		// Spawn a new reactor.
 		void spawn(ReactorSpawn&& spawn);
 		// Remove a reactor.
 		void remove(int32_t oid, int8_t state, Point<int16_t> position);
 		// Remove all reactors.
 		void clear();
+		MapObjects* MapReactors::get_reactors();
 
 	private:
 		MapObjects reactors;

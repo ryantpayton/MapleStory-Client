@@ -25,6 +25,9 @@ namespace ms
 		reactors.draw(layer, viewx, viewy, alpha);
 	}
 
+	/*
+	 * Spawns all reactors to map with proper footholds.
+	 */
 	void MapReactors::update(const Physics& physics)
 	{
 		for (; !spawns.empty(); spawns.pop())
@@ -42,6 +45,12 @@ namespace ms
 		reactors.update(physics);
 	}
 
+	void MapReactors::trigger(int32_t oid, int8_t state)
+	{
+		if (Optional<Reactor> reactor = reactors.get(oid)) {
+			reactor->set_state(state);
+		}
+	}
 	void MapReactors::spawn(ReactorSpawn&& spawn)
 	{
 		spawns.emplace(std::move(spawn));
@@ -56,5 +65,10 @@ namespace ms
 	void MapReactors::clear()
 	{
 		reactors.clear();
+	}
+
+	MapObjects* MapReactors::get_reactors()
+	{
+		return &reactors;
 	}
 }
