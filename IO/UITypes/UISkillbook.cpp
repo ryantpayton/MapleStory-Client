@@ -133,8 +133,8 @@ namespace ms
 
 		buttons[Buttons::BT_SPDOWN]->set_state(Button::State::DISABLED);
 
-		sp_before = Charset(skillPoint["num"], Charset::Alignment::LEFT);
-		sp_after = Charset(skillPoint["num"], Charset::Alignment::LEFT);
+		sp_before = Charset(skillPoint["num"], Charset::Alignment::RIGHT);
+		sp_after = Charset(skillPoint["num"], Charset::Alignment::RIGHT);
 		sp_used = Text(Text::Font::A12B, Text::Alignment::RIGHT, Color::Name::WHITE);
 		sp_remaining = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::SUPERNOVA);
 		sp_name = Text(Text::Font::A12B, Text::Alignment::CENTER, Color::Name::WHITE);
@@ -215,7 +215,7 @@ namespace ms
 
 		bookicon.draw(position + Point<int16_t>(11, 85));
 		booktext.draw(position + Point<int16_t>(173, 59));
-		splabel.draw(position + Point<int16_t>(303, 23));
+		splabel.draw(position + Point<int16_t>(304, 23));
 
 		Point<int16_t> skill_position_l = position + SKILL_OFFSET + Point<int16_t>(-1, 0);
 		Point<int16_t> skill_position_r = position + SKILL_OFFSET + Point<int16_t>(-1 + ROW_WIDTH, 0);
@@ -275,14 +275,14 @@ namespace ms
 			sp_backgrnd2.draw(sp_pos);
 			sp_backgrnd3.draw(sp_pos);
 
-			Point<int16_t> sp_level_pos = sp_pos + Point<int16_t>(54, 149);
+			Point<int16_t> sp_level_pos = sp_pos + Point<int16_t>(78, 149);
 
 			sp_before.draw(sp_before_text, 12, sp_level_pos);
-			sp_after.draw(sp_after_text, 11, sp_level_pos + Point<int16_t>(80, 0));
+			sp_after.draw(sp_after_text, 11, sp_level_pos + Point<int16_t>(78, 0));
 			sp_used.draw(sp_pos + Point<int16_t>(82, 87));
 			sp_remaining.draw(sp_pos + Point<int16_t>(76, 65));
 			sp_name.draw(sp_pos + Point<int16_t>(97, 35));
-			sp_skill.draw(sp_pos + Point<int16_t>(13, 63));
+			sp_skill.draw(sp_pos + Point<int16_t>(13, 31));
 		}
 
 		UIElement::draw_buttons(alpha);
@@ -621,6 +621,7 @@ namespace ms
 		}
 
 		change_offset(offset);
+		set_skillpoint(false);
 	}
 
 	void UISkillbook::change_tab(uint16_t new_tab)
@@ -750,9 +751,18 @@ namespace ms
 		sp_id = id;
 		sp_masterlevel = skillData.get_masterlevel();
 
-		buttons[Buttons::BT_SPDOWN]->set_state(Button::State::DISABLED);
-		buttons[Buttons::BT_SPMAX]->set_state(Button::State::NORMAL);
-		buttons[Buttons::BT_SPUP]->set_state(Button::State::NORMAL);
+		if (sp_masterlevel == 1)
+		{
+			buttons[Buttons::BT_SPDOWN]->set_state(Button::State::DISABLED);
+			buttons[Buttons::BT_SPMAX]->set_state(Button::State::DISABLED);
+			buttons[Buttons::BT_SPUP]->set_state(Button::State::DISABLED);
+		}
+		else
+		{
+			buttons[Buttons::BT_SPDOWN]->set_state(Button::State::DISABLED);
+			buttons[Buttons::BT_SPMAX]->set_state(Button::State::NORMAL);
+			buttons[Buttons::BT_SPUP]->set_state(Button::State::NORMAL);
+		}
 
 		if (!sp_enabled)
 			set_skillpoint(true);
@@ -847,7 +857,7 @@ namespace ms
 
 		if (macro_enabled)
 			dimension = bg_dimensions + Point<int16_t>(macro_backgrnd.get_dimensions().x(), 0);
-		else
+		else if (!sp_enabled)
 			dimension = bg_dimensions;
 
 		buttons[Buttons::BT_MACRO_OK]->set_active(macro_enabled);
@@ -862,7 +872,7 @@ namespace ms
 
 		if (sp_enabled)
 			dimension = bg_dimensions + Point<int16_t>(sp_backgrnd.get_dimensions().x(), 0);
-		else
+		else if (!macro_enabled)
 			dimension = bg_dimensions;
 
 		buttons[Buttons::BT_CANCLE]->set_active(sp_enabled);
