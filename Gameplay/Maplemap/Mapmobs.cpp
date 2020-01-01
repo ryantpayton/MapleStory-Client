@@ -89,7 +89,7 @@ namespace ms
 			mob->send_movement(start, std::move(movements));
 	}
 
-	void MapMobs::send_attack(AttackResult& result, const Attack& attack, const std::vector<int32_t> &targets, uint8_t mobcount)
+	void MapMobs::send_attack(AttackResult& result, const Attack& attack, const std::vector<int32_t>& targets, uint8_t mobcount)
 	{
 		for (auto& target : targets)
 		{
@@ -113,12 +113,10 @@ namespace ms
 		{
 			mob->apply_damage(damage, toleft);
 
-			// Maybe move this into the method above too?
+			// TODO: Maybe move this into the method above too?
 			move.apply_hiteffects(user, *mob);
 		}
 	}
-
-	
 
 	bool MapMobs::contains(int32_t oid) const
 	{
@@ -127,10 +125,10 @@ namespace ms
 
 	int32_t MapMobs::find_colliding(const MovingObject& moveobj) const
 	{
-		Range<int16_t> horizontal{ moveobj.get_last_x(), moveobj.get_x() };
-		Range<int16_t> vertical{ moveobj.get_last_y(), moveobj.get_y() };
+		Range<int16_t> horizontal = Range<int16_t>(moveobj.get_last_x(), moveobj.get_x());
+		Range<int16_t> vertical = Range<int16_t>(moveobj.get_last_y(), moveobj.get_y());
 
-		Rectangle<int16_t> player_rect{
+		Rectangle<int16_t> player_rect = {
 			horizontal.smaller(),
 			horizontal.greater(),
 			vertical.smaller() - 50,
@@ -166,7 +164,7 @@ namespace ms
 		if (auto mob = mobs.get(oid))
 			return mob->get_position();
 		else
-			return {};
+			return Point<int16_t>(0, 0);
 	}
 
 	Point<int16_t> MapMobs::get_mob_head_position(int32_t oid) const
@@ -174,10 +172,10 @@ namespace ms
 		if (Optional<const Mob> mob = mobs.get(oid))
 			return mob->get_head_position();
 		else
-			return {};
+			return Point<int16_t>(0, 0);
 	}
 
-	MapObjects* MapMobs::get_mobs() 
+	MapObjects* MapMobs::get_mobs()
 	{
 		return &mobs;
 	}

@@ -42,9 +42,11 @@ namespace ms
 
 		void toggle_active() override;
 		void doubleclick(Point<int16_t> cursorpos) override;
-		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		void remove_cursor() override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
+
+		UIElement::Type get_type() const override;
 
 		void update_stat(Maplestat::Id stat, int16_t value);
 		void update_skills(int32_t skill_id);
@@ -64,7 +66,8 @@ namespace ms
 			bool drop_on_items(InventoryType::Id, Equipslot::Id, int16_t, bool) const override { return true; }
 			void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const override;
 			void set_count(int16_t) override {}
-			void set_state(StatefulIcon::State state) override {};
+			void set_state(StatefulIcon::State) override {}
+			Icon::IconType get_type() override;
 
 		private:
 			int32_t skill_id;

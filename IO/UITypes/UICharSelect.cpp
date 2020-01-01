@@ -527,6 +527,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UICharSelect::get_type() const
+	{
+		return TYPE;
+	}
+
 	void UICharSelect::add_character(CharEntry&& character)
 	{
 		charlooks.emplace_back(character.look);

@@ -33,8 +33,9 @@ namespace ms
 		void draw(float inter) const override;
 		void update() override;
 
-		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
+
+		UIElement::Type get_type() const override;
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;

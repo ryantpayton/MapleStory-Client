@@ -188,6 +188,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UINpcTalk::get_type() const
+	{
+		return TYPE;
+	}
+
 	UINpcTalk::TalkType UINpcTalk::get_by_value(int8_t value)
 	{
 		if (value > TalkType::NONE && value < TalkType::LENGTH)

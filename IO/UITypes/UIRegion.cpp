@@ -64,6 +64,11 @@ namespace ms
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
+	UIElement::Type UIRegion::get_type() const
+	{
+		return TYPE;
+	}
+
 	Button::State UIRegion::button_pressed(uint16_t buttonid)
 	{
 		clear_tooltip();

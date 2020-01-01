@@ -89,6 +89,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UILoginNotice::get_type() const
+	{
+		return TYPE;
+	}
+
 	Button::State UILoginNotice::button_pressed(uint16_t buttonid)
 	{
 		if (buttonid == Buttons::YES)
@@ -130,6 +135,11 @@ namespace ms
 				deactivate();
 			}
 		}
+	}
+
+	UIElement::Type UIQuitConfirm::get_type() const
+	{
+		return TYPE;
 	}
 
 	Button::State UIQuitConfirm::button_pressed(uint16_t buttonid)
@@ -249,11 +259,6 @@ namespace ms
 		dimension = Texture(backgrnd).get_dimensions();
 	}
 
-	bool UIClassConfirm::remove_cursor(bool clicked, Point<int16_t> cursorpos)
-	{
-		return false;
-	}
-
 	Cursor::State UIClassConfirm::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
 		for (auto& btit : buttons)
@@ -296,6 +301,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UIClassConfirm::get_type() const
+	{
+		return TYPE;
+	}
+
 	Button::State UIClassConfirm::button_pressed(uint16_t buttonid)
 	{
 		deactivate();
@@ -329,6 +339,11 @@ namespace ms
 		if (pressed && !login)
 			if (escape || keycode == KeyAction::Id::RETURN)
 				deactivate();
+	}
+
+	UIElement::Type UIKeySelect::get_type() const
+	{
+		return TYPE;
 	}
 
 	Button::State UIKeySelect::button_pressed(uint16_t buttonid)
@@ -391,6 +406,11 @@ namespace ms
 				UI::get().remove(UIElement::Type::LOGINNOTICE);
 			}
 		}
+	}
+
+	UIElement::Type UIKeyConfirm::get_type() const
+	{
+		return TYPE;
 	}
 
 	Button::State UIKeyConfirm::button_pressed(uint16_t buttonid)

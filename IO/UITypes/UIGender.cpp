@@ -29,7 +29,7 @@
 
 namespace ms
 {
-	UIGender::UIGender(std::function<void()> oh) : okhandler(oh)
+	UIGender::UIGender(std::function<void()> oh) : UIElement(Point<int16_t>(0, 15), Point<int16_t>(0, 0)), okhandler(oh)
 	{
 		CUR_TIMESTEP = 0;
 
@@ -83,30 +83,20 @@ namespace ms
 			CUR_TIMESTEP += Constants::TIMESTEP;
 	}
 
-	bool UIGender::remove_cursor(bool clicked, Point<int16_t> cursorpos)
-	{
-		if (buttons[Buttons::SELECT]->remove_cursor(clicked, cursorpos))
-			return true;
-
-		return false;
-	}
-
 	Cursor::State UIGender::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
-		if (buttons[Buttons::SELECT]->is_pressed())
-		{
-			if (buttons[Buttons::SELECT]->in_combobox(cursorpos))
-			{
-				if (Cursor::State new_state = buttons[Buttons::SELECT]->send_cursor(clicked, cursorpos))
-					return new_state;
-			}
-			else
-			{
-				remove_cursor(clicked, cursorpos);
-			}
-		}
+		auto& combobox = buttons[Buttons::SELECT];
+
+		if (combobox->is_pressed() && combobox->in_combobox(cursorpos))
+			if (Cursor::State new_state = combobox->send_cursor(clicked, cursorpos))
+				return new_state;
 
 		return UIElement::send_cursor(clicked, cursorpos);
+	}
+
+	UIElement::Type UIGender::get_type() const
+	{
+		return TYPE;
 	}
 
 	Button::State UIGender::button_pressed(uint16_t buttonid)

@@ -40,6 +40,8 @@ namespace ms
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
+		UIElement::Type get_type() const override;
+
 		bool check_name(std::string name) const;
 		void send_naming_result(bool nameused);
 

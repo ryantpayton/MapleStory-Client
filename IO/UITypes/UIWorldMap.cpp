@@ -101,6 +101,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UIWorldMap::get_type() const
+	{
+		return TYPE;
+	}
+
 	Button::State UIWorldMap::button_pressed(uint16_t buttonid)
 	{
 		switch (buttonid)

@@ -113,6 +113,11 @@ namespace ms
 		return UIElement::send_cursor(pressed, cursorposition);
 	}
 
+	UIElement::Type UIBuffList::get_type() const
+	{
+		return TYPE;
+	}
+
 	void UIBuffList::add_buff(int32_t buffid, int32_t duration)
 	{
 		icons.emplace(

@@ -270,6 +270,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UIEquipInventory::get_type() const
+	{
+		return TYPE;
+	}
+
 	void UIEquipInventory::doubleclick(Point<int16_t> cursorpos)
 	{
 		Equipslot::Id slot = slot_by_position(cursorpos);
@@ -417,5 +422,10 @@ namespace ms
 		}
 
 		return true;
+	}
+
+	Icon::IconType UIEquipInventory::EquipIcon::get_type()
+	{
+		return Icon::IconType::EQUIP;
 	}
 }

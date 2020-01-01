@@ -484,6 +484,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UIItemInventory::get_type() const
+	{
+		return TYPE;
+	}
+
 	void UIItemInventory::modify(InventoryType::Id type, int16_t slot, int8_t mode, int16_t arg)
 	{
 		if (slot <= 0)
@@ -597,12 +602,11 @@ namespace ms
 		}
 	}
 
-	bool UIItemInventory::remove_cursor(bool clicked, Point<int16_t> cursorpos)
+	void UIItemInventory::remove_cursor()
 	{
-		if (UIDragElement::remove_cursor(clicked, cursorpos))
-			return true;
+		UIDragElement::remove_cursor();
 
-		return slider.remove_cursor(clicked);
+		slider.remove_cursor();
 	}
 
 	void UIItemInventory::show_item(int16_t slot)
@@ -854,6 +858,11 @@ namespace ms
 	void UIItemInventory::ItemIcon::set_count(int16_t c)
 	{
 		count = c;
+	}
+
+	Icon::IconType UIItemInventory::ItemIcon::get_type()
+	{
+		return Icon::IconType::ITEM;
 	}
 
 	UIItemInventory::ItemIcon::ItemIcon(const UIItemInventory& parent, InventoryType::Id st, Equipslot::Id eqs, int16_t s, int32_t iid, int16_t c, bool u, bool cash) : parent(parent)

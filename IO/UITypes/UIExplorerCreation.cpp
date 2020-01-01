@@ -359,6 +359,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UIExplorerCreation::get_type() const
+	{
+		return TYPE;
+	}
+
 	void UIExplorerCreation::send_naming_result(bool nameused)
 	{
 		if (!named)

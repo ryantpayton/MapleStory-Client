@@ -38,6 +38,8 @@ namespace ms
 
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
+		UIElement::Type get_type() const override;
+
 		enum Tab
 		{
 			FRIEND,

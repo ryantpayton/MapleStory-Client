@@ -163,12 +163,11 @@ namespace ms
 		}
 	}
 
-	bool UIEvent::remove_cursor(bool clicked, Point<int16_t> cursorpos)
+	void UIEvent::remove_cursor()
 	{
-		if (slider.remove_cursor(clicked))
-			return true;
+		UIDragElement::remove_cursor();
 
-		return UIElement::remove_cursor(clicked, cursorpos);
+		slider.remove_cursor();
 	}
 
 	Cursor::State UIEvent::send_cursor(bool clicked, Point<int16_t> cursorpos)
@@ -204,6 +203,11 @@ namespace ms
 	{
 		if (pressed && escape)
 			close();
+	}
+
+	UIElement::Type UIEvent::get_type() const
+	{
+		return TYPE;
 	}
 
 	Button::State UIEvent::button_pressed(uint16_t buttonid)

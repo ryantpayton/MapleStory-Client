@@ -18,7 +18,7 @@
 #include "MapObjectHandlers.h"
 
 #include "Helpers/LoginParser.h"
-#include "Helpers\MovementParser.h"
+#include "Helpers/MovementParser.h"
 
 #include "../Audio/Audio.h"
 #include "../Gameplay/Stage.h"
@@ -30,7 +30,7 @@ namespace ms
 	{
 		int32_t cid = recv.read_int();
 
-		// We dont' need to spawn the player twice.
+		// We don't need to spawn the player twice
 		if (Stage::get().is_player(cid))
 			return;
 
@@ -195,7 +195,7 @@ namespace ms
 		}
 		else
 		{
-			// todo
+			// TODO: Blank
 		}
 	}
 
@@ -425,9 +425,9 @@ namespace ms
 		int32_t oid = recv.read_int();
 		int8_t state = recv.read_byte();
 		Point<int16_t> point = recv.read_point();
-		int8_t stance = recv.read_byte(); // TODO: when is this different than state..?
-		recv.skip(2); // TODO: Unused..
-		recv.skip(1); // "frame" delay but this is in wz..?
+		int8_t stance = recv.read_byte(); // TODO: When is this different than state?
+		recv.skip(2); // TODO: Unused
+		recv.skip(1); // "frame" delay but this is in the wz file?
 
 		Stage::get().get_reactors().trigger(oid, state);
 	}

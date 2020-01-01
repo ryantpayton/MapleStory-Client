@@ -39,6 +39,8 @@ namespace ms
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 		bool is_in_range(Point<int16_t> cursorpos) const override;
 
+		UIElement::Type get_type() const override;
+
 		void update_all_stats();
 		void update_stat(Maplestat::Id stat);
 

@@ -30,8 +30,6 @@ namespace ms
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
 
-		void send_key(int32_t keycode, bool pressed, bool escape);
-
 	protected:
 		enum NoticeType : uint8_t
 		{
@@ -71,6 +69,8 @@ namespace ms
 
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
+		UIElement::Type get_type() const override;
+
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
 
@@ -93,6 +93,8 @@ namespace ms
 
 		Cursor::State send_cursor(bool pressed, Point<int16_t> cursorpos) override;
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
+
+		UIElement::Type get_type() const override;
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -118,6 +120,8 @@ namespace ms
 		void draw(float alpha) const override;
 
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
+
+		UIElement::Type get_type() const override;
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;

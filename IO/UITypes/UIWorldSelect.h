@@ -38,6 +38,8 @@ namespace ms
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
+		UIElement::Type get_type() const override;
+
 		void draw_world();
 		void add_world(World world);
 		void add_recommended_world(RecommendedWorld world);

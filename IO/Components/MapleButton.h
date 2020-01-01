@@ -37,7 +37,7 @@ namespace ms
 		int16_t width() const;
 		Point<int16_t> origin() const;
 		Cursor::State send_cursor(bool, Point<int16_t>) { return Cursor::State::IDLE; }
-		bool remove_cursor(bool, Point<int16_t>) { return false; }
+		void remove_cursor() {}
 
 	private:
 		Texture textures[Button::State::NUM_STATES];

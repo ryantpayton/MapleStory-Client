@@ -190,6 +190,11 @@ namespace ms
 		return bounds.contains(cursorpos);
 	}
 
+	UIElement::Type UIStatsinfo::get_type() const
+	{
+		return TYPE;
+	}
+
 	void UIStatsinfo::update_all_stats()
 	{
 		update_simple(AP, Maplestat::Id::AP);

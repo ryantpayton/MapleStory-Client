@@ -107,6 +107,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UISoftkey::get_type() const
+	{
+		return TYPE;
+	}
+
 	Button::State UISoftkey::button_pressed(uint16_t buttonid)
 	{
 		std::string entered = entry.get_text();

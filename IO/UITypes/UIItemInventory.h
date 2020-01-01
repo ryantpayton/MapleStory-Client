@@ -40,9 +40,11 @@ namespace ms
 		void doubleclick(Point<int16_t> position) override;
 		bool send_icon(const Icon& icon, Point<int16_t> position) override;
 		void toggle_active() override;
-		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		void remove_cursor() override;
 		Cursor::State send_cursor(bool pressed, Point<int16_t> position) override;
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
+
+		UIElement::Type get_type() const override;
 
 		void modify(InventoryType::Id type, int16_t pos, int8_t mode, int16_t arg);
 		void set_sort(bool enabled);
@@ -78,6 +80,7 @@ namespace ms
 			bool drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const override;
 			void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const override;
 			void set_count(int16_t count) override;
+			Icon::IconType get_type() override;
 
 		private:
 			InventoryType::Id sourcetab;

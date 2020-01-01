@@ -60,6 +60,8 @@ namespace ms
 		int64_t get_upexp() override { return 0; }
 
 	private:
+		void remove_cursor(UIElement::Type type);
+
 		template <class T, typename...Args>
 		void emplace(Args&& ...args);
 

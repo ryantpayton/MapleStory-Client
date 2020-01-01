@@ -56,6 +56,8 @@ namespace ms
 		void update() override;
 		void update_screen(int16_t new_width, int16_t new_height) override;
 
+		UIElement::Type get_type() const override;
+
 		void show_status(Color::Name color, const std::string& message);
 
 	private:

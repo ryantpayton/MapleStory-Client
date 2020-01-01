@@ -205,26 +205,25 @@ namespace ms
 		}
 	}
 
-	bool UIOptionMenu::remove_cursor(bool clicked, Point<int16_t> cursorpos)
+	void UIOptionMenu::remove_cursor()
 	{
-		if (buttons[Buttons::SELECT_RES]->remove_cursor(clicked, cursorpos))
-			return true;
-
-		return false;
+		buttons[Buttons::SELECT_RES]->remove_cursor();
 	}
 
 	Cursor::State UIOptionMenu::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
-		if (buttons[Buttons::SELECT_RES]->is_pressed())
+		auto& button = buttons[Buttons::SELECT_RES];
+
+		if (button->is_pressed())
 		{
-			if (buttons[Buttons::SELECT_RES]->in_combobox(cursorpos))
+			if (button->in_combobox(cursorpos))
 			{
-				if (Cursor::State new_state = buttons[Buttons::SELECT_RES]->send_cursor(clicked, cursorpos))
+				if (Cursor::State new_state = button->send_cursor(clicked, cursorpos))
 					return new_state;
 			}
 			else
 			{
-				remove_cursor(clicked, cursorpos);
+				remove_cursor();
 			}
 		}
 
@@ -240,6 +239,11 @@ namespace ms
 			else if (keycode == KeyAction::Id::RETURN)
 				button_pressed(Buttons::OK);
 		}
+	}
+
+	UIElement::Type UIOptionMenu::get_type() const
+	{
+		return TYPE;
 	}
 
 	void UIOptionMenu::change_tab(uint16_t tabid)

@@ -259,6 +259,11 @@ namespace ms
 		return ret;
 	}
 
+	UIElement::Type UIChannel::get_type() const
+	{
+		return TYPE;
+	}
+
 	Button::State UIChannel::button_pressed(uint16_t buttonid)
 	{
 		if (buttonid < Buttons::CH)

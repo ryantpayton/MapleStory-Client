@@ -378,9 +378,8 @@ namespace ms
 
 		nl::node src = nl::nx::effect["BasicEff.img"];
 
-		for (auto iter : CharEffect::PATHS) {
+		for (auto iter : CharEffect::PATHS)
 			chareffects.emplace(iter.first, src.resolve(iter.second));
-		}
 	}
 
 	EnumMap<CharEffect::Id, Animation> Char::chareffects;

@@ -76,6 +76,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UIJoypad::get_type() const
+	{
+		return TYPE;
+	}
+
 	Button::State UIJoypad::button_pressed(uint16_t buttonid)
 	{
 		switch (buttonid)

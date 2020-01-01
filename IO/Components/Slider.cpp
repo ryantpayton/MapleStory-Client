@@ -141,20 +141,13 @@ namespace ms
 		}
 	}
 
-	bool Slider::remove_cursor(bool clicked)
+	void Slider::remove_cursor()
 	{
-		if (scrolling)
-		{
-			return scrolling = clicked;
-		}
-		else
-		{
-			thumb.set_state(Button::State::NORMAL);
-			next.set_state(Button::State::NORMAL);
-			prev.set_state(Button::State::NORMAL);
+		scrolling = false;
 
-			return false;
-		}
+		thumb.set_state(Button::State::NORMAL);
+		next.set_state(Button::State::NORMAL);
+		prev.set_state(Button::State::NORMAL);
 	}
 
 	Point<int16_t> Slider::getthumbpos() const

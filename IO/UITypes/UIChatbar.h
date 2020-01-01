@@ -50,6 +50,9 @@ namespace ms
 
 		bool is_in_range(Point<int16_t> cursorpos) const override;
 		Cursor::State send_cursor(bool clicking, Point<int16_t> cursorpos) override;
+
+		UIElement::Type get_type() const override;
+
 		Cursor::State check_dragtop(bool clicking, Point<int16_t> cursorpos);
 
 		void send_chatline(const std::string& line, LineType type);

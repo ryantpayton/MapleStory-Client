@@ -42,6 +42,8 @@ namespace ms
 		bool send_icon(const Icon& icon, Point<int16_t> cursorpos) override;
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
+		UIElement::Type get_type() const override;
+
 		void close();
 
 		void stage_mapping(Point<int16_t> cursorposition, Keyboard::Mapping mapping);
@@ -95,6 +97,7 @@ namespace ms
 			bool drop_on_items(InventoryType::Id, Equipslot::Id, int16_t, bool) const override { return true; }
 			void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const override;
 			void set_count(int16_t) override {}
+			Icon::IconType get_type() override;
 
 		private:
 			Keyboard::Mapping mapping;

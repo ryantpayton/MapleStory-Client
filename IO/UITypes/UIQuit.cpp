@@ -161,6 +161,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UIQuit::get_type() const
+	{
+		return TYPE;
+	}
+
 	Button::State UIQuit::button_pressed(uint16_t buttonid)
 	{
 		switch (buttonid)

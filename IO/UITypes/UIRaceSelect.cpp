@@ -343,6 +343,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UIRaceSelect::get_type() const
+	{
+		return TYPE;
+	}
+
 	bool UIRaceSelect::check_name(std::string name) const
 	{
 		nl::node ForbiddenName = nl::nx::etc["ForbiddenName.img"];

@@ -124,6 +124,34 @@ namespace ms
 		return true;
 	}
 
+	void UIStateGame::remove_icon()
+	{
+		draggedicon->reset();
+		draggedicon = {};
+	}
+
+	void UIStateGame::remove_cursors()
+	{
+		for (auto type : elementorder)
+		{
+			auto element = elements[type].get();
+
+			if (element && element->is_active())
+				element->remove_cursor();
+		}
+	}
+
+	void UIStateGame::remove_cursor(UIElement::Type t)
+	{
+		for (auto type : elementorder)
+		{
+			auto element = elements[type].get();
+
+			if (element && element->is_active() && element->get_type() != t)
+				element->remove_cursor();
+		}
+	}
+
 	void UIStateGame::doubleclick(Point<int16_t> pos)
 	{
 		if (UIElement* front = get_front(pos))
@@ -294,28 +322,26 @@ namespace ms
 	{
 		if (draggedicon)
 		{
-			switch (cursorstate)
+			if (cursorstate == Cursor::State::CLICKING)
 			{
-			case Cursor::State::CLICKING:
 				if (drop_icon(*draggedicon, cursorpos))
-				{
-					draggedicon->reset();
-					draggedicon = {};
-				}
+					remove_icon();
 
 				return cursorstate;
-			default:
-				return Cursor::State::GRABBING;
 			}
+
+			return Cursor::State::GRABBING;
 		}
 		else
 		{
 			bool clicked = cursorstate == Cursor::State::CLICKING || cursorstate == Cursor::State::VSCROLLIDLE;
 
-			if (UIElement* focusedelement = get(focused))
+			if (auto focusedelement = get(focused))
 			{
 				if (focusedelement->is_active())
 				{
+					remove_cursor(focusedelement->get_type());
+
 					return focusedelement->send_cursor(clicked, cursorpos);
 				}
 				else
@@ -331,19 +357,31 @@ namespace ms
 				{
 					dragged = nullptr;
 
-					auto element = get_front(cursorpos);
+					if (auto front = get_front(cursorpos))
+					{
+						UIElement::Type front_type = front->get_type();
 
-					if (element != nullptr)
-						return element->send_cursor(clicked, cursorpos);
+						if (tooltipparent != UIElement::Type::NONE)
+							if (front_type != tooltipparent)
+								clear_tooltip(tooltipparent);
+
+						remove_cursor(front_type);
+
+						return front->send_cursor(clicked, cursorpos);
+					}
 					else
+					{
+						remove_cursors();
+
 						return Stage::get().send_cursor(clicked, cursorpos);
+					}
 				}
 				else
 				{
 
 					if (!dragged)
 					{
-						auto drag_element_type = UIElement::Type::NONE;
+						UIElement::Type drag_element_type = UIElement::Type::NONE;
 
 						for (auto iter = elementorder.rbegin(); iter != elementorder.rend(); ++iter)
 						{
@@ -503,7 +541,7 @@ namespace ms
 					else
 						Sound(Sound::Name::MENUUP).play();
 
-					UI::get().reset_cursor();
+					UI::get().send_cursor(false);
 				}
 				else
 				{
@@ -511,6 +549,12 @@ namespace ms
 						Sound(Sound::Name::WORLDMAPCLOSE).play();
 					else
 						Sound(Sound::Name::MENUDOWN).play();
+
+					element->remove_cursor();
+
+					if (draggedicon)
+						if (element->get_type() == icons[draggedicon.get()->get_type()])
+							remove_icon();
 
 					UI::get().send_cursor(false);
 				}
