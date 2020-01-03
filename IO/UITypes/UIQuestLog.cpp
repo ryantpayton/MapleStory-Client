@@ -130,6 +130,11 @@ namespace ms
 		return UIDragElement::send_cursor(clicking, cursorpos);
 	}
 
+	UIElement::Type UIQuestLog::get_type() const
+	{
+		return TYPE;
+	}
+
 	Button::State UIQuestLog::button_pressed(uint16_t buttonid)
 	{
 		switch (buttonid)

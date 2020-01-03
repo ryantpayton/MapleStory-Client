@@ -107,19 +107,6 @@ namespace ms
 		bottombox.draw(start);
 	}
 
-	void UINotice::send_key(int32_t keycode, bool pressed, bool escape)
-	{
-		if (pressed && (keycode == KeyAction::Id::RETURN || escape))
-		{
-			if (type == NoticeType::OK)
-				UI::get().get_element<UIOk>()->send_key(keycode, pressed, escape);
-			else if (type == NoticeType::YESNO)
-				UI::get().get_element<UIYesNo>()->send_key(keycode, pressed, escape);
-			else if (type == NoticeType::ENTERNUMBER)
-				UI::get().get_element<UIEnterNumber>()->send_key(keycode, pressed, escape);
-		}
-	}
-
 	int16_t UINotice::box2offset(bool textfield) const
 	{
 		int16_t offset = top.height() + centerbox.height() + box.height() + height - (textfield ? 0 : 16);
@@ -163,6 +150,11 @@ namespace ms
 			yesnohandler(false);
 			deactivate();
 		}
+	}
+
+	UIElement::Type UIYesNo::get_type() const
+	{
+		return TYPE;
 	}
 
 	Button::State UIYesNo::button_pressed(uint16_t buttonid)
@@ -257,6 +249,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UIEnterNumber::get_type() const
+	{
+		return TYPE;
+	}
+
 	Button::State UIEnterNumber::button_pressed(uint16_t buttonid)
 	{
 		switch (buttonid)
@@ -345,6 +342,11 @@ namespace ms
 				deactivate();
 			}
 		}
+	}
+
+	UIElement::Type UIOk::get_type() const
+	{
+		return TYPE;
 	}
 
 	Button::State UIOk::button_pressed(uint16_t buttonid)

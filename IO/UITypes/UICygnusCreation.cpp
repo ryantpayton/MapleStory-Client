@@ -359,6 +359,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UICygnusCreation::get_type() const
+	{
+		return TYPE;
+	}
+
 	void UICygnusCreation::send_naming_result(bool nameused)
 	{
 		if (!named)

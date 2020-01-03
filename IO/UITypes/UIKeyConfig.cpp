@@ -593,15 +593,9 @@ namespace ms
 		}
 
 		for (auto ubicon : action_icons)
-		{
 			if (ubicon.second)
-			{
 				if (std::find(bound_actions.begin(), bound_actions.end(), ubicon.first) == bound_actions.end())
-				{
 					ubicon.second->draw(position + unbound_actions_pos[ubicon.first]);
-				}
-			}
-		}
 
 		for (auto fkey : key_textures)
 		{
@@ -719,7 +713,7 @@ namespace ms
 
 			if (mapping.type != KeyType::Id::NONE)
 			{
-				Icon* ficon = NULL;
+				Icon* ficon = nullptr;
 
 				if (mapping.type == KeyType::Id::ITEM)
 				{
@@ -774,7 +768,7 @@ namespace ms
 			Rectangle<int16_t> icon_rect = Rectangle<int16_t>(
 				position + iter.second,
 				position + iter.second + Point<int16_t>(32, 32)
-			);
+				);
 
 			if (icon_rect.contains(cursorpos))
 				icon.drop_on_bindings(cursorpos, true);
@@ -792,6 +786,11 @@ namespace ms
 	{
 		if (pressed && escape)
 			safe_close();
+	}
+
+	UIElement::Type UIKeyConfig::get_type() const
+	{
+		return TYPE;
 	}
 
 	void UIKeyConfig::safe_close()
@@ -1000,13 +999,10 @@ namespace ms
 		{
 			KeyConfig::Key k = KeyConfig::actionbyid(key.first);
 			Keyboard::Mapping mapping = key.second;
-
 			Keyboard::Mapping saved_mapping = keyboard->get_maple_mapping(key.first);
 
 			if (mapping != saved_mapping)
-			{
 				updated_actions.emplace_back(std::make_tuple(k, mapping.type, mapping.action));
-			}
 		}
 
 		auto maplekeys = keyboard->get_maplekeys();
@@ -1124,7 +1120,7 @@ namespace ms
 			Rectangle<int16_t> icon_rect = Rectangle<int16_t>(
 				position + iter.second,
 				position + iter.second + Point<int16_t>(32, 32)
-			);
+				);
 
 			if (icon_rect.contains(cursorpos))
 				return iter.first;
@@ -1266,4 +1262,8 @@ namespace ms
 			keyconfig->stage_mapping(cursorposition, mapping);
 	}
 
+	Icon::IconType UIKeyConfig::MappingIcon::get_type()
+	{
+		return Icon::IconType::KEY;
+	}
 }

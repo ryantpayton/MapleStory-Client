@@ -232,15 +232,12 @@ namespace ms
 		return Button::State::PRESSED;
 	}
 
-	bool UIShop::remove_cursor(bool clicked, Point<int16_t> cursorpos)
+	void UIShop::remove_cursor()
 	{
-		if (buyslider.remove_cursor(clicked))
-			return true;
+		UIDragElement::remove_cursor();
 
-		if (sellslider.remove_cursor(clicked))
-			return true;
-
-		return UIElement::remove_cursor(clicked, cursorpos);
+		buyslider.remove_cursor();
+		sellslider.remove_cursor();
 	}
 
 	Cursor::State UIShop::send_cursor(bool clicked, Point<int16_t> cursorpos)
@@ -410,6 +407,11 @@ namespace ms
 	{
 		if (pressed && escape)
 			exit_shop();
+	}
+
+	UIElement::Type UIShop::get_type() const
+	{
+		return TYPE;
 	}
 
 	void UIShop::clear_tooltip()

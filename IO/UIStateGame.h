@@ -70,6 +70,10 @@ namespace ms
 		const CharStats& stats;
 
 		bool drop_icon(const Icon& icon, Point<int16_t> pos);
+		void remove_icon();
+		void remove_cursors();
+		void remove_cursor(UIElement::Type type);
+
 		template <class T, typename...Args>
 		void emplace(Args&& ...args);
 
@@ -86,6 +90,15 @@ namespace ms
 		Tooltip::Parent tooltipparent;
 
 		Optional<Icon> draggedicon;
+
+		std::map<Icon::IconType, UIElement::Type> icon_map = {
+			{ Icon::IconType::NONE, UIElement::Type::NONE },
+			{ Icon::IconType::SKILL, UIElement::Type::SKILLBOOK },
+			{ Icon::IconType::EQUIP, UIElement::Type::EQUIPINVENTORY },
+			{ Icon::IconType::ITEM, UIElement::Type::ITEMINVENTORY },
+			{ Icon::IconType::KEY, UIElement::Type::KEYCONFIG },
+			{ Icon::IconType::NUM_TYPES, UIElement::Type::NUM_TYPES }
+		};
 
 		int16_t VWIDTH;
 		int16_t VHEIGHT;

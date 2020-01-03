@@ -549,14 +549,6 @@ namespace ms
 			buttons[i]->set_position(event_pos + pos_adj);
 	}
 
-	bool UIStatusbar::remove_cursor(bool clicked, Point<int16_t> cursorpos)
-	{
-		if (clicked && !is_in_range(cursorpos))
-			remove_menus();
-
-		return false;
-	}
-
 	Button::State UIStatusbar::button_pressed(uint16_t id)
 	{
 		switch (id)
@@ -854,6 +846,11 @@ namespace ms
 		}
 
 		return bounds.contains(cursorpos);
+	}
+
+	UIElement::Type UIStatusbar::get_type() const
+	{
+		return TYPE;
 	}
 
 	void UIStatusbar::toggle_qs()

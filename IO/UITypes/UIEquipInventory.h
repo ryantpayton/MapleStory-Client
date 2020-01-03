@@ -45,6 +45,8 @@ namespace ms
 		Cursor::State send_cursor(bool pressed, Point<int16_t> position) override;
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
+		UIElement::Type get_type() const override;
+
 		void modify(int16_t pos, int8_t mode, int16_t arg);
 
 	protected:
@@ -68,6 +70,7 @@ namespace ms
 			bool drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const override;
 			void drop_on_bindings(Point<int16_t>, bool) const override {}
 			void set_count(int16_t) override {}
+			Icon::IconType get_type() override;
 
 		private:
 			int16_t source;

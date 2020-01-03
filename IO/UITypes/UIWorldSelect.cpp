@@ -392,6 +392,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UIWorldSelect::get_type() const
+	{
+		return TYPE;
+	}
+
 	void UIWorldSelect::draw_world()
 	{
 		if (worldcount <= 0)

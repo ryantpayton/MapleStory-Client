@@ -31,48 +31,52 @@ namespace ms
 		normal = src[0];
 		animation_ended = true;
 		dead = false;
-
 		hittable = false;
-		for (auto sub : src[0]) {
-			if (sub.name() == "event") {
+
+		for (auto sub : src[0])
+			if (sub.name() == "event")
 				if (sub["0"]["type"].get_integer() == 0)
 					hittable = true;
-			}
-		}
 	}
 
 	void Reactor::draw(double viewx, double viewy, float alpha) const
 	{
 		Point<int16_t> absp = phobj.get_absolute(viewx, viewy, alpha);
-		Point<int16_t> shift = { 0, normal.get_origin().y() };
-		if (animation_ended) {
-			/* TODO: handle 'default' animations (horntail reactor floating). */
+		Point<int16_t> shift = Point<int16_t>(0, normal.get_origin().y());
+
+		if (animation_ended)
+		{
+			// TODO: Handle 'default' animations (horntail reactor floating)
 			normal.draw(absp - shift, alpha);
 		}
-		else {
-			animations.at(state-1).draw(DrawArgument(absp - shift), 1.0);
+		else
+		{
+			animations.at(state - 1).draw(DrawArgument(absp - shift), 1.0);
 		}
 	}
 
 	int8_t Reactor::update(const Physics& physics)
 	{
 		physics.move_object(phobj);
+
 		if (!animation_ended)
-			animation_ended = animations.at(state-1).update();
+			animation_ended = animations.at(state - 1).update();
 
 		if (animation_ended && dead)
 			deactivate();
-		
+
 		return phobj.fhlayer;
 	}
 
-	void Reactor::set_state(int8_t state) 
+	void Reactor::set_state(int8_t state)
 	{
-		/* TODO: hit/break sounds... */
-		if (hittable) {
+		// TODO: hit/break sounds
+		if (hittable)
+		{
 			animations[this->state] = src[this->state]["hit"];
 			animation_ended = false;
 		}
+
 		this->state = state;
 	}
 
@@ -94,7 +98,7 @@ namespace ms
 		if (!active)
 			return false;
 
-		Rectangle<int16_t> bounds(Point<int16_t>(-30, -normal.get_dimensions().y()), Point<int16_t>(normal.get_dimensions().x()-10, 0)); //normal.get_bounds(); //animations.at(stance).get_bounds();
+		Rectangle<int16_t> bounds(Point<int16_t>(-30, -normal.get_dimensions().y()), Point<int16_t>(normal.get_dimensions().x() - 10, 0)); //normal.get_bounds(); //animations.at(stance).get_bounds();
 		bounds.shift(get_position());
 
 		return range.overlaps(bounds);

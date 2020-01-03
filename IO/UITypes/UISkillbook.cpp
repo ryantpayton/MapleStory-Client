@@ -48,6 +48,11 @@ namespace ms
 			keyconfig->stage_mapping(cursorposition, mapping);
 	}
 
+	Icon::IconType UISkillbook::SkillIcon::get_type()
+	{
+		return Icon::IconType::SKILL;
+	}
+
 	UISkillbook::SkillDisplayMeta::SkillDisplayMeta(int32_t i, int32_t l) : id(i), level(l)
 	{
 		const SkillData& data = SkillData::get(id);
@@ -436,12 +441,11 @@ namespace ms
 		}
 	}
 
-	bool UISkillbook::remove_cursor(bool clicked, Point<int16_t> cursorpos)
+	void UISkillbook::remove_cursor()
 	{
-		if (UIDragElement::remove_cursor(clicked, cursorpos))
-			return true;
+		UIDragElement::remove_cursor();
 
-		return slider.remove_cursor(clicked);
+		slider.remove_cursor();
 	}
 
 	Cursor::State UISkillbook::send_cursor(bool clicked, Point<int16_t> cursorpos)
@@ -557,6 +561,11 @@ namespace ms
 				change_tab(new_tab - Buttons::BT_TAB0);
 			}
 		}
+	}
+
+	UIElement::Type UISkillbook::get_type() const
+	{
+		return TYPE;
 	}
 
 	void UISkillbook::update_stat(Maplestat::Id stat, int16_t value)

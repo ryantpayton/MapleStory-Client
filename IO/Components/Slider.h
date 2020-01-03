@@ -41,7 +41,7 @@ namespace ms
 		void setvertical(Range<int16_t> vertical);
 
 		void draw(Point<int16_t> position) const;
-		bool remove_cursor(bool clicked);
+		void remove_cursor();
 		Cursor::State send_cursor(Point<int16_t> cursor, bool pressed);
 		void send_scroll(double yoffset);
 

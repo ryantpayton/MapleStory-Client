@@ -77,9 +77,6 @@ namespace ms
 			makeactive();
 	}
 
-	Button::State UIElement::button_pressed(uint16_t) { return Button::State::DISABLED; }
-	bool UIElement::send_icon(const Icon&, Point<int16_t>) { return true; }
-
 	bool UIElement::is_in_range(Point<int16_t> cursorpos) const
 	{
 		auto bounds = Rectangle<int16_t>(position, position + dimension);
@@ -87,21 +84,15 @@ namespace ms
 		return bounds.contains(cursorpos);
 	}
 
-	bool UIElement::remove_cursor(bool, Point<int16_t>)
+	void UIElement::remove_cursor()
 	{
 		for (auto& btit : buttons)
 		{
-			Button* button = btit.second.get();
+			auto button = btit.second.get();
 
-			switch (button->get_state())
-			{
-			case Button::State::MOUSEOVER:
+			if (button->get_state() == Button::State::MOUSEOVER)
 				button->set_state(Button::State::NORMAL);
-				break;
-			}
 		}
-
-		return false;
 	}
 
 	Cursor::State UIElement::send_cursor(bool down, Point<int16_t> pos)

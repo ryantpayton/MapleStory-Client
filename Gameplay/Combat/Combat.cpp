@@ -19,12 +19,16 @@
 
 #include "../Character/SkillId.h"
 #include "../IO/Messages.h"
+
 #include "../Net/Packets/AttackAndSkillPackets.h"
 #include "../Net/Packets/GameplayPackets.h"
 
 namespace ms
 {
-	Combat::Combat(Player& in_player, MapChars& in_chars, MapMobs& in_mobs, MapReactors& in_reactors) : player(in_player), chars(in_chars), mobs(in_mobs), reactors(in_reactors), attackresults([&](const AttackResult& attack) { apply_attack(attack); }), bulleteffects([&](const BulletEffect& effect) { apply_bullet_effect(effect); }), damageeffects([&](const DamageEffect& effect) { apply_damage_effect(effect); }) {}
+	Combat::Combat(Player& in_player, MapChars& in_chars, MapMobs& in_mobs, MapReactors& in_reactors) : player(in_player), chars(in_chars), mobs(in_mobs), reactors(in_reactors),
+		attackresults([&](const AttackResult& attack) { apply_attack(attack); }),
+		bulleteffects([&](const BulletEffect& effect) { apply_bullet_effect(effect); }),
+		damageeffects([&](const DamageEffect& effect) { apply_damage_effect(effect); }) {}
 
 	void Combat::draw(double viewx, double viewy, float alpha) const
 	{
@@ -126,14 +130,14 @@ namespace ms
 					origin.y() + range.b()
 				};
 			}
-			/* this approach should also make it easier to implement PvP.. */
-			
+
+			// This approach should also make it easier to implement PvP
 			uint8_t mobcount = attack.mobcount;
 			AttackResult result = attack;
 
 			MapObjects* mob_objs = mobs.get_mobs();
 			MapObjects* reactor_objs = reactors.get_reactors();
-			
+
 			std::vector<int32_t> mob_targets = find_closest(mob_objs, range, origin, mobcount, true);
 			std::vector<int32_t> reactor_targets = find_closest(reactor_objs, range, origin, mobcount, false);
 
@@ -146,11 +150,9 @@ namespace ms
 
 			AttackPacket(result).dispatch();
 
-			if (reactor_targets.size()) {
-				if (Optional<Reactor> reactor = reactor_objs->get(reactor_targets.at(0))) {
-					DamageReactorPacket(reactor->get_oid(), player.get_position(), 0 , 0).dispatch();
-				}
-			}
+			if (reactor_targets.size())
+				if (Optional<Reactor> reactor = reactor_objs->get(reactor_targets.at(0)))
+					DamageReactorPacket(reactor->get_oid(), player.get_position(), 0, 0).dispatch();
 		}
 		else
 		{
@@ -169,7 +171,8 @@ namespace ms
 
 		for (auto& mmo : *objs)
 		{
-			if (use_mobs) {
+			if (use_mobs)
+			{
 				const Mob* mob = static_cast<const Mob*>(mmo.second.get());
 
 				if (mob && mob->is_alive() && mob->is_in_range(range))
@@ -179,8 +182,9 @@ namespace ms
 					distances.emplace(distance, oid);
 				}
 			}
-			else {
-				// assume reactor
+			else
+			{
+				// Assume Reactor
 				const Reactor* reactor = static_cast<const Reactor*>(mmo.second.get());
 
 				if (reactor && reactor->is_hittable() && reactor->is_in_range(range))
@@ -212,8 +216,8 @@ namespace ms
 		case SkillId::Id::TELEPORT_FP:
 		case SkillId::Id::IL_TELEPORT:
 		case SkillId::Id::PRIEST_TELEPORT:
-			break;
 		case SkillId::Id::FLASH_JUMP:
+		default:
 			break;
 		}
 	}
@@ -226,6 +230,8 @@ namespace ms
 		case SkillId::Id::RUSH_PALADIN:
 		case SkillId::Id::RUSH_DK:
 			apply_rush(result);
+			break;
+		default:
 			break;
 		}
 	}

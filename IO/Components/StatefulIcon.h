@@ -26,9 +26,9 @@ namespace ms
 	class StatefulIcon : public Icon
 	{
 	public:
-		enum State: uint8_t
+		enum State : uint8_t
 		{
-			NORMAL = 0,
+			NORMAL,
 			DISABLED,
 			MOUSEOVER,
 			LENGTH
@@ -47,9 +47,10 @@ namespace ms
 			void drop_on_stage() const override {}
 			void drop_on_equips(Equipslot::Id) const override {}
 			bool drop_on_items(InventoryType::Id, Equipslot::Id, int16_t, bool) const override { return true; }
-			void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const override {}
+			void drop_on_bindings(Point<int16_t>, bool) const override {}
 			void set_count(int16_t) override {}
-			void set_state(State state) override {};
+			void set_state(State) override {}
+			Icon::IconType get_type() override { return IconType::NONE; }
 		};
 
 		StatefulIcon(std::unique_ptr<Type> type, Texture normal_tx, Texture disabled_tx, Texture mouseover_tx);

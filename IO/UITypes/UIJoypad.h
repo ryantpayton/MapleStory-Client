@@ -37,6 +37,8 @@ namespace ms
 
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
+		UIElement::Type get_type() const override;
+
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
 

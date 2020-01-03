@@ -77,6 +77,11 @@ namespace ms
 		position = Point<int16_t>(new_width - 6, new_height - 145 + y_adj);
 	}
 
+	UIElement::Type UIStatusMessenger::get_type() const
+	{
+		return TYPE;
+	}
+
 	void UIStatusMessenger::show_status(Color::Name color, const std::string& message)
 	{
 		statusinfos.push_front(StatusInfo(message, color));

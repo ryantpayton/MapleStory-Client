@@ -283,6 +283,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UIChatbar::get_type() const
+	{
+		return TYPE;
+	}
+
 	Cursor::State UIChatbar::check_dragtop(bool clicking, Point<int16_t> cursorpos)
 	{
 		Rectangle<int16_t> bounds = getbounds(dimension);

@@ -54,7 +54,6 @@ namespace ms
 		void quit();
 		bool not_quitted() const;
 
-		void reset_cursor();
 		void send_cursor(Point<int16_t> pos);
 		void send_cursor(bool pressed);
 		void send_cursor(Point<int16_t> cursorpos, Cursor::State cursorstate);

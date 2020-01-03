@@ -52,7 +52,7 @@ namespace ms
 		void send_movement(int32_t oid, Point<int16_t> start, std::vector<Movement>&& movements);
 
 		// Calculate the results of an attack.
-		void send_attack(AttackResult& result, const Attack& attack, const std::vector<int32_t> &targets, uint8_t mobcount);
+		void send_attack(AttackResult& result, const Attack& attack, const std::vector<int32_t>& targets, uint8_t mobcount);
 		// Applies damage to a mob.
 		void apply_damage(int32_t oid, int32_t damage, bool toleft, const AttackUser& user, const SpecialMove& move);
 
@@ -70,7 +70,6 @@ namespace ms
 		MapObjects* get_mobs();
 
 	private:
-
 		MapObjects mobs;
 
 		std::queue<MobSpawn> spawns;

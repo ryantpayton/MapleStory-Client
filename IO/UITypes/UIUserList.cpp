@@ -267,6 +267,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UIUserList::get_type() const
+	{
+		return TYPE;
+	}
+
 	Button::State UIUserList::button_pressed(uint16_t buttonid)
 	{
 		switch (buttonid)

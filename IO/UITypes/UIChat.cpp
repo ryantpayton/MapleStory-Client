@@ -84,6 +84,11 @@ namespace ms
 			close();
 	}
 
+	UIElement::Type UIChat::get_type() const
+	{
+		return TYPE;
+	}
+
 	Button::State UIChat::button_pressed(uint16_t buttonid)
 	{
 		switch (buttonid)
@@ -161,6 +166,11 @@ namespace ms
 	{
 		if (pressed && escape)
 			close();
+	}
+
+	UIElement::Type UIRank::get_type() const
+	{
+		return TYPE;
 	}
 
 	Button::State UIRank::button_pressed(uint16_t buttonid)

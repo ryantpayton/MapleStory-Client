@@ -288,6 +288,11 @@ namespace ms
 		return Button::State::NORMAL;
 	}
 
+	UIElement::Type UIMiniMap::get_type() const
+	{
+		return TYPE;
+	}
+
 	void UIMiniMap::update_buttons()
 	{
 		// Add one pixel for a space to the right of each button

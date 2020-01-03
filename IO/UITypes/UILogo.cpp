@@ -98,4 +98,9 @@ namespace ms
 
 		return ret;
 	}
+
+	UIElement::Type UILogo::get_type() const
+	{
+		return TYPE;
+	}
 }

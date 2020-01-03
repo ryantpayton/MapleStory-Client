@@ -1061,7 +1061,9 @@ namespace ms
 		EULA += "INTO THIS AGREEMENT.";
 #pragma endregion
 
-		text = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, EULA, 340, true, 2);
+		// TOOD: Fix drawing of text to fit the window. Too laggy with full text.
+		//text = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, EULA, 340, true, 2);
+		text = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, "Coming soon...", 340, true, 2);
 		max_rows = std::floor(text.height() / 50) - 5;
 
 		int16_t slider_y = 77;
@@ -1084,7 +1086,10 @@ namespace ms
 
 		update_accept(offset);
 
-		position = Point<int16_t>(0, 0);
+		// TODO: Remove this when drawing of text is fixed, until then need to be able to accept TOS.
+		buttons[Buttons::OK]->set_state(Button::State::NORMAL);
+
+		position = Point<int16_t>(0, 10);
 		dimension = TOS_dimensions;
 	}
 
@@ -1094,14 +1099,6 @@ namespace ms
 
 		text.draw(position + Point<int16_t>(226, 84 - offset * 50));
 		slider.draw(position);
-	}
-
-	bool UITermsOfService::remove_cursor(bool clicked, Point<int16_t> cursorpos)
-	{
-		if (slider.remove_cursor(clicked))
-			return true;
-
-		return UIElement::remove_cursor(clicked, cursorpos);
 	}
 
 	Cursor::State UITermsOfService::send_cursor(bool clicked, Point<int16_t> cursorpos)
@@ -1117,6 +1114,11 @@ namespace ms
 		}
 
 		return UIElement::send_cursor(clicked, cursorpos);
+	}
+
+	UIElement::Type UITermsOfService::get_type() const
+	{
+		return TYPE;
 	}
 
 	Button::State UITermsOfService::button_pressed(uint16_t buttonid)

@@ -62,6 +62,8 @@ namespace ms
 
 		Cursor::State send_cursor(bool pressed, Point<int16_t> position) override;
 
+		UIElement::Type get_type() const override;
+
 		void add_buff(int32_t buffid, int32_t duration);
 
 	private:

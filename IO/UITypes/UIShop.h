@@ -38,11 +38,13 @@ namespace ms
 		void draw(float alpha) const override;
 		void update() override;
 
-		bool remove_cursor(bool clicked, Point<int16_t> cursorpos) override;
+		void remove_cursor() override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> position) override;
 		void send_scroll(double yoffset) override;
 		void rightclick(Point<int16_t> cursorpos) override;
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
+
+		UIElement::Type get_type() const override;
 
 		void reset(int32_t npcid);
 		void add_item(int32_t id, int32_t price, int32_t pitch, int32_t time, int16_t buyable);

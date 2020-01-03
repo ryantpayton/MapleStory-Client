@@ -20,6 +20,7 @@
 #include "MapObject.h"
 
 #include "../Graphics/Animation.h"
+
 #include "../Gameplay/Physics/Physics.h"
 
 #include <vector>
@@ -47,11 +48,11 @@ namespace ms
 		int32_t oid;
 		int32_t rid;
 		int8_t state;
-		//int8_t stance; ??
-		// TODO: these are in gms client
-		//bool movable; /* snowball? */
-		//int32_t questid; 
-		//bool activates_by_touch; // 
+		//int8_t stance; // TODO: ??
+		// TODO: These are in the GMS client
+		//bool movable; // TODO: Snowball?
+		//int32_t questid;
+		//bool activates_by_touch;
 
 		nl::node src;
 		std::map<int8_t, Animation> animations;

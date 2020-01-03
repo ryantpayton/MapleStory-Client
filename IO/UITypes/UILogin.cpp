@@ -266,4 +266,9 @@ namespace ms
 
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
+
+	UIElement::Type UILogin::get_type() const
+	{
+		return TYPE;
+	}
 }

@@ -86,27 +86,37 @@ namespace ms
 		}
 	}
 
-	Cursor::State UIStateLogin::send_cursor(Cursor::State mst, Point<int16_t> pos)
+	Cursor::State UIStateLogin::send_cursor(Cursor::State cursorstate, Point<int16_t> cursorpos)
 	{
-		if (UIElement* focusedelement = get(focused))
+		bool clicked = cursorstate == Cursor::State::CLICKING || cursorstate == Cursor::State::VSCROLLIDLE;
+
+		if (auto focusedelement = get(focused))
 		{
 			if (focusedelement->is_active())
 			{
-				return focusedelement->send_cursor(mst == Cursor::CLICKING, pos);
+				remove_cursor(focusedelement->get_type());
+
+				return focusedelement->send_cursor(clicked, cursorpos);
 			}
 			else
 			{
 				focused = UIElement::NONE;
 
-				return mst;
+				return cursorstate;
 			}
 		}
 		else
 		{
 			if (auto front = get_front())
-				return front->send_cursor(mst == Cursor::State::CLICKING, pos);
+			{
+				remove_cursor(front->get_type());
+
+				return front->send_cursor(clicked, cursorpos);
+			}
 			else
+			{
 				return Cursor::State::IDLE;
+			}
 		}
 	}
 
@@ -226,5 +236,16 @@ namespace ms
 		}
 
 		return nullptr;
+	}
+
+	void UIStateLogin::remove_cursor(UIElement::Type type)
+	{
+		for (auto iter : elements)
+		{
+			auto& element = iter.second;
+
+			if (element && element->is_active() && element->get_type() != type)
+				element->remove_cursor();
+		}
 	}
 }

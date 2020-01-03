@@ -326,6 +326,11 @@ namespace ms
 		}
 	}
 
+	UIElement::Type UIAranCreation::get_type() const
+	{
+		return TYPE;
+	}
+
 	void UIAranCreation::send_naming_result(bool nameused)
 	{
 		if (!named)

@@ -40,6 +40,11 @@ namespace ms
 		dimension = Texture(backgrnd).get_dimensions();
 	}
 
+	UIElement::Type UILoginwait::get_type() const
+	{
+		return TYPE;
+	}
+
 	UILoginwait::UILoginwait() : UILoginwait([]() {}) {}
 
 	void UILoginwait::close()

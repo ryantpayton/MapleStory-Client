@@ -28,7 +28,7 @@ namespace ms
 {
 	Icon::Icon(std::unique_ptr<Type> t, Texture tx, int16_t c) : type(std::move(t)), texture(tx), count(c)
 	{
-		texture.shift({ 0, 32 });
+		texture.shift(Point<int16_t>(0, 32));
 		showcount = c > -1;
 		dragged = false;
 	}
@@ -38,11 +38,11 @@ namespace ms
 	void Icon::draw(Point<int16_t> position) const
 	{
 		float opacity = dragged ? 0.5f : 1.0f;
-		get_texture().draw({ position, opacity });
+		get_texture().draw(DrawArgument(position, opacity));
 
 		if (showcount)
 		{
-			static const Charset countset = { nl::nx::ui["Basic.img"]["ItemNo"], Charset::Alignment::LEFT };
+			static const Charset countset = Charset(nl::nx::ui["Basic.img"]["ItemNo"], Charset::Alignment::LEFT);
 			countset.draw(std::to_string(count), position + Point<int16_t>(0, 20));
 		}
 	}
@@ -50,7 +50,7 @@ namespace ms
 	void Icon::dragdraw(Point<int16_t> cursorpos) const
 	{
 		if (dragged)
-			get_texture().draw({ cursorpos - cursoroffset, 0.5f });
+			get_texture().draw(DrawArgument(cursorpos - cursoroffset, 0.5f));
 	}
 
 	void Icon::drop_on_stage() const
@@ -91,9 +91,7 @@ namespace ms
 		dragged = false;
 	}
 
-	/**
-	 * Allows for Icon extensibility. Use this instead of referencing texture directly.
-	 */
+	// Allows for Icon extensibility. Use this instead of referencing texture directly.
 	Texture Icon::get_texture() const
 	{
 		return texture;
@@ -103,6 +101,11 @@ namespace ms
 	{
 		count = c;
 		type->set_count(c);
+	}
+
+	Icon::IconType Icon::get_type()
+	{
+		return type->get_type();
 	}
 
 	int16_t Icon::get_count() const

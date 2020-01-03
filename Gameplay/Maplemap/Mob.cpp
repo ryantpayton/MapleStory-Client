@@ -391,8 +391,8 @@ namespace ms
 			break;
 		case 1:
 			dying = true;
-			apply_death();
 
+			apply_death();
 			break;
 		case 2:
 			fading = true;
