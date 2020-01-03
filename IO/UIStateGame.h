@@ -91,7 +91,7 @@ namespace ms
 
 		Optional<Icon> draggedicon;
 
-		std::map<Icon::IconType, UIElement::Type> icons = {
+		std::map<Icon::IconType, UIElement::Type> icon_map = {
 			{ Icon::IconType::NONE, UIElement::Type::NONE },
 			{ Icon::IconType::SKILL, UIElement::Type::SKILLBOOK },
 			{ Icon::IconType::EQUIP, UIElement::Type::EQUIPINVENTORY },

@@ -553,7 +553,7 @@ namespace ms
 					element->remove_cursor();
 
 					if (draggedicon)
-						if (element->get_type() == icons[draggedicon.get()->get_type()])
+						if (element->get_type() == icon_map[draggedicon.get()->get_type()])
 							remove_icon();
 
 					UI::get().send_cursor(false);

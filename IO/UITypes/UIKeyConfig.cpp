@@ -73,6 +73,7 @@ namespace ms
 	}
 
 	// Load
+
 	void UIKeyConfig::load_keys_pos()
 	{
 		int16_t slot_width = 33;
@@ -512,6 +513,7 @@ namespace ms
 	}
 
 	// UI
+
 	void UIKeyConfig::draw(float inter) const
 	{
 		UIElement::draw(inter);
@@ -810,6 +812,7 @@ namespace ms
 	}
 
 	// Keymap Staging
+
 	void UIKeyConfig::stage_mapping(Point<int16_t> cursorposition, Keyboard::Mapping mapping)
 	{
 		KeyConfig::Key key = key_by_position(cursorposition);
@@ -1048,6 +1051,7 @@ namespace ms
 	}
 
 	// Helpers
+
 	Texture UIKeyConfig::get_item_texture(int32_t item_id) const
 	{
 		const ItemData& data = ItemData::get(item_id);
@@ -1200,6 +1204,7 @@ namespace ms
 	}
 
 	// MappingIcon
+
 	UIKeyConfig::MappingIcon::MappingIcon(Keyboard::Mapping m) : mapping(m) {}
 
 	UIKeyConfig::MappingIcon::MappingIcon(KeyAction::Id action)
