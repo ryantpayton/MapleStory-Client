@@ -17,34 +17,59 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Template/Point.h"
+#include "Tooltip.h"
+#include "MapleFrame.h"
 
-#include <cstdint>
+#include "../Graphics/Text.h"
+#include "../Graphics/Geometry.h"
+
+#include <unordered_map>
 
 namespace ms
 {
-	// Interface for tooltips, information windows about something
-	// the mouse cursor is pointed at.
-	class Tooltip
+	class MapTooltip : public Tooltip
 	{
 	public:
-		// Possible parent UIs for Tooltips.
-		enum Parent
-		{
-			NONE,
-			EQUIPINVENTORY,
-			ITEMINVENTORY,
-			SKILLBOOK,
-			SHOP,
-			EVENT,
-			TEXT,
-			KEYCONFIG,
-			WORLDMAP,
-			MINIMAP
-		};
+		MapTooltip();
 
-		virtual ~Tooltip() {}
+		void draw(Point<int16_t> position) const override;
 
-		virtual void draw(Point<int16_t> cursorpos) const = 0;
+		void set_name(Tooltip::Parent parent, std::string name, bool bolded);
+		void set_desc(std::string description);
+		void set_mapid(int32_t mapid);
+
+		void reset();
+
+	private:
+		static constexpr uint8_t MAX_LIFE = 10u;
+		static constexpr uint8_t MIN_WIDTH = 166u;
+		static constexpr uint8_t BOTTOM_PADDING = 8u;
+		static constexpr Point<int16_t> SEPARATOR_ADJ = Point<int16_t>(5, 0);
+		static constexpr Point<int16_t> LIFE_LABEL_ADJ = Point<int16_t>(20, 3);
+		static constexpr Point<int16_t> LIFE_ICON_ADJ = Point<int16_t>(5, 9);
+
+		MapleFrame frame;
+
+		Texture cover;
+		Texture Mob;
+		Texture Npc;
+		Texture Party;
+
+		Tooltip::Parent parent;
+
+		std::string name;
+		std::string description;
+
+		Text name_label;
+		Text name_simple;
+		Text desc_label;
+		Text desc_simple;
+		Text mob_labels[MAX_LIFE];
+		Text npc_labels[MAX_LIFE];
+
+		int16_t fillwidth;
+		int16_t fillheight;
+
+		ColorLine separator;
 	};
 }

@@ -21,6 +21,9 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_map>
+
+#include <nlnx/node.hpp>
 
 namespace ms
 {
@@ -62,5 +65,31 @@ namespace ms
 	{
 		// Check if a bit mask contains the specified value.
 		bool compare(int32_t mask, int32_t value);
+	}
+
+	namespace NxHelper
+	{
+		namespace Map
+		{
+			struct MapInfo
+			{
+				std::string description;
+				std::string name;
+				std::string street_name;
+				std::string full_name;
+			};
+
+			// Returns all relative map info.
+			MapInfo get_map_info_by_id(int32_t mapid);
+
+			// Returns the category of a map.
+			std::string get_map_category(int32_t mapid);
+
+			// Returns a list of all life on a map (Mobs and NPCs)
+			std::unordered_map<int64_t, std::pair<std::string, std::string>> get_life_on_map(int32_t mapid);
+
+			// Returns the name of the node, under which the argument mapid is in.
+			nl::node get_map_node_name(int32_t mapid);
+		}
 	}
 }

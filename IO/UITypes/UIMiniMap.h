@@ -26,7 +26,6 @@
 #include "../Components/MapleButton.h"
 #include "../Components/AreaButton.h"
 #include "../Components/Slider.h"
-#include "../Components/TextTooltip.h"
 
 namespace ms
 {
@@ -42,6 +41,7 @@ namespace ms
 		void draw(float alpha) const override;
 		void update() override;
 
+		void remove_cursor() override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> pos) override;
 		void UIMiniMap::send_scroll(double yoffset) override;
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
@@ -52,12 +52,15 @@ namespace ms
 		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
-		static constexpr int16_t center_start_x = 64;
-		static constexpr Point<int16_t> window_ul_pos = Point<int16_t>(0, 0);
-		static constexpr int16_t btn_min_y = 4;
-		static constexpr int16_t ml_mr_y = 17;
-		static constexpr int16_t max_adj = 40;
-		const CharStats& stats;
+		static constexpr int16_t CENTER_START_X = 64;
+		static constexpr int16_t BTN_MIN_Y = 4;
+		static constexpr int16_t ML_MR_Y = 17;
+		static constexpr int16_t MAX_ADJ = 40;
+		static constexpr int16_t M_START = 36;
+		static constexpr int16_t LISTNPC_ITEM_HEIGHT = 17;
+		static constexpr int16_t LISTNPC_ITEM_WIDTH = 140;
+		static constexpr int16_t LISTNPC_TEXT_WIDTH = 114;
+		static constexpr Point<int16_t> WINDOW_UL_POS = Point<int16_t>(0, 0);
 
 		void update_buttons();
 		void toggle_buttons();
@@ -70,11 +73,6 @@ namespace ms
 		void update_npclist();
 		void draw_npclist(Point<int16_t> minimap_dims, float alpha) const;
 		void select_npclist(int16_t choice);
-
-		nl::node get_map_node_name();
-
-		// Returns the name of the node, under which the argument mapid is in.
-		std::string get_map_category(int mapid);
 
 		enum Buttons
 		{
@@ -96,6 +94,7 @@ namespace ms
 		// Constants
 		int32_t mapid;
 		int8_t type;
+		int8_t user_type;
 		bool simpleMode;
 		bool big_map;
 		bool has_map;
@@ -119,30 +118,24 @@ namespace ms
 		Point<int16_t> min_dimensions;
 		Point<int16_t> normal_dimensions;
 		Point<int16_t> max_dimensions;
-		TextTooltip hover_tooltip;
 		Text combined_text;
 		Text region_text;
 		Text town_text;
-
-		bool tooltip_enabled;
-		Point<int16_t> tooltip_pos;
 
 		bool listNpc_enabled;
 		nl::node listNpc;
 		std::vector<Sprite> listNpc_sprites;
 		std::vector<MapObject*> listNpc_list;
 		std::vector<Text> listNpc_names;
+		std::vector<std::string> listNpc_full_names;
 
 		Point<int16_t> listNpc_dimensions;
-
-		const int16_t m_start = 36;
-		const int16_t listNpc_item_height = 17;
-		const int16_t listNpc_item_width = 128;
-		const int16_t listNpc_text_width = 114;
 
 		Slider listNpc_slider;
 		int16_t listNpc_offset;
 		int16_t selected;
 		Animation selected_marker;
+
+		const CharStats& stats;
 	};
 }

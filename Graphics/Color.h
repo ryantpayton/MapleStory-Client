@@ -80,6 +80,8 @@ namespace ms
 			GRAYOLIVE,
 			ELECTRICLIME,
 			SUPERNOVA,
+			CHARTREUSE,
+			MALIBU,
 			NUM_COLORS
 		};
 
@@ -118,7 +120,9 @@ namespace ms
 			{ 0.00f, 0.50f, 0.00f }, // Japanese Laurel (Mob HP Bar)
 			{ 0.67f, 0.67f, 0.60f }, // Gray Olive
 			{ 0.80f, 1.00f, 0.00f }, // Electric Lime
-			{ 1.00f, 0.80f, 0.00f }  // Supernova
+			{ 1.00f, 0.80f, 0.00f }, // Supernova
+			{ 0.47f, 1.00f, 0.00f }, // Chartreuse
+			{ 0.47f, 0.80f, 1.00f }  // Malibu
 		};
 
 		// Create a color by an array of real numbers [0.0f, 1.0f]

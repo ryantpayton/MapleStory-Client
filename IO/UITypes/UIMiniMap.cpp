@@ -29,9 +29,10 @@
 namespace ms
 {
 	UIMiniMap::UIMiniMap(const CharStats& st) : UIDragElement<PosMINIMAP>(Point<int16_t>(128, 20)),
-		stats(st), big_map(true), has_map(false), listNpc_enabled(false), listNpc_dimensions(Point<int16_t>(150, 170)), listNpc_offset(0), selected(-1), hover_tooltip()
+		stats(st), big_map(true), has_map(false), listNpc_enabled(false), listNpc_dimensions(Point<int16_t>(150, 170)), listNpc_offset(0), selected(-1)
 	{
 		type = Setting<MiniMapType>::get().load();
+		user_type = type;
 		simpleMode = Setting<MiniMapSimpleMode>::get().load();
 
 		std::string node = simpleMode ? "MiniMapSimpleMode" : "MiniMap";
@@ -49,7 +50,7 @@ namespace ms
 		town_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
 		combined_text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE);
 
-		marker = Setting<MiniMapDefaultHelpers>::get().load() ? nl::nx::ui["UIWindow2.img"]["MiniMapSimpleMode"]["DefaultHelper"] : nl::nx::map["MapHelper.img"]["minimap"];
+		marker = Setting<MiniMapDefaultHelpers>::get().load() ? nl::nx::ui["UIWindow2.img"]["MiniMapSimpleMode"]["DefaultHelper"] : nl::nx::mapLatest["MapHelper.img"]["minimap"];
 
 		player_marker = Animation(marker["user"]);
 		selected_marker = Animation(MiniMap["iconNpc"]);
@@ -71,7 +72,7 @@ namespace ms
 
 			if (has_map)
 			{
-				Animation portal_marker(marker["portal"]);
+				Animation portal_marker = Animation(marker["portal"]);
 
 				for (auto sprite : static_marker_info)
 					portal_marker.draw(position + sprite.second, alpha);
@@ -80,9 +81,6 @@ namespace ms
 
 				if (listNpc_enabled)
 					draw_npclist(normal_dimensions, alpha);
-
-				if (tooltip_enabled)
-					hover_tooltip.draw(tooltip_pos);
 			}
 		}
 		else
@@ -98,15 +96,12 @@ namespace ms
 				Animation portal_marker(marker["portal"]);
 
 				for (auto sprite : static_marker_info)
-					portal_marker.draw(position + sprite.second + Point<int16_t>(0, max_adj), alpha);
+					portal_marker.draw(position + sprite.second + Point<int16_t>(0, MAX_ADJ), alpha);
 
-				draw_movable_markers(position + Point<int16_t>(0, max_adj), alpha);
+				draw_movable_markers(position + Point<int16_t>(0, MAX_ADJ), alpha);
 
 				if (listNpc_enabled)
 					draw_npclist(max_dimensions, alpha);
-
-				if (tooltip_enabled)
-					hover_tooltip.draw(tooltip_pos);
 			}
 		}
 
@@ -120,15 +115,29 @@ namespace ms
 		if (mid != mapid)
 		{
 			mapid = mid;
-			Map = get_map_node_name();
+			Map = NxHelper::Map::get_map_node_name(mapid);
 
-			if (!Map["miniMap"])
+			nl::node town = Map["info"]["town"];
+			nl::node miniMap = Map["miniMap"];
+
+			if (!miniMap)
+			{
 				has_map = false;
+				type = Type::MIN;
+			}
 			else
+			{
 				has_map = true;
 
-			scale = std::pow(2, (int)Map["miniMap"]["mag"]);
-			center_offset = Point<int16_t>(Map["miniMap"]["centerX"], Map["miniMap"]["centerY"]);
+				if (town && town.get_bool())
+					type = Type::MAX;
+				else
+					type = user_type;
+			}
+
+			scale = std::pow(2, (int)miniMap["mag"]);
+			center_offset = Point<int16_t>(miniMap["centerX"], miniMap["centerY"]);
+
 			update_text();
 			update_buttons();
 			update_canvas();
@@ -154,20 +163,22 @@ namespace ms
 		}
 
 		if (listNpc_enabled)
-			for each (Sprite s in listNpc_sprites)
-				s.update();
-
-		if (selected >= 0)
-			selected_marker.update();
-
-		if (listNpc_enabled)
-			for each (Sprite s in listNpc_sprites)
-				s.update();
+			for (Sprite sprite : listNpc_sprites)
+				sprite.update();
 
 		if (selected >= 0)
 			selected_marker.update();
 
 		UIElement::update();
+	}
+
+	void UIMiniMap::remove_cursor()
+	{
+		UIDragElement::remove_cursor();
+
+		listNpc_slider.remove_cursor();
+
+		UI::get().clear_tooltip(Tooltip::Parent::MINIMAP);
 	}
 
 	Cursor::State UIMiniMap::send_cursor(bool clicked, Point<int16_t> cursorpos)
@@ -183,36 +194,45 @@ namespace ms
 			if (Cursor::State new_state = listNpc_slider.send_cursor(cursor_relative, clicked))
 				return new_state;
 
-		if (listNpc_enabled && clicked)
+		if (listNpc_enabled)
 		{
-			Point<int16_t> clicked_point = cursor_relative - Point<int16_t>(10 + (type == Type::MAX ? max_dimensions : normal_dimensions).x(), 23);
-			Rectangle<int16_t> list_bounds(0, listNpc_item_width, 0, listNpc_item_height * 8);
+			Point<int16_t> relative_point = cursor_relative - Point<int16_t>(10 + (type == Type::MAX ? max_dimensions : normal_dimensions).x(), 23);
+			Rectangle<int16_t> list_bounds = Rectangle<int16_t>(0, LISTNPC_ITEM_WIDTH, 0, LISTNPC_ITEM_HEIGHT * 8);
 
-			if (list_bounds.contains(clicked_point))
+			if (list_bounds.contains(relative_point))
 			{
-				int16_t clicked_item = listNpc_offset + clicked_point.y() / listNpc_item_height;
-				select_npclist(clicked_item < listNpc_names.size() ? clicked_item : -1);
+				int16_t list_index = listNpc_offset + relative_point.y() / LISTNPC_ITEM_HEIGHT;
+				bool in_list = list_index < listNpc_names.size();
+
+				if (clicked)
+					select_npclist(in_list ? list_index : -1);
+				else if (in_list)
+					UI::get().show_text(Tooltip::Parent::MINIMAP, listNpc_full_names[list_index]);
 
 				return Cursor::State::IDLE;
 			}
 		}
 
 		bool found = false;
-		auto Npcs = Stage::get().get_npcs().get_npcs();
+		auto npcs = Stage::get().get_npcs().get_npcs();
 
-		for (auto npc = Npcs->begin(); npc != Npcs->end(); npc++)
+		for (auto npc = npcs->begin(); npc != npcs->end(); npc++)
 		{
 			Point<int16_t> npc_pos = (npc->second->get_position() + center_offset) / scale + Point<int16_t>(map_draw_origin_x, map_draw_origin_y);
-			Rectangle<int16_t> marker_spot(npc_pos - Point<int16_t>(4, 8), npc_pos);
+			Rectangle<int16_t> marker_spot = Rectangle<int16_t>(npc_pos - Point<int16_t>(4, 8), npc_pos);
 
 			if (type == Type::MAX)
-				marker_spot.shift(Point<int16_t>(0, max_adj));
+				marker_spot.shift(Point<int16_t>(0, MAX_ADJ));
 
 			if (marker_spot.contains(cursor_relative))
 			{
 				found = true;
-				hover_tooltip.set_text(static_cast<Npc*>(npc->second.get())->get_name());
-				tooltip_pos = cursorpos + 24;
+
+				auto n = static_cast<Npc*>(npc->second.get());
+				std::string name = n->get_name();
+				std::string func = n->get_func();
+
+				UI::get().show_map(Tooltip::Parent::MINIMAP, name, func, {}, false);
 				break;
 			}
 		}
@@ -221,24 +241,27 @@ namespace ms
 		{
 			for (auto sprite : static_marker_info)
 			{
-				Rectangle<int16_t> marker_spot(sprite.second, sprite.second + 8);
+				Rectangle<int16_t> marker_spot = Rectangle<int16_t>(sprite.second, sprite.second + 8);
 
 				if (type == Type::MAX)
-					marker_spot.shift(Point<int16_t>(0, max_adj));
+					marker_spot.shift(Point<int16_t>(0, MAX_ADJ));
 
 				if (marker_spot.contains(cursor_relative))
 				{
-					found = true;
-					nl::node portal_name_node = nl::nx::string["Map.img"][get_map_category(Map["portal"][sprite.first]["tm"])][Map["portal"][sprite.first]["tm"]];
-					std::string portal_dest_name = portal_name_node["mapName"] + ": " + portal_name_node["streetName"];
-					hover_tooltip.set_text(portal_dest_name);
-					tooltip_pos = cursorpos + 24;
-					break;
+					nl::node portal_tm = Map["portal"][sprite.first]["tm"];
+					std::string portal_cat = NxHelper::Map::get_map_category(portal_tm);
+					nl::node portal_name = nl::nx::string["Map.img"][portal_cat][portal_tm]["mapName"];
+
+					if (portal_name)
+					{
+						found = true;
+
+						UI::get().show_map(Tooltip::Parent::MINIMAP, portal_name, "", portal_tm, false);
+						break;
+					}
 				}
 			}
 		}
-
-		tooltip_enabled = found;
 
 		return Cursor::State::IDLE;
 	}
@@ -251,12 +274,17 @@ namespace ms
 
 	void UIMiniMap::send_key(int32_t keycode, bool pressed, bool escape)
 	{
-		if (type < Type::MAX)
-			type++;
-		else
-			type = Type::MIN;
+		if (has_map)
+		{
+			if (type < Type::MAX)
+				type++;
+			else
+				type = Type::MIN;
 
-		toggle_buttons();
+			user_type = type;
+
+			toggle_buttons();
+		}
 	}
 
 	Button::State UIMiniMap::button_pressed(uint16_t buttonid)
@@ -274,7 +302,7 @@ namespace ms
 		case BT_SMALL:
 		case BT_BIG:
 			big_map = !big_map;
-			// TODO: toggle scrolling map
+			// TODO: Toggle scrolling map
 			toggle_buttons();
 			break;
 		case BT_MAP:
@@ -317,19 +345,23 @@ namespace ms
 			buttons[Buttons::BT_BIG]->set_active(false);
 
 			buttons[Buttons::BT_MIN]->set_state(Button::State::DISABLED);
-			buttons[Buttons::BT_MAX]->set_state(Button::State::NORMAL);
+
+			if (has_map)
+				buttons[Buttons::BT_MAX]->set_state(Button::State::NORMAL);
+			else
+				buttons[Buttons::BT_MAX]->set_state(Button::State::DISABLED);
 
 			bt_min_x = combined_text_width + 11;
 
-			buttons[Buttons::BT_MIN]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
+			buttons[Buttons::BT_MIN]->set_position(Point<int16_t>(bt_min_x, BTN_MIN_Y));
 
 			bt_min_x += bt_min_width;
 
-			buttons[Buttons::BT_MAX]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
+			buttons[Buttons::BT_MAX]->set_position(Point<int16_t>(bt_min_x, BTN_MIN_Y));
 
 			bt_min_x += bt_max_width;
 
-			buttons[Buttons::BT_MAP]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
+			buttons[Buttons::BT_MAP]->set_position(Point<int16_t>(bt_min_x, BTN_MIN_Y));
 
 			min_dimensions = Point<int16_t>(bt_min_x + bt_map_width + 7, 20);
 
@@ -341,10 +373,12 @@ namespace ms
 		}
 		else
 		{
+			bool has_npcs = Stage::get().get_npcs().get_npcs()->size() > 0;
+
 			buttons[Buttons::BT_MAP]->set_active(true);
 			buttons[Buttons::BT_MAX]->set_active(true);
 			buttons[Buttons::BT_MIN]->set_active(true);
-			buttons[Buttons::BT_NPC]->set_active(true);
+			buttons[Buttons::BT_NPC]->set_active(has_npcs);
 
 			if (big_map)
 			{
@@ -359,33 +393,33 @@ namespace ms
 
 			buttons[Buttons::BT_MIN]->set_state(Button::State::NORMAL);
 
-			bt_min_x = middle_right_x - (bt_min_width + buttons[Buttons::BT_SMALL]->width() + 1 + bt_max_width + bt_map_width + buttons[Buttons::BT_NPC]->width());
+			bt_min_x = middle_right_x - (bt_min_width + buttons[Buttons::BT_SMALL]->width() + 1 + bt_max_width + bt_map_width + (has_npcs ? buttons[Buttons::BT_NPC]->width() : 0));
 
-			buttons[Buttons::BT_MIN]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
-
-			bt_min_x += bt_max_width;
-
-			buttons[Buttons::BT_MAX]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
+			buttons[Buttons::BT_MIN]->set_position(Point<int16_t>(bt_min_x, BTN_MIN_Y));
 
 			bt_min_x += bt_max_width;
 
-			buttons[Buttons::BT_SMALL]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
-			buttons[Buttons::BT_BIG]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
+			buttons[Buttons::BT_MAX]->set_position(Point<int16_t>(bt_min_x, BTN_MIN_Y));
 
 			bt_min_x += bt_max_width;
 
-			buttons[Buttons::BT_MAP]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
+			buttons[Buttons::BT_SMALL]->set_position(Point<int16_t>(bt_min_x, BTN_MIN_Y));
+			buttons[Buttons::BT_BIG]->set_position(Point<int16_t>(bt_min_x, BTN_MIN_Y));
+
+			bt_min_x += bt_max_width;
+
+			buttons[Buttons::BT_MAP]->set_position(Point<int16_t>(bt_min_x, BTN_MIN_Y));
 
 			bt_min_x += bt_map_width;
 
-			buttons[Buttons::BT_NPC]->set_position(Point<int16_t>(bt_min_x, btn_min_y));
+			buttons[Buttons::BT_NPC]->set_position(Point<int16_t>(bt_min_x, BTN_MIN_Y));
 
 			if (type == Type::MAX)
 				buttons[Buttons::BT_MAX]->set_state(Button::State::DISABLED);
 			else
 				buttons[Buttons::BT_MAX]->set_state(Button::State::NORMAL);
 
-			set_npclist_active(listNpc_enabled);
+			set_npclist_active(listNpc_enabled && has_npcs);
 
 			dragarea = Point<int16_t>(dimension.x(), 20);
 		}
@@ -393,25 +427,10 @@ namespace ms
 
 	void UIMiniMap::update_text()
 	{
-		nl::node Map = nl::nx::string["Map.img"];
-		nl::node foundMap;
-
-		for (auto node = Map.begin(); node != Map.end(); ++node)
-		{
-			foundMap = node.resolve(std::to_string(mapid));
-
-			if (foundMap.size() > 0)
-			{
-				std::string mapName = foundMap["mapName"];
-				std::string streetName = foundMap["streetName"];
-				std::string combined = mapName + ": " + streetName;
-
-				combined_text.change_text(combined);
-				region_text.change_text(mapName);
-				town_text.change_text(streetName);
-				break;
-			}
-		}
+		NxHelper::Map::MapInfo map_info = NxHelper::Map::get_map_info_by_id(mapid);
+		combined_text.change_text(map_info.full_name);
+		region_text.change_text(map_info.name);
+		town_text.change_text(map_info.street_name);
 	}
 
 	void UIMiniMap::update_canvas()
@@ -444,7 +463,7 @@ namespace ms
 		int16_t window_width = std::max(178, std::max((int)mark_text_width, map_dimensions.x() + 20));
 
 		c_stretch = std::max(0, window_width - 128);
-		ur_x_offset = center_start_x + c_stretch;
+		ur_x_offset = CENTER_START_X + c_stretch;
 		map_draw_origin_x = std::max(10, window_width / 2 - map_dimensions.x() / 2);
 
 		if (map_dimensions.y() <= 20)
@@ -485,9 +504,9 @@ namespace ms
 		int16_t min_c_stretch = combined_text_width + 18 + bt_min_width + bt_max_width + bt_map_width - 128;
 
 		// Min sprites queue
-		min_sprites.emplace_back(Min[Center], DrawArgument(window_ul_pos + Point<int16_t>(center_start_x, 0), Point<int16_t>(min_c_stretch, 0)));
-		min_sprites.emplace_back(Min[Left], DrawArgument(window_ul_pos));
-		min_sprites.emplace_back(Min[Right], DrawArgument(window_ul_pos + Point<int16_t>(min_c_stretch + center_start_x, 0)));
+		min_sprites.emplace_back(Min[Center], DrawArgument(WINDOW_UL_POS + Point<int16_t>(CENTER_START_X, 0), Point<int16_t>(min_c_stretch, 0)));
+		min_sprites.emplace_back(Min[Left], DrawArgument(WINDOW_UL_POS));
+		min_sprites.emplace_back(Min[Right], DrawArgument(WINDOW_UL_POS + Point<int16_t>(min_c_stretch + CENTER_START_X, 0)));
 
 		// (7,10) is the top left corner of the inner window. 
 		// 114 = 128 (width of left and right borders) - 14 (width of middle borders * 2). 27 = height of inner frame drawn on up and down borders
@@ -497,12 +516,12 @@ namespace ms
 		if (has_map)
 			normal_sprites.emplace_back(Map["miniMap"]["canvas"], DrawArgument(Point<int16_t>(map_draw_origin_x, map_draw_origin_y)));
 
-		normal_sprites.emplace_back(Normal[MiddleLeft], DrawArgument(Point<int16_t>(0, ml_mr_y), Point<int16_t>(0, m_stretch)));
-		normal_sprites.emplace_back(Normal[MiddleRight], DrawArgument(Point<int16_t>(middle_right_x, ml_mr_y), Point<int16_t>(0, m_stretch)));
-		normal_sprites.emplace_back(Normal[UpCenter], DrawArgument(Point<int16_t>(center_start_x, 0) + window_ul_pos, Point<int16_t>(c_stretch, 0)));
-		normal_sprites.emplace_back(Normal[UpLeft], window_ul_pos);
-		normal_sprites.emplace_back(Normal[UpRight], DrawArgument(Point<int16_t>(ur_x_offset, 0) + window_ul_pos));
-		normal_sprites.emplace_back(Normal[DownCenter], DrawArgument(Point<int16_t>(center_start_x, down_y_offset + 18), Point<int16_t>(c_stretch, 0)));
+		normal_sprites.emplace_back(Normal[MiddleLeft], DrawArgument(Point<int16_t>(0, ML_MR_Y), Point<int16_t>(0, m_stretch)));
+		normal_sprites.emplace_back(Normal[MiddleRight], DrawArgument(Point<int16_t>(middle_right_x, ML_MR_Y), Point<int16_t>(0, m_stretch)));
+		normal_sprites.emplace_back(Normal[UpCenter], DrawArgument(Point<int16_t>(CENTER_START_X, 0) + WINDOW_UL_POS, Point<int16_t>(c_stretch, 0)));
+		normal_sprites.emplace_back(Normal[UpLeft], WINDOW_UL_POS);
+		normal_sprites.emplace_back(Normal[UpRight], DrawArgument(Point<int16_t>(ur_x_offset, 0) + WINDOW_UL_POS));
+		normal_sprites.emplace_back(Normal[DownCenter], DrawArgument(Point<int16_t>(CENTER_START_X, down_y_offset + 18), Point<int16_t>(c_stretch, 0)));
 		normal_sprites.emplace_back(Normal[DownLeft], Point<int16_t>(0, down_y_offset));
 		normal_sprites.emplace_back(Normal[DownRight], Point<int16_t>(ur_x_offset, down_y_offset));
 
@@ -512,69 +531,19 @@ namespace ms
 		max_sprites.emplace_back(MiddleCenter, DrawArgument(Point<int16_t>(7, 50), Point<int16_t>(c_stretch + 114, m_stretch + 27)));
 
 		if (has_map)
-			max_sprites.emplace_back(Map["miniMap"]["canvas"], DrawArgument(Point<int16_t>(map_draw_origin_x, map_draw_origin_y + max_adj)));
+			max_sprites.emplace_back(Map["miniMap"]["canvas"], DrawArgument(Point<int16_t>(map_draw_origin_x, map_draw_origin_y + MAX_ADJ)));
 
-		max_sprites.emplace_back(Max[MiddleLeft], DrawArgument(Point<int16_t>(0, ml_mr_y + max_adj), Point<int16_t>(0, m_stretch)));
-		max_sprites.emplace_back(Max[MiddleRight], DrawArgument(Point<int16_t>(middle_right_x, ml_mr_y + max_adj), Point<int16_t>(0, m_stretch)));
-		max_sprites.emplace_back(Max[UpCenter], DrawArgument(Point<int16_t>(center_start_x, 0) + window_ul_pos, Point<int16_t>(c_stretch, 0)));
-		max_sprites.emplace_back(Max[UpLeft], window_ul_pos);
-		max_sprites.emplace_back(Max[UpRight], DrawArgument(Point<int16_t>(ur_x_offset, 0) + window_ul_pos));
-		max_sprites.emplace_back(Max[DownCenter], DrawArgument(Point<int16_t>(center_start_x, down_y_offset + max_adj + 18), Point<int16_t>(c_stretch, 0)));
-		max_sprites.emplace_back(Max[DownLeft], Point<int16_t>(0, down_y_offset + max_adj));
-		max_sprites.emplace_back(Max[DownRight], Point<int16_t>(ur_x_offset, down_y_offset + max_adj));
-		max_sprites.emplace_back(nl::nx::map["MapHelper.img"]["mark"][Map["info"]["mapMark"]], DrawArgument(Point<int16_t>(7, 16)));
+		max_sprites.emplace_back(Max[MiddleLeft], DrawArgument(Point<int16_t>(0, ML_MR_Y + MAX_ADJ), Point<int16_t>(0, m_stretch)));
+		max_sprites.emplace_back(Max[MiddleRight], DrawArgument(Point<int16_t>(middle_right_x, ML_MR_Y + MAX_ADJ), Point<int16_t>(0, m_stretch)));
+		max_sprites.emplace_back(Max[UpCenter], DrawArgument(Point<int16_t>(CENTER_START_X, 0) + WINDOW_UL_POS, Point<int16_t>(c_stretch, 0)));
+		max_sprites.emplace_back(Max[UpLeft], WINDOW_UL_POS);
+		max_sprites.emplace_back(Max[UpRight], DrawArgument(Point<int16_t>(ur_x_offset, 0) + WINDOW_UL_POS));
+		max_sprites.emplace_back(Max[DownCenter], DrawArgument(Point<int16_t>(CENTER_START_X, down_y_offset + MAX_ADJ + 18), Point<int16_t>(c_stretch, 0)));
+		max_sprites.emplace_back(Max[DownLeft], Point<int16_t>(0, down_y_offset + MAX_ADJ));
+		max_sprites.emplace_back(Max[DownRight], Point<int16_t>(ur_x_offset, down_y_offset + MAX_ADJ));
+		max_sprites.emplace_back(nl::nx::mapLatest["MapHelper.img"]["mark"][Map["info"]["mapMark"]], DrawArgument(Point<int16_t>(7, 17)));
 
-		max_dimensions = normal_dimensions + Point<int16_t>(0, max_adj);
-
-	}
-
-	nl::node UIMiniMap::get_map_node_name()
-	{
-		// Create node name from new map id
-		std::string mid_string = "000000000.img";
-		std::string id_string = std::to_string(mapid);
-		mid_string.replace(9 - id_string.length(), id_string.length(), id_string);
-
-		// Get node of new map
-		return nl::nx::map["Map"]["Map" + std::to_string(mapid / 100000000)][mid_string];
-	}
-
-	std::string UIMiniMap::get_map_category(int mapid)
-	{
-		if (mapid < 1000000)
-			return "maple";
-
-		if (mapid < 200000000)
-			return "victoria";
-
-		if (mapid < 300000000)
-			return "ossyria";
-
-		if (mapid < 400000000)
-			return "elin";
-
-		if (mapid >= 540000000 && mapid < 560000000)
-			return "singapore";
-
-		if (mapid >= 600000000 && mapid < 620000000)
-			return "MasteriaGL";
-
-		if ((mapid >= 670000000 && mapid < 680100000) || mapid == 681000000)
-			return "weddingGL";
-
-		if (mapid >= 677000000 && mapid < 678000000)
-			return "Episode1GL";
-
-		if (mapid >= 677000000 && mapid < 678000000)
-			return "HalloweenGL";
-
-		if (mapid >= 683000000 && mapid < 684000000)
-			return "event";
-
-		if (mapid >= 800000000 && mapid < 889000000)
-			return "jp";
-
-		return "etc";
+		max_dimensions = normal_dimensions + Point<int16_t>(0, MAX_ADJ);
 	}
 
 	void UIMiniMap::draw_movable_markers(Point<int16_t> init_pos, float alpha) const
@@ -641,15 +610,10 @@ namespace ms
 
 	void UIMiniMap::set_npclist_active(bool active)
 	{
-		if (type == Type::MIN)
-		{
-			listNpc_enabled = false;
+		listNpc_enabled = active;
+
+		if (!active)
 			select_npclist(-1);
-		}
-		else
-		{
-			listNpc_enabled = active;
-		}
 
 		update_dimensions();
 	}
@@ -677,6 +641,7 @@ namespace ms
 	{
 		listNpc_sprites.clear();
 		listNpc_names.clear();
+		listNpc_full_names.clear();
 		listNpc_list.clear();
 		selected = -1;
 		listNpc_offset = 0;
@@ -684,28 +649,35 @@ namespace ms
 		if (simpleMode)
 			return;
 
-		MapObjects* npcs = Stage::get().get_npcs().get_npcs();
+		auto npcs = Stage::get().get_npcs().get_npcs();
 
 		for (auto npc = npcs->begin(); npc != npcs->end(); ++npc)
 		{
 			listNpc_list.emplace_back(npc->second.get());
 
-			Npc* n = static_cast<Npc*>(npc->second.get());
+			auto n = static_cast<Npc*>(npc->second.get());
 			std::string name = n->get_name();
+			std::string func = n->get_func();
 
-			if (n->get_func() != "")
-				name += " (" + n->get_func() + ")";
+			if (func != "")
+				name += " (" + func + ")";
 
 			Text name_text = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::WHITE, name);
 
-			// Stopgap solution to truncating names until Text supports truncation...
-			while (name_text.width() > listNpc_text_width)
-			{
-				name.pop_back();
-				name_text.change_text(name + "..");
-			}
-
 			listNpc_names.emplace_back(name_text);
+			listNpc_full_names.emplace_back(name);
+		}
+
+		for (size_t i = 0; i < listNpc_names.size(); i++)
+		{
+			std::string text = listNpc_names[i].get_text();
+
+			// Stopgap solution to truncating names until Text supports truncation
+			while (listNpc_names[i].width() > LISTNPC_TEXT_WIDTH - (listNpc_names.size() > 8 ? 0 : 20))
+			{
+				text.pop_back();
+				listNpc_names[i].change_text(text + "..");
+			}
 		}
 
 		const Point<int16_t> listNpc_pos = Point<int16_t>(type == Type::MAX ? max_dimensions.x() : normal_dimensions.x(), 0);
@@ -715,7 +687,7 @@ namespace ms
 		if (listNpc_names.size() > 8)
 		{
 			listNpc_slider = Slider(
-				Slider::DEFAULT, Range<int16_t>(23, 11 + listNpc_item_height * 8), listNpc_pos.x() + listNpc_item_width + 13, 8, listNpc_names.size(),
+				Slider::DEFAULT, Range<int16_t>(23, 11 + LISTNPC_ITEM_HEIGHT * 8), listNpc_pos.x() + LISTNPC_ITEM_WIDTH + 1, 8, listNpc_names.size(),
 				[&](bool upwards)
 				{
 					int16_t shift = upwards ? -1 : 1;
@@ -732,20 +704,21 @@ namespace ms
 		else
 		{
 			listNpc_slider.setenabled(false);
-			m_stretch = listNpc_item_height * listNpc_names.size() - 34;
+			m_stretch = LISTNPC_ITEM_HEIGHT * listNpc_names.size() - 34;
+			c_stretch -= 17;
 		}
 
-		listNpc_sprites.emplace_back(listNpc["c"], DrawArgument(listNpc_pos + Point<int16_t>(center_start_x, m_start), Point<int16_t>(c_stretch, m_stretch)));
-		listNpc_sprites.emplace_back(listNpc["w"], DrawArgument(listNpc_pos + Point<int16_t>(0, m_start), Point<int16_t>(0, m_stretch)));
-		listNpc_sprites.emplace_back(listNpc["e"], DrawArgument(listNpc_pos + Point<int16_t>(center_start_x + c_stretch, m_start), Point<int16_t>(0, m_stretch)));
-		listNpc_sprites.emplace_back(listNpc["n"], DrawArgument(listNpc_pos + Point<int16_t>(center_start_x, 0), Point<int16_t>(c_stretch, 0)));
-		listNpc_sprites.emplace_back(listNpc["s"], DrawArgument(listNpc_pos + Point<int16_t>(center_start_x, m_start + m_stretch), Point<int16_t>(c_stretch, 0)));
+		listNpc_sprites.emplace_back(listNpc["c"], DrawArgument(listNpc_pos + Point<int16_t>(CENTER_START_X, M_START), Point<int16_t>(c_stretch, m_stretch)));
+		listNpc_sprites.emplace_back(listNpc["w"], DrawArgument(listNpc_pos + Point<int16_t>(0, M_START), Point<int16_t>(0, m_stretch)));
+		listNpc_sprites.emplace_back(listNpc["e"], DrawArgument(listNpc_pos + Point<int16_t>(CENTER_START_X + c_stretch, M_START), Point<int16_t>(0, m_stretch)));
+		listNpc_sprites.emplace_back(listNpc["n"], DrawArgument(listNpc_pos + Point<int16_t>(CENTER_START_X, 0), Point<int16_t>(c_stretch, 0)));
+		listNpc_sprites.emplace_back(listNpc["s"], DrawArgument(listNpc_pos + Point<int16_t>(CENTER_START_X, M_START + m_stretch), Point<int16_t>(c_stretch, 0)));
 		listNpc_sprites.emplace_back(listNpc["nw"], DrawArgument(listNpc_pos + Point<int16_t>(0, 0)));
-		listNpc_sprites.emplace_back(listNpc["ne"], DrawArgument(listNpc_pos + Point<int16_t>(center_start_x + c_stretch, 0)));
-		listNpc_sprites.emplace_back(listNpc["sw"], DrawArgument(listNpc_pos + Point<int16_t>(0, m_start + m_stretch)));
-		listNpc_sprites.emplace_back(listNpc["se"], DrawArgument(listNpc_pos + Point<int16_t>(center_start_x + c_stretch, m_start + m_stretch)));
+		listNpc_sprites.emplace_back(listNpc["ne"], DrawArgument(listNpc_pos + Point<int16_t>(CENTER_START_X + c_stretch, 0)));
+		listNpc_sprites.emplace_back(listNpc["sw"], DrawArgument(listNpc_pos + Point<int16_t>(0, M_START + m_stretch)));
+		listNpc_sprites.emplace_back(listNpc["se"], DrawArgument(listNpc_pos + Point<int16_t>(CENTER_START_X + c_stretch, M_START + m_stretch)));
 
-		listNpc_dimensions = Point<int16_t>(center_start_x * 2 + c_stretch, m_start + m_stretch + 30);
+		listNpc_dimensions = Point<int16_t>(CENTER_START_X * 2 + c_stretch, M_START + m_stretch + 30);
 
 		update_dimensions();
 	}
@@ -754,8 +727,8 @@ namespace ms
 	{
 		Animation npc_marker = Animation(marker["npc"]);
 
-		for each (Sprite s in listNpc_sprites)
-			s.draw(position, alpha);
+		for (Sprite sprite : listNpc_sprites)
+			sprite.draw(position, alpha);
 
 		Point<int16_t> listNpc_pos = position + Point<int16_t>(minimap_dims.x() + 10, 23);
 
@@ -763,14 +736,14 @@ namespace ms
 		{
 			if (selected - listNpc_offset == i)
 			{
-				ColorBox highlight = ColorBox(listNpc_item_width, listNpc_item_height, Color::Name::YELLOW, 1.0f);
+				ColorBox highlight = ColorBox(LISTNPC_ITEM_WIDTH - (listNpc_slider.isenabled() ? 0 : 30), LISTNPC_ITEM_HEIGHT, Color::Name::YELLOW, 1.0f);
 				highlight.draw(listNpc_pos);
 			}
 
-			npc_marker.draw(DrawArgument(listNpc_pos + Point<int16_t>(2, 7), false, npc_marker.get_dimensions() / 2), alpha);
-			listNpc_names[listNpc_offset + i].draw(DrawArgument(listNpc_pos + Point<int16_t>(11, -3)));
+			npc_marker.draw(DrawArgument(listNpc_pos + Point<int16_t>(0, 2), false, npc_marker.get_dimensions() / 2), alpha);
+			listNpc_names[listNpc_offset + i].draw(DrawArgument(listNpc_pos + Point<int16_t>(14, -2)));
 
-			listNpc_pos.shift_y(listNpc_item_height);
+			listNpc_pos.shift_y(LISTNPC_ITEM_HEIGHT);
 		}
 
 		if (listNpc_slider.isenabled())
@@ -778,14 +751,19 @@ namespace ms
 
 		if (selected >= 0)
 		{
-			Point<int16_t> npc_pos = (listNpc_list[selected]->get_position() + center_offset) / scale
-				+ Point<int16_t>(map_draw_origin_x, map_draw_origin_y - npc_marker.get_dimensions().y() + (type == Type::MAX ? max_adj : 0));
+			Point<int16_t> npc_pos =
+				(listNpc_list[selected]->get_position() + center_offset) / scale +
+				Point<int16_t>(map_draw_origin_x, map_draw_origin_y - npc_marker.get_dimensions().y() + (type == Type::MAX ? MAX_ADJ : 0));
+
 			selected_marker.draw(position + npc_pos, 0.5f);
 		}
 	}
 
 	void UIMiniMap::select_npclist(int16_t choice)
 	{
+		if (selected == choice)
+			return;
+
 		if (selected >= 0 && selected < listNpc_names.size())
 			listNpc_names[selected].change_color(Color::Name::WHITE);
 

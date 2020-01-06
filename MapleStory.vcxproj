@@ -229,6 +229,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="io\components\MapleButton.cpp" />
     <ClCompile Include="IO\Components\MapleComboBox.cpp" />
     <ClCompile Include="io\components\MapleFrame.cpp" />
+    <ClCompile Include="IO\Components\MapTooltip.cpp" />
     <ClCompile Include="io\components\Nametag.cpp" />
     <ClCompile Include="io\components\Npctext.cpp" />
     <ClCompile Include="io\components\ScrollingNotice.cpp" />
@@ -422,6 +423,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="io\components\MapleButton.h" />
     <ClInclude Include="IO\Components\MapleComboBox.h" />
     <ClInclude Include="io\components\MapleFrame.h" />
+    <ClInclude Include="IO\Components\MapTooltip.h" />
     <ClInclude Include="io\components\Nametag.h" />
     <ClInclude Include="io\components\ScrollingNotice.h" />
     <ClInclude Include="io\components\SkillTooltip.h" />

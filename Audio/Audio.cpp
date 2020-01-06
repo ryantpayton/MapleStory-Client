@@ -83,6 +83,7 @@ namespace ms
 		add_sound(Sound::Name::MENUUP, uisrc["MenuUp"]);
 		add_sound(Sound::Name::RACESELECT, uisrc["RaceSelect"]);
 		add_sound(Sound::Name::SCROLLUP, uisrc["ScrollUp"]);
+		add_sound(Sound::Name::SELECTMAP, uisrc["SelectMap"]);
 		add_sound(Sound::Name::TAB, uisrc["Tab"]);
 		add_sound(Sound::Name::WORLDSELECT, uisrc["WorldSelect"]);
 		add_sound(Sound::Name::DRAGSTART, uisrc["DragStart"]);

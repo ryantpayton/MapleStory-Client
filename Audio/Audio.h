@@ -44,6 +44,7 @@ namespace ms
 			MENUUP,
 			RACESELECT,
 			SCROLLUP,
+			SELECTMAP,
 			TAB,
 			WORLDSELECT,
 			DRAGSTART,

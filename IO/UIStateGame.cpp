@@ -441,6 +441,7 @@ namespace ms
 			eqtooltip.set_equip(Tooltip::Parent::NONE, 0);
 			ittooltip.set_item(0);
 			tetooltip.set_text("");
+			matooltip.reset();
 			tooltip = {};
 			tooltipparent = Tooltip::Parent::NONE;
 		}
@@ -486,6 +487,19 @@ namespace ms
 		if (!text.empty())
 		{
 			tooltip = tetooltip;
+			tooltipparent = parent;
+		}
+	}
+
+	void UIStateGame::show_map(Tooltip::Parent parent, std::string name, std::string description, int32_t mapid, bool bolded)
+	{
+		matooltip.set_name(parent, name, bolded);
+		matooltip.set_desc(description);
+		matooltip.set_mapid(mapid);
+
+		if (!name.empty())
+		{
+			tooltip = matooltip;
 			tooltipparent = parent;
 		}
 	}

@@ -440,6 +440,11 @@ namespace ms
 		state->show_text(parent, text);
 	}
 
+	void UI::show_map(Tooltip::Parent parent, std::string name, std::string description, int32_t mapid, bool bolded)
+	{
+		state->show_map(parent, name, description, mapid, bolded);
+	}
+
 	Keyboard& UI::get_keyboard()
 	{
 		return keyboard;
