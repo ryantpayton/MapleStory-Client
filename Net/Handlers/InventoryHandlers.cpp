@@ -24,9 +24,10 @@
 #include "../IO/Messages.h"
 
 #include "../Character/Inventory/Inventory.h"
-#include "../IO/UITypes/UIShop.h"
 #include "../IO/UITypes/UIEquipInventory.h"
 #include "../IO/UITypes/UIItemInventory.h"
+#include "../IO/UITypes/UIKeyConfig.h"
+#include "../IO/UITypes/UIShop.h"
 
 namespace ms
 {
@@ -78,6 +79,13 @@ namespace ms
 			{
 			case Inventory::Modification::ADD:
 				ItemParser::parse_item(recv, mod.type, mod.pos, inventory);
+
+				if (auto keyconfig = UI::get().get_element<UIKeyConfig>())
+				{
+					int16_t count_now = inventory.get_item_count(mod.type, mod.pos);
+					keyconfig->update_item_count(mod.type, mod.pos, count_now);
+				}
+
 				break;
 			case Inventory::Modification::CHANGECOUNT:
 			{
@@ -88,6 +96,9 @@ namespace ms
 
 				inventory.modify(mod.type, mod.pos, mod.mode, mod.arg, Inventory::Movement::MOVE_NONE);
 
+				if (auto keyconfig = UI::get().get_element<UIKeyConfig>())
+					keyconfig->update_item_count(mod.type, mod.pos, count_now - count_before);
+
 				if (count_before < count_now)
 					mod.mode = Inventory::Modification::ADDCOUNT;
 			}
@@ -96,6 +107,12 @@ namespace ms
 				mod.arg = recv.read_short();
 				break;
 			case Inventory::Modification::REMOVE:
+				if (auto keyconfig = UI::get().get_element<UIKeyConfig>())
+				{
+					int16_t count_before = inventory.get_item_count(mod.type, mod.pos);
+					keyconfig->update_item_count(mod.type, mod.pos, -1 * count_before);
+				}
+
 				inventory.modify(mod.type, mod.pos, mod.mode, mod.arg, Inventory::Movement::MOVE_INTERNAL);
 				break;
 			}

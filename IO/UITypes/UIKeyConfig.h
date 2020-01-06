@@ -26,6 +26,8 @@
 #include "../Character/Skillbook.h"
 #include "../Template/EnumMap.h"
 
+#include "../Character/Inventory/Inventory.h"
+
 namespace ms
 {
 	class UIKeyConfig : public UIDragElement<PosKEYCONFIG>
@@ -35,7 +37,7 @@ namespace ms
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 
-		UIKeyConfig(const Skillbook& skillbook);
+		UIKeyConfig(const Inventory& inventory, const Skillbook& skillbook);
 
 		void draw(float inter) const override;
 
@@ -49,6 +51,8 @@ namespace ms
 
 		void stage_mapping(Point<int16_t> cursorposition, Keyboard::Mapping mapping);
 		void unstage_mapping(Keyboard::Mapping mapping);
+
+		void update_item_count(InventoryType::Id type, int16_t slot, int16_t change);
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -94,7 +98,7 @@ namespace ms
 		class MappingIcon : public Icon::Type
 		{
 		public:
-			MappingIcon(Keyboard::Mapping);
+			MappingIcon(Keyboard::Mapping mapping);
 			MappingIcon(KeyAction::Id keyId);
 
 			void drop_on_stage() const override;
@@ -108,6 +112,19 @@ namespace ms
 			Keyboard::Mapping mapping;
 		};
 
+		// Used for displaying item counts
+		class CountableMappingIcon : public MappingIcon
+		{
+		public:
+			CountableMappingIcon(Keyboard::Mapping mapping, int16_t count);
+
+			void set_count(int16_t count) override;
+
+		private:
+			int16_t count;
+		};
+
+		const Inventory& inventory;
 		const Skillbook& skillbook;
 
 		bool dirty;
