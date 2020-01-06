@@ -131,4 +131,9 @@ namespace ms
 	{
 		return objects.end();
 	}
+
+	MapObjects::underlying_t::size_type MapObjects::size() const
+	{
+		return objects.size();
+	}
 }

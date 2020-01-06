@@ -61,6 +61,8 @@ namespace ms
 		underlying_t::const_iterator begin() const;
 		// Return an end iterator.
 		underlying_t::const_iterator end() const;
+		// Return the size of the iterator.
+		underlying_t::size_type size() const;
 
 	private:
 		std::unordered_map<int32_t, std::unique_ptr<MapObject>> objects;
