@@ -43,7 +43,6 @@ namespace ms
 		virtual int16_t width() const = 0;
 		virtual Point<int16_t> origin() const = 0;
 		virtual Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) = 0;
-		virtual void remove_cursor() = 0;
 		virtual bool in_combobox(Point<int16_t> cursorpos);
 		virtual uint16_t get_selected() const;
 

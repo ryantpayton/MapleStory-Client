@@ -49,11 +49,15 @@ namespace ms
 
 	void Background::settype(Type type)
 	{
+		int16_t dim_x = animation.get_dimensions().x();
+		int16_t dim_y = animation.get_dimensions().y();
+
+		// TODO: Double check for zero. Is this a wz reading issue?
 		if (cx == 0)
-			cx = animation.get_dimensions().x();
+			cx = (dim_x > 0) ? dim_x : 1;
 
 		if (cy == 0)
-			cy = animation.get_dimensions().y();
+			cy = (dim_y > 0) ? dim_y : 1;
 
 		htile = 1;
 		vtile = 1;

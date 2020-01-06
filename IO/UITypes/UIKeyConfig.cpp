@@ -619,7 +619,7 @@ namespace ms
 		{
 		case Buttons::CLOSE:
 		case Buttons::CANCEL:
-			safe_close();
+			close();
 			break;
 		case Buttons::DEFAULT:
 		{

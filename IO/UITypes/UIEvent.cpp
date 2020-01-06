@@ -79,6 +79,7 @@ namespace ms
 		);
 
 		dimension = bg_dimensions;
+		dragarea = Point<int16_t>(dimension.x(), 20);
 	}
 
 	void UIEvent::draw(float inter) const
@@ -167,6 +168,8 @@ namespace ms
 	{
 		UIDragElement::remove_cursor();
 
+		UI::get().clear_tooltip(Tooltip::Parent::EVENT);
+
 		slider.remove_cursor();
 	}
 
@@ -175,16 +178,8 @@ namespace ms
 		Point<int16_t> cursoroffset = cursorpos - position;
 
 		if (slider.isenabled())
-		{
-			Cursor::State state = slider.send_cursor(cursoroffset, clicked);
-
-			if (state != Cursor::State::IDLE)
-			{
-				clear_tooltip();
-
-				return state;
-			}
-		}
+			if (Cursor::State new_state = slider.send_cursor(cursoroffset, clicked))
+				return new_state;
 
 		int16_t yoff = cursoroffset.y();
 		int16_t xoff = cursoroffset.x();
@@ -193,10 +188,8 @@ namespace ms
 
 		if (row > 0 && row < 4 && col > 0 && col < 6)
 			show_item(row, col);
-		else
-			clear_tooltip();
 
-		return UIElement::send_cursor(clicked, cursorpos);
+		return UIDragElement::send_cursor(clicked, cursorpos);
 	}
 
 	void UIEvent::send_key(int32_t keycode, bool pressed, bool escape)
@@ -221,11 +214,6 @@ namespace ms
 		}
 
 		return Button::State::NORMAL;
-	}
-
-	void UIEvent::clear_tooltip()
-	{
-		UI::get().clear_tooltip(Tooltip::Parent::EVENT);
 	}
 
 	void UIEvent::close()
@@ -342,6 +330,6 @@ namespace ms
 
 	void UIEvent::show_item(int16_t row, int16_t col)
 	{
-		UI::get().show_item(Tooltip::Parent::SHOP, 2000000 + col - 1);
+		UI::get().show_item(Tooltip::Parent::EVENT, 2000000 + col - 1);
 	}
 }

@@ -46,7 +46,6 @@ namespace ms
 		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
-		void clear_tooltip();
 		void close();
 		std::string get_event_title(uint8_t id);
 		std::string get_event_date(uint8_t id);

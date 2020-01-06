@@ -51,7 +51,6 @@ namespace ms
 		int16_t width() const override;
 		Point<int16_t> origin() const override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
-		void remove_cursor() override;
 		bool in_combobox(Point<int16_t> cursorpos) override;
 		uint16_t get_selected() const override;
 

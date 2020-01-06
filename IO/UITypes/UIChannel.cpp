@@ -76,6 +76,7 @@ namespace ms
 		}
 
 		dimension = bg.get_dimensions();
+		dragarea = Point<int16_t>(dimension.x(), 20);
 	}
 
 	void UIChannel::draw(float inter) const
@@ -209,6 +210,11 @@ namespace ms
 
 	Cursor::State UIChannel::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
+		Cursor::State dstate = UIDragElement::send_cursor(clicked, cursorpos);
+
+		if (dragged)
+			return dstate;
+
 		Cursor::State ret = clicked ? Cursor::State::CLICKING : Cursor::State::IDLE;
 
 		for (size_t i = 0; i < channel_count + Buttons::CH; i++)

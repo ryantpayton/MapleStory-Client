@@ -192,12 +192,6 @@ namespace ms
 		return ret;
 	}
 
-	void MapleComboBox::remove_cursor()
-	{
-		current_shown = false;
-		option_text[last_shown].change_color(Color::Name::BLACK);
-	}
-
 	bool MapleComboBox::in_combobox(Point<int16_t> cursorpos)
 	{
 		Point<int16_t> lt = Point<int16_t>(position.x() + 1, position.y() + textures[state][0].get_dimensions().y() + 1) + parentpos;

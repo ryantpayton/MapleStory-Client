@@ -205,13 +205,13 @@ namespace ms
 		}
 	}
 
-	void UIOptionMenu::remove_cursor()
-	{
-		buttons[Buttons::SELECT_RES]->remove_cursor();
-	}
-
 	Cursor::State UIOptionMenu::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
+		Cursor::State dstate = UIDragElement::send_cursor(clicked, cursorpos);
+
+		if (dragged)
+			return dstate;
+
 		auto& button = buttons[Buttons::SELECT_RES];
 
 		if (button->is_pressed())
