@@ -139,7 +139,13 @@ namespace ms
 			const char* args = error.get_args();
 			bool can_retry = error.can_retry();
 
-			std::cout << "Error: " << message << args << std::endl;
+			std::cout << "Error: " << message << std::endl;
+
+			if (args && args[0])
+				std::cout << "Message: " << args << std::endl;
+
+			if (can_retry)
+				std::cout << "Enter 'retry' to try again." << std::endl;
 
 			std::string command;
 			std::cin >> command;

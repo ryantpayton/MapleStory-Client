@@ -43,7 +43,7 @@ namespace ms
 		if (state == State::DISABLED)
 			return;
 
-		Point<int16_t> absp = bounds.getlt() + parent;
+		Point<int16_t> absp = bounds.get_left_top() + parent;
 
 		if (text.size() > 0)
 			textlabel.draw(absp);
@@ -296,8 +296,8 @@ namespace ms
 	Rectangle<int16_t> Textfield::get_bounds() const
 	{
 		return Rectangle<int16_t>(
-			bounds.getlt() + parentpos,
-			bounds.getrb() + parentpos
+			bounds.get_left_top() + parentpos,
+			bounds.get_right_bottom() + parentpos
 			);
 	}
 }

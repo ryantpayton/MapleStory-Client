@@ -291,8 +291,8 @@ namespace ms
 	Cursor::State UIChatbar::check_dragtop(bool clicking, Point<int16_t> cursorpos)
 	{
 		Rectangle<int16_t> bounds = getbounds(dimension);
-		Point<int16_t> bounds_lt = bounds.getlt();
-		Point<int16_t> bounds_rb = bounds.getrb();
+		Point<int16_t> bounds_lt = bounds.get_left_top();
+		Point<int16_t> bounds_rb = bounds.get_right_bottom();
 
 		int16_t chattab_height = 20;
 		int16_t bounds_rb_y = bounds_rb.y();

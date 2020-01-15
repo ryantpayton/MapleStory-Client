@@ -123,5 +123,6 @@ namespace ms
 
 	private:
 		std::vector<int8_t> bytes;
+		int16_t opcode;
 	};
 }

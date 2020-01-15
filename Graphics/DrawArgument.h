@@ -27,23 +27,23 @@ namespace ms
 	{
 	public:
 		constexpr DrawArgument() : DrawArgument(0, 0) {}
-		constexpr DrawArgument(int16_t x, int16_t y) : DrawArgument(Point<int16_t>{x, y}) {}
-		constexpr DrawArgument(Point<int16_t> p) : DrawArgument(p, 1.0f) {}
-		constexpr DrawArgument(Point<int16_t> p, float xs, float ys) : DrawArgument(p, p, xs, ys, 1.0f) {}
-		constexpr DrawArgument(Point<int16_t> p, Point<int16_t> s) : DrawArgument(p, p, s, 1.0f, 1.0f, 1.0f, 0.0f) {}
-		constexpr DrawArgument(Point<int16_t> p, bool flip) : DrawArgument(p, flip, 1.0f) {}
-		constexpr DrawArgument(float ang, Point<int16_t> p, float opc) : DrawArgument(ang, p, false, opc) {}
-		constexpr DrawArgument(Point<int16_t> p, float opc) : DrawArgument(p, false, opc) {}
-		constexpr DrawArgument(Point<int16_t> p, Color color) : DrawArgument(p, p, {}, 1.0f, 1.0f, color, 0.0f) {}
-		constexpr DrawArgument(Point<int16_t> p, bool flip, Point<int16_t> c) : DrawArgument(p, c, flip ? -1.0f : 1.0f, 1.0f, 1.0f) {}
-		constexpr DrawArgument(Point<int16_t> p, Point<int16_t> c, float xs, float ys, float opc) : DrawArgument(p, c, {}, xs, ys, opc, 0.0f) {}
+		constexpr DrawArgument(int16_t x, int16_t y) : DrawArgument(Point<int16_t>(x, y)) {}
+		constexpr DrawArgument(Point<int16_t> position) : DrawArgument(position, 1.0f) {}
+		constexpr DrawArgument(Point<int16_t> position, float xscale, float yscale) : DrawArgument(position, position, xscale, yscale, 1.0f) {}
+		constexpr DrawArgument(Point<int16_t> position, Point<int16_t> stretch) : DrawArgument(position, position, stretch, 1.0f, 1.0f, 1.0f, 0.0f) {}
+		constexpr DrawArgument(Point<int16_t> position, bool flip) : DrawArgument(position, flip, 1.0f) {}
+		constexpr DrawArgument(float angle, Point<int16_t> position, float opacity) : DrawArgument(angle, position, false, opacity) {}
+		constexpr DrawArgument(Point<int16_t> position, float opacity) : DrawArgument(position, false, opacity) {}
+		constexpr DrawArgument(Point<int16_t> position, Color color) : DrawArgument(position, position, Point<int16_t>(0, 0), 1.0f, 1.0f, color, 0.0f) {}
+		constexpr DrawArgument(Point<int16_t> position, bool flip, Point<int16_t> center) : DrawArgument(position, center, flip ? -1.0f : 1.0f, 1.0f, 1.0f) {}
+		constexpr DrawArgument(Point<int16_t> position, Point<int16_t> center, float xscale, float yscale, float opacity) : DrawArgument(position, center, Point<int16_t>(0, 0), xscale, yscale, opacity, 0.0f) {}
 		constexpr DrawArgument(bool flip) : DrawArgument(flip ? -1.0f : 1.0f, 1.0f, 1.0f) {}
-		constexpr DrawArgument(float xs, float ys, float opc) : DrawArgument({}, xs, ys, opc) {}
-		constexpr DrawArgument(Point<int16_t> p, float xs, float ys, float opc) : DrawArgument(p, p, xs, ys, opc) {}
-		constexpr DrawArgument(Point<int16_t> p, bool flip, float opc) : DrawArgument(p, p, flip ? -1.0f : 1.0f, 1.0f, opc) {}
-		constexpr DrawArgument(float ang, Point<int16_t> p, bool flip, float opc) : DrawArgument(p, p, {}, flip ? -1.0f : 1.0f, 1.0f, opc, ang) {}
-		constexpr DrawArgument(Point<int16_t> p, Point<int16_t> c, Point<int16_t> s, float xs, float ys, float opc, float ang) : pos(p), center(c), stretch(s), xscale(xs), yscale(ys), color(1.0f, 1.0f, 1.0f, opc), angle(ang) {}
-		constexpr DrawArgument(Point<int16_t> p, Point<int16_t> c, Point<int16_t> s, float xs, float ys, Color color, float ang) : pos(p), center(c), stretch(s), xscale(xs), yscale(ys), color(color), angle(ang) {}
+		constexpr DrawArgument(float xscale, float yscale, float opacity) : DrawArgument(Point<int16_t>(0, 0), xscale, yscale, opacity) {}
+		constexpr DrawArgument(Point<int16_t> position, float xscale, float yscale, float opacity) : DrawArgument(position, position, xscale, yscale, opacity) {}
+		constexpr DrawArgument(Point<int16_t> position, bool flip, float opacity) : DrawArgument(position, position, flip ? -1.0f : 1.0f, 1.0f, opacity) {}
+		constexpr DrawArgument(float angle, Point<int16_t> position, bool flip, float opacity) : DrawArgument(position, position, Point<int16_t>(0, 0), flip ? -1.0f : 1.0f, 1.0f, opacity, angle) {}
+		constexpr DrawArgument(Point<int16_t> position, Point<int16_t> center, Point<int16_t> stretch, float xscale, float yscale, float opacity, float angle) : pos(position), center(center), stretch(stretch), xscale(xscale), yscale(yscale), color(1.0f, 1.0f, 1.0f, opacity), angle(angle) {}
+		constexpr DrawArgument(Point<int16_t> position, Point<int16_t> center, Point<int16_t> stretch, float xscale, float yscale, Color color, float angle) : pos(position), center(center), stretch(stretch), xscale(xscale), yscale(yscale), color(color), angle(angle) {}
 
 		constexpr Point<int16_t> getpos() const
 		{

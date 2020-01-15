@@ -110,24 +110,24 @@ namespace ms
 
 			Point<int16_t> origin = attack.origin;
 			Rectangle<int16_t> range = attack.range;
-			int16_t hrange = static_cast<int16_t>(range.l() * attack.hrange);
+			int16_t hrange = static_cast<int16_t>(range.left() * attack.hrange);
 
 			if (attack.toleft)
 			{
 				range = {
 					origin.x() + hrange,
-					origin.x() + range.r(),
-					origin.y() + range.t(),
-					origin.y() + range.b()
+					origin.x() + range.right(),
+					origin.y() + range.top(),
+					origin.y() + range.bottom()
 				};
 			}
 			else
 			{
 				range = {
-					origin.x() - range.r(),
+					origin.x() - range.right(),
 					origin.x() - hrange,
-					origin.y() + range.t(),
-					origin.y() + range.b()
+					origin.y() + range.top(),
+					origin.y() + range.bottom()
 				};
 			}
 

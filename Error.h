@@ -19,7 +19,7 @@
 
 namespace ms
 {
-	// Error codes to be checked after initialisation.
+	// Error codes to be checked after initialization.
 	class Error
 	{
 	public:
@@ -35,11 +35,13 @@ namespace ms
 			FREETYPE,
 			VERTEX_SHADER,
 			FRAGMENT_SHADER,
-			SHADER_PROGRAM,
+			SHADER_PROGRAM_LINK,
+			SHADER_PROGRAM_VALID,
 			SHADER_VARS,
 			WINDOW,
 			AUDIO,
 			MISSING_ICON,
+			FONT_PATH,
 			LENGTH
 		};
 
@@ -53,7 +55,7 @@ namespace ms
 
 		constexpr bool can_retry() const
 		{
-			return code == Code::CONNECTION || code == Code::MISSING_FILE;
+			return code == Code::CONNECTION || code == Code::MISSING_FILE || code == Code::WRONG_UI_FILE || code == Code::MISSING_ICON || code == Code::FONT_PATH;
 		}
 
 		constexpr const char* get_message() const
@@ -73,20 +75,22 @@ namespace ms
 		static constexpr const char* messages[Code::LENGTH] =
 		{
 			"",
-			"The server seems to be offline. Please start the server and enter 'retry'.",
-			"Could not initialize nlnx. Message: ",
+			"Cannot connect to server.",
+			"Could not initialize NLNX.",
 			"Missing a game file: ",
 			"UI.nx has wrong version.",
-			"Could not initialize glfw.",
-			"Could not initialize glew.",
-			"Could not initialize freetype.",
-			"Failed to create vertex shader.",
-			"Failed to create fragment shader.",
-			"Failed to create shader program.",
+			"Could not initialize GLFW.",
+			"Could not initialize GLEW.",
+			"Could not initialize FreeType.",
+			"Failed to compile vertex shader.",
+			"Failed to compile fragment shader.",
+			"Failed to link shader program.",
+			"Failed to validate shader program.",
 			"Failed to locate shader variables.",
 			"Failed to create window.",
-			"Failed to initialize audio",
-			"Could not load icon. Message: "
+			"Failed to initialize audio.",
+			"Could not load icon.",
+			"Could not load fonts."
 		};
 	};
 }

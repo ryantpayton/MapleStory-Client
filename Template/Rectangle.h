@@ -26,92 +26,96 @@ namespace ms
 	class Rectangle
 	{
 	public:
-		Rectangle(nl::node nlt, nl::node nrb) : lt(nlt), rb(nrb) {}
-		Rectangle(nl::node src) : lt(src["lt"]), rb(src["rb"]) {}
+		Rectangle(nl::node sourceLeftTop, nl::node sourceRightBottom) : left_top(sourceLeftTop), right_bottom(sourceRightBottom) {}
+		Rectangle(nl::node source) : left_top(source["lt"]), right_bottom(source["rb"]) {}
 
-		constexpr Rectangle(Point<T> lt, Point<T> rb) : lt(lt), rb(rb) {}
-		constexpr Rectangle(T l, T r, T t, T b) : lt(l, t), rb(r, b) {}
-
+		constexpr Rectangle(Point<T> leftTop, Point<T> rightBottom) : left_top(leftTop), right_bottom(rightBottom) {}
+		constexpr Rectangle(T left, T right, T top, T bottom) : left_top(left, top), right_bottom(right, bottom) {}
 		constexpr Rectangle() {}
 
 		constexpr T width() const
 		{
-			return std::abs(lt.x() - rb.x());
+			return std::abs(left() - right());
 		}
 
 		constexpr T height() const
 		{
-			return std::abs(lt.y() - rb.y());
+			return std::abs(top() - bottom());
 		}
 
-		constexpr T l() const
+		constexpr T left() const
 		{
-			return lt.x();
+			return left_top.x();
 		}
 
-		constexpr T t() const
+		constexpr T top() const
 		{
-			return lt.y();
+			return left_top.y();
 		}
 
-		constexpr T r() const
+		constexpr T right() const
 		{
-			return rb.x();
+			return right_bottom.x();
 		}
 
-		constexpr T b() const
+		constexpr T bottom() const
 		{
-			return rb.y();
+			return right_bottom.y();
 		}
 
 		constexpr bool contains(const Point<T>& v) const
 		{
-			return !straight() && v.x() >= lt.x() && v.x() <= rb.x() && v.y() >= lt.y() && v.y() <= rb.y();
+			return
+				!straight() &&
+				v.x() >= left() && v.x() <= right() &&
+				v.y() >= top() && v.y() <= bottom();
 		}
 
 		constexpr bool overlaps(const Rectangle<T>& ar) const
 		{
-			return Range<T>(lt.x(), rb.x()).overlaps(Range<T>(ar.lt.x(), ar.rb.x())) && Range<T>(lt.y(), rb.y()).overlaps(Range<T>(ar.lt.y(), ar.rb.y()));
+			return
+				get_horizontal().overlaps(Range<T>(ar.left(), ar.right())) &&
+				get_vertical().overlaps(Range<T>(ar.top(), ar.bottom()));
 		}
 
 		constexpr bool straight() const
 		{
-			return lt == rb;
+			return left_top == right_bottom;
 		}
 
 		constexpr bool empty() const
 		{
-			return lt.straight() && rb.straight() && straight();
+			return left_top.straight() && right_bottom.straight() && straight();
 		}
 
-		constexpr const Point<T>& getlt() const
+		constexpr const Point<T>& get_left_top() const
 		{
-			return lt;
+			return left_top;
 		}
 
-		constexpr const Point<T>& getrb() const
+		constexpr const Point<T>& get_right_bottom() const
 		{
-			return rb;
+			return right_bottom;
 		}
 
 		constexpr Range<T> get_horizontal() const
 		{
-			return { lt.x(), rb.x() };
+			return { left(), right() };
 		}
 
 		constexpr Range<T> get_vertical() const
 		{
-			return { lt.y(), rb.y() };
+			return { top(), bottom() };
 		}
 
 		void shift(const Point<T>& v)
 		{
-			lt = lt + v;
-			rb = rb + v;
+			left_top = left_top + v;
+			right_bottom = right_bottom + v;
 		}
 
 	private:
-		Point<T> lt;
-		Point<T> rb;
+		Point<T> left_top;
+		Point<T> right_bottom;
 	};
 }

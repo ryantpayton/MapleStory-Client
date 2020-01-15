@@ -25,7 +25,7 @@
 
 namespace ms
 {
-	OutPacket::OutPacket(int16_t opcode)
+	OutPacket::OutPacket(int16_t opc) : opcode(opc)
 	{
 		write_short(opcode);
 	}
@@ -33,6 +33,9 @@ namespace ms
 	void OutPacket::dispatch()
 	{
 		Session::get().write(bytes.data(), bytes.size());
+
+		if (Configuration::get().get_show_packets())
+			std::cout << "Sent Packet: " << std::to_string(opcode) << std::endl;
 	}
 
 	void OutPacket::skip(size_t count)

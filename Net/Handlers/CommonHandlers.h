@@ -23,7 +23,7 @@ namespace ms
 {
 	class PingHandler : public PacketHandler
 	{
-		void handle(InPacket& recv) const override;
+		void handle(InPacket&) const override;
 	};
 
 	class NullHandler : public PacketHandler

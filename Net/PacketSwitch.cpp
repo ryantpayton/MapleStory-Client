@@ -267,7 +267,7 @@ namespace ms
 
 		if (opcode < NUM_HANDLERS)
 		{
-			if (auto & handler = handlers[opcode])
+			if (auto& handler = handlers[opcode])
 			{
 				// Handler ok. Packet is passed on.
 				try
