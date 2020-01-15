@@ -28,15 +28,10 @@
 
 namespace ms
 {
-	UITermsOfService::UITermsOfService(std::function<void()> oh) : okhandler(oh)
+	UITermsOfService::UITermsOfService(std::function<void()> oh) : okhandler(oh), offset(0), unit_rows(1)
 	{
-		offset = 0;
-		unit_rows = 1;
-
 		nl::node Login = nl::nx::ui["Login.img"];
 		nl::node TOS = Login["TOS"];
-
-		Point<int16_t> TOS_dimensions = Texture(TOS).get_dimensions();
 
 		sprites.emplace_back(TOS, Point<int16_t>(399, 250));
 
@@ -1061,10 +1056,8 @@ namespace ms
 		EULA += "INTO THIS AGREEMENT.";
 #pragma endregion
 
-		// TOOD: Fix drawing of text to fit the window. Too laggy with full text.
-		//text = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, EULA, 340, true, 2);
-		text = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, "Coming soon...", 340, true, 2);
-		max_rows = std::floor(text.height() / 50) - 5;
+		text = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, EULA, 340, true, 2);
+		max_rows = text.height() / 300 + 1;
 
 		int16_t slider_y = 77;
 
@@ -1086,18 +1079,16 @@ namespace ms
 
 		update_accept(offset);
 
-		// TODO: Remove this when drawing of text is fixed, until then need to be able to accept TOS.
-		buttons[Buttons::OK]->set_state(Button::State::NORMAL);
-
 		position = Point<int16_t>(0, 10);
-		dimension = TOS_dimensions;
+		dimension = Texture(TOS).get_dimensions();
 	}
 
 	void UITermsOfService::draw(float inter) const
 	{
 		UIElement::draw(inter);
 
-		text.draw(position + Point<int16_t>(226, 84 - offset * 50));
+		int16_t range_min = 80;
+		text.draw(position + Point<int16_t>(226, 84 - offset * 300), Range<int16_t>(range_min, range_min + 316));
 		slider.draw(position);
 	}
 

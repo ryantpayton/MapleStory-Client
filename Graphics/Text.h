@@ -95,6 +95,7 @@ namespace ms
 		Text();
 
 		void draw(const DrawArgument& args) const;
+		void draw(const DrawArgument& args, const Range<int16_t>& vertical) const;
 
 		void change_text(const std::string& text);
 		void change_color(Color::Name color);

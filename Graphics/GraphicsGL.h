@@ -54,7 +54,7 @@ namespace ms
 		// Create a layout for the text with the parameters specified.
 		Text::Layout createlayout(const std::string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth, bool formatted, int16_t line_adj);
 		// Draw a text with the given parameters.
-		void drawtext(const DrawArgument& args, const std::string& text, const Text::Layout& layout, Text::Font font, Color::Name color, Text::Background back);
+		void drawtext(const DrawArgument& args, const Range<int16_t>& vertical, const std::string& text, const Text::Layout& layout, Text::Font font, Color::Name color, Text::Background back);
 
 		// Draw a rectangle filled with the specified color.
 		void drawrectangle(int16_t x, int16_t y, int16_t width, int16_t height, float red, float green, float blue, float alpha);

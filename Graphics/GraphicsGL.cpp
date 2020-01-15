@@ -694,7 +694,7 @@ namespace ms
 		words.clear();
 	}
 
-	void GraphicsGL::drawtext(const DrawArgument& args, const std::string& text, const Text::Layout& layout, Text::Font id, Color::Name colorid, Text::Background background)
+	void GraphicsGL::drawtext(const DrawArgument& args, const Range<int16_t>& vertical, const std::string& text, const Text::Layout& layout, Text::Font id, Color::Name colorid, Text::Background background)
 	{
 		if (locked)
 			return;
@@ -710,6 +710,8 @@ namespace ms
 		GLshort y = args.getpos().y();
 		GLshort w = layout.width();
 		GLshort h = layout.height();
+		GLshort minheight = vertical.first() > 0 ? vertical.first() : SCREEN.top();
+		GLshort maxheight = vertical.second() > 0 ? vertical.second() : SCREEN.bottom();
 
 		switch (background)
 		{
@@ -754,20 +756,41 @@ namespace ms
 					const char c = text[pos];
 					const Font::Char& ch = font.chars[c];
 
-					GLshort chx = x + ax + ch.bl;
-					GLshort chy = y + ay - ch.bt;
-					GLshort chw = ch.bw;
-					GLshort chh = ch.bh;
+					GLshort char_x = x + ax + ch.bl;
+					GLshort char_y = y + ay - ch.bt;
+					GLshort char_width = ch.bw;
+					GLshort char_height = ch.bh;
+					GLshort char_bottom = char_y + char_height;
+
+					Offset offset = ch.offset;
+
+					if (char_bottom > maxheight)
+					{
+						GLshort bottom_adjust = char_bottom - maxheight;
+
+						if (bottom_adjust < 10)
+						{
+							offset.bottom -= bottom_adjust;
+							char_bottom -= bottom_adjust;
+						}
+						else
+						{
+							continue;
+						}
+					}
+
+					if (char_y < minheight)
+						continue;
 
 					if (ax == 0 && c == ' ')
 						continue;
 
 					ax += ch.ax;
 
-					if (chw <= 0 || chh <= 0)
+					if (char_width <= 0 || char_height <= 0)
 						continue;
 
-					quads.emplace_back(chx, chx + chw, chy, chy + chh, ch.offset, abscolor, 0.0f);
+					quads.emplace_back(char_x, char_x + char_width, char_y, char_bottom, offset, abscolor, 0.0f);
 				}
 			}
 		}
