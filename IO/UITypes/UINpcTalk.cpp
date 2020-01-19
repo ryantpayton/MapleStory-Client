@@ -28,7 +28,7 @@
 
 namespace ms
 {
-	UINpcTalk::UINpcTalk()
+	UINpcTalk::UINpcTalk() : offset(0), unitrows(0), rowmax(0), show_slider(false), draw_text(false), formatted_text(""), formatted_text_pos(0), timestep(0)
 	{
 		nl::node UIWindow2 = nl::nx::ui["UIWindow2.img"];
 		nl::node UtilDlgEx = UIWindow2["UtilDlgEx"];
@@ -38,6 +38,8 @@ namespace ms
 		bottom = UtilDlgEx["s"];
 		nametag = UtilDlgEx["bar"];
 
+		min_height = 8 * fill.height() + 14;
+
 		buttons[Buttons::ALLLEVEL] = std::make_unique<MapleButton>(UtilDlgEx["BtAllLevel"]);
 		buttons[Buttons::CLOSE] = std::make_unique<MapleButton>(UtilDlgEx["BtClose"]);
 		buttons[Buttons::MYLEVEL] = std::make_unique<MapleButton>(UtilDlgEx["BtMyLevel"]);
@@ -45,6 +47,7 @@ namespace ms
 
 		// TODO: Replace when _inlink is fixed
 		//buttons[Buttons::NO] = std::make_unique<MapleButton>(UtilDlgEx["BtNo"]);
+
 		nl::node Quest = UIWindow2["Quest"];
 
 		buttons[Buttons::NO] = std::make_unique<MapleButton>(Quest["BtNo"]);
@@ -59,6 +62,18 @@ namespace ms
 		buttons[Buttons::QYES] = std::make_unique<MapleButton>(UtilDlgEx["BtQYes"]);
 		buttons[Buttons::YES] = std::make_unique<MapleButton>(UtilDlgEx["BtYes"]);
 
+		name = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::WHITE);
+
+		onmoved = [&](bool upwards)
+		{
+			int16_t shift = upwards ? -unitrows : unitrows;
+			bool above = offset + shift >= 0;
+			bool below = offset + shift <= rowmax - unitrows;
+
+			if (above && below)
+				offset += shift;
+		};
+
 		UI::get().remove_textfield();
 	}
 
@@ -67,16 +82,62 @@ namespace ms
 		Point<int16_t> drawpos = position;
 		top.draw(drawpos);
 		drawpos.shift_y(top.height());
-		fill.draw(DrawArgument(drawpos, Point<int16_t>(0, vtile) * fill.height()));
-		drawpos.shift_y(vtile * fill.height());
+		fill.draw(DrawArgument(drawpos, Point<int16_t>(0, height)));
+		drawpos.shift_y(height);
 		bottom.draw(drawpos);
+		drawpos.shift_y(bottom.height());
 
 		UIElement::draw(inter);
 
-		speaker.draw(DrawArgument(position + Point<int16_t>(80, 100), true));
-		nametag.draw(position + Point<int16_t>(25, 100));
-		name.draw(position + Point<int16_t>(80, 99));
-		text.draw(position + Point<int16_t>(156, 16 + ((vtile * fill.height() - text.height()) / 2)));
+		int16_t speaker_y = (top.height() + height + bottom.height()) / 2;
+		Point<int16_t> speaker_pos = position + Point<int16_t>(22, 11 + speaker_y);
+		Point<int16_t> center_pos = speaker_pos + Point<int16_t>(nametag.width() / 2, 0);
+
+		speaker.draw(DrawArgument(center_pos, true));
+		nametag.draw(speaker_pos);
+		name.draw(center_pos + Point<int16_t>(0, -4));
+
+		if (show_slider)
+		{
+			int16_t text_min_height = position.y() + top.height() - 1;
+			text.draw(position + Point<int16_t>(162, 19 - offset * 400), Range<int16_t>(text_min_height, text_min_height + height - 18));
+			slider.draw(position);
+		}
+		else
+		{
+			int16_t y_adj = height - min_height;
+			text.draw(position + Point<int16_t>(166, 48 - y_adj));
+		}
+	}
+
+	void UINpcTalk::update()
+	{
+		UIElement::update();
+
+		if (draw_text)
+		{
+			if (timestep > 4)
+			{
+				if (formatted_text_pos < formatted_text.size())
+				{
+					std::string t = text.get_text();
+					char c = formatted_text[formatted_text_pos];
+
+					text.change_text(t + c);
+
+					formatted_text_pos++;
+					timestep = 0;
+				}
+				else
+				{
+					draw_text = false;
+				}
+			}
+			else
+			{
+				timestep++;
+			}
+		}
 	}
 
 	Button::State UINpcTalk::button_pressed(uint16_t buttonid)
@@ -178,6 +239,25 @@ namespace ms
 		return Button::State::NORMAL;
 	}
 
+	Cursor::State UINpcTalk::send_cursor(bool clicked, Point<int16_t> cursorpos)
+	{
+		Point<int16_t> cursor_relative = cursorpos - position;
+
+		if (show_slider && slider.isenabled())
+			if (Cursor::State sstate = slider.send_cursor(cursor_relative, clicked))
+				return sstate;
+
+		Cursor::State estate = UIElement::send_cursor(clicked, cursorpos);
+
+		if (estate == Cursor::State::CLICKING && clicked && draw_text)
+		{
+			draw_text = false;
+			text.change_text(formatted_text);
+		}
+
+		return estate;
+	}
+
 	void UINpcTalk::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && escape)
@@ -253,16 +333,28 @@ namespace ms
 	void UINpcTalk::change_text(int32_t npcid, int8_t msgtype, int16_t, int8_t speakerbyte, const std::string& tx)
 	{
 		type = get_by_value(msgtype);
-		text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::DARKGREY, format_text(tx, npcid), 320);
+
+		timestep = 0;
+		draw_text = true;
+		formatted_text_pos = 0;
+		formatted_text = format_text(tx, npcid);
+
+		text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::DARKGREY, formatted_text, 320);
+
+		int16_t text_height = text.height();
+
+		text.change_text("");
 
 		if (speakerbyte == 0)
 		{
 			std::string strid = std::to_string(npcid);
 			strid.insert(0, 7 - strid.size(), '0');
 			strid.append(".img");
+
 			speaker = nl::nx::npc[strid]["stand"]["0"];
+
 			std::string namestr = nl::nx::string["Npc.img"][std::to_string(npcid)]["name"];
-			name = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::WHITE, namestr);
+			name.change_text(namestr);
 		}
 		else
 		{
@@ -270,8 +362,26 @@ namespace ms
 			name.change_text("");
 		}
 
-		vtile = 8;
-		height = vtile * fill.height();
+		height = min_height;
+		show_slider = false;
+
+		if (text_height > height)
+		{
+			if (text_height > MAX_HEIGHT)
+			{
+				height = MAX_HEIGHT;
+				show_slider = true;
+				rowmax = text_height / 400 + 1;
+				unitrows = 1;
+
+				int16_t slider_y = top.height() - 7;
+				slider = Slider(Slider::Type::DEFAULT, Range<int16_t>(slider_y, slider_y + height - 20), top.width() - 26, unitrows, rowmax, onmoved);
+			}
+			else
+			{
+				height = text_height;
+			}
+		}
 
 		for (auto& button : buttons)
 		{
@@ -299,20 +409,14 @@ namespace ms
 
 			buttons[Buttons::NO]->set_position(yes_position + Point<int16_t>(65, 0));
 			buttons[Buttons::NO]->set_active(true);
+			break;
 		}
-		break;
 		case TalkType::SENDNEXT:
-			break;
 		case TalkType::SENDNEXTPREV:
-			break;
 		case TalkType::SENDACCEPTDECLINE:
-			break;
 		case TalkType::SENDGETTEXT:
-			break;
 		case TalkType::SENDGETNUMBER:
-			break;
 		case TalkType::SENDSIMPLE:
-			break;
 		default:
 			break;
 		}

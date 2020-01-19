@@ -20,6 +20,7 @@
 #include "../UIElement.h"
 
 #include "../Graphics/Text.h"
+#include "../Components/Slider.h"
 
 namespace ms
 {
@@ -49,7 +50,9 @@ namespace ms
 		UINpcTalk();
 
 		void draw(float inter) const override;
+		void update() override;
 
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursorpos) override;
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
 		UIElement::Type get_type() const override;
@@ -62,6 +65,8 @@ namespace ms
 	private:
 		TalkType get_by_value(int8_t value);
 		std::string format_text(const std::string& tx, const int32_t& npcid);
+
+		static constexpr int16_t MAX_HEIGHT = 248;
 
 		enum Buttons
 		{
@@ -86,14 +91,25 @@ namespace ms
 		Texture fill;
 		Texture bottom;
 		Texture nametag;
+		Texture speaker;
 
 		Text text;
-		Texture speaker;
 		Text name;
-		int16_t height;
-		int16_t vtile;
-		bool slider;
 
+		int16_t height;
+		int16_t offset;
+		int16_t unitrows;
+		int16_t rowmax;
+		int16_t min_height;
+
+		bool show_slider;
+		bool draw_text;
+		Slider slider;
 		TalkType type;
+		std::string formatted_text;
+		size_t formatted_text_pos;
+		uint16_t timestep;
+
+		std::function<void(bool)> onmoved;
 	};
 }
