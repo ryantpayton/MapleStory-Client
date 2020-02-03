@@ -20,7 +20,7 @@ The default settings can be configured by editing the **Configuration.h** file. 
    * [Windows 8.1 SDK](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)
 3. Press **Build** > **Build Solution** or **Ctrl + Shift + B**
 4. After a successful build, you can now run the program by pressing **Debug** > **Start Debugging** or **F5**
-5. Make sure all nx files are present in the parent folder. To convert wz files to nx you can use [NoLifeStory.zip](https://drive.google.com/open?id=1Mk3Kq1lY4NTMqylN5sn0-DQNAcoZZRYH)
+5. Make sure all nx files are present in the parent folder. To convert wz files to nx you can use [NoLifeStory.zip](https://drive.google.com/file/d/1Mk3Kq1lY4NTMqylN5sn0-DQNAcoZZRYH/view?usp=sharing)
    - Extract the zip
    - Place your wz files in the **files** folder
    - Run **start.bat**
@@ -28,7 +28,7 @@ The default settings can be configured by editing the **Configuration.h** file. 
 
 # Required Files
 *Always check **NxFiles.h** for an updated list of required nx files*
-- MapPretty.nx (v167 GMS Map.wz)
+- [MapPretty.nx](https://drive.google.com/file/d/1d8HJkWY6ght5OAoJGtsAjNiG2BL1wcle/view?usp=sharing) (v167 GMS Map.wz)
 - MapLatest.nx (Lastest GMS Map.wz)
 - Map001.nx (Latest GMS Map001.wz)
 - UI.nx (Latest GMS UI.wz)
@@ -36,7 +36,7 @@ The default settings can be configured by editing the **Configuration.h** file. 
 
 # Dependencies
 - Nx library:
-[NoLifeNX](https://github.com/NoLifeDev/NoLifeNx)
+[NoLifeNX](https://github.com/ryantpayton/NoLifeNx)
 
 - Graphics:
 [GLFW3](http://www.glfw.org/download.html), [GLEW](http://glew.sourceforge.net/), [FreeType](http://www.freetype.org/)
@@ -59,7 +59,7 @@ If you experience any kind of in-game glitches, UI rendering issues, or anything
 5. Rebuild Solution
 
 # Binaries (08.19.2019)
-The latest build ([ddd67c8](https://github.com/ryantpayton/HeavenClient/commit/ddd67c8693ef2ad352e8c2dc1e4628e625c49953)) can be found here: [HeavenClient.zip](https://drive.google.com/open?id=186fBZWcuK5uSB3CN6jeTJ_AdU6tK82Ey)
+The latest build ([4fc96b0](https://github.com/ryantpayton/HeavenClient/commit/4fc96b0d8a2d23216501b00cc2be8e1fd4d28af3)) can be found here: [HeavenClient.zip](https://drive.google.com/file/d/14BiqOHtBiHZOsjrYnwU8twx6r5U7g0p8/view?usp=sharing)
 
 # Donations
 If you feel obligated to donate, to further help and support all parties involved in the development of the HeavenClient project, you can donate using [this](https://paypal.me/pools/c/8frYNoobcY) link.
