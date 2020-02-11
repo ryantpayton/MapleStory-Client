@@ -47,8 +47,8 @@ namespace ms
 		void draw(float alpha) const override;
 		void update() override;
 
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
 		bool is_in_range(Point<int16_t> cursorpos) const override;
+		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
 		UIElement::Type get_type() const override;
 
@@ -74,7 +74,7 @@ namespace ms
 		void toggle_event();
 		void remove_active_menu(MenuType type);
 
-		Point<int16_t> get_quickslot_pos();
+		Point<int16_t> get_quickslot_pos() const;
 
 		enum Buttons : uint16_t
 		{

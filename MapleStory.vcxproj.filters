@@ -552,6 +552,12 @@
     <ClCompile Include="IO\Components\MapTooltip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IO\UITypes\UICharInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\PlayerInteractionHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Configuration.h">
@@ -1251,6 +1257,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IO\Components\MapTooltip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UICharInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Packets\PlayerInteractionPackets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\PlayerInteractionHandlers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -37,6 +37,7 @@
 #include "UITypes/UIEvent.h"
 #include "UITypes/UIChannel.h"
 #include "UITypes/UIQuit.h"
+#include "UITypes/UICharInfo.h"
 
 #include "../Gameplay/Stage.h"
 
@@ -304,6 +305,11 @@ namespace ms
 						break;
 					case KeyAction::Id::CHANGECHANNEL:
 						emplace<UIChannel>();
+						break;
+					case KeyAction::Id::CHARINFO:
+						emplace<UICharInfo>(
+							Stage::get().get_player().get_oid()
+							);
 						break;
 					default:
 						std::cout << "Action (" << action << ") not handled!" << std::endl;

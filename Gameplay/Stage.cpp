@@ -275,12 +275,9 @@ namespace ms
 		if (statusbar && statusbar->is_menu_active())
 		{
 			if (pressed)
-			{
 				statusbar->remove_menus();
 
-				return npcs.send_cursor(pressed, position, camera.position());
-			}
-
+			if (statusbar->is_in_range(position))
 			return statusbar->send_cursor(pressed, position);
 		}
 

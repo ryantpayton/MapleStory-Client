@@ -449,6 +449,12 @@ namespace ms
 		PosOPTIONMENU() : PointEntry("PosUSERLIST", "(170, -1)") {}
 	};
 
+	// The default position of the character info window.
+	struct PosCHARINFO : public Configuration::PointEntry
+	{
+		PosCHARINFO() : PointEntry("PosCHARINFO", "(264, 264)") {}
+	};
+
 	struct MiniMapType : public Configuration::ByteEntry
 	{
 		MiniMapType() : ByteEntry("MiniMapType", "0") {}

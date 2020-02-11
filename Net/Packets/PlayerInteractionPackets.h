@@ -17,19 +17,19 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../PacketHandler.h"
+#include "../OutPacket.h"
 
 namespace ms
 {
-	// Handler for a packet which contains NPC dialog
-	class NpcDialogueHandler : public PacketHandler
+	// Packet to request character info
+	// Opcode: CHAR_INFO_REQUEST(97)
+	class CharInfoRequestPacket : public OutPacket
 	{
-		void handle(InPacket& recv) const override;
-	};
-
-	// Opens an NPC shop defined by the packet's contents
-	class OpenNpcShopHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
+	public:
+		CharInfoRequestPacket(int32_t character_id) : OutPacket(OutPacket::Opcode::CHAR_INFO_REQUEST)
+		{
+			write_random();
+			write_int(character_id);
+		}
 	};
 }

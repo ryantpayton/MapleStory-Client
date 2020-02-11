@@ -23,7 +23,7 @@
 
 namespace ms
 {
-	Char::Char(int32_t o, const CharLook& lk, const std::string& name) : MapObject(o), look(lk), namelabel(Text(Text::Font::A13M, Text::Alignment::CENTER, Color::Name::WHITE, Text::Background::NAMETAG, name)) {}
+	Char::Char(int32_t o, const CharLook& lk, const std::string& name) : MapObject(o), look(lk), look_preview(lk), namelabel(Text(Text::Font::A13M, Text::Alignment::CENTER, Color::Name::WHITE, Text::Background::NAMETAG, name)) {}
 
 	void Char::draw(double viewx, double viewy, float alpha) const
 	{
@@ -70,6 +70,11 @@ namespace ms
 
 		for (auto& number : damagenumbers)
 			number.draw(viewx, viewy, alpha);
+	}
+
+	void Char::draw_preview(Point<int16_t> position, float alpha) const
+	{
+		look_preview.draw(position, false, Stance::Id::STAND1, Expression::Id::DEFAULT);
 	}
 
 	bool Char::update(const Physics& physics, float speed)

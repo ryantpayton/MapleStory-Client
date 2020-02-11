@@ -21,14 +21,8 @@
 
 namespace ms
 {
-	// Handler for a packet which contains NPC dialog
-	class NpcDialogueHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
-
-	// Opens an NPC shop defined by the packet's contents
-	class OpenNpcShopHandler : public PacketHandler
+	// Handler for a packet which contains character info
+	class CharInfoHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};

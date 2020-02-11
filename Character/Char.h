@@ -59,6 +59,8 @@ namespace ms
 
 		// Draw look, nametag, effects and chat bubble.
 		void draw(double viewx, double viewy, float alpha) const override;
+		// Draw look
+		void draw_preview(Point<int16_t> position, float alpha) const;
 		// Update look and movements.
 		int8_t update(const Physics& physics) override;
 		// Return the current map layer, or 7 if on a ladder or rope.
@@ -148,6 +150,7 @@ namespace ms
 		float get_stancespeed() const;
 
 		CharLook look;
+		CharLook look_preview;
 		PetLook pets[3];
 
 		State state;

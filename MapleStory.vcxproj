@@ -248,6 +248,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="io\UIStateLogin.cpp" />
     <ClCompile Include="IO\UITypes\UIAranCreation.cpp" />
     <ClCompile Include="IO\UITypes\UIChannel.cpp" />
+    <ClCompile Include="IO\UITypes\UICharInfo.cpp" />
     <ClCompile Include="IO\UITypes\UIChat.cpp" />
     <ClCompile Include="IO\UITypes\UIExplorerCreation.cpp" />
     <ClCompile Include="io\uitypes\UIBuffList.cpp" />
@@ -297,6 +298,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="net\handlers\MessagingHandlers.cpp" />
     <ClCompile Include="net\handlers\NpcInteractionHandlers.cpp" />
     <ClCompile Include="net\handlers\PlayerHandlers.cpp" />
+    <ClCompile Include="Net\Handlers\PlayerInteractionHandlers.cpp" />
     <ClCompile Include="net\handlers\SetfieldHandlers.cpp" />
     <ClCompile Include="Net\Handlers\TestingHandlers.cpp" />
     <ClCompile Include="net\InPacket.cpp" />
@@ -447,6 +449,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="io\UIStateLogin.h" />
     <ClInclude Include="IO\UITypes\UIAranCreation.h" />
     <ClInclude Include="IO\UITypes\UIChannel.h" />
+    <ClInclude Include="IO\UITypes\UICharInfo.h" />
     <ClInclude Include="IO\UITypes\UIChat.h" />
     <ClInclude Include="IO\UITypes\UIExplorerCreation.h" />
     <ClInclude Include="io\uitypes\UIBuffList.h" />
@@ -496,6 +499,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="net\handlers\MessagingHandlers.h" />
     <ClInclude Include="net\handlers\NpcInteractionHandlers.h" />
     <ClInclude Include="net\handlers\PlayerHandlers.h" />
+    <ClInclude Include="Net\Handlers\PlayerInteractionHandlers.h" />
     <ClInclude Include="net\handlers\SetfieldHandlers.h" />
     <ClInclude Include="Net\Handlers\TestingHandlers.h" />
     <ClInclude Include="net\InPacket.h" />
@@ -515,6 +519,7 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="net\packets\MessagingPackets.h" />
     <ClInclude Include="net\packets\MovementPacket.h" />
     <ClInclude Include="net\packets\NpcInteractionPackets.h" />
+    <ClInclude Include="Net\Packets\PlayerInteractionPackets.h" />
     <ClInclude Include="net\packets\PlayerPackets.h" />
     <ClInclude Include="net\packets\SelectCharPackets.h" />
     <ClInclude Include="net\Session.h" />

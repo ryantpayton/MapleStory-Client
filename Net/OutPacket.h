@@ -27,12 +27,12 @@ namespace ms
 	class OutPacket
 	{
 	public:
-		// Construct a packet by writing its opcode.
+		// Construct a packet by writing its opcode
 		OutPacket(int16_t opcode);
 
 		void dispatch();
 
-		// Opcodes for OutPackets associated with version 83 of the game.
+		// Opcodes for OutPackets associated with version 83 of the game
 		enum Opcode : uint16_t
 		{
 			// Login
@@ -70,6 +70,9 @@ namespace ms
 			NPC_TALK_MORE = 60,
 			NPC_SHOP_ACTION = 61,
 
+			// Player Interaction
+			CHAR_INFO_REQUEST = 97,
+
 			// Inventory
 			GATHER_ITEMS = 69,
 			SORT_ITEMS = 70,
@@ -97,29 +100,30 @@ namespace ms
 		};
 
 	protected:
-		// Skip a number of bytes (filled with zeroes).
+		// Skip a number of bytes (filled with zeros)
 		void skip(size_t count);
-		// Write a byte.
+		// Write a byte
 		void write_byte(int8_t ch);
-		// Write a short.
+		// Write a short
 		void write_short(int16_t sh);
-		// Write an int.
+		// Write an int
 		void write_int(int32_t in);
-		// Write a long.
+		// Write a long
 		void write_long(int64_t lg);
 
 		// Write a point, one short for x and one for y.
 		void write_point(Point<int16_t> point);
-		// Write a timestamp as an integer.
+		// Write a timestamp as an integer
 		void write_time();
-		// Write a string. Writes the length as a short
-		// and then each individual character as a byte.
+		// Write a string. Writes the length as a short and then each individual character as a byte.
 		void write_string(const std::string& str);
+		// Write a random int
+		void write_random();
 
 		// Write the MACS and then write the HWID of the computer
 		void write_hardware_info();
 		// Function to convert hexadecimal to decimal
-		int hex_to_dec(std::string hexVal);
+		int32_t hex_to_dec(std::string hexVal);
 
 	private:
 		std::vector<int8_t> bytes;

@@ -40,8 +40,10 @@ namespace ms
 		void draw(float inter) const override;
 
 		void toggle_active() override;
-		void doubleclick(Point<int16_t> position) override;
 		bool send_icon(const Icon& icon, Point<int16_t> position) override;
+
+		void doubleclick(Point<int16_t> position) override;
+		bool is_in_range(Point<int16_t> cursorpos) const override;
 		Cursor::State send_cursor(bool pressed, Point<int16_t> position) override;
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
@@ -104,6 +106,9 @@ namespace ms
 		Texture disabled;
 		Texture disabled2;
 		std::vector<Texture> Slots[Buttons::BT_TABE];
+
+		Point<int16_t> totem_dimensions;
+		Point<int16_t> totem_adj;
 
 		bool hasPendantSlot;
 		bool hasPocketSlot;

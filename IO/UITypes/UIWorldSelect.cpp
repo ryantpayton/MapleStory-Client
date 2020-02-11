@@ -16,6 +16,7 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIWorldSelect.h"
+
 #include "UILoginNotice.h"
 #include "UILoginwait.h"
 #include "UIRegion.h"
@@ -28,7 +29,7 @@
 
 #include "../Net/Packets/LoginPackets.h"
 
-#include <ctime>
+#include "../../Util/Randomizer.h"
 
 #include <nlnx/nx.hpp>
 
@@ -74,9 +75,8 @@ namespace ms
 		{
 			if (backgrounds_size > 1)
 			{
-				std::srand(std::time(NULL)); // Generate a new seed
-
-				int index = rand() % backgrounds_size;
+				auto randomizer = Randomizer();
+				int32_t index = randomizer.next_int(backgrounds_size);
 
 				sprites.emplace_back(obj["WorldSelect"][backgrounds[index]][0], background_pos);
 			}

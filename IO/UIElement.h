@@ -69,6 +69,7 @@ namespace ms
 			KEYCONFIG,
 			OPTIONMENU,
 			QUIT,
+			CHARINFO,
 			NUM_TYPES
 		};
 

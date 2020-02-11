@@ -19,22 +19,23 @@
 
 #include "../UI.h"
 
+#include "../Character/ExpTable.h"
 #include "../Components/MapleButton.h"
 #include "../Gameplay/Stage.h"
-#include "../UITypes/UIQuestLog.h"
-#include "../UITypes/UIUserList.h"
-#include "../UITypes/UIStatsinfo.h"
-#include "../UITypes/UISkillbook.h"
-#include "../UITypes/UIEquipInventory.h"
-#include "../UITypes/UIItemInventory.h"
 #include "../UITypes/UIChannel.h"
-#include "../UITypes/UIJoypad.h"
-#include "../UITypes/UIEvent.h"
-#include "../UITypes/UIKeyConfig.h"
+#include "../UITypes/UICharInfo.h"
 #include "../UITypes/UIChat.h"
+#include "../UITypes/UIEquipInventory.h"
+#include "../UITypes/UIEvent.h"
+#include "../UITypes/UIItemInventory.h"
+#include "../UITypes/UIJoypad.h"
+#include "../UITypes/UIKeyConfig.h"
 #include "../UITypes/UIOptionMenu.h"
+#include "../UITypes/UIQuestLog.h"
 #include "../UITypes/UIQuit.h"
-#include "../Character/ExpTable.h"
+#include "../UITypes/UISkillbook.h"
+#include "../UITypes/UIStatsinfo.h"
+#include "../UITypes/UIUserList.h"
 
 #include <nlnx/nx.hpp>
 
@@ -666,6 +667,10 @@ namespace ms
 			remove_menus();
 			break;
 		case Buttons::BT_CHARACTER_INFO:
+			UI::get().emplace<UICharInfo>(
+				Stage::get().get_player().get_oid()
+				);
+
 			remove_menus();
 			break;
 		case Buttons::BT_CHARACTER_STAT:
@@ -838,7 +843,7 @@ namespace ms
 
 			pos_y_adj += VHEIGHT - 600;
 
-			Point<int16_t> pos_adj = const_cast<UIStatusbar*>(this)->get_quickslot_pos();
+			Point<int16_t> pos_adj = get_quickslot_pos();
 			pos = Point<int16_t>(pos.x(), std::abs(pos.y()) + pos_y_adj) + pos_adj;
 
 			uint16_t end_y = std::floor(28.2 * button_count);
@@ -1013,7 +1018,7 @@ namespace ms
 			toggle_event();
 	}
 
-	Point<int16_t> UIStatusbar::get_quickslot_pos()
+	Point<int16_t> UIStatusbar::get_quickslot_pos() const
 	{
 		if (quickslot_active)
 		{

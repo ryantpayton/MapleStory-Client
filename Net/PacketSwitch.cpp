@@ -17,23 +17,24 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "PacketSwitch.h"
 
-#include "Handlers/CommonHandlers.h"
-#include "Handlers/LoginHandlers.h"
-#include "Handlers/SetfieldHandlers.h"
-#include "Handlers/PlayerHandlers.h"
 #include "Handlers/AttackHandlers.h"
-#include "Handlers/MapobjectHandlers.h"
+#include "Handlers/CommonHandlers.h"
 #include "Handlers/InventoryHandlers.h"
+#include "Handlers/LoginHandlers.h"
+#include "Handlers/MapobjectHandlers.h"
 #include "Handlers/MessagingHandlers.h"
 #include "Handlers/NpcInteractionHandlers.h"
+#include "Handlers/PlayerHandlers.h"
+#include "Handlers/PlayerInteractionHandlers.h"
+#include "Handlers/SetfieldHandlers.h"
 #include "Handlers/TestingHandlers.h"
 
-#include "../Console.h"
 #include "../Configuration.h"
+#include "../Console.h"
 
 namespace ms
 {
-	// Opcodes for InPackets.
+	// Opcodes for InPackets
 	enum Opcode : uint16_t
 	{
 		// Login 1
@@ -149,7 +150,10 @@ namespace ms
 		PLAYER_INTERACTION = 314,
 		KEYMAP = 335,
 		AUTO_HP_POT = 336,
-		AUTO_MP_POT = 337
+		AUTO_MP_POT = 337,
+
+		// Player Interaction
+		CHAR_INFO = 61
 	};
 
 	PacketSwitch::PacketSwitch()
@@ -222,6 +226,9 @@ namespace ms
 		emplace<NPC_DIALOGUE, NpcDialogueHandler>();
 		emplace<OPEN_NPC_SHOP, OpenNpcShopHandler>();
 
+		// Player Interaction
+		emplace<CHAR_INFO, CharInfoHandler>();
+
 		// TODO: Handle packets below correctly
 		emplace<MOVE_MOB_RESPONSE, NullHandler>();
 		emplace<MEMO_RESULT, NullHandler>();
@@ -257,38 +264,45 @@ namespace ms
 
 	void PacketSwitch::forward(const int8_t* bytes, size_t length) const
 	{
-		// Wrap the bytes with a parser.
+		// Wrap the bytes with a parser
 		InPacket recv = { bytes, length };
-		// Read the opcode to determine handler responsible.
+
+		// Read the opcode to determine handler responsible
 		uint16_t opcode = recv.read_short();
 
 		if (Configuration::get().get_show_packets())
-			std::cout << "Received Packet: " << std::to_string(opcode) << std::endl;
+		{
+			if (opcode == PING)
+				std::cout << "Received Packet: PING" << std::endl;
+			else
+				std::cout << "Received Packet: " << std::to_string(opcode) << std::endl;
+		}
 
 		if (opcode < NUM_HANDLERS)
 		{
 			if (auto& handler = handlers[opcode])
 			{
-				// Handler ok. Packet is passed on.
+				// Handler is good, packet is passed on
+
 				try
 				{
 					handler->handle(recv);
 				}
 				catch (const PacketError& err)
 				{
-					// Notice about an error.
+					// Notice about an error
 					warn(err.what(), opcode);
 				}
 			}
 			else
 			{
-				// Warn about an unhandled packet.
+				// Warn about an unhandled packet
 				warn(MSG_UNHANDLED, opcode);
 			}
 		}
 		else
 		{
-			// Warn about a packet with opcode out of bounds.
+			// Warn about a packet with opcode out of bounds
 			warn(MSG_OUTOFBOUNDS, opcode);
 		}
 	}

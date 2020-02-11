@@ -57,6 +57,7 @@ namespace ms
 		settings.emplace<PosEVENT>();
 		settings.emplace<PosKEYCONFIG>();
 		settings.emplace<PosOPTIONMENU>();
+		settings.emplace<PosCHARINFO>();
 		settings.emplace<MiniMapType>();
 		settings.emplace<MiniMapSimpleMode>();
 		settings.emplace<MiniMapDefaultHelpers>();
@@ -114,8 +115,8 @@ namespace ms
 			// Save settings line by line.
 			for (auto& setting : settings)
 				config << setting.second->to_string() << std::endl;
-			}
 		}
+	}
 
 	void Configuration::BoolEntry::save(bool b)
 	{

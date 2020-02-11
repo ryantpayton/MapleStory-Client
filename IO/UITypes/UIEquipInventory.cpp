@@ -96,10 +96,13 @@ namespace ms
 
 		nl::node EquipGL = nl::nx::ui["UIWindowGL.img"]["Equip"];
 		nl::node backgrnd = Equip["backgrnd"];
+		nl::node totem_backgrnd = EquipGL["Totem"]["backgrnd"];
 
 		Point<int16_t> bg_dimensions = Texture(backgrnd).get_dimensions();
+		totem_dimensions = Texture(totem_backgrnd).get_dimensions();
+		totem_adj = Point<int16_t>(-totem_dimensions.x() + 4, 0);
 
-		sprites.emplace_back(EquipGL["Totem"]["backgrnd"], Point<int16_t>(-56, 0));
+		sprites.emplace_back(totem_backgrnd, totem_adj);
 		sprites.emplace_back(backgrnd);
 		sprites.emplace_back(Equip["backgrnd2"]);
 
@@ -282,6 +285,16 @@ namespace ms
 		if (icons[slot])
 			if (int16_t freeslot = inventory.find_free_slot(InventoryType::Id::EQUIP))
 				UnequipItemPacket(slot, freeslot).dispatch();
+	}
+
+	bool UIEquipInventory::is_in_range(Point<int16_t> cursorpos) const
+	{
+		Rectangle<int16_t> bounds = Rectangle<int16_t>(position, position + dimension);
+
+		Rectangle<int16_t> totem_bounds = Rectangle<int16_t>(position, position + totem_dimensions);
+		totem_bounds.shift(totem_adj);
+
+		return bounds.contains(cursorpos) || totem_bounds.contains(cursorpos);
 	}
 
 	bool UIEquipInventory::send_icon(const Icon& icon, Point<int16_t> cursorpos)

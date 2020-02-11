@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Net/InPacket.h"
-#include "../Net/Login.h"
+#include "../../InPacket.h"
+#include "../../Login.h"
 
 namespace ms
 {
