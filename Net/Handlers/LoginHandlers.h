@@ -27,20 +27,26 @@ namespace ms
 		void handle(InPacket& recv) const override;
 	};
 
+	// Handler for a packet that contains the status of the requested world
+	class ServerStatusHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
 	// Handles the packet that contains information on worlds and channels.
 	class ServerlistHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};
 
-	// Handles the packet that contains information on recommended worlds
-	class RecommendedWorldsHandler : public PacketHandler
+	// Handler for a packet that contains information on all chars on this world.
+	class CharlistHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};
 
-	// Handler for a packet that contains information on all chars on this world.
-	class CharlistHandler : public PacketHandler
+	// Handles the packet which contains the IP of a channel server to connect to.
+	class ServerIPHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};
@@ -63,8 +69,8 @@ namespace ms
 		void handle(InPacket& recv) const override;
 	};
 
-	// Handles the packet which contains the IP of a channel server to connect to.
-	class ServerIPHandler : public PacketHandler
+	// Handles the packet that contains information on recommended worlds
+	class RecommendedWorldsHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};

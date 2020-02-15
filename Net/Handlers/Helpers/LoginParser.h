@@ -30,5 +30,6 @@ namespace ms
 		CharEntry parse_charentry(InPacket& recv);
 		StatsEntry parse_stats(InPacket& recv);
 		LookEntry parse_look(InPacket& recv);
+		void parse_login(InPacket& recv);
 	}
 }

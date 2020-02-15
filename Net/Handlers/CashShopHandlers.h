@@ -21,15 +21,30 @@
 
 namespace ms
 {
-	// Handler for a packet which contains all character information on first login or warps the player to a different map
-	class SetfieldHandler : public PacketHandler
+	// Handler for entering the Cash Shop
+	class SetCashShopHandler : public PacketHandler
 	{
 	public:
 		void handle(InPacket& recv) const override;
 
 	private:
-		void transition(int32_t mapid, uint8_t portalid) const;
-		void change_map(InPacket& recv, int32_t map_id) const;
-		void set_field(InPacket& recv) const;
+		void transition() const;
+	};
+
+	// TODO: Write description
+	class QueryCashResultHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+	// TODO: Write description
+	class CashShopOperationHandler : public PacketHandler
+	{
+	public:
+		void handle(InPacket& recv) const override;
+
+	private:
+		void parseCashItemInformation(InPacket& recv) const;
+		void parseExpirationTime(InPacket& recv) const;
 	};
 }

@@ -16,13 +16,14 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "UILogin.h"
-#include "UILoginwait.h"
+
 #include "UILoginNotice.h"
+#include "UILoginwait.h"
 
 #include "../UI.h"
 
-#include "../Components/MapleButton.h"
 #include "../Audio/Audio.h"
+#include "../Components/MapleButton.h"
 
 #include "../Net/Packets/LoginPackets.h"
 
@@ -34,6 +35,8 @@ namespace ms
 {
 	UILogin::UILogin() : UIElement(Point<int16_t>(0, 0), Point<int16_t>(800, 600))
 	{
+		LoginStartPacket().dispatch();
+
 		Music("BgmUI.img/Title").play();
 
 		std::string version_text = Configuration::get().get_version();

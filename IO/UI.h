@@ -17,18 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "Cursor.h"
-#include "Keyboard.h"
 #include "UIState.h"
 
-#include "Components/Icon.h"
 #include "Components/Textfield.h"
 #include "Components/ScrollingNotice.h"
-
-#include "../Template/Singleton.h"
-#include "../Template/Optional.h"
-
-#include <unordered_map>
 
 namespace ms
 {
@@ -38,7 +30,8 @@ namespace ms
 		enum State
 		{
 			LOGIN,
-			GAME
+			GAME,
+			CASHSHOP
 		};
 
 		UI();
@@ -79,9 +72,6 @@ namespace ms
 		void show_map(Tooltip::Parent parent, std::string name, std::string description, int32_t mapid, bool bolded);
 
 		Keyboard& get_keyboard();
-		int64_t get_uptime();
-		uint16_t get_uplevel();
-		int64_t get_upexp();
 
 		template <class T, typename...Args>
 		Optional<T> emplace(Args&& ...args);

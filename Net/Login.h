@@ -19,7 +19,6 @@
 
 #include "../Character/Maplestat.h"
 
-#include <string>
 #include <vector>
 #include <map>
 
@@ -27,12 +26,13 @@ namespace ms
 {
 	struct Account
 	{
-		std::string name;
 		int32_t accid;
-		uint8_t female;
+		int8_t female;
+		bool admin;
+		std::string name;
 		bool muted;
-		int16_t pin;
-		int8_t gmlevel;
+		bool pin;
+		int8_t pic;
 	};
 
 	struct World

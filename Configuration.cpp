@@ -77,7 +77,7 @@ namespace ms
 
 		if (file.is_open())
 		{
-			// Go through the file line for line.
+			// Go through the file line by line
 			std::string line;
 
 			while (getline(file, line))
@@ -95,7 +95,7 @@ namespace ms
 			}
 		}
 
-		// Replace default values with loaded values.
+		// Replace default values with loaded values
 		for (auto& setting : settings)
 		{
 			auto rsiter = rawsettings.find(setting.second->name);
@@ -107,12 +107,12 @@ namespace ms
 
 	void Configuration::save() const
 	{
-		// Open the settings file.
+		// Open the settings file
 		std::ofstream config(FILENAME);
 
 		if (config.is_open())
 		{
-			// Save settings line by line.
+			// Save settings line by line
 			for (auto& setting : settings)
 				config << setting.second->to_string() << std::endl;
 		}
@@ -344,5 +344,15 @@ namespace ms
 	void Configuration::set_channelid(uint8_t id)
 	{
 		channelid = id;
+	}
+
+	bool Configuration::get_admin()
+	{
+		return admin;
+	}
+
+	void Configuration::set_admin(bool value)
+	{
+		admin = value;
 	}
 }

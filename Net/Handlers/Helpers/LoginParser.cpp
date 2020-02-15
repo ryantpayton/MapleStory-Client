@@ -17,34 +17,36 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "LoginParser.h"
 
+#include "../../Session.h"
+
 namespace ms
 {
 	Account LoginParser::parse_account(InPacket& recv)
 	{
 		Account account;
 
-		recv.skip(2);
+		recv.skip_short();
 
 		account.accid = recv.read_int();
 		account.female = recv.read_byte();
+		account.admin = recv.read_bool();
 
-		recv.read_bool(); // is admin
-
-		account.gmlevel = recv.read_byte();
-
-		recv.skip(1);
+		recv.skip_byte(); // Admin
+		recv.skip_byte(); // Country Code
 
 		account.name = recv.read_string();
 
-		recv.skip(1);
+		recv.skip_byte();
 
 		account.muted = recv.read_bool();
 
-		recv.read_long(); // muted until
-		recv.read_long(); // creation date
-		recv.skip(4);
+		recv.skip_long(); // muted until
+		recv.skip_long(); // creation date
 
-		account.pin = recv.read_short();
+		recv.skip_int(); // Remove "Select the world you want to play in"
+
+		account.pin = recv.read_bool(); // 0 - Enabled, 1 - Disabled
+		account.pic = recv.read_byte(); // 0 - Register, 1 - Ask, 2 - Disabled
 
 		return account;
 	}
@@ -189,5 +191,28 @@ namespace ms
 			look.petids.push_back(recv.read_int());
 
 		return look;
+	}
+
+	void LoginParser::parse_login(InPacket& recv)
+	{
+		recv.skip_byte();
+
+		// Read the IPv4 address in a string
+		std::string addrstr;
+
+		for (size_t i = 0; i < 4; i++)
+		{
+			uint8_t num = static_cast<uint8_t>(recv.read_byte());
+			addrstr.append(std::to_string(num));
+
+			if (i < 3)
+				addrstr.push_back('.');
+		}
+
+		// Read the port address in a string
+		std::string portstr = std::to_string(recv.read_short());
+
+		// Attempt to reconnect to the server
+		Session::get().reconnect(addrstr.c_str(), portstr.c_str());
 	}
 }

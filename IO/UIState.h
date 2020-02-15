@@ -17,15 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "UIElement.h"
 #include "Keyboard.h"
+#include "UIElement.h"
 
-#include "Components/Icon.h"
 #include "Components/Tooltip.h"
-
-#include "../Template/EnumMap.h"
-
-#include <memory>
 
 namespace ms
 {
@@ -59,9 +54,6 @@ namespace ms
 		virtual UIElement* get(UIElement::Type type) = 0;
 		virtual UIElement* get_front(std::list<UIElement::Type> types) = 0;
 		virtual UIElement* get_front(Point<int16_t> pos) = 0;
-		virtual int64_t get_uptime() = 0;
-		virtual uint16_t get_uplevel() = 0;
-		virtual int64_t get_upexp() = 0;
 	};
 
 	class UIStateNull : public UIState
@@ -86,8 +78,5 @@ namespace ms
 		UIElement* get(UIElement::Type) override { return nullptr; }
 		UIElement* get_front(std::list<UIElement::Type>) override { return nullptr; }
 		UIElement* get_front(Point<int16_t>) override { return nullptr; }
-		int64_t get_uptime() override { return 0; }
-		uint16_t get_uplevel() override { return 0; }
-		int64_t get_upexp() override { return 0; }
 	};
 }

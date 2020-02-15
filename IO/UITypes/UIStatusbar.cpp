@@ -37,6 +37,8 @@
 #include "../UITypes/UIStatsinfo.h"
 #include "../UITypes/UIUserList.h"
 
+#include "../../Net/Packets/GameplayPackets.h"
+
 #include <nlnx/nx.hpp>
 
 namespace ms
@@ -555,6 +557,7 @@ namespace ms
 		switch (id)
 		{
 		case Buttons::BT_CASHSHOP:
+			EnterCashShopPacket().dispatch();
 			break;
 		case Buttons::BT_MENU:
 			toggle_menu();

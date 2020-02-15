@@ -17,11 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIStateLogin.h"
 
-#include "UITypes/UILogin.h"
-#include "UITypes/UILogo.h"
-#include "UITypes/UILoginNotice.h"
-#include "UITypes/UIRegion.h"
 #include "UITypes/UICharSelect.h"
+#include "UITypes/UILogin.h"
+#include "UITypes/UILoginNotice.h"
+#include "UITypes/UILogo.h"
+#include "UITypes/UIRegion.h"
 
 #include "../Configuration.h"
 
@@ -29,7 +29,8 @@ namespace ms
 {
 	UIStateLogin::UIStateLogin()
 	{
-		focused = UIElement::NONE;
+		focused = UIElement::Type::NONE;
+
 		bool start_shown = Configuration::get().get_start_shown();
 
 		if (!start_shown)
@@ -79,7 +80,7 @@ namespace ms
 			}
 			else
 			{
-				focused = UIElement::NONE;
+				focused = UIElement::Type::NONE;
 
 				return;
 			}
@@ -100,7 +101,7 @@ namespace ms
 			}
 			else
 			{
-				focused = UIElement::NONE;
+				focused = UIElement::Type::NONE;
 
 				return cursorstate;
 			}
@@ -177,7 +178,7 @@ namespace ms
 	void UIStateLogin::remove(UIElement::Type type)
 	{
 		if (focused == type)
-			focused = UIElement::NONE;
+			focused = UIElement::Type::NONE;
 
 		if (auto& element = elements[type])
 		{

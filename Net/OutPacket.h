@@ -39,7 +39,7 @@ namespace ms
 			LOGIN = 1,
 			SERVERLIST_REREQUEST = 4,
 			CHARLIST_REQUEST = 5,
-			STATUS_REQUEST = 6,
+			SERVERSTATUS_REQUEST = 6,
 			ACCEPT_TOS = 7,
 			SET_GENDER = 8,
 			AFTER_LOGIN = 9,
@@ -53,9 +53,11 @@ namespace ms
 			PONG = 24,
 			REGISTER_PIC = 29,
 			SELECT_CHAR_PIC = 30,
+			LOGIN_START = 35, // Custom name
 
 			// Gameplay 1
 			CHANGEMAP = 38,
+			ENTER_CASHSHOP = 40,
 			MOVE_PLAYER = 41,
 			CLOSE_ATTACK = 44,
 			RANGED_ATTACK = 45,
@@ -90,10 +92,12 @@ namespace ms
 
 			// Gameplay 2
 			PARTY_OPERATION = 124,
+			ADMIN_COMMAND = 128,
 			MOVE_MONSTER = 188,
 			PICKUP_ITEM = 202,
 			DAMAGE_REACTOR = 205,
 			PLAYER_MAP_TRANSFER = 207,
+			PLAYER_UPDATE = 223,
 
 			// Custom
 			HASH_CHECK = 30000

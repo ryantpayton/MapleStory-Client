@@ -17,43 +17,27 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "PlayerHandlers.h"
 
-#include "../Character/Buff.h"
+#include "Helpers/LoginParser.h"
+
 #include "../Gameplay/Stage.h"
 #include "../IO/UI.h"
+
 #include "../IO/UITypes/UIBuffList.h"
-#include "../IO/UITypes/UIStatsinfo.h"
+#include "../IO/UITypes/UICashShop.h"
 #include "../IO/UITypes/UISkillbook.h"
+#include "../IO/UITypes/UIStatsinfo.h"
 
 namespace ms
 {
-	void KeymapHandler::handle(InPacket& recv) const
+	void ChangeChannelHandler::handle(InPacket& recv) const
 	{
-		recv.skip(1);
+		LoginParser::parse_login(recv);
 
-		for (uint8_t i = 0; i < 90; i++)
-		{
-			uint8_t type = recv.read_byte();
-			int32_t action = recv.read_int();
+		auto cashshop = UI::get().get_element<UICashShop>();
 
-			UI::get().add_keymapping(i, type, action);
-		}
+		if (cashshop)
+			cashshop->exit_cashshop();
 	}
-
-
-	void SkillMacrosHandler::handle(InPacket& recv) const
-	{
-		uint8_t size = recv.read_byte();
-
-		for (uint8_t i = 0; i < size; i++)
-		{
-			recv.read_string(); // name
-			recv.read_byte(); // 'shout' byte
-			recv.read_int(); // skill 1
-			recv.read_int(); // skill 2
-			recv.read_int(); // skill 3
-		}
-	}
-
 
 	void ChangeStatsHandler::handle(InPacket& recv) const
 	{
@@ -156,7 +140,6 @@ namespace ms
 		}
 	}
 
-
 	void BuffHandler::handle(InPacket& recv) const
 	{
 		uint64_t firstmask = recv.read_long();
@@ -197,7 +180,6 @@ namespace ms
 		Stage::get().get_player().cancel_buff(bs);
 	}
 
-
 	void RecalculateStatsHandler::handle(InPacket&) const
 	{
 		Stage::get().get_player().recalc_stats(false);
@@ -220,11 +202,38 @@ namespace ms
 		UI::get().enable();
 	}
 
+	void SkillMacrosHandler::handle(InPacket& recv) const
+	{
+		uint8_t size = recv.read_byte();
+
+		for (uint8_t i = 0; i < size; i++)
+		{
+			recv.read_string(); // name
+			recv.read_byte(); // 'shout' byte
+			recv.read_int(); // skill 1
+			recv.read_int(); // skill 2
+			recv.read_int(); // skill 3
+		}
+	}
+
 	void AddCooldownHandler::handle(InPacket& recv) const
 	{
 		int32_t skill_id = recv.read_int();
 		int16_t cooltime = recv.read_short();
 
 		Stage::get().get_player().add_cooldown(skill_id, cooltime);
+	}
+
+	void KeymapHandler::handle(InPacket& recv) const
+	{
+		recv.skip(1);
+
+		for (uint8_t i = 0; i < 90; i++)
+		{
+			uint8_t type = recv.read_byte();
+			int32_t action = recv.read_int();
+
+			UI::get().add_keymapping(i, type, action);
+		}
 	}
 }

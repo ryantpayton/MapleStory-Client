@@ -17,19 +17,25 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../PacketHandler.h"
+#include "../../InPacket.h"
+
+#include "../../../Character/Player.h"
 
 namespace ms
 {
-	// Handler for a packet which contains all character information on first login or warps the player to a different map
-	class SetfieldHandler : public PacketHandler
+	namespace CharacterParser
 	{
-	public:
-		void handle(InPacket& recv) const override;
-
-	private:
-		void transition(int32_t mapid, uint8_t portalid) const;
-		void change_map(InPacket& recv, int32_t map_id) const;
-		void set_field(InPacket& recv) const;
-	};
+		void parse_inventory(InPacket& recv, Inventory& inventory);
+		void parse_skillbook(InPacket& recv, Skillbook& skills);
+		void parse_cooldowns(InPacket& recv, Player& player);
+		void parse_questlog(InPacket& recv, Questlog& quests);
+		void parse_ring1(InPacket& recv);
+		void parse_ring2(InPacket& recv);
+		void parse_ring3(InPacket& recv);
+		void parse_minigame(InPacket& recv);
+		void parse_monsterbook(InPacket& recv, Monsterbook& monsterbook);
+		void parse_telerock(InPacket& recv, Telerock& telerock);
+		void parse_nyinfo(InPacket& recv);
+		void parse_areainfo(InPacket& recv);
+	}
 }

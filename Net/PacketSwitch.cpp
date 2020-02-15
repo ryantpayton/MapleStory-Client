@@ -18,6 +18,7 @@
 #include "PacketSwitch.h"
 
 #include "Handlers/AttackHandlers.h"
+#include "Handlers/CashShopHandlers.h"
 #include "Handlers/CommonHandlers.h"
 #include "Handlers/InventoryHandlers.h"
 #include "Handlers/LoginHandlers.h"
@@ -30,7 +31,6 @@
 #include "Handlers/TestingHandlers.h"
 
 #include "../Configuration.h"
-#include "../Console.h"
 
 namespace ms
 {
@@ -39,6 +39,7 @@ namespace ms
 	{
 		// Login 1
 		LOGIN_RESULT = 0,
+		SERVERSTATUS = 3,
 		SERVERLIST = 10,
 		CHARLIST = 11,
 		SERVER_IP = 12,
@@ -59,6 +60,7 @@ namespace ms
 		MODIFY_INVENTORY = 29,
 
 		// Player 2
+		CHANGE_CHANNEL = 16,
 		CHANGE_STATS = 31,
 		GIVE_BUFF = 32,
 		CANCEL_BUFF = 33,
@@ -153,7 +155,12 @@ namespace ms
 		AUTO_MP_POT = 337,
 
 		// Player Interaction
-		CHAR_INFO = 61
+		CHAR_INFO = 61,
+
+		// Cash Shop
+		SET_CASH_SHOP = 127,
+		QUERY_CASH_RESULT = 324,
+		CASHSHOP_OPERATION = 325
 	};
 
 	PacketSwitch::PacketSwitch()
@@ -163,13 +170,14 @@ namespace ms
 
 		// Login handlers
 		emplace<LOGIN_RESULT, LoginResultHandler>();
+		emplace<SERVERSTATUS, ServerStatusHandler>();
 		emplace<SERVERLIST, ServerlistHandler>();
-		emplace<RECOMMENDED_WORLDS, RecommendedWorldsHandler>();
 		emplace<CHARLIST, CharlistHandler>();
+		emplace<SERVER_IP, ServerIPHandler>();
 		emplace<CHARNAME_RESPONSE, CharnameResponseHandler>();
 		emplace<ADD_NEWCHAR_ENTRY, AddNewCharEntryHandler>();
 		emplace<DELCHAR_RESPONSE, DeleteCharResponseHandler>();
-		emplace<SERVER_IP, ServerIPHandler>();
+		emplace<RECOMMENDED_WORLDS, RecommendedWorldsHandler>();
 
 		// 'Setfield' handlers
 		emplace<SET_FIELD, SetfieldHandler>();
@@ -200,6 +208,7 @@ namespace ms
 		emplace<ATTACKED_MAGIC, MagicAttackHandler>();
 
 		// Player handlers
+		emplace<CHANGE_CHANNEL, ChangeChannelHandler>();
 		emplace<KEYMAP, KeymapHandler>();
 		emplace<SKILL_MACROS, SkillMacrosHandler>();
 		emplace<CHANGE_STATS, ChangeStatsHandler>();
@@ -228,6 +237,11 @@ namespace ms
 
 		// Player Interaction
 		emplace<CHAR_INFO, CharInfoHandler>();
+
+		// Cash Shop
+		emplace<SET_CASH_SHOP, SetCashShopHandler>();
+		emplace<QUERY_CASH_RESULT, QueryCashResultHandler>();
+		emplace<CASHSHOP_OPERATION, CashShopOperationHandler>();
 
 		// TODO: Handle packets below correctly
 		emplace<MOVE_MOB_RESPONSE, NullHandler>();

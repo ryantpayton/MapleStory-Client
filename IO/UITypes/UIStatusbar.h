@@ -19,9 +19,9 @@
 
 #include "../UIElement.h"
 
+#include "../Character/CharStats.h"
 #include "../Components/Charset.h"
 #include "../Components/Gauge.h"
-#include "../Character/CharStats.h"
 #include "../Graphics/SpecialText.h"
 
 namespace ms

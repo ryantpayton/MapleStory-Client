@@ -244,9 +244,11 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="io\Messages.cpp" />
     <ClCompile Include="io\UI.cpp" />
     <ClCompile Include="io\UIElement.cpp" />
+    <ClCompile Include="IO\UIStateCashShop.cpp" />
     <ClCompile Include="io\UIStateGame.cpp" />
     <ClCompile Include="io\UIStateLogin.cpp" />
     <ClCompile Include="IO\UITypes\UIAranCreation.cpp" />
+    <ClCompile Include="IO\UITypes\UICashShop.cpp" />
     <ClCompile Include="IO\UITypes\UIChannel.cpp" />
     <ClCompile Include="IO\UITypes\UICharInfo.cpp" />
     <ClCompile Include="IO\UITypes\UIChat.cpp" />
@@ -287,8 +289,11 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClCompile Include="MapleStory.cpp" />
     <ClCompile Include="net\Cryptography.cpp" />
     <ClCompile Include="net\handlers\AttackHandlers.cpp" />
+    <ClCompile Include="Net\Handlers\CashShopHandlers.cpp" />
     <ClCompile Include="net\handlers\CommonHandlers.cpp" />
     <ClCompile Include="net\handlers\CustomHandlers.cpp" />
+    <ClCompile Include="Net\Handlers\Helpers\CashShopParser.cpp" />
+    <ClCompile Include="Net\Handlers\Helpers\CharacterParser.cpp" />
     <ClCompile Include="net\handlers\helpers\ItemParser.cpp" />
     <ClCompile Include="net\handlers\helpers\LoginParser.cpp" />
     <ClCompile Include="net\handlers\helpers\MovementParser.cpp" />
@@ -445,9 +450,11 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="io\UIDragElement.h" />
     <ClInclude Include="io\UIElement.h" />
     <ClInclude Include="io\UIState.h" />
+    <ClInclude Include="IO\UIStateCashShop.h" />
     <ClInclude Include="io\UIStateGame.h" />
     <ClInclude Include="io\UIStateLogin.h" />
     <ClInclude Include="IO\UITypes\UIAranCreation.h" />
+    <ClInclude Include="IO\UITypes\UICashShop.h" />
     <ClInclude Include="IO\UITypes\UIChannel.h" />
     <ClInclude Include="IO\UITypes\UICharInfo.h" />
     <ClInclude Include="IO\UITypes\UIChat.h" />
@@ -488,8 +495,11 @@ copy /y /d  "$(ProjectDir)includes\nlnx\includes\lz4_v1_8_2_win64\dll\liblz4.so.
     <ClInclude Include="MapleStory.h" />
     <ClInclude Include="net\Cryptography.h" />
     <ClInclude Include="net\handlers\AttackHandlers.h" />
+    <ClInclude Include="Net\Handlers\CashShopHandlers.h" />
     <ClInclude Include="net\handlers\CommonHandlers.h" />
     <ClInclude Include="net\handlers\CustomHandlers.h" />
+    <ClInclude Include="Net\Handlers\Helpers\CashShopParser.h" />
+    <ClInclude Include="Net\Handlers\Helpers\CharacterParser.h" />
     <ClInclude Include="net\handlers\helpers\ItemParser.h" />
     <ClInclude Include="net\handlers\helpers\LoginParser.h" />
     <ClInclude Include="net\handlers\helpers\MovementParser.h" />

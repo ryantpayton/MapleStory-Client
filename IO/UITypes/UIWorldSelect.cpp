@@ -573,7 +573,9 @@ namespace ms
 
 			buttons[Buttons::BT_WORLD0 + worldid]->set_state(Button::State::NORMAL);
 
-			worldid = static_cast<uint8_t>(id - Buttons::BT_WORLD0);
+			worldid = id - Buttons::BT_WORLD0;
+
+			ServerStatusRequestPacket(worldid).dispatch();
 
 			world_selected = true;
 			clear_selected_world();

@@ -70,6 +70,7 @@ namespace ms
 			OPTIONMENU,
 			QUIT,
 			CHARINFO,
+			CASHSHOP,
 			NUM_TYPES
 		};
 

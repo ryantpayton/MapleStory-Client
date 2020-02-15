@@ -17,19 +17,31 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../PacketHandler.h"
+#include "../../InPacket.h"
+#include "../../Login.h"
 
 namespace ms
 {
-	// Handler for a packet which contains all character information on first login or warps the player to a different map
-	class SetfieldHandler : public PacketHandler
+	namespace CashShopParser
 	{
-	public:
-		void handle(InPacket& recv) const override;
+		enum Jobs : uint16_t
+		{
+			EVAN = 2001,
+			EVAN1 = 2200,
+			EVAN2 = 2210,
+			EVAN3 = 2211,
+			EVAN4 = 2212,
+			EVAN5 = 2213,
+			EVAN6 = 2214,
+			EVAN7 = 2215,
+			EVAN8 = 2216,
+			EVAN9 = 2217,
+			EVAN10 = 2218
+		};
 
-	private:
-		void transition(int32_t mapid, uint8_t portalid) const;
-		void change_map(InPacket& recv, int32_t map_id) const;
-		void set_field(InPacket& recv) const;
-	};
+		StatsEntry parseCharacterInfo(InPacket& recv);
+		StatsEntry parseCharStats(InPacket& recv);
+		bool hasSPTable(int16_t job);
+		void parseRemainingSkillInfo(InPacket& recv);
+	}
 }
