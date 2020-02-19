@@ -193,7 +193,7 @@ namespace ms
 		splabel = Text(Text::Font::A12M, Text::Alignment::RIGHT, Color::Name::BLACK);
 
 		slider = Slider(
-			Slider::Type::DEFAULT, Range<int16_t>(93, 317), 295, ROWS, 1,
+			Slider::Type::DEFAULT_SILVER, Range<int16_t>(93, 317), 295, ROWS, 1,
 			[&](bool upwards)
 			{
 				int16_t shift = upwards ? -1 : 1;

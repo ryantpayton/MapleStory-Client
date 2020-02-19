@@ -66,7 +66,7 @@ namespace ms
 		label_next = main["label_next"]["0"];
 
 		slider = Slider(
-			Slider::Type::DEFAULT, Range<int16_t>(86, 449), 396, 3, event_count,
+			Slider::Type::DEFAULT_SILVER, Range<int16_t>(86, 449), 396, 3, event_count,
 			[&](bool upwards)
 			{
 				int16_t shift = upwards ? -1 : 1;

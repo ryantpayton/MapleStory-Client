@@ -687,7 +687,7 @@ namespace ms
 		if (listNpc_names.size() > 8)
 		{
 			listNpc_slider = Slider(
-				Slider::DEFAULT, Range<int16_t>(23, 11 + LISTNPC_ITEM_HEIGHT * 8), listNpc_pos.x() + LISTNPC_ITEM_WIDTH + 1, 8, listNpc_names.size(),
+				Slider::DEFAULT_SILVER, Range<int16_t>(23, 11 + LISTNPC_ITEM_HEIGHT * 8), listNpc_pos.x() + LISTNPC_ITEM_WIDTH + 1, 8, listNpc_names.size(),
 				[&](bool upwards)
 				{
 					int16_t shift = upwards ? -1 : 1;

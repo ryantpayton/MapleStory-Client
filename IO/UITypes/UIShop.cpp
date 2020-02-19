@@ -106,7 +106,7 @@ namespace ms
 		mesolabel = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::MINESHAFT);
 
 		buyslider = Slider(
-			Slider::Type::DEFAULT, Range<int16_t>(123, 484), 257, 5, 1,
+			Slider::Type::DEFAULT_SILVER, Range<int16_t>(123, 484), 257, 5, 1,
 			[&](bool upwards)
 			{
 				int16_t shift = upwards ? -1 : 1;
@@ -119,7 +119,7 @@ namespace ms
 		);
 
 		sellslider = Slider(
-			Slider::Type::DEFAULT, Range<int16_t>(123, 484), 488, 5, 1,
+			Slider::Type::DEFAULT_SILVER, Range<int16_t>(123, 484), 488, 5, 1,
 			[&](bool upwards)
 			{
 				int16_t shift = upwards ? -1 : 1;

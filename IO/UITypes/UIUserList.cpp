@@ -83,7 +83,7 @@ namespace ms
 		int16_t party_height = party_y + 168;
 		int16_t party_unitrows = 6;
 		int16_t party_rowmax = 6;
-		party_slider = Slider(Slider::Type::DEFAULT, Range<int16_t>(party_y, party_height), party_x, party_unitrows, party_rowmax, [](bool) {});
+		party_slider = Slider(Slider::Type::DEFAULT_SILVER, Range<int16_t>(party_y, party_height), party_x, party_unitrows, party_rowmax, [](bool) {});
 
 		// Buddy Tab
 		nl::node Friend = Main["Friend"];
@@ -123,7 +123,7 @@ namespace ms
 		int16_t friends_height = friends_y + 148;
 		int16_t friends_unitrows = 6;
 		int16_t friends_rowmax = 6;
-		friends_slider = Slider(Slider::Type::DEFAULT, Range<int16_t>(friends_y, friends_height), friends_x, friends_unitrows, friends_rowmax, [](bool) {});
+		friends_slider = Slider(Slider::Type::DEFAULT_SILVER, Range<int16_t>(friends_y, friends_height), friends_x, friends_unitrows, friends_rowmax, [](bool) {});
 
 		// Boss tab
 		nl::node Boss = Main["Boss"];

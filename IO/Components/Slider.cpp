@@ -38,7 +38,7 @@ namespace ms
 		{
 			std::string VScr = "VScr";
 
-			if (type != Type::BLUE)
+			if (type != Type::LINE_CYAN)
 				VScr += std::to_string(type);
 
 			src = nl::nx::ui["Basic.img"][VScr];

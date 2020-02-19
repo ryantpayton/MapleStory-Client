@@ -118,7 +118,7 @@ namespace ms
 		slotrange[InventoryType::Id::CASH] = { 1, 24 };
 
 		slider = Slider(
-			Slider::Type::DEFAULT, Range<int16_t>(50, 245), 152, 6, 1 + inventory.get_slotmax(tab) / COLUMNS,
+			Slider::Type::DEFAULT_SILVER, Range<int16_t>(50, 245), 152, 6, 1 + inventory.get_slotmax(tab) / COLUMNS,
 			[&](bool upwards)
 			{
 				int16_t shift = upwards ? -COLUMNS : COLUMNS;
