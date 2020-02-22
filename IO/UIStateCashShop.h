@@ -27,7 +27,7 @@ namespace ms
 		UIStateCashShop();
 
 		void draw(float inter, Point<int16_t> cursor) const override;
-		void update() override {}
+		void update() override;
 
 		void doubleclick(Point<int16_t> pos) override {}
 		void rightclick(Point<int16_t> pos) override {}

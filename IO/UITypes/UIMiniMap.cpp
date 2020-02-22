@@ -16,6 +16,7 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIMiniMap.h"
+
 #include "UIWorldMap.h"
 
 #include "../UI.h"
@@ -457,7 +458,7 @@ namespace ms
 		map_sprite = Texture(Map["miniMap"]["canvas"]);
 		Point<int16_t> map_dimensions = map_sprite.get_dimensions();
 
-		// 48 (Offset for text) + longer text's width + 10 (space for right side border)
+		// 48 (offset for text) + longer text's width + 10 (space for right side border)
 		int16_t mark_text_width = 48 + std::max(region_text.width(), town_text.width()) + 10;
 		int16_t c_stretch, ur_x_offset, m_stretch, down_y_offset;
 		int16_t window_width = std::max(178, std::max((int)mark_text_width, map_dimensions.x() + 20));
@@ -494,8 +495,8 @@ namespace ms
 		std::string UpLeft = simpleMode ? "UpLeft" : "nw";
 		std::string UpRight = simpleMode ? "UpRight" : "ne";
 
-		// SimpleMode's backdrop is opaque, notSimpleMode's is transparent but lightly coloured 
-		// UI.wz v208 has normal centre sprite inlinked to bottom right window frame, not sure why?
+		// SimpleMode's backdrop is opaque, the other is transparent but lightly colored
+		// UI.wz v208 has normal center sprite in-linked to bottom right window frame, not sure why.
 		nl::node MiddleCenter = simpleMode ? MiniMap["Window"]["Max"]["MiddleCenter"] : MiniMap["MaxMap"]["c"];
 
 		int16_t dl_dr_y = std::max(map_dimensions.y(), (int16_t)10);
@@ -508,9 +509,10 @@ namespace ms
 		min_sprites.emplace_back(Min[Left], DrawArgument(WINDOW_UL_POS));
 		min_sprites.emplace_back(Min[Right], DrawArgument(WINDOW_UL_POS + Point<int16_t>(min_c_stretch + CENTER_START_X, 0)));
 
-		// (7,10) is the top left corner of the inner window. 
-		// 114 = 128 (width of left and right borders) - 14 (width of middle borders * 2). 27 = height of inner frame drawn on up and down borders
 		// Normal sprites queue
+		// (7, 10) is the top left corner of the inner window
+		// 114 = 128 (width of left and right borders) - 14 (width of middle borders * 2).
+		// 27 = height of inner frame drawn on up and down borders
 		normal_sprites.emplace_back(MiddleCenter, DrawArgument(Point<int16_t>(7, 10), Point<int16_t>(c_stretch + 114, m_stretch + 27)));
 
 		if (has_map)
@@ -554,7 +556,7 @@ namespace ms
 		Animation marker_sprite;
 		Point<int16_t> sprite_offset;
 
-		// NPCs
+		/// NPCs
 		MapObjects* npcs = Stage::get().get_npcs().get_npcs();
 		marker_sprite = Animation(marker["npc"]);
 		sprite_offset = marker_sprite.get_dimensions() / Point<int16_t>(2, 0);
@@ -565,7 +567,7 @@ namespace ms
 			marker_sprite.draw((npc_pos + center_offset) / scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y) + init_pos, alpha);
 		}
 
-		// other characters
+		/// Other characters
 		MapObjects* chars = Stage::get().get_chars().get_chars();
 		marker_sprite = Animation(marker["another"]);
 		sprite_offset = marker_sprite.get_dimensions() / Point<int16_t>(2, 0);
@@ -576,7 +578,7 @@ namespace ms
 			marker_sprite.draw((chr_pos + center_offset) / scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y) + init_pos, alpha);
 		}
 
-		// Player
+		/// Player
 		Point<int16_t> player_pos = Stage::get().get_player().get_position();
 		sprite_offset = player_marker.get_dimensions() / Point<int16_t>(2, 0);
 		player_marker.draw((player_pos + center_offset) / scale - sprite_offset + Point<int16_t>(map_draw_origin_x, map_draw_origin_y) + init_pos, alpha);
@@ -591,7 +593,7 @@ namespace ms
 
 		Animation marker_sprite;
 
-		// portals
+		/// Portals
 		nl::node portals = Map["portal"];
 		marker_sprite = Animation(marker["portal"]);
 		Point<int16_t> marker_offset = marker_sprite.get_dimensions() / Point<int16_t>(2, 0);
@@ -669,16 +671,7 @@ namespace ms
 		}
 
 		for (size_t i = 0; i < listNpc_names.size(); i++)
-		{
-			std::string text = listNpc_names[i].get_text();
-
-			// Stopgap solution to truncating names until Text supports truncation
-			while (listNpc_names[i].width() > LISTNPC_TEXT_WIDTH - (listNpc_names.size() > 8 ? 0 : 20))
-			{
-				text.pop_back();
-				listNpc_names[i].change_text(text + "..");
-			}
-		}
+			string_format::format_with_ellipsis(listNpc_names[i], LISTNPC_TEXT_WIDTH - (listNpc_names.size() > 8 ? 0 : 20));
 
 		const Point<int16_t> listNpc_pos = Point<int16_t>(type == Type::MAX ? max_dimensions.x() : normal_dimensions.x(), 0);
 		int16_t c_stretch = 20;

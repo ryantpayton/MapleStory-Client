@@ -19,11 +19,9 @@
 
 #include "Animation.h"
 
-#include <nlnx/node.hpp>
-
 namespace ms
 {
-	// Combines an Animation with additional state.
+	// Combines an Animation with additional state
 	class Sprite
 	{
 	public:
@@ -35,6 +33,11 @@ namespace ms
 		void draw(Point<int16_t> parentpos, float alpha) const;
 		bool update(uint16_t timestep);
 		bool update();
+
+		int16_t width() const;
+		int16_t height() const;
+		Point<int16_t> get_origin() const;
+		Point<int16_t> get_dimensions() const;
 
 	private:
 		Animation animation;

@@ -234,6 +234,11 @@ namespace ms
 		return RESETPIC;
 	}
 
+	std::string Configuration::get_chargenx() const
+	{
+		return CHARGENX;
+	}
+
 	void Configuration::set_macs(char* macs)
 	{
 		MACS = macs;

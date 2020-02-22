@@ -19,13 +19,8 @@
 
 #include "../UIDragElement.h"
 
-#include "../Graphics/Text.h"
-#include "../Character/Charstats.h"
-#include "../Gameplay/Stage.h"
-
-#include "../Components/MapleButton.h"
-#include "../Components/AreaButton.h"
 #include "../Components/Slider.h"
+#include "../Gameplay/Stage.h"
 
 namespace ms
 {
@@ -91,7 +86,7 @@ namespace ms
 			MAX
 		};
 
-		// Constants
+		/// Constants
 		int32_t mapid;
 		int8_t type;
 		int8_t user_type;

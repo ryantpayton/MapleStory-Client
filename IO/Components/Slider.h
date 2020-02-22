@@ -19,12 +19,7 @@
 
 #include "TwoSpriteButton.h"
 
-#include "../Cursor.h"
-
-#include "../Graphics/Texture.h"
-
 #include <functional>
-#include <memory>
 
 namespace ms
 {
@@ -39,6 +34,7 @@ namespace ms
 		void setrows(int16_t newrow, int16_t unitrows, int16_t rowmax);
 		void setrows(int16_t unitrows, int16_t rowmax);
 		void setvertical(Range<int16_t> vertical);
+		Range<int16_t> getvertical() const;
 
 		void draw(Point<int16_t> position) const;
 		void remove_cursor();
@@ -47,7 +43,7 @@ namespace ms
 
 		enum Type
 		{
-			// Default
+			/// Default
 			LINE_CYAN,
 			LINE_CONTESSA = 2,
 			SMALL_HAVELOCKBLUE,
@@ -74,7 +70,7 @@ namespace ms
 			THIN_MIKADO,
 			ARROWS_TORYBLUE,
 			THIN_SLATEGRAY,
-			// Custom
+			/// Custom
 			CHATBAR
 		};
 

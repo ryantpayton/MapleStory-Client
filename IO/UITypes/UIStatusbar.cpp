@@ -77,6 +77,7 @@ namespace ms
 		int16_t exp_max = VWIDTH - 16;
 
 		expbar = Gauge(
+			Gauge::Type::GAME,
 			EXPBarRes.resolve("layer:gauge"),
 			EXPBarRes.resolve("layer:cover"),
 			EXPBar.resolve("layer:effect"),
@@ -180,8 +181,8 @@ namespace ms
 		if (VWIDTH > 800)
 			hpmp_max += 30;
 
-		hpbar = Gauge(status.resolve("gauge/hp/layer:0"), hpmp_max, 0.0f);
-		mpbar = Gauge(status.resolve("gauge/mp/layer:0"), hpmp_max, 0.0f);
+		hpbar = Gauge(Gauge::Type::GAME, status.resolve("gauge/hp/layer:0"), hpmp_max, 0.0f);
+		mpbar = Gauge(Gauge::Type::GAME, status.resolve("gauge/mp/layer:0"), hpmp_max, 0.0f);
 
 		statset = Charset(EXPBar["number"], Charset::Alignment::RIGHT);
 		hpmpset = Charset(status["gauge"]["number"], Charset::Alignment::RIGHT);

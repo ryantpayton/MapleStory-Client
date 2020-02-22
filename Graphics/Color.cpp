@@ -45,9 +45,9 @@ namespace ms
 			end(),
 			other.begin(),
 			blended.begin(),
-			[alpha](float f, float s)
+			[alpha](float first, float second)
 			{
-				return lerp(f, s, alpha);
+				return lerp(first, second, alpha);
 			}
 		);
 

@@ -17,7 +17,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "Template/Point.h"
 #include "Template/TypeMap.h"
 #include "Util/Misc.h"
 
@@ -68,6 +67,8 @@ namespace ms
 		std::string get_findpass() const;
 		// Get private member RESETPIC
 		std::string get_resetpic() const;
+		// Get private member CHARGENX
+		std::string get_chargenx() const;
 		// Set private member MACS
 		void set_macs(char* macs);
 		// Set private member HWID
@@ -221,6 +222,7 @@ namespace ms
 		const char* FINDID = "https://www.nexon.com/account/en/login";
 		const char* FINDPASS = "https://www.nexon.com/account/en/reset-password";
 		const char* RESETPIC = "https://www.nexon.com/account/en/login";
+		const char* CHARGENX = "https://billing.nexon.net/PurchaseNX";
 		const bool SHOW_FPS = false;
 		const bool SHOW_PACKETS = false;
 		const bool AUTO_LOGIN = false;

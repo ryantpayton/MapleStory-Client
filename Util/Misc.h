@@ -19,11 +19,9 @@
 
 #include "../Console.h"
 
-#include <cstdint>
-#include <string>
-#include <unordered_map>
+#include "../Graphics/Text.h"
 
-#include <nlnx/node.hpp>
+#include <unordered_map>
 
 namespace ms
 {
@@ -53,17 +51,19 @@ namespace ms
 
 	namespace string_format
 	{
-		// Format a number string so that each 3 decimal points
-		// are seperated by a ',' character.
+		// Format a number string so that each three decimal points are separated by a comma
 		void split_number(std::string& input);
 
-		// Prefix an id with zeroes so that it has the minimum specified length.
+		// Prefix an id with zeros so that it has the minimum specified length
 		std::string extend_id(int32_t id, size_t length);
+
+		// Cut off a string at a specified length with an ellipsis
+		void format_with_ellipsis(Text& input, size_t length);
 	};
 
 	namespace bytecode
 	{
-		// Check if a bit mask contains the specified value.
+		// Check if a bit mask contains the specified value
 		bool compare(int32_t mask, int32_t value);
 	}
 
@@ -79,16 +79,16 @@ namespace ms
 				std::string full_name;
 			};
 
-			// Returns all relative map info.
+			// Returns all relative map info
 			MapInfo get_map_info_by_id(int32_t mapid);
 
-			// Returns the category of a map.
+			// Returns the category of a map
 			std::string get_map_category(int32_t mapid);
 
 			// Returns a list of all life on a map (Mobs and NPCs)
 			std::unordered_map<int64_t, std::pair<std::string, std::string>> get_life_on_map(int32_t mapid);
 
-			// Returns the name of the node, under which the argument mapid is in.
+			// Returns the name of the node, under which the argument map id is in
 			nl::node get_map_node_name(int32_t mapid);
 		}
 	}

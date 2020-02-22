@@ -39,6 +39,17 @@ namespace ms
 		}
 	}
 
+	void UIStateCashShop::update()
+	{
+		for (auto iter : elements)
+		{
+			UIElement* element = iter.second.get();
+
+			if (element && element->is_active())
+				element->update();
+		}
+	}
+
 	Cursor::State UIStateCashShop::send_cursor(Cursor::State cursorstate, Point<int16_t> cursorpos)
 	{
 		bool clicked = cursorstate == Cursor::State::CLICKING || cursorstate == Cursor::State::VSCROLLIDLE;

@@ -19,17 +19,17 @@
 
 namespace ms
 {
-	Gauge::Gauge(Texture front, int16_t max, float percent) : barfront(front), maximum(max), percentage(percent)
+	Gauge::Gauge(Type type, Texture front, int16_t max, float percent) : type(type), barfront(front), maximum(max), percentage(percent)
 	{
 		target = percentage;
 	}
 
-	Gauge::Gauge(Texture front, Texture mid, int16_t max, float percent) : barfront(front), barmid(mid), maximum(max), percentage(percent)
+	Gauge::Gauge(Type type, Texture front, Texture mid, int16_t max, float percent) : type(type), barfront(front), barmid(mid), maximum(max), percentage(percent)
 	{
 		target = percentage;
 	}
 
-	Gauge::Gauge(Texture front, Texture mid, Texture end, int16_t max, float percent) : barfront(front), barmid(mid), barend(end), maximum(max), percentage(percent)
+	Gauge::Gauge(Type type, Texture front, Texture mid, Texture end, int16_t max, float percent) : type(type), barfront(front), barmid(mid), barend(end), maximum(max), percentage(percent)
 	{
 		target = percentage;
 	}
@@ -42,9 +42,20 @@ namespace ms
 
 		if (length > 0)
 		{
-			barfront.draw(args + DrawArgument(Point<int16_t>(0, 0), Point<int16_t>(length, 0)));
-			barmid.draw(args);
-			barend.draw(args + Point<int16_t>(length + 8, 20));
+			if (type == Type::GAME)
+			{
+				barfront.draw(args + DrawArgument(Point<int16_t>(0, 0), Point<int16_t>(length, 0)));
+				barmid.draw(args);
+				barend.draw(args + Point<int16_t>(length + 8, 20));
+			}
+			else if (type == Type::CASHSHOP)
+			{
+				Point<int16_t> pos_adj = Point<int16_t>(45, 1);
+
+				barfront.draw(args - pos_adj);
+				barmid.draw(args + DrawArgument(Point<int16_t>(0, 0), Point<int16_t>(length, 0)));
+				barend.draw(args - pos_adj + Point<int16_t>(length + barfront.width(), 0));
+			}
 		}
 	}
 
