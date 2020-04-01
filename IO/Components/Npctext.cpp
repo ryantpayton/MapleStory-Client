@@ -20,7 +20,7 @@
 // Keeping it so I can copypaste some code later.
 
 /*
-	size_t Npctext::parseL(std::string& str, size_t pos)
+	size_t NpcText::parseL(std::string& str, size_t pos)
 	{
 		size_t next = str.find_first_of('#', pos + 2);
 		if (next != std::string::npos)
@@ -44,7 +44,7 @@
 		}
 	}
 
-	size_t Npctext::parsez(std::string& str, size_t pos)
+	size_t NpcText::parsez(std::string& str, size_t pos)
 	{
 		size_t next = str.find_first_of('#', pos + 2);
 		if (next != std::string::npos)
@@ -76,7 +76,7 @@
 		}
 	}
 
-	size_t Npctext::parseh(std::string& str, size_t pos)
+	size_t NpcText::parseh(std::string& str, size_t pos)
 	{
 		size_t next = str.find_first_of('#', pos + 2);
 		if (next != std::string::npos)
@@ -109,7 +109,7 @@
 		}
 	}
 
-	size_t Npctext::parsev(std::string& str, size_t pos)
+	size_t NpcText::parsev(std::string& str, size_t pos)
 	{
 		size_t next = str.find_first_of('#', pos + 2);
 		if (next != std::string::npos)
@@ -144,7 +144,7 @@
 		}
 	}
 
-	void Npctext::draw(Point<int16_t> position) const
+	void NpcText::draw(Point<int16_t> position) const
 	{
 		for (auto& line : lines)
 		{
@@ -159,7 +159,7 @@
 		}
 	}
 
-	int16_t Npctext::getheight() const
+	int16_t NpcText::getheight() const
 	{
 		return offset.y();
 	}

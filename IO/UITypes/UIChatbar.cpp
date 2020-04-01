@@ -15,17 +15,17 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "UIChatbar.h"
+#include "UIChatBar.h"
 
 #include "../Components/MapleButton.h"
 
-#include "../Net/Packets/MessagingPackets.h"
+#include "../../Net/Packets/MessagingPackets.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	UIChatbar::UIChatbar() : UIDragElement<PosCHAT>(Point<int16_t>(410, -5))
+	UIChatBar::UIChatBar() : UIDragElement<PosCHAT>(Point<int16_t>(410, -5))
 	{
 		chatopen = Setting<Chatopen>::get().load();
 		chatopen_persist = chatopen;
@@ -158,11 +158,11 @@ namespace ms
 
 		dimension = Point<int16_t>(410, DIMENSION_Y);
 
-		/*if (chatopen)
-			dimension.shift_y(getchatbarheight());*/
+		//if (chatopen)
+		//	dimension.shift_y(getchatbarheight());
 	}
 
-	void UIChatbar::draw(float inter) const
+	void UIChatBar::draw(float inter) const
 	{
 		UIElement::draw_sprites(inter);
 
@@ -233,7 +233,7 @@ namespace ms
 		}
 	}
 
-	void UIChatbar::update()
+	void UIChatBar::update()
 	{
 		UIElement::update();
 
@@ -251,7 +251,7 @@ namespace ms
 			iter.second -= Constants::TIMESTEP;
 	}
 
-	void UIChatbar::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIChatBar::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -262,13 +262,13 @@ namespace ms
 		}
 	}
 
-	bool UIChatbar::is_in_range(Point<int16_t> cursorpos) const
+	bool UIChatBar::is_in_range(Point<int16_t> cursorpos) const
 	{
 		auto bounds = getbounds(dimension);
 		return bounds.contains(cursorpos);
 	}
 
-	Cursor::State UIChatbar::send_cursor(bool clicking, Point<int16_t> cursorpos)
+	Cursor::State UIChatBar::send_cursor(bool clicking, Point<int16_t> cursorpos)
 	{
 		if (chatopen)
 		{
@@ -283,12 +283,12 @@ namespace ms
 		}
 	}
 
-	UIElement::Type UIChatbar::get_type() const
+	UIElement::Type UIChatBar::get_type() const
 	{
 		return TYPE;
 	}
 
-	Cursor::State UIChatbar::check_dragtop(bool clicking, Point<int16_t> cursorpos)
+	Cursor::State UIChatBar::check_dragtop(bool clicking, Point<int16_t> cursorpos)
 	{
 		Rectangle<int16_t> bounds = getbounds(dimension);
 		Point<int16_t> bounds_lt = bounds.get_left_top();
@@ -412,14 +412,14 @@ namespace ms
 		return UIDragElement::send_cursor(clicking, cursorpos);
 	}
 
-	bool UIChatbar::indragrange(Point<int16_t> cursorpos) const
+	bool UIChatBar::indragrange(Point<int16_t> cursorpos) const
 	{
 		auto bounds = getbounds(dragarea);
 
 		return bounds.contains(cursorpos);
 	}
 
-	void UIChatbar::send_chatline(const std::string& line, LineType type)
+	void UIChatBar::send_chatline(const std::string& line, LineType type)
 	{
 		rowmax++;
 		rowpos = rowmax;
@@ -448,10 +448,10 @@ namespace ms
 			std::piecewise_construct,
 			std::forward_as_tuple(rowmax),
 			std::forward_as_tuple(Text::Font::A11M, Text::Alignment::LEFT, color, line, 480)
-		);
+			);
 	}
 
-	void UIChatbar::display_message(Messages::Type line, UIChatbar::LineType type)
+	void UIChatBar::display_message(Messages::Type line, UIChatBar::LineType type)
 	{
 		if (message_cooldowns[line] > 0)
 			return;
@@ -462,13 +462,13 @@ namespace ms
 		message_cooldowns[line] = MESSAGE_COOLDOWN;
 	}
 
-	void UIChatbar::toggle_chat()
+	void UIChatBar::toggle_chat()
 	{
 		chatopen_persist = !chatopen_persist;
 		toggle_chat(chatopen_persist);
 	}
 
-	void UIChatbar::toggle_chat(bool chat_open)
+	void UIChatBar::toggle_chat(bool chat_open)
 	{
 		if (!chat_open && chatopen_persist)
 			return;
@@ -487,13 +487,13 @@ namespace ms
 		buttons[Buttons::BT_TAB_0 + ChatTab::NUM_CHATTAB]->set_active(chat_open);
 	}
 
-	void UIChatbar::toggle_chatfield()
+	void UIChatBar::toggle_chatfield()
 	{
 		chatfieldopen = !chatfieldopen;
 		toggle_chatfield(chatfieldopen);
 	}
 
-	void UIChatbar::toggle_chatfield(bool chatfield_open)
+	void UIChatBar::toggle_chatfield(bool chatfield_open)
 	{
 		chatfieldopen = chatfield_open;
 
@@ -524,17 +524,17 @@ namespace ms
 		}
 	}
 
-	bool UIChatbar::is_chatopen()
+	bool UIChatBar::is_chatopen()
 	{
 		return chatopen;
 	}
 
-	bool UIChatbar::is_chatfieldopen()
+	bool UIChatBar::is_chatfieldopen()
 	{
 		return chatfieldopen;
 	}
 
-	Button::State UIChatbar::button_pressed(uint16_t buttonid)
+	Button::State UIChatBar::button_pressed(uint16_t buttonid)
 	{
 		switch (buttonid)
 		{
@@ -564,7 +564,7 @@ namespace ms
 		return Button::State::NORMAL;
 	}
 
-	int16_t UIChatbar::getchattop(bool chat_open) const
+	int16_t UIChatBar::getchattop(bool chat_open) const
 	{
 		if (chat_open)
 			return getchatbarheight() * -1;
@@ -572,12 +572,12 @@ namespace ms
 			return -1;
 	}
 
-	int16_t UIChatbar::getchatbarheight() const
+	int16_t UIChatBar::getchatbarheight() const
 	{
 		return 15 + chatrows * CHATROWHEIGHT;
 	}
 
-	Rectangle<int16_t> UIChatbar::getbounds(Point<int16_t> additional_area) const
+	Rectangle<int16_t> UIChatBar::getbounds(Point<int16_t> additional_area) const
 	{
 		int16_t screen_adj = (chatopen) ? 35 : 16;
 

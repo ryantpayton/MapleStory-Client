@@ -27,17 +27,17 @@ namespace ms
 	public:
 		virtual ~PlayerState() {}
 
-		// Actions taken when transitioning into the state.
+		// Actions taken when transitioning into the state
 		virtual void initialize(Player& player) const = 0;
-		// How to handle inputs while in the state.
+		// How to handle inputs while in the state
 		virtual void send_action(Player& player, KeyAction::Id action, bool pressed) const = 0;
 		// Actions taken in the player's update method, before physics are applied.
 		virtual void update(Player& player) const = 0;
-		// Transition into a new state after physics have been applied.
+		// Transition into a new state after physics have been applied
 		virtual void update_state(Player& player) const = 0;
 
 	protected:
-		// Play the jumping sound.
+		// Play the jumping sound
 		void play_jumpsound() const;
 	};
 
@@ -52,7 +52,7 @@ namespace ms
 		void update_state(Player& player) const override;
 	};
 
-	// The standing state.
+	// The standing state
 	class PlayerStandState : public PlayerState
 	{
 	public:
@@ -62,7 +62,7 @@ namespace ms
 		void update_state(Player& player) const override;
 	};
 
-	// The walking state.
+	// The walking state
 	class PlayerWalkState : public PlayerState
 	{
 		void initialize(Player& player) const override;
@@ -74,7 +74,7 @@ namespace ms
 		bool haswalkinput(const Player& player) const;
 	};
 
-	// The falling state.
+	// The falling state
 	class PlayerFallState : public PlayerState
 	{
 	public:
@@ -86,7 +86,7 @@ namespace ms
 		void update_state(Player& player) const override;
 	};
 
-	// The prone state (lying down).
+	// The prone state (Lying down)
 	class PlayerProneState : public PlayerState
 	{
 	public:
@@ -98,7 +98,7 @@ namespace ms
 		void update_state(Player&) const override {}
 	};
 
-	// The sitting state.
+	// The sitting state
 	class PlayerSitState : public PlayerState
 	{
 	public:
@@ -110,7 +110,7 @@ namespace ms
 		void update_state(Player&) const override {}
 	};
 
-	// The flying or swimming state.
+	// The flying or swimming state
 	class PlayerFlyState : public PlayerState
 	{
 		void initialize(Player& player) const override;
@@ -119,7 +119,7 @@ namespace ms
 		void update_state(Player& player) const override;
 	};
 
-	// The climbing state.
+	// The climbing state
 	class PlayerClimbState : public PlayerState
 	{
 	public:

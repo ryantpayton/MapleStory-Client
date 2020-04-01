@@ -16,11 +16,8 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "Texture.h"
+
 #include "GraphicsGL.h"
-
-#include "../Configuration.h"
-
-#include <nlnx/nx.hpp>
 
 namespace ms
 {
@@ -80,7 +77,7 @@ namespace ms
 			args.get_rectangle(origin, dimensions),
 			args.get_color(),
 			args.get_angle()
-		);
+			);
 	}
 
 	void Texture::shift(Point<int16_t> amount)

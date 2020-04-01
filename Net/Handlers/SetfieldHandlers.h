@@ -22,7 +22,7 @@
 namespace ms
 {
 	// Handler for a packet which contains all character information on first login or warps the player to a different map
-	class SetfieldHandler : public PacketHandler
+	class SetFieldHandler : public PacketHandler
 	{
 	public:
 		void handle(InPacket& recv) const override;

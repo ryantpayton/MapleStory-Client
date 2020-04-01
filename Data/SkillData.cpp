@@ -20,32 +20,29 @@
 #include "../Character/SkillId.h"
 #include "../Util/Misc.h"
 
-#include <unordered_set>
-
 #include <nlnx/nx.hpp>
-#include <nlnx/node.hpp>
 
 namespace ms
 {
 	SkillData::SkillData(int32_t id)
 	{
-		// Locate sources
+		/// Locate sources
 		std::string strid = string_format::extend_id(id, 7);
 		std::string jobid = strid.substr(0, 3);
 		nl::node src = nl::nx::skill[jobid + ".img"]["skill"][strid];
 		nl::node strsrc = nl::nx::string["Skill.img"][strid];
 
-		// Load icons
+		/// Load icons
 		icons = { src["icon"], src["iconDisabled"], src["iconMouseOver"] };
 
-		// Load strings
+		/// Load strings
 		name = strsrc["name"];
 		desc = strsrc["desc"];
 
 		for (int32_t level = 1; nl::node sub = strsrc["h" + std::to_string(level)]; level++)
 			levels.emplace(level, sub);
 
-		// Load stats
+		/// Load stats
 		nl::node levelsrc = src["level"];
 
 		for (auto sub : levelsrc)
@@ -86,7 +83,7 @@ namespace ms
 		flags = flags_of(id);
 		invisible = src["invisible"].get_bool();
 
-		// Load required skills
+		/// Load required skills
 		nl::node reqsrc = src["req"];
 
 		for (auto sub : reqsrc)
@@ -146,7 +143,7 @@ namespace ms
 			{ SkillId::POISON_BREATH, ATTACK },
 			{ SkillId::SEAL_FP, ATTACK },
 			{ SkillId::ELEMENT_COMPOSITION_FP, ATTACK | RANGED },
-			//
+			// TODO: Blank?
 			{ SkillId::FIRE_DEMON, ATTACK },
 			{ SkillId::PARALYZE, ATTACK | RANGED },
 			{ SkillId::METEOR_SHOWER, ATTACK }

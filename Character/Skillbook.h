@@ -17,14 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <cstdint>
-#include <unordered_map>
 #include <map>
+#include <unordered_map>
 
 namespace ms
 {
-	// Class that stores all information about the skills of an individual character.
-	class Skillbook
+	// Class that stores all information about the skills of an individual character
+	class SkillBook
 	{
 	public:
 		void set_skill(int32_t id, int32_t level, int32_t masterlevel, int64_t expiration);
@@ -34,12 +33,12 @@ namespace ms
 		int32_t get_masterlevel(int32_t id) const;
 		int64_t get_expiration(int32_t id) const;
 
-		// Return id and level of all passive skills.
-		// An ordered map is used so that lower passive skills don't override higher ones.
+		// Return id and level of all passive skills
+		// An ordered map is used so that lower passive skills don't override higher ones
 		std::map<int32_t, int32_t> collect_passives() const;
 
-		// Return id and level of all required skills.
-		std::unordered_map<int32_t, int32_t> Skillbook::collect_required(int32_t id) const;
+		// Return id and level of all required skills
+		std::unordered_map<int32_t, int32_t> collect_required(int32_t id) const;
 
 	private:
 		struct SkillEntry

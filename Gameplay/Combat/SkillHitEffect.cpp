@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "SkillHitEffect.h"
 
-#include "../Util/Misc.h"
+#include "../../Util/Misc.h"
 
 namespace ms
 {
@@ -28,9 +28,9 @@ namespace ms
 		effect.apply(target, user.flip);
 	}
 
-	TwoHHitEffect::TwoHHitEffect(nl::node src) : effects(src["hit"]["0"], src["hit"]["1"]) {}
+	TwoHandedHitEffect::TwoHandedHitEffect(nl::node src) : effects(src["hit"]["0"], src["hit"]["1"]) {}
 
-	void TwoHHitEffect::apply(const AttackUser& user, Mob& target) const
+	void TwoHandedHitEffect::apply(const AttackUser& user, Mob& target) const
 	{
 		effects[user.secondweapon].apply(target, user.flip);
 	}
@@ -67,7 +67,7 @@ namespace ms
 			effects.emplace(std::piecewise_construct,
 				std::forward_as_tuple(level),
 				std::forward_as_tuple(sub["hit"]["0"], sub["hit"]["1"])
-			);
+				);
 		}
 	}
 

@@ -15,18 +15,19 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#pragma once
-
-#include "UILoginwait.h"
+#include "UILoginWait.h"
 
 #include "../Components/MapleButton.h"
-#include "../Net/Session.h"
+
+#include "../../Net/Session.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	UILoginwait::UILoginwait(std::function<void()> okhandler) : okhandler(okhandler)
+	UILoginWait::UILoginWait() : UILoginWait([]() {}) {}
+
+	UILoginWait::UILoginWait(std::function<void()> okhandler) : okhandler(okhandler)
 	{
 		nl::node Loading = nl::nx::ui["Login.img"]["Notice"]["Loading"];
 		nl::node backgrnd = Loading["backgrnd"];
@@ -40,25 +41,23 @@ namespace ms
 		dimension = Texture(backgrnd).get_dimensions();
 	}
 
-	UIElement::Type UILoginwait::get_type() const
+	UIElement::Type UILoginWait::get_type() const
 	{
 		return TYPE;
 	}
 
-	UILoginwait::UILoginwait() : UILoginwait([]() {}) {}
-
-	void UILoginwait::close()
+	void UILoginWait::close()
 	{
 		deactivate();
 		okhandler();
 	}
 
-	std::function<void()> UILoginwait::get_handler()
+	std::function<void()> UILoginWait::get_handler()
 	{
 		return okhandler;
 	}
 
-	Button::State UILoginwait::button_pressed(uint16_t id)
+	Button::State UILoginWait::button_pressed(uint16_t id)
 	{
 		Session::get().reconnect();
 

@@ -53,8 +53,8 @@ namespace ms
 			DrawArgument(
 				position + Point<int16_t>(0, 30 - interheight),
 				Point<int16_t>(30, interheight)
-			)
-		);
+				)
+			);
 	}
 
 	void IconCover::update()

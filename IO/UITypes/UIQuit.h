@@ -19,9 +19,10 @@
 
 #include "../UIElement.h"
 
-#include "../Character/Charstats.h"
 #include "../Components/Charset.h"
-#include "../Graphics/Geometry.h"
+
+#include "../../Character/CharStats.h"
+#include "../../Graphics/Geometry.h"
 
 namespace ms
 {

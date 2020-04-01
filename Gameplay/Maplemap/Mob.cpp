@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Mob.h"
 
-#include "../Util/Misc.h"
+#include "../../Util/Misc.h"
 
-#include "../Net/Packets/GameplayPackets.h"
+#include "../../Net/Packets/GameplayPackets.h"
 
 #include <nlnx/nx.hpp>
 
@@ -316,9 +316,10 @@ namespace ms
 	void Mob::update_movement()
 	{
 		MoveMobPacket(
-			oid, 1, 0, 0, 0, 0, 0, 0, get_position(),
+			oid, 1, 0, 0, 0, 0, 0, 0,
+			get_position(),
 			Movement(phobj, value_of(stance, flip))
-		).dispatch();
+			).dispatch();
 	}
 
 	void Mob::draw(double viewx, double viewy, float alpha) const

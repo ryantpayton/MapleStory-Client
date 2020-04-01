@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Character/Inventory/Inventory.h"
-#include "../Graphics/Texture.h"
-#include "../Template/EnumMap.h"
+#include "../../Graphics/Texture.h"
+
+#include "../../Character/Inventory/Inventory.h"
 
 #include <memory>
 
@@ -44,8 +44,8 @@ namespace ms
 			virtual ~Type() {}
 
 			virtual void drop_on_stage() const = 0;
-			virtual void drop_on_equips(Equipslot::Id eqslot) const = 0;
-			virtual bool drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const = 0;
+			virtual void drop_on_equips(EquipSlot::Id eqslot) const = 0;
+			virtual bool drop_on_items(InventoryType::Id tab, EquipSlot::Id eqslot, int16_t slot, bool equip) const = 0;
 			virtual void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const = 0;
 			virtual void set_count(int16_t) = 0;
 			virtual IconType get_type() = 0;
@@ -54,8 +54,8 @@ namespace ms
 		class NullType : public Type
 		{
 			void drop_on_stage() const override {}
-			void drop_on_equips(Equipslot::Id) const override {}
-			bool drop_on_items(InventoryType::Id, Equipslot::Id, int16_t, bool) const override { return true; }
+			void drop_on_equips(EquipSlot::Id) const override {}
+			bool drop_on_items(InventoryType::Id, EquipSlot::Id, int16_t, bool) const override { return true; }
 			void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const override {}
 			void set_count(int16_t) override {}
 			IconType get_type() override { return IconType::NONE; }
@@ -65,8 +65,8 @@ namespace ms
 		Icon();
 
 		void drop_on_stage() const;
-		void drop_on_equips(Equipslot::Id eqslot) const;
-		bool drop_on_items(InventoryType::Id tab, Equipslot::Id eqslot, int16_t slot, bool equip) const;
+		void drop_on_equips(EquipSlot::Id eqslot) const;
+		bool drop_on_items(InventoryType::Id tab, EquipSlot::Id eqslot, int16_t slot, bool equip) const;
 		void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const;
 		void set_count(int16_t count);
 		IconType get_type();

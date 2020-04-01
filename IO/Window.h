@@ -21,10 +21,9 @@
 
 #include "../Template/Singleton.h"
 
-#include <GL/glew.h>
-
+#include <glew.h>
 #include <glfw3.h>
-#include <string>
+
 #include <functional>
 
 namespace ms

@@ -17,11 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Skill.h"
 
-#include "../Character/SkillId.h"
-#include "../Data/SkillData.h"
-#include "../Util/Misc.h"
+#include "../../Character/SkillId.h"
+#include "../../Data/SkillData.h"
+#include "../../Util/Misc.h"
 
-#include <nlnx/node.hpp>
 #include <nlnx/nx.hpp>
 
 namespace ms
@@ -66,7 +65,7 @@ namespace ms
 			}
 			else if (haseffect1)
 			{
-				useeffect = std::make_unique<TwoHUseEffect>(src);
+				useeffect = std::make_unique<TwoHandedUseEffect>(src);
 			}
 			else
 			{
@@ -101,7 +100,7 @@ namespace ms
 		}
 		else if (hashit0 && hashit1)
 		{
-			hiteffect = std::make_unique<TwoHHitEffect>(src);
+			hiteffect = std::make_unique<TwoHandedHitEffect>(src);
 		}
 		else if (hashit0)
 		{
@@ -117,7 +116,7 @@ namespace ms
 
 		if (hasaction0 && hasaction1)
 		{
-			action = std::make_unique<TwoHAction>(src);
+			action = std::make_unique<TwoHandedAction>(src);
 		}
 		else if (hasaction0)
 		{

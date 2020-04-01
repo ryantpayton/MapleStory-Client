@@ -15,22 +15,17 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#pragma once
-
-#include <cstdint>
-#include <vector>
+#include "TeleportRock.h"
 
 namespace ms
 {
-	// Saved locations for the 'teleport rock' and 'VIP teleport rock' cash items.
-	class Telerock
+	void TeleportRock::addlocation(int32_t mapid)
 	{
-	public:
-		void addlocation(int32_t);
-		void addviplocation(int32_t);
+		locations.push_back(mapid);
+	}
 
-	private:
-		std::vector<int32_t> locations;
-		std::vector<int32_t> viplocations;
-	};
+	void TeleportRock::addviplocation(int32_t mapid)
+	{
+		viplocations.push_back(mapid);
+	}
 }

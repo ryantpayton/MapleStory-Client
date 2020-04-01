@@ -21,8 +21,8 @@
 
 namespace ms
 {
-	// Class that stores information on the questlog of an individual character.
-	class Questlog
+	// Class that stores information on the quest log of an individual character
+	class QuestLog
 	{
 	public:
 		void add_started(int16_t, const std::string& quest_data);

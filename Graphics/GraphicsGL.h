@@ -23,7 +23,6 @@
 #include "../Error.h"
 
 #include "../Util/QuadTree.h"
-#include "../Template/Singleton.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -32,43 +31,43 @@
 
 namespace ms
 {
-	// Graphics engine which uses OpenGL.
+	// Graphics engine which uses OpenGL
 	class GraphicsGL : public Singleton<GraphicsGL>
 	{
 	public:
 		GraphicsGL();
 
-		// Initialise all resources.
+		// Initialize all resources
 		Error init();
-		// Re-initialise after changing screen modes.
+		// Re-initialize after changing screen modes
 		void reinit();
 
-		// Clear all bitmaps if most of the space is used up.
+		// Clear all bitmaps if most of the space is used up
 		void clear();
 
-		// Add a bitmap to the available resources.
+		// Add a bitmap to the available resources
 		void addbitmap(const nl::bitmap& bmp);
-		// Draw the bitmap with the given parameters.
+		// Draw the bitmap with the given parameters
 		void draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect, const Color& color, float angle);
 
-		// Create a layout for the text with the parameters specified.
+		// Create a layout for the text with the parameters specified
 		Text::Layout createlayout(const std::string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth, bool formatted, int16_t line_adj);
-		// Draw a text with the given parameters.
+		// Draw a text with the given parameters
 		void drawtext(const DrawArgument& args, const Range<int16_t>& vertical, const std::string& text, const Text::Layout& layout, Text::Font font, Color::Name color, Text::Background back);
 
-		// Draw a rectangle filled with the specified color.
+		// Draw a rectangle filled with the specified color
 		void drawrectangle(int16_t x, int16_t y, int16_t width, int16_t height, float red, float green, float blue, float alpha);
-		// Fill the screen with the specified color.
+		// Fill the screen with the specified color
 		void drawscreenfill(float red, float green, float blue, float alpha);
 
-		// Lock the current scene.
+		// Lock the current scene
 		void lock();
-		// Unlock the scene.
+		// Unlock the scene
 		void unlock();
 
-		// Draw the buffer contents with the specified scene opacity.
+		// Draw the buffer contents with the specified scene opacity
 		void flush(float opacity);
-		// Clear the buffer contents.
+		// Clear the buffer contents
 		void clearscene();
 
 	private:
@@ -99,7 +98,7 @@ namespace ms
 			}
 		};
 
-		// Add a bitmap to the available resources.
+		// Add a bitmap to the available resources
 		const Offset& getoffset(const nl::bitmap& bmp);
 
 		struct Leftover

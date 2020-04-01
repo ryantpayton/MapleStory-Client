@@ -17,10 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Console.h"
-
 #include "../Graphics/Text.h"
 
+#include <iostream>
 #include <unordered_map>
 
 namespace ms
@@ -37,7 +36,8 @@ namespace ms
 			}
 			catch (const std::exception& ex)
 			{
-				Console::get().print(__func__, ex);
+				std::cout << __func__ << ": " << ex.what() << std::endl;
+
 				return def;
 			}
 		}

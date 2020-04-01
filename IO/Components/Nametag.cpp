@@ -15,13 +15,11 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#pragma once
-
-#include "Nametag.h"
+#include "NameTag.h"
 
 namespace ms
 {
-	Nametag::Nametag(nl::node src, Text::Font f, std::string n)
+	NameTag::NameTag(nl::node src, Text::Font f, std::string n)
 	{
 		name = OutlinedText(f, Text::Alignment::CENTER, Color::Name::EAGLE, Color::Name::JAMBALAYA);
 		name.change_text(n);
@@ -36,7 +34,7 @@ namespace ms
 		selected = false;
 	}
 
-	void Nametag::draw(Point<int16_t> position) const
+	void NameTag::draw(Point<int16_t> position) const
 	{
 		position = position + Point<int16_t>(1, 2);
 
@@ -52,7 +50,7 @@ namespace ms
 		name.draw(position);
 	}
 
-	void Nametag::set_selected(bool s)
+	void NameTag::set_selected(bool s)
 	{
 		selected = s;
 

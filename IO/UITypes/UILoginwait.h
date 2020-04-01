@@ -21,15 +21,15 @@
 
 namespace ms
 {
-	class UILoginwait : public UIElement
+	class UILoginWait : public UIElement
 	{
 	public:
 		static constexpr Type TYPE = UIElement::Type::LOGINWAIT;
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
 
-		UILoginwait();
-		UILoginwait(std::function<void()> okhandler);
+		UILoginWait();
+		UILoginWait(std::function<void()> okhandler);
 
 		UIElement::Type get_type() const override;
 

@@ -23,7 +23,7 @@
 #include "UITypes/UIChannel.h"
 #include "UITypes/UICharInfo.h"
 #include "UITypes/UIChat.h"
-#include "UITypes/UIChatbar.h"
+#include "UITypes/UIChatBar.h"
 #include "UITypes/UIEquipInventory.h"
 #include "UITypes/UIEvent.h"
 #include "UITypes/UIItemInventory.h"
@@ -32,9 +32,9 @@
 #include "UITypes/UIQuestLog.h"
 #include "UITypes/UIQuit.h"
 #include "UITypes/UIShop.h"
-#include "UITypes/UISkillbook.h"
-#include "UITypes/UIStatsinfo.h"
-#include "UITypes/UIStatusbar.h"
+#include "UITypes/UISkillBook.h"
+#include "UITypes/UIStatsInfo.h"
+#include "UITypes/UIStatusBar.h"
 #include "UITypes/UIStatusMessenger.h"
 #include "UITypes/UIUserList.h"
 #include "UITypes/UIWorldMap.h"
@@ -52,8 +52,8 @@ namespace ms
 		const Inventory& inventory = Stage::get().get_player().get_inventory();
 
 		emplace<UIStatusMessenger>();
-		emplace<UIStatusbar>(stats);
-		emplace<UIChatbar>();
+		emplace<UIStatusBar>(stats);
+		emplace<UIChatBar>();
 		emplace<UIMiniMap>(stats);
 		emplace<UIBuffList>();
 		emplace<UIShop>(look, inventory);
@@ -94,7 +94,7 @@ namespace ms
 			UI::get().remove(UIElement::Type::STATUSBAR);
 
 			const CharStats& stats = Stage::get().get_player().get_stats();
-			emplace<UIStatusbar>(stats);
+			emplace<UIStatusBar>(stats);
 		}
 
 		for (auto& type : elementorder)
@@ -196,12 +196,12 @@ namespace ms
 							);
 						break;
 					case KeyAction::Id::STATS:
-						emplace<UIStatsinfo>(
+						emplace<UIStatsInfo>(
 							Stage::get().get_player().get_stats()
 							);
 						break;
 					case KeyAction::Id::SKILLS:
-						emplace<UISkillbook>(
+						emplace<UISkillBook>(
 							Stage::get().get_player().get_stats(),
 							Stage::get().get_player().get_skills()
 							);
@@ -276,18 +276,18 @@ namespace ms
 						break;
 					}
 					case KeyAction::Id::TOGGLECHAT:
-						if (auto chatbar = UI::get().get_element<UIChatbar>())
+						if (auto chatbar = UI::get().get_element<UIChatBar>())
 							if (!chatbar->is_chatfieldopen())
 								chatbar->toggle_chat();
 
 						break;
 					case KeyAction::Id::MENU:
-						if (auto statusbar = UI::get().get_element<UIStatusbar>())
+						if (auto statusbar = UI::get().get_element<UIStatusBar>())
 							statusbar->toggle_menu();
 
 						break;
 					case KeyAction::Id::QUICKSLOTS:
-						if (auto statusbar = UI::get().get_element<UIStatusbar>())
+						if (auto statusbar = UI::get().get_element<UIStatusBar>())
 							statusbar->toggle_qs();
 
 						break;
@@ -306,12 +306,12 @@ namespace ms
 						emplace<UIChannel>();
 						break;
 					case KeyAction::Id::MAINMENU:
-						if (auto statusbar = UI::get().get_element<UIStatusbar>())
+						if (auto statusbar = UI::get().get_element<UIStatusBar>())
 							statusbar->send_key(action, pressed, escape);
 
 						break;
 					default:
-						std::cout << "Action (" << action << ") not handled!" << std::endl;
+						std::cout << "Unknown KeyAction::Id action: [" << action << "]" << std::endl;
 						break;
 					}
 				}

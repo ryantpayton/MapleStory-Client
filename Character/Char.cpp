@@ -203,17 +203,17 @@ namespace ms
 		chatballoon.change_text(line);
 	}
 
-	void Char::change_look(Maplestat::Id stat, int32_t id)
+	void Char::change_look(MapleStat::Id stat, int32_t id)
 	{
 		switch (stat)
 		{
-		case Maplestat::Id::SKIN:
+		case MapleStat::Id::SKIN:
 			look.set_body(id);
 			break;
-		case Maplestat::Id::FACE:
+		case MapleStat::Id::FACE:
 			look.set_face(id);
 			break;
-		case Maplestat::Id::HAIR:
+		case MapleStat::Id::HAIR:
 			look.set_hair(id);
 			break;
 		}
@@ -276,7 +276,7 @@ namespace ms
 		const WeaponData& weapon = WeaponData::get(weapon_id);
 
 		std::string stance_name = Stance::names[look.get_stance()];
-		int16_t weapon_level = weapon.get_equipdata().get_reqstat(Maplestat::Id::LEVEL);
+		int16_t weapon_level = weapon.get_equipdata().get_reqstat(MapleStat::Id::LEVEL);
 		const std::string& ai_name = weapon.get_afterimage();
 
 		afterimage = Afterimage(skill_id, ai_name, stance_name, weapon_level);

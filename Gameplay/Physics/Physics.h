@@ -17,29 +17,29 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "Footholdtree.h"
+#include "FootholdTree.h"
 
 namespace ms
 {
-	// Class that uses physics engines and the collection of platforms to determine object movement.
+	// Class that uses physics engines and the collection of platforms to determine object movement
 	class Physics
 	{
 	public:
 		Physics(nl::node src);
 		Physics();
 
-		// Move the specified object over the specified game-time.
+		// Move the specified object over the specified game-time
 		void move_object(PhysicsObject& tomove) const;
-		// Determine the point on the ground below the specified position.
+		// Determine the point on the ground below the specified position
 		Point<int16_t> get_y_below(Point<int16_t> position) const;
-		// Return a reference to the collection of platforms.
-		const Footholdtree& get_fht() const;
+		// Return a reference to the collection of platforms
+		const FootholdTree& get_fht() const;
 
 	private:
 		void move_normal(PhysicsObject&) const;
 		void move_flying(PhysicsObject&) const;
 		void move_swimming(PhysicsObject&) const;
 
-		Footholdtree fht;
+		FootholdTree fht;
 	};
 }

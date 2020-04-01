@@ -17,14 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIQuestLog.h"
 
-#include "../IO/Components/MapleButton.h"
-#include "../IO/Components/TwoSpriteButton.h"
+#include "../Components/MapleButton.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	UIQuestLog::UIQuestLog(const Questlog& ql) : UIDragElement<PosQUEST>(), questlog(ql)
+	UIQuestLog::UIQuestLog(const QuestLog& ql) : UIDragElement<PosQUEST>(), questlog(ql)
 	{
 		tab = Buttons::TAB0;
 

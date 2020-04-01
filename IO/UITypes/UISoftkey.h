@@ -21,12 +21,14 @@
 
 #include "../Components/Textfield.h"
 #include "../Components/TextTooltip.h"
-#include "../Util/Randomizer.h"
+
+#include "../../Util/Randomizer.h"
 
 namespace ms
 {
-	// Keyboard which is used via the mouse. The game uses this for pic/pin input.
-	class UISoftkey : public UIElement
+	// Keyboard which is used via the mouse
+	// The game uses this for PIC/PIN input
+	class UISoftKey : public UIElement
 	{
 	public:
 		using OkCallback = std::function<void(const std::string& entered)>;
@@ -36,10 +38,10 @@ namespace ms
 		static constexpr bool FOCUSED = true;
 		static constexpr bool TOGGLED = false;
 
-		UISoftkey(OkCallback ok_callback, CancelCallback cancel_callback, std::string tooltip_text, Point<int16_t> tooltip_pos);
-		UISoftkey(OkCallback ok_callback, CancelCallback cancel_callback, std::string tooltip_text);
-		UISoftkey(OkCallback ok_callback, CancelCallback cancel_callback);
-		UISoftkey(OkCallback ok_callback);
+		UISoftKey(OkCallback ok_callback, CancelCallback cancel_callback, std::string tooltip_text, Point<int16_t> tooltip_pos);
+		UISoftKey(OkCallback ok_callback, CancelCallback cancel_callback, std::string tooltip_text);
+		UISoftKey(OkCallback ok_callback, CancelCallback cancel_callback);
+		UISoftKey(OkCallback ok_callback);
 
 		void draw(float inter) const override;
 		void update() override;

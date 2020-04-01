@@ -15,24 +15,13 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "Configuration.h"
-#include "Constants.h"
-#include "Error.h"
-#include "Timer.h"
-
-#include "Audio/Audio.h"
-#include "Character/Char.h"
 #include "Gameplay/Stage.h"
 #include "IO/UI.h"
 #include "IO/Window.h"
 #include "Net/Session.h"
-#include "Util/NxFiles.h"
 #include "Util/HardwareInfo.h"
+#include "Util/NxFiles.h"
 #include "Util/ScreenResolution.h"
-
-#include "Gameplay/Combat/DamageNumber.h"
-
-#include <iostream>
 
 namespace ms
 {
@@ -89,6 +78,7 @@ namespace ms
 	void loop()
 	{
 		Timer::get().start();
+
 		int64_t timestep = Constants::TIMESTEP * 1000;
 		int64_t accumulator = timestep;
 
@@ -119,6 +109,7 @@ namespace ms
 				else if (period)
 				{
 					int64_t fps = (samples * 1000000) / period;
+
 					std::cout << "FPS: " << fps << std::endl;
 
 					period = 0;
@@ -132,7 +123,7 @@ namespace ms
 
 	void start()
 	{
-		// Initialize and check for errors.
+		// Initialize and check for errors
 		if (Error error = init())
 		{
 			const char* message = error.get_message();

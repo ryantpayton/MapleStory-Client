@@ -15,7 +15,7 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "SetfieldHandlers.h"
+#include "SetFieldHandlers.h"
 
 #include "Helpers/CharacterParser.h"
 #include "Helpers/LoginParser.h"
@@ -32,7 +32,7 @@
 
 namespace ms
 {
-	void SetfieldHandler::transition(int32_t mapid, uint8_t portalid) const
+	void SetFieldHandler::transition(int32_t mapid, uint8_t portalid) const
 	{
 		float fadestep = 0.025f;
 
@@ -56,7 +56,7 @@ namespace ms
 		Timer::get().start();
 	}
 
-	void SetfieldHandler::handle(InPacket& recv) const
+	void SetFieldHandler::handle(InPacket& recv) const
 	{
 		Constants::Constants::get().set_viewwidth(Setting<Width>::get().load());
 		Constants::Constants::get().set_viewheight(Setting<Height>::get().load());
@@ -71,7 +71,7 @@ namespace ms
 			set_field(recv);
 	}
 
-	void SetfieldHandler::change_map(InPacket& recv, int32_t) const
+	void SetFieldHandler::change_map(InPacket& recv, int32_t) const
 	{
 		recv.skip(3);
 
@@ -81,7 +81,7 @@ namespace ms
 		transition(mapid, portalid);
 	}
 
-	void SetfieldHandler::set_field(InPacket& recv) const
+	void SetFieldHandler::set_field(InPacket& recv) const
 	{
 		recv.skip(23);
 
@@ -115,7 +115,7 @@ namespace ms
 		CharacterParser::parse_ring1(recv);
 		CharacterParser::parse_ring2(recv);
 		CharacterParser::parse_ring3(recv);
-		CharacterParser::parse_telerock(recv, player.get_telerock());
+		CharacterParser::parse_teleportrock(recv, player.get_teleportrock());
 		CharacterParser::parse_monsterbook(recv, player.get_monsterbook());
 		CharacterParser::parse_nyinfo(recv);
 		CharacterParser::parse_areainfo(recv);

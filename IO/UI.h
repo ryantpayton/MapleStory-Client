@@ -19,8 +19,8 @@
 
 #include "UIState.h"
 
-#include "Components/Textfield.h"
 #include "Components/ScrollingNotice.h"
+#include "Components/Textfield.h"
 
 namespace ms
 {
@@ -74,9 +74,27 @@ namespace ms
 		Keyboard& get_keyboard();
 
 		template <class T, typename...Args>
-		Optional<T> emplace(Args&& ...args);
+		Optional<T> emplace(Args&& ...args)
+		{
+			if (auto iter = state->pre_add(T::TYPE, T::TOGGLED, T::FOCUSED))
+			{
+				(*iter).second = std::make_unique<T>(
+					std::forward<Args>(args)...
+					);
+			}
+
+			return state->get(T::TYPE);
+		}
+
 		template <class T>
-		Optional<T> get_element();
+		Optional<T> get_element()
+		{
+			UIElement::Type type = T::TYPE;
+			UIElement* element = state->get(type);
+
+			return static_cast<T*>(element);
+		}
+
 		void remove(UIElement::Type type);
 
 	private:
@@ -92,26 +110,4 @@ namespace ms
 		bool quitted;
 		bool caps_lock_enabled = false;
 	};
-
-	template <class T, typename...Args>
-	Optional<T> UI::emplace(Args&& ...args)
-	{
-		if (auto iter = state->pre_add(T::TYPE, T::TOGGLED, T::FOCUSED))
-		{
-			(*iter).second = std::make_unique<T>(
-				std::forward<Args>(args)...
-				);
-		}
-
-		return state->get(T::TYPE);
-	}
-
-	template <class T>
-	Optional<T> UI::get_element()
-	{
-		UIElement::Type type = T::TYPE;
-		UIElement* element = state->get(type);
-
-		return static_cast<T*>(element);
-	}
 }

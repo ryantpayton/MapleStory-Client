@@ -19,17 +19,15 @@
 
 #include "Stance.h"
 
-#include "../Template/Point.h"
+#include "../../Template/Point.h"
 
-#include <cstdint>
-#include <string>
 #include <unordered_map>
 #include <vector>
 
 namespace ms
 {
-	// A frame of animation for a skill or similar 'meta-stance'. 
-	// This simply redirects to a different stance and frame to use.
+	// A frame of animation for a skill or similar 'meta-stance' 
+	// This simply redirects to a different stance and frame to use
 	class BodyAction
 	{
 	public:
@@ -91,7 +89,7 @@ namespace ms
 		bool attackframe;
 	};
 
-	class BodyDrawinfo
+	class BodyDrawInfo
 	{
 	public:
 		void init();

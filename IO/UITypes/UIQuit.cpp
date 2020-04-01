@@ -20,10 +20,11 @@
 #include "../UI.h"
 #include "../Window.h"
 
-#include "../Character/ExpTable.h"
 #include "../Components/MapleButton.h"
-#include "../Gameplay/Stage.h"
-#include "../Net/Session.h"
+
+#include "../../Character/ExpTable.h"
+#include "../../Gameplay/Stage.h"
+#include "../../Net/Session.h"
 
 #include <nlnx/nx.hpp>
 
@@ -74,7 +75,7 @@ namespace ms
 		levelBeforePos = level["posBefore"];
 		levelBeforeText = std::to_string(uplevel);
 
-		cur_level = stats.get_stat(Maplestat::Id::LEVEL);
+		cur_level = stats.get_stat(MapleStat::Id::LEVEL);
 
 		levelAfter = Charset(level["number"], Charset::Alignment::LEFT);
 		levelAfterPos = level["posAfter"];

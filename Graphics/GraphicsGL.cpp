@@ -469,9 +469,11 @@ namespace ms
 		}
 
 		//size_t used = ATLASW * border.y() + border.x() * yrange.second();
+		//
 		//double usedpercent = static_cast<double>(used) / (ATLASW * ATLASH);
 		//double wastedpercent = static_cast<double>(wasted) / used;
-		//Console::get().print("Used: " + std::to_string(usedpercent) + ", wasted: " + std::to_string(wastedpercent));
+		//
+		//std::cout << "Used: [" << usedpercent << "] Wasted: [" << wastedpercent << "]" << std::endl;
 
 		glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, GL_BGRA, GL_UNSIGNED_BYTE, bmp.data());
 
@@ -479,7 +481,7 @@ namespace ms
 			std::piecewise_construct,
 			std::forward_as_tuple(id),
 			std::forward_as_tuple(x, y, width, height)
-		).first->second;
+			).first->second;
 	}
 
 	void GraphicsGL::draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect, const Color& color, float angle)

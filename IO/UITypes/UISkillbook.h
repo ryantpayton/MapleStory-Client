@@ -17,26 +17,25 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../UIElement.h"
 #include "../UIDragElement.h"
 
-#include "../Components/Slider.h"
 #include "../Components/Charset.h"
+#include "../Components/Slider.h"
 #include "../Components/StatefulIcon.h"
-#include "../Character/CharStats.h"
-#include "../Character/Skillbook.h"
-#include "../Graphics/Text.h"
+
+#include "../../Character/CharStats.h"
+#include "../../Character/SkillBook.h"
 
 namespace ms
 {
-	class UISkillbook : public UIDragElement<PosSKILL>
+	class UISkillBook : public UIDragElement<PosSKILL>
 	{
 	public:
 		static constexpr Type TYPE = UIElement::Type::SKILLBOOK;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 
-		UISkillbook(const CharStats& stats, const Skillbook& skillbook);
+		UISkillBook(const CharStats& stats, const SkillBook& skillbook);
 
 		void draw(float alpha) const override;
 
@@ -48,7 +47,7 @@ namespace ms
 
 		UIElement::Type get_type() const override;
 
-		void update_stat(Maplestat::Id stat, int16_t value);
+		void update_stat(MapleStat::Id stat, int16_t value);
 		void update_skills(int32_t skill_id);
 		bool is_skillpoint_enabled();
 
@@ -62,8 +61,8 @@ namespace ms
 			SkillIcon(int32_t skill_id);
 
 			void drop_on_stage() const override {}
-			void drop_on_equips(Equipslot::Id) const override {}
-			bool drop_on_items(InventoryType::Id, Equipslot::Id, int16_t, bool) const override { return true; }
+			void drop_on_equips(EquipSlot::Id) const override {}
+			bool drop_on_items(InventoryType::Id, EquipSlot::Id, int16_t, bool) const override { return true; }
 			void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const override;
 			void set_count(int16_t) override {}
 			void set_state(StatefulIcon::State) override {}
@@ -105,7 +104,7 @@ namespace ms
 		void spend_sp(int32_t skill_id);
 
 		Job::Level joblevel_by_tab(uint16_t tab) const;
-		UISkillbook::SkillDisplayMeta* skill_by_position(Point<int16_t> cursorpos) const;
+		const UISkillBook::SkillDisplayMeta* skill_by_position(Point<int16_t> cursorpos) const;
 
 		void close();
 		bool check_required(int32_t id) const;
@@ -153,7 +152,7 @@ namespace ms
 		static constexpr Point<int16_t> LINE_OFFSET = Point<int16_t>(0, 37);
 
 		const CharStats& stats;
-		const Skillbook& skillbook;
+		const SkillBook& skillbook;
 
 		Slider slider;
 		Texture skille;

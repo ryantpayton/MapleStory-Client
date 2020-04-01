@@ -30,21 +30,4 @@ namespace ms
 	private:
 		void transition() const;
 	};
-
-	// TODO: Write description
-	class QueryCashResultHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
-
-	// TODO: Write description
-	class CashShopOperationHandler : public PacketHandler
-	{
-	public:
-		void handle(InPacket& recv) const override;
-
-	private:
-		void parseCashItemInformation(InPacket& recv) const;
-		void parseExpirationTime(InPacket& recv) const;
-	};
 }

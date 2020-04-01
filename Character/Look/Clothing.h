@@ -17,13 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "BodyDrawinfo.h"
-#include "Equipslot.h"
+#include "BodyDrawInfo.h"
+#include "EquipSlot.h"
 
-#include "../Graphics/Texture.h"
-#include "../Template/EnumMap.h"
-
-#include <unordered_map>
+#include "../../Graphics/Texture.h"
 
 namespace ms
 {
@@ -68,25 +65,25 @@ namespace ms
 			NUM_LAYERS
 		};
 
-		// Construct a new equip.
-		Clothing(int32_t itemid, const BodyDrawinfo& drawinfo);
+		// Construct a new equip
+		Clothing(int32_t itemid, const BodyDrawInfo& drawinfo);
 
-		// Draw the equip.
+		// Draw the equip
 		void draw(Stance::Id stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
-		// Check if a part of the equip lies on the specified layer while in the specified stance.
+		// Check if a part of the equip lies on the specified layer while in the specified stance
 		bool contains_layer(Stance::Id stance, Layer layer) const;
 
-		// Return whether the equip is invisble.
+		// Return whether the equip is invisible
 		bool is_transparent() const;
-		// Return whether this equip uses twohanded stances.
+		// Return whether this equip uses twohanded stances
 		bool is_twohanded() const;
-		// Return the item id.
+		// Return the item id
 		int32_t get_id() const;
-		// Return the equip slot for this cloth.
-		Equipslot::Id get_eqslot() const;
-		// Return the standing stance to use while equipped.
+		// Return the equip slot for this cloth
+		EquipSlot::Id get_eqslot() const;
+		// Return the standing stance to use while equipped
 		Stance::Id get_stand() const;
-		// Return the walking stance to use while equipped.
+		// Return the walking stance to use while equipped
 		Stance::Id get_walk() const;
 		// Return the vslot, used to distinguish some layering types.
 		const std::string& get_vslot() const;
@@ -94,13 +91,12 @@ namespace ms
 	private:
 		EnumMap<Stance::Id, EnumMap<Layer, std::unordered_multimap<uint8_t, Texture>, Layer::NUM_LAYERS>> stances;
 		int32_t itemid;
-		Equipslot::Id eqslot;
+		EquipSlot::Id eqslot;
 		Stance::Id walk;
 		Stance::Id stand;
 		std::string vslot;
 		bool twohanded;
 		bool transparent;
-
 
 		static const std::unordered_map<std::string, Layer> sublayernames;
 	};

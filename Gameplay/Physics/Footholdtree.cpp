@@ -15,13 +15,13 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "Footholdtree.h"
+#include "FootholdTree.h"
 
-#include "../Console.h"
+#include <iostream>
 
 namespace ms
 {
-	Footholdtree::Footholdtree(nl::node src)
+	FootholdTree::FootholdTree(nl::node src)
 	{
 		int16_t leftw = 30000;
 		int16_t rightw = -30000;
@@ -38,7 +38,7 @@ namespace ms
 			}
 			catch (const std::exception& ex)
 			{
-				Console::get().print(__func__, ex);
+				std::cout << __func__ << ": " << ex.what() << std::endl;
 				continue;
 			}
 
@@ -54,7 +54,7 @@ namespace ms
 					}
 					catch (const std::exception& ex)
 					{
-						Console::get().print(__func__, ex);
+						std::cout << __func__ << ": " << ex.what() << std::endl;
 						continue;
 					}
 
@@ -62,7 +62,7 @@ namespace ms
 						std::piecewise_construct,
 						std::forward_as_tuple(id),
 						std::forward_as_tuple(lastf, id, layer)
-					).first->second;
+						).first->second;
 
 					if (foothold.l() < leftw)
 						leftw = foothold.l();
@@ -92,9 +92,9 @@ namespace ms
 		borders = { topb - 300, botb + 100 };
 	}
 
-	Footholdtree::Footholdtree() {}
+	FootholdTree::FootholdTree() {}
 
-	void Footholdtree::limit_movement(PhysicsObject& phobj) const
+	void FootholdTree::limit_movement(PhysicsObject& phobj) const
 	{
 		if (phobj.hmobile())
 		{
@@ -146,7 +146,7 @@ namespace ms
 		}
 	}
 
-	void Footholdtree::update_fh(PhysicsObject& phobj) const
+	void FootholdTree::update_fh(PhysicsObject& phobj) const
 	{
 		if (phobj.type == PhysicsObject::Type::FIXATED && phobj.fhid > 0)
 			return;
@@ -227,7 +227,7 @@ namespace ms
 		}
 	}
 
-	const Foothold& Footholdtree::get_fh(uint16_t fhid) const
+	const Foothold& FootholdTree::get_fh(uint16_t fhid) const
 	{
 		auto iter = footholds.find(fhid);
 
@@ -237,7 +237,7 @@ namespace ms
 		return iter->second;
 	}
 
-	double Footholdtree::get_wall(uint16_t curid, bool left, double fy) const
+	double FootholdTree::get_wall(uint16_t curid, bool left, double fy) const
 	{
 		auto shorty = static_cast<int16_t>(fy);
 		Range<int16_t> vertical(shorty - 50, shorty - 1);
@@ -273,7 +273,7 @@ namespace ms
 		}
 	}
 
-	double Footholdtree::get_edge(uint16_t curid, bool left) const
+	double FootholdTree::get_edge(uint16_t curid, bool left) const
 	{
 		const Foothold& fh = get_fh(curid);
 
@@ -309,7 +309,7 @@ namespace ms
 		}
 	}
 
-	uint16_t Footholdtree::get_fhid_below(double fx, double fy) const
+	uint16_t FootholdTree::get_fhid_below(double fx, double fy) const
 	{
 		uint16_t ret = 0;
 		double comp = borders.second();
@@ -332,7 +332,7 @@ namespace ms
 		return ret;
 	}
 
-	int16_t Footholdtree::get_y_below(Point<int16_t> position) const
+	int16_t FootholdTree::get_y_below(Point<int16_t> position) const
 	{
 		if (uint16_t fhid = get_fhid_below(position.x(), position.y()))
 		{
@@ -346,12 +346,12 @@ namespace ms
 		}
 	}
 
-	Range<int16_t> Footholdtree::get_walls() const
+	Range<int16_t> FootholdTree::get_walls() const
 	{
 		return walls;
 	}
 
-	Range<int16_t> Footholdtree::get_borders() const
+	Range<int16_t> FootholdTree::get_borders() const
 	{
 		return borders;
 	}

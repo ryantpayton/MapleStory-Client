@@ -17,16 +17,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Graphics/Texture.h"
-#include "../Template/BoolPair.h"
-#include "../Graphics/SpecialText.h"
+#include "../../Graphics/SpecialText.h"
+#include "../../Graphics/Texture.h"
+#include "../../Template/BoolPair.h"
 
 namespace ms
 {
-	class Nametag
+	class NameTag
 	{
 	public:
-		Nametag(nl::node src, Text::Font font, std::string name);
+		NameTag(nl::node src, Text::Font font, std::string name);
 
 		void draw(Point<int16_t> position) const;
 		void set_selected(bool selected);

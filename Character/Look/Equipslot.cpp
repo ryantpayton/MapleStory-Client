@@ -15,21 +15,24 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "Equipslot.h"
+#include "EquipSlot.h"
 
-#include "../Console.h"
+#include <iostream>
 
 namespace ms
 {
-	Equipslot::Id Equipslot::by_id(size_t id)
+	namespace EquipSlot
 	{
-		if (id >= Equipslot::Id::LENGTH)
+		Id by_id(size_t id)
 		{
-			Console::get().print("Invalid Equipslot id: " + std::to_string(id));
+			if (id >= Id::LENGTH)
+			{
+				std::cout << "Unknown EquipSlot::Id id: [" << id << "]" << std::endl;
 
-			return Equipslot::Id::NONE;
+				return Id::NONE;
+			}
+
+			return static_cast<Id>(id);
 		}
-
-		return static_cast<Id>(id);
 	}
 }

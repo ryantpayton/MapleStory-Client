@@ -25,7 +25,7 @@
 #include "Components/SkillTooltip.h"
 #include "Components/TextTooltip.h"
 
-#include "../Character/Charstats.h"
+#include "../Character/CharStats.h"
 
 namespace ms
 {
@@ -84,13 +84,14 @@ namespace ms
 
 		Optional<Icon> draggedicon;
 
-		std::map<Icon::IconType, UIElement::Type> icon_map = {
-			{ Icon::IconType::NONE, UIElement::Type::NONE },
-			{ Icon::IconType::SKILL, UIElement::Type::SKILLBOOK },
-			{ Icon::IconType::EQUIP, UIElement::Type::EQUIPINVENTORY },
-			{ Icon::IconType::ITEM, UIElement::Type::ITEMINVENTORY },
-			{ Icon::IconType::KEY, UIElement::Type::KEYCONFIG },
-			{ Icon::IconType::NUM_TYPES, UIElement::Type::NUM_TYPES }
+		std::map<Icon::IconType, UIElement::Type> icon_map =
+		{
+			{ Icon::IconType::NONE,			UIElement::Type::NONE			},
+			{ Icon::IconType::SKILL,		UIElement::Type::SKILLBOOK		},
+			{ Icon::IconType::EQUIP,		UIElement::Type::EQUIPINVENTORY	},
+			{ Icon::IconType::ITEM,			UIElement::Type::ITEMINVENTORY	},
+			{ Icon::IconType::KEY,			UIElement::Type::KEYCONFIG		},
+			{ Icon::IconType::NUM_TYPES,	UIElement::Type::NUM_TYPES		}
 		};
 
 		int16_t VWIDTH;

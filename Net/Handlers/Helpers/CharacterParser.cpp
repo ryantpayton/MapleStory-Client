@@ -65,7 +65,7 @@ namespace ms
 		}
 	}
 
-	void CharacterParser::parse_skillbook(InPacket& recv, Skillbook& skills)
+	void CharacterParser::parse_skillbook(InPacket& recv, SkillBook& skills)
 	{
 		int16_t size = recv.read_short();
 
@@ -92,7 +92,7 @@ namespace ms
 		}
 	}
 
-	void CharacterParser::parse_questlog(InPacket& recv, Questlog& quests)
+	void CharacterParser::parse_questlog(InPacket& recv, QuestLog& quests)
 	{
 		int16_t size = recv.read_short();
 
@@ -105,7 +105,7 @@ namespace ms
 			{
 				int16_t qidl = quests.get_last_started();
 				quests.add_in_progress(qidl, qid, qdata);
-				//i--;
+				//i--; // This was causing issues
 			}
 			else
 			{
@@ -177,7 +177,7 @@ namespace ms
 		recv.skip(2);
 	}
 
-	void CharacterParser::parse_monsterbook(InPacket& recv, Monsterbook& monsterbook)
+	void CharacterParser::parse_monsterbook(InPacket& recv, MonsterBook& monsterbook)
 	{
 		monsterbook.set_cover(recv.read_int());
 
@@ -194,13 +194,13 @@ namespace ms
 		}
 	}
 
-	void CharacterParser::parse_telerock(InPacket& recv, Telerock& trock)
+	void CharacterParser::parse_teleportrock(InPacket& recv, TeleportRock& teleportrock)
 	{
 		for (size_t i = 0; i < 5; i++)
-			trock.addlocation(recv.read_int());
+			teleportrock.addlocation(recv.read_int());
 
 		for (size_t i = 0; i < 10; i++)
-			trock.addviplocation(recv.read_int());
+			teleportrock.addviplocation(recv.read_int());
 	}
 
 	void CharacterParser::parse_nyinfo(InPacket& recv)

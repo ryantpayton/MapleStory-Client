@@ -25,13 +25,13 @@ namespace ms
 			iter.second = nullptr;
 	}
 
-	void CharEquips::draw(Equipslot::Id slot, Stance::Id stance, Clothing::Layer layer, uint8_t frame, const DrawArgument& args) const
+	void CharEquips::draw(EquipSlot::Id slot, Stance::Id stance, Clothing::Layer layer, uint8_t frame, const DrawArgument& args) const
 	{
-		if (const Clothing * cloth = clothes[slot])
+		if (const Clothing* cloth = clothes[slot])
 			cloth->draw(stance, layer, frame, args);
 	}
 
-	void CharEquips::add_equip(int32_t itemid, const BodyDrawinfo& drawinfo)
+	void CharEquips::add_equip(int32_t itemid, const BodyDrawInfo& drawinfo)
 	{
 		if (itemid <= 0)
 			return;
@@ -44,31 +44,31 @@ namespace ms
 				std::piecewise_construct,
 				std::forward_as_tuple(itemid),
 				std::forward_as_tuple(itemid, drawinfo)
-			).first;
+				).first;
 		}
 
 		const Clothing& cloth = iter->second;
 
-		Equipslot::Id slot = cloth.get_eqslot();
+		EquipSlot::Id slot = cloth.get_eqslot();
 		clothes[slot] = &cloth;
 	}
 
-	void CharEquips::remove_equip(Equipslot::Id slot)
+	void CharEquips::remove_equip(EquipSlot::Id slot)
 	{
 		clothes[slot] = nullptr;
 	}
 
-	bool CharEquips::is_visible(Equipslot::Id slot) const
+	bool CharEquips::is_visible(EquipSlot::Id slot) const
 	{
-		if (const Clothing * cloth = clothes[slot])
+		if (const Clothing* cloth = clothes[slot])
 			return cloth->is_transparent() == false;
 		else
 			return false;
 	}
 
-	bool CharEquips::comparelayer(Equipslot::Id slot, Stance::Id stance, Clothing::Layer layer) const
+	bool CharEquips::comparelayer(EquipSlot::Id slot, Stance::Id stance, Clothing::Layer layer) const
 	{
-		if (const Clothing * cloth = clothes[slot])
+		if (const Clothing* cloth = clothes[slot])
 			return cloth->contains_layer(stance, layer);
 		else
 			return false;
@@ -76,7 +76,7 @@ namespace ms
 
 	bool CharEquips::has_overall() const
 	{
-		return get_equip(Equipslot::Id::TOP) / 10000 == 105;
+		return get_equip(EquipSlot::Id::TOP) / 10000 == 105;
 	}
 
 	bool CharEquips::has_weapon() const
@@ -86,7 +86,7 @@ namespace ms
 
 	bool CharEquips::is_twohanded() const
 	{
-		if (const Clothing * weapon = clothes[Equipslot::Id::WEAPON])
+		if (const Clothing* weapon = clothes[EquipSlot::Id::WEAPON])
 			return weapon->is_twohanded();
 		else
 			return false;
@@ -94,7 +94,7 @@ namespace ms
 
 	CharEquips::CapType CharEquips::getcaptype() const
 	{
-		if (const Clothing * cap = clothes[Equipslot::Id::HAT])
+		if (const Clothing* cap = clothes[EquipSlot::Id::HAT])
 		{
 			const std::string& vslot = cap->get_vslot();
 			if (vslot == "CpH1H5")
@@ -114,7 +114,7 @@ namespace ms
 
 	Stance::Id CharEquips::adjust_stance(Stance::Id stance) const
 	{
-		if (const Clothing * weapon = clothes[Equipslot::Id::WEAPON])
+		if (const Clothing* weapon = clothes[EquipSlot::Id::WEAPON])
 		{
 			switch (stance)
 			{
@@ -134,9 +134,9 @@ namespace ms
 		}
 	}
 
-	int32_t CharEquips::get_equip(Equipslot::Id slot) const
+	int32_t CharEquips::get_equip(EquipSlot::Id slot) const
 	{
-		if (const Clothing * cloth = clothes[slot])
+		if (const Clothing* cloth = clothes[slot])
 			return cloth->get_id();
 		else
 			return 0;
@@ -144,7 +144,7 @@ namespace ms
 
 	int32_t CharEquips::get_weapon() const
 	{
-		return get_equip(Equipslot::Id::WEAPON);
+		return get_equip(EquipSlot::Id::WEAPON);
 	}
 
 	std::unordered_map<int32_t, Clothing> CharEquips::cloth_cache;

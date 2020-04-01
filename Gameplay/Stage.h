@@ -18,12 +18,12 @@
 #pragma once
 
 #include "Combat/Combat.h"
-#include "Maplemap/MapBackgrounds.h"
-#include "Maplemap/MapDrops.h"
-#include "Maplemap/MapEffect.h"
-#include "Maplemap/MapNpcs.h"
-#include "Maplemap/MapPortals.h"
-#include "Maplemap/MapTilesObjs.h"
+#include "MapleMap/MapBackgrounds.h"
+#include "MapleMap/MapDrops.h"
+#include "MapleMap/MapEffect.h"
+#include "MapleMap/MapNpcs.h"
+#include "MapleMap/MapPortals.h"
+#include "MapleMap/MapTilesObjs.h"
 
 #include "../Timer.h"
 

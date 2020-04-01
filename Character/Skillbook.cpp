@@ -15,23 +15,23 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "Skillbook.h"
+#include "SkillBook.h"
 
 #include "../Data/SkillData.h"
 
 namespace ms
 {
-	void Skillbook::set_skill(int32_t id, int32_t level, int32_t mlevel, int64_t expire)
+	void SkillBook::set_skill(int32_t id, int32_t level, int32_t mlevel, int64_t expire)
 	{
 		skillentries[id] = { level, mlevel, expire };
 	}
 
-	bool Skillbook::has_skill(int32_t id) const
+	bool SkillBook::has_skill(int32_t id) const
 	{
 		return skillentries.count(id) > 0;
 	}
 
-	int32_t Skillbook::get_level(int32_t id) const
+	int32_t SkillBook::get_level(int32_t id) const
 	{
 		auto iter = skillentries.find(id);
 
@@ -41,7 +41,7 @@ namespace ms
 		return iter->second.level;
 	}
 
-	int32_t Skillbook::get_masterlevel(int32_t id) const
+	int32_t SkillBook::get_masterlevel(int32_t id) const
 	{
 		auto iter = skillentries.find(id);
 
@@ -51,7 +51,7 @@ namespace ms
 		return iter->second.masterlevel;
 	}
 
-	int64_t Skillbook::get_expiration(int32_t id) const
+	int64_t SkillBook::get_expiration(int32_t id) const
 	{
 		auto iter = skillentries.find(id);
 
@@ -61,7 +61,7 @@ namespace ms
 		return iter->second.expiration;
 	}
 
-	std::map<int32_t, int32_t> Skillbook::collect_passives() const
+	std::map<int32_t, int32_t> SkillBook::collect_passives() const
 	{
 		std::map<int32_t, int32_t> passives;
 
@@ -72,7 +72,7 @@ namespace ms
 		return passives;
 	}
 
-	std::unordered_map<int32_t, int32_t> Skillbook::collect_required(int32_t id) const
+	std::unordered_map<int32_t, int32_t> SkillBook::collect_required(int32_t id) const
 	{
 		auto iter = skillentries.find(id);
 

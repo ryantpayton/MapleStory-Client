@@ -15,43 +15,44 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "Maplestat.h"
+#include "MapleStat.h"
 
-#include "../Console.h"
-
-#include "../Util/Misc.h"
+#include <iostream>
 
 namespace ms
 {
-	Maplestat::Id Maplestat::by_id(size_t id)
+	namespace MapleStat
 	{
-		if (id >= LENGTH)
-			Console::get().print("Invalid Maplestat id: " + std::to_string(id));
+		Id by_id(size_t id)
+		{
+			if (id >= LENGTH)
+				std::cout << "Unknown MapleStat::Id id: [" << id << "]" << std::endl;
 
-		return static_cast<Id>(id);
+			return static_cast<Id>(id);
+		}
+
+		const EnumMap<Id, int32_t> codes =
+		{
+			0x1,
+			0x2,
+			0x4,
+			0x10,
+			0x20,
+			0x40,
+			0x80,
+			0x100,
+			0x200,
+			0x400,
+			0x800,
+			0x1000,
+			0x2000,
+			0x4000,
+			0x8000,
+			0x10000,
+			0x20000,
+			0x40000,
+			0x180008,
+			0x200000
+		};
 	}
-
-	const EnumMap<Maplestat::Id, int32_t> Maplestat::codes =
-	{
-		0x1,
-		0x2,
-		0x4,
-		0x10,
-		0x20,
-		0x40,
-		0x80,
-		0x100,
-		0x200,
-		0x400,
-		0x800,
-		0x1000,
-		0x2000,
-		0x4000,
-		0x8000,
-		0x10000,
-		0x20000,
-		0x40000,
-		0x180008,
-		0x200000
-	};
 }

@@ -19,11 +19,9 @@
 
 #include "../Template/EnumMap.h"
 
-#include <cstdint>
-
 namespace ms
 {
-	namespace Maplestat
+	namespace MapleStat
 	{
 		enum Id
 		{

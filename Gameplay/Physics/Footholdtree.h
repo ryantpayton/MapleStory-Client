@@ -24,22 +24,23 @@
 
 namespace ms
 {
-	// The collection of platforms in a maple-map. Used for collision-detection.
-	class Footholdtree
+	// The collection of platforms in a maple map
+	// Used for collision-detection
+	class FootholdTree
 	{
 	public:
-		Footholdtree(nl::node source);
-		Footholdtree();
+		FootholdTree(nl::node source);
+		FootholdTree();
 
-		// Takes an accelerated PhysicsObject and limits its movement based on the platforms in this tree.
+		// Takes an accelerated PhysicsObject and limits its movement based on the platforms in this tree
 		void limit_movement(PhysicsObject& touse) const;
-		// Updates a PhysicsObject's fhid based on it's position.
+		// Updates a PhysicsObject's fhid based on it's position
 		void update_fh(PhysicsObject& touse) const;
-		// Determine the point on the ground below the specified position.
+		// Determine the point on the ground below the specified position
 		int16_t get_y_below(Point<int16_t> position) const;
-		// Returns the leftmost and rightmost platform positions of the map.
+		// Returns the leftmost and rightmost platform positions of the map
 		Range<int16_t> get_walls() const;
-		// Returns the topmost and bottommost platform positions of the map.
+		// Returns the topmost and bottommost platform positions of the map
 		Range<int16_t> get_borders() const;
 
 	private:

@@ -15,15 +15,15 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "BodyDrawinfo.h"
+#include "BodyDrawInfo.h"
+
 #include "Body.h"
 
 #include <nlnx/nx.hpp>
-#include <nlnx/node.hpp>
 
 namespace ms
 {
-	void BodyDrawinfo::init()
+	void BodyDrawInfo::init()
 	{
 		nl::node bodynode = nl::nx::character["00002000.img"];
 		nl::node headnode = nl::nx::character["00012000.img"];
@@ -94,7 +94,7 @@ namespace ms
 		}
 	}
 
-	Point<int16_t> BodyDrawinfo::get_body_position(Stance::Id stance, uint8_t frame) const
+	Point<int16_t> BodyDrawInfo::get_body_position(Stance::Id stance, uint8_t frame) const
 	{
 		auto iter = body_positions[stance].find(frame);
 
@@ -104,7 +104,7 @@ namespace ms
 		return iter->second;
 	}
 
-	Point<int16_t> BodyDrawinfo::get_arm_position(Stance::Id stance, uint8_t frame) const
+	Point<int16_t> BodyDrawInfo::get_arm_position(Stance::Id stance, uint8_t frame) const
 	{
 		auto iter = arm_positions[stance].find(frame);
 
@@ -114,7 +114,7 @@ namespace ms
 		return iter->second;
 	}
 
-	Point<int16_t> BodyDrawinfo::get_hand_position(Stance::Id stance, uint8_t frame) const
+	Point<int16_t> BodyDrawInfo::get_hand_position(Stance::Id stance, uint8_t frame) const
 	{
 		auto iter = hand_positions[stance].find(frame);
 
@@ -124,7 +124,7 @@ namespace ms
 		return iter->second;
 	}
 
-	Point<int16_t> BodyDrawinfo::get_head_position(Stance::Id stance, uint8_t frame) const
+	Point<int16_t> BodyDrawInfo::get_head_position(Stance::Id stance, uint8_t frame) const
 	{
 		auto iter = head_positions[stance].find(frame);
 
@@ -134,7 +134,7 @@ namespace ms
 		return iter->second;
 	}
 
-	Point<int16_t> BodyDrawinfo::gethairpos(Stance::Id stance, uint8_t frame) const
+	Point<int16_t> BodyDrawInfo::gethairpos(Stance::Id stance, uint8_t frame) const
 	{
 		auto iter = hair_positions[stance].find(frame);
 
@@ -144,7 +144,7 @@ namespace ms
 		return iter->second;
 	}
 
-	Point<int16_t> BodyDrawinfo::getfacepos(Stance::Id stance, uint8_t frame) const
+	Point<int16_t> BodyDrawInfo::getfacepos(Stance::Id stance, uint8_t frame) const
 	{
 		auto iter = face_positions[stance].find(frame);
 
@@ -154,7 +154,7 @@ namespace ms
 		return iter->second;
 	}
 
-	uint8_t BodyDrawinfo::nextframe(Stance::Id stance, uint8_t frame) const
+	uint8_t BodyDrawInfo::nextframe(Stance::Id stance, uint8_t frame) const
 	{
 		if (stance_delays[stance].count(frame + 1))
 			return frame + 1;
@@ -162,7 +162,7 @@ namespace ms
 			return 0;
 	}
 
-	uint16_t BodyDrawinfo::get_delay(Stance::Id stance, uint8_t frame) const
+	uint16_t BodyDrawInfo::get_delay(Stance::Id stance, uint8_t frame) const
 	{
 		auto iter = stance_delays[stance].find(frame);
 
@@ -172,7 +172,7 @@ namespace ms
 		return iter->second;
 	}
 
-	uint16_t BodyDrawinfo::get_attackdelay(std::string action, size_t no) const
+	uint16_t BodyDrawInfo::get_attackdelay(std::string action, size_t no) const
 	{
 		auto action_iter = attack_delays.find(action);
 
@@ -183,7 +183,7 @@ namespace ms
 		return 0;
 	}
 
-	uint8_t BodyDrawinfo::next_actionframe(std::string action, uint8_t frame) const
+	uint8_t BodyDrawInfo::next_actionframe(std::string action, uint8_t frame) const
 	{
 		auto action_iter = body_actions.find(action);
 
@@ -194,7 +194,7 @@ namespace ms
 		return 0;
 	}
 
-	const BodyAction* BodyDrawinfo::get_action(std::string action, uint8_t frame) const
+	const BodyAction* BodyDrawInfo::get_action(std::string action, uint8_t frame) const
 	{
 		auto action_iter = body_actions.find(action);
 

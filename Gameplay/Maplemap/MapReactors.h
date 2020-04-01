@@ -26,24 +26,24 @@
 
 namespace ms
 {
-	// Collection of reactors on a map.
+	// Collection of reactors on a map
 	class MapReactors
 	{
 	public:
-		// Draw all reactors on a layer.
+		// Draw all reactors on a layer
 		void draw(Layer::Id layer, double viewx, double viewy, float alpha) const;
-		// Update all reactors.
+		// Update all reactors
 		void update(const Physics& physics);
 
-		// Trigger a reactor.
+		// Trigger a reactor
 		void trigger(int32_t oid, int8_t state);
-		// Spawn a new reactor.
+		// Spawn a new reactor
 		void spawn(ReactorSpawn&& spawn);
-		// Remove a reactor.
+		// Remove a reactor
 		void remove(int32_t oid, int8_t state, Point<int16_t> position);
-		// Remove all reactors.
+		// Remove all reactors
 		void clear();
-		MapObjects* MapReactors::get_reactors();
+		MapObjects* get_reactors();
 
 	private:
 		MapObjects reactors;

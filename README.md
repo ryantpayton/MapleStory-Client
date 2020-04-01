@@ -9,9 +9,7 @@ HeavenClient is a custom, made-from-scratch game client.
 # Configuration
 The build can be configured by editing the **MapleStory.h** file. The following options are available:
 - **USE_ASIO**: Use Asio for networking (additional dependency)
-- **USE_XXHASH** : Use xxhash for file check (additional dependency)
 - **USE_CRYPTO**: Use cryptography when communicating for the server.
-- **PRINT_WARNINGS**: Print warnings and minor errors to the console.
 
 The default settings can be configured by editing the **Configuration.h** file. These are also generated after a game session in a file called **Settings**. These can be altered in the same way as **Configuration.h**, although, these do not persist if you delete the file, unlike **Configuration.h**.
 
@@ -44,9 +42,6 @@ The default settings can be configured by editing the **Configuration.h** file. 
 
 - Audio:
 [Bass](http://www.un4seen.com/)
-
-- Utility:
-[xxHash](https://github.com/Cyan4973/xxHash) (optional)
 
 - Networking:
 [Asio](http://think-async.com/) (optional)

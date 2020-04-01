@@ -15,10 +15,11 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "Mapportals.h"
+#include "MapPortals.h"
 
-#include "../Constants.h"
-#include "../Util/Misc.h"
+#include "../../Constants.h"
+
+#include "../../Util/Misc.h"
 
 #include <nlnx/nx.hpp>
 
@@ -46,7 +47,7 @@ namespace ms
 				std::piecewise_construct,
 				std::forward_as_tuple(portal_id),
 				std::forward_as_tuple(animation, type, name, intramap, position, target_id, target_name)
-			);
+				);
 
 			portal_ids_by_name.emplace(name, portal_id);
 		}

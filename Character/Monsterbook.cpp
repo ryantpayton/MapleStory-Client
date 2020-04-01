@@ -15,21 +15,21 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "Monsterbook.h"
+#include "MonsterBook.h"
 
 namespace ms
 {
-	Monsterbook::Monsterbook()
+	MonsterBook::MonsterBook()
 	{
 		cover = 0;
 	}
 
-	void Monsterbook::set_cover(int32_t cov)
+	void MonsterBook::set_cover(int32_t cov)
 	{
 		cover = cov;
 	}
 
-	void Monsterbook::add_card(int16_t card, int8_t level)
+	void MonsterBook::add_card(int16_t card, int8_t level)
 	{
 		cards[card] = level;
 	}

@@ -19,8 +19,8 @@
 
 #include "../PacketHandler.h"
 
-#include "../Character/Buff.h"
-#include "../Character/Maplestat.h"
+#include "../../Character/Buff.h"
+#include "../../Character/MapleStat.h"
 
 namespace ms
 {
@@ -39,9 +39,9 @@ namespace ms
 		void handle(InPacket& recv) const override;
 
 	private:
-		bool handle_stat(Maplestat::Id stat, InPacket& recv) const;
-		bool need_statsinfo_update(Maplestat::Id stat) const;
-		bool need_skillbook_update(Maplestat::Id stat) const;
+		bool handle_stat(MapleStat::Id stat, InPacket& recv) const;
+		bool need_statsinfo_update(MapleStat::Id stat) const;
+		bool need_skillbook_update(MapleStat::Id stat) const;
 	};
 
 	// Base class for packets which need to parse buff stats

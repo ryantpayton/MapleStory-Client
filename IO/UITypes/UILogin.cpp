@@ -18,14 +18,15 @@
 #include "UILogin.h"
 
 #include "UILoginNotice.h"
-#include "UILoginwait.h"
+#include "UILoginWait.h"
 
 #include "../UI.h"
 
-#include "../Audio/Audio.h"
 #include "../Components/MapleButton.h"
 
-#include "../Net/Packets/LoginPackets.h"
+#include "../../Audio/Audio.h"
+
+#include "../../Net/Packets/LoginPackets.h"
 
 #include <windows.h>
 
@@ -129,15 +130,15 @@ namespace ms
 
 		if (Configuration::get().get_auto_login())
 		{
-			UI::get().emplace<UILoginwait>([]() {});
+			UI::get().emplace<UILoginWait>([]() {});
 
-			auto loginwait = UI::get().get_element<UILoginwait>();
+			auto loginwait = UI::get().get_element<UILoginWait>();
 
 			if (loginwait && loginwait->is_active())
 				LoginPacket(
 					Configuration::get().get_auto_acc(),
 					Configuration::get().get_auto_pass()
-				).dispatch();
+					).dispatch();
 		}
 	}
 
@@ -197,9 +198,9 @@ namespace ms
 			return;
 		}
 
-		UI::get().emplace<UILoginwait>(okhandler);
+		UI::get().emplace<UILoginWait>(okhandler);
 
-		auto loginwait = UI::get().get_element<UILoginwait>();
+		auto loginwait = UI::get().get_element<UILoginWait>();
 
 		if (loginwait && loginwait->is_active())
 			LoginPacket(account_text, password_text).dispatch();

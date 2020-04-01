@@ -15,39 +15,42 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "Equipstat.h"
+#include "EquipStat.h"
 
 namespace ms
 {
-	Equipstat::Id Equipstat::by_id(size_t id)
+	namespace EquipStat
 	{
-		return static_cast<Id>(id);
+		Id by_id(size_t id)
+		{
+			return static_cast<Id>(id);
+		}
+
+		int32_t value_of(Id value)
+		{
+			return value;
+		}
+
+		const char* names[Id::LENGTH] =
+		{
+			"STR",
+			"DEX",
+			"INT",
+			"LUK",
+			"MaxHP",
+			"MaxMP",
+			"Attack Power",
+			"Magic Attack",
+			"Defense",
+
+			// TODO: Does current GMS use these anymore?
+			"MAGIC DEFENSE",
+			"ACCURACY",
+			"AVOID",
+			"HANDS",
+
+			"Speed",
+			"Jump"
+		};
 	}
-
-	int32_t Equipstat::value_of(Id value)
-	{
-		return value;
-	}
-
-	const char* Equipstat::names[Id::LENGTH] =
-	{
-		"STR",
-		"DEX",
-		"INT",
-		"LUK",
-		"MaxHP",
-		"MaxMP",
-		"Attack Power",
-		"Magic Attack",
-		"Defense",
-
-		// TODO: Does curret GMS use these anymore?
-		"MAGIC DEFENSE",
-		"ACCURACY",
-		"AVOID",
-		"HANDS",
-
-		"Speed",
-		"Jump"
-	};
 }

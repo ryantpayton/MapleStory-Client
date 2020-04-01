@@ -17,22 +17,22 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIKeyConfig.h"
 
-#include "../Console.h"
 #include "../UI.h"
 
 #include "../Components/MapleButton.h"
-#include "../Data/ItemData.h"
-#include "../Data/SkillData.h"
-#include "../UITypes/UINotice.h"
 #include "../UITypes/UILoginNotice.h"
+#include "../UITypes/UINotice.h"
 
-#include "../Net/Packets/PlayerPackets.h"
+#include "../../Data/ItemData.h"
+#include "../../Data/SkillData.h"
+
+#include "../../Net/Packets/PlayerPackets.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	UIKeyConfig::UIKeyConfig(const Inventory& in_inventory, const Skillbook& in_skillbook) : UIDragElement<PosKEYCONFIG>(), inventory(in_inventory), skillbook(in_skillbook), dirty(false)
+	UIKeyConfig::UIKeyConfig(const Inventory& in_inventory, const SkillBook& in_skillbook) : UIDragElement<PosKEYCONFIG>(), inventory(in_inventory), skillbook(in_skillbook), dirty(false)
 	{
 		keyboard = &UI::get().get_keyboard();
 		staged_mappings = keyboard->get_maplekeys();
@@ -72,8 +72,7 @@ namespace ms
 		bind_staged_action_keys();
 	}
 
-	// Load
-
+	/// Load
 	void UIKeyConfig::load_keys_pos()
 	{
 		int16_t slot_width = 33;
@@ -515,8 +514,7 @@ namespace ms
 		}
 	}
 
-	// UI: General
-
+	/// UI: General
 	void UIKeyConfig::draw(float inter) const
 	{
 		UIElement::draw(inter);
@@ -556,7 +554,7 @@ namespace ms
 			}
 			else
 			{
-				Console::get().print("Unresolvable key mapping: " + std::to_string(mapping.type) + ", " + std::to_string(mapping.action));
+				std::cout << "Invalid key mapping: (" << mapping.type << ", " << mapping.action << ")" << std::endl;
 			}
 
 			if (ficon)
@@ -739,7 +737,7 @@ namespace ms
 				}
 				else
 				{
-					Console::get().print("Could not determine icon type for key mapping: " + std::to_string(mapping.type) + ", " + std::to_string(mapping.action));
+					std::cout << "Invalid icon type for key mapping: (" << mapping.type << ", " << mapping.action << ")" << std::endl;
 				}
 
 				if (ficon)
@@ -823,8 +821,7 @@ namespace ms
 		}
 	}
 
-	// UI: Tooltip
-
+	/// UI: Tooltip
 	void UIKeyConfig::show_item(int32_t item_id)
 	{
 		UI::get().show_item(Tooltip::Parent::KEYCONFIG, item_id);
@@ -844,8 +841,7 @@ namespace ms
 		UI::get().clear_tooltip(Tooltip::Parent::KEYCONFIG);
 	}
 
-	// Keymap Staging
-
+	/// Keymap Staging
 	void UIKeyConfig::stage_mapping(Point<int16_t> cursorposition, Keyboard::Mapping mapping)
 	{
 		KeyConfig::Key key = key_by_position(cursorposition);
@@ -1084,8 +1080,7 @@ namespace ms
 		dirty = false;
 	}
 
-	// Helpers
-
+	/// Helpers
 	Texture UIKeyConfig::get_item_texture(int32_t item_id) const
 	{
 		const ItemData& data = ItemData::get(item_id);
@@ -1237,8 +1232,7 @@ namespace ms
 		}
 	}
 
-	// Item count
-
+	/// Item count
 	void UIKeyConfig::update_item_count(InventoryType::Id type, int16_t slot, int16_t change)
 	{
 		int32_t item_id = inventory.get_item_id(type, slot);
@@ -1250,8 +1244,7 @@ namespace ms
 		item_icons[item_id]->set_count(item_count + change);
 	}
 
-	// MappingIcon
-
+	/// MappingIcon
 	UIKeyConfig::MappingIcon::MappingIcon(Keyboard::Mapping m) : mapping(m) {}
 
 	UIKeyConfig::MappingIcon::MappingIcon(KeyAction::Id action)

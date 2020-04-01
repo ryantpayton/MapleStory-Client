@@ -21,7 +21,7 @@
 
 namespace ms
 {
-	// Handler for a packet that contains the response to an attempt at logging in.
+	// Handler for a packet that contains the response to an attempt at logging in
 	class LoginResultHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
@@ -33,37 +33,37 @@ namespace ms
 		void handle(InPacket& recv) const override;
 	};
 
-	// Handles the packet that contains information on worlds and channels.
+	// Handles the packet that contains information on worlds and channels
 	class ServerlistHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};
 
-	// Handler for a packet that contains information on all chars on this world.
+	// Handler for a packet that contains information on all chars on this world
 	class CharlistHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};
 
-	// Handles the packet which contains the IP of a channel server to connect to.
+	// Handles the packet which contains the IP of a channel server to connect to
 	class ServerIPHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};
 
-	// Handler for a packet which responds to the request for a character name.
+	// Handler for a packet which responds to the request for a character name
 	class CharnameResponseHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};
 
-	// Handler for the packet that notifies that a char was successfully created.
+	// Handler for the packet that notifies that a char was successfully created
 	class AddNewCharEntryHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;
 	};
 
-	// Handler for a packet that responds to the request to the delete a character.
+	// Handler for a packet that responds to the request to the delete a character
 	class DeleteCharResponseHandler : public PacketHandler
 	{
 		void handle(InPacket& recv) const override;

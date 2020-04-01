@@ -17,10 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "Attack.h"
+#include "../MapleMap/Mob.h"
 
-#include "../Maplemap/Mob.h"
-#include "../Template/BoolPair.h"
+#include "../../Template/BoolPair.h"
 
 namespace ms
 {
@@ -55,14 +54,14 @@ namespace ms
 		};
 	};
 
-	// No animation.
+	// No animation
 	class NoHitEffect : public SkillHitEffect
 	{
 	public:
 		void apply(const AttackUser&, Mob&) const override {}
 	};
 
-	// A single animation.
+	// A single animation
 	class SingleHitEffect : public SkillHitEffect
 	{
 	public:
@@ -74,11 +73,11 @@ namespace ms
 		Effect effect;
 	};
 
-	// The animation changes depending on the weapon used.
-	class TwoHHitEffect : public SkillHitEffect
+	// The animation changes depending on the weapon used
+	class TwoHandedHitEffect : public SkillHitEffect
 	{
 	public:
-		TwoHHitEffect(nl::node src);
+		TwoHandedHitEffect(nl::node src);
 
 		void apply(const AttackUser& user, Mob& target) const override;
 
@@ -86,7 +85,7 @@ namespace ms
 		BoolPair<Effect> effects;
 	};
 
-	// The animation changes with the character level.
+	// The animation changes with the character level
 	class ByLevelHitEffect : public SkillHitEffect
 	{
 	public:
@@ -98,7 +97,7 @@ namespace ms
 		std::map<uint16_t, Effect> effects;
 	};
 
-	// The animation changes with the character level and weapon used.
+	// The animation changes with the character level and weapon used
 	class ByLevelTwoHHitEffect : public SkillHitEffect
 	{
 	public:
@@ -110,7 +109,7 @@ namespace ms
 		std::map<uint16_t, BoolPair<Effect>> effects;
 	};
 
-	// The animation changes with the skill level.
+	// The animation changes with the skill level
 	class BySkillLevelHitEffect : public SkillHitEffect
 	{
 	public:

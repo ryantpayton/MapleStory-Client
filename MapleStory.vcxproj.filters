@@ -18,511 +18,364 @@
     <ClCompile Include="Configuration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="audio\Audio.cpp">
+    <ClCompile Include="MapleStory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\ActiveBuffs.cpp">
+    <ClCompile Include="Audio\Audio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\Buff.cpp">
+    <ClCompile Include="Character\Inventory\Equip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\Char.cpp">
+    <ClCompile Include="Character\Inventory\EquipQuality.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\CharEffect.cpp">
+    <ClCompile Include="Character\Inventory\Inventory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\Charstats.cpp">
+    <ClCompile Include="Character\Inventory\InventoryType.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\Equipstat.cpp">
+    <ClCompile Include="Character\Inventory\Item.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\ExpTable.cpp">
+    <ClCompile Include="Character\Inventory\Pet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\Job.cpp">
+    <ClCompile Include="Character\Inventory\Weapon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\Maplestat.cpp">
+    <ClCompile Include="Character\Look\Afterimage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\Monsterbook.cpp">
+    <ClCompile Include="Character\Look\Body.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\OtherChar.cpp">
+    <ClCompile Include="Character\Look\CharEquips.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\PassiveBuffs.cpp">
+    <ClCompile Include="Character\Look\CharLook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\Player.cpp">
+    <ClCompile Include="Character\Look\Clothing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\PlayerStates.cpp">
+    <ClCompile Include="Character\Look\EquipSlot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\Questlog.cpp">
+    <ClCompile Include="Character\Look\Face.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\Skillbook.cpp">
+    <ClCompile Include="Character\Look\Hair.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\Telerock.cpp">
+    <ClCompile Include="Character\Look\PetLook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\inventory\Equip.cpp">
+    <ClCompile Include="Character\Look\Stance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\inventory\EquipQuality.cpp">
+    <ClCompile Include="Character\ActiveBuffs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\inventory\Inventory.cpp">
+    <ClCompile Include="Character\Buff.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\inventory\InventoryType.cpp">
+    <ClCompile Include="Character\Char.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\inventory\Item.cpp">
+    <ClCompile Include="Character\CharEffect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\inventory\Pet.cpp">
+    <ClCompile Include="Character\CharStats.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\inventory\Weapon.cpp">
+    <ClCompile Include="Character\EquipStat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\look\Afterimage.cpp">
+    <ClCompile Include="Character\ExpTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\look\Body.cpp">
+    <ClCompile Include="Character\Job.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\look\BodyDrawinfo.cpp">
+    <ClCompile Include="Character\MapleStat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\look\CharEquips.cpp">
+    <ClCompile Include="Character\MonsterBook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\look\CharLook.cpp">
+    <ClCompile Include="Character\OtherChar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\look\Clothing.cpp">
+    <ClCompile Include="Character\PassiveBuffs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\look\Equipslot.cpp">
+    <ClCompile Include="Character\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\look\Face.cpp">
+    <ClCompile Include="Character\PlayerStates.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\look\Hair.cpp">
+    <ClCompile Include="Character\QuestLog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\look\PetLook.cpp">
+    <ClCompile Include="Character\SkillBook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="character\look\Stance.cpp">
+    <ClCompile Include="Character\TeleportRock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="data\BulletData.cpp">
+    <ClCompile Include="Data\BulletData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="data\EquipData.cpp">
+    <ClCompile Include="Data\EquipData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="data\ItemData.cpp">
+    <ClCompile Include="Data\ItemData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="data\JobData.cpp">
+    <ClCompile Include="Data\JobData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="data\SkillData.cpp">
+    <ClCompile Include="Data\SkillData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="data\WeaponData.cpp">
+    <ClCompile Include="Data\WeaponData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\Camera.cpp">
+    <ClCompile Include="Gameplay\Combat\Bullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\Spawn.cpp">
+    <ClCompile Include="Gameplay\Combat\Combat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\Stage.cpp">
+    <ClCompile Include="Gameplay\Combat\DamageNumber.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\combat\Bullet.cpp">
+    <ClCompile Include="Gameplay\Combat\RegularAttack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\combat\Combat.cpp">
+    <ClCompile Include="Gameplay\Combat\Skill.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\combat\DamageNumber.cpp">
+    <ClCompile Include="Gameplay\Combat\SkillAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\combat\RegularAttack.cpp">
+    <ClCompile Include="Gameplay\Combat\SkillBullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\combat\Skill.cpp">
+    <ClCompile Include="Gameplay\Combat\SkillHitEffect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\combat\SkillAction.cpp">
+    <ClCompile Include="Gameplay\Combat\SkillSound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\combat\SkillBullet.cpp">
+    <ClCompile Include="Gameplay\Combat\SkillUseEffect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\combat\SkillHitEffect.cpp">
+    <ClCompile Include="Gameplay\MapleMap\Drop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\combat\SkillSound.cpp">
+    <ClCompile Include="Gameplay\MapleMap\ItemDrop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\combat\SkillUseEffect.cpp">
+    <ClCompile Include="Gameplay\MapleMap\MapBackgrounds.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\Drop.cpp">
+    <ClCompile Include="Gameplay\MapleMap\MapChars.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\ItemDrop.cpp">
+    <ClCompile Include="Gameplay\MapleMap\MapDrops.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\MapBackgrounds.cpp">
+    <ClCompile Include="Gameplay\MapleMap\MapEffect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\Mapchars.cpp">
+    <ClCompile Include="Gameplay\MapleMap\MapInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\MapDrops.cpp">
+    <ClCompile Include="Gameplay\MapleMap\MapMobs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\Mapinfo.cpp">
+    <ClCompile Include="Gameplay\MapleMap\MapNpcs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\Mapmobs.cpp">
+    <ClCompile Include="Gameplay\MapleMap\MapObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\MapNpcs.cpp">
+    <ClCompile Include="Gameplay\MapleMap\MapObjects.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\MapObject.cpp">
+    <ClCompile Include="Gameplay\MapleMap\MapPortals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\Mapobjects.cpp">
+    <ClCompile Include="Gameplay\MapleMap\MapReactors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\Mapportals.cpp">
+    <ClCompile Include="Gameplay\MapleMap\MapTilesObjs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\MapReactors.cpp">
+    <ClCompile Include="Gameplay\MapleMap\MesoDrop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\MapTilesObjs.cpp">
+    <ClCompile Include="Gameplay\MapleMap\Mob.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\MesoDrop.cpp">
+    <ClCompile Include="Gameplay\MapleMap\Npc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\Mob.cpp">
+    <ClCompile Include="Gameplay\MapleMap\Obj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\Npc.cpp">
+    <ClCompile Include="Gameplay\MapleMap\Portal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\Obj.cpp">
+    <ClCompile Include="Gameplay\MapleMap\Reactor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\Portal.cpp">
+    <ClCompile Include="Gameplay\MapleMap\Tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\Reactor.cpp">
+    <ClCompile Include="Gameplay\Physics\Foothold.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\maplemap\Tile.cpp">
+    <ClCompile Include="Gameplay\Physics\FootholdTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\physics\Foothold.cpp">
+    <ClCompile Include="Gameplay\Physics\Physics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\physics\Footholdtree.cpp">
+    <ClCompile Include="Gameplay\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameplay\physics\Physics.cpp">
+    <ClCompile Include="Gameplay\Spawn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\Animation.cpp">
+    <ClCompile Include="Gameplay\Stage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\Color.cpp">
+    <ClCompile Include="Graphics\Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\EffectLayer.cpp">
+    <ClCompile Include="Graphics\Color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\Geometry.cpp">
+    <ClCompile Include="Graphics\EffectLayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\GraphicsGL.cpp">
+    <ClCompile Include="Graphics\Geometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\Sprite.cpp">
+    <ClCompile Include="Graphics\GraphicsGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\Text.cpp">
+    <ClCompile Include="Graphics\Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\Texture.cpp">
+    <ClCompile Include="Graphics\Text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\Cursor.cpp">
+    <ClCompile Include="Graphics\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\Keyboard.cpp">
+    <ClCompile Include="IO\Components\AreaButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\Messages.cpp">
+    <ClCompile Include="IO\Components\Button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\UI.cpp">
+    <ClCompile Include="IO\Components\Charset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\UIElement.cpp">
+    <ClCompile Include="IO\Components\ChatBalloon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\UIStateGame.cpp">
+    <ClCompile Include="IO\Components\EquipTooltip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\UIStateLogin.cpp">
+    <ClCompile Include="IO\Components\Gauge.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\Window.cpp">
+    <ClCompile Include="IO\Components\Icon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\components\AreaButton.cpp">
+    <ClCompile Include="IO\Components\IconCover.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\components\Button.cpp">
+    <ClCompile Include="IO\Components\ItemTooltip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\components\Charset.cpp">
+    <ClCompile Include="IO\Components\MapleButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\components\ChatBalloon.cpp">
+    <ClCompile Include="IO\Components\MapleComboBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\components\EquipTooltip.cpp">
+    <ClCompile Include="IO\Components\MapleFrame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\components\Gauge.cpp">
+    <ClCompile Include="IO\Components\MapTooltip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\components\Icon.cpp">
+    <ClCompile Include="IO\Components\NameTag.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\components\IconCover.cpp">
+    <ClCompile Include="IO\Components\NpcText.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\components\ItemTooltip.cpp">
+    <ClCompile Include="IO\Components\ScrollingNotice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\components\MapleButton.cpp">
+    <ClCompile Include="IO\Components\SkillTooltip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\components\MapleFrame.cpp">
+    <ClCompile Include="IO\Components\Slider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\components\Nametag.cpp">
+    <ClCompile Include="IO\Components\StatefulIcon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\components\Npctext.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\components\ScrollingNotice.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\components\SkillTooltip.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\components\Slider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\components\Textfield.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\components\TwoSpriteButton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UIBuffList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UICharSelect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UIChatbar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UIEquipInventory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UIItemInventory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UILogin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UILoginNotice.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UILoginwait.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UINotice.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UINpcTalk.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UIShop.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UISkillbook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UISoftkey.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UIStatsinfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UIStatusbar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UIStatusMessenger.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io\uitypes\UIWorldSelect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\Cryptography.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\InPacket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\OutPacket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\PacketSwitch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\Session.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\SocketAsio.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\SocketWinsock.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\handlers\AttackHandlers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\handlers\CommonHandlers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\handlers\CustomHandlers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\handlers\InventoryHandlers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\handlers\LoginHandlers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\handlers\MapObjectHandlers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\handlers\MessagingHandlers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\handlers\NpcInteractionHandlers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\handlers\PlayerHandlers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\handlers\SetfieldHandlers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\handlers\helpers\ItemParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\handlers\helpers\LoginParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="net\handlers\helpers\MovementParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="util\HashUtility.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="util\Misc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="util\NxFiles.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Net\Handlers\TestingHandlers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\UITypes\UIQuestLog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\UITypes\UIWorldMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\UITypes\UIUserList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\UITypes\UIMiniMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\UITypes\UIChat.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\UITypes\UIChannel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\UITypes\UIJoypad.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\UITypes\UIEvent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\UITypes\UIKeyConfig.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\UITypes\UILogo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\UITypes\UIRegion.cpp">
+    <ClCompile Include="IO\Components\Textfield.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IO\Components\TextTooltip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IO\UITypes\UITermsOfService.cpp">
+    <ClCompile Include="IO\Components\TwoSpriteButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="io\uitypes\UIRaceSelect.cpp">
+    <ClCompile Include="IO\UITypes\UIAranCreation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIBuffList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UICashShop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIChannel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UICharInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UICharSelect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIChat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIChatBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IO\UITypes\UICygnusCreation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IO\UITypes\UIAranCreation.cpp">
+    <ClCompile Include="IO\UITypes\UIEquipInventory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IO\UITypes\UIExplorerCreation.cpp">
@@ -531,54 +384,192 @@
     <ClCompile Include="IO\UITypes\UIGender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IO\Components\MapleComboBox.cpp">
+    <ClCompile Include="IO\UITypes\UIItemInventory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIJoypad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIKeyConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UILogin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UILoginNotice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UILoginWait.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UILogo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIMiniMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UINotice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UINpcTalk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IO\UITypes\UIOptionMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MapleStory.cpp">
+    <ClCompile Include="IO\UITypes\UIQuestLog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IO\UITypes\UIQuit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Gameplay\Maplemap\MapEffect.cpp">
+    <ClCompile Include="IO\UITypes\UIRaceSelect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IO\Components\StatefulIcon.cpp">
+    <ClCompile Include="IO\UITypes\UIRegion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IO\Components\MapTooltip.cpp">
+    <ClCompile Include="IO\UITypes\UIShop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IO\UITypes\UICharInfo.cpp">
+    <ClCompile Include="IO\UITypes\UISkillBook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Net\Handlers\PlayerInteractionHandlers.cpp">
+    <ClCompile Include="IO\UITypes\UISoftKey.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Net\Handlers\CashShopHandlers.cpp">
+    <ClCompile Include="IO\UITypes\UIStatsInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Net\Handlers\Helpers\CharacterParser.cpp">
+    <ClCompile Include="IO\UITypes\UIStatusBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIStatusMessenger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UITermsOfService.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIUserList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIWorldMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UITypes\UIWorldSelect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\Cursor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\Keyboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\Messages.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UIElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IO\UIStateCashShop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IO\UITypes\UICashShop.cpp">
+    <ClCompile Include="IO\UIStateGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\UIStateLogin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Net\Handlers\Helpers\CashShopParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Net\Handlers\Helpers\CharacterParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\Helpers\ItemParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\Helpers\LoginParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\Helpers\MovementParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\AttackHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\CashShopHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\CommonHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\InventoryHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\LoginHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\MapObjectHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\MessagingHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\NpcInteractionHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\PlayerHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\PlayerInteractionHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\SetFieldHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Handlers\TestingHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Cryptography.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\InPacket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\OutPacket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\PacketSwitch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\Session.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\SocketAsio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Net\SocketWinsock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Util\Misc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Util\NxFiles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Character\Look\BodyDrawInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Configuration.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Constants.h">
@@ -590,658 +581,400 @@
     <ClInclude Include="Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="audio\Audio.h">
+    <ClInclude Include="MapleStory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\ActiveBuffs.h">
+    <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\Buff.h">
+    <ClInclude Include="Audio\Audio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\Char.h">
+    <ClInclude Include="Character\Inventory\Equip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\CharEffect.h">
+    <ClInclude Include="Character\Inventory\EquipQuality.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\Charstats.h">
+    <ClInclude Include="Character\Inventory\Inventory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\Equipstat.h">
+    <ClInclude Include="Character\Inventory\InventoryType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\ExpTable.h">
+    <ClInclude Include="Character\Inventory\Item.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\Job.h">
+    <ClInclude Include="Character\Inventory\Pet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\Maplestat.h">
+    <ClInclude Include="Character\Inventory\Weapon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\Monsterbook.h">
+    <ClInclude Include="Character\Look\Afterimage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\OtherChar.h">
+    <ClInclude Include="Character\Look\Body.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\PassiveBuffs.h">
+    <ClInclude Include="Character\Look\BodyDrawInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\Player.h">
+    <ClInclude Include="Character\Look\CharEquips.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\PlayerStates.h">
+    <ClInclude Include="Character\Look\CharLook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\Questlog.h">
+    <ClInclude Include="Character\Look\Clothing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\Skillbook.h">
+    <ClInclude Include="Character\Look\EquipSlot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\SkillId.h">
+    <ClInclude Include="Character\Look\Face.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\StatCaps.h">
+    <ClInclude Include="Character\Look\Hair.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\Telerock.h">
+    <ClInclude Include="Character\Look\PetLook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\inventory\Equip.h">
+    <ClInclude Include="Character\Look\Stance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\inventory\EquipQuality.h">
+    <ClInclude Include="Character\ActiveBuffs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\inventory\Inventory.h">
+    <ClInclude Include="Character\Buff.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\inventory\InventoryType.h">
+    <ClInclude Include="Character\Char.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\inventory\Item.h">
+    <ClInclude Include="Character\CharEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\inventory\Pet.h">
+    <ClInclude Include="Character\CharStats.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\inventory\Weapon.h">
+    <ClInclude Include="Character\EquipStat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\look\Afterimage.h">
+    <ClInclude Include="Character\ExpTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\look\Body.h">
+    <ClInclude Include="Character\Job.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\look\BodyDrawinfo.h">
+    <ClInclude Include="Character\MapleStat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\look\CharEquips.h">
+    <ClInclude Include="Character\MonsterBook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\look\CharLook.h">
+    <ClInclude Include="Character\OtherChar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\look\Clothing.h">
+    <ClInclude Include="Character\PassiveBuffs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\look\Equipslot.h">
+    <ClInclude Include="Character\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\look\Face.h">
+    <ClInclude Include="Character\PlayerStates.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\look\Hair.h">
+    <ClInclude Include="Character\Questlog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\look\PetLook.h">
+    <ClInclude Include="Character\SkillBook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="character\look\Stance.h">
+    <ClInclude Include="Character\SkillId.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="data\BulletData.h">
+    <ClInclude Include="Character\StatCaps.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="data\EquipData.h">
+    <ClInclude Include="Character\TeleportRock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="data\ItemData.h">
+    <ClInclude Include="Data\BulletData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="data\JobData.h">
+    <ClInclude Include="Data\EquipData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="data\SkillData.h">
+    <ClInclude Include="Data\ItemData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="data\WeaponData.h">
+    <ClInclude Include="Data\JobData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\Camera.h">
+    <ClInclude Include="Data\SkillData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\Movement.h">
+    <ClInclude Include="Data\WeaponData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\Playable.h">
+    <ClInclude Include="Gameplay\Combat\Attack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\Spawn.h">
+    <ClInclude Include="Gameplay\Combat\Bullet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\Stage.h">
+    <ClInclude Include="Gameplay\Combat\Combat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\combat\Attack.h">
+    <ClInclude Include="Gameplay\Combat\DamageNumber.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\combat\Bullet.h">
+    <ClInclude Include="Gameplay\Combat\RegularAttack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\combat\Combat.h">
+    <ClInclude Include="Gameplay\Combat\Skill.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\combat\DamageNumber.h">
+    <ClInclude Include="Gameplay\Combat\SkillAction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\combat\RegularAttack.h">
+    <ClInclude Include="Gameplay\Combat\SkillBullet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\combat\Skill.h">
+    <ClInclude Include="Gameplay\Combat\SkillHitEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\combat\SkillAction.h">
+    <ClInclude Include="Gameplay\Combat\SkillSound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\combat\SkillBullet.h">
+    <ClInclude Include="Gameplay\Combat\SkillUseEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\combat\SkillHitEffect.h">
+    <ClInclude Include="Gameplay\Combat\SpecialMove.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\combat\SkillSound.h">
+    <ClInclude Include="Gameplay\MapleMap\Drop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\combat\SkillUseEffect.h">
+    <ClInclude Include="Gameplay\MapleMap\ItemDrop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\combat\SpecialMove.h">
+    <ClInclude Include="Gameplay\MapleMap\Layer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\Drop.h">
+    <ClInclude Include="Gameplay\MapleMap\MapBackgrounds.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\ItemDrop.h">
+    <ClInclude Include="Gameplay\MapleMap\MapChars.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\Layer.h">
+    <ClInclude Include="Gameplay\MapleMap\MapDrops.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\MapBackgrounds.h">
+    <ClInclude Include="Gameplay\MapleMap\MapEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\Mapchars.h">
+    <ClInclude Include="Gameplay\MapleMap\MapInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\MapDrops.h">
+    <ClInclude Include="Gameplay\MapleMap\MapMobs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\Mapinfo.h">
+    <ClInclude Include="Gameplay\MapleMap\MapNpcs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\Mapmobs.h">
+    <ClInclude Include="Gameplay\MapleMap\MapObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\MapNpcs.h">
+    <ClInclude Include="Gameplay\MapleMap\MapObjects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\Mapobject.h">
+    <ClInclude Include="Gameplay\MapleMap\MapPortals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\Mapobjects.h">
+    <ClInclude Include="Gameplay\MapleMap\MapReactors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\Mapportals.h">
+    <ClInclude Include="Gameplay\MapleMap\MapTilesObjs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\MapReactors.h">
+    <ClInclude Include="Gameplay\MapleMap\MesoDrop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\MapTilesObjs.h">
+    <ClInclude Include="Gameplay\MapleMap\Mob.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\MesoDrop.h">
+    <ClInclude Include="Gameplay\MapleMap\Npc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\Mob.h">
+    <ClInclude Include="Gameplay\MapleMap\Obj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\Npc.h">
+    <ClInclude Include="Gameplay\MapleMap\Portal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\Obj.h">
+    <ClInclude Include="Gameplay\MapleMap\Reactor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\Portal.h">
+    <ClInclude Include="Gameplay\MapleMap\Tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\Reactor.h">
+    <ClInclude Include="Gameplay\Physics\Foothold.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\maplemap\Tile.h">
+    <ClInclude Include="Gameplay\Physics\FootholdTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\physics\Foothold.h">
+    <ClInclude Include="Gameplay\Physics\Physics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\physics\Footholdtree.h">
+    <ClInclude Include="Gameplay\Physics\PhysicsObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\physics\Physics.h">
+    <ClInclude Include="Gameplay\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameplay\physics\PhysicsObject.h">
+    <ClInclude Include="Gameplay\Movement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\Animation.h">
+    <ClInclude Include="Gameplay\Playable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\Color.h">
+    <ClInclude Include="Gameplay\Spawn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\DrawArgument.h">
+    <ClInclude Include="Gameplay\Stage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\EffectLayer.h">
+    <ClInclude Include="Graphics\Animation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\Geometry.h">
+    <ClInclude Include="Graphics\Color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\GraphicsGL.h">
+    <ClInclude Include="Graphics\DrawArgument.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\Sprite.h">
+    <ClInclude Include="Graphics\EffectLayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\Text.h">
+    <ClInclude Include="Graphics\Geometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\Cursor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\KeyAction.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\Keyboard.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\KeyType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\Messages.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\UI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\UIDragElement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\UIElement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\UIState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\UIStateGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\UIStateLogin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\AreaButton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\Button.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\Charset.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\ChatBalloon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\EquipTooltip.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\Gauge.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\Icon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\IconCover.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\ItemTooltip.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\MapleButton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\MapleFrame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\Nametag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\ScrollingNotice.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\SkillTooltip.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\Slider.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\Textfield.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\Tooltip.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\components\TwoSpriteButton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UIBuffList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UICharSelect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UIChatbar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UIEquipInventory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UIItemInventory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UILogin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UILoginNotice.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UILoginwait.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UINotice.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UINpcTalk.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UIShop.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UISkillbook.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UISoftkey.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UIStatsinfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UIStatusbar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UIStatusMessenger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io\uitypes\UIWorldSelect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\Cryptography.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\InPacket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\Login.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\NetConstants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\OutPacket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\PacketError.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\PacketHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\PacketSwitch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\Session.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\SocketAsio.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\SocketWinsock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\handlers\AttackHandlers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\handlers\CommonHandlers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\handlers\CustomHandlers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\handlers\InventoryHandlers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\handlers\LoginHandlers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\handlers\MapobjectHandlers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\handlers\MessagingHandlers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\handlers\NpcInteractionHandlers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\handlers\PlayerHandlers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\handlers\SetfieldHandlers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\handlers\helpers\ItemParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\handlers\helpers\LoginParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\handlers\helpers\MovementParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\packets\AttackAndSkillPackets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\packets\CharCreationPackets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\packets\CommonPackets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\packets\CustomPackets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\packets\GameplayPackets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\packets\InventoryPackets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\packets\LoginPackets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\packets\MessagingPackets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\packets\MovementPacket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\packets\NpcInteractionPackets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\packets\PlayerPackets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="net\packets\SelectCharPackets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="template\BoolPair.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="template\Cache.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="template\Enumeration.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="template\EnumMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="template\Interpolated.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="template\Optional.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="template\Point.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="template\Range.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="template\Rectangle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="template\Singleton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="template\TimedQueue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="template\TypeMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="util\HashUtility.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="util\Lerp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="util\Misc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="util\NxFiles.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="util\QuadTree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="util\Randomizer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="util\TimedBool.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Net\Handlers\TestingHandlers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Util\HardwareInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\UITypes\UIQuestLog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\UITypes\UIWorldMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\UITypes\UIUserList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\UITypes\UIMiniMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\UITypes\UIChat.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\UITypes\UIChannel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\UITypes\UIJoypad.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\UITypes\UIEvent.h">
+    <ClInclude Include="Graphics\GraphicsGL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\SpecialText.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IO\UITypes\UIKeyConfig.h">
+    <ClInclude Include="Graphics\Sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IO\KeyConfig.h">
+    <ClInclude Include="Graphics\Text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IO\UITypes\UILogo.h">
+    <ClInclude Include="Graphics\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
+    <ClInclude Include="IO\Components\AreaButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IO\UITypes\UIRegion.h">
+    <ClInclude Include="IO\Components\Button.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\Charset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\ChatBalloon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\EquipTooltip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\Gauge.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\Icon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\IconCover.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\ItemTooltip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\MapleButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\MapleComboBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\MapleFrame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\MapTooltip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\NameTag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\ScrollingNotice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\SkillTooltip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\Slider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\StatefulIcon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Components\Textfield.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IO\Components\TextTooltip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IO\UITypes\UITermsOfService.h">
+    <ClInclude Include="IO\Components\Tooltip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="io\uitypes\UIRaceSelect.h">
+    <ClInclude Include="IO\Components\TwoSpriteButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IO\UITypes\UIAranCreation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IO\UITypes\UIBuffList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UICashShop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIChannel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UICharInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UICharSelect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIChat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIChatBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="IO\UITypes\UICygnusCreation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIEquipInventory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IO\UITypes\UIExplorerCreation.h">
@@ -1250,52 +983,301 @@
     <ClInclude Include="IO\UITypes\UIGender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IO\Components\MapleComboBox.h">
+    <ClInclude Include="IO\UITypes\UIItemInventory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Util\ScreenResolution.h">
+    <ClInclude Include="IO\UITypes\UIJoypad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIKeyConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UILogin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UILoginNotice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UILoginWait.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UILogo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIMiniMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UINotice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UINpcTalk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IO\UITypes\UIOptionMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MapleStory.h">
+    <ClInclude Include="IO\UITypes\UIQuestLog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IO\UITypes\UIQuit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Gameplay\Maplemap\MapEffect.h">
+    <ClInclude Include="IO\UITypes\UIRaceSelect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IO\Components\StatefulIcon.h">
+    <ClInclude Include="IO\UITypes\UIRegion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IO\Components\MapTooltip.h">
+    <ClInclude Include="IO\UITypes\UIShop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IO\UITypes\UICharInfo.h">
+    <ClInclude Include="IO\UITypes\UISkillBook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Net\Packets\PlayerInteractionPackets.h">
+    <ClInclude Include="IO\UITypes\UISoftKey.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Net\Handlers\PlayerInteractionHandlers.h">
+    <ClInclude Include="IO\UITypes\UIStatsInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Net\Handlers\CashShopHandlers.h">
+    <ClInclude Include="IO\UITypes\UIStatusBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Net\Handlers\Helpers\CharacterParser.h">
+    <ClInclude Include="IO\UITypes\UIStatusMessenger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UITermsOfService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIUserList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIWorldMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UIWorldSelect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Cursor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\KeyAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Keyboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\KeyConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\KeyType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Messages.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UIDragElement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UIElement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UIState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IO\UIStateCashShop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IO\UITypes\UICashShop.h">
+    <ClInclude Include="IO\UIStateGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UIStateLogin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Net\Handlers\Helpers\CashShopParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\Helpers\CharacterParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\Helpers\ItemParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\Helpers\LoginParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\Helpers\MovementParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\AttackHandlers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\CashShopHandlers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\CommonHandlers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\InventoryHandlers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\LoginHandlers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\MapObjectHandlers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\MessagingHandlers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\NpcInteractionHandlers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\PlayerHandlers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\PlayerInteractionHandlers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\SetFieldHandlers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Handlers\TestingHandlers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Packets\AttackAndSkillPackets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Packets\CharCreationPackets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Packets\CommonPackets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Packets\GameplayPackets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Packets\InventoryPackets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Packets\LoginPackets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Packets\MessagingPackets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Packets\MovementPacket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Packets\NpcInteractionPackets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Packets\PlayerInteractionPackets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Packets\PlayerPackets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Packets\SelectCharPackets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Cryptography.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\InPacket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Login.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\NetConstants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\OutPacket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\PacketError.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\PacketHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\PacketSwitch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Session.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\SocketAsio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\SocketWinsock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Template\BoolPair.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Template\Cache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Template\Enumeration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Template\EnumMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Template\Interpolated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Template\Optional.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Template\Point.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Template\Range.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Template\Rectangle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Template\Singleton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Template\TimedQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Template\TypeMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\HardwareInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\Lerp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\Misc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\NxFiles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\QuadTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\Randomizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\ScreenResolution.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\TimedBool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

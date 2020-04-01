@@ -17,12 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "Maplemap/MapObject.h"
+#include "MapleMap/MapObject.h"
 
 #include "../Graphics/Animation.h"
 #include "../Net/Login.h"
 
-#include <cstdint>
 #include <memory>
 
 namespace ms

@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "MapEffect.h"
 
-#include "../Constants.h"
+#include "../../Constants.h"
 
-#include <nlnx\nx.hpp>
+#include <nlnx/nx.hpp>
 
 namespace ms
 {

@@ -16,20 +16,23 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "UICharSelect.h"
-#include "UIWorldSelect.h"
-#include "UIRaceSelect.h"
-#include "UISoftkey.h"
+
 #include "UILoginNotice.h"
+#include "UIRaceSelect.h"
+#include "UISoftKey.h"
+#include "UIWorldSelect.h"
 
 #include "../UI.h"
-#include "../Configuration.h"
 
-#include "../Components/MapleButton.h"
 #include "../Components/AreaButton.h"
-#include "../Audio/Audio.h"
-#include "../Character/Job.h"
+#include "../Components/MapleButton.h"
 
-#include "../Net/Packets/SelectCharPackets.h"
+#include "../../Configuration.h"
+
+#include "../../Audio/Audio.h"
+#include "../../Character/Job.h"
+
+#include "../../Net/Packets/SelectCharPackets.h"
 
 #define NOMINMAX
 #include <windows.h>
@@ -38,8 +41,7 @@
 
 namespace ms
 {
-	UICharSelect::UICharSelect(std::vector<CharEntry> c, int8_t char_count, int32_t s, int8_t rp) : UIElement(Point<int16_t>(0, 0), Point<int16_t>(800, 600)),
-		characters(c), characters_count(char_count), slots(s), require_pic(rp)
+	UICharSelect::UICharSelect(std::vector<CharEntry> characters, int8_t characters_count, int32_t slots, int8_t require_pic) : characters(characters), characters_count(characters_count), slots(slots), require_pic(require_pic)
 	{
 		burning_character = true;
 
@@ -49,6 +51,7 @@ namespace ms
 		pagepos = Point<int16_t>(247, 462);
 		worldpos = Point<int16_t>(586, 46);
 		charinfopos = Point<int16_t>(671, 339);
+
 		Point<int16_t> character_sel_pos = Point<int16_t>(601, 393);
 		Point<int16_t> character_new_pos = Point<int16_t>(200, 495);
 		Point<int16_t> character_del_pos = Point<int16_t>(316, 495);
@@ -78,7 +81,6 @@ namespace ms
 		nl::node Login = nl::nx::ui["Login.img"];
 		nl::node Common = Login["Common"];
 		nl::node CharSelect = Login["CharSelect"];
-
 		nl::node selectWorld = Common["selectWorld"];
 		nl::node selectedWorld = CharSelect["selectedWorld"];
 		nl::node pageNew = CharSelect["pageNew"];
@@ -107,9 +109,7 @@ namespace ms
 		sprites.emplace_back(Common["frame"], Point<int16_t>(400, 300));
 		sprites.emplace_back(Common["step"]["2"], Point<int16_t>(40, 0));
 
-		nl::node Burning = Common["Burning"];
-
-		burning_notice = Burning["BurningNotice"];
+		burning_notice = Common["Burning"]["BurningNotice"];
 		burning_count = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE, "1");
 
 		charinfo = CharSelect["charInfo"];
@@ -149,7 +149,7 @@ namespace ms
 		for (size_t i = 0; i < InfoLabel::NUM_LABELS; i++)
 			infolabels[i] = OutlinedText(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::WHITE, Color::Name::TOBACCOBROWN);
 
-		for (auto& entry : characters)
+		for (CharEntry& entry : characters)
 		{
 			charlooks.emplace_back(entry.look);
 			nametags.emplace_back(nametag, Text::Font::A13M, entry.stats.name);
@@ -179,8 +179,10 @@ namespace ms
 			SelectCharPicPacket(
 				Configuration::get().get_auto_pic(),
 				Configuration::get().get_auto_cid()
-			).dispatch();
+				).dispatch();
 		}
+
+		dimension = Point<int16_t>(800, 600);
 	}
 
 	void UICharSelect::draw(float inter) const
@@ -191,17 +193,17 @@ namespace ms
 		charslot.draw(position + Point<int16_t>(589, 106 - charslot_y));
 		chatslotlabel.draw(position + Point<int16_t>(700, 110 - charslot_y));
 
-		for (auto sprite : world_sprites)
+		for (Sprite sprite : world_sprites)
 			sprite.draw(position, inter);
 
 		std::string total = pad_number_with_leading_zero(page_count);
 		std::string current = pad_number_with_leading_zero(selected_page + 1);
 
-		std::list<int8_t> fliplist = { 2, 3, 6, 7 };
+		std::list<uint8_t> fliplist = { 2, 3, 6, 7 };
 
-		for (size_t i = 0; i < PAGESIZE; i++)
+		for (uint8_t i = 0; i < PAGESIZE; i++)
 		{
-			auto index = i + selected_page * PAGESIZE;
+			uint8_t index = i + selected_page * PAGESIZE;
 			bool flip_character = std::find(fliplist.begin(), fliplist.end(), i) != fliplist.end();
 			bool selectedslot = index == selected_character;
 
@@ -223,7 +225,7 @@ namespace ms
 
 					charinfo.draw(position + charinfopos);
 
-					std::string levelstr = std::to_string(character_stats.stats[Maplestat::Id::LEVEL]);
+					std::string levelstr = std::to_string(character_stats.stats[MapleStat::Id::LEVEL]);
 					int16_t lvx = levelset.draw(levelstr, pos_adj + Point<int16_t>(12, lvy));
 					levelset.draw('l', pos_adj + Point<int16_t>(1 - lvx / 2, lvy));
 
@@ -237,7 +239,7 @@ namespace ms
 				}
 
 				uint8_t j = 0;
-				uint16_t job = character_stats.stats[Maplestat::Id::JOB];
+				uint16_t job = character_stats.stats[MapleStat::Id::JOB];
 
 				if (job >= 0 && job < 1000)
 					j = 0;
@@ -315,10 +317,10 @@ namespace ms
 		if (!tab_move && tab_move_pos > 0)
 			tab_move_pos -= 1;
 
-		for (auto& charlook : charlooks)
+		for (CharLook& charlook : charlooks)
 			charlook.update(Constants::TIMESTEP);
 
-		for (auto& effect : selectedslot_effect)
+		for (Animation& effect : selectedslot_effect)
 			effect.update();
 
 		emptyslot_effect.update();
@@ -411,7 +413,7 @@ namespace ms
 					uint16_t btn_index = tab_map[tab_index];
 
 					auto& btn = buttons[btn_index];
-					auto state = btn->get_state();
+					Button::State state = btn->get_state();
 
 					if (state != Button::State::DISABLED)
 						button_pressed(btn_index);
@@ -432,12 +434,12 @@ namespace ms
 				uint8_t rows = std::floor((index_total - 1) / COLUMNS) + 1;
 
 				div_t div = std::div(selected_index, columns);
-				auto current_col = div.rem;
-				//auto current_row = div.quot;
+				int32_t current_col = div.rem;
+				//int32_t current_row = div.quot;
 
 				if (keycode == KeyAction::Id::UP)
 				{
-					auto next_index = (selected_index - COLUMNS < 0 ? (selected_index - COLUMNS) + rows * COLUMNS : selected_index - COLUMNS);
+					uint8_t next_index = (selected_index - COLUMNS < 0 ? (selected_index - COLUMNS) + rows * COLUMNS : selected_index - COLUMNS);
 
 					if (next_index == selected_character)
 						return;
@@ -449,7 +451,7 @@ namespace ms
 				}
 				else if (keycode == KeyAction::Id::DOWN)
 				{
-					auto next_index = (selected_index + COLUMNS >= index_total ? current_col : selected_index + COLUMNS);
+					uint8_t next_index = (selected_index + COLUMNS >= index_total ? current_col : selected_index + COLUMNS);
 
 					if (next_index == selected_character)
 						return;
@@ -509,7 +511,7 @@ namespace ms
 					tab_move_pos = 0;
 
 					auto& prev_btn = buttons[tab_map[prev_tab]];
-					auto prev_state = prev_btn->get_state();
+					Button::State prev_state = prev_btn->get_state();
 
 					if (prev_state != Button::State::DISABLED)
 						prev_btn->set_state(Button::State::NORMAL);
@@ -517,7 +519,7 @@ namespace ms
 					if (tab_active)
 					{
 						auto& btn = buttons[tab_map[tab_index]];
-						auto state = btn->get_state();
+						Button::State state = btn->get_state();
 
 						if (state != Button::State::DISABLED)
 							btn->set_state(Button::State::MOUSEOVER);
@@ -543,7 +545,7 @@ namespace ms
 
 	void UICharSelect::post_add_character()
 	{
-		auto page_matches = (characters_count - 1) / PAGESIZE == selected_page;
+		bool page_matches = (characters_count - 1) / PAGESIZE == selected_page;
 
 		if (!page_matches)
 			button_pressed(Buttons::PAGERIGHT);
@@ -574,7 +576,7 @@ namespace ms
 
 				if (selected_page > 0)
 				{
-					auto page_matches = (characters_count - 1) / PAGESIZE == selected_page;
+					bool page_matches = (characters_count - 1) / PAGESIZE == selected_page;
 
 					if (!page_matches)
 						button_pressed(Buttons::PAGELEFT);
@@ -594,11 +596,11 @@ namespace ms
 
 	const CharEntry& UICharSelect::get_character(int32_t id)
 	{
-		for (auto& character : characters)
+		for (CharEntry& character : characters)
 			if (character.id == id)
 				return character;
 
-		Console::get().print(__func__, "Warning: Invalid character id '" + std::to_string(id) + "'");
+		std::cout << "Invalid character id: [" << id << "]" << std::endl;
 
 		static const CharEntry null_character = { {}, {}, 0 };
 
@@ -633,7 +635,7 @@ namespace ms
 					SelectCharPicPacket(pic, id).dispatch();
 				};
 
-				UI::get().emplace<UISoftkey>(onok);
+				UI::get().emplace<UISoftKey>(onok);
 			}
 			break;
 			case 2:
@@ -685,11 +687,11 @@ namespace ms
 						chatslotlabel.change_text(get_slot_text());
 					};
 
-					UI::get().emplace<UISoftkey>(onok, oncancel);
+					UI::get().emplace<UISoftKey>(onok, oncancel);
 				};
 
 				const StatsEntry& character_stats = characters[selected_character].stats;
-				uint16_t cjob = character_stats.stats[Maplestat::Id::JOB];
+				uint16_t cjob = character_stats.stats[MapleStat::Id::JOB];
 
 				if (cjob < 1000)
 					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::DELETE_CONFIRMATION, onok, oncancel);
@@ -783,9 +785,9 @@ namespace ms
 
 	void UICharSelect::update_buttons()
 	{
-		for (size_t i = 0; i < PAGESIZE; i++)
+		for (uint8_t i = 0; i < PAGESIZE; i++)
 		{
-			auto index = i + selected_page * PAGESIZE;
+			uint8_t index = i + selected_page * PAGESIZE;
 
 			if (index < characters_count)
 				buttons[Buttons::CHARACTER_SLOT0 + i]->set_state(Button::State::NORMAL);
@@ -800,9 +802,9 @@ namespace ms
 
 		bool character_found = false;
 
-		for (int i = PAGESIZE - 1; i >= 0; i--)
+		for (uint8_t i = PAGESIZE - 1; i >= 0; i--)
 		{
-			auto index = i + selected_page * PAGESIZE;
+			uint8_t index = i + selected_page * PAGESIZE;
 
 			if (index < characters_count)
 			{
@@ -833,9 +835,9 @@ namespace ms
 
 	void UICharSelect::select_last_slot()
 	{
-		for (int i = PAGESIZE - 1; i >= 0; i--)
+		for (uint8_t i = PAGESIZE - 1; i >= 0; i--)
 		{
-			auto index = i + selected_page * PAGESIZE;
+			uint8_t index = i + selected_page * PAGESIZE;
 
 			if (index < characters_count)
 			{
@@ -865,8 +867,8 @@ namespace ms
 
 	Point<int16_t> UICharSelect::get_character_slot_pos(size_t index, uint16_t x_adj, uint16_t y_adj) const
 	{
-		auto x = 125 * (index % 4);
-		auto y = 200 * (index > 3);
+		int16_t x = 125 * (index % 4);
+		int16_t y = 200 * (index > 3);
 
 		return Point<int16_t>(x + x_adj, y + y_adj);
 	}
@@ -899,15 +901,15 @@ namespace ms
 		switch (index)
 		{
 		case InfoLabel::JOB:
-			return Job(character_stats.stats[Maplestat::Id::JOB]).get_name();
+			return Job(character_stats.stats[MapleStat::Id::JOB]).get_name();
 		case InfoLabel::STR:
-			return std::to_string(character_stats.stats[Maplestat::Id::STR]);
+			return std::to_string(character_stats.stats[MapleStat::Id::STR]);
 		case InfoLabel::DEX:
-			return std::to_string(character_stats.stats[Maplestat::Id::DEX]);
+			return std::to_string(character_stats.stats[MapleStat::Id::DEX]);
 		case InfoLabel::INT:
-			return std::to_string(character_stats.stats[Maplestat::Id::INT]);
+			return std::to_string(character_stats.stats[MapleStat::Id::INT]);
 		case InfoLabel::LUK:
-			return std::to_string(character_stats.stats[Maplestat::Id::LUK]);
+			return std::to_string(character_stats.stats[MapleStat::Id::LUK]);
 		case InfoLabel::NUM_LABELS:
 			break;
 		default:
@@ -938,10 +940,10 @@ namespace ms
 				}
 			};
 
-			UI::get().emplace<UISoftkey>(verifypic, []() {}, "Please re-enter your new PIC.", Point<int16_t>(24, 0));
+			UI::get().emplace<UISoftKey>(verifypic, []() {}, "Please re-enter your new PIC.", Point<int16_t>(24, 0));
 		};
 
-		UI::get().emplace<UISoftkey>(enterpic, []() {}, "Your new PIC must at least be 6 characters long.", Point<int16_t>(24, 0));
+		UI::get().emplace<UISoftKey>(enterpic, []() {}, "Your new PIC must at least be 6 characters long.", Point<int16_t>(24, 0));
 	}
 
 	void UICharSelect::check_pic(const std::string entered_pic) const
@@ -985,7 +987,7 @@ namespace ms
 			RegisterPicPacket(
 				characters[selected_character].id,
 				entered_pic
-			).dispatch();
+				).dispatch();
 		}
 	}
 }

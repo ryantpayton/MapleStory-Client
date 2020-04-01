@@ -17,10 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Character/Maplestat.h"
+#include "../Character/MapleStat.h"
 
-#include <vector>
 #include <map>
+#include <vector>
 
 namespace ms
 {
@@ -56,7 +56,7 @@ namespace ms
 		std::string name;
 		bool female;
 		std::vector<int64_t> petids;
-		EnumMap<Maplestat::Id, uint16_t> stats;
+		EnumMap<MapleStat::Id, uint16_t> stats;
 		int64_t exp;
 		int32_t mapid;
 		uint8_t portal;

@@ -19,24 +19,23 @@
 
 #include "Helpers/LoginParser.h"
 
-#include "../Session.h"
-
-#include "../IO/UI.h"
 #include "../Packets/LoginPackets.h"
 
-#include "../IO/UITypes/UICharSelect.h"
-#include "../IO/UITypes/UIGender.h"
-#include "../IO/UITypes/UILoginNotice.h"
-#include "../IO/UITypes/UILoginwait.h"
-#include "../IO/UITypes/UIRaceSelect.h"
-#include "../IO/UITypes/UITermsOfService.h"
-#include "../IO/UITypes/UIWorldSelect.h"
+#include "../../IO/UI.h"
+
+#include "../../IO/UITypes/UICharSelect.h"
+#include "../../IO/UITypes/UIGender.h"
+#include "../../IO/UITypes/UILoginNotice.h"
+#include "../../IO/UITypes/UILoginWait.h"
+#include "../../IO/UITypes/UIRaceSelect.h"
+#include "../../IO/UITypes/UITermsOfService.h"
+#include "../../IO/UITypes/UIWorldSelect.h"
 
 namespace ms
 {
 	void LoginResultHandler::handle(InPacket& recv) const
 	{
-		auto loginwait = UI::get().get_element<UILoginwait>();
+		auto loginwait = UI::get().get_element<UILoginWait>();
 
 		if (loginwait && loginwait->is_active())
 		{
@@ -51,7 +50,8 @@ namespace ms
 			// The packet should contain a 'reason' integer which can signify various things
 			if (int32_t reason = recv.read_int())
 			{
-				// Login unsuccessful, the LoginNotice displayed will contain the specific information.
+				// Login unsuccessful
+				// The LoginNotice displayed will contain the specific information
 				switch (reason)
 				{
 				case 2:
@@ -83,7 +83,8 @@ namespace ms
 			}
 			else
 			{
-				// Login successful; The packet contains information on the account, so we initialize the account with it.
+				// Login successful
+				// The packet contains information on the account, so we initialize the account with it.
 				Account account = LoginParser::parse_account(recv);
 
 				Configuration::get().set_admin(account.admin);
@@ -94,7 +95,7 @@ namespace ms
 				}
 				else
 				{
-					// Save the Login ID if the box for it on the login screen is checked
+					// Save the "Login ID" if the box for it on the login screen is checked
 					if (Setting<SaveLogin>::get().load())
 						Setting<DefaultAccount>::get().save(account.name);
 
@@ -148,7 +149,7 @@ namespace ms
 
 	void CharlistHandler::handle(InPacket& recv) const
 	{
-		auto loginwait = UI::get().get_element<UILoginwait>();
+		auto loginwait = UI::get().get_element<UILoginWait>();
 
 		if (loginwait && loginwait->is_active())
 		{

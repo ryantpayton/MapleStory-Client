@@ -16,9 +16,10 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "Messages.h"
+
 #include "UI.h"
 
-#include "UITypes/UIChatbar.h"
+#include "UITypes/UIChatBar.h"
 
 namespace ms
 {
@@ -37,7 +38,6 @@ namespace ms
 		"The item has been destroyed due to the overwhelming power of the scroll."
 	};
 
-
 	InChatMessage::InChatMessage(Messages::Type t)
 	{
 		type = t;
@@ -45,13 +45,12 @@ namespace ms
 
 	void InChatMessage::drop() const
 	{
-		if (type == Messages::NONE)
+		if (type == Messages::Type::NONE)
 			return;
 
-		if (auto chatbar = UI::get().get_element<UIChatbar>())
-			chatbar->display_message(type, UIChatbar::RED);
+		if (auto chatbar = UI::get().get_element<UIChatBar>())
+			chatbar->display_message(type, UIChatBar::RED);
 	}
-
 
 	ForbidSkillMessage::ForbidSkillMessage(SpecialMove::ForbidReason reason, Weapon::Type weapon) : InChatMessage(message_by_reason(reason, weapon)) {}
 
@@ -59,18 +58,18 @@ namespace ms
 	{
 		switch (reason)
 		{
-		case SpecialMove::FBR_WEAPONTYPE:
-			return Messages::SKILL_WEAPONTYPE;
-		case SpecialMove::FBR_HPCOST:
-			return Messages::SKILL_HPCOST;
-		case SpecialMove::FBR_MPCOST:
-			return Messages::SKILL_MPCOST;
-		case SpecialMove::FBR_COOLDOWN:
-			return Messages::SKILL_COOLDOWN;
-		case SpecialMove::FBR_BULLETCOST:
+		case SpecialMove::ForbidReason::FBR_WEAPONTYPE:
+			return Messages::Type::SKILL_WEAPONTYPE;
+		case SpecialMove::ForbidReason::FBR_HPCOST:
+			return Messages::Type::SKILL_HPCOST;
+		case SpecialMove::ForbidReason::FBR_MPCOST:
+			return Messages::Type::SKILL_MPCOST;
+		case SpecialMove::ForbidReason::FBR_COOLDOWN:
+			return Messages::Type::SKILL_COOLDOWN;
+		case SpecialMove::ForbidReason::FBR_BULLETCOST:
 			return message_by_weapon(weapon);
 		default:
-			return Messages::NONE;
+			return Messages::Type::NONE;
 		}
 	}
 
@@ -78,13 +77,13 @@ namespace ms
 	{
 		switch (weapon)
 		{
-		case Weapon::BOW:
-		case Weapon::CROSSBOW:
-			return Messages::SKILL_NOARROWS;
-		case Weapon::CLAW:
-			return Messages::SKILL_NOSTARS;
+		case Weapon::Type::BOW:
+		case Weapon::Type::CROSSBOW:
+			return Messages::Type::SKILL_NOARROWS;
+		case Weapon::Type::CLAW:
+			return Messages::Type::SKILL_NOSTARS;
 		default:
-			return Messages::SKILL_NOBULLETS;
+			return Messages::Type::SKILL_NOBULLETS;
 		}
 	}
 }

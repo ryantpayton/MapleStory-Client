@@ -101,6 +101,7 @@ namespace ms
 			CANCEL
 		};
 
+		// TODO: Merge with UIRaceSelect.h
 		enum Classes : uint8_t
 		{
 			RESISTANCE,

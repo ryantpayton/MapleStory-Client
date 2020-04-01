@@ -22,8 +22,6 @@
 #include "../Template/EnumMap.h"
 
 #include <unordered_map>
-#include <cstdint>
-#include <string>
 
 #include <nlnx/node.hpp>
 
@@ -32,10 +30,10 @@ namespace ms
 	class Sound
 	{
 	public:
-		// Preloaded sounds.
+		// Preloaded sounds
 		enum Name
 		{
-			// UI
+			/// UI
 			BUTTONCLICK,
 			BUTTONOVER,
 			CHARSELECT,
@@ -52,10 +50,10 @@ namespace ms
 			WORLDMAPOPEN,
 			WORLDMAPCLOSE,
 
-			// Login
+			/// Login
 			GAMESTART,
 
-			// Game
+			/// Game
 			JUMP,
 			DROP,
 			PICKUP,
@@ -82,7 +80,7 @@ namespace ms
 		static void play(size_t id);
 
 		static size_t add_sound(nl::node src);
-		static void add_sound(Sound::Name name, nl::node src);
+		static void add_sound(Name name, nl::node src);
 		static void add_sound(std::string itemid, nl::node src);
 
 		static std::string format_id(int32_t itemid);

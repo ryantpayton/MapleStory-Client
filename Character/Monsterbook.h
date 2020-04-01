@@ -17,16 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <cstdint>
 #include <map>
 
 namespace ms
 {
-	// Class that represents the monster card collection of an individual character.
-	class Monsterbook
+	// Class that represents the monster card collection of an individual character
+	class MonsterBook
 	{
 	public:
-		Monsterbook();
+		MonsterBook();
 
 		void set_cover(int32_t);
 		void add_card(int16_t, int8_t);

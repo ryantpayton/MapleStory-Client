@@ -20,9 +20,10 @@
 #include "../UIElement.h"
 
 #include "../Components/Textfield.h"
-#include "../Template/BoolPair.h"
 
-#include "../Character/Look/CharLook.h"
+#include "../../Template/BoolPair.h"
+
+#include "../../Character/Look/CharLook.h"
 
 namespace ms
 {
@@ -50,7 +51,7 @@ namespace ms
 
 	private:
 		void randomize_look();
-		const std::string& get_equipname(Equipslot::Id slot) const;
+		const std::string& get_equipname(EquipSlot::Id slot) const;
 
 		enum Buttons : uint16_t
 		{

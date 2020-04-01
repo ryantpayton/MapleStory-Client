@@ -17,11 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Spawn.h"
 
-#include "Maplemap/Npc.h"
-#include "Maplemap/Mob.h"
-#include "Maplemap/Reactor.h"
-#include "Maplemap/ItemDrop.h"
-#include "Maplemap/MesoDrop.h"
+#include "MapleMap/ItemDrop.h"
+#include "MapleMap/MesoDrop.h"
+#include "MapleMap/Mob.h"
+#include "MapleMap/Npc.h"
+#include "MapleMap/Reactor.h"
 
 #include "../Character/OtherChar.h"
 

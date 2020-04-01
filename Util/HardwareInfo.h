@@ -21,7 +21,6 @@
 
 #include <Windows.h>
 #include <IPHlpApi.h>
-#include <cstdio>
 
 namespace ms
 {
@@ -95,7 +94,7 @@ namespace ms
 				// Contains pointer to current adapter info
 				PIP_ADAPTER_INFO pAdapterInfo = AdapterInfo;
 
-				// Technically should look at pAdapterInfo->AddressLength and not assume it is 6.
+				// Technically should look at pAdapterInfo->AddressLength and not assume it is 6
 				sprintf(hwid, "%02X%02X%02X%02X%02X%02X",
 					pAdapterInfo->Address[0], pAdapterInfo->Address[1],
 					pAdapterInfo->Address[2], pAdapterInfo->Address[3],
@@ -105,7 +104,7 @@ namespace ms
 
 				pAdapterInfo = pAdapterInfo->Next;
 
-				// Technically should look at pAdapterInfo->AddressLength and not assume it is 6.
+				// Technically should look at pAdapterInfo->AddressLength and not assume it is 6
 				sprintf(macs, "%02X-%02X-%02X-%02X-%02X-%02X",
 					pAdapterInfo->Address[0], pAdapterInfo->Address[1],
 					pAdapterInfo->Address[2], pAdapterInfo->Address[3],

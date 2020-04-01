@@ -17,22 +17,18 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Character/Inventory/Weapon.h"
 #include "../Graphics/Texture.h"
-#include "../Template/Rectangle.h"
 #include "../Template/Cache.h"
 
-#include <string>
-#include <array>
-#include <unordered_map>
+#include "../Character/Inventory/Weapon.h"
 
 namespace ms
 {
-	// Contains information about a skill.
+	// Contains information about a skill
 	class SkillData : public Cache<SkillData>
 	{
 	public:
-		// The stats of one level.
+		// The stats of one level
 		struct Stats
 		{
 			float damage;
@@ -54,7 +50,7 @@ namespace ms
 			constexpr Stats(float damage, int32_t matk, int32_t fixdamage, int32_t mastery, uint8_t attackcount, uint8_t mobcount, uint8_t bulletcount, int16_t bulletcost, int32_t hpcost, int32_t mpcost, float chance, float critical, float ignoredef, float hrange, Rectangle<int16_t> range) : damage(damage), matk(matk), fixdamage(fixdamage), mastery(mastery), attackcount(attackcount), mobcount(mobcount), bulletcount(bulletcount), bulletcost(bulletcost), hpcost(hpcost), mpcost(mpcost), chance(chance), critical(critical), ignoredef(ignoredef), hrange(hrange), range(range) {}
 		};
 
-		// Skill flags, unfortunately these just have to be hardcoded
+		// Skill flags, unfortunately these just have to be hard-coded
 		enum Flags
 		{
 			NONE = 0x0000,
@@ -71,42 +67,42 @@ namespace ms
 			NUM_ICONS
 		};
 
-		// Return whether the skill is passive.
+		// Return whether the skill is passive
 		bool is_passive() const;
-		// Return whether the skill is an attack skill.
+		// Return whether the skill is an attack skill
 		bool is_attack() const;
-		// Return whether this skill is invisible in the skill book ui.
+		// Return whether this skill is invisible in the skill book UI
 		bool is_invisible() const;
-		// Return the default masterlevel.
+		// Return the default masterlevel
 		int32_t get_masterlevel() const;
-		// Return the required weapon.
+		// Return the required weapon
 		Weapon::Type get_required_weapon() const;
-		// Return the stats of one level.
+		// Return the stats of one level
 		// If there are no stats for that level, a default object is returned.
 		const Stats& get_stats(int32_t level) const;
 
-		// Return the name of the skill.
+		// Return the name of the skill
 		const std::string& get_name() const;
-		// Return the description of the skill.
+		// Return the description of the skill
 		const std::string& get_desc() const;
-		// Return the description of a level.
+		// Return the description of a level
 		// If there is no description for this level, a warning message is returned.
 		const std::string& get_level_desc(int32_t level) const;
 
-		// Return one of the skill icons.
-		// Cannot fail if type is a valid enum.
+		// Return one of the skill icons
+		// Cannot fail if type is a valid enumeration
 		const Texture& get_icon(Icon icon) const;
 
-		// Return id and level of all required skills.
+		// Return id and level of all required skills
 		const std::unordered_map<int32_t, int32_t>& get_reqskills() const;
 
 	private:
-		// Allow the cache to use the constructor.
+		// Allow the cache to use the constructor
 		friend Cache<SkillData>;
-		// Load a skill from the game files.
+		// Load a skill from the game files
 		SkillData(int32_t id);
 
-		// Get some hardcoded information.
+		// Get some hard-coded information
 		int32_t flags_of(int32_t id) const;
 
 		std::unordered_map<int32_t, Stats> stats;
@@ -122,6 +118,6 @@ namespace ms
 		std::unordered_map<int32_t, std::string> levels;
 		std::unordered_map<int32_t, int32_t> reqskills;
 
-		std::array<Texture, SkillData::Icon::NUM_ICONS> icons;
+		std::array<Texture, Icon::NUM_ICONS> icons;
 	};
 }

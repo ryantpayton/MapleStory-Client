@@ -19,13 +19,13 @@
 
 #include "Helpers/LoginParser.h"
 
-#include "../Gameplay/Stage.h"
-#include "../IO/UI.h"
+#include "../../Gameplay/Stage.h"
+#include "../../IO/UI.h"
 
-#include "../IO/UITypes/UIBuffList.h"
-#include "../IO/UITypes/UICashShop.h"
-#include "../IO/UITypes/UISkillbook.h"
-#include "../IO/UITypes/UIStatsinfo.h"
+#include "../../IO/UITypes/UIBuffList.h"
+#include "../../IO/UITypes/UICashShop.h"
+#include "../../IO/UITypes/UISkillBook.h"
+#include "../../IO/UITypes/UIStatsInfo.h"
 
 namespace ms
 {
@@ -46,7 +46,7 @@ namespace ms
 
 		bool recalculate = false;
 
-		for (auto iter : Maplestat::codes)
+		for (auto iter : MapleStat::codes)
 			if (updatemask & iter.second)
 				recalculate |= handle_stat(iter.first, recv);
 
@@ -56,7 +56,7 @@ namespace ms
 		UI::get().enable();
 	}
 
-	bool ChangeStatsHandler::handle_stat(Maplestat::Id stat, InPacket& recv) const
+	bool ChangeStatsHandler::handle_stat(MapleStat::Id stat, InPacket& recv) const
 	{
 		Player& player = Stage::get().get_player();
 
@@ -64,23 +64,23 @@ namespace ms
 
 		switch (stat)
 		{
-		case Maplestat::SKIN:
+		case MapleStat::Id::SKIN:
 			player.change_look(stat, recv.read_short());
 			break;
-		case Maplestat::FACE:
-		case Maplestat::HAIR:
+		case MapleStat::Id::FACE:
+		case MapleStat::Id::HAIR:
 			player.change_look(stat, recv.read_int());
 			break;
-		case Maplestat::LEVEL:
+		case MapleStat::Id::LEVEL:
 			player.change_level(recv.read_byte());
 			break;
-		case Maplestat::JOB:
+		case MapleStat::Id::JOB:
 			player.change_job(recv.read_short());
 			break;
-		case Maplestat::EXP:
+		case MapleStat::Id::EXP:
 			player.get_stats().set_exp(recv.read_int());
 			break;
-		case Maplestat::MESO:
+		case MapleStat::Id::MESO:
 			player.get_inventory().set_meso(recv.read_int());
 			break;
 		default:
@@ -92,7 +92,7 @@ namespace ms
 		bool update_statsinfo = need_statsinfo_update(stat);
 
 		if (update_statsinfo && !recalculate)
-			if (auto statsinfo = UI::get().get_element<UIStatsinfo>())
+			if (auto statsinfo = UI::get().get_element<UIStatsInfo>())
 				statsinfo->update_stat(stat);
 
 		bool update_skillbook = need_skillbook_update(stat);
@@ -101,39 +101,39 @@ namespace ms
 		{
 			int16_t value = player.get_stats().get_stat(stat);
 
-			if (auto skillbook = UI::get().get_element<UISkillbook>())
+			if (auto skillbook = UI::get().get_element<UISkillBook>())
 				skillbook->update_stat(stat, value);
 		}
 
 		return recalculate;
 	}
 
-	bool ChangeStatsHandler::need_statsinfo_update(Maplestat::Id stat) const
+	bool ChangeStatsHandler::need_statsinfo_update(MapleStat::Id stat) const
 	{
 		switch (stat)
 		{
-		case Maplestat::JOB:
-		case Maplestat::STR:
-		case Maplestat::DEX:
-		case Maplestat::INT:
-		case Maplestat::LUK:
-		case Maplestat::HP:
-		case Maplestat::MAXHP:
-		case Maplestat::MP:
-		case Maplestat::MAXMP:
-		case Maplestat::AP:
+		case MapleStat::Id::JOB:
+		case MapleStat::Id::STR:
+		case MapleStat::Id::DEX:
+		case MapleStat::Id::INT:
+		case MapleStat::Id::LUK:
+		case MapleStat::Id::HP:
+		case MapleStat::Id::MAXHP:
+		case MapleStat::Id::MP:
+		case MapleStat::Id::MAXMP:
+		case MapleStat::Id::AP:
 			return true;
 		default:
 			return false;
 		}
 	}
 
-	bool ChangeStatsHandler::need_skillbook_update(Maplestat::Id stat) const
+	bool ChangeStatsHandler::need_skillbook_update(MapleStat::Id stat) const
 	{
 		switch (stat)
 		{
-		case Maplestat::JOB:
-		case Maplestat::SP:
+		case MapleStat::Id::JOB:
+		case MapleStat::Id::SP:
 			return true;
 		default:
 			return false;
@@ -196,7 +196,7 @@ namespace ms
 
 		Stage::get().get_player().change_skill(skillid, level, masterlevel, expire);
 
-		if (auto skillbook = UI::get().get_element<UISkillbook>())
+		if (auto skillbook = UI::get().get_element<UISkillBook>())
 			skillbook->update_skills(skillid);
 
 		UI::get().enable();
@@ -208,11 +208,11 @@ namespace ms
 
 		for (uint8_t i = 0; i < size; i++)
 		{
-			recv.read_string(); // name
-			recv.read_byte(); // 'shout' byte
-			recv.read_int(); // skill 1
-			recv.read_int(); // skill 2
-			recv.read_int(); // skill 3
+			recv.read_string();	// name
+			recv.read_byte();	// 'shout' byte
+			recv.read_int();	// skill 1
+			recv.read_int();	// skill 2
+			recv.read_int();	// skill 3
 		}
 	}
 

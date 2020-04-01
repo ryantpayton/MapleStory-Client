@@ -17,19 +17,19 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../MapleStory.h"
-
-#ifdef USE_XXHASH
-#include <cstdint>
-#include <string>
+#include <vector>
 
 namespace ms
 {
-	// Uses hashing to calculate the hash value of a game file. 
-	namespace HashUtility
+	// Saved locations for the 'teleport rock' and 'VIP teleport rock' cash items
+	class TeleportRock
 	{
-		// Calculate file hash using the fast xxhash algorithm.
-		std::string get_filehash(const char* filename, uint64_t seed);
-	}
+	public:
+		void addlocation(int32_t);
+		void addviplocation(int32_t);
+
+	private:
+		std::vector<int32_t> locations;
+		std::vector<int32_t> viplocations;
+	};
 }
-#endif

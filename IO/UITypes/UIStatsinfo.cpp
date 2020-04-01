@@ -15,22 +15,23 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "UIStatsinfo.h"
+#include "UIStatsInfo.h"
+
+#include "UINotice.h"
 
 #include "../UI.h"
 
 #include "../Components/MapleButton.h"
-#include "../UITypes/UINotice.h"
-#include "../Character/Player.h"
-#include "../Gameplay/Stage.h"
 
-#include "../Net/Packets/PlayerPackets.h"
+#include "../../Gameplay/Stage.h"
+
+#include "../../Net/Packets/PlayerPackets.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	UIStatsinfo::UIStatsinfo(const CharStats& st) : UIDragElement<PosSTATS>(Point<int16_t>(212, 20)), stats(st)
+	UIStatsInfo::UIStatsInfo(const CharStats& st) : UIDragElement<PosSTATS>(Point<int16_t>(212, 20)), stats(st)
 	{
 		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
 		nl::node Stat = nl::nx::ui["UIWindow4.img"]["Stat"];
@@ -129,14 +130,14 @@ namespace ms
 		statoffsets[StatLabel::HONOR] = Point<int16_t>(73, 283);
 
 		update_all_stats();
-		update_stat(Maplestat::Id::JOB);
-		update_stat(Maplestat::Id::FAME);
+		update_stat(MapleStat::Id::JOB);
+		update_stat(MapleStat::Id::FAME);
 
 		dimension = Point<int16_t>(212, 318);
 		showdetail = false;
 	}
 
-	void UIStatsinfo::draw(float alpha) const
+	void UIStatsInfo::draw(float alpha) const
 	{
 		UIElement::draw_sprites(alpha);
 
@@ -171,13 +172,13 @@ namespace ms
 		UIElement::draw_buttons(alpha);
 	}
 
-	void UIStatsinfo::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIStatsInfo::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed && escape)
 			deactivate();
 	}
 
-	bool UIStatsinfo::is_in_range(Point<int16_t> cursorpos) const
+	bool UIStatsInfo::is_in_range(Point<int16_t> cursorpos) const
 	{
 		Point<int16_t> pos_adj;
 
@@ -190,27 +191,27 @@ namespace ms
 		return bounds.contains(cursorpos);
 	}
 
-	UIElement::Type UIStatsinfo::get_type() const
+	UIElement::Type UIStatsInfo::get_type() const
 	{
 		return TYPE;
 	}
 
-	void UIStatsinfo::update_all_stats()
+	void UIStatsInfo::update_all_stats()
 	{
-		update_simple(AP, Maplestat::Id::AP);
+		update_simple(AP, MapleStat::Id::AP);
 
-		if (hasap ^ (stats.get_stat(Maplestat::Id::AP) > 0))
+		if (hasap ^ (stats.get_stat(MapleStat::Id::AP) > 0))
 			update_ap();
 
 		statlabels[StatLabel::NAME].change_text(stats.get_name());
 		statlabels[StatLabel::GUILD].change_text("-");
-		statlabels[StatLabel::HP].change_text(std::to_string(stats.get_stat(Maplestat::Id::HP)) + " / " + std::to_string(stats.get_total(Equipstat::Id::HP)));
-		statlabels[StatLabel::MP].change_text(std::to_string(stats.get_stat(Maplestat::Id::MP)) + " / " + std::to_string(stats.get_total(Equipstat::Id::MP)));
+		statlabels[StatLabel::HP].change_text(std::to_string(stats.get_stat(MapleStat::Id::HP)) + " / " + std::to_string(stats.get_total(EquipStat::Id::HP)));
+		statlabels[StatLabel::MP].change_text(std::to_string(stats.get_stat(MapleStat::Id::MP)) + " / " + std::to_string(stats.get_total(EquipStat::Id::MP)));
 
-		update_basevstotal(StatLabel::STR, Maplestat::Id::STR, Equipstat::Id::STR);
-		update_basevstotal(StatLabel::DEX, Maplestat::Id::DEX, Equipstat::Id::DEX);
-		update_basevstotal(StatLabel::INT, Maplestat::Id::INT, Equipstat::Id::INT);
-		update_basevstotal(StatLabel::LUK, Maplestat::Id::LUK, Equipstat::Id::LUK);
+		update_basevstotal(StatLabel::STR, MapleStat::Id::STR, EquipStat::Id::STR);
+		update_basevstotal(StatLabel::DEX, MapleStat::Id::DEX, EquipStat::Id::DEX);
+		update_basevstotal(StatLabel::INT, MapleStat::Id::INT, EquipStat::Id::INT);
+		update_basevstotal(StatLabel::LUK, MapleStat::Id::LUK, EquipStat::Id::LUK);
 
 		statlabels[StatLabel::DAMAGE].change_text(std::to_string(stats.get_mindamage()) + " ~ " + std::to_string(stats.get_maxdamage()));
 
@@ -229,27 +230,27 @@ namespace ms
 		statlabels[StatLabel::STATUS_RESISTANCE].change_text(std::to_string(static_cast<int32_t>(stats.get_resistance())));
 		statlabels[StatLabel::KNOCKBACK_RESISTANCE].change_text("0%");
 
-		update_buffed(StatLabel::DEFENSE, Equipstat::Id::WDEF);
+		update_buffed(StatLabel::DEFENSE, EquipStat::Id::WDEF);
 
-		statlabels[StatLabel::SPEED].change_text(std::to_string(stats.get_total(Equipstat::Id::SPEED)) + "%");
-		statlabels[StatLabel::JUMP].change_text(std::to_string(stats.get_total(Equipstat::Id::JUMP)) + "%");
+		statlabels[StatLabel::SPEED].change_text(std::to_string(stats.get_total(EquipStat::Id::SPEED)) + "%");
+		statlabels[StatLabel::JUMP].change_text(std::to_string(stats.get_total(EquipStat::Id::JUMP)) + "%");
 		statlabels[StatLabel::HONOR].change_text(std::to_string(stats.get_honor()));
 	}
 
-	void UIStatsinfo::update_stat(Maplestat::Id stat)
+	void UIStatsInfo::update_stat(MapleStat::Id stat)
 	{
 		switch (stat)
 		{
-		case Maplestat::Id::JOB:
+		case MapleStat::Id::JOB:
 			statlabels[StatLabel::JOB].change_text(stats.get_jobname());
 			break;
-		case Maplestat::Id::FAME:
-			update_simple(StatLabel::FAME, Maplestat::Id::FAME);
+		case MapleStat::Id::FAME:
+			update_simple(StatLabel::FAME, MapleStat::Id::FAME);
 			break;
 		}
 	}
 
-	Button::State UIStatsinfo::button_pressed(uint16_t id)
+	Button::State UIStatsInfo::button_pressed(uint16_t id)
 	{
 		const Player& player = Stage::get().get_player();
 
@@ -259,22 +260,22 @@ namespace ms
 			deactivate();
 			break;
 		case Buttons::BT_HP:
-			send_apup(Maplestat::Id::HP);
+			send_apup(MapleStat::Id::HP);
 			break;
 		case Buttons::BT_MP:
-			send_apup(Maplestat::Id::MP);
+			send_apup(MapleStat::Id::MP);
 			break;
 		case Buttons::BT_STR:
-			send_apup(Maplestat::Id::STR);
+			send_apup(MapleStat::Id::STR);
 			break;
 		case Buttons::BT_DEX:
-			send_apup(Maplestat::Id::DEX);
+			send_apup(MapleStat::Id::DEX);
 			break;
 		case Buttons::BT_INT:
-			send_apup(Maplestat::Id::INT);
+			send_apup(MapleStat::Id::INT);
 			break;
 		case Buttons::BT_LUK:
-			send_apup(Maplestat::Id::LUK);
+			send_apup(MapleStat::Id::LUK);
 			break;
 		case Buttons::BT_AUTO:
 		{
@@ -282,21 +283,21 @@ namespace ms
 			uint16_t autodex = 0;
 			uint16_t autoint = 0;
 			uint16_t autoluk = 0;
-			uint16_t nowap = stats.get_stat(Maplestat::Id::AP);
-			Equipstat::Id id = player.get_stats().get_job().get_primary(player.get_weapontype());
+			uint16_t nowap = stats.get_stat(MapleStat::Id::AP);
+			EquipStat::Id id = player.get_stats().get_job().get_primary(player.get_weapontype());
 
 			switch (id)
 			{
-			case Equipstat::Id::STR:
+			case EquipStat::Id::STR:
 				autostr = nowap;
 				break;
-			case Equipstat::Id::DEX:
+			case EquipStat::Id::DEX:
 				autodex = nowap;
 				break;
-			case Equipstat::Id::INT:
+			case EquipStat::Id::INT:
 				autoint = nowap;
 				break;
-			case Equipstat::Id::LUK:
+			case EquipStat::Id::LUK:
 				autoluk = nowap;
 				break;
 			}
@@ -315,19 +316,19 @@ namespace ms
 				{
 					if (autostr > 0)
 						for (size_t i = 0; i < autostr; i++)
-							send_apup(Maplestat::Id::STR);
+							send_apup(MapleStat::Id::STR);
 
 					if (autodex > 0)
 						for (size_t i = 0; i < autodex; i++)
-							send_apup(Maplestat::Id::DEX);
+							send_apup(MapleStat::Id::DEX);
 
 					if (autoint > 0)
 						for (size_t i = 0; i < autoint; i++)
-							send_apup(Maplestat::Id::INT);
+							send_apup(MapleStat::Id::INT);
 
 					if (autoluk > 0)
 						for (size_t i = 0; i < autoluk; i++)
-							send_apup(Maplestat::Id::LUK);
+							send_apup(MapleStat::Id::LUK);
 				}
 			};
 
@@ -358,13 +359,13 @@ namespace ms
 		return Button::State::NORMAL;
 	}
 
-	void UIStatsinfo::send_apup(Maplestat::Id stat) const
+	void UIStatsInfo::send_apup(MapleStat::Id stat) const
 	{
 		SpendApPacket(stat).dispatch();
 		UI::get().disable();
 	}
 
-	void UIStatsinfo::set_detail(bool enabled)
+	void UIStatsInfo::set_detail(bool enabled)
 	{
 		showdetail = enabled;
 
@@ -374,9 +375,9 @@ namespace ms
 		buttons[Buttons::BT_DETAIL_DETAILCLOSE]->set_active(enabled);
 	}
 
-	void UIStatsinfo::update_ap()
+	void UIStatsInfo::update_ap()
 	{
-		bool nowap = stats.get_stat(Maplestat::Id::AP) > 0;
+		bool nowap = stats.get_stat(MapleStat::Id::AP) > 0;
 		Button::State newstate = nowap ? Button::State::NORMAL : Button::State::DISABLED;
 
 		for (int i = Buttons::BT_HP; i <= Buttons::BT_AUTO; i++)
@@ -385,12 +386,12 @@ namespace ms
 		hasap = nowap;
 	}
 
-	void UIStatsinfo::update_simple(StatLabel label, Maplestat::Id stat)
+	void UIStatsInfo::update_simple(StatLabel label, MapleStat::Id stat)
 	{
 		statlabels[label].change_text(std::to_string(stats.get_stat(stat)));
 	}
 
-	void UIStatsinfo::update_basevstotal(StatLabel label, Maplestat::Id bstat, Equipstat::Id tstat)
+	void UIStatsInfo::update_basevstotal(StatLabel label, MapleStat::Id bstat, EquipStat::Id tstat)
 	{
 		int32_t base = stats.get_stat(bstat);
 		int32_t total = stats.get_total(tstat);
@@ -413,7 +414,7 @@ namespace ms
 		statlabels[label].change_text(stattext);
 	}
 
-	void UIStatsinfo::update_buffed(StatLabel label, Equipstat::Id stat)
+	void UIStatsInfo::update_buffed(StatLabel label, EquipStat::Id stat)
 	{
 		int32_t total = stats.get_total(stat);
 		int32_t delta = stats.get_buffdelta(stat);

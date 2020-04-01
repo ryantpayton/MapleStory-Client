@@ -16,14 +16,13 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "Player.h"
-#include "PlayerStates.h"
 
-#include "../Constants.h"
+#include "PlayerStates.h"
 
 #include "../Data/WeaponData.h"
 #include "../IO/UI.h"
 
-#include "../IO/UITypes/UIStatsinfo.h"
+#include "../IO/UITypes/UIStatsInfo.h"
 #include "../Net/Packets/GameplayPackets.h"
 #include "../Net/Packets/InventoryPackets.h"
 
@@ -104,7 +103,7 @@ namespace ms
 		if (equipchanged)
 			inventory.recalc_stats(weapontype);
 
-		for (auto stat : Equipstat::values)
+		for (auto stat : EquipStat::values)
 		{
 			int32_t inventory_total = inventory.get_stat(stat);
 			stats.add_value(stat, inventory_total);
@@ -125,7 +124,7 @@ namespace ms
 
 		stats.close_totalstats();
 
-		if (auto statsinfo = UI::get().get_element<UIStatsinfo>())
+		if (auto statsinfo = UI::get().get_element<UIStatsInfo>())
 			statsinfo->update_all_stats();
 	}
 
@@ -134,7 +133,7 @@ namespace ms
 		if (int32_t itemid = inventory.get_item_id(InventoryType::Id::EQUIPPED, slot))
 			look.add_equip(itemid);
 		else
-			look.remove_equip(Equipslot::by_id(slot));
+			look.remove_equip(EquipSlot::by_id(slot));
 	}
 
 	void Player::use_item(int32_t itemid)
@@ -245,8 +244,8 @@ namespace ms
 		int32_t level = skillbook.get_level(move.get_id());
 		Weapon::Type weapon = get_weapontype();
 		const Job& job = stats.get_job();
-		uint16_t hp = stats.get_stat(Maplestat::Id::HP);
-		uint16_t mp = stats.get_stat(Maplestat::Id::MP);
+		uint16_t hp = stats.get_stat(MapleStat::Id::HP);
+		uint16_t mp = stats.get_stat(MapleStat::Id::MP);
 		uint16_t bullets = inventory.get_bulletcount();
 
 		return move.can_use(level, weapon, job, hp, mp, bullets);
@@ -264,7 +263,7 @@ namespace ms
 		}
 		else
 		{
-			Weapon::Type weapontype; 
+			Weapon::Type weapontype;
 			weapontype = get_weapontype();
 
 			switch (weapontype)
@@ -301,8 +300,8 @@ namespace ms
 
 		attack.critical = stats.get_critical();
 		attack.ignoredef = stats.get_ignoredef();
-		attack.accuracy = stats.get_total(Equipstat::Id::ACC);
-		attack.playerlevel = stats.get_stat(Maplestat::Id::LEVEL);
+		attack.accuracy = stats.get_total(EquipStat::Id::ACC);
+		attack.playerlevel = stats.get_stat(MapleStat::Id::LEVEL);
 		attack.range = stats.get_range();
 		attack.bullet = inventory.get_bulletid();
 		attack.origin = get_position();
@@ -401,12 +400,12 @@ namespace ms
 		if (level > oldlevel)
 			show_effect_id(CharEffect::Id::LEVELUP);
 
-		stats.set_stat(Maplestat::Id::LEVEL, level);
+		stats.set_stat(MapleStat::Id::LEVEL, level);
 	}
 
 	uint16_t Player::get_level() const
 	{
-		return stats.get_stat(Maplestat::Id::LEVEL);
+		return stats.get_stat(MapleStat::Id::LEVEL);
 	}
 
 	int32_t Player::get_skilllevel(int32_t skillid) const
@@ -446,17 +445,17 @@ namespace ms
 
 	float Player::get_walkforce() const
 	{
-		return 0.05f + 0.11f * static_cast<float>(stats.get_total(Equipstat::Id::SPEED)) / 100;
+		return 0.05f + 0.11f * static_cast<float>(stats.get_total(EquipStat::Id::SPEED)) / 100;
 	}
 
 	float Player::get_jumpforce() const
 	{
-		return 1.0f + 3.5f * static_cast<float>(stats.get_total(Equipstat::Id::JUMP)) / 100;
+		return 1.0f + 3.5f * static_cast<float>(stats.get_total(EquipStat::Id::JUMP)) / 100;
 	}
 
 	float Player::get_climbforce() const
 	{
-		return static_cast<float>(stats.get_total(Equipstat::Id::SPEED)) / 100;
+		return static_cast<float>(stats.get_total(EquipStat::Id::SPEED)) / 100;
 	}
 
 	float Player::get_flyforce() const
@@ -494,22 +493,22 @@ namespace ms
 		return inventory;
 	}
 
-	Skillbook& Player::get_skills()
+	SkillBook& Player::get_skills()
 	{
 		return skillbook;
 	}
 
-	Questlog& Player::get_quests()
+	QuestLog& Player::get_quests()
 	{
 		return questlog;
 	}
 
-	Telerock& Player::get_telerock()
+	TeleportRock& Player::get_teleportrock()
 	{
-		return telerock;
+		return teleportrock;
 	}
 
-	Monsterbook& Player::get_monsterbook()
+	MonsterBook& Player::get_monsterbook()
 	{
 		return monsterbook;
 	}

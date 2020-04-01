@@ -16,14 +16,11 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "Window.h"
+
 #include "UI.h"
 
-#include "../Console.h"
-#include "../Constants.h"
 #include "../Configuration.h"
 #include "../Timer.h"
-
-#include "../Graphics/GraphicsGL.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -48,7 +45,7 @@ namespace ms
 
 	void error_callback(int no, const char* description)
 	{
-		Console::get().print("glfw error: " + std::string(description) + " (" + std::to_string(no) + ")");
+		std::cout << "GLFW error [" << no << "]: " << description << std::endl;
 	}
 
 	void key_callback(GLFWwindow*, int key, int, int action, int)
@@ -150,7 +147,7 @@ namespace ms
 			Configuration::get().get_title().c_str(),
 			fullscreen ? glfwGetPrimaryMonitor() : nullptr,
 			context
-		);
+			);
 
 		if (!glwnd)
 			return Error::Code::WINDOW;
@@ -180,7 +177,7 @@ namespace ms
 		glfwSetWindowCloseCallback(glwnd, close_callback);
 
 		char buf[256];
-		GetCurrentDirectoryA(256, buf);
+		GetCurrentDirectory(256, buf);
 		strcat(buf, "\\Icon.png");
 
 		GLFWimage images[1];

@@ -17,16 +17,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UISoftKey.h"
 
-#include "../Constants.h"
-
 #include "../Components/MapleButton.h"
 #include "../Components/TwoSpriteButton.h"
+
+#include "../../Constants.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	UISoftkey::UISoftkey(OkCallback ok, CancelCallback cancel, std::string tooltip_text, Point<int16_t> tooltip_pos) : ok_callback(ok), cancel_callback(cancel), tooltipposition(tooltip_pos)
+	UISoftKey::UISoftKey(OkCallback ok, CancelCallback cancel, std::string tooltip_text, Point<int16_t> tooltip_pos) : ok_callback(ok), cancel_callback(cancel), tooltipposition(tooltip_pos)
 	{
 		Point<int16_t> screen_adj = Point<int16_t>(-1, 0);
 
@@ -69,11 +69,11 @@ namespace ms
 		dimension = Texture(backgrnd).get_dimensions();
 	}
 
-	UISoftkey::UISoftkey(OkCallback ok_callback, CancelCallback cancel_callback, std::string tooltip_text) : UISoftkey(ok_callback, cancel_callback, tooltip_text, Point<int16_t>(0, 0)) {}
-	UISoftkey::UISoftkey(OkCallback ok_callback, CancelCallback cancel_callback) : UISoftkey(ok_callback, cancel_callback, "") {}
-	UISoftkey::UISoftkey(OkCallback ok_callback) : UISoftkey(ok_callback, []() {}) {}
+	UISoftKey::UISoftKey(OkCallback ok_callback, CancelCallback cancel_callback, std::string tooltip_text) : UISoftKey(ok_callback, cancel_callback, tooltip_text, Point<int16_t>(0, 0)) {}
+	UISoftKey::UISoftKey(OkCallback ok_callback, CancelCallback cancel_callback) : UISoftKey(ok_callback, cancel_callback, "") {}
+	UISoftKey::UISoftKey(OkCallback ok_callback) : UISoftKey(ok_callback, []() {}) {}
 
-	void UISoftkey::draw(float inter) const
+	void UISoftKey::draw(float inter) const
 	{
 		UIElement::draw(inter);
 
@@ -83,7 +83,7 @@ namespace ms
 			tooltip->draw(position + Point<int16_t>(71, 46) + tooltipposition);
 	}
 
-	void UISoftkey::update()
+	void UISoftKey::update()
 	{
 		UIElement::update();
 
@@ -96,7 +96,7 @@ namespace ms
 		}
 	}
 
-	void UISoftkey::send_key(int32_t keycode, bool pressed, bool escape)
+	void UISoftKey::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -107,12 +107,12 @@ namespace ms
 		}
 	}
 
-	UIElement::Type UISoftkey::get_type() const
+	UIElement::Type UISoftKey::get_type() const
 	{
 		return TYPE;
 	}
 
-	Button::State UISoftkey::button_pressed(uint16_t buttonid)
+	Button::State UISoftKey::button_pressed(uint16_t buttonid)
 	{
 		std::string entered = entry.get_text();
 		size_t size = entered.size();
@@ -161,7 +161,7 @@ namespace ms
 		return Button::State::NORMAL;
 	}
 
-	void UISoftkey::shufflekeys()
+	void UISoftKey::shufflekeys()
 	{
 		std::vector<uint8_t> reserve;
 
@@ -179,7 +179,7 @@ namespace ms
 		}
 	}
 
-	void UISoftkey::show_text(std::string text)
+	void UISoftKey::show_text(std::string text)
 	{
 		tetooltip.set_text(text);
 
@@ -190,14 +190,14 @@ namespace ms
 		}
 	}
 
-	void UISoftkey::clear_tooltip()
+	void UISoftKey::clear_tooltip()
 	{
 		tooltipposition = Point<int16_t>(0, 0);
 		tetooltip.set_text("");
 		tooltip = Optional<Tooltip>();
 	}
 
-	Point<int16_t> UISoftkey::keypos(uint8_t num) const
+	Point<int16_t> UISoftKey::keypos(uint8_t num) const
 	{
 		auto x = (num % 3) * 39;
 		auto y = (num / 3) * 35;

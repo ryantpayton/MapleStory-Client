@@ -15,7 +15,7 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "Mapobjects.h"
+#include "MapObjects.h"
 
 namespace ms
 {
@@ -36,7 +36,7 @@ namespace ms
 		{
 			bool remove_mob = false;
 
-			if (auto & mmo = iter->second)
+			if (auto& mmo = iter->second)
 			{
 				int8_t oldlayer = mmo->get_layer();
 				int8_t newlayer = mmo->update(physics);

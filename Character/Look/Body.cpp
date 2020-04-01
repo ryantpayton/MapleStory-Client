@@ -17,16 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Body.h"
 
-#include "../Console.h"
-
-#include "../Util/Misc.h"
+#include "../../Util/Misc.h"
 
 #include <nlnx/nx.hpp>
-#include <nlnx/node.hpp>
 
 namespace ms
 {
-	Body::Body(int32_t skin, const BodyDrawinfo& drawinfo)
+	Body::Body(int32_t skin, const BodyDrawInfo& drawinfo)
 	{
 		std::string strid = string_format::extend_id(skin, 2);
 		nl::node bodynode = nl::nx::character["000020" + strid + ".img"];
@@ -129,7 +126,7 @@ namespace ms
 		if (layer_iter == layers_by_name.end())
 		{
 			if (name != "")
-				Console::get().print("Warning: Unhandled body layer (" + name + ")");
+				std::cout << "Unknown Body::Layer name: [" << name << "]" << std::endl;
 
 			return Body::Layer::NONE;
 		}
@@ -139,16 +136,16 @@ namespace ms
 
 	const std::unordered_map<std::string, Body::Layer> Body::layers_by_name =
 	{
-		{ "body",						Body::Layer::BODY },
-		{ "backBody",					Body::Layer::BODY },
-		{ "arm",						Body::Layer::ARM },
-		{ "armBelowHead",				Body::Layer::ARM_BELOW_HEAD },
-		{ "armBelowHeadOverMailChest",	Body::Layer::ARM_BELOW_HEAD_OVER_MAIL },
-		{ "armOverHair",				Body::Layer::ARM_OVER_HAIR },
-		{ "armOverHairBelowWeapon",		Body::Layer::ARM_OVER_HAIR_BELOW_WEAPON },
-		{ "handBelowWeapon",			Body::Layer::HAND_BELOW_WEAPON },
-		{ "handOverHair",				Body::Layer::HAND_OVER_HAIR },
-		{ "handOverWeapon",				Body::Layer::HAND_OVER_WEAPON },
+		{ "body",						Body::Layer::BODY						},
+		{ "backBody",					Body::Layer::BODY						},
+		{ "arm",						Body::Layer::ARM						},
+		{ "armBelowHead",				Body::Layer::ARM_BELOW_HEAD				},
+		{ "armBelowHeadOverMailChest",	Body::Layer::ARM_BELOW_HEAD_OVER_MAIL	},
+		{ "armOverHair",				Body::Layer::ARM_OVER_HAIR				},
+		{ "armOverHairBelowWeapon",		Body::Layer::ARM_OVER_HAIR_BELOW_WEAPON	},
+		{ "handBelowWeapon",			Body::Layer::HAND_BELOW_WEAPON			},
+		{ "handOverHair",				Body::Layer::HAND_OVER_HAIR				},
+		{ "handOverWeapon",				Body::Layer::HAND_OVER_WEAPON			},
 		{ "head",						Body::Layer::HEAD }
 	};
 }

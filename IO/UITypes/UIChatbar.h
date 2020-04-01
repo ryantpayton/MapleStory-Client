@@ -17,15 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../UIDragElement.h"
 #include "../Messages.h"
+#include "../UIDragElement.h"
 
-#include "../Components/Textfield.h"
 #include "../Components/Slider.h"
+#include "../Components/Textfield.h"
 
 namespace ms
 {
-	class UIChatbar : public UIDragElement<PosCHAT>
+	class UIChatBar : public UIDragElement<PosCHAT>
 	{
 	public:
 		static constexpr Type TYPE = UIElement::Type::CHATBAR;
@@ -41,7 +41,7 @@ namespace ms
 			YELLOW
 		};
 
-		UIChatbar();
+		UIChatBar();
 
 		void draw(float inter) const override;
 		void update() override;
@@ -56,7 +56,7 @@ namespace ms
 		Cursor::State check_dragtop(bool clicking, Point<int16_t> cursorpos);
 
 		void send_chatline(const std::string& line, LineType type);
-		void display_message(Messages::Type line, UIChatbar::LineType type);
+		void display_message(Messages::Type line, UIChatBar::LineType type);
 		void toggle_chat();
 		void toggle_chat(bool chat_open);
 		void toggle_chatfield();
@@ -127,7 +127,7 @@ namespace ms
 		Textfield chatfield;
 		Point<int16_t> closechat;
 
-		Text chattab_text[UIChatbar::ChatTab::NUM_CHATTAB];
+		Text chattab_text[UIChatBar::ChatTab::NUM_CHATTAB];
 		int16_t chattab_x;
 		int16_t chattab_y;
 		int16_t chattab_span;

@@ -15,27 +15,29 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "UIStatusbar.h"
+#include "UIStatusBar.h"
+
+#include "UIChannel.h"
+#include "UICharInfo.h"
+#include "UIChat.h"
+#include "UIEquipInventory.h"
+#include "UIEvent.h"
+#include "UIItemInventory.h"
+#include "UIJoypad.h"
+#include "UIKeyConfig.h"
+#include "UIOptionMenu.h"
+#include "UIQuestLog.h"
+#include "UIQuit.h"
+#include "UISkillBook.h"
+#include "UIStatsInfo.h"
+#include "UIUserList.h"
 
 #include "../UI.h"
 
-#include "../Character/ExpTable.h"
 #include "../Components/MapleButton.h"
-#include "../Gameplay/Stage.h"
-#include "../UITypes/UIChannel.h"
-#include "../UITypes/UICharInfo.h"
-#include "../UITypes/UIChat.h"
-#include "../UITypes/UIEquipInventory.h"
-#include "../UITypes/UIEvent.h"
-#include "../UITypes/UIItemInventory.h"
-#include "../UITypes/UIJoypad.h"
-#include "../UITypes/UIKeyConfig.h"
-#include "../UITypes/UIOptionMenu.h"
-#include "../UITypes/UIQuestLog.h"
-#include "../UITypes/UIQuit.h"
-#include "../UITypes/UISkillbook.h"
-#include "../UITypes/UIStatsinfo.h"
-#include "../UITypes/UIUserList.h"
+
+#include "../../Character/ExpTable.h"
+#include "../../Gameplay/Stage.h"
 
 #include "../../Net/Packets/GameplayPackets.h"
 
@@ -43,7 +45,7 @@
 
 namespace ms
 {
-	UIStatusbar::UIStatusbar(const CharStats& st) : stats(st)
+	UIStatusBar::UIStatusBar(const CharStats& st) : stats(st)
 	{
 		quickslot_active = false;
 		quickslot_adj = Point<int16_t>(QUICKSLOT_MAX, 0);
@@ -82,7 +84,7 @@ namespace ms
 			EXPBarRes.resolve("layer:cover"),
 			EXPBar.resolve("layer:effect"),
 			exp_max, 0.0f
-		);
+			);
 
 		int16_t pos_adj = 0;
 
@@ -360,7 +362,7 @@ namespace ms
 		}
 	}
 
-	void UIStatusbar::draw(float alpha) const
+	void UIStatusBar::draw(float alpha) const
 	{
 		UIElement::draw_sprites(alpha);
 
@@ -376,11 +378,11 @@ namespace ms
 		hpmp_sprites[1].draw(position, alpha);
 		hpmp_sprites[2].draw(position, alpha);
 
-		int16_t level = stats.get_stat(Maplestat::Id::LEVEL);
-		int16_t hp = stats.get_stat(Maplestat::Id::HP);
-		int16_t mp = stats.get_stat(Maplestat::Id::MP);
-		int32_t maxhp = stats.get_total(Equipstat::Id::HP);
-		int32_t maxmp = stats.get_total(Equipstat::Id::MP);
+		int16_t level = stats.get_stat(MapleStat::Id::LEVEL);
+		int16_t hp = stats.get_stat(MapleStat::Id::HP);
+		int16_t mp = stats.get_stat(MapleStat::Id::MP);
+		int32_t maxhp = stats.get_total(EquipStat::Id::HP);
+		int32_t maxmp = stats.get_total(EquipStat::Id::MP);
 		int64_t exp = stats.get_exp();
 
 		std::string expstring = std::to_string(100 * getexppercent());
@@ -388,22 +390,22 @@ namespace ms
 		statset.draw(
 			std::to_string(exp) + "[" + expstring.substr(0, expstring.find('.') + 3) + "%]",
 			position + statset_pos
-		);
+			);
 
 		hpmpset.draw(
 			"[" + std::to_string(hp) + "/" + std::to_string(maxhp) + "]",
 			position + hpset_pos
-		);
+			);
 
 		hpmpset.draw(
 			"[" + std::to_string(mp) + "/" + std::to_string(maxmp) + "]",
 			position + mpset_pos
-		);
+			);
 
 		levelset.draw(
 			std::to_string(level),
 			position + levelset_pos
-		);
+			);
 
 		namelabel.draw(position + namelabel_pos);
 
@@ -490,7 +492,7 @@ namespace ms
 #pragma endregion
 	}
 
-	void UIStatusbar::update()
+	void UIStatusBar::update()
 	{
 		UIElement::update();
 
@@ -553,7 +555,7 @@ namespace ms
 			buttons[i]->set_position(event_pos + pos_adj);
 	}
 
-	Button::State UIStatusbar::button_pressed(uint16_t id)
+	Button::State UIStatusBar::button_pressed(uint16_t id)
 	{
 		switch (id)
 		{
@@ -678,14 +680,14 @@ namespace ms
 			remove_menus();
 			break;
 		case Buttons::BT_CHARACTER_STAT:
-			UI::get().emplace<UIStatsinfo>(
+			UI::get().emplace<UIStatsInfo>(
 				Stage::get().get_player().get_stats()
 				);
 
 			remove_menus();
 			break;
 		case Buttons::BT_CHARACTER_SKILL:
-			UI::get().emplace<UISkillbook>(
+			UI::get().emplace<UISkillBook>(
 				Stage::get().get_player().get_stats(),
 				Stage::get().get_player().get_skills()
 				);
@@ -719,7 +721,7 @@ namespace ms
 		return Button::State::NORMAL;
 	}
 
-	void UIStatusbar::send_key(int32_t keycode, bool pressed, bool escape)
+	void UIStatusBar::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -799,7 +801,7 @@ namespace ms
 		}
 	}
 
-	bool UIStatusbar::is_in_range(Point<int16_t> cursorpos) const
+	bool UIStatusBar::is_in_range(Point<int16_t> cursorpos) const
 	{
 		Point<int16_t> pos;
 		Rectangle<int16_t> bounds;
@@ -858,18 +860,18 @@ namespace ms
 		return bounds.contains(cursorpos);
 	}
 
-	UIElement::Type UIStatusbar::get_type() const
+	UIElement::Type UIStatusBar::get_type() const
 	{
 		return TYPE;
 	}
 
-	void UIStatusbar::toggle_qs()
+	void UIStatusBar::toggle_qs()
 	{
 		if (!menu_active && !setting_active && !community_active && !character_active && !event_active)
 			toggle_qs(!quickslot_active);
 	}
 
-	void UIStatusbar::toggle_qs(bool quick_slot_active)
+	void UIStatusBar::toggle_qs(bool quick_slot_active)
 	{
 		if (quickslot_active == quick_slot_active)
 			return;
@@ -889,7 +891,7 @@ namespace ms
 		}
 	}
 
-	void UIStatusbar::toggle_menu()
+	void UIStatusBar::toggle_menu()
 	{
 		remove_active_menu(MenuType::MENU);
 
@@ -915,7 +917,7 @@ namespace ms
 		}
 	}
 
-	void UIStatusbar::toggle_setting()
+	void UIStatusBar::toggle_setting()
 	{
 		remove_active_menu(MenuType::SETTING);
 
@@ -935,7 +937,7 @@ namespace ms
 		}
 	}
 
-	void UIStatusbar::toggle_community()
+	void UIStatusBar::toggle_community()
 	{
 		remove_active_menu(MenuType::COMMUNITY);
 
@@ -954,7 +956,7 @@ namespace ms
 		}
 	}
 
-	void UIStatusbar::toggle_character()
+	void UIStatusBar::toggle_character()
 	{
 		remove_active_menu(MenuType::CHARACTER);
 
@@ -974,7 +976,7 @@ namespace ms
 		}
 	}
 
-	void UIStatusbar::toggle_event()
+	void UIStatusBar::toggle_event()
 	{
 		remove_active_menu(MenuType::EVENT);
 
@@ -991,7 +993,7 @@ namespace ms
 		}
 	}
 
-	void UIStatusbar::remove_menus()
+	void UIStatusBar::remove_menus()
 	{
 		if (menu_active)
 			toggle_menu();
@@ -1005,7 +1007,7 @@ namespace ms
 			toggle_event();
 	}
 
-	void UIStatusbar::remove_active_menu(MenuType type)
+	void UIStatusBar::remove_active_menu(MenuType type)
 	{
 		for (size_t i = Buttons::BT_MENU_QUEST; i <= Buttons::BT_EVENT_DAILY; i++)
 			buttons[i]->set_state(Button::State::NORMAL);
@@ -1022,7 +1024,7 @@ namespace ms
 			toggle_event();
 	}
 
-	Point<int16_t> UIStatusbar::get_quickslot_pos() const
+	Point<int16_t> UIStatusBar::get_quickslot_pos() const
 	{
 		if (quickslot_active)
 		{
@@ -1035,14 +1037,14 @@ namespace ms
 		return Point<int16_t>(0, 0);
 	}
 
-	bool UIStatusbar::is_menu_active()
+	bool UIStatusBar::is_menu_active()
 	{
 		return menu_active || setting_active || community_active || character_active || event_active;
 	}
 
-	float UIStatusbar::getexppercent() const
+	float UIStatusBar::getexppercent() const
 	{
-		int16_t level = stats.get_stat(Maplestat::Id::LEVEL);
+		int16_t level = stats.get_stat(MapleStat::Id::LEVEL);
 
 		if (level >= ExpTable::LEVELCAP)
 			return 0.0f;
@@ -1054,18 +1056,18 @@ namespace ms
 			);
 	}
 
-	float UIStatusbar::gethppercent() const
+	float UIStatusBar::gethppercent() const
 	{
-		int16_t hp = stats.get_stat(Maplestat::Id::HP);
-		int32_t maxhp = stats.get_total(Equipstat::Id::HP);
+		int16_t hp = stats.get_stat(MapleStat::Id::HP);
+		int32_t maxhp = stats.get_total(EquipStat::Id::HP);
 
 		return static_cast<float>(hp) / maxhp;
 	}
 
-	float UIStatusbar::getmppercent() const
+	float UIStatusBar::getmppercent() const
 	{
-		int16_t mp = stats.get_stat(Maplestat::Id::MP);
-		int32_t maxmp = stats.get_total(Equipstat::Id::MP);
+		int16_t mp = stats.get_stat(MapleStat::Id::MP);
+		int32_t maxmp = stats.get_total(EquipStat::Id::MP);
 
 		return static_cast<float>(mp) / maxmp;
 	}

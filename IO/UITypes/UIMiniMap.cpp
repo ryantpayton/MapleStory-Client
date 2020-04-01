@@ -23,15 +23,21 @@
 
 #include "../Components/MapleButton.h"
 
-#include "../Gameplay/Maplemap/Npc.h"
+#include "../../Gameplay/MapleMap/Npc.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	UIMiniMap::UIMiniMap(const CharStats& st) : UIDragElement<PosMINIMAP>(Point<int16_t>(128, 20)),
-		stats(st), big_map(true), has_map(false), listNpc_enabled(false), listNpc_dimensions(Point<int16_t>(150, 170)), listNpc_offset(0), selected(-1)
+	UIMiniMap::UIMiniMap(const CharStats& stats) : UIDragElement<PosMINIMAP>(Point<int16_t>(128, 20)), stats(stats)
 	{
+		big_map = true;
+		has_map = false;
+		listNpc_enabled = false;
+		listNpc_dimensions = Point<int16_t>(150, 170);
+		listNpc_offset = 0;
+		selected = -1;
+
 		type = Setting<MiniMapType>::get().load();
 		user_type = type;
 		simpleMode = Setting<MiniMapSimpleMode>::get().load();

@@ -18,18 +18,18 @@
 #include "UIWorldSelect.h"
 
 #include "UILoginNotice.h"
-#include "UILoginwait.h"
+#include "UILoginWait.h"
 #include "UIRegion.h"
 
 #include "../UI.h"
 
-#include "../Audio/Audio.h"
 #include "../Components/MapleButton.h"
 #include "../Components/TwoSpriteButton.h"
 
-#include "../Net/Packets/LoginPackets.h"
-
+#include "../../Audio/Audio.h"
 #include "../../Util/Randomizer.h"
+
+#include "../../Net/Packets/LoginPackets.h"
 
 #include <nlnx/nx.hpp>
 
@@ -133,8 +133,8 @@ namespace ms
 			Configuration::get().set_worldid(world);
 			Configuration::get().set_channelid(channel);
 
-			UI::get().emplace<UILoginwait>();
-			auto loginwait = UI::get().get_element<UILoginwait>();
+			UI::get().emplace<UILoginWait>();
+			auto loginwait = UI::get().get_element<UILoginWait>();
 
 			if (loginwait && loginwait->is_active())
 				CharlistRequestPacket(world, channel).dispatch();
@@ -612,8 +612,8 @@ namespace ms
 		Configuration::get().set_worldid(worldid);
 		Configuration::get().set_channelid(channelid);
 
-		UI::get().emplace<UILoginwait>();
-		auto loginwait = UI::get().get_element<UILoginwait>();
+		UI::get().emplace<UILoginWait>();
+		auto loginwait = UI::get().get_element<UILoginWait>();
 
 		if (loginwait && loginwait->is_active())
 			CharlistRequestPacket(worldid, channelid).dispatch();

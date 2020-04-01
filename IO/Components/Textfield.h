@@ -20,7 +20,7 @@
 #include "../Cursor.h"
 #include "../Keyboard.h"
 
-#include "../Graphics/Text.h"
+#include "../../Graphics/Text.h"
 
 #include <functional>
 
@@ -36,9 +36,8 @@ namespace ms
 			FOCUSED
 		};
 
-		Textfield(Text::Font font, Text::Alignment alignment, Color::Name color, Rectangle<int16_t> bounds, size_t limit);
 		Textfield();
-		~Textfield();
+		Textfield(Text::Font font, Text::Alignment alignment, Color::Name color, Rectangle<int16_t> bounds, size_t limit);
 
 		void draw(Point<int16_t> position) const;
 		void update(Point<int16_t> parentpos);
@@ -60,7 +59,7 @@ namespace ms
 		const std::string& get_text() const;
 
 	private:
-		void modifytext(const std::string&);
+		void modifytext(const std::string& t);
 		bool belowlimit() const;
 
 		Text textlabel;

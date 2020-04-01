@@ -17,15 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "Attack.h"
 #include "RegularAttack.h"
-#include "Skill.h"
 
-#include "../Maplemap/MapChars.h"
-#include "../Maplemap/MapMobs.h"
-#include "../Maplemap/MapReactors.h"
-#include "../Character/Player.h"
-#include "../Template/TimedQueue.h"
+#include "../MapleMap/MapChars.h"
+#include "../MapleMap/MapMobs.h"
+#include "../MapleMap/MapReactors.h"
+
+#include "../../Character/Player.h"
+#include "../../Template/TimedQueue.h"
 
 namespace ms
 {
@@ -39,14 +38,14 @@ namespace ms
 		// Poll attacks, damage effects, etc.
 		void update();
 
-		// Make the player use a special move.
+		// Make the player use a special move
 		void use_move(int32_t move_id);
 
-		// Add an attack to the attack queue.
+		// Add an attack to the attack queue
 		void push_attack(const AttackResult& attack);
-		// Show a buff effect.
+		// Show a buff effect
 		void show_buff(int32_t cid, int32_t skillid, int8_t level);
-		// Show a buff effect.
+		// Show a buff effect
 		void show_player_buff(int32_t skillid);
 
 	private:
@@ -69,7 +68,7 @@ namespace ms
 
 		void apply_attack(const AttackResult& attack);
 		void apply_move(const SpecialMove& move);
-		std::vector<int32_t> find_closest(MapObjects *objs, Rectangle<int16_t> range, Point<int16_t> origin, uint8_t objcount, bool use_mobs) const;
+		std::vector<int32_t> find_closest(MapObjects* objs, Rectangle<int16_t> range, Point<int16_t> origin, uint8_t objcount, bool use_mobs) const;
 		void apply_use_movement(const SpecialMove& move);
 		void apply_result_movement(const SpecialMove& move, const AttackResult& result);
 		void apply_rush(const AttackResult& result);

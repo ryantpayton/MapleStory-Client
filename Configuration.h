@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "Template/Singleton.h"
 #include "Template/TypeMap.h"
 #include "Util/Misc.h"
 
@@ -31,7 +32,9 @@ namespace ms
 		// Save
 		~Configuration();
 
-		// Load all settings. If something is missing, set the default value. Can be used for reloading.
+		// Load all settings
+		// If something is missing, set the default value.
+		// Can be used for reloading
 		void load();
 		// Save the current settings 
 		void save() const;
@@ -216,7 +219,7 @@ namespace ms
 
 		const char* FILENAME = "Settings";
 		const char* TITLE = "MapleStory";
-		const char* VERSION = "211.2";
+		const char* VERSION = "212.1";
 		const char* JOINLINK = "https://www.nexon.com/account/en/create";
 		const char* WEBSITE = "http://maplestory.nexon.net/";
 		const char* FINDID = "https://www.nexon.com/account/en/login";
@@ -294,13 +297,15 @@ namespace ms
 		FontPathBold() : StringEntry("FontPathBold", "fonts/Roboto/Roboto-Bold.ttf") {}
 	};
 
-	// Music Volume, a number from 0 to 100.
+	// Music Volume
+	// Number from 0 to 100
 	struct BGMVolume : public Configuration::ByteEntry
 	{
 		BGMVolume() : ByteEntry("BGMVolume", "50") {}
 	};
 
-	// Sound Volume, a number from 0 to 100.
+	// Sound Volume
+	// Number from 0 to 100
 	struct SFXVolume : public Configuration::ByteEntry
 	{
 		SFXVolume() : ByteEntry("SFXVolume", "50") {}
@@ -342,13 +347,13 @@ namespace ms
 		DefaultCharacter() : ByteEntry("Character", "0") {}
 	};
 
-	// Whether to show UIChatbar
+	// Whether to show UIChatBar
 	struct Chatopen : public Configuration::BoolEntry
 	{
 		Chatopen() : BoolEntry("Chatopen", "false") {}
 	};
 
-	// The default position of UIStatsinfo
+	// The default position of UIStatsInfo
 	struct PosSTATS : public Configuration::PointEntry
 	{
 		PosSTATS() : PointEntry("PosSTATS", "(72,72)") {}
@@ -366,7 +371,7 @@ namespace ms
 		PosINV() : PointEntry("PosINV", "(300,160)") {}
 	};
 
-	// The default position of UISkillbook
+	// The default position of UISkillBook
 	struct PosSKILL : public Configuration::PointEntry
 	{
 		PosSKILL() : PointEntry("PosSKILL", "(96,96)") {}
@@ -390,7 +395,7 @@ namespace ms
 		PosUSERLIST() : PointEntry("PosUSERLIST", "(104, 104)") {}
 	};
 
-	// The default position of UIChatbar
+	// The default position of UIChatBar
 	struct PosCHAT : public Configuration::PointEntry
 	{
 		PosCHAT() : PointEntry("PosCHAT", "(0, 572)") {}

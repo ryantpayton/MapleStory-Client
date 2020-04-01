@@ -19,20 +19,19 @@
 
 #include "../UIDragElement.h"
 
-#include "../Template/BoolPair.h"
-#include "../Character/CharStats.h"
-#include "../Graphics/Text.h"
+#include "../../Character/CharStats.h"
+#include "../../Template/BoolPair.h"
 
 namespace ms
 {
-	class UIStatsinfo : public UIDragElement<PosSTATS>
+	class UIStatsInfo : public UIDragElement<PosSTATS>
 	{
 	public:
 		static constexpr Type TYPE = UIElement::Type::STATSINFO;
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 
-		UIStatsinfo(const CharStats& stats);
+		UIStatsInfo(const CharStats& stats);
 
 		void draw(float alpha) const override;
 
@@ -42,7 +41,7 @@ namespace ms
 		UIElement::Type get_type() const override;
 
 		void update_all_stats();
-		void update_stat(Maplestat::Id stat);
+		void update_stat(MapleStat::Id stat);
 
 	protected:
 		Button::State button_pressed(uint16_t buttonid) override;
@@ -51,18 +50,42 @@ namespace ms
 		enum StatLabel
 		{
 			// Normal
-			NAME, JOB, GUILD, FAME, DAMAGE, HP, MP, AP, STR, DEX, INT, LUK, NUM_NORMAL,
+			NAME,
+			JOB,
+			GUILD,
+			FAME,
+			DAMAGE,
+			HP,
+			MP,
+			AP,
+			STR,
+			DEX,
+			INT,
+			LUK,
+			NUM_NORMAL,
 			// Detailed
-			DAMAGE_DETAILED, DAMAGE_BONUS, BOSS_DAMAGE, FINAL_DAMAGE, IGNORE_DEFENSE, CRITICAL_RATE, CRITICAL_DAMAGE, STATUS_RESISTANCE, KNOCKBACK_RESISTANCE, DEFENSE, SPEED, JUMP, HONOR,
+			DAMAGE_DETAILED,
+			DAMAGE_BONUS,
+			BOSS_DAMAGE,
+			FINAL_DAMAGE,
+			IGNORE_DEFENSE,
+			CRITICAL_RATE,
+			CRITICAL_DAMAGE,
+			STATUS_RESISTANCE,
+			KNOCKBACK_RESISTANCE,
+			DEFENSE,
+			SPEED,
+			JUMP,
+			HONOR,
 			// Total
 			NUM_LABELS
 		};
 
 		void update_ap();
-		void update_simple(StatLabel label, Maplestat::Id stat);
-		void update_basevstotal(StatLabel label, Maplestat::Id bstat, Equipstat::Id tstat);
-		void update_buffed(StatLabel label, Equipstat::Id stat);
-		void send_apup(Maplestat::Id stat) const;
+		void update_simple(StatLabel label, MapleStat::Id stat);
+		void update_basevstotal(StatLabel label, MapleStat::Id bstat, EquipStat::Id tstat);
+		void update_buffed(StatLabel label, EquipStat::Id stat);
+		void send_apup(MapleStat::Id stat) const;
 		void set_detail(bool enabled);
 
 		enum Buttons
@@ -95,7 +118,7 @@ namespace ms
 			NUM_ABILITIES
 		};
 
-		std::array<Texture, UIStatsinfo::Ability::NUM_ABILITIES> abilities;
+		std::array<Texture, Ability::NUM_ABILITIES> abilities;
 		BoolPair<Texture> inner_ability;
 
 		std::vector<Texture> textures_detail;
@@ -103,7 +126,7 @@ namespace ms
 
 		bool hasap;
 
-		Text statlabels[UIStatsinfo::StatLabel::NUM_LABELS];
-		Point<int16_t> statoffsets[UIStatsinfo::StatLabel::NUM_LABELS];
+		Text statlabels[StatLabel::NUM_LABELS];
+		Point<int16_t> statoffsets[StatLabel::NUM_LABELS];
 	};
 }

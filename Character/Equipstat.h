@@ -19,11 +19,9 @@
 
 #include "../Template/Enumeration.h"
 
-#include <cstdint>
-
 namespace ms
 {
-	namespace Equipstat
+	namespace EquipStat
 	{
 		enum Id
 		{

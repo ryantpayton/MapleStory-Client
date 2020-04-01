@@ -15,29 +15,26 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "UISkillbook.h"
+#include "UISkillBook.h"
 
-#include "../Components/Icon.h"
+#include "../UI.h"
+
 #include "../Components/MapleButton.h"
-#include "../Components/StatefulIcon.h"
-#include "../Character/SkillId.h"
-#include "../Data/JobData.h"
-#include "../Data/SkillData.h"
-#include "../Gameplay/Stage.h"
-#include "../Keyboard.h"
-#include "../KeyType.h"
-#include "../IO/UI.h"
 
-#include "../IO/UITypes/UIKeyConfig.h"
-#include "../Net/Packets/PlayerPackets.h"
+#include "../../Character/SkillId.h"
+#include "../../Data/JobData.h"
+#include "../../Data/SkillData.h"
+#include "../../Gameplay/Stage.h"
+
+#include "../../Net/Packets/PlayerPackets.h"
 
 #include <nlnx/nx.hpp>
 
 namespace ms
 {
-	UISkillbook::SkillIcon::SkillIcon(int32_t id) : skill_id(id) {}
+	UISkillBook::SkillIcon::SkillIcon(int32_t id) : skill_id(id) {}
 
-	void UISkillbook::SkillIcon::drop_on_bindings(Point<int16_t> cursorposition, bool remove) const
+	void UISkillBook::SkillIcon::drop_on_bindings(Point<int16_t> cursorposition, bool remove) const
 	{
 		auto keyconfig = UI::get().get_element<UIKeyConfig>();
 		Keyboard::Mapping mapping = Keyboard::Mapping(KeyType::SKILL, skill_id);
@@ -48,12 +45,12 @@ namespace ms
 			keyconfig->stage_mapping(cursorposition, mapping);
 	}
 
-	Icon::IconType UISkillbook::SkillIcon::get_type()
+	Icon::IconType UISkillBook::SkillIcon::get_type()
 	{
 		return Icon::IconType::SKILL;
 	}
 
-	UISkillbook::SkillDisplayMeta::SkillDisplayMeta(int32_t i, int32_t l) : id(i), level(l)
+	UISkillBook::SkillDisplayMeta::SkillDisplayMeta(int32_t i, int32_t l) : id(i), level(l)
 	{
 		const SkillData& data = SkillData::get(id);
 
@@ -80,29 +77,29 @@ namespace ms
 		}
 	}
 
-	void UISkillbook::SkillDisplayMeta::draw(const DrawArgument& args) const
+	void UISkillBook::SkillDisplayMeta::draw(const DrawArgument& args) const
 	{
 		icon->draw(args.getpos());
 		name_text.draw(args + Point<int16_t>(38, -5));
 		level_text.draw(args + Point<int16_t>(38, 13));
 	}
 
-	int32_t UISkillbook::SkillDisplayMeta::get_id() const
+	int32_t UISkillBook::SkillDisplayMeta::get_id() const
 	{
 		return id;
 	}
 
-	int32_t UISkillbook::SkillDisplayMeta::get_level() const
+	int32_t UISkillBook::SkillDisplayMeta::get_level() const
 	{
 		return level;
 	}
 
-	StatefulIcon* UISkillbook::SkillDisplayMeta::get_icon() const
+	StatefulIcon* UISkillBook::SkillDisplayMeta::get_icon() const
 	{
 		return icon.get();
 	}
 
-	UISkillbook::UISkillbook(const CharStats& in_stats, const Skillbook& in_skillbook) : UIDragElement<PosSKILL>(), stats(in_stats), skillbook(in_skillbook), grabbing(false), tab(0), macro_enabled(false), sp_enabled(false)
+	UISkillBook::UISkillBook(const CharStats& in_stats, const SkillBook& in_skillbook) : UIDragElement<PosSKILL>(), stats(in_stats), skillbook(in_skillbook), grabbing(false), tab(0), macro_enabled(false), sp_enabled(false)
 	{
 		nl::node Skill = nl::nx::ui["UIWindow2.img"]["Skill"];
 		nl::node main = Skill["main"];
@@ -205,7 +202,7 @@ namespace ms
 			}
 		);
 
-		change_job(stats.get_stat(Maplestat::Id::JOB));
+		change_job(stats.get_stat(MapleStat::Id::JOB));
 
 		set_macro(false);
 		set_skillpoint(false);
@@ -214,7 +211,7 @@ namespace ms
 		dragarea = Point<int16_t>(dimension.x(), 20);
 	}
 
-	void UISkillbook::draw(float alpha) const
+	void UISkillBook::draw(float alpha) const
 	{
 		UIElement::draw_sprites(alpha);
 
@@ -293,7 +290,7 @@ namespace ms
 		UIElement::draw_buttons(alpha);
 	}
 
-	Button::State UISkillbook::button_pressed(uint16_t id)
+	Button::State UISkillBook::button_pressed(uint16_t id)
 	{
 		int16_t cur_sp = std::stoi(splabel.get_text());
 
@@ -417,7 +414,7 @@ namespace ms
 		return Button::State::NORMAL;
 	}
 
-	void UISkillbook::toggle_active()
+	void UISkillBook::toggle_active()
 	{
 		if (!is_skillpoint_enabled())
 		{
@@ -427,7 +424,7 @@ namespace ms
 		}
 	}
 
-	void UISkillbook::doubleclick(Point<int16_t> cursorpos)
+	void UISkillBook::doubleclick(Point<int16_t> cursorpos)
 	{
 		const SkillDisplayMeta* skill = skill_by_position(cursorpos - position);
 
@@ -441,14 +438,14 @@ namespace ms
 		}
 	}
 
-	void UISkillbook::remove_cursor()
+	void UISkillBook::remove_cursor()
 	{
 		UIDragElement::remove_cursor();
 
 		slider.remove_cursor();
 	}
 
-	Cursor::State UISkillbook::send_cursor(bool clicked, Point<int16_t> cursorpos)
+	Cursor::State UISkillBook::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
 		Cursor::State dstate = UIDragElement::send_cursor(clicked, cursorpos);
 
@@ -534,7 +531,7 @@ namespace ms
 		return UIElement::send_cursor(clicked, cursorpos);
 	}
 
-	void UISkillbook::send_key(int32_t keycode, bool pressed, bool escape)
+	void UISkillBook::send_key(int32_t keycode, bool pressed, bool escape)
 	{
 		if (pressed)
 		{
@@ -563,30 +560,30 @@ namespace ms
 		}
 	}
 
-	UIElement::Type UISkillbook::get_type() const
+	UIElement::Type UISkillBook::get_type() const
 	{
 		return TYPE;
 	}
 
-	void UISkillbook::update_stat(Maplestat::Id stat, int16_t value)
+	void UISkillBook::update_stat(MapleStat::Id stat, int16_t value)
 	{
 		switch (stat)
 		{
-		case Maplestat::Id::JOB:
+		case MapleStat::Id::JOB:
 			change_job(value);
 			break;
-		case Maplestat::Id::SP:
+		case MapleStat::Id::SP:
 			change_sp();
 			break;
 		}
 	}
 
-	void UISkillbook::update_skills(int32_t skill_id)
+	void UISkillBook::update_skills(int32_t skill_id)
 	{
 		change_tab(tab);
 	}
 
-	void UISkillbook::change_job(uint16_t id)
+	void UISkillBook::change_job(uint16_t id)
 	{
 		job.change_job(id);
 
@@ -598,10 +595,10 @@ namespace ms
 		change_tab(level - Job::Level::BEGINNER);
 	}
 
-	void UISkillbook::change_sp()
+	void UISkillBook::change_sp()
 	{
 		Job::Level joblevel = joblevel_by_tab(tab);
-		uint16_t level = stats.get_stat(Maplestat::Id::LEVEL);
+		uint16_t level = stats.get_stat(MapleStat::Id::LEVEL);
 
 		if (joblevel == Job::Level::BEGINNER)
 		{
@@ -625,7 +622,7 @@ namespace ms
 		}
 		else
 		{
-			sp = stats.get_stat(Maplestat::Id::SP);
+			sp = stats.get_stat(MapleStat::Id::SP);
 			splabel.change_text(std::to_string(sp));
 		}
 
@@ -633,7 +630,7 @@ namespace ms
 		set_skillpoint(false);
 	}
 
-	void UISkillbook::change_tab(uint16_t new_tab)
+	void UISkillBook::change_tab(uint16_t new_tab)
 	{
 		buttons[Buttons::BT_TAB0 + tab]->set_state(Button::NORMAL);
 		buttons[Buttons::BT_TAB0 + new_tab]->set_state(Button::PRESSED);
@@ -669,7 +666,7 @@ namespace ms
 		change_sp();
 	}
 
-	void UISkillbook::change_offset(uint16_t new_offset)
+	void UISkillBook::change_offset(uint16_t new_offset)
 	{
 		offset = new_offset;
 
@@ -688,7 +685,7 @@ namespace ms
 		}
 	}
 
-	void UISkillbook::show_skill(int32_t id)
+	void UISkillBook::show_skill(int32_t id)
 	{
 		int32_t skill_id = id;
 		int32_t level = skillbook.get_level(id);
@@ -698,12 +695,12 @@ namespace ms
 		UI::get().show_skill(Tooltip::Parent::SKILLBOOK, skill_id, level, masterlevel, expiration);
 	}
 
-	void UISkillbook::clear_tooltip()
+	void UISkillBook::clear_tooltip()
 	{
 		UI::get().clear_tooltip(Tooltip::Parent::SKILLBOOK);
 	}
 
-	bool UISkillbook::can_raise(int32_t skill_id) const
+	bool UISkillBook::can_raise(int32_t skill_id) const
 	{
 		Job::Level joblevel = joblevel_by_tab(tab);
 
@@ -731,7 +728,7 @@ namespace ms
 		}
 	}
 
-	void UISkillbook::send_spup(uint16_t row)
+	void UISkillBook::send_spup(uint16_t row)
 	{
 		if (row >= skills.size())
 			return;
@@ -777,14 +774,14 @@ namespace ms
 			set_skillpoint(true);
 	}
 
-	void UISkillbook::spend_sp(int32_t skill_id)
+	void UISkillBook::spend_sp(int32_t skill_id)
 	{
 		SpendSpPacket(skill_id).dispatch();
 
 		UI::get().disable();
 	}
 
-	Job::Level UISkillbook::joblevel_by_tab(uint16_t t) const
+	Job::Level UISkillBook::joblevel_by_tab(uint16_t t) const
 	{
 		switch (t)
 		{
@@ -801,7 +798,7 @@ namespace ms
 		}
 	}
 
-	UISkillbook::SkillDisplayMeta* UISkillbook::skill_by_position(Point<int16_t> cursorpos) const
+	const UISkillBook::SkillDisplayMeta* UISkillBook::skill_by_position(Point<int16_t> cursorpos) const
 	{
 		int16_t x = cursorpos.x();
 
@@ -830,18 +827,18 @@ namespace ms
 		if (skill_idx >= skills.size())
 			return nullptr;
 
-		auto iter = skills.begin() + skill_idx;
+		auto iter = skills.data() + skill_idx;
 
-		return iter._Ptr;
+		return iter;
 	}
 
-	void UISkillbook::close()
+	void UISkillBook::close()
 	{
 		clear_tooltip();
 		deactivate();
 	}
 
-	bool UISkillbook::check_required(int32_t id) const
+	bool UISkillBook::check_required(int32_t id) const
 	{
 		std::unordered_map<int32_t, int32_t> required = skillbook.collect_required(id);
 
@@ -860,7 +857,7 @@ namespace ms
 		return true;
 	}
 
-	void UISkillbook::set_macro(bool enabled)
+	void UISkillBook::set_macro(bool enabled)
 	{
 		macro_enabled = enabled;
 
@@ -875,7 +872,7 @@ namespace ms
 			set_skillpoint(false);
 	}
 
-	void UISkillbook::set_skillpoint(bool enabled)
+	void UISkillBook::set_skillpoint(bool enabled)
 	{
 		sp_enabled = enabled;
 
@@ -894,7 +891,7 @@ namespace ms
 			set_macro(false);
 	}
 
-	bool UISkillbook::is_skillpoint_enabled()
+	bool UISkillBook::is_skillpoint_enabled()
 	{
 		return sp_enabled;
 	}

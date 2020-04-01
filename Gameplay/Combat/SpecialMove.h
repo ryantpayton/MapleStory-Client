@@ -17,15 +17,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "Attack.h"
+#include "../MapleMap/Mob.h"
 
-#include "../Maplemap/Mob.h"
-#include "../Character/Char.h"
-#include "../Character/Job.h"
+#include "../../Character/Char.h"
+#include "../../Character/Job.h"
 
 namespace ms
 {
-	// Base class for attacks and buffs.
+	// Base class for attacks and buffs
 	class SpecialMove
 	{
 	public:

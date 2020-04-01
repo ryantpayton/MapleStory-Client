@@ -22,7 +22,7 @@
 #include "../IO/UI.h"
 #include "../Util/Misc.h"
 
-#include "../IO/UITypes/UIStatusbar.h"
+#include "../IO/UITypes/UIStatusBar.h"
 #include "../Net/Packets/AttackAndSkillPackets.h"
 #include "../Net/Packets/GameplayPackets.h"
 
@@ -64,7 +64,7 @@ namespace ms
 		start = ContinuousTimer::get().start();
 
 		CharStats stats = player.get_stats();
-		levelBefore = stats.get_stat(Maplestat::Id::LEVEL);
+		levelBefore = stats.get_stat(MapleStat::Id::LEVEL);
 		expBefore = stats.get_exp();
 	}
 
@@ -275,7 +275,7 @@ namespace ms
 
 	Cursor::State Stage::send_cursor(bool pressed, Point<int16_t> position)
 	{
-		auto statusbar = UI::get().get_element<UIStatusbar>();
+		auto statusbar = UI::get().get_element<UIStatusBar>();
 
 		if (statusbar && statusbar->is_menu_active())
 		{

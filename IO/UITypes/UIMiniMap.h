@@ -20,7 +20,8 @@
 #include "../UIDragElement.h"
 
 #include "../Components/Slider.h"
-#include "../Gameplay/Stage.h"
+
+#include "../../Gameplay/Stage.h"
 
 namespace ms
 {
@@ -38,7 +39,7 @@ namespace ms
 
 		void remove_cursor() override;
 		Cursor::State send_cursor(bool clicked, Point<int16_t> pos) override;
-		void UIMiniMap::send_scroll(double yoffset) override;
+		void send_scroll(double yoffset) override;
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
 		UIElement::Type get_type() const override;

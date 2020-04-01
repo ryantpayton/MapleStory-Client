@@ -19,14 +19,15 @@
 
 #include "../UIElement.h"
 
-#include "../Character/CharStats.h"
 #include "../Components/Charset.h"
 #include "../Components/Gauge.h"
-#include "../Graphics/SpecialText.h"
+
+#include "../../Character/CharStats.h"
+#include "../../Graphics/SpecialText.h"
 
 namespace ms
 {
-	class UIStatusbar : public UIElement
+	class UIStatusBar : public UIElement
 	{
 	public:
 		static constexpr Type TYPE = UIElement::Type::STATUSBAR;
@@ -42,7 +43,7 @@ namespace ms
 			EVENT
 		};
 
-		UIStatusbar(const CharStats& stats);
+		UIStatusBar(const CharStats& stats);
 
 		void draw(float alpha) const override;
 		void update() override;
