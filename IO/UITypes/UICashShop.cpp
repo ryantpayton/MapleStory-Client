@@ -27,7 +27,11 @@
 #include "../../Net/Packets/GameplayPackets.h"
 #include "../../Net/Packets/LoginPackets.h"
 
+#include "Timer.h"
+
+#ifdef WIN32
 #include <windows.h>
+#endif
 
 #include <nlnx/nx.hpp>
 
@@ -321,7 +325,10 @@ namespace ms
 		{
 			std::string url = Configuration::get().get_chargenx();
 
+//todo: open url on linux
+#ifdef WIN32
 			ShellExecute(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+#endif
 
 			return Button::State::NORMAL;
 		}

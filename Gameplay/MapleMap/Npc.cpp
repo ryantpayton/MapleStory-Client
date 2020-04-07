@@ -58,11 +58,13 @@ namespace ms
 				lines[state].push_back(strsrc[speaknode.get_string()]);
 		}
 
-		name = strsrc["name"];
-		func = strsrc["func"];
+		name = std::string(strsrc["name"]);
+		func = std::string(strsrc["func"]);
 
-		namelabel = Text(Text::Font::A13B, Text::Alignment::CENTER, Color::Name::YELLOW, Text::Background::NAMETAG, name);
-		funclabel = Text(Text::Font::A13B, Text::Alignment::CENTER, Color::Name::YELLOW, Text::Background::NAMETAG, func);
+		namelabel = Text(Text::Font::A13B, Text::Alignment::CENTER, Color::Name::YELLOW, Text::Background::NAMETAG,
+						 name);
+		funclabel = Text(Text::Font::A13B, Text::Alignment::CENTER, Color::Name::YELLOW, Text::Background::NAMETAG,
+						 func);
 
 		npcid = id;
 		flip = !fl;
@@ -88,7 +90,7 @@ namespace ms
 		}
 	}
 
-	int8_t Npc::update(const Physics& physics)
+	int8_t Npc::update(const Physics &physics)
 	{
 		if (!active)
 			return phobj.fhlayer;
@@ -110,7 +112,7 @@ namespace ms
 		return phobj.fhlayer;
 	}
 
-	void Npc::set_stance(const std::string& st)
+	void Npc::set_stance(const std::string &st)
 	{
 		if (stance != st)
 		{
@@ -138,16 +140,16 @@ namespace ms
 		Point<int16_t> absp = get_position() + viewpos;
 
 		Point<int16_t> dim =
-			animations.count(stance) ?
-			animations.at(stance).get_dimensions() :
-			Point<int16_t>();
+				animations.count(stance) ?
+				animations.at(stance).get_dimensions() :
+				Point<int16_t>();
 
 		return Rectangle<int16_t>(
-			absp.x() - dim.x() / 2,
-			absp.x() + dim.x() / 2,
-			absp.y() - dim.y(),
-			absp.y()
-			).contains(cursorpos);
+				absp.x() - dim.x() / 2,
+				absp.x() + dim.x() / 2,
+				absp.y() - dim.y(),
+				absp.y()
+		).contains(cursorpos);
 	}
 
 	std::string Npc::get_name()

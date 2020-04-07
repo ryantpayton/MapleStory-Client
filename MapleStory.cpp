@@ -23,6 +23,12 @@
 #include "Util/NxFiles.h"
 #include "Util/ScreenResolution.h"
 
+#include "Gameplay/Combat/DamageNumber.h"
+
+#include <iostream>
+
+#include "Timer.h"
+
 namespace ms
 {
 	Error init()
@@ -36,11 +42,13 @@ namespace ms
 		if (Error error = Window::get().init())
 			return error;
 
+		// TODO: (rich) fix
+		if (Error error = Music::init())
+			return error;
+
 		if (Error error = Sound::init())
 			return error;
 
-		if (Error error = Music::init())
-			return error;
 
 		Char::init();
 		DamageNumber::init();
@@ -58,6 +66,7 @@ namespace ms
 		Stage::get().update();
 		UI::get().update();
 		Session::get().read();
+		Music::update_context();
 	}
 
 	void draw(float alpha)
@@ -71,8 +80,8 @@ namespace ms
 	bool running()
 	{
 		return Session::get().is_connected()
-			&& UI::get().not_quitted()
-			&& Window::get().not_closed();
+			   && UI::get().not_quitted()
+			   && Window::get().not_closed();
 	}
 
 	void loop()
@@ -105,8 +114,7 @@ namespace ms
 				{
 					period += elapsed;
 					samples++;
-				}
-				else if (period)
+				} else if (period)
 				{
 					int64_t fps = (samples * 1000000) / period;
 
@@ -126,8 +134,8 @@ namespace ms
 		// Initialize and check for errors
 		if (Error error = init())
 		{
-			const char* message = error.get_message();
-			const char* args = error.get_args();
+			const char *message = error.get_message();
+			const char *args = error.get_args();
 			bool can_retry = error.can_retry();
 
 			std::cout << "Error: " << message << std::endl;
@@ -143,8 +151,7 @@ namespace ms
 
 			if (can_retry && command == "retry")
 				start();
-		}
-		else
+		} else
 		{
 			loop();
 		}

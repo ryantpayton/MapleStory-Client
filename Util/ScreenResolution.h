@@ -19,8 +19,8 @@
 
 #include "../Configuration.h"
 
-#include <windef.h>
-#include <WinUser.h>
+//#include <windef.h>
+//#include <WinUser.h>
 
 namespace ms
 {
@@ -29,17 +29,20 @@ namespace ms
 	public:
 		ScreenResolution()
 		{
-			RECT desktop;
+			//Rectangle desktop;
 
 			// Get a handle to the desktop window
-			const HWND hDesktop = GetDesktopWindow();
+			//const HWND hDesktop = GetDesktopWindow();
 
 			// Get the size of screen to the variable desktop
-			GetWindowRect(hDesktop, &desktop);
+			//GetWindowRect(hDesktop, &desktop);
+			//const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
 			// The top left corner will have coordinates (0, 0) and the bottom right corner will have coordinates (horizontal, vertical)
-			Configuration::get().set_max_width(desktop.right);
-			Configuration::get().set_max_height(desktop.bottom);
+			//Configuration::get().set_max_width(desktop.right);
+			//Configuration::get().set_max_height(desktop.bottom);
+			Configuration::get().set_max_width(2560);
+			Configuration::get().set_max_height(1440);
 		}
 	};
 }

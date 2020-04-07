@@ -28,28 +28,28 @@ namespace ms
 		// Number of needed files
 		constexpr uint8_t NUM_FILES = 18;
 
-		// Names of the needed game files
-		constexpr std::array<const char*, NUM_FILES> filenames =
-		{
-			"Character.nx",
-			"Effect.nx",
-			"Etc.nx",
-			"Item.nx",
-			"Map.nx",
-			"MapPretty.nx",	// From v167,
-			"MapLatest.nx",	// From latest,
-			"Map001.nx",	// From latest,
-			"Mob.nx",
-			"Morph.nx",
-			"Npc.nx",
-			"Quest.nx",
-			"Reactor.nx",
-			"Skill.nx",
-			"Sound.nx",
-			"String.nx",
-			"TamingMob.nx",
-			"UI.nx"			// From latest
-		};
+		// Names of the needed game files.
+		constexpr std::array<const char *, NUM_FILES> filenames =
+				{
+						"Character.nx",
+						"Effect.nx",
+						"Etc.nx",
+						"Item.nx",
+						"Map.nx",
+						"MapPretty.nx",    // From v167,
+						"MapLatest.nx",    // From v209.2,
+						"Map001.nx",    // From v209.2,
+						"Mob.nx",
+						"Morph.nx",
+						"Npc.nx",
+						"Quest.nx",
+						"Reactor.nx",
+						"Skill.nx",
+						"Sound.nx",
+						"String.nx",
+						"TamingMob.nx",
+						"UI.nx"            // From v209.2
+				};
 
 		// Initialize NX
 		// When successful test if the UI file is the correct version
