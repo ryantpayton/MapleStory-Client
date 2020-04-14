@@ -4,8 +4,8 @@ HeavenClient is a custom, made-from-scratch game client.
 # Supported versions
 - The client is currently compatible with version 83 servers.
 - The client has only been tested with [HeavenMS](https://github.com/ronancpl/HeavenMS).
-- ### [**Switch**](https://github.com/lain3d/HeavenClientNX)
-- ### [**Linux**](https://github.com/ryantpayton/HeavenClient/tree/linux)
+- **[Switch](https://github.com/lain3d/HeavenClientNX)**
+- **[Linux](https://github.com/ryantpayton/HeavenClient/tree/linux)**
 
 # Configuration
 The build can be configured by editing the **MapleStory.h** file. The following options are available:
