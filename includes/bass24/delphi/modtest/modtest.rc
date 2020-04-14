@@ -1,0 +1,19 @@
+
+1000	DIALOG 0, 0, 200, 88
+STYLE	DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION	"BASS MOD music test"
+FONT	8, "MS Sans Serif"
+BEGIN
+  PUSHBUTTON	"click here to open a file...",	10,	  5,  5, 190, 14
+  CTEXT		"",				11,	  5, 21, 190,  8
+  CTEXT		"",				15,	 20, 34,  45, 10, SS_SUNKEN
+  PUSHBUTTON	"Play / Pause",			12,	120, 33,  60, 12
+  CONTROL	"Slider1",			20, "msctls_trackbar32", TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,
+							  5, 48, 190, 12
+  CTEXT		"Interpolation",		-1,	 22, 61,  45,  8
+  COMBOBOX					21,	 22, 70,  45, 70, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+  CTEXT		"Ramping",			-1,	 77, 61,  45,  8
+  COMBOBOX					22,	 77, 70,  45, 70, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+  CTEXT		"Surround",			-1,	132, 61,  45,  8
+  COMBOBOX					23,	132, 70,  45, 70, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END

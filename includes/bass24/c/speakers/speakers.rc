@@ -1,0 +1,35 @@
+#include "windows.h"
+
+1000 DIALOG DISCARDABLE  100, 100, 230, 126
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "BASS multi-speaker example"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "1 - front",-1,5,0,220,29
+    PUSHBUTTON      "click here to open a file...",10,10,10,165,14
+    CONTROL         "L",30,"Button",BS_AUTOCHECKBOX | WS_DISABLED | 
+                    WS_TABSTOP,182,12,20,10
+    CONTROL         "R",31,"Button",BS_AUTOCHECKBOX | WS_DISABLED | 
+                    WS_TABSTOP,202,12,21,10
+    GROUPBOX        "2 - rear",-1,5,31,220,29
+    PUSHBUTTON      "click here to open a file...",11,10,40,165,14
+    CONTROL         "L",32,"Button",BS_AUTOCHECKBOX | WS_DISABLED | 
+                    WS_TABSTOP,182,42,20,10
+    CONTROL         "R",33,"Button",BS_AUTOCHECKBOX | WS_DISABLED | 
+                    WS_TABSTOP,202,42,21,10
+    GROUPBOX        "3 - center/LFE",-1,5,62,220,29
+    PUSHBUTTON      "click here to open a file...",12,10,72,165,14
+    CONTROL         "L",34,"Button",BS_AUTOCHECKBOX | WS_DISABLED | 
+                    WS_TABSTOP,182,74,20,10
+    CONTROL         "R",35,"Button",BS_AUTOCHECKBOX | WS_DISABLED | 
+                    WS_TABSTOP,202,74,21,10
+    GROUPBOX        "4 - rear center",-1,5,92,220,29
+    PUSHBUTTON      "click here to open a file...",13,10,102,165,14
+    CONTROL         "L",36,"Button",BS_AUTOCHECKBOX | WS_DISABLED | 
+                    WS_TABSTOP,182,104,20,10
+    CONTROL         "R",37,"Button",BS_AUTOCHECKBOX | WS_DISABLED | 
+                    WS_TABSTOP,202,104,21,10
+    PUSHBUTTON      "swap",20,195,24,25,14
+    PUSHBUTTON      "swap",21,195,55,25,14
+    PUSHBUTTON      "swap",22,195,86,25,14
+END

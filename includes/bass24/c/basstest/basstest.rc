@@ -1,0 +1,48 @@
+#include "windows.h"
+
+1000 DIALOG DISCARDABLE  100, 100, 350, 130
+STYLE WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "BASS - simple playback test"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Stream",-1,5,0,110,107
+    LISTBOX         10,10,10,100,35,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_TABSTOP
+    PUSHBUTTON      "Play",11,10,50,30,12
+    PUSHBUTTON      "Stop",12,45,50,30,12
+    PUSHBUTTON      "Restart",13,80,50,30,12
+    PUSHBUTTON      "Add ...",14,10,65,48,16
+    PUSHBUTTON      "Remove",15,62,65,48,16
+    LTEXT           "global volume:",-1,10,83,46,8
+    CONTROL         "Slider1",16,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | 
+                    WS_TABSTOP,10,92,100,11
+    GROUPBOX        "MOD Music",-1,120,0,110,107
+    LISTBOX         20,125,10,100,35,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_TABSTOP
+    PUSHBUTTON      "Play",21,125,50,30,12
+    PUSHBUTTON      "Stop",22,160,50,30,12
+    PUSHBUTTON      "Restart",23,195,50,30,12
+    PUSHBUTTON      "Add ...",24,125,65,48,16
+    PUSHBUTTON      "Remove",25,177,65,48,16
+    LTEXT           "global volume:",-1,125,83,46,8
+    CONTROL         "Slider1",26,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | 
+                    WS_TABSTOP,125,92,100,11
+    GROUPBOX        "Sample",-1,235,0,110,107
+    LISTBOX         30,240,10,100,35,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_TABSTOP
+    PUSHBUTTON      "Play",31,240,50,100,12
+    PUSHBUTTON      "Add ...",32,240,65,48,16
+    PUSHBUTTON      "Remove",33,292,65,48,16
+    LTEXT           "global volume:",-1,240,83,46,8
+    CONTROL         "Slider1",34,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | 
+                    WS_TABSTOP,240,92,100,11
+    PUSHBUTTON      "Stop Output",41,20,112,60,14
+    PUSHBUTTON      "Resume",42,85,112,60,14
+    LTEXT           "volume:",-1,160,109,26,8
+    CONTROL         "Slider1",43,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | 
+                    WS_TABSTOP,160,118,100,11
+    LTEXT           "CPU%",-1,291,120,25,8
+    LTEXT           "",40,316,120,30,8
+    CONTROL         "2 update threads",44,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,272,109,69,10
+END
