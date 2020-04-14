@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "NxFiles.h"
 
+#ifdef USE_NX
 #include <fstream>
 
 #include <nlnx/node.hpp>
@@ -52,3 +53,4 @@ namespace ms
 		}
 	}
 }
+#endif

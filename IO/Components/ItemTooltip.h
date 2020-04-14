@@ -19,9 +19,10 @@
 
 #include "Tooltip.h"
 
-#include "../Template/BoolPair.h"
 #include "../Components/MapleFrame.h"
-#include "../Graphics/Text.h"
+
+#include "../../Graphics/Text.h"
+#include "../../Template/BoolPair.h"
 
 namespace ms
 {

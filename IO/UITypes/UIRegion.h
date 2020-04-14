@@ -19,8 +19,6 @@
 
 #include "../UIElement.h"
 
-#include "../Components/TextTooltip.h"
-
 namespace ms
 {
 	class UIRegion : public UIElement

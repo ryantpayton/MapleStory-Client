@@ -17,10 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIUserList.h"
 
-#include "../IO/Components/MapleButton.h"
-#include "../IO/Components/TwoSpriteButton.h"
+#include "../../IO/Components/MapleButton.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

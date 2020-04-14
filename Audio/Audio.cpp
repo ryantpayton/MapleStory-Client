@@ -21,8 +21,10 @@
 
 #include <bass.h>
 
-#include <nlnx/nx.hpp>
+#ifdef USE_NX
 #include <nlnx/audio.hpp>
+#include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

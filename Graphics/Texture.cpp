@@ -77,7 +77,7 @@ namespace ms
 			args.get_rectangle(origin, dimensions),
 			args.get_color(),
 			args.get_angle()
-			);
+		);
 	}
 
 	void Texture::shift(Point<int16_t> amount)

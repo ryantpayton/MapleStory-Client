@@ -20,13 +20,14 @@
 #include "../Configuration.h"
 
 #include "../IO/UI.h"
-#include "../Util/Misc.h"
 
 #include "../IO/UITypes/UIStatusBar.h"
 #include "../Net/Packets/AttackAndSkillPackets.h"
 #include "../Net/Packets/GameplayPackets.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

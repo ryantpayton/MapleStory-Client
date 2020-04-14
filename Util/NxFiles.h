@@ -17,6 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "../MapleStory.h"
+
+#ifdef USE_NX
 #include "../Error.h"
 
 #include <array>
@@ -56,3 +59,4 @@ namespace ms
 		Error init();
 	};
 }
+#endif

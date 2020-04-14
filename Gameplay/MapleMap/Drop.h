@@ -19,8 +19,7 @@
 
 #include "MapObject.h"
 
-#include "../Template/Interpolated.h"
-#include "../Template/Rectangle.h"
+#include "../../Template/Rectangle.h"
 
 namespace ms
 {

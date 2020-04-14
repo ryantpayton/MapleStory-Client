@@ -17,12 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Graphics/Geometry.h"
-#include "../Template/Interpolated.h"
+#include "../../Graphics/Geometry.h"
+#include "../../Template/Interpolated.h"
 
 namespace ms
 {
-	// The scrolling server notice at the top of the screen.
+	// The scrolling server notice at the top of the screen
 	class ScrollingNotice
 	{
 	public:

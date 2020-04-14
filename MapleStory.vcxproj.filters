@@ -561,10 +561,13 @@
     <ClCompile Include="Util\Misc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Util\NxFiles.cpp">
+    <ClCompile Include="Character\Look\BodyDrawInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Character\Look\BodyDrawInfo.cpp">
+    <ClCompile Include="Util\WzFiles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Util\NxFiles.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1265,9 +1268,6 @@
     <ClInclude Include="Util\Misc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Util\NxFiles.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Util\QuadTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1278,6 +1278,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Util\TimedBool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\WzFiles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Util\NxFiles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

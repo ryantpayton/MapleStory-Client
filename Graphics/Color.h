@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#define GLEW_STATIC
 #include <glew.h>
 
 #include <array>
@@ -144,7 +145,7 @@ namespace ms
 			static_cast<float>(green) / 255,
 			static_cast<float>(blue) / 255,
 			static_cast<float>(alpha) / 255
-			) {}
+		) {}
 
 		// Create a color by code
 		constexpr Color(uint32_t code) : Color(
@@ -152,7 +153,7 @@ namespace ms
 			static_cast<uint8_t>(code >> 16),
 			static_cast<uint8_t>(code >> 8),
 			static_cast<uint8_t>(code)
-			) {}
+		) {}
 
 		// Create a color by named code
 		constexpr Color(Code code) : Color((uint32_t)code) {}
@@ -208,7 +209,7 @@ namespace ms
 				g() * o.g(),
 				b() * o.b(),
 				a() * o.a()
-				);
+			);
 		}
 
 		// Combine two colors
@@ -219,7 +220,7 @@ namespace ms
 				g() / o.g(),
 				b() / o.b(),
 				a() / o.a()
-				);
+			);
 		}
 
 	private:

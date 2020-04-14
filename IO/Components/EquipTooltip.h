@@ -20,11 +20,11 @@
 #include "Charset.h"
 #include "Tooltip.h"
 
-#include "../Character/MapleStat.h"
-#include "../Graphics/Text.h"
-#include "../Template/BoolPair.h"
+#include "../../Character/MapleStat.h"
+#include "../../Graphics/Text.h"
+#include "../../Template/BoolPair.h"
 
-#include "../Character/Inventory/Equip.h"
+#include "../../Character/Inventory/Equip.h"
 
 namespace ms
 {

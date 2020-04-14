@@ -17,19 +17,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <type_traits>
-#include <utility>
 #include <array>
 
 namespace ms
 {
 	template <typename K, typename V, K LENGTH = K::LENGTH>
-	// Wraps an array so that it is addressable by enum values.
+	// Wraps an array so that it is addressable by enumeration values
 	class EnumMap
 	{
 	public:
 		template <typename...Args>
-		// Initialize with an initializer list.
+		// Initialize with an initializer list
 		EnumMap(Args&& ... args) : m_values{ { std::forward<Args>(args)... } }
 		{
 			static_assert(std::is_enum<K>::value, "Template parameter 'K' for EnumMap must be an enum.");

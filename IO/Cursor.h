@@ -22,11 +22,11 @@
 
 namespace ms
 {
-	// Class that represents the mouse cursor.
+	// Class that represents the mouse cursor
 	class Cursor
 	{
 	public:
-		// Maple-cursorstates, linked to the cursor's animation.
+		// Maple cursor states that are linked to the cursor's animation
 		enum State
 		{
 			IDLE,

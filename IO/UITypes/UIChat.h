@@ -20,7 +20,6 @@
 #include "../UIDragElement.h"
 
 #include "../Components/Charset.h"
-#include "../Graphics/Text.h"
 
 namespace ms
 {

@@ -67,7 +67,9 @@ namespace ms
 
 	Configuration::~Configuration()
 	{
+#ifndef DEBUG
 		save();
+#endif
 	}
 
 	void Configuration::load()

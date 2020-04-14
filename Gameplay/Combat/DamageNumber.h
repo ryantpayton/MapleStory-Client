@@ -18,11 +18,10 @@
 #pragma once
 
 #include "../Physics/PhysicsObject.h"
-#include "../Template/BoolPair.h"
-#include "../Template/Interpolated.h"
-#include "../Template/Point.h"
 
-#include "../IO/Components/Charset.h"
+#include "../../Template/BoolPair.h"
+
+#include "../../IO/Components/Charset.h"
 
 namespace ms
 {

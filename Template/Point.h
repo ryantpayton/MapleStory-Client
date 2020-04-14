@@ -17,7 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "../MapleStory.h"
+
+#ifdef USE_NX
 #include <nlnx/node.hpp>
+#else
+#include "../Util/WzFiles.h"
+#endif
 
 namespace ms
 {

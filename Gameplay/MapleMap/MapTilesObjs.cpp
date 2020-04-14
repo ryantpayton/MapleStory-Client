@@ -38,8 +38,6 @@ namespace ms
 		}
 	}
 
-	TilesObjs::TilesObjs() {}
-
 	void TilesObjs::update()
 	{
 		for (auto& iter : objs)
@@ -60,8 +58,6 @@ namespace ms
 		for (auto iter : layers)
 			iter.second = src[iter.first];
 	}
-
-	MapTilesObjs::MapTilesObjs() {}
 
 	void MapTilesObjs::draw(Layer::Id layer, Point<int16_t> viewpos, float alpha) const
 	{

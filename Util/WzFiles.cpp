@@ -15,39 +15,39 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#pragma once
+#include "WzFiles.h"
 
-#include "Tooltip.h"
-#include "MapleFrame.h"
-
-#include "../../Graphics/Geometry.h"
+#ifndef USE_NX
+#include <fstream>
 
 namespace ms
 {
-	class SkillTooltip : public Tooltip
+	namespace WzFiles
 	{
-	public:
-		SkillTooltip();
+		Error init()
+		{
+			for (auto filename : filenames)
+				if (std::ifstream{ filename }.good() == false)
+					return Error(Error::Code::MISSING_FILE, filename);
 
-		void draw(Point<int16_t> position) const override;
+			try
+			{
+				//nl::nx::load_all();
+			}
+			catch (const std::exception& ex)
+			{
+				static const std::string message = ex.what();
 
-		void set_skill(int32_t id, int32_t level, int32_t masterlevel, int64_t expiration);
+				return Error(Error::Code::WZ, message.c_str());
+			}
 
-	private:
-		int32_t skill_id;
-		int16_t height;
-		int16_t width;
-		int16_t icon_offset;
-		int16_t level_offset;
-		Texture icon;
-		Texture required_icon;
+			//constexpr const char* POSTCHAOS_BITMAP = "Login.img/WorldSelect/BtChannel/layer:bg";
+			//
+			//if (nl::nx::ui.resolve(POSTCHAOS_BITMAP).data_type() != nl::node::type::bitmap)
+			//	return Error::Code::WRONG_UI_FILE;
 
-		Text name;
-		Text desc;
-		Text leveldesc;
-		MapleFrame frame;
-		ColorLine line;
-		ColorBox box;
-		Texture cover;
-	};
+			return Error::Code::NONE;
+		}
+	}
 }
+#endif

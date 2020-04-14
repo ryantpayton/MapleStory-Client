@@ -17,9 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "../../MapleStory.h"
+
 #include "../../Template/Range.h"
 
+#ifdef USE_NX
 #include <nlnx/node.hpp>
+#else
+#include "../../Util/WzFiles.h"
+#endif
 
 namespace ms
 {
@@ -27,8 +33,8 @@ namespace ms
 	class Foothold
 	{
 	public:
-		Foothold(nl::node src, uint16_t id, uint8_t layer);
 		Foothold();
+		Foothold(nl::node src, uint16_t id, uint8_t layer);
 
 		// Returns the foothold id aka the identifier in game data of this platform
 		uint16_t id() const;

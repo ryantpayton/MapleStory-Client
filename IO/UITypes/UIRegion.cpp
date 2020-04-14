@@ -16,13 +16,16 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIRegion.h"
+
 #include "UIWorldSelect.h"
 
 #include "../UI.h"
 
 #include "../Components/MapleButton.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

@@ -20,11 +20,12 @@
 #include "../UIElement.h"
 
 #include "../Components/Textfield.h"
-#include "../Template/BoolPair.h"
+
+#include "../../Template/BoolPair.h"
 
 namespace ms
 {
-	// Race selection screen.
+	// Race selection screen
 	class UIRaceSelect : public UIElement
 	{
 	public:

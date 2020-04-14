@@ -30,7 +30,9 @@
 
 #include <windows.h>
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {
@@ -47,7 +49,6 @@ namespace ms
 		nl::node back = map["back"];
 		nl::node ani = map["ani"];
 
-		nl::node obj = nl::nx::map["Obj"]["login.img"];
 		nl::node title = nl::nx::ui["Login.img"]["Title"];
 		nl::node common = nl::nx::ui["Login.img"]["Common"];
 
@@ -138,7 +139,7 @@ namespace ms
 				LoginPacket(
 					Configuration::get().get_auto_acc(),
 					Configuration::get().get_auto_pass()
-					).dispatch();
+				).dispatch();
 		}
 	}
 
@@ -228,7 +229,7 @@ namespace ms
 			return;
 		}
 
-		ShellExecute(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+		ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	}
 
 	Button::State UILogin::button_pressed(uint16_t id)

@@ -1,14 +1,14 @@
 /.vs
 /x64
+/x86
 
-*.nx
 *.aps
 *.log
 *.tlog
+*.vcxproj.user
 
+*.nx
+*.wz
 Settings
 
-/includes/**/*.sln
-/includes/**/*.vcxproj*
-/includes/**/*.txt
-/includes/**/*.gitignore
+/includes

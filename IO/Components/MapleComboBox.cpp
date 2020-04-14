@@ -16,11 +16,14 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "MapleComboBox.h"
+
 #include "AreaButton.h"
 
-#include "../Audio/Audio.h"
+#include "../../Audio/Audio.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

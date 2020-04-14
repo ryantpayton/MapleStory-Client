@@ -16,22 +16,25 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIRaceSelect.h"
-#include "UILoginNotice.h"
-#include "UICharSelect.h"
-#include "UIExplorerCreation.h"
-#include "UICygnusCreation.h"
+
 #include "UIAranCreation.h"
+#include "UICharSelect.h"
+#include "UICygnusCreation.h"
+#include "UIExplorerCreation.h"
+#include "UILoginNotice.h"
 
 #include "../UI.h"
-#include "../Configuration.h"
 
-#include "../Components/MapleButton.h"
 #include "../Components/AreaButton.h"
-#include "../Audio/Audio.h"
+#include "../Components/MapleButton.h"
 
-#include <cctype>
+#include "../../Configuration.h"
 
+#include "../../Audio/Audio.h"
+
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

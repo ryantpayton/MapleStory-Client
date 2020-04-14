@@ -17,10 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Character/Char.h"
-#include "../Graphics/Animation.h"
-
-#include <unordered_map>
+#include "../../Character/Char.h"
 
 namespace ms
 {

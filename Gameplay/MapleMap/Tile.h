@@ -17,25 +17,23 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Graphics/Texture.h"
-#include "../Template/Point.h"
+#include "../../Graphics/Texture.h"
 
-#include <cstdint>
-#include <string>
-
+#ifdef USE_NX
 #include <nlnx/node.hpp>
+#endif
 
 namespace ms
 {
-	// Represents a tile on a map.
+	// Represents a tile on a map
 	class Tile
 	{
 	public:
 		Tile(nl::node src, const std::string& tileset);
 
-		// Draw the tile.
+		// Draw the tile
 		void draw(Point<int16_t> viewpos) const;
-		// Returns depth of the tile.
+		// Returns the depth of the tile
 		uint8_t getz() const;
 
 	private:

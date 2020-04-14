@@ -37,7 +37,9 @@
 #define NOMINMAX
 #include <windows.h>
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {
@@ -179,7 +181,7 @@ namespace ms
 			SelectCharPicPacket(
 				Configuration::get().get_auto_pic(),
 				Configuration::get().get_auto_cid()
-				).dispatch();
+			).dispatch();
 		}
 
 		dimension = Point<int16_t>(800, 600);
@@ -744,7 +746,7 @@ namespace ms
 		{
 			std::string url = Configuration::get().get_resetpic();
 
-			ShellExecute(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+			ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
 		}
 		break;
 		case Buttons::EDITCHARLIST:
@@ -987,7 +989,7 @@ namespace ms
 			RegisterPicPacket(
 				characters[selected_character].id,
 				entered_pic
-				).dispatch();
+			).dispatch();
 		}
 	}
 }

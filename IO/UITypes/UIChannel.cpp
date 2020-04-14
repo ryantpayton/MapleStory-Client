@@ -19,11 +19,14 @@
 
 #include "../KeyAction.h"
 
-#include "../Components/MapleButton.h"
 #include "../Components/AreaButton.h"
-#include "../Audio/Audio.h"
+#include "../Components/MapleButton.h"
 
+#include "../../Audio/Audio.h"
+
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

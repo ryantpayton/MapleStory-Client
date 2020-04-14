@@ -64,7 +64,7 @@ namespace ms
 		void rightclick(Point<int16_t>) override {}
 		void send_key(KeyType::Id, int32_t, bool, bool) override {}
 		Cursor::State send_cursor(Cursor::State, Point<int16_t>) override { return Cursor::State::IDLE; }
-		void send_scroll(double yoffset) override {}
+		void send_scroll(double) override {}
 		void send_close() override {}
 		void drag_icon(Icon*) override {}
 		void clear_tooltip(Tooltip::Parent) override {}

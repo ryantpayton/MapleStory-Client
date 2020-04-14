@@ -20,11 +20,14 @@
 #include "../UI.h"
 
 #include "../Components/MapleButton.h"
-#include "../Gameplay/Stage.h"
 
-#include "../Net/Packets/NpcInteractionPackets.h"
+#include "../../Gameplay/Stage.h"
 
+#include "../../Net/Packets/NpcInteractionPackets.h"
+
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

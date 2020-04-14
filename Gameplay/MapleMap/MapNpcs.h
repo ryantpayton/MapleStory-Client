@@ -21,7 +21,7 @@
 
 #include "../Spawn.h"
 
-#include "../IO/Cursor.h"
+#include "../../IO/Cursor.h"
 
 #include <queue>
 
@@ -30,22 +30,22 @@ namespace ms
 	class MapNpcs
 	{
 	public:
-		// Draw all NPCs on a layer.
+		// Draw all NPCs on a layer
 		void draw(Layer::Id layer, double viewx, double viewy, float alpha) const;
-		// Update all NPCs.
+		// Update all NPCs
 		void update(const Physics& physics);
 
-		// Add an npc to the spawn queue.
+		// Add an NPC to the spawn queue
 		void spawn(NpcSpawn&& spawn);
-		// Remove the npc with the specified oid;
+		// Remove the NPC with the specified oid
 		void remove(int32_t oid);
-		// Remove all NPCs.
+		// Remove all NPCs
 		void clear();
 
-		// Returns a reference to the MapObjects object.
+		// Returns a reference to the MapObject's object
 		MapObjects* get_npcs();
 
-		// Send mouse input to clickable NPCs.
+		// Send mouse input to clickable NPCs
 		Cursor::State send_cursor(bool pressed, Point<int16_t> position, Point<int16_t> viewpos);
 
 	private:

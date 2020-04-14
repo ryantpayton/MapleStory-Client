@@ -26,7 +26,9 @@
 #include "../../Gameplay/Stage.h"
 #include "../../Net/Session.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

@@ -17,8 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "SkillBullet.h"
 
-#include "../Data/BulletData.h"
-#include "../Util/Misc.h"
+#include "../../Data/BulletData.h"
+#include "../../Util/Misc.h"
 
 namespace ms
 {

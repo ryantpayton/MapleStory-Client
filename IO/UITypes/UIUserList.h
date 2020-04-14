@@ -19,8 +19,8 @@
 
 #include "../UIDragElement.h"
 
-#include "../Components/Textfield.h"
 #include "../Components/Slider.h"
+#include "../Components/Textfield.h"
 
 namespace ms
 {

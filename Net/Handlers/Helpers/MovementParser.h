@@ -17,8 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Net/InPacket.h"
-#include "../Gameplay/Movement.h"
+#include "../../InPacket.h"
+
+#include "../../../Gameplay/Movement.h"
 
 #include <vector>
 

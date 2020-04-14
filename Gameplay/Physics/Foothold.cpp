@@ -19,8 +19,8 @@
 
 namespace ms
 {
-	Foothold::Foothold(nl::node src, uint16_t id, uint8_t ly) : m_prev(src["prev"]), m_next(src["next"]), m_horizontal(src["x1"], src["x2"]), m_vertical(src["y1"], src["y2"]), m_id(id), m_layer(ly) {}
 	Foothold::Foothold() : m_id(0), m_layer(0), m_next(0), m_prev(0) {}
+	Foothold::Foothold(nl::node src, uint16_t id, uint8_t ly) : m_prev(src["prev"]), m_next(src["next"]), m_horizontal(src["x1"], src["x2"]), m_vertical(src["y1"], src["y2"]), m_id(id), m_layer(ly) {}
 
 	uint16_t Foothold::id() const
 	{

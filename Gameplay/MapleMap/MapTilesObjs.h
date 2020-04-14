@@ -18,22 +18,21 @@
 #pragma once
 
 #include "Layer.h"
-#include "Tile.h"
 #include "Obj.h"
+#include "Tile.h"
 
-#include "../Template/EnumMap.h"
+#include "../../Template/EnumMap.h"
 
-#include <vector>
 #include <map>
 
 namespace ms
 {
-	// A tile and obj layer.
+	// A tile and object layer
 	class TilesObjs
 	{
 	public:
+		TilesObjs() {};
 		TilesObjs(nl::node src);
-		TilesObjs();
 
 		void draw(Point<int16_t> viewpos, float alpha) const;
 		void update();
@@ -43,12 +42,12 @@ namespace ms
 		std::multimap<uint8_t, Obj> objs;
 	};
 
-	// The collection of tile and obj layers on a map.
+	// The collection of tile and object layers on a map
 	class MapTilesObjs
 	{
 	public:
+		MapTilesObjs() {};
 		MapTilesObjs(nl::node src);
-		MapTilesObjs();
 
 		void draw(Layer::Id layer, Point<int16_t> viewpos, float alpha) const;
 		void update();

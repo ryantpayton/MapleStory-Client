@@ -18,12 +18,17 @@
 #pragma once
 
 #include "../Error.h"
+#include "../MapleStory.h"
 
 #include "../Template/EnumMap.h"
 
 #include <unordered_map>
 
+#ifdef USE_NX
 #include <nlnx/node.hpp>
+#else
+#include "../Util/WzFiles.h"
+#endif
 
 namespace ms
 {

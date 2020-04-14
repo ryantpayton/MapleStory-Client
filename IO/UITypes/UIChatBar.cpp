@@ -21,7 +21,9 @@
 
 #include "../../Net/Packets/MessagingPackets.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {
@@ -448,7 +450,7 @@ namespace ms
 			std::piecewise_construct,
 			std::forward_as_tuple(rowmax),
 			std::forward_as_tuple(Text::Font::A11M, Text::Alignment::LEFT, color, line, 480)
-			);
+		);
 	}
 
 	void UIChatBar::display_message(Messages::Type line, UIChatBar::LineType type)

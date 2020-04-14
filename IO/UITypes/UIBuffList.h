@@ -18,12 +18,8 @@
 #pragma once
 
 #include "../UIElement.h"
-#include "../Constants.h"
 
 #include "../Components/IconCover.h"
-#include "../Graphics/Texture.h"
-
-#include <unordered_map>
 
 namespace ms
 {

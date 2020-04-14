@@ -17,8 +17,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Configuration.h"
 #include "../OutPacket.h"
+
+#include "../../Configuration.h"
 
 namespace ms
 {
@@ -43,7 +44,9 @@ namespace ms
 
 			write_string(acc);
 			write_string(pass);
+
 			skip(6);
+
 			write_byte(h);
 			write_byte(w);
 			write_byte(i);

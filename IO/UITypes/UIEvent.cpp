@@ -20,9 +20,12 @@
 #include "../UI.h"
 
 #include "../Components/MapleButton.h"
-#include "../Data/ItemData.h"
 
+#include "../../Data/ItemData.h"
+
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

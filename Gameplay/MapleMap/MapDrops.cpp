@@ -18,15 +18,12 @@
 #include "MapDrops.h"
 
 #include "Drop.h"
-#include "ItemDrop.h"
-#include "MesoDrop.h"
 
-#include "../Constants.h"
+#include "../../Data/ItemData.h"
 
-#include "../Data/ItemData.h"
-
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
-#include <nlnx/node.hpp>
+#endif
 
 namespace ms
 {
@@ -77,7 +74,7 @@ namespace ms
 					const Animation& icon = mesoicons[mesotype];
 					drops.add(spawn.instantiate(icon));
 				}
-				else if (const ItemData & itemdata = ItemData::get(itemid))
+				else if (const ItemData& itemdata = ItemData::get(itemid))
 				{
 					const Texture& icon = itemdata.get_icon(true);
 					drops.add(spawn.instantiate(icon));

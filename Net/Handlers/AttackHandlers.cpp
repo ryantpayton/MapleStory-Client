@@ -17,11 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "AttackHandlers.h"
 
-#include "../Character/SkillId.h"
-#include "../Gameplay/Stage.h"
-
-#include <unordered_map>
-#include <vector>
+#include "../../Character/SkillId.h"
+#include "../../Gameplay/Stage.h"
 
 namespace ms
 {

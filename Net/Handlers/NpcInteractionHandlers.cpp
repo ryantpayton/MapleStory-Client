@@ -17,9 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "NpcInteractionHandlers.h"
 
-#include "../IO/UI.h"
-#include "../IO/UITypes/UINpcTalk.h"
-#include "../IO/UITypes/UIShop.h"
+#include "../../IO/UI.h"
+
+#include "../../IO/UITypes/UINpcTalk.h"
+#include "../../IO/UITypes/UIShop.h"
 
 namespace ms
 {

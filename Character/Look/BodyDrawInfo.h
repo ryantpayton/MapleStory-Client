@@ -22,7 +22,6 @@
 #include "../../Template/Point.h"
 
 #include <unordered_map>
-#include <vector>
 
 namespace ms
 {

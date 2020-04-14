@@ -16,13 +16,16 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "UILogo.h"
+
 #include "UILogin.h"
 
-#include "../Configuration.h"
+#include "../../Configuration.h"
 
-#include "../Audio/Audio.h"
+#include "../../Audio/Audio.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

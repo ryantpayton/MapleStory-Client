@@ -16,9 +16,10 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "MapNpcs.h"
+
 #include "Npc.h"
 
-#include "../Net/Packets/NpcInteractionPackets.h"
+#include "../../Net/Packets/NpcInteractionPackets.h"
 
 namespace ms
 {

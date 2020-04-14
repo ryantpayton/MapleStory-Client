@@ -15,11 +15,16 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-
-// Define program attributes here
+#pragma once
 
 // If defined use Asio for networking, otherwise use Winsock.
 //#define USE_ASIO
 
 // Use cryptography for communication with the server
 #define USE_CRYPTO
+
+// If defined use NX, otherwise use WZ.
+#define USE_NX
+
+// Run in debug mode
+#define DEBUG

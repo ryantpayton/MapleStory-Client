@@ -4,12 +4,15 @@ HeavenClient is a custom, made-from-scratch game client.
 # Supported versions
 - The client is currently compatible with version 83 servers.
 - The client has only been tested with [HeavenMS](https://github.com/ronancpl/HeavenMS).
-- There is also a Switch version available here: [HeavenClientNX](https://github.com/lain3d/HeavenClientNX).
+- ##### **[Switch](https://github.com/lain3d/HeavenClientNX)**
+- ##### **[Linux](https://github.com/ryantpayton/HeavenClient/tree/linux)**
 
 # Configuration
 The build can be configured by editing the **MapleStory.h** file. The following options are available:
 - **USE_ASIO**: Use Asio for networking (additional dependency)
 - **USE_CRYPTO**: Use cryptography when communicating for the server.
+- **USE_NX**: Use NX files instead of WZ files.
+- **USE_DEBUG**: This suppresses the generation of the Settings file
 
 The default settings can be configured by editing the **Configuration.h** file. These are also generated after a game session in a file called **Settings**. These can be altered in the same way as **Configuration.h**, although, these do not persist if you delete the file, unlike **Configuration.h**.
 
@@ -33,9 +36,14 @@ The default settings can be configured by editing the **Configuration.h** file. 
 - UI.nx (Latest GMS UI.wz)
 - Everything else is from v83 GMS wz files
 
+There is an archive of all the NX files listed above available for download [here](https://drive.google.com/file/d/14mujxsm0e4rM0yt029wjabW92dnRX_O7) (Latest: v210).
+
 # Dependencies
 - Nx library:
 [NoLifeNX](https://github.com/ryantpayton/NoLifeNx)
+
+- Wz library:
+N/A
 
 - Graphics:
 [GLFW3](http://www.glfw.org/download.html), [GLEW](http://glew.sourceforge.net/), [FreeType](http://www.freetype.org/)

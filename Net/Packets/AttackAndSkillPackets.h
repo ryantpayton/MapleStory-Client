@@ -19,11 +19,10 @@
 
 #include "../OutPacket.h"
 
-#include "../Gameplay/Combat/Attack.h"
-
 namespace ms
 {
-	// Notifies the server of an attack. The opcode is determined by the attack type.
+	// Notifies the server of an attack
+	// The opcode is determined by the attack type
 	// Attack::CLOSE = CLOSE_ATTACK(44)
 	// Attack::RANGED = RANGED_ATTACK(45)
 	// Attack::MAGIC = MAGIC_ATTACK(46)
@@ -55,7 +54,7 @@ namespace ms
 				skip(1);
 				write_byte(attack.toleft);
 				skip(7);
-				// TODO: skip(4); If hurricane, piercing arrow or rapidfire
+				// TODO: skip(4); If hurricane, piercing arrow or rapidfire.
 			}
 			else
 			{
@@ -94,7 +93,7 @@ namespace ms
 		}
 	};
 
-	// Tells the server that the player took damage.
+	// Tells the server that the player took damage
 	// Opcode: TAKE_DAMAGE(48)
 	class TakeDamagePacket : public OutPacket
 	{
@@ -115,11 +114,11 @@ namespace ms
 			write_byte(direction);
 		}
 
-		// From mob attack result.
+		// From mob attack result
 		TakeDamagePacket(const MobAttackResult& result, From from) : TakeDamagePacket(from, 0, result.damage, result.mobid, result.oid, result.direction) {}
 	};
 
-	// Packet which notifies the server of a skill usage.
+	// Packet which notifies the server of a skill usage
 	// Opcode: USE_SKILL(91)
 	class UseSkillPacket : public OutPacket
 	{

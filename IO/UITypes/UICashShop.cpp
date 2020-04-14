@@ -29,7 +29,9 @@
 
 #include <windows.h>
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {
@@ -321,7 +323,7 @@ namespace ms
 		{
 			std::string url = Configuration::get().get_chargenx();
 
-			ShellExecute(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+			ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
 
 			return Button::State::NORMAL;
 		}

@@ -19,13 +19,13 @@
 
 #include "Button.h"
 
-#include "../Graphics/Geometry.h"
+#include "../../Graphics/Geometry.h"
 
 #include <memory>
 
 namespace ms
 {
-	// A standard maplestory-combobox with 4 states and three textures for each state.
+	// A standard MapleStory combo box with four states and three textures for each state
 	class MapleComboBox : public Button
 	{
 	public:

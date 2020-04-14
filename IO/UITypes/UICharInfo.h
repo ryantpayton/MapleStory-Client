@@ -19,11 +19,7 @@
 
 #include "../UIDragElement.h"
 
-#include "../Components/Charset.h"
-
-#include "../../Graphics/Text.h"
 #include "../../Character/Char.h"
-#include "../../Template/BoolPair.h"
 
 namespace ms
 {

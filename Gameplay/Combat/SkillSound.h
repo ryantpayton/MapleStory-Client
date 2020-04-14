@@ -15,11 +15,13 @@
 //	You should have received a copy of the GNU Affero General Public License	//
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Audio/Audio.h"
+#pragma once
+
+#include "../../Audio/Audio.h"
 
 namespace ms
 {
-	// Interface for skill sound.
+	// Interface for skill sound
 	class SkillSound
 	{
 	public:
@@ -29,7 +31,7 @@ namespace ms
 		virtual void play_hit() const = 0;
 	};
 
-	// No sound.
+	// No sound
 	class NoSkillSound : public SkillSound
 	{
 	public:
@@ -37,7 +39,7 @@ namespace ms
 		void play_hit() const override {}
 	};
 
-	// Plays one use and one hit sound.
+	// Plays one use and one hit sound
 	class SingleSkillSound : public SkillSound
 	{
 	public:

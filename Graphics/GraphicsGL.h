@@ -27,7 +27,9 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#ifdef USE_NX
 #include <nlnx/bitmap.hpp>
+#endif
 
 namespace ms
 {

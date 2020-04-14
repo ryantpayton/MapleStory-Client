@@ -20,8 +20,13 @@
 #include "IO/Window.h"
 #include "Net/Session.h"
 #include "Util/HardwareInfo.h"
-#include "Util/NxFiles.h"
 #include "Util/ScreenResolution.h"
+
+#ifdef USE_NX
+#include "Util/NxFiles.h"
+#else
+#include "Util/WzFiles.h"
+#endif
 
 namespace ms
 {
@@ -30,8 +35,13 @@ namespace ms
 		if (Error error = Session::get().init())
 			return error;
 
+#ifdef USE_NX
 		if (Error error = NxFiles::init())
 			return error;
+#else
+		if (Error error = WzFiles::init())
+			return error;
+#endif
 
 		if (Error error = Window::get().init())
 			return error;

@@ -21,7 +21,9 @@
 
 #include "../../Util/Misc.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {
@@ -47,7 +49,7 @@ namespace ms
 				std::piecewise_construct,
 				std::forward_as_tuple(portal_id),
 				std::forward_as_tuple(animation, type, name, intramap, position, target_id, target_name)
-				);
+			);
 
 			portal_ids_by_name.emplace(name, portal_id);
 		}

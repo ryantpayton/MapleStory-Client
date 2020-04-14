@@ -19,15 +19,13 @@
 
 #include "Helpers/ItemParser.h"
 
-#include "../Gameplay/Stage.h"
-#include "../IO/UI.h"
-#include "../IO/Messages.h"
+#include "../../Gameplay/Stage.h"
+#include "../../IO/UI.h"
 
-#include "../Character/Inventory/Inventory.h"
-#include "../IO/UITypes/UIEquipInventory.h"
-#include "../IO/UITypes/UIItemInventory.h"
-#include "../IO/UITypes/UIKeyConfig.h"
-#include "../IO/UITypes/UIShop.h"
+#include "../../IO/UITypes/UIEquipInventory.h"
+#include "../../IO/UITypes/UIItemInventory.h"
+#include "../../IO/UITypes/UIKeyConfig.h"
+#include "../../IO/UITypes/UIShop.h"
 
 namespace ms
 {

@@ -41,7 +41,9 @@
 
 #include "../../Net/Packets/GameplayPackets.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {
@@ -84,7 +86,7 @@ namespace ms
 			EXPBarRes.resolve("layer:cover"),
 			EXPBar.resolve("layer:effect"),
 			exp_max, 0.0f
-			);
+		);
 
 		int16_t pos_adj = 0;
 
@@ -390,22 +392,22 @@ namespace ms
 		statset.draw(
 			std::to_string(exp) + "[" + expstring.substr(0, expstring.find('.') + 3) + "%]",
 			position + statset_pos
-			);
+		);
 
 		hpmpset.draw(
 			"[" + std::to_string(hp) + "/" + std::to_string(maxhp) + "]",
 			position + hpset_pos
-			);
+		);
 
 		hpmpset.draw(
 			"[" + std::to_string(mp) + "/" + std::to_string(maxmp) + "]",
 			position + mpset_pos
-			);
+		);
 
 		levelset.draw(
 			std::to_string(level),
 			position + levelset_pos
-			);
+		);
 
 		namelabel.draw(position + namelabel_pos);
 

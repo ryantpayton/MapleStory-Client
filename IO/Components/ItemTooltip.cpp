@@ -17,11 +17,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "ItemTooltip.h"
 
-#include "../Constants.h"
+#include "../../Constants.h"
 
-#include "../Data/ItemData.h"
+#include "../../Data/ItemData.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

@@ -17,11 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Graphics/Animation.h"
-#include "../Template/Rectangle.h"
-
-#include <cstdint>
-#include <map>
+#include "../../Graphics/Animation.h"
 
 namespace ms
 {

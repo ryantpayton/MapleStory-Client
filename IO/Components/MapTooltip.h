@@ -17,13 +17,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "Tooltip.h"
 #include "MapleFrame.h"
+#include "Tooltip.h"
 
-#include "../Graphics/Text.h"
-#include "../Graphics/Geometry.h"
-
-#include <unordered_map>
+#include "../../Graphics/Geometry.h"
 
 namespace ms
 {

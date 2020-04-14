@@ -17,22 +17,21 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Graphics/Animation.h"
-#include "../Template/Point.h"
+#include "../../Graphics/Animation.h"
 
 namespace ms
 {
-	// Represents an obj (map decoration) on a map.
+	// Represents a map decoration (object) on a map
 	class Obj
 	{
 	public:
 		Obj(nl::node source);
 
-		// Update animation.
+		// Update animation
 		void update();
-		// Draw the obj at the specified position.
+		// Draw the object at the specified position
 		void draw(Point<int16_t> viewpos, float inter) const;
-		// Return depth of the obj.
+		// Return the depth of the object
 		uint8_t getz() const;
 
 	private:

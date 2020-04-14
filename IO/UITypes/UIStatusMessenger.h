@@ -19,7 +19,7 @@
 
 #include "../UIElement.h"
 
-#include "../Graphics/Text.h"
+#include "../../Graphics/Text.h"
 
 #include <deque>
 
@@ -38,7 +38,7 @@ namespace ms
 		Text shadow;
 		Linear<float> opacity;
 
-		// 8 seconds.
+		// 8 seconds
 		static constexpr int64_t FADE_DURATION = 8'000;
 	};
 

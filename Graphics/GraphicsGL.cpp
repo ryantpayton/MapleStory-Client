@@ -481,7 +481,7 @@ namespace ms
 			std::piecewise_construct,
 			std::forward_as_tuple(id),
 			std::forward_as_tuple(x, y, width, height)
-			).first->second;
+		).first->second;
 	}
 
 	void GraphicsGL::draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect, const Color& color, float angle)

@@ -20,7 +20,8 @@
 #include "../UIDragElement.h"
 
 #include "../Components/Slider.h"
-#include "../Graphics/SpecialText.h"
+
+#include "../../Graphics/SpecialText.h"
 
 namespace ms
 {

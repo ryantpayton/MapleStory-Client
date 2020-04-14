@@ -19,7 +19,6 @@
 
 #include "../Keyboard.h"
 #include "../KeyConfig.h"
-#include "../KeyType.h"
 #include "../UIDragElement.h"
 
 #include "../../Character/SkillBook.h"

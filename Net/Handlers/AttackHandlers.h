@@ -19,7 +19,7 @@
 
 #include "../PacketHandler.h"
 
-#include "../Gameplay/Combat/Attack.h"
+#include "../../Gameplay/Combat/Attack.h"
 
 namespace ms
 {

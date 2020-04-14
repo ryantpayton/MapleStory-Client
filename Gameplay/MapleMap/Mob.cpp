@@ -21,7 +21,9 @@
 
 #include "../../Net/Packets/GameplayPackets.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {
@@ -319,7 +321,7 @@ namespace ms
 			oid, 1, 0, 0, 0, 0, 0, 0,
 			get_position(),
 			Movement(phobj, value_of(stance, flip))
-			).dispatch();
+		).dispatch();
 	}
 
 	void Mob::draw(double viewx, double viewy, float alpha) const

@@ -16,6 +16,7 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIShop.h"
+
 #include "UINotice.h"
 
 #include "../UI.h"
@@ -23,12 +24,15 @@
 #include "../Components/AreaButton.h"
 #include "../Components/Charset.h"
 #include "../Components/MapleButton.h"
-#include "../Audio/Audio.h"
-#include "../Data/ItemData.h"
 
-#include "../Net/Packets/NpcInteractionPackets.h"
+#include "../../Audio/Audio.h"
+#include "../../Data/ItemData.h"
 
+#include "../../Net/Packets/NpcInteractionPackets.h"
+
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

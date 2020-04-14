@@ -18,12 +18,12 @@
 #pragma once
 
 #include "../Physics/PhysicsObject.h"
-#include "../Graphics/Animation.h"
-#include "../Template/Point.h"
+
+#include "../../Graphics/Animation.h"
 
 namespace ms
 {
-	// Represents a projectile on a map.
+	// Represents a projectile on a map
 	class Bullet
 	{
 	public:

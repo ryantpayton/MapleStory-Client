@@ -17,18 +17,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Template/Point.h"
-
-#include <cstdint>
+#include "../../Template/Point.h"
 
 namespace ms
 {
-	// Interface for tooltips, information windows about something
-	// the mouse cursor is pointed at.
+	// Interface for tooltips
+	// Window with helpful information that appears on mouse hover at a specific location
 	class Tooltip
 	{
 	public:
-		// Possible parent UIs for Tooltips.
+		// Possible parent UIs for Tooltips
 		enum Parent
 		{
 			NONE,

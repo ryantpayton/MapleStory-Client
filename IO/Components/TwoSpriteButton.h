@@ -19,7 +19,7 @@
 
 #include "Button.h"
 
-#include "../Template/BoolPair.h"
+#include "../../Template/BoolPair.h"
 
 namespace ms
 {

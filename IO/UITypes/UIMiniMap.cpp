@@ -25,7 +25,9 @@
 
 #include "../../Gameplay/MapleMap/Npc.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

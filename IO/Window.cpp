@@ -147,7 +147,7 @@ namespace ms
 			Configuration::get().get_title().c_str(),
 			fullscreen ? glfwGetPrimaryMonitor() : nullptr,
 			context
-			);
+		);
 
 		if (!glwnd)
 			return Error::Code::WINDOW;
@@ -177,8 +177,8 @@ namespace ms
 		glfwSetWindowCloseCallback(glwnd, close_callback);
 
 		char buf[256];
-		GetCurrentDirectory(256, buf);
-		strcat(buf, "\\Icon.png");
+		GetCurrentDirectoryA(256, buf);
+		strcat_s(buf, sizeof(buf), "\\Icon.png");
 
 		GLFWimage images[1];
 

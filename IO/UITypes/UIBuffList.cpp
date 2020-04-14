@@ -17,11 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIBuffList.h"
 
-#include "../Data/ItemData.h"
-#include "../Util/Misc.h"
+#include "../../Data/ItemData.h"
+#include "../../Util/Misc.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
-#include <nlnx/node.hpp>
+#endif
 
 namespace ms
 {

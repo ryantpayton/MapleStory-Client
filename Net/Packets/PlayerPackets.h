@@ -21,7 +21,7 @@
 
 #include "../../Character/MapleStat.h"
 
-#include "../IO/UITypes/UIKeyConfig.h"
+#include "../../IO/UITypes/UIKeyConfig.h"
 
 namespace ms
 {

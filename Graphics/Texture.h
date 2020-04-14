@@ -19,7 +19,9 @@
 
 #include "DrawArgument.h"
 
+#ifdef USE_NX
 #include <nlnx/bitmap.hpp>
+#endif
 
 namespace ms
 {

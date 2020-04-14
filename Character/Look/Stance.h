@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Template/EnumMap.h"
+#include "../../Template/EnumMap.h"
 
 #include <string>
 

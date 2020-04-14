@@ -22,7 +22,9 @@
 #include "../Components/MapleButton.h"
 #include "../Components/TwoSpriteButton.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

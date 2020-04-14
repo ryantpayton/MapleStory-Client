@@ -19,7 +19,7 @@
 
 namespace ms
 {
-	// Error codes to be checked after initialization.
+	// Error codes to be checked after initialization
 	class Error
 	{
 	public:
@@ -28,6 +28,7 @@ namespace ms
 			NONE,
 			CONNECTION,
 			NLNX,
+			WZ,
 			MISSING_FILE,
 			WRONG_UI_FILE,
 			GLFW,
@@ -77,6 +78,7 @@ namespace ms
 			"",
 			"Cannot connect to server.",
 			"Could not initialize NLNX.",
+			"Could not initialize WZ.",
 			"Missing a game file: ",
 			"UI.nx has wrong version.",
 			"Could not initialize GLFW.",

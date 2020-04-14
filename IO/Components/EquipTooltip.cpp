@@ -20,7 +20,9 @@
 #include "../../Data/WeaponData.h"
 #include "../../Gameplay/Stage.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

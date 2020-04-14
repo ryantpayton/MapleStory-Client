@@ -19,37 +19,34 @@
 
 #include "MapObjects.h"
 
-#include "../Movement.h"
 #include "../Spawn.h"
 
-#include "../Character/OtherChar.h"
-
-#include <queue>
+#include "../../Character/OtherChar.h"
 
 namespace ms
 {
-	// A collection of remote controlled characters on a map.
+	// A collection of remote controlled characters on a map
 	class MapChars
 	{
 	public:
-		// Draw all characters on a layer.
+		// Draw all characters on a layer
 		void draw(Layer::Id layer, double viewx, double viewy, float alpha) const;
-		// Update all characters.
+		// Update all characters
 		void update(const Physics& physics);
 
 		// Spawn a new character, if it has not been spawned yet.
 		void spawn(CharSpawn&& spawn);
-		// Remove a character.
+		// Remove a character
 		void remove(int32_t cid);
-		// Remove all characters.
+		// Remove all characters
 		void clear();
 
-		// Returns a reference to the MapObjects object.
+		// Returns a reference to the MapObjects` object
 		MapObjects* get_chars();
 
-		// Update a characters movement.
+		// Update a character's movement
 		void send_movement(int32_t cid, const std::vector<Movement>& movements);
-		// Update a characters look.
+		// Update a character's look
 		void update_look(int32_t cid, const LookEntry& look);
 
 		Optional<OtherChar> get_char(int32_t cid);

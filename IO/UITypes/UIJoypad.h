@@ -19,8 +19,9 @@
 
 #include "../UIDragElement.h"
 
-#include "../Template/BoolPair.h"
 #include "../Components/Textfield.h"
+
+#include "../../Template/BoolPair.h"
 
 namespace ms
 {

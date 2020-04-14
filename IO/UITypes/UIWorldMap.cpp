@@ -19,12 +19,13 @@
 
 #include "../UI.h"
 
-#include "../Gameplay/Stage.h"
-#include "../Util/Misc.h"
+#include "../../Gameplay/Stage.h"
 
-#include "../IO/Components/MapleButton.h"
+#include "../../IO/Components/MapleButton.h"
 
+#ifdef USE_NX
 #include <nlnx/nx.hpp>
+#endif
 
 namespace ms
 {

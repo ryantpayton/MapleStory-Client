@@ -19,11 +19,9 @@
 
 #include "Button.h"
 
-#include "../Graphics/Animation.h"
-
 namespace ms
 {
-	// A standard maplestory-button with 4 states and a texture for each state.
+	// A standard MapleStory button with 4 states and a texture for each state
 	class MapleButton : public Button
 	{
 	public:
