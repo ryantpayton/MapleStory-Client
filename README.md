@@ -27,6 +27,8 @@ The default settings can be configured by editing the **Configuration.h** file. 
 4. ```cmake ..```
 5. ```make -j$CORES``` where $CORES is your number of CPU cores
 
+This will always be the option with the most performance, but if you are using Mac / are having issues, try out the [Vagrant](vagrant-setup) or [Docker](#docker-setup---web-vnc) setups. 
+
 ## Required Files
 
 *Always check **NxFiles.h** for an updated list of required nx files*
@@ -66,6 +68,28 @@ If you experience any kind of in-game glitches, UI rendering issues, or anything
 Note: These steps are not applicable to linux
 
 ---
+
+## Vagrant setup
+
+A [Vagrantfile](./Vagrantfile) has been included in the repo to simulate a complete HeaventClient setup on a linux ubuntu/bionic virtual machine (using virtualbox provider).
+
+One can refer to the shell scripts written within the Vagrantfile to get an insight of the complete environmental setup and dependencies required to build and run the HeavenClient binary.
+
+### Building/Running client via Vagrant
+
+All ssh commands must be run on a shell within context of the HeavenClient directory (this project)
+
+1. ```vagrant up```
+2. Login to the desktop environment via the virtualbox window with default vagrant credentials (vagrant:vagrant) - once the bootstrap script has completed execution
+   1. This is required to start up desktop environment (xfce)
+3. ```vagrant ssh -- -R 8484:localhost:8484 -R 7575:localhost:7575 -R 7576:localhost:7576 -R 7577:localhost:7577```
+   1. We SSH into the VM with reverse port-forwarding; this allows us to run/dev our [server](https://github.com/ronancpl/HeavenMS) on the host machine while allowing the client to connect to it and run on the VM
+4. ```cd /home/vagrant/Desktop/HeavenClient/build/```
+5. ```./HeavenClient```
+
+Note: To run the HeavenClient from the build directory; all the [relevant **.nx** files](./Util/NxFiles.h) must be available within the linux build directory
+
+Tip: Since the binary is built on the VM with a mounted/shared volume; the binary is also available/usable by a linux host
 
 ## Docker Setup - web-vnc
 
