@@ -40,15 +40,15 @@ namespace ms
 			"Item.nx",
 			"Map.nx",
 			"MapPretty.nx",	// From v167,
-			"MapLatest.nx",	// From latest,
-			"Map001.nx",	// From latest,
+			"MapLatest.nx",	// From latest
+			"Map001.nx",	// From latest
 			"Mob.nx",
 			"Morph.nx",
 			"Npc.nx",
 			"Quest.nx",
 			"Reactor.nx",
 			"Skill.nx",
-			"Sound.nx",
+			"Sound.nx",		// From latest
 			"String.nx",
 			"TamingMob.nx",
 			"UI.nx"			// From latest

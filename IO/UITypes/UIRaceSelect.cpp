@@ -53,11 +53,9 @@ namespace ms
 		pos = Point<int16_t>(std::abs(make_pos.x()), std::abs(make_pos.y()));
 		posZero = Point<int16_t>(std::abs(make_posZero.x()), std::abs(make_posZero.y()));
 
-		uint8_t selected_list = 1;
-
-		order = RaceSelect["order"][selected_list];
-		hotlist = RaceSelect["hotList"][selected_list];
-		newlist = RaceSelect["newList"][selected_list];
+		order = RaceSelect["order"][SELECTED_LIST];
+		hotlist = RaceSelect["hotList"][SELECTED_LIST];
+		newlist = RaceSelect["newList"][SELECTED_LIST];
 		bgm = RaceSelect["bgm"];
 
 		hotlabel = RaceSelect["hotLabel"];
@@ -71,38 +69,28 @@ namespace ms
 		class_index[2] = order[2];
 		class_index[3] = order[3];
 		class_index[4] = order[4];
+
 		mouseover[0] = true;
 		mouseover[1] = false;
 		mouseover[2] = false;
 		mouseover[3] = false;
 		mouseover[4] = false;
 
-		class_isdisabled[Classes::RESISTANCE] = true;
+		nl::node button = RaceSelect["button"];
+		nl::node buttonDisabled = RaceSelect["buttonDisabled"];
+
+		class_count = button.size();
+		class_isdisabled = std::vector<bool>(class_count, true);
+		class_disabled = std::vector<BoolPair<Texture>>(class_count);
+		class_normal = std::vector<BoolPair<Texture>>(class_count);
+		class_background = std::vector<Texture>(class_count);
+		class_details = std::vector<Texture>(class_count);
+		class_title = std::vector<Texture>(class_count);
+		class_map = std::vector<uint16_t>(class_count);
+
 		class_isdisabled[Classes::EXPLORER] = false;
 		class_isdisabled[Classes::CYGNUSKNIGHTS] = false;
 		class_isdisabled[Classes::ARAN] = false;
-		class_isdisabled[Classes::EVAN] = true;
-		class_isdisabled[Classes::MERCEDES] = true;
-		class_isdisabled[Classes::DEMON] = true;
-		class_isdisabled[Classes::PHANTOM] = true;
-		class_isdisabled[Classes::DUALBLADE] = true;
-		class_isdisabled[Classes::MIHILE] = true;
-		class_isdisabled[Classes::LUMINOUS] = true;
-		class_isdisabled[Classes::KAISER] = true;
-		class_isdisabled[Classes::ANGELICBUSTER] = true;
-		class_isdisabled[Classes::CANNONEER] = true;
-		class_isdisabled[Classes::XENON] = true;
-		class_isdisabled[Classes::ZERO] = true;
-		class_isdisabled[Classes::SHADE] = true;
-		class_isdisabled[Classes::JETT] = true;
-		class_isdisabled[Classes::HAYATO] = true;
-		class_isdisabled[Classes::KANNA] = true;
-		class_isdisabled[Classes::CHASE] = true;
-		class_isdisabled[Classes::PINKBEAN] = true;
-		class_isdisabled[Classes::KINESIS] = true;
-		class_isdisabled[Classes::CADENA] = true;
-		class_isdisabled[Classes::ILLIUM] = true;
-		class_isdisabled[Classes::ARK] = true;
 
 		sprites.emplace_back(Common["frame"], Point<int16_t>(400, 300));
 
@@ -112,17 +100,26 @@ namespace ms
 		class_details_background = RaceSelect["Back1"]["0"]["0"];
 		class_details_backgroundZero = RaceSelect["Back1"]["1"]["0"];
 
-		for (size_t i = 0; i < CLASS_COUNT; i++)
+		uint16_t node_index = 0;
+
+		for (nl::node node : button)
+			class_map[node_index++] = std::stoi(node.name());
+
+		std::sort(class_map.begin(), class_map.begin() + class_count);
+
+		for (uint16_t i = 0; i < class_count; i++)
 		{
-			class_normal[i][false] = RaceSelect["button"][i]["normal"]["0"];
-			class_normal[i][true] = RaceSelect["button"][i]["mouseOver"]["0"];
+			uint16_t corrected_index = class_map[i];
 
-			class_disabled[i][false] = RaceSelect["buttonDisabled"][i]["normal"]["0"];
-			class_disabled[i][true] = RaceSelect["buttonDisabled"][i]["mouseOver"]["0"];
+			class_normal[i][false] = button[corrected_index]["normal"]["0"];
+			class_normal[i][true] = button[corrected_index]["mouseOver"]["0"];
 
-			class_background[i] = RaceSelect["Back0"][i]["0"];
-			class_details[i] = RaceSelect["Back2"][i]["0"];
-			class_title[i] = RaceSelect["Back3"][i]["0"];
+			class_disabled[i][false] = buttonDisabled[corrected_index]["normal"]["0"];
+			class_disabled[i][true] = buttonDisabled[corrected_index]["mouseOver"]["0"];
+
+			class_background[i] = RaceSelect["Back0"][corrected_index]["0"];
+			class_details[i] = RaceSelect["Back2"][corrected_index]["0"];
+			class_title[i] = RaceSelect["Back3"][corrected_index]["0"];
 		}
 
 		buttons[Buttons::BACK] = std::make_unique<MapleButton>(Common["BtStart"], Point<int16_t>(0, 515));
@@ -144,6 +141,8 @@ namespace ms
 
 	void UIRaceSelect::draw(float inter) const
 	{
+		uint16_t corrected_index = get_corrected_class_index(selected_class);
+
 		if (selected_class == Classes::ZERO)
 			backZero.draw(position);
 		else
@@ -160,11 +159,11 @@ namespace ms
 			else
 				class_details_background.draw(position);
 
-			class_background[selected_class].draw(position);
+			class_background[corrected_index].draw(position);
 		}
 		else
 		{
-			class_background[selected_class].draw(position);
+			class_background[corrected_index].draw(position);
 
 			if (selected_class == Classes::ZERO)
 				class_details_backgroundZero.draw(position);
@@ -172,10 +171,10 @@ namespace ms
 				class_details_background.draw(position);
 		}
 
-		class_details[selected_class].draw(position);
-		class_title[selected_class].draw(position);
+		class_details[corrected_index].draw(position);
+		class_title[corrected_index].draw(position);
 
-		for each (auto node in hotlist)
+		for (nl::node node : hotlist)
 		{
 			if (node.get_integer() == selected_class)
 			{
@@ -188,7 +187,7 @@ namespace ms
 			}
 		}
 
-		for each (auto node in newlist)
+		for (nl::node node : newlist)
 		{
 			if (node.get_integer() == selected_class)
 			{
@@ -197,13 +196,15 @@ namespace ms
 			}
 		}
 
-		for (size_t i = 0; i < INDEX_COUNT; i++)
+		for (uint16_t i = 0; i < INDEX_COUNT; i++)
 		{
 			Point<int16_t> button_pos = get_class_pos(i);
 
-			class_isdisabled[class_index[i]] ? class_disabled[class_index[i]][mouseover[i]].draw(position + button_pos) : class_normal[class_index[i]][mouseover[i]].draw(position + button_pos);
+			uint16_t cur_class = get_corrected_class_index(class_index[i]);
+			auto found_class = class_isdisabled[cur_class] ? class_disabled : class_normal;
+			found_class[cur_class][mouseover[i]].draw(position + button_pos);
 
-			for each (auto node in hotlist)
+			for (nl::node node : hotlist)
 			{
 				if (node.get_integer() == class_index[i])
 				{
@@ -212,9 +213,9 @@ namespace ms
 				}
 			}
 
-			for each (auto node in newlist)
+			for (nl::node node : newlist)
 			{
-				if (node.get_integer() == selected_class)
+				if (node.get_integer() == class_index[i])
 				{
 					newbtn.draw(position + button_pos, inter);
 					break;
@@ -243,40 +244,6 @@ namespace ms
 			buttons[Buttons::MAKE]->set_position(position + pos);
 
 		back_ani.update();
-
-		for each (auto node in bgm)
-		{
-			uint8_t name = std::stoi(node.name());
-
-			if (name == selected_class)
-			{
-				std::string found_bgm = node["bgm"];
-				std::size_t found_img = found_bgm.find(".img");
-
-				if (found_img == std::string::npos)
-				{
-					std::size_t found_slash = found_bgm.find('/');
-
-					if (found_slash != std::string::npos)
-					{
-						found_bgm.insert(found_slash, ".img");
-
-						Music(found_bgm).play();
-					}
-				}
-				else
-				{
-					Music(found_bgm).play();
-				}
-
-				break;
-			}
-			else
-			{
-				Music("BgmUI.img/Title").play();
-				break;
-			}
-		}
 	}
 
 	Cursor::State UIRaceSelect::send_cursor(bool clicked, Point<int16_t> cursorpos)
@@ -355,7 +322,7 @@ namespace ms
 	{
 		nl::node ForbiddenName = nl::nx::etc["ForbiddenName.img"];
 
-		for each (std::string forbiddenName in ForbiddenName)
+		for (std::string forbiddenName : ForbiddenName)
 		{
 			std::string lName = to_lower(name);
 			std::string fName = to_lower(forbiddenName);
@@ -396,9 +363,11 @@ namespace ms
 		}
 		else if (buttonid == Buttons::MAKE)
 		{
-			auto okhandler = [&]()
+			uint16_t corrected_index = get_corrected_class_index(selected_class);
+
+			std::function<void()> okhandler = [&, corrected_index]()
 			{
-				if (!class_isdisabled[selected_class])
+				if (!class_isdisabled[corrected_index])
 				{
 					Sound(Sound::Name::SCROLLUP).play();
 
@@ -413,33 +382,23 @@ namespace ms
 				}
 			};
 
-			UI::get().emplace<UIClassConfirm>(selected_class, class_isdisabled[selected_class], okhandler);
+			UI::get().emplace<UIClassConfirm>(selected_class, class_isdisabled[corrected_index], okhandler);
 
 			return Button::State::NORMAL;
 		}
 		else if (buttonid == Buttons::LEFT)
 		{
-			uint8_t new_index = selected_index - 1;
+			uint16_t new_index = selected_index - 1;
 
-			int size = sizeof(class_index) / sizeof(class_index[0]);
-
-			int selected = class_index[selected_index - index_shift];
-			auto selected_itr = std::find(class_index, class_index + size, selected);
-
-			if (selected_itr != std::end(class_index))
+			if (selected_index - index_shift == 0)
 			{
-				auto button_index = std::distance(class_index, selected_itr);
+				index_shift--;
 
-				if (button_index == 0)
-				{
-					index_shift--;
-
-					class_index[0] = order[new_index + 4 - Buttons::CLASS0];
-					class_index[1] = order[new_index + 5 - Buttons::CLASS0];
-					class_index[2] = order[new_index + 6 - Buttons::CLASS0];
-					class_index[3] = order[new_index + 7 - Buttons::CLASS0];
-					class_index[4] = order[new_index + 8 - Buttons::CLASS0];
-				}
+				class_index[0] = order[new_index + 4 - Buttons::CLASS0];
+				class_index[1] = order[new_index + 5 - Buttons::CLASS0];
+				class_index[2] = order[new_index + 6 - Buttons::CLASS0];
+				class_index[3] = order[new_index + 7 - Buttons::CLASS0];
+				class_index[4] = order[new_index + 8 - Buttons::CLASS0];
 			}
 
 			select_class(new_index);
@@ -448,27 +407,18 @@ namespace ms
 		}
 		else if (buttonid == Buttons::RIGHT)
 		{
-			uint8_t new_index = selected_index + 1;
+			uint16_t new_index = selected_index + 1;
+			uint16_t selected = class_index[selected_index - index_shift];
 
-			int size = sizeof(class_index) / sizeof(class_index[0]);
-
-			int selected = class_index[selected_index - index_shift];
-			auto selected_itr = std::find(class_index, class_index + size, selected);
-
-			if (selected_itr != std::end(class_index))
+			if (selected == class_index[4])
 			{
-				auto button_index = std::distance(class_index, selected_itr);
+				index_shift++;
 
-				if (button_index == 4)
-				{
-					index_shift++;
-
-					class_index[0] = order[new_index + 0 - Buttons::CLASS0];
-					class_index[1] = order[new_index + 1 - Buttons::CLASS0];
-					class_index[2] = order[new_index + 2 - Buttons::CLASS0];
-					class_index[3] = order[new_index + 3 - Buttons::CLASS0];
-					class_index[4] = order[new_index + 4 - Buttons::CLASS0];
-				}
+				class_index[0] = order[new_index + 0 - Buttons::CLASS0];
+				class_index[1] = order[new_index + 1 - Buttons::CLASS0];
+				class_index[2] = order[new_index + 2 - Buttons::CLASS0];
+				class_index[3] = order[new_index + 3 - Buttons::CLASS0];
+				class_index[4] = order[new_index + 4 - Buttons::CLASS0];
 			}
 
 			select_class(new_index);
@@ -477,7 +427,7 @@ namespace ms
 		}
 		else if (buttonid >= Buttons::CLASS0)
 		{
-			auto index = buttonid - Buttons::CLASS0 + index_shift;
+			uint16_t index = buttonid - Buttons::CLASS0 + index_shift;
 
 			select_class(index);
 
@@ -485,41 +435,50 @@ namespace ms
 		}
 		else
 		{
-			return Button::State::NORMAL;
+			return Button::State::DISABLED;
 		}
 	}
 
-	void UIRaceSelect::select_class(uint8_t index)
+	void UIRaceSelect::select_class(uint16_t index)
 	{
-		uint8_t previous_index = selected_index;
+		uint16_t previous_index = selected_index;
 		selected_index = index;
 
 		if (previous_index != selected_index)
 		{
 			Sound(Sound::Name::RACESELECT).play();
 
-			int size = sizeof(class_index) / sizeof(class_index[0]);
+			uint16_t previous = previous_index - index_shift;
 
-			int previous = class_index[previous_index - index_shift];
-			auto previous_itr = std::find(class_index, class_index + size, previous);
+			mouseover[previous] = false;
+			buttons[previous + Buttons::CLASS0]->set_state(Button::State::NORMAL);
 
-			if (previous_itr != std::end(class_index))
+			uint16_t selected = selected_index - index_shift;
+
+			selected_class = class_index[selected];
+			mouseover[selected] = true;
+
+			if (selected_class == Classes::KINESIS)
 			{
-				auto button_index = std::distance(class_index, previous_itr);
+				nl::node node = bgm[selected_class];
+				std::string found_bgm = node["bgm"];
+				std::size_t found_img = found_bgm.find(".img");
 
-				mouseover[previous_index - index_shift] = false;
-				buttons[button_index + Buttons::CLASS0]->set_state(Button::State::NORMAL);
+				if (found_img == std::string::npos)
+				{
+					std::size_t found_slash = found_bgm.find('/');
+
+					if (found_slash != std::string::npos)
+					{
+						found_bgm.insert(found_slash, ".img");
+
+						Music(found_bgm).play();
+					}
+				}
 			}
-
-			int selected = class_index[selected_index - index_shift];
-			auto selected_itr = std::find(class_index, class_index + size, selected);
-
-			if (selected_itr != std::end(class_index))
+			else if (class_index[previous] == Classes::KINESIS)
 			{
-				auto button_index = std::distance(class_index, selected_itr);
-
-				selected_class = class_index[button_index];
-				mouseover[selected_index - index_shift] = true;
+				Music("BgmUI.img/Title").play();
 			}
 		}
 		else
@@ -532,7 +491,7 @@ namespace ms
 		else
 			buttons[Buttons::LEFT]->set_state(Button::State::DISABLED);
 
-		if (selected_index < CLASS_COUNT - 2)
+		if (selected_index < order.size() - 1)
 			buttons[Buttons::RIGHT]->set_state(Button::State::NORMAL);
 		else
 			buttons[Buttons::RIGHT]->set_state(Button::State::DISABLED);
@@ -560,5 +519,16 @@ namespace ms
 		std::transform(value.begin(), value.end(), value.begin(), ::tolower);
 
 		return value;
+	}
+
+	uint16_t UIRaceSelect::get_corrected_class_index(uint16_t index) const
+	{
+		for (uint16_t i = 0; i < class_count; i++)
+			if (index == class_map[i])
+				return i;
+
+		std::cout << "Failed to find corrected class index" << std::endl;
+
+		return index;
 	}
 }

@@ -48,7 +48,7 @@ namespace ms
 
 					if (layer_iter == layers_by_name.end())
 					{
-						std::cout << "Unknown Hair::Layer name: [" << layername << "]" << std::endl;
+						std::cout << "Unknown Hair::Layer name: [" << layername << "]\tLocation: [" << hairnode.name() << "][" << stancename << "][" << frame << "]" << std::endl;
 						continue;
 					}
 
@@ -99,11 +99,13 @@ namespace ms
 
 	const std::unordered_map<std::string, Hair::Layer> Hair::layers_by_name =
 	{
-		{ "hair",				Hair::Layer::DEFAULT	},
-		{ "hairBelowBody",		Hair::Layer::BELOWBODY	},
-		{ "hairOverHead",		Hair::Layer::OVERHEAD	},
-		{ "hairShade",			Hair::Layer::SHADE		},
-		{ "backHair",			Hair::Layer::BACK		},
-		{ "backHairBelowCap",	Hair::Layer::BELOWCAP	}
+		{ "hair",					Hair::Layer::DEFAULT		},
+		{ "hairBelowBody",			Hair::Layer::BELOWBODY		},
+		{ "hairOverHead",			Hair::Layer::OVERHEAD		},
+		{ "hairShade",				Hair::Layer::SHADE			},
+		{ "backHair",				Hair::Layer::BACK			},
+		{ "backHairBelowCap",		Hair::Layer::BELOWCAP		},
+		{ "backHairBelowCapNarrow",	Hair::Layer::BELOWCAPNARROW },
+		{ "backHairBelowCapWide",	Hair::Layer::BELOWCAPWIDE	}
 	};
 }

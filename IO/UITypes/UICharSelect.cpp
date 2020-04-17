@@ -427,67 +427,7 @@ namespace ms
 			}
 			else
 			{
-				uint8_t selected_index = selected_character;
-				uint8_t index_total = std::min(characters_count, static_cast<int8_t>((selected_page + 1) * PAGESIZE));
-
-				uint8_t COLUMNS = 4;
-				uint8_t columns = std::min(index_total, COLUMNS);
-
-				uint8_t rows = std::floor((index_total - 1) / COLUMNS) + 1;
-
-				div_t div = std::div(selected_index, columns);
-				int32_t current_col = div.rem;
-				//int32_t current_row = div.quot;
-
-				if (keycode == KeyAction::Id::UP)
-				{
-					uint8_t next_index = (selected_index - COLUMNS < 0 ? (selected_index - COLUMNS) + rows * COLUMNS : selected_index - COLUMNS);
-
-					if (next_index == selected_character)
-						return;
-
-					if (next_index >= index_total)
-						button_pressed(next_index - COLUMNS + Buttons::CHARACTER_SLOT0);
-					else
-						button_pressed(next_index + Buttons::CHARACTER_SLOT0);
-				}
-				else if (keycode == KeyAction::Id::DOWN)
-				{
-					uint8_t next_index = (selected_index + COLUMNS >= index_total ? current_col : selected_index + COLUMNS);
-
-					if (next_index == selected_character)
-						return;
-
-					if (next_index > index_total)
-						button_pressed(next_index + COLUMNS + Buttons::CHARACTER_SLOT0);
-					else
-						button_pressed(next_index + Buttons::CHARACTER_SLOT0);
-				}
-				else if (keycode == KeyAction::Id::LEFT)
-				{
-					if (selected_index != 0)
-					{
-						selected_index--;
-
-						if (selected_index >= (selected_page + 1) * PAGESIZE - PAGESIZE)
-							button_pressed(selected_index + Buttons::CHARACTER_SLOT0);
-						else
-							button_pressed(Buttons::PAGELEFT);
-					}
-				}
-				else if (keycode == KeyAction::Id::RIGHT)
-				{
-					if (selected_index != characters_count - 1)
-					{
-						selected_index++;
-
-						if (selected_index < index_total)
-							button_pressed(selected_index + Buttons::CHARACTER_SLOT0);
-						else
-							button_pressed(Buttons::PAGERIGHT);
-					}
-				}
-				else if (keycode == KeyAction::Id::TAB)
+				if (keycode == KeyAction::Id::TAB)
 				{
 					uint8_t prev_tab = tab_index;
 
@@ -525,6 +465,73 @@ namespace ms
 
 						if (state != Button::State::DISABLED)
 							btn->set_state(Button::State::MOUSEOVER);
+					}
+				}
+				else
+				{
+					uint8_t selected_index = selected_character;
+					uint8_t index_total = std::min(characters_count, static_cast<int8_t>((selected_page + 1) * PAGESIZE));
+
+					uint8_t COLUMNS = 4;
+					uint8_t columns = std::min(index_total, COLUMNS);
+
+					uint8_t rows = std::floor((index_total - 1) / COLUMNS) + 1;
+
+					int32_t current_col = 0;
+
+					if (columns > 0)
+					{
+						div_t div = std::div(selected_index, columns);
+						current_col = div.rem;
+					}
+
+					if (keycode == KeyAction::Id::UP)
+					{
+						uint8_t next_index = (selected_index - COLUMNS < 0 ? (selected_index - COLUMNS) + rows * COLUMNS : selected_index - COLUMNS);
+
+						if (next_index == selected_character)
+							return;
+
+						if (next_index >= index_total)
+							button_pressed(next_index - COLUMNS + Buttons::CHARACTER_SLOT0);
+						else
+							button_pressed(next_index + Buttons::CHARACTER_SLOT0);
+					}
+					else if (keycode == KeyAction::Id::DOWN)
+					{
+						uint8_t next_index = (selected_index + COLUMNS >= index_total ? current_col : selected_index + COLUMNS);
+
+						if (next_index == selected_character)
+							return;
+
+						if (next_index > index_total)
+							button_pressed(next_index + COLUMNS + Buttons::CHARACTER_SLOT0);
+						else
+							button_pressed(next_index + Buttons::CHARACTER_SLOT0);
+					}
+					else if (keycode == KeyAction::Id::LEFT)
+					{
+						if (selected_index != 0)
+						{
+							selected_index--;
+
+							if (selected_index >= (selected_page + 1) * PAGESIZE - PAGESIZE)
+								button_pressed(selected_index + Buttons::CHARACTER_SLOT0);
+							else
+								button_pressed(Buttons::PAGELEFT);
+						}
+					}
+					else if (keycode == KeyAction::Id::RIGHT)
+					{
+						if (selected_index != characters_count - 1)
+						{
+							selected_index++;
+
+							if (selected_index < index_total)
+								button_pressed(selected_index + Buttons::CHARACTER_SLOT0);
+							else
+								button_pressed(Buttons::PAGERIGHT);
+						}
 					}
 				}
 			}
@@ -613,173 +620,194 @@ namespace ms
 	{
 		switch (buttonid)
 		{
-		case Buttons::CHARACTER_SELECT:
-		{
-			Setting<DefaultCharacter>::get().save(selected_character);
-			int32_t id = characters[selected_character].id;
-
-			switch (require_pic)
+			case Buttons::CHARACTER_SELECT:
 			{
-			case 0:
-			{
-				std::function<void()> onok = [&]()
+				if (characters.size() > 0)
 				{
-					request_pic();
-				};
+					Setting<DefaultCharacter>::get().save(selected_character);
+					int32_t id = characters[selected_character].id;
 
-				UI::get().emplace<UILoginNotice>(UILoginNotice::Message::PIC_REQ, onok);
-			}
-			break;
-			case 1:
-			{
-				std::function<void(const std::string&)> onok = [id](const std::string& pic)
-				{
-					SelectCharPicPacket(pic, id).dispatch();
-				};
-
-				UI::get().emplace<UISoftKey>(onok);
-			}
-			break;
-			case 2:
-				SelectCharPacket(id).dispatch();
-				break;
-			}
-		}
-		break;
-		case Buttons::CHARACTER_NEW:
-			Sound(Sound::Name::SCROLLUP).play();
-
-			deactivate();
-
-			tab_index = 0;
-			tab_active = false;
-			tab_move = false;
-			tab_move_pos = 0;
-
-			UI::get().emplace<UIRaceSelect>();
-			break;
-		case Buttons::CHARACTER_DELETE:
-		{
-			int32_t id = characters[selected_character].id;
-
-			switch (require_pic)
-			{
-			case 0:
-			{
-				std::function<void()> onok = [&]()
-				{
-					chatslotlabel.change_text(get_slot_text());
-				};
-
-				UI::get().emplace<UILoginNotice>(UILoginNotice::Message::CHAR_DEL_FAIL_NO_PIC, onok);
-			}
-			break;
-			case 1:
-			{
-				std::function<void()> oncancel = [&]()
-				{
-					chatslotlabel.change_text(get_slot_text());
-				};
-
-				std::function<void()> onok = [&, id, oncancel]()
-				{
-					std::function<void(const std::string&)> onok = [&, id](const std::string& pic)
+					switch (require_pic)
 					{
-						DeleteCharPicPacket(pic, id).dispatch();
-						chatslotlabel.change_text(get_slot_text());
-					};
+						case 0:
+						{
+							std::function<void()> onok = [&]()
+							{
+								request_pic();
+							};
 
-					UI::get().emplace<UISoftKey>(onok, oncancel);
-				};
+							UI::get().emplace<UILoginNotice>(UILoginNotice::Message::PIC_REQ, onok);
+							break;
+						}
+						case 1:
+						{
+							std::function<void(const std::string&)> onok = [id](const std::string& pic)
+							{
+								SelectCharPicPacket(pic, id).dispatch();
+							};
 
-				const StatsEntry& character_stats = characters[selected_character].stats;
-				uint16_t cjob = character_stats.stats[MapleStat::Id::JOB];
-
-				if (cjob < 1000)
-					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::DELETE_CONFIRMATION, onok, oncancel);
-				else
-					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::CASH_ITEMS_CONFIRM_DELETION, onok);
-			}
-			break;
-			case 2:
-				DeleteCharPacket(id).dispatch();
-				chatslotlabel.change_text(get_slot_text());
-				break;
-			}
-		}
-		break;
-		case Buttons::PAGELEFT:
-		{
-			uint8_t previous_page = selected_page;
-
-			if (selected_page > 0)
-				selected_page--;
-			else if (characters_count > PAGESIZE)
-				selected_page = page_count - 1;
-
-			if (previous_page != selected_page)
-				update_buttons();
-
-			select_last_slot();
-		}
-		break;
-		case Buttons::PAGERIGHT:
-		{
-			uint8_t previous_page = selected_page;
-
-			if (selected_page < page_count - 1)
-				selected_page++;
-			else
-				selected_page = 0;
-
-			if (previous_page != selected_page)
-			{
-				update_buttons();
-
-				button_pressed(Buttons::CHARACTER_SLOT0);
-			}
-		}
-		break;
-		case Buttons::CHANGEPIC:
-			break;
-		case Buttons::RESETPIC:
-		{
-			std::string url = Configuration::get().get_resetpic();
-
-			ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
-		}
-		break;
-		case Buttons::EDITCHARLIST:
-			break;
-		case Buttons::BACK:
-			deactivate();
-
-			Sound(Sound::Name::SCROLLUP).play();
-
-			if (auto worldselect = UI::get().get_element<UIWorldSelect>())
-				worldselect->makeactive();
-
-			break;
-		default:
-			if (buttonid >= Buttons::CHARACTER_SLOT0)
-			{
-				uint8_t previous_character = selected_character;
-				selected_character = buttonid - Buttons::CHARACTER_SLOT0 + selected_page * PAGESIZE;
-
-				if (previous_character != selected_character)
-				{
-					if (previous_character < characters_count)
-					{
-						charlooks[previous_character].set_stance(Stance::Id::STAND1);
-						nametags[previous_character].set_selected(false);
+							UI::get().emplace<UISoftKey>(onok);
+							break;
+						}
+						case 2:
+						{
+							SelectCharPacket(id).dispatch();
+							break;
+						}
 					}
-
-					if (selected_character < characters_count)
-						update_selected_character();
 				}
-			}
 
-			break;
+				break;
+			}
+			case Buttons::CHARACTER_NEW:
+			{
+				Sound(Sound::Name::SCROLLUP).play();
+
+				deactivate();
+
+				tab_index = 0;
+				tab_active = false;
+				tab_move = false;
+				tab_move_pos = 0;
+
+				UI::get().emplace<UIRaceSelect>();
+				break;
+			}
+			case Buttons::CHARACTER_DELETE:
+			{
+				int32_t id = characters[selected_character].id;
+
+				switch (require_pic)
+				{
+					case 0:
+					{
+						std::function<void()> onok = [&]()
+						{
+							chatslotlabel.change_text(get_slot_text());
+						};
+
+						UI::get().emplace<UILoginNotice>(UILoginNotice::Message::CHAR_DEL_FAIL_NO_PIC, onok);
+						break;
+					}
+					case 1:
+					{
+						std::function<void()> oncancel = [&]()
+						{
+							chatslotlabel.change_text(get_slot_text());
+						};
+
+						std::function<void()> onok = [&, id, oncancel]()
+						{
+							std::function<void(const std::string&)> onok = [&, id](const std::string& pic)
+							{
+								DeleteCharPicPacket(pic, id).dispatch();
+								chatslotlabel.change_text(get_slot_text());
+							};
+
+							UI::get().emplace<UISoftKey>(onok, oncancel);
+						};
+
+						const StatsEntry& character_stats = characters[selected_character].stats;
+						uint16_t cjob = character_stats.stats[MapleStat::Id::JOB];
+
+						if (cjob < 1000)
+							UI::get().emplace<UILoginNotice>(UILoginNotice::Message::DELETE_CONFIRMATION, onok, oncancel);
+						else
+							UI::get().emplace<UILoginNotice>(UILoginNotice::Message::CASH_ITEMS_CONFIRM_DELETION, onok);
+
+						break;
+					}
+					case 2:
+					{
+						DeleteCharPacket(id).dispatch();
+						chatslotlabel.change_text(get_slot_text());
+						break;
+					}
+				}
+
+				break;
+			}
+			case Buttons::PAGELEFT:
+			{
+				uint8_t previous_page = selected_page;
+
+				if (selected_page > 0)
+					selected_page--;
+				else if (characters_count > PAGESIZE)
+					selected_page = page_count - 1;
+
+				if (previous_page != selected_page)
+					update_buttons();
+
+				select_last_slot();
+				break;
+			}
+			case Buttons::PAGERIGHT:
+			{
+				uint8_t previous_page = selected_page;
+
+				if (selected_page < page_count - 1)
+					selected_page++;
+				else
+					selected_page = 0;
+
+				if (previous_page != selected_page)
+				{
+					update_buttons();
+
+					button_pressed(Buttons::CHARACTER_SLOT0);
+				}
+
+				break;
+			}
+			case Buttons::CHANGEPIC:
+			{
+				break;
+			}
+			case Buttons::RESETPIC:
+			{
+				std::string url = Configuration::get().get_resetpic();
+
+				ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+				break;
+			}
+			case Buttons::EDITCHARLIST:
+			{
+				break;
+			}
+			case Buttons::BACK:
+			{
+				deactivate();
+
+				Sound(Sound::Name::SCROLLUP).play();
+
+				if (auto worldselect = UI::get().get_element<UIWorldSelect>())
+					worldselect->makeactive();
+
+				break;
+			}
+			default:
+			{
+				if (buttonid >= Buttons::CHARACTER_SLOT0)
+				{
+					uint8_t previous_character = selected_character;
+					selected_character = buttonid - Buttons::CHARACTER_SLOT0 + selected_page * PAGESIZE;
+
+					if (previous_character != selected_character)
+					{
+						if (previous_character < characters_count)
+						{
+							charlooks[previous_character].set_stance(Stance::Id::STAND1);
+							nametags[previous_character].set_selected(false);
+						}
+
+						if (selected_character < characters_count)
+							update_selected_character();
+					}
+				}
+
+				break;
+			}
 		}
 
 		return Button::State::NORMAL;
@@ -804,7 +832,7 @@ namespace ms
 
 		bool character_found = false;
 
-		for (uint8_t i = PAGESIZE - 1; i >= 0; i--)
+		for (int8_t i = PAGESIZE - 1; i >= 0; i--)
 		{
 			uint8_t index = i + selected_page * PAGESIZE;
 
@@ -837,7 +865,7 @@ namespace ms
 
 	void UICharSelect::select_last_slot()
 	{
-		for (uint8_t i = PAGESIZE - 1; i >= 0; i--)
+		for (int8_t i = PAGESIZE - 1; i >= 0; i--)
 		{
 			uint8_t index = i + selected_page * PAGESIZE;
 
@@ -879,20 +907,20 @@ namespace ms
 	{
 		switch (index)
 		{
-		case InfoLabel::JOB:
-			return Point<int16_t>(66, -74);
-		case InfoLabel::STR:
-			return Point<int16_t>(-6, -50);
-		case InfoLabel::DEX:
-			return Point<int16_t>(-6, -27);
-		case InfoLabel::INT:
-			return Point<int16_t>(65, -50);
-		case InfoLabel::LUK:
-			return Point<int16_t>(65, -27);
-		case InfoLabel::NUM_LABELS:
-			break;
-		default:
-			break;
+			case InfoLabel::JOB:
+				return Point<int16_t>(66, -74);
+			case InfoLabel::STR:
+				return Point<int16_t>(-6, -50);
+			case InfoLabel::DEX:
+				return Point<int16_t>(-6, -27);
+			case InfoLabel::INT:
+				return Point<int16_t>(65, -50);
+			case InfoLabel::LUK:
+				return Point<int16_t>(65, -27);
+			case InfoLabel::NUM_LABELS:
+				break;
+			default:
+				break;
 		}
 
 		return Point<int16_t>();
@@ -902,20 +930,20 @@ namespace ms
 	{
 		switch (index)
 		{
-		case InfoLabel::JOB:
-			return Job(character_stats.stats[MapleStat::Id::JOB]).get_name();
-		case InfoLabel::STR:
-			return std::to_string(character_stats.stats[MapleStat::Id::STR]);
-		case InfoLabel::DEX:
-			return std::to_string(character_stats.stats[MapleStat::Id::DEX]);
-		case InfoLabel::INT:
-			return std::to_string(character_stats.stats[MapleStat::Id::INT]);
-		case InfoLabel::LUK:
-			return std::to_string(character_stats.stats[MapleStat::Id::LUK]);
-		case InfoLabel::NUM_LABELS:
-			break;
-		default:
-			break;
+			case InfoLabel::JOB:
+				return Job(character_stats.stats[MapleStat::Id::JOB]).get_name();
+			case InfoLabel::STR:
+				return std::to_string(character_stats.stats[MapleStat::Id::STR]);
+			case InfoLabel::DEX:
+				return std::to_string(character_stats.stats[MapleStat::Id::DEX]);
+			case InfoLabel::INT:
+				return std::to_string(character_stats.stats[MapleStat::Id::INT]);
+			case InfoLabel::LUK:
+				return std::to_string(character_stats.stats[MapleStat::Id::LUK]);
+			case InfoLabel::NUM_LABELS:
+				break;
+			default:
+				break;
 		}
 
 		return "";

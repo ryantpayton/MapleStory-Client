@@ -38,15 +38,15 @@ namespace ms
 
 		switch (message)
 		{
-		case Message::NAME_IN_USE:
-		case Message::ILLEGAL_NAME:
-		case Message::BLOCKED_ID:
-		case Message::INCORRECT_PIC:
-			backgrnd = Notice["backgrnd"]["1"];
-			break;
-		default:
-			backgrnd = Notice["backgrnd"]["0"];
-			break;
+			case Message::NAME_IN_USE:
+			case Message::ILLEGAL_NAME:
+			case Message::BLOCKED_ID:
+			case Message::INCORRECT_PIC:
+				backgrnd = Notice["backgrnd"]["1"];
+				break;
+			default:
+				backgrnd = Notice["backgrnd"]["0"];
+				break;
 		}
 
 		sprites.emplace_back(backgrnd);
@@ -155,98 +155,20 @@ namespace ms
 		return Button::PRESSED;
 	}
 
-	UIClassConfirm::UIClassConfirm(uint8_t selected_class, bool unavailable, std::function<void()> okhandler) : okhandler(okhandler)
+	UIClassConfirm::UIClassConfirm(uint16_t selected_class, bool unavailable, std::function<void()> okhandler) : okhandler(okhandler)
 	{
 		nl::node RaceSelect = nl::nx::ui["Login.img"]["RaceSelect_new"];
 		nl::node type = unavailable ? RaceSelect["deny"] : RaceSelect["confirm"];
 		nl::node backgrnd = type["backgrnd"];
 		nl::node race = type["race"][selected_class];
 
-		Point<int16_t> race_pos = Point<int16_t>(0, 0);
+		int16_t backgrnd_x = Texture(backgrnd).get_dimensions().x();
+		int16_t race_x = Texture(race).get_dimensions().x();
 
-		// TODO: Calculate position based on width of race?
-		switch (selected_class)
-		{
-		case Classes::RESISTANCE:
-			race_pos = Point<int16_t>(57, 10);
-			break;
-		case Classes::EXPLORER:
-			race_pos = Point<int16_t>(71, 10);
-			break;
-		case Classes::CYGNUSKNIGHTS:
-			race_pos = Point<int16_t>(32, 10);
-			break;
-		case Classes::ARAN:
-			race_pos = Point<int16_t>(95, 10);
-			break;
-		case Classes::EVAN:
-			race_pos = Point<int16_t>(93, 10);
-			break;
-		case Classes::MERCEDES:
-			race_pos = Point<int16_t>(65, 10);
-			break;
-		case Classes::DEMON:
-			race_pos = Point<int16_t>(85, 10);
-			break;
-		case Classes::PHANTOM:
-			race_pos = Point<int16_t>(71, 10);
-			break;
-		case Classes::DUALBLADE:
-			race_pos = Point<int16_t>(54, 10);
-			break;
-		case Classes::MIHILE:
-			race_pos = Point<int16_t>(85, 10);
-			break;
-		case Classes::LUMINOUS:
-			race_pos = Point<int16_t>(66, 10);
-			break;
-		case Classes::KAISER:
-			race_pos = Point<int16_t>(87, 10);
-			break;
-		case Classes::ANGELICBUSTER:
-			race_pos = Point<int16_t>(41, 10);
-			break;
-		case Classes::CANNONEER:
-			race_pos = Point<int16_t>(57, 10);
-			break;
-		case Classes::XENON:
-			race_pos = Point<int16_t>(88, 10);
-			break;
-		case Classes::ZERO:
-			break;
-		case Classes::SHADE:
-			race_pos = Point<int16_t>(86, 10);
-			break;
-		case Classes::JETT:
-			race_pos = Point<int16_t>(101, 10);
-			break;
-		case Classes::HAYATO:
-			race_pos = Point<int16_t>(81, 10);
-			break;
-		case Classes::KANNA:
-			race_pos = Point<int16_t>(86, 10);
-			break;
-		case Classes::CHASE:
-		case Classes::PINKBEAN:
-			break;
-		case Classes::KINESIS:
-			race_pos = Point<int16_t>(84, 10);
-			break;
-		case Classes::CADENA:
-			race_pos = Point<int16_t>(77, 10);
-			break;
-		case Classes::ILLIUM:
-			race_pos = Point<int16_t>(92, 10);
-			break;
-		case Classes::ARK:
-			race_pos = Point<int16_t>(100, 10);
-			break;
-		default:
-			break;
-		}
+		int16_t pos_x = (backgrnd_x - race_x) / 2;
 
 		sprites.emplace_back(backgrnd);
-		sprites.emplace_back(race, race_pos + (Point<int16_t>)race["origin"]);
+		sprites.emplace_back(race, Point<int16_t>(pos_x, 10) + (Point<int16_t>)race["origin"]);
 
 		if (unavailable)
 		{
@@ -353,29 +275,29 @@ namespace ms
 	{
 		switch (buttonid)
 		{
-		default:
-		case Buttons::CLOSE:
-			deactivate();
-			break;
-		case Buttons::TYPEA:
-		case Buttons::TYPEB:
-		{
-			bool alternate = (buttonid == Buttons::TYPEA) ? false : true;
-
-			if (alternate)
-				buttons[Buttons::TYPEA]->set_state(Button::State::DISABLED);
-			else
-				buttons[Buttons::TYPEB]->set_state(Button::State::DISABLED);
-
-			auto onok = [&, alternate]()
-			{
-				okhandler(alternate);
+			default:
+			case Buttons::CLOSE:
 				deactivate();
-			};
+				break;
+			case Buttons::TYPEA:
+			case Buttons::TYPEB:
+			{
+				bool alternate = (buttonid == Buttons::TYPEA) ? false : true;
 
-			UI::get().emplace<UIKeyConfirm>(alternate, onok, login);
-			break;
-		}
+				if (alternate)
+					buttons[Buttons::TYPEA]->set_state(Button::State::DISABLED);
+				else
+					buttons[Buttons::TYPEB]->set_state(Button::State::DISABLED);
+
+				auto onok = [&, alternate]()
+				{
+					okhandler(alternate);
+					deactivate();
+				};
+
+				UI::get().emplace<UIKeyConfirm>(alternate, onok, login);
+				break;
+			}
 		}
 
 		return Button::State::DISABLED;

@@ -121,11 +121,11 @@ namespace ms
 			}
 
 			body->draw(interstance, Body::Layer::ARM_BELOW_HEAD_OVER_MAIL, interframe, args);
-			hair->draw(interstance, Hair::Layer::DEFAULT, interframe, args);
 			equips.draw(EquipSlot::Id::SHIELD, interstance, Clothing::Layer::SHIELD_OVER_HAIR, interframe, args);
 			equips.draw(EquipSlot::Id::EARACC, interstance, Clothing::Layer::EARRINGS, interframe, args);
 			body->draw(interstance, Body::Layer::HEAD, interframe, args);
 			hair->draw(interstance, Hair::Layer::SHADE, interframe, args);
+			hair->draw(interstance, Hair::Layer::DEFAULT, interframe, args);
 			face->draw(interexpression, interexpframe, faceargs);
 			equips.draw(EquipSlot::Id::FACE, interstance, Clothing::Layer::FACEACC, 0, faceargs);
 			equips.draw(EquipSlot::Id::EYEACC, interstance, Clothing::Layer::EYEACC, interframe, args);
