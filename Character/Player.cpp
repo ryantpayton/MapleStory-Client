@@ -42,23 +42,23 @@ namespace ms
 
 		switch (state)
 		{
-		case Char::State::STAND:
-			return &standing;
-		case Char::State::WALK:
-			return &walking;
-		case Char::State::FALL:
-			return &falling;
-		case Char::State::PRONE:
-			return &lying;
-		case Char::State::LADDER:
-		case Char::State::ROPE:
-			return &climbing;
-		case Char::State::SIT:
-			return &sitting;
-		case Char::State::SWIM:
-			return &flying;
-		default:
-			return nullptr;
+			case Char::State::STAND:
+				return &standing;
+			case Char::State::WALK:
+				return &walking;
+			case Char::State::FALL:
+				return &falling;
+			case Char::State::PRONE:
+				return &lying;
+			case Char::State::LADDER:
+			case Char::State::ROPE:
+				return &climbing;
+			case Char::State::SIT:
+				return &sitting;
+			case Char::State::SWIM:
+				return &flying;
+			default:
+				return nullptr;
 		}
 	}
 
@@ -183,6 +183,8 @@ namespace ms
 			lastmove = newmove;
 		}
 
+		climb_cooldown.update();
+
 		return get_layer();
 	}
 
@@ -268,22 +270,28 @@ namespace ms
 
 			switch (weapontype)
 			{
-			case Weapon::Type::BOW:
-			case Weapon::Type::CROSSBOW:
-			case Weapon::Type::CLAW:
-			case Weapon::Type::GUN:
-				degenerate = !inventory.has_projectile();
-				attacktype = degenerate ? Attack::Type::CLOSE : Attack::Type::RANGED;
-				break;
-			case Weapon::Type::WAND:
-			case Weapon::Type::STAFF:
-				degenerate = !skill;
-				attacktype = degenerate ? Attack::Type::CLOSE : Attack::Type::MAGIC;
-				break;
-			default:
-				attacktype = Attack::Type::CLOSE;
-				degenerate = false;
-				break;
+				case Weapon::Type::BOW:
+				case Weapon::Type::CROSSBOW:
+				case Weapon::Type::CLAW:
+				case Weapon::Type::GUN:
+				{
+					degenerate = !inventory.has_projectile();
+					attacktype = degenerate ? Attack::Type::CLOSE : Attack::Type::RANGED;
+					break;
+				}
+				case Weapon::Type::WAND:
+				case Weapon::Type::STAFF:
+				{
+					degenerate = !skill;
+					attacktype = degenerate ? Attack::Type::CLOSE : Attack::Type::MAGIC;
+					break;
+				}
+				default:
+				{
+					attacktype = Attack::Type::CLOSE;
+					degenerate = false;
+					break;
+				}
 			}
 		}
 
@@ -435,12 +443,23 @@ namespace ms
 		if (ladder)
 		{
 			phobj.set_x(ldr->get_x());
+
 			phobj.hspeed = 0.0;
 			phobj.vspeed = 0.0;
 			phobj.fhlayer = 7;
+
 			set_state(ldr->is_ladder() ? Char::State::LADDER : Char::State::ROPE);
-			set_direction(false);
 		}
+	}
+
+	void Player::set_climb_cooldown()
+	{
+		climb_cooldown.set_for(1000);
+	}
+
+	bool Player::can_climb()
+	{
+		return !climb_cooldown;
 	}
 
 	float Player::get_walkforce() const

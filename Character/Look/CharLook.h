@@ -82,6 +82,7 @@ namespace ms
 		Nominal<Expression::Id> expression;
 		Nominal<uint8_t> expframe;
 		uint16_t expelapsed;
+		TimedBool expcooldown;
 
 		bool flip;
 

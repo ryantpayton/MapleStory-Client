@@ -78,20 +78,20 @@ namespace ms
 
 			switch (equips.getcaptype())
 			{
-			case CharEquips::CapType::NONE:
-				hair->draw(interstance, Hair::Layer::BACK, interframe, args);
-				break;
-			case CharEquips::CapType::HEADBAND:
-				equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
-				hair->draw(interstance, Hair::Layer::BACK, interframe, args);
-				break;
-			case CharEquips::CapType::HALFCOVER:
-				hair->draw(interstance, Hair::Layer::BELOWCAP, interframe, args);
-				equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
-				break;
-			case CharEquips::CapType::FULLCOVER:
-				equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
-				break;
+				case CharEquips::CapType::NONE:
+					hair->draw(interstance, Hair::Layer::BACK, interframe, args);
+					break;
+				case CharEquips::CapType::HEADBAND:
+					equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
+					hair->draw(interstance, Hair::Layer::BACK, interframe, args);
+					break;
+				case CharEquips::CapType::HALFCOVER:
+					hair->draw(interstance, Hair::Layer::BELOWCAP, interframe, args);
+					equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
+					break;
+				case CharEquips::CapType::FULLCOVER:
+					equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
+					break;
 			}
 
 			equips.draw(EquipSlot::Id::SHIELD, interstance, Clothing::Layer::BACKSHIELD, interframe, args);
@@ -133,22 +133,22 @@ namespace ms
 
 			switch (equips.getcaptype())
 			{
-			case CharEquips::CapType::NONE:
-				hair->draw(interstance, Hair::Layer::OVERHEAD, interframe, args);
-				break;
-			case CharEquips::CapType::HEADBAND:
-				equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
-				hair->draw(interstance, Hair::Layer::DEFAULT, interframe, args);
-				hair->draw(interstance, Hair::Layer::OVERHEAD, interframe, args);
-				equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP_OVER_HAIR, interframe, args);
-				break;
-			case CharEquips::CapType::HALFCOVER:
-				hair->draw(interstance, Hair::Layer::DEFAULT, interframe, args);
-				equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
-				break;
-			case CharEquips::CapType::FULLCOVER:
-				equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
-				break;
+				case CharEquips::CapType::NONE:
+					hair->draw(interstance, Hair::Layer::OVERHEAD, interframe, args);
+					break;
+				case CharEquips::CapType::HEADBAND:
+					equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
+					hair->draw(interstance, Hair::Layer::DEFAULT, interframe, args);
+					hair->draw(interstance, Hair::Layer::OVERHEAD, interframe, args);
+					equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP_OVER_HAIR, interframe, args);
+					break;
+				case CharEquips::CapType::HALFCOVER:
+					hair->draw(interstance, Hair::Layer::DEFAULT, interframe, args);
+					equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
+					break;
+				case CharEquips::CapType::FULLCOVER:
+					equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
+					break;
 			}
 
 			equips.draw(EquipSlot::Id::WEAPON, interstance, Clothing::Layer::WEAPON_BELOW_ARM, interframe, args);
@@ -204,12 +204,14 @@ namespace ms
 
 		switch (interstance)
 		{
-		case Stance::Id::STAND1:
-		case Stance::Id::STAND2:
-			if (alerted)
-				interstance = Stance::Id::ALERT;
+			case Stance::Id::STAND1:
+			case Stance::Id::STAND2:
+			{
+				if (alerted)
+					interstance = Stance::Id::ALERT;
 
-			break;
+				break;
+			}
 		}
 
 		draw(relargs + args, interstance, interexpression, interframe, interexpframe);
@@ -233,6 +235,7 @@ namespace ms
 		}
 
 		alerted.update();
+		expcooldown.update();
 
 		bool aniend = false;
 
@@ -335,7 +338,7 @@ namespace ms
 				std::piecewise_construct,
 				std::forward_as_tuple(skin_id),
 				std::forward_as_tuple(skin_id, drawinfo)
-				).first;
+			).first;
 		}
 
 		body = &iter->second;
@@ -351,7 +354,7 @@ namespace ms
 				std::piecewise_construct,
 				std::forward_as_tuple(hair_id),
 				std::forward_as_tuple(hair_id, drawinfo)
-				).first;
+			).first;
 		}
 
 		hair = &iter->second;
@@ -420,12 +423,12 @@ namespace ms
 
 		switch (newstance)
 		{
-		case Stance::Id::SHOT:
-			set_action("handgun");
-			break;
-		default:
-			set_stance(newstance);
-			break;
+			case Stance::Id::SHOT:
+				set_action("handgun");
+				break;
+			default:
+				set_stance(newstance);
+				break;
 		}
 	}
 
@@ -518,12 +521,13 @@ namespace ms
 
 	void CharLook::set_expression(Expression::Id newexpression)
 	{
-		if (expression != newexpression)
+		if (expression != newexpression && !expcooldown)
 		{
 			expression.set(newexpression);
 			expframe.set(0);
 
 			expelapsed = 0;
+			expcooldown.set_for(5000);
 		}
 	}
 
@@ -571,14 +575,14 @@ namespace ms
 	{
 		switch (st)
 		{
-		case Stance::Id::STAND1:
-		case Stance::Id::WALK1:
-			return false;
-		case Stance::Id::STAND2:
-		case Stance::Id::WALK2:
-			return true;
-		default:
-			return equips.is_twohanded();
+			case Stance::Id::STAND1:
+			case Stance::Id::WALK1:
+				return false;
+			case Stance::Id::STAND2:
+			case Stance::Id::WALK2:
+				return true;
+			default:
+				return equips.is_twohanded();
 		}
 	}
 

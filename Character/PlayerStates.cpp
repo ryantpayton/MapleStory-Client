@@ -19,13 +19,29 @@
 
 namespace ms
 {
-	// Base class
+#pragma region Base
 	void PlayerState::play_jumpsound() const
 	{
-		Sound(Sound::JUMP).play();
+		Sound(Sound::Name::JUMP).play();
 	}
 
-	// Null state
+	bool PlayerState::haswalkinput(const Player& player) const
+	{
+		return player.is_key_down(KeyAction::Id::LEFT) || player.is_key_down(KeyAction::Id::RIGHT);
+	}
+
+	bool PlayerState::hasleftinput(const Player& player) const
+	{
+		return player.is_key_down(KeyAction::Id::LEFT) && !player.is_key_down(KeyAction::Id::RIGHT);
+	}
+
+	bool PlayerState::hasrightinput(const Player& player) const
+	{
+		return player.is_key_down(KeyAction::Id::RIGHT) && !player.is_key_down(KeyAction::Id::LEFT);
+	}
+#pragma endregion
+
+#pragma region Null
 	void PlayerNullState::update_state(Player& player) const
 	{
 		Char::State state;
@@ -35,11 +51,13 @@ namespace ms
 			if (player.is_key_down(KeyAction::Id::LEFT))
 			{
 				state = Char::State::WALK;
+
 				player.set_direction(false);
 			}
 			else if (player.is_key_down(KeyAction::Id::RIGHT))
 			{
 				state = Char::State::WALK;
+
 				player.set_direction(true);
 			}
 			else if (player.is_key_down(KeyAction::Id::DOWN))
@@ -62,11 +80,11 @@ namespace ms
 		}
 
 		player.get_phobj().clear_flags();
-
 		player.set_state(state);
 	}
+#pragma endregion
 
-	// Standing
+#pragma region Standing
 	void PlayerStandState::initialize(Player& player) const
 	{
 		player.get_phobj().type = PhysicsObject::Type::NORMAL;
@@ -77,26 +95,11 @@ namespace ms
 		if (player.is_attacking())
 			return;
 
-		if (down)
+		if (down && ka == KeyAction::Id::JUMP)
 		{
-			switch (ka)
-			{
-			case KeyAction::Id::LEFT:
-				player.set_direction(false);
-				player.set_state(Char::State::WALK);
-				break;
-			case KeyAction::Id::RIGHT:
-				player.set_direction(true);
-				player.set_state(Char::State::WALK);
-				break;
-			case KeyAction::Id::JUMP:
-				play_jumpsound();
-				player.get_phobj().vforce = -player.get_jumpforce();
-				break;
-			case KeyAction::Id::DOWN:
-				player.set_state(Char::State::PRONE);
-				break;
-			}
+			play_jumpsound();
+
+			player.get_phobj().vforce = -player.get_jumpforce();
 		}
 	}
 
@@ -104,6 +107,23 @@ namespace ms
 	{
 		if (player.get_phobj().enablejd == false)
 			player.get_phobj().set_flag(PhysicsObject::Flag::CHECKBELOW);
+
+		if (player.is_attacking())
+			return;
+
+		if (hasrightinput(player))
+		{
+			player.set_direction(true);
+			player.set_state(Char::State::WALK);
+		}
+		else if (hasleftinput(player))
+		{
+			player.set_direction(false);
+			player.set_state(Char::State::WALK);
+		}
+
+		if (player.is_key_down(KeyAction::Id::DOWN) && !player.is_key_down(KeyAction::Id::UP) && !haswalkinput(player))
+			player.set_state(Char::State::PRONE);
 	}
 
 	void PlayerStandState::update_state(Player& player) const
@@ -111,8 +131,9 @@ namespace ms
 		if (!player.get_phobj().onground)
 			player.set_state(Char::State::FALL);
 	}
+#pragma endregion
 
-	// Walking
+#pragma region Walking
 	void PlayerWalkState::initialize(Player& player) const
 	{
 		player.get_phobj().type = PhysicsObject::Type::NORMAL;
@@ -123,39 +144,48 @@ namespace ms
 		if (player.is_attacking())
 			return;
 
-		if (down)
+		if (down && ka == KeyAction::Id::JUMP)
 		{
-			switch (ka)
-			{
-			case KeyAction::Id::LEFT:
-				player.set_direction(false);
-				break;
-			case KeyAction::Id::RIGHT:
-				player.set_direction(true);
-				break;
-			case KeyAction::Id::JUMP:
-				play_jumpsound();
-				player.get_phobj().vforce = -player.get_jumpforce();
-				break;
-			case KeyAction::Id::DOWN:
-				player.set_state(Char::State::PRONE);
-				break;
-			}
-		}
-	}
+			play_jumpsound();
 
-	bool PlayerWalkState::haswalkinput(const Player& player) const
-	{
-		return player.is_key_down(KeyAction::Id::LEFT) || player.is_key_down(KeyAction::Id::RIGHT);
+			player.get_phobj().vforce = -player.get_jumpforce();
+		}
+
+		if (down && ka == KeyAction::Id::JUMP && player.is_key_down(KeyAction::Id::DOWN) && player.get_phobj().enablejd)
+		{
+			play_jumpsound();
+
+			player.get_phobj().y = player.get_phobj().groundbelow;
+			player.set_state(Char::State::FALL);
+		}
 	}
 
 	void PlayerWalkState::update(Player& player) const
 	{
-		if (!player.is_attacking() && haswalkinput(player))
-			player.get_phobj().hforce += player.getflip() ? player.get_walkforce() : -player.get_walkforce();
-
 		if (player.get_phobj().enablejd == false)
 			player.get_phobj().set_flag(PhysicsObject::Flag::CHECKBELOW);
+
+		if (player.is_attacking())
+			return;
+
+		if (haswalkinput(player))
+		{
+			if (hasrightinput(player))
+			{
+				player.set_direction(true);
+				player.get_phobj().hforce += player.get_walkforce();
+			}
+			else if (hasleftinput(player))
+			{
+				player.set_direction(false);
+				player.get_phobj().hforce += -player.get_walkforce();
+			}
+		}
+		else
+		{
+			if (player.is_key_down(KeyAction::Id::DOWN))
+				player.set_state(Char::State::PRONE);
+		}
 	}
 
 	void PlayerWalkState::update_state(Player& player) const
@@ -170,103 +200,59 @@ namespace ms
 			player.set_state(Char::State::FALL);
 		}
 	}
+#pragma endregion
 
-	// Falling
+#pragma region Falling
 	void PlayerFallState::initialize(Player& player) const
 	{
 		player.get_phobj().type = PhysicsObject::Type::NORMAL;
 	}
 
-	void PlayerFallState::send_action(Player& player, KeyAction::Id ka, bool down) const
-	{
-		if (down)
-		{
-			switch (ka)
-			{
-			case KeyAction::Id::LEFT:
-				player.set_direction(false);
-				break;
-			case KeyAction::Id::RIGHT:
-				player.set_direction(true);
-				break;
-			}
-		}
-	}
-
 	void PlayerFallState::update(Player& player) const
 	{
+		if (player.is_attacking())
+			return;
+
 		auto& hspeed = player.get_phobj().hspeed;
 
-		if (player.is_key_down(KeyAction::Id::LEFT) && hspeed > 0.0)
-		{
+		if (hasleftinput(player) && hspeed > 0.0)
 			hspeed -= 0.025;
-
-			if (hspeed < 0.0)
-				hspeed = 0.0;
-		}
-		else if (player.is_key_down(KeyAction::Id::RIGHT) && hspeed < 0.0)
-		{
+		else if (hasrightinput(player) && hspeed < 0.0)
 			hspeed += 0.025;
 
-			if (hspeed > 0.0)
-				hspeed = 0.0;
-		}
+		if (hasleftinput(player))
+			player.set_direction(false);
+		else if (hasrightinput(player))
+			player.set_direction(true);
 	}
 
 	void PlayerFallState::update_state(Player& player) const
 	{
 		if (player.get_phobj().onground)
 		{
-			if (player.is_key_down(KeyAction::Id::LEFT))
-			{
-				player.set_direction(false);
-				player.set_state(Char::State::WALK);
-			}
-			else if (player.is_key_down(KeyAction::Id::RIGHT))
-			{
-				player.set_direction(true);
-				player.set_state(Char::State::WALK);
-			}
-			else if (player.is_key_down(KeyAction::Id::DOWN))
-			{
+			if (player.is_key_down(KeyAction::Id::DOWN) && !haswalkinput(player))
 				player.set_state(Char::State::PRONE);
-			}
 			else
-			{
 				player.set_state(Char::State::STAND);
-			}
 		}
 		else if (player.is_underwater())
 		{
 			player.set_state(Char::State::SWIM);
 		}
 	}
+#pragma endregion
 
-	// Prone
+#pragma region Prone
 	void PlayerProneState::send_action(Player& player, KeyAction::Id ka, bool down) const
 	{
-		if (down)
+		if (down && ka == KeyAction::Id::JUMP)
 		{
-			switch (ka)
+			if (player.get_phobj().enablejd && player.is_key_down(KeyAction::Id::DOWN))
 			{
-			case KeyAction::Id::JUMP:
-				if (player.get_phobj().enablejd && player.is_key_down(KeyAction::Id::DOWN))
-				{
-					play_jumpsound();
-					player.get_phobj().y = player.get_phobj().groundbelow;
-					player.set_state(Char::State::FALL);
-				}
+				play_jumpsound();
 
-				break;
-			}
-		}
-		else
-		{
-			switch (ka)
-			{
-			case KeyAction::Id::DOWN:
-				player.set_state(Char::State::STAND);
-				break;
+				player.get_phobj().y = player.get_phobj().groundbelow;
+				player.set_state(Char::State::FALL);
 			}
 		}
 	}
@@ -275,35 +261,48 @@ namespace ms
 	{
 		if (player.get_phobj().enablejd == false)
 			player.get_phobj().set_flag(PhysicsObject::Flag::CHECKBELOW);
-	}
 
-	// Sitting
+		if (player.is_key_down(KeyAction::Id::UP) || !player.is_key_down(KeyAction::Id::DOWN))
+			player.set_state(Char::State::STAND);
+
+		if (player.is_key_down(KeyAction::Id::LEFT))
+		{
+			player.set_direction(false);
+			player.set_state(Char::State::WALK);
+		}
+
+		if (player.is_key_down(KeyAction::Id::RIGHT))
+		{
+			player.set_direction(true);
+			player.set_state(Char::State::WALK);
+		}
+	}
+#pragma endregion
+
+#pragma region Sitting
 	void PlayerSitState::send_action(Player& player, KeyAction::Id ka, bool down) const
 	{
 		if (down)
 		{
 			switch (ka)
 			{
-			case KeyAction::Id::LEFT:
-				player.set_direction(false);
-				player.set_state(Char::State::WALK);
-				break;
-			case KeyAction::Id::RIGHT:
-				player.set_direction(true);
-				player.set_state(Char::State::WALK);
-				break;
-			case KeyAction::Id::JUMP:
-				play_jumpsound();
-				player.set_state(Char::State::STAND);
-				break;
-			case KeyAction::Id::UP:
-				player.set_state(Char::State::STAND);
-				break;
+				case KeyAction::Id::LEFT:
+					player.set_direction(false);
+					player.set_state(Char::State::WALK);
+					break;
+				case KeyAction::Id::RIGHT:
+					player.set_direction(true);
+					player.set_state(Char::State::WALK);
+					break;
+				case KeyAction::Id::JUMP:
+					player.set_state(Char::State::STAND);
+					break;
 			}
 		}
 	}
+#pragma endregion
 
-	// Flying
+#pragma region Flying
 	void PlayerFlyState::initialize(Player& player) const
 	{
 		player.get_phobj().type = player.is_underwater() ? PhysicsObject::Type::SWIMMING : PhysicsObject::Type::FLYING;
@@ -315,12 +314,12 @@ namespace ms
 		{
 			switch (ka)
 			{
-			case KeyAction::Id::LEFT:
-				player.set_direction(false);
-				break;
-			case KeyAction::Id::RIGHT:
-				player.set_direction(true);
-				break;
+				case KeyAction::Id::LEFT:
+					player.set_direction(false);
+					break;
+				case KeyAction::Id::RIGHT:
+					player.set_direction(true);
+					break;
 			}
 		}
 	}
@@ -350,11 +349,13 @@ namespace ms
 			if (player.is_key_down(KeyAction::Id::LEFT))
 			{
 				state = Char::State::WALK;
+
 				player.set_direction(false);
 			}
 			else if (player.is_key_down(KeyAction::Id::RIGHT))
 			{
 				state = Char::State::WALK;
+
 				player.set_direction(true);
 			}
 			else if (player.is_key_down(KeyAction::Id::DOWN))
@@ -369,50 +370,42 @@ namespace ms
 			player.set_state(state);
 		}
 	}
+#pragma endregion
 
-	// Climbing
+#pragma region Climbing
 	void PlayerClimbState::initialize(Player& player) const
 	{
 		player.get_phobj().type = PhysicsObject::Type::FIXATED;
 	}
 
-	void PlayerClimbState::send_action(Player& player, KeyAction::Id ka, bool down) const
-	{
-		if (down)
-		{
-			switch (ka)
-			{
-			case KeyAction::Id::JUMP:
-				if (player.is_key_down(KeyAction::Id::LEFT))
-				{
-					play_jumpsound();
-					player.set_direction(false);
-					player.get_phobj().hspeed = -player.get_walkforce() * 8.0;
-					player.get_phobj().vspeed = -player.get_jumpforce() / 1.5;
-					cancel_ladder(player);
-				}
-				else if (player.is_key_down(KeyAction::Id::RIGHT))
-				{
-					play_jumpsound();
-					player.set_direction(true);
-					player.get_phobj().hspeed = player.get_walkforce() * 8.0;
-					player.get_phobj().vspeed = -player.get_jumpforce() / 1.5;
-					cancel_ladder(player);
-				}
-
-				break;
-			}
-		}
-	}
-
 	void PlayerClimbState::update(Player& player) const
 	{
-		if (player.is_key_down(KeyAction::Id::UP))
+		if (player.is_key_down(KeyAction::Id::UP) && !player.is_key_down(KeyAction::Id::DOWN))
+		{
 			player.get_phobj().vspeed = -player.get_climbforce();
-		else if (player.is_key_down(KeyAction::Id::DOWN))
+		}
+		else if (player.is_key_down(KeyAction::Id::DOWN) && !player.is_key_down(KeyAction::Id::UP))
+		{
 			player.get_phobj().vspeed = player.get_climbforce();
+		}
 		else
+		{
 			player.get_phobj().vspeed = 0.0;
+		}
+
+		if (player.is_key_down(KeyAction::Id::JUMP) && haswalkinput(player))
+		{
+			play_jumpsound();
+
+			const auto& walkforce = player.get_walkforce() * 8.0;
+
+			player.set_direction(player.is_key_down(KeyAction::Id::RIGHT));
+
+			player.get_phobj().hspeed = player.is_key_down(KeyAction::Id::LEFT) ? -walkforce : walkforce;
+			player.get_phobj().vspeed = -player.get_jumpforce() / 1.5;
+
+			cancel_ladder(player);
+		}
 	}
 
 	void PlayerClimbState::update_state(Player& player) const
@@ -429,5 +422,7 @@ namespace ms
 	{
 		player.set_state(Char::State::FALL);
 		player.set_ladder(nullptr);
+		player.set_climb_cooldown();
 	}
+#pragma endregion
 }

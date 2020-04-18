@@ -45,13 +45,13 @@ namespace ms
 	{
 		switch (state)
 		{
-		case State::INACTIVE:
-			load_map(mapid);
-			respawn(portalid);
-			break;
-		case State::TRANSITION:
-			respawn(portalid);
-			break;
+			case State::INACTIVE:
+				load_map(mapid);
+				respawn(portalid);
+				break;
+			case State::TRANSITION:
+				respawn(portalid);
+				break;
 		}
 
 		state = State::ACTIVE;
@@ -156,6 +156,27 @@ namespace ms
 		portals.update(player.get_position());
 		camera.update(player.get_position());
 
+		if (!player.is_climbing() && !player.is_sitting() && !player.is_attacking())
+		{
+			if (player.is_key_down(KeyAction::Id::UP) && !player.is_key_down(KeyAction::Id::DOWN))
+				check_ladders(true);
+
+			if (player.is_key_down(KeyAction::Id::UP))
+				check_portals();
+
+			if (player.is_key_down(KeyAction::Id::DOWN))
+				check_ladders(false);
+
+			if (player.is_key_down(KeyAction::Id::SIT))
+				check_seats();
+
+			if (player.is_key_down(KeyAction::Id::ATTACK))
+				combat.use_move(0);
+
+			if (player.is_key_down(KeyAction::Id::PICKUP))
+				check_drops();
+		}
+
 		if (player.is_invincible())
 			return;
 
@@ -213,7 +234,7 @@ namespace ms
 
 	void Stage::check_ladders(bool up)
 	{
-		if (player.is_climbing() || player.is_attacking())
+		if (!player.can_climb() || player.is_climbing() || player.is_attacking())
 			return;
 
 		Optional<const Ladder> ladder = mapinfo.findladder(player.get_position(), up);
@@ -236,41 +257,18 @@ namespace ms
 
 		switch (type)
 		{
-		case KeyType::Id::ACTION:
-			if (down)
-			{
-				switch (action)
-				{
-				case KeyAction::Id::UP:
-					check_ladders(true);
-					check_portals();
-					break;
-				case KeyAction::Id::DOWN:
-					check_ladders(false);
-					break;
-				case KeyAction::Id::SIT:
-					check_seats();
-					break;
-				case KeyAction::Id::ATTACK:
-					combat.use_move(0);
-					break;
-				case KeyAction::Id::PICKUP:
-					check_drops();
-					break;
-				}
-			}
-
-			playable->send_action(KeyAction::actionbyid(action), down);
-			break;
-		case KeyType::Id::SKILL:
-			combat.use_move(action);
-			break;
-		case KeyType::Id::ITEM:
-			player.use_item(action);
-			break;
-		case KeyType::Id::FACE:
-			player.set_expression(action);
-			break;
+			case KeyType::Id::ACTION:
+				playable->send_action(KeyAction::actionbyid(action), down);
+				break;
+			case KeyType::Id::SKILL:
+				combat.use_move(action);
+				break;
+			case KeyType::Id::ITEM:
+				player.use_item(action);
+				break;
+			case KeyType::Id::FACE:
+				player.set_expression(action);
+				break;
 		}
 	}
 

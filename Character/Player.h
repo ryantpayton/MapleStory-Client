@@ -124,6 +124,10 @@ namespace ms
 		void set_seat(Optional<const Seat> seat);
 		// Change players x-position to the ladder x and change stance to Char::State::LADDER or Char::State::ROPE
 		void set_ladder(Optional<const Ladder> ladder);
+		// Sets a quick cooldown on climbing so when jumping off a ladder or rope, it doesn't start climb again.
+		void set_climb_cooldown();
+		// Checks if the player can climb
+		bool can_climb();
 
 		// Obtain a reference to the player's stats
 		CharStats& get_stats();
@@ -163,6 +167,7 @@ namespace ms
 		Randomizer randomizer;
 
 		Optional<const Ladder> ladder;
+		TimedBool climb_cooldown;
 
 		bool underwater;
 	};

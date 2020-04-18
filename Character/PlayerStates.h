@@ -39,6 +39,12 @@ namespace ms
 	protected:
 		// Play the jumping sound
 		void play_jumpsound() const;
+		// Check if the left or right key is pressed
+		bool haswalkinput(const Player& player) const;
+		// Check if only the left key is pressed and not the right key
+		bool hasleftinput(const Player& player) const;
+		// Check if only the right key is pressed and not the left key
+		bool hasrightinput(const Player& player) const;
 	};
 
 	// The initial state, determines which state the player should be in.
@@ -69,9 +75,6 @@ namespace ms
 		void send_action(Player& player, KeyAction::Id ka, bool down) const override;
 		void update(Player& player) const override;
 		void update_state(Player& player) const override;
-
-	private:
-		bool haswalkinput(const Player& player) const;
 	};
 
 	// The falling state
@@ -80,7 +83,7 @@ namespace ms
 	public:
 		void initialize(Player& player) const override;
 
-		void send_action(Player& player, KeyAction::Id ka, bool down) const override;
+		void send_action(Player& player, KeyAction::Id ka, bool down) const override {}
 		void update(Player& player) const override;
 
 		void update_state(Player& player) const override;
@@ -124,7 +127,7 @@ namespace ms
 	{
 	public:
 		void initialize(Player& player) const override;
-		void send_action(Player& player, KeyAction::Id ka, bool down) const override;
+		void send_action(Player&, KeyAction::Id, bool) const override {}
 		void update(Player& player) const override;
 		void update_state(Player& player) const override;
 
