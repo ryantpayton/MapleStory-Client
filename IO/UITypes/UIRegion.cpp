@@ -32,11 +32,13 @@ namespace ms
 	UIRegion::UIRegion() : UIElement(Point<int16_t>(0, 0), Point<int16_t>(800, 600))
 	{
 		nl::node Common = nl::nx::ui["Login.img"]["Common"];
+		nl::node frame = nl::nx::mapLatest["Obj"]["login.img"]["Common"]["frame"]["2"]["0"];
 		nl::node Gateway = nl::nx::ui["Gateway.img"]["WorldSelect"];
 		nl::node na = Gateway["BtButton0"];
 		nl::node eu = Gateway["BtButton1"];
 
 		sprites.emplace_back(Gateway["backgrnd2"]);
+		sprites.emplace_back(frame, Point<int16_t>(400, 300));
 		sprites.emplace_back(Common["frame"], Point<int16_t>(400, 300));
 
 		int16_t pos_y = 84;
@@ -78,27 +80,31 @@ namespace ms
 
 		switch (buttonid)
 		{
-		case Buttons::NA:
-		case Buttons::EU:
-		{
-			// TODO: Update UIWorldSelect after selecting new region
-			//uint8_t region = (buttonid == Buttons::NA) ? 5 : 6;
-
-			if (auto worldselect = UI::get().get_element<UIWorldSelect>())
+			case Buttons::NA:
+			case Buttons::EU:
 			{
-				UI::get().remove(UIElement::Type::REGION);
+				// TODO: Update UIWorldSelect after selecting new region
+				//uint8_t region = (buttonid == Buttons::NA) ? 5 : 6;
 
-				//worldselect->set_region(region);
-				worldselect->makeactive();
+				if (auto worldselect = UI::get().get_element<UIWorldSelect>())
+				{
+					UI::get().remove(UIElement::Type::REGION);
+
+					//worldselect->set_region(region);
+					worldselect->makeactive();
+				}
+
+				break;
 			}
-
-			break;
-		}
-		case Buttons::EXIT:
-			UI::get().quit();
-			break;
-		default:
-			break;
+			case Buttons::EXIT:
+			{
+				UI::get().quit();
+				break;
+			}
+			default:
+			{
+				break;
+			}
 		}
 
 		return Button::State::NORMAL;

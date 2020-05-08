@@ -21,6 +21,7 @@
 
 #include "../Components/Textfield.h"
 
+#include "../../Graphics/Geometry.h"
 #include "../../Template/BoolPair.h"
 
 namespace ms
@@ -66,6 +67,8 @@ namespace ms
 		Texture accountbg;
 		Texture passwordbg;
 		BoolPair<Texture> checkbox;
+		ColorBox background;
+		Point<int16_t> signboard_pos;
 
 		bool saveid;
 	};

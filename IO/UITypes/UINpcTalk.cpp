@@ -33,8 +33,7 @@ namespace ms
 {
 	UINpcTalk::UINpcTalk() : offset(0), unitrows(0), rowmax(0), show_slider(false), draw_text(false), formatted_text(""), formatted_text_pos(0), timestep(0)
 	{
-		nl::node UIWindow2 = nl::nx::ui["UIWindow2.img"];
-		nl::node UtilDlgEx = UIWindow2["UtilDlgEx"];
+		nl::node UtilDlgEx = nl::nx::ui["UIWindow2.img"]["UtilDlgEx"];
 
 		top = UtilDlgEx["t"];
 		fill = UtilDlgEx["c"];
@@ -47,13 +46,7 @@ namespace ms
 		buttons[Buttons::CLOSE] = std::make_unique<MapleButton>(UtilDlgEx["BtClose"]);
 		buttons[Buttons::MYLEVEL] = std::make_unique<MapleButton>(UtilDlgEx["BtMyLevel"]);
 		buttons[Buttons::NEXT] = std::make_unique<MapleButton>(UtilDlgEx["BtNext"]);
-
-		// TODO: Replace when _inlink is fixed
-		//buttons[Buttons::NO] = std::make_unique<MapleButton>(UtilDlgEx["BtNo"]);
-
-		nl::node Quest = UIWindow2["Quest"];
-
-		buttons[Buttons::NO] = std::make_unique<MapleButton>(Quest["BtNo"]);
+		buttons[Buttons::NO] = std::make_unique<MapleButton>(UtilDlgEx["BtNo"]);
 		buttons[Buttons::OK] = std::make_unique<MapleButton>(UtilDlgEx["BtOK"]);
 		buttons[Buttons::PREV] = std::make_unique<MapleButton>(UtilDlgEx["BtPrev"]);
 		buttons[Buttons::QAFTER] = std::make_unique<MapleButton>(UtilDlgEx["BtQAfter"]);
@@ -149,94 +142,116 @@ namespace ms
 
 		switch (type)
 		{
-		case TalkType::SENDNEXT:
-		case TalkType::SENDOK:
-			// Type = 0
-			switch (buttonid)
+			case TalkType::SENDNEXT:
+			case TalkType::SENDOK:
 			{
-			case Buttons::CLOSE:
-				NpcTalkMorePacket(type, -1).dispatch();
-				break;
-			case Buttons::NEXT:
-			case Buttons::OK:
-				NpcTalkMorePacket(type, 1).dispatch();
+				// Type = 0
+				switch (buttonid)
+				{
+					case Buttons::CLOSE:
+						NpcTalkMorePacket(type, -1).dispatch();
+						break;
+					case Buttons::NEXT:
+					case Buttons::OK:
+						NpcTalkMorePacket(type, 1).dispatch();
+						break;
+				}
+
 				break;
 			}
-			break;
-		case TalkType::SENDNEXTPREV:
-			// Type = 0
-			switch (buttonid)
+			case TalkType::SENDNEXTPREV:
 			{
-			case Buttons::CLOSE:
-				NpcTalkMorePacket(type, -1).dispatch();
-				break;
-			case Buttons::NEXT:
-				NpcTalkMorePacket(type, 1).dispatch();
-				break;
-			case Buttons::PREV:
-				NpcTalkMorePacket(type, 0).dispatch();
+				// Type = 0
+				switch (buttonid)
+				{
+					case Buttons::CLOSE:
+						NpcTalkMorePacket(type, -1).dispatch();
+						break;
+					case Buttons::NEXT:
+						NpcTalkMorePacket(type, 1).dispatch();
+						break;
+					case Buttons::PREV:
+						NpcTalkMorePacket(type, 0).dispatch();
+						break;
+				}
+
 				break;
 			}
-			break;
-		case TalkType::SENDYESNO:
-			// Type = 1
-			switch (buttonid)
+			case TalkType::SENDYESNO:
 			{
-			case Buttons::CLOSE:
-				NpcTalkMorePacket(type, -1).dispatch();
-				break;
-			case Buttons::NO:
-				NpcTalkMorePacket(type, 0).dispatch();
-				break;
-			case Buttons::YES:
-				NpcTalkMorePacket(type, 1).dispatch();
+				// Type = 1
+				switch (buttonid)
+				{
+					case Buttons::CLOSE:
+						NpcTalkMorePacket(type, -1).dispatch();
+						break;
+					case Buttons::NO:
+						NpcTalkMorePacket(type, 0).dispatch();
+						break;
+					case Buttons::YES:
+						NpcTalkMorePacket(type, 1).dispatch();
+						break;
+				}
+
 				break;
 			}
-			break;
-		case TalkType::SENDACCEPTDECLINE:
-			// Type = 1
-			switch (buttonid)
+			case TalkType::SENDACCEPTDECLINE:
 			{
-			case Buttons::CLOSE:
-				NpcTalkMorePacket(type, -1).dispatch();
-				break;
-			case Buttons::QNO:
-				NpcTalkMorePacket(type, 0).dispatch();
-				break;
-			case Buttons::QYES:
-				NpcTalkMorePacket(type, 1).dispatch();
+				// Type = 1
+				switch (buttonid)
+				{
+					case Buttons::CLOSE:
+						NpcTalkMorePacket(type, -1).dispatch();
+						break;
+					case Buttons::QNO:
+						NpcTalkMorePacket(type, 0).dispatch();
+						break;
+					case Buttons::QYES:
+						NpcTalkMorePacket(type, 1).dispatch();
+						break;
+				}
+
 				break;
 			}
-			break;
-		case TalkType::SENDGETTEXT:
-			// TODO: What is this?
-			break;
-		case TalkType::SENDGETNUMBER:
-			// Type = 3
-			switch (buttonid)
+			case TalkType::SENDGETTEXT:
 			{
-			case Buttons::CLOSE:
-				NpcTalkMorePacket(type, 0).dispatch();
-				break;
-			case Buttons::OK:
-				NpcTalkMorePacket(type, 1).dispatch();
+				// TODO: What is this?
 				break;
 			}
-			break;
-		case TalkType::SENDSIMPLE:
-			// Type = 4
-			switch (buttonid)
+			case TalkType::SENDGETNUMBER:
 			{
-			case Buttons::CLOSE:
-				NpcTalkMorePacket(type, 0).dispatch();
+				// Type = 3
+				switch (buttonid)
+				{
+					case Buttons::CLOSE:
+						NpcTalkMorePacket(type, 0).dispatch();
+						break;
+					case Buttons::OK:
+						NpcTalkMorePacket(type, 1).dispatch();
+						break;
+				}
+
 				break;
+			}
+			case TalkType::SENDSIMPLE:
+			{
+				// Type = 4
+				switch (buttonid)
+				{
+					case Buttons::CLOSE:
+						NpcTalkMorePacket(type, 0).dispatch();
+						break;
+					default:
+						NpcTalkMorePacket(0).dispatch(); // TODO: Selection
+						break;
+				}
+
+				break;
+			}
 			default:
-				NpcTalkMorePacket(0).dispatch(); // TODO: Selection
+			{
 				break;
 			}
-			break;
-		default:
-			break;
 		}
 
 		return Button::State::NORMAL;
@@ -399,29 +414,33 @@ namespace ms
 
 		switch (type)
 		{
-		case TalkType::SENDOK:
-			buttons[Buttons::OK]->set_position(Point<int16_t>(471, y_cord));
-			buttons[Buttons::OK]->set_active(true);
-			break;
-		case TalkType::SENDYESNO:
-		{
-			Point<int16_t> yes_position = Point<int16_t>(389, y_cord);
+			case TalkType::SENDOK:
+			{
+				buttons[Buttons::OK]->set_position(Point<int16_t>(471, y_cord));
+				buttons[Buttons::OK]->set_active(true);
+				break;
+			}
+			case TalkType::SENDYESNO:
+			{
+				Point<int16_t> yes_position = Point<int16_t>(389, y_cord);
 
-			buttons[Buttons::YES]->set_position(yes_position);
-			buttons[Buttons::YES]->set_active(true);
+				buttons[Buttons::YES]->set_position(yes_position);
+				buttons[Buttons::YES]->set_active(true);
 
-			buttons[Buttons::NO]->set_position(yes_position + Point<int16_t>(65, 0));
-			buttons[Buttons::NO]->set_active(true);
-			break;
-		}
-		case TalkType::SENDNEXT:
-		case TalkType::SENDNEXTPREV:
-		case TalkType::SENDACCEPTDECLINE:
-		case TalkType::SENDGETTEXT:
-		case TalkType::SENDGETNUMBER:
-		case TalkType::SENDSIMPLE:
-		default:
-			break;
+				buttons[Buttons::NO]->set_position(yes_position + Point<int16_t>(65, 0));
+				buttons[Buttons::NO]->set_active(true);
+				break;
+			}
+			case TalkType::SENDNEXT:
+			case TalkType::SENDNEXTPREV:
+			case TalkType::SENDACCEPTDECLINE:
+			case TalkType::SENDGETTEXT:
+			case TalkType::SENDGETNUMBER:
+			case TalkType::SENDSIMPLE:
+			default:
+			{
+				break;
+			}
 		}
 
 		position = Point<int16_t>(400 - top.width() / 2, 240 - height / 2);

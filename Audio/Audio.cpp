@@ -71,7 +71,7 @@ namespace ms
 
 	Error Sound::init()
 	{
-		if (!BASS_Init(1, 44100, 0, nullptr, 0))
+		if (!BASS_Init(-1, 44100, 0, nullptr, 0))
 			return Error::Code::AUDIO;
 
 		nl::node uisrc = nl::nx::sound["UI.img"];

@@ -25,56 +25,28 @@ namespace ms
 	{
 		if (src.data_type() == nl::node::type::bitmap)
 		{
-			origin = src["origin"];
-
-			std::string source = src["source"];
-			std::string _outlink = src["_outlink"];
-			std::string _inlink = src["_inlink"];
-
-			auto foundSource = find_child(src, source);
-			auto foundOutlink = find_child(src, _outlink);
-
-			auto foundChild = foundSource || foundOutlink;
-
-			if (foundChild)
-				src = foundSource ? foundSource : foundOutlink;
-
-			if (!foundChild && !_inlink.empty())
-			{
-				auto parent_node = src.root();
-
-				for (auto child_node = parent_node.begin(); child_node != parent_node.end(); ++child_node)
-				{
-					auto found_node = child_node.resolve(_inlink);
-
-					if (found_node.data_type() == nl::node::type::bitmap)
-					{
-						src = found_node;
-						break;
-					}
-				}
-			}
-
 			bitmap = src;
+			origin = src["origin"];
 			dimensions = Point<int16_t>(bitmap.width(), bitmap.height());
 
 			GraphicsGL::get().addbitmap(bitmap);
 		}
 	}
 
-	Texture::Texture() {}
-	Texture::~Texture() {}
-
 	void Texture::draw(const DrawArgument& args) const
 	{
-		size_t id = bitmap.id();
+		draw(args, Range<int16_t>(0, 0));
+	}
 
-		if (id == 0)
+	void Texture::draw(const DrawArgument& args, const Range<int16_t>& vertical) const
+	{
+		if (!is_valid())
 			return;
 
 		GraphicsGL::get().draw(
 			bitmap,
 			args.get_rectangle(origin, dimensions),
+			vertical,
 			args.get_color(),
 			args.get_angle()
 		);
@@ -108,17 +80,5 @@ namespace ms
 	Point<int16_t> Texture::get_dimensions() const
 	{
 		return dimensions;
-	}
-
-	nl::node Texture::find_child(nl::node source, std::string link)
-	{
-		if (!link.empty())
-		{
-			nl::node parent_node = source.root();
-
-			return parent_node.resolve(link.substr(link.find('/') + 1));
-		}
-
-		return nl::node();
 	}
 }

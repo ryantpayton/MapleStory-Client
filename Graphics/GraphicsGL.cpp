@@ -203,6 +203,7 @@ namespace ms
 		addfont(FONT_BOLD_STR, Text::Font::A12B, 0, 12);
 		addfont(FONT_NORMAL_STR, Text::Font::A13M, 0, 13);
 		addfont(FONT_BOLD_STR, Text::Font::A13B, 0, 13);
+		addfont(FONT_BOLD_STR, Text::Font::A14B, 0, 14);
 		addfont(FONT_BOLD_STR, Text::Font::A15B, 0, 15);
 		addfont(FONT_NORMAL_STR, Text::Font::A18M, 0, 18);
 
@@ -484,7 +485,7 @@ namespace ms
 		).first->second;
 	}
 
-	void GraphicsGL::draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect, const Color& color, float angle)
+	void GraphicsGL::draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect, const Range<int16_t>& vertical, const Color& color, float angle)
 	{
 		if (locked)
 			return;
@@ -495,7 +496,12 @@ namespace ms
 		if (!rect.overlaps(SCREEN))
 			return;
 
-		quads.emplace_back(rect.left(), rect.right(), rect.top(), rect.bottom(), getoffset(bmp), color, angle);
+		Offset offset = getoffset(bmp);
+
+		offset.top += vertical.first();
+		offset.bottom -= vertical.second();
+
+		quads.emplace_back(rect.left(), rect.right(), rect.top() + vertical.first(), rect.bottom() - vertical.second(), offset, color, angle);
 	}
 
 	Text::Layout GraphicsGL::createlayout(const std::string& text, Text::Font id, Text::Alignment alignment, int16_t maxwidth, bool formatted, int16_t line_adj)
@@ -553,48 +559,52 @@ namespace ms
 		{
 			switch (text[first])
 			{
-			case '\\':
-				if (first + 1 < last)
+				case '\\':
 				{
-					switch (text[first + 1])
+					if (first + 1 < last)
 					{
-					case 'n':
-						linebreak = true;
-						break;
-					case 'r':
-						linebreak = ax > 0;
-						break;
+						switch (text[first + 1])
+						{
+							case 'n':
+								linebreak = true;
+								break;
+							case 'r':
+								linebreak = ax > 0;
+								break;
+						}
+
+						skip++;
 					}
 
 					skip++;
+					break;
 				}
-
-				skip++;
-				break;
-			case '#':
-				if (first + 1 < last)
+				case '#':
 				{
-					switch (text[first + 1])
+					if (first + 1 < last)
 					{
-					case 'k':
-						color = Color::Name::DARKGREY;
-						break;
-					case 'b':
-						color = Color::Name::BLUE;
-						break;
-					case 'r':
-						color = Color::Name::RED;
-						break;
-					case 'c':
-						color = Color::Name::ORANGE;
-						break;
+						switch (text[first + 1])
+						{
+							case 'k':
+								color = Color::Name::DARKGREY;
+								break;
+							case 'b':
+								color = Color::Name::BLUE;
+								break;
+							case 'r':
+								color = Color::Name::RED;
+								break;
+							case 'c':
+								color = Color::Name::ORANGE;
+								break;
+						}
+
+						skip++;
 					}
 
 					skip++;
+					break;
 				}
-
-				skip++;
-				break;
 			}
 		}
 
@@ -684,12 +694,12 @@ namespace ms
 
 		switch (alignment)
 		{
-		case Text::Alignment::CENTER:
-			line_x -= ax / 2;
-			break;
-		case Text::Alignment::RIGHT:
-			line_x -= ax;
-			break;
+			case Text::Alignment::CENTER:
+				line_x -= ax / 2;
+				break;
+			case Text::Alignment::RIGHT:
+				line_x -= ax;
+				break;
 		}
 
 		lines.push_back({ words, { line_x, line_y } });
@@ -717,22 +727,24 @@ namespace ms
 
 		switch (background)
 		{
-		case Text::Background::NAMETAG:
-			// If ever changing code in here confirm placements with map 10000
-			for (const Text::Layout::Line& line : layout)
+			case Text::Background::NAMETAG:
 			{
-				GLshort left = x + line.position.x() - 1;
-				GLshort right = left + w + 3;
-				GLshort top = y + line.position.y() - font.linespace() + 6;
-				GLshort bottom = top + h - 2;
-				Color ntcolor = Color(0.0f, 0.0f, 0.0f, 0.6f);
+				// If ever changing code in here confirm placements with map 10000
+				for (const Text::Layout::Line& line : layout)
+				{
+					GLshort left = x + line.position.x() - 1;
+					GLshort right = left + w + 3;
+					GLshort top = y + line.position.y() - font.linespace() + 6;
+					GLshort bottom = top + h - 2;
+					Color ntcolor = Color(0.0f, 0.0f, 0.0f, 0.6f);
 
-				quads.emplace_back(left, right, top, bottom, nulloffset, ntcolor, 0.0f);
-				quads.emplace_back(left - 1, left, top + 1, bottom - 1, nulloffset, ntcolor, 0.0f);
-				quads.emplace_back(right, right + 1, top + 1, bottom - 1, nulloffset, ntcolor, 0.0f);
+					quads.emplace_back(left, right, top, bottom, nulloffset, ntcolor, 0.0f);
+					quads.emplace_back(left - 1, left, top + 1, bottom - 1, nulloffset, ntcolor, 0.0f);
+					quads.emplace_back(right, right + 1, top + 1, bottom - 1, nulloffset, ntcolor, 0.0f);
+				}
+
+				break;
 			}
-
-			break;
 		}
 
 		for (const Text::Layout::Line& line : layout)

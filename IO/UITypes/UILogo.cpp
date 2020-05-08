@@ -46,8 +46,6 @@ namespace ms
 
 	void UILogo::draw(float inter) const
 	{
-		UIElement::draw(inter);
-
 		if (!user_clicked)
 		{
 			if (!nexon_ended)
@@ -70,8 +68,6 @@ namespace ms
 
 	void UILogo::update()
 	{
-		UIElement::update();
-
 		if (!nexon_ended)
 		{
 			nexon_ended = Nexon.update();

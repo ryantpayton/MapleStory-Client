@@ -62,11 +62,11 @@ namespace ms
 
 		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(190, 6));
 		buttons[Buttons::BT_HP] = std::make_unique<MapleButton>(main["BtHpUp"]);
-		buttons[Buttons::BT_MP] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0, 18));		// TODO: "BtMpUp" not Working
-		buttons[Buttons::BT_STR] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0, 87));	// TODO: "BtStrUp" not working
-		buttons[Buttons::BT_DEX] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0, 105));	// TODO: "BtDexUp" not working
-		buttons[Buttons::BT_INT] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0, 123));	// TODO: "BtIntUp" not working
-		buttons[Buttons::BT_LUK] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0, 141));	// TODO: "BtLukUp" not working
+		buttons[Buttons::BT_MP] = std::make_unique<MapleButton>(main["BtMpUp"]);
+		buttons[Buttons::BT_STR] = std::make_unique<MapleButton>(main["BtStrUp"]);
+		buttons[Buttons::BT_DEX] = std::make_unique<MapleButton>(main["BtDexUp"]);
+		buttons[Buttons::BT_INT] = std::make_unique<MapleButton>(main["BtIntUp"]);
+		buttons[Buttons::BT_LUK] = std::make_unique<MapleButton>(main["BtLukUp"]);
 		buttons[Buttons::BT_AUTO] = std::make_unique<MapleButton>(main["BtAuto"]);
 		buttons[Buttons::BT_HYPERSTATOPEN] = std::make_unique<MapleButton>(main["BtHyperStatOpen"]);
 		buttons[Buttons::BT_HYPERSTATCLOSE] = std::make_unique<MapleButton>(main["BtHyperStatClose"]);
@@ -243,12 +243,12 @@ namespace ms
 	{
 		switch (stat)
 		{
-		case MapleStat::Id::JOB:
-			statlabels[StatLabel::JOB].change_text(stats.get_jobname());
-			break;
-		case MapleStat::Id::FAME:
-			update_simple(StatLabel::FAME, MapleStat::Id::FAME);
-			break;
+			case MapleStat::Id::JOB:
+				statlabels[StatLabel::JOB].change_text(stats.get_jobname());
+				break;
+			case MapleStat::Id::FAME:
+				update_simple(StatLabel::FAME, MapleStat::Id::FAME);
+				break;
 		}
 	}
 
@@ -258,104 +258,126 @@ namespace ms
 
 		switch (id)
 		{
-		case Buttons::BT_CLOSE:
-			deactivate();
-			break;
-		case Buttons::BT_HP:
-			send_apup(MapleStat::Id::HP);
-			break;
-		case Buttons::BT_MP:
-			send_apup(MapleStat::Id::MP);
-			break;
-		case Buttons::BT_STR:
-			send_apup(MapleStat::Id::STR);
-			break;
-		case Buttons::BT_DEX:
-			send_apup(MapleStat::Id::DEX);
-			break;
-		case Buttons::BT_INT:
-			send_apup(MapleStat::Id::INT);
-			break;
-		case Buttons::BT_LUK:
-			send_apup(MapleStat::Id::LUK);
-			break;
-		case Buttons::BT_AUTO:
-		{
-			uint16_t autostr = 0;
-			uint16_t autodex = 0;
-			uint16_t autoint = 0;
-			uint16_t autoluk = 0;
-			uint16_t nowap = stats.get_stat(MapleStat::Id::AP);
-			EquipStat::Id id = player.get_stats().get_job().get_primary(player.get_weapontype());
-
-			switch (id)
+			case Buttons::BT_CLOSE:
 			{
-			case EquipStat::Id::STR:
-				autostr = nowap;
-				break;
-			case EquipStat::Id::DEX:
-				autodex = nowap;
-				break;
-			case EquipStat::Id::INT:
-				autoint = nowap;
-				break;
-			case EquipStat::Id::LUK:
-				autoluk = nowap;
+				deactivate();
 				break;
 			}
-
-			std::string message =
-				"Your AP will be distributed as follows:\\r"
-				"\\nSTR : +" + std::to_string(autostr) +
-				"\\nDEX : +" + std::to_string(autodex) +
-				"\\nINT : +" + std::to_string(autoint) +
-				"\\nLUK : +" + std::to_string(autoluk) +
-				"\\r\\n";
-
-			std::function<void(bool)> yesnohandler = [&, autostr, autodex, autoint, autoluk](bool yes)
+			case Buttons::BT_HP:
 			{
-				if (yes)
+				send_apup(MapleStat::Id::HP);
+				break;
+			}
+			case Buttons::BT_MP:
+			{
+				send_apup(MapleStat::Id::MP);
+				break;
+			}
+			case Buttons::BT_STR:
+			{
+				send_apup(MapleStat::Id::STR);
+				break;
+			}
+			case Buttons::BT_DEX:
+			{
+				send_apup(MapleStat::Id::DEX);
+				break;
+			}
+			case Buttons::BT_INT:
+			{
+				send_apup(MapleStat::Id::INT);
+				break;
+			}
+			case Buttons::BT_LUK:
+			{
+				send_apup(MapleStat::Id::LUK);
+				break;
+			}
+			case Buttons::BT_AUTO:
+			{
+				uint16_t autostr = 0;
+				uint16_t autodex = 0;
+				uint16_t autoint = 0;
+				uint16_t autoluk = 0;
+				uint16_t nowap = stats.get_stat(MapleStat::Id::AP);
+				EquipStat::Id id = player.get_stats().get_job().get_primary(player.get_weapontype());
+
+				switch (id)
 				{
-					if (autostr > 0)
-						for (size_t i = 0; i < autostr; i++)
-							send_apup(MapleStat::Id::STR);
-
-					if (autodex > 0)
-						for (size_t i = 0; i < autodex; i++)
-							send_apup(MapleStat::Id::DEX);
-
-					if (autoint > 0)
-						for (size_t i = 0; i < autoint; i++)
-							send_apup(MapleStat::Id::INT);
-
-					if (autoluk > 0)
-						for (size_t i = 0; i < autoluk; i++)
-							send_apup(MapleStat::Id::LUK);
+					case EquipStat::Id::STR:
+						autostr = nowap;
+						break;
+					case EquipStat::Id::DEX:
+						autodex = nowap;
+						break;
+					case EquipStat::Id::INT:
+						autoint = nowap;
+						break;
+					case EquipStat::Id::LUK:
+						autoluk = nowap;
+						break;
 				}
-			};
 
-			UI::get().emplace<UIYesNo>(message, yesnohandler, Text::Alignment::LEFT);
-		}
-		break;
-		case Buttons::BT_HYPERSTATOPEN:
-			break;
-		case Buttons::BT_HYPERSTATCLOSE:
-		{
-			if (player.get_level() < 140)
-				UI::get().emplace<UIOk>("You can use the Hyper Stat at Lv. 140 and above.", [](bool) {});
-		}
-		break;
-		case Buttons::BT_DETAILOPEN:
-			set_detail(true);
-			break;
-		case Buttons::BT_DETAILCLOSE:
-		case Buttons::BT_DETAIL_DETAILCLOSE:
-			set_detail(false);
-			break;
-		case Buttons::BT_ABILITY:
-			break;
-		default:
-			break;
+				std::string message =
+					"Your AP will be distributed as follows:\\r"
+					"\\nSTR : +" + std::to_string(autostr) +
+					"\\nDEX : +" + std::to_string(autodex) +
+					"\\nINT : +" + std::to_string(autoint) +
+					"\\nLUK : +" + std::to_string(autoluk) +
+					"\\r\\n";
+
+				std::function<void(bool)> yesnohandler = [&, autostr, autodex, autoint, autoluk](bool yes)
+				{
+					if (yes)
+					{
+						if (autostr > 0)
+							for (size_t i = 0; i < autostr; i++)
+								send_apup(MapleStat::Id::STR);
+
+						if (autodex > 0)
+							for (size_t i = 0; i < autodex; i++)
+								send_apup(MapleStat::Id::DEX);
+
+						if (autoint > 0)
+							for (size_t i = 0; i < autoint; i++)
+								send_apup(MapleStat::Id::INT);
+
+						if (autoluk > 0)
+							for (size_t i = 0; i < autoluk; i++)
+								send_apup(MapleStat::Id::LUK);
+					}
+				};
+
+				UI::get().emplace<UIYesNo>(message, yesnohandler, Text::Alignment::LEFT);
+				break;
+			}
+			case Buttons::BT_HYPERSTATOPEN:
+			{
+				break;
+			}
+			case Buttons::BT_HYPERSTATCLOSE:
+			{
+				if (player.get_level() < 140)
+					UI::get().emplace<UIOk>("You can use the Hyper Stat at Lv. 140 and above.", [](bool) {});
+
+				break;
+			}
+			case Buttons::BT_DETAILOPEN:
+			{
+				set_detail(true);
+				break;
+			}
+			case Buttons::BT_DETAILCLOSE:
+			case Buttons::BT_DETAIL_DETAILCLOSE:
+			{
+				set_detail(false);
+				break;
+			}
+			case Buttons::BT_ABILITY:
+			default:
+			{
+				break;
+			}
 		}
 
 		return Button::State::NORMAL;
