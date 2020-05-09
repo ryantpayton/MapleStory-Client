@@ -19,14 +19,43 @@
 
 #include "GraphicsGL.h"
 
+#ifdef USE_NX
+#include <nlnx/nx.hpp>
+#endif
+
 namespace ms
 {
 	Texture::Texture(nl::node src)
 	{
 		if (src.data_type() == nl::node::type::bitmap)
 		{
-			bitmap = src;
 			origin = src["origin"];
+
+			if (src.root() == nl::nx::map001)
+			{
+				const std::string& _outlink = src["_outlink"];
+
+				if (!_outlink.empty())
+				{
+					size_t first = _outlink.find_first_of('/');
+
+					if (first != std::string::npos)
+					{
+						const std::string& first_part = _outlink.substr(0, first);
+
+						if (first_part == "Map")
+						{
+							const std::string& path = _outlink.substr(first + 1);
+							nl::node foundOutlink = nl::nx::mapLatest.resolve(path);
+
+							if (foundOutlink)
+								src = foundOutlink;
+						}
+					}
+				}
+			}
+
+			bitmap = src;
 			dimensions = Point<int16_t>(bitmap.width(), bitmap.height());
 
 			GraphicsGL::get().addbitmap(bitmap);
