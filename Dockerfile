@@ -31,23 +31,6 @@ RUN apt-get install -y \
   xorg-dev \
   libgl1-mesa-dev
 
-
-# Explicitly copying required files into container (optimize for docker caching)
-WORKDIR /tmp/HeavenClient/
-COPY *.cpp *.h Icon.* build-deps.sh CMakeLists.txt ./
-COPY Audio ./Audio
-COPY Character ./Character
-COPY Data ./Data
-COPY Gameplay ./Gameplay
-COPY Graphics ./Graphics
-COPY IO ./IO
-COPY Net ./Net
-COPY Template ./Template
-COPY Util ./Util
-COPY libs ./libs
-COPY fonts ./fonts
-
-
 # Build all HeavenClient dependencies
 WORKDIR /tmp/HeavenClient/libs
 
@@ -58,7 +41,7 @@ RUN git clone https://github.com/kcat/alure && \
     cmake .. && \
     make -j$(nproc)
 
-# fetch * build openal-soft
+# fetch & build openal-soft
 RUN git clone https://github.com/kcat/openal-soft && \
   cd openal-soft && \
   git checkout f5e0eef && \
@@ -66,15 +49,18 @@ RUN git clone https://github.com/kcat/openal-soft && \
   cmake .. && \
   make -j$(nproc)
 
-# build glad
-RUN cd glad && \
+# fetch & build glad
+RUN git clone https://github.com/Dav1dde/glad.git && \
+  cd glad && \
   mkdir -p build && \
   cd build && \
   cmake .. && \
   make -j$(nproc)
 
-# build lz4
-RUN cd lz4 && make -j$(nproc)
+# fetch & build lz4
+RUN git clone https://github.com/lz4/lz4.git && \
+  cd lz4 && \
+  make -j$(nproc)
 
 # fetch & build NoLifeNx
 RUN mkdir NoLifeNx && \
@@ -98,9 +84,24 @@ RUN git clone https://github.com/glfw/glfw && \
 # fetch asio
 RUN git clone https://github.com/chriskohlhoff/asio.git
 
+# fetch stb
+RUN git clone https://github.com/nothings/stb.git
 
-# Building HeavenClient
-WORKDIR /tmp/HeavenClient
+# Explicitly copying required files into container (optimize for docker caching)
+WORKDIR /tmp/HeavenClient/
+COPY *.cpp *.h Icon.* CMakeLists.txt ./
+COPY Audio ./Audio
+COPY Character ./Character
+COPY Data ./Data
+COPY Gameplay ./Gameplay
+COPY Graphics ./Graphics
+COPY IO ./IO
+COPY Net ./Net
+COPY Template ./Template
+COPY Util ./Util
+COPY fonts ./fonts
+
+# Build HeavenClient
 RUN mkdir build && \
   cd build && \
   cmake .. && \

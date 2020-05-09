@@ -2,43 +2,47 @@
 set -ex
 
 SOURCE_DIR=${PWD}
-CORES=$(nproc)
+CORES=$(sysctl -n hw.ncpu)
 
 mkdir -p libs
 
 # fetch & build alure
 if [[
-    ! -d "libs/alure/include" ||
-    ! -f "libs/alure/build/libalure2.so" 
+    ! -d "libs/alure/include"
+    # ! -d "libs/alure/include" ||
+    # ! -f "libs/alure/build/libalure2.so" 
 ]]; then
     rm -rf "libs/alure"
     echo "fetching and building alure..."
     cd libs && \
-    git clone https://github.com/kcat/alure && \
-    cd alure && \
-    cd build && \
-    cmake .. && \
-    make -j$CORES
-    echo "successfully compiled alure"
+    git clone https://github.com/kcat/alure
+    # git clone https://github.com/kcat/alure && \
+    # cd alure && \
+    # cd build && \
+    # cmake .. && \
+    # make -j$CORES
+    # echo "successfully compiled alure"
     cd $SOURCE_DIR
 fi
 
 
 # fetch & build openal-soft
 if [[
-    ! -d "libs/openal-soft/include" ||
-    ! -f "libs/openal-soft/build/libopenal.so"
+    ! -d "libs/openal-soft/include"
+    # ! -d "libs/openal-soft/include" ||
+    # ! -f "libs/openal-soft/build/libopenal.so"
 ]]; then
     rm -rf "libs/openal-soft"
     echo "fetching and building openal-soft..."
     cd libs && \
-    git clone https://github.com/kcat/openal-soft && \
-    cd openal-soft && \
-    git checkout f5e0eef && \
-    cd build && \
-    cmake .. && \
-    make -j$CORES
-    echo "successfully compiled openal-soft"
+    git clone https://github.com/kcat/openal-soft
+    # git clone https://github.com/kcat/openal-soft && \
+    # cd openal-soft && \
+    # git checkout f5e0eef && \
+    # cd build && \
+    # cmake .. && \
+    # make -j$CORES
+    # echo "successfully compiled openal-soft"
     cd $SOURCE_DIR
 fi
 
@@ -95,22 +99,24 @@ if [[
 fi
 
 
-# fetch & build glfw
+# # fetch & build glfw
 if [[
-    ! -d "libs/glfw/include" ||
-    ! -f "libs/glfw/build/src/libglfw3.a"
+    ! -d "libs/glfw/include"
+    # ! -d "libs/glfw/include" ||
+    # ! -f "libs/glfw/build/src/libglfw3.a"
 ]]; then
     rm -rf "libs/glfw"
     echo "fetching and building glfw..."
     cd libs && \
     git clone https://github.com/glfw/glfw && \
     cd glfw && \
-    git checkout 0a49ef0 && \
-    mkdir build && \
-    cd build && \
-    cmake .. && \
-    make -j$CORES && \
-    echo "successfully compiled glfw"
+    git checkout 0a49ef0
+    # git checkout 0a49ef0 && \
+    # mkdir build && \
+    # cd build && \
+    # cmake .. && \
+    # make -j$CORES && \
+    # echo "successfully compiled glfw"
     cd $SOURCE_DIR
 fi
 
@@ -138,4 +144,3 @@ if [[
     echo "successfully fetched stb"
     cd $SOURCE_DIR
 fi
-
