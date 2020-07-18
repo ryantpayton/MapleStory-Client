@@ -63,7 +63,7 @@ If you experience any kind of in-game glitches, UI rendering issues, or anything
 5. Rebuild Solution
 
 # Binaries (08.19.2019)
-The latest build ([a3a9500][commit] can be found here: [HeavenClient.rar]
+The latest build ([a3a9500][commit]) can be found here: [HeavenClient.rar]
 
 # Donations
 If you feel obligated to donate, to further help and support all parties involved in the development of the HeavenClient project, you can donate using [this][2] link.
