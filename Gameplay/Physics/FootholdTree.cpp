@@ -62,7 +62,7 @@ namespace ms
 						std::piecewise_construct,
 						std::forward_as_tuple(id),
 						std::forward_as_tuple(lastf, id, layer)
-						).first->second;
+					).first->second;
 
 					if (foothold.l() < leftw)
 						leftw = foothold.l();
@@ -172,6 +172,9 @@ namespace ms
 		else
 		{
 			phobj.fhid = get_fhid_below(x, y);
+
+			if (phobj.fhid == 0)
+				return;
 		}
 
 		const Foothold& nextfh = get_fh(phobj.fhid);
