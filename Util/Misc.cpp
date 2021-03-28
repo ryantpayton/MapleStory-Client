@@ -36,22 +36,47 @@ namespace ms
 
 		std::string extend_id(int32_t id, size_t length)
 		{
-			std::string strid = std::to_string(id);
-
-			if (strid.size() < length)
-				strid.insert(0, length - strid.size(), '0');
-
-			return strid;
+			return pad_string(std::to_string(id), length);
 		}
 
-		void format_with_ellipsis(Text& input, size_t length)
+		std::string pad_string(std::string str, size_t length)
 		{
+			if (str.size() < length)
+				str.insert(0, length - str.size(), '0');
+
+			return str;
+		}
+
+		void format_with_ellipsis(Text& input, int16_t width, uint16_t ellipsis_width, bool word_break)
+		{
+			if (input.get_text().empty() || width == 0 || input.width() <= width)
+				return;
+
+			uint16_t i = 0;
+			std::string ellipsis;
 			std::string text = input.get_text();
 
-			while (input.width() > length)
+			while (i < ellipsis_width)
 			{
-				text.pop_back();
-				input.change_text(text + "..");
+				ellipsis += ".";
+				i++;
+			}
+
+			while (input.width() > width)
+			{
+				if (word_break)
+				{
+					size_t space = text.find_last_of(' ');
+
+					if (space != std::string::npos)
+						text = text.substr(0, space + 1);
+				}
+				else
+				{
+					text.pop_back();
+				}
+
+				input.change_text(text + ellipsis);
 			}
 		}
 
@@ -177,6 +202,19 @@ namespace ms
 				std::string mapid_str = string_format::extend_id(mapid, 9);
 
 				return nl::nx::map["Map"]["Map" + prefix][mapid_str + ".img"];
+			}
+		}
+	}
+
+	namespace single_console
+	{
+		void log_message(std::string message)
+		{
+			if (std::find(std::begin(log_history), std::end(log_history), message) == std::end(log_history))
+			{
+				log_history.push_back(message);
+
+				std::cout << message << std::endl;
 			}
 		}
 	}

@@ -77,9 +77,9 @@ namespace ms
 		}
 	}
 
-	void Cursor::set_position(Point<int16_t> pos)
+	void Cursor::set_position(Point<int16_t> cursor_position)
 	{
-		position = pos;
+		position = cursor_position;
 		hide_counter = 0;
 	}
 

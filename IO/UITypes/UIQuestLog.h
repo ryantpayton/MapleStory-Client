@@ -36,6 +36,7 @@ namespace ms
 		UIQuestLog(const QuestLog& questLog);
 
 		void draw(float inter) const override;
+		void update() override;
 
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 		Cursor::State send_cursor(bool clicking, Point<int16_t> cursorpos) override;
@@ -47,6 +48,9 @@ namespace ms
 
 	private:
 		void change_tab(uint16_t tabid);
+
+		Point<int16_t> get_search_pos();
+		Point<int16_t> get_search_dim();
 
 		enum Buttons : uint16_t
 		{

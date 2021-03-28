@@ -87,8 +87,8 @@ namespace ms
 			GRAY,
 			TORCHRED,
 			CREAM,
-			SMALT,
-			PRUSSIANBLUE,
+			PERSIANGREEN,
+			SILVER,
 			NUM_COLORS
 		};
 
@@ -134,8 +134,8 @@ namespace ms
 			{ 0.54f, 0.54f, 0.54f }, // Gray
 			{ 0.94f, 0.00f, 0.20f }, // Torch Red
 			{ 1.00f, 1.00f, 0.80f }, // Cream
-			{ 0.00f, 0.23f, 0.56f }, // Smalt
-			{ 0.01f, 0.19f, 0.28f }  // Prussian Blue
+			{ 0.00f, 0.67f, 0.67f }, // Persian Green
+			{ 0.80f, 0.80f, 0.80f }  // Silver
 		};
 
 		// Create a color by an array of real numbers [0.0f, 1.0f]

@@ -19,13 +19,15 @@
 
 namespace ms
 {
+	Charset::Charset() : Charset({}, Charset::Alignment::LEFT) {}
+
 	Charset::Charset(nl::node src, Alignment alignment) : alignment(alignment)
 	{
-		for (auto sub : src)
+		for (nl::node node : src)
 		{
-			std::string name = sub.name();
+			std::string name = node.name();
 
-			if (sub.data_type() != nl::node::type::bitmap || name.empty())
+			if (node.data_type() != nl::node::type::bitmap || name.empty())
 				continue;
 
 			char c = *name.begin();
@@ -33,11 +35,9 @@ namespace ms
 			if (c == '\\')
 				c = '/';
 
-			chars.emplace(c, sub);
+			chars.emplace(c, node);
 		}
 	}
-
-	Charset::Charset() : alignment(Charset::Alignment::LEFT) {}
 
 	void Charset::draw(int8_t c, const DrawArgument& args) const
 	{
@@ -51,9 +51,13 @@ namespace ms
 	{
 		auto iter = chars.find(c);
 
-		return iter != chars.end() ? iter->second.width() : 0;
+		if (iter != chars.end())
+			return iter->second.width();
+
+		return 0;
 	}
 
+	// TODO: The two below draw methods need combined adding hspace to width only if it does not equal zero
 	int16_t Charset::draw(const std::string& text, const DrawArgument& args) const
 	{
 		int16_t shift = 0;
@@ -68,6 +72,7 @@ namespace ms
 					int16_t width = getw(c);
 
 					draw(c, args + Point<int16_t>(shift, 0));
+
 					shift += width + 2;
 					total += width;
 				}
@@ -80,6 +85,7 @@ namespace ms
 				for (char c : text)
 				{
 					draw(c, args + Point<int16_t>(shift, 0));
+
 					shift += getw(c) + 1;
 				}
 
@@ -91,6 +97,7 @@ namespace ms
 				{
 					char c = *iter;
 					shift += getw(c);
+
 					draw(c, args - Point<int16_t>(shift, 0));
 				}
 

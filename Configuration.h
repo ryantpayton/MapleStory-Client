@@ -225,7 +225,7 @@ namespace ms
 
 		const char* FILENAME = "Settings";
 		const char* TITLE = "MapleStory";
-		const char* VERSION = "213.2";
+		const char* VERSION = "221.1";
 		const char* LoginMusic = "BgmUI.img/Title";
 		const char* LoginMusicSEA = "BgmGL.img/OldMaple";
 		const char* LoginMusicNewtro = "BgmEvent2.img/Newtro_Login";
@@ -356,10 +356,22 @@ namespace ms
 		DefaultCharacter() : ByteEntry("Character", "0") {}
 	};
 
-	// Whether to show UIChatBar
-	struct Chatopen : public Configuration::BoolEntry
+	// Whether the UIChatBar is expanded or not
+	struct ChatViewMax : public Configuration::BoolEntry
 	{
-		Chatopen() : BoolEntry("Chatopen", "false") {}
+		ChatViewMax() : BoolEntry("ChatViewMax", "false") {}
+	};
+
+	// The user defined width for UIChatBar
+	struct ChatViewX : public Configuration::ShortEntry
+	{
+		ChatViewX() : ShortEntry("ChatViewX", "0") {}
+	};
+
+	// The user defined height for UIChatBar
+	struct ChatViewY : public Configuration::ShortEntry
+	{
+		ChatViewY() : ShortEntry("ChatViewY", "0") {}
 	};
 
 	// The default position of UIStatsInfo

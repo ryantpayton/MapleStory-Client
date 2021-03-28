@@ -49,7 +49,7 @@ namespace ms
 			return;
 
 		if (auto chatbar = UI::get().get_element<UIChatBar>())
-			chatbar->display_message(type, UIChatBar::RED);
+			chatbar->show_message(Messages::messages[type], UIChatBar::RED);
 	}
 
 	ForbidSkillMessage::ForbidSkillMessage(SpecialMove::ForbidReason reason, Weapon::Type weapon) : InChatMessage(message_by_reason(reason, weapon)) {}

@@ -17,11 +17,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../Messages.h"
 #include "../UIDragElement.h"
 
-#include "../Components/Slider.h"
 #include "../Components/Textfield.h"
+
+// TODO: Change these?
+#include "../Messages.h"
 
 namespace ms
 {
@@ -32,7 +33,33 @@ namespace ms
 		static constexpr bool FOCUSED = false;
 		static constexpr bool TOGGLED = true;
 
-		enum LineType
+		UIChatBar();
+
+		void draw(float inter) const override;
+		void update() override;
+
+		Button::State button_pressed(uint16_t buttonid) override;
+
+		bool is_in_range(Point<int16_t> cursor_position) const override;
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursor_position) override;
+		void send_key(int32_t keycode, bool pressed, bool escape) override;
+
+		UIElement::Type get_type() const override;
+
+		enum MessageGroup : uint8_t
+		{
+			ALL,
+			BATTLE,
+			PARTY,
+			FRIEND,
+			GUILD,
+			ALLIANCE,
+			SPOUSE,
+			GROUP,
+			LENGTH
+		};
+
+		enum MessageType : uint8_t
 		{
 			UNK0,
 			WHITE,
@@ -41,108 +68,110 @@ namespace ms
 			YELLOW
 		};
 
-		UIChatBar();
+		bool has_input() const;
+		void toggle_view();
+		void show_message(const char* message, MessageType type);
 
-		void draw(float inter) const override;
-		void update() override;
-
-		void send_key(int32_t keycode, bool pressed, bool escape) override;
-
-		bool is_in_range(Point<int16_t> cursorpos) const override;
-		Cursor::State send_cursor(bool clicking, Point<int16_t> cursorpos) override;
-
-		UIElement::Type get_type() const override;
-
-		Cursor::State check_dragtop(bool clicking, Point<int16_t> cursorpos);
-
-		void send_chatline(const std::string& line, LineType type);
-		void display_message(Messages::Type line, UIChatBar::LineType type);
-		void toggle_chat();
-		void toggle_chat(bool chat_open);
-		void toggle_chatfield();
-		void toggle_chatfield(bool chatfield_open);
-		bool is_chatopen();
-		bool is_chatfieldopen();
-
-	protected:
-		Button::State button_pressed(uint16_t buttonid) override;
+		// TODO: Change these?
+		void change_target(int32_t action) {}
 
 	private:
-		bool indragrange(Point<int16_t> cursorpos) const override;
+		static constexpr int16_t INPUT_TEXT_HEIGHT = 18;
+		static constexpr int16_t MIN_HEIGHT = 12;
+		static constexpr int16_t MAX_HEIGHT = 467;
 
-		int16_t getchattop(bool chat_open) const;
-		int16_t getchatbarheight() const;
-		Rectangle<int16_t> getbounds(Point<int16_t> additional_area) const;
+		bool indragrange(Point<int16_t> cursor_position) const override;
+		bool intoprange(Point<int16_t> cursor_position) const;
+		bool inbottomrange(Point<int16_t> cursor_position) const;
+		bool inleftrange(Point<int16_t> cursor_position)  const;
+		bool inrightrange(Point<int16_t> cursor_position) const;
+		bool intopleftrange(Point<int16_t> cursor_position)  const;
+		bool inbottomrightrange(Point<int16_t> cursor_position) const;
+		bool intoprightrange(Point<int16_t> cursor_position)  const;
+		bool inbottomleftrange(Point<int16_t> cursor_position) const;
 
-		static constexpr int16_t CHATROWHEIGHT = 13;
-		static constexpr int16_t MINCHATROWS = 1;
-		static constexpr int16_t MAXCHATROWS = 16;
-		static constexpr int16_t DIMENSION_Y = 17;
-		static constexpr time_t MESSAGE_COOLDOWN = 1'000;
+		Point<int16_t> get_position() const;
+		Point<int16_t> get_dragarea_position() const;
+		Point<int16_t> get_input_position() const;
+		Point<int16_t> get_input_text_position();
+		void toggle_input(bool enabled);
+		void toggle_view(bool max, bool pressed);
+		void update_view(bool pressed);
+		void input_text_enter_callback(std::string message);
+		void input_text_escape_callback();
+		void change_message(bool up);
 
-		enum Buttons : uint16_t
+		enum Buttons
 		{
-			BT_OPENCHAT,
-			BT_CLOSECHAT,
-			BT_CHAT,
-			BT_HELP,
-			BT_LINK,
-			BT_TAB_0,
-			BT_TAB_1,
-			BT_TAB_2,
-			BT_TAB_3,
-			BT_TAB_4,
-			BT_TAB_5,
-			BT_TAB_ADD,
-			BT_CHAT_TARGET
+			BtMax,
+			BtMin,
+			BtChat,
+			BtHelp,
+			BtItemLink,
+			BtChatEmoticon,
+			BtOutChat
 		};
 
-		enum ChatTab
+		enum DragDirection
 		{
-			CHT_ALL,
-			CHT_BATTLE,
-			CHT_PARTY,
-			CHT_FRIEND,
-			CHT_GUILD,
-			CHT_ALLIANCE,
-			NUM_CHATTAB
+			NONE,
+			DOWN,
+			LEFT,
+			DOWNLEFT
 		};
 
-		std::vector<std::string> ChatTabText =
+		Texture drag;
+		std::vector<Texture> max_textures;
+		std::vector<Texture> min_textures;
+		std::vector<Texture> input_textures;
+
+		int16_t min_x;
+		int16_t max_x;
+		int16_t top_y;
+		int16_t center_y;
+		int16_t bottom_y;
+		int16_t btMin_x;
+		int16_t user_view_x;
+		int16_t user_view_y;
+		int16_t temp_view_x;
+		int16_t temp_view_y;
+		int16_t min_view_y;
+		bool view_max;
+		bool view_input;
+		bool view_adjusted;
+		bool position_adjusted;
+		DragDirection drag_direction;
+		Point<int16_t> temp_position;
+
+		int16_t input_bg_x;
+		int16_t input_bg_y;
+		int16_t input_max_x;
+		int16_t input_origin_x;
+		Textfield input_text;
+
+		struct Message
 		{
-			"All",
-			"Battle",
-			"Party",
-			"Friend",
-			"Guild",
-			"Alliance"
+			MessageGroup group;
+			MessageType type;
+			Text text;
+
+			Message() : group(MessageGroup::ALL), type(MessageType::UNK0), text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::WHITE, "") {}
+			Message(std::string text) : group(MessageGroup::ALL), type(MessageType::UNK0), text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::WHITE, text) {}
+			Message(MessageGroup group, MessageType type, Text text) : group(group), type(type), text(text) {}
 		};
 
-		bool chatopen;
-		bool chatopen_persist;
-		bool chatfieldopen;
-		Texture chatspace[4];
-		Texture chatenter;
-		Texture chatcover;
-		Textfield chatfield;
-		Point<int16_t> closechat;
+		std::vector<Message> message_history;
+		std::vector<std::string> user_message_history;
+		size_t user_message_history_index;
 
-		Text chattab_text[UIChatBar::ChatTab::NUM_CHATTAB];
-		int16_t chattab_x;
-		int16_t chattab_y;
-		int16_t chattab_span;
-
-		Slider slider;
-
-		EnumMap<Messages::Type, time_t> message_cooldowns;
-		std::vector<std::string> lastentered;
-		size_t lastpos;
-
-		int16_t chatrows;
-		int16_t rowpos;
-		int16_t rowmax;
-		std::unordered_map<int16_t, Text> rowtexts;
-
-		bool dragchattop;
+#ifdef DEBUG
+		ColorBox dimension_box;
+		ColorBox dragarea_box;
+		ColorBox top_box;
+		ColorBox bottom_box;
+		ColorBox left_box;
+		ColorBox right_box;
+		ColorBox input_box;
+#endif
 	};
 }

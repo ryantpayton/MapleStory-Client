@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIChatBar.h"
 
+#include "../UI.h"
+
 #include "../Components/MapleButton.h"
 
 #include "../../Net/Packets/MessagingPackets.h"
@@ -27,230 +29,798 @@
 
 namespace ms
 {
-	UIChatBar::UIChatBar() : UIDragElement<PosCHAT>(Point<int16_t>(410, -5))
+	UIChatBar::UIChatBar() : temp_view_x(0), temp_view_y(0), drag_direction(DragDirection::NONE), view_input(false), view_adjusted(false), position_adjusted(false)
 	{
-		chatopen = Setting<Chatopen>::get().load();
-		chatopen_persist = chatopen;
-		chatfieldopen = false;
-		chatrows = 5;
-		lastpos = 0;
-		rowpos = 0;
-		rowmax = -1;
-
-		nl::node chat = nl::nx::ui["StatusBar3.img"]["chat"];
-		nl::node ingame = chat["ingame"];
-		nl::node view = ingame["view"];
+		nl::node ingame = nl::nx::ui["StatusBar3.img"]["chat"]["ingame"];
 		nl::node input = ingame["input"];
-		nl::node chatTarget = chat["common"]["chatTarget"];
 
-		chatspace[0] = view["min"]["top"];
-		chatspace[1] = view["min"]["center"];
-		chatspace[2] = view["min"]["bottom"];
-		chatspace[3] = view["drag"];
+		nl::node view = ingame["view"];
+		nl::node max = view["max"];
+		nl::node min = view["min"];
 
-		int16_t chattop_y = getchattop(true) - 33;
-		closechat = Point<int16_t>(387, 21);
+		drag = view["drag"];
 
-		buttons[Buttons::BT_OPENCHAT] = std::make_unique<MapleButton>(view["btMax"], Point<int16_t>(391, -7));
-		buttons[Buttons::BT_CLOSECHAT] = std::make_unique<MapleButton>(view["btMin"], closechat + Point<int16_t>(0, chattop_y));
-		buttons[Buttons::BT_CHAT] = std::make_unique<MapleButton>(input["button:chat"], Point<int16_t>(344, -8));
-		buttons[Buttons::BT_LINK] = std::make_unique<MapleButton>(input["button:itemLink"], Point<int16_t>(365, -8));
-		buttons[Buttons::BT_HELP] = std::make_unique<MapleButton>(input["button:help"], Point<int16_t>(386, -8));
+		max_textures.emplace_back(max["top"]);
+		max_textures.emplace_back(max["center"]);
+		max_textures.emplace_back(max["bottom"]);
 
-		buttons[chatopen ? Buttons::BT_OPENCHAT : Buttons::BT_CLOSECHAT]->set_active(false);
-		buttons[Buttons::BT_CHAT]->set_active(chatopen ? true : false);
-		buttons[Buttons::BT_LINK]->set_active(chatopen ? true : false);
-		buttons[Buttons::BT_HELP]->set_active(chatopen ? true : false);
+		min_textures.emplace_back(min["top"]);
+		min_textures.emplace_back(min["center"]);
+		min_textures.emplace_back(min["bottom"]);
 
-		chattab_x = 6;
-		chattab_y = chattop_y;
-		chattab_span = 54;
+		min_x = min_textures[0].width();
+		max_x = max_textures[0].width();
+		top_y = min_textures[0].height();
+		center_y = min_textures[1].height();
+		bottom_y = min_textures[2].height();
+		btMin_x = Texture(view["btMin"]["normal"]["0"]).width();
 
-		for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
+		input_textures.emplace_back(input["layer:backgrnd"]);
+		input_textures.emplace_back(input["layer:chatEnter"]);
+
+		input_bg_x = input_textures[0].width();
+		input_bg_y = input_textures[0].height();
+		input_max_x = input_textures[1].width();
+
+		auto input_origin = input_textures[1].get_origin().abs();
+		input_origin_x = input_origin.x();
+		auto input_origin_y = input_origin.y();
+
+		min_view_y = Constants::Constants::get().get_viewheight() - input_bg_y;
+		user_view_x = Setting<ChatViewX>::get().load();
+
+		if (user_view_x == 0)
+			user_view_x = min_x;
+
+		user_view_y = Setting<ChatViewY>::get().load();
+
+		if (user_view_y == 0)
 		{
-			buttons[Buttons::BT_TAB_0 + i] = std::make_unique<MapleButton>(view["tab"], Point<int16_t>(chattab_x + (i * chattab_span), chattab_y));
-			buttons[Buttons::BT_TAB_0 + i]->set_active(chatopen ? true : false);
-			chattab_text[ChatTab::CHT_ALL + i] = Text(Text::Font::A12M, Text::Alignment::CENTER, Color::Name::DUSTYGRAY, ChatTabText[i]);
+			// 20 pixels for the extra height by default
+			user_view_y = top_y + center_y + bottom_y + 20;
 		}
 
-		chattab_text[ChatTab::CHT_ALL].change_color(Color::Name::WHITE);
+		int16_t btMax_x = Texture(view["btMax"]["normal"]["0"]).width();
 
-		buttons[Buttons::BT_TAB_0 + ChatTab::NUM_CHATTAB] = std::make_unique<MapleButton>(view["btAddTab"], Point<int16_t>(chattab_x + (ChatTab::NUM_CHATTAB * chattab_span), chattab_y));
-		buttons[Buttons::BT_TAB_0 + ChatTab::NUM_CHATTAB]->set_active(chatopen ? true : false);
+		// Five pixels left and seven pixels up for padding
+		buttons[Buttons::BtMax] = std::make_unique<MapleButton>(view["btMax"], Point<int16_t>(min_x - btMax_x - 5, -7));
+		buttons[Buttons::BtMin] = std::make_unique<MapleButton>(view["btMin"]);
 
-		buttons[Buttons::BT_CHAT_TARGET] = std::make_unique<MapleButton>(chatTarget["all"], Point<int16_t>(5, -8));
-		buttons[Buttons::BT_CHAT_TARGET]->set_active(chatopen ? true : false);
+		auto p = /*get_input_position() + */Point<int16_t>(input_max_x - (input_bg_x - user_view_x) + input_origin_x - 17, 15 + input_origin_y + 1);
+		int16_t chat_x = Texture(input["button:chat"]["normal"]["0"]).width() + 3;
 
-		chatenter = input["layer:chatEnter"];
-		chatcover = input["layer:backgrnd"];
+		buttons[Buttons::BtChat] = std::make_unique<MapleButton>(input["button:chat"], p + Point<int16_t>(chat_x * 0, 0));
+		buttons[Buttons::BtItemLink] = std::make_unique<MapleButton>(input["button:itemLink"], p + Point<int16_t>(chat_x * 1, 0));
+		buttons[Buttons::BtChatEmoticon] = std::make_unique<MapleButton>(input["button:chatEmoticon"], p + Point<int16_t>(chat_x * 2, 0));
+		buttons[Buttons::BtHelp] = std::make_unique<MapleButton>(input["button:help"], p + Point<int16_t>(chat_x * 3, 0));
+		buttons[Buttons::BtOutChat] = std::make_unique<MapleButton>(input["button:outChat"], p + Point<int16_t>(chat_x * 4, 0));
 
-		chatfield = Textfield(Text::A11M, Text::LEFT, Color::Name::WHITE, Rectangle<int16_t>(Point<int16_t>(62, -9), Point<int16_t>(330, 8)), 0);
-		chatfield.set_state(chatopen ? Textfield::State::NORMAL : Textfield::State::DISABLED);
+		buttons[Buttons::BtChat]->set_active(false);
+		buttons[Buttons::BtItemLink]->set_active(false);
+		buttons[Buttons::BtChatEmoticon]->set_active(false);
+		buttons[Buttons::BtHelp]->set_active(false);
+		buttons[Buttons::BtOutChat]->set_active(false);
 
-		chatfield.set_enter_callback(
-			[&](std::string msg)
+		int16_t input_text_limit = 70;
+		int16_t input_text_marker_height = 11;
+
+		input_text = Textfield(
+			Text::Font::A11M, Text::Alignment::LEFT, Color::Name::WHITE,
+			Rectangle<int16_t>(get_input_text_position(), get_input_text_position() + Point<int16_t>(283, INPUT_TEXT_HEIGHT)),
+			input_text_limit, input_text_marker_height
+		);
+
+		input_text.set_enter_callback(
+			[&](std::string message)
 			{
-				if (msg.size() > 0)
-				{
-					size_t last = msg.find_last_not_of(' ');
-
-					if (last != std::string::npos)
-					{
-						msg.erase(last + 1);
-
-						GeneralChatPacket(msg, true).dispatch();
-
-						lastentered.push_back(msg);
-						lastpos = lastentered.size();
-					}
-					else
-					{
-						toggle_chatfield();
-					}
-
-					chatfield.change_text("");
-				}
-				else
-				{
-					toggle_chatfield();
-				}
+				input_text_enter_callback(message);
 			}
 		);
 
-		chatfield.set_key_callback(
-			KeyAction::Id::UP,
-			[&]()
-			{
-				if (lastpos > 0)
-				{
-					lastpos--;
-					chatfield.change_text(lastentered[lastpos]);
-				}
-			}
-		);
-
-		chatfield.set_key_callback(
-			KeyAction::Id::DOWN,
-			[&]()
-			{
-				if (lastentered.size() > 0 && lastpos < lastentered.size() - 1)
-				{
-					lastpos++;
-					chatfield.change_text(lastentered[lastpos]);
-				}
-			}
-		);
-
-		chatfield.set_key_callback(
+		input_text.set_key_callback(
 			KeyAction::Id::ESCAPE,
 			[&]()
 			{
-				toggle_chatfield(false);
+				input_text_escape_callback();
 			}
 		);
 
-		//int16_t slider_x = 394;
-		//int16_t slider_y = -80;
-		//int16_t slider_height = slider_y + 56;
-		//int16_t slider_unitrows = chatrows;
-		//int16_t slider_rowmax = 1;
-		//slider = Slider(Slider::Type::CHATBAR, Range<int16_t>(slider_y, slider_height), slider_x, slider_unitrows, slider_rowmax, [&](bool upwards) {});
+		input_text.set_key_callback(
+			KeyAction::Id::UP,
+			[&]()
+			{
+				change_message(true);
+			}
+		);
 
-		send_chatline("[Welcome] Welcome to MapleStory!!", LineType::YELLOW);
+		input_text.set_key_callback(
+			KeyAction::Id::DOWN,
+			[&]()
+			{
+				change_message(false);
+			}
+		);
 
-		dimension = Point<int16_t>(410, DIMENSION_Y);
+		dragarea = drag.get_dimensions();
 
-		//if (chatopen)
-		//	dimension.shift_y(getchatbarheight());
+		toggle_view(Setting<ChatViewMax>::get().load(), false);
+
+#ifdef DEBUG
+		dragarea_box = ColorBox(dragarea.x(), dragarea.y(), Color::Name::BLUE, 0.5f);
+		input_box = ColorBox(input_bg_x, input_bg_y, Color::Name::RED, 0.5f);
+#endif
+
+		show_message("[Welcome] Welcome to MapleStory!!", MessageType::YELLOW);
 	}
 
 	void UIChatBar::draw(float inter) const
 	{
-		UIElement::draw_sprites(inter);
-
-		if (chatopen)
+		if (view_max)
 		{
-			int16_t chattop = getchattop(chatopen);
+			Range<int16_t> vertical = Range<int16_t>(0, 0);
 
-			auto pos_adj = chatfieldopen ? Point<int16_t>(0, 0) : Point<int16_t>(0, 28);
+			max_textures[0].draw(position - Point<int16_t>(0, center_y + user_view_y), vertical, Range<int16_t>(0, max_x - user_view_x + 5));
+			max_textures[0].draw(position - Point<int16_t>(max_x - user_view_x, center_y + user_view_y), vertical, Range<int16_t>(max_x - 5, 0));
 
-			chatspace[0].draw(position + Point<int16_t>(0, chattop) + pos_adj);
+			max_textures[1].draw(DrawArgument(position - Point<int16_t>(0, center_y + user_view_y), Point<int16_t>(0, user_view_y + 1)), vertical, Range<int16_t>(0, max_x - user_view_x + 2));
+			max_textures[1].draw(DrawArgument(position - Point<int16_t>(max_x - user_view_x, center_y + user_view_y), Point<int16_t>(0, user_view_y + 1)), vertical, Range<int16_t>(max_x - 2, 0));
 
-			if (chatrows > 1)
-				chatspace[1].draw(DrawArgument(position + Point<int16_t>(0, -28) + pos_adj, Point<int16_t>(0, 28 + chattop)));
+			max_textures[2].draw(position, vertical, Range<int16_t>(0, max_x - user_view_x + 5));
+			max_textures[2].draw(position - Point<int16_t>(max_x - user_view_x, 0), vertical, Range<int16_t>(max_x - 5, 0));
 
-			chatspace[2].draw(position + Point<int16_t>(0, -28) + pos_adj);
-			chatspace[3].draw(position + Point<int16_t>(0, -15 + chattop) + pos_adj);
+			drag.draw(position - Point<int16_t>(0, top_y + center_y + user_view_y));
 
-			//slider.draw(position);
+			int16_t message_y = 0;
 
-			int16_t yshift = chattop;
-
-			for (size_t i = 0; i < chatrows; i++)
+			for (int i = message_history.size() - 1; i >= 0; i--)
 			{
-				int16_t rowid = rowpos - i;
-
-				if (!rowtexts.count(rowid))
-					break;
-
-				int16_t textheight = rowtexts.at(rowid).height() / CHATROWHEIGHT;
-
-				while (textheight > 0)
+				if (message_y <= center_y + user_view_y)
 				{
-					yshift += CHATROWHEIGHT;
-					textheight--;
-				}
+					message_history[i].text.draw(position - Point<int16_t>(drag.get_origin().x() - 2, 5) - Point<int16_t>(0, message_y));
 
-				rowtexts.at(rowid).draw(position + Point<int16_t>(9, getchattop(chatopen) - yshift - 21) + pos_adj);
+					message_y += 13;
+				}
+			}
+
+			if (view_input)
+			{
+				Point<int16_t> pos = get_input_position();
+
+				input_textures[0].draw(pos, vertical, Range<int16_t>(0, input_bg_x - user_view_x + 5));
+				input_textures[0].draw(pos - Point<int16_t>(input_bg_x - user_view_x, 0), vertical, Range<int16_t>(input_bg_x - 5, 0));
+
+				input_textures[1].draw(pos, vertical, Range<int16_t>(0, input_max_x - (input_bg_x - user_view_x) - input_origin_x - 22 + 3));
+				input_textures[1].draw(pos - Point<int16_t>(input_max_x - (input_bg_x - user_view_x) - input_origin_x - 22, 0), vertical, Range<int16_t>(input_max_x - 3, 0));
+
+				input_text.draw(Point<int16_t>(1, -2), Point<int16_t>(1, -3));
+
+#ifdef DEBUG
+				input_box.draw(pos);
+#endif
+			}
+
+			if (dragged)
+			{
+				if (temp_view_y > 0 && temp_view_x == 0)
+				{
+					Point<int16_t> pos = position;
+
+					if (drag_direction == DragDirection::DOWN)
+						pos = temp_position;
+
+					max_textures[0].draw(pos - Point<int16_t>(0, center_y + temp_view_y), vertical, Range<int16_t>(0, max_x - user_view_x + 5));
+					max_textures[0].draw(pos - Point<int16_t>(max_x - user_view_x, center_y + temp_view_y), vertical, Range<int16_t>(max_x - 5, 0));
+
+					max_textures[1].draw(DrawArgument(pos - Point<int16_t>(0, center_y + temp_view_y), Point<int16_t>(0, temp_view_y + 1)), vertical, Range<int16_t>(0, max_x - user_view_x + 2));
+					max_textures[1].draw(DrawArgument(pos - Point<int16_t>(max_x - user_view_x, center_y + temp_view_y), Point<int16_t>(0, temp_view_y + 1)), vertical, Range<int16_t>(max_x - 2, 0));
+
+					max_textures[2].draw(pos, vertical, Range<int16_t>(0, max_x - user_view_x + 5));
+					max_textures[2].draw(pos - Point<int16_t>(max_x - user_view_x, 0), vertical, Range<int16_t>(max_x - 5, 0));
+				}
+				else if (temp_view_y == 0 && temp_view_x > 0)
+				{
+					Point<int16_t> pos = position;
+
+					if (drag_direction == DragDirection::LEFT)
+						pos = temp_position;
+
+					max_textures[0].draw(pos - Point<int16_t>(0, center_y + user_view_y), vertical, Range<int16_t>(0, max_x - temp_view_x + 5));
+					max_textures[0].draw(pos - Point<int16_t>(max_x - temp_view_x, center_y + user_view_y), vertical, Range<int16_t>(max_x - 5, 0));
+
+					max_textures[1].draw(DrawArgument(pos - Point<int16_t>(0, center_y + user_view_y), Point<int16_t>(0, user_view_y + 1)), vertical, Range<int16_t>(0, max_x - temp_view_x + 2));
+					max_textures[1].draw(DrawArgument(pos - Point<int16_t>(max_x - temp_view_x, center_y + user_view_y), Point<int16_t>(0, user_view_y + 1)), vertical, Range<int16_t>(max_x - 2, 0));
+
+					max_textures[2].draw(pos, vertical, Range<int16_t>(0, max_x - temp_view_x + 5));
+					max_textures[2].draw(pos - Point<int16_t>(max_x - temp_view_x, 0), vertical, Range<int16_t>(max_x - 5, 0));
+				}
+				else if (temp_view_y > 0 && temp_view_x > 0)
+				{
+					Point<int16_t> pos = position;
+
+					if (drag_direction == DragDirection::DOWN || drag_direction == DragDirection::LEFT || drag_direction == DragDirection::DOWNLEFT)
+						pos = temp_position;
+
+					max_textures[0].draw(pos - Point<int16_t>(0, center_y + temp_view_y), vertical, Range<int16_t>(0, max_x - temp_view_x + 5));
+					max_textures[0].draw(pos - Point<int16_t>(max_x - temp_view_x, center_y + temp_view_y), vertical, Range<int16_t>(max_x - 5, 0));
+
+					max_textures[1].draw(DrawArgument(pos - Point<int16_t>(0, center_y + temp_view_y), Point<int16_t>(0, temp_view_y + 1)), vertical, Range<int16_t>(0, max_x - temp_view_x + 2));
+					max_textures[1].draw(DrawArgument(pos - Point<int16_t>(max_x - temp_view_x, center_y + temp_view_y), Point<int16_t>(0, temp_view_y + 1)), vertical, Range<int16_t>(max_x - 2, 0));
+
+					max_textures[2].draw(pos, vertical, Range<int16_t>(0, max_x - temp_view_x + 5));
+					max_textures[2].draw(pos - Point<int16_t>(max_x - temp_view_x, 0), vertical, Range<int16_t>(max_x - 5, 0));
+				}
 			}
 		}
 		else
 		{
-			auto pos_adj = chatfieldopen ? Point<int16_t>(0, -28) : Point<int16_t>(0, 0);
+			min_textures[0].draw(position - Point<int16_t>(0, center_y));
+			min_textures[1].draw(position - Point<int16_t>(0, center_y));
+			min_textures[2].draw(position);
 
-			chatspace[0].draw(position + Point<int16_t>(0, -1) + pos_adj);
-			chatspace[1].draw(position + Point<int16_t>(0, -1) + pos_adj);
-			chatspace[2].draw(position + pos_adj);
-			chatspace[3].draw(position + Point<int16_t>(0, -16) + pos_adj);
+			drag.draw(position - Point<int16_t>(0, top_y + center_y));
 
-			if (rowtexts.count(rowmax))
-				rowtexts.at(rowmax).draw(position + Point<int16_t>(9, -6) + pos_adj);
+			const size_t size = message_history.size();
+
+			if (size > 0)
+				message_history[size - 1].text.draw(position - Point<int16_t>(0, top_y + center_y) + Point<int16_t>(drag.get_origin().abs().x(), drag.height()) + Point<int16_t>(2, 7));
 		}
 
-		if (chatfieldopen)
+		UIElement::draw(inter);
+
+#ifdef DEBUG
+		dimension_box.draw(get_position());
+		dragarea_box.draw(get_dragarea_position());
+
+		if (view_max)
 		{
-			chatcover.draw(DrawArgument(position + Point<int16_t>(0, -13), Point<int16_t>(409, 0)));
-			chatenter.draw(DrawArgument(position + Point<int16_t>(0, -13), Point<int16_t>(285, 0)));
-			chatfield.draw(position + Point<int16_t>(-4, -4));
+			top_box.draw(get_position());
+			bottom_box.draw(get_position() + Point<int16_t>(0, dimension.y() - 3));
+			left_box.draw(get_position());
+			right_box.draw(get_position() + Point<int16_t>(dimension.x() - 3, 0));
 		}
-
-		UIElement::draw_buttons(inter);
-
-		if (chatopen)
-		{
-			auto pos_adj = chatopen && !chatfieldopen ? Point<int16_t>(0, 28) : Point<int16_t>(0, 0);
-
-			for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
-				chattab_text[ChatTab::CHT_ALL + i].draw(position + Point<int16_t>(chattab_x + (i * chattab_span) + 25, chattab_y - 3) + pos_adj);
-		}
+#endif
 	}
 
 	void UIChatBar::update()
 	{
-		UIElement::update();
+		input_text.update(get_input_text_position(), Point<int16_t>(input_max_x - (input_bg_x - user_view_x) - 22, INPUT_TEXT_HEIGHT));
+	}
 
-		auto pos_adj = chatopen && !chatfieldopen ? Point<int16_t>(0, 28) : Point<int16_t>(0, 0);
+	Button::State UIChatBar::button_pressed(uint16_t buttonid)
+	{
+		switch (buttonid)
+		{
+			case ms::UIChatBar::BtMax:
+			{
+				toggle_view(true, true);
 
-		for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
-			buttons[BT_TAB_0 + i]->set_position(Point<int16_t>(chattab_x + (i * chattab_span), chattab_y) + pos_adj);
+				return Button::State::NORMAL;
+			}
+			case ms::UIChatBar::BtMin:
+			{
+				toggle_view(false, true);
 
-		buttons[Buttons::BT_TAB_0 + ChatTab::NUM_CHATTAB]->set_position(Point<int16_t>(chattab_x + (ChatTab::NUM_CHATTAB * chattab_span), chattab_y) + pos_adj);
-		buttons[Buttons::BT_CLOSECHAT]->set_position(closechat + Point<int16_t>(0, chattab_y) + pos_adj);
+				return Button::State::NORMAL;
+			}
+			default:
+			{
+				return Button::State::DISABLED;
+			}
+		}
+	}
 
-		chatfield.update(position);
+	bool UIChatBar::is_in_range(Point<int16_t> cursor_position) const
+	{
+		if (temp_view_y == 0 && temp_view_x == 0)
+		{
+			Rectangle<int16_t> bounds = Rectangle<int16_t>(get_position(), get_position() + dimension);
+			Rectangle<int16_t> input_bounds = Rectangle<int16_t>(get_input_position(), get_input_position() + Point<int16_t>(user_view_x, input_bg_y));
 
-		for (auto iter : message_cooldowns)
-			iter.second -= Constants::TIMESTEP;
+			return bounds.contains(cursor_position) || input_bounds.contains(cursor_position);
+		}
+		else
+		{
+			Rectangle<int16_t> bounds = Rectangle<int16_t>(
+				Point<int16_t>(0, 0),
+				Point<int16_t>(
+					Constants::Constants::get().get_viewwidth(),
+					Constants::Constants::get().get_viewheight()
+					)
+				);
+
+			return bounds.contains(cursor_position);
+		}
+	}
+
+	Cursor::State UIChatBar::send_cursor(bool clicked, Point<int16_t> cursor_position)
+	{
+		if (view_input && temp_view_y == 0 && temp_view_x == 0)
+			if (Cursor::State new_state = input_text.send_cursor(cursor_position, clicked))
+				return new_state;
+
+		if (clicked)
+		{
+			if (dragged)
+			{
+				if (temp_view_y == 0 && temp_view_x == 0)
+				{
+					Point<int16_t> new_pos = cursor_position - cursoroffset;
+					int16_t new_pos_x = new_pos.x();
+					int16_t new_pos_y = new_pos.y();
+
+					if (new_pos_x < 0)
+						new_pos.set_x(0);
+
+					int16_t min_y = MIN_HEIGHT - 2 + drag.get_origin().y() * -1;
+
+					if (view_input)
+						min_y += user_view_y;
+
+					if (new_pos_y < min_y)
+						new_pos.set_y(min_y);
+
+					int16_t max_x = Constants::Constants::get().get_viewwidth() - user_view_x;
+
+					if (new_pos_x > max_x)
+						new_pos.set_x(max_x);
+
+					int16_t max_y = min_view_y;
+
+					if (view_input)
+						max_y -= input_bg_y;
+
+					if (new_pos_y > max_y)
+						new_pos.set_y(max_y);
+
+					position = new_pos;
+
+					return Cursor::State::CHATBARMOVE;
+				}
+				else
+				{
+					if (temp_view_x == 0)
+					{
+						if (drag_direction == DragDirection::DOWN)
+						{
+							// TODO: The top gets shifted by a pixel
+							Point<int16_t> pos_y = cursor_position - position + Point<int16_t>(0, user_view_y) - Point<int16_t>(0, 13);
+							Point<int16_t> pos = cursor_position - cursoroffset;
+
+							if (pos_y.y() <= MIN_HEIGHT)
+							{
+								temp_view_y = MIN_HEIGHT;
+								temp_position = position - Point<int16_t>(0, user_view_y) + Point<int16_t>(0, 13);
+							}
+							else if (pos_y.y() >= MAX_HEIGHT)
+							{
+								temp_view_y = MAX_HEIGHT;
+								temp_position = position - Point<int16_t>(0, user_view_y) + Point<int16_t>(0, MAX_HEIGHT);
+							}
+							else
+							{
+								temp_view_y = pos_y.y();
+								temp_position = Point<int16_t>(position.x(), pos.y());
+							}
+						}
+						else
+						{
+							Point<int16_t> pos = position - cursor_position - Point<int16_t>(0, 13);
+
+							if (pos.y() <= MIN_HEIGHT)
+								temp_view_y = MIN_HEIGHT;
+							else if (pos.y() >= MAX_HEIGHT)
+								temp_view_y = MAX_HEIGHT;
+							else
+								temp_view_y = pos.y();
+						}
+
+#ifdef DEBUG
+						dimension = Point<int16_t>(user_view_x, top_y + center_y + bottom_y) + Point<int16_t>(0, temp_view_y);
+
+						dimension_box = ColorBox(dimension.x(), dimension.y(), Color::Name::RED, 0.5f);
+						left_box = ColorBox(3, dimension.y(), Color::Name::YELLOW, 0.5f);
+						right_box = ColorBox(3, dimension.y(), Color::Name::YELLOW, 0.5f);
+#endif
+
+						return Cursor::State::CHATBARVDRAG;
+					}
+					else if (temp_view_y == 0)
+					{
+						if (drag_direction == DragDirection::LEFT)
+						{
+							// TODO: The right gets shifted by a pixel
+							Point<int16_t> pos_x = position - cursor_position + Point<int16_t>(user_view_x, 0);
+							Point<int16_t> pos = cursor_position - cursoroffset;
+
+							if (pos_x.x() <= min_x)
+							{
+								temp_view_x = min_x;
+								temp_position = position + Point<int16_t>(user_view_x, 0) - Point<int16_t>(min_x, 0);
+							}
+							else if (pos_x.x() >= max_x)
+							{
+								temp_view_x = max_x;
+								temp_position = position - Point<int16_t>(max_x, 0) + Point<int16_t>(user_view_x, 0);
+							}
+							else
+							{
+								temp_view_x = pos_x.x();
+								temp_position = Point<int16_t>(pos.x(), position.y());
+							}
+						}
+						else
+						{
+							Point<int16_t> pos = cursor_position - position;
+
+							if (pos.x() <= min_x)
+								temp_view_x = min_x;
+							else if (pos.x() >= max_x)
+								temp_view_x = max_x;
+							else
+								temp_view_x = pos.x();
+						}
+
+#ifdef DEBUG
+						dimension = Point<int16_t>(temp_view_x, top_y + center_y + bottom_y) + Point<int16_t>(0, user_view_y);
+
+						dimension_box = ColorBox(dimension.x(), dimension.y(), Color::Name::RED, 0.5f);
+						top_box = ColorBox(dimension.x(), 3, Color::Name::GREEN, 0.5f);
+						bottom_box = ColorBox(dimension.x(), 3, Color::Name::GREEN, 0.5f);
+#endif
+
+						return Cursor::State::CHATBARHDRAG;
+					}
+					else
+					{
+						if (drag_direction == DragDirection::DOWNLEFT)
+						{
+							int16_t temp_position_x, temp_position_y;
+
+							Point<int16_t> pos = cursor_position - cursoroffset;
+
+							// TODO: The right gets shifted by a pixel
+							Point<int16_t> pos_x = position - cursor_position + Point<int16_t>(user_view_x, 0);
+
+							if (pos_x.x() <= min_x)
+							{
+								temp_view_x = min_x;
+								temp_position_x = position.x() + user_view_x - min_x;
+							}
+							else if (pos_x.x() >= max_x)
+							{
+								temp_view_x = max_x;
+								temp_position_x = position.x() - max_x + user_view_x;
+							}
+							else
+							{
+								temp_view_x = pos_x.x();
+								temp_position_x = pos.x();
+							}
+
+							// TODO: The top gets shifted by a pixel
+							Point<int16_t> pos_y = cursor_position - position + Point<int16_t>(0, user_view_y) - Point<int16_t>(0, 13);
+
+							if (pos_y.y() <= MIN_HEIGHT)
+							{
+								temp_view_y = MIN_HEIGHT;
+								temp_position_y = position.y() - user_view_y + 13;
+							}
+							else if (pos_y.y() >= MAX_HEIGHT)
+							{
+								temp_view_y = MAX_HEIGHT;
+								temp_position_y = position.y() - user_view_y + MAX_HEIGHT;
+							}
+							else
+							{
+								temp_view_y = pos_y.y();
+								temp_position_y = pos.y();
+							}
+
+							temp_position = Point<int16_t>(temp_position_x, temp_position_y);
+						}
+						else
+						{
+							if (drag_direction == DragDirection::LEFT)
+							{
+								// TODO: The right gets shifted by a pixel
+								Point<int16_t> pos_x = position - cursor_position + Point<int16_t>(user_view_x, 0);
+								Point<int16_t> pos = cursor_position - cursoroffset;
+
+								if (pos_x.x() <= min_x)
+								{
+									temp_view_x = min_x;
+									temp_position = position + Point<int16_t>(user_view_x, 0) - Point<int16_t>(min_x, 0);
+								}
+								else if (pos_x.x() >= max_x)
+								{
+									temp_view_x = max_x;
+									temp_position = position - Point<int16_t>(max_x, 0) + Point<int16_t>(user_view_x, 0);
+								}
+								else
+								{
+									temp_view_x = pos_x.x();
+									temp_position = Point<int16_t>(pos.x(), position.y());
+								}
+							}
+							else
+							{
+								Point<int16_t> pos_x = cursor_position - position;
+
+								if (pos_x.x() <= min_x)
+									temp_view_x = min_x;
+								else if (pos_x.x() >= max_x)
+									temp_view_x = max_x;
+								else
+									temp_view_x = pos_x.x();
+							}
+
+							if (drag_direction == DragDirection::DOWN)
+							{
+								// TODO: The top gets shifted by a pixel
+								Point<int16_t> pos_y = cursor_position - position + Point<int16_t>(0, user_view_y) - Point<int16_t>(0, 13);
+								Point<int16_t> pos = cursor_position - cursoroffset;
+
+								if (pos_y.y() <= MIN_HEIGHT)
+								{
+									temp_view_y = MIN_HEIGHT;
+									temp_position = position - Point<int16_t>(0, user_view_y) + Point<int16_t>(0, 13);
+								}
+								else if (pos_y.y() >= MAX_HEIGHT)
+								{
+									temp_view_y = MAX_HEIGHT;
+									temp_position = position - Point<int16_t>(0, user_view_y) + Point<int16_t>(0, MAX_HEIGHT);
+								}
+								else
+								{
+									temp_view_y = pos_y.y();
+									temp_position = Point<int16_t>(position.x(), pos.y());
+								}
+							}
+							else
+							{
+								Point<int16_t> pos_y = position - cursor_position - Point<int16_t>(0, 13);
+
+								if (pos_y.y() <= MIN_HEIGHT)
+									temp_view_y = MIN_HEIGHT;
+								else if (pos_y.y() >= MAX_HEIGHT)
+									temp_view_y = MAX_HEIGHT;
+								else
+									temp_view_y = pos_y.y();
+							}
+						}
+
+#ifdef DEBUG
+						dimension = Point<int16_t>(temp_view_x, top_y + center_y + bottom_y) + Point<int16_t>(0, temp_view_y);
+
+						dimension_box = ColorBox(dimension.x(), dimension.y(), Color::Name::RED, 0.5f);
+						top_box = ColorBox(dimension.x(), 3, Color::Name::GREEN, 0.5f);
+						bottom_box = ColorBox(dimension.x(), 3, Color::Name::GREEN, 0.5f);
+						left_box = ColorBox(3, dimension.y(), Color::Name::YELLOW, 0.5f);
+						right_box = ColorBox(3, dimension.y(), Color::Name::YELLOW, 0.5f);
+#endif
+
+						if (drag_direction == DragDirection::DOWN || drag_direction == DragDirection::LEFT)
+							return Cursor::State::CHATBARBRTLDRAG;
+						else
+							return Cursor::State::CHATBARBLTRDRAG;
+					}
+				}
+			}
+			else if (indragrange(cursor_position))
+			{
+				cursoroffset = cursor_position - position;
+				dragged = true;
+
+				return Cursor::State::CHATBARMOVE;
+			}
+			else if (view_max)
+			{
+				if (intoprange(cursor_position) && !inleftrange(cursor_position) && !inrightrange(cursor_position))
+				{
+					dragged = true;
+
+					temp_view_y = user_view_y;
+
+					return Cursor::State::CHATBARVDRAG;
+				}
+				else if (inrightrange(cursor_position) && !intoprange(cursor_position) && !inbottomrange(cursor_position))
+				{
+					dragged = true;
+
+					temp_view_x = user_view_x;
+
+					return Cursor::State::CHATBARHDRAG;
+				}
+				else if (intoprightrange(cursor_position))
+				{
+					dragged = true;
+
+					temp_view_x = user_view_x;
+					temp_view_y = user_view_y;
+
+					return Cursor::State::CHATBARBLTRDRAG;
+				}
+				else if (inbottomrange(cursor_position) && !inleftrange(cursor_position) && !inrightrange(cursor_position))
+				{
+					cursoroffset = cursor_position - position;
+					dragged = true;
+
+					temp_view_y = user_view_y;
+					temp_position = position;
+					drag_direction = DragDirection::DOWN;
+
+					return Cursor::State::CHATBARVDRAG;
+				}
+				else if (inbottomrightrange(cursor_position))
+				{
+					cursoroffset = cursor_position - position;
+					dragged = true;
+
+					temp_view_x = user_view_x;
+					temp_view_y = user_view_y;
+					temp_position = position;
+					drag_direction = DragDirection::DOWN;
+
+					return Cursor::State::CHATBARBRTLDRAG;
+				}
+				else if (inleftrange(cursor_position) && !intoprange(cursor_position) && !inbottomrange(cursor_position))
+				{
+					cursoroffset = cursor_position - position;
+					dragged = true;
+
+					temp_view_x = user_view_x;
+					temp_position = position;
+					drag_direction = DragDirection::LEFT;
+
+					return Cursor::State::CHATBARHDRAG;
+				}
+				else if (intopleftrange(cursor_position))
+				{
+					cursoroffset = cursor_position - position;
+					dragged = true;
+
+					temp_view_x = user_view_x;
+					temp_view_y = user_view_y;
+					temp_position = position;
+					drag_direction = DragDirection::LEFT;
+
+					return Cursor::State::CHATBARBRTLDRAG;
+				}
+				else if (inbottomleftrange(cursor_position))
+				{
+					cursoroffset = cursor_position - position;
+					dragged = true;
+
+					temp_view_x = user_view_x;
+					temp_view_y = user_view_y;
+					temp_position = position;
+					drag_direction = DragDirection::DOWNLEFT;
+
+					return Cursor::State::CHATBARBLTRDRAG;
+				}
+			}
+		}
+		else
+		{
+			if (dragged)
+			{
+				if (temp_view_y == 0 && temp_view_x == 0)
+				{
+					dragged = false;
+
+					Setting<PosCHAT>::get().save(position);
+
+					return Cursor::State::CHATBARMOVE;
+				}
+				else
+				{
+					if (temp_view_x == 0)
+					{
+						user_view_y = temp_view_y;
+						temp_view_y = 0;
+						dragged = false;
+
+						update_view(false);
+
+						Setting<ChatViewY>::get().save(user_view_y);
+
+						if (drag_direction == DragDirection::DOWN)
+						{
+							drag_direction = DragDirection::NONE;
+
+							if (temp_position.y() > min_view_y - input_bg_y)
+							{
+								if (view_input)
+									temp_position.set_y(min_view_y - input_bg_y);
+								else
+									temp_position.set_y(min_view_y);
+							}
+
+							position = temp_position;
+
+							Setting<PosCHAT>::get().save(position);
+						}
+
+						return Cursor::State::CHATBARVDRAG;
+					}
+					else if (temp_view_y == 0)
+					{
+						user_view_x = temp_view_x;
+						temp_view_x = 0;
+						dragged = false;
+
+						update_view(false);
+
+						Setting<ChatViewX>::get().save(user_view_x);
+
+						if (drag_direction == DragDirection::LEFT)
+						{
+							drag_direction = DragDirection::NONE;
+
+							position = temp_position;
+
+							Setting<PosCHAT>::get().save(position);
+						}
+
+						return Cursor::State::CHATBARHDRAG;
+					}
+					else
+					{
+						user_view_x = temp_view_x;
+						temp_view_x = 0;
+
+						user_view_y = temp_view_y;
+						temp_view_y = 0;
+
+						dragged = false;
+
+						update_view(false);
+
+						Setting<ChatViewX>::get().save(user_view_x);
+						Setting<ChatViewY>::get().save(user_view_y);
+
+						if (drag_direction == DragDirection::DOWN || drag_direction == DragDirection::LEFT || drag_direction == DragDirection::DOWNLEFT)
+						{
+							drag_direction = DragDirection::NONE;
+
+							if (temp_position.y() > min_view_y - input_bg_y)
+							{
+								if (view_input)
+									temp_position.set_y(min_view_y - input_bg_y);
+								else
+									temp_position.set_y(min_view_y);
+							}
+
+							position = temp_position;
+
+							Setting<PosCHAT>::get().save(position);
+
+							if (drag_direction != DragDirection::DOWNLEFT)
+								return Cursor::State::CHATBARBRTLDRAG;
+						}
+
+						return Cursor::State::CHATBARBLTRDRAG;
+					}
+				}
+			}
+			else if (indragrange(cursor_position))
+			{
+				return Cursor::State::CHATBARMOVE;
+			}
+			else if (view_max)
+			{
+				if (intopleftrange(cursor_position) || inbottomrightrange(cursor_position))
+					return Cursor::State::CHATBARBRTLDRAG;
+				else if (intoprightrange(cursor_position) || inbottomleftrange(cursor_position))
+					return Cursor::State::CHATBARBLTRDRAG;
+				else if (intoprange(cursor_position) || inbottomrange(cursor_position))
+					return Cursor::State::CHATBARVDRAG;
+				else if (inleftrange(cursor_position) || inrightrange(cursor_position))
+					return Cursor::State::CHATBARHDRAG;
+			}
+		}
+
+		return UIElement::send_cursor(clicked, cursor_position);
 	}
 
 	void UIChatBar::send_key(int32_t keycode, bool pressed, bool escape)
@@ -258,30 +828,25 @@ namespace ms
 		if (pressed)
 		{
 			if (keycode == KeyAction::Id::RETURN)
-				toggle_chatfield();
-			else if (escape)
-				toggle_chatfield(false);
-		}
-	}
+			{
+				if (!view_input)
+				{
+					toggle_input(true);
+				}
+				else
+				{
+					input_text.change_text("");
+					input_text.set_state(Textfield::State::FOCUSED);
+				}
+			}
+			else
+			{
+				int32_t index = UI::get().get_keyboard().get_mapping_index(keycode);
 
-	bool UIChatBar::is_in_range(Point<int16_t> cursorpos) const
-	{
-		auto bounds = getbounds(dimension);
-		return bounds.contains(cursorpos);
-	}
-
-	Cursor::State UIChatBar::send_cursor(bool clicking, Point<int16_t> cursorpos)
-	{
-		if (chatopen)
-		{
-			if (Cursor::State new_state = chatfield.send_cursor(cursorpos, clicking))
-				return new_state;
-
-			return check_dragtop(clicking, cursorpos);
-		}
-		else
-		{
-			return UIDragElement::send_cursor(clicking, cursorpos);
+				input_text.change_text("");
+				input_text.set_state(Textfield::State::FOCUSED);
+				input_text.send_key(KeyType::Id::TEXT, index, pressed);
+			}
 		}
 	}
 
@@ -290,305 +855,293 @@ namespace ms
 		return TYPE;
 	}
 
-	Cursor::State UIChatBar::check_dragtop(bool clicking, Point<int16_t> cursorpos)
+	bool UIChatBar::has_input() const
 	{
-		Rectangle<int16_t> bounds = getbounds(dimension);
-		Point<int16_t> bounds_lt = bounds.get_left_top();
-		Point<int16_t> bounds_rb = bounds.get_right_bottom();
-
-		int16_t chattab_height = 20;
-		int16_t bounds_rb_y = bounds_rb.y();
-		int16_t bounds_lt_y = bounds_lt.y() + chattab_height;
-
-		auto chattop_rb = Point<int16_t>(bounds_rb.x() - 1, bounds_rb_y - 27);
-		auto chattop = Rectangle<int16_t>(Point<int16_t>(bounds_lt.x() + 1, bounds_lt_y), chattop_rb);
-
-		auto chattopleft = Rectangle<int16_t>(Point<int16_t>(bounds_lt.x(), bounds_lt_y), Point<int16_t>(bounds_lt.x(), chattop_rb.y()));
-		auto chattopright = Rectangle<int16_t>(Point<int16_t>(chattop_rb.x() + 1, bounds_lt_y), Point<int16_t>(chattop_rb.x() + 1, chattop_rb.y()));
-		auto chatleft = Rectangle<int16_t>(Point<int16_t>(bounds_lt.x(), bounds_lt_y), Point<int16_t>(bounds_lt.x(), bounds_lt_y + bounds_rb_y));
-		auto chatright = Rectangle<int16_t>(Point<int16_t>(chattop_rb.x() + 1, bounds_lt_y), Point<int16_t>(chattop_rb.x() + 1, bounds_lt_y + bounds_rb_y));
-
-		bool in_chattop = chattop.contains(cursorpos);
-		bool in_chattopleft = chattopleft.contains(cursorpos);
-		bool in_chattopright = chattopright.contains(cursorpos);
-		bool in_chatleft = chatleft.contains(cursorpos);
-		bool in_chatright = chatright.contains(cursorpos);
-
-		if (dragchattop)
-		{
-			if (clicking)
-			{
-				int16_t ydelta = cursorpos.y() - bounds_rb_y + 10;
-
-				while (ydelta > 0 && chatrows > MINCHATROWS)
-				{
-					chatrows--;
-					ydelta -= CHATROWHEIGHT;
-				}
-
-				while (ydelta < 0 && chatrows < MAXCHATROWS)
-				{
-					chatrows++;
-					ydelta += CHATROWHEIGHT;
-				}
-
-				//slider.setrows(rowpos, chatrows, rowmax);
-				//slider.setvertical(Range<int16_t>(0, CHATROWHEIGHT * chatrows - 14));
-
-				chattab_y = getchattop(chatopen) - 33;
-				//dimension.set_y(getchatbarheight());
-
-				return Cursor::State::CLICKING;
-			}
-			else
-			{
-				dragchattop = false;
-			}
-		}
-		else if (in_chattop)
-		{
-			if (clicking)
-			{
-				dragchattop = true;
-
-				return Cursor::State::CLICKING;
-			}
-			else
-			{
-				return Cursor::State::CHATBARVDRAG;
-			}
-		}
-		else if (in_chattopleft)
-		{
-			if (clicking)
-			{
-				//dragchattopleft = true;
-
-				return Cursor::State::CLICKING;
-			}
-			else
-			{
-				return Cursor::State::CHATBARBRTLDRAG;
-			}
-		}
-		else if (in_chattopright)
-		{
-			if (clicking)
-			{
-				//dragchattopright = true;
-
-				return Cursor::State::CLICKING;
-			}
-			else
-			{
-				return Cursor::State::CHATBARBLTRDRAG;
-			}
-		}
-		else if (in_chatleft)
-		{
-			if (clicking)
-			{
-				//dragchatleft = true;
-
-				return Cursor::State::CLICKING;
-			}
-			else
-			{
-				return Cursor::State::CHATBARHDRAG;
-			}
-		}
-		else if (in_chatright)
-		{
-			if (clicking)
-			{
-				//dragchatright = true;
-
-				return Cursor::State::CLICKING;
-			}
-			else
-			{
-				return Cursor::State::CHATBARHDRAG;
-			}
-		}
-
-		return UIDragElement::send_cursor(clicking, cursorpos);
+		return view_input;
 	}
 
-	bool UIChatBar::indragrange(Point<int16_t> cursorpos) const
+	void UIChatBar::toggle_view()
 	{
-		auto bounds = getbounds(dragarea);
-
-		return bounds.contains(cursorpos);
+		toggle_view(!view_max, true);
 	}
 
-	void UIChatBar::send_chatline(const std::string& line, LineType type)
+	void UIChatBar::show_message(const char* message, MessageType type)
 	{
-		rowmax++;
-		rowpos = rowmax;
+		Color::Name color = Color::Name::RED;
 
-		//slider.setrows(rowpos, chatrows, rowmax);
-
-		Color::Name color;
-
-		switch (type)
-		{
-		case LineType::RED:
-			color = Color::Name::DARKRED;
-			break;
-		case LineType::BLUE:
-			color = Color::Name::MEDIUMBLUE;
-			break;
-		case LineType::YELLOW:
+		if (type == MessageType::YELLOW)
 			color = Color::Name::YELLOW;
-			break;
-		default:
+		else if (type == MessageType::WHITE)
 			color = Color::Name::WHITE;
-			break;
-		}
+		else
+			std::cout << "[UIChatBar::show_message]: " << type << " not supported." << std::endl;
 
-		rowtexts.emplace(
-			std::piecewise_construct,
-			std::forward_as_tuple(rowmax),
-			std::forward_as_tuple(Text::Font::A11M, Text::Alignment::LEFT, color, line, 480)
-		);
+		message_history.push_back(Message(MessageGroup::ALL, type, Text(Text::Font::A11M, Text::Alignment::LEFT, color, message)));
 	}
 
-	void UIChatBar::display_message(Messages::Type line, UIChatBar::LineType type)
+	bool UIChatBar::indragrange(Point<int16_t> cursor_position) const
 	{
-		if (message_cooldowns[line] > 0)
-			return;
+		Rectangle<int16_t> bounds = Rectangle<int16_t>(get_dragarea_position(), get_dragarea_position() + dragarea);
 
-		std::string message = Messages::messages[line];
-		send_chatline(message, type);
-
-		message_cooldowns[line] = MESSAGE_COOLDOWN;
+		return bounds.contains(cursor_position);
 	}
 
-	void UIChatBar::toggle_chat()
+	bool UIChatBar::intoprange(Point<int16_t> cursor_position) const
 	{
-		chatopen_persist = !chatopen_persist;
-		toggle_chat(chatopen_persist);
+		Rectangle<int16_t> bounds = Rectangle<int16_t>(get_position(), get_position() + Point<int16_t>(dimension.x(), 3));
+
+		return bounds.contains(cursor_position);
 	}
 
-	void UIChatBar::toggle_chat(bool chat_open)
+	bool UIChatBar::inbottomrange(Point<int16_t> cursor_position) const
 	{
-		if (!chat_open && chatopen_persist)
-			return;
+		Point<int16_t> position = get_position() + Point<int16_t>(0, dimension.y() - 3);
+		Rectangle<int16_t> bounds = Rectangle<int16_t>(position, position + Point<int16_t>(dimension.x(), 3));
 
-		chatopen = chat_open;
-
-		if (!chatopen && chatfieldopen)
-			toggle_chatfield();
-
-		buttons[Buttons::BT_OPENCHAT]->set_active(!chat_open);
-		buttons[Buttons::BT_CLOSECHAT]->set_active(chat_open);
-
-		for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
-			buttons[Buttons::BT_TAB_0 + i]->set_active(chat_open);
-
-		buttons[Buttons::BT_TAB_0 + ChatTab::NUM_CHATTAB]->set_active(chat_open);
+		return bounds.contains(cursor_position);
 	}
 
-	void UIChatBar::toggle_chatfield()
+	bool UIChatBar::inleftrange(Point<int16_t> cursor_position) const
 	{
-		chatfieldopen = !chatfieldopen;
-		toggle_chatfield(chatfieldopen);
+		Rectangle<int16_t> bounds = Rectangle<int16_t>(get_position(), get_position() + Point<int16_t>(3, dimension.y()));
+
+		return bounds.contains(cursor_position);
 	}
 
-	void UIChatBar::toggle_chatfield(bool chatfield_open)
+	bool UIChatBar::inrightrange(Point<int16_t> cursor_position) const
 	{
-		chatfieldopen = chatfield_open;
+		Point<int16_t> position = get_position() + Point<int16_t>(dimension.x() - 3, 0);
+		Rectangle<int16_t> bounds = Rectangle<int16_t>(position, position + Point<int16_t>(3, dimension.y()));
 
-		toggle_chat(chatfieldopen);
+		return bounds.contains(cursor_position);
+	}
 
-		if (chatfieldopen)
+	bool UIChatBar::intopleftrange(Point<int16_t> cursor_position) const
+	{
+		return intoprange(cursor_position) && inleftrange(cursor_position);
+	}
+
+	bool UIChatBar::inbottomrightrange(Point<int16_t> cursor_position) const
+	{
+		return inbottomrange(cursor_position) && inrightrange(cursor_position);
+	}
+
+	bool UIChatBar::intoprightrange(Point<int16_t> cursor_position) const
+	{
+		return intoprange(cursor_position) && inrightrange(cursor_position);
+	}
+
+	bool UIChatBar::inbottomleftrange(Point<int16_t> cursor_position) const
+	{
+		return inbottomrange(cursor_position) && inleftrange(cursor_position);
+	}
+
+	Point<int16_t> UIChatBar::get_position() const
+	{
+		if (temp_view_y == 0 && temp_view_x == 0)
 		{
-			buttons[Buttons::BT_CHAT]->set_active(true);
-			buttons[Buttons::BT_HELP]->set_active(true);
-			buttons[Buttons::BT_LINK]->set_active(true);
-			buttons[Buttons::BT_CHAT_TARGET]->set_active(true);
-
-			chatfield.set_state(Textfield::State::FOCUSED);
-
-			//dimension.shift_y(getchatbarheight());
+			if (view_max)
+				return position - Point<int16_t>(0, top_y + center_y + user_view_y);
+			else
+				return position - Point<int16_t>(0, top_y + center_y);
 		}
 		else
 		{
-			buttons[Buttons::BT_CHAT]->set_active(false);
-			buttons[Buttons::BT_HELP]->set_active(false);
-			buttons[Buttons::BT_LINK]->set_active(false);
-			buttons[Buttons::BT_CHAT_TARGET]->set_active(false);
-
-			chatfield.set_state(Textfield::State::DISABLED);
-			chatfield.change_text("");
-
-			//dimension.set_y(DIMENSION_Y);
-		}
-	}
-
-	bool UIChatBar::is_chatopen()
-	{
-		return chatopen;
-	}
-
-	bool UIChatBar::is_chatfieldopen()
-	{
-		return chatfieldopen;
-	}
-
-	Button::State UIChatBar::button_pressed(uint16_t buttonid)
-	{
-		switch (buttonid)
-		{
-		case Buttons::BT_OPENCHAT:
-		case Buttons::BT_CLOSECHAT:
-			toggle_chat();
-			break;
-		case Buttons::BT_TAB_0:
-		case Buttons::BT_TAB_1:
-		case Buttons::BT_TAB_2:
-		case Buttons::BT_TAB_3:
-		case Buttons::BT_TAB_4:
-		case Buttons::BT_TAB_5:
-			for (size_t i = 0; i < ChatTab::NUM_CHATTAB; i++)
+			if (temp_view_y > 0 && temp_view_x == 0)
 			{
-				buttons[Buttons::BT_TAB_0 + i]->set_state(Button::State::NORMAL);
-				chattab_text[ChatTab::CHT_ALL + i].change_color(Color::Name::DUSTYGRAY);
+				if (drag_direction == DragDirection::DOWN)
+					return temp_position - Point<int16_t>(0, top_y + center_y + temp_view_y);
+				else
+					return position - Point<int16_t>(0, top_y + center_y + temp_view_y);
 			}
+			else if (temp_view_y == 0 && temp_view_x > 0)
+			{
+				if (drag_direction == DragDirection::LEFT)
+					return temp_position - Point<int16_t>(0, top_y + center_y + user_view_y);
+				else
+					return position - Point<int16_t>(0, top_y + center_y + user_view_y);
+			}
+			else
+			{
+				if (drag_direction == DragDirection::DOWN || drag_direction == DragDirection::LEFT || drag_direction == DragDirection::DOWNLEFT)
+					return temp_position - Point<int16_t>(0, top_y + center_y + temp_view_y);
+				else
+					return position - Point<int16_t>(0, top_y + center_y + temp_view_y);
+			}
+		}
+	}
 
-			chattab_text[buttonid - Buttons::BT_TAB_0].change_color(Color::Name::WHITE);
+	Point<int16_t> UIChatBar::get_dragarea_position() const
+	{
+		Point<int16_t> drag_origin = drag.get_origin();
 
-			return Button::State::PRESSED;
+		if (view_max)
+			return position - Point<int16_t>(drag_origin.x(), top_y + center_y + user_view_y + drag_origin.y());
+		else
+			return position - Point<int16_t>(drag_origin.x(), top_y + center_y + drag_origin.y());
+	}
+
+	Point<int16_t> UIChatBar::get_input_position() const
+	{
+		return position + Point<int16_t>(0, 15);
+	}
+
+	Point<int16_t> UIChatBar::get_input_text_position()
+	{
+		Point<int16_t> adjust = Point<int16_t>(57, 20);
+
+		return position + adjust;
+	}
+
+	void UIChatBar::toggle_input(bool enabled)
+	{
+		view_input = enabled;
+
+		if (view_input && !view_max)
+		{
+			view_adjusted = true;
+
+			toggle_view(true, true);
+		}
+		else
+		{
+			if (view_adjusted)
+			{
+				view_adjusted = false;
+
+				toggle_view(false, true);
+			}
+			else
+			{
+				update_view(true);
+			}
 		}
 
-		Setting<Chatopen>::get().save(chatopen);
-
-		return Button::State::NORMAL;
+		buttons[Buttons::BtChat]->set_active(view_input);
+		buttons[Buttons::BtItemLink]->set_active(view_input);
+		buttons[Buttons::BtChatEmoticon]->set_active(view_input);
+		buttons[Buttons::BtHelp]->set_active(view_input);
+		buttons[Buttons::BtOutChat]->set_active(view_input);
 	}
 
-	int16_t UIChatBar::getchattop(bool chat_open) const
+	void UIChatBar::toggle_view(bool max, bool pressed)
 	{
-		if (chat_open)
-			return getchatbarheight() * -1;
+		view_max = max;
+
+		if (!view_max)
+		{
+			view_input = false;
+			view_adjusted = false;
+		}
+
+		Setting<ChatViewMax>::get().save(view_max);
+
+		buttons[Buttons::BtMax]->set_active(!view_max);
+		buttons[Buttons::BtMin]->set_active(view_max);
+
+		update_view(pressed);
+	}
+
+	void UIChatBar::update_view(bool pressed)
+	{
+		if (view_input)
+			input_text.set_state(Textfield::State::FOCUSED);
 		else
-			return -1;
+			input_text.set_state(Textfield::State::DISABLED);
+
+		if (pressed)
+		{
+			if (position_adjusted)
+			{
+				position_adjusted = false;
+
+				if (position.y() >= min_view_y - input_bg_y)
+					position.shift_y(input_bg_y);
+			}
+			else
+			{
+				if (view_input && position.y() >= min_view_y)
+				{
+					position_adjusted = true;
+					position.shift_y(-input_bg_y);
+				}
+			}
+		}
+
+		int16_t y = position.y() - center_y - user_view_y;
+
+		if (y < 0)
+		{
+			position.shift_y(-y);
+			position.shift_y(15);
+		}
+
+		Point<int16_t> btMin_padding = Point<int16_t>(-4, 3);
+
+		if (view_max)
+		{
+			dimension = Point<int16_t>(user_view_x, top_y + center_y + bottom_y) + Point<int16_t>(0, user_view_y);
+
+			buttons[Buttons::BtMin]->set_position(Point<int16_t>(user_view_x - btMin_x, -top_y - center_y - user_view_y) + btMin_padding);
+		}
+		else
+		{
+			dimension = Point<int16_t>(min_x, top_y + center_y + bottom_y);
+
+			buttons[Buttons::BtMin]->set_position(Point<int16_t>(min_x - btMin_x, -top_y - center_y - user_view_y) + btMin_padding);
+		}
+
+#ifdef DEBUG
+		dimension_box = ColorBox(dimension.x(), dimension.y(), Color::Name::RED, 0.5f);
+		top_box = ColorBox(dimension.x(), 3, Color::Name::GREEN, 0.5f);
+		bottom_box = ColorBox(dimension.x(), 3, Color::Name::GREEN, 0.5f);
+		left_box = ColorBox(3, dimension.y(), Color::Name::YELLOW, 0.5f);
+		right_box = ColorBox(3, dimension.y(), Color::Name::YELLOW, 0.5f);
+		input_box = ColorBox(user_view_x, input_bg_y, Color::Name::RED, 0.5f);
+#endif
 	}
 
-	int16_t UIChatBar::getchatbarheight() const
+	void UIChatBar::input_text_enter_callback(std::string message)
 	{
-		return 15 + chatrows * CHATROWHEIGHT;
+		if (message == "")
+		{
+			input_text_escape_callback();
+		}
+		else
+		{
+			user_message_history.push_back(message);
+			user_message_history_index = user_message_history.size();
+
+			GeneralChatPacket(message, true).dispatch();
+
+			input_text.change_text("");
+		}
 	}
 
-	Rectangle<int16_t> UIChatBar::getbounds(Point<int16_t> additional_area) const
+	void UIChatBar::input_text_escape_callback()
 	{
-		int16_t screen_adj = (chatopen) ? 35 : 16;
+		toggle_input(false);
+	}
 
-		auto absp = position + Point<int16_t>(0, getchattop(chatopen));
-		auto da = absp + additional_area;
+	void UIChatBar::change_message(bool up)
+	{
+		size_t size = user_message_history.size();
+		size_t message_history_min = 1;
+		size_t message_history_max = size;
+		size_t max = 7;
 
-		absp = Point<int16_t>(absp.x(), absp.y() - screen_adj);
-		da = Point<int16_t>(da.x(), da.y());
+		if (size > max)
+			message_history_min = size - max;
 
-		return Rectangle<int16_t>(absp, da);
+		if (user_message_history.size() > 0)
+		{
+			if (up && user_message_history_index > message_history_min)
+				user_message_history_index--;
+
+			if (!up && user_message_history_index < message_history_max)
+				user_message_history_index++;
+
+			input_text.change_text(user_message_history[user_message_history_index - 1]);
+		}
 	}
 }

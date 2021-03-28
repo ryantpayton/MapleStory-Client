@@ -37,13 +37,13 @@ namespace ms
 		};
 
 		Textfield();
-		Textfield(Text::Font font, Text::Alignment alignment, Color::Name text_color, Rectangle<int16_t> bounds, size_t limit);
-		Textfield(Text::Font font, Text::Alignment alignment, Color::Name text_color, Color::Name marker_color, float marker_opacity, Rectangle<int16_t> bounds, size_t limit);
+		Textfield(Text::Font font, Text::Alignment alignment, Color::Name text_color, Rectangle<int16_t> bounds, size_t limit, int16_t marker_height = 12);
 
 		void draw(Point<int16_t> position) const;
 		void draw(Point<int16_t> position, Point<int16_t> marker_adjust) const;
-		void update(Point<int16_t> parentpos);
-		void send_key(KeyType::Id type, int32_t code, bool down);
+		void update();
+		void update(Point<int16_t> position, Point<int16_t> dimensions);
+		void send_key(KeyType::Id type, int32_t action, bool pressed);
 		void add_string(const std::string& str);
 
 		void set_state(State state);
@@ -58,7 +58,6 @@ namespace ms
 
 		bool empty() const;
 		State get_state() const;
-		Rectangle<int16_t> get_bounds() const;
 		const std::string& get_text() const;
 		bool can_copy_paste() const;
 
@@ -73,10 +72,10 @@ namespace ms
 		uint16_t elapsed;
 		size_t markerpos;
 		Rectangle<int16_t> bounds;
-		Point<int16_t> parentpos;
 		size_t limit;
 		int8_t crypt;
 		State state;
+		ColorBox boundsoutline;
 
 		std::function<void(std::string)> onreturn;
 		std::map<int32_t, std::function<void(void)>> callbacks;

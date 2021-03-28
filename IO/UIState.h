@@ -37,7 +37,7 @@ namespace ms
 		virtual void doubleclick(Point<int16_t> pos) = 0;
 		virtual void rightclick(Point<int16_t> pos) = 0;
 		virtual void send_key(KeyType::Id type, int32_t action, bool pressed, bool escape) = 0;
-		virtual Cursor::State send_cursor(Cursor::State mst, Point<int16_t> pos) = 0;
+		virtual Cursor::State send_cursor(Point<int16_t> cursor_position, Cursor::State cursor_state) = 0;
 		virtual void send_scroll(double yoffset) = 0;
 		virtual void send_close() = 0;
 
@@ -53,7 +53,7 @@ namespace ms
 		virtual void remove(UIElement::Type type) = 0;
 		virtual UIElement* get(UIElement::Type type) = 0;
 		virtual UIElement* get_front(std::list<UIElement::Type> types) = 0;
-		virtual UIElement* get_front(Point<int16_t> pos) = 0;
+		virtual UIElement* get_front(Point<int16_t> cursor_position) = 0;
 	};
 
 	class UIStateNull : public UIState
@@ -63,7 +63,7 @@ namespace ms
 		void doubleclick(Point<int16_t>) override {}
 		void rightclick(Point<int16_t>) override {}
 		void send_key(KeyType::Id, int32_t, bool, bool) override {}
-		Cursor::State send_cursor(Cursor::State, Point<int16_t>) override { return Cursor::State::IDLE; }
+		Cursor::State send_cursor(Point<int16_t>, Cursor::State) override { return Cursor::State::IDLE; }
 		void send_scroll(double) override {}
 		void send_close() override {}
 		void drag_icon(Icon*) override {}

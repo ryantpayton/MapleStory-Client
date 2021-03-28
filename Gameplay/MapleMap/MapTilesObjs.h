@@ -31,7 +31,7 @@ namespace ms
 	class TilesObjs
 	{
 	public:
-		TilesObjs() {};
+		TilesObjs() {}
 		TilesObjs(nl::node src);
 
 		void draw(Point<int16_t> viewpos, float alpha) const;
@@ -46,7 +46,7 @@ namespace ms
 	class MapTilesObjs
 	{
 	public:
-		MapTilesObjs() {};
+		MapTilesObjs() {}
 		MapTilesObjs(nl::node src);
 
 		void draw(Layer::Id layer, Point<int16_t> viewpos, float alpha) const;

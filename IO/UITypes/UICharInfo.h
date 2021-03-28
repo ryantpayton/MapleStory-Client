@@ -42,7 +42,7 @@ namespace ms
 
 		UIElement::Type get_type() const override;
 
-		void update_stats(int32_t character_id, int16_t job_id, int8_t level, int16_t fame, std::string guild, std::string alliance);
+		void update_stats(int32_t character_id, int16_t job_id, uint16_t level, int16_t fame, std::string guild, std::string alliance);
 
 	private:
 		void show_bottom_window(uint16_t buttonid);

@@ -66,6 +66,7 @@ namespace ms
 		void request_pic();
 
 		static constexpr uint8_t PAGESIZE = 8;
+		static constexpr int16_t CHARSLOT_Y_MAX = 24;
 
 		enum Buttons : uint16_t
 		{
@@ -120,6 +121,7 @@ namespace ms
 		OutlinedText charslotlabel;
 		int16_t timestamp;
 		uint16_t charslot_y;
+		bool use_timestamp;
 		bool show_timestamp;
 		bool burning_character;
 

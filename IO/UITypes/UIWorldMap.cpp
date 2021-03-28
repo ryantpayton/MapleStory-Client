@@ -29,7 +29,7 @@
 
 namespace ms
 {
-	UIWorldMap::UIWorldMap() : UIDragElement<PosMAP>()
+	UIWorldMap::UIWorldMap() : UIDragElement<PosMAP>(), search_text_dim(Point<int16_t>(82, 14))
 	{
 		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
 		nl::node WorldMap = nl::nx::ui["UIWindow2.img"]["WorldMap"];
@@ -51,31 +51,31 @@ namespace ms
 		bg_dimensions = Texture(Border).get_dimensions();
 		bg_search_dimensions = search_background.get_dimensions();
 
-		int16_t bg_dimension_x = bg_dimensions.x();
-		background_dimensions = Point<int16_t>(bg_dimension_x, 0);
+		int16_t bg_dimensions_x = bg_dimensions.x();
+		int16_t bg_search_dimensions_x = bg_search_dimensions.x();
 
-		int16_t base_x = bg_dimension_x / 2;
+		background_dimensions = Point<int16_t>(bg_dimensions_x, 0);
+
+		int16_t base_x = bg_dimensions_x / 2;
 		int16_t base_y = bg_dimensions.y() / 2;
 		base_position = Point<int16_t>(base_x, base_y + 15);
 
-		Point<int16_t> close_dimensions = Point<int16_t>(bg_dimension_x - 22, 4);
+		Point<int16_t> close_dimensions = Point<int16_t>(bg_dimensions_x - 22, 4);
 
 		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close, close_dimensions);
 		buttons[Buttons::BT_SEARCH] = std::make_unique<MapleButton>(WorldMap["BtSearch"]);
 		buttons[Buttons::BT_AUTOFLY] = std::make_unique<MapleButton>(WorldMap["BtAutoFly_1"]);
 		buttons[Buttons::BT_NAVIREG] = std::make_unique<MapleButton>(WorldMap["BtNaviRegister"]);
-		buttons[Buttons::BT_SEARCH_CLOSE] = std::make_unique<MapleButton>(close, close_dimensions + Point<int16_t>(bg_search_dimensions.x(), 0));
+		buttons[Buttons::BT_SEARCH_CLOSE] = std::make_unique<MapleButton>(close, close_dimensions + Point<int16_t>(bg_search_dimensions_x, 0));
 		buttons[Buttons::BT_ALLSEARCH] = std::make_unique<MapleButton>(WorldMapSearch["BtAllsearch"], background_dimensions);
 
-		Point<int16_t> search_text_pos = Point<int16_t>(bg_dimension_x + 14, 25);
-		Point<int16_t> search_box_dim = Point<int16_t>(83, 15);
-		Rectangle<int16_t> search_text_dim = Rectangle<int16_t>(search_text_pos, search_text_pos + search_box_dim);
+		int16_t search_limit = 8;
 
-		search_text = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, search_text_dim, 8);
+		search_text = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, Rectangle<int16_t>(get_search_pos(), get_search_pos() + search_text_dim), search_limit);
 
 		set_search(true);
 
-		dragarea = Point<int16_t>(bg_dimension_x, 20);
+		dragarea = Point<int16_t>(bg_dimensions_x, 20);
 	}
 
 	void UIWorldMap::draw(float alpha) const
@@ -86,7 +86,7 @@ namespace ms
 		{
 			search_background.draw(position + background_dimensions);
 			search_notice.draw(position + background_dimensions);
-			search_text.draw(position + Point<int16_t>(1, -5));
+			search_text.draw(Point<int16_t>(1, -5));
 		}
 
 		base_img.draw(position + base_position);
@@ -147,15 +147,15 @@ namespace ms
 		if (mid != mapid)
 		{
 			mapid = mid;
-			auto prefix = mapid / 10000000;
-			auto parent_map = "WorldMap0" + std::to_string(prefix);
+
+			int32_t prefix = mapid / 10000000;
+			std::string parent_map = "WorldMap0" + std::to_string(prefix);
 			user_map = parent_map;
 
-			update_world(parent_map);
+			update_world(user_map);
 		}
 
-		if (search)
-			search_text.update(position);
+		search_text.update(get_search_pos(), search_text_dim);
 
 		for (size_t i = 0; i < MAPSPOT_TYPE_MAX; i++)
 			npc_pos[i].update(1);
@@ -211,17 +211,17 @@ namespace ms
 	{
 		switch (buttonid)
 		{
-		case Buttons::BT_CLOSE:
-			deactivate();
-			break;
-		case Buttons::BT_SEARCH:
-			set_search(!search);
-			break;
-		case Buttons::BT_SEARCH_CLOSE:
-			set_search(false);
-			break;
-		default:
-			break;
+			case Buttons::BT_CLOSE:
+				deactivate();
+				break;
+			case Buttons::BT_SEARCH:
+				set_search(!search);
+				break;
+			case Buttons::BT_SEARCH_CLOSE:
+				set_search(false);
+				break;
+			default:
+				break;
 		}
 
 		if (buttonid >= Buttons::BT_LINK0)
@@ -352,5 +352,10 @@ namespace ms
 				map_spots.emplace_back(std::make_pair<Point<int16_t>, MapSpot>(spot, { desc, path, title, type, marker, false, map_ids }));
 			}
 		}
+	}
+
+	Point<int16_t> UIWorldMap::get_search_pos()
+	{
+		return position + Point<int16_t>(bg_dimensions.x() + 13, 25);
 	}
 }

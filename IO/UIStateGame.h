@@ -40,7 +40,7 @@ namespace ms
 		void doubleclick(Point<int16_t> pos) override;
 		void rightclick(Point<int16_t> pos) override;
 		void send_key(KeyType::Id type, int32_t action, bool pressed, bool escape) override;
-		Cursor::State send_cursor(Cursor::State cursorstate, Point<int16_t> cursorpos) override;
+		Cursor::State send_cursor(Point<int16_t> cursor_position, Cursor::State cursor_state) override;
 		void send_scroll(double yoffset) override;
 		void send_close() override;
 
@@ -56,12 +56,12 @@ namespace ms
 		void remove(UIElement::Type type) override;
 		UIElement* get(UIElement::Type type) override;
 		UIElement* get_front(std::list<UIElement::Type> types) override;
-		UIElement* get_front(Point<int16_t> pos) override;
+		UIElement* get_front(Point<int16_t> cursor_position) override;
 
 	private:
 		const CharStats& stats;
 
-		bool drop_icon(const Icon& icon, Point<int16_t> pos);
+		bool drop_icon(const Icon& icon, Point<int16_t> cursor_position);
 		void remove_icon();
 		void remove_cursors();
 		void remove_cursor(UIElement::Type type);

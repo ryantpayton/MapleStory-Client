@@ -29,12 +29,13 @@ namespace ms
 	class Texture
 	{
 	public:
-		Texture() {};
+		Texture() {}
 		Texture(nl::node source);
-		~Texture() {};
+		~Texture() {}
 
 		void draw(const DrawArgument& args) const;
 		void draw(const DrawArgument& args, const Range<int16_t>& vertical) const;
+		void draw(const DrawArgument& args, const Range<int16_t>& vertical, const Range<int16_t>& horizontal) const;
 		void shift(Point<int16_t> amount);
 
 		bool is_valid() const;

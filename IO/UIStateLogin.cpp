@@ -31,12 +31,18 @@ namespace ms
 	{
 		focused = UIElement::Type::NONE;
 
+//#ifdef DEBUG
+//		Configuration::get().set_start_shown(true);
+//
+//		emplace<UILogin>();
+//#else
 		bool start_shown = Configuration::get().get_start_shown();
 
 		if (!start_shown)
 			emplace<UILogo>();
 		else
 			emplace<UILogin>();
+//#endif
 	}
 
 	void UIStateLogin::draw(float inter, Point<int16_t> cursor) const
@@ -87,9 +93,9 @@ namespace ms
 		}
 	}
 
-	Cursor::State UIStateLogin::send_cursor(Cursor::State cursorstate, Point<int16_t> cursorpos)
+	Cursor::State UIStateLogin::send_cursor(Point<int16_t> cursor_position, Cursor::State cursor_state)
 	{
-		bool clicked = cursorstate == Cursor::State::CLICKING || cursorstate == Cursor::State::VSCROLLIDLE;
+		bool clicked = cursor_state == Cursor::State::CLICKING || cursor_state == Cursor::State::VSCROLLIDLE;
 
 		if (auto focusedelement = get(focused))
 		{
@@ -97,13 +103,13 @@ namespace ms
 			{
 				remove_cursor(focusedelement->get_type());
 
-				return focusedelement->send_cursor(clicked, cursorpos);
+				return focusedelement->send_cursor(clicked, cursor_position);
 			}
 			else
 			{
 				focused = UIElement::Type::NONE;
 
-				return cursorstate;
+				return cursor_state;
 			}
 		}
 		else
@@ -112,7 +118,7 @@ namespace ms
 			{
 				remove_cursor(front->get_type());
 
-				return front->send_cursor(clicked, cursorpos);
+				return front->send_cursor(clicked, cursor_position);
 			}
 			else
 			{
@@ -223,7 +229,7 @@ namespace ms
 		return nullptr;
 	}
 
-	UIElement* UIStateLogin::get_front(Point<int16_t> pos)
+	UIElement* UIStateLogin::get_front(Point<int16_t> cursor_position)
 	{
 		auto begin = elements.values().rbegin();
 		auto end = elements.values().rend();
@@ -232,7 +238,7 @@ namespace ms
 		{
 			auto& element = *iter;
 
-			if (element && element->is_active() && element->is_in_range(pos))
+			if (element && element->is_active() && element->is_in_range(cursor_position))
 				return element.get();
 		}
 

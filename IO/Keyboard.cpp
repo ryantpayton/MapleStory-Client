@@ -24,7 +24,7 @@ namespace ms
 	constexpr int32_t Keytable[90] =
 	{
 		0, 0, // 1
-		GLFW_KEY_0, GLFW_KEY_1, GLFW_KEY_2, GLFW_KEY_3, GLFW_KEY_4, GLFW_KEY_5, GLFW_KEY_6, GLFW_KEY_7, GLFW_KEY_8, GLFW_KEY_9, GLFW_KEY_MINUS, GLFW_KEY_EQUAL,
+		GLFW_KEY_1, GLFW_KEY_2, GLFW_KEY_3, GLFW_KEY_4, GLFW_KEY_5, GLFW_KEY_6, GLFW_KEY_7, GLFW_KEY_8, GLFW_KEY_9, GLFW_KEY_0, GLFW_KEY_MINUS, GLFW_KEY_EQUAL,
 		0, 0, // 15
 		GLFW_KEY_Q, GLFW_KEY_W, GLFW_KEY_E, GLFW_KEY_R, GLFW_KEY_T, GLFW_KEY_Y, GLFW_KEY_U, GLFW_KEY_I, GLFW_KEY_O, GLFW_KEY_P, GLFW_KEY_LEFT_BRACKET, GLFW_KEY_RIGHT_BRACKET,
 		0, // 28
@@ -127,14 +127,14 @@ namespace ms
 	{
 		switch (keycode)
 		{
-		case GLFW_KEY_C:
-			return KeyAction::Id::COPY;
-		case GLFW_KEY_V:
-			return KeyAction::Id::PASTE;
-			/*case GLFW_KEY_A:
-				return KeyAction::Id::SELECTALL;*/
-		default:
-			return KeyAction::Id::LENGTH;
+			case GLFW_KEY_C:
+				return KeyAction::Id::COPY;
+			case GLFW_KEY_V:
+				return KeyAction::Id::PASTE;
+				//case GLFW_KEY_A:
+				//	return KeyAction::Id::SELECTALL;
+			default:
+				return KeyAction::Id::LENGTH;
 		}
 	}
 
@@ -181,13 +181,13 @@ namespace ms
 		{
 			switch (keycode)
 			{
-			case GLFW_KEY_LEFT:
-			case GLFW_KEY_RIGHT:
-			case GLFW_KEY_UP:
-			case GLFW_KEY_DOWN:
-				return keymap.at(keycode);
-			default:
-				return Mapping(KeyType::Id::NONE, 0);
+				case GLFW_KEY_LEFT:
+				case GLFW_KEY_RIGHT:
+				case GLFW_KEY_UP:
+				case GLFW_KEY_DOWN:
+					return keymap.at(keycode);
+				default:
+					return Mapping(KeyType::Id::NONE, 0);
 			}
 		}
 	}
@@ -200,6 +200,15 @@ namespace ms
 			return Mapping(KeyType::Id::NONE, 0);
 
 		return iter->second;
+	}
+
+	int32_t Keyboard::get_mapping_index(int32_t action) const
+	{
+		for (auto key : keymap)
+			if (key.second.action == action)
+				return key.first;
+
+		return 0;
 	}
 
 	Keyboard::Mapping Keyboard::get_maple_mapping(int32_t keycode) const

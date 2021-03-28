@@ -59,7 +59,7 @@ namespace ms
 		void draw(float alpha) const;
 		void update();
 		void set_state(State state);
-		void set_position(Point<int16_t> position);
+		void set_position(Point<int16_t> cursor_position);
 		State get_state() const;
 		Point<int16_t> get_position() const;
 

@@ -59,14 +59,14 @@ namespace ms
 
 						switch (layer)
 						{
-						case Body::Layer::HAND_BELOW_WEAPON:
-							shift = drawinfo.get_hand_position(stance, frame);
-							shift -= partnode["map"]["handMove"];
-							break;
-						default:
-							shift = drawinfo.get_body_position(stance, frame);
-							shift -= partnode["map"]["navel"];
-							break;
+							case Body::Layer::HAND_BELOW_WEAPON:
+								shift = drawinfo.get_hand_position(stance, frame);
+								shift -= partnode["map"]["handMove"];
+								break;
+							default:
+								shift = drawinfo.get_body_position(stance, frame);
+								shift -= partnode["map"]["navel"];
+								break;
 						}
 
 						stances[stance][layer]
@@ -86,24 +86,38 @@ namespace ms
 			}
 		}
 
-		constexpr size_t NUM_SKINTYPES = 12;
+		constexpr size_t NUM_SKINTYPES = 13;
 
 		constexpr char* skintypes[NUM_SKINTYPES] =
 		{
 			"Light",
-			"Tan",
+			"Tanned",
 			"Dark",
 			"Pale",
+#pragma region TODO: Check these names
 			"Blue",
 			"Green",
 			"", "", "",
 			"Grey",
 			"Pink",
-			"Red"
+#pragma endregion
+			"Clay",
+			"Elf"
 		};
 
-		size_t index = skin;
-		name = (index < NUM_SKINTYPES) ? skintypes[index] : "";
+		if (skin < NUM_SKINTYPES)
+		{
+			name = skintypes[skin];
+
+			if (name == "")
+				std::cout << "Unknown skin [" << skin << "].";
+		}
+		else
+		{
+			name = "";
+
+			std::cout << "Unknown skin [" << skin << "].";
+		}
 	}
 
 	void Body::draw(Stance::Id stance, Layer layer, uint8_t frame, const DrawArgument& args) const
@@ -128,7 +142,7 @@ namespace ms
 		if (layer_iter == layers_by_name.end())
 		{
 			if (name != "")
-				std::cout << "Unknown Body::Layer name: [" << name << "]" << std::endl;
+				single_console::log_message("[Body::layer_by_name] Unknown Layer name: [" + name + "]");
 
 			return Body::Layer::NONE;
 		}

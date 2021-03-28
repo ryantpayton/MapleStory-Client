@@ -59,6 +59,7 @@ namespace ms
 		std::map<int32_t, Mapping> get_maplekeys() const;
 		KeyAction::Id get_ctrl_action(int32_t keycode) const;
 		Mapping get_mapping(int32_t keycode) const;
+		int32_t get_mapping_index(int32_t action) const;
 		Mapping get_maple_mapping(int32_t keycode) const;
 		Mapping get_text_mapping(int32_t keycode, bool shift) const;
 

@@ -44,6 +44,7 @@ namespace ms
 	void UI::init()
 	{
 		cursor.init();
+
 		change_state(State::LOGIN);
 	}
 
@@ -101,11 +102,12 @@ namespace ms
 		return !quitted;
 	}
 
-	void UI::send_cursor(Point<int16_t> cursorpos, Cursor::State cursorstate)
+	void UI::send_cursor(Point<int16_t> cursor_position, Cursor::State cursor_state)
 	{
-		Cursor::State nextstate = state->send_cursor(cursorstate, cursorpos);
-		cursor.set_state(nextstate);
-		cursor.set_position(cursorpos);
+		Cursor::State next_state = state->send_cursor(cursor_position, cursor_state);
+
+		cursor.set_state(next_state);
+		cursor.set_position(cursor_position);
 	}
 
 	void UI::send_focus(int focused)
@@ -156,9 +158,9 @@ namespace ms
 		}
 	}
 
-	void UI::send_cursor(Point<int16_t> pos)
+	void UI::send_cursor(Point<int16_t> cursor_position)
 	{
-		send_cursor(pos, cursor.get_state());
+		send_cursor(cursor_position, cursor.get_state());
 	}
 
 	void UI::rightclick()
@@ -358,18 +360,13 @@ namespace ms
 
 			if (!sent)
 			{
-				auto chatbar = UI::get().get_element<UIChatBar>();
-
 				if (escape)
 				{
-					if (chatbar && chatbar->is_chatopen())
-						chatbar->send_key(mapping.action, pressed, escape);
-					else
-						state->send_key(mapping.type, mapping.action, pressed, escape);
+					state->send_key(mapping.type, mapping.action, pressed, escape);
 				}
 				else if (enter)
 				{
-					if (chatbar)
+					if (auto chatbar = UI::get().get_element<UIChatBar>())
 						chatbar->send_key(mapping.action, pressed, escape);
 					else
 						state->send_key(mapping.type, mapping.action, pressed, escape);

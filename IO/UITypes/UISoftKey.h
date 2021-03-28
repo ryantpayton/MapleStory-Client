@@ -101,7 +101,6 @@ namespace ms
 		CancelCallback cancel_callback;
 
 		Textfield textfield;
-		Point<int16_t> textfield_pos;
 
 		int16_t tooltip_timestep;
 		TextTooltip tetooltip;

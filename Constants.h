@@ -25,7 +25,7 @@ namespace ms
 {
 	namespace Constants
 	{
-		// Timestep, e.g. the granularity in which the game advances.
+		// Timestep, i.e., the granularity in which the game advances.
 		constexpr uint16_t TIMESTEP = 8;
 
 		class Constants : public Singleton<Constants>
@@ -37,32 +37,36 @@ namespace ms
 				VIEWHEIGHT = 600;
 			};
 
-			~Constants() {};
+			~Constants() {}
 
+			// Get the window and screen width
 			int16_t get_viewwidth()
 			{
 				return VIEWWIDTH;
 			}
 
+			// Set the window and screen width
 			void set_viewwidth(int16_t width)
 			{
 				VIEWWIDTH = width;
 			}
 
+			// Get the window and screen height
 			int16_t get_viewheight()
 			{
 				return VIEWHEIGHT;
 			}
 
+			// Set the window and screen height
 			void set_viewheight(int16_t height)
 			{
 				VIEWHEIGHT = height;
 			}
 
 		private:
-			// Window and screen width.
+			// Window and screen width
 			int16_t VIEWWIDTH;
-			// Window and screen height.
+			// Window and screen height
 			int16_t VIEWHEIGHT;
 		};
 	}

@@ -33,8 +33,8 @@ namespace ms
 			RIGHT
 		};
 
-		Charset(nl::node source, Alignment alignment);
 		Charset();
+		Charset(nl::node source, Alignment alignment);
 
 		void draw(int8_t character, const DrawArgument& args) const;
 		int16_t draw(const std::string& text, const DrawArgument& args) const;

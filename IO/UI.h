@@ -47,9 +47,9 @@ namespace ms
 		void quit();
 		bool not_quitted() const;
 
-		void send_cursor(Point<int16_t> pos);
+		void send_cursor(Point<int16_t> cursor_position);
 		void send_cursor(bool pressed);
-		void send_cursor(Point<int16_t> cursorpos, Cursor::State cursorstate);
+		void send_cursor(Point<int16_t> cursor_position, Cursor::State cursor_state);
 		void send_focus(int focused);
 		void send_scroll(double yoffset);
 		void send_close();

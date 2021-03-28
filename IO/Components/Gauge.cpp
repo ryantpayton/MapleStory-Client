@@ -19,22 +19,9 @@
 
 namespace ms
 {
-	Gauge::Gauge(Type type, Texture front, int16_t max, float percent) : type(type), barfront(front), maximum(max), percentage(percent)
-	{
-		target = percentage;
-	}
-
-	Gauge::Gauge(Type type, Texture front, Texture mid, int16_t max, float percent) : type(type), barfront(front), barmid(mid), maximum(max), percentage(percent)
-	{
-		target = percentage;
-	}
-
-	Gauge::Gauge(Type type, Texture front, Texture mid, Texture end, int16_t max, float percent) : type(type), barfront(front), barmid(mid), barend(end), maximum(max), percentage(percent)
-	{
-		target = percentage;
-	}
-
-	Gauge::Gauge() {}
+	Gauge::Gauge(Type type, Texture front, int16_t maximum, float percentage) : Gauge(type, front, {}, maximum, percentage) {}
+	Gauge::Gauge(Type type, Texture front, Texture middle, int16_t maximum, float percentage) : Gauge(type, front, {}, {}, maximum, percentage) {}
+	Gauge::Gauge(Type type, Texture front, Texture middle, Texture end, int16_t maximum, float percentage) : type(type), barfront(front), barmid(middle), barend(end), maximum(maximum), percentage(percentage), target(percentage) {}
 
 	void Gauge::draw(const DrawArgument& args) const
 	{
@@ -42,7 +29,7 @@ namespace ms
 
 		if (length > 0)
 		{
-			if (type == Type::GAME)
+			if (type == Type::DEFAULT)
 			{
 				barfront.draw(args + DrawArgument(Point<int16_t>(0, 0), Point<int16_t>(length, 0)));
 				barmid.draw(args);
@@ -56,6 +43,15 @@ namespace ms
 				barmid.draw(args + DrawArgument(Point<int16_t>(0, 0), Point<int16_t>(length, 0)));
 				barend.draw(args - pos_adj + Point<int16_t>(length + barfront.width(), 0));
 			}
+			else if (type == Type::WORLDSELECT)
+			{
+				barfront.draw(args, {}, Range<int16_t>(0, barfront.width() - length));
+			}
+		}
+		else
+		{
+			if (type == Type::WORLDSELECT)
+				barfront.draw(args, {}, Range<int16_t>(0, barfront.width() - 1));
 		}
 	}
 

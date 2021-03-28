@@ -61,8 +61,8 @@ namespace ms
 			IconType get_type() override { return IconType::NONE; }
 		};
 
-		Icon(std::unique_ptr<Type> type, Texture texture, int16_t count);
 		Icon();
+		Icon(std::unique_ptr<Type> type, Texture texture, int16_t count);
 
 		void drop_on_stage() const;
 		void drop_on_equips(EquipSlot::Id eqslot) const;
@@ -75,7 +75,6 @@ namespace ms
 		void dragdraw(Point<int16_t> cursorpos) const;
 		void start_drag(Point<int16_t> offset);
 		void reset();
-		virtual Texture get_texture() const;
 		int16_t get_count() const;
 		bool get_drag();
 

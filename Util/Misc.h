@@ -57,8 +57,11 @@ namespace ms
 		// Prefix an id with zeros so that it has the minimum specified length
 		std::string extend_id(int32_t id, size_t length);
 
-		// Cut off a string at a specified length with an ellipsis
-		void format_with_ellipsis(Text& input, size_t length);
+		// Pad a string with leading zeros to a specified length
+		std::string pad_string(std::string str, size_t length);
+
+		// Cut off a string at a specified width with an ellipsis
+		void format_with_ellipsis(Text& input, int16_t width, uint16_t ellipsis_width = 2U, bool word_break = false);
 
 		// Convert a string to lowercase letters
 		std::string tolower(std::string str);
@@ -94,5 +97,12 @@ namespace ms
 			// Returns the name of the node, under which the argument map id is in
 			nl::node get_map_node_name(int32_t mapid);
 		}
+	}
+
+	namespace single_console
+	{
+		void log_message(std::string message);
+
+		static std::list<std::string> log_history;
 	}
 }

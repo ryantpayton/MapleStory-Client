@@ -56,10 +56,8 @@ namespace ms
 		void load_keys_pos();
 		void load_unbound_actions_pos();
 		void load_key_textures();
-		void load_action_mappings();
-		void load_action_icons();
-		void load_item_icons();
-		void load_skill_icons();
+		void load_actions();
+		void load_icons();
 
 		void safe_close();
 
@@ -90,33 +88,22 @@ namespace ms
 			OK
 		};
 
-		class MappingIcon : public Icon::Type
+		class KeyIcon : public Icon::Type
 		{
 		public:
-			MappingIcon(Keyboard::Mapping mapping);
-			MappingIcon(KeyAction::Id keyId);
+			KeyIcon(Keyboard::Mapping mapping, int16_t count);
+			KeyIcon(KeyAction::Id action);
 
 			void drop_on_stage() const override;
 			void drop_on_equips(EquipSlot::Id) const override {}
 			bool drop_on_items(InventoryType::Id, EquipSlot::Id, int16_t, bool) const override { return true; }
 			void drop_on_bindings(Point<int16_t> cursorposition, bool remove) const override;
-			void set_count(int16_t) override {}
+			void set_count(int16_t count) override;
 			Icon::IconType get_type() override;
 
 		private:
-			Keyboard::Mapping mapping;
-		};
-
-		// Used for displaying item counts
-		class CountableMappingIcon : public MappingIcon
-		{
-		public:
-			CountableMappingIcon(Keyboard::Mapping mapping, int16_t count);
-
-			void set_count(int16_t count) override;
-
-		private:
 			int16_t count;
+			Keyboard::Mapping mapping;
 		};
 
 		const Inventory& inventory;
@@ -146,99 +133,99 @@ namespace ms
 
 		std::map<int32_t, Keyboard::Mapping> alternate_keys =
 		{
-		   { KeyConfig::Key::ESCAPE,		Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::MAINMENU)			},
-		   { KeyConfig::Key::F1,			Keyboard::Mapping(KeyType::Id::FACE,	KeyAction::Id::FACE1)				},
-		   { KeyConfig::Key::F2,			Keyboard::Mapping(KeyType::Id::FACE,	KeyAction::Id::FACE2)				},
-		   { KeyConfig::Key::F3,			Keyboard::Mapping(KeyType::Id::FACE,	KeyAction::Id::FACE3)				},
-		   { KeyConfig::Key::F5,			Keyboard::Mapping(KeyType::Id::FACE,	KeyAction::Id::FACE4)				},
-		   { KeyConfig::Key::F6,			Keyboard::Mapping(KeyType::Id::FACE,	KeyAction::Id::FACE5)				},
-		   { KeyConfig::Key::F7,			Keyboard::Mapping(KeyType::Id::FACE,	KeyAction::Id::FACE6)				},
-		   { KeyConfig::Key::F8,			Keyboard::Mapping(KeyType::Id::FACE,	KeyAction::Id::FACE7)				},
-		   { KeyConfig::Key::SCROLL_LOCK,	Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::SCREENSHOT)			},
-		   { KeyConfig::Key::GRAVE_ACCENT,	Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::CASHSHOP)			},
-		   { KeyConfig::Key::INSERT,		Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::SAY)					},
-		   { KeyConfig::Key::HOME,			Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::PARTYCHAT)			},
-		   { KeyConfig::Key::PAGE_UP,		Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::FRIENDSCHAT)			},
-		   { KeyConfig::Key::T,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::BOSSPARTY)			},
-		   { KeyConfig::Key::Y,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::ITEMPOT)				},
-		   { KeyConfig::Key::U,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::EQUIPMENT)			},
-		   { KeyConfig::Key::I,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::ITEMS)				},
-		   { KeyConfig::Key::P,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::PARTY)				},
-		   { KeyConfig::Key::LEFT_BRACKET,	Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::MENU)				},
-		   { KeyConfig::Key::RIGHT_BRACKET,	Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::QUICKSLOTS)			},
-		   { KeyConfig::Key::BACKSLASH,		Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::KEYBINDINGS)			},
-		   { KeyConfig::Key::DELETE,		Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::GUILDCHAT)			},
-		   { KeyConfig::Key::END,			Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::ALLIANCECHAT)		},
-		   { KeyConfig::Key::G,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::GUILD)				},
-		   { KeyConfig::Key::H,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::WHISPER)				},
-		   { KeyConfig::Key::J,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::QUESTLOG)			},
-		   { KeyConfig::Key::K,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::SKILLS)				},
-		   { KeyConfig::Key::L,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::NOTIFIER)			},
-		   { KeyConfig::Key::SEMICOLON,		Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::MEDALS)				},
-		   { KeyConfig::Key::APOSTROPHE,	Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::TOGGLECHAT)			},
-		   { KeyConfig::Key::Z,				Keyboard::Mapping(KeyType::Id::ACTION,	KeyAction::Id::PICKUP)				},
-		   { KeyConfig::Key::X,				Keyboard::Mapping(KeyType::Id::ACTION,	KeyAction::Id::SIT)					},
-		   { KeyConfig::Key::C,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::STATS)				},
-		   { KeyConfig::Key::V,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::EVENT)				},
-		   { KeyConfig::Key::B,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::PROFESSION)			},
-		   { KeyConfig::Key::N,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::WORLDMAP)			},
-		   { KeyConfig::Key::M,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::MINIMAP)				},
-		   { KeyConfig::Key::PERIOD,		Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::FRIENDS)				},
-		   { KeyConfig::Key::LEFT_CONTROL,	Keyboard::Mapping(KeyType::Id::ACTION,	KeyAction::Id::ATTACK)				},
-		   { KeyConfig::Key::LEFT_ALT,		Keyboard::Mapping(KeyType::Id::ACTION,	KeyAction::Id::JUMP)				},
-		   { KeyConfig::Key::SPACE,			Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::INTERACT_HARVEST)	},
-		   { KeyConfig::Key::RIGHT_ALT,		Keyboard::Mapping(KeyType::Id::ACTION,	KeyAction::Id::JUMP)				},
-		   { KeyConfig::Key::RIGHT_CONTROL,	Keyboard::Mapping(KeyType::Id::ACTION,	KeyAction::Id::ATTACK)				}
+		   { KeyConfig::Key::ESCAPE,		Keyboard::Mapping(get_keytype(KeyAction::Id::MAINMENU),			KeyAction::Id::MAINMENU)			},
+		   { KeyConfig::Key::F1,			Keyboard::Mapping(get_keytype(KeyAction::Id::FACE1),			KeyAction::Id::FACE1)				},
+		   { KeyConfig::Key::F2,			Keyboard::Mapping(get_keytype(KeyAction::Id::FACE2),			KeyAction::Id::FACE2)				},
+		   { KeyConfig::Key::F3,			Keyboard::Mapping(get_keytype(KeyAction::Id::FACE3),			KeyAction::Id::FACE3)				},
+		   { KeyConfig::Key::F5,			Keyboard::Mapping(get_keytype(KeyAction::Id::FACE4),			KeyAction::Id::FACE4)				},
+		   { KeyConfig::Key::F6,			Keyboard::Mapping(get_keytype(KeyAction::Id::FACE5),			KeyAction::Id::FACE5)				},
+		   { KeyConfig::Key::F7,			Keyboard::Mapping(get_keytype(KeyAction::Id::FACE6),			KeyAction::Id::FACE6)				},
+		   { KeyConfig::Key::F8,			Keyboard::Mapping(get_keytype(KeyAction::Id::FACE7),			KeyAction::Id::FACE7)				},
+		   { KeyConfig::Key::SCROLL_LOCK,	Keyboard::Mapping(get_keytype(KeyAction::Id::SCREENSHOT),		KeyAction::Id::SCREENSHOT)			},
+		   { KeyConfig::Key::GRAVE_ACCENT,	Keyboard::Mapping(get_keytype(KeyAction::Id::CASHSHOP),			KeyAction::Id::CASHSHOP)			},
+		   { KeyConfig::Key::INSERT,		Keyboard::Mapping(get_keytype(KeyAction::Id::SAY),				KeyAction::Id::SAY)					},
+		   { KeyConfig::Key::HOME,			Keyboard::Mapping(get_keytype(KeyAction::Id::PARTYCHAT),		KeyAction::Id::PARTYCHAT)			},
+		   { KeyConfig::Key::PAGE_UP,		Keyboard::Mapping(get_keytype(KeyAction::Id::FRIENDSCHAT),		KeyAction::Id::FRIENDSCHAT)			},
+		   { KeyConfig::Key::T,				Keyboard::Mapping(get_keytype(KeyAction::Id::BOSSPARTY),		KeyAction::Id::BOSSPARTY)			},
+		   { KeyConfig::Key::Y,				Keyboard::Mapping(get_keytype(KeyAction::Id::ITEMPOT),			KeyAction::Id::ITEMPOT)				},
+		   { KeyConfig::Key::U,				Keyboard::Mapping(get_keytype(KeyAction::Id::EQUIPMENT),		KeyAction::Id::EQUIPMENT)			},
+		   { KeyConfig::Key::I,				Keyboard::Mapping(get_keytype(KeyAction::Id::ITEMS),			KeyAction::Id::ITEMS)				},
+		   { KeyConfig::Key::P,				Keyboard::Mapping(get_keytype(KeyAction::Id::PARTY),			KeyAction::Id::PARTY)				},
+		   { KeyConfig::Key::LEFT_BRACKET,	Keyboard::Mapping(get_keytype(KeyAction::Id::MENU),				KeyAction::Id::MENU)				},
+		   { KeyConfig::Key::RIGHT_BRACKET,	Keyboard::Mapping(get_keytype(KeyAction::Id::QUICKSLOTS),		KeyAction::Id::QUICKSLOTS)			},
+		   { KeyConfig::Key::BACKSLASH,		Keyboard::Mapping(get_keytype(KeyAction::Id::KEYBINDINGS),		KeyAction::Id::KEYBINDINGS)			},
+		   { KeyConfig::Key::DELETE,		Keyboard::Mapping(get_keytype(KeyAction::Id::GUILDCHAT),		KeyAction::Id::GUILDCHAT)			},
+		   { KeyConfig::Key::END,			Keyboard::Mapping(get_keytype(KeyAction::Id::ALLIANCECHAT),		KeyAction::Id::ALLIANCECHAT)		},
+		   { KeyConfig::Key::G,				Keyboard::Mapping(get_keytype(KeyAction::Id::GUILD),			KeyAction::Id::GUILD)				},
+		   { KeyConfig::Key::H,				Keyboard::Mapping(get_keytype(KeyAction::Id::WHISPER),			KeyAction::Id::WHISPER)				},
+		   { KeyConfig::Key::J,				Keyboard::Mapping(get_keytype(KeyAction::Id::QUESTLOG),			KeyAction::Id::QUESTLOG)			},
+		   { KeyConfig::Key::K,				Keyboard::Mapping(get_keytype(KeyAction::Id::SKILLS),			KeyAction::Id::SKILLS)				},
+		   { KeyConfig::Key::L,				Keyboard::Mapping(get_keytype(KeyAction::Id::NOTIFIER),			KeyAction::Id::NOTIFIER)			},
+		   { KeyConfig::Key::SEMICOLON,		Keyboard::Mapping(get_keytype(KeyAction::Id::MEDALS),			KeyAction::Id::MEDALS)				},
+		   { KeyConfig::Key::APOSTROPHE,	Keyboard::Mapping(get_keytype(KeyAction::Id::TOGGLECHAT),		KeyAction::Id::TOGGLECHAT)			},
+		   { KeyConfig::Key::Z,				Keyboard::Mapping(get_keytype(KeyAction::Id::PICKUP),			KeyAction::Id::PICKUP)				},
+		   { KeyConfig::Key::X,				Keyboard::Mapping(get_keytype(KeyAction::Id::SIT),				KeyAction::Id::SIT)					},
+		   { KeyConfig::Key::C,				Keyboard::Mapping(get_keytype(KeyAction::Id::STATS),			KeyAction::Id::STATS)				},
+		   { KeyConfig::Key::V,				Keyboard::Mapping(get_keytype(KeyAction::Id::EVENT),			KeyAction::Id::EVENT)				},
+		   { KeyConfig::Key::B,				Keyboard::Mapping(get_keytype(KeyAction::Id::PROFESSION),		KeyAction::Id::PROFESSION)			},
+		   { KeyConfig::Key::N,				Keyboard::Mapping(get_keytype(KeyAction::Id::WORLDMAP),			KeyAction::Id::WORLDMAP)			},
+		   { KeyConfig::Key::M,				Keyboard::Mapping(get_keytype(KeyAction::Id::MINIMAP),			KeyAction::Id::MINIMAP)				},
+		   { KeyConfig::Key::PERIOD,		Keyboard::Mapping(get_keytype(KeyAction::Id::FRIENDS),			KeyAction::Id::FRIENDS)				},
+		   { KeyConfig::Key::LEFT_CONTROL,	Keyboard::Mapping(get_keytype(KeyAction::Id::ATTACK),			KeyAction::Id::ATTACK)				},
+		   { KeyConfig::Key::LEFT_ALT,		Keyboard::Mapping(get_keytype(KeyAction::Id::JUMP),				KeyAction::Id::JUMP)				},
+		   { KeyConfig::Key::SPACE,			Keyboard::Mapping(get_keytype(KeyAction::Id::INTERACT_HARVEST),	KeyAction::Id::INTERACT_HARVEST)	},
+		   { KeyConfig::Key::RIGHT_ALT,		Keyboard::Mapping(get_keytype(KeyAction::Id::JUMP),				KeyAction::Id::JUMP)				},
+		   { KeyConfig::Key::RIGHT_CONTROL,	Keyboard::Mapping(get_keytype(KeyAction::Id::ATTACK),			KeyAction::Id::ATTACK)				}
 		};
 
 		std::map<int32_t, Keyboard::Mapping> basic_keys =
 		{
-		   { KeyConfig::Key::ESCAPE,		Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::MAINMENU)			},
-		   { KeyConfig::Key::F1,			Keyboard::Mapping(KeyType::Id::FACE,	KeyAction::Id::FACE1)				},
-		   { KeyConfig::Key::F2,			Keyboard::Mapping(KeyType::Id::FACE,	KeyAction::Id::FACE2)				},
-		   { KeyConfig::Key::F3,			Keyboard::Mapping(KeyType::Id::FACE,	KeyAction::Id::FACE3)				},
-		   { KeyConfig::Key::F5,			Keyboard::Mapping(KeyType::Id::FACE,	KeyAction::Id::FACE4)				},
-		   { KeyConfig::Key::F6,			Keyboard::Mapping(KeyType::Id::FACE,	KeyAction::Id::FACE5)				},
-		   { KeyConfig::Key::F7,			Keyboard::Mapping(KeyType::Id::FACE,	KeyAction::Id::FACE6)				},
-		   { KeyConfig::Key::F8,			Keyboard::Mapping(KeyType::Id::FACE,	KeyAction::Id::FACE7)				},
-		   { KeyConfig::Key::SCROLL_LOCK,	Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::SCREENSHOT)			},
-		   { KeyConfig::Key::GRAVE_ACCENT,	Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::CASHSHOP)			},
-		   { KeyConfig::Key::NUM1,			Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::SAY)					},
-		   { KeyConfig::Key::NUM2,			Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::PARTYCHAT)			},
-		   { KeyConfig::Key::NUM3,			Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::FRIENDSCHAT)			},
-		   { KeyConfig::Key::NUM4,			Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::GUILDCHAT)			},
-		   { KeyConfig::Key::NUM5,			Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::ALLIANCECHAT)		},
-		   { KeyConfig::Key::Q,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::QUESTLOG)			},
-		   { KeyConfig::Key::W,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::WORLDMAP)			},
-		   { KeyConfig::Key::E,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::EQUIPMENT)			},
-		   { KeyConfig::Key::R,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::FRIENDS)				},
-		   { KeyConfig::Key::T,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::BOSSPARTY)			},
-		   { KeyConfig::Key::Y,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::ITEMPOT)				},
-		   { KeyConfig::Key::U,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::GUIDE)				},
-		   { KeyConfig::Key::I,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::ITEMS)				},
-		   { KeyConfig::Key::O,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::ENHANCEEQUIP)		},
-		   { KeyConfig::Key::P,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::PARTY)				},
-		   { KeyConfig::Key::LEFT_BRACKET,	Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::MENU)				},
-		   { KeyConfig::Key::RIGHT_BRACKET,	Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::QUICKSLOTS)			},
-		   { KeyConfig::Key::BACKSLASH,		Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::KEYBINDINGS)			},
-		   { KeyConfig::Key::S,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::STATS)				},
-		   { KeyConfig::Key::G,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::GUILD)				},
-		   { KeyConfig::Key::H,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::WHISPER)				},
-		   { KeyConfig::Key::K,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::SKILLS)				},
-		   { KeyConfig::Key::L,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::NOTIFIER)			},
-		   { KeyConfig::Key::SEMICOLON,		Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::MEDALS)				},
-		   { KeyConfig::Key::APOSTROPHE,	Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::TOGGLECHAT)			},
-		   { KeyConfig::Key::Z,				Keyboard::Mapping(KeyType::Id::ACTION,	KeyAction::Id::PICKUP)				},
-		   { KeyConfig::Key::X,				Keyboard::Mapping(KeyType::Id::ACTION,	KeyAction::Id::SIT)					},
-		   { KeyConfig::Key::C,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::MAPLECHAT)			},
-		   { KeyConfig::Key::V,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::EVENT)				},
-		   { KeyConfig::Key::B,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::PROFESSION)			},
-		   { KeyConfig::Key::M,				Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::MINIMAP)				},
-		   { KeyConfig::Key::LEFT_CONTROL,	Keyboard::Mapping(KeyType::Id::ACTION,	KeyAction::Id::ATTACK)				},
-		   { KeyConfig::Key::LEFT_ALT,		Keyboard::Mapping(KeyType::Id::ACTION,	KeyAction::Id::JUMP)				},
-		   { KeyConfig::Key::SPACE,			Keyboard::Mapping(KeyType::Id::MENU,	KeyAction::Id::INTERACT_HARVEST)	},
-		   { KeyConfig::Key::RIGHT_ALT,		Keyboard::Mapping(KeyType::Id::ACTION,	KeyAction::Id::JUMP)				},
-		   { KeyConfig::Key::RIGHT_CONTROL,	Keyboard::Mapping(KeyType::Id::ACTION,	KeyAction::Id::ATTACK)				}
+		   { KeyConfig::Key::ESCAPE,		Keyboard::Mapping(get_keytype(KeyAction::Id::MAINMENU),			KeyAction::Id::MAINMENU)			},
+		   { KeyConfig::Key::F1,			Keyboard::Mapping(get_keytype(KeyAction::Id::FACE1),			KeyAction::Id::FACE1)				},
+		   { KeyConfig::Key::F2,			Keyboard::Mapping(get_keytype(KeyAction::Id::FACE2),			KeyAction::Id::FACE2)				},
+		   { KeyConfig::Key::F3,			Keyboard::Mapping(get_keytype(KeyAction::Id::FACE3),			KeyAction::Id::FACE3)				},
+		   { KeyConfig::Key::F5,			Keyboard::Mapping(get_keytype(KeyAction::Id::FACE4),			KeyAction::Id::FACE4)				},
+		   { KeyConfig::Key::F6,			Keyboard::Mapping(get_keytype(KeyAction::Id::FACE5),			KeyAction::Id::FACE5)				},
+		   { KeyConfig::Key::F7,			Keyboard::Mapping(get_keytype(KeyAction::Id::FACE6),			KeyAction::Id::FACE6)				},
+		   { KeyConfig::Key::F8,			Keyboard::Mapping(get_keytype(KeyAction::Id::FACE7),			KeyAction::Id::FACE7)				},
+		   { KeyConfig::Key::SCROLL_LOCK,	Keyboard::Mapping(get_keytype(KeyAction::Id::SCREENSHOT),		KeyAction::Id::SCREENSHOT)			},
+		   { KeyConfig::Key::GRAVE_ACCENT,	Keyboard::Mapping(get_keytype(KeyAction::Id::CASHSHOP),			KeyAction::Id::CASHSHOP)			},
+		   { KeyConfig::Key::NUM1,			Keyboard::Mapping(get_keytype(KeyAction::Id::SAY),				KeyAction::Id::SAY)					},
+		   { KeyConfig::Key::NUM2,			Keyboard::Mapping(get_keytype(KeyAction::Id::PARTYCHAT),		KeyAction::Id::PARTYCHAT)			},
+		   { KeyConfig::Key::NUM3,			Keyboard::Mapping(get_keytype(KeyAction::Id::FRIENDSCHAT),		KeyAction::Id::FRIENDSCHAT)			},
+		   { KeyConfig::Key::NUM4,			Keyboard::Mapping(get_keytype(KeyAction::Id::GUILDCHAT),		KeyAction::Id::GUILDCHAT)			},
+		   { KeyConfig::Key::NUM5,			Keyboard::Mapping(get_keytype(KeyAction::Id::ALLIANCECHAT),		KeyAction::Id::ALLIANCECHAT)		},
+		   { KeyConfig::Key::Q,				Keyboard::Mapping(get_keytype(KeyAction::Id::QUESTLOG),			KeyAction::Id::QUESTLOG)			},
+		   { KeyConfig::Key::W,				Keyboard::Mapping(get_keytype(KeyAction::Id::WORLDMAP),			KeyAction::Id::WORLDMAP)			},
+		   { KeyConfig::Key::E,				Keyboard::Mapping(get_keytype(KeyAction::Id::EQUIPMENT),		KeyAction::Id::EQUIPMENT)			},
+		   { KeyConfig::Key::R,				Keyboard::Mapping(get_keytype(KeyAction::Id::FRIENDS),			KeyAction::Id::FRIENDS)				},
+		   { KeyConfig::Key::T,				Keyboard::Mapping(get_keytype(KeyAction::Id::BOSSPARTY),		KeyAction::Id::BOSSPARTY)			},
+		   { KeyConfig::Key::Y,				Keyboard::Mapping(get_keytype(KeyAction::Id::ITEMPOT),			KeyAction::Id::ITEMPOT)				},
+		   { KeyConfig::Key::U,				Keyboard::Mapping(get_keytype(KeyAction::Id::GUIDE),			KeyAction::Id::GUIDE)				},
+		   { KeyConfig::Key::I,				Keyboard::Mapping(get_keytype(KeyAction::Id::ITEMS),			KeyAction::Id::ITEMS)				},
+		   { KeyConfig::Key::O,				Keyboard::Mapping(get_keytype(KeyAction::Id::ENHANCEEQUIP),		KeyAction::Id::ENHANCEEQUIP)		},
+		   { KeyConfig::Key::P,				Keyboard::Mapping(get_keytype(KeyAction::Id::PARTY),			KeyAction::Id::PARTY)				},
+		   { KeyConfig::Key::LEFT_BRACKET,	Keyboard::Mapping(get_keytype(KeyAction::Id::MENU),				KeyAction::Id::MENU)				},
+		   { KeyConfig::Key::RIGHT_BRACKET,	Keyboard::Mapping(get_keytype(KeyAction::Id::QUICKSLOTS),		KeyAction::Id::QUICKSLOTS)			},
+		   { KeyConfig::Key::BACKSLASH,		Keyboard::Mapping(get_keytype(KeyAction::Id::KEYBINDINGS),		KeyAction::Id::KEYBINDINGS)			},
+		   { KeyConfig::Key::S,				Keyboard::Mapping(get_keytype(KeyAction::Id::STATS),			KeyAction::Id::STATS)				},
+		   { KeyConfig::Key::G,				Keyboard::Mapping(get_keytype(KeyAction::Id::GUILD),			KeyAction::Id::GUILD)				},
+		   { KeyConfig::Key::H,				Keyboard::Mapping(get_keytype(KeyAction::Id::WHISPER),			KeyAction::Id::WHISPER)				},
+		   { KeyConfig::Key::K,				Keyboard::Mapping(get_keytype(KeyAction::Id::SKILLS),			KeyAction::Id::SKILLS)				},
+		   { KeyConfig::Key::L,				Keyboard::Mapping(get_keytype(KeyAction::Id::NOTIFIER),			KeyAction::Id::NOTIFIER)			},
+		   { KeyConfig::Key::SEMICOLON,		Keyboard::Mapping(get_keytype(KeyAction::Id::MEDALS),			KeyAction::Id::MEDALS)				},
+		   { KeyConfig::Key::APOSTROPHE,	Keyboard::Mapping(get_keytype(KeyAction::Id::TOGGLECHAT),		KeyAction::Id::TOGGLECHAT)			},
+		   { KeyConfig::Key::Z,				Keyboard::Mapping(get_keytype(KeyAction::Id::PICKUP),			KeyAction::Id::PICKUP)				},
+		   { KeyConfig::Key::X,				Keyboard::Mapping(get_keytype(KeyAction::Id::SIT),				KeyAction::Id::SIT)					},
+		   { KeyConfig::Key::C,				Keyboard::Mapping(get_keytype(KeyAction::Id::MAPLECHAT),		KeyAction::Id::MAPLECHAT)			},
+		   { KeyConfig::Key::V,				Keyboard::Mapping(get_keytype(KeyAction::Id::EVENT),			KeyAction::Id::EVENT)				},
+		   { KeyConfig::Key::B,				Keyboard::Mapping(get_keytype(KeyAction::Id::PROFESSION),		KeyAction::Id::PROFESSION)			},
+		   { KeyConfig::Key::M,				Keyboard::Mapping(get_keytype(KeyAction::Id::MINIMAP),			KeyAction::Id::MINIMAP)				},
+		   { KeyConfig::Key::LEFT_CONTROL,	Keyboard::Mapping(get_keytype(KeyAction::Id::ATTACK),			KeyAction::Id::ATTACK)				},
+		   { KeyConfig::Key::LEFT_ALT,		Keyboard::Mapping(get_keytype(KeyAction::Id::JUMP),				KeyAction::Id::JUMP)				},
+		   { KeyConfig::Key::SPACE,			Keyboard::Mapping(get_keytype(KeyAction::Id::INTERACT_HARVEST),	KeyAction::Id::INTERACT_HARVEST)	},
+		   { KeyConfig::Key::RIGHT_ALT,		Keyboard::Mapping(get_keytype(KeyAction::Id::JUMP),				KeyAction::Id::JUMP)				},
+		   { KeyConfig::Key::RIGHT_CONTROL,	Keyboard::Mapping(get_keytype(KeyAction::Id::ATTACK),			KeyAction::Id::ATTACK)				}
 		};
 	};
 }

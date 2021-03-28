@@ -35,9 +35,9 @@ namespace ms
 		constexpr std::array<const char*, NUM_FILES> filenames =
 		{
 			"Base.nx",
-			"Character.nx",
+			"Character.nx",	// From latest
 			"Effect.nx",
-			"Etc.nx",
+			"Etc.nx",		// From latest
 			"Item.nx",
 			"Map.nx",
 			"Map001.nx",	// From latest
@@ -50,7 +50,7 @@ namespace ms
 			"Reactor.nx",
 			"Skill.nx",
 			"Sound.nx",		// From latest
-			"String.nx",
+			"String.nx",	// From latest
 			"TamingMob.nx",
 			"UI.nx"			// From latest
 		};

@@ -69,6 +69,11 @@ namespace ms
 
 	void Texture::draw(const DrawArgument& args, const Range<int16_t>& vertical) const
 	{
+		draw(args, vertical, Range<int16_t>(0, 0));
+	}
+
+	void Texture::draw(const DrawArgument& args, const Range<int16_t>& vertical, const Range<int16_t>& horizontal) const
+	{
 		if (!is_valid())
 			return;
 
@@ -76,6 +81,7 @@ namespace ms
 			bitmap,
 			args.get_rectangle(origin, dimensions),
 			vertical,
+			horizontal,
 			args.get_color(),
 			args.get_angle()
 		);

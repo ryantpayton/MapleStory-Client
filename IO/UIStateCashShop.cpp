@@ -50,9 +50,9 @@ namespace ms
 		}
 	}
 
-	Cursor::State UIStateCashShop::send_cursor(Cursor::State cursorstate, Point<int16_t> cursorpos)
+	Cursor::State UIStateCashShop::send_cursor(Point<int16_t> cursor_position, Cursor::State cursor_state)
 	{
-		bool clicked = cursorstate == Cursor::State::CLICKING || cursorstate == Cursor::State::VSCROLLIDLE;
+		bool clicked = cursor_state == Cursor::State::CLICKING || cursor_state == Cursor::State::VSCROLLIDLE;
 
 		if (auto focusedelement = get(focused))
 		{
@@ -60,13 +60,13 @@ namespace ms
 			{
 				remove_cursor(focusedelement->get_type());
 
-				return focusedelement->send_cursor(clicked, cursorpos);
+				return focusedelement->send_cursor(clicked, cursor_position);
 			}
 			else
 			{
 				focused = UIElement::NONE;
 
-				return cursorstate;
+				return cursor_state;
 			}
 		}
 		else
@@ -75,7 +75,7 @@ namespace ms
 			{
 				remove_cursor(front->get_type());
 
-				return front->send_cursor(clicked, cursorpos);
+				return front->send_cursor(clicked, cursor_position);
 			}
 			else
 			{

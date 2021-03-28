@@ -32,7 +32,7 @@ namespace ms
 		if (Stage::get().is_player(cid))
 			return;
 
-		uint8_t level = recv.read_byte();
+		uint16_t level = recv.read_short();
 		std::string name = recv.read_string();
 
 		recv.read_string();	// guildname

@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Stance.h"
 
+#include "../../Util/Misc.h"
+
 #include <iostream>
 
 namespace ms
@@ -59,7 +61,7 @@ namespace ms
 			if (iter.second == name)
 				return iter.first;
 
-		std::cout << "Unknown Stance::Id name: [" << name << "]" << std::endl;
+		single_console::log_message("[Stance::by_string] Unknown Id name: [" + name + "]");
 
 		return NONE;
 	}

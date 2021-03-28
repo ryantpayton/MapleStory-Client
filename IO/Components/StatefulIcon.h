@@ -54,7 +54,7 @@ namespace ms
 		StatefulIcon() : StatefulIcon(std::make_unique<NullType>(), Texture(), Texture(), Texture()) {};
 		StatefulIcon(std::unique_ptr<Type> type, Texture normal_tx, Texture disabled_tx, Texture mouseover_tx);
 
-		Texture get_texture() const override;
+		Texture get_texture() const;
 
 		void set_state(State state);
 

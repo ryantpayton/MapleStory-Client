@@ -54,31 +54,43 @@ namespace ms
 				// The LoginNotice displayed will contain the specific information
 				switch (reason)
 				{
-				case 2:
-					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::BLOCKED_ID, okhandler);
-					break;
-				case 5:
-					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::NOT_REGISTERED, okhandler);
-					break;
-				case 7:
-					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::ALREADY_LOGGED_IN, okhandler);
-					break;
-				case 13:
-					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::UNABLE_TO_LOGIN_WITH_IP, okhandler);
-					break;
-				case 23:
-					UI::get().emplace<UITermsOfService>(okhandler);
-					break;
-				default:
-					// Other reasons
-					if (reason > 0)
+					case 2:
 					{
-						auto reasonbyte = static_cast<int8_t>(reason - 1);
-
-						UI::get().emplace<UILoginNotice>(reasonbyte, okhandler);
+						UI::get().emplace<UILoginNotice>(UILoginNotice::Message::BLOCKED_ID, okhandler);
+						break;
 					}
+					case 5:
+					{
+						UI::get().emplace<UILoginNotice>(UILoginNotice::Message::NOT_REGISTERED, okhandler);
+						break;
+					}
+					case 7:
+					{
+						UI::get().emplace<UILoginNotice>(UILoginNotice::Message::ALREADY_LOGGED_IN, okhandler);
+						break;
+					}
+					case 13:
+					{
+						UI::get().emplace<UILoginNotice>(UILoginNotice::Message::UNABLE_TO_LOGIN_WITH_IP, okhandler);
+						break;
+					}
+					case 23:
+					{
+						UI::get().emplace<UITermsOfService>(okhandler);
+						break;
+					}
+					default:
+					{
+						// Other reasons
+						if (reason > 0)
+						{
+							auto reasonbyte = static_cast<int8_t>(reason - 1);
 
-					break;
+							UI::get().emplace<UILoginNotice>(reasonbyte, okhandler);
+						}
+
+						break;
+					}
 				}
 			}
 			else
@@ -117,6 +129,58 @@ namespace ms
 		// TODO: I believe it shows a warning message if it's 1 and blocks enter into the world if it's 2. Need to find those messages.
 	}
 
+	void SelectCharacterHandler::handle(InPacket& recv) const
+	{
+		std::function<void()> okhandler = []() {};
+
+		// The packet should contain a 'reason' integer which can signify various things
+		if (int16_t reason = recv.read_short())
+		{
+			// Select character unsuccessful
+			// The LoginNotice displayed will contain the specific information
+			switch (reason)
+			{
+				case 2:
+				{
+					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::BLOCKED_ID, okhandler);
+					break;
+				}
+				case 5:
+				{
+					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::NOT_REGISTERED, okhandler);
+					break;
+				}
+				case 7:
+				{
+					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::ALREADY_LOGGED_IN, okhandler);
+					break;
+				}
+				case 13:
+				{
+					UI::get().emplace<UILoginNotice>(UILoginNotice::Message::UNABLE_TO_LOGIN_WITH_IP, okhandler);
+					break;
+				}
+				case 23:
+				{
+					UI::get().emplace<UITermsOfService>(okhandler);
+					break;
+				}
+				default:
+				{
+					// Other reasons
+					if (reason > 0)
+					{
+						auto reasonbyte = static_cast<int8_t>(reason - 1);
+
+						UI::get().emplace<UILoginNotice>(reasonbyte, okhandler);
+					}
+
+					break;
+				}
+			}
+		}
+	}
+
 	void ServerlistHandler::handle(InPacket& recv) const
 	{
 		auto worldselect = UI::get().get_element<UIWorldSelect>();
@@ -129,7 +193,7 @@ namespace ms
 		{
 			World world = LoginParser::parse_world(recv);
 
-			if (world.wid != -1)
+			if (world.id != -1)
 			{
 				worldselect->add_world(world);
 			}
@@ -224,14 +288,14 @@ namespace ms
 
 			switch (state)
 			{
-			case 10:
-				message = UILoginNotice::Message::BIRTHDAY_INCORRECT;
-				break;
-			case 20:
-				message = UILoginNotice::Message::INCORRECT_PIC;
-				break;
-			default:
-				message = UILoginNotice::Message::UNKNOWN_ERROR;
+				case 10:
+					message = UILoginNotice::Message::BIRTHDAY_INCORRECT;
+					break;
+				case 20:
+					message = UILoginNotice::Message::INCORRECT_PIC;
+					break;
+				default:
+					message = UILoginNotice::Message::UNKNOWN_ERROR;
 			}
 
 			UI::get().emplace<UILoginNotice>(message);
@@ -253,7 +317,7 @@ namespace ms
 			{
 				RecommendedWorld world = LoginParser::parse_recommended_world(recv);
 
-				if (world.wid != -1 && !world.message.empty())
+				if (world.id != -1 && !world.message.empty())
 					worldselect->add_recommended_world(world);
 			}
 		}

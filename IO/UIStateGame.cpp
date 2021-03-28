@@ -111,10 +111,10 @@ namespace ms
 		}
 	}
 
-	bool UIStateGame::drop_icon(const Icon& icon, Point<int16_t> pos)
+	bool UIStateGame::drop_icon(const Icon& icon, Point<int16_t> cursor_position)
 	{
-		if (UIElement* front = get_front(pos))
-			return front->send_icon(icon, pos);
+		if (UIElement* front = get_front(cursor_position))
+			return front->send_icon(icon, cursor_position);
 		else
 			icon.drop_on_stage();
 
@@ -301,11 +301,15 @@ namespace ms
 
 								break;
 							}
-							case KeyAction::Id::TOGGLECHAT:
+							case KeyAction::Id::SAY:
+							case KeyAction::Id::PARTYCHAT:
+							case KeyAction::Id::FRIENDSCHAT:
+							case KeyAction::Id::GUILDCHAT:
+							case KeyAction::Id::ALLIANCECHAT:
+							case KeyAction::Id::TOSPOUSE:
 							{
 								if (auto chatbar = UI::get().get_element<UIChatBar>())
-									if (!chatbar->is_chatfieldopen())
-										chatbar->toggle_chat();
+									chatbar->change_target(action);
 
 								break;
 							}
@@ -320,6 +324,18 @@ namespace ms
 							{
 								if (auto statusbar = UI::get().get_element<UIStatusBar>())
 									statusbar->toggle_qs();
+
+								break;
+							}
+							case KeyAction::Id::TOGGLECHAT:
+							{
+								if (auto chatbar = UI::get().get_element<UIChatBar>())
+								{
+									if (chatbar->has_input())
+										chatbar->send_key(action, pressed, escape);
+									else
+										chatbar->toggle_view();
+								}
 
 								break;
 							}
@@ -375,23 +391,23 @@ namespace ms
 		}
 	}
 
-	Cursor::State UIStateGame::send_cursor(Cursor::State cursorstate, Point<int16_t> cursorpos)
+	Cursor::State UIStateGame::send_cursor(Point<int16_t> cursor_position, Cursor::State cursor_state)
 	{
 		if (draggedicon)
 		{
-			if (cursorstate == Cursor::State::CLICKING)
+			if (cursor_state == Cursor::State::CLICKING)
 			{
-				if (drop_icon(*draggedicon, cursorpos))
+				if (drop_icon(*draggedicon, cursor_position))
 					remove_icon();
 
-				return cursorstate;
+				return cursor_state;
 			}
 
 			return Cursor::State::GRABBING;
 		}
 		else
 		{
-			bool clicked = cursorstate == Cursor::State::CLICKING || cursorstate == Cursor::State::VSCROLLIDLE;
+			bool clicked = cursor_state == Cursor::State::CLICKING || cursor_state == Cursor::State::VSCROLLIDLE || (dragged && (cursor_state == Cursor::State::CHATBARMOVE || cursor_state == Cursor::State::CHATBARVDRAG || cursor_state == Cursor::State::CHATBARHDRAG || cursor_state == Cursor::State::CHATBARBLTRDRAG || cursor_state == Cursor::State::CHATBARBRTLDRAG));
 
 			if (auto focusedelement = get(focused))
 			{
@@ -399,13 +415,13 @@ namespace ms
 				{
 					remove_cursor(focusedelement->get_type());
 
-					return focusedelement->send_cursor(clicked, cursorpos);
+					return focusedelement->send_cursor(clicked, cursor_position);
 				}
 				else
 				{
 					focused = UIElement::Type::NONE;
 
-					return cursorstate;
+					return cursor_state;
 				}
 			}
 			else
@@ -414,7 +430,7 @@ namespace ms
 				{
 					dragged = nullptr;
 
-					if (auto front = get_front(cursorpos))
+					if (auto front = get_front(cursor_position))
 					{
 						UIElement::Type front_type = front->get_type();
 
@@ -424,18 +440,17 @@ namespace ms
 
 						remove_cursor(front_type);
 
-						return front->send_cursor(clicked, cursorpos);
+						return front->send_cursor(clicked, cursor_position);
 					}
 					else
 					{
 						remove_cursors();
 
-						return Stage::get().send_cursor(clicked, cursorpos);
+						return Stage::get().send_cursor(clicked, cursor_position);
 					}
 				}
 				else
 				{
-
 					if (!dragged)
 					{
 						UIElement::Type drag_element_type = UIElement::Type::NONE;
@@ -444,7 +459,7 @@ namespace ms
 						{
 							auto& element = elements[*iter];
 
-							if (element && element->is_active() && element->is_in_range(cursorpos))
+							if (element && element->is_active() && element->is_in_range(cursor_position))
 							{
 								dragged = element.get();
 								drag_element_type = *iter;
@@ -460,9 +475,9 @@ namespace ms
 					}
 
 					if (dragged)
-						return dragged->send_cursor(clicked, cursorpos);
+						return dragged->send_cursor(clicked, cursor_position);
 					else
-						return Stage::get().send_cursor(clicked, cursorpos);
+						return Stage::get().send_cursor(clicked, cursor_position);
 				}
 			}
 		}
@@ -686,7 +701,7 @@ namespace ms
 		return nullptr;
 	}
 
-	UIElement* UIStateGame::get_front(Point<int16_t> pos)
+	UIElement* UIStateGame::get_front(Point<int16_t> cursor_position)
 	{
 		auto begin = elementorder.rbegin();
 		auto end = elementorder.rend();
@@ -695,7 +710,7 @@ namespace ms
 		{
 			auto& element = elements[*iter];
 
-			if (element && element->is_active() && element->is_in_range(pos))
+			if (element && element->is_active() && element->is_in_range(cursor_position))
 				return element.get();
 		}
 

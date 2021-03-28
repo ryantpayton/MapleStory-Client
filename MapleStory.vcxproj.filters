@@ -570,6 +570,9 @@
     <ClCompile Include="Util\NxFiles.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IO\UITypes\UICommonCreation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Configuration.h">
@@ -1284,6 +1287,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Util\NxFiles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\UITypes\UICommonCreation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

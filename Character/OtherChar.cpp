@@ -21,15 +21,13 @@
 
 namespace ms
 {
-	OtherChar::OtherChar(int32_t id, const CharLook& lk, uint8_t lvl, int16_t jb, const std::string& nm, int8_t st, Point<int16_t> pos) : Char(id, lk, nm)
+	OtherChar::OtherChar(int32_t charid, const CharLook& look, uint16_t level, int16_t job, const std::string& name, int8_t stance, Point<int16_t> position) : Char(charid, look, name), level(level), job(job)
 	{
-		level = lvl;
-		job = jb;
-		set_position(pos);
+		set_position(position);
 
-		lastmove.xpos = pos.x();
-		lastmove.ypos = pos.y();
-		lastmove.newstate = st;
+		lastmove.xpos = position.x();
+		lastmove.ypos = position.y();
+		lastmove.newstate = stance;
 		timer = 0;
 
 		attackspeed = 6;

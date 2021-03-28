@@ -43,6 +43,7 @@ namespace ms
 
 		std::string linebreak = "\\r\\n";
 
+		// TODO: Replace EULA text with nl::nx::string["TrialEULA.img"]["EULA"]
 #pragma region EULA
 		std::string EULA = "NEXON AMERICA, INC. - TERMS OF USE";
 
@@ -1119,17 +1120,16 @@ namespace ms
 	{
 		switch (buttonid)
 		{
-		case Buttons::OK:
-			UI::get().emplace<UILoginWait>();
+			case Buttons::OK:
+				UI::get().emplace<UILoginWait>();
 
-			TOSPacket().dispatch();
-			break;
-		case Buttons::CANCEL:
-			deactivate();
-			okhandler();
-			break;
-		default:
-			break;
+				TOSPacket().dispatch();
+				break;
+			case Buttons::CANCEL:
+				UI::get().quit();
+				break;
+			default:
+				break;
 		}
 
 		return Button::State::NORMAL;

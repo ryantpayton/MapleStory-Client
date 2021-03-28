@@ -33,6 +33,12 @@ namespace ms
 		void handle(InPacket& recv) const override;
 	};
 
+	// Handler for a packet that contains the status of the requested world
+	class SelectCharacterHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
 	// Handles the packet that contains information on worlds and channels
 	class ServerlistHandler : public PacketHandler
 	{

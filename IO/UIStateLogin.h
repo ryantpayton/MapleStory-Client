@@ -34,7 +34,7 @@ namespace ms
 		void doubleclick(Point<int16_t> pos) override;
 		void rightclick(Point<int16_t>) override {}
 		void send_key(KeyType::Id type, int32_t action, bool pressed, bool escape) override;
-		Cursor::State send_cursor(Cursor::State mst, Point<int16_t> pos) override;
+		Cursor::State send_cursor(Point<int16_t> cursor_position, Cursor::State cursor_state) override;
 		void send_scroll(double) override {}
 		void send_close() override;
 
@@ -51,7 +51,7 @@ namespace ms
 		UIElement* get(UIElement::Type type) override;
 		UIElement* get_front();
 		UIElement* get_front(std::list<UIElement::Type> types) override;
-		UIElement* get_front(Point<int16_t> pos) override;
+		UIElement* get_front(Point<int16_t> cursor_position) override;
 
 	private:
 		void remove_cursor(UIElement::Type type);

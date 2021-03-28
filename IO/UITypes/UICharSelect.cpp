@@ -43,10 +43,9 @@
 
 namespace ms
 {
-	UICharSelect::UICharSelect(std::vector<CharEntry> characters, int8_t characters_count, int32_t slots, int8_t require_pic) : characters(characters), characters_count(characters_count), slots(slots), require_pic(require_pic)
+	UICharSelect::UICharSelect(std::vector<CharEntry> characters, int8_t characters_count, int32_t slots, int8_t require_pic) : UIElement(Point<int16_t>(0, 0), Point<int16_t>(800, 600)),
+		characters(characters), characters_count(characters_count), slots(slots), require_pic(require_pic), burning_character(true), tab_index(0), tab_active(false), tab_move(false), charslot_y(0), use_timestamp(false)
 	{
-		burning_character = true;
-
 		std::string version_text = Configuration::get().get_version();
 		version = Text(Text::Font::A11B, Text::Alignment::LEFT, Color::Name::LEMONGRASS, "Ver. " + version_text);
 
@@ -63,10 +62,6 @@ namespace ms
 		page_count = std::ceil((double)slots / (double)PAGESIZE);
 
 		tab = nl::nx::ui["Basic.img"]["Cursor"]["18"]["0"];
-
-		tab_index = 0;
-		tab_active = false;
-		tab_move = false;
 
 		Point<int16_t> tab_adj = Point<int16_t>(86, 5);
 
@@ -108,7 +103,7 @@ namespace ms
 
 		sprites.emplace_back(map["back"]["13"], Point<int16_t>(392, 297));
 		sprites.emplace_back(ani["17"], Point<int16_t>(151, 283));
-		sprites.emplace_back(ani["18"], Point<int16_t>(365, 252));
+		sprites.emplace_back(ani["18"], Point<int16_t>(364, 251));
 		sprites.emplace_back(ani["19"], Point<int16_t>(191, 208));
 		sprites.emplace_back(frame, Point<int16_t>(400, 300));
 		sprites.emplace_back(Common["frame"], Point<int16_t>(400, 300));
@@ -186,8 +181,6 @@ namespace ms
 				Configuration::get().get_auto_cid()
 			).dispatch();
 		}
-
-		dimension = Point<int16_t>(800, 600);
 	}
 
 	void UICharSelect::draw(float inter) const
@@ -293,24 +286,29 @@ namespace ms
 	{
 		UIElement::update();
 
-		if (show_timestamp)
-		{
-			if (timestamp > 0)
-			{
-				timestamp -= Constants::TIMESTEP;
+		int16_t timestep_max = CHARSLOT_Y_MAX * Constants::TIMESTEP;
 
-				if (timestamp <= 176)
-					charslot_y += 1;
+		if (use_timestamp)
+		{
+			if (show_timestamp)
+			{
+				if (timestamp > 0)
+				{
+					timestamp -= Constants::TIMESTEP;
+
+					if (timestamp <= timestep_max)
+						charslot_y += 1;
+				}
 			}
-		}
-		else
-		{
-			if (timestamp <= 176)
+			else
 			{
-				timestamp += Constants::TIMESTEP;
+				if (timestamp <= timestep_max)
+				{
+					timestamp += Constants::TIMESTEP;
 
-				if (charslot_y >= 0)
-					charslot_y -= 1;
+					if (charslot_y >= 0)
+						charslot_y -= 1;
+				}
 			}
 		}
 
@@ -355,7 +353,8 @@ namespace ms
 		{
 			if (clicked)
 			{
-				show_timestamp = !show_timestamp;
+				if (use_timestamp)
+					show_timestamp = !show_timestamp;
 
 				return Cursor::State::CLICKING;
 			}
@@ -587,6 +586,8 @@ namespace ms
 
 				characters_count--;
 
+				charslotlabel.change_text(get_slot_text());
+
 				if (selected_page > 0)
 				{
 					bool page_matches = (characters_count - 1) / PAGESIZE == selected_page;
@@ -705,7 +706,6 @@ namespace ms
 							std::function<void(const std::string&)> onok = [&, id](const std::string& pic)
 							{
 								DeleteCharPicPacket(pic, id).dispatch();
-								charslotlabel.change_text(get_slot_text());
 							};
 
 							UI::get().emplace<UISoftKey>(onok, oncancel);
@@ -724,7 +724,6 @@ namespace ms
 					case 2:
 					{
 						DeleteCharPacket(id).dispatch();
-						charslotlabel.change_text(get_slot_text());
 						break;
 					}
 				}
@@ -884,9 +883,12 @@ namespace ms
 
 	std::string UICharSelect::get_slot_text()
 	{
-		show_timestamp = true;
-		timestamp = 7 * 1000;
-		charslot_y = 0;
+		if (use_timestamp)
+		{
+			show_timestamp = true;
+			timestamp = 7 * 1000;
+			charslot_y = 0;
+		}
 
 		return pad_number_with_leading_zero(characters_count) + "/" + pad_number_with_leading_zero(slots);
 	}

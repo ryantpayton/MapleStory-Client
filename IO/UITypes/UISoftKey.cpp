@@ -245,9 +245,9 @@ namespace ms
 #pragma endregion
 #pragma endregion
 
-		Point<int16_t> textfield_tl = Point<int16_t>(350, 205);
+		Point<int16_t> textfield_topleft = Point<int16_t>(306, 201);
 
-		textfield = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR, Rectangle<int16_t>(textfield_tl, textfield_tl + Point<int16_t>(117, 20)), MAX_TEXT_LEN);
+		textfield = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, Rectangle<int16_t>(textfield_topleft, textfield_topleft + Point<int16_t>(187, 21)), MAX_TEXT_LEN);
 		textfield.set_cryptchar('*');
 
 		textfield.set_enter_callback(
@@ -272,8 +272,6 @@ namespace ms
 			}
 		);
 
-		textfield_pos = Point<int16_t>(0, -4);
-
 		show_text(tooltip_text);
 
 		dimension = Texture(backgrnd).get_dimensions();
@@ -293,7 +291,7 @@ namespace ms
 			btn->draw(position);
 		}
 
-		textfield.draw(textfield_pos, Point<int16_t>(1, 0));
+		textfield.draw(Point<int16_t>(44, 0), Point<int16_t>(1, 0));
 
 		if (tooltip)
 			tooltip->draw(position + Point<int16_t>(419, 50) + tooltip_pos);
@@ -303,7 +301,7 @@ namespace ms
 	{
 		UIElement::update();
 
-		textfield.update(textfield_pos);
+		textfield.update();
 		textfield.set_state(Textfield::State::FOCUSED);
 
 		if (tooltip)

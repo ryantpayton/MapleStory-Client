@@ -79,7 +79,7 @@ namespace ms
 			for (size_t i = 0; i < 3; i++)
 				statsentry.petids.push_back(recv.read_long());
 
-			statsentry.stats[MapleStat::Id::LEVEL] = recv.read_byte(); // TODO: Change to recv.read_short(); to increase level cap
+			statsentry.stats[MapleStat::Id::LEVEL] = recv.read_short();
 
 			auto job = recv.read_short();
 
@@ -116,20 +116,20 @@ namespace ms
 		{
 			switch (job)
 			{
-			case Jobs::EVAN:
-			case Jobs::EVAN1:
-			case Jobs::EVAN2:
-			case Jobs::EVAN3:
-			case Jobs::EVAN4:
-			case Jobs::EVAN5:
-			case Jobs::EVAN6:
-			case Jobs::EVAN7:
-			case Jobs::EVAN8:
-			case Jobs::EVAN9:
-			case Jobs::EVAN10:
-				return true;
-			default:
-				return false;
+				case Jobs::EVAN:
+				case Jobs::EVAN1:
+				case Jobs::EVAN2:
+				case Jobs::EVAN3:
+				case Jobs::EVAN4:
+				case Jobs::EVAN5:
+				case Jobs::EVAN6:
+				case Jobs::EVAN7:
+				case Jobs::EVAN8:
+				case Jobs::EVAN9:
+				case Jobs::EVAN10:
+					return true;
+				default:
+					return false;
 			}
 		}
 

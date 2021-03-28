@@ -103,14 +103,14 @@ namespace ms
 	class CharSpawn
 	{
 	public:
-		CharSpawn(int32_t cid, const LookEntry& look, uint8_t level, int16_t job, const std::string& name, int8_t stance, Point<int16_t> position);
+		CharSpawn(int32_t cid, const LookEntry& look, uint16_t level, int16_t job, const std::string& name, int8_t stance, Point<int16_t> position);
 
 		int32_t get_cid() const;
 		std::unique_ptr<MapObject> instantiate() const;
 
 	private:
 		int32_t cid;
-		uint8_t level;
+		uint16_t level;
 		int16_t job;
 		std::string name;
 		int8_t stance;

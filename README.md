@@ -17,24 +17,24 @@ The build can be configured by editing the **MapleStory.h** file. The following 
 The default settings can be configured by editing the **Configuration.h** file. These are also generated after a game session in a file called **Settings**. These can be altered in the same way as **Configuration.h**, although, these do not persist if you delete the file, unlike **Configuration.h**.
 
 # Building
-1. Open **MapleStory.sln** in Visual Studio 2017 CE
-2. Make sure to use **Windows SDK Version: 8.1** and **Platform Toolset: v140** (If you don't have these, download them)
+1. Open **MapleStory.sln** in Visual Studio 2019 CE
+2. Make sure to use **Windows SDK Version: 8.1** and **Platform Toolset: v140** (If you don't have these, download them.)
    * [Windows 8.1 SDK]
 3. Press **Build** > **Build Solution** or **Ctrl + Shift + B**
-4. After a successful build, you can now run the program by pressing **Debug** > **Start Debugging** or **F5**
-5. Make sure all nx files are present in the parent folder. To convert wz files to nx you can use the [NoLifeWzToNx] project.
+4. After a successful build, you can now run the program by pressing **Debug** > **Start Debugging** or **F5**.
+5. Make sure all NX files are present in the parent folder. To convert WZ files to NX you can use the [NoLifeWzToNx] project.
    - Extract the zip
-   - Place your wz files in the **files** folder
+   - Place your WZ files in the **files** folder
    - Run **start.bat**
-   - See **Required Files** for a list of required nx files
+   - See **Required Files** for a list of required NX files
 
 # Required Files
-*Always check **NxFiles.h** for an updated list of required nx files*
+*Always check **NxFiles.h** for an updated list of required NX files*
 - [MapPretty.nx] (Trimmed v167 GMS Map.wz)
 - MapLatest.nx (Lastest GMS Map.wz)
 - Map001.nx (Latest GMS Map001.wz)
 - UI.nx (Latest GMS UI.wz)
-- Everything else is from v83 GMS wz files
+- Everything else is from v83 GMS WZ files
 
 There is an archive of all the NX files listed above available for download [here][1] (Latest: v213.2).
 

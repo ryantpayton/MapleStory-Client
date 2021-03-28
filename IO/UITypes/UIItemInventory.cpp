@@ -369,7 +369,17 @@ namespace ms
 					case InventoryType::Id::EQUIP:
 					{
 						if (can_wear_equip(slot))
-							EquipItemPacket(slot, inventory.find_equipslot(item_id)).dispatch();
+						{
+							EquipSlot::Id equipslot = inventory.find_equipslot(item_id);
+
+							if (equipslot == EquipSlot::Id::NONE)
+							{
+								std::cout << "Could not find appropriate EquipSlot::Id for item [" << item_id << "]. Equip would be dropped." << std::endl;
+								break;
+							}
+
+							EquipItemPacket(slot, equipslot).dispatch();
+						}
 
 						break;
 					}
@@ -447,6 +457,7 @@ namespace ms
 			{
 				Point<int16_t> slotpos = get_slotpos(slot);
 				icon->start_drag(cursor_relative - slotpos);
+
 				UI::get().drag_icon(icon);
 
 				clear_tooltip();

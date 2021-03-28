@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Configuration.h"
 
+#include "Util/Misc.h"
+
 #include <fstream>
 
 namespace ms
@@ -39,7 +41,9 @@ namespace ms
 		settings.emplace<DefaultChannel>();
 		settings.emplace<DefaultRegion>();
 		settings.emplace<DefaultCharacter>();
-		settings.emplace<Chatopen>();
+		settings.emplace<ChatViewMax>();
+		settings.emplace<ChatViewX>();
+		settings.emplace<ChatViewY>();
 		settings.emplace<PosSTATS>();
 		settings.emplace<PosEQINV>();
 		settings.emplace<PosINV>();
@@ -274,6 +278,10 @@ namespace ms
 		std::string part2 = VolumeSerialNumber.substr(2, 2);
 		std::string part3 = VolumeSerialNumber.substr(4, 2);
 		std::string part4 = VolumeSerialNumber.substr(6, 2);
+
+		// TODO: VolumeSerialNumber was not eight characters long, added fix for last part.
+		// TODO: Need to look into why the VolumeSerialNumber was seven characters long
+		part4 = string_format::pad_string(part4, 2);
 
 		newHWID.append(part4);
 		newHWID.append(part3);

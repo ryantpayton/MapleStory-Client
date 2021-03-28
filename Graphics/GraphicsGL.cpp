@@ -485,7 +485,7 @@ namespace ms
 		).first->second;
 	}
 
-	void GraphicsGL::draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect, const Range<int16_t>& vertical, const Color& color, float angle)
+	void GraphicsGL::draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect, const Range<int16_t>& vertical, const Range<int16_t>& horizontal, const Color& color, float angle)
 	{
 		if (locked)
 			return;
@@ -500,8 +500,16 @@ namespace ms
 
 		offset.top += vertical.first();
 		offset.bottom -= vertical.second();
+		offset.left += horizontal.first();
+		offset.right -= horizontal.second();
 
-		quads.emplace_back(rect.left(), rect.right(), rect.top() + vertical.first(), rect.bottom() - vertical.second(), offset, color, angle);
+		quads.emplace_back(
+			rect.left() + horizontal.first(),
+			rect.right() - horizontal.second(),
+			rect.top() + vertical.first(),
+			rect.bottom() - vertical.second(),
+			offset, color, angle
+		);
 	}
 
 	Text::Layout GraphicsGL::createlayout(const std::string& text, Text::Font id, Text::Alignment alignment, int16_t maxwidth, bool formatted, int16_t line_adj)
@@ -589,7 +597,7 @@ namespace ms
 								color = Color::Name::DARKGREY;
 								break;
 							case 'b':
-								color = Color::Name::BLUE;
+								color = Color::Name::PERSIANGREEN;
 								break;
 							case 'r':
 								color = Color::Name::RED;

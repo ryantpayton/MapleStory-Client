@@ -53,6 +53,8 @@ namespace ms
 		void set_search(bool enable);
 		void update_world(std::string parent_map);
 
+		Point<int16_t> get_search_pos();
+
 		enum Buttons
 		{
 			BT_CLOSE,
@@ -111,5 +113,6 @@ namespace ms
 		Point<int16_t> bg_search_dimensions;
 		Point<int16_t> background_dimensions;
 		Point<int16_t> base_position;
+		Point<int16_t> search_text_dim;
 	};
 }

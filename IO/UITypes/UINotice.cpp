@@ -166,12 +166,12 @@ namespace ms
 
 		switch (buttonid)
 		{
-		case Buttons::YES:
-			yesnohandler(true);
-			break;
-		case Buttons::NO:
-			yesnohandler(false);
-			break;
+			case Buttons::YES:
+				yesnohandler(true);
+				break;
+			case Buttons::NO:
+				yesnohandler(false);
+				break;
 		}
 
 		return Button::State::PRESSED;
@@ -190,7 +190,12 @@ namespace ms
 		buttons[Buttons::OK] = std::make_unique<MapleButton>(src["BtOK4"], 156, pos_y);
 		buttons[Buttons::CANCEL] = std::make_unique<MapleButton>(src["BtCancel4"], 198, pos_y);
 
-		numfield = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::LIGHTGREY, Rectangle<int16_t>(24, 232, belowtext, belowtext + 20), 10);
+		Point<int16_t> numfield_pos = position + Point<int16_t>(22, belowtext + 5);
+		Point<int16_t> numfield_dim = Point<int16_t>(217, 16);
+
+		int16_t numfield_limit = 10;
+
+		numfield = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::LIGHTGREY, Rectangle<int16_t>(numfield_pos, numfield_pos + numfield_dim), numfield_limit);
 		numfield.change_text(std::to_string(quantity));
 
 		numfield.set_enter_callback(
@@ -216,14 +221,14 @@ namespace ms
 		UINotice::draw(true);
 		UIElement::draw(alpha);
 
-		numfield.draw(position);
+		numfield.draw(Point<int16_t>(2, -4));
 	}
 
 	void UIEnterNumber::update()
 	{
 		UIElement::update();
 
-		numfield.update(position);
+		numfield.update();
 	}
 
 	Cursor::State UIEnterNumber::send_cursor(bool clicked, Point<int16_t> cursorpos)
@@ -261,12 +266,12 @@ namespace ms
 	{
 		switch (buttonid)
 		{
-		case Buttons::OK:
-			handlestring(numfield.get_text());
-			break;
-		case Buttons::CANCEL:
-			deactivate();
-			break;
+			case Buttons::OK:
+				handlestring(numfield.get_text());
+				break;
+			case Buttons::CANCEL:
+				deactivate();
+				break;
 		}
 
 		return Button::State::NORMAL;
@@ -358,9 +363,9 @@ namespace ms
 
 		switch (buttonid)
 		{
-		case Buttons::OK:
-			okhandler(true);
-			break;
+			case Buttons::OK:
+				okhandler(true);
+				break;
 		}
 
 		return Button::State::NORMAL;

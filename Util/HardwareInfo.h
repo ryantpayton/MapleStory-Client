@@ -106,13 +106,16 @@ namespace ms
 
 				pAdapterInfo = pAdapterInfo->Next;
 
-				// Technically should look at pAdapterInfo->AddressLength and not assume it is 6
-				sprintf_s(macs, size, "%02X-%02X-%02X-%02X-%02X-%02X",
-					pAdapterInfo->Address[0], pAdapterInfo->Address[1],
-					pAdapterInfo->Address[2], pAdapterInfo->Address[3],
-					pAdapterInfo->Address[4], pAdapterInfo->Address[5]);
+				if (pAdapterInfo)
+				{
+					// Technically should look at pAdapterInfo->AddressLength and not assume it is 6
+					sprintf_s(macs, size, "%02X-%02X-%02X-%02X-%02X-%02X",
+						pAdapterInfo->Address[0], pAdapterInfo->Address[1],
+						pAdapterInfo->Address[2], pAdapterInfo->Address[3],
+						pAdapterInfo->Address[4], pAdapterInfo->Address[5]);
 
-				Configuration::get().set_macs(macs);
+					Configuration::get().set_macs(macs);
+				}
 			}
 
 			free(AdapterInfo);

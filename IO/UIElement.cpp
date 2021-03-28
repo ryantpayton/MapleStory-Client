@@ -77,11 +77,11 @@ namespace ms
 			makeactive();
 	}
 
-	bool UIElement::is_in_range(Point<int16_t> cursorpos) const
+	bool UIElement::is_in_range(Point<int16_t> cursor_position) const
 	{
 		auto bounds = Rectangle<int16_t>(position, position + dimension);
 
-		return bounds.contains(cursorpos);
+		return bounds.contains(cursor_position);
 	}
 
 	void UIElement::remove_cursor()
@@ -95,13 +95,13 @@ namespace ms
 		}
 	}
 
-	Cursor::State UIElement::send_cursor(bool down, Point<int16_t> pos)
+	Cursor::State UIElement::send_cursor(bool clicked, Point<int16_t> cursor_position)
 	{
-		Cursor::State ret = down ? Cursor::State::CLICKING : Cursor::State::IDLE;
+		Cursor::State ret = clicked ? Cursor::State::CLICKING : Cursor::State::IDLE;
 
 		for (auto& btit : buttons)
 		{
-			if (btit.second->is_active() && btit.second->bounds(position).contains(pos))
+			if (btit.second->is_active() && btit.second->bounds(position).contains(cursor_position))
 			{
 				if (btit.second->get_state() == Button::State::NORMAL)
 				{
@@ -112,7 +112,7 @@ namespace ms
 				}
 				else if (btit.second->get_state() == Button::State::MOUSEOVER)
 				{
-					if (down)
+					if (clicked)
 					{
 						Sound(Sound::Name::BUTTONCLICK).play();
 

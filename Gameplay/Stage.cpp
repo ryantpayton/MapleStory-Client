@@ -272,20 +272,20 @@ namespace ms
 		}
 	}
 
-	Cursor::State Stage::send_cursor(bool pressed, Point<int16_t> position)
+	Cursor::State Stage::send_cursor(bool clicked, Point<int16_t> cursor_position)
 	{
 		auto statusbar = UI::get().get_element<UIStatusBar>();
 
 		if (statusbar && statusbar->is_menu_active())
 		{
-			if (pressed)
+			if (clicked)
 				statusbar->remove_menus();
 
-			if (statusbar->is_in_range(position))
-				return statusbar->send_cursor(pressed, position);
+			if (statusbar->is_in_range(cursor_position))
+				return statusbar->send_cursor(clicked, cursor_position);
 		}
 
-		return npcs.send_cursor(pressed, position, camera.position());
+		return npcs.send_cursor(clicked, cursor_position, camera.position());
 	}
 
 	bool Stage::is_player(int32_t cid) const

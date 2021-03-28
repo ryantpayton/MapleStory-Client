@@ -68,24 +68,24 @@ namespace ms
 
 				switch (type)
 				{
-				case InventoryType::Id::EQUIP:
-					tab = "Eqp";
-					break;
-				case InventoryType::Id::USE:
-					tab = "Use";
-					break;
-				case InventoryType::Id::SETUP:
-					tab = "Setup";
-					break;
-				case InventoryType::Id::ETC:
-					tab = "Etc";
-					break;
-				case InventoryType::Id::CASH:
-					tab = "Cash";
-					break;
-				default:
-					tab = "UNKNOWN";
-					break;
+					case InventoryType::Id::EQUIP:
+						tab = "Eqp";
+						break;
+					case InventoryType::Id::USE:
+						tab = "Use";
+						break;
+					case InventoryType::Id::SETUP:
+						tab = "Setup";
+						break;
+					case InventoryType::Id::ETC:
+						tab = "Etc";
+						break;
+					case InventoryType::Id::CASH:
+						tab = "Cash";
+						break;
+					default:
+						tab = "UNKNOWN";
+						break;
 				}
 
 				// TODO: show_status(Color::Name::WHITE, "You have lost items in the " + tab + " tab (" + name + " " + std::to_string(qty) + ")");
@@ -165,22 +165,54 @@ namespace ms
 		bool servermessage = recv.inspect_bool();
 
 		if (servermessage)
-			recv.skip(1);
+			recv.skip_byte();
 
-		std::string message = recv.read_string();
+		std::string error = "[MessagingHandlers::ServerMessageHandler]: ";
+		const std::string& message = recv.read_string();
 
 		if (type == 3)
 		{
-			recv.read_byte(); // channel
-			recv.read_bool(); // megaphone
+			int8_t channel = recv.read_byte();
+			bool megaEar = recv.read_bool();
+
+#ifdef DEBUG
+			const std::string& megatype = megaEar ? "megaEar" : "unknown megatype";
+			error += "Unhandled [" + megatype + "] on channel [" + std::to_string(channel) + "].";
+
+			UI::get().get_element<UIChatBar>()->show_message(error.c_str(), UIChatBar::MessageType::RED);
+#endif
 		}
 		else if (type == 4)
 		{
 			UI::get().set_scrollnotice(message);
 		}
+		else if (type == 6)
+		{
+			recv.skip_int();
+
+#ifdef DEBUG
+			error += "Unhandled type [" + std::to_string(type) + "].";
+
+			UI::get().get_element<UIChatBar>()->show_message(error.c_str(), UIChatBar::MessageType::RED);
+#endif
+		}
 		else if (type == 7)
 		{
-			recv.read_int(); // npcid
+			int32_t npc = recv.read_int();
+
+#ifdef DEBUG
+			error += "Unhandled message for NPC [" + std::to_string(npc) + "].";
+
+			UI::get().get_element<UIChatBar>()->show_message(error.c_str(), UIChatBar::MessageType::RED);
+#endif
+		}
+		else
+		{
+#ifdef DEBUG
+			error += "Unhandled type [" + std::to_string(type) + "].";
+
+			UI::get().get_element<UIChatBar>()->show_message(error.c_str(), UIChatBar::MessageType::RED);
+#endif
 		}
 	}
 
@@ -195,7 +227,7 @@ namespace ms
 		if (message.substr(0, MAPLETIP.length()).compare("[MapleTip]"))
 			message = "[Notice] " + message;
 
-		UI::get().get_element<UIChatBar>()->send_chatline(message, UIChatBar::LineType::YELLOW);
+		UI::get().get_element<UIChatBar>()->show_message(message.c_str(), UIChatBar::MessageType::YELLOW);
 	}
 
 	void ChatReceivedHandler::handle(InPacket& recv) const
@@ -209,14 +241,14 @@ namespace ms
 
 		if (auto character = Stage::get().get_character(charid))
 		{
-			message = character->get_name() + ": " + message;
+			message = character->get_name() + " : " + message;
 			character->speak(message);
 		}
 
-		auto linetype = static_cast<UIChatBar::LineType>(type);
+		auto linetype = static_cast<UIChatBar::MessageType>(type);
 
 		if (auto chatbar = UI::get().get_element<UIChatBar>())
-			chatbar->send_chatline(message, linetype);
+			chatbar->show_message(message.c_str(), linetype);
 	}
 
 	void ScrollResultHandler::handle(InPacket& recv) const
@@ -250,7 +282,7 @@ namespace ms
 		if (Stage::get().is_player(cid))
 		{
 			if (auto chatbar = UI::get().get_element<UIChatBar>())
-				chatbar->display_message(message, UIChatBar::LineType::RED);
+				chatbar->show_message(Messages::messages[message], UIChatBar::MessageType::RED);
 
 			UI::get().enable();
 		}
@@ -279,7 +311,7 @@ namespace ms
 				std::string message = "Gained an item: " + name + " (" + sign + std::to_string(qty) + ")";
 
 				if (auto chatbar = UI::get().get_element<UIChatBar>())
-					chatbar->send_chatline(message, UIChatBar::LineType::BLUE);
+					chatbar->show_message(message.c_str(), UIChatBar::MessageType::BLUE);
 			}
 		}
 		else if (mode1 == 13) // card effect

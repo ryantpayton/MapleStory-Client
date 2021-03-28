@@ -81,7 +81,7 @@ namespace ms
 		int16_t exp_max = VWIDTH - 16;
 
 		expbar = Gauge(
-			Gauge::Type::GAME,
+			Gauge::Type::DEFAULT,
 			EXPBarRes.resolve("layer:gauge"),
 			EXPBarRes.resolve("layer:cover"),
 			EXPBar.resolve("layer:effect"),
@@ -185,8 +185,8 @@ namespace ms
 		if (VWIDTH > 800)
 			hpmp_max += 30;
 
-		hpbar = Gauge(Gauge::Type::GAME, status.resolve("gauge/hp/layer:0"), hpmp_max, 0.0f);
-		mpbar = Gauge(Gauge::Type::GAME, status.resolve("gauge/mp/layer:0"), hpmp_max, 0.0f);
+		hpbar = Gauge(Gauge::Type::DEFAULT, status.resolve("gauge/hp/layer:0"), hpmp_max, 0.0f);
+		mpbar = Gauge(Gauge::Type::DEFAULT, status.resolve("gauge/mp/layer:0"), hpmp_max, 0.0f);
 
 		statset = Charset(EXPBar["number"], Charset::Alignment::RIGHT);
 		hpmpset = Charset(status["gauge"]["number"], Charset::Alignment::RIGHT);
@@ -561,163 +561,211 @@ namespace ms
 	{
 		switch (id)
 		{
-		case Buttons::BT_CASHSHOP:
-			EnterCashShopPacket().dispatch();
-			break;
-		case Buttons::BT_MENU:
-			toggle_menu();
-			break;
-		case Buttons::BT_OPTIONS:
-			toggle_setting();
-			break;
-		case Buttons::BT_CHARACTER:
-			toggle_character();
-			break;
-		case Buttons::BT_COMMUNITY:
-			toggle_community();
-			break;
-		case Buttons::BT_EVENT:
-			toggle_event();
-			break;
-		case Buttons::BT_FOLD_QS:
-			toggle_qs(false);
-			break;
-		case Buttons::BT_EXTEND_QS:
-			toggle_qs(true);
-			break;
-		case Buttons::BT_MENU_QUEST:
-			UI::get().emplace<UIQuestLog>(
-				Stage::get().get_player().get_quests()
-				);
-
-			remove_menus();
-			break;
-		case Buttons::BT_MENU_MEDAL:
-		case Buttons::BT_MENU_UNION:
-		case Buttons::BT_MENU_MONSTER_COLLECTION:
-		case Buttons::BT_MENU_AUCTION:
-		case Buttons::BT_MENU_MONSTER_LIFE:
-		case Buttons::BT_MENU_BATTLE:
-		case Buttons::BT_MENU_ACHIEVEMENT:
-		case Buttons::BT_MENU_FISHING:
-		case Buttons::BT_MENU_HELP:
-		case Buttons::BT_MENU_CLAIM:
-			remove_menus();
-			break;
-		case Buttons::BT_SETTING_CHANNEL:
-			UI::get().emplace<UIChannel>();
-
-			remove_menus();
-			break;
-		case Buttons::BT_SETTING_OPTION:
-			UI::get().emplace<UIOptionMenu>();
-
-			remove_menus();
-			break;
-		case Buttons::BT_SETTING_KEYS:
-			UI::get().emplace<UIKeyConfig>(
-				Stage::get().get_player().get_inventory(),
-				Stage::get().get_player().get_skills()
-				);
-
-			remove_menus();
-			break;
-		case Buttons::BT_SETTING_JOYPAD:
-			UI::get().emplace<UIJoypad>();
-
-			remove_menus();
-			break;
-		case Buttons::BT_SETTING_QUIT:
-			UI::get().emplace<UIQuit>(stats);
-
-			remove_menus();
-			break;
-		case Buttons::BT_COMMUNITY_FRIENDS:
-		case Buttons::BT_COMMUNITY_PARTY:
-		{
-			auto userlist = UI::get().get_element<UIUserList>();
-			auto tab = (id == Buttons::BT_COMMUNITY_FRIENDS) ? UIUserList::Tab::FRIEND : UIUserList::Tab::PARTY;
-
-			if (!userlist)
+			case Buttons::BT_CASHSHOP:
 			{
-				UI::get().emplace<UIUserList>(tab);
+				EnterCashShopPacket().dispatch();
+				break;
 			}
-			else
+			case Buttons::BT_MENU:
 			{
-				auto cur_tab = userlist->get_tab();
-				auto is_active = userlist->is_active();
+				toggle_menu();
+				break;
+			}
+			case Buttons::BT_OPTIONS:
+			{
+				toggle_setting();
+				break;
+			}
+			case Buttons::BT_CHARACTER:
+			{
+				toggle_character();
+				break;
+			}
+			case Buttons::BT_COMMUNITY:
+			{
+				toggle_community();
+				break;
+			}
+			case Buttons::BT_EVENT:
+			{
+				toggle_event();
+				break;
+			}
+			case Buttons::BT_FOLD_QS:
+			{
+				toggle_qs(false);
+				break;
+			}
+			case Buttons::BT_EXTEND_QS:
+			{
+				toggle_qs(true);
+				break;
+			}
+			case Buttons::BT_MENU_QUEST:
+			{
+				UI::get().emplace<UIQuestLog>(
+					Stage::get().get_player().get_quests()
+					);
 
-				if (cur_tab == tab)
+				remove_menus();
+				break;
+			}
+			case Buttons::BT_MENU_MEDAL:
+			case Buttons::BT_MENU_UNION:
+			case Buttons::BT_MENU_MONSTER_COLLECTION:
+			case Buttons::BT_MENU_AUCTION:
+			case Buttons::BT_MENU_MONSTER_LIFE:
+			case Buttons::BT_MENU_BATTLE:
+			case Buttons::BT_MENU_ACHIEVEMENT:
+			case Buttons::BT_MENU_FISHING:
+			case Buttons::BT_MENU_HELP:
+			case Buttons::BT_MENU_CLAIM:
+			{
+				remove_menus();
+				break;
+			}
+			case Buttons::BT_SETTING_CHANNEL:
+			{
+				UI::get().emplace<UIChannel>();
+
+				remove_menus();
+				break;
+			}
+			case Buttons::BT_SETTING_OPTION:
+			{
+				UI::get().emplace<UIOptionMenu>();
+
+				remove_menus();
+				break;
+			}
+			case Buttons::BT_SETTING_KEYS:
+			{
+				UI::get().emplace<UIKeyConfig>(
+					Stage::get().get_player().get_inventory(),
+					Stage::get().get_player().get_skills()
+					);
+
+				remove_menus();
+				break;
+			}
+			case Buttons::BT_SETTING_JOYPAD:
+			{
+				UI::get().emplace<UIJoypad>();
+
+				remove_menus();
+				break;
+			}
+			case Buttons::BT_SETTING_QUIT:
+			{
+				UI::get().emplace<UIQuit>(stats);
+
+				remove_menus();
+				break;
+			}
+			case Buttons::BT_COMMUNITY_FRIENDS:
+			case Buttons::BT_COMMUNITY_PARTY:
+			{
+				auto userlist = UI::get().get_element<UIUserList>();
+				auto tab = (id == Buttons::BT_COMMUNITY_FRIENDS) ? UIUserList::Tab::FRIEND : UIUserList::Tab::PARTY;
+
+				if (!userlist)
 				{
-					if (is_active)
-						userlist->deactivate();
-					else
-						userlist->makeactive();
+					UI::get().emplace<UIUserList>(tab);
 				}
 				else
 				{
-					if (!is_active)
-						userlist->makeactive();
+					auto cur_tab = userlist->get_tab();
+					auto is_active = userlist->is_active();
 
-					userlist->change_tab(tab);
+					if (cur_tab == tab)
+					{
+						if (is_active)
+							userlist->deactivate();
+						else
+							userlist->makeactive();
+					}
+					else
+					{
+						if (!is_active)
+							userlist->makeactive();
+
+						userlist->change_tab(tab);
+					}
 				}
+
+				remove_menus();
+				break;
 			}
+			case Buttons::BT_COMMUNITY_GUILD:
+			{
+				remove_menus();
+				break;
+			}
+			case Buttons::BT_COMMUNITY_MAPLECHAT:
+			{
+				UI::get().emplace<UIChat>();
 
-			remove_menus();
-		}
-		break;
-		case Buttons::BT_COMMUNITY_GUILD:
-			remove_menus();
-			break;
-		case Buttons::BT_COMMUNITY_MAPLECHAT:
-			UI::get().emplace<UIChat>();
+				remove_menus();
+				break;
+			}
+			case Buttons::BT_CHARACTER_INFO:
+			{
+				UI::get().emplace<UICharInfo>(
+					Stage::get().get_player().get_oid()
+					);
 
-			remove_menus();
-			break;
-		case Buttons::BT_CHARACTER_INFO:
-			UI::get().emplace<UICharInfo>(
-				Stage::get().get_player().get_oid()
-				);
+				remove_menus();
+				break;
+			}
+			case Buttons::BT_CHARACTER_STAT:
+			{
+				UI::get().emplace<UIStatsInfo>(
+					Stage::get().get_player().get_stats()
+					);
 
-			remove_menus();
-			break;
-		case Buttons::BT_CHARACTER_STAT:
-			UI::get().emplace<UIStatsInfo>(
-				Stage::get().get_player().get_stats()
-				);
+				remove_menus();
+				break;
+			}
+			case Buttons::BT_CHARACTER_SKILL:
+			{
+				UI::get().emplace<UISkillBook>(
+					Stage::get().get_player().get_stats(),
+					Stage::get().get_player().get_skills()
+					);
 
-			remove_menus();
-			break;
-		case Buttons::BT_CHARACTER_SKILL:
-			UI::get().emplace<UISkillBook>(
-				Stage::get().get_player().get_stats(),
-				Stage::get().get_player().get_skills()
-				);
+				remove_menus();
+				break;
+			}
+			case Buttons::BT_CHARACTER_EQUIP:
+			{
+				UI::get().emplace<UIEquipInventory>(
+					Stage::get().get_player().get_inventory()
+					);
 
-			remove_menus();
-			break;
-		case Buttons::BT_CHARACTER_EQUIP:
-			UI::get().emplace<UIEquipInventory>(
-				Stage::get().get_player().get_inventory()
-				);
+				remove_menus();
+				break;
+			}
+			case Buttons::BT_CHARACTER_ITEM:
+			{
+				UI::get().emplace<UIItemInventory>(
+					Stage::get().get_player().get_inventory()
+					);
 
-			remove_menus();
-			break;
-		case Buttons::BT_CHARACTER_ITEM:
-			UI::get().emplace<UIItemInventory>(
-				Stage::get().get_player().get_inventory()
-				);
+				remove_menus();
+				break;
+			}
+			case Buttons::BT_EVENT_SCHEDULE:
+			{
+				UI::get().emplace<UIEvent>();
 
-			remove_menus();
-			break;
-		case Buttons::BT_EVENT_SCHEDULE:
-			UI::get().emplace<UIEvent>();
-
-			remove_menus();
-			break;
-		case Buttons::BT_EVENT_DAILY:
-			remove_menus();
-			break;
+				remove_menus();
+				break;
+			}
+			case Buttons::BT_EVENT_DAILY:
+			{
+				remove_menus();
+				break;
+			}
 		}
 
 		return Button::State::NORMAL;
@@ -803,7 +851,7 @@ namespace ms
 		}
 	}
 
-	bool UIStatusBar::is_in_range(Point<int16_t> cursorpos) const
+	bool UIStatusBar::is_in_range(Point<int16_t> cursor_position) const
 	{
 		Point<int16_t> pos;
 		Rectangle<int16_t> bounds;
@@ -859,7 +907,7 @@ namespace ms
 			bounds = Rectangle<int16_t>(pos, pos + Point<int16_t>(113, end_y + 35));
 		}
 
-		return bounds.contains(cursorpos);
+		return bounds.contains(cursor_position);
 	}
 
 	UIElement::Type UIStatusBar::get_type() const

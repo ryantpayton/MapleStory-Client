@@ -38,17 +38,17 @@ namespace ms
 	struct World
 	{
 		std::string name;
-		std::string message;
-		std::vector<int32_t> chloads;
-		uint8_t channelcount;
+		std::string event_message;
+		std::vector<int32_t> channel_capacities;
+		uint8_t channel_count;
 		uint8_t flag;
-		int8_t wid;
+		int8_t id;
 	};
 
 	struct RecommendedWorld
 	{
 		std::string message;
-		int32_t wid;
+		int32_t id;
 	};
 
 	struct StatsEntry

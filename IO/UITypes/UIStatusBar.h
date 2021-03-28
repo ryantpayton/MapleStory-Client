@@ -48,7 +48,7 @@ namespace ms
 		void draw(float alpha) const override;
 		void update() override;
 
-		bool is_in_range(Point<int16_t> cursorpos) const override;
+		bool is_in_range(Point<int16_t> cursor_position) const override;
 		void send_key(int32_t keycode, bool pressed, bool escape) override;
 
 		UIElement::Type get_type() const override;

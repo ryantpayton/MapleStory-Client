@@ -256,29 +256,42 @@ namespace ms
 	{
 		switch (buttonid)
 		{
-		case Buttons::BtClose:
-			deactivate();
-			return Button::State::NORMAL;
-		case Buttons::BtFamily:
-		case Buttons::BtParty:
-			break;
-		case Buttons::BtItem:
-			show_right_window(buttonid);
-			return Button::State::NORMAL;
-		case Buttons::BtCollect:
-		case Buttons::BtPersonality:
-		case Buttons::BtRide:
-		case Buttons::BtPet:
-		case Buttons::BtDamage:
-			show_bottom_window(buttonid);
-			return Button::State::NORMAL;
-		case Buttons::BtPopDown:
-		case Buttons::BtPopUp:
-		case Buttons::BtTrad:
-		case Buttons::BtFriend:
-		case Buttons::BtVisit:
-		default:
-			break;
+			case Buttons::BtClose:
+			{
+				deactivate();
+
+				return Button::State::NORMAL;
+			}
+			case Buttons::BtFamily:
+			case Buttons::BtParty:
+			{
+				break;
+			}
+			case Buttons::BtItem:
+			{
+				show_right_window(buttonid);
+
+				return Button::State::NORMAL;
+			}
+			case Buttons::BtCollect:
+			case Buttons::BtPersonality:
+			case Buttons::BtRide:
+			case Buttons::BtPet:
+			case Buttons::BtDamage:
+			{
+				show_bottom_window(buttonid);
+
+				return Button::State::NORMAL;
+			}
+			case Buttons::BtPopDown:
+			case Buttons::BtPopUp:
+			case Buttons::BtTrad:
+			case Buttons::BtFriend:
+			case Buttons::BtVisit:
+			default:
+			{
+				break;
+			}
 		}
 
 		return Button::State::DISABLED;
@@ -335,7 +348,7 @@ namespace ms
 		return TYPE;
 	}
 
-	void UICharInfo::update_stats(int32_t character_id, int16_t job_id, int8_t lv, int16_t f, std::string g, std::string a)
+	void UICharInfo::update_stats(int32_t character_id, int16_t job_id, uint16_t lv, int16_t f, std::string g, std::string a)
 	{
 		int32_t player_id = Stage::get().get_player().get_oid();
 
@@ -353,7 +366,12 @@ namespace ms
 		job.change_text(character_job.get_name());
 		level.change_text(std::to_string(lv));
 		fame.change_text(std::to_string(f));
-		guild.change_text((g == "" ? "-" : g));
+
+		if (g == "")
+			guild.change_text("-");
+		else
+			guild.change_text(g);
+
 		alliance.change_text(a);
 
 		farm_name.change_text("");
@@ -368,15 +386,15 @@ namespace ms
 
 		switch (buttonid)
 		{
-		case Buttons::BtPersonality:
-			personality_enabled = true;
-			break;
-		case Buttons::BtCollect:
-			collect_enabled = true;
-			break;
-		case Buttons::BtDamage:
-			damage_enabled = true;
-			break;
+			case Buttons::BtPersonality:
+				personality_enabled = true;
+				break;
+			case Buttons::BtCollect:
+				collect_enabled = true;
+				break;
+			case Buttons::BtDamage:
+				damage_enabled = true;
+				break;
 		}
 	}
 
@@ -386,9 +404,9 @@ namespace ms
 
 		switch (buttonid)
 		{
-		case Buttons::BtItem:
-			item_enabled = true;
-			break;
+			case Buttons::BtItem:
+				item_enabled = true;
+				break;
 		}
 	}
 }

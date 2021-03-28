@@ -20,6 +20,7 @@
 #include "../UI.h"
 
 #include <sstream>
+#include <iostream>
 
 namespace ms
 {
@@ -28,12 +29,11 @@ namespace ms
 		text = "";
 	}
 
-	Textfield::Textfield(Text::Font font, Text::Alignment alignment, Color::Name text_color, Rectangle<int16_t> bounds, size_t limit) : Textfield(font, alignment, text_color, text_color, 1.0f, bounds, limit) {}
-
-	Textfield::Textfield(Text::Font font, Text::Alignment alignment, Color::Name text_color, Color::Name marker_color, float marker_opacity, Rectangle<int16_t> bounds, size_t limit) : bounds(bounds), limit(limit)
+	Textfield::Textfield(Text::Font font, Text::Alignment alignment, Color::Name text_color, Rectangle<int16_t> b, size_t limit, int16_t marker_height) : bounds(b), limit(limit)
 	{
 		textlabel = Text(font, alignment, text_color, "", 0, false);
-		marker = ColorLine(12, marker_color, marker_opacity, true);
+		marker = ColorLine(marker_height, text_color, 1.0f, true);
+		boundsoutline = ColorBox(bounds.width(), bounds.height(), Color::Name::RED, 0.5f);
 
 		text = "";
 		markerpos = 0;
@@ -48,10 +48,16 @@ namespace ms
 
 	void Textfield::draw(Point<int16_t> position, Point<int16_t> marker_adjust) const
 	{
+		Point<int16_t> absp = bounds.get_left_top();
+
+#ifdef DEBUG
+		boundsoutline.draw(absp);
+#endif
+
 		if (state == State::DISABLED)
 			return;
 
-		Point<int16_t> absp = bounds.get_left_top() + position;
+		absp.shift(position);
 
 		if (text.size() > 0)
 			textlabel.draw(absp);
@@ -67,12 +73,30 @@ namespace ms
 		}
 	}
 
-	void Textfield::update(Point<int16_t> parent)
+	void Textfield::update()
 	{
 		if (state == State::DISABLED)
 			return;
 
-		parentpos = parent;
+		elapsed += Constants::TIMESTEP;
+
+		if (elapsed > 256)
+		{
+			showmarker = !showmarker;
+			elapsed = 0;
+		}
+	}
+
+	void Textfield::update(Point<int16_t> position, Point<int16_t> dimensions)
+	{
+		if (state == State::DISABLED)
+			return;
+
+		bounds = Rectangle<int16_t>(position, position + dimensions);
+
+		boundsoutline.setwidth(bounds.width());
+		boundsoutline.setheight(bounds.height());
+
 		elapsed += Constants::TIMESTEP;
 
 		if (elapsed > 256)
@@ -118,13 +142,13 @@ namespace ms
 		ontext = action;
 	}
 
-	void Textfield::send_key(KeyType::Id type, int32_t key, bool pressed)
+	void Textfield::send_key(KeyType::Id type, int32_t action, bool pressed)
 	{
 		if (pressed)
 		{
 			if (type == KeyType::Id::ACTION)
 			{
-				switch (key)
+				switch (action)
 				{
 					case KeyAction::Id::LEFT:
 					{
@@ -188,8 +212,8 @@ namespace ms
 					}
 					default:
 					{
-						if (callbacks.count(key))
-							callbacks.at(key)();
+						if (callbacks.count(action))
+							callbacks.at(action)();
 
 						break;
 					}
@@ -199,7 +223,7 @@ namespace ms
 			{
 				if (ontext)
 				{
-					if (isdigit(key) || isalpha(key))
+					if (isdigit(action) || isalpha(action))
 					{
 						ontext();
 						return;
@@ -207,9 +231,9 @@ namespace ms
 				}
 
 				std::stringstream ss;
-				char a = static_cast<int8_t>(key);
+				char c = static_cast<int8_t>(action);
 
-				ss << a;
+				ss << c;
 
 				add_string(ss.str());
 			}
@@ -253,7 +277,7 @@ namespace ms
 		if (state == State::DISABLED)
 			return Cursor::State::IDLE;
 
-		if (get_bounds().contains(cursorpos))
+		if (bounds.contains(cursorpos))
 		{
 			if (clicked)
 			{
@@ -269,6 +293,28 @@ namespace ms
 		}
 		else
 		{
+#ifdef DEBUG
+			Point<int16_t> lt = bounds.get_left_top();
+			int16_t lt_x = lt.x();
+			int16_t lt_y = lt.y();
+
+			Point<int16_t> rb = bounds.get_right_bottom();
+			int16_t rb_x = rb.x();
+			int16_t rb_y = rb.y();
+
+			int16_t cur_x = cursorpos.x();
+			int16_t cur_y = cursorpos.y();
+
+			std::cout
+				<< "(" << lt_x << ", " << lt_y << ") != (" << rb_x << ", " << rb_y << ") && "
+				<< cur_x << " >= (" << lt_x << ") && "
+				<< cur_x << " <= (" << rb_x << ") && "
+				<< cur_y << " >= (" << lt_y << ") && "
+				<< cur_y << " <= (" << rb_y << ")"
+				<< std::endl
+				<< std::endl;
+#endif
+
 			if (clicked && state == State::FOCUSED)
 				set_state(State::NORMAL);
 
@@ -329,13 +375,5 @@ namespace ms
 	Textfield::State Textfield::get_state() const
 	{
 		return state;
-	}
-
-	Rectangle<int16_t> Textfield::get_bounds() const
-	{
-		return Rectangle<int16_t>(
-			bounds.get_left_top() + parentpos,
-			bounds.get_right_bottom() + parentpos
-			);
 	}
 }

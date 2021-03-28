@@ -27,19 +27,20 @@
 
 namespace ms
 {
-	Icon::Icon(std::unique_ptr<Type> t, Texture tx, int16_t c) : type(std::move(t)), texture(tx), count(c)
+	Icon::Icon() : Icon(std::make_unique<NullType>(), {}, -1) {}
+
+	Icon::Icon(std::unique_ptr<Type> type, Texture t, int16_t c) : type(std::move(type)), texture(t), count(c)
 	{
 		texture.shift(Point<int16_t>(0, 32));
-		showcount = c > -1;
+
+		showcount = count > -1;
 		dragged = false;
 	}
-
-	Icon::Icon() : Icon(std::make_unique<NullType>(), {}, -1) {}
 
 	void Icon::draw(Point<int16_t> position) const
 	{
 		float opacity = dragged ? 0.5f : 1.0f;
-		get_texture().draw(DrawArgument(position, opacity));
+		texture.draw(DrawArgument(position, opacity));
 
 		if (showcount)
 		{
@@ -51,7 +52,7 @@ namespace ms
 	void Icon::dragdraw(Point<int16_t> cursorpos) const
 	{
 		if (dragged)
-			get_texture().draw(DrawArgument(cursorpos - cursoroffset, 0.5f));
+			texture.draw(DrawArgument(cursorpos - cursoroffset, 0.5f));
 	}
 
 	void Icon::drop_on_stage() const
@@ -92,17 +93,11 @@ namespace ms
 		dragged = false;
 	}
 
-	// Allows for Icon extensibility
-	// Use this instead of referencing texture directly
-	Texture Icon::get_texture() const
-	{
-		return texture;
-	}
-
 	void Icon::set_count(int16_t c)
 	{
 		count = c;
-		type->set_count(c);
+
+		type->set_count(count);
 	}
 
 	Icon::IconType Icon::get_type()

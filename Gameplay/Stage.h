@@ -57,7 +57,7 @@ namespace ms
 		// Send key input to the stage
 		void send_key(KeyType::Id keytype, int32_t keycode, bool pressed);
 		// Send mouse input to the stage
-		Cursor::State send_cursor(bool pressed, Point<int16_t> position);
+		Cursor::State send_cursor(bool clicked, Point<int16_t> cursor_position);
 
 		// Check if the specified id is the player's id
 		bool is_player(int32_t cid) const;

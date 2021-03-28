@@ -60,26 +60,27 @@ namespace ms
 
 		std::string name = recv.read_string();
 		uint8_t flag = recv.read_byte();
-		std::string message = recv.read_string();
+		std::string event_message = recv.read_string();
 
 		recv.skip(5);
 
-		std::vector<int32_t> chloads;
-		uint8_t channelcount = recv.read_byte();
+		std::vector<int32_t> channelload;
+		uint8_t channelload_size = recv.read_byte();
 
-		for (uint8_t i = 0; i < channelcount; ++i)
+		for (uint8_t i = 0; i < channelload_size; ++i)
 		{
-			recv.read_string(); // channel name
+			recv.skip_string(); // channel name
 
-			chloads.push_back(recv.read_int());
+			channelload.push_back(recv.read_int());
 
-			recv.skip(1);
-			recv.skip(2);
+			recv.skip_byte(); // world id
+			recv.skip_byte(); // channel id
+			recv.skip_bool(); // adult channel
 		}
 
-		recv.skip(2);
+		recv.skip_short();
 
-		return { name, message, chloads, channelcount, flag, wid };
+		return { name, event_message, channelload, channelload_size, flag, wid };
 	}
 
 	RecommendedWorld LoginParser::parse_recommended_world(InPacket& recv)
@@ -133,7 +134,7 @@ namespace ms
 		for (size_t i = 0; i < 3; i++)
 			statsentry.petids.push_back(recv.read_long());
 
-		statsentry.stats[MapleStat::Id::LEVEL] = recv.read_byte(); // TODO: Change to recv.read_short(); to increase level cap
+		statsentry.stats[MapleStat::Id::LEVEL] = recv.read_short();
 		statsentry.stats[MapleStat::Id::JOB] = recv.read_short();
 		statsentry.stats[MapleStat::Id::STR] = recv.read_short();
 		statsentry.stats[MapleStat::Id::DEX] = recv.read_short();

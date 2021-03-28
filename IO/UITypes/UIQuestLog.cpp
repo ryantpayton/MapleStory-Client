@@ -54,16 +54,10 @@ namespace ms
 		buttons[Buttons::MY_LOCATION] = std::make_unique<MapleButton>(list["BtMyLocation"]);
 
 		search_area = list["searchArea"];
-		auto search_area_dim = search_area.get_dimensions();
-		auto search_area_origin = search_area.get_origin().abs();
 
-		auto search_pos_adj = Point<int16_t>(29, 0);
-		auto search_dim_adj = Point<int16_t>(-80, 0);
+		int16_t search_limit = 19;
 
-		auto search_pos = position + search_area_origin + search_pos_adj;
-		auto search_dim = search_pos + search_area_dim + search_dim_adj;
-
-		search = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BOULDER, Rectangle<int16_t>(search_pos, search_dim), 19);
+		search = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BOULDER, Rectangle<int16_t>(get_search_pos(), get_search_pos() + get_search_dim()), search_limit);
 		placeholder = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BOULDER, "Enter the quest name.");
 
 		slider = Slider(Slider::Type::DEFAULT_SILVER, Range<int16_t>(0, 279), 150, 20, 5, [](bool) {});
@@ -90,7 +84,7 @@ namespace ms
 		if (tab != Buttons::TAB2)
 		{
 			search_area.draw(position);
-			search.draw(Point<int16_t>(0, 0));
+			search.draw(Point<int16_t>(4, -4), Point<int16_t>(2, -2));
 
 			if (search.get_state() == Textfield::State::NORMAL && search.empty())
 				placeholder.draw(position + Point<int16_t>(39, 51));
@@ -99,6 +93,11 @@ namespace ms
 		slider.draw(position + Point<int16_t>(126, 75));
 
 		UIElement::draw_buttons(alpha);
+	}
+
+	void UIQuestLog::update()
+	{
+		search.update(get_search_pos(), get_search_dim());
 	}
 
 	void UIQuestLog::send_key(int32_t keycode, bool pressed, bool escape)
@@ -140,17 +139,17 @@ namespace ms
 	{
 		switch (buttonid)
 		{
-		case Buttons::TAB0:
-		case Buttons::TAB1:
-		case Buttons::TAB2:
-			change_tab(buttonid);
+			case Buttons::TAB0:
+			case Buttons::TAB1:
+			case Buttons::TAB2:
+				change_tab(buttonid);
 
-			return Button::State::IDENTITY;
-		case Buttons::CLOSE:
-			deactivate();
-			break;
-		default:
-			break;
+				return Button::State::IDENTITY;
+			case Buttons::CLOSE:
+				deactivate();
+				break;
+			default:
+				break;
 		}
 
 		return Button::State::NORMAL;
@@ -175,5 +174,20 @@ namespace ms
 		}
 
 		buttons[Buttons::TAB0 + tab]->set_state(Button::State::PRESSED);
+	}
+
+	Point<int16_t> UIQuestLog::get_search_pos()
+	{
+		Point<int16_t> search_area_origin = search_area.get_origin().abs();
+		Point<int16_t> search_pos_adj = Point<int16_t>(25, 4);
+
+		return position + search_area_origin + search_pos_adj;
+	}
+
+	Point<int16_t> UIQuestLog::get_search_dim()
+	{
+		Point<int16_t> adjust = Point<int16_t>(-75, -8);
+
+		return search_area.get_dimensions() + adjust;
 	}
 }

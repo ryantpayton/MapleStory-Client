@@ -82,12 +82,12 @@ namespace ms
 
 		background = ColorBox(dimension.x(), dimension.y(), Color::Name::BLACK, 1.0f);
 
-		Point<int16_t> textbox_pos = signboard_pos + Point<int16_t>(-96, -51);
-		Point<int16_t> textbox_dim = Point<int16_t>(150, 24);
+		Point<int16_t> textbox_pos = signboard_pos + Point<int16_t>(-100, -51);
+		Point<int16_t> textbox_dim = Point<int16_t>(160, 23);
 		int16_t textbox_limit = 12;
 
 #pragma region Account
-		account = Textfield(Text::Font::A13M, Text::Alignment::LEFT, Color::Name::JAMBALAYA, Color::Name::SMALT, 0.75f, Rectangle<int16_t>(textbox_pos, textbox_pos + textbox_dim), textbox_limit);
+		account = Textfield(Text::Font::A13M, Text::Alignment::LEFT, Color::Name::JAMBALAYA, Rectangle<int16_t>(textbox_pos, textbox_pos + textbox_dim), textbox_limit);
 
 		account.set_key_callback
 		(
@@ -112,7 +112,7 @@ namespace ms
 #pragma region Password
 		textbox_pos.shift_y(26);
 
-		password = Textfield(Text::Font::A13M, Text::Alignment::LEFT, Color::Name::JAMBALAYA, Color::Name::PRUSSIANBLUE, 0.85f, Rectangle<int16_t>(textbox_pos, textbox_pos + textbox_dim), textbox_limit);
+		password = Textfield(Text::Font::A13M, Text::Alignment::LEFT, Color::Name::JAMBALAYA, Rectangle<int16_t>(textbox_pos, textbox_pos + textbox_dim), textbox_limit);
 
 		password.set_key_callback
 		(
@@ -168,14 +168,14 @@ namespace ms
 		UIElement::draw(alpha);
 
 		version.draw(position + Point<int16_t>(707, 4));
-		account.draw(position + Point<int16_t>(1, 0));
-		password.draw(position + Point<int16_t>(1, 3));
+		account.draw(position + Point<int16_t>(5, 0));
+		password.draw(position + Point<int16_t>(5, 3));
 
 		if (account.get_state() == Textfield::State::NORMAL && account.empty())
-			accountbg.draw(position + signboard_pos + Point<int16_t>(-101, -51));
+			accountbg.draw(position + signboard_pos + Point<int16_t>(-100, -51));
 
 		if (password.get_state() == Textfield::State::NORMAL && password.empty())
-			passwordbg.draw(position + signboard_pos + Point<int16_t>(-101, -25));
+			passwordbg.draw(position + signboard_pos + Point<int16_t>(-100, -25));
 
 		checkbox[saveid].draw(position + signboard_pos + Point<int16_t>(-101, 7));
 	}
@@ -184,8 +184,8 @@ namespace ms
 	{
 		UIElement::update();
 
-		account.update(position);
-		password.update(position);
+		account.update();
+		password.update();
 	}
 
 	void UILogin::login()

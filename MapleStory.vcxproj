@@ -313,6 +313,7 @@ copy /y /d "$(ProjectDir)includes\NoLifeNx\nlnx\includes\lz4_v1_8_2_win$(Platfor
     <ClCompile Include="IO\UITypes\UICharSelect.cpp" />
     <ClCompile Include="IO\UITypes\UIChat.cpp" />
     <ClCompile Include="IO\UITypes\UIChatBar.cpp" />
+    <ClCompile Include="IO\UITypes\UICommonCreation.cpp" />
     <ClCompile Include="IO\UITypes\UICygnusCreation.cpp" />
     <ClCompile Include="IO\UITypes\UIEquipInventory.cpp" />
     <ClCompile Include="IO\UITypes\UIEvent.cpp" />
@@ -517,6 +518,7 @@ copy /y /d "$(ProjectDir)includes\NoLifeNx\nlnx\includes\lz4_v1_8_2_win$(Platfor
     <ClInclude Include="IO\UITypes\UICharSelect.h" />
     <ClInclude Include="IO\UITypes\UIChat.h" />
     <ClInclude Include="IO\UITypes\UIChatBar.h" />
+    <ClInclude Include="IO\UITypes\UICommonCreation.h" />
     <ClInclude Include="IO\UITypes\UICygnusCreation.h" />
     <ClInclude Include="IO\UITypes\UIEquipInventory.h" />
     <ClInclude Include="IO\UITypes\UIEvent.h" />

@@ -20,6 +20,7 @@
 #include "../UIElement.h"
 
 #include "../Components/ChatBalloon.h"
+#include "../Components/Gauge.h"
 
 #include "../../Net/Login.h"
 
@@ -53,6 +54,11 @@ namespace ms
 		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
+		static constexpr uint8_t COLUMNS = 5U;
+		static constexpr uint8_t FLAG_SIZE = 3U;
+		// This is from the server in ServerConstants
+		static constexpr int32_t CHANNEL_LOAD = 100;
+
 		void enter_world();
 		void toggle_recommended(bool active);
 		void clear_selected_world();
@@ -66,26 +72,7 @@ namespace ms
 			BT_WORLD3,
 			BT_WORLD4,
 			BT_CHANNEL0,
-			BT_CHANNEL1,
-			BT_CHANNEL2,
-			BT_CHANNEL3,
-			BT_CHANNEL4,
-			BT_CHANNEL5,
-			BT_CHANNEL6,
-			BT_CHANNEL7,
-			BT_CHANNEL8,
-			BT_CHANNEL9,
-			BT_CHANNEL10,
-			BT_CHANNEL11,
-			BT_CHANNEL12,
-			BT_CHANNEL13,
-			BT_CHANNEL14,
-			BT_CHANNEL15,
-			BT_CHANNEL16,
-			BT_CHANNEL17,
-			BT_CHANNEL18,
-			BT_CHANNEL19,
-			BT_ENTERWORLD,
+			BT_ENTERWORLD = 35U,
 			BT_VIEWALL,
 			BT_VIEWRECOMMENDED,
 			BT_VIEWRECOMMENDED_SELECT,
@@ -96,6 +83,7 @@ namespace ms
 			BT_QUITGAME
 		};
 
+		/// If ever changing order, check the WZ file.
 		enum Worlds : uint16_t
 		{
 			SCANIA,
@@ -116,19 +104,19 @@ namespace ms
 			NOVA,
 			RENEGADES,
 			AURORA,
-			ELYSIUM1,
-			KOREAN1 = 29,
+			ELYSIUM,
+			KOREAN_ENOSIS = 29,
 			LUNA,
-			ELYSIUM2,
+			ELYSIUM_LINK,
 			LAB = 40,
-			KOREAN2 = 43,
-			KOREAN3,
+			KOREAN_RED = 43,
+			KOREAN_AURORA,
+			REBOOT0,
 			REBOOT1,
-			REBOOT2,
 			PINKBEAN = 48,
 			BURNING,
-			KOREAN4,
-			KOREAN5,
+			KOREAN_ARCANE,
+			KOREAN_NOVA,
 			TESPIA = 100
 		};
 
@@ -150,15 +138,20 @@ namespace ms
 		std::vector<RecommendedWorld> recommended_worlds;
 		std::vector<Texture> world_textures;
 		std::vector<Texture> recommended_world_textures;
-		std::vector<Texture> recommended_textures;
+		Texture recommended_texture;
 		std::map<uint16_t, uint16_t> world_map;
+
+		std::vector<Sprite> flag_sprites;
+		Texture worldNotice;
+		Text worldNoticeMessage;
+		Gauge channel_gauge[Buttons::BT_ENTERWORLD - Buttons::BT_CHANNEL0];
 
 		bool world_selected;
 		bool use_recommended;
 		bool show_recommended;
 		bool draw_chatballoon;
 
-		nl::node worldselect;
+		nl::node WorldSelect;
 		nl::node worldsrc;
 		nl::node channelsrc;
 	};

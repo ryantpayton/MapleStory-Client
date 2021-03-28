@@ -50,7 +50,7 @@ namespace ms
 		// Add a bitmap to the available resources
 		void addbitmap(const nl::bitmap& bmp);
 		// Draw the bitmap with the given parameters
-		void draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect, const Range<int16_t>& vertical, const Color& color, float angle);
+		void draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect, const Range<int16_t>& vertical, const Range<int16_t>& horizontal, const Color& color, float angle);
 
 		// Create a layout for the text with the parameters specified
 		Text::Layout createlayout(const std::string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth, bool formatted, int16_t line_adj);

@@ -59,44 +59,60 @@ namespace ms
 	{
 		switch (button)
 		{
-		case GLFW_MOUSE_BUTTON_LEFT:
-			switch (action)
+			case GLFW_MOUSE_BUTTON_LEFT:
 			{
-			case GLFW_PRESS:
-				UI::get().send_cursor(true);
-				break;
-			case GLFW_RELEASE:
-			{
-				auto diff_ms = ContinuousTimer::get().stop(start) / 1000;
-				start = ContinuousTimer::get().start();
+				switch (action)
+				{
+					case GLFW_PRESS:
+					{
+						UI::get().send_cursor(true);
+						break;
+					}
+					case GLFW_RELEASE:
+					{
+						auto diff_ms = ContinuousTimer::get().stop(start) / 1000;
 
-				if (diff_ms > 10 && diff_ms < 200)
-					UI::get().doubleclick();
+						start = ContinuousTimer::get().start();
 
-				UI::get().send_cursor(false);
-			}
-			break;
-			}
+						if (diff_ms > 10 && diff_ms < 200)
+							UI::get().doubleclick();
 
-			break;
-		case GLFW_MOUSE_BUTTON_RIGHT:
-			switch (action)
-			{
-			case GLFW_PRESS:
-				UI::get().rightclick();
+						UI::get().send_cursor(false);
+						break;
+					}
+				}
+
 				break;
 			}
+			case GLFW_MOUSE_BUTTON_RIGHT:
+			{
+				switch (action)
+				{
+					case GLFW_PRESS:
+						UI::get().rightclick();
+						break;
+				}
 
-			break;
+				break;
+			}
 		}
 	}
 
 	void cursor_callback(GLFWwindow*, double xpos, double ypos)
 	{
-		int16_t x = static_cast<int16_t>(xpos);
-		int16_t y = static_cast<int16_t>(ypos);
-		Point<int16_t> pos = Point<int16_t>(x, y);
-		UI::get().send_cursor(pos);
+		Point<int16_t> cursor_position = Point<int16_t>(
+			static_cast<int16_t>(xpos),
+			static_cast<int16_t>(ypos)
+			);
+
+		Point<int16_t> screen = Point<int16_t>(
+			Constants::Constants::get().get_viewwidth(),
+			Constants::Constants::get().get_viewheight()
+			);
+
+		if (cursor_position.x() > 0 && cursor_position.y() > 0)
+			if (cursor_position.x() < screen.x() && cursor_position.y() < screen.y())
+				UI::get().send_cursor(cursor_position);
 	}
 
 	void focus_callback(GLFWwindow*, int focused)

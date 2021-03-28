@@ -57,7 +57,7 @@ namespace ms
 		uint16_t get_corrected_class_index(uint16_t index) const;
 
 		static constexpr uint16_t INDEX_COUNT = 5;
-		static constexpr uint16_t SELECTED_LIST = 33;
+		static constexpr uint16_t SELECTED_LIST = 2;
 
 		enum Buttons : uint16_t
 		{

@@ -64,6 +64,8 @@ namespace ms
 
 			/// Messaging
 			GENERAL_CHAT = 49,
+			MULTI_CHAT = 119,
+			SPOUSE_CHAT = 121,
 
 			/// NPC Interaction
 			TALK_TO_NPC = 58,

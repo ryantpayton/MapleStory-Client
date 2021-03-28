@@ -26,14 +26,15 @@ namespace ms
 	public:
 		enum Type : uint8_t
 		{
-			GAME,
-			CASHSHOP
+			DEFAULT,
+			CASHSHOP,
+			WORLDSELECT
 		};
 
-		Gauge(Type type, Texture front, int16_t max, float percent);
-		Gauge(Type type, Texture front, Texture mid, int16_t max, float percent);
-		Gauge(Type type, Texture front, Texture mid, Texture end, int16_t maximum, float percentage);
-		Gauge();
+		Gauge() {}
+		Gauge(Type type, Texture front, int16_t maximum, float percent);
+		Gauge(Type type, Texture front, Texture middle, int16_t maximum, float percent);
+		Gauge(Type type, Texture front, Texture middle, Texture end, int16_t maximum, float percentage);
 
 		void draw(const DrawArgument& args) const;
 		void update(float target);
