@@ -34,7 +34,7 @@ namespace ms
 		if (type != Type::DEFAULT)
 			combobox += std::to_string(type);
 
-		nl::node src = nl::nx::ui["Basic.img"][combobox];
+		nl::node src = nl::nx::UI["Basic.img"][combobox];
 
 		textures[Button::State::PRESSED][0] = src["pressed"][0];
 		textures[Button::State::PRESSED][1] = src["pressed"][1];
@@ -52,7 +52,7 @@ namespace ms
 		textures[Button::State::DISABLED][1] = src["disabled"][1];
 		textures[Button::State::DISABLED][2] = src["disabled"][2];
 
-		for each (auto option in options)
+		for (std::string option : options)
 			option_text.push_back(Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::BLACK, option));
 
 		Text::Font selected_font = Text::Font::A12M;

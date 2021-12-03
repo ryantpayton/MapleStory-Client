@@ -103,7 +103,7 @@ namespace ms
 
 	UISkillBook::UISkillBook(const CharStats& in_stats, const SkillBook& in_skillbook) : UIDragElement<PosSKILL>(), stats(in_stats), skillbook(in_skillbook), grabbing(false), tab(0), macro_enabled(false), sp_enabled(false)
 	{
-		nl::node Skill = nl::nx::ui["UIWindow2.img"]["Skill"];
+		nl::node Skill = nl::nx::UI["UIWindow2.img"]["Skill"];
 		nl::node main = Skill["main"];
 		nl::node ui_backgrnd = main["backgrnd"];
 
@@ -123,7 +123,7 @@ namespace ms
 		buttons[Buttons::BT_GUILDSKILL]->set_state(Button::State::DISABLED);
 		buttons[Buttons::BT_RIDE]->set_state(Button::State::DISABLED);
 
-		nl::node skillPoint = nl::nx::ui["UIWindow4.img"]["Skill"]["skillPoint"];
+		nl::node skillPoint = nl::nx::UI["UIWindow4.img"]["Skill"]["skillPoint"];
 
 		sp_backgrnd = skillPoint["backgrnd"];
 		sp_backgrnd2 = skillPoint["backgrnd2"];
@@ -157,7 +157,7 @@ namespace ms
 
 		buttons[Buttons::BT_MACRO_OK]->set_state(Button::State::DISABLED);
 
-		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
+		nl::node close = nl::nx::UI["Basic.img"]["BtClose3"];
 
 		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(bg_dimensions.x() - 23, 6));
 

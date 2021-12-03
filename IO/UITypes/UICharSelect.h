@@ -60,25 +60,25 @@ namespace ms
 		void select_last_slot();
 		std::string get_slot_text();
 		std::string pad_number_with_leading_zero(uint8_t value) const;
-		Point<int16_t> get_character_slot_pos(size_t index, uint16_t x_adj, uint16_t y_adj) const;
+		Point<int16_t> get_character_slot_pos(size_t index) const;
 		Point<int16_t> get_infolabel_pos(size_t index) const;
 		std::string get_infolabel(size_t index, StatsEntry character_stats) const;
 		void request_pic();
 
-		static constexpr uint8_t PAGESIZE = 8;
+		static constexpr uint8_t PAGESIZE = 12;
 		static constexpr int16_t CHARSLOT_Y_MAX = 24;
 
 		enum Buttons : uint16_t
 		{
-			CHARACTER_SELECT,
-			CHARACTER_NEW,
-			CHARACTER_DELETE,
-			PAGELEFT,
-			PAGERIGHT,
-			CHANGEPIC,
-			RESETPIC,
-			EDITCHARLIST,
-			BACK,
+			BtSelect,
+			BtNew,
+			BtDelete,
+			BtPageL,
+			BtPageR,
+			BtChangePIC,
+			BtResetPIC,
+			BtCharacter,
+			BtPreview,
 			CHARACTER_SLOT0
 		};
 
@@ -87,9 +87,9 @@ namespace ms
 		int32_t slots;
 		int8_t require_pic;
 		Text version;
+		Point<int16_t> version_pos;
 		Point<int16_t> pagepos;
-		Point<int16_t> worldpos;
-		Point<int16_t> charinfopos;
+		Point<int16_t> BtNewPos;
 		uint8_t selected_character;
 		uint8_t selected_page;
 		uint8_t page_count;
@@ -100,12 +100,24 @@ namespace ms
 		Point<int16_t> tab_pos[3];
 		int16_t tab_move_pos;
 		std::map<uint8_t, uint16_t> tab_map;
-		Point<int16_t> world_dimensions;
 		Animation burning_notice;
+		Point <int16_t> burning_numPos;
 		Text burning_count;
 		std::vector<Sprite> world_sprites;
 		Texture charinfo;
+		Point<int16_t> avatarLT;
+		Point<int16_t> avatarRB;
+		Point<int16_t> avatarSpace;
+		Point<int16_t> jobPos;
+		Point<int16_t> levelPos;
+		Point<int16_t> namePos;
+		Point<int16_t> statDEXPos;
+		Point<int16_t> statINTPos;
+		Point<int16_t> statLUKPos;
+		Point<int16_t> statSTRPos;
 		Texture charslot;
+		Point<int16_t> charslot_pos;
+		Rectangle<int16_t> charslot_bounds;
 		Texture pagebase;
 		Charset pagenumber;
 		nl::node pagenumberpos;
@@ -124,6 +136,7 @@ namespace ms
 		bool use_timestamp;
 		bool show_timestamp;
 		bool burning_character;
+		bool show_pic_btns;
 
 		enum InfoLabel : uint8_t
 		{

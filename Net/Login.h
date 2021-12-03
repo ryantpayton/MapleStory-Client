@@ -45,12 +45,6 @@ namespace ms
 		int8_t id;
 	};
 
-	struct RecommendedWorld
-	{
-		std::string message;
-		int32_t id;
-	};
-
 	struct StatsEntry
 	{
 		std::string name;

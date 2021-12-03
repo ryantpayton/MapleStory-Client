@@ -27,7 +27,7 @@ namespace ms
 {
 	MapEffect::MapEffect(std::string path) : active(false)
 	{
-		nl::node Effect = nl::nx::map["Effect.img"];
+		nl::node Effect = nl::nx::Map["Effect.img"];
 
 		effect = Effect.resolve(path);
 

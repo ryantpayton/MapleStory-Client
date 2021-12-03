@@ -46,6 +46,7 @@ namespace ms
 
 		void quit();
 		bool not_quitted() const;
+		bool has_capslocks() const;
 
 		void send_cursor(Point<int16_t> cursor_position);
 		void send_cursor(bool pressed);
@@ -108,6 +109,6 @@ namespace ms
 
 		bool enabled;
 		bool quitted;
-		bool caps_lock_enabled = false;
+		bool caps_lock_enabled;
 	};
 }

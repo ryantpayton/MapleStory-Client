@@ -37,7 +37,7 @@ namespace ms
 		selected_channel = current_channel;
 		channel_count = 20; // TODO: Need to get total number of channels on world
 
-		nl::node Channel = nl::nx::ui["UIWindow2.img"]["Channel"];
+		nl::node Channel = nl::nx::UI["UIWindow2.img"]["Channel"];
 
 		nl::node backgrnd = Channel["backgrnd"];
 		Texture bg = backgrnd;
@@ -96,7 +96,7 @@ namespace ms
 			channel[false].draw(DrawArgument(position.x() + current_channel_x, position.y() + current_channel_y));
 		}
 
-		for each (auto sprite in ch)
+		for (Sprite sprite : ch)
 			sprite.draw(position, inter);
 	}
 
@@ -104,7 +104,7 @@ namespace ms
 	{
 		UIElement::update();
 
-		for each (auto sprite in ch)
+		for (Sprite sprite : ch)
 			sprite.update();
 	}
 
@@ -279,14 +279,14 @@ namespace ms
 		{
 			switch (buttonid)
 			{
-			case Buttons::CANCEL:
-				cancel();
-				break;
-			case Buttons::CHANGE:
-				change_channel();
-				break;
-			default:
-				break;
+				case Buttons::CANCEL:
+					cancel();
+					break;
+				case Buttons::CHANGE:
+					change_channel();
+					break;
+				default:
+					break;
 			}
 		}
 		else

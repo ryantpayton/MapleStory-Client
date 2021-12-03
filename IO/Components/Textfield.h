@@ -49,6 +49,7 @@ namespace ms
 		void set_state(State state);
 		void change_text(const std::string& text);
 		void set_cryptchar(int8_t character);
+		void set_limit(size_t limit);
 
 		void set_enter_callback(std::function<void(std::string)> onreturn);
 		void set_key_callback(KeyAction::Id key, std::function<void(void)> action);

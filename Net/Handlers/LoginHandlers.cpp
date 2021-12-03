@@ -306,20 +306,4 @@ namespace ms
 				charselect->remove_character(cid);
 		}
 	}
-
-	void RecommendedWorldsHandler::handle(InPacket& recv) const
-	{
-		if (auto worldselect = UI::get().get_element<UIWorldSelect>())
-		{
-			int16_t count = recv.read_byte();
-
-			for (size_t i = 0; i < count; i++)
-			{
-				RecommendedWorld world = LoginParser::parse_recommended_world(recv);
-
-				if (world.id != -1 && !world.message.empty())
-					worldselect->add_recommended_world(world);
-			}
-		}
-	}
 }

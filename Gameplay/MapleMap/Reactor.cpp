@@ -28,7 +28,7 @@ namespace ms
 	Reactor::Reactor(int32_t o, int32_t r, int8_t s, Point<int16_t> p) : MapObject(o, p), rid(r), state(s)
 	{
 		std::string strid = string_format::extend_id(rid, 7);
-		src = nl::nx::reactor[strid + ".img"];
+		src = nl::nx::Reactor[strid + ".img"];
 
 		normal = src[0];
 		animation_ended = true;

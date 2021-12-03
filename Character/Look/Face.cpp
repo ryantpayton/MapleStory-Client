@@ -68,7 +68,7 @@ namespace ms
 	Face::Face(int32_t faceid)
 	{
 		std::string strid = "000" + std::to_string(faceid);
-		nl::node facenode = nl::nx::character["Face"][strid + ".img"];
+		nl::node facenode = nl::nx::Character["Face"][strid + ".img"];
 
 		for (auto iter : Expression::names)
 		{
@@ -88,7 +88,7 @@ namespace ms
 			}
 		}
 
-		name = nl::nx::string["Eqp.img"]["Eqp"]["Face"][std::to_string(faceid)]["name"];
+		name = nl::nx::String["Eqp.img"]["Eqp"]["Face"][std::to_string(faceid)]["name"];
 	}
 
 	void Face::draw(Expression::Id expression, uint8_t frame, const DrawArgument& args) const

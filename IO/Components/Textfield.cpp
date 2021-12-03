@@ -334,6 +334,11 @@ namespace ms
 		crypt = character;
 	}
 
+	void Textfield::set_limit(size_t l)
+	{
+		limit = l;
+	}
+
 	bool Textfield::belowlimit() const
 	{
 		if (limit > 0)

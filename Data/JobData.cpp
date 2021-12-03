@@ -28,8 +28,8 @@ namespace ms
 	JobData::JobData(int32_t id)
 	{
 		std::string strid = string_format::extend_id(id, 3);
-		nl::node src = nl::nx::skill[strid + ".img"];
-		nl::node strsrc = nl::nx::string["Skill.img"][strid];
+		nl::node src = nl::nx::Skill[strid + ".img"];
+		nl::node strsrc = nl::nx::String["Skill.img"][strid];
 
 		icon = src["info"]["icon"];
 

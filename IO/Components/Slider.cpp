@@ -33,7 +33,7 @@ namespace ms
 
 		if (type == Type::CHATBAR)
 		{
-			src = nl::nx::ui["StatusBar3.img"]["chat"]["common"]["scroll"];
+			src = nl::nx::UI["StatusBar3.img"]["chat"]["common"]["scroll"];
 			base_str += "_c";
 		}
 		else
@@ -43,7 +43,7 @@ namespace ms
 			if (type != Type::LINE_CYAN)
 				VScr += std::to_string(type);
 
-			src = nl::nx::ui["Basic.img"][VScr];
+			src = nl::nx::UI["Basic.img"][VScr];
 		}
 
 		nl::node dsrc = src["disabled"];

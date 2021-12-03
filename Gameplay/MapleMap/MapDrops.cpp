@@ -34,7 +34,7 @@ namespace ms
 
 	void MapDrops::init()
 	{
-		nl::node src = nl::nx::item["Special"]["0900.img"];
+		nl::node src = nl::nx::Item["Special"]["0900.img"];
 
 		mesoicons[MesoIcon::BRONZE] = src["09000000"]["iconRaw"];
 		mesoicons[MesoIcon::GOLD] = src["09000001"]["iconRaw"];

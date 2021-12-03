@@ -25,7 +25,7 @@ namespace ms
 {
 	SingleSkillSound::SingleSkillSound(std::string strid)
 	{
-		nl::node soundsrc = nl::nx::sound["Skill.img"][strid];
+		nl::node soundsrc = nl::nx::Sound["Skill.img"][strid];
 
 		usesound = soundsrc["Use"];
 		hitsound = soundsrc["Hit"];

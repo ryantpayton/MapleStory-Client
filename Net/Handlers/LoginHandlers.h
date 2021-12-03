@@ -74,10 +74,4 @@ namespace ms
 	{
 		void handle(InPacket& recv) const override;
 	};
-
-	// Handles the packet that contains information on recommended worlds
-	class RecommendedWorldsHandler : public PacketHandler
-	{
-		void handle(InPacket& recv) const override;
-	};
 }

@@ -43,6 +43,8 @@ namespace ms
 
 	void UI::init()
 	{
+		caps_lock_enabled = Configuration::get().get_caps_lock_enabled();
+	
 		cursor.init();
 
 		change_state(State::LOGIN);
@@ -100,6 +102,11 @@ namespace ms
 	bool UI::not_quitted() const
 	{
 		return !quitted;
+	}
+
+	bool UI::has_capslocks() const
+	{
+		return caps_lock_enabled;
 	}
 
 	void UI::send_cursor(Point<int16_t> cursor_position, Cursor::State cursor_state)

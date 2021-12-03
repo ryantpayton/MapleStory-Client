@@ -32,11 +32,11 @@ namespace ms
 		if (skill_id > 0)
 		{
 			std::string strid = string_format::extend_id(skill_id, 7);
-			src = nl::nx::skill[strid.substr(0, 3) + ".img"]["skill"][strid]["afterimage"][name][stance_name];
+			src = nl::nx::Skill[strid.substr(0, 3) + ".img"]["skill"][strid]["afterimage"][name][stance_name];
 		}
 
 		if (!src)
-			src = nl::nx::character["Afterimage"][name + ".img"][level / 10][stance_name];
+			src = nl::nx::Character["Afterimage"][name + ".img"][level / 10][stance_name];
 
 		range = src;
 		firstframe = 0;

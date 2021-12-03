@@ -38,11 +38,9 @@ namespace ms
 		UIElement::Type get_type() const override;
 
 	private:
-		Animation Nexon;
 		Animation Wizet;
 		Texture WizetEnd;
 
-		bool nexon_ended;
 		bool wizet_ended;
 		bool user_clicked;
 	};

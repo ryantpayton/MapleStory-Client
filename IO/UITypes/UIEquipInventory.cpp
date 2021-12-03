@@ -84,8 +84,8 @@ namespace ms
 		tab_source[Buttons::BT_TAB2] = "Pet";
 		tab_source[Buttons::BT_TAB3] = "Android";
 
-		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
-		nl::node Equip = nl::nx::ui["UIWindow4.img"]["Equip"];
+		nl::node close = nl::nx::UI["Basic.img"]["BtClose3"];
+		nl::node Equip = nl::nx::UI["UIWindow4.img"]["Equip"];
 
 		background[Buttons::BT_TAB0] = Equip[tab_source[Buttons::BT_TAB0]]["backgrnd"];
 		background[Buttons::BT_TAB1] = Equip[tab_source[Buttons::BT_TAB1]]["backgrnd"];
@@ -97,7 +97,7 @@ namespace ms
 				if (slot.name().find("_") == std::string::npos)
 					Slots[i].emplace_back(slot);
 
-		nl::node EquipGL = nl::nx::ui["UIWindowGL.img"]["Equip"];
+		nl::node EquipGL = nl::nx::UI["UIWindowGL.img"]["Equip"];
 		nl::node backgrnd = Equip["backgrnd"];
 		nl::node totem_backgrnd = EquipGL["Totem"]["backgrnd"];
 

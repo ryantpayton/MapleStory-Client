@@ -36,7 +36,7 @@ namespace ms
 		if (buffid >= 0)
 		{
 			std::string strid = string_format::extend_id(buffid, 7);
-			nl::node src = nl::nx::skill[strid.substr(0, 3) + ".img"]["skill"][strid];
+			nl::node src = nl::nx::Skill[strid.substr(0, 3) + ".img"]["skill"][strid];
 			icon = src["icon"];
 		}
 		else

@@ -27,7 +27,7 @@ namespace ms
 	{
 		std::string strid = "0" + std::to_string(id);
 		std::string category = itemdata.get_category();
-		nl::node src = nl::nx::character[category][strid + ".img"]["info"];
+		nl::node src = nl::nx::Character[category][strid + ".img"]["info"];
 
 		cash = src["cash"].get_bool();
 		tradeblock = src["tradeBlock"].get_bool();

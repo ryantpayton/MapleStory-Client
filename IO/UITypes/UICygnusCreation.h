@@ -24,14 +24,6 @@ namespace ms
 	class UICygnusCreation : public UICommonCreation
 	{
 	public:
-		UICygnusCreation();
-
-		void draw(float inter) const override;
-		void update() override;
-
-	private:
-		Texture sky;
-		Texture cloud;
-		float cloudfx;
+		UICygnusCreation() : UICommonCreation("1000") {}
 	};
 }

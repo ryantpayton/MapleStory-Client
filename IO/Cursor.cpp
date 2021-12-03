@@ -33,7 +33,7 @@ namespace ms
 
 	void Cursor::init()
 	{
-		nl::node src = nl::nx::ui["Basic.img"]["Cursor"];
+		nl::node src = nl::nx::UI["Basic.img"]["Cursor"];
 
 		for (auto iter : animations)
 			iter.second = src[iter.first];

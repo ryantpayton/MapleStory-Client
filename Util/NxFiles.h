@@ -29,29 +29,39 @@ namespace ms
 	namespace NxFiles
 	{
 		// Number of needed files
-		constexpr uint8_t NUM_FILES = 19;
+		constexpr uint8_t NUM_FILES = 29;
 
 		// Names of the needed game files
 		constexpr std::array<const char*, NUM_FILES> filenames =
 		{
-			"Base.nx",
+			"Base.nx",		// From latest
 			"Character.nx",	// From latest
-			"Effect.nx",
+			"Effect.nx",	// From latest
 			"Etc.nx",		// From latest
-			"Item.nx",
-			"Map.nx",
+			"Item.nx",		// From latest
+			"Map.nx",		// v83
+			"MapLatest.nx", // From latest
 			"Map001.nx",	// From latest
-			"MapLatest.nx",	// From latest
-			"MapPretty.nx",	// From v167
-			"Mob.nx",
-			"Morph.nx",
-			"Npc.nx",
-			"Quest.nx",
-			"Reactor.nx",
-			"Skill.nx",
+			"Map002.nx",	// From latest
+			"Map2.nx",		// From latest
+			"Mob.nx",		// From latest
+			"Mob001.nx",	// From latest
+			"Mob002.nx",	// From latest
+			"Mob2.nx",		// From latest
+			"Morph.nx",		// From latest
+			"Npc.nx",		// From latest
+			"Quest.nx",		// From latest
+			"Reactor.nx",	// From latest
+			"Skill.nx",		// From latest
+			"Skill001.nx",	// From latest
+			"Skill002.nx",	// From latest
+			"Skill003.nx",	// From latest
 			"Sound.nx",		// From latest
+			"Sound001.nx",	// From latest
+			"Sound002.nx",	// From latest
+			"Sound2.nx",	// From latest
 			"String.nx",	// From latest
-			"TamingMob.nx",
+			"TamingMob.nx",	// From latest
 			"UI.nx"			// From latest
 		};
 

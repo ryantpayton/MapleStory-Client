@@ -38,7 +38,7 @@ namespace ms
 {
 	UIShop::UIShop(const CharLook& in_charlook, const Inventory& in_inventory) : UIDragElement<PosSHOP>(), charlook(in_charlook), inventory(in_inventory)
 	{
-		nl::node src = nl::nx::ui["UIWindow2.img"]["Shop2"];
+		nl::node src = nl::nx::UI["UIWindow2.img"]["Shop2"];
 
 		nl::node background = src["backgrnd"];
 		Texture bg = background;
@@ -459,7 +459,7 @@ namespace ms
 	void UIShop::reset(int32_t npcid)
 	{
 		std::string strid = string_format::extend_id(npcid, 7);
-		npc = nl::nx::npc[strid + ".img"]["stand"]["0"];
+		npc = nl::nx::Npc[strid + ".img"]["stand"]["0"];
 
 		for (auto& button : buttons)
 			button.second->set_state(Button::State::NORMAL);
@@ -616,7 +616,7 @@ namespace ms
 
 		if (showcount)
 		{
-			static const Charset countset = Charset(nl::nx::ui["Basic.img"]["ItemNo"], Charset::Alignment::LEFT);
+			static const Charset countset = Charset(nl::nx::UI["Basic.img"]["ItemNo"], Charset::Alignment::LEFT);
 			countset.draw(std::to_string(sellable), pos + Point<int16_t>(41, 28));
 		}
 

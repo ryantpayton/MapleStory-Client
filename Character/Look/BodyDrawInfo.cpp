@@ -19,6 +19,8 @@
 
 #include "Body.h"
 
+#include "../../Util/Misc.h"
+
 #ifdef USE_NX
 #include <nlnx/nx.hpp>
 #endif
@@ -27,8 +29,8 @@ namespace ms
 {
 	void BodyDrawInfo::init()
 	{
-		nl::node bodynode = nl::nx::character["00002000.img"];
-		nl::node headnode = nl::nx::character["00012000.img"];
+		nl::node bodynode = nl::nx::Character["00002000.img"];
+		nl::node headnode = nl::nx::Character["00012000.img"];
 
 		for (nl::node stancenode : bodynode)
 		{
@@ -53,6 +55,13 @@ namespace ms
 				else
 				{
 					Stance::Id stance = Stance::by_string(ststr);
+
+					if (stance == Stance::Id::NONE || stance == Stance::Id::LENGTH)
+					{
+						single_console::log_message("[BodyDrawInfo::init] Unknown Stance::Id name: [" + ststr + "]");
+						continue;
+					}
+
 					int16_t delay = framenode["delay"];
 
 					if (delay <= 0)

@@ -29,12 +29,12 @@ namespace ms
 		type = Weapon::by_value(prefix);
 		twohanded = prefix == Weapon::Type::STAFF || (prefix >= Weapon::Type::SWORD_2H && prefix <= Weapon::Type::POLEARM) || prefix == Weapon::Type::CROSSBOW;
 
-		nl::node src = nl::nx::character["Weapon"]["0" + std::to_string(equipid) + ".img"]["info"];
+		nl::node src = nl::nx::Character["Weapon"]["0" + std::to_string(equipid) + ".img"]["info"];
 
 		attackspeed = static_cast<uint8_t>(src["attackSpeed"]);
 		attack = static_cast<uint8_t>(src["attack"]);
 
-		nl::node soundsrc = nl::nx::sound["Weapon.img"][src["sfx"]];
+		nl::node soundsrc = nl::nx::Sound["Weapon.img"][src["sfx"]];
 
 		bool twosounds = soundsrc["Attack2"].data_type() == nl::node::type::audio;
 

@@ -33,8 +33,8 @@ namespace ms
 		public:
 			Constants()
 			{
-				VIEWWIDTH = 800;
-				VIEWHEIGHT = 600;
+				VIEWWIDTH = 1024;
+				VIEWHEIGHT = 768;
 			};
 
 			~Constants() {}

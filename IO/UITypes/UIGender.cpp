@@ -35,7 +35,7 @@ namespace ms
 	{
 		CUR_TIMESTEP = 0;
 
-		nl::node Gender = nl::nx::ui["Login.img"]["Gender"];
+		nl::node Gender = nl::nx::UI["Login.img"]["Gender"];
 
 		for (size_t i = 0; i < 3; i++)
 			gender_sprites[i] = Gender["scroll"]["0"][i];

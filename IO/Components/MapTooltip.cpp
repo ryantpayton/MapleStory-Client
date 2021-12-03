@@ -27,8 +27,8 @@ namespace ms
 {
 	MapTooltip::MapTooltip() : name(""), description(""), fillwidth(MIN_WIDTH), fillheight(0)
 	{
-		nl::node Frame = nl::nx::ui["UIToolTip.img"]["Item"]["Frame2"];
-		nl::node WorldMap = nl::nx::ui["UIWindow2.img"]["ToolTip"]["WorldMap"];
+		nl::node Frame = nl::nx::UI["UIToolTip.img"]["Item"]["Frame2"];
+		nl::node WorldMap = nl::nx::UI["UIWindow2.img"]["ToolTip"]["WorldMap"];
 
 		frame = Frame;
 		cover = Frame["cover"];

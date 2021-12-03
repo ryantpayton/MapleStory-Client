@@ -29,15 +29,15 @@ namespace ms
 		strid.insert(0, 7 - strid.size(), '0');
 		strid.append(".img");
 
-		nl::node src = nl::nx::npc[strid];
-		nl::node strsrc = nl::nx::string["Npc.img"][std::to_string(id)];
+		nl::node src = nl::nx::Npc[strid];
+		nl::node strsrc = nl::nx::String["Npc.img"][std::to_string(id)];
 
 		std::string link = src["info"]["link"];
 
 		if (link.size() > 0)
 		{
 			link.append(".img");
-			src = nl::nx::npc[link];
+			src = nl::nx::Npc[link];
 		}
 
 		nl::node info = src["info"];

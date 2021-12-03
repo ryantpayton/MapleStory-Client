@@ -33,7 +33,7 @@ namespace ms
 	{
 		multiple = false;
 
-		nl::node Notice = nl::nx::ui["Login.img"]["Notice"];
+		nl::node Notice = nl::nx::UI["Login.img"]["Notice"];
 		nl::node backgrnd;
 
 		switch (message)
@@ -52,7 +52,7 @@ namespace ms
 		sprites.emplace_back(backgrnd);
 		sprites.emplace_back(Notice["text"][message], Point<int16_t>(17, 13));
 
-		if (message == Message::DELETE_CONFIRMATION)
+		if (message == Message::DELETE_CONFIRMATION || message == Message::CASH_ITEMS_CONFIRM_DELETION)
 		{
 			multiple = true;
 
@@ -64,7 +64,7 @@ namespace ms
 			buttons[Buttons::YES] = std::make_unique<MapleButton>(Notice["BtYes"], Point<int16_t>(100, 106));
 		}
 
-		position = Point<int16_t>(275, 209);
+		position = Point<int16_t>(388, 313);
 		dimension = Texture(backgrnd).get_dimensions();
 	}
 
@@ -111,16 +111,16 @@ namespace ms
 
 	UIQuitConfirm::UIQuitConfirm()
 	{
-		nl::node notice = nl::nx::ui["Login.img"]["Notice"];
+		nl::node notice = nl::nx::UI["Login.img"]["Notice"];
 		nl::node backgrnd = notice["backgrnd"]["0"];
 
 		sprites.emplace_back(backgrnd);
 		sprites.emplace_back(notice["text"][UILoginNotice::Message::CONFIRM_EXIT], Point<int16_t>(17, 13));
 
-		buttons[Buttons::BT_OK] = std::make_unique<MapleButton>(notice["BtYes"], Point<int16_t>(70, 106));
-		buttons[Buttons::BT_CANCEL] = std::make_unique<MapleButton>(notice["BtNo"], Point<int16_t>(130, 106));
+		buttons[Buttons::BT_OK] = std::make_unique<MapleButton>(notice["BtYes"], Point<int16_t>(68, 106));
+		buttons[Buttons::BT_CANCEL] = std::make_unique<MapleButton>(notice["BtNo"], Point<int16_t>(129, 106));
 
-		position = Point<int16_t>(275, 209);
+		position = Point<int16_t>(387, 293);
 		dimension = Texture(backgrnd).get_dimensions();
 	}
 
@@ -157,7 +157,7 @@ namespace ms
 
 	UIClassConfirm::UIClassConfirm(uint16_t selected_class, bool unavailable, std::function<void()> okhandler) : okhandler(okhandler)
 	{
-		nl::node RaceSelect = nl::nx::ui["Login.img"]["RaceSelect_new"];
+		nl::node RaceSelect = nl::nx::UI["Login.img"]["RaceSelect_new"];
 		nl::node type = unavailable ? RaceSelect["deny"] : RaceSelect["confirm"];
 		nl::node backgrnd = type["backgrnd"];
 		nl::node race = type["race"][selected_class];
@@ -180,7 +180,7 @@ namespace ms
 			buttons[Buttons::CANCEL] = std::make_unique<MapleButton>(type["BtCancel"], Point<int16_t>(137, 107));
 		}
 
-		position = Point<int16_t>(286, 189);
+		position = Point<int16_t>(398, 273);
 		dimension = Texture(backgrnd).get_dimensions();
 	}
 
@@ -243,7 +243,7 @@ namespace ms
 
 	UIKeySelect::UIKeySelect(std::function<void(bool)> oh, bool l) : okhandler(oh), login(l)
 	{
-		nl::node KeyType = nl::nx::ui["UIWindow2.img"]["KeyConfig"]["KeyType"];
+		nl::node KeyType = nl::nx::UI["UIWindow2.img"]["KeyConfig"]["KeyType"];
 		nl::node backgrnd = KeyType["backgrnd"];
 
 		sprites.emplace_back(backgrnd);
@@ -255,7 +255,7 @@ namespace ms
 		if (login)
 			buttons[Buttons::CLOSE]->set_active(false);
 
-		position = Point<int16_t>(181, 145);
+		position = Point<int16_t>(293, 229);
 		dimension = Texture(backgrnd).get_dimensions();
 	}
 
@@ -305,14 +305,14 @@ namespace ms
 
 	UIKeyConfirm::UIKeyConfirm(bool alternate, std::function<void()> oh, bool l) : okhandler(oh), login(l)
 	{
-		nl::node alert = nl::nx::ui["UIWindow2.img"]["KeyConfig"]["KeyType"]["alert"];
+		nl::node alert = nl::nx::UI["UIWindow2.img"]["KeyConfig"]["KeyType"]["alert"];
 		nl::node background = alternate ? alert["alternate"] : alert["default"];
 
 		sprites.emplace_back(background);
 
 		buttons[Buttons::OK] = std::make_unique<MapleButton>(alert["btOk"]);
 
-		position = Point<int16_t>(276, 229);
+		position = Point<int16_t>(388, 313);
 		dimension = Texture(background).get_dimensions();
 	}
 

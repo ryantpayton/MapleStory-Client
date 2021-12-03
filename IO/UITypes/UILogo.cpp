@@ -33,58 +33,42 @@ namespace ms
 	{
 		Music("BgmUI.img/NxLogo").play_once();
 
-		nexon_ended = false;
 		wizet_ended = false;
 		user_clicked = false;
 
-		nl::node Logo = nl::nx::ui["Logo.img"];
+		nl::node Logo = nl::nx::UI["Logo.img"];
 
-		Nexon = Logo["Nexon"];
 		Wizet = Logo["Wizet"];
-		WizetEnd = Logo["Wizet"]["40"];
+		WizetEnd = Logo["Wizet"]["28"];
 	}
 
 	void UILogo::draw(float inter) const
 	{
 		if (!user_clicked)
 		{
-			if (!nexon_ended)
-			{
-				Nexon.draw(position + Point<int16_t>(440, 360), inter);
-			}
+			if (!wizet_ended)
+				Wizet.draw(position, inter);
 			else
-			{
-				if (!wizet_ended)
-					Wizet.draw(position + Point<int16_t>(263, 195), inter);
-				else
-					WizetEnd.draw(position + Point<int16_t>(263, 195));
-			}
+				WizetEnd.draw(position);
 		}
 		else
 		{
-			WizetEnd.draw(position + Point<int16_t>(263, 195));
+			WizetEnd.draw(position);
 		}
 	}
 
 	void UILogo::update()
 	{
-		if (!nexon_ended)
+		if (!wizet_ended)
 		{
-			nexon_ended = Nexon.update();
+			wizet_ended = Wizet.update(3);
 		}
 		else
 		{
-			if (!wizet_ended)
-			{
-				wizet_ended = Wizet.update();
-			}
-			else
-			{
-				Configuration::get().set_start_shown(true);
+			Configuration::get().set_start_shown(true);
 
-				UI::get().remove(UIElement::Type::START);
-				UI::get().emplace<UILogin>();
-			}
+			UI::get().remove(UIElement::Type::START);
+			UI::get().emplace<UILogin>();
 		}
 	}
 

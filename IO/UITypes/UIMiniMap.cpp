@@ -44,9 +44,12 @@ namespace ms
 		user_type = type;
 		simpleMode = Setting<MiniMapSimpleMode>::get().load();
 
+		nl::node UIWindow2 = nl::nx::UI["UIWindow2.img"];
+
 		std::string node = simpleMode ? "MiniMapSimpleMode" : "MiniMap";
-		MiniMap = nl::nx::ui["UIWindow2.img"][node];
-		listNpc = nl::nx::ui["UIWindow2.img"]["MiniMap"]["ListNpc"];
+		MiniMap = UIWindow2[node];
+		listNpc = UIWindow2["MiniMap"]["ListNpc"];
+		MapHelper = nl::nx::Map["MapHelper.img"];
 
 		buttons[Buttons::BT_MIN] = std::make_unique<MapleButton>(MiniMap["BtMin"], Point<int16_t>(195, -6));
 		buttons[Buttons::BT_MAX] = std::make_unique<MapleButton>(MiniMap["BtMax"], Point<int16_t>(209, -6));
@@ -59,7 +62,7 @@ namespace ms
 		town_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
 		combined_text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE);
 
-		marker = Setting<MiniMapDefaultHelpers>::get().load() ? nl::nx::ui["UIWindow2.img"]["MiniMapSimpleMode"]["DefaultHelper"] : nl::nx::mapLatest["MapHelper.img"]["minimap"];
+		marker = Setting<MiniMapDefaultHelpers>::get().load() ? UIWindow2["MiniMapSimpleMode"]["DefaultHelper"] : MapHelper["minimap"];
 
 		player_marker = Animation(marker["user"]);
 		selected_marker = Animation(MiniMap["iconNpc"]);
@@ -259,7 +262,7 @@ namespace ms
 				{
 					nl::node portal_tm = Map["portal"][sprite.first]["tm"];
 					std::string portal_cat = NxHelper::Map::get_map_category(portal_tm);
-					nl::node portal_name = nl::nx::string["Map.img"][portal_cat][portal_tm]["mapName"];
+					nl::node portal_name = nl::nx::String["Map.img"][portal_cat][portal_tm]["mapName"];
 
 					if (portal_name)
 					{
@@ -300,26 +303,38 @@ namespace ms
 	{
 		switch (buttonid)
 		{
-		case BT_MIN:
-			type -= 1;
-			toggle_buttons();
-			return type == Type::MIN ? Button::State::DISABLED : Button::State::NORMAL;
-		case BT_MAX:
-			type += 1;
-			toggle_buttons();
-			return type == Type::MAX ? Button::State::DISABLED : Button::State::NORMAL;
-		case BT_SMALL:
-		case BT_BIG:
-			big_map = !big_map;
-			// TODO: Toggle scrolling map
-			toggle_buttons();
-			break;
-		case BT_MAP:
-			UI::get().emplace<UIWorldMap>();
-			break;
-		case BT_NPC:
-			set_npclist_active(!listNpc_enabled);
-			break;
+			case BT_MIN:
+			{
+				type -= 1;
+				toggle_buttons();
+
+				return type == Type::MIN ? Button::State::DISABLED : Button::State::NORMAL;
+			}
+			case BT_MAX:
+			{
+				type += 1;
+				toggle_buttons();
+
+				return type == Type::MAX ? Button::State::DISABLED : Button::State::NORMAL;
+			}
+			case BT_SMALL:
+			case BT_BIG:
+			{
+				big_map = !big_map;
+				// TODO: Toggle scrolling map
+				toggle_buttons();
+				break;
+			}
+			case BT_MAP:
+			{
+				UI::get().emplace<UIWorldMap>();
+				break;
+			}
+			case BT_NPC:
+			{
+				set_npclist_active(!listNpc_enabled);
+				break;
+			}
 		}
 
 		return Button::State::NORMAL;
@@ -551,7 +566,7 @@ namespace ms
 		max_sprites.emplace_back(Max[DownCenter], DrawArgument(Point<int16_t>(CENTER_START_X, down_y_offset + MAX_ADJ + 18), Point<int16_t>(c_stretch, 0)));
 		max_sprites.emplace_back(Max[DownLeft], Point<int16_t>(0, down_y_offset + MAX_ADJ));
 		max_sprites.emplace_back(Max[DownRight], Point<int16_t>(ur_x_offset, down_y_offset + MAX_ADJ));
-		max_sprites.emplace_back(nl::nx::mapLatest["MapHelper.img"]["mark"][Map["info"]["mapMark"]], DrawArgument(Point<int16_t>(7, 17)));
+		max_sprites.emplace_back(MapHelper["mark"][Map["info"]["mapMark"]], DrawArgument(Point<int16_t>(7, 17)));
 
 		max_dimensions = normal_dimensions + Point<int16_t>(0, MAX_ADJ);
 	}

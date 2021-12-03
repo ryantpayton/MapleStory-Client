@@ -27,8 +27,8 @@ namespace ms
 {
 	UIUserList::UIUserList(uint16_t t) : UIDragElement<PosUSERLIST>(Point<int16_t>(260, 20)), tab(t)
 	{
-		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
-		UserList = nl::nx::ui["UIWindow2.img"]["UserList"];
+		nl::node close = nl::nx::UI["Basic.img"]["BtClose3"];
+		UserList = nl::nx::UI["UIWindow2.img"]["UserList"];
 		nl::node Main = UserList["Main"];
 
 		sprites.emplace_back(Main["backgrnd"]);
@@ -207,7 +207,7 @@ namespace ms
 		}
 		else if (tab == Buttons::BT_TAB_FRIEND)
 		{
-			for each (auto sprite in friend_sprites)
+			for (Sprite sprite : friend_sprites)
 				sprite.draw(position, alpha);
 
 			friends_online_text.draw(position + Point<int16_t>(211, 62));
@@ -220,7 +220,7 @@ namespace ms
 		}
 		else if (tab == Buttons::BT_TAB_BOSS)
 		{
-			for each (auto sprite in boss_sprites)
+			for (Sprite sprite : boss_sprites)
 				sprite.draw(position, alpha);
 		}
 		else if (tab == Buttons::BT_TAB_BLACKLIST)
@@ -238,11 +238,11 @@ namespace ms
 		UIElement::update();
 
 		if (tab == Buttons::BT_TAB_FRIEND)
-			for each (auto sprite in friend_sprites)
+			for (Sprite sprite : friend_sprites)
 				sprite.update();
 
 		if (tab == Buttons::BT_TAB_BOSS)
-			for each (auto sprite in boss_sprites)
+			for (Sprite sprite : boss_sprites)
 				sprite.update();
 	}
 

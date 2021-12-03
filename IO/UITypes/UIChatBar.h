@@ -147,6 +147,8 @@ namespace ms
 		int16_t input_bg_y;
 		int16_t input_max_x;
 		int16_t input_origin_x;
+		int16_t input_origin_y;
+		int16_t input_btns_x;
 		Textfield input_text;
 
 		struct Message

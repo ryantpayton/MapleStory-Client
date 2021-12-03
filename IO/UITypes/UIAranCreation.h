@@ -24,14 +24,6 @@ namespace ms
 	class UIAranCreation : public UICommonCreation
 	{
 	public:
-		UIAranCreation();
-
-		void draw(float inter) const override;
-		void update() override;
-
-	private:
-		Texture sky;
-		Texture cloud;
-		float cloudfx;
+		UIAranCreation() : UICommonCreation("2000") {}
 	};
 }

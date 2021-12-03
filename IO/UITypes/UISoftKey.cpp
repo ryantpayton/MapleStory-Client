@@ -30,9 +30,9 @@
 
 namespace ms
 {
-	UISoftKey::UISoftKey(OkCallback ok_callback, CancelCallback cancel_callback, std::string tooltip_text, Point<int16_t> tooltip_pos) : UIElement(Point<int16_t>(104, 140), Point<int16_t>(0, 0)), ok_callback(ok_callback), cancel_callback(cancel_callback), tooltip_pos(tooltip_pos), highCase(false)
+	UISoftKey::UISoftKey(OkCallback ok_callback, CancelCallback cancel_callback, std::string tooltip_text, Point<int16_t> tooltip_pos) : UIElement(Point<int16_t>(216, 224), Point<int16_t>(0, 0)), ok_callback(ok_callback), cancel_callback(cancel_callback), tooltip_pos(tooltip_pos), highCase(false)
 	{
-		nl::node SoftKey = nl::nx::ui["Login.img"]["Common"]["SoftKey"];
+		nl::node SoftKey = nl::nx::UI["Login.img"]["Common"]["SoftKey"];
 		nl::node backgrnd = SoftKey["backgrnd"];
 
 		sprites.emplace_back(backgrnd);
@@ -245,9 +245,9 @@ namespace ms
 #pragma endregion
 #pragma endregion
 
-		Point<int16_t> textfield_topleft = Point<int16_t>(306, 201);
+		Point<int16_t> textfield_topleft = position + Point<int16_t>(202, 61);
 
-		textfield = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, Rectangle<int16_t>(textfield_topleft, textfield_topleft + Point<int16_t>(187, 21)), MAX_TEXT_LEN);
+		textfield = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, Rectangle<int16_t>(textfield_topleft, textfield_topleft + Point<int16_t>(188, 21)), MAX_TEXT_LEN);
 		textfield.set_cryptchar('*');
 
 		textfield.set_enter_callback(
@@ -291,7 +291,7 @@ namespace ms
 			btn->draw(position);
 		}
 
-		textfield.draw(Point<int16_t>(44, 0), Point<int16_t>(1, 0));
+		textfield.draw(Point<int16_t>(44, 0));
 
 		if (tooltip)
 			tooltip->draw(position + Point<int16_t>(419, 50) + tooltip_pos);

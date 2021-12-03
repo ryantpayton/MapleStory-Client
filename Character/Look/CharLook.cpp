@@ -62,31 +62,31 @@ namespace ms
 	void CharLook::draw(const DrawArgument& args, Stance::Id interstance, Expression::Id interexpression, uint8_t interframe, uint8_t interexpframe) const
 	{
 		Point<int16_t> faceshift = drawinfo.getfacepos(interstance, interframe);
-		DrawArgument faceargs = args + DrawArgument{ faceshift, false, Point<int16_t>{} };
+		DrawArgument faceargs = args + DrawArgument{ faceshift, false, Point<int16_t>(0, 0) };
 
 		if (Stance::is_climbing(interstance))
 		{
-			body->draw(interstance, Body::Layer::BODY, interframe, args);
+			body->draw(Body::Layer::BODY, interstance, interframe, args);
 			equips.draw(EquipSlot::Id::GLOVES, interstance, Clothing::Layer::GLOVE, interframe, args);
 			equips.draw(EquipSlot::Id::SHOES, interstance, Clothing::Layer::SHOES, interframe, args);
 			equips.draw(EquipSlot::Id::BOTTOM, interstance, Clothing::Layer::PANTS, interframe, args);
 			equips.draw(EquipSlot::Id::TOP, interstance, Clothing::Layer::TOP, interframe, args);
 			equips.draw(EquipSlot::Id::TOP, interstance, Clothing::Layer::MAIL, interframe, args);
 			equips.draw(EquipSlot::Id::CAPE, interstance, Clothing::Layer::CAPE, interframe, args);
-			body->draw(interstance, Body::Layer::HEAD, interframe, args);
+			body->draw(Body::Layer::HEAD, interstance, interframe, args);
 			equips.draw(EquipSlot::Id::EARACC, interstance, Clothing::Layer::EARRINGS, interframe, args);
 
 			switch (equips.getcaptype())
 			{
 				case CharEquips::CapType::NONE:
-					hair->draw(interstance, Hair::Layer::BACK, interframe, args);
+					hair->draw(Hair::Layer::BACK, interstance, interframe, args);
 					break;
 				case CharEquips::CapType::HEADBAND:
 					equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
-					hair->draw(interstance, Hair::Layer::BACK, interframe, args);
+					hair->draw(Hair::Layer::BACK, interstance, interframe, args);
 					break;
 				case CharEquips::CapType::HALFCOVER:
-					hair->draw(interstance, Hair::Layer::BELOWCAP, interframe, args);
+					hair->draw(Hair::Layer::BELOWCAP, interstance, interframe, args);
 					equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
 					break;
 				case CharEquips::CapType::FULLCOVER:
@@ -99,16 +99,16 @@ namespace ms
 		}
 		else
 		{
-			hair->draw(interstance, Hair::Layer::BELOWBODY, interframe, args);
+			hair->draw(Hair::Layer::BELOWBODY, interstance, interframe, args);
 			equips.draw(EquipSlot::Id::CAPE, interstance, Clothing::Layer::CAPE, interframe, args);
 			equips.draw(EquipSlot::Id::SHIELD, interstance, Clothing::Layer::SHIELD_BELOW_BODY, interframe, args);
 			equips.draw(EquipSlot::Id::WEAPON, interstance, Clothing::Layer::WEAPON_BELOW_BODY, interframe, args);
 			equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP_BELOW_BODY, interframe, args);
-			body->draw(interstance, Body::Layer::BODY, interframe, args);
+			body->draw(Body::Layer::BODY, interstance, interframe, args);
 			equips.draw(EquipSlot::Id::GLOVES, interstance, Clothing::Layer::WRIST_OVER_BODY, interframe, args);
 			equips.draw(EquipSlot::Id::GLOVES, interstance, Clothing::Layer::GLOVE_OVER_BODY, interframe, args);
 			equips.draw(EquipSlot::Id::SHOES, interstance, Clothing::Layer::SHOES, interframe, args);
-			body->draw(interstance, Body::Layer::ARM_BELOW_HEAD, interframe, args);
+			body->draw(Body::Layer::ARM_BELOW_HEAD, interstance, interframe, args);
 
 			if (equips.has_overall())
 			{
@@ -120,12 +120,13 @@ namespace ms
 				equips.draw(EquipSlot::Id::TOP, interstance, Clothing::Layer::TOP, interframe, args);
 			}
 
-			body->draw(interstance, Body::Layer::ARM_BELOW_HEAD_OVER_MAIL, interframe, args);
+			body->draw(Body::Layer::ARM_BELOW_HEAD_OVER_MAIL, interstance, interframe, args);
 			equips.draw(EquipSlot::Id::SHIELD, interstance, Clothing::Layer::SHIELD_OVER_HAIR, interframe, args);
 			equips.draw(EquipSlot::Id::EARACC, interstance, Clothing::Layer::EARRINGS, interframe, args);
-			body->draw(interstance, Body::Layer::HEAD, interframe, args);
-			hair->draw(interstance, Hair::Layer::SHADE, interframe, args);
-			hair->draw(interstance, Hair::Layer::DEFAULT, interframe, args);
+			body->draw(Body::Layer::HEAD, interstance, interframe, args);
+			body->draw(Body::Layer::HUMAN_EAR, interstance, interframe, args + Point<int16_t>(0, 1));
+			hair->draw(Hair::Layer::SHADE, interstance, interframe, args);
+			hair->draw(Hair::Layer::DEFAULT, interstance, interframe, args);
 			face->draw(interexpression, interexpframe, faceargs);
 			equips.draw(EquipSlot::Id::FACE, interstance, Clothing::Layer::FACEACC, 0, faceargs);
 			equips.draw(EquipSlot::Id::EYEACC, interstance, Clothing::Layer::EYEACC, interframe, args);
@@ -134,16 +135,16 @@ namespace ms
 			switch (equips.getcaptype())
 			{
 				case CharEquips::CapType::NONE:
-					hair->draw(interstance, Hair::Layer::OVERHEAD, interframe, args);
+					hair->draw(Hair::Layer::OVERHEAD, interstance, interframe, args);
 					break;
 				case CharEquips::CapType::HEADBAND:
 					equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
-					hair->draw(interstance, Hair::Layer::DEFAULT, interframe, args);
-					hair->draw(interstance, Hair::Layer::OVERHEAD, interframe, args);
+					hair->draw(Hair::Layer::DEFAULT, interstance, interframe, args);
+					hair->draw(Hair::Layer::OVERHEAD, interstance, interframe, args);
 					equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP_OVER_HAIR, interframe, args);
 					break;
 				case CharEquips::CapType::HALFCOVER:
-					hair->draw(interstance, Hair::Layer::DEFAULT, interframe, args);
+					hair->draw(Hair::Layer::DEFAULT, interstance, interframe, args);
 					equips.draw(EquipSlot::Id::HAT, interstance, Clothing::Layer::CAP, interframe, args);
 					break;
 				case CharEquips::CapType::FULLCOVER:
@@ -152,18 +153,17 @@ namespace ms
 			}
 
 			equips.draw(EquipSlot::Id::WEAPON, interstance, Clothing::Layer::WEAPON_BELOW_ARM, interframe, args);
-			bool twohanded = is_twohanded(interstance);
 
-			if (twohanded)
+			if (is_twohanded(interstance))
 			{
+				body->draw(Body::Layer::ARM, interstance, interframe, args);
 				equips.draw(EquipSlot::Id::TOP, interstance, Clothing::Layer::MAILARM, interframe, args);
-				body->draw(interstance, Body::Layer::ARM, interframe, args);
 				equips.draw(EquipSlot::Id::WEAPON, interstance, Clothing::Layer::WEAPON, interframe, args);
 			}
 			else
 			{
 				equips.draw(EquipSlot::Id::WEAPON, interstance, Clothing::Layer::WEAPON, interframe, args);
-				body->draw(interstance, Body::Layer::ARM, interframe, args);
+				body->draw(Body::Layer::ARM, interstance, interframe, args);
 				equips.draw(EquipSlot::Id::TOP, interstance, Clothing::Layer::MAILARM, interframe, args);
 			}
 
@@ -171,14 +171,14 @@ namespace ms
 			equips.draw(EquipSlot::Id::GLOVES, interstance, Clothing::Layer::GLOVE, interframe, args);
 			equips.draw(EquipSlot::Id::WEAPON, interstance, Clothing::Layer::WEAPON_OVER_GLOVE, interframe, args);
 
-			body->draw(interstance, Body::Layer::HAND_BELOW_WEAPON, interframe, args);
+			body->draw(Body::Layer::HAND_BELOW_WEAPON, interstance, interframe, args);
 
-			body->draw(interstance, Body::Layer::ARM_OVER_HAIR, interframe, args);
-			body->draw(interstance, Body::Layer::ARM_OVER_HAIR_BELOW_WEAPON, interframe, args);
+			body->draw(Body::Layer::ARM_OVER_HAIR, interstance, interframe, args);
+			body->draw(Body::Layer::ARM_OVER_HAIR_BELOW_WEAPON, interstance, interframe, args);
 			equips.draw(EquipSlot::Id::WEAPON, interstance, Clothing::Layer::WEAPON_OVER_HAND, interframe, args);
 			equips.draw(EquipSlot::Id::WEAPON, interstance, Clothing::Layer::WEAPON_OVER_BODY, interframe, args);
-			body->draw(interstance, Body::Layer::HAND_OVER_HAIR, interframe, args);
-			body->draw(interstance, Body::Layer::HAND_OVER_WEAPON, interframe, args);
+			body->draw(Body::Layer::HAND_OVER_HAIR, interstance, interframe, args);
+			body->draw(Body::Layer::HAND_OVER_WEAPON, interstance, interframe, args);
 
 			equips.draw(EquipSlot::Id::GLOVES, interstance, Clothing::Layer::WRIST_OVER_HAIR, interframe, args);
 			equips.draw(EquipSlot::Id::GLOVES, interstance, Clothing::Layer::GLOVE_OVER_HAIR, interframe, args);

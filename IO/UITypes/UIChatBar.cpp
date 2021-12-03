@@ -31,7 +31,7 @@ namespace ms
 {
 	UIChatBar::UIChatBar() : temp_view_x(0), temp_view_y(0), drag_direction(DragDirection::NONE), view_input(false), view_adjusted(false), position_adjusted(false)
 	{
-		nl::node ingame = nl::nx::ui["StatusBar3.img"]["chat"]["ingame"];
+		nl::node ingame = nl::nx::UI["StatusBar3.img"]["chat"]["ingame"];
 		nl::node input = ingame["input"];
 
 		nl::node view = ingame["view"];
@@ -62,9 +62,9 @@ namespace ms
 		input_bg_y = input_textures[0].height();
 		input_max_x = input_textures[1].width();
 
-		auto input_origin = input_textures[1].get_origin().abs();
+		Point<int16_t> input_origin = input_textures[1].get_origin().abs();
 		input_origin_x = input_origin.x();
-		auto input_origin_y = input_origin.y();
+		input_origin_y = input_origin.y();
 
 		min_view_y = Constants::Constants::get().get_viewheight() - input_bg_y;
 		user_view_x = Setting<ChatViewX>::get().load();
@@ -86,14 +86,15 @@ namespace ms
 		buttons[Buttons::BtMax] = std::make_unique<MapleButton>(view["btMax"], Point<int16_t>(min_x - btMax_x - 5, -7));
 		buttons[Buttons::BtMin] = std::make_unique<MapleButton>(view["btMin"]);
 
-		auto p = /*get_input_position() + */Point<int16_t>(input_max_x - (input_bg_x - user_view_x) + input_origin_x - 17, 15 + input_origin_y + 1);
-		int16_t chat_x = Texture(input["button:chat"]["normal"]["0"]).width() + 3;
+		Point<int16_t> input_btns_pos = Point<int16_t>(input_max_x - (input_bg_x - user_view_x) + input_origin_x - 17, 15 + input_origin_y + 1);
+		int16_t input_btns_padding = 3;
+		input_btns_x = Texture(input["button:chat"]["normal"]["0"]).width() + input_btns_padding;
 
-		buttons[Buttons::BtChat] = std::make_unique<MapleButton>(input["button:chat"], p + Point<int16_t>(chat_x * 0, 0));
-		buttons[Buttons::BtItemLink] = std::make_unique<MapleButton>(input["button:itemLink"], p + Point<int16_t>(chat_x * 1, 0));
-		buttons[Buttons::BtChatEmoticon] = std::make_unique<MapleButton>(input["button:chatEmoticon"], p + Point<int16_t>(chat_x * 2, 0));
-		buttons[Buttons::BtHelp] = std::make_unique<MapleButton>(input["button:help"], p + Point<int16_t>(chat_x * 3, 0));
-		buttons[Buttons::BtOutChat] = std::make_unique<MapleButton>(input["button:outChat"], p + Point<int16_t>(chat_x * 4, 0));
+		buttons[Buttons::BtChat] = std::make_unique<MapleButton>(input["button:chat"], input_btns_pos + Point<int16_t>(input_btns_x * 0, 0));
+		buttons[Buttons::BtItemLink] = std::make_unique<MapleButton>(input["button:itemLink"], input_btns_pos + Point<int16_t>(input_btns_x * 1, 0));
+		buttons[Buttons::BtChatEmoticon] = std::make_unique<MapleButton>(input["button:chatEmoticon"], input_btns_pos + Point<int16_t>(input_btns_x * 2, 0));
+		buttons[Buttons::BtHelp] = std::make_unique<MapleButton>(input["button:help"], input_btns_pos + Point<int16_t>(input_btns_x * 3, 0));
+		buttons[Buttons::BtOutChat] = std::make_unique<MapleButton>(input["button:outChat"], input_btns_pos + Point<int16_t>(input_btns_x * 4, 0));
 
 		buttons[Buttons::BtChat]->set_active(false);
 		buttons[Buttons::BtItemLink]->set_active(false);
@@ -1032,6 +1033,12 @@ namespace ms
 		{
 			view_input = false;
 			view_adjusted = false;
+
+			buttons[Buttons::BtChat]->set_active(view_input);
+			buttons[Buttons::BtItemLink]->set_active(view_input);
+			buttons[Buttons::BtChatEmoticon]->set_active(view_input);
+			buttons[Buttons::BtHelp]->set_active(view_input);
+			buttons[Buttons::BtOutChat]->set_active(view_input);
 		}
 
 		Setting<ChatViewMax>::get().save(view_max);
@@ -1083,6 +1090,14 @@ namespace ms
 			dimension = Point<int16_t>(user_view_x, top_y + center_y + bottom_y) + Point<int16_t>(0, user_view_y);
 
 			buttons[Buttons::BtMin]->set_position(Point<int16_t>(user_view_x - btMin_x, -top_y - center_y - user_view_y) + btMin_padding);
+
+			Point<int16_t> input_btns_pos = Point<int16_t>(input_max_x - (input_bg_x - user_view_x) + input_origin_x - 17, 15 + input_origin_y + 1);
+
+			buttons[Buttons::BtChat]->set_position(input_btns_pos + Point<int16_t>(input_btns_x * 0, 0));
+			buttons[Buttons::BtItemLink]->set_position(input_btns_pos + Point<int16_t>(input_btns_x * 1, 0));
+			buttons[Buttons::BtChatEmoticon]->set_position(input_btns_pos + Point<int16_t>(input_btns_x * 2, 0));
+			buttons[Buttons::BtHelp]->set_position(input_btns_pos + Point<int16_t>(input_btns_x * 3, 0));
+			buttons[Buttons::BtOutChat]->set_position(input_btns_pos + Point<int16_t>(input_btns_x * 4, 0));
 		}
 		else
 		{

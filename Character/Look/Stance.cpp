@@ -75,12 +75,12 @@ namespace ms
 	{
 		switch (value)
 		{
-		case STAND2:
-			return STAND1;
-		case WALK2:
-			return WALK1;
-		default:
-			return value;
+			case STAND2:
+				return STAND1;
+			case WALK2:
+				return WALK1;
+			default:
+				return value;
 		}
 	}
 
@@ -88,12 +88,12 @@ namespace ms
 	{
 		switch (value)
 		{
-		case STAND1:
-			return STAND2;
-		case WALK1:
-			return WALK2;
-		default:
-			return value;
+			case STAND1:
+				return STAND2;
+			case WALK1:
+				return WALK2;
+			default:
+				return value;
 		}
 	}
 

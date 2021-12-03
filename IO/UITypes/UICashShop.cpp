@@ -37,7 +37,7 @@ namespace ms
 {
 	UICashShop::UICashShop() : preview_index(0), menu_index(1), promotion_index(0), mvp_grade(1), mvp_exp(0.07f), list_offset(0)
 	{
-		nl::node CashShop = nl::nx::ui["CashShop.img"];
+		nl::node CashShop = nl::nx::UI["CashShop.img"];
 		nl::node Base = CashShop["Base"];
 		nl::node backgrnd = Base["backgrnd"];
 		nl::node BestNew = Base["BestNew"];

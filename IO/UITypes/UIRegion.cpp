@@ -31,23 +31,19 @@ namespace ms
 {
 	UIRegion::UIRegion() : UIElement(Point<int16_t>(0, 0), Point<int16_t>(800, 600))
 	{
-		nl::node Common = nl::nx::ui["Login.img"]["Common"];
-		nl::node frame = nl::nx::mapLatest["Obj"]["login.img"]["Common"]["frame"]["2"]["0"];
-		nl::node Gateway = nl::nx::ui["Gateway.img"]["WorldSelect"];
+		nl::node Gateway = nl::nx::UI["Gateway.img"]["WorldSelect"];
 		nl::node na = Gateway["BtButton0"];
 		nl::node eu = Gateway["BtButton1"];
 
 		sprites.emplace_back(Gateway["backgrnd2"]);
-		sprites.emplace_back(frame, Point<int16_t>(400, 300));
-		sprites.emplace_back(Common["frame"], Point<int16_t>(400, 300));
 
-		int16_t pos_y = 84;
-		Point<int16_t> na_pos = Point<int16_t>(155, pos_y);
-		Point<int16_t> eu_pos = Point<int16_t>(424, pos_y);
+		int16_t pos_y = 254;
+		Point<int16_t> na_pos = Point<int16_t>(190, pos_y);
+		Point<int16_t> eu_pos = Point<int16_t>(579, pos_y);
 
 		buttons[Buttons::NA] = std::make_unique<MapleButton>(na, na_pos);
 		buttons[Buttons::EU] = std::make_unique<MapleButton>(eu, eu_pos);
-		buttons[Buttons::EXIT] = std::make_unique<MapleButton>(Common["BtExit"], Point<int16_t>(0, 540));
+		buttons[Buttons::EXIT] = std::make_unique<MapleButton>(nl::nx::UI["Login.img"]["Common"]["BtExit"]);
 
 		Point<int16_t> na_dim = Texture(na["normal"]["0"]).get_dimensions();
 		Point<int16_t> eu_dim = Texture(eu["normal"]["0"]).get_dimensions();

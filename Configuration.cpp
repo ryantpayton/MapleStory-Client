@@ -385,4 +385,14 @@ namespace ms
 	{
 		admin = value;
 	}
+
+	bool Configuration::get_caps_lock_enabled()
+	{
+		return caps_lock_enabled;
+	}
+
+	void Configuration::set_caps_lock_enabled(int value)
+	{
+		caps_lock_enabled = value;
+	}
 }

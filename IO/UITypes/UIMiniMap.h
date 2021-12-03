@@ -120,6 +120,7 @@ namespace ms
 
 		bool listNpc_enabled;
 		nl::node listNpc;
+		nl::node MapHelper;
 		std::vector<Sprite> listNpc_sprites;
 		std::vector<MapObject*> listNpc_list;
 		std::vector<Text> listNpc_names;

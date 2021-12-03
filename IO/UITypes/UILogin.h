@@ -46,30 +46,39 @@ namespace ms
 		Button::State button_pressed(uint16_t id) override;
 
 	private:
+		static constexpr int16_t TEXTFIELD_LIMIT = 12;
+
 		void login();
 		void open_url(uint16_t id);
 
 		enum Buttons
 		{
-			BT_LOGIN,
-			BT_REGISTER,
-			BT_HOMEPAGE,
-			BT_PASSLOST,
-			BT_IDLOST,
-			BT_SAVEID,
-			BT_QUIT,
+			BtLogin,
+			BtNew,
+			BtHomePage,
+			BtPasswdLost,
+			BtEmailLost,
+			BtEmailSave,
+			BtQuit,
+			BtMapleID,
+			BtNexonID,
 			NUM_BUTTONS
 		};
 
 		Text version;
+		Point<int16_t> version_pos;
 		Textfield account;
+		Point<int16_t> account_src_dim;
+		BoolPair<Texture> account_bg;
 		Textfield password;
-		Texture accountbg;
-		Texture passwordbg;
-		BoolPair<Texture> checkbox;
+		Point<int16_t> password_src_dim;
+		Texture password_bg;
+		BoolPair<Texture> check;
+		Texture capslock;
 		ColorBox background;
-		Point<int16_t> signboard_pos;
+		Point<int16_t> title_pos;
 
 		bool saveid;
+		bool nexon;
 	};
 }

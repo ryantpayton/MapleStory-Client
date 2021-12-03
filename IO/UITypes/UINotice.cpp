@@ -31,7 +31,7 @@ namespace ms
 {
 	UINotice::UINotice(std::string message, NoticeType t, Text::Alignment a) : UIDragElement<PosNOTICE>(), type(t), alignment(a)
 	{
-		nl::node src = nl::nx::ui["Basic.img"]["Notice6"];
+		nl::node src = nl::nx::UI["Basic.img"]["Notice6"];
 
 		top = src["t"];
 		center = src["c"];
@@ -127,7 +127,7 @@ namespace ms
 
 		int16_t belowtext = box2offset(false);
 
-		nl::node src = nl::nx::ui["Basic.img"];
+		nl::node src = nl::nx::UI["Basic.img"];
 
 		buttons[Buttons::YES] = std::make_unique<MapleButton>(src["BtOK4"], Point<int16_t>(156, belowtext));
 		buttons[Buttons::NO] = std::make_unique<MapleButton>(src["BtCancel4"], Point<int16_t>(198, belowtext));
@@ -185,7 +185,7 @@ namespace ms
 		int16_t belowtext = box2offset(true) - 21;
 		int16_t pos_y = belowtext + 35;
 
-		nl::node src = nl::nx::ui["Basic.img"];
+		nl::node src = nl::nx::UI["Basic.img"];
 
 		buttons[Buttons::OK] = std::make_unique<MapleButton>(src["BtOK4"], 156, pos_y);
 		buttons[Buttons::CANCEL] = std::make_unique<MapleButton>(src["BtCancel4"], 198, pos_y);
@@ -324,7 +324,7 @@ namespace ms
 	{
 		okhandler = oh;
 
-		nl::node src = nl::nx::ui["Basic.img"];
+		nl::node src = nl::nx::UI["Basic.img"];
 
 		buttons[Buttons::OK] = std::make_unique<MapleButton>(src["BtOK4"], 197, box2offset(false));
 	}

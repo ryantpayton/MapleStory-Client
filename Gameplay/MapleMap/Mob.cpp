@@ -30,7 +30,7 @@ namespace ms
 	Mob::Mob(int32_t oi, int32_t mid, int8_t mode, int8_t st, uint16_t fh, bool newspawn, int8_t tm, Point<int16_t> position) : MapObject(oi)
 	{
 		std::string strid = string_format::extend_id(mid, 7);
-		nl::node src = nl::nx::mob[strid + ".img"];
+		nl::node src = nl::nx::Mob[strid + ".img"];
 
 		nl::node info = src["info"];
 
@@ -67,9 +67,9 @@ namespace ms
 		animations[Stance::HIT] = src["hit1"];
 		animations[Stance::DIE] = src["die1"];
 
-		name = nl::nx::string["Mob.img"][std::to_string(mid)]["name"];
+		name = nl::nx::String["Mob.img"][std::to_string(mid)]["name"];
 
-		nl::node sndsrc = nl::nx::sound["Mob.img"][strid];
+		nl::node sndsrc = nl::nx::Sound["Mob.img"][strid];
 
 		hitsound = sndsrc["Damage"];
 		diesound = sndsrc["Die"];

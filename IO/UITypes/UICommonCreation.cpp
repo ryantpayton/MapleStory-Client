@@ -20,6 +20,7 @@
 #include "UICharSelect.h"
 #include "UILoginNotice.h"
 #include "UIRaceSelect.h"
+#include "UIWorldSelect.h"
 
 #include "../UI.h"
 
@@ -38,46 +39,164 @@
 
 namespace ms
 {
-	UICommonCreation::UICommonCreation(const std::string& c) : UIElement(Point<int16_t>(0, 0), Point<int16_t>(800, 600)), classType(c), genderSelected(false), charLookSelected(false), charNameSelected(false), newCharNameDisabled(true), female(false)
+	UICommonCreation::UICommonCreation(const std::string& c) : UIElement(Point<int16_t>(0, 0), Point<int16_t>(800, 600)), classType(c), className(class_map[c]), genderSelected(false), charLookSelected(false), charNameSelected(false), newCharNameDisabled(true), female(false)
 	{
 		load_char_look();
 
 		std::string version_text = Configuration::get().get_version();
-		version = Text(Text::Font::A11B, Text::Alignment::LEFT, Color::Name::LEMONGRASS, "Ver. " + version_text);
+		version = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::LEMONGRASS, "Ver. " + version_text);
 
-		nl::node Login = nl::nx::ui["Login.img"];
+		nl::node Login = nl::nx::UI["Login.img"];
 		nl::node Common = Login["Common"];
+		version_pos = Common["version"]["pos"];
+
 		nl::node createLimit = Login["NewChar"]["createLimit"];
 		nl::node CustomizeChar = Login["CustomizeChar"][classType];
 		nl::node board = CustomizeChar["board"];
 		nl::node genderSelect = CustomizeChar["genderSelect"];
+		nl::node CustomizeCharInfo = CustomizeChar["info"];
 
-		nl::node frame = nl::nx::mapLatest["Obj"]["login.img"]["Common"]["frame"]["2"]["0"];
+		avatarOrigin = CustomizeCharInfo["avatarOrigin"];
+		Point<int16_t> avatarSize = CustomizeCharInfo["avatarSize"];
+		charNameOrigin = CustomizeCharInfo["charNameOrigin"];
+		Point<int16_t> genderFemale = CustomizeCharInfo["genderFemale"];
+		Point<int16_t> genderMale = CustomizeCharInfo["genderMale"];
+		int16_t genderMarginX = CustomizeCharInfo["genderMarginX"];
+		int16_t genderMarginY = CustomizeCharInfo["genderMarginY"];
+		genderOrigin = CustomizeCharInfo["genderOrigin"];
+		Point<int16_t> genderSize = CustomizeCharInfo["genderSize"];
+		Point<int16_t> nameEditCtrlPos = CustomizeCharInfo["nameEditCtrlPos"];
+		std::string nameEditFontColor = CustomizeCharInfo["nameEditFontColor"];
+		newAvatarPos = CustomizeCharInfo["newAvatarPos"];
+		Point<int16_t> offsetForElemBack = CustomizeCharInfo["offsetForElemBack"];
+		vCanvasCount = CustomizeCharInfo["vCanvasCount"];
+
+		if (vCanvasCount == 0)
+		{
+			if (className == "adventurer")
+				vCanvasCount = 6;
+			else if (className == "cygnusKnight")
+				vCanvasCount = 7;
+		}
+
+		nl::node CustomizeCharObj = nl::nx::MapLatest["Obj"]["login.img"]["CustomizeChar"][class_map[classType]];
+
+		int16_t genderHeight = board["genderHeight"];
+		int16_t avatarHeight = board["avatarHeight"];
+
+		nl::node genderTop = board["genderTop"];
+		genderTopHeight = Texture(genderTop).height();
+
+		nl::node boardBottom = board["boardBottom"];
+		int16_t boardBottomHeight = Texture(boardBottom).height();
+
+		nl::node boardMid = board["boardMid"];
+		boardMidHeight = Texture(boardMid).height();
+
+		sprites_background.emplace_back(CustomizeCharObj["0"], Point<int16_t>(512, 384));
 
 		sprites.emplace_back(createLimit["backgrnd"]);
-		sprites_gender_select.emplace_back(board["genderTop"], getGenderTopPos());
-		sprites_gender_select.emplace_back(board["boardMid"], getBoardMidPos());
-		sprites_gender_select.emplace_back(board["boardBottom"], getBoardBottomPos());
+
+		if (className == "adventurer" || className == "cygnusKnight")
+			sprites_gender_select.emplace_back(genderTop, genderOrigin);
+		else
+			sprites_gender_select.emplace_back(genderTop, genderOrigin - Point<int16_t>(1, 0));
+
+		if (className == "cygnusKnight")
+			sprites_gender_select.emplace_back(boardMid, genderOrigin - Point<int16_t>(0, 112));
+		else
+			sprites_gender_select.emplace_back(boardMid, genderOrigin);
+
+		if (className == "cygnusKnight")
+			sprites_gender_select.emplace_back(boardBottom, genderOrigin + Point<int16_t>(0, genderHeight - boardBottomHeight) - Point<int16_t>(0, 238));
+		else
+			sprites_gender_select.emplace_back(boardBottom, genderOrigin + Point<int16_t>(0, genderHeight - boardBottomHeight));
+
+		if (className == "adventurer")
+			sprites_lookboard.emplace_back(board["avatarTop"], genderOrigin);
+		else
+			sprites_lookboard.emplace_back(board["avatarTop"], genderOrigin + Point<int16_t>(1, 0));
+
+		sprites_lookboard.emplace_back(boardMid, genderOrigin);
+
+		if (className == "cygnusKnight")
+			sprites_lookboard.emplace_back(boardBottom, genderOrigin);
+		else
+			sprites_lookboard.emplace_back(boardBottom, genderOrigin + Point<int16_t>(0, avatarHeight - boardBottomHeight));
 
 		nl::node avatarSel = CustomizeChar["avatarSel"];
 
-		for (size_t i = 0; i <= avatarSel.size(); i++)
-			sprites_char_look.emplace_back(avatarSel[i]["normal"], getAvatarSelPos(i));
+		Point<int16_t> avatarSelAdj = Point<int16_t>(0, 0);
 
-		sprites.emplace_back(frame, Point<int16_t>(400, 300));
-		sprites.emplace_back(Common["frame"], Point<int16_t>(400, 300));
-		sprites.emplace_back(Common["step"]["3"], Point<int16_t>(40, 0));
+		if (className == "adventurer")
+			avatarSelAdj = Point<int16_t>(44, 108);
+		else if (className == "aran")
+			avatarSelAdj = Point<int16_t>(36, 92);
+		else if (className == "cygnusKnight")
+			avatarSelAdj = Point<int16_t>(0, 18);
+		else
+			avatarSelAdj = Point<int16_t>(0, 0);
+
+		if (className == "cygnusKnight")
+			sprites_char_look.emplace_back(avatarSel["WZ2_skin"], avatarOrigin - Point<int16_t>(0, 18 * 3));
+		else
+			sprites_char_look.emplace_back(avatarSel["WZ2_skin"], avatarOrigin + avatarSelAdj);
+
+		for (size_t i = 0; i < avatarSel.size() - 1; i++)
+		{
+			size_t t = i;
+
+			if (className == "adventurer" && i >= 2)
+				t++;
+
+			if (className == "cygnusKnight")
+			{
+				if (i == 2)
+					sprites_char_look.emplace_back(avatarSel[i]["normal"], avatarOrigin + avatarSelAdj - Point<int16_t>(0, 16));
+				else if (i > 2)
+					sprites_char_look.emplace_back(avatarSel[i]["normal"], avatarOrigin + avatarSelAdj - Point<int16_t>(0, 18));
+				else
+					sprites_char_look.emplace_back(avatarSel[i]["normal"], avatarOrigin + avatarSelAdj);
+			}
+			else
+			{
+				sprites_char_look.emplace_back(avatarSel[i]["normal"], avatarOrigin + avatarSelAdj + Point<int16_t>(0, 18 * (t + 1)));
+			}
+		}
 
 		nameboard = CustomizeChar["charName"];
 		createLimitPos = Texture(createLimit["backgrnd"]).get_origin();
 		createLimitNum = Charset(createLimit["num"], Charset::Alignment::RIGHT);
 
-		buttons[Buttons::BtStart] = std::make_unique<MapleButton>(Login["Common"]["BtStart"], Point<int16_t>(0, 515));
+		buttons[Buttons::BtStart] = std::make_unique<MapleButton>(Common["BtStart"], Point<int16_t>(0, 1));
+		buttons[Buttons::BtPreview] = std::make_unique<MapleButton>(Common["BtPreview"]);
 		buttons[Buttons::BtGenderMale] = std::make_unique<MapleButton>(genderSelect["male"], getGenderSelectMalePos());
 		buttons[Buttons::BtGenderFemale] = std::make_unique<MapleButton>(genderSelect["female"], getGenderSelectFemalePos());
 
-		Point<int16_t> charLookLeft = getCharLookLeftPos();
-		Point<int16_t> charLookRight = getCharLookRightPos();
+		Point<int16_t> charLookAdj = Point<int16_t>(0, 0);
+
+		if (className == "adventurer")
+			charLookAdj = Point<int16_t>(75, 108);
+		else if (className == "aran")
+			charLookAdj = Point<int16_t>(69, 92);
+		else
+			charLookAdj = Point<int16_t>(0, 0);
+
+		Point<int16_t> charLookLeft = avatarOrigin + charLookAdj;
+		Point<int16_t> charLookRight = charLookLeft;
+
+		if (className == "adventurer")
+			charLookRight += Point<int16_t>(118, 0);
+		else if (className == "aran")
+			charLookRight += Point<int16_t>(110, 0);
+		else
+			charLookRight += Point<int16_t>(0, 0);
+
+		buttons[Buttons::BtSkinLeft] = std::make_unique<MapleButton>(CustomizeChar["BtLeft"], charLookLeft);
+		buttons[Buttons::BtSkinRight] = std::make_unique<MapleButton>(CustomizeChar["BtRight"], charLookRight);
+
+		charLookLeft.shift_y(18);
+		charLookRight.shift_y(18);
 
 		buttons[Buttons::BtFaceLeft] = std::make_unique<MapleButton>(CustomizeChar["BtLeft"], charLookLeft);
 		buttons[Buttons::BtFaceRight] = std::make_unique<MapleButton>(CustomizeChar["BtRight"], charLookRight);
@@ -95,19 +214,7 @@ namespace ms
 		{
 			charLookLeft.shift_y(18);
 			charLookRight.shift_y(18);
-
-			if (classType == "1000")
-			{
-				charLookLeft.shift_y(18);
-				charLookRight.shift_y(18);
-			}
 		}
-
-		buttons[Buttons::BtSkinLeft] = std::make_unique<MapleButton>(CustomizeChar["BtLeft"], charLookLeft);
-		buttons[Buttons::BtSkinRight] = std::make_unique<MapleButton>(CustomizeChar["BtRight"], charLookRight);
-
-		charLookLeft.shift_y(18);
-		charLookRight.shift_y(18);
 
 		buttons[Buttons::BtTopLeft] = std::make_unique<MapleButton>(CustomizeChar["BtLeft"], charLookLeft);
 		buttons[Buttons::BtTopRight] = std::make_unique<MapleButton>(CustomizeChar["BtRight"], charLookRight);
@@ -142,8 +249,14 @@ namespace ms
 		buttons[Buttons::BtWeaponLeft] = std::make_unique<MapleButton>(CustomizeChar["BtLeft"], charLookLeft);
 		buttons[Buttons::BtWeaponRight] = std::make_unique<MapleButton>(CustomizeChar["BtRight"], charLookRight);
 
-		buttons[Buttons::BtYes] = std::make_unique<MapleButton>(CustomizeChar["BtYes"], getBtYesPos(0));
-		buttons[Buttons::BtNo] = std::make_unique<MapleButton>(CustomizeChar["BtNo"], getBtNoPos(0));
+		nl::node BtYes = CustomizeChar["BtYes"];
+		BtYesPos = BtYes["pos"];
+
+		nl::node BtNo = CustomizeChar["BtNo"];
+		BtNoPos = BtNo["pos"];
+
+		buttons[Buttons::BtYes] = std::make_unique<MapleButton>(BtYes, genderOrigin + Point<int16_t>(BtYesPos["gender"]));
+		buttons[Buttons::BtNo] = std::make_unique<MapleButton>(BtNo, genderOrigin + Point<int16_t>(BtNoPos["gender"]));
 
 		nl::node hairSelect = CustomizeChar["hairSelect"];
 		hairSelectSize = hairSelect.size();
@@ -153,7 +266,25 @@ namespace ms
 
 		disable_char_look();
 
-		newCharName = Textfield(Text::Font::A12M, Text::Alignment::LEFT, getNewCharNameColor(), getNewCharNameRect(), 12);
+		newCharNamePos = charNameOrigin + nameEditCtrlPos - Point<int16_t>(5, 5);
+
+		if (className == "adventurer")
+			newCharNamePos += Point<int16_t>(3, 0);
+		else if (className == "cygnusKnight")
+			newCharNamePos += Point<int16_t>(-1, 1);
+
+		Point<int16_t> newCharNameDim = Point<int16_t>(0, 0);
+
+		if (className == "adventurer")
+			newCharNameDim = Point<int16_t>(163, 24);
+		else if (className == "aran")
+			newCharNameDim = Point<int16_t>(149, 25);
+		else if (className == "cygnusKnight")
+			newCharNameDim = Point<int16_t>(147, 19);
+		else
+			newCharNameDim = Point<int16_t>(0, 0);
+
+		newCharName = Textfield(Text::Font::A12M, Text::Alignment::LEFT, getNewCharNameColor(), Rectangle<int16_t>(newCharNamePos, newCharNamePos + newCharNameDim), 12);
 
 		newCharName.set_enter_callback(
 			[&](std::string)
@@ -170,9 +301,9 @@ namespace ms
 			}
 		);
 
+		skinColorName = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::BLACK);
 		faceName = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::BLACK);
 		hairStyleName = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::BLACK);
-		skinColorName = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::BLACK);
 		topName = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::BLACK);
 		bottomName = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::BLACK);
 		capeName = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::BLACK);
@@ -195,8 +326,8 @@ namespace ms
 			{
 				if (i == 1)
 				{
-					for (size_t f = 0; f <= getVerticalCount(); f++)
-						sprites_gender_select[i].draw(position + Point<int16_t>(0, f * getVerticalAdj()), inter);
+					for (size_t f = 0; f < vCanvasCount; f++)
+						sprites_gender_select[i].draw(position + Point<int16_t>(0, genderTopHeight + (boardMidHeight * f)), inter);
 				}
 				else
 				{
@@ -206,7 +337,7 @@ namespace ms
 
 			UIElement::draw(inter);
 
-			newCharLook.draw(Point<int16_t>(394, 339), inter);
+			newCharLook.draw(newAvatarPos, inter);
 		}
 		else
 		{
@@ -214,72 +345,81 @@ namespace ms
 			{
 				UIElement::draw_sprites(inter);
 
-				if (classType == "1000")
+				for (size_t i = 0; i < sprites_lookboard.size(); i++)
 				{
-					for (size_t i = 0; i < sprites_lookboard.size(); i++)
+					if (i == 0 && className == "cygnusKnight")
 					{
-						if (i == 1)
+						sprites_lookboard[i].draw(position - Point<int16_t>(1, 0), inter);
+					}
+					else if (i == 1)
+					{
+						for (size_t f = 0; f < vCanvasCount; f++)
 						{
-							for (size_t f = 0; f <= getVerticalCount() + 1; f++)
-								sprites_lookboard[i].draw(position + Point<int16_t>(0, f * getVerticalAdj()), inter);
-						}
-						else
-						{
-							sprites_lookboard[i].draw(position, inter);
+							if (className == "cygnusKnight")
+								sprites_lookboard[i].draw(position + Point<int16_t>(0, boardMidHeight * f), inter);
+							else
+								sprites_lookboard[i].draw(position + Point<int16_t>(0, genderTopHeight + (boardMidHeight * f)), inter);
 						}
 					}
-				}
-				else
-				{
-					for (auto& sprite : sprites_lookboard)
-						sprite.draw(position, inter);
+					else
+					{
+						sprites_lookboard[i].draw(position, inter);
+					}
 				}
 
 				for (auto& sprite : sprites_char_look)
 					sprite.draw(position, inter);
 
-				size_t name_index = 0;
+				Point<int16_t> label_pos = avatarOrigin;
 
-				faceName.draw(getNamePos(name_index));
+				if (className == "adventurer")
+					label_pos += Point<int16_t>(140, 107);
+				else if (className == "aran")
+					label_pos += Point<int16_t>(132, 91);
+				else if (className == "cygnusKnight")
+					label_pos += Point<int16_t>(199, 105);
+				else
+					label_pos += Point<int16_t>(0, 0);
 
-				name_index++;
+				skinColorName.draw(label_pos);
 
-				hairStyleName.draw(getNamePos(name_index));
+				label_pos.shift_y(18);
 
-				name_index++;
+				faceName.draw(label_pos);
+
+				label_pos.shift_y(18);
+
+				hairStyleName.draw(label_pos);
+
+				label_pos.shift_y(18);
 
 				if (hairColorEnabled)
-					name_index++;
+					label_pos.shift_y(18);
 
-				skinColorName.draw(getNamePos(name_index));
+				topName.draw(label_pos);
 
-				name_index++;
-
-				topName.draw(getNamePos(name_index));
-
-				name_index++;
+				label_pos.shift_y(18);
 
 				if (bottomEnabled)
 				{
-					bottomName.draw(getNamePos(name_index));
+					bottomName.draw(label_pos);
 
-					name_index++;
+					label_pos.shift_y(18);
 				}
 
 				if (capeEnabled)
 				{
-					capeName.draw(getNamePos(name_index));
+					capeName.draw(label_pos);
 
-					name_index++;
+					label_pos.shift_y(18);
 				}
 
-				shoeName.draw(getNamePos(name_index));
+				shoeName.draw(label_pos);
 
-				name_index++;
+				label_pos.shift_y(18);
 
-				weaponName.draw(getNamePos(name_index));
-
-				newCharLook.draw(Point<int16_t>(394, 339), inter);
+				weaponName.draw(label_pos);
+				newCharLook.draw(newAvatarPos, inter);
 
 				UIElement::draw_buttons(inter);
 			}
@@ -289,10 +429,18 @@ namespace ms
 				{
 					UIElement::draw_sprites(inter);
 
-					nameboard.draw(getNameboardPos());
+					nameboard.draw(charNameOrigin);
 
-					newCharName.draw(position + getTextfieldPos(), Point<int16_t>(1, -1));
-					newCharLook.draw(Point<int16_t>(394, 339), inter);
+					if (className == "adventurer")
+						newCharName.draw(position + Point<int16_t>(2, -2), Point<int16_t>(1, -1));
+					else if (className == "cygnusKnight")
+						newCharName.draw(position + Point<int16_t>(6, -3), Point<int16_t>(1, -1));
+					else if (className == "aran")
+						newCharName.draw(position + Point<int16_t>(6, -2), Point<int16_t>(1, -1));
+					else
+						newCharName.draw(position);
+
+					newCharLook.draw(newAvatarPos, inter);
 
 					UIElement::draw_buttons(inter);
 				}
@@ -300,7 +448,7 @@ namespace ms
 				{
 					UIElement::draw_sprites(inter);
 
-					nameboard.draw(getNameboardPos());
+					nameboard.draw(charNameOrigin);
 
 					UIElement::draw_buttons(inter);
 				}
@@ -308,9 +456,9 @@ namespace ms
 		}
 
 		// TOOD: Get number of character able to create
-		createLimitNum.draw("10", 8, position - createLimitPos + Point<int16_t>(14, 0));
+		createLimitNum.draw("10", 5, position - createLimitPos + Point<int16_t>(7, 0));
 
-		version.draw(position + Point<int16_t>(707, 4));
+		version.draw(position + version_pos - Point<int16_t>(0, 5));
 	}
 
 	void UICommonCreation::update()
@@ -388,7 +536,7 @@ namespace ms
 				else
 					hair = hairStyle;
 
-				int64_t skin = skinColors[female][skinColorIndex];
+				int64_t skin = skinColors[skinColorIndex];
 				int64_t top = tops[female][topIndex];
 
 				int64_t bottom = 0;
@@ -405,11 +553,11 @@ namespace ms
 				int64_t shoe = shoes[female][shoeIndex];
 				int64_t weapon = weapons[female][weaponIndex];
 
-				if (classType == "000")
+				if (className == "adventurer")
 					job = 1;
-				else if (classType == "2000")
+				else if (className == "aran")
 					job = 2;
-				else if (classType == "1000")
+				else if (className == "cygnusKnight")
 					job = 0;
 
 				if (job >= 0)
@@ -454,6 +602,20 @@ namespace ms
 			Sound(Sound::Name::SCROLLUP).play();
 
 			UI::get().remove(UIElement::Type::CLASSCREATION);
+			UI::get().remove(UIElement::Type::RACESELECT);
+			UI::get().remove(UIElement::Type::CHARSELECT);
+
+			if (auto worldselect = UI::get().get_element<UIWorldSelect>())
+				worldselect->makeactive();
+
+			return Button::State::NORMAL;
+		}
+		else if (buttonid == Buttons::BtPreview)
+		{
+			Sound(Sound::Name::SCROLLUP).play();
+
+			UI::get().remove(UIElement::Type::CLASSCREATION);
+
 			UI::get().emplace<UIRaceSelect>();
 
 			return Button::State::NORMAL;
@@ -479,8 +641,8 @@ namespace ms
 
 					disable_char_look();
 
-					buttons[Buttons::BtYes]->set_position(getBtYesPos(2));
-					buttons[Buttons::BtNo]->set_position(getBtNoPos(2));
+					buttons[Buttons::BtYes]->set_position(genderOrigin + Point<int16_t>(BtYesPos["name"]));
+					buttons[Buttons::BtNo]->set_position(genderOrigin + Point<int16_t>(BtNoPos["name"]));
 
 					newCharNameDisabled = false;
 
@@ -575,18 +737,40 @@ namespace ms
 
 					disable_char_look();
 
-					buttons[Buttons::BtYes]->set_position(getBtYesPos(0));
-					buttons[Buttons::BtNo]->set_position(getBtNoPos(0));
+					buttons[Buttons::BtYes]->set_position(genderOrigin + Point<int16_t>(BtYesPos["gender"]));
+					buttons[Buttons::BtNo]->set_position(genderOrigin + Point<int16_t>(BtNoPos["gender"]));
 
 					return Button::State::NORMAL;
 				}
 				else
 				{
-					button_pressed(Buttons::BtStart);
+					button_pressed(Buttons::BtPreview);
 
 					return Button::State::NORMAL;
 				}
 			}
+		}
+		else if (buttonid == Buttons::BtSkinLeft)
+		{
+			skinColorIndex = (skinColorIndex > 0) ? skinColorIndex - 1 : skinColors.size() - 1;
+
+			newCharLook.set_body(skinColors[skinColorIndex]);
+			skinColorName.change_text(newCharLook.get_body()->get_name());
+
+			check_names();
+
+			return Button::State::NORMAL;
+		}
+		else if (buttonid == Buttons::BtSkinRight)
+		{
+			skinColorIndex = (skinColorIndex < skinColors.size() - 1) ? skinColorIndex + 1 : 0;
+
+			newCharLook.set_body(skinColors[skinColorIndex]);
+			skinColorName.change_text(newCharLook.get_body()->get_name());
+
+			check_names();
+
+			return Button::State::NORMAL;
 		}
 		else if (buttonid == Buttons::BtFaceLeft)
 		{
@@ -633,28 +817,6 @@ namespace ms
 
 			newCharLook.set_hair(hairColors_[hairColorIndex]);
 			hairStyleName.change_text(newCharLook.get_hair()->get_name());
-
-			check_names();
-
-			return Button::State::NORMAL;
-		}
-		else if (buttonid == Buttons::BtSkinLeft)
-		{
-			skinColorIndex = (skinColorIndex > 0) ? skinColorIndex - 1 : skinColors[female].size() - 1;
-
-			newCharLook.set_body(skinColors[female][skinColorIndex]);
-			skinColorName.change_text(newCharLook.get_body()->get_name());
-
-			check_names();
-
-			return Button::State::NORMAL;
-		}
-		else if (buttonid == Buttons::BtSkinRight)
-		{
-			skinColorIndex = (skinColorIndex < skinColors[female].size() - 1) ? skinColorIndex + 1 : 0;
-
-			newCharLook.set_body(skinColors[female][skinColorIndex]);
-			skinColorName.change_text(newCharLook.get_body()->get_name());
 
 			check_names();
 
@@ -814,20 +976,21 @@ namespace ms
 
 	void UICommonCreation::randomize_look()
 	{
+		skinColorIndex = randomizer.next_int(skinColors.size());
 		faceIndex = randomizer.next_int(faces[female].size());
 		hairStyleIndex = randomizer.next_int(hairStyles[female].size());
 
 		int64_t hairStyle = hairStyles[female][hairStyleIndex];
-		auto hairColors_ = hairColors[female][hairStyle];
+		auto& hairColors_ = hairColors[female][hairStyle];
 		hairColorIndex = randomizer.next_int(hairColors_.size());
 
-		skinColorIndex = randomizer.next_int(skinColors[female].size());
 		topIndex = randomizer.next_int(tops[female].size());
 		bottomIndex = randomizer.next_int(bottoms[female].size());
 		capeIndex = randomizer.next_int(capes[female].size());
 		shoeIndex = randomizer.next_int(shoes[female].size());
 		weaponIndex = randomizer.next_int(weapons[female].size());
 
+		newCharLook.set_body(skinColors[skinColorIndex]);
 		newCharLook.set_face(faces[female][faceIndex]);
 
 		if (hairColors_.size() > 0)
@@ -835,7 +998,6 @@ namespace ms
 		else
 			newCharLook.set_hair(hairStyle);
 
-		newCharLook.set_body(skinColors[female][skinColorIndex]);
 		newCharLook.add_equip(tops[female][topIndex]);
 
 		if (bottoms[female].size() > 0)
@@ -847,9 +1009,9 @@ namespace ms
 		newCharLook.add_equip(shoes[female][shoeIndex]);
 		newCharLook.add_equip(weapons[female][weaponIndex]);
 
+		skinColorName.change_text(newCharLook.get_body()->get_name());
 		faceName.change_text(newCharLook.get_face()->get_name());
 		hairStyleName.change_text(newCharLook.get_hair()->get_name());
-		skinColorName.change_text(newCharLook.get_body()->get_name());
 		topName.change_text(get_equipname(EquipSlot::Id::TOP));
 		bottomName.change_text(get_equipname(EquipSlot::Id::BOTTOM));
 		capeName.change_text(get_equipname(EquipSlot::Id::CAPE));
@@ -863,7 +1025,7 @@ namespace ms
 	{
 		size_t color_count = 0, bottom_count = 0, cape_count = 0;
 
-		nl::node MakeCharInfo = nl::nx::etc["MakeCharInfo.img"][classType];
+		nl::node MakeCharInfo = nl::nx::Etc["MakeCharInfo.img"][classType];
 
 		for (nl::node gender_node : MakeCharInfo)
 		{
@@ -876,6 +1038,11 @@ namespace ms
 				if (!choosableGender)
 					button_pressed(Buttons::BtYes);
 
+				nl::node skins = gender_node["WZ2_skin"];
+
+				for (nl::node skin : skins)
+					skinColors.push_back(skin["id"].get_integer() - 12000);
+
 				continue;
 			}
 
@@ -886,10 +1053,11 @@ namespace ms
 				for (nl::node id_node : gender_node[type])
 				{
 					std::string id_node_name = id_node.name();
-					int64_t id_node_value = id_node.get_integer();
 
-					if (id_node_name == "color")
+					if (id_node_name == "color" || id_node_name == "name")
 						continue;
+
+					int64_t id_node_value = id_node.get_integer();
 
 					switch (type)
 					{
@@ -912,11 +1080,6 @@ namespace ms
 							break;
 						}
 						case 2:
-						{
-							skinColors[f].push_back(id_node_value);
-							break;
-						}
-						case 3:
 						{
 							tops[f].push_back(id_node_value);
 							break;
@@ -967,8 +1130,8 @@ namespace ms
 
 	void UICommonCreation::enable_char_look()
 	{
-		buttons[Buttons::BtYes]->set_position(getBtYesPos(1));
-		buttons[Buttons::BtNo]->set_position(getBtNoPos(1));
+		buttons[Buttons::BtYes]->set_position(genderOrigin + Point<int16_t>(BtYesPos["avatar"]));
+		buttons[Buttons::BtNo]->set_position(genderOrigin + Point<int16_t>(BtNoPos["avatar"]));
 
 		if (faces[female].size() > 1)
 		{
@@ -982,7 +1145,7 @@ namespace ms
 			buttons[Buttons::BtHairRight]->set_active(true);
 		}
 
-		if (skinColors[female].size() > 1)
+		if (skinColors.size() > 1)
 		{
 			buttons[Buttons::BtSkinLeft]->set_active(true);
 			buttons[Buttons::BtSkinRight]->set_active(true);
@@ -1059,14 +1222,14 @@ namespace ms
 	{
 		int16_t max_width = getMaxWidth();
 
-		string_format::format_with_ellipsis(faceName, max_width, 3, true);
-		string_format::format_with_ellipsis(hairStyleName, max_width, 3, true);
-		string_format::format_with_ellipsis(skinColorName, max_width, 3, true);
-		string_format::format_with_ellipsis(topName, max_width, 3, true);
-		string_format::format_with_ellipsis(bottomName, max_width, 3, true);
-		string_format::format_with_ellipsis(capeName, max_width, 3, true);
-		string_format::format_with_ellipsis(shoeName, max_width, 3, true);
-		string_format::format_with_ellipsis(weaponName, max_width, 3, true);
+		string_format::format_with_ellipsis(skinColorName, max_width, 3, false);
+		string_format::format_with_ellipsis(faceName, max_width, 3, false);
+		string_format::format_with_ellipsis(hairStyleName, max_width, 3, false);
+		string_format::format_with_ellipsis(topName, max_width, 3, false);
+		string_format::format_with_ellipsis(bottomName, max_width, 3, false);
+		string_format::format_with_ellipsis(capeName, max_width, 3, false);
+		string_format::format_with_ellipsis(shoeName, max_width, 3, false);
+		string_format::format_with_ellipsis(weaponName, max_width, 3, false);
 	}
 
 	const std::string& UICommonCreation::get_equipname(EquipSlot::Id slot) const
@@ -1085,11 +1248,11 @@ namespace ms
 
 	Point<int16_t> UICommonCreation::getGenderTopPos()
 	{
-		if (classType == "000")
+		if (className == "adventurer")
 			return Point<int16_t>(486, 95);
-		else if (classType == "2000")
+		else if (className == "aran")
 			return Point<int16_t>(491, 168);
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 			return Point<int16_t>(423, 104);
 		else
 			return Point<int16_t>(0, 0);
@@ -1097,11 +1260,11 @@ namespace ms
 
 	Point<int16_t> UICommonCreation::getBoardMidPos()
 	{
-		if (classType == "000")
+		if (className == "adventurer")
 			return Point<int16_t>(486, 209);
-		else if (classType == "2000")
+		else if (className == "aran")
 			return Point<int16_t>(491, 220);
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 			return Point<int16_t>(423, 222);
 		else
 			return Point<int16_t>(0, 0);
@@ -1109,11 +1272,11 @@ namespace ms
 
 	Point<int16_t> UICommonCreation::getBoardBottomPos()
 	{
-		if (classType == "000")
+		if (className == "adventurer")
 			return Point<int16_t>(486, 329);
-		else if (classType == "2000")
+		else if (className == "aran")
 			return Point<int16_t>(491, 313);
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 			return Point<int16_t>(423, 348);
 		else
 			return Point<int16_t>(0, 0);
@@ -1121,18 +1284,18 @@ namespace ms
 
 	Point<int16_t> UICommonCreation::getAvatarSelPos(size_t index)
 	{
-		if (classType == "000")
+		if (className == "adventurer")
 		{
 			if (index >= 2)
 				index++;
 
 			return Point<int16_t>(497, 197 + index * 18);
 		}
-		else if (classType == "2000")
+		else if (className == "aran")
 		{
 			return Point<int16_t>(504, 187 + index * 18);
 		}
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 		{
 			int16_t y = 0;
 
@@ -1149,35 +1312,35 @@ namespace ms
 
 	Point<int16_t> UICommonCreation::getGenderSelectMalePos()
 	{
-		if (classType == "000")
-			return Point<int16_t>(487, 109);
-		else if (classType == "2000")
-			return Point<int16_t>(439, 106);
-		else if (classType == "1000")
-			return Point<int16_t>(425, 107);
-		else
-			return Point<int16_t>(0, 0);
+		Point<int16_t> genderSelectAdj = Point<int16_t>(-33, -13);
+
+		if (className == "adventurer")
+			genderSelectAdj = Point<int16_t>(0, -4);
+		else if (className == "aran")
+			genderSelectAdj = Point<int16_t>(-33, -13);
+		else if (className == "cygnusKnight")
+			genderSelectAdj = Point<int16_t>(2, 3);
+
+		return genderOrigin + genderSelectAdj;
 	}
 
 	Point<int16_t> UICommonCreation::getGenderSelectFemalePos()
 	{
-		if (classType == "000")
-			return Point<int16_t>(485, 109);
-		else if (classType == "2000")
-			return Point<int16_t>(437, 106);
-		else if (classType == "1000")
-			return Point<int16_t>(423, 107);
+		Point<int16_t> genderSelectMalePos = getGenderSelectMalePos();
+
+		if (className == "adventurer")
+			return genderSelectMalePos;
 		else
-			return Point<int16_t>(0, 0);
+			return genderSelectMalePos - Point<int16_t>(2, 0);
 	}
 
 	int16_t UICommonCreation::getCharLookY()
 	{
-		if (classType == "000")
+		if (className == "adventurer")
 			return 198;
-		else if (classType == "2000")
+		else if (className == "aran")
 			return 187;
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 			return 81;
 		else
 			return 0;
@@ -1187,11 +1350,11 @@ namespace ms
 	{
 		int16_t charLookY = getCharLookY();
 
-		if (classType == "000")
+		if (className == "adventurer")
 			return Point<int16_t>(552, charLookY);
-		else if (classType == "2000")
+		else if (className == "aran")
 			return Point<int16_t>(562, charLookY);
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 			return Point<int16_t>(418, charLookY);
 		else
 			return Point<int16_t>(0, 0);
@@ -1201,11 +1364,11 @@ namespace ms
 	{
 		int16_t charLookY = getCharLookY();
 
-		if (classType == "000")
+		if (className == "adventurer")
 			return Point<int16_t>(684, charLookY);
-		else if (classType == "2000")
+		else if (className == "aran")
 			return Point<int16_t>(699, charLookY);
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 			return Point<int16_t>(415, charLookY);
 		else
 			return Point<int16_t>(0, 0);
@@ -1213,7 +1376,7 @@ namespace ms
 
 	Point<int16_t> UICommonCreation::getBtYesPos(uint8_t step)
 	{
-		if (classType == "000")
+		if (className == "adventurer")
 		{
 			switch (step)
 			{
@@ -1225,7 +1388,7 @@ namespace ms
 					return Point<int16_t>(513, 273);
 			}
 		}
-		else if (classType == "2000")
+		else if (className == "aran")
 		{
 			switch (step)
 			{
@@ -1237,7 +1400,7 @@ namespace ms
 					return Point<int16_t>(523, 243);
 			}
 		}
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 		{
 			switch (step)
 			{
@@ -1255,7 +1418,7 @@ namespace ms
 
 	Point<int16_t> UICommonCreation::getBtNoPos(uint8_t step)
 	{
-		if (classType == "000")
+		if (className == "adventurer")
 		{
 			switch (step)
 			{
@@ -1267,7 +1430,7 @@ namespace ms
 					return Point<int16_t>(587, 273);
 			}
 		}
-		else if (classType == "2000")
+		else if (className == "aran")
 		{
 			switch (step)
 			{
@@ -1279,7 +1442,7 @@ namespace ms
 					return Point<int16_t>(597, 243);
 			}
 		}
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 		{
 			switch (step)
 			{
@@ -1297,37 +1460,37 @@ namespace ms
 
 	Point<int16_t> UICommonCreation::getHairSelectPos(size_t index)
 	{
-		if (classType == "000" || classType == "2000")
-			return Point<int16_t>(549 + (index * 15), 234);
-		else if (classType == "1000")
-			return Point<int16_t>(553 + (index * 15), 238);
+		if (className == "adventurer")
+			return Point<int16_t>(677 + (index * 15), 339);
+		else if (className == "cygnusKnight")
+			return Point<int16_t>(674 + (index * 15), 349);
 		else
 			return Point<int16_t>(0, 0);
 	}
 
 	Color::Name UICommonCreation::getNewCharNameColor()
 	{
-		if (classType == "1000")
-			return Color::Name::BLACK;
-		else
+		if (className == "aran")
 			return Color::Name::WHITE;
+		else
+			return Color::Name::BLACK;
 	}
 
 	Rectangle<int16_t> UICommonCreation::getNewCharNameRect()
 	{
-		if (classType == "000")
+		if (className == "adventurer")
 		{
 			Point<int16_t> pos = Point<int16_t>(514, 198);
 
 			return Rectangle<int16_t>(pos, pos + Point<int16_t>(148, 24));
 		}
-		else if (classType == "2000")
+		else if (className == "aran")
 		{
 			Point<int16_t> pos = Point<int16_t>(522, 197);
 
 			return Rectangle<int16_t>(pos, pos + Point<int16_t>(146, 25));
 		}
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 		{
 			Point<int16_t> pos = Point<int16_t>(533, 213);
 
@@ -1341,9 +1504,9 @@ namespace ms
 
 	size_t UICommonCreation::getVerticalCount() const
 	{
-		if (classType == "000" || classType == "2000")
+		if (className == "adventurer" || className == "aran")
 			return 4;
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 			return 6;
 		else
 			return 0;
@@ -1351,9 +1514,9 @@ namespace ms
 
 	int16_t UICommonCreation::getVerticalAdj() const
 	{
-		if (classType == "000" || classType == "2000")
+		if (className == "adventurer" || className == "aran")
 			return 24;
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 			return 18;
 		else
 			return 0;
@@ -1364,18 +1527,18 @@ namespace ms
 		int16_t name_x = 0;
 		int16_t name_y = 0;
 
-		if (classType == "000")
+		if (className == "adventurer")
 			name_x = 626;
-		else if (classType == "2000")
+		else if (className == "aran")
 			name_x = 647;
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 			name_x = 618;
 
-		if (classType == "000")
+		if (className == "adventurer")
 			name_y = 196;
-		else if (classType == "2000")
+		else if (className == "aran")
 			name_y = 186;
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 			name_y = 203;
 
 		return Point<int16_t>(name_x, name_y + index * 18);
@@ -1383,11 +1546,11 @@ namespace ms
 
 	Point<int16_t> UICommonCreation::getNameboardPos() const
 	{
-		if (classType == "000")
+		if (className == "adventurer")
 			return Point<int16_t>(486, 95);
-		else if (classType == "2000")
+		else if (className == "aran")
 			return Point<int16_t>(489, 106);
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 			return Point<int16_t>(423, 104);
 		else
 			return Point<int16_t>(0, 0);
@@ -1395,11 +1558,11 @@ namespace ms
 
 	Point<int16_t> UICommonCreation::getTextfieldPos() const
 	{
-		if (classType == "000")
+		if (className == "adventurer")
 			return Point<int16_t>(8, -2);
-		else if (classType == "2000")
+		else if (className == "aran")
 			return Point<int16_t>(3, 0);
-		else if (classType == "1000")
+		else if (className == "cygnusKnight")
 			return Point<int16_t>(6, -3);
 		else
 			return Point<int16_t>(0, 0);
@@ -1407,8 +1570,12 @@ namespace ms
 
 	int16_t UICommonCreation::getMaxWidth() const
 	{
-		if (classType == "2000")
-			return 107;
+		if (className == "adventurer")
+			return 89;
+		else if (className == "aran")
+			return 94;
+		else if (className == "cygnusKnight")
+			return 97;
 		else
 			return 0;
 	}

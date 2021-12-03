@@ -31,8 +31,8 @@ namespace ms
 		/// Locate sources
 		std::string strid = string_format::extend_id(id, 7);
 		std::string jobid = strid.substr(0, 3);
-		nl::node src = nl::nx::skill[jobid + ".img"]["skill"][strid];
-		nl::node strsrc = nl::nx::string["Skill.img"][strid];
+		nl::node src = nl::nx::Skill[jobid + ".img"]["skill"][strid];
+		nl::node strsrc = nl::nx::String["Skill.img"][strid];
 
 		/// Load icons
 		icons = { src["icon"], src["iconDisabled"], src["iconMouseOver"] };

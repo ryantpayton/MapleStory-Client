@@ -58,7 +58,6 @@ namespace ms
 		Text textlabel;
 		Texture arrow;
 		Texture center;
-		Texture east;
 		Texture northeast;
 		Texture north;
 		Texture northwest;

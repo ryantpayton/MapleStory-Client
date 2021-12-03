@@ -30,29 +30,40 @@ namespace ms
 	namespace WzFiles
 	{
 		// Number of needed files
-		constexpr uint8_t NUM_FILES = 18;
+		constexpr uint8_t NUM_FILES = 29;
 
 		// Names of the needed game files
 		constexpr std::array<const char*, NUM_FILES> filenames =
 		{
-			"Character.wz",
-			"Effect.wz",
-			"Etc.wz",
-			"Item.wz",
-			"Map.wz",
-			"MapPretty.wz",	// From v167,
-			"MapLatest.wz",	// From latest,
-			"Map001.wz",	// From latest,
-			"Mob.wz",
-			"Morph.wz",
-			"Npc.wz",
-			"Quest.wz",
-			"Reactor.wz",
-			"Skill.wz",
-			"Sound.wz",
-			"String.wz",
-			"TamingMob.wz",
-			"UI.wz"			// From latest
+			"Base.nx",		// From latest
+			"Character.nx",	// From latest
+			"Effect.nx",	// From latest
+			"Etc.nx",		// From latest
+			"Item.nx",		// From latest
+			"Map.nx",		// v83
+			"MapLatest.nx", // From latest
+			"Map001.nx",	// From latest
+			"Map002.nx",	// From latest
+			"Map2.nx",		// From latest
+			"Mob.nx",		// From latest
+			"Mob001.nx",	// From latest
+			"Mob002.nx",	// From latest
+			"Mob2.nx",		// From latest
+			"Morph.nx",		// From latest
+			"Npc.nx",		// From latest
+			"Quest.nx",		// From latest
+			"Reactor.nx",	// From latest
+			"Skill.nx",		// From latest
+			"Skill001.nx",	// From latest
+			"Skill002.nx",	// From latest
+			"Skill003.nx",	// From latest
+			"Sound.nx",		// From latest
+			"Sound001.nx",	// From latest
+			"Sound002.nx",	// From latest
+			"Sound2.nx",	// From latest
+			"String.nx",	// From latest
+			"TamingMob.nx",	// From latest
+			"UI.nx"			// From latest
 		};
 
 		// Initialize WZ
@@ -182,7 +193,7 @@ namespace nl
 
 	namespace nx
 	{
-		static nl::node base, character, effect, etc, item, map, mapPretty, mapLatest, map001, mob, morph, npc, quest, reactor, skill, sound, string, tamingmob, ui;
+		static nl::node Base, Character, Effect, Etc, Item, Map, Map001, Map002, Map2, Mob, Mob001, Mob2, Morph, Npc, Quest, Reactor, Skill, Skill001, Skill002, Sound, Sound001, Sound2, String, TamingMob, UI;
 	}
 }
 #endif

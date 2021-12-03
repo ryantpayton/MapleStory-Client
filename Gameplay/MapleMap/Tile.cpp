@@ -25,8 +25,8 @@ namespace ms
 {
 	Tile::Tile(nl::node src, const std::string& ts)
 	{
-		nl::node dsrc = nl::nx::map["Tile"][ts][src["u"]][src["no"]];
-		texture = Texture(nl::nx::map["Tile"][ts][src["u"]][src["no"]]);
+		nl::node dsrc = nl::nx::Map["Tile"][ts][src["u"]][src["no"]];
+		texture = Texture(dsrc);
 		pos = Point<int16_t>(src["x"], src["y"]);
 		z = dsrc["z"];
 

@@ -35,8 +35,8 @@ namespace ms
 {
 	UIStatsInfo::UIStatsInfo(const CharStats& st) : UIDragElement<PosSTATS>(Point<int16_t>(212, 20)), stats(st)
 	{
-		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
-		nl::node Stat = nl::nx::ui["UIWindow4.img"]["Stat"];
+		nl::node close = nl::nx::UI["Basic.img"]["BtClose3"];
+		nl::node Stat = nl::nx::UI["UIWindow4.img"]["Stat"];
 		nl::node main = Stat["main"];
 		nl::node detail = Stat["detail"];
 		nl::node abilityTitle = detail["abilityTitle"];

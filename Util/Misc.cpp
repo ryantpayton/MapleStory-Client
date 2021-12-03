@@ -70,13 +70,16 @@ namespace ms
 
 					if (space != std::string::npos)
 						text = text.substr(0, space + 1);
+
+					if (text.back() == ' ')
+						text.pop_back();
 				}
 				else
 				{
 					text.pop_back();
 				}
 
-				input.change_text(text + ellipsis);
+				input.change_text(text + ' ' + ellipsis);
 			}
 		}
 
@@ -107,7 +110,7 @@ namespace ms
 			MapInfo get_map_info_by_id(int32_t mapid)
 			{
 				std::string map_category = get_map_category(mapid);
-				nl::node map_info = nl::nx::string["Map.img"][map_category][mapid];
+				nl::node map_info = nl::nx::String["Map.img"][map_category][mapid];
 
 				return {
 					map_info["mapDesc"],
@@ -177,10 +180,10 @@ namespace ms
 					if (life_type == "m")
 					{
 						// Mob
-						nl::node life_name = nl::nx::string["Mob.img"][life_id]["name"];
+						nl::node life_name = nl::nx::String["Mob.img"][life_id]["name"];
 
 						std::string life_id_str = string_format::extend_id(life_id, 7);
-						nl::node life_level = nl::nx::mob[life_id_str + ".img"]["info"]["level"];
+						nl::node life_level = nl::nx::Mob[life_id_str + ".img"]["info"]["level"];
 
 						if (life_name && life_level)
 							map_life[life_id] = { life_type, life_name + "(Lv. " + life_level + ")" };
@@ -188,7 +191,7 @@ namespace ms
 					else if (life_type == "n")
 					{
 						// NPC
-						if (nl::node life_name = nl::nx::string["Npc.img"][life_id]["name"])
+						if (nl::node life_name = nl::nx::String["Npc.img"][life_id]["name"])
 							map_life[life_id] = { life_type, life_name };
 					}
 				}
@@ -201,7 +204,7 @@ namespace ms
 				std::string prefix = std::to_string(mapid / 100000000);
 				std::string mapid_str = string_format::extend_id(mapid, 9);
 
-				return nl::nx::map["Map"]["Map" + prefix][mapid_str + ".img"];
+				return nl::nx::Map["Map"]["Map" + prefix][mapid_str + ".img"];
 			}
 		}
 	}

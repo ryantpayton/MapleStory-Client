@@ -27,7 +27,7 @@ namespace ms
 	{
 		std::string prefix = "0" + std::to_string(itemid / 10000);
 		std::string strid = "0" + std::to_string(itemid);
-		nl::node src = src = nl::nx::item["Consume"][prefix + ".img"][strid];
+		nl::node src = src = nl::nx::Item["Consume"][prefix + ".img"][strid];
 
 		bullet = src["bullet"];
 		watk = src["info"]["incPAD"];

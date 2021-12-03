@@ -85,14 +85,15 @@ namespace ms
 		enum Buttons : uint16_t
 		{
 			BtStart,
+			BtPreview,
 			BtYes,
 			BtNo,
+			BtSkinLeft,
+			BtSkinRight,
 			BtFaceLeft,
 			BtFaceRight,
 			BtHairLeft,
 			BtHairRight,
-			BtSkinLeft,
-			BtSkinRight,
 			BtTopLeft,
 			BtTopRight,
 			BtBottomLeft,
@@ -116,10 +117,29 @@ namespace ms
 			LENGTH
 		};
 
+		std::map<std::string, std::string> class_map =
+		{
+			{ "000",	"adventurer"	},
+			{ "1000",	"cygnusKnight"	},
+			{ "2000",	"aran"			}
+		};
+
 		Text version;
+		Point<int16_t> version_pos;
 		Texture nameboard;
 		std::vector<Sprite> sprites_char_look;
 		std::vector<Sprite> sprites_gender_select;
+
+		Point<int16_t> avatarOrigin;
+		Point<int16_t> charNameOrigin;
+		Point<int16_t> genderOrigin;
+		Point<int16_t> newAvatarPos;
+		int16_t vCanvasCount;
+		int16_t genderTopHeight;
+		int16_t boardMidHeight;
+
+		nl::node BtYesPos;
+		nl::node BtNoPos;
 
 		size_t hairSelectSize;
 		Randomizer randomizer;
@@ -131,11 +151,13 @@ namespace ms
 		bool newCharNameDisabled;
 		bool choosableGender;
 		std::string classType;
+		std::string className;
 
 		Charset createLimitNum;
 		Point<int16_t> createLimitPos;
 
 		CharLook newCharLook;
+		Point<int16_t> newCharNamePos;
 		Textfield newCharName;
 
 		size_t faceIndex;
@@ -152,7 +174,7 @@ namespace ms
 
 		size_t skinColorIndex;
 		Text skinColorName;
-		BoolPair<std::vector<int64_t>> skinColors;
+		std::vector<int64_t> skinColors;
 
 		size_t topIndex;
 		Text topName;

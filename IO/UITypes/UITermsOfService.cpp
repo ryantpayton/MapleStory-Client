@@ -33,7 +33,7 @@ namespace ms
 {
 	UITermsOfService::UITermsOfService(std::function<void()> oh) : okhandler(oh), offset(0), unit_rows(1)
 	{
-		nl::node Login = nl::nx::ui["Login.img"];
+		nl::node Login = nl::nx::UI["Login.img"];
 		nl::node TOS = Login["TOS"];
 
 		sprites.emplace_back(TOS, Point<int16_t>(399, 250));

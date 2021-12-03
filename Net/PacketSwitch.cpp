@@ -50,7 +50,6 @@ namespace ms
 		PING = 17,
 
 		/// Login 2
-		RECOMMENDED_WORLDS = 27,
 		CHECK_SPW_RESULT = 28,
 
 		/// Inventory 1
@@ -147,7 +146,6 @@ namespace ms
 		emplace<CHARNAME_RESPONSE, CharnameResponseHandler>();
 		emplace<ADD_NEWCHAR_ENTRY, AddNewCharEntryHandler>();
 		emplace<DELCHAR_RESPONSE, DeleteCharResponseHandler>();
-		emplace<RECOMMENDED_WORLDS, RecommendedWorldsHandler>();
 
 		// SetField handlers
 		emplace<SET_FIELD, SetFieldHandler>();

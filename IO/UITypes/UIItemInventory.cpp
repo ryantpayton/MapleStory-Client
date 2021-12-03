@@ -37,7 +37,7 @@ namespace ms
 {
 	UIItemInventory::UIItemInventory(const Inventory& invent) : UIDragElement<PosINV>(), inventory(invent), ignore_tooltip(false), tab(InventoryType::Id::EQUIP), sort_enabled(false)
 	{
-		nl::node Item = nl::nx::ui["UIWindow2.img"]["Item"];
+		nl::node Item = nl::nx::UI["UIWindow2.img"]["Item"];
 
 		backgrnd = Item["productionBackgrnd"];
 		backgrnd2 = Item["productionBackgrnd2"];
@@ -61,7 +61,7 @@ namespace ms
 		nl::node taben = Tab["enabled"];
 		nl::node tabdis = Tab["disabled"];
 
-		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
+		nl::node close = nl::nx::UI["Basic.img"]["BtClose3"];
 		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close);
 
 		buttons[Buttons::BT_TAB_EQUIP] = std::make_unique<TwoSpriteButton>(tabdis["0"], taben["0"]);
@@ -165,7 +165,7 @@ namespace ms
 			maplepointslabel.draw(maplepointslabel_pos);
 		}
 
-		auto range = slotrange.at(tab);
+		auto& range = slotrange.at(tab);
 
 		size_t numslots = inventory.get_slotmax(tab);
 		size_t firstslot = full_enabled ? 1 : range.first;
@@ -686,7 +686,7 @@ namespace ms
 
 	bool UIItemInventory::is_not_visible(int16_t slot) const
 	{
-		auto range = slotrange.at(tab);
+		auto& range = slotrange.at(tab);
 
 		if (full_enabled)
 			return slot < 1 || slot > 24;

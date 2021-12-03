@@ -28,8 +28,8 @@ namespace ms
 	Body::Body(int32_t skin, const BodyDrawInfo& drawinfo)
 	{
 		std::string strid = string_format::extend_id(skin, 2);
-		nl::node bodynode = nl::nx::character["000020" + strid + ".img"];
-		nl::node headnode = nl::nx::character["000120" + strid + ".img"];
+		nl::node bodynode = nl::nx::Character["000020" + strid + ".img"];
+		nl::node headnode = nl::nx::Character["000120" + strid + ".img"];
 
 		for (auto iter : Stance::names)
 		{
@@ -75,12 +75,18 @@ namespace ms
 					}
 				}
 
-				if (nl::node headsfnode = headnode[stancename][frame]["head"])
+				for (nl::node partnode : headnode[stancename][frame])
 				{
+					std::string part = partnode.name();
+					Body::Layer layer = layer_by_name(part);
+
+					if (layer == Body::Layer::NONE)
+						continue;
+
 					Point<int16_t> shift = drawinfo.get_head_position(stance, frame);
 
-					stances[stance][Body::Layer::HEAD]
-						.emplace(frame, headsfnode)
+					stances[stance][layer]
+						.emplace(frame, partnode)
 						.first->second.shift(shift);
 				}
 			}
@@ -91,36 +97,32 @@ namespace ms
 		constexpr char* skintypes[NUM_SKINTYPES] =
 		{
 			"Light",
-			"Tanned",
+			"Tan",
 			"Dark",
 			"Pale",
-#pragma region TODO: Check these names
-			"Blue",
+			"Ashen",
 			"Green",
-			"", "", "",
-			"Grey",
-			"Pink",
-#pragma endregion
+			"",
+			"",
+			"",
+			"Ghostly",
+			"Pale Pink",
 			"Clay",
-			"Elf"
+			"Alabaster"
 		};
 
 		if (skin < NUM_SKINTYPES)
-		{
 			name = skintypes[skin];
 
-			if (name == "")
-				std::cout << "Unknown skin [" << skin << "].";
-		}
-		else
+		if (name == "")
 		{
-			name = "";
+			std::cout << "Skin [" << skin << "] is using the default value.";
 
-			std::cout << "Unknown skin [" << skin << "].";
+			name = nl::nx::String["Eqp.img"]["Eqp"]["Skin"][skin]["name"];
 		}
 	}
 
-	void Body::draw(Stance::Id stance, Layer layer, uint8_t frame, const DrawArgument& args) const
+	void Body::draw(Layer layer, Stance::Id stance, uint8_t frame, const DrawArgument& args) const
 	{
 		auto frameit = stances[stance][layer].find(frame);
 
@@ -162,6 +164,10 @@ namespace ms
 		{ "handBelowWeapon",			Body::Layer::HAND_BELOW_WEAPON			},
 		{ "handOverHair",				Body::Layer::HAND_OVER_HAIR				},
 		{ "handOverWeapon",				Body::Layer::HAND_OVER_WEAPON			},
-		{ "head",						Body::Layer::HEAD }
+		{ "ear",						Body::Layer::EAR						},
+		{ "head",						Body::Layer::HEAD						},
+		{ "highlefEar",					Body::Layer::HIGH_LEF_EAR				},
+		{ "humanEar",					Body::Layer::HUMAN_EAR					},
+		{ "lefEar",						Body::Layer::LEF_EAR					}
 	};
 }

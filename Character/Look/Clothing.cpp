@@ -73,35 +73,35 @@ namespace ms
 
 		std::string strid = "0" + std::to_string(itemid);
 		std::string category = equipdata.get_itemdata().get_category();
-		nl::node src = nl::nx::character[category][strid + ".img"];
+		nl::node src = nl::nx::Character[category][strid + ".img"];
 		nl::node info = src["info"];
 
 		vslot = info["vslot"];
 
 		switch (int32_t standno = info["stand"])
 		{
-		case 1:
-			stand = Stance::Id::STAND1;
-			break;
-		case 2:
-			stand = Stance::Id::STAND2;
-			break;
-		default:
-			stand = twohanded ? Stance::Id::STAND2 : Stance::Id::STAND1;
-			break;
+			case 1:
+				stand = Stance::Id::STAND1;
+				break;
+			case 2:
+				stand = Stance::Id::STAND2;
+				break;
+			default:
+				stand = twohanded ? Stance::Id::STAND2 : Stance::Id::STAND1;
+				break;
 		}
 
 		switch (int32_t walkno = info["walk"])
 		{
-		case 1:
-			walk = Stance::Id::WALK1;
-			break;
-		case 2:
-			walk = Stance::Id::WALK2;
-			break;
-		default:
-			walk = twohanded ? Stance::Id::WALK2 : Stance::Id::WALK1;
-			break;
+			case 1:
+				walk = Stance::Id::WALK1;
+				break;
+			case 2:
+				walk = Stance::Id::WALK2;
+				break;
+			default:
+				walk = twohanded ? Stance::Id::WALK2 : Stance::Id::WALK1;
+				break;
 		}
 
 		for (auto iter : Stance::names)
@@ -155,32 +155,40 @@ namespace ms
 
 					switch (eqslot)
 					{
-					case EquipSlot::Id::FACE:
-						shift -= parentpos;
-						break;
-					case EquipSlot::Id::SHOES:
-					case EquipSlot::Id::GLOVES:
-					case EquipSlot::Id::TOP:
-					case EquipSlot::Id::BOTTOM:
-					case EquipSlot::Id::CAPE:
-						shift = drawinfo.get_body_position(stance, frame) - parentpos;
-						break;
-					case EquipSlot::Id::HAT:
-					case EquipSlot::Id::EARACC:
-					case EquipSlot::Id::EYEACC:
-						shift = drawinfo.getfacepos(stance, frame) - parentpos;
-						break;
-					case EquipSlot::Id::SHIELD:
-					case EquipSlot::Id::WEAPON:
-						if (parent == "handMove")
-							shift += drawinfo.get_hand_position(stance, frame);
-						else if (parent == "hand")
-							shift += drawinfo.get_arm_position(stance, frame);
-						else if (parent == "navel")
-							shift += drawinfo.get_body_position(stance, frame);
+						case EquipSlot::Id::FACE:
+						{
+							shift -= parentpos;
+							break;
+						}
+						case EquipSlot::Id::SHOES:
+						case EquipSlot::Id::GLOVES:
+						case EquipSlot::Id::TOP:
+						case EquipSlot::Id::BOTTOM:
+						case EquipSlot::Id::CAPE:
+						{
+							shift = drawinfo.get_body_position(stance, frame) - parentpos;
+							break;
+						}
+						case EquipSlot::Id::HAT:
+						case EquipSlot::Id::EARACC:
+						case EquipSlot::Id::EYEACC:
+						{
+							shift = drawinfo.getfacepos(stance, frame) - parentpos;
+							break;
+						}
+						case EquipSlot::Id::SHIELD:
+						case EquipSlot::Id::WEAPON:
+						{
+							if (parent == "handMove")
+								shift += drawinfo.get_hand_position(stance, frame);
+							else if (parent == "hand")
+								shift += drawinfo.get_arm_position(stance, frame);
+							else if (parent == "navel")
+								shift += drawinfo.get_body_position(stance, frame);
 
-						shift -= parentpos;
-						break;
+							shift -= parentpos;
+							break;
+						}
 					}
 
 					stances[stance][z].emplace(frame, partnode)->second.shift(shift);
@@ -200,7 +208,7 @@ namespace ms
 	{
 		auto range = stances[stance][layer].equal_range(frame);
 
-		for (auto iter = range.first; iter != range.second; ++iter)
+		for (auto& iter = range.first; iter != range.second; ++iter)
 			iter->second.draw(args);
 	}
 

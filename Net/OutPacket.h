@@ -38,6 +38,7 @@ namespace ms
 		{
 			/// Login
 			LOGIN = 1,
+			LOGIN_EMAIL = 3,
 			CHARLIST_REQUEST = 5,
 			SERVERSTATUS_REQUEST = 6,
 			ACCEPT_TOS = 7,

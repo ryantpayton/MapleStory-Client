@@ -135,7 +135,7 @@ namespace ms
 
 	void MapPortals::init()
 	{
-		nl::node src = nl::nx::map["MapHelper.img"]["portal"]["game"];
+		nl::node src = nl::nx::Map["MapHelper.img"]["portal"]["game"];
 
 		animations[Portal::HIDDEN] = src["ph"]["default"]["portalContinue"];
 		animations[Portal::REGULAR] = src["pv"];

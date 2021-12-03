@@ -83,18 +83,6 @@ namespace ms
 		return { name, event_message, channelload, channelload_size, flag, wid };
 	}
 
-	RecommendedWorld LoginParser::parse_recommended_world(InPacket& recv)
-	{
-		int32_t wid = recv.read_int();
-
-		if (wid == -1)
-			return { {}, wid };
-
-		std::string message = recv.read_string();
-
-		return { message, wid };
-	}
-
 	CharEntry LoginParser::parse_charentry(InPacket& recv)
 	{
 		int32_t cid = recv.read_int();

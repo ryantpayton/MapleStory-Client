@@ -38,13 +38,17 @@ namespace ms
 			HAND_BELOW_WEAPON,
 			HAND_OVER_HAIR,
 			HAND_OVER_WEAPON,
+			EAR,
 			HEAD,
+			HIGH_LEF_EAR,
+			HUMAN_EAR,
+			LEF_EAR,
 			NUM_LAYERS
 		};
 
 		Body(int32_t skin, const BodyDrawInfo& drawinfo);
 
-		void draw(Stance::Id stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
+		void draw(Layer layer, Stance::Id stance, uint8_t frame, const DrawArgument& args) const;
 
 		const std::string& get_name() const;
 

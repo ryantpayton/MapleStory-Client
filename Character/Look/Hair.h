@@ -42,7 +42,7 @@ namespace ms
 
 		Hair(int32_t hairid, const BodyDrawInfo& drawinfo);
 
-		void draw(Stance::Id stance, Layer layer, uint8_t frame, const DrawArgument& args) const;
+		void draw(Layer layer, Stance::Id stance, uint8_t frame, const DrawArgument& args) const;
 
 		const std::string& get_name() const;
 		const std::string& getcolor() const;

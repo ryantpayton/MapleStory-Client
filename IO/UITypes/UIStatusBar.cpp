@@ -65,7 +65,7 @@ namespace ms
 		if (VWIDTH == 800)
 			stat += "800";
 
-		nl::node mainBar = nl::nx::ui["StatusBar3.img"]["mainBar"];
+		nl::node mainBar = nl::nx::UI["StatusBar3.img"]["mainBar"];
 		nl::node status = mainBar[stat];
 		nl::node EXPBar = mainBar["EXPBar"];
 		nl::node EXPBarRes = EXPBar[VWIDTH];
@@ -498,7 +498,7 @@ namespace ms
 	{
 		UIElement::update();
 
-		for each (auto sprite in hpmp_sprites)
+		for (Sprite sprite : hpmp_sprites)
 			sprite.update();
 
 		expbar.update(getexppercent());

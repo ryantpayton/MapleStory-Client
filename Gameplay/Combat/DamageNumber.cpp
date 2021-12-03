@@ -143,18 +143,22 @@ namespace ms
 
 			switch (type)
 			{
-			case DamageNumber::Type::CRITICAL:
-				if (first)
-					advance += 8;
-				else
-					advance += 4;
+				case DamageNumber::Type::CRITICAL:
+				{
+					if (first)
+						advance += 8;
+					else
+						advance += 4;
 
-				break;
-			default:
-				if (first)
-					advance += 2;
+					break;
+				}
+				default:
+				{
+					if (first)
+						advance += 2;
 
-				break;
+					break;
+				}
 			}
 
 			return advance;
@@ -187,12 +191,14 @@ namespace ms
 
 	void DamageNumber::init()
 	{
-		charsets[DamageNumber::Type::NORMAL].set(false, nl::nx::effect["BasicEff.img"]["NoRed1"], Charset::Alignment::LEFT);
-		charsets[DamageNumber::Type::NORMAL].set(true, nl::nx::effect["BasicEff.img"]["NoRed0"], Charset::Alignment::LEFT);
-		charsets[DamageNumber::Type::CRITICAL].set(false, nl::nx::effect["BasicEff.img"]["NoCri1"], Charset::Alignment::LEFT);
-		charsets[DamageNumber::Type::CRITICAL].set(true, nl::nx::effect["BasicEff.img"]["NoCri0"], Charset::Alignment::LEFT);
-		charsets[DamageNumber::Type::TOPLAYER].set(false, nl::nx::effect["BasicEff.img"]["NoViolet1"], Charset::Alignment::LEFT);
-		charsets[DamageNumber::Type::TOPLAYER].set(true, nl::nx::effect["BasicEff.img"]["NoViolet0"], Charset::Alignment::LEFT);
+		nl::node BasicEff = nl::nx::Effect["BasicEff.img"];
+
+		charsets[DamageNumber::Type::NORMAL].set(false, BasicEff["NoRed1"], Charset::Alignment::LEFT);
+		charsets[DamageNumber::Type::NORMAL].set(true, BasicEff["NoRed0"], Charset::Alignment::LEFT);
+		charsets[DamageNumber::Type::CRITICAL].set(false, BasicEff["NoCri1"], Charset::Alignment::LEFT);
+		charsets[DamageNumber::Type::CRITICAL].set(true, BasicEff["NoCri0"], Charset::Alignment::LEFT);
+		charsets[DamageNumber::Type::TOPLAYER].set(false, BasicEff["NoViolet1"], Charset::Alignment::LEFT);
+		charsets[DamageNumber::Type::TOPLAYER].set(true, BasicEff["NoViolet0"], Charset::Alignment::LEFT);
 	}
 
 	BoolPair<Charset> DamageNumber::charsets[NUM_TYPES];

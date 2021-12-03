@@ -27,7 +27,7 @@ namespace ms
 {
 	Hair::Hair(int32_t hairid, const BodyDrawInfo& drawinfo)
 	{
-		nl::node hairnode = nl::nx::character["Hair"]["000" + std::to_string(hairid) + ".img"];
+		nl::node hairnode = nl::nx::Character["Hair"]["000" + std::to_string(hairid) + ".img"];
 
 		for (auto stance_iter : Stance::names)
 		{
@@ -57,14 +57,48 @@ namespace ms
 					Point<int16_t> brow = layernode["map"]["brow"];
 					Point<int16_t> shift = drawinfo.gethairpos(stance, frame) - brow;
 
-					stances[stance][layer]
-						.emplace(frame, layernode)
-						.first->second.shift(shift);
+					if (Texture(layernode).is_valid())
+					{
+						stances[stance][layer]
+							.emplace(frame, layernode)
+							.first->second.shift(shift);
+
+						continue;
+					}
+
+					std::string defaultstancename = "default";
+
+					if (layername.substr(0, 4) == "back")
+						defaultstancename = "backDefault";
+
+					nl::node defaultnode = hairnode[defaultstancename][layername];
+
+					if (Texture(defaultnode).is_valid())
+					{
+						stances[stance][layer]
+							.emplace(frame, defaultnode)
+							.first->second.shift(shift);
+
+						continue;
+					}
+
+					nl::node defaultnode2 = defaultnode["0"];
+
+					if (Texture(defaultnode2).is_valid())
+					{
+						stances[stance][layer]
+							.emplace(frame, defaultnode2)
+							.first->second.shift(shift);
+
+						continue;
+					}
+
+					std::cout << "Invalid Hair::Layer texture\tName: [" << layername << "]\tLocation: [" << hairnode.name() << "][" << stancename << "][" << frame << "]" << std::endl;
 				}
 			}
 		}
 
-		name = nl::nx::string["Eqp.img"]["Eqp"]["Hair"][std::to_string(hairid)]["name"];
+		name = nl::nx::String["Eqp.img"]["Eqp"]["Hair"][std::to_string(hairid)]["name"];
 
 		constexpr size_t NUM_COLORS = 8;
 
@@ -77,7 +111,7 @@ namespace ms
 		color = (index < NUM_COLORS) ? haircolors[index] : "";
 	}
 
-	void Hair::draw(Stance::Id stance, Layer layer, uint8_t frame, const DrawArgument& args) const
+	void Hair::draw(Layer layer, Stance::Id stance, uint8_t frame, const DrawArgument& args) const
 	{
 		auto frameit = stances[stance][layer].find(frame);
 

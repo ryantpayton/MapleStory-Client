@@ -383,7 +383,7 @@ namespace ms
 	{
 		CharLook::init();
 
-		nl::node src = nl::nx::effect["BasicEff.img"];
+		nl::node src = nl::nx::Effect["BasicEff.img"];
 
 		for (auto iter : CharEffect::PATHS)
 			chareffects.emplace(iter.first, src.resolve(iter.second));

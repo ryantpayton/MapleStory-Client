@@ -31,7 +31,7 @@ namespace ms
 		{
 			origin = src["origin"];
 
-			if (src.root() == nl::nx::map001)
+			if (src.root() == nl::nx::Map001)
 			{
 				const std::string& _outlink = src["_outlink"];
 
@@ -46,7 +46,7 @@ namespace ms
 						if (first_part == "Map")
 						{
 							const std::string& path = _outlink.substr(first + 1);
-							nl::node foundOutlink = nl::nx::mapLatest.resolve(path);
+							nl::node foundOutlink = nl::nx::MapLatest.resolve(path);
 
 							if (foundOutlink)
 								src = foundOutlink;

@@ -345,9 +345,6 @@
     <ClCompile Include="IO\Components\TwoSpriteButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IO\UITypes\UIAranCreation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IO\UITypes\UIBuffList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -369,16 +366,10 @@
     <ClCompile Include="IO\UITypes\UIChatBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IO\UITypes\UICygnusCreation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IO\UITypes\UIEquipInventory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IO\UITypes\UIEvent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IO\UITypes\UIExplorerCreation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IO\UITypes\UIGender.cpp">

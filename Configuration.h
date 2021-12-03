@@ -118,8 +118,12 @@ namespace ms
 		void set_channelid(uint8_t id);
 		// Check if the current account is an admin account
 		bool get_admin();
-		// Check whether the current account is an admin account
+		// Set whether the current account is an admin account
 		void set_admin(bool value);
+		// Check if the Caps Lock key is enabled
+		bool get_caps_lock_enabled();
+		// Set if the Caps Lock key is enabled
+		void set_caps_lock_enabled(int value);
 
 		// Base class for an entry in the settings file
 		class Entry
@@ -225,7 +229,7 @@ namespace ms
 
 		const char* FILENAME = "Settings";
 		const char* TITLE = "MapleStory";
-		const char* VERSION = "221.1";
+		const char* VERSION = "228.3";
 		const char* LoginMusic = "BgmUI.img/Title";
 		const char* LoginMusicSEA = "BgmGL.img/OldMaple";
 		const char* LoginMusicNewtro = "BgmEvent2.img/Newtro_Login";
@@ -255,6 +259,7 @@ namespace ms
 		uint8_t worldid;
 		uint8_t channelid;
 		bool admin;
+		bool caps_lock_enabled;
 		TypeMap<Entry> settings;
 	};
 

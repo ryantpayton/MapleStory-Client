@@ -30,7 +30,7 @@ namespace ms
 	// TODO: Add blue dot next to name
 	ItemTooltip::ItemTooltip()
 	{
-		nl::node Item = nl::nx::ui["UIToolTip.img"]["Item"];
+		nl::node Item = nl::nx::UI["UIToolTip.img"]["Item"];
 		nl::node Frame = Item["Frame2"];
 		nl::node ItemIcon = Item["ItemIcon"];
 

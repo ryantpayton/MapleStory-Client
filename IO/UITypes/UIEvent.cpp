@@ -34,8 +34,8 @@ namespace ms
 		offset = 0;
 		event_count = 16;
 
-		nl::node main = nl::nx::ui["UIWindow2.img"]["EventList"]["main"];
-		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
+		nl::node main = nl::nx::UI["UIWindow2.img"]["EventList"]["main"];
+		nl::node close = nl::nx::UI["Basic.img"]["BtClose3"];
 
 		nl::node backgrnd = main["backgrnd"];
 		Point<int16_t> bg_dimensions = Texture(backgrnd).get_dimensions();
@@ -98,11 +98,11 @@ namespace ms
 			if (slot >= event_count)
 				break;
 
-			auto event_pos = Point<int16_t>(12, 87 + 125 * i);
+			Point<int16_t> event_pos = Point<int16_t>(12, 87 + 125 * i);
 
-			auto evnt = events[slot];
-			auto in_progress = evnt[1];
-			auto itm_reward = evnt[0];
+			BoolPair<bool> evnt = events[slot];
+			bool in_progress = evnt[1];
+			bool itm_reward = evnt[0];
 
 			if (itm_reward)
 			{
@@ -210,10 +210,10 @@ namespace ms
 	{
 		switch (buttonid)
 		{
-		case Buttons::CLOSE:
-			close();
-		default:
-			break;
+			case Buttons::CLOSE:
+				close();
+			default:
+				break;
 		}
 
 		return Button::State::NORMAL;
@@ -228,40 +228,40 @@ namespace ms
 	{
 		switch (id)
 		{
-		case 0:
-			return "LINE FRIENDS";
-		case 1:
-			return "LINE FRIENDS Coin Shop";
-		case 2:
-			return "[14th Street] Big Bang Store";
-		case 3:
-			return "[14th Street] Override Fashion Marketing";
-		case 4:
-			return "[14th Street] Dance Battle V";
-		case 5:
-			return "MapleStory 14th Anniversary Appre..";
-		case 6:
-			return "[14th Street] Big Bang Store Season..";
-		case 7:
-			return "[14th Street] Maplelin Star Grub!";
-		case 8:
-			return "[14th Street] Sub-Zero Hunt";
-		case 9:
-			return "[14th Street] The Legends Return!";
-		case 10:
-			return "[14th Street] Renegade Personal Training";
-		case 11:
-			return "[14th Street] Round-We-Go Cafe Rising Heroes!";
-		case 12:
-			return "[14th Street] Big Bang Attack!";
-		case 13:
-			return "[14th Street] Spiegelmann's Art Retrieval";
-		case 14:
-			return "[14th Street] 14th Street Sky";
-		case 15:
-			return "[Sunny Sunday] Perks Abound!";
-		default:
-			return "";
+			case 0:
+				return "LINE FRIENDS";
+			case 1:
+				return "LINE FRIENDS Coin Shop";
+			case 2:
+				return "[14th Street] Big Bang Store";
+			case 3:
+				return "[14th Street] Override Fashion Marketing";
+			case 4:
+				return "[14th Street] Dance Battle V";
+			case 5:
+				return "MapleStory 14th Anniversary Appre..";
+			case 6:
+				return "[14th Street] Big Bang Store Season..";
+			case 7:
+				return "[14th Street] Maplelin Star Grub!";
+			case 8:
+				return "[14th Street] Sub-Zero Hunt";
+			case 9:
+				return "[14th Street] The Legends Return!";
+			case 10:
+				return "[14th Street] Renegade Personal Training";
+			case 11:
+				return "[14th Street] Round-We-Go Cafe Rising Heroes!";
+			case 12:
+				return "[14th Street] Big Bang Attack!";
+			case 13:
+				return "[14th Street] Spiegelmann's Art Retrieval";
+			case 14:
+				return "[14th Street] 14th Street Sky";
+			case 15:
+				return "[Sunny Sunday] Perks Abound!";
+			default:
+				return "";
 		}
 	}
 
@@ -269,33 +269,33 @@ namespace ms
 	{
 		switch (id)
 		{
-		case 0:
-		case 1:
-		case 2:
-			return "04/24/2019 - 05/21/2019, 23:59";
-		case 3:
-			return "04/24/2019 - 05/07/2019, 23:59";
-		case 4:
-			return "04/24/2019 - 06/11/2019, 23:59";
-		case 5:
-			return "05/11/2019 - 05/11/2019, 23:59";
-		case 6:
-		case 10:
-		case 11:
-		case 12:
-			return "05/22/2019 - 06/11/2019, 23:59";
-		case 7:
-		case 8:
-			return "05/08/2019 - 05/21/2019, 23:59";
-		case 9:
-			return "05/08/2019 - 06/11/2019, 23:59";
-		case 13:
-		case 14:
-			return "05/29/2019 - 06/11/2019, 23:59";
-		case 15:
-			return "05/05/2019 - 05/05/2019, 23:59";
-		default:
-			return "";
+			case 0:
+			case 1:
+			case 2:
+				return "04/24/2019 - 05/21/2019, 23:59";
+			case 3:
+				return "04/24/2019 - 05/07/2019, 23:59";
+			case 4:
+				return "04/24/2019 - 06/11/2019, 23:59";
+			case 5:
+				return "05/11/2019 - 05/11/2019, 23:59";
+			case 6:
+			case 10:
+			case 11:
+			case 12:
+				return "05/22/2019 - 06/11/2019, 23:59";
+			case 7:
+			case 8:
+				return "05/08/2019 - 05/21/2019, 23:59";
+			case 9:
+				return "05/08/2019 - 06/11/2019, 23:59";
+			case 13:
+			case 14:
+				return "05/29/2019 - 06/11/2019, 23:59";
+			case 15:
+				return "05/05/2019 - 05/05/2019, 23:59";
+			default:
+				return "";
 		}
 	}
 

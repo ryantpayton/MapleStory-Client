@@ -28,7 +28,7 @@ namespace ms
 {
 	EquipTooltip::EquipTooltip()
 	{
-		nl::node Item = nl::nx::ui["UIToolTip.img"]["Item"];
+		nl::node Item = nl::nx::UI["UIToolTip.img"]["Item"];
 		nl::node Frame = Item["Frame"];
 		nl::node ItemIcon = Item["ItemIcon"];
 		nl::node Equip = Item["Equip"];

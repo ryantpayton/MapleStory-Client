@@ -24,14 +24,6 @@ namespace ms
 	class UIExplorerCreation : public UICommonCreation
 	{
 	public:
-		UIExplorerCreation();
-
-		void draw(float inter) const override;
-		void update() override;
-
-	private:
-		Texture sky;
-		Texture cloud;
-		float cloudfx;
+		UIExplorerCreation() : UICommonCreation("000") {}
 	};
 }

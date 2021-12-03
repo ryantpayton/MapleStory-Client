@@ -31,13 +31,13 @@ namespace ms
 
 	UILoginWait::UILoginWait(std::function<void()> okhandler) : okhandler(okhandler)
 	{
-		nl::node Loading = nl::nx::ui["Login.img"]["Notice"]["Loading"];
+		nl::node Loading = nl::nx::UI["Login.img"]["Notice"]["Loading"];
 		nl::node backgrnd = Loading["backgrnd"];
 
-		sprites.emplace_back(backgrnd);
-		sprites.emplace_back(Loading["circle"], Point<int16_t>(127, 70));
+		sprites.emplace_back(backgrnd, Point<int16_t>(112, 84));
+		sprites.emplace_back(Loading["circle"], Point<int16_t>(239, 154));
 
-		buttons[Buttons::CANCEL] = std::make_unique<MapleButton>(Loading["BtCancel"], Point<int16_t>(101, 106));
+		buttons[Buttons::BtCancel] = std::make_unique<MapleButton>(Loading["BtCancel"], Point<int16_t>(110, 80));
 
 		position = Point<int16_t>(276, 229);
 		dimension = Texture(backgrnd).get_dimensions();

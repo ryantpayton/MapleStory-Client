@@ -44,7 +44,7 @@ namespace ms
 
 		if (showcount)
 		{
-			static const Charset countset = Charset(nl::nx::ui["Basic.img"]["ItemNo"], Charset::Alignment::LEFT);
+			static const Charset countset = Charset(nl::nx::UI["Basic.img"]["ItemNo"], Charset::Alignment::LEFT);
 			countset.draw(std::to_string(count), position + Point<int16_t>(0, 20));
 		}
 	}

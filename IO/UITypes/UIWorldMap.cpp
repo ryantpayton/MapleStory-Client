@@ -31,12 +31,12 @@ namespace ms
 {
 	UIWorldMap::UIWorldMap() : UIDragElement<PosMAP>(), search_text_dim(Point<int16_t>(82, 14))
 	{
-		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
-		nl::node WorldMap = nl::nx::ui["UIWindow2.img"]["WorldMap"];
+		nl::node close = nl::nx::UI["Basic.img"]["BtClose3"];
+		nl::node WorldMap = nl::nx::UI["UIWindow2.img"]["WorldMap"];
 		nl::node WorldMapSearch = WorldMap["WorldMapSearch"];
 		nl::node Border = WorldMap["Border"]["0"];
 		nl::node backgrnd = WorldMapSearch["backgrnd"];
-		nl::node MapHelper = nl::nx::map["MapHelper.img"]["worldMap"];
+		nl::node MapHelper = nl::nx::Map["MapHelper.img"]["worldMap"];
 
 		cur_pos = MapHelper["curPos"];
 
@@ -290,10 +290,10 @@ namespace ms
 
 	void UIWorldMap::update_world(std::string map)
 	{
-		nl::node WorldMap = nl::nx::map["WorldMap"][map + ".img"];
+		nl::node WorldMap = nl::nx::Map["WorldMap"][map + ".img"];
 
 		if (!WorldMap)
-			WorldMap = nl::nx::map["WorldMap"]["WorldMap.img"];
+			WorldMap = nl::nx::Map["WorldMap"]["WorldMap.img"];
 
 		base_img = WorldMap["BaseImg"][0];
 		parent_map = WorldMap["info"]["parentMap"];
@@ -322,7 +322,7 @@ namespace ms
 			i++;
 		}
 
-		nl::node mapImage = nl::nx::map["MapHelper.img"]["worldMap"]["mapImage"];
+		nl::node mapImage = nl::nx::Map["MapHelper.img"]["worldMap"]["mapImage"];
 
 		map_spots.clear();
 

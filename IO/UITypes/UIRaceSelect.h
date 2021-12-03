@@ -52,19 +52,21 @@ namespace ms
 	private:
 		void select_class(uint16_t index);
 		void show_charselect();
+		void show_worldselect();
 		Point<int16_t> get_class_pos(size_t index) const;
 		std::string to_lower(std::string value) const;
 		uint16_t get_corrected_class_index(uint16_t index) const;
 
-		static constexpr uint16_t INDEX_COUNT = 5;
-		static constexpr uint16_t SELECTED_LIST = 2;
+		static constexpr uint16_t INDEX_COUNT = 6;
+		static constexpr uint16_t SELECTED_LIST = 35;
 
 		enum Buttons : uint16_t
 		{
-			BACK,
-			MAKE,
-			LEFT,
-			RIGHT,
+			BtStart,
+			BtPreview,
+			BtMake,
+			BtLeftArrow,
+			BtRightArrow,
 			CLASS0,
 			CLASS1,
 			CLASS2,
@@ -75,7 +77,7 @@ namespace ms
 		enum Classes : uint16_t
 		{
 			RESISTANCE,
-			EXPLORER,
+			EXPLORERS,
 			CYGNUSKNIGHTS,
 			ARAN,
 			EVAN,
@@ -98,24 +100,33 @@ namespace ms
 			ARK,
 			PATHFINDER,
 			HOYOUNG,
-			JETT,
+			ADELE,
+			KAIN,
+			YETI,
+			LARA,
+			JETT = 1000,
 			HAYATO,
 			KANNA,
 			CHASE
 		};
 
 		Text version;
+		Point<int16_t> version_pos;
 		Point<int16_t> pos;
 		Point<int16_t> posZero;
-		nl::node order;
+		std::vector<uint16_t> order;
 		nl::node hotlist;
 		nl::node newlist;
 		nl::node bgm;
+		nl::node Back2;
 		Sprite hotlabel;
 		Sprite hotlabelZero;
 		Sprite newlabel;
+		Point<int16_t> newlabelPos;
 		Sprite hotbtn;
+		Point<int16_t> hotbtnPos;
 		Sprite newbtn;
+		Point<int16_t> newbtnPos;
 		uint16_t class_index[INDEX_COUNT];
 		bool mouseover[INDEX_COUNT];
 		uint16_t selected_class;
@@ -134,5 +145,8 @@ namespace ms
 		Sprite back_ani;
 		Texture class_details_background;
 		Texture class_details_backgroundZero;
+		Texture dot;
+		int16_t buttonIntervalX;
+		Point<int16_t> buttonPos;
 	};
 }

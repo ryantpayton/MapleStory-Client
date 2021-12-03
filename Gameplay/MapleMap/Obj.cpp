@@ -25,7 +25,7 @@ namespace ms
 {
 	Obj::Obj(nl::node src)
 	{
-		animation = Animation(nl::nx::map["Obj"][src["oS"] + ".img"][src["l0"]][src["l1"]][src["l2"]]);
+		animation = Animation(nl::nx::Map["Obj"][src["oS"] + ".img"][src["l0"]][src["l1"]][src["l2"]]);
 		pos = Point<int16_t>(src["x"], src["y"]);
 		flip = src["f"].get_bool();
 		z = src["z"];

@@ -33,7 +33,7 @@ namespace ms
 {
 	UINpcTalk::UINpcTalk() : offset(0), unitrows(0), rowmax(0), show_slider(false), draw_text(false), formatted_text(""), formatted_text_pos(0), timestep(0)
 	{
-		nl::node UtilDlgEx = nl::nx::ui["UIWindow2.img"]["UtilDlgEx"];
+		nl::node UtilDlgEx = nl::nx::UI["UIWindow2.img"]["UtilDlgEx"];
 
 		top = UtilDlgEx["t"];
 		fill = UtilDlgEx["c"];
@@ -311,7 +311,7 @@ namespace ms
 
 			if (end != std::string::npos)
 			{
-				std::string namestr = nl::nx::string["Npc.img"][std::to_string(npcid)]["name"];
+				std::string namestr = nl::nx::String["Npc.img"][std::to_string(npcid)]["name"];
 				formatted_text.replace(begin, end - begin, namestr);
 			}
 		}
@@ -339,7 +339,7 @@ namespace ms
 			{
 				size_t b = begin + 2;
 				int32_t itemid = std::stoi(formatted_text.substr(b, end - b));
-				std::string itemname = nl::nx::string["Consume.img"][itemid]["name"];
+				std::string itemname = nl::nx::String["Consume.img"][itemid]["name"];
 
 				formatted_text.replace(begin, end - begin, itemname);
 			}
@@ -369,9 +369,9 @@ namespace ms
 			strid.insert(0, 7 - strid.size(), '0');
 			strid.append(".img");
 
-			speaker = nl::nx::npc[strid]["stand"]["0"];
+			speaker = nl::nx::Npc[strid]["stand"]["0"];
 
-			std::string namestr = nl::nx::string["Npc.img"][std::to_string(npcid)]["name"];
+			std::string namestr = nl::nx::String["Npc.img"][std::to_string(npcid)]["name"];
 			name.change_text(namestr);
 		}
 		else

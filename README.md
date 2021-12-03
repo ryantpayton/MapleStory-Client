@@ -30,13 +30,9 @@ The default settings can be configured by editing the **Configuration.h** file. 
 
 # Required Files
 *Always check **NxFiles.h** for an updated list of required NX files*
-- [MapPretty.nx] (Trimmed v167 GMS Map.wz)
+- Map.nx (v83 GMS Map.wz)
 - MapLatest.nx (Lastest GMS Map.wz)
-- Map001.nx (Latest GMS Map001.wz)
-- UI.nx (Latest GMS UI.wz)
-- Everything else is from v83 GMS WZ files
-
-There is an archive of all the NX files listed above available for download [here][1] (Latest: v213.2).
+- Everything else from latest GMS WZ files
 
 # Dependencies
 - Nx library:
@@ -66,7 +62,7 @@ If you experience any kind of in-game glitches, UI rendering issues, or anything
 The latest build ([a3a9500][commit]) can be found here: [HeavenClient.rar]
 
 # Donations
-If you feel obligated to donate, to further help and support all parties involved in the development of the HeavenClient project, you can donate using [this][2] link.
+If you feel obligated to donate, to further help and support all parties involved in the development of the HeavenClient project, you can donate using [this][donate] link.
 
 Please remember this is ONLY for the HeavenClient development and will only be used in the support of helping further develop the client. *Also please remember to support Nexon as this is not meant to replace anything Nexon offers*
 
@@ -77,8 +73,6 @@ Another important note to remember is that HeavenClient is a free open-sourced c
 [Linux]:             https://github.com/ryantpayton/HeavenClient/tree/linux
 [Windows 8.1 SDK]:   https://developer.microsoft.com/en-us/windows/downloads/sdk-archive
 [NoLifeWzToNx]:      https://github.com/ryantpayton/NoLifeWzToNx
-[MapPretty.nx]:      https://drive.google.com/file/d/1F7nUgH3royIS75WsPlYwc7RtdiGPnzd_/view?usp=sharing
-[1]:                 https://drive.google.com/file/d/1LKhOtdDWOFJs8eIvqSx8pvP1ZfHF2rpo/view?usp=sharing
 [NoLifeNx]:          https://github.com/ryantpayton/NoLifeNx
 [GLFW3]:             http://www.glfw.org/download.html
 [GLEW]:              http://glew.sourceforge.net/
@@ -87,4 +81,4 @@ Another important note to remember is that HeavenClient is a free open-sourced c
 [Asio]:              http://think-async.com/
 [commit]:            https://github.com/HeavenClient/HeavenClient/commit/a3a95007495b6cded5e34af840a1354fd012c4e0
 [HeavenClient.rar]:  https://drive.google.com/file/d/1--KgFBFqrD6_-07cD-S8dpEimbq5tq0t/view?usp=sharing
-[2]:                 https://paypal.me/pools/c/8frYNoobcY
+[donate]:            https://www.paypal.com/donate?business=MZDZLUH2UC5FE&no_recurring=0&currency_code=USD

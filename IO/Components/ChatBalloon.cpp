@@ -43,7 +43,7 @@ namespace ms
 			typestr = std::to_string(type);
 		}
 
-		nl::node src = nl::nx::ui["ChatBalloon.img"][typestr];
+		nl::node src = nl::nx::UI["ChatBalloon.img"][typestr];
 
 		arrow = src["arrow"];
 		frame = src;
@@ -90,11 +90,10 @@ namespace ms
 
 	ChatBalloonHorizontal::ChatBalloonHorizontal()
 	{
-		nl::node Balloon = nl::nx::ui["Login.img"]["WorldNotice"]["Balloon"];
+		nl::node Balloon = nl::nx::UI["Login.img"]["WorldNotice"]["Balloon"];
 
 		arrow = Balloon["arrow"];
 		center = Balloon["c"];
-		east = Balloon["e"];
 		northeast = Balloon["ne"];
 		north = Balloon["n"];
 		northwest = Balloon["nw"];
@@ -106,13 +105,13 @@ namespace ms
 		xtile = std::max<int16_t>(north.width(), 1);
 		ytile = std::max<int16_t>(west.height(), 1);
 
-		textlabel = Text(Text::Font::A13B, Text::Alignment::LEFT, Color::Name::BLACK);
+		textlabel = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::BLACK);
 	}
 
 	void ChatBalloonHorizontal::draw(Point<int16_t> position) const
 	{
 		int16_t width = textlabel.width() + 9;
-		int16_t height = textlabel.height() - 2;
+		int16_t height = textlabel.height() - 1;
 
 		int16_t left = position.x() - width / 2;
 		int16_t top = position.y() - height;
@@ -125,10 +124,9 @@ namespace ms
 		for (int16_t y = top; y < bottom; y += ytile)
 		{
 			west.draw(DrawArgument(left, y));
-			east.draw(DrawArgument(right, y));
 		}
 
-		center.draw(DrawArgument(Point<int16_t>(left - 8, top), Point<int16_t>(width + 8, height)));
+		center.draw(DrawArgument(Point<int16_t>(left, top), Point<int16_t>(width + 1, height)));
 
 		for (int16_t x = left; x < right; x += xtile)
 		{
@@ -140,7 +138,7 @@ namespace ms
 		southeast.draw(DrawArgument(right, bottom));
 
 		arrow.draw(DrawArgument(right + 1, top));
-		textlabel.draw(DrawArgument(left + 6, top - 5));
+		textlabel.draw(DrawArgument(left + 6, top - 4));
 	}
 
 	void ChatBalloonHorizontal::change_text(const std::string& text)

@@ -40,31 +40,31 @@ namespace ms
 
 		switch (prefix)
 		{
-		case 1:
-			category = get_eqcategory(itemid);
-			src = nl::nx::character[category][strid + ".img"]["info"];
-			strsrc = nl::nx::string["Eqp.img"]["Eqp"][category][std::to_string(itemid)];
-			break;
-		case 2:
-			category = "Consume";
-			src = nl::nx::item["Consume"][strprefix + ".img"][strid]["info"];
-			strsrc = nl::nx::string["Consume.img"][std::to_string(itemid)];
-			break;
-		case 3:
-			category = "Install";
-			src = nl::nx::item["Install"][strprefix + ".img"][strid]["info"];
-			strsrc = nl::nx::string["Ins.img"][std::to_string(itemid)];
-			break;
-		case 4:
-			category = "Etc";
-			src = nl::nx::item["Etc"][strprefix + ".img"][strid]["info"];
-			strsrc = nl::nx::string["Etc.img"]["Etc"][std::to_string(itemid)];
-			break;
-		case 5:
-			category = "Cash";
-			src = nl::nx::item["Cash"][strprefix + ".img"][strid]["info"];
-			strsrc = nl::nx::string["Cash.img"][std::to_string(itemid)];
-			break;
+			case 1:
+				category = get_eqcategory(itemid);
+				src = nl::nx::Character[category][strid + ".img"]["info"];
+				strsrc = nl::nx::String["Eqp.img"]["Eqp"][category][std::to_string(itemid)];
+				break;
+			case 2:
+				category = "Consume";
+				src = nl::nx::Item["Consume"][strprefix + ".img"][strid]["info"];
+				strsrc = nl::nx::String["Consume.img"][std::to_string(itemid)];
+				break;
+			case 3:
+				category = "Install";
+				src = nl::nx::Item["Install"][strprefix + ".img"][strid]["info"];
+				strsrc = nl::nx::String["Ins.img"][std::to_string(itemid)];
+				break;
+			case 4:
+				category = "Etc";
+				src = nl::nx::Item["Etc"][strprefix + ".img"][strid]["info"];
+				strsrc = nl::nx::String["Etc.img"]["Etc"][std::to_string(itemid)];
+				break;
+			case 5:
+				category = "Cash";
+				src = nl::nx::Item["Cash"][strprefix + ".img"][strid]["info"];
+				strsrc = nl::nx::String["Cash.img"][std::to_string(itemid)];
+				break;
 		}
 
 		if (src)

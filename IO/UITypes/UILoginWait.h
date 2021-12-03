@@ -42,7 +42,7 @@ namespace ms
 	private:
 		enum Buttons : uint16_t
 		{
-			CANCEL
+			BtCancel
 		};
 
 		std::function<void()> okhandler;

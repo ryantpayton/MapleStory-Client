@@ -39,7 +39,7 @@ namespace ms
 		keyboard = &UI::get().get_keyboard();
 		staged_mappings = keyboard->get_maplekeys();
 
-		nl::node KeyConfig = nl::nx::ui["StatusBar3.img"]["KeyConfig"];
+		nl::node KeyConfig = nl::nx::UI["StatusBar3.img"]["KeyConfig"];
 
 		icon = KeyConfig["icon"];
 		key = KeyConfig["key"];
@@ -52,7 +52,7 @@ namespace ms
 		sprites.emplace_back(KeyConfig["backgrnd2"]);
 		sprites.emplace_back(KeyConfig["backgrnd3"]);
 
-		nl::node BtClose3 = nl::nx::ui["Basic.img"]["BtClose3"];
+		nl::node BtClose3 = nl::nx::UI["Basic.img"]["BtClose3"];
 		buttons[Buttons::CLOSE] = std::make_unique<MapleButton>(BtClose3, Point<int16_t>(bg_dimensions.x() - 18, 3));
 		buttons[Buttons::CANCEL] = std::make_unique<MapleButton>(KeyConfig["button:Cancel"]);
 		buttons[Buttons::DEFAULT] = std::make_unique<MapleButton>(KeyConfig["button:Default"]);
@@ -895,7 +895,7 @@ namespace ms
 	{
 		std::vector<std::tuple<KeyConfig::Key, KeyType::Id, int32_t>> updated_actions;
 
-		for (auto key : staged_mappings)
+		for (auto& key : staged_mappings)
 		{
 			KeyConfig::Key k = KeyConfig::actionbyid(key.first);
 			Keyboard::Mapping mapping = key.second;
@@ -907,12 +907,12 @@ namespace ms
 
 		auto maplekeys = keyboard->get_maplekeys();
 
-		for (auto key : maplekeys)
+		for (auto& key : maplekeys)
 		{
 			bool keyFound = false;
 			KeyConfig::Key keyConfig = KeyConfig::actionbyid(key.first);
 
-			for (auto tkey : staged_mappings)
+			for (auto& tkey : staged_mappings)
 			{
 				KeyConfig::Key tKeyConfig = KeyConfig::actionbyid(tkey.first);
 
@@ -930,7 +930,7 @@ namespace ms
 		if (updated_actions.size() > 0)
 			ChangeKeyMapPacket(updated_actions).dispatch();
 
-		for (auto action : updated_actions)
+		for (auto& action : updated_actions)
 		{
 			KeyConfig::Key key = std::get<0>(action);
 			KeyType::Id type = std::get<1>(action);

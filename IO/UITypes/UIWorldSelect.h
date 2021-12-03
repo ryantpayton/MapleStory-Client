@@ -44,7 +44,6 @@ namespace ms
 
 		void draw_world();
 		void add_world(World world);
-		void add_recommended_world(RecommendedWorld world);
 		void change_world(World selectedWorld);
 		void remove_selected();
 		void set_region(uint8_t value);
@@ -60,27 +59,20 @@ namespace ms
 		static constexpr int32_t CHANNEL_LOAD = 100;
 
 		void enter_world();
-		void toggle_recommended(bool active);
 		void clear_selected_world();
 		uint16_t get_next_world(uint16_t id, bool upward);
 
 		enum Buttons : uint16_t
 		{
-			BT_WORLD0,
-			BT_WORLD1,
-			BT_WORLD2,
-			BT_WORLD3,
-			BT_WORLD4,
-			BT_CHANNEL0,
-			BT_ENTERWORLD = 35U,
-			BT_VIEWALL,
-			BT_VIEWRECOMMENDED,
-			BT_VIEWRECOMMENDED_SELECT,
-			BT_VIEWRECOMMENDED_CANCEL,
-			BT_VIEWRECOMMENDED_PREV,
-			BT_VIEWRECOMMENDED_NEXT,
-			BT_CHANGEREGION,
-			BT_QUITGAME
+			BtWorld0,
+			BtWorld1,
+			BtWorld2,
+			BtWorld3,
+			BtWorld4,
+			BtChannel0,
+			BtGoWorld = 35U,
+			BtRegion,
+			BtExit
 		};
 
 		/// If ever changing order, check the WZ file.
@@ -121,7 +113,7 @@ namespace ms
 		};
 
 		Text version;
-		Text recommended_message;
+		Point<int16_t> version_pos;
 		Texture worlds_background;
 		Texture channels_background;
 		Point<int16_t> worldsrc_pos;
@@ -129,29 +121,21 @@ namespace ms
 		ChatBalloonHorizontal chatballoon;
 
 		uint8_t worldid;
-		uint8_t recommended_worldid;
 		uint8_t channelid;
 		uint8_t worldcount;
-		uint8_t recommended_worldcount;
 
 		std::vector<World> worlds;
-		std::vector<RecommendedWorld> recommended_worlds;
 		std::vector<Texture> world_textures;
-		std::vector<Texture> recommended_world_textures;
-		Texture recommended_texture;
 		std::map<uint16_t, uint16_t> world_map;
 
 		std::vector<Sprite> flag_sprites;
 		Texture worldNotice;
+		Texture rebootNotice;
 		Text worldNoticeMessage;
-		Gauge channel_gauge[Buttons::BT_ENTERWORLD - Buttons::BT_CHANNEL0];
+		Gauge channel_gauge[Buttons::BtGoWorld - Buttons::BtChannel0];
 
 		bool world_selected;
-		bool use_recommended;
-		bool show_recommended;
-		bool draw_chatballoon;
 
-		nl::node WorldSelect;
 		nl::node worldsrc;
 		nl::node channelsrc;
 	};
