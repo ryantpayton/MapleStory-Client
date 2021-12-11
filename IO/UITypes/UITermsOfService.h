@@ -58,5 +58,6 @@ namespace ms
 		uint16_t offset;
 		int16_t unit_rows;
 		int16_t max_rows;
+		nl::node EULA;
 	};
 }

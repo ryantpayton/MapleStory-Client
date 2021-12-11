@@ -79,7 +79,7 @@ namespace ms
 				vCanvasCount = 7;
 		}
 
-		nl::node CustomizeCharObj = nl::nx::MapLatest["Obj"]["login.img"]["CustomizeChar"][class_map[classType]];
+		nl::node CustomizeCharObj = nl::nx::Map["Obj"]["login.img"]["CustomizeChar"][class_map[classType]];
 
 		int16_t genderHeight = board["genderHeight"];
 		int16_t avatarHeight = board["avatarHeight"];

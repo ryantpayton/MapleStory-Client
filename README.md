@@ -29,17 +29,16 @@ The default settings can be configured by editing the **Configuration.h** file. 
    - See **Required Files** for a list of required NX files
 
 # Required Files
-*Always check **NxFiles.h** for an updated list of required NX files*
-- Map.nx (v83 GMS Map.wz)
-- MapLatest.nx (Lastest GMS Map.wz)
-- Everything else from latest GMS WZ files
+*All WZ files from the official client are required to be converted*
+*Check **NxFiles.h** for an updated list of required NX files*
+*Check **Configuration.h** for the latest version of WZ files tested*
 
 # Dependencies
 - Nx library:
 [NoLifeNx]
 
 - Wz library:
-N/A
+TBA
 
 - Graphics:
 [GLFW3], [GLEW], [FreeType]
@@ -68,7 +67,7 @@ Please remember this is ONLY for the HeavenClient development and will only be u
 
 Another important note to remember is that HeavenClient is a free open-sourced client developed for personal use. Do NOT pay for any services requested by anyone in regards to this client. It will always remain open and free of charge. There is no intent to publish this code with any payment in mind. If that ever changes, donations and disclaimers for donations will be removed.
 
-[HeavenMS]:          https://github.com/ronancpl/HeavenMS
+[HeavenMS]:          https://github.com/ryantpayton/MapleStory
 [Switch]:            https://github.com/lain3d/HeavenClientNX
 [Linux]:             https://github.com/ryantpayton/HeavenClient/tree/linux
 [Windows 8.1 SDK]:   https://developer.microsoft.com/en-us/windows/downloads/sdk-archive

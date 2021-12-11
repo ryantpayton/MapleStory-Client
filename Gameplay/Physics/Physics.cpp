@@ -21,7 +21,7 @@ namespace ms
 {
 	const double GRAVFORCE = 0.14;
 	const double SWIMGRAVFORCE = 0.03;
-	const double FRICTION = 0.3;
+	const double FRICTION = 0.5;
 	const double SLOPEFACTOR = 0.1;
 	const double GROUNDSLIP = 3.0;
 	const double FLYFRICTION = 0.05;

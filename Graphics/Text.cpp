@@ -34,7 +34,7 @@ namespace ms
 		if (text.empty())
 			return;
 
-		layout = GraphicsGL::get().createlayout(text, font, alignment, maxwidth, formatted, line_adj);
+		layout = GraphicsGL::get().createlayout(text, font, alignment, color, maxwidth, formatted, line_adj);
 	}
 
 	void Text::change_text(const std::string& t)

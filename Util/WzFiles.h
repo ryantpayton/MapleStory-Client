@@ -30,40 +30,39 @@ namespace ms
 	namespace WzFiles
 	{
 		// Number of needed files
-		constexpr uint8_t NUM_FILES = 29;
+		constexpr uint8_t NUM_FILES = 28;
 
 		// Names of the needed game files
 		constexpr std::array<const char*, NUM_FILES> filenames =
 		{
-			"Base.nx",		// From latest
-			"Character.nx",	// From latest
-			"Effect.nx",	// From latest
-			"Etc.nx",		// From latest
-			"Item.nx",		// From latest
-			"Map.nx",		// v83
-			"MapLatest.nx", // From latest
-			"Map001.nx",	// From latest
-			"Map002.nx",	// From latest
-			"Map2.nx",		// From latest
-			"Mob.nx",		// From latest
-			"Mob001.nx",	// From latest
-			"Mob002.nx",	// From latest
-			"Mob2.nx",		// From latest
-			"Morph.nx",		// From latest
-			"Npc.nx",		// From latest
-			"Quest.nx",		// From latest
-			"Reactor.nx",	// From latest
-			"Skill.nx",		// From latest
-			"Skill001.nx",	// From latest
-			"Skill002.nx",	// From latest
-			"Skill003.nx",	// From latest
-			"Sound.nx",		// From latest
-			"Sound001.nx",	// From latest
-			"Sound002.nx",	// From latest
-			"Sound2.nx",	// From latest
-			"String.nx",	// From latest
-			"TamingMob.nx",	// From latest
-			"UI.nx"			// From latest
+			"Base.nx",
+			"Character.nx",
+			"Effect.nx",
+			"Etc.nx",
+			"Item.nx",
+			"Map.nx",
+			"Map001.nx",
+			"Map002.nx",
+			"Map2.nx",
+			"Mob.nx",
+			"Mob001.nx",
+			"Mob002.nx",
+			"Mob2.nx",
+			"Morph.nx",
+			"Npc.nx",
+			"Quest.nx",
+			"Reactor.nx",
+			"Skill.nx",
+			"Skill001.nx",
+			"Skill002.nx",
+			"Skill003.nx",
+			"Sound.nx",
+			"Sound001.nx",
+			"Sound002.nx",
+			"Sound2.nx",
+			"String.nx",
+			"TamingMob.nx",
+			"UI.nx"
 		};
 
 		// Initialize WZ

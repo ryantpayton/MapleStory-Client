@@ -53,7 +53,7 @@ namespace ms
 		void draw(const nl::bitmap& bmp, const Rectangle<int16_t>& rect, const Range<int16_t>& vertical, const Range<int16_t>& horizontal, const Color& color, float angle);
 
 		// Create a layout for the text with the parameters specified
-		Text::Layout createlayout(const std::string& text, Text::Font font, Text::Alignment alignment, int16_t maxwidth, bool formatted, int16_t line_adj);
+		Text::Layout createlayout(const std::string& text, Text::Font font, Text::Alignment alignment, Color::Name color, int16_t maxwidth, bool formatted, int16_t line_adj);
 		// Draw a text with the given parameters
 		void drawtext(const DrawArgument& args, const Range<int16_t>& vertical, const std::string& text, const Text::Layout& layout, Text::Font font, Color::Name color, Text::Background back);
 
@@ -220,7 +220,7 @@ namespace ms
 		class LayoutBuilder
 		{
 		public:
-			LayoutBuilder(const Font& font, Text::Alignment alignment, int16_t maxwidth, bool formatted, int16_t line_adj);
+			LayoutBuilder(Text::Font id, const Font& font, Text::Alignment alignment, Color::Name color, int16_t maxwidth, bool formatted, int16_t line_adj);
 
 			size_t add(const char* text, size_t prev, size_t first, size_t last);
 			Text::Layout finish(size_t first, size_t last);

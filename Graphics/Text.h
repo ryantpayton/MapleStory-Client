@@ -35,9 +35,12 @@ namespace ms
 			A12B,
 			A13M,
 			A13B,
+			A14M,
 			A14B,
+			A15M,
 			A15B,
 			A18M,
+			A18B,
 			NUM_FONTS
 		};
 

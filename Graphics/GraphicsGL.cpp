@@ -203,9 +203,12 @@ namespace ms
 		addfont(FONT_BOLD_STR, Text::Font::A12B, 0, 12);
 		addfont(FONT_NORMAL_STR, Text::Font::A13M, 0, 13);
 		addfont(FONT_BOLD_STR, Text::Font::A13B, 0, 13);
+		addfont(FONT_NORMAL_STR, Text::Font::A14M, 0, 14);
 		addfont(FONT_BOLD_STR, Text::Font::A14B, 0, 14);
+		addfont(FONT_NORMAL_STR, Text::Font::A15M, 0, 15);
 		addfont(FONT_BOLD_STR, Text::Font::A15B, 0, 15);
 		addfont(FONT_NORMAL_STR, Text::Font::A18M, 0, 18);
+		addfont(FONT_BOLD_STR, Text::Font::A18B, 0, 18);
 
 		fontymax += fontborder.y();
 
@@ -512,14 +515,14 @@ namespace ms
 		);
 	}
 
-	Text::Layout GraphicsGL::createlayout(const std::string& text, Text::Font id, Text::Alignment alignment, int16_t maxwidth, bool formatted, int16_t line_adj)
+	Text::Layout GraphicsGL::createlayout(const std::string& text, Text::Font id, Text::Alignment alignment, Color::Name color, int16_t maxwidth, bool formatted, int16_t line_adj)
 	{
 		size_t length = text.length();
 
 		if (length == 0)
 			return Text::Layout();
 
-		LayoutBuilder builder(fonts[id], alignment, maxwidth, formatted, line_adj);
+		LayoutBuilder builder(id, fonts[id], alignment, color, maxwidth, formatted, line_adj);
 
 		const char* p_text = text.c_str();
 
@@ -528,7 +531,7 @@ namespace ms
 
 		while (offset < length)
 		{
-			size_t last = text.find_first_of(" \\#", offset + 1);
+			size_t last = text.find_first_of(" \\#\t", offset + 1);
 
 			if (last == std::string::npos)
 				last = length;
@@ -540,10 +543,8 @@ namespace ms
 		return builder.finish(first, offset);
 	}
 
-	GraphicsGL::LayoutBuilder::LayoutBuilder(const Font& f, Text::Alignment a, int16_t mw, bool fm, int16_t la) : font(f), alignment(a), maxwidth(mw), formatted(fm), line_adj(la)
+	GraphicsGL::LayoutBuilder::LayoutBuilder(Text::Font id, const Font& f, Text::Alignment a, Color::Name c, int16_t mw, bool fm, int16_t la) : fontid(id), font(f), alignment(a), color(c), maxwidth(mw), formatted(fm), line_adj(la)
 	{
-		fontid = Text::Font::NUM_FONTS;
-		color = Color::Name::NUM_COLORS;
 		ax = 0;
 		ay = font.linespace();
 		width = 0;
@@ -565,51 +566,276 @@ namespace ms
 
 		if (formatted)
 		{
+			size_t next_char = first + 1;
+			char c = text[next_char];
+
 			switch (text[first])
 			{
 				case '\\':
 				{
-					if (first + 1 < last)
+					if (next_char < last)
 					{
-						switch (text[first + 1])
+						switch (c)
 						{
+							// \r\n - Moves down a line
+							case 'rn':
+							case 'RN':
+							{
+								// TODO: How is this treated differently than the single versions?
+								skip += 4;
+								break;
+							}
+							// \n - New line
 							case 'n':
+							case 'N':
+							{
 								linebreak = true;
+								skip += 2;
 								break;
+							}
+							// \r - Return carriage
 							case 'r':
+							case 'R':
+							{
 								linebreak = ax > 0;
+								skip += 2;
 								break;
+							}
+							// \b - Backwards
+							case 'b':
+							{
+								// TODO: What is this?
+								skip += 2;
+								break;
+							}
+							default:
+							{
+								single_console::log_message("[GraphicsGL::LayoutBuilder::add] Unknown format: [" + std::to_string(c) + "]");
+								break;
+							}
 						}
-
-						skip++;
 					}
 
-					skip++;
 					break;
 				}
 				case '#':
 				{
-					if (first + 1 < last)
+					if (next_char < last)
 					{
-						switch (text[first + 1])
+						switch (c)
 						{
-							case 'k':
-								color = Color::Name::DARKGREY;
-								break;
+							// #b - Blue text
 							case 'b':
+							{
 								color = Color::Name::PERSIANGREEN;
+								skip += 2;
 								break;
-							case 'r':
-								color = Color::Name::RED;
+							}
+							// #B[%]# - Shows a progress bar
+							case 'B':
+							{
+								// TODO: Needs implemented
+								skip += 2;
 								break;
+							}
+							// #c[id]# - Show how many of a given item are in the player's inventory in an orange color
 							case 'c':
+							{
+								// TODO: Show the number of items
 								color = Color::Name::ORANGE;
+								skip += 2;
 								break;
-						}
+							}
+							// #d - Purple text
+							case 'd':
+							{
+								// TODO: Need to get the proper color
+								skip += 2;
+								break;
+							}
+							// #e - Bold text
+							case 'e':
+							case 'E':
+							{
+								switch (last_font)
+								{
+									case Text::Font::A11M:
+										fontid = Text::Font::A11B;
+										break;
+									case Text::Font::A12M:
+										fontid = Text::Font::A12B;
+										break;
+									case Text::Font::A13M:
+										fontid = Text::Font::A13B;
+										break;
+									case Text::Font::A18M:
+										fontid = Text::Font::A18B;
+										break;
+									default:
+										single_console::log_message("[GraphicsGL::LayoutBuilder::add] Unknown Text::Font: [" + std::to_string(last_font) + "]");
+										break;
+								}
 
-						skip++;
+								skip += 2;
+								break;
+							}
+							// #f[path]# - Shows an image within the WZ file
+							case 'f':
+							{
+								// TODO: Needs implemented
+								skip += 2;
+								break;
+							}
+							// #g - Green text
+							case 'g':
+							{
+								// TODO: Need to get the proper color
+								skip += 2;
+								break;
+							}
+							// TODO: Is there a space between the h and ending # or not?
+							// #h # - Shows the name of the player
+							case 'h':
+							{
+								// TODO: Needs implemented
+								skip += 2;
+								break;
+							}
+							// #i[id]# - Shows a picture of the given item
+							case 'i':
+							{
+								// TODO: Needs implemented
+								skip += 2;
+								break;
+							}
+							// #k - Black text
+							case 'k':
+							{
+								color = Color::Name::DARKGREY;
+								skip += 2;
+								break;
+							}
+							// #l - Ends the list of items in the selection
+							case 'l':
+							{
+								// TODO: Needs implemented
+								skip += 2;
+								break;
+							}
+							// #L[number]# - Starts a selection for the number of items given
+							case 'L':
+							{
+								// TODO: Needs implemented
+								skip += 2;
+								break;
+							}
+							// #m[id]# - Shows the name of the given map
+							case 'm':
+							{
+								// TODO: Needs implemented
+								skip += 2;
+								break;
+							}
+							// #n - Normal text (Removes bold)
+							case 'n':
+							case 'N':
+							{
+								switch (last_font)
+								{
+									case Text::Font::A11B:
+										fontid = Text::Font::A11M;
+										break;
+									case Text::Font::A12B:
+										fontid = Text::Font::A12M;
+										break;
+									case Text::Font::A13B:
+										fontid = Text::Font::A13M;
+										break;
+									case Text::Font::A18B:
+										fontid = Text::Font::A18M;
+										break;
+									default:
+										single_console::log_message("[GraphicsGL::LayoutBuilder::add] Unknown Text::Font: [" + std::to_string(last_font) + "]");
+										break;
+								}
+
+								skip += 2;
+								break;
+							}
+							// #o[id]# - Shows the name of the given monster
+							case 'o':
+							{
+								// TODO: Needs implemented
+								skip += 2;
+								break;
+							}
+							// #p[id]# - Shows the name of the given NPC
+							case 'p':
+							{
+								// TODO: Needs implemented
+								skip += 2;
+								break;
+							}
+							// #q[id]# - Shows the name of the given skill
+							case 'q':
+							{
+								// TODO: Needs implemented
+								skip += 2;
+								break;
+							}
+							// #r - Red text
+							case 'r':
+							{
+								color = Color::Name::RED;
+								skip += 2;
+								break;
+							}
+							// #s[id]# - Shows the image of the given skill
+							case 's':
+							{
+								// TODO: Needs implemented
+								skip += 2;
+								break;
+							}
+							// #t[id]#
+							// #z[id]#
+							// Shows the name of the given item
+							// TODO: Are these the same?
+							case 't':
+							case 'z':
+							{
+								// TODO: Needs implemented
+								skip += 2;
+								break;
+							}
+							// #v[id]# - Shows a picture of the given item
+							case 'v':
+							{
+								// TODO: Needs implemented
+								skip += 2;
+								break;
+							}
+							// #x - Returns "0%" (Need more information on this)
+							case 'x':
+							{
+								// TODO: Needs implemented
+								skip += 2;
+								break;
+							}
+							default:
+							{
+								single_console::log_message("[GraphicsGL::LayoutBuilder::add] Unknown format: [" + std::to_string(c) + "]");
+								break;
+							}
+						}
 					}
 
+					break;
+				}
+				// \t - Tab (4 spaces)
+				case '\t':
+				{
+					ax = font.chars[' '].ax * 4;
 					skip++;
 					break;
 				}
@@ -623,7 +849,11 @@ namespace ms
 			for (size_t i = first; i < last; i++)
 			{
 				char c = text[i];
-				wordwidth += font.chars[c].ax;
+
+				if (c == '\t')
+					wordwidth += ax;
+				else
+					wordwidth += font.chars[c].ax;
 
 				if (wordwidth > maxwidth)
 				{
@@ -776,7 +1006,8 @@ namespace ms
 				for (size_t pos = word.first; pos < word.last; ++pos)
 				{
 					const char c = text[pos];
-					const Font::Char& ch = font.chars[c];
+					const Font& word_font = fonts[word.font];
+					const Font::Char& ch = word_font.chars[c];
 
 					GLshort char_x = x + ax + ch.bl;
 					GLshort char_y = y + ay - ch.bt;

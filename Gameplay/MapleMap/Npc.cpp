@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Npc.h"
 
+#include <codecvt>
+
 #ifdef USE_NX
 #include <nlnx/nx.hpp>
 #endif
@@ -62,6 +64,21 @@ namespace ms
 
 		name = strsrc["name"];
 		func = strsrc["func"];
+
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+		std::wstring wide = converter.from_bytes(func);
+
+		for (size_t i = 0; i < wide.size(); i++)
+		{
+			wchar_t c = wide[i];
+
+			// Korean
+			if (c >= 0x1100 && c <= 0x11FF)
+			{
+				func = "";
+				break;
+			}
+		}
 
 		namelabel = Text(Text::Font::A13B, Text::Alignment::CENTER, Color::Name::YELLOW, Text::Background::NAMETAG, name);
 		funclabel = Text(Text::Font::A13B, Text::Alignment::CENTER, Color::Name::YELLOW, Text::Background::NAMETAG, func);

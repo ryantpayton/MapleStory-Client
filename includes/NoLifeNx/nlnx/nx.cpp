@@ -45,7 +45,7 @@ namespace nl
 			return *files.back();
 		}
 
-		node Base, Character, Effect, Etc, Item, Map, MapLatest, Map001, Map002, Map2, Mob, Mob001, Mob002, Mob2, Morph, Npc, Quest, Reactor, Skill, Skill001, Skill002, Skill003, Sound, Sound001, Sound002, Sound2, String, TamingMob, UI;
+		node Base, Character, Effect, Etc, Item, Map, Map001, Map002, Map2, Mob, Mob001, Mob002, Mob2, Morph, Npc, Quest, Reactor, Skill, Skill001, Skill002, Skill003, Sound, Sound001, Sound002, Sound2, String, TamingMob, UI;
 
 		void load_all()
 		{
@@ -57,7 +57,6 @@ namespace nl
 				Etc = add_file("Etc.nx");
 				Item = add_file("Item.nx");
 				Map = add_file("Map.nx");
-				MapLatest = add_file("MapLatest.nx");
 				Map001 = add_file("Map001.nx");
 				Map002 = add_file("Map002.nx");
 				Map2 = add_file("Map2.nx");
@@ -89,7 +88,6 @@ namespace nl
 				Etc = Base["Etc"];
 				Item = Base["Item"];
 				Map = Base["Map"];
-				MapLatest = Base["MapLatest"];
 				Map001 = Base["Map001"];
 				Map002 = Base["Map002"];
 				Map2 = Base["Map2"];

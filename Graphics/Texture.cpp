@@ -46,7 +46,7 @@ namespace ms
 						if (first_part == "Map")
 						{
 							const std::string& path = _outlink.substr(first + 1);
-							nl::node foundOutlink = nl::nx::MapLatest.resolve(path);
+							nl::node foundOutlink = nl::nx::Map.resolve(path);
 
 							if (foundOutlink)
 								src = foundOutlink;
