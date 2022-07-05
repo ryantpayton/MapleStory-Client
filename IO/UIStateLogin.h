@@ -44,7 +44,7 @@ namespace ms
 		void show_item(Tooltip::Parent, int32_t) override {}
 		void show_skill(Tooltip::Parent, int32_t, int32_t, int32_t, int64_t) override {}
 		void show_text(Tooltip::Parent parent, std::string text) override;
-		void show_map(Tooltip::Parent, std::string, std::string, int32_t, bool) {}
+		void show_map(Tooltip::Parent, std::string, std::string, int32_t, bool, bool) {}
 
 		Iterator pre_add(UIElement::Type type, bool toggled, bool focused) override;
 		void remove(UIElement::Type type) override;

@@ -561,13 +561,13 @@ namespace ms
 		}
 	}
 
-	void UIStateGame::show_map(Tooltip::Parent parent, std::string name, std::string description, int32_t mapid, bool bolded)
+	void UIStateGame::show_map(Tooltip::Parent parent, std::string title, std::string description, int32_t mapid, bool bolded, bool portal)
 	{
-		matooltip.set_name(parent, name, bolded);
+		matooltip.set_title(parent, title, bolded);
 		matooltip.set_desc(description);
-		matooltip.set_mapid(mapid);
+		matooltip.set_mapid(mapid, portal);
 
-		if (!name.empty())
+		if (!title.empty())
 		{
 			tooltip = matooltip;
 			tooltipparent = parent;
@@ -687,7 +687,7 @@ namespace ms
 		auto begin = elementorder.rbegin();
 		auto end = elementorder.rend();
 
-		for (auto iter = begin; iter != end; ++iter)
+		for (auto& iter = begin; iter != end; ++iter)
 		{
 			if (std::find(types.begin(), types.end(), *iter) != types.end())
 			{
@@ -706,7 +706,7 @@ namespace ms
 		auto begin = elementorder.rbegin();
 		auto end = elementorder.rend();
 
-		for (auto iter = begin; iter != end; ++iter)
+		for (auto& iter = begin; iter != end; ++iter)
 		{
 			auto& element = elements[*iter];
 

@@ -147,12 +147,10 @@ namespace ms
 				return Button::State::IDENTITY;
 			case Buttons::CLOSE:
 				deactivate();
-				break;
+				return Button::State::NORMAL;
 			default:
-				break;
+				return Button::State::DISABLED;
 		}
-
-		return Button::State::NORMAL;
 	}
 
 	void UIQuestLog::change_tab(uint16_t tabid)

@@ -444,9 +444,9 @@ namespace ms
 		state->show_text(parent, text);
 	}
 
-	void UI::show_map(Tooltip::Parent parent, std::string name, std::string description, int32_t mapid, bool bolded)
+	void UI::show_map(Tooltip::Parent parent, std::string title, std::string description, int32_t mapid, bool bolded, bool portal)
 	{
-		state->show_map(parent, name, description, mapid, bolded);
+		state->show_map(parent, title, description, mapid, bolded, portal);
 	}
 
 	Keyboard& UI::get_keyboard()

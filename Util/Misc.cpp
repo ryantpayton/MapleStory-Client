@@ -107,6 +107,7 @@ namespace ms
 	{
 		namespace Map
 		{
+			// TODO: nl::nx::String["Map.img"]["victoria"][160070000] is returning invalid data, yet the WZ file is fine.
 			MapInfo get_map_info_by_id(int32_t mapid)
 			{
 				std::string map_category = get_map_category(mapid);
@@ -176,23 +177,27 @@ namespace ms
 				{
 					int64_t life_id = life["id"];
 					std::string life_type = life["type"];
+					uint8_t hide_life = life["hide"];
 
-					if (life_type == "m")
+					if (!hide_life)
 					{
-						// Mob
-						nl::node life_name = nl::nx::String["Mob.img"][life_id]["name"];
+						if (life_type == "m")
+						{
+							// Mob
+							nl::node life_name = nl::nx::String["Mob.img"][life_id]["name"];
 
-						std::string life_id_str = string_format::extend_id(life_id, 7);
-						nl::node life_level = nl::nx::Mob[life_id_str + ".img"]["info"]["level"];
+							std::string life_id_str = string_format::extend_id(life_id, 7);
+							nl::node life_level = nl::nx::Mob[life_id_str + ".img"]["info"]["level"];
 
-						if (life_name && life_level)
-							map_life[life_id] = { life_type, life_name + "(Lv. " + life_level + ")" };
-					}
-					else if (life_type == "n")
-					{
-						// NPC
-						if (nl::node life_name = nl::nx::String["Npc.img"][life_id]["name"])
-							map_life[life_id] = { life_type, life_name };
+							if (life_name && life_level)
+								map_life[life_id] = { life_type, life_name + "(Lv. " + life_level + ")" };
+						}
+						else if (life_type == "n")
+						{
+							// NPC
+							if (nl::node life_name = nl::nx::String["Npc.img"][life_id]["name"])
+								map_life[life_id] = { life_type, life_name };
+						}
 					}
 				}
 

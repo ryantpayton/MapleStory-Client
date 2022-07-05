@@ -72,21 +72,21 @@ namespace ms
 	{
 		if (type == Type::MIN)
 		{
-			for (auto sprite : min_sprites)
+			for (Sprite sprite : min_sprites)
 				sprite.draw(position, alpha);
 
 			combined_text.draw(position + Point<int16_t>(7, -3));
 		}
 		else if (type == Type::NORMAL)
 		{
-			for (auto sprite : normal_sprites)
+			for (Sprite sprite : normal_sprites)
 				sprite.draw(position, alpha);
 
 			if (has_map)
 			{
 				Animation portal_marker = Animation(marker["portal"]);
 
-				for (auto sprite : static_marker_info)
+				for (auto& sprite : static_marker_info)
 					portal_marker.draw(position + sprite.second, alpha);
 
 				draw_movable_markers(position, alpha);
@@ -97,7 +97,7 @@ namespace ms
 		}
 		else
 		{
-			for (auto sprite : max_sprites)
+			for (Sprite sprite : max_sprites)
 				sprite.draw(position, alpha);
 
 			region_text.draw(position + Point<int16_t>(48, 14));
@@ -107,7 +107,7 @@ namespace ms
 			{
 				Animation portal_marker(marker["portal"]);
 
-				for (auto sprite : static_marker_info)
+				for (auto& sprite : static_marker_info)
 					portal_marker.draw(position + sprite.second + Point<int16_t>(0, MAX_ADJ), alpha);
 
 				draw_movable_markers(position + Point<int16_t>(0, MAX_ADJ), alpha);
@@ -160,17 +160,17 @@ namespace ms
 
 		if (type == Type::MIN)
 		{
-			for (auto sprite : min_sprites)
+			for (Sprite sprite : min_sprites)
 				sprite.update();
 		}
 		else if (type == Type::NORMAL)
 		{
-			for (auto sprite : normal_sprites)
+			for (Sprite sprite : normal_sprites)
 				sprite.update();
 		}
 		else
 		{
-			for (auto sprite : max_sprites)
+			for (Sprite sprite : max_sprites)
 				sprite.update();
 		}
 
@@ -244,14 +244,14 @@ namespace ms
 				std::string name = n->get_name();
 				std::string func = n->get_func();
 
-				UI::get().show_map(Tooltip::Parent::MINIMAP, name, func, {}, false);
+				UI::get().show_map(Tooltip::Parent::MINIMAP, name, func, {}, false, false);
 				break;
 			}
 		}
 
 		if (!found)
 		{
-			for (auto sprite : static_marker_info)
+			for (auto& sprite : static_marker_info)
 			{
 				Rectangle<int16_t> marker_spot = Rectangle<int16_t>(sprite.second, sprite.second + 8);
 
@@ -268,7 +268,7 @@ namespace ms
 					{
 						found = true;
 
-						UI::get().show_map(Tooltip::Parent::MINIMAP, portal_name, "", portal_tm, false);
+						UI::get().show_map(Tooltip::Parent::MINIMAP, portal_name, "", portal_tm, false, true);
 						break;
 					}
 				}

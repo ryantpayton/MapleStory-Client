@@ -209,21 +209,6 @@ namespace ms
 
 	Button::State UIWorldMap::button_pressed(uint16_t buttonid)
 	{
-		switch (buttonid)
-		{
-			case Buttons::BT_CLOSE:
-				deactivate();
-				break;
-			case Buttons::BT_SEARCH:
-				set_search(!search);
-				break;
-			case Buttons::BT_SEARCH_CLOSE:
-				set_search(false);
-				break;
-			default:
-				break;
-		}
-
 		if (buttonid >= Buttons::BT_LINK0)
 		{
 			update_world(link_maps[buttonid]);
@@ -231,7 +216,20 @@ namespace ms
 			return Button::State::IDENTITY;
 		}
 
-		return Button::State::NORMAL;
+		switch (buttonid)
+		{
+			case Buttons::BT_CLOSE:
+				deactivate();
+				return Button::State::NORMAL;
+			case Buttons::BT_SEARCH:
+				set_search(!search);
+				return Button::State::NORMAL;
+			case Buttons::BT_SEARCH_CLOSE:
+				set_search(false);
+				return Button::State::NORMAL;
+			default:
+				return Button::State::DISABLED;
+		}
 	}
 
 	void UIWorldMap::remove_cursor()
@@ -256,12 +254,12 @@ namespace ms
 			Point<int16_t> d = p + path.second.marker.get_dimensions();
 			Rectangle<int16_t> abs_bounds = Rectangle<int16_t>(p, d);
 
-			if (abs_bounds.contains(cursorpos))
+			if (!clicked && abs_bounds.contains(cursorpos))
 			{
 				path_img = path.second.path;
 				show_path_img = path_img.is_valid();
 
-				UI::get().show_map(Tooltip::Parent::WORLDMAP, path.second.title, path.second.description, path.second.map_ids[0], path.second.bolded);
+				UI::get().show_map(Tooltip::Parent::WORLDMAP, path.second.title, path.second.description, path.second.map_ids[0], path.second.bolded, false);
 				break;
 			}
 		}
@@ -335,6 +333,8 @@ namespace ms
 			nl::node title = list["title"];
 			nl::node type = list["type"];
 			nl::node marker = mapImage[type];
+			
+			bool bolded = !desc.get_string().empty();
 
 			std::vector<int32_t> map_ids;
 
@@ -344,12 +344,13 @@ namespace ms
 			if (!desc && !title)
 			{
 				NxHelper::Map::MapInfo map_info = NxHelper::Map::get_map_info_by_id(mapNo[0]);
+				bolded = !map_info.description.empty();
 
-				map_spots.emplace_back(std::make_pair<Point<int16_t>, MapSpot>(spot, { map_info.description, path, map_info.full_name, type, marker, true, map_ids }));
+				map_spots.emplace_back(std::make_pair<Point<int16_t>, MapSpot>(spot, { map_info.description, path, map_info.full_name, type, marker, bolded, map_ids }));
 			}
 			else
 			{
-				map_spots.emplace_back(std::make_pair<Point<int16_t>, MapSpot>(spot, { desc, path, title, type, marker, false, map_ids }));
+				map_spots.emplace_back(std::make_pair<Point<int16_t>, MapSpot>(spot, { desc, path, title, type, marker, bolded, map_ids }));
 			}
 		}
 	}

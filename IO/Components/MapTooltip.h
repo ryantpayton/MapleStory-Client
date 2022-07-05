@@ -31,36 +31,42 @@ namespace ms
 
 		void draw(Point<int16_t> position) const override;
 
-		void set_name(Tooltip::Parent parent, std::string name, bool bolded);
+		void set_title(Tooltip::Parent parent, std::string title, bool bolded);
 		void set_desc(std::string description);
-		void set_mapid(int32_t mapid);
+		void set_mapid(int32_t mapid, bool portal);
 
 		void reset();
 
 	private:
 		static constexpr uint8_t MAX_LIFE = 10u;
-		static constexpr uint8_t MIN_WIDTH = 166u;
-		static constexpr uint8_t BOTTOM_PADDING = 8u;
-		static constexpr Point<int16_t> SEPARATOR_ADJ = Point<int16_t>(5, 0);
-		static constexpr Point<int16_t> LIFE_LABEL_ADJ = Point<int16_t>(20, 3);
-		static constexpr Point<int16_t> LIFE_ICON_ADJ = Point<int16_t>(5, 9);
+		static constexpr Point<int16_t> SEPARATOR_ADJ = Point<int16_t>(1, 10);
+		static constexpr Point<int16_t> LIFE_LABEL_ADJ = Point<int16_t>(16, 3);
+		static constexpr Point<int16_t> LIFE_ICON_ADJ = Point<int16_t>(1, 9);
+
+		void draw_worldmap(Point<int16_t> position) const;
+		void draw_minimap(Point<int16_t> position) const;
+
+		void set_worldmap_title(bool bolded);
+		void set_minimap_title(bool bolded);
+		void set_worldmap_desc();
+		void set_minimap_desc();
+		void set_worldmap_mapid(std::unordered_map<int64_t, std::pair<std::string, std::string>> life, bool portal);
+		void set_minimap_mapid(std::unordered_map<int64_t, std::pair<std::string, std::string>> life, bool portal);
 
 		MapleFrame frame;
 
 		Texture cover;
 		Texture Mob;
 		Texture Npc;
-		Texture Party;
+		//Texture Party;
 
 		Tooltip::Parent parent;
 
-		std::string name;
+		std::string title;
 		std::string description;
 
-		Text name_label;
-		Text name_simple;
+		Text title_label;
 		Text desc_label;
-		Text desc_simple;
 		Text mob_labels[MAX_LIFE];
 		Text npc_labels[MAX_LIFE];
 
