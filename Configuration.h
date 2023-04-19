@@ -472,7 +472,7 @@ namespace ms
 	// The default position of UIKeyConfig
 	struct PosKEYCONFIG : public Configuration::PointEntry
 	{
-		PosKEYCONFIG() : PointEntry("PosKEYCONFIG", "(65, 50)") {}
+		PosKEYCONFIG() : PointEntry("PosKEYCONFIG", "(144, 144)") {}
 	};
 
 	// The default position of UIOptionMenu

@@ -86,6 +86,7 @@ namespace ms
 			MAPLESTORAGE = 200,
 			SAFEMODE,
 			MUTE,
+			EMOTICON,
 			MAPLERELAY = 300,
 			FAMILIAR = 1000,
 			TOSPOUSE,
