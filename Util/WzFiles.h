@@ -20,6 +20,8 @@
 #include "../MapleStory.h"
 
 #ifndef USE_NX
+#pragma comment(lib, "WzLib")
+
 #include "../Error.h"
 
 #include <array>
@@ -35,34 +37,34 @@ namespace ms
 		// Names of the needed game files
 		constexpr std::array<const char*, NUM_FILES> filenames =
 		{
-			"Base.nx",
-			"Character.nx",
-			"Effect.nx",
-			"Etc.nx",
-			"Item.nx",
-			"Map.nx",
-			"Map001.nx",
-			"Map002.nx",
-			"Map2.nx",
-			"Mob.nx",
-			"Mob001.nx",
-			"Mob002.nx",
-			"Mob2.nx",
-			"Morph.nx",
-			"Npc.nx",
-			"Quest.nx",
-			"Reactor.nx",
-			"Skill.nx",
-			"Skill001.nx",
-			"Skill002.nx",
-			"Skill003.nx",
-			"Sound.nx",
-			"Sound001.nx",
-			"Sound002.nx",
-			"Sound2.nx",
-			"String.nx",
-			"TamingMob.nx",
-			"UI.nx"
+			"Base.wz",
+			"Character.wz",
+			"Effect.wz",
+			"Etc.wz",
+			"Item.wz",
+			"Map.wz",
+			"Map001.wz",
+			"Map002.wz",
+			"Map2.wz",
+			"Mob.wz",
+			"Mob001.wz",
+			"Mob002.wz",
+			"Mob2.wz",
+			"Morph.wz",
+			"Npc.wz",
+			"Quest.wz",
+			"Reactor.wz",
+			"Skill.wz",
+			"Skill001.wz",
+			"Skill002.wz",
+			"Skill003.wz",
+			"Sound.wz",
+			"Sound001.wz",
+			"Sound002.wz",
+			"Sound2.wz",
+			"String.wz",
+			"TamingMob.wz",
+			"UI.wz"
 		};
 
 		// Initialize WZ
@@ -190,7 +192,7 @@ namespace nl
 	inline std::string operator+(node, std::string) { return ""; }
 	inline std::string operator+(node, char const*) { return ""; }
 
-	namespace nx
+	namespace wz
 	{
 		static nl::node Base, Character, Effect, Etc, Item, Map, Map001, Map002, Map2, Mob, Mob001, Mob2, Morph, Npc, Quest, Reactor, Skill, Skill001, Skill002, Sound, Sound001, Sound2, String, TamingMob, UI;
 	}

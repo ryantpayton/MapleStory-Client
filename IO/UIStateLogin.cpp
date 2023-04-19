@@ -31,7 +31,7 @@ namespace ms
 	{
 		focused = UIElement::Type::NONE;
 
-//#ifdef DEBUG
+//#ifdef _DEBUG
 //		Configuration::get().set_start_shown(true);
 //
 //		emplace<UILogin>();

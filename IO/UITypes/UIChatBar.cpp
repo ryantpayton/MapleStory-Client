@@ -146,7 +146,7 @@ namespace ms
 
 		toggle_view(Setting<ChatViewMax>::get().load(), false);
 
-#ifdef DEBUG
+#ifdef _DEBUG
 		dragarea_box = ColorBox(dragarea.x(), dragarea.y(), Color::Name::BLUE, 0.5f);
 		input_box = ColorBox(input_bg_x, input_bg_y, Color::Name::RED, 0.5f);
 #endif
@@ -195,7 +195,7 @@ namespace ms
 
 				input_text.draw(Point<int16_t>(1, -2), Point<int16_t>(1, -3));
 
-#ifdef DEBUG
+#ifdef _DEBUG
 				input_box.draw(pos);
 #endif
 			}
@@ -268,7 +268,7 @@ namespace ms
 
 		UIElement::draw(inter);
 
-#ifdef DEBUG
+#ifdef _DEBUG
 		dimension_box.draw(get_position());
 		dragarea_box.draw(get_dragarea_position());
 
@@ -415,7 +415,7 @@ namespace ms
 								temp_view_y = pos.y();
 						}
 
-#ifdef DEBUG
+#ifdef _DEBUG
 						dimension = Point<int16_t>(user_view_x, top_y + center_y + bottom_y) + Point<int16_t>(0, temp_view_y);
 
 						dimension_box = ColorBox(dimension.x(), dimension.y(), Color::Name::RED, 0.5f);
@@ -461,7 +461,7 @@ namespace ms
 								temp_view_x = pos.x();
 						}
 
-#ifdef DEBUG
+#ifdef _DEBUG
 						dimension = Point<int16_t>(temp_view_x, top_y + center_y + bottom_y) + Point<int16_t>(0, user_view_y);
 
 						dimension_box = ColorBox(dimension.x(), dimension.y(), Color::Name::RED, 0.5f);
@@ -590,7 +590,7 @@ namespace ms
 							}
 						}
 
-#ifdef DEBUG
+#ifdef _DEBUG
 						dimension = Point<int16_t>(temp_view_x, top_y + center_y + bottom_y) + Point<int16_t>(0, temp_view_y);
 
 						dimension_box = ColorBox(dimension.x(), dimension.y(), Color::Name::RED, 0.5f);
@@ -1106,7 +1106,7 @@ namespace ms
 			buttons[Buttons::BtMin]->set_position(Point<int16_t>(min_x - btMin_x, -top_y - center_y - user_view_y) + btMin_padding);
 		}
 
-#ifdef DEBUG
+#ifdef _DEBUG
 		dimension_box = ColorBox(dimension.x(), dimension.y(), Color::Name::RED, 0.5f);
 		top_box = ColorBox(dimension.x(), 3, Color::Name::GREEN, 0.5f);
 		bottom_box = ColorBox(dimension.x(), 3, Color::Name::GREEN, 0.5f);

@@ -175,7 +175,7 @@ namespace ms
 			int8_t channel = recv.read_byte();
 			bool megaEar = recv.read_bool();
 
-#ifdef DEBUG
+#ifdef _DEBUG
 			const std::string& megatype = megaEar ? "megaEar" : "unknown megatype";
 			error += "Unhandled [" + megatype + "] on channel [" + std::to_string(channel) + "].";
 
@@ -190,7 +190,7 @@ namespace ms
 		{
 			recv.skip_int();
 
-#ifdef DEBUG
+#ifdef _DEBUG
 			error += "Unhandled type [" + std::to_string(type) + "].";
 
 			UI::get().get_element<UIChatBar>()->show_message(error.c_str(), UIChatBar::MessageType::RED);
@@ -200,7 +200,7 @@ namespace ms
 		{
 			int32_t npc = recv.read_int();
 
-#ifdef DEBUG
+#ifdef _DEBUG
 			error += "Unhandled message for NPC [" + std::to_string(npc) + "].";
 
 			UI::get().get_element<UIChatBar>()->show_message(error.c_str(), UIChatBar::MessageType::RED);
@@ -208,7 +208,7 @@ namespace ms
 		}
 		else
 		{
-#ifdef DEBUG
+#ifdef _DEBUG
 			error += "Unhandled type [" + std::to_string(type) + "].";
 
 			UI::get().get_element<UIChatBar>()->show_message(error.c_str(), UIChatBar::MessageType::RED);

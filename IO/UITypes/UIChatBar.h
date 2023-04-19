@@ -166,7 +166,7 @@ namespace ms
 		std::vector<std::string> user_message_history;
 		size_t user_message_history_index;
 
-#ifdef DEBUG
+#ifdef _DEBUG
 		ColorBox dimension_box;
 		ColorBox dragarea_box;
 		ColorBox top_box;

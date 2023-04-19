@@ -20,6 +20,8 @@
 #include "../MapleStory.h"
 
 #ifdef USE_NX
+#pragma comment(lib, "NoLifeNx")
+
 #include "../Error.h"
 
 #include <array>

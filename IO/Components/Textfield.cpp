@@ -50,7 +50,7 @@ namespace ms
 	{
 		Point<int16_t> absp = bounds.get_left_top();
 
-#ifdef DEBUG
+#ifdef _DEBUG
 		boundsoutline.draw(absp);
 #endif
 

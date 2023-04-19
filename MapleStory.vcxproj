@@ -125,7 +125,7 @@ copy /y /d "$(ProjectDir)includes\NoLifeNx\nlnx\includes\lz4_v1_8_2_win$(Platfor
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glew32s.lib;freetype.lib;glfw3.lib;bass.lib;OpenGL32.lib;Iphlpapi.lib;NoLifeNx.lib;WzLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32s.lib;freetype.lib;glfw3.lib;bass.lib;OpenGL32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)includes\glew-2.1.0\lib\Release\$(Platform);$(ProjectDir)includes\freetype\win$(PlatformArchitecture);$(ProjectDir)includes\glfw-3.3.2.bin.WIN$(PlatformArchitecture)\lib-vc2015;$(ProjectDir)includes\bass24\c\$(PlatformTarget);$(ProjectDir)includes\NoLifeNx\nlnx\$(PlatformTarget)\$(Configuration);$(ProjectDir)includes\WzLib\bin\Win32Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -173,11 +173,11 @@ copy /y /d "$(ProjectDir)includes\NoLifeNx\nlnx\includes\lz4_v1_8_2_win$(Platfor
       <AdditionalIncludeDirectories>$(ProjectDir)includes\glew-2.1.0\include\GL;$(ProjectDir)includes\freetype\include;$(ProjectDir)includes\glfw-3.3.2.bin.WIN$(PlatformArchitecture)\include\GLFW;$(ProjectDir)includes\stb;$(ProjectDir)includes\bass24\c;$(ProjectDir)includes\NoLifeNx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glew32s.lib;freetype.lib;glfw3.lib;bass.lib;OpenGL32.lib;Iphlpapi.lib;NoLifeNx.lib;WzLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32s.lib;freetype.lib;glfw3.lib;bass.lib;OpenGL32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)includes\glew-2.1.0\lib\Release\$(Platform);$(ProjectDir)includes\freetype\win$(PlatformArchitecture);$(ProjectDir)includes\glfw-3.3.2.bin.WIN$(PlatformArchitecture)\lib-vc2015;$(ProjectDir)includes\bass24\c\$(PlatformTarget);$(ProjectDir)includes\NoLifeNx\nlnx\$(PlatformTarget)\$(Configuration);$(ProjectDir)includes\WzLib\bin\Win32Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>

@@ -161,7 +161,11 @@ namespace ms
 	}
 }
 
+#ifdef _DEBUG
 int main()
+#else
+int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow)
+#endif
 {
 	ms::HardwareInfo();
 	ms::ScreenResolution();

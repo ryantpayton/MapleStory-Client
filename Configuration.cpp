@@ -71,7 +71,7 @@ namespace ms
 
 	Configuration::~Configuration()
 	{
-#ifndef DEBUG
+#ifndef _DEBUG
 		save();
 #endif
 	}
@@ -172,6 +172,10 @@ namespace ms
 
 	bool Configuration::get_auto_login() const
 	{
+#ifdef NDEBUG
+		return false;
+#endif
+
 		return AUTO_LOGIN;
 	}
 
