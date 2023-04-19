@@ -116,7 +116,7 @@ namespace ms
 
 		if (name == "")
 		{
-			std::cout << "Skin [" << skin << "] is using the default value.";
+			LOG(LOG_DEBUG, "Skin [" << skin << "] is using the default value.");
 
 			name = nl::nx::String["Eqp.img"]["Eqp"]["Skin"][skin]["name"];
 		}

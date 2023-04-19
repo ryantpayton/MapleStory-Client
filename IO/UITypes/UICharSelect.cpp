@@ -633,7 +633,7 @@ namespace ms
 			if (character.id == id)
 				return character;
 
-		std::cout << "Invalid character id: [" << id << "]" << std::endl;
+		LOG(LOG_DEBUG, "Invalid character id: [" << id << "]");
 
 		static const CharEntry null_character = { {}, {}, 0 };
 

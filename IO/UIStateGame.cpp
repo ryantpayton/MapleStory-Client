@@ -371,7 +371,7 @@ namespace ms
 							}
 							default:
 							{
-								std::cout << "Unknown KeyAction::Id action: [" << action << "]" << std::endl;
+								LOG(LOG_DEBUG, "Unknown KeyAction::Id action: [" << action << "]");
 								break;
 							}
 						}

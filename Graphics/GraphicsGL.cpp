@@ -86,8 +86,8 @@ namespace ms
 		if (GLenum error = glewInit())
 			return Error(Error::Code::GLEW, (const char*)glewGetErrorString(error));
 
-		std::cout << "Using OpenGL " << glGetString(GL_VERSION) << std::endl;
-		std::cout << "Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
+		LOG(LOG_INFO, "Using OpenGL " << glGetString(GL_VERSION));
+		LOG(LOG_INFO, "Using GLEW " << glewGetString(GLEW_VERSION));
 
 		if (FT_Init_FreeType(&ftlibrary))
 			return Error::Code::FREETYPE;
@@ -98,7 +98,7 @@ namespace ms
 
 		FT_Library_Version(ftlibrary, &ftmajor, &ftminor, &ftpatch);
 
-		std::cout << "Using FreeType " << ftmajor << "." << ftminor << "." << ftpatch << std::endl;
+		LOG(LOG_INFO, "Using FreeType " << ftmajor << "." << ftminor << "." << ftpatch);
 
 		// Build and compile our shader program
 		// ------------------------------------
@@ -472,12 +472,14 @@ namespace ms
 			}
 		}
 
-		//size_t used = ATLASW * border.y() + border.x() * yrange.second();
-		//
-		//double usedpercent = static_cast<double>(used) / (ATLASW * ATLASH);
-		//double wastedpercent = static_cast<double>(wasted) / used;
-		//
-		//std::cout << "Used: [" << usedpercent << "] Wasted: [" << wastedpercent << "]" << std::endl;
+#if LOG_LEVEL >= LOG_TRACE
+		size_t used = ATLASW * border.y() + border.x() * yrange.second();
+
+		double usedpercent = static_cast<double>(used) / (ATLASW * ATLASH);
+		double wastedpercent = static_cast<double>(wasted) / used;
+
+		LOG(LOG_TRACE, "Used: [" << usedpercent << "] Wasted: [" << wastedpercent << "]");
+#endif
 
 		glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, GL_BGRA, GL_UNSIGNED_BYTE, bmp.data());
 

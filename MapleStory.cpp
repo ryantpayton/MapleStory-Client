@@ -120,7 +120,7 @@ namespace ms
 				{
 					int64_t fps = (samples * 1000000) / period;
 
-					std::cout << "FPS: " << fps << std::endl;
+					LOG(LOG_INFO, "FPS: " << fps);
 
 					period = 0;
 					samples = 0;
@@ -140,13 +140,13 @@ namespace ms
 			const char* args = error.get_args();
 			bool can_retry = error.can_retry();
 
-			std::cout << "Error: " << message << std::endl;
-
 			if (args && args[0])
-				std::cout << "Message: " << args << std::endl;
+				LOG(LOG_ERROR, message << args);
+			else
+				LOG(LOG_ERROR, args);
 
 			if (can_retry)
-				std::cout << "Enter 'retry' to try again." << std::endl;
+				LOG(LOG_INFO, "Enter 'retry' to try again.");
 
 			std::string command;
 			std::cin >> command;

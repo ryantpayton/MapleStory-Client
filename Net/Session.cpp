@@ -101,7 +101,7 @@ namespace ms
 			}
 			catch (const PacketError& err)
 			{
-				std::cout << err.what() << std::endl;
+				LOG(LOG_NETWORK, err.what());
 			}
 
 			pos = 0;

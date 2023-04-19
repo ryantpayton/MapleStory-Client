@@ -366,7 +366,7 @@ namespace ms
 		if (value >= Inventory::Movement::MOVE_INTERNAL && value <= Inventory::Movement::MOVE_EQUIP)
 			return static_cast<Movement>(value);
 
-		std::cout << "Unknown Inventory::Movement value: [" << value << "]" << std::endl;
+		LOG(LOG_DEBUG, "Unknown Inventory::Movement value: [" << value << "]");
 
 		return Inventory::Movement::MOVE_NONE;
 	}

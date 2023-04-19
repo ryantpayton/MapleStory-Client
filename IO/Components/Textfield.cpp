@@ -293,7 +293,7 @@ namespace ms
 		}
 		else
 		{
-#ifdef DEBUG
+#if LOG_LEVEL >= LOG_UI
 			Point<int16_t> lt = bounds.get_left_top();
 			int16_t lt_x = lt.x();
 			int16_t lt_y = lt.y();
@@ -305,14 +305,12 @@ namespace ms
 			int16_t cur_x = cursorpos.x();
 			int16_t cur_y = cursorpos.y();
 
-			std::cout
-				<< "(" << lt_x << ", " << lt_y << ") != (" << rb_x << ", " << rb_y << ") && "
+			LOG(LOG_UI,
+				"(" << lt_x << ", " << lt_y << ") != (" << rb_x << ", " << rb_y << ") && "
 				<< cur_x << " >= (" << lt_x << ") && "
 				<< cur_x << " <= (" << rb_x << ") && "
 				<< cur_y << " >= (" << lt_y << ") && "
-				<< cur_y << " <= (" << rb_y << ")"
-				<< std::endl
-				<< std::endl;
+				<< cur_y << " <= (" << rb_y << ")");
 #endif
 
 			if (clicked && state == State::FOCUSED)

@@ -875,7 +875,7 @@ namespace ms
 		else if (type == MessageType::WHITE)
 			color = Color::Name::WHITE;
 		else
-			std::cout << "[UIChatBar::show_message]: " << type << " not supported." << std::endl;
+			LOG(LOG_DEBUG, "[UIChatBar::show_message]: " << type << " not supported.");
 
 		message_history.push_back(Message(MessageGroup::ALL, type, Text(Text::Font::A11M, Text::Alignment::LEFT, color, message)));
 	}

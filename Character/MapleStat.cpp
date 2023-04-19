@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "MapleStat.h"
 
+#include "../../MapleStory.h"
+
 #include <iostream>
 
 namespace ms
@@ -26,7 +28,7 @@ namespace ms
 		Id by_id(size_t id)
 		{
 			if (id >= LENGTH)
-				std::cout << "Unknown MapleStat::Id id: [" << id << "]" << std::endl;
+				LOG(LOG_DEBUG, "Unknown MapleStat::Id id: [" << id << "]");
 
 			return static_cast<Id>(id);
 		}

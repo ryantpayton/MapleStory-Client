@@ -222,7 +222,7 @@ namespace ms
 			{
 				log_history.push_back(message);
 
-				std::cout << message << std::endl;
+				LOG(LOG_DEBUG, message);
 			}
 		}
 	}

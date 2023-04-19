@@ -225,9 +225,9 @@ namespace ms
 		if (Configuration::get().get_show_packets())
 		{
 			if (opcode == PING)
-				std::cout << "Received Packet: PING" << std::endl;
+				LOG(LOG_NETWORK, "Received Packet: PING");
 			else
-				std::cout << "Received Packet: " << std::to_string(opcode) << std::endl;
+				LOG(LOG_NETWORK, "Received Packet: " << std::to_string(opcode));
 		}
 
 		if (opcode < NUM_HANDLERS)
@@ -572,7 +572,6 @@ namespace ms
 			default: break;
 		}
 
-
-		std::cout << "[PacketSwitch::warn]: Opcode [" << opcode_msg << "] Error: " << message << std::endl;
+		LOG(LOG_NETWORK, "[PacketSwitch::warn]: Opcode [" << opcode_msg << "] Error: " << message);
 	}
 }

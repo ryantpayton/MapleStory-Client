@@ -36,7 +36,7 @@ namespace ms
 			}
 			catch (const std::exception& ex)
 			{
-				std::cout << __func__ << ": " << ex.what() << std::endl;
+				LOG(LOG_ERROR, __func__ << ": " << ex.what());
 
 				return def;
 			}

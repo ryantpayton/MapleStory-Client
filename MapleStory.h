@@ -26,5 +26,35 @@
 // If defined use NX, otherwise use WZ.
 #define USE_NX
 
-// Run in debug mode
-#define DEBUG
+// Debug options
+#define LOG_ERROR	1
+#define LOG_WARN	2
+#define LOG_INFO	3
+#define LOG_DEBUG	4
+#define LOG_NETWORK	5
+#define LOG_UI		6
+#define LOG_TRACE	7
+
+// Log Level
+#ifdef _DEBUG
+	#define LOG_LEVEL LOG_DEBUG
+#else
+	#define LOG_LEVEL LOG_WARN
+#endif
+
+// Log Text
+#define LOG_TEXT(level) (\
+	level == LOG_ERROR		? "ERROR"	:\
+	level == LOG_WARN		? "WARN"	:\
+	level == LOG_INFO		? "INFO"	:\
+	level == LOG_DEBUG		? "DEBUG"	:\
+	level == LOG_NETWORK	? "NETWORK"	:\
+	level == LOG_TRACE		? "TRACE"	:\
+	level == LOG_UI			? "UI"		: "UNDEFINED")
+
+// Log Commands
+#ifdef _DEBUG
+	#define LOG(level, message) level <= LOG_LEVEL ? std::cout << "[" << LOG_TEXT(level) << "]: " << message << std::endl : std::cout
+#else
+	#define LOG(level, message) void(0)
+#endif

@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "InventoryType.h"
 
+#include "../../MapleStory.h"
+
 #include <iostream>
 
 namespace ms
@@ -56,7 +58,7 @@ namespace ms
 			return Id::CASH;
 		}
 
-		std::cout << "Unknown InventoryType::Id value: [" << value << "]" << std::endl;
+		LOG(LOG_DEBUG, "Unknown InventoryType::Id value: [" << value << "]");
 
 		return Id::NONE;
 	}

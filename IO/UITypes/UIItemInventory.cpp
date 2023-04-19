@@ -374,7 +374,7 @@ namespace ms
 
 							if (equipslot == EquipSlot::Id::NONE)
 							{
-								std::cout << "Could not find appropriate EquipSlot::Id for item [" << item_id << "]. Equip would be dropped." << std::endl;
+								LOG(LOG_DEBUG, "Could not find appropriate EquipSlot::Id for item [" << item_id << "]. Equip would be dropped.");
 								break;
 							}
 

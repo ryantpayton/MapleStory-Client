@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "EquipSlot.h"
 
+#include "../../MapleStory.h"
+
 #include <iostream>
 
 namespace ms
@@ -27,7 +29,7 @@ namespace ms
 		{
 			if (id >= Id::LENGTH)
 			{
-				std::cout << "Unknown EquipSlot::Id id: [" << id << "]" << std::endl;
+				LOG(LOG_DEBUG, "Unknown EquipSlot::Id id: [" << id << "]");
 
 				return Id::NONE;
 			}

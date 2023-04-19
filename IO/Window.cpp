@@ -45,7 +45,7 @@ namespace ms
 
 	void error_callback(int no, const char* description)
 	{
-		std::cout << "GLFW error [" << no << "]: " << description << std::endl;
+		LOG(LOG_ERROR, "GLFW error [" << no << "]: " << description);
 	}
 
 	void key_callback(GLFWwindow*, int key, int, int action, int)

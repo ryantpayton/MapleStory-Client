@@ -439,7 +439,7 @@ namespace ms
 				}
 				else
 				{
-					std::cout << "Invalid mapping (" << mapping.type << ", " << mapping.action << ") for key [" << iter.first << "]." << std::endl;
+					LOG(LOG_DEBUG, "Invalid mapping (" << mapping.type << ", " << mapping.action << ") for key [" << iter.first << "].");
 				}
 
 				if (icon)
@@ -617,7 +617,7 @@ namespace ms
 					}
 					else
 					{
-						std::cout << "Invalid mapping (" << mapping.type << ", " << mapping.action << ") for key [" << key << "]." << std::endl;
+						LOG(LOG_DEBUG, "Invalid mapping (" << mapping.type << ", " << mapping.action << ") for key [" << key << "].");
 					}
 
 					if (icon)

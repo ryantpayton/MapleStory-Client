@@ -48,7 +48,7 @@ namespace ms
 
 					if (layer_iter == layers_by_name.end())
 					{
-						std::cout << "Unknown Hair::Layer name: [" << layername << "]\tLocation: [" << hairnode.name() << "][" << stancename << "][" << frame << "]" << std::endl;
+						LOG(LOG_DEBUG, "Unknown Hair::Layer name: [" << layername << "]\tLocation: [" << hairnode.name() << "][" << stancename << "][" << frame << "]");
 						continue;
 					}
 
@@ -93,7 +93,7 @@ namespace ms
 						continue;
 					}
 
-					std::cout << "Invalid Hair::Layer texture\tName: [" << layername << "]\tLocation: [" << hairnode.name() << "][" << stancename << "][" << frame << "]" << std::endl;
+					LOG(LOG_DEBUG, "Invalid Hair::Layer texture\tName: [" << layername << "]\tLocation: [" << hairnode.name() << "][" << stancename << "][" << frame << "]");
 				}
 			}
 		}

@@ -39,9 +39,9 @@ namespace ms
 		if (Configuration::get().get_show_packets())
 		{
 			if (opcode == Opcode::PONG)
-				std::cout << "Sent Packet: PONG" << std::endl;
+				LOG(LOG_NETWORK, "Sent Packet: PONG");
 			else
-				std::cout << "Sent Packet: " << std::to_string(opcode) << std::endl;
+				LOG(LOG_NETWORK, "Sent Packet: " << std::to_string(opcode));
 		}
 	}
 
