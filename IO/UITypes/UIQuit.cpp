@@ -32,7 +32,7 @@
 
 namespace ms
 {
-	UIQuit::UIQuit(const CharStats& st) : screen_adj(212, 114), stats(st)
+	UIQuit::UIQuit(const CharStats& st) : screen_adj(212, 104), stats(st)
 	{
 		nl::node askReward = nl::nx::UI["UIWindow6.img"]["askReward"];
 		nl::node userLog = askReward["userLog"];
@@ -43,8 +43,8 @@ namespace ms
 
 		sprites.emplace_back(backgrnd, -screen_adj);
 
-		buttons[Buttons::NO] = std::make_unique<MapleButton>(askReward["btNo"], Point<int16_t>(0, 37));
-		buttons[Buttons::YES] = std::make_unique<MapleButton>(askReward["btYes"], Point<int16_t>(0, 37));
+		buttons[Buttons::NO] = std::make_unique<MapleButton>(askReward["btNo"], Point<int16_t>(0, 47));
+		buttons[Buttons::YES] = std::make_unique<MapleButton>(askReward["btYes"], Point<int16_t>(0, 47));
 
 		Stage& stage = Stage::get();
 
@@ -85,7 +85,7 @@ namespace ms
 
 		levelNumberWidth = level["numberWidth"];
 
-		level_adj = Point<int16_t>(40, 0);
+		level_adj = Point<int16_t>(50, 0);
 
 		/// Experience
 		int64_t upexp = stage.get_upexp();
@@ -104,7 +104,7 @@ namespace ms
 		expAfter = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::ELECTRICLIME, expAfterText);
 		expAfterPos = exp["posAfter"];
 
-		exp_adj = Point<int16_t>(0, 6);
+		exp_adj = Point<int16_t>(0, 4);
 
 		int16_t width = Constants::Constants::get().get_viewwidth();
 		int16_t height = Constants::Constants::get().get_viewheight();
@@ -120,8 +120,10 @@ namespace ms
 
 		UIElement::draw(inter);
 
-		time_minutes.draw(time_minutes_text, time_number_width, position + time_minutes_pos - screen_adj);
-		time_hours.draw(time_hours_text, time_number_width, position + time_hours_pos - screen_adj);
+		Point<int16_t> time_adj = Point<int16_t>(188, -2);
+
+		time_minutes.draw(time_minutes_text, time_number_width, position + time_minutes_pos - time_adj + Point<int16_t>(50, 0));
+		time_hours.draw(time_hours_text + "dot", time_number_width, position + time_hours_pos - time_adj);
 
 		levelBefore.draw(levelBeforeText, levelNumberWidth, position + levelBeforePos + level_adj - screen_adj);
 		levelAfter.draw(levelAfterText, levelNumberWidth, position + levelAfterPos + level_adj - screen_adj);
