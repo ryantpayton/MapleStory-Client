@@ -430,7 +430,7 @@ namespace ms
 	// The default position of UIMiniMap
 	struct PosMINIMAP : public Configuration::PointEntry
 	{
-		PosMINIMAP() : PointEntry("PosMINIMAP", "(0, 0)") {}
+		PosMINIMAP() : PointEntry("PosMINIMAP", "(8, 8)") {}
 	};
 
 	// The default position of UIShop
@@ -490,7 +490,7 @@ namespace ms
 	// The default type of UIMiniMap
 	struct MiniMapType : public Configuration::ByteEntry
 	{
-		MiniMapType() : ByteEntry("MiniMapType", "0") {}
+		MiniMapType() : ByteEntry("MiniMapType", "2") {}
 	};
 
 	// Whether to use a simple version of UIMiniMap
