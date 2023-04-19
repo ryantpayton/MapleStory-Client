@@ -54,7 +54,8 @@ namespace ms
 			JOB,
 			GUILD,
 			FAME,
-			DAMAGE,
+			MIN_DAMAGE,
+			MAX_DAMAGE,
 			HP,
 			MP,
 			AP,
@@ -64,12 +65,16 @@ namespace ms
 			LUK,
 			NUM_NORMAL,
 			// Detailed
-			DAMAGE_DETAILED,
+			MIN_DAMAGE_DETAILED,
+			MAX_DAMAGE_DETAILED,
 			DAMAGE_BONUS,
 			BOSS_DAMAGE,
 			FINAL_DAMAGE,
+			BUFF_DURATION,
 			IGNORE_DEFENSE,
+			ITEM_DROP_RATE,
 			CRITICAL_RATE,
+			MESOS_OBTAINED,
 			CRITICAL_DAMAGE,
 			STATUS_RESISTANCE,
 			KNOCKBACK_RESISTANCE,
@@ -125,6 +130,7 @@ namespace ms
 		bool showdetail;
 
 		bool hasap;
+		uint16_t jobId;
 
 		Text statlabels[StatLabel::NUM_LABELS];
 		Point<int16_t> statoffsets[StatLabel::NUM_LABELS];

@@ -42,9 +42,20 @@ namespace ms
 		nl::node abilityTitle = detail["abilityTitle"];
 		nl::node metierLine = detail["metierLine"];
 
-		sprites.emplace_back(main["backgrnd"]);
-		sprites.emplace_back(main["backgrnd2"]);
-		sprites.emplace_back(main["backgrnd3"]);
+		jobId = stats.get_stat(MapleStat::Id::JOB);
+
+		if (jobId == Job::Level::BEGINNER)
+		{
+			sprites.emplace_back(main["backgrnd"]);
+			sprites.emplace_back(main["cover0"]);
+			sprites.emplace_back(main["cover1"]);
+		}
+		else
+		{
+			sprites.emplace_back(main["backgrnd"]);
+			sprites.emplace_back(main["backgrnd2"]);
+			sprites.emplace_back(main["backgrnd3"]);
+		}
 
 		textures_detail.emplace_back(detail["backgrnd"]);
 		textures_detail.emplace_back(detail["backgrnd2"]);
@@ -81,6 +92,17 @@ namespace ms
 		buttons[Buttons::BT_ABILITY]->set_state(Button::State::DISABLED);
 		buttons[Buttons::BT_DETAIL_DETAILCLOSE]->set_active(false);
 
+		if (jobId == Job::Level::BEGINNER)
+		{
+			buttons[Buttons::BT_HP]->set_active(false);
+			buttons[Buttons::BT_MP]->set_active(false);
+			buttons[Buttons::BT_STR]->set_active(false);
+			buttons[Buttons::BT_DEX]->set_active(false);
+			buttons[Buttons::BT_INT]->set_active(false);
+			buttons[Buttons::BT_LUK]->set_active(false);
+			buttons[Buttons::BT_AUTO]->set_active(false);
+		}
+
 		update_ap();
 
 		// Normal
@@ -89,47 +111,72 @@ namespace ms
 
 		statlabels[StatLabel::AP] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
 
-		statoffsets[StatLabel::NAME] = Point<int16_t>(73, 26);
-		statoffsets[StatLabel::JOB] = Point<int16_t>(74, 44);
-		statoffsets[StatLabel::GUILD] = Point<int16_t>(74, 63);
-		statoffsets[StatLabel::FAME] = Point<int16_t>(74, 80);
-		statoffsets[StatLabel::DAMAGE] = Point<int16_t>(74, 98);
-		statoffsets[StatLabel::HP] = Point<int16_t>(74, 116);
-		statoffsets[StatLabel::MP] = Point<int16_t>(74, 134);
-		statoffsets[StatLabel::AP] = Point<int16_t>(91, 175);
-		statoffsets[StatLabel::STR] = Point<int16_t>(73, 204);
-		statoffsets[StatLabel::DEX] = Point<int16_t>(73, 222);
-		statoffsets[StatLabel::INT] = Point<int16_t>(73, 240);
-		statoffsets[StatLabel::LUK] = Point<int16_t>(73, 258);
+		Point<int16_t> statoffset = Point<int16_t>(73, 29);
+		int16_t statoffset_y = 18;
+
+		statoffsets[StatLabel::NAME] = statoffset;
+		statoffsets[StatLabel::JOB] = statoffset + Point<int16_t>(1, statoffset_y * 1);
+		statoffsets[StatLabel::GUILD] = statoffset + Point<int16_t>(1, statoffset_y * 2);
+		statoffsets[StatLabel::FAME] = statoffset + Point<int16_t>(1, statoffset_y * 3);
+		statoffsets[StatLabel::MIN_DAMAGE] = statoffset + Point<int16_t>(15, statoffset_y * 4);
+		statoffsets[StatLabel::MAX_DAMAGE] = statoffset + Point<int16_t>(19, statoffset_y * 5);
+		statoffsets[StatLabel::HP] = statoffset + Point<int16_t>(1, statoffset_y * 6);
+		statoffsets[StatLabel::MP] = statoffset + Point<int16_t>(1, statoffset_y * 7);
+		statoffsets[StatLabel::AP] = statoffset + Point<int16_t>(18, 149);
+		statoffsets[StatLabel::STR] = statoffset + Point<int16_t>(0, 178);
+		statoffsets[StatLabel::DEX] = statoffset + Point<int16_t>(0, 196);
+		statoffsets[StatLabel::INT] = statoffset + Point<int16_t>(0, 214);
+		statoffsets[StatLabel::LUK] = statoffset + Point<int16_t>(0, 232);
 
 		// Detailed
-		statlabels[StatLabel::DAMAGE_DETAILED] = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR);
+		statlabels[StatLabel::MIN_DAMAGE_DETAILED] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
+		statlabels[StatLabel::MAX_DAMAGE_DETAILED] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
 		statlabels[StatLabel::DAMAGE_BONUS] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
 		statlabels[StatLabel::BOSS_DAMAGE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
 		statlabels[StatLabel::FINAL_DAMAGE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
+		statlabels[StatLabel::BUFF_DURATION] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
 		statlabels[StatLabel::IGNORE_DEFENSE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
+		statlabels[StatLabel::ITEM_DROP_RATE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
 		statlabels[StatLabel::CRITICAL_RATE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
-		statlabels[StatLabel::CRITICAL_DAMAGE] = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR);
+		statlabels[StatLabel::MESOS_OBTAINED] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
+		statlabels[StatLabel::CRITICAL_DAMAGE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
 		statlabels[StatLabel::STATUS_RESISTANCE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
 		statlabels[StatLabel::KNOCKBACK_RESISTANCE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
-		statlabels[StatLabel::DEFENSE] = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR);
+		statlabels[StatLabel::DEFENSE] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
 		statlabels[StatLabel::SPEED] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
 		statlabels[StatLabel::JUMP] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);
 		statlabels[StatLabel::HONOR] = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR);
 
-		statoffsets[StatLabel::DAMAGE_DETAILED] = Point<int16_t>(73, 38);
-		statoffsets[StatLabel::DAMAGE_BONUS] = Point<int16_t>(100, 56);
-		statoffsets[StatLabel::BOSS_DAMAGE] = Point<int16_t>(196, 56);
-		statoffsets[StatLabel::FINAL_DAMAGE] = Point<int16_t>(100, 74);
-		statoffsets[StatLabel::IGNORE_DEFENSE] = Point<int16_t>(196, 74);
-		statoffsets[StatLabel::CRITICAL_RATE] = Point<int16_t>(100, 92);
-		statoffsets[StatLabel::CRITICAL_DAMAGE] = Point<int16_t>(73, 110);
-		statoffsets[StatLabel::STATUS_RESISTANCE] = Point<int16_t>(100, 128);
-		statoffsets[StatLabel::KNOCKBACK_RESISTANCE] = Point<int16_t>(196, 128);
-		statoffsets[StatLabel::DEFENSE] = Point<int16_t>(73, 146);
-		statoffsets[StatLabel::SPEED] = Point<int16_t>(100, 164);
-		statoffsets[StatLabel::JUMP] = Point<int16_t>(196, 164);
-		statoffsets[StatLabel::HONOR] = Point<int16_t>(73, 283);
+		Point<int16_t> statoffset_detailed = Point<int16_t>(0, 77);
+		int16_t statoffset_detailed_lx = 116;
+		int16_t statoffset_detailed_rx = 227;
+
+		statoffsets[StatLabel::MIN_DAMAGE_DETAILED] = Point<int16_t>(94, 41);
+		statoffsets[StatLabel::MAX_DAMAGE_DETAILED] = Point<int16_t>(105, 59);
+
+		statoffsets[StatLabel::DAMAGE_BONUS] = statoffset_detailed + Point<int16_t>(statoffset_detailed_lx, statoffset_y * 0);
+		statoffsets[StatLabel::BOSS_DAMAGE] = statoffset_detailed + Point<int16_t>(statoffset_detailed_rx, statoffset_y * 0);
+
+		statoffsets[StatLabel::FINAL_DAMAGE] = statoffset_detailed + Point<int16_t>(statoffset_detailed_lx, statoffset_y * 1);
+		statoffsets[StatLabel::BUFF_DURATION] = statoffset_detailed + Point<int16_t>(statoffset_detailed_rx, statoffset_y * 1);
+
+		statoffsets[StatLabel::IGNORE_DEFENSE] = statoffset_detailed + Point<int16_t>(statoffset_detailed_lx, statoffset_y * 2);
+		statoffsets[StatLabel::ITEM_DROP_RATE] = statoffset_detailed + Point<int16_t>(statoffset_detailed_rx, statoffset_y * 2);
+
+		statoffsets[StatLabel::CRITICAL_RATE] = statoffset_detailed + Point<int16_t>(statoffset_detailed_lx, statoffset_y * 3);
+		statoffsets[StatLabel::MESOS_OBTAINED] = statoffset_detailed + Point<int16_t>(statoffset_detailed_rx, statoffset_y * 3);
+
+		statoffsets[StatLabel::CRITICAL_DAMAGE] = statoffset_detailed + Point<int16_t>(statoffset_detailed_lx + 3, statoffset_y * 4);
+
+		statoffsets[StatLabel::STATUS_RESISTANCE] = statoffset_detailed + Point<int16_t>(statoffset_detailed_lx, statoffset_y * 5);
+		statoffsets[StatLabel::KNOCKBACK_RESISTANCE] = statoffset_detailed + Point<int16_t>(statoffset_detailed_rx, statoffset_y * 5);
+
+		statoffsets[StatLabel::DEFENSE] = statoffset_detailed + Point<int16_t>(statoffset_detailed_lx, statoffset_y * 6);
+
+		statoffsets[StatLabel::SPEED] = statoffset_detailed + Point<int16_t>(statoffset_detailed_lx, statoffset_y * 7);
+		statoffsets[StatLabel::JUMP] = statoffset_detailed + Point<int16_t>(statoffset_detailed_lx, statoffset_y * 8);
+
+		statoffsets[StatLabel::HONOR] = statoffset_detailed + Point<int16_t>(73, 263);
 
 		update_all_stats();
 		update_stat(MapleStat::Id::JOB);
@@ -168,7 +215,15 @@ namespace ms
 			if (i >= StatLabel::NUM_NORMAL)
 				labelpos.shift_x(213);
 
-			statlabels[i].draw(labelpos);
+			if (jobId == Job::Level::BEGINNER)
+			{
+				if (i < AP || i > NUM_NORMAL)
+					statlabels[i].draw(labelpos);
+			}
+			else
+			{
+				statlabels[i].draw(labelpos);
+			}
 		}
 
 		UIElement::draw_buttons(alpha);
@@ -215,19 +270,30 @@ namespace ms
 		update_basevstotal(StatLabel::INT, MapleStat::Id::INT, EquipStat::Id::INT);
 		update_basevstotal(StatLabel::LUK, MapleStat::Id::LUK, EquipStat::Id::LUK);
 
-		statlabels[StatLabel::DAMAGE].change_text(std::to_string(stats.get_mindamage()) + " ~ " + std::to_string(stats.get_maxdamage()));
+		statlabels[StatLabel::MIN_DAMAGE].change_text(std::to_string(stats.get_mindamage()));
+		statlabels[StatLabel::MAX_DAMAGE].change_text(" ~ " + std::to_string(stats.get_maxdamage()));
 
 		if (stats.is_damage_buffed())
-			statlabels[StatLabel::DAMAGE].change_color(Color::Name::RED);
+		{
+			statlabels[StatLabel::MIN_DAMAGE].change_color(Color::Name::RED);
+			statlabels[StatLabel::MIN_DAMAGE].change_color(Color::Name::RED);
+		}
 		else
-			statlabels[StatLabel::DAMAGE].change_color(Color::Name::EMPEROR);
+		{
+			statlabels[StatLabel::MAX_DAMAGE].change_color(Color::Name::EMPEROR);
+			statlabels[StatLabel::MAX_DAMAGE].change_color(Color::Name::EMPEROR);
+		}
 
-		statlabels[StatLabel::DAMAGE_DETAILED].change_text(std::to_string(stats.get_mindamage()) + " ~ " + std::to_string(stats.get_maxdamage()));
+		statlabels[StatLabel::MIN_DAMAGE_DETAILED].change_text(std::to_string(stats.get_mindamage()));
+		statlabels[StatLabel::MAX_DAMAGE_DETAILED].change_text(" ~ " + std::to_string(stats.get_maxdamage()));
 		statlabels[StatLabel::DAMAGE_BONUS].change_text("0%");
 		statlabels[StatLabel::BOSS_DAMAGE].change_text(std::to_string(static_cast<int32_t>(stats.get_bossdmg() * 100)) + "%");
-		statlabels[StatLabel::FINAL_DAMAGE].change_text("0%");
+		statlabels[StatLabel::FINAL_DAMAGE].change_text("0.00%");
+		statlabels[StatLabel::BUFF_DURATION].change_text("0%");
 		statlabels[StatLabel::IGNORE_DEFENSE].change_text(std::to_string(static_cast<int32_t>(stats.get_ignoredef())) + "%");
+		statlabels[StatLabel::ITEM_DROP_RATE].change_text("0%");
 		statlabels[StatLabel::CRITICAL_RATE].change_text(std::to_string(static_cast<int32_t>(stats.get_critical() * 100)) + "%");
+		statlabels[StatLabel::MESOS_OBTAINED].change_text("0%");
 		statlabels[StatLabel::CRITICAL_DAMAGE].change_text("0.00%");
 		statlabels[StatLabel::STATUS_RESISTANCE].change_text(std::to_string(static_cast<int32_t>(stats.get_resistance())));
 		statlabels[StatLabel::KNOCKBACK_RESISTANCE].change_text("0%");
