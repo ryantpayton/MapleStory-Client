@@ -42,20 +42,12 @@ namespace ms
 		nl::node abilityTitle = detail["abilityTitle"];
 		nl::node metierLine = detail["metierLine"];
 
-		jobId = stats.get_stat(MapleStat::Id::JOB);
+		sprites.emplace_back(main["backgrnd"]);
+		sprites.emplace_back(main["backgrnd2"]);
+		sprites.emplace_back(main["backgrnd3"]);
 
-		if (jobId == Job::Level::BEGINNER)
-		{
-			sprites.emplace_back(main["backgrnd"]);
-			sprites.emplace_back(main["cover0"]);
-			sprites.emplace_back(main["cover1"]);
-		}
-		else
-		{
-			sprites.emplace_back(main["backgrnd"]);
-			sprites.emplace_back(main["backgrnd2"]);
-			sprites.emplace_back(main["backgrnd3"]);
-		}
+		cover0 = Sprite(main["cover0"]);
+		cover1 = Sprite(main["cover1"]);
 
 		textures_detail.emplace_back(detail["backgrnd"]);
 		textures_detail.emplace_back(detail["backgrnd2"]);
@@ -91,6 +83,8 @@ namespace ms
 		buttons[Buttons::BT_ABILITY]->set_active(false);
 		buttons[Buttons::BT_ABILITY]->set_state(Button::State::DISABLED);
 		buttons[Buttons::BT_DETAIL_DETAILCLOSE]->set_active(false);
+
+		jobId = stats.get_stat(MapleStat::Id::JOB);
 
 		if (jobId == Job::Level::BEGINNER)
 		{
@@ -189,6 +183,12 @@ namespace ms
 	void UIStatsInfo::draw(float alpha) const
 	{
 		UIElement::draw_sprites(alpha);
+
+		if (jobId == Job::Level::BEGINNER)
+		{
+			cover0.draw(position, alpha);
+			cover1.draw(position, alpha);
+		}
 
 		if (showdetail)
 		{
@@ -310,11 +310,26 @@ namespace ms
 		switch (stat)
 		{
 			case MapleStat::Id::JOB:
+			{
+				jobId = stats.get_stat(MapleStat::Id::JOB);
+
 				statlabels[StatLabel::JOB].change_text(stats.get_jobname());
+
+				buttons[Buttons::BT_HP]->set_active(jobId != Job::Level::BEGINNER);
+				buttons[Buttons::BT_MP]->set_active(jobId != Job::Level::BEGINNER);
+				buttons[Buttons::BT_STR]->set_active(jobId != Job::Level::BEGINNER);
+				buttons[Buttons::BT_DEX]->set_active(jobId != Job::Level::BEGINNER);
+				buttons[Buttons::BT_INT]->set_active(jobId != Job::Level::BEGINNER);
+				buttons[Buttons::BT_LUK]->set_active(jobId != Job::Level::BEGINNER);
+				buttons[Buttons::BT_AUTO]->set_active(jobId != Job::Level::BEGINNER);
+
 				break;
+			}
 			case MapleStat::Id::FAME:
+			{
 				update_simple(StatLabel::FAME, MapleStat::Id::FAME);
 				break;
+			}
 		}
 	}
 

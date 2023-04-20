@@ -132,6 +132,9 @@ namespace ms
 		bool hasap;
 		uint16_t jobId;
 
+		Sprite cover0;
+		Sprite cover1;
+
 		Text statlabels[StatLabel::NUM_LABELS];
 		Point<int16_t> statoffsets[StatLabel::NUM_LABELS];
 	};
