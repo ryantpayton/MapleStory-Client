@@ -91,7 +91,7 @@ namespace ms
 
 	std::string ItemData::get_eqcategory(int32_t id) const
 	{
-		constexpr char* categorynames[15] =
+		constexpr const char* categorynames[15] =
 		{
 			"Cap",
 			"Accessory",

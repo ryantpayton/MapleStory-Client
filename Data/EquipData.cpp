@@ -62,7 +62,7 @@ namespace ms
 
 		if (index < NON_WEAPON_TYPES)
 		{
-			constexpr char* types[NON_WEAPON_TYPES] =
+			constexpr const char* types[NON_WEAPON_TYPES] =
 			{
 				"HAT",
 				"FACE ACCESSORY",
@@ -105,7 +105,7 @@ namespace ms
 		}
 		else if (index >= WEAPON_OFFSET && index < WEAPON_OFFSET + WEAPON_TYPES)
 		{
-			constexpr char* types[WEAPON_TYPES] =
+			constexpr const char* types[WEAPON_TYPES] =
 			{
 				"ONE-HANDED SWORD",
 				"ONE-HANDED AXE",

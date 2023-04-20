@@ -939,9 +939,9 @@ namespace ms
 
 	void UIItemInventory::ItemIcon::drop_on_stage() const
 	{
-		constexpr char* dropmessage = "How many will you drop?";
-		constexpr char* untradablemessage = "This item can't be taken back once thrown away.\\nWill you still drop it?";
-		constexpr char* cashmessage = "You can't drop this item.";
+		constexpr const char* dropmessage = "How many will you drop?";
+		constexpr const char* untradablemessage = "This item can't be taken back once thrown away.\\nWill you still drop it?";
+		constexpr const char* cashmessage = "You can't drop this item.";
 
 		if (cashitem)
 		{

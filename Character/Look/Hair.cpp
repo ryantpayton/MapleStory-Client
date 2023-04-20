@@ -102,7 +102,7 @@ namespace ms
 
 		constexpr size_t NUM_COLORS = 8;
 
-		constexpr char* haircolors[NUM_COLORS] =
+		constexpr const char* haircolors[NUM_COLORS] =
 		{
 			"Black", "Red", "Orange", "Blonde", "Green", "Blue", "Violet", "Brown"
 		};
