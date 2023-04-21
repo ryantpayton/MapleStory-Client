@@ -220,6 +220,9 @@ namespace ms
 
 	uint8_t Inventory::get_slotmax(InventoryType::Id type) const
 	{
+		if (type == InventoryType::Id::DEC)
+			return slotmaxima[InventoryType::Id::CASH];
+
 		return slotmaxima[type];
 	}
 

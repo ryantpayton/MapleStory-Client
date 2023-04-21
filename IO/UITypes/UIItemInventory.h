@@ -64,7 +64,6 @@ namespace ms
 		int16_t slot_by_position(Point<int16_t> position) const;
 		uint16_t button_by_tab(InventoryType::Id tab) const;
 		Point<int16_t> get_slotpos(int16_t slot) const;
-		Point<int16_t> get_full_slotpos(int16_t slot) const;
 		Point<int16_t> get_tabpos(InventoryType::Id tab) const;
 		Icon* get_icon(int16_t slot);
 		void set_full(bool enabled);
@@ -92,13 +91,6 @@ namespace ms
 			const UIItemInventory& parent;
 		};
 
-		static constexpr uint16_t ROWS = 8;
-		static constexpr uint16_t COLUMNS = 4;
-		static constexpr uint16_t MAXSLOTS = ROWS * COLUMNS;
-		static constexpr uint16_t MAXFULLSLOTS = COLUMNS * MAXSLOTS;
-		static constexpr uint16_t ICON_WIDTH = 36;
-		static constexpr uint16_t ICON_HEIGHT = 35;
-
 		enum Buttons
 		{
 			BT_CLOSE,
@@ -107,13 +99,13 @@ namespace ms
 			BT_TAB_ETC,
 			BT_TAB_SETUP,
 			BT_TAB_CASH,
+			BT_TAB_DEC,
 			BT_COIN,
 			BT_POINT,
 			BT_GATHER,
 			BT_SORT,
 			BT_FULL,
 			BT_SMALL,
-			BT_POT,
 			BT_UPGRADE,
 			BT_APPRAISE,
 			BT_EXTRACT,
@@ -123,9 +115,6 @@ namespace ms
 			BT_POINT_SM,
 			BT_GATHER_SM,
 			BT_SORT_SM,
-			BT_FULL_SM,
-			BT_SMALL_SM,
-			BT_POT_SM,
 			BT_UPGRADE_SM,
 			BT_APPRAISE_SM,
 			BT_EXTRACT_SM,
@@ -137,7 +126,8 @@ namespace ms
 		const Inventory& inventory;
 
 		Animation newitemslot;
-		Animation newitemtab;
+		Animation newitemtaben;
+		Animation newitemtabdis;
 		Texture projectile;
 		Texture disabled;
 		Text mesolabel;
@@ -150,6 +140,14 @@ namespace ms
 		InventoryType::Id tab;
 		InventoryType::Id newtab;
 		int16_t newslot;
+		int16_t slot_col;
+		int16_t slot_row;
+		int16_t slot_space_x;
+		int16_t slot_space_y;
+		int16_t max_slots;
+		int16_t max_full_slots;
+		int16_t icon_width;
+		int16_t icon_height;
 		bool ignore_tooltip;
 
 		bool sort_enabled;
@@ -162,5 +160,10 @@ namespace ms
 		Texture full_backgrnd3;
 		Point<int16_t> bg_dimensions;
 		Point<int16_t> bg_full_dimensions;
+		Point<int16_t> slot_pos;
+
+#if LOG_LEVEL >= LOG_UI
+		Text slot_labels[128];
+#endif
 	};
 }

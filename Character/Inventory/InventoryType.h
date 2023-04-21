@@ -32,6 +32,7 @@ namespace ms
 			SETUP,
 			ETC,
 			CASH,
+			DEC,
 			EQUIPPED,
 			LENGTH
 		};

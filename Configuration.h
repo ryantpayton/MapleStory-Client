@@ -394,7 +394,7 @@ namespace ms
 	// The default position of UIItemInventory
 	struct PosINV : public Configuration::PointEntry
 	{
-		PosINV() : PointEntry("PosINV", "(300,160)") {}
+		PosINV() : PointEntry("PosINV", "(24,24)") {}
 	};
 
 	// The default position of UISkillBook
@@ -430,7 +430,7 @@ namespace ms
 	// The default position of UIMiniMap
 	struct PosMINIMAP : public Configuration::PointEntry
 	{
-		PosMINIMAP() : PointEntry("PosMINIMAP", "(8, 8)") {}
+		PosMINIMAP() : PointEntry("PosMINIMAP", "(0, 0)") {}
 	};
 
 	// The default position of UIShop

@@ -169,6 +169,7 @@ namespace ms
 
 					okjobs_preview.clear();
 
+					// TODO: Remove from UIItemInventory and move into Job?
 					switch (equipdata.get_reqstat(MapleStat::Id::JOB))
 					{
 					case 0:
@@ -204,6 +205,7 @@ namespace ms
 						canequip_preview[MapleStat::Id::JOB] = false;
 						break;
 					}
+					// End of TODO
 
 					prank_preview = equip.get_potrank();
 
