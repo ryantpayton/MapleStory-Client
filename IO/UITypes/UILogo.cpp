@@ -33,11 +33,10 @@ namespace ms
 	{
 		Music("BgmUI.img/NxLogo").play_once();
 
-#if _DEBUG
-		wizet_ended = true;
-#else
-		wizet_ended = false;
-#endif
+		if (Configuration::get().get_auto_login())
+			wizet_ended = true;
+		else
+			wizet_ended = false;
 
 		user_clicked = false;
 
