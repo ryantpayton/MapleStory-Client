@@ -76,10 +76,13 @@ namespace ms
 		size_t limit;
 		int8_t crypt;
 		State state;
-		ColorBox boundsoutline;
 
 		std::function<void(std::string)> onreturn;
 		std::map<int32_t, std::function<void(void)>> callbacks;
 		std::function<void(void)> ontext;
+
+#if LOG_LEVEL >= LOG_UI
+		ColorBox boundsoutline;
+#endif
 	};
 }

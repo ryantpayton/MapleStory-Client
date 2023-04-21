@@ -33,7 +33,10 @@ namespace ms
 	{
 		textlabel = Text(font, alignment, text_color, "", 0, false);
 		marker = ColorLine(marker_height, text_color, 1.0f, true);
+
+#if LOG_LEVEL >= LOG_UI
 		boundsoutline = ColorBox(bounds.width(), bounds.height(), Color::Name::RED, 0.5f);
+#endif
 
 		text = "";
 		markerpos = 0;
@@ -50,7 +53,7 @@ namespace ms
 	{
 		Point<int16_t> absp = bounds.get_left_top();
 
-#ifdef _DEBUG
+#if LOG_LEVEL >= LOG_UI
 		boundsoutline.draw(absp);
 #endif
 
@@ -94,8 +97,10 @@ namespace ms
 
 		bounds = Rectangle<int16_t>(position, position + dimensions);
 
+#if LOG_LEVEL >= LOG_UI
 		boundsoutline.setwidth(bounds.width());
 		boundsoutline.setheight(bounds.height());
+#endif
 
 		elapsed += Constants::TIMESTEP;
 
