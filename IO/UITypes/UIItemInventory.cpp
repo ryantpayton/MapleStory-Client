@@ -795,40 +795,47 @@ namespace ms
 
 		switch (reqJOB)
 		{
-			case 0:
+			case 0: // Common
 			{
 				can_wear = true;
 				break;
 			}
-			case 1:
+			case 1: // Warrior
 			{
 				if (job == 1 || job >= 20)
 					can_wear = true;
 
 				break;
 			}
-			case 2:
+			case 2: // Magician
 			{
 				if (job == 2)
 					can_wear = true;
 
 				break;
 			}
-			case 4:
+			case 3: // Magician, Warrior
+			{
+				if (job == 1 || job >= 20 || job == 2)
+					can_wear = true;
+
+				break;
+			}
+			case 4: // Bowman
 			{
 				if (job == 3)
 					can_wear = true;
 
 				break;
 			}
-			case 8:
+			case 8: // Thief
 			{
 				if (job == 4)
 					can_wear = true;
 
 				break;
 			}
-			case 16:
+			case 16: // Pirate
 			{
 				if (job == 5)
 					can_wear = true;

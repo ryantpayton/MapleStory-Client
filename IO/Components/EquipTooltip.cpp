@@ -386,7 +386,7 @@ namespace ms
 
 		switch (equipdata.get_reqstat(MapleStat::Id::JOB))
 		{
-		case 0:
+		case 0: // Common
 			okjobs.push_back(0);
 			okjobs.push_back(1);
 			okjobs.push_back(2);
@@ -395,23 +395,28 @@ namespace ms
 			okjobs.push_back(5);
 			canequip[MapleStat::Id::JOB] = true;
 			break;
-		case 1:
+		case 1: // Warrior
 			okjobs.push_back(1);
 			canequip[MapleStat::Id::JOB] = (stats.get_stat(MapleStat::Id::JOB) / 100 == 1) || (stats.get_stat(MapleStat::Id::JOB) / 100 >= 20);
 			break;
-		case 2:
+		case 2: // Magician
 			okjobs.push_back(2);
 			canequip[MapleStat::Id::JOB] = stats.get_stat(MapleStat::Id::JOB) / 100 == 2;
 			break;
-		case 4:
+		case 3: // Magician, Warrior
+			okjobs.push_back(1);
+			okjobs.push_back(2);
+			canequip[MapleStat::Id::JOB] = (stats.get_stat(MapleStat::Id::JOB) / 100 == 1) || (stats.get_stat(MapleStat::Id::JOB) / 100 >= 20) || stats.get_stat(MapleStat::Id::JOB) / 100 == 2;
+			break;
+		case 4: // Bowman
 			okjobs.push_back(3);
 			canequip[MapleStat::Id::JOB] = stats.get_stat(MapleStat::Id::JOB) / 100 == 3;
 			break;
-		case 8:
+		case 8: // Thief
 			okjobs.push_back(4);
 			canequip[MapleStat::Id::JOB] = stats.get_stat(MapleStat::Id::JOB) / 100 == 4;
 			break;
-		case 16:
+		case 16: // Pirate
 			okjobs.push_back(5);
 			canequip[MapleStat::Id::JOB] = stats.get_stat(MapleStat::Id::JOB) / 100 == 5;
 			break;
