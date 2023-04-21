@@ -31,18 +31,12 @@ namespace ms
 	{
 		focused = UIElement::Type::NONE;
 
-//#ifdef _DEBUG
-//		Configuration::get().set_start_shown(true);
-//
-//		emplace<UILogin>();
-//#else
 		bool start_shown = Configuration::get().get_start_shown();
 
 		if (!start_shown)
 			emplace<UILogo>();
 		else
 			emplace<UILogin>();
-//#endif
 	}
 
 	void UIStateLogin::draw(float inter, Point<int16_t> cursor) const
@@ -167,7 +161,7 @@ namespace ms
 		{
 			(*iter).second = std::make_unique<T>(
 				std::forward<Args>(args)...
-				);
+			);
 		}
 	}
 
