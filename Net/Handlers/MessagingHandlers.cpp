@@ -186,6 +186,11 @@ namespace ms
 		{
 			UI::get().set_scrollnotice(message);
 		}
+		else if (type == 5)
+		{
+			// TODO: Is this actually white?
+			UI::get().get_element<UIChatBar>()->show_message(message.c_str(), UIChatBar::MessageType::WHITE);
+		}
 		else if (type == 6)
 		{
 			recv.skip_int();
