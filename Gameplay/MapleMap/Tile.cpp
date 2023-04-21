@@ -21,11 +21,36 @@
 #include <nlnx/nx.hpp>
 #endif
 
+#include <iostream>
+
 namespace ms
 {
 	Tile::Tile(nl::node src, const std::string& ts)
 	{
 		nl::node dsrc = nl::nx::Map["Tile"][ts][src["u"]][src["no"]];
+		nl::node _outlink = dsrc["_outlink"];
+
+		// TODO: Should this be done during the NX conversion?
+		if (_outlink)
+		{
+			size_t pos = 0;
+			std::string path = _outlink;
+			std::string delimiter = "/";
+
+			std::string file;
+
+			if ((pos = path.find(delimiter)) != std::string::npos)
+			{
+				file = path.substr(0, pos);
+				path.erase(0, pos + delimiter.length());
+			}
+
+			if (file == "Map")
+				dsrc = nl::nx::Map.resolve(path);
+			else
+				LOG(LOG_WARN, "Tile::Tile file not handled: " << file);
+		}
+
 		texture = Texture(dsrc);
 		pos = Point<int16_t>(src["x"], src["y"]);
 		z = dsrc["z"];

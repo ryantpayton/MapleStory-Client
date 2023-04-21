@@ -51,21 +51,26 @@ namespace ms
 		canjump = src["jump"].size() > 0;
 		canfly = src["fly"].size() > 0;
 		canmove = src["move"].size() > 0 || canfly;
+		
+		std::string linkid = info["link"];
+		nl::node link_src = nl::nx::Mob[linkid + ".img"];
+		nl::node link = link_src ? link_src : src;
+		nl::node fly = link["fly"];
 
 		if (canfly)
 		{
-			animations[Stance::STAND] = src["fly"];
-			animations[Stance::MOVE] = src["fly"];
+			animations[Stance::STAND] = fly;
+			animations[Stance::MOVE] = fly;
 		}
 		else
 		{
-			animations[Stance::STAND] = src["stand"];
-			animations[Stance::MOVE] = src["move"];
+			animations[Stance::STAND] = link["stand"];
+			animations[Stance::MOVE] = link["move"];
 		}
 
-		animations[Stance::JUMP] = src["jump"];
-		animations[Stance::HIT] = src["hit1"];
-		animations[Stance::DIE] = src["die1"];
+		animations[Stance::JUMP] = link["jump"];
+		animations[Stance::HIT] = link["hit1"];
+		animations[Stance::DIE] = link["die1"];
 
 		name = nl::nx::String["Mob.img"][std::to_string(mid)]["name"];
 
