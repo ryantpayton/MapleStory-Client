@@ -33,7 +33,12 @@ namespace ms
 	{
 		Music("BgmUI.img/NxLogo").play_once();
 
+#if _DEBUG
+		wizet_ended = true;
+#else
 		wizet_ended = false;
+#endif
+
 		user_clicked = false;
 
 		nl::node Logo = nl::nx::UI["Logo.img"];
