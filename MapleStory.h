@@ -49,8 +49,8 @@
 	level == LOG_INFO		? "INFO"	:\
 	level == LOG_DEBUG		? "DEBUG"	:\
 	level == LOG_NETWORK	? "NETWORK"	:\
-	level == LOG_TRACE		? "TRACE"	:\
-	level == LOG_UI			? "UI"		: "UNDEFINED")
+	level == LOG_UI			? "UI"		:\
+	level == LOG_TRACE		? "TRACE"	: "UNDEFINED")
 
 // Log Commands
 #ifdef _DEBUG

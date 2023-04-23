@@ -222,13 +222,7 @@ namespace ms
 		// Read the opcode to determine handler responsible
 		uint16_t opcode = recv.read_short();
 
-		if (Configuration::get().get_show_packets())
-		{
-			if (opcode == PING)
-				LOG(LOG_NETWORK, "Received Packet: PING");
-			else
-				LOG(LOG_NETWORK, "Received Packet: " << std::to_string(opcode));
-		}
+		bool opcode_error = false;
 
 		if (opcode < NUM_HANDLERS)
 		{
@@ -244,22 +238,36 @@ namespace ms
 				{
 					// Notice about an error
 					warn(err.what(), opcode);
+					opcode_error = true;
 				}
 			}
 			else
 			{
 				// Warn about an unhandled packet
 				warn(MSG_UNHANDLED, opcode);
+				opcode_error = true;
 			}
 		}
 		else
 		{
 			// Warn about a packet with opcode out of bounds
 			warn(MSG_OUTOFBOUNDS, opcode);
+			opcode_error = true;
 		}
+
+#if LOG_LEVEL >= LOG_NETWORK
+		if (!opcode_error)
+			LOG(LOG_NETWORK, "Received Packet: " << OpcodeName(opcode));
+#endif
 	}
 
 	void PacketSwitch::warn(const std::string& message, size_t opcode) const
+	{
+		std::string opcode_msg = OpcodeName(opcode);
+		LOG(LOG_NETWORK, "[PacketSwitch::warn]: Opcode [" << opcode_msg << "] Error: " << message);
+	}
+
+	std::string PacketSwitch::OpcodeName(size_t opcode) const
 	{
 		std::string opcode_msg = std::to_string(opcode);
 
@@ -572,6 +580,6 @@ namespace ms
 			default: break;
 		}
 
-		LOG(LOG_NETWORK, "[PacketSwitch::warn]: Opcode [" << opcode_msg << "] Error: " << message);
+		return opcode_msg;
 	}
 }

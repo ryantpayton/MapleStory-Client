@@ -150,12 +150,4 @@ namespace ms
 			write_int(cid);
 		}
 	};
-
-	// Opcode: LOGIN_START(35)
-	class LoginStartPacket : public OutPacket
-	{
-	public:
-		// Sends whenever we hit the start of the Login screen
-		LoginStartPacket() : OutPacket(OutPacket::Opcode::LOGIN_START) {}
-	};
 }

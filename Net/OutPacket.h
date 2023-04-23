@@ -52,7 +52,6 @@ namespace ms
 			PONG = 24,
 			REGISTER_PIC = 29,
 			SELECT_CHAR_PIC = 30,
-			LOGIN_START = 35, // Custom name
 
 			/// Gameplay 1
 			CHANGEMAP = 38,

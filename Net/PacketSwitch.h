@@ -37,6 +37,9 @@ namespace ms
 		// Print a warning
 		void warn(const std::string& message, size_t opcode) const;
 
+		// Get the string value of the Opcode
+		std::string OpcodeName(size_t opcode) const;
+
 		// Opcodes for which handlers can be registered
 		enum Opcode : uint16_t;
 

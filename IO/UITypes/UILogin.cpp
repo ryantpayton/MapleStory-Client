@@ -39,8 +39,6 @@ namespace ms
 {
 	UILogin::UILogin() : UIElement(Point<int16_t>(0, 0), Point<int16_t>(1024, 768)), title_pos(Point<int16_t>(344, 246)), nexon(false)
 	{
-		LoginStartPacket().dispatch();
-
 		std::string LoginMusicNewtro = Configuration::get().get_login_music_newtro();
 
 		Music(LoginMusicNewtro).play();
