@@ -26,25 +26,25 @@ namespace ms
 	{
 		enum Id : int16_t
 		{
-			NONE = 0,
-			HAT = 1,
-			FACE = 2,
-			EYEACC = 3,
-			EARACC = 4,
-			TOP = 5,
-			BOTTOM = 6,
-			SHOES = 7,
-			GLOVES = 8,
-			CAPE = 9,
-			SHIELD = 10, // TODO: Where is this now?
-			WEAPON = 11,
-			RING1 = 12,
-			RING2 = 13,
+			NONE,
+			HAT,
+			FACE,
+			EYEACC,
+			EARACC,
+			TOP,
+			BOTTOM,
+			SHOES,
+			GLOVES,
+			CAPE,
+			SHIELD,		// TODO: Where is this now?
+			WEAPON,
+			RING1,
+			RING2,
 			RING3 = 15,
-			RING4 = 16,
-			PENDANT1 = 17,
-			TAMEDMOB = 18,	// TODO: Where is this now?
-			SADDLE = 19,	// TODO: Where is this now?
+			RING4,
+			PENDANT1,
+			TAMEDMOB,	// TODO: Where is this now?
+			SADDLE,		// TODO: Where is this now?
 			MEDAL = 49,
 			BELT = 50,
 			POCKET,		// TODO: What is the proper value for this?
@@ -56,6 +56,8 @@ namespace ms
 			BADGE,		// TODO: What is the proper value for this?
 			SUBWEAPON,	// TODO: What is the proper value for this?
 			HEART,		// TODO: What is the proper value for this?
+			TOP_DEFAULT,
+			BOTTOM_DEFAULT,
 			LENGTH
 		};
 

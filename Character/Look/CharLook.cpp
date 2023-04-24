@@ -29,6 +29,9 @@ namespace ms
 		set_hair(entry.hairid);
 		set_face(entry.faceid);
 
+		add_equip(Clothing::TOP_DEFAULT_ID);
+		add_equip(Clothing::BOTTOM_DEFAULT_ID);
+
 		for (auto& equip : entry.equips)
 			add_equip(equip.second);
 	}
@@ -69,7 +72,9 @@ namespace ms
 			body->draw(Body::Layer::BODY, interstance, interframe, args);
 			equips.draw(EquipSlot::Id::GLOVES, interstance, Clothing::Layer::GLOVE, interframe, args);
 			equips.draw(EquipSlot::Id::SHOES, interstance, Clothing::Layer::SHOES, interframe, args);
+			equips.draw(EquipSlot::Id::BOTTOM_DEFAULT, interstance, Clothing::Layer::PANTS_DEFAULT, interframe, args);
 			equips.draw(EquipSlot::Id::BOTTOM, interstance, Clothing::Layer::PANTS, interframe, args);
+			equips.draw(EquipSlot::Id::TOP_DEFAULT, interstance, Clothing::Layer::TOP_DEFAULT, interframe, args);
 			equips.draw(EquipSlot::Id::TOP, interstance, Clothing::Layer::TOP, interframe, args);
 			equips.draw(EquipSlot::Id::TOP, interstance, Clothing::Layer::MAIL, interframe, args);
 			equips.draw(EquipSlot::Id::CAPE, interstance, Clothing::Layer::CAPE, interframe, args);
@@ -116,7 +121,9 @@ namespace ms
 			}
 			else
 			{
+				equips.draw(EquipSlot::Id::BOTTOM_DEFAULT, interstance, Clothing::Layer::PANTS_DEFAULT, interframe, args);
 				equips.draw(EquipSlot::Id::BOTTOM, interstance, Clothing::Layer::PANTS, interframe, args);
+				equips.draw(EquipSlot::Id::TOP_DEFAULT, interstance, Clothing::Layer::TOP_DEFAULT, interframe, args);
 				equips.draw(EquipSlot::Id::TOP, interstance, Clothing::Layer::TOP, interframe, args);
 			}
 
