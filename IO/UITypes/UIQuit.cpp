@@ -80,7 +80,7 @@ namespace ms
 		cur_level = stats.get_stat(MapleStat::Id::LEVEL);
 
 		levelAfter = Charset(level["number"], Charset::Alignment::LEFT);
-		levelAfterPos = level["posAfter"];
+		levelAfterPos = Point<int16_t>(level["posAfter"]) - Point<int16_t>(10, 0);
 		levelAfterText = std::to_string(cur_level);
 
 		levelNumberWidth = level["numberWidth"];

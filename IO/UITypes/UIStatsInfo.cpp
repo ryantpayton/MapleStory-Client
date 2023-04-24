@@ -116,11 +116,11 @@ namespace ms
 		statoffsets[StatLabel::MAX_DAMAGE] = statoffset + Point<int16_t>(19, statoffset_y * 5);
 		statoffsets[StatLabel::HP] = statoffset + Point<int16_t>(1, statoffset_y * 6);
 		statoffsets[StatLabel::MP] = statoffset + Point<int16_t>(1, statoffset_y * 7);
-		statoffsets[StatLabel::AP] = statoffset + Point<int16_t>(18, 149);
-		statoffsets[StatLabel::STR] = statoffset + Point<int16_t>(0, 178);
-		statoffsets[StatLabel::DEX] = statoffset + Point<int16_t>(0, 196);
-		statoffsets[StatLabel::INT] = statoffset + Point<int16_t>(0, 214);
-		statoffsets[StatLabel::LUK] = statoffset + Point<int16_t>(0, 232);
+		statoffsets[StatLabel::AP] = statoffset + Point<int16_t>(19, 167);
+		statoffsets[StatLabel::STR] = statoffset + Point<int16_t>(1, 196);
+		statoffsets[StatLabel::DEX] = statoffset + Point<int16_t>(1, 214);
+		statoffsets[StatLabel::INT] = statoffset + Point<int16_t>(1, 232);
+		statoffsets[StatLabel::LUK] = statoffset + Point<int16_t>(1, 250);
 
 		// Detailed
 		statlabels[StatLabel::MIN_DAMAGE_DETAILED] = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::EMPEROR);

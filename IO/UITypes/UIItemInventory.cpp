@@ -230,14 +230,14 @@ namespace ms
 		{
 			if (newtab == tab)
 			{
-				newitemtaben.draw(position + get_tabpos(newtab), alpha);
+				newitemtaben.draw(position + get_tabpos(newtab) - Point<int16_t>(2, 3), alpha);
 
 				if (is_visible(newslot))
 					newitemslot.draw(position + get_slotpos(newslot) + Point<int16_t>(1, 1), alpha);
 			}
 			else
 			{
-				newitemtabdis.draw(position + get_tabpos(newtab), alpha);
+				newitemtabdis.draw(position + get_tabpos(newtab) - Point<int16_t>(2, 1), alpha);
 			}
 		}
 	}
