@@ -58,7 +58,7 @@ If you experience any kind of in-game glitches, UI rendering issues, or anything
 5. Rebuild Solution
 
 # Binaries (08.19.2019)
-The latest build ([a3a9500][commit]) can be found here: [HeavenClient.rar]
+The latest build ([e3e97c2][commit]) can be found here: ([HeavenClient v228.3.zip][archive])
 
 # Donations
 If you feel obligated to donate, to further help and support all parties involved in the development of the HeavenClient project, you can donate using [this][donate] link.
@@ -78,6 +78,6 @@ Another important note to remember is that HeavenClient is a free open-sourced c
 [FreeType]:          http://www.freetype.org/
 [Bass]:              http://www.un4seen.com/
 [Asio]:              http://think-async.com/
-[commit]:            https://github.com/HeavenClient/HeavenClient/commit/a3a95007495b6cded5e34af840a1354fd012c4e0
-[HeavenClient.rar]:  https://drive.google.com/file/d/1--KgFBFqrD6_-07cD-S8dpEimbq5tq0t/view?usp=sharing
+[commit]:            https://github.com/ryantpayton/MapleStory-Client/commit/e3e97c23fc6a92b87356fc2484c7f8b12d71bf19
+[archive]:           https://1drv.ms/u/s!Al6eadQnem68on8i7qG62UBsFXpV?e=sumYue
 [donate]:            https://www.paypal.com/donate?business=MZDZLUH2UC5FE&no_recurring=0&currency_code=USD
