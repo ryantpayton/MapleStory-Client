@@ -2,16 +2,16 @@
 HeavenClient is a custom, made-from-scratch game client.
 
 # Supported versions
-- The client is currently compatible with version 83 servers.
-- The client has only been tested with [HeavenMS].
+- The client is currently compatible with version 83 servers
+- The client has only been tested with [HeavenMS]
 - **[Switch]**
 - **[Linux]**
 
 # Configuration
 The build can be configured by editing the **MapleStory.h** file. The following options are available:
 - **USE_ASIO**: Use Asio for networking (additional dependency)
-- **USE_CRYPTO**: Use cryptography when communicating for the server.
-- **USE_NX**: Use NX files instead of WZ files.
+- **USE_CRYPTO**: Use cryptography when communicating for the server
+- **USE_NX**: Use NX files instead of WZ files
 - **USE_DEBUG**: This suppresses the generation of the Settings file
 
 The default settings can be configured by editing the **Configuration.h** file. These are also generated after a game session in a file called **Settings**. These can be altered in the same way as **Configuration.h**, although, these do not persist if you delete the file, unlike **Configuration.h**.
@@ -58,7 +58,7 @@ If you experience any kind of in-game glitches, UI rendering issues, or anything
 5. Rebuild Solution
 
 # Binaries (08.19.2019)
-The latest build ([e3e97c2][commit]) can be found here: ([HeavenClient v228.3.zip][archive])
+The latest build ([e3e97c2][commit]) can be found here: [HeavenClient v228.3.zip][archive]
 
 # Donations
 If you feel obligated to donate, to further help and support all parties involved in the development of the HeavenClient project, you can donate using [this][donate] link.
