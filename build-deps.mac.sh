@@ -57,6 +57,7 @@ if [[
     cd libs && \
     git clone https://github.com/Dav1dde/glad.git && \
     cd glad && \
+    git checkout master && \
     mkdir build && \
     cd build && \
     cmake .. && \
