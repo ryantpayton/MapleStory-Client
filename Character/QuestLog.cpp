@@ -16,6 +16,8 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "QuestLog.h"
+#include <cstddef>
+#include <cstdint>
 
 namespace ms
 {

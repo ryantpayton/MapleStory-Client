@@ -18,6 +18,7 @@
 #pragma once
 
 #include "Player.h"
+#include <cstdint>
 
 namespace ms
 {

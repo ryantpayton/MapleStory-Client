@@ -16,8 +16,8 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #include "SkillBook.h"
-
 #include "../Data/SkillData.h"
+#include <cstdint>
 
 namespace ms
 {
