@@ -489,7 +489,7 @@ ELSE()
 ENDIF()
 
 IF(APPLE)
-    TARGET_LINK_FRAMEWORKS(HeavenClient OpenGL
+    target_link_libraries(HeavenClient "-framework OpenGL")
 ELSE()
     TARGET_LINK_LIBRARIES(HeavenClient GL)
     TARGET_LINK_LIBRARIES(HeavenClient X11)
