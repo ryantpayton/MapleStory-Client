@@ -483,13 +483,18 @@ ENDIF()
 
 TARGET_INCLUDE_DIRECTORIES(HeavenClient PUBLIC ${PROJECT_SOURCE_DIR}/libs/alure/include)
 IF(APPLE)
-    TARGET_LINK_LIBRARIES(HeavenClient /opt/homebrew/Cellar/alure/1.2_1/lib/libalure.dylib)
+    TARGET_LINK_LIBRARIES(HeavenClient /usr/local/lib/libalure2.dylib)
 ELSE()
     TARGET_LINK_LIBRARIES(HeavenClient ${PROJECT_SOURCE_DIR}/libs/alure/build/libalure2.so)
 ENDIF()
 
-TARGET_LINK_LIBRARIES(HeavenClient GL)
-TARGET_LINK_LIBRARIES(HeavenClient X11)
+IF(APPLE)
+    TARGET_LINK_FRAMEWORKS(HeavenClient OpenGL
+ELSE()
+    TARGET_LINK_LIBRARIES(HeavenClient GL)
+    TARGET_LINK_LIBRARIES(HeavenClient X11)
+ENDIF()
+
 IF(NOT APPLE)
     TARGET_LINK_LIBRARIES(HeavenClient dl)
     TARGET_LINK_LIBRARIES(HeavenClient pthread)
