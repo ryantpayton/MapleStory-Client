@@ -807,17 +807,20 @@ namespace ms
 
 		bool character_found = false;
 
-		for (uint8_t i = PAGESIZE - 1; i >= 0; i--)
-		{
-			uint8_t index = i + selected_page * PAGESIZE;
+        if (characters_count)
+        {
+            for (uint8_t i = PAGESIZE - 1; i >= 0; i--)
+            {
+                uint8_t index = i + selected_page * PAGESIZE;
+                
+                if (index < characters_count)
+                {
+                    character_found = true;
 
-			if (index < characters_count)
-			{
-				character_found = true;
-
-				break;
-			}
-		}
+                    break;
+                }
+            }
+        }
 
 		buttons[Buttons::CHARACTER_SELECT]->set_active(character_found);
 		buttons[Buttons::CHARACTER_DELETE]->set_state(
