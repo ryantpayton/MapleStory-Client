@@ -20,6 +20,7 @@
 #include "../Error.h"
 
 #include <array>
+#include <cstdint>
 
 namespace ms
 {

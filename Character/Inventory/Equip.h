@@ -18,6 +18,7 @@
 #pragma once
 
 #include "EquipQuality.h"
+#include <string>
 
 namespace ms
 {

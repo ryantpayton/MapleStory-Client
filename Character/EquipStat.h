@@ -18,6 +18,8 @@
 #pragma once
 
 #include "../Template/Enumeration.h"
+#include <cstdint>
+#include <cstddef>
 
 namespace ms
 {
