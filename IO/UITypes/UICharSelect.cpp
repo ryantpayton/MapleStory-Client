@@ -874,15 +874,18 @@ namespace ms
 	{
 		Sound(Sound::Name::CHARSELECT).play();
 
-		charlooks[selected_character].set_stance(Stance::Id::WALK1);
-		nametags[selected_character].set_selected(true);
+		if (charlooks.size() > selected_character)
+		{
+			charlooks[selected_character].set_stance(Stance::Id::WALK1);
+			nametags[selected_character].set_selected(true);
 
-		const StatsEntry& character_stats = characters[selected_character].stats;
+			const StatsEntry& character_stats = characters[selected_character].stats;
 
-		namelabel.change_text(character_stats.name);
+			namelabel.change_text(character_stats.name);
 
-		for (size_t i = 0; i < InfoLabel::NUM_LABELS; i++)
-			infolabels[i].change_text(get_infolabel(i, character_stats));
+			for (size_t i = 0; i < InfoLabel::NUM_LABELS; i++)
+				infolabels[i].change_text(get_infolabel(i, character_stats));
+		}
 	}
 
 	void UICharSelect::select_last_slot()
