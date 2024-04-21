@@ -37,12 +37,13 @@ namespace ms
 	class CreateCharPacket : public OutPacket
 	{
 	public:
-		CreateCharPacket(const std::string& name, int32_t job, int32_t face, int32_t hair, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, bool female) : OutPacket(OutPacket::Opcode::CREATE_CHAR)
+		CreateCharPacket(const std::string& name, int32_t job, int32_t face, int32_t hairstyle, int32_t haircolor, int32_t skin, int32_t top, int32_t bottom, int32_t shoes, int32_t weapon, bool female) : OutPacket(OutPacket::Opcode::CREATE_CHAR)
 		{
 			write_string(name);
 			write_int(job);
 			write_int(face);
-			write_int(hair);
+			write_int(hairstyle);
+			write_int(haircolor);
 			write_int(skin);
 			write_int(top);
 			write_int(bottom);

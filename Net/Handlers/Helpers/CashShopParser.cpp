@@ -79,7 +79,7 @@ namespace ms
 			for (size_t i = 0; i < 3; i++)
 				statsentry.petids.push_back(recv.read_long());
 
-			statsentry.stats[MapleStat::Id::LEVEL] = recv.read_short();
+			statsentry.stats[MapleStat::Id::LEVEL] = recv.read_byte();
 
 			auto job = recv.read_short();
 

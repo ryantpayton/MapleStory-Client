@@ -58,7 +58,7 @@ namespace ms
 		uint8_t regionid = Setting<DefaultRegion>::get().load();
 		set_region(regionid);
 
-		nl::node WorldSelectMap = nl::nx::Map["Obj"]["login.img"]["WorldSelect"];
+		nl::node WorldSelectMap = nl::nx::MapLatest["Obj"]["login.img"]["WorldSelect"];
 		sprites.emplace_back(WorldSelectMap["default"]["0"], background_pos);
 
 		std::vector<std::string> backgrounds = { "MapleLive" };

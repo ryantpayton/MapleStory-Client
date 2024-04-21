@@ -79,7 +79,7 @@ namespace ms
 				vCanvasCount = 7;
 		}
 
-		nl::node CustomizeCharObj = nl::nx::Map["Obj"]["login.img"]["CustomizeChar"][class_map[classType]];
+		nl::node CustomizeCharObj = nl::nx::MapLatest["Obj"]["login.img"]["CustomizeChar"][class_map[classType]];
 
 		int16_t genderHeight = board["genderHeight"];
 		int16_t avatarHeight = board["avatarHeight"];
@@ -562,7 +562,7 @@ namespace ms
 
 				if (job >= 0)
 				{
-					CreateCharPacket(name, job, face, hair, skin, top, bottom, shoe, weapon, female).dispatch();
+					CreateCharPacket(name, job, face, hairStyle, hair, skin, top, bottom, shoe, weapon, female).dispatch();
 
 					auto onok = [&](bool alternate)
 					{
@@ -1025,7 +1025,7 @@ namespace ms
 	{
 		size_t color_count = 0, bottom_count = 0, cape_count = 0;
 
-		nl::node MakeCharInfo = nl::nx::Etc["MakeCharInfo.img"][classType];
+		nl::node MakeCharInfo = nl::nx::EtcLatest["MakeCharInfo.img"][classType];
 
 		for (nl::node gender_node : MakeCharInfo)
 		{

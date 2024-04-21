@@ -24,7 +24,7 @@ namespace nl
 	{
 		// Pre-defined nodes to access standard MapleStory style data
 		// Make sure you called load_all first
-		extern node Base, Character, Effect, Etc, Item, Map, Map001, Map002, Map2, Mob, Mob001, Mob002, Mob2, Morph, Npc, Quest, Reactor, Skill, Skill001, Skill002, Skill003, Sound, Sound001, Sound002, Sound2, String, TamingMob, UI;
+		extern node Base, Character, Effect, Etc, EtcLatest, Item, Map, Map001, MapLatest, Mob, Morph, Npc, Quest, Reactor, Skill, Sound, String, TamingMob, UI;
 
 		// Loads the pre-defined nodes from a standard setup of nx files for MapleStory
 		// Only call this function once

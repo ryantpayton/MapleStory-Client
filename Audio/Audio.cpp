@@ -198,7 +198,7 @@ namespace ms
 		if (path == bgmpath)
 			return;
 
-		nl::audio ad = nl::nx::Sound002.resolve(path);
+		nl::audio ad = nl::nx::Sound.resolve(path);
 		auto data = reinterpret_cast<const void*>(ad.data());
 
 		if (data)
@@ -224,7 +224,7 @@ namespace ms
 		if (path == bgmpath)
 			return;
 
-		nl::audio ad = nl::nx::Sound002.resolve(path);
+		nl::audio ad = nl::nx::Sound.resolve(path);
 		auto data = reinterpret_cast<const void*>(ad.data());
 
 		if (data)

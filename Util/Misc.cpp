@@ -209,7 +209,7 @@ namespace ms
 				std::string prefix = std::to_string(mapid / 100000000);
 				std::string mapid_str = string_format::extend_id(mapid, 9);
 
-				return nl::nx::Map002["Map"]["Map" + prefix][mapid_str + ".img"];
+				return nl::nx::Map["Map"]["Map" + prefix][mapid_str + ".img"];
 			}
 		}
 	}
