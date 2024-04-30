@@ -45,7 +45,7 @@ namespace nl
 			return *files.back();
 		}
 
-		node Base, Character, Effect, Etc, EtcLatest, Item, Map, Map001, MapLatest, Mob, Morph, Npc, Quest, Reactor, Skill, Sound, String, TamingMob, UI;
+		node Base, Character, Effect, Etc, EtcLatest, Item, Map, Map001, MapLatest, Mob, Morph, Npc, Quest, Reactor, Skill, Sound, Sound002, String, TamingMob, UI;
 
 		void load_all()
 		{
@@ -67,6 +67,7 @@ namespace nl
 				Reactor = add_file("Reactor.nx");
 				Skill = add_file("Skill.nx");
 				Sound = add_file("Sound.nx");
+				Sound002 = add_file("Sound002.nx");
 				String = add_file("String.nx");
 				TamingMob = add_file("TamingMob.nx");
 				UI = add_file("UI.nx");
@@ -89,6 +90,7 @@ namespace nl
 				Reactor = Base["Reactor"];
 				Skill = Base["Skill"];
 				Sound = Base["Sound"];
+				Sound002 = Base["Sound002"];
 				String = Base["String"];
 				TamingMob = Base["TamingMob"];
 				UI = Base["UI"];
