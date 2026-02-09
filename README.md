@@ -2,16 +2,16 @@
 HeavenClient is a custom, made-from-scratch game client.
 
 # Supported versions
-- The client is currently compatible with version 83 servers.
-- The client has only been tested with [HeavenMS].
+- The client is currently compatible with version 83 servers
+- The client has only been tested with [HeavenMS]
 - **[Switch]**
 - **[Linux]**
 
 # Configuration
 The build can be configured by editing the **MapleStory.h** file. The following options are available:
 - **USE_ASIO**: Use Asio for networking (additional dependency)
-- **USE_CRYPTO**: Use cryptography when communicating for the server.
-- **USE_NX**: Use NX files instead of WZ files.
+- **USE_CRYPTO**: Use cryptography when communicating for the server
+- **USE_NX**: Use NX files instead of WZ files
 - **USE_DEBUG**: This suppresses the generation of the Settings file
 
 The default settings can be configured by editing the **Configuration.h** file. These are also generated after a game session in a file called **Settings**. These can be altered in the same way as **Configuration.h**, although, these do not persist if you delete the file, unlike **Configuration.h**.
@@ -58,7 +58,7 @@ If you experience any kind of in-game glitches, UI rendering issues, or anything
 5. Rebuild Solution
 
 # Binaries (08.19.2019)
-The latest build ([a3a9500][commit]) can be found here: [HeavenClient.rar]
+The latest build ([e3e97c2][commit]) can be found here: [HeavenClient v228.3.zip][archive]
 
 # Donations
 If you feel obligated to donate, to further help and support all parties involved in the development of the HeavenClient project, you can donate using [this][donate] link.
@@ -78,6 +78,6 @@ Another important note to remember is that HeavenClient is a free open-sourced c
 [FreeType]:          http://www.freetype.org/
 [Bass]:              http://www.un4seen.com/
 [Asio]:              http://think-async.com/
-[commit]:            https://github.com/HeavenClient/HeavenClient/commit/a3a95007495b6cded5e34af840a1354fd012c4e0
-[HeavenClient.rar]:  https://drive.google.com/file/d/1--KgFBFqrD6_-07cD-S8dpEimbq5tq0t/view?usp=sharing
+[commit]:            https://github.com/ryantpayton/MapleStory-Client/commit/e3e97c23fc6a92b87356fc2484c7f8b12d71bf19
+[archive]:           https://1drv.ms/u/s!Al6eadQnem68on8i7qG62UBsFXpV?e=sumYue
 [donate]:            https://www.paypal.com/donate?business=MZDZLUH2UC5FE&no_recurring=0&currency_code=USD
