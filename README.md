@@ -25,7 +25,7 @@ The default settings can be configured by editing the **Configuration.h** file. 
 5. Make sure all NX files are present in the parent folder. To convert WZ files to NX you can use the [NoLifeWzToNx] project.
    - Extract the zip
    - Place your WZ files in the **files** folder
-   - Run **start.bat**
+   - Run **convert.bat**
    - See **Required Files** for a list of required NX files
 
 # Required Files
