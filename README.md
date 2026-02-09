@@ -1,72 +1,122 @@
 # HeavenClient
-HeavenClient is a custom, made-from-scratch game client.
 
-# Supported versions
-- The client is currently compatible with version 83 servers
-- The client has only been tested with [HeavenMS]
-- **[Switch]**
-- **[Linux]**
+HeavenClient is a custom, made-from-scratch game client for MapleStory. It is a free, open-source project developed for educational and personal use.
 
-# Configuration
-The build can be configured by editing the **MapleStory.h** file. The following options are available:
-- **USE_ASIO**: Use Asio for networking (additional dependency)
-- **USE_CRYPTO**: Use cryptography when communicating for the server
-- **USE_NX**: Use NX files instead of WZ files
-- **USE_DEBUG**: This suppresses the generation of the Settings file
+## Table of Contents
 
-The default settings can be configured by editing the **Configuration.h** file. These are also generated after a game session in a file called **Settings**. These can be altered in the same way as **Configuration.h**, although, these do not persist if you delete the file, unlike **Configuration.h**.
+- [Compatibility](#compatibility)
+- [Getting Started](#getting-started)
+- [Configuration](#configuration)
+- [Required Files](#required-files)
+- [Dependencies](#dependencies)
+- [Troubleshooting](#troubleshooting)
+- [Binaries](#binaries)
+- [Donations](#donations)
 
-# Building
-1. Open **MapleStory.sln** in Visual Studio 2019 CE
-2. Make sure to use **Windows SDK Version: 8.1** and **Platform Toolset: v140** (If you don't have these, download them.)
-   * [Windows 8.1 SDK]
-3. Press **Build** > **Build Solution** or **Ctrl + Shift + B**
-4. After a successful build, you can now run the program by pressing **Debug** > **Start Debugging** or **F5**.
-5. Make sure all NX files are present in the parent folder. To convert WZ files to NX you can use the [NoLifeWzToNx] project.
-   - Extract the zip
-   - Place your WZ files in the **files** folder
-   - Run **convert.bat**
-   - See **Required Files** for a list of required NX files
+---
 
-# Required Files
-*All WZ files from the official client are required to be converted*
-*Check **NxFiles.h** for an updated list of required NX files*
-*Check **Configuration.h** for the latest version of WZ files tested*
+## Compatibility
 
-# Dependencies
-- Nx library:
-[NoLifeNx]
+| Platform | Link |
+|----------|------|
+| **Server** | Compatible with version 83 servers. Tested with [HeavenMS] using v229.2. |
+| **Switch** | [HeavenClientNX][Switch] |
+| **Linux** | [Linux branch][Linux] |
 
-- Wz library:
-TBA
+---
 
-- Graphics:
-[GLFW3], [GLEW], [FreeType]
+## Getting Started
 
-- Audio:
-[Bass]
+### Prerequisites
 
-- Networking:
-[Asio] (optional)
+- **Visual Studio 2026** Community Edition (tested with v18.2.1)
+- **Windows SDK Version:** 8.1 ([Download][Windows 8.1 SDK])
+- **Platform Toolset:** v140
 
-# In-Game Issues
-If you experience any kind of in-game glitches, UI rendering issues, or anything else that seems out of the ordinary that other developers are not experiences; Follow these steps in order to hopefully resolve aforementioned issues.
-1. Clean Solution
-2. Close Visual Studio
-3. Delete the following files/folders: **.vs**, **x64**, **debug.log**, **MapleStory.aps**, **Settings**
-4. Open Solution
-5. Rebuild Solution
+### Build Steps
 
-# Binaries (08.19.2019)
-The latest build ([e3e97c2][commit]) can be found here: [HeavenClient v228.3.zip][archive]
+1. Open **MapleStory.sln** in Visual Studio.
+2. Verify the SDK and toolset versions are set correctly (see above).
+3. Build the solution: **Build** > **Build Solution** (`Ctrl + Shift + B`).
+4. Run the client: **Debug** > **Start Debugging** (`F5`).
 
-# Donations
-If you feel obligated to donate, to further help and support all parties involved in the development of the HeavenClient project, you can donate using [this][donate] link.
+### Converting WZ Files to NX
 
-Please remember this is ONLY for the HeavenClient development and will only be used in the support of helping further develop the client. *Also please remember to support Nexon as this is not meant to replace anything Nexon offers*
+All WZ files from the v229.2 official client must be converted to NX format and placed in the parent folder of the executable. See the [NoLifeWzToNx] README for conversion instructions.
 
-Another important note to remember is that HeavenClient is a free open-sourced client developed for personal use. Do NOT pay for any services requested by anyone in regards to this client. It will always remain open and free of charge. There is no intent to publish this code with any payment in mind. If that ever changes, donations and disclaimers for donations will be removed.
+---
 
+## Configuration
+
+### Build Options
+
+Edit **MapleStory.h** to toggle build-time features:
+
+| Option | Description |
+|--------|-------------|
+| `USE_ASIO` | Use Asio for networking (requires additional dependency) |
+| `USE_CRYPTO` | Enable cryptography for server communication |
+| `USE_NX` | Use NX files instead of WZ files |
+| `USE_DEBUG` | Suppress generation of the Settings file |
+
+### Runtime Settings
+
+Default settings are defined in **Configuration.h**. A **Settings** file is generated after a game session with the same options. Editing either file works the same way, but **Settings** will not persist if deleted.
+
+---
+
+## Required Files
+
+- All WZ files from the official client must be converted to NX format.
+- See **NxFiles.h** for the full list of required NX files.
+- See **Configuration.h** for the latest tested WZ file version (currently v229.2).
+
+---
+
+## Dependencies
+
+| Category | Library |
+|----------|---------|
+| NX | [NoLifeNx] |
+| WZ | TBA |
+| Graphics | [GLFW3], [GLEW], [FreeType] |
+| Audio | [Bass] |
+| Networking | [Asio] *(optional)* |
+
+---
+
+## Troubleshooting
+
+If you experience in-game glitches, UI rendering issues, or other unexpected behavior, try the following:
+
+1. **Clean Solution** in Visual Studio.
+2. **Close** Visual Studio.
+3. **Delete** the following files and folders:
+   - `.vs/`
+   - `x64/`
+   - `debug.log`
+   - `MapleStory.aps`
+   - `Settings`
+4. **Reopen** the solution.
+5. **Rebuild** the solution.
+
+---
+
+## Binaries
+
+The latest build ([e3e97c2][commit]) is available here: [HeavenClient v228.3.zip][archive]
+
+---
+
+## Donations
+
+If you'd like to support the continued development of HeavenClient, you can [donate here][donate].
+
+All donations go directly toward the development of this project. Please also remember to support Nexon — this project is not meant to replace anything they offer.
+
+> **Note:** HeavenClient is and will always be free and open-source. Do **not** pay anyone for services related to this client.
+
+<!-- Link References -->
 [HeavenMS]:          https://github.com/ryantpayton/MapleStory
 [Switch]:            https://github.com/lain3d/HeavenClientNX
 [Linux]:             https://github.com/ryantpayton/HeavenClient/tree/linux
