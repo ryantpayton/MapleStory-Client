@@ -22,6 +22,7 @@ HeavenClient is a custom, made-from-scratch game client for MapleStory. It is a 
 | **Server** | Compatible with version 83 servers. Tested with [HeavenMS] using v229.2. |
 | **Switch** | [HeavenClientNX][Switch] |
 | **Linux** | [Linux branch][Linux] |
+| **Web** | [MapleStory WASM][WASM] |
 
 ---
 
@@ -120,6 +121,7 @@ All donations go directly toward the development of this project. Please also re
 [HeavenMS]:          https://github.com/ryantpayton/MapleStory
 [Switch]:            https://github.com/lain3d/HeavenClientNX
 [Linux]:             https://github.com/ryantpayton/HeavenClient/tree/linux
+[WASM]:              https://github.com/nmnsnv/maplestory-wasm
 [Windows 8.1 SDK]:   https://developer.microsoft.com/en-us/windows/downloads/sdk-archive
 [NoLifeWzToNx]:      https://github.com/ryantpayton/NoLifeWzToNx
 [NoLifeNx]:          https://github.com/ryantpayton/NoLifeNx
